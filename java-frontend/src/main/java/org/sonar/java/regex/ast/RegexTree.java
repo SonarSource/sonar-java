@@ -38,6 +38,7 @@ public abstract class RegexTree extends RegexSyntaxElement {
     PLAIN_CHARACTER,
     REPETITION,
     SEQUENCE,
+    UNICODE_CODE_POINT,
   }
 
   public RegexTree(RegexSource source, IndexRange range) {

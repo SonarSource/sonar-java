@@ -19,46 +19,42 @@
  */
 package org.sonar.java.regex.ast;
 
-public class PlainCharacterTree extends CharacterTree {
+/**
+ * Represents the \\x{N...N} sequence in a regular expression, which specifies a single Unicode code point.
+ * This differs from PlainCharacterTree in that it will match a single code point even if it consists of
+ * multiple multiple UTF-16 code units (i.e. multiple Java chars).
+ */
+public class UnicodeCodePointTree extends CharacterTree {
 
-  private final JavaCharacter contents;
+  private final int codePoint;
 
-  public PlainCharacterTree(RegexSource source, IndexRange range, JavaCharacter character) {
+  public UnicodeCodePointTree(RegexSource source, IndexRange range, int codePoint) {
     super(source, range);
-    this.contents = character;
-  }
-
-  public char getCharacter() {
-    return contents.getCharacter();
-  }
-
-  public JavaCharacter getContents() {
-    return contents;
-  }
-
-  @Override
-  public String characterAsString() {
-    return String.valueOf(getCharacter());
+    this.codePoint = codePoint;
   }
 
   @Override
   public int codePointOrUnit() {
-    return getCharacter();
+    return codePoint;
   }
 
   @Override
   public boolean isEscapeSequence() {
-    return contents.isEscapeSequence();
+    return true;
+  }
+
+  @Override
+  public String characterAsString() {
+    return String.valueOf(Character.toChars(codePoint));
   }
 
   @Override
   public void accept(RegexVisitor visitor) {
-    visitor.visitPlainCharacter(this);
+    visitor.visitUnicodeCodePoint(this);
   }
 
   @Override
   public Kind kind() {
-    return Kind.PLAIN_CHARACTER;
+    return Kind.UNICODE_CODE_POINT;
   }
-
 }

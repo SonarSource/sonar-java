@@ -52,10 +52,13 @@ import org.sonar.java.regex.ast.RegexTree;
 import org.sonar.java.regex.ast.RepetitionTree;
 import org.sonar.java.regex.ast.SequenceTree;
 import org.sonar.java.regex.ast.SimpleQuantifier;
+import org.sonar.java.regex.ast.UnicodeCodePointTree;
 
 import static org.sonar.java.regex.RegexLexer.EOF;
 
 public class RegexParser {
+
+  private static final String HEX_DIGIT = "hexadecimal digit";
 
   private final RegexSource source;
 
@@ -434,8 +437,10 @@ public class RegexParser {
           return parseEscapedCharacterClass(backslash);
         case 'u':
           return parseUnicodeEscape(backslash);
+        case 'x':
+          return parseHexEscape(backslash);
         default:
-          // TODO other kind of escape sequences such as quotations, special characters, N, x, R or X
+          // TODO other kind of escape sequences such as quotations, special characters, N, R or X
           characters.moveNext();
           return new PlainCharacterTree(source, backslash.getRange().merge(character.getRange()), character);
       }
@@ -449,14 +454,55 @@ public class RegexParser {
     char codeUnit = 0;
     while (i < 4 && isHexDigit(characters.getCurrentChar())) {
       codeUnit *= 16;
-      codeUnit += Integer.parseInt("" + characters.getCurrent().getCharacter(), 16);
-      characters.moveNext();
+      codeUnit += parseHexDigit();
       i++;
     }
     if (i < 4) {
-      expected("hexadecimal digit");
+      expected(HEX_DIGIT);
     }
     return plainCharacter(new JavaCharacter(source, backslash.getRange().extendTo(characters.getCurrentStartIndex()), codeUnit, true));
+  }
+
+  private RegexTree parseHexEscape(JavaCharacter backslash) {
+    // Discard 'x'
+    characters.moveNext();
+    int codePoint = 0;
+    if (characters.currentIs('{')) {
+      // Discard '{'
+      characters.moveNext();
+      if (!isHexDigit(characters.getCurrentChar())) {
+        expected(HEX_DIGIT);
+      }
+      while (isHexDigit(characters.getCurrentChar())) {
+        codePoint *= 16;
+        codePoint += parseHexDigit();
+      }
+      if (characters.currentIs('}')) {
+        characters.moveNext();
+      } else {
+        expected(HEX_DIGIT + " or '}'");
+      }
+    } else {
+      int firstDigit = parseHexDigit();
+      int secondDigit = parseHexDigit();
+      codePoint = firstDigit * 16 + secondDigit;
+    }
+    IndexRange range = backslash.getRange().extendTo(characters.getCurrentStartIndex());
+    UnicodeCodePointTree tree = new UnicodeCodePointTree(source, range, codePoint);
+    if (!Character.isValidCodePoint(codePoint)) {
+      errors.add(new SyntaxError(tree, "Invalid Unicode code point"));
+    }
+    return tree;
+  }
+
+  private int parseHexDigit() {
+    if (!isHexDigit(characters.getCurrentChar())) {
+      expected(HEX_DIGIT);
+      return 0;
+    }
+    int value = Integer.parseInt("" + characters.getCurrent().getCharacter(), 16);
+    characters.moveNext();
+    return value;
   }
 
   private RegexTree parseEscapedCharacterClass(JavaCharacter backslash) {

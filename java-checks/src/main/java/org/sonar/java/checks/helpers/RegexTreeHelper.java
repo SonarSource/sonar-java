@@ -24,8 +24,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.sonar.java.regex.RegexCheck;
-import org.sonar.java.regex.ast.JavaCharacter;
-import org.sonar.java.regex.ast.PlainCharacterTree;
+import org.sonar.java.regex.ast.CharacterTree;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.java.regex.ast.RegexTree;
 
@@ -44,8 +43,8 @@ public class RegexTreeHelper {
     RegexSyntaxElement startGrapheme = null;
     RegexSyntaxElement endGrapheme = null;
     for (RegexTree child : trees) {
-      if (child.is(RegexTree.Kind.PLAIN_CHARACTER)) {
-        JavaCharacter currentCharacter = ((PlainCharacterTree) child).getContents();
+      if (child.is(RegexTree.Kind.PLAIN_CHARACTER, RegexTree.Kind.UNICODE_CODE_POINT)) {
+        CharacterTree currentCharacter = (CharacterTree) child;
         if (!currentCharacter.isEscapeSequence()) {
           if (!isMark(currentCharacter)) {
             addCurrentGrapheme(result, startGrapheme, endGrapheme);
@@ -65,8 +64,8 @@ public class RegexTreeHelper {
     return result;
   }
 
-  private static boolean isMark(JavaCharacter currentChar) {
-    return MARK_PATTERN.matcher(String.valueOf(currentChar.getCharacter())).matches();
+  private static boolean isMark(CharacterTree currentChar) {
+    return MARK_PATTERN.matcher(currentChar.characterAsString()).matches();
   }
 
   private static void addCurrentGrapheme(List<RegexCheck.RegexIssueLocation> result, @Nullable RegexSyntaxElement start, @Nullable RegexSyntaxElement end) {

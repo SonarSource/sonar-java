@@ -6,6 +6,10 @@ public class UnicodeCaseCheck {
 
   void noncompliant(String str) {
     Pattern.compile("söme pättern", Pattern.CASE_INSENSITIVE); // Noncompliant [[sc=37;ec=61]] {{Also use "Pattern.UNICODE_CASE" to correctly handle non-ASCII letters.}}
+    Pattern.compile("s\u00F6me", Pattern.CASE_INSENSITIVE); // Noncompliant
+    Pattern.compile("s\\u00F6me", Pattern.CASE_INSENSITIVE); // Noncompliant
+    Pattern.compile("s\\xF6me", Pattern.CASE_INSENSITIVE); // Noncompliant
+
     Pattern.compile("söme pättern", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE); // Noncompliant [[sc=37;ec=81]] {{Also use "Pattern.UNICODE_CASE" to correctly handle non-ASCII letters.}}
     str.matches("(?i)söme pättern"); // Noncompliant [[sc=20;ec=21]] {{Also use the "u" flag to correctly handle non-ASCII letters.}}
     str.matches("(?i:söme) pättern"); // Noncompliant [[sc=20;ec=21]] {{Also use the "u" flag to correctly handle non-ASCII letters.}}
@@ -19,7 +23,7 @@ public class UnicodeCaseCheck {
     str.matches("(?iu)söme (?-U)pättern"); // Noncompliant [[sc=20;ec=21]] {{Also use the "u" flag to correctly handle non-ASCII letters.}}
   }
 
-  void complaint(String str) {
+  void compliant(String str) {
     Pattern.compile("söme pättern", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     str.matches("(?iu)söme pättern");
     str.matches("(?iu:söme) pättern");
