@@ -44,8 +44,9 @@ public class EmptyStringRepetitionCheck extends AbstractRegexCheck {
 
     @Override
     public void visitRepetition(RepetitionTree tree) {
-      if (matchEmptyString(tree.getElement())) {
-        reportIssue(tree, MESSAGE, null, Collections.emptyList());
+      RegexTree element = tree.getElement();
+      if (matchEmptyString(element)) {
+        reportIssue(element, MESSAGE, null, Collections.emptyList());
       }
     }
 
