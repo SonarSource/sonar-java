@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 import org.opentest4j.AssertionFailedError;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.regex.ast.CharacterClassTree;
@@ -108,12 +109,19 @@ public class RegexParserTestUtils {
     assertPlainString(expected, assertSuccessfulParse(regex));
   }
 
-  public static void assertPlainCharacter(char expected, RegexTree regex) {
+  public static void assertPlainCharacter(char expected, @Nullable Boolean expectedEscape, RegexTree regex) {
     assertKind(RegexTree.Kind.PLAIN_CHARACTER, regex);
     PlainCharacterTree characterTree = assertType(PlainCharacterTree.class, regex);
     assertEquals(expected, characterTree.getCharacter(), "Regex should contain the right characters.");
     assertEquals(expected, characterTree.codePointOrUnit(), "Code unit should equal character.");
     assertEquals("" + expected, characterTree.characterAsString());
+    if (expectedEscape != null) {
+      assertEquals(expectedEscape, characterTree.isEscapeSequence());
+    }
+  }
+
+  public static void assertPlainCharacter(char expected, RegexTree regex) {
+    assertPlainCharacter(expected, null, regex);
   }
 
   public static void assertJavaCharacter(int index, char ch, JavaCharacter javaCharacter) {
@@ -127,10 +135,14 @@ public class RegexParserTestUtils {
     assertLocation(index, index + str.length(), token);
   }
 
-  public static void assertPlainCharacter(char expected, String regexSource) {
+  public static void assertPlainCharacter(char expected, @Nullable Boolean expectedEscape, String regexSource) {
     RegexTree regex = assertSuccessfulParse(regexSource);
     assertLocation(0, regexSource.length(), regex);
-    assertPlainCharacter(expected, regex);
+    assertPlainCharacter(expected, expectedEscape, regex);
+  }
+
+  public static void assertPlainCharacter(char expected, String regexSource) {
+    assertPlainCharacter(expected, null, regexSource);
   }
 
   public static RegexTree assertCharacterClass(boolean expectNegated, RegexTree actual) {

@@ -22,7 +22,9 @@ package org.sonar.java.regex.ast;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.sonar.java.regex.RegexParserTestUtils.assertFailParsing;
+import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
 import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
 import static org.sonar.java.regex.RegexParserTestUtils.assertLocation;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
@@ -63,9 +65,11 @@ class UnicodeCodePointTest {
 
   void assertCodePoint(String expectedString, int expectedCodePoint, int start, int end, RegexTree regex) {
     UnicodeCodePointTree unicodeCodePoint = assertType(UnicodeCodePointTree.class, regex);
+    assertKind(RegexTree.Kind.UNICODE_CODE_POINT, unicodeCodePoint);
     assertEquals(expectedString, unicodeCodePoint.characterAsString());
     assertEquals(expectedCodePoint, unicodeCodePoint.codePointOrUnit());
     assertLocation(start, end, unicodeCodePoint);
+    assertTrue(unicodeCodePoint.isEscapeSequence());
   }
 
 }
