@@ -21,53 +21,73 @@ package org.sonar.java.regex.ast;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.sonar.java.regex.RegexParserTestUtils.assertFailParsing;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainString;
-import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 
 class PlainCharacterTreeTest {
 
   @Test
   void testSimpleCharacter() {
-    RegexTree x = assertSuccessfulParse("x");
-    assertPlainCharacter('x', x);
-    assertFalse(((PlainCharacterTree) x).getContents().isEscapedUnicode());
-    assertPlainCharacter(' ', " ");
+    assertPlainCharacter('x', false, "x");
+    assertPlainCharacter(' ', false, " ");
   }
 
   @Test
   void testSimpleEscapeSequences() {
-    assertPlainCharacter('\b', "\\b");
-    assertPlainCharacter('\t', "\\t");
-    assertPlainCharacter('\n', "\\n");
-    assertPlainCharacter('\f', "\\f");
-    assertPlainCharacter('\r', "\\r");
-    assertPlainCharacter('"', "\\\"");
+    assertPlainCharacter('\b', true, "\\b");
+    assertPlainCharacter('\t', true, "\\t");
+    assertPlainCharacter('\n', true, "\\n");
+    assertPlainCharacter('\f', true, "\\f");
+    assertPlainCharacter('\r', true, "\\r");
+    assertPlainCharacter('"', true, "\\\"");
   }
 
   @Test
   void octalEscapeSequences() {
-    assertPlainCharacter('\n', "\\012");
-    assertPlainCharacter('\n', "\\12");
-    assertPlainCharacter('D', "\\104");
+    assertPlainCharacter('\n', true, "\\012");
+    assertPlainCharacter('\n', true, "\\12");
+    assertPlainCharacter('D', true, "\\104");
     assertPlainString("D\n", "\\104\\012");
     assertPlainString("\nD", "\\12D");
   }
 
   @Test
+  void octalEscapesWithDoubleBackslash() {
+    assertPlainCharacter('\n', true, "\\\\0012");
+    assertPlainCharacter('\n', true, "\\\\012");
+    assertPlainCharacter('D', true, "\\\\0104");
+    assertPlainString("D\n", "\\\\0104\\\\012");
+    assertPlainString("\nD", "\\\\012D");
+    assertPlainString("%6", "\\\\0456");
+  }
+
+  @Test
+  void errorsInOctalEscapesWithDoubleBackslash() {
+    assertFailParsing("\\\\0", "Expected octal digit, but found the end of the regex");
+    assertFailParsing("\\\\0x", "Expected octal digit, but found 'x'");
+  }
+
+  @Test
   void unicodeEscapeSequences() {
-    RegexTree u1 = assertSuccessfulParse("\\u0009");
-    assertPlainCharacter('\t', u1);
-    assertTrue(((PlainCharacterTree) u1).getContents().isEscapedUnicode());
-    RegexTree u2 = assertSuccessfulParse("\\u0044");
-    assertPlainCharacter('D', u2);
-    assertTrue(((PlainCharacterTree) u2).getContents().isEscapedUnicode());
-    RegexTree u3 = assertSuccessfulParse("\\u00F6");
-    assertPlainCharacter('ö', u3);
-    assertTrue(((PlainCharacterTree) u3).getContents().isEscapedUnicode());
+    assertPlainCharacter('\t', true, "\\u0009");
+    assertPlainCharacter('D', true, "\\u0044");
+    assertPlainCharacter('ö', true, "\\u00F6");
+  }
+
+  @Test
+  void unicodeEscapesWithDoubleBackslash() {
+    assertPlainCharacter('\u1234', true, "\\\\u1234");
+    assertPlainCharacter('\n', true, "\\\\u000A");
+  }
+
+  @Test
+  void errorsInUnicodeEscapesWithDoubleBackslash() {
+    assertFailParsing("\\\\u123", "Expected hexadecimal digit, but found the end of the regex");
+    assertFailParsing("\\\\u123X", "Expected hexadecimal digit, but found 'X'");
+    // Note that using multiple 'u's is legal in Java Unicode escapes, but not in regex ones
+    assertFailParsing("\\\\uu1234", "Expected hexadecimal digit, but found 'u'");
+    assertPlainCharacter('\n', "\\\\u000A");
   }
 
   @Test

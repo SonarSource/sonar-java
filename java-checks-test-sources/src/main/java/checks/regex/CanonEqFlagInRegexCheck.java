@@ -41,6 +41,7 @@ public class CanonEqFlagInRegexCheck {
     // With escaped unicode, one know exactly what to match
     Pattern.compile("c\\u0308"); // Compliant
     Pattern.compile("e\u0300"); // Compliant
+    Pattern.compile("c\\x{0308}"); // Compliant
     Pattern.compile("\\u0308"); // Compliant
     Pattern.compile("c\u0308̀"); // Compliant (letter, escaped mark, non-escaped mark)
 

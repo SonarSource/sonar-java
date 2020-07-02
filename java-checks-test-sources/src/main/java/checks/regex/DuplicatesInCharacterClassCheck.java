@@ -28,6 +28,7 @@ public class DuplicatesInCharacterClassCheck {
     str.matches("(?u)[äÄ]");
     str.matches("(?u)[xX]");
     str.matches("[ab-z]");
+    str.matches("[\\x00\\x01]]"); // This would falsely complain about x and 0 being duplicates previously
     str.matches("[z-a9-0]"); // Illegal character class should not make the check explode
     str.matches("[aa"); // Check should not run on syntactically invalid regexen
     str.matches("[[a][a]]"); // Rule doesn't take into account nested character classes

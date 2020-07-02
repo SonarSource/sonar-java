@@ -111,20 +111,23 @@ public class JavaCharacterParser {
         break;
       default:
         if (isOctalDigit(ch)) {
-          StringBuilder codeUnit = new StringBuilder(3);
+          ch = 0;
           for (int i = 0; i < 3 && javaCharacter != null && isOctalDigit(javaCharacter.getCharacter()); i++) {
-            codeUnit.append(javaCharacter.getCharacter());
+            int newValue = ch * 8 + javaCharacter.getCharacter() - '0';
+            if (newValue > 0xFF) {
+              break;
+            }
+            ch = (char) newValue;
             unicodeProcessedCharacters.moveNext();
             javaCharacter = unicodeProcessedCharacters.getCurrent();
           }
-          ch = (char) Integer.parseInt(codeUnit.toString(), 8);
           int endIndex = javaCharacter == null ? source.length() : javaCharacter.getRange().getBeginningOffset();
-          return new JavaCharacter(source, backslash.getRange().extendTo(endIndex), ch);
+          return new JavaCharacter(source, backslash.getRange().extendTo(endIndex), ch, true);
         }
         break;
     }
     unicodeProcessedCharacters.moveNext();
-    return new JavaCharacter(source, backslash.getRange().merge(javaCharacter.getRange()), ch);
+    return new JavaCharacter(source, backslash.getRange().merge(javaCharacter.getRange()), ch, true);
   }
 
   private static boolean isOctalDigit(int c) {

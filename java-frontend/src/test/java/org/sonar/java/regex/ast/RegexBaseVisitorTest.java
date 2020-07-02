@@ -154,10 +154,10 @@ class RegexBaseVisitorTest {
     void visitingRegexWithVariousFeatures() {
       LeafCollector visitor = new LeafCollector();
       visitor.visit(RegexParserTestUtils.assertSuccessfulParseResult(
-        "^[ab&&[^c]]+|(?<x>d)[e-f].\\\\1\\\\k<x>\\\\w$")
+        "^[ab&&[^c]]+|(?<x>d)[e-f].\\\\1\\\\k<x>\\\\w\\\\x0A$")
       );
       assertThat(visitor.visitedCharacters()).isEqualTo(
-        "<boundary:^>abcd<range:e-f><dot><backref:1><backref:x><char-class-escape:\\\\w><boundary:$>"
+        "<boundary:^>abcd<range:e-f><dot><backref:1><backref:x><char-class-escape:\\\\w><u a><boundary:$>"
       );
     }
 
@@ -188,6 +188,14 @@ class RegexBaseVisitorTest {
       public void visitPlainCharacter(PlainCharacterTree tree) {
         characters.append(tree.getCharacter());
         super.visitPlainCharacter(tree);
+      }
+
+      @Override
+      public void visitUnicodeCodePoint(UnicodeCodePointTree tree) {
+        characters.append("<u ");
+        characters.append(Integer.toHexString(tree.codePointOrUnit()));
+        characters.append(">");
+        super.visitUnicodeCodePoint(tree);
       }
 
       @Override

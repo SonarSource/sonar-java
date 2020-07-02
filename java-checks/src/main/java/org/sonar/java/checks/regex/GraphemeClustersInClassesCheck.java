@@ -34,10 +34,6 @@ import static org.sonar.java.checks.helpers.RegexTreeHelper.getGraphemeInList;
 @Rule(key = "S5868")
 public class GraphemeClustersInClassesCheck extends AbstractRegexCheck {
 
-  // M (Mark) is "a character intended to be combined with another character (e.g. accents, umlauts, enclosing boxes, etc.)."
-  // See https://www.regular-expressions.info/unicode.html
-  private static final Pattern MARK_PATTERN = Pattern.compile("\\p{M}");
-
   private static final String MESSAGE = "Extract %d Grapheme Cluster(s) from this character class.";
 
   @Override

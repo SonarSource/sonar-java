@@ -36,8 +36,6 @@ class BackReferenceTreeTest {
 
     assertBackReference("\\\\1", 1);
     assertBackReference("\\\\42", 42);
-    // octal
-    assertBackReference("\\\\042", 34);
 
     RegexTree regex = assertSuccessfulParse("\\\\42.");
     assertThat(regex.is(RegexTree.Kind.SEQUENCE)).isTrue();

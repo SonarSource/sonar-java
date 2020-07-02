@@ -19,46 +19,19 @@
  */
 package org.sonar.java.regex.ast;
 
-public class PlainCharacterTree extends CharacterTree {
+/**
+ * Base class for PlainCharacterTree and UnicodeCodePointTree
+ */
+public abstract class CharacterTree extends RegexTree {
 
-  private final JavaCharacter contents;
-
-  public PlainCharacterTree(RegexSource source, IndexRange range, JavaCharacter character) {
+  public CharacterTree(RegexSource source, IndexRange range) {
     super(source, range);
-    this.contents = character;
   }
 
-  public char getCharacter() {
-    return contents.getCharacter();
-  }
+  public abstract String characterAsString();
 
-  public JavaCharacter getContents() {
-    return contents;
-  }
+  public abstract int codePointOrUnit();
 
-  @Override
-  public String characterAsString() {
-    return String.valueOf(getCharacter());
-  }
-
-  @Override
-  public int codePointOrUnit() {
-    return getCharacter();
-  }
-
-  @Override
-  public boolean isEscapeSequence() {
-    return contents.isEscapeSequence();
-  }
-
-  @Override
-  public void accept(RegexVisitor visitor) {
-    visitor.visitPlainCharacter(this);
-  }
-
-  @Override
-  public Kind kind() {
-    return Kind.PLAIN_CHARACTER;
-  }
+  public abstract boolean isEscapeSequence();
 
 }

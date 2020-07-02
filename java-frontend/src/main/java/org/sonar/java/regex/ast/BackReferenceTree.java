@@ -68,7 +68,7 @@ public class BackReferenceTree extends RegexTree {
     if (!isNumerical()) {
       return -1;
     }
-    return Integer.parseInt(groupName, groupName.charAt(0) == '0' ? 8 : 10);
+    return Integer.parseInt(groupName);
   }
 
 }

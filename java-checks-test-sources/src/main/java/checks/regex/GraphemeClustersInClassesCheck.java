@@ -23,6 +23,8 @@ public class GraphemeClustersInClassesCheck {
   void compliant(String str) {
     Pattern.compile("[é]"); // Compliant, a single char
     Pattern.compile("[e\u0300]"); // Compliant, escaped unicode
+    Pattern.compile("[e\\u0300]"); // Compliant, escaped unicode
+    Pattern.compile("[e\\x{0300}]"); // Compliant, escaped unicode
     Pattern.compile("[e\u20DD̀]"); // Compliant, (letter, escaped unicode, mark) can not be combined
     Pattern.compile("[\u0300e]"); // Compliant, escaped unicode, letter
     Pattern.compile("[̀̀]"); // Compliant, two marks

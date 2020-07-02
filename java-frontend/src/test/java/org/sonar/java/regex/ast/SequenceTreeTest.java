@@ -22,16 +22,49 @@ package org.sonar.java.regex.ast;
 import org.junit.jupiter.api.Test;
 
 import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
+import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
 import static org.sonar.java.regex.RegexParserTestUtils.assertLocation;
+import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
+import static org.sonar.java.regex.RegexParserTestUtils.assertType;
 
 class SequenceTreeTest {
 
   @Test
-  void empty_string() {
+  void emptyString() {
     RegexTree regex = assertSuccessfulParse("");
     assertLocation(0, 0, regex);
     assertKind(RegexTree.Kind.SEQUENCE, regex);
+  }
+
+  @Test
+  void multipleEscapes() {
+    SequenceTree sequence = assertType(SequenceTree.class, assertSuccessfulParse("\\123\\124"));
+    assertListElements(sequence.getItems(),
+      first -> {
+        assertPlainCharacter('S', first);
+        assertLocation(0, 4, first);
+      },
+      second -> {
+        assertPlainCharacter('T', second);
+        assertLocation(4, 8, second);
+      }
+    );
+  }
+
+  @Test
+  void octalEscapeLimit() {
+    SequenceTree sequence = assertType(SequenceTree.class, assertSuccessfulParse("\\456"));
+    assertListElements(sequence.getItems(),
+      first -> {
+        assertPlainCharacter('%', first);
+        assertLocation(0, 3, first);
+      },
+      second -> {
+        assertPlainCharacter('6', second);
+        assertLocation(3, 4, second);
+      }
+    );
   }
 
 }
