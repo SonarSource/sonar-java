@@ -450,16 +450,7 @@ public class RegexParser {
   private RegexTree parseUnicodeEscape(JavaCharacter backslash) {
     // Discard 'u'
     characters.moveNext();
-    int i = 0;
-    char codeUnit = 0;
-    while (i < 4 && isHexDigit(characters.getCurrentChar())) {
-      codeUnit *= 16;
-      codeUnit += parseHexDigit();
-      i++;
-    }
-    if (i < 4) {
-      expected(HEX_DIGIT);
-    }
+    char codeUnit = (char) parseFixedAmountOfHexDigits(4);
     return plainCharacter(new JavaCharacter(source, backslash.getRange().extendTo(characters.getCurrentStartIndex()), codeUnit, true));
   }
 
@@ -483,9 +474,7 @@ public class RegexParser {
         expected(HEX_DIGIT + " or '}'");
       }
     } else {
-      int firstDigit = parseHexDigit();
-      int secondDigit = parseHexDigit();
-      codePoint = firstDigit * 16 + secondDigit;
+      codePoint = parseFixedAmountOfHexDigits(2);
     }
     IndexRange range = backslash.getRange().extendTo(characters.getCurrentStartIndex());
     UnicodeCodePointTree tree = new UnicodeCodePointTree(source, range, codePoint);
@@ -495,11 +484,21 @@ public class RegexParser {
     return tree;
   }
 
-  private int parseHexDigit() {
-    if (!isHexDigit(characters.getCurrentChar())) {
-      expected(HEX_DIGIT);
-      return 0;
+  private int parseFixedAmountOfHexDigits(int amount) {
+    int i = 0;
+    char result = 0;
+    while (i < amount && isHexDigit(characters.getCurrentChar())) {
+      result *= 16;
+      result += parseHexDigit();
+      i++;
     }
+    if (i < amount) {
+      expected(HEX_DIGIT);
+    }
+    return result;
+  }
+
+  private int parseHexDigit() {
     int value = Integer.parseInt("" + characters.getCurrent().getCharacter(), 16);
     characters.moveNext();
     return value;
