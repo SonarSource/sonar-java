@@ -20,20 +20,20 @@
 package org.sonar.java.checks.regex;
 
 import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedList;
 import org.sonar.check.Rule;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.DisjunctionTree;
-import org.sonar.java.regex.ast.Quantifier;
+import org.sonar.java.regex.ast.GroupTree;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
+import org.sonar.java.regex.ast.RegexTree;
 import org.sonar.java.regex.ast.RepetitionTree;
 import org.sonar.java.regex.ast.SequenceTree;
-import org.sonar.java.regex.ast.SimpleQuantifier;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 @Rule(key = "S5842")
 public class EmptyStringRepetitionCheck extends AbstractRegexCheck {
+
+  private static final String MESSAGE = "Rework this part of the regex to not match the empty string.";
 
   @Override
   public void checkRegex(RegexParseResult regex, MethodInvocationTree mit) {
@@ -42,38 +42,30 @@ public class EmptyStringRepetitionCheck extends AbstractRegexCheck {
 
   private class Visitor extends RegexBaseVisitor {
 
-    Deque<SimpleQuantifier> quantifiers = new LinkedList<>();
-
-    @Override
-    public void visitSequence(SequenceTree tree) {
-      if (isEmptySequence(tree)) {
-        SimpleQuantifier quantifier = quantifiers.peek();
-        if (quantifier != null && SimpleQuantifier.Kind.STAR.equals(quantifier.getKind())) {
-          reportIssue(tree, "Remove this part of the regex.", null, Collections.emptyList());
-        }
-      }
-      super.visitSequence(tree);
-    }
-
-    private boolean isEmptySequence(SequenceTree tree) {
-      return tree.getItems().isEmpty();
-    }
-
-    @Override
-    public void visitDisjunction(DisjunctionTree tree) {
-      // TODO All alternatives should be repetition or at least one should be matching the empty String
-      super.visitDisjunction(tree);
-    }
-
     @Override
     public void visitRepetition(RepetitionTree tree) {
-      Quantifier quantifier = tree.getQuantifier();
-      if (quantifier instanceof SimpleQuantifier) {
-        quantifiers.push((SimpleQuantifier) quantifier);
+      if (matchEmptyString(tree.getElement())) {
+        reportIssue(tree, MESSAGE, null, Collections.emptyList());
       }
-      super.visitRepetition(tree);
-      if (quantifier instanceof SimpleQuantifier) {
-        quantifiers.pop();
+    }
+
+    private boolean matchEmptyString(RegexTree element) {
+      switch (element.kind()) {
+        case SEQUENCE:
+          return ((SequenceTree) element).getItems().stream().allMatch(this::matchEmptyString);
+        case DISJUNCTION:
+          return ((DisjunctionTree) element).getAlternatives().stream().anyMatch(this::matchEmptyString);
+        case REPETITION:
+          return ((RepetitionTree) element).getQuantifier().getMinimumRepetitions() == 0;
+        case LOOK_AROUND:
+        case BOUNDARY:
+          return true;
+        default:
+          if (element instanceof GroupTree) {
+            RegexTree nestedElement = ((GroupTree) element).getElement();
+            return nestedElement == null || matchEmptyString(nestedElement);
+          }
+          return false;
       }
     }
 
