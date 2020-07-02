@@ -60,11 +60,8 @@ public class ImpossibleRegexCheck extends AbstractRegexCheck {
   private class ImpossiblePatternFinder extends RegexBaseVisitor {
 
     int groupCount = 0;
-
     boolean isAtBeginning = true;
-
     boolean isAtEnd = true;
-
     List<ImpossibleSubPattern> impossibleSubPatterns = new ArrayList<>();
 
     @Override
@@ -159,13 +156,12 @@ public class ImpossibleRegexCheck extends AbstractRegexCheck {
     }
 
     int findLastConsumingIndex(List<RegexTree> items) {
-      int lastIndex = -1;
-      for (int i = 0; i < items.size(); i++) {
+      for (int i = items.size() - 1; i >= 0; i--) {
         if (canConsumeInput(items.get(i))) {
-          lastIndex = i;
+          return i;
         }
       }
-      return lastIndex;
+      return -1;
     }
 
     boolean canConsumeInput(RegexTree tree) {
