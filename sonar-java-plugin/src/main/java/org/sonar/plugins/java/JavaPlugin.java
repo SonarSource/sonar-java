@@ -25,6 +25,7 @@ import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
+import org.sonar.api.utils.Version;
 import org.sonar.java.AnalysisWarningsWrapper;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
@@ -58,10 +59,9 @@ public class JavaPlugin implements Plugin {
         .build());
 
       ExternalReportExtensions.define(context);
-
-      if (context.getRuntime().getEdition() != SonarEdition.COMMUNITY) {
-        builder.add(Jasper.class);
-      }
+    }
+    if (supportJspTranspilation(context)) {
+      builder.add(Jasper.class);
     }
     builder.addAll(JavaClasspathProperties.getProperties());
     builder.add(
@@ -87,5 +87,14 @@ public class JavaPlugin implements Plugin {
     builder.add(AnalysisWarningsWrapper.class);
 
     context.addExtensions(builder.build());
+  }
+
+  private boolean supportJspTranspilation(Context context) {
+    if (context.getRuntime().getProduct() != SonarProduct.SONARQUBE) {
+      return false;
+    }
+    SonarEdition edition = context.getRuntime().getEdition();
+    boolean greaterThan83 = context.getSonarQubeVersion().isGreaterThanOrEqual(Version.create(8, 3));
+    return edition != SonarEdition.COMMUNITY && greaterThan83;
   }
 }
