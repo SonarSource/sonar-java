@@ -10,7 +10,6 @@ public class AnchorPrecedenceCheck {
     str.matches("a|b|c$"); // Noncompliant [[sc=18;ec=24]]
     str.matches("\\Aa|b|c\\Z"); // Noncompliant [[sc=18;ec=29]]
     str.matches("\\Aa|b|c\\z"); // Noncompliant [[sc=18;ec=29]]
-    str.matches("\\ba|b|c\\b"); // Noncompliant [[sc=18;ec=29]]
   }
 
   void compliant(String str) {
@@ -24,6 +23,8 @@ public class AnchorPrecedenceCheck {
     str.matches("^a|^b$|c$");
     str.matches("^a|^b|c$");
     str.matches("^a|b$|c$");
+    // Only beginning and end of line/input boundaries are considered - not word boundaries
+    str.matches("\\ba|b|c\\b");
     str.matches("\\ba\\b|\\bb\\b|\\bc\\b");
     // If multiple alternatives are anchored, but not all, that's more likely to be intentional than if only the first
     // one were anchored, so we won't report an issue for the following line:

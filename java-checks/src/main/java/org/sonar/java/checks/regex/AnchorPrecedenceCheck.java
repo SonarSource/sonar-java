@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.regex.RegexParseResult;
+import org.sonar.java.regex.ast.BoundaryTree;
 import org.sonar.java.regex.ast.DisjunctionTree;
 import org.sonar.java.regex.ast.NonCapturingGroupTree;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
@@ -86,7 +87,21 @@ public class AnchorPrecedenceCheck extends AbstractRegexCheck {
         return false;
       }
       int index = position == Position.BEGINNING ? 0 : (items.size() - 1);
-      return items.get(index).is(RegexTree.Kind.BOUNDARY);
+      RegexTree firstOrLast = items.get(index);
+      return firstOrLast.is(RegexTree.Kind.BOUNDARY) && isAnchor((BoundaryTree) firstOrLast);
+    }
+
+    private boolean isAnchor(BoundaryTree tree) {
+      switch (tree.type()) {
+        case INPUT_START:
+        case LINE_START:
+        case INPUT_END:
+        case INPUT_END_FINAL_TERMINATOR:
+        case LINE_END:
+          return true;
+        default:
+          return false;
+      }
     }
 
     /**
