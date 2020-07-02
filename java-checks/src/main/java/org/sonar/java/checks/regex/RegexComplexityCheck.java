@@ -193,7 +193,9 @@ public class RegexComplexityCheck extends AbstractRegexCheck {
         firstComponent = syntaxElement;
       }
       String message = "+" + increment;
-      message += " (incl " + (increment - 1) + " for nesting)";
+      if (increment > 1) {
+        message += " (incl " + (increment - 1) + " for nesting)";
+      }
       components.add(new RegexIssueLocation(syntaxElement, message));
     }
 
