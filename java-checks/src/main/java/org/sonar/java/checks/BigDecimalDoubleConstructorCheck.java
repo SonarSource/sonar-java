@@ -19,17 +19,25 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Collections;
-import java.util.List;
-
 @Rule(key = "S2111")
 public class BigDecimalDoubleConstructorCheck extends IssuableSubscriptionVisitor {
+
+  private static final MethodMatchers BIG_DECIMAL_DOUBLE_FLOAT =
+    MethodMatchers.create().ofTypes("java.math.BigDecimal")
+      .constructor()
+      .addParametersMatcher("double")
+      .addParametersMatcher("float")
+      .addParametersMatcher("double", MethodMatchers.ANY)
+      .addParametersMatcher("float", MethodMatchers.ANY)
+      .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -38,19 +46,8 @@ public class BigDecimalDoubleConstructorCheck extends IssuableSubscriptionVisito
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      NewClassTree nct = (NewClassTree) tree;
-      if (nct.symbolType().is("java.math.BigDecimal") && isDoubleConstructor(nct)) {
-        reportIssue(tree, "Use \"BigDecimal.valueOf\" instead.");
-      }
+    if (BIG_DECIMAL_DOUBLE_FLOAT.matches((NewClassTree) tree)) {
+      reportIssue(tree, "Use \"BigDecimal.valueOf\" instead.");
     }
-  }
-
-  private static boolean isDoubleConstructor(NewClassTree nct) {
-    if (!nct.arguments().isEmpty() && nct.arguments().size() <= 2) {
-      Type argumentType = nct.arguments().get(0).symbolType();
-      return argumentType.is("double") || argumentType.is("float");
-    }
-    return false;
   }
 }
