@@ -17,20 +17,20 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.regex;
 
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.regex.RegexParseResult;
+import org.sonar.java.regex.ast.RegexTree;
+import org.sonar.java.regex.ast.SequenceTree;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 @Rule(key = "S5361")
-public class StringReplaceCheck extends AbstractMethodDetection {
+public class StringReplaceCheck extends AbstractRegexCheck {
 
   private static final String LANG_STRING = "java.lang.String";
-  private static final char[] REGEX_META = ".$|([{^?*+\\".toCharArray();
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
@@ -42,21 +42,16 @@ public class StringReplaceCheck extends AbstractMethodDetection {
   }
 
   @Override
-  protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    ExpressionTree regexArg = mit.arguments().get(0);
-    regexArg.asConstant(String.class)
-      .filter(r -> !isRegex(r))
-      .ifPresent(r -> reportIssue(((MemberSelectExpressionTree) mit.methodSelect()).identifier(), "Replace this call to \"replaceAll()\" by a call to the \"replace()\" method."));
+  public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
+    RegexTree regex = regexForLiterals.getResult();
+    if (!regexForLiterals.hasSyntaxErrors() && isPlainString(regex)) {
+      reportIssue(ExpressionUtils.methodName(mit), "Replace this call to \"replaceAll()\" by a call to the \"replace()\" method.");
+    }
   }
 
-  private static boolean isRegex(String s) {
-    for (char c : s.toCharArray()) {
-      for (char meta : REGEX_META) {
-        if (c == meta) {
-          return true;
-        }
-      }
-    }
-    return false;
+  private static boolean isPlainString(RegexTree regex) {
+    return regex.is(RegexTree.Kind.PLAIN_CHARACTER)
+      || (regex.is(RegexTree.Kind.SEQUENCE)
+      && ((SequenceTree) regex).getItems().stream().allMatch(item -> item.is(RegexTree.Kind.PLAIN_CHARACTER)));
   }
 }
