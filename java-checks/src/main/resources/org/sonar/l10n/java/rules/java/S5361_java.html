@@ -8,19 +8,22 @@ special regex character or pattern.</p>
 <pre>
 String init = "Bob is a Bird... Bob is a Plane... Bob is Superman!";
 String changed = init.replaceAll("Bob is", "It's"); // Noncompliant
+changed = changed.replaceAll("\\.\\.\\.", ";"); // Noncompliant
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
 String init = "Bob is a Bird... Bob is a Plane... Bob is Superman!";
 String changed = init.replace("Bob is", "It's");
+changed = changed.replace("...", ";");
 </pre>
 <p>Or, with a regex:</p>
 <pre>
 String init = "Bob is a Bird... Bob is a Plane... Bob is Superman!";
 String changed = init.replaceAll("\\w*\\sis", "It's");
+changed = changed.replaceAll("\\.{3}", ";");
 </pre>
 <h2>See</h2>
 <ul>
-  <li> {rule:java:S4248} - Regex patterns should not be created needlessly </li>
+  <li> {rule:squid:S4248} - Regex patterns should not be created needlessly </li>
 </ul>
 

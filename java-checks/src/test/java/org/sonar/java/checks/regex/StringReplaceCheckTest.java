@@ -17,9 +17,10 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.regex;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.java.checks.regex.StringReplaceCheck;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
@@ -29,7 +30,7 @@ class StringReplaceCheckTest {
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/StringReplace.java"))
+      .onFile(testSourcesPath("checks/regex/StringReplace.java"))
       .withCheck(new StringReplaceCheck())
       .verifyIssues();
   }
