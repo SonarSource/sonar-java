@@ -33,6 +33,7 @@ import org.sonar.java.regex.ast.CharacterClassIntersectionTree;
 import org.sonar.java.regex.ast.CharacterClassTree;
 import org.sonar.java.regex.ast.CharacterClassUnionTree;
 import org.sonar.java.regex.ast.CharacterRangeTree;
+import org.sonar.java.regex.ast.CharacterTree;
 import org.sonar.java.regex.ast.CurlyBraceQuantifier;
 import org.sonar.java.regex.ast.DisjunctionTree;
 import org.sonar.java.regex.ast.DotTree;
@@ -666,8 +667,8 @@ public class RegexParser {
     switch (startCharacter.getCharacter()) {
       case '\\':
         RegexTree escape = parseEscapeSequence();
-        if (escape.is(RegexTree.Kind.PLAIN_CHARACTER)) {
-          return parseCharacterRange(((PlainCharacterTree)escape).getContents(), escape.getRange());
+        if (escape.is(RegexTree.Kind.PLAIN_CHARACTER, RegexTree.Kind.UNICODE_CODE_POINT)) {
+          return parseCharacterRange((CharacterTree) escape);
         } else {
           return escape;
         }
@@ -676,55 +677,54 @@ public class RegexParser {
       case ']':
         if (isAtBeginning) {
           characters.moveNext();
-          return parseCharacterRange(startCharacter, startCharacter.getRange());
+          return parseCharacterRange(plainCharacter(startCharacter));
         } else {
           return null;
         }
       default:
         characters.moveNext();
-        return parseCharacterRange(startCharacter, startCharacter.getRange());
+        return parseCharacterRange(plainCharacter(startCharacter));
     }
   }
 
-  private RegexTree parseCharacterRange(JavaCharacter startCharacter, IndexRange startRange) {
+  private RegexTree parseCharacterRange(CharacterTree startCharacter) {
     if (characters.currentIs('-')) {
       int lookAhead = characters.lookAhead(1);
       if (lookAhead == EOF || lookAhead == ']') {
-        return plainCharacter(startCharacter, startRange);
+        return startCharacter;
       } else if (lookAhead == '\\') {
         characters.moveNext();
         JavaCharacter backslash = characters.getCurrent();
         RegexTree escape = parseEscapeSequence();
-        if (escape.is(RegexTree.Kind.PLAIN_CHARACTER)) {
-          JavaCharacter endCharacter = ((PlainCharacterTree) escape).getContents();
-          return characterRange(startCharacter, startRange, endCharacter);
+        if (escape.is(RegexTree.Kind.PLAIN_CHARACTER, RegexTree.Kind.UNICODE_CODE_POINT)) {
+          return characterRange(startCharacter, (CharacterTree) escape);
         } else {
           expected("simple character", escape);
-          return characterRange(startCharacter, startRange, backslash);
+          return characterRange(startCharacter, plainCharacter(backslash));
         }
       } else {
         characters.moveNext();
         JavaCharacter endCharacter = characters.getCurrent();
         characters.moveNext();
-        return characterRange(startCharacter, startRange, endCharacter);
+        return characterRange(startCharacter, plainCharacter(endCharacter));
       }
     } else {
-      return plainCharacter(startCharacter, startRange);
+      return startCharacter;
     }
   }
 
-  private RegexTree plainCharacter(JavaCharacter character) {
+  private PlainCharacterTree plainCharacter(JavaCharacter character) {
     return plainCharacter(character, character.getRange());
   }
 
-  private RegexTree plainCharacter(JavaCharacter character, IndexRange range) {
+  private PlainCharacterTree plainCharacter(JavaCharacter character, IndexRange range) {
     return new PlainCharacterTree(source, range, character);
   }
 
-  private CharacterRangeTree characterRange(JavaCharacter startCharacter, IndexRange startRange, JavaCharacter endCharacter) {
-    IndexRange range = startRange.merge(endCharacter.getRange());
+  private CharacterRangeTree characterRange(CharacterTree startCharacter, CharacterTree endCharacter) {
+    IndexRange range = startCharacter.getRange().merge(endCharacter.getRange());
     CharacterRangeTree characterRange = new CharacterRangeTree(source, range, startCharacter, endCharacter);
-    if (startCharacter.getCharacter() > endCharacter.getCharacter()) {
+    if (startCharacter.codePointOrUnit() > endCharacter.codePointOrUnit()) {
       errors.add(new SyntaxError(characterRange, "Illegal character range"));
     }
     return characterRange;

@@ -30,7 +30,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.CharacterClassUnionTree;
 import org.sonar.java.regex.ast.CharacterRangeTree;
-import org.sonar.java.regex.ast.PlainCharacterTree;
+import org.sonar.java.regex.ast.CharacterTree;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
 import org.sonar.java.regex.ast.RegexTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -50,15 +50,15 @@ public class DuplicatesInCharacterClassCheck extends AbstractRegexCheck {
     @Override
     public void visitCharacterClassUnion(CharacterClassUnionTree tree) {
       List<RegexTree> duplicates = new ArrayList<>();
-      TreeMap<Character, Boolean> inCharacterClass = new TreeMap<>();
+      TreeMap<Integer, Boolean> inCharacterClass = new TreeMap<>();
       for (RegexTree element : tree.getCharacterClasses()) {
-        if (element.is(RegexTree.Kind.PLAIN_CHARACTER)) {
-          char ch = ((PlainCharacterTree) element).getCharacter();
+        if (element.is(RegexTree.Kind.PLAIN_CHARACTER, RegexTree.Kind.UNICODE_CODE_POINT)) {
+          int ch = ((CharacterTree) element).codePointOrUnit();
           processRange(duplicates, inCharacterClass, ch, ch, element);
         } else if (element.is(RegexTree.Kind.CHARACTER_RANGE)) {
           CharacterRangeTree range = (CharacterRangeTree) element;
-          char lower = range.getLowerBound().getCharacter();
-          char upper = range.getUpperBound().getCharacter();
+          int lower = range.getLowerBound().codePointOrUnit();
+          int upper = range.getUpperBound().codePointOrUnit();
           processRange(duplicates, inCharacterClass, lower, upper, range);
         }
       }
@@ -72,7 +72,7 @@ public class DuplicatesInCharacterClassCheck extends AbstractRegexCheck {
       super.visitCharacterClassUnion(tree);
     }
 
-    void processRange(List<RegexTree> duplicates, TreeMap<Character, Boolean> inCharacterClass, char from, char to, RegexTree tree) {
+    void processRange(List<RegexTree> duplicates, TreeMap<Integer, Boolean> inCharacterClass, int from, int to, RegexTree tree) {
       if (to < from) {
         return;
       }
@@ -82,22 +82,22 @@ public class DuplicatesInCharacterClassCheck extends AbstractRegexCheck {
         duplicates.add(tree);
       }
       inCharacterClass.put(from, true);
-      for (Map.Entry<Character, Boolean> entry : inCharacterClass.subMap(from, true, to, true).entrySet()) {
+      for (Map.Entry<Integer, Boolean> entry : inCharacterClass.subMap(from, true, to, true).entrySet()) {
         entry.setValue(true);
       }
-      char next = (char) (to + 1);
+      int next = to + 1;
       if (!inCharacterClass.containsKey(next)) {
         inCharacterClass.put(next, false);
       }
     }
 
-    boolean containsOverlap(TreeMap<Character, Boolean> inCharacterClass, char from, char to) {
-      Map.Entry<Character, Boolean> fromEntry = inCharacterClass.floorEntry(from);
-      Map.Entry<Character, Boolean> toEntry = inCharacterClass.floorEntry(to);
+    boolean containsOverlap(TreeMap<Integer, Boolean> inCharacterClass, int from, int to) {
+      Map.Entry<Integer, Boolean> fromEntry = inCharacterClass.floorEntry(from);
+      Map.Entry<Integer, Boolean> toEntry = inCharacterClass.floorEntry(to);
       return (fromEntry != null && fromEntry.getValue()) || !Objects.equals(fromEntry, toEntry);
     }
 
-    char caseFold(char ch) {
+    int caseFold(int ch) {
       if (flagActive(Pattern.CASE_INSENSITIVE) && (flagActive(Pattern.UNICODE_CASE) || ('A' <= ch && ch <= 'Z'))) {
         return Character.toLowerCase(Character.toUpperCase(ch));
       }

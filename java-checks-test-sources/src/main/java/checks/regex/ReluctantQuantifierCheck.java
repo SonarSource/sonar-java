@@ -14,6 +14,7 @@ public class ReluctantQuantifierCheck {
     str.matches("\\[.*?\\]"); // Noncompliant [[sc=21;ec=24]] {{Replace this use of a reluctant quantifier with "[^\\]]*+".}}
     str.matches(".+?[abc]"); // Noncompliant [[sc=18;ec=21]] {{Replace this use of a reluctant quantifier with "[^abc]++".}}
     str.matches(".+?[^abc]"); // Noncompliant [[sc=18;ec=21]] {{Replace this use of a reluctant quantifier with "[abc]++".}}
+    str.matches(".+?\\x{1F4A9}"); // Noncompliant [[sc=18;ec=21]] {{Replace this use of a reluctant quantifier with "[^\\x{1F4A9}]++".}}
     str.matches("<abc.*?>"); // Noncompliant [[sc=22;ec=25]] {{Replace this use of a reluctant quantifier with "[^>]*+".}}
     str.matches("<.+?>|otherstuff"); // Noncompliant [[sc=19;ec=22]] {{Replace this use of a reluctant quantifier with "[^>]++".}}
     str.matches("(<.+?>)*"); // Noncompliant [[sc=20;ec=23]] {{Replace this use of a reluctant quantifier with "[^>]++".}}

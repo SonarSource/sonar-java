@@ -17,6 +17,7 @@ public class DuplicatesInCharacterClassCheck {
     str.matches("(?iU)[äÄ]"); // Noncompliant [[sc=25;ec=26]]
     str.matches("(?iu)[xX]"); // Noncompliant [[sc=25;ec=26]]
     str.matches("[\\\"\\\".]"); // Noncompliant [[sc=23;ec=27]]
+    str.matches("[\\x{1F600}-\\x{1F637}\\x{1F608}]"); // Noncompliant [[sc=40;ec=50]]
   }
 
   void compliant() {
@@ -29,6 +30,7 @@ public class DuplicatesInCharacterClassCheck {
     str.matches("(?u)[xX]");
     str.matches("[ab-z]");
     str.matches("[\\x00\\x01]]"); // This would falsely complain about x and 0 being duplicates previously
+    str.matches("[\\x00-\\x01\\x02-\\x03]]");
     str.matches("[z-a9-0]"); // Illegal character class should not make the check explode
     str.matches("[aa"); // Check should not run on syntactically invalid regexen
     str.matches("[[a][a]]"); // Rule doesn't take into account nested character classes
