@@ -98,9 +98,9 @@ public class AssertionsCompletenessCheck {
     org.assertj.core.api.Assertions.assertThat(1).usingDefaultComparator(); // Noncompliant
     org.assertj.core.api.Assertions.assertThatObject(null).extracting("name"); // Noncompliant
     org.assertj.core.api.Assertions.assertThatObject(null).extracting("name").isEqualTo("Paul");
-    org.assertj.core.api.Assertions.assertThatThrownBy(() -> {}).describedAs(""); // Noncompliant
+    org.assertj.core.api.Assertions.assertThatThrownBy(() -> {}).describedAs(""); // Compliant, can be used alone (will fail if not exception is used).
     org.assertj.core.api.Assertions.assertThatThrownBy(() -> {}).describedAs("").hasMessage("42");
-    org.assertj.core.api.Assertions.assertThatThrownBy(() -> {}, "desc", 42).usingComparator(null); // Noncompliant
+    org.assertj.core.api.Assertions.assertThatThrownBy(() -> {}, "desc", 42).usingComparator(null); // Compliant
     org.assertj.core.api.Assertions.assertThatThrownBy(() -> {}, "desc", 42).usingComparator(null).isInstanceOf(IllegalStateException.class);
     org.assertj.core.api.Assertions.assertThatCode(() -> {}); // Noncompliant
     org.assertj.core.api.Assertions.assertThatCode(() -> {}).isInstanceOf(IllegalStateException.class);

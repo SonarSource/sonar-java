@@ -99,7 +99,6 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
         "org.assertj.core.api.Assertions")
       .names(
         "assertThatObject",
-        "assertThatThrownBy",
         "assertThatCode",
         "assertThatExceptionOfType",
         "assertThatNullPointerException",
