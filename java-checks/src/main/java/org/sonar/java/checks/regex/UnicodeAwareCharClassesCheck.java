@@ -97,9 +97,12 @@ public class UnicodeAwareCharClassesCheck extends AbstractRegexCheck {
 
     @Override
     public void visitCharacterRange(CharacterRangeTree tree) {
-      Character expectedUpperBoundChar = unicodeUnawareCharacterRanges.get(tree.getLowerBound().getCharacter());
-      if (expectedUpperBoundChar != null && expectedUpperBoundChar == tree.getUpperBound().getCharacter()) {
-        unicodeUnawareRange.add(tree);
+      int lowerBound = tree.getLowerBound().codePointOrUnit();
+      if (lowerBound < 0xFFFF) {
+        Character expectedUpperBoundChar = unicodeUnawareCharacterRanges.get((char) lowerBound);
+        if (expectedUpperBoundChar != null && expectedUpperBoundChar == tree.getUpperBound().codePointOrUnit()) {
+          unicodeUnawareRange.add(tree);
+        }
       }
     }
 

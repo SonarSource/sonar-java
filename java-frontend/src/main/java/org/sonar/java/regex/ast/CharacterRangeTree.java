@@ -21,21 +21,21 @@ package org.sonar.java.regex.ast;
 
 public class CharacterRangeTree extends RegexTree {
 
-  private final JavaCharacter lowerBound;
+  private final CharacterTree lowerBound;
 
-  private final JavaCharacter upperBound;
+  private final CharacterTree upperBound;
 
-  public CharacterRangeTree(RegexSource source, IndexRange range, JavaCharacter lowerBound, JavaCharacter upperBound) {
+  public CharacterRangeTree(RegexSource source, IndexRange range, CharacterTree lowerBound, CharacterTree upperBound) {
     super(source, range);
     this.lowerBound = lowerBound;
     this.upperBound = upperBound;
   }
 
-  public JavaCharacter getLowerBound() {
+  public CharacterTree getLowerBound() {
     return lowerBound;
   }
 
-  public JavaCharacter getUpperBound() {
+  public CharacterTree getUpperBound() {
     return upperBound;
   }
 

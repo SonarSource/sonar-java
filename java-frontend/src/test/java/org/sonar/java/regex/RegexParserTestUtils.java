@@ -155,10 +155,10 @@ public class RegexParserTestUtils {
     return characterClass.getContents();
   }
 
-  public static void assertCharacterRange(char expectedLowerBound, char expectedUpperBound, RegexTree actual) {
+  public static void assertCharacterRange(int expectedLowerBound, int expectedUpperBound, RegexTree actual) {
     CharacterRangeTree range = assertType(CharacterRangeTree.class, actual);
-    assertEquals(expectedLowerBound, range.getLowerBound().getCharacter(), "Lower bound should be '" + expectedLowerBound + "'.");
-    assertEquals(expectedUpperBound, range.getUpperBound().getCharacter(), "Upper bound should be '" + expectedUpperBound + "'.");
+    assertEquals(expectedLowerBound, range.getLowerBound().codePointOrUnit(), "Lower bound should be '" + expectedLowerBound + "'.");
+    assertEquals(expectedUpperBound, range.getUpperBound().codePointOrUnit(), "Upper bound should be '" + expectedUpperBound + "'.");
   }
 
   public static <T> T assertType(Class<T> klass, Object o) {
