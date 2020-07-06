@@ -23,6 +23,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Streams;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -69,9 +70,13 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
 
   private RegexScannerContext regexContext;
 
+  // We want to report only one issue per element for one rule.
+  private final HashSet<RegexSyntaxElement> reportedRegexTrees = new HashSet<>();
+
   @Override
   public final void setContext(JavaFileScannerContext context) {
     this.regexContext = (RegexScannerContext) context;
+    reportedRegexTrees.clear();
     super.setContext(context);
   }
 
@@ -161,7 +166,9 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
   public abstract void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit);
 
   public final void reportIssue(RegexSyntaxElement regexTree, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries) {
-    regexContext.reportIssue(this, regexTree, message, cost, secondaries);
+    if (reportedRegexTrees.add(regexTree)) {
+      regexContext.reportIssue(this, regexTree, message, cost, secondaries);
+    }
   }
 
   public final void reportIssue(Tree javaTree, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries) {
