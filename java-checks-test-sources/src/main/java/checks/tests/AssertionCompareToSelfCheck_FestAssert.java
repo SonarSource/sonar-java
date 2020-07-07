@@ -46,6 +46,10 @@ public class AssertionCompareToSelfCheck_FestAssert {
     assertThat(actual).containsOnly(actual);  // Noncompliant
     assertThat(actual).isEqualTo(actual);  // Noncompliant
     assertThat(actual).isSameAs(actual);  // Noncompliant
+
+    assertThat(actual).contains(); // Compliant
+    assertThat(actual).containsExactly();  // Compliant
+    assertThat(actual).containsOnly(); // Compliant
   }
 
   Object[] getRandomObjects() {

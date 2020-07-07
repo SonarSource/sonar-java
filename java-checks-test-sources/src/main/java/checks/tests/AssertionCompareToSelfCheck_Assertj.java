@@ -89,6 +89,10 @@ public class AssertionCompareToSelfCheck_Assertj {
     assertThat(actual).hasSameSizeAs(actual);  // Noncompliant
     assertThat(actual).isEqualTo(actual);  // Noncompliant
     assertThat(actual).isSameAs(actual);  // Noncompliant
+
+    assertThat(actual).contains(); // Compliant
+    assertThat(actual).containsAnyOf();  // Compliant
+    assertThat(actual).containsOnly();  // Compliant
   }
 
   @Test
