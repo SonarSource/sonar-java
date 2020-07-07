@@ -125,7 +125,7 @@ public class SpecializedFunctionalInterfacesCheck {
       public void accept(Long t) {
       }
 
-      Function<? extends A, ? extends A> a41 = new Function() { // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'UnaryOperator<? extends A>'}}
+      Function<? extends A, ? extends A> a41 = new Function() { // Compliant because we don't apply the rule when wildcards are used
         @Override
         public Object apply(Object t) {
           return null;
@@ -171,16 +171,16 @@ public class SpecializedFunctionalInterfacesCheck {
         return null;
       }
 
-      private static String getDetails(Function<? super Integer, ? super Integer> function, Integer... inT) { // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'UnaryOperator<? super Integer>'}}
+      private static String getDetails(Function<? super Integer, ? super Integer> function, Integer... inT) { // Compliant because we don't apply the rule when wildcards are used
 
         Function<?, String> a; // Compliant
-        Function<? super A, ? super A> foo1 = new Function() { // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'UnaryOperator<? super A>'}}
+        Function<? super A, ? super A> foo1 = new Function() { // Compliant because we don't apply the rule when wildcards are used
           @Override
           public Object apply(Object t) {
             return null;
           }
         };
-        Function<?, ?> foo2 = new Function() { // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'UnaryOperator<?>'}}
+        Function<?, ?> foo2 = new Function() { // Compliant because we don't apply the rule when wildcards are used
           @Override
           public Object apply(Object t) {
             return null;
@@ -311,7 +311,7 @@ public class SpecializedFunctionalInterfacesCheck {
       return fun().map((Function<String, String> f) -> consume(f, str)).isPresent();
     }
 
-    java.util.Optional<Function<?, ?>> consume(Function<?, ?> f, String str) { // Noncompliant
+    java.util.Optional<Function<?, ?>> consume(Function<?, ?> f, String str) { // Compliant because we don't apply the rule when wildcards are used
       return null;
     }
   }
