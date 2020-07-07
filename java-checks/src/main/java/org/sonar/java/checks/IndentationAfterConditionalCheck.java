@@ -24,6 +24,7 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
@@ -47,13 +48,13 @@ public class IndentationAfterConditionalCheck extends BaseTreeVisitor implements
   public void visitIfStatement(IfStatementTree tree) {
     Tree parentTree = tree.parent();
     if (parentTree.is(Tree.Kind.IF_STATEMENT) && tree.equals(((IfStatementTree) parentTree).elseStatement())) {
-      checkForReport(tree.thenStatement(), ((IfStatementTree) parentTree).elseKeyword(), tree.closeParenToken(), tree.ifKeyword().firstToken().text());
+      checkForReport(tree.thenStatement(), getAcceptableStartOfElse((IfStatementTree) parentTree), tree.closeParenToken(), tree.ifKeyword().firstToken().text());
     } else {
       checkForReport(tree.thenStatement(), tree.ifKeyword(), tree.closeParenToken(), tree.ifKeyword().text());
     }
     SyntaxToken elseKeyword = tree.elseKeyword();
     if (elseKeyword != null && !tree.elseStatement().is(Tree.Kind.IF_STATEMENT)) {
-      checkForReport(tree.elseStatement(), elseKeyword, elseKeyword, elseKeyword.firstToken().text());
+      checkForReport(tree.elseStatement(), getAcceptableStartOfElse(tree), elseKeyword, elseKeyword.firstToken().text());
     }
     super.visitIfStatement(tree);
   }
@@ -74,6 +75,18 @@ public class IndentationAfterConditionalCheck extends BaseTreeVisitor implements
   public void visitForEachStatement(ForEachStatement tree) {
     super.visitForEachStatement(tree);
     checkForReport(tree.statement(), tree.forKeyword(), tree.closeParenToken(), tree.forKeyword().text());
+  }
+
+  private static Tree getAcceptableStartOfElse(IfStatementTree ifStatement) {
+    StatementTree thenStatement = ifStatement.thenStatement();
+    SyntaxToken elseKeyword = ifStatement.elseKeyword();
+    if (thenStatement.is(Tree.Kind.BLOCK)) {
+      SyntaxToken closeBrace = ((BlockTree) thenStatement).closeBraceToken();
+      if (closeBrace.line() == elseKeyword.line()) {
+        return closeBrace;
+      }
+    }
+    return elseKeyword;
   }
 
   private void checkForReport(StatementTree statement, Tree startTree, Tree endTree, String name) {
