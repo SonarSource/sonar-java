@@ -199,6 +199,10 @@ static class UtilityClass {
       "abc".matches(STRCONST); // WithIssue
       PATTERN.matcher("a");
     }
+
+    private String doNotAccessInstanceField() { // WithIssue
+      return STRCONST;
+    }
   }
 
   // UtilityClass generates static keyword for fields
@@ -218,6 +222,10 @@ static class UtilityClass {
       Pattern.compile(STRCONST); // WithIssue
       "abc".matches(STRCONST); // WithIssue
       PATTERN.matcher("a");
+    }
+
+    private String doNotAccessInstanceField() { // NoIssue
+      return STRCONST;
     }
   }
 }
