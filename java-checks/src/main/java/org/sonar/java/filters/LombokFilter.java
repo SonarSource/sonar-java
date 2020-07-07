@@ -36,6 +36,7 @@ import org.sonar.java.checks.EqualsNotOverridenWithCompareToCheck;
 import org.sonar.java.checks.ExceptionsShouldBeImmutableCheck;
 import org.sonar.java.checks.FieldModifierCheck;
 import org.sonar.java.checks.PrivateFieldUsedLocallyCheck;
+import org.sonar.java.checks.RegexPatternsNeedlesslyCheck;
 import org.sonar.java.checks.SillyEqualsCheck;
 import org.sonar.java.checks.UselessImportCheck;
 import org.sonar.java.checks.UtilityClassWithPublicConstructorCheck;
@@ -69,7 +70,8 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     UselessImportCheck.class,
     FieldModifierCheck.class,
     ExceptionsShouldBeImmutableCheck.class,
-    SpringComponentWithNonAutowiredMembersCheck.class);
+    SpringComponentWithNonAutowiredMembersCheck.class,
+    RegexPatternsNeedlesslyCheck.class);
 
   private static final String LOMBOK_VAL = "lombok.val";
   private static final String LOMBOK_VALUE = "lombok.Value";
@@ -127,7 +129,14 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     excludeLinesIfTrue(usesAnnotation(tree, GENERATE_CONSTRUCTOR), tree, AtLeastOneConstructorCheck.class, SpringComponentWithNonAutowiredMembersCheck.class);
     excludeLinesIfTrue(generatesEquals, tree, EqualsNotOverriddenInSubclassCheck.class, EqualsNotOverridenWithCompareToCheck.class);
     excludeLinesIfTrue(generatesNonPublicConstructor(tree), tree, UtilityClassWithPublicConstructorCheck.class);
-    excludeLinesIfTrue(usesAnnotation(tree, UTILITY_CLASS), tree, BadFieldNameCheck.class, ConstantsShouldBeStaticFinalCheck.class);
+    boolean isUtilityClass = usesAnnotation(tree, UTILITY_CLASS);
+    excludeLinesIfTrue(isUtilityClass, tree, BadFieldNameCheck.class, ConstantsShouldBeStaticFinalCheck.class);
+
+    if (isUtilityClass) {
+      tree.members().stream()
+        .filter(t -> t.is(Tree.Kind.VARIABLE))
+        .forEach(v -> excludeLines(v, RegexPatternsNeedlesslyCheck.class));
+    }
 
     if (generatesPrivateFields(tree)) {
       tree.members().stream()
