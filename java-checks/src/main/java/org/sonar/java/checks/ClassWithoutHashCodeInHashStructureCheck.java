@@ -68,7 +68,9 @@ public class ClassWithoutHashCodeInHashStructureCheck extends IssuableSubscripti
   }
 
   private static boolean implementsEquals(Symbol.TypeSymbol symbol) {
-    return symbol.lookupSymbols("equals").stream().anyMatch(EQUALS_MATCHER::matches);
+    return symbol.lookupSymbols("equals").stream()
+      .filter(s -> !s.isAbstract())
+      .anyMatch(EQUALS_MATCHER::matches);
   }
 
   private static boolean implementsHashCode(Symbol.TypeSymbol symbol) {

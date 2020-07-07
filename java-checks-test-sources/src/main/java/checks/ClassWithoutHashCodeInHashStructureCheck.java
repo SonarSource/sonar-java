@@ -66,4 +66,13 @@ class ClassWithoutHashCodeInHashStructureCheck {
       return 0;
     }
   }
+
+  class NotOverridenEquals {
+    private Set<Equality> set = new HashSet<>(); // Compliant
+  }
+
+  interface Equality {
+    @Override
+    boolean equals(Object other); // does not have a default implementation
+  }
 }
