@@ -19,59 +19,28 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 @Rule(key = "S1194")
-public class ErrorClassExtendedCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  private JavaFileScannerContext context;
+public class ErrorClassExtendedCheck extends IssuableSubscriptionVisitor {
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
+  public List<Tree.Kind> nodesToVisit() {
+    return Collections.singletonList(Tree.Kind.CLASS);
   }
 
   @Override
-  public void visitClass(ClassTree tree) {
-    TypeTree superClass = tree.superClass();
-    if (tree.is(Tree.Kind.CLASS) && superClass != null) {
-      if (superClass.is(Tree.Kind.IDENTIFIER)) {
-        IdentifierTree idt = (IdentifierTree) superClass;
-        if ("Error".equals(idt.name())) {
-          context.reportIssue(this, superClass, "Extend \"java.lang.Exception\" or one of its subclasses.");
-        }
-      } else if (superClass.is(Tree.Kind.MEMBER_SELECT)) {
-        MemberSelectExpressionTree mse = (MemberSelectExpressionTree) superClass;
-        if ("Error".equals(mse.identifier().name()) && isJavaLang(mse.expression())) {
-          context.reportIssue(this, superClass, "Extend \"java.lang.Exception\" or one of its subclasses.");
-        }
-      }
+  public void visitNode(Tree tree) {
+    TypeTree superClass = ((ClassTree) tree).superClass();
+    if (superClass != null && superClass.symbolType().isSubtypeOf("java.lang.Error")) {
+      reportIssue(superClass, "Extend \"java.lang.Exception\" or one of its subclasses.");
     }
-    super.visitClass(tree);
-  }
-
-  private static boolean isJavaLang(ExpressionTree tree) {
-    if (tree.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
-      if (!"lang".equals(mse.identifier().name())) {
-        return false;
-      }
-      if (mse.expression().is(Tree.Kind.IDENTIFIER)) {
-        IdentifierTree idt = (IdentifierTree) mse.expression();
-        return "java".equals(idt.name());
-      }
-    }
-    return false;
   }
 
 }
