@@ -84,7 +84,7 @@
 
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
-    <sonar.version>7.9</sonar.version>
+    <sonar.version>7.9.3.33150</sonar.version>
     <analyzer.commons.version>1.11.0.541</analyzer.commons.version>
     <orchestrator.version>3.27.0.2172</orchestrator.version>
     <sslr.version>1.23</sslr.version>
@@ -280,7 +280,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <configuration />
+          <configuration/>
         </plugin>
 
         <plugin>
