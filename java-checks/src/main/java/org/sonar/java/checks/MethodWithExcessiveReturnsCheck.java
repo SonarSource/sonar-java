@@ -25,6 +25,7 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -68,7 +69,13 @@ public class MethodWithExcessiveReturnsCheck extends IssuableSubscriptionVisitor
   public void leaveNode(Tree tree) {
     Tree reportTree = null;
     if (tree.is(Tree.Kind.METHOD)) {
-      reportTree = ((MethodTree) tree).simpleName();
+      IdentifierTree methodName = ((MethodTree) tree).simpleName();
+      if ("equals".equals(methodName.name())) {
+        methods.pop();
+      } else {
+        reportTree = methodName;
+      }
+
     } else if (tree.is(Tree.Kind.LAMBDA_EXPRESSION)) {
       reportTree = ((LambdaExpressionTree) tree).arrowToken();
     }

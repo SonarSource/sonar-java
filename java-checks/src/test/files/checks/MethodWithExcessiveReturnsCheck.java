@@ -46,6 +46,23 @@ class A {
     return;
     return;
   }
+
+  int intMember;
+
+  @Override
+  public boolean equals(Object other) { // Compliant because equals method is excempt from the rule
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    A other = (A) obj;
+    return intMember == other.intMember && Objects.equals(stringMember, other.stringMember);
+  }
 }
 interface B {
   default void method() { // Noncompliant {{Reduce the number of returns of this method 5, down to the maximum allowed 3.}}
