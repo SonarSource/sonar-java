@@ -22,17 +22,27 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
+
+
 class ClassWithoutHashCodeInHashStructureCheckTest {
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ClassWithoutHashCodeInHashStructureCheck.java")
+      .onFile(testSourcesPath("checks/ClassWithoutHashCodeInHashStructureCheck.java"))
       .withCheck(new ClassWithoutHashCodeInHashStructureCheck())
       .verifyIssues();
+
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ClassWithoutHashCodeInHashStructureCheck.java")
+      .onFile(testSourcesPath("checks/ClassWithoutHashCodeInHashStructureCheck.java"))
       .withCheck(new ClassWithoutHashCodeInHashStructureCheck())
       .withoutSemantic()
+      .verifyNoIssues();
+
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/ClassWithoutHashCodeInHashStructureCheck.java"))
+      .withCheck(new ClassWithoutHashCodeInHashStructureCheck())
       .verifyNoIssues();
   }
 }
