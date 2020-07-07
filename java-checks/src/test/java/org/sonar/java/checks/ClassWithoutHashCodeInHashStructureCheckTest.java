@@ -27,6 +27,7 @@ import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
 
 
 class ClassWithoutHashCodeInHashStructureCheckTest {
+
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
