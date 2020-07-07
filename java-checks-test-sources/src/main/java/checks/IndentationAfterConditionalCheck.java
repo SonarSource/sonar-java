@@ -180,7 +180,34 @@ class IndentationAfterConditionalCheck {
         doTheOtherThing();
     else
       somethingElseEntirely();
-    return i;  
+
+    if (i > 0) {
+      doTheThing();
+    } else
+      return i;
+
+    if (i > 0) {
+      doTheOtherThing();
+    } else // Noncompliant
+    return i;
+
+    if (i > 0) {
+      doTheOtherThing();
+    } else if (i < 0)
+      return i;
+
+    if (i > 0) {
+      doTheOtherThing();
+    } else if (i < 0) // Noncompliant
+    return i;
+
+    if (i > 0) {
+      doTheOtherThing();
+    }
+      else if (i < 0) // Noncompliant
+      return i;
+
+    return i;
   }
 
   public void doTheThing() {};
