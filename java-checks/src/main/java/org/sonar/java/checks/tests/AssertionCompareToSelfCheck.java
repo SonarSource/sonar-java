@@ -123,7 +123,7 @@ public class AssertionCompareToSelfCheck extends IssuableSubscriptionVisitor {
     } else if (ASSERTJ_AND_FEST_ASSERT_SUBJECT_METHODS.matches(mit)) {
       ExpressionTree actualExpression = mit.arguments().get(0);
       consecutiveMethodIgnoringMessageDescription(mit)
-        .filter(ASSERTJ_AND_FEST_ASSERT_PREDICATES::matches)
+        .filter(predicate -> predicate.arguments().size() == 1 && ASSERTJ_AND_FEST_ASSERT_PREDICATES.matches(predicate))
         .ifPresent(predicate -> checkActualAndExpectedExpression(methodName(predicate).name(), actualExpression, predicate.arguments().get(0)));
     }
   }
