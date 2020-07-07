@@ -7,6 +7,7 @@ import static lombok.AccessLevel.PUBLIC;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.stereotype.Repository;
+import java.util.regex.Pattern;
 
 class Fields {
   @lombok.Getter
@@ -188,8 +189,19 @@ static class UtilityClass {
 
     public final String FINAL_NON_STATIC = "x"; // WithIssue
     public final String finalNonStatic = "x"; // WithIssue
+
+    private final Pattern PATTERN = Pattern.compile(".*"); // WithIssue
+
+    private static final String STRCONST = ".*";
+
+    private void match() {
+      Pattern.compile(STRCONST); // WithIssue
+      "abc".matches(STRCONST); // WithIssue
+      PATTERN.matcher("a");
+    }
   }
 
+  // UtilityClass generates static keyword for fields
   @lombok.experimental.UtilityClass
   static class B { // NoIssue
     public static void foo() {
@@ -197,6 +209,16 @@ static class UtilityClass {
 
     public final String STATIC_FINAL_ALLCAPS = "x"; // NoIssue
     public final String staticFinalCamelCase = "x"; // NoIssue
+
+    private final Pattern PATTERN = Pattern.compile(".*"); // NoIssue
+
+    private static final String STRCONST = ".*";
+
+    private void match() {
+      Pattern.compile(STRCONST); // WithIssue
+      "abc".matches(STRCONST); // WithIssue
+      PATTERN.matcher("a");
+    }
   }
 }
 
