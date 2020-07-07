@@ -134,7 +134,7 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
   private static Optional<String> handleFunctionInterface(Type parametrizedType, boolean usedAsMethodReference) {
     ParameterTypeNameAndTreeType firstArgument = new ParameterTypeNameAndTreeType(parametrizedType, 0);
     ParameterTypeNameAndTreeType secondArgument = new ParameterTypeNameAndTreeType(parametrizedType, 1);
-    if (firstArgument.paramType.equals(secondArgument.paramType)) {
+    if (typeEquals(firstArgument.paramType, secondArgument.paramType)) {
       if (firstArgument.paramTypeName != null && !usedAsMethodReference) {
         return functionalInterfaceName("%sUnaryOperator", firstArgument.paramTypeName);
       }
@@ -162,7 +162,7 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     ParameterTypeNameAndTreeType firstArgument = new ParameterTypeNameAndTreeType(parametrizedType, 0);
     ParameterTypeNameAndTreeType secondArgument = new ParameterTypeNameAndTreeType(parametrizedType, 1);
     ParameterTypeNameAndTreeType thirdArgument = new ParameterTypeNameAndTreeType(parametrizedType, 2);
-    if (firstArgument.paramType.equals(secondArgument.paramType) && firstArgument.paramType.equals(thirdArgument.paramType)) {
+    if (typeEquals(firstArgument.paramType, secondArgument.paramType) && typeEquals(firstArgument.paramType, thirdArgument.paramType)) {
       return functionalInterfaceName("BinaryOperator<%s>", firstArgument.paramType);
     }
     if (isBoolean(thirdArgument)) {
@@ -240,6 +240,10 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     return usages.stream()
       .map(Tree::parent)
       .anyMatch(parent -> parent.is(Tree.Kind.ARGUMENTS, Tree.Kind.ASSIGNMENT, Tree.Kind.VARIABLE));
+  }
+
+  private static boolean typeEquals(Type type1, Type type2) {
+    return !type1.name().startsWith("?") && type1.equals(type2);
   }
 
 }
