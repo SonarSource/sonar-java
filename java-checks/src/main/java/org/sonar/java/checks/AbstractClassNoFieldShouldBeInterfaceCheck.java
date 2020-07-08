@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -38,11 +37,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S1610")
 public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
-  private static final List<String> CLASS_ANNOTATIONS = Arrays.asList(
-    "com.google.auto.value.AutoValue",
-    "com.google.auto.value.AutoValue$Builder",
-    "com.google.auto.value.AutoOneOf",
-    "org.immutables.value.Value$Immutable");
+  private static final String IMMUTABLE_ANNOTATION = "org.immutables.value.Value$Immutable";
 
   private int javaVersionAsInt;
 
@@ -68,7 +63,7 @@ public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscrip
     if (classTree.superClass() == null
             && classIsAbstract(classTree)
             && classHasNoFieldAndProtectedMethod(classTree)
-            && classHasNoAutoValueOrImmutableAnnotation(classTree)
+            && classHasNoImmutableAnnotation(classTree)
             && supportPrivateMethod(classTree)) {
       IdentifierTree simpleName = classTree.simpleName();
       reportIssue(
@@ -104,8 +99,8 @@ public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscrip
     return ModifiersUtils.hasModifier(member.modifiers(), Modifier.PROTECTED) || !Boolean.FALSE.equals(member.isOverriding());
   }
 
-  private static boolean classHasNoAutoValueOrImmutableAnnotation(ClassTree tree) {
+  private static boolean classHasNoImmutableAnnotation(ClassTree tree) {
     SymbolMetadata classMetadata = tree.symbol().metadata();
-    return CLASS_ANNOTATIONS.stream().noneMatch(classMetadata::isAnnotatedWith);
+    return !classMetadata.isAnnotatedWith(IMMUTABLE_ANNOTATION);
   }
 }

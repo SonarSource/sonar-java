@@ -21,11 +21,11 @@ package org.sonar.java.filters;
 
 import org.junit.jupiter.api.Test;
 
-class GoogleAutoValueFilterTest {
+class GoogleAutoFilterTest {
 
   @Test
   void test() {
-    FilterVerifier.verify("src/test/files/filters/GoogleAutoValueFilter.java", new GoogleAutoValueFilter());
+    FilterVerifier.verify("src/test/files/filters/GoogleAutoFilter.java", new GoogleAutoFilter());
   }
 
 }

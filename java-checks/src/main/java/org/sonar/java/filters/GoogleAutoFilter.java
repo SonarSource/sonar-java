@@ -20,20 +20,28 @@
 package org.sonar.java.filters;
 
 import com.google.common.collect.ImmutableSet;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
+import org.sonar.java.checks.AbstractClassNoFieldShouldBeInterfaceCheck;
 import org.sonar.java.checks.EqualsNotOverridenWithCompareToCheck;
 import org.sonar.java.checks.EqualsOverridenWithHashCodeCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 
-public class GoogleAutoValueFilter extends BaseTreeVisitorIssueFilter {
+public class GoogleAutoFilter extends BaseTreeVisitorIssueFilter {
 
   private static final Set<Class<? extends JavaCheck>> FILTERED_RULES = ImmutableSet.<Class<? extends JavaCheck>>of(
     EqualsOverridenWithHashCodeCheck.class,
-    EqualsNotOverridenWithCompareToCheck.class);
+    EqualsNotOverridenWithCompareToCheck.class,
+    AbstractClassNoFieldShouldBeInterfaceCheck.class);
 
   private static final String AUTO_VALUE_ANNOTATION = "com.google.auto.value.AutoValue";
+
+  private static final List<String> AUTO_ANNOTATIONS = Arrays.asList(
+    "com.google.auto.value.AutoValue$Builder",
+    "com.google.auto.value.AutoOneOf");
 
   @Override
   public Set<Class<? extends JavaCheck>> filteredRules() {
@@ -44,10 +52,17 @@ public class GoogleAutoValueFilter extends BaseTreeVisitorIssueFilter {
   public void visitClass(ClassTree tree) {
     SymbolMetadata classMetadata = tree.symbol().metadata();
 
-    if (classMetadata.isAnnotatedWith(AUTO_VALUE_ANNOTATION)) {
+    boolean isAnnotatedWithAutoValue = classMetadata.isAnnotatedWith(AUTO_VALUE_ANNOTATION);
+
+    if (isAnnotatedWithAutoValue) {
       excludeLines(tree, EqualsOverridenWithHashCodeCheck.class);
       excludeLines(tree, EqualsNotOverridenWithCompareToCheck.class);
     }
+
+    if (isAnnotatedWithAutoValue || AUTO_ANNOTATIONS.stream().anyMatch(classMetadata::isAnnotatedWith)){
+      excludeLines(tree.simpleName(), AbstractClassNoFieldShouldBeInterfaceCheck.class);
+    }
+
     super.visitClass(tree);
   }
 

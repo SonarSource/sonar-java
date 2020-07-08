@@ -35,7 +35,7 @@ public class PostAnalysisIssueFilter implements JavaFileScanner, SonarJavaIssueF
   private static final Iterable<JavaIssueFilter> DEFAULT_ISSUE_FILTERS = ImmutableList.<JavaIssueFilter>of(
     new EclipseI18NFilter(),
     new LombokFilter(),
-    new GoogleAutoValueFilter(),
+    new GoogleAutoFilter(),
     new SuppressWarningFilter(),
     new GeneratedCodeFilter());
   private Iterable<JavaIssueFilter> issueFilers;
