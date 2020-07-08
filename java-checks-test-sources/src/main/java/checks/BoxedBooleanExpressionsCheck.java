@@ -1,5 +1,8 @@
+package checks;
+
 import java.util.Optional;
-class A {
+
+class BoxedBooleanExpressionsCheck {
 
   void emptyFor(Boolean B) {
     for (;;) {
@@ -306,4 +309,7 @@ class A {
   Boolean False() {
     return Boolean.FALSE;
   }
+
+  Object foo() { return new Object(); }
+  Object bar() { return new Object(); }
 }
