@@ -22,16 +22,19 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 class BoxedBooleanExpressionsCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/BoxedBooleanExpressionsCheck.java")
+      .onFile(testSourcesPath("checks/BoxedBooleanExpressionsCheck.java"))
       .withCheck(new BoxedBooleanExpressionsCheck())
       .verifyIssues();
+
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/BoxedBooleanExpressionsCheck.java")
+      .onFile(testSourcesPath("checks/BoxedBooleanExpressionsCheck.java"))
       .withCheck(new BoxedBooleanExpressionsCheck())
       .withoutSemantic()
       .verifyNoIssues();
