@@ -98,6 +98,50 @@ class EqualsNotOverriddenInSubclassCheck {
     public final boolean equals(Object o) { return false; }
   }
 
+  abstract class AbstractEquals {
+    @Override
+    abstract public boolean equals(Object obj);
+  }
+
+  abstract class BAbstractEquals extends AbstractEquals { // Compliant, parent is not overriding the content of equals.
+    String field = "";
+  }
+
+  class CAbstractEquals extends BAbstractEquals { // Compliant, you have to override equals anyway
+    private String field = "";
+
+    @Override
+    public boolean equals(Object obj) {
+      return false;
+    }
+  }
+
+  abstract class AbstractClass {
+    @Override
+    public boolean equals(Object obj) {
+      return true;
+    }
+  }
+
+  abstract class BAbstractClass extends AbstractClass { // Noncompliant
+    private String field = "";
+  }
+
+  class CAbstractClass extends BAbstractClass { // Noncompliant
+    private String field2 = "";
+  }
+
+  abstract class BAbstractClass2 extends AbstractClass {
+    @Override
+    public boolean equals(Object obj) {
+      return true;
+    }
+  }
+
+  abstract class CAbstractClass2 extends BAbstractClass2 { // Noncompliant
+    private String field2 = "";
+  }
+
 }
 
 
