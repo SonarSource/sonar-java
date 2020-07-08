@@ -23,6 +23,7 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -69,11 +70,11 @@ public class MethodWithExcessiveReturnsCheck extends IssuableSubscriptionVisitor
   public void leaveNode(Tree tree) {
     Tree reportTree = null;
     if (tree.is(Tree.Kind.METHOD)) {
-      IdentifierTree methodName = ((MethodTree) tree).simpleName();
-      if ("equals".equals(methodName.name())) {
+      MethodTree method = (MethodTree) tree;
+      if (MethodTreeUtils.isEqualsMethod(method)) {
         methods.pop();
       } else {
-        reportTree = methodName;
+        reportTree = method.simpleName();
       }
 
     } else if (tree.is(Tree.Kind.LAMBDA_EXPRESSION)) {
