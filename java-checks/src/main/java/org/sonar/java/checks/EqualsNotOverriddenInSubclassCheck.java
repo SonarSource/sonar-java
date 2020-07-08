@@ -76,7 +76,8 @@ public class EqualsNotOverriddenInSubclassCheck extends IssuableSubscriptionVisi
         Symbol.TypeSymbol superClassSymbol = superClassType.symbol();
         Optional<Symbol> equalsMethod = equalsMethod(superClassSymbol);
         if (equalsMethod.isPresent()) {
-          return !equalsMethod.get().isFinal();
+          Symbol equalsMethodSymbol = equalsMethod.get();
+          return !equalsMethodSymbol.isFinal() && !equalsMethodSymbol.isAbstract();
         }
         superClassType = superClassSymbol.superClass();
       }

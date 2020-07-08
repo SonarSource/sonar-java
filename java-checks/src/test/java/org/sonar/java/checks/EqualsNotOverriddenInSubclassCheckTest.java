@@ -22,12 +22,20 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 class EqualsNotOverriddenInSubclassCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/EqualsNotOverriddenInSubclassCheck.java")
+      .onFile(testSourcesPath("checks/EqualsNotOverriddenInSubclassCheck.java"))
+      .withCheck(new EqualsNotOverriddenInSubclassCheck())
+      .verifyIssues();
+
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/EqualsNotOverriddenInSubclassCheck.java"))
       .withCheck(new EqualsNotOverriddenInSubclassCheck())
       .verifyIssues();
   }
@@ -35,7 +43,7 @@ class EqualsNotOverriddenInSubclassCheckTest {
   @Test
   void noSemantic() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/EqualsNotOverriddenInSubclassCheck.java")
+      .onFile(testSourcesPath("checks/EqualsNotOverriddenInSubclassCheck.java"))
       .withCheck(new EqualsNotOverriddenInSubclassCheck())
       .withoutSemantic()
       .verifyNoIssues();
