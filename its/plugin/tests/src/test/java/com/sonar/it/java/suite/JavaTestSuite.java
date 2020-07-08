@@ -51,6 +51,7 @@ import static java.util.Collections.singletonList;
   JavaClasspathTest.class,
   SuppressWarningTest.class,
   SonarLintTest.class,
+  SelfAnalysisTest.class,
   ExternalReportTest.class,
   DuplicationTest.class,
   JspTest.class

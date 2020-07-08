@@ -19,7 +19,6 @@
  */
 package org.sonar.java.it;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
 import com.sonar.orchestrator.Orchestrator;
@@ -83,12 +82,12 @@ public class ProfileGenerator {
         .append("</profile>");
 
       File file = File.createTempFile("profile", ".xml");
-      Files.write(sb, file, StandardCharsets.UTF_8);
+      Files.asCharSink(file, StandardCharsets.UTF_8).write(sb);
       LOG.info("Restoring profile to SonarQube");
       orchestrator.getServer().restoreProfile(FileLocation.of(file));
       file.delete();
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 
