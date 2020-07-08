@@ -24,6 +24,8 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type.Primitives;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -116,7 +118,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
 
   @CheckForNull
   private static ExpressionTree findBoxedBoolean(ExpressionTree tree) {
-    if (tree.symbolType().is(BOOLEAN) && !isOptionalInvocation(tree)) {
+    if (tree.symbolType().is(BOOLEAN) && !isValidMethodInvocation(tree)) {
       return tree;
     }
     if (tree.is(Kind.LOGICAL_COMPLEMENT)) {
@@ -142,11 +144,24 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
     return false;
   }
 
-  private static boolean isOptionalInvocation(ExpressionTree tree) {
+  private static boolean isValidMethodInvocation(ExpressionTree tree) {
     if (tree.is(Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
-      return OPTIONAL_ORELSE.matches(mit) && !mit.arguments().get(0).is(Kind.NULL_LITERAL);
+      return isOptionalInvocation(mit) || isAnnotatedNonnull(mit);
     }
     return false;
+  }
+
+  private static boolean isOptionalInvocation(MethodInvocationTree mit) {
+    return OPTIONAL_ORELSE.matches(mit) && !mit.arguments().get(0).is(Kind.NULL_LITERAL);
+  }
+
+  private static boolean isAnnotatedNonnull(MethodInvocationTree mit) {
+    return mit.symbol().metadata()
+      .annotations()
+      .stream()
+      .map(SymbolMetadata.AnnotationInstance::symbol)
+      .map(Symbol::name)
+      .anyMatch(name -> name.equalsIgnoreCase("nonNull") || name.equalsIgnoreCase("notNull"));
   }
 }

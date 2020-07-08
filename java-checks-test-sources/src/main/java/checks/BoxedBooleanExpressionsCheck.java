@@ -1,6 +1,9 @@
 package checks;
 
 import java.util.Optional;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.validation.constraints.NotNull;
 
 class BoxedBooleanExpressionsCheck {
 
@@ -282,6 +285,24 @@ class BoxedBooleanExpressionsCheck {
     }
   }
 
+  void nonNullStuff() {
+    if (getNotNull()) { // Compliant
+      foo();
+    }
+
+    if (getNonnull()) { // Compliant
+      foo();
+    }
+
+    if (getCustomNonNull()) { // Compliant
+      foo();
+    }
+
+    if (getNullable()) { // Noncompliant
+      foo();
+    }
+  }
+
   Object boxedConditional1(Boolean B) {
     return B ? foo() : bar(); // Noncompliant
   }
@@ -309,6 +330,14 @@ class BoxedBooleanExpressionsCheck {
   Boolean False() {
     return Boolean.FALSE;
   }
+
+  public @interface NonNull {}
+  // no need to be a well-known annotation, the semantic of the name is enough
+  @NonNull Boolean getCustomNonNull() { return Math.random() > 0.5 ? Boolean.FALSE : Boolean.TRUE; }
+
+  @Nonnull Boolean getNonnull() { return getCustomNonNull(); }
+  @NotNull Boolean getNotNull() { return getCustomNonNull(); }
+  @CheckForNull Boolean getNullable() { return null; }
 
   Object foo() { return new Object(); }
   Object bar() { return new Object(); }
