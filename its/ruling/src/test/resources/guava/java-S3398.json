@@ -12,10 +12,6 @@
 'com.google.guava:guava:src/com/google/common/collect/HashBiMap.java':[
 306,
 ],
-'com.google.guava:guava:src/com/google/common/collect/LinkedHashMultimap.java':[
-144,
-148,
-],
 'com.google.guava:guava:src/com/google/common/collect/MapConstraints.java':[
 190,
 216,
@@ -53,14 +49,8 @@
 'com.google.guava:guava:src/com/google/common/collect/TreeRangeSet.java':[
 132,
 ],
-'com.google.guava:guava:src/com/google/common/eventbus/SubscriberRegistry.java':[
-184,
-],
 'com.google.guava:guava:src/com/google/common/reflect/Types.java':[
 507,
-],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AggregateFuture.java':[
-279,
 ],
 'com.google.guava:guava:src/com/google/common/util/concurrent/MoreExecutors.java':[
 237,
