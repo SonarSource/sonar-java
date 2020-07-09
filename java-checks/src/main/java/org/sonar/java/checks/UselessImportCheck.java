@@ -54,7 +54,7 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 @Rule(key = "S1128")
 public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final Pattern NON_WORDS_OR_WHITE_SPACES_CHARACTERS = Pattern.compile("(?:\\W|\\s)+");
+  private static final Pattern NON_WORDS_CHARACTERS = Pattern.compile("\\W+");
 
   private final Map<String, ImportTree> lineByImportReference = new HashMap<>();
   private final Set<String> pendingImports = new HashSet<>();
@@ -276,7 +276,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
     }
 
     private void updatePendingImportsForComments(String comment) {
-      Set<String> words = NON_WORDS_OR_WHITE_SPACES_CHARACTERS.splitAsStream(comment)
+      Set<String> words = NON_WORDS_CHARACTERS.splitAsStream(comment)
         .filter(w -> !w.isEmpty())
         .collect(Collectors.toSet());
       if (!words.isEmpty()) {
