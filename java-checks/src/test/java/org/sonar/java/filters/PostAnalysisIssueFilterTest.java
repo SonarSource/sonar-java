@@ -53,7 +53,7 @@ class PostAnalysisIssueFilterTest {
 
   @Test
   void number_of_issue_filters() {
-    assertThat(postAnalysisIssueFilter.getIssueFilters()).hasSize(4);
+    assertThat(postAnalysisIssueFilter.getIssueFilters()).hasSize(5);
   }
 
   @Test

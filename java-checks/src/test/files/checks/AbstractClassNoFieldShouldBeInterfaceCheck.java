@@ -57,20 +57,22 @@ public abstract class Car { // Compliant - has private methods
   private void startEngine() {}
 }
 
+// Issue will be filtered by GoogleAutoFilter
 @AutoValue
-abstract class Foo { // Compliant
+abstract class Foo { // Noncompliant
   static Foo create(String name) {
     return new AutoValue_Foo(name);
   }
   abstract String name();
   @AutoValue.Builder
-  abstract static class Builder {
+  abstract static class Builder { // Noncompliant
     abstract Builder namer(String name);
   }
 }
 
+// Issue will be filtered by GoogleAutoFilter
 @AutoOneOf(StringOrInteger.Kind.class)
-abstract class StringOrInteger { // Compliant
+abstract class StringOrInteger { // Noncompliant
   public enum Kind {
     STRING, INTEGER
   }
