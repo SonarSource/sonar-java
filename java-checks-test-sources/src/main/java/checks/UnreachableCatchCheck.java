@@ -68,7 +68,7 @@ public class UnreachableCatchCheck {
       // ...
     } catch (IOException e) { // Compliant
       // ...
-    } catch (CustomException e) { // FN, line 67 hide this catch, but we don't support correctly the presence of another type of Exception
+    } catch (CustomException e) { // Noncompliant [[secondary=67]]
       // ...
     }
 
@@ -77,7 +77,7 @@ public class UnreachableCatchCheck {
       throwIOException();
     } catch (ExtendsCustomException | IOException e) {
       // ...
-    } catch (CustomException e) { // FN, we don't support correctly the presence of another type of Exception
+    } catch (CustomException e) { // Noncompliant [[secondary=78]]
       // ...
     }
 
@@ -217,7 +217,7 @@ public class UnreachableCatchCheck {
 
     try {
       throwExtendsCustomException();
-      throwOtherOtherExtendsCustomException();
+      throwOtherExtendsCustomException();
     } catch (ExtendsCustomException e) {
       // ...
     } catch (CustomException e) { // Compliant
@@ -245,7 +245,7 @@ public class UnreachableCatchCheck {
   void throwBoth() throws ExtendsCustomException, OtherExtendsCustomException {
   }
 
-  void throwOtherOtherExtendsCustomException() throws OtherExtendsCustomException {
+  void throwOtherExtendsCustomException() throws OtherExtendsCustomException {
     throw new OtherExtendsCustomException();
   }
 
