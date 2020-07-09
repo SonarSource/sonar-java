@@ -133,7 +133,7 @@ public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
     }
 
     private void reportIssueOnMethod(@Nullable MethodTree declaration, Symbol.TypeSymbol classSymbol) {
-      if (declaration != null) {
+      if (declaration != null && !isIllegalMove(declaration, classSymbol)) {
         String message = "Move this method into ";
         if (classSymbol.name().isEmpty()) {
           message += "the anonymous class declared at line " + ((JavaTree) classSymbol.declaration()).getLine()+".";
@@ -142,6 +142,10 @@ public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
         }
         reportIssue(declaration.simpleName(), message);
       }
+    }
+
+    private boolean isIllegalMove(MethodTree declaration, Symbol.TypeSymbol classSymbol) {
+      return declaration.symbol().isStatic() && !classSymbol.isStatic();
     }
 
   }

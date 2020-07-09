@@ -2,13 +2,15 @@ class A {
 
   public void foo() {}
   private void bar() {}
-  private void qix() { // Noncompliant [[sc=16;ec=19]] {{Move this method into "inner".}}
+  private void qix() { // Noncompliant [[sc=16;ec=19]] {{Move this method into "Inner".}}
     bar();
   }
-  private void baz(){} // Noncompliant [[sc=16;ec=19]] {{Move this method into "inner".}}
-  private void bax(){} // Noncompliant [[sc=16;ec=19]] {{Move this method into the anonymous class declared at line 25.}}
+  private void baz(){} // Noncompliant [[sc=16;ec=19]] {{Move this method into "Inner".}}
+  private void bax(){} // Noncompliant [[sc=16;ec=19]] {{Move this method into the anonymous class declared at line 34.}}
+  private static void bay(){} // Compliant, can't move static method into non-static inner class
+  private static void baw() {} // Noncompliant [[sc=23;ec=26]] {{Move this method into "StaticInner".}}
 
-  class inner {
+  class Inner {
     void plop() {
       bar();
       qix();
@@ -17,9 +19,16 @@ class A {
       baz();
       baz();
       baz();
+      bay();
       innerFun();
     }
     private void innerFun() {}
+  }
+
+  static class StaticInner {
+    void plop() {
+      baw();
+    }
   }
 
   Object foo = new Object() {
