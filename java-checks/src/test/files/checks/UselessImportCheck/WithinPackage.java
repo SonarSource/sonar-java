@@ -1,4 +1,5 @@
 package checks.UselessImportCheck;
+
 import a.b.c.Foo;
 import a.b.c.Bar;
 import a.b.c.Baz;
@@ -37,6 +38,8 @@ import java.util.Map;
 import java.util.HashMap;
 import javax.annotation.Nonnull;
 import checks.UselessImportCheck.WithPackageAux; // Noncompliant {{Remove this unnecessary import: same package classes are always implicitly imported.}}
+
+import java.io.File; // Noncompliant
 
 import static checks.UselessImportCheck.SomeEntity.FIND_BY_NAME;
 import static checks.UselessImportCheck.SomeEntity.FIND_BY_AGE; // Noncompliant
@@ -86,6 +89,12 @@ public class Foo2 extends Foo {
     }
   }
 
+  /**
+   * FileUtils#getFile() .... <--- should not invalid import of j-a-v-a-.-i-o-.-F-i-l-e (avoid recognition here)
+   */
+  void bar() {
+    // ...
+  }
 }
 
 @MyAnnotation(name = FIND_BY_NAME)
