@@ -26,6 +26,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
@@ -51,6 +53,8 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 @DeprecatedRuleKey(ruleKey = "UselessImportCheck", repositoryKey = "squid")
 @Rule(key = "S1128")
 public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  private static final Pattern NON_WORDS_CHARACTERS = Pattern.compile("\\W+");
 
   private final Map<String, ImportTree> lineByImportReference = new HashMap<>();
   private final Set<String> pendingImports = new HashSet<>();
@@ -94,7 +98,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
     //check references
     scan(cut);
     //check references from comments.
-    new CommentVisitor().checkImportsFromComments(cut, pendingImports);
+    new CommentVisitor().checkImportsFromComments(cut);
     leaveFile();
   }
 
@@ -255,16 +259,14 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
     return firstIndexOfDot == -1 ? reference : reference.substring(0, firstIndexOfDot);
   }
 
-  private static class CommentVisitor extends SubscriptionVisitor {
-    private Set<String> pendingImports;
+  private class CommentVisitor extends SubscriptionVisitor {
 
     @Override
     public List<Tree.Kind> nodesToVisit() {
       return Collections.singletonList(Tree.Kind.TRIVIA);
     }
 
-    public void checkImportsFromComments(CompilationUnitTree cut, Set<String> pendingImports) {
-      this.pendingImports = pendingImports;
+    public void checkImportsFromComments(CompilationUnitTree cut) {
       scanTree(cut);
     }
 
@@ -274,10 +276,15 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
     }
 
     private void updatePendingImportsForComments(String comment) {
-      pendingImports.removeIf(pendingImport -> comment.contains(extractLastClassName(pendingImport)));
+      Set<String> words = NON_WORDS_CHARACTERS.splitAsStream(comment)
+        .filter(w -> !w.isEmpty())
+        .collect(Collectors.toSet());
+      if (!words.isEmpty()) {
+        pendingImports.removeIf(pendingImport -> words.contains(extractLastClassName(pendingImport)));
+      }
     }
 
-    private static String extractLastClassName(String reference) {
+    private String extractLastClassName(String reference) {
       int lastIndexOfDot = reference.lastIndexOf('.');
       return lastIndexOfDot == -1 ? reference : reference.substring(lastIndexOfDot + 1);
     }
