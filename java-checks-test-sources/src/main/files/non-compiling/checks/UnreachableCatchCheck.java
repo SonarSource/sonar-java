@@ -35,6 +35,15 @@ public class UnreachableCatchCheck {
     }
 
     try {
+      unknown();
+      throwUnknownException();
+    } catch (ExtendsCustomException e) {
+      // ...
+    } catch (CustomException e) { // Compliant
+      // ...
+    }
+
+    try {
       throwExtendsCustomException();
       unknown();
     } catch (ExtendsCustomException e) {

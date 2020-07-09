@@ -82,7 +82,7 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
         .filter(subtype -> isHiding(subtype, thrownTypes))
         .collect(Collectors.toList());
 
-      if (!subtypesHiding.isEmpty()) {
+      if (isUnreachable(baseType, subtypesHiding, thrownTypes)) {
         reportIssue(typeToTypeTree.get(baseType),
           "Remove this type because it is unreachable as hidden by previous catch blocks.",
           subtypesHiding.stream().map(type -> new JavaFileScannerContext.Location("Already catch the exception", typeToTypeTree.get(type)))
@@ -134,12 +134,21 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isHiding(Type subtype, List<Type> thrownTypes) {
-    // All thrown exceptions are caught by the subtype exception, hiding the base one
-    // This logic could be improved to remove FN, but it's not trivial and source of FP.
     return thrownTypes.stream()
-      .allMatch(thrownType ->
+      .anyMatch(thrownType ->
         thrownType.isSubtypeOf(subtype)
       );
+  }
+
+  private static boolean isUnreachable(Type baseType, List<Type> subtypes, List<Type> thrownTypes) {
+    return thrownTypes.stream()
+      .allMatch(thrownType ->
+        !relatedTypes(thrownType, baseType) || subtypes.stream().anyMatch(thrownType::isSubtypeOf)
+      );
+  }
+
+  private static boolean relatedTypes(Type type1, Type type2) {
+    return type1.isSubtypeOf(type2) || type2.isSubtypeOf(type1);
   }
 
   private static class ThrownExceptionCollector extends BaseTreeVisitor {
@@ -166,7 +175,9 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
 
     private void addAllThrownTypes(Symbol symbol) {
       if (symbol.isMethodSymbol()) {
-        thrownTypes.addAll(((Symbol.MethodSymbol) symbol).thrownTypes());
+        List<Type> newThrownTypes = ((Symbol.MethodSymbol) symbol).thrownTypes();
+        thrownTypes.addAll(newThrownTypes);
+        unknownVisited = unknownVisited || newThrownTypes.stream().anyMatch(Type::isUnknown);
       } else if (symbol.isUnknown()) {
         unknownVisited = true;
       }
