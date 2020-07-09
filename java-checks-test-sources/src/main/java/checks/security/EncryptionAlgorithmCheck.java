@@ -2,7 +2,13 @@ package checks.security;
 
 import javax.crypto.Cipher;
 
+import static java.io.File.separator;
+
 abstract class EncryptionAlgorithmCheck {
+
+  static final String RSA = "RSA";
+  static final String NO_PADDING = "/NONE/NoPadding";
+  static final String RSA_NO_PADDING = RSA + NO_PADDING;
 
   public void foo(java.util.Properties props) {
     /*
@@ -54,8 +60,16 @@ abstract class EncryptionAlgorithmCheck {
       Cipher.getInstance(null); // Compliant
       Cipher.getInstance(""); // Noncompliant
       String algo = props.getProperty("myAlgo", "AES/ECB/PKCS5Padding");
-      Cipher.getInstance(algo); // Noncompliant
+      Cipher.getInstance(algo); // Noncompliant [[sc=26;ec=30;secondary=62]]
       String s = "RSA/NONE/NoPadding"; // Compliant
+      Cipher.getInstance(s); // Noncompliant [[sc=26;ec=27;secondary=64]]
+
+      String sPlus = "RSA" + "/NONE/NoPadding"; // Compliant
+      Cipher.getInstance(sPlus); // Noncompliant [[sc=26;ec=31;secondary=67]]
+
+      Cipher.getInstance(RSA_NO_PADDING); // Noncompliant [[sc=26;ec=40;secondary=11]]
+
+      Cipher.getInstance(separator); // Compliant, can not resolve the declaration, for coverage
 
       // Case is ignored
       Cipher.getInstance("rsa/NONE/NoPadding"); // Noncompliant
