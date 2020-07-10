@@ -2147,12 +2147,10 @@ public class JParser {
       }
       case ASTNode.INSTANCEOF_EXPRESSION: {
         InstanceofExpression e = (InstanceofExpression) node;
-        if (e.getAST().isPreviewEnabled() && e.getPatternVariable() != null) {
-          throw new IllegalStateException();
-        }
         return new InstanceOfTreeImpl(
           firstTokenAfter(e.getLeftOperand(), TerminalTokens.TokenNameinstanceof),
-          convertType(e.getRightOperand())
+          convertType(e.getRightOperand()),
+          e.getAST().isPreviewEnabled() && e.getPatternVariable() != null ? createVariable(e.getPatternVariable()) : null
         ).complete(
           convertExpression(e.getLeftOperand())
         );

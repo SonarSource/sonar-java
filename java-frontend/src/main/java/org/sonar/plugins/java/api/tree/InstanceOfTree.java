@@ -21,6 +21,8 @@ package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
 
+import javax.annotation.Nullable;
+
 /**
  * 'instanceof' expression.
  *
@@ -40,5 +42,13 @@ public interface InstanceOfTree extends ExpressionTree {
   SyntaxToken instanceofKeyword();
 
   TypeTree type();
+
+  /**
+   * @since Java 14
+   * @deprecated Preview Feature
+   */
+  @Deprecated
+  @Nullable
+  VariableTree patternVariable();
 
 }
