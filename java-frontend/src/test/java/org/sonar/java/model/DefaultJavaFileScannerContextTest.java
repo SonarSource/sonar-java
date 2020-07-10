@@ -172,7 +172,6 @@ class DefaultJavaFileScannerContextTest {
   @Test
   void working_directory() {
     assertThat(context.getWorkingDirectory()).isNotNull();
-    assertThat(context.getBaseDirectory()).isNotNull();
   }
 
   @Test
@@ -348,7 +347,6 @@ class DefaultJavaFileScannerContextTest {
 
     when(sonarComponents.fileLines(any(InputFile.class))).thenReturn(Collections.emptyList());
     when(sonarComponents.inputFileContents(any(InputFile.class))).thenReturn("content");
-    when(sonarComponents.baseDir()).thenReturn(BASE_DIR);
     when(sonarComponents.workDir()).thenReturn(WORK_DIR);
     when(sonarComponents.project()).thenReturn(PROJECT_BASE_DIR);
 
