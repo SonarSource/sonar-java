@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.io.File;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
@@ -30,35 +29,25 @@ import static org.sonar.java.CheckTestUtils.testSourcesPath;
 class PackageInfoCheckTest {
 
   @Test
-  void with_package_info() {
-    PackageInfoCheck check = new PackageInfoCheck();
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/packageInfo/HelloWorld.java"))
-      .withCheck(check)
-      .verifyNoIssues();
-    assertThat(check.directoriesWithoutPackageFile).isEmpty();
-  }
-
-  @Test
   void no_package_info() {
+    final String expectedPackage = "checks.packageInfo.nopackageinfo";
+
     PackageInfoCheck check = new PackageInfoCheck();
-    String expectedMessage = "Add a 'package-info.java' file to document the '../java-checks-test-sources/src/main/java/checks/packageInfo/nopackageinfo' package"
-      .replace('/', File.separatorChar);
+    String expectedMessage = "Add a 'package-info.java' file to document the '" + expectedPackage + "' package";
 
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/packageInfo/nopackageinfo/nopackageinfo.java"))
+      .onFiles(
+        testSourcesPath("DefaultPackage.java"),
+        testSourcesPath("checks/packageInfo/HelloWorld.java"),
+        testSourcesPath("checks/packageInfo/package-info.java"),
+        testSourcesPath("checks/packageInfo/nopackageinfo/HelloWorld.java"),
+        testSourcesPath("checks/packageInfo/nopackageinfo/nopackageinfo.java"))
       .withCheck(check)
       .verifyIssueOnProject(expectedMessage);
 
-    Set<File> set = check.directoriesWithoutPackageFile;
+    Set<String> set = check.missingPackageWithoutPackageFile;
     assertThat(set).hasSize(1);
-    assertThat(set.iterator().next()).hasName("nopackageinfo");
-
-    // only one issue per package
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/packageInfo/nopackageinfo/HelloWorld.java"))
-      .withCheck(check)
-      .verifyNoIssues();
+    assertThat(set.iterator().next()).isEqualTo(expectedPackage);
   }
 
 }
