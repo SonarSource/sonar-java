@@ -38,6 +38,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeParameters;
 import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -55,6 +56,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   private SyntaxToken declarationKeyword;
   private IdentifierTree simpleName;
   private TypeParameters typeParameters;
+  private List<VariableTree> recordComponents = Collections.emptyList();
   @Nullable
   private SyntaxToken extendsKeyword;
   @Nullable
@@ -130,6 +132,10 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     return this;
   }
 
+  public void completeRecordComponents(List<VariableTree> recordComponents) {
+    this.recordComponents = recordComponents;
+  }
+
   @Override
   public Kind kind() {
     return kind;
@@ -144,6 +150,11 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   @Override
   public TypeParameters typeParameters() {
     return typeParameters;
+  }
+
+  @Override
+  public List<VariableTree> recordComponents() {
+    return recordComponents;
   }
 
   @Override
@@ -219,6 +230,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
       addIfNotNull(declarationKeyword),
       addIfNotNull(simpleName),
       Collections.singletonList(typeParameters),
+      recordComponents,
       addIfNotNull(extendsKeyword),
       addIfNotNull(superClass),
       addIfNotNull(implementsKeyword),

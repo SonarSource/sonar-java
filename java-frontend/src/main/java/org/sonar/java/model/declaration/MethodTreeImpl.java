@@ -57,8 +57,10 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   @Nullable
   private TypeTree returnType;
   private IdentifierTree simpleName;
+  @Nullable
   private final SyntaxToken openParenToken;
   private final FormalParametersListTreeImpl parameters;
+  @Nullable
   private final SyntaxToken closeParenToken;
   @Nullable
   private final BlockTree block;
@@ -158,6 +160,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     return simpleName;
   }
 
+  @Nullable
   @Override
   public SyntaxToken openParenToken() {
     return openParenToken;
@@ -168,6 +171,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     return (List) parameters;
   }
 
+  @Nullable
   @Override
   public SyntaxToken closeParenToken() {
     return closeParenToken;
@@ -242,9 +246,12 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     if (returnType != null) {
       iteratorBuilder.add(returnType);
     }
-    iteratorBuilder.add(simpleName, openParenToken);
-    iteratorBuilder.addAll(parameters.iterator());
-    iteratorBuilder.add(closeParenToken);
+    iteratorBuilder.add(simpleName);
+    if (openParenToken != null) {
+      iteratorBuilder.add(openParenToken);
+      iteratorBuilder.addAll(parameters.iterator());
+      iteratorBuilder.add(closeParenToken);
+    }
     if (throwsToken != null) {
       iteratorBuilder.add(throwsToken);
       iteratorBuilder.add(throwsClauses);
