@@ -1,9 +1,19 @@
+package checks;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class TestClass {
+public class StaticMultithreadedUnsafeFields {
 
   public static class ConcreteCalendar extends java.util.Calendar {
+    @Override public void computeTime() { }
+    @Override public void computeFields() { }
+    @Override public void add(int field, int amount) { }
+    @Override public void roll(int field, boolean up) { }
+    @Override public int getMinimum(int field) { return 0; }
+    @Override public int getMaximum(int field) { return 0; }
+    @Override public int getGreatestMinimum(int field) { return 0; }
+    @Override public int getLeastMaximum(int field) { return 0; }
   }
 
   private static int field; // Compliant
