@@ -27,16 +27,25 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
+
+import javax.annotation.Nullable;
 
 public class InstanceOfTreeImpl extends AssessableExpressionTree implements InstanceOfTree {
 
   private ExpressionTree expression;
   private final InternalSyntaxToken instanceofToken;
   private final TypeTree type;
+  private final VariableTree patternVariable;
 
-  public InstanceOfTreeImpl(InternalSyntaxToken instanceofToken, TypeTree type) {
+  public InstanceOfTreeImpl(
+    InternalSyntaxToken instanceofToken,
+    TypeTree type,
+    @Nullable VariableTree patternVariable
+  ) {
     this.instanceofToken = instanceofToken;
     this.type = type;
+    this.patternVariable = patternVariable;
   }
 
   public InstanceOfTreeImpl complete(ExpressionTree expression) {
@@ -64,6 +73,12 @@ public class InstanceOfTreeImpl extends AssessableExpressionTree implements Inst
     return type;
   }
 
+  @Nullable
+  @Override
+  public VariableTree patternVariable() {
+    return patternVariable;
+  }
+
   @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitInstanceOf(this);
@@ -74,7 +89,8 @@ public class InstanceOfTreeImpl extends AssessableExpressionTree implements Inst
     return Lists.newArrayList(
       expression,
       instanceofToken,
-      type
+      type,
+      patternVariable
     );
   }
 

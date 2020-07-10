@@ -66,6 +66,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
@@ -489,11 +490,13 @@ class JParserSemanticTest {
 
   /**
    * Pattern Matching for instanceof (Preview in Java 14) https://openjdk.java.net/jeps/305
+   *
+   * @see org.eclipse.jdt.core.dom.InstanceofExpression
    */
   @Test
   void expression_instanceof() {
-    assertThrows(IllegalStateException.class,
-      () -> expression("o instanceof String s"));
+    InstanceOfTree e = (InstanceOfTree) expression("o instanceof String s");
+    assertThat(e.patternVariable()).isNotNull();
   }
 
   /**
