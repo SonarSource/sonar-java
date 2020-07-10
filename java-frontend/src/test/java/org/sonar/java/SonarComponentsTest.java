@@ -120,7 +120,6 @@ class SonarComponentsTest {
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, null, mock(JavaTestClasspath.class), checkFactory, null);
 
     assertThat(sonarComponents.workDir()).isEqualTo(workDir);
-    assertThat(sonarComponents.baseDir()).isEqualTo(baseDir);
   }
 
   @Test

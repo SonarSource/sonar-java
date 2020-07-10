@@ -320,10 +320,6 @@ public class SonarComponents {
     return current.getWorkDir();
   }
 
-  public File baseDir() {
-    return fs.baseDir();
-  }
-
   public InputComponent project() {
     // TODO to be changed to context.project() once LTS 7.x has been released
     return context.module();
