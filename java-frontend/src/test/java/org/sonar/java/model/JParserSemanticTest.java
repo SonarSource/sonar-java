@@ -911,11 +911,24 @@ class JParserSemanticTest {
 
   /**
    * Records (Preview in Java 14) https://openjdk.java.net/jeps/359
+   *
+   * @see org.eclipse.jdt.core.dom.RecordDeclaration
    */
   @Test
   void declaration_record() {
-    assertThrows(IllegalStateException.class,
-      () -> test("record Point(int x, int y) { }"));
+    JavaTree.CompilationUnitTreeImpl cu = test("record R<T>(int component1, int component2) implements java.io.Serializable { public R { } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    assertThat(c.kind()).isEqualTo(Tree.Kind.RECORD);
+    assertThat(c.declarationKeyword().text()).isEqualTo("record");
+    assertThat(c.typeParameters()).hasSize(1);
+    assertThat(c.recordComponents()).hasSize(2);
+    assertThat(c.recordComponents().get(0).endToken()).isNotNull();
+    assertThat(c.recordComponents().get(1).endToken()).isNull();
+    assertThat(c.superInterfaces()).hasSize(1);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    assertThat(m.openParenToken()).isNull();
+    assertThat(m.parameters()).isEmpty();
+    assertThat(m.closeParenToken()).isNull();
   }
 
   /**

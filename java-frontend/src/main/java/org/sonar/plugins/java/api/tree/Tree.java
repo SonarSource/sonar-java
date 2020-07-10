@@ -75,6 +75,15 @@ public interface Tree {
     ANNOTATION_TYPE(ClassTree.class),
 
     /**
+     * {@link ClassTree}
+     *
+     * @since Java 14
+     * @deprecated Preview Feature
+     */
+    @Deprecated
+    RECORD(ClassTree.class),
+
+    /**
      * {@link EnumConstantTree}
      *
      * @since Java 1.5

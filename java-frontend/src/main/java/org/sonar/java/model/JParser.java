@@ -96,6 +96,7 @@ import org.eclipse.jdt.core.dom.PrimitiveType;
 import org.eclipse.jdt.core.dom.ProvidesDirective;
 import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.QualifiedType;
+import org.eclipse.jdt.core.dom.RecordDeclaration;
 import org.eclipse.jdt.core.dom.RequiresDirective;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SimpleName;
@@ -744,6 +745,9 @@ public class JParser {
       case ASTNode.TYPE_DECLARATION:
         kind = ((TypeDeclaration) e).isInterface() ? Tree.Kind.INTERFACE : Tree.Kind.CLASS;
         break;
+      case ASTNode.RECORD_DECLARATION:
+        kind = Tree.Kind.RECORD;
+        break;
       default:
         throw new IllegalStateException();
     }
@@ -768,6 +772,10 @@ public class JParser {
         t.completeDeclarationKeyword(firstTokenBefore(e.getName(), TerminalTokens.TokenNameinterface));
         t.completeIdentifier(convertSimpleName(e.getName()));
         break;
+      case RECORD:
+        t.completeDeclarationKeyword(firstTokenBefore(e.getName(), TerminalTokens.TokenNameIdentifier));
+        t.completeIdentifier(convertSimpleName(e.getName()));
+        break;
       case ANNOTATION_TYPE:
         t.complete(
           firstTokenBefore(e.getName(), TerminalTokens.TokenNameAT),
@@ -784,6 +792,22 @@ public class JParser {
       t.completeTypeParameters(
         convertTypeParameters(ee.typeParameters())
       );
+    } else if (kind == Tree.Kind.RECORD) {
+      RecordDeclaration ee = (RecordDeclaration) e;
+      t.completeTypeParameters(
+        convertTypeParameters(ee.typeParameters())
+      );
+
+      List<VariableTree> recordComponents = new ArrayList<>();
+      for (int i = 0; i < ee.recordComponents().size(); i++) {
+        SingleVariableDeclaration o = (SingleVariableDeclaration) ee.recordComponents().get(i);
+        VariableTreeImpl recordComponent = createVariable(o);
+        if (i < ee.recordComponents().size() - 1) {
+          recordComponent.setEndToken(firstTokenAfter(o, TerminalTokens.TokenNameCOMMA));
+        }
+        recordComponents.add(recordComponent);
+      }
+      t.completeRecordComponents(recordComponents);
     }
 
     switch (kind) {
@@ -799,8 +823,9 @@ public class JParser {
         // fall through
       }
       case INTERFACE:
+      case RECORD:
       case ENUM: {
-        List superInterfaceTypes = kind == Tree.Kind.ENUM ? ((EnumDeclaration) e).superInterfaceTypes() : ((TypeDeclaration) e).superInterfaceTypes();
+        List superInterfaceTypes = superInterfaceTypes(e);
         if (!superInterfaceTypes.isEmpty()) {
           QualifiedIdentifierListTreeImpl superInterfaces = new QualifiedIdentifierListTreeImpl(
             new ArrayList<>(),
@@ -828,6 +853,19 @@ public class JParser {
     declaration(t.typeBinding, t);
 
     return t;
+  }
+
+  private static List superInterfaceTypes(AbstractTypeDeclaration e) {
+    switch (e.getNodeType()) {
+      case ASTNode.TYPE_DECLARATION:
+        return ((TypeDeclaration) e).superInterfaceTypes();
+      case ASTNode.ENUM_DECLARATION:
+        return ((EnumDeclaration) e).superInterfaceTypes();
+      case ASTNode.RECORD_DECLARATION:
+        return ((RecordDeclaration) e).superInterfaceTypes();
+      default:
+        throw new IllegalStateException();
+    }
   }
 
   private EnumConstantTreeImpl processEnumConstantDeclaration(EnumConstantDeclaration e) {
@@ -905,6 +943,7 @@ public class JParser {
     switch (node.getNodeType()) {
       case ASTNode.ANNOTATION_TYPE_DECLARATION:
       case ASTNode.ENUM_DECLARATION:
+      case ASTNode.RECORD_DECLARATION:
       case ASTNode.TYPE_DECLARATION: {
         members.add(convertTypeDeclaration((AbstractTypeDeclaration) node));
         lastTokenIndex = tokenManager.lastIndexIn(node, TerminalTokens.TokenNameRBRACE);
@@ -956,12 +995,18 @@ public class JParser {
       case ASTNode.METHOD_DECLARATION: {
         MethodDeclaration e = (MethodDeclaration) node;
 
-        FormalParametersListTreeImpl parameters = new FormalParametersListTreeImpl(
-          firstTokenAfter(e.getName(), TerminalTokens.TokenNameLPAREN),
-          firstTokenAfter(
-            e.parameters().isEmpty() ? e.getName() : (ASTNode) e.parameters().get(e.parameters().size() - 1),
-            TerminalTokens.TokenNameRPAREN
-          ));
+        final FormalParametersListTreeImpl parameters;
+        if (e.getAST().isPreviewEnabled() && e.isCompactConstructor()) {
+          parameters = new FormalParametersListTreeImpl(null, null);
+        } else {
+          parameters = new FormalParametersListTreeImpl(
+            firstTokenAfter(e.getName(), TerminalTokens.TokenNameLPAREN),
+            firstTokenAfter(
+              e.parameters().isEmpty() ? e.getName() : (ASTNode) e.parameters().get(e.parameters().size() - 1),
+              TerminalTokens.TokenNameRPAREN
+            ));
+        }
+
         for (int i = 0; i < e.parameters().size(); i++) {
           SingleVariableDeclaration o = (SingleVariableDeclaration) e.parameters().get(i);
           VariableTreeImpl parameter = createVariable(o);

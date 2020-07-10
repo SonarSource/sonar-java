@@ -59,10 +59,18 @@ public interface MethodTree extends Tree {
 
   IdentifierTree simpleName();
 
+  /**
+   * @return null in case of compact constructor in records
+   */
+  @Nullable
   SyntaxToken openParenToken();
 
   List<VariableTree> parameters();
 
+  /**
+   * @return null in case of compact constructor in records
+   */
+  @Nullable
   SyntaxToken closeParenToken();
 
   SyntaxToken throwsToken();

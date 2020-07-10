@@ -68,6 +68,13 @@ public interface ClassTree extends StatementTree {
 
   TypeParameters typeParameters();
 
+  /**
+   * @since Java 14
+   * @deprecated Preview Feature
+   */
+  @Deprecated
+  List<VariableTree> recordComponents();
+
   ModifiersTree modifiers();
 
   @Nullable
