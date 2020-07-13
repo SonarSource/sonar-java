@@ -20,9 +20,11 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -38,6 +40,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S3457")
 public class PrintfMisuseCheck extends AbstractPrintfChecker {
 
+  protected static final String ORG_SLF4J_LOGGER = "org.slf4j.Logger";
+
   private static final MethodMatchers TO_STRING = MethodMatchers.create()
     .ofAnyType().names("toString").addWithoutParametersMatcher().build();
   private static final MethodMatchers GET_LOGGER = MethodMatchers.or(
@@ -47,17 +51,46 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
       .ofTypes(JAVA_UTIL_LOGGING_LOGGER).names("getAnonymousLogger").addParametersMatcher(JAVA_LANG_STRING).build());
 
   @Override
+  protected MethodMatchers getMethodInvocationMatchers() {
+    ArrayList<MethodMatchers> matchers = new ArrayList<>(slf4jMethods());
+    matchers.add(super.getMethodInvocationMatchers());
+    // Add log methods as they only apply to misuse and not error.
+    matchers.add(log4jMethods());
+    matchers.add(JAVA_UTIL_LOGGER_LOG_LEVEL_STRING);
+    matchers.add(JAVA_UTIL_LOGGER_LOG_LEVEL_STRING_ANY);
+    return MethodMatchers.or(matchers);
+  }
+
+  private static Collection<MethodMatchers> slf4jMethods() {
+    return LEVELS.stream()
+      .map(l -> MethodMatchers.create().ofTypes(ORG_SLF4J_LOGGER).names(l).withAnyParameters().build())
+      .collect(Collectors.toList());
+  }
+
+  private static MethodMatchers log4jMethods() {
+    List<String> methodNames = new ArrayList<>();
+    methodNames.add(PRINTF_METHOD_NAME);
+    methodNames.add("log");
+    methodNames.addAll(LEVELS);
+    return MethodMatchers.create()
+      .ofTypes(ORG_APACHE_LOGGING_LOG4J_LOGGER)
+      .names(methodNames.toArray(new String[0]))
+      .withAnyParameters()
+      .build();
+  }
+
+  @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     boolean isMessageFormat = MESSAGE_FORMAT.matches(mit);
     if (isMessageFormat && !mit.symbol().isStatic()) {
       // only consider the static method
       return;
     }
+    if (!isMessageFormat && JAVA_UTIL_LOGGER_LOG_MATCHER.matches(mit) && hasResourceBundle(mit)) {
+      return;
+    }
     if (!isMessageFormat) {
-      isMessageFormat = JAVA_UTIL_LOGGER_LOG_MATCHER.matches(mit);
-      if (isMessageFormat && hasResourceBundle(mit)) {
-        return;
-      }
+      isMessageFormat = JAVA_UTIL_LOGGER_LOG_LEVEL_STRING_ANY.matches(mit);
     }
     if(!isMessageFormat) {
       isMessageFormat = isLoggingMethod(mit);
@@ -91,6 +124,15 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
 
   @Override
   protected void handlePrintfFormat(MethodInvocationTree mit, String formatString, List<ExpressionTree> args) {
+    handlePrintfFormat(mit, formatString, args, false);
+  }
+
+  @Override
+  protected void handlePrintfFormatCatchingErrors(MethodInvocationTree mit, String formatString, List<ExpressionTree> args) {
+    handlePrintfFormat(mit, formatString, args, true);
+  }
+
+  private void handlePrintfFormat(MethodInvocationTree mit, String formatString, List<ExpressionTree> args, boolean catchErrors) {
     List<String> params = getParameters(formatString, mit);
     if (usesMessageFormat(formatString, params)) {
       reportIssue(mit, "Looks like there is a confusion with the use of java.text.MessageFormat, parameters will be simply ignored here");
@@ -102,12 +144,21 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
       return;
     }
     cleanupLineSeparator(params);
-    if (!params.isEmpty() && argIndexes(params).size() <= args.size()) {
-      verifyParameters(mit, args, params);
+    if (!params.isEmpty()) {
+      if (argIndexes(params).size() <= args.size()) {
+        verifyParametersForMisuse(mit, args, params);
+      }
+      if (catchErrors) {
+        // Errors are caught, we can report them in this rule
+        if (checkArgumentNumber(mit, argIndexes(params).size(), args.size())) {
+          return;
+        }
+        verifyParametersForErrors(mit, args, params);
+      }
     }
   }
 
-  private void verifyParameters(MethodInvocationTree mit, List<ExpressionTree> args, List<String> params) {
+  private void verifyParametersForMisuse(MethodInvocationTree mit, List<ExpressionTree> args, List<String> params) {
     int index = 0;
     List<ExpressionTree> unusedArgs = new ArrayList<>(args);
     for (String rawParam : params) {
@@ -147,6 +198,10 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     }
     if (indexes.isEmpty() && !transposedArgs.isEmpty()) {
       reportIssue(mit, "String contains no format specifiers.");
+      return;
+    }
+    if (checkArgumentNumber(mit, indexes.size(), transposedArgs.size())
+      || checkUnbalancedQuotes(mit, newFormatString)) {
       return;
     }
     checkToStringInvocation(transposedArgs);
@@ -193,6 +248,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     List<ExpressionTree> unusedArgs = new ArrayList<>(args);
     for (int index : indexes) {
       if (index >= args.size()) {
+        reportIssue(mit, "Not enough arguments.");
         return;
       }
       unusedArgs.remove(args.get(index));
@@ -252,5 +308,10 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
 
   private static boolean isIncorrectConcatenation(ExpressionTree formatStringTree) {
     return formatStringTree.is(Tree.Kind.PLUS) && !formatStringTree.asConstant().isPresent();
+  }
+
+  private static boolean isLoggingMethod(MethodInvocationTree mit) {
+    String methodName = mit.symbol().name();
+    return "log".equals(methodName) || LEVELS.contains(methodName);
   }
 }
