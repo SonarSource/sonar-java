@@ -30,32 +30,32 @@ import org.sonarqube.ws.Issues.Issue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SquidTest {
+public class PackageInfoTest {
 
   @ClassRule
   public static Orchestrator orchestrator = JavaTestSuite.ORCHESTRATOR;
 
   @BeforeClass
   public static void init() {
-    MavenBuild build = MavenBuild.create(TestUtils.projectPom("squid"))
+    MavenBuild build = MavenBuild.create(TestUtils.projectPom("package-info"))
       .setCleanPackageSonarGoals()
+      .setProperty("sonar.sources", "src/main/java,src/main/other-src")
       .setProperty("sonar.scm.disabled", "true");
-    TestUtils.provisionProject(orchestrator, "org.sonarsource.it.projects:squid", "squid", "java", "squid");
+    TestUtils.provisionProject(orchestrator, "org.sonarsource.it.projects:package-info", "package-info", "java", "package-info");
     orchestrator.executeBuild(build);
   }
 
   @Test
   public void should_detect_missing_package_info() throws Exception {
-    List<Issue> issues = TestUtils.issuesForComponent(orchestrator, "org.sonarsource.it.projects:squid");
+    List<Issue> issues = TestUtils.issuesForComponent(orchestrator, "org.sonarsource.it.projects:package-info");
 
     assertThat(issues).hasSize(2);
     assertThat(issues.stream().map(Issue::getRule)).allMatch("java:S1228"::equals);
     assertThat(issues.stream().map(Issue::getLine)).allMatch(line -> line == 0);
-    String sep = "[/\\\\]";
-    Pattern packagePattern = Pattern.compile("'src" + sep + "main" + sep + "java" + sep + "package[12]'");
+    Pattern packagePattern = Pattern.compile("'org\\.package[12]'");
     assertThat(issues.stream().map(Issue::getMessage)).allMatch(msg -> packagePattern.matcher(msg).find());
 
-    List<Issue> issuesOnTestPackage = TestUtils.issuesForComponent(orchestrator, "org.sonarsource.it.projects:squid:src/test/java/package1");
+    List<Issue> issuesOnTestPackage = TestUtils.issuesForComponent(orchestrator, "org.sonarsource.it.projects:package-info:src/test/java/package1");
     assertThat(issuesOnTestPackage).isEmpty();
   }
 

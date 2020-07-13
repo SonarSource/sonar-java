@@ -1,6 +1,6 @@
-package package2;
+package org.package2;
 
-import package1.Class1;
+import org.package1.Class1;
 
 public class Class2 {
   public Class1 method() {
