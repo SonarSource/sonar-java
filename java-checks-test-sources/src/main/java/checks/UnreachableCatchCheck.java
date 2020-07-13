@@ -13,7 +13,7 @@ public class UnreachableCatchCheck {
       throwExtendsCustomException();
     } catch (ExtendsCustomException e) {
       // ...
-    } catch (CustomException e) { // Noncompliant [[sc=14;ec=29;secondary=14]] {{Remove this type because it is unreachable as hidden by previous catch blocks.}}
+    } catch (CustomException e) { // Noncompliant [[sc=7;ec=12;secondary=14]] {{Remove or refactor this catch clause because it is unreachable as hidden by previous catch blocks.}}
       // ...
     }
 
@@ -21,7 +21,18 @@ public class UnreachableCatchCheck {
       throw new ExtendsCustomException();
     } catch (ExtendsCustomException e) {
       // ...
-    } catch (CustomException|IllegalStateException e) { // Noncompliant [[sc=14;ec=29]]
+    } catch (CustomException|IllegalStateException e) { // Noncompliant [[sc=14;ec=29]] {{Remove this type because it is unreachable as hidden by previous catch blocks.}}
+      // ...
+    }
+
+    try {
+      if (true) throw new ExtendsExtendsCustomException();
+      else throw new ExtendsOtherExtendsCustomException();
+    } catch (ExtendsExtendsCustomException e) {
+      // ...
+    } catch (ExtendsOtherExtendsCustomException e) {
+      // ...
+    } catch (ExtendsCustomException|OtherExtendsCustomException e) { // Noncompliant [[sc=7;ec=12;secondary=31,33]] {{Remove or refactor this catch clause because it is unreachable as hidden by previous catch blocks.}}
       // ...
     }
 
@@ -45,9 +56,9 @@ public class UnreachableCatchCheck {
       throwExtendsExtendsCustomException();
     } catch (ExtendsExtendsCustomException e) {
       // ...
-    } catch (ExtendsCustomException e) { // Noncompliant [[secondary=46]]
+    } catch (ExtendsCustomException e) { // Noncompliant [[secondary=57]]
       // ...
-    } catch (CustomException e) { // Noncompliant [[secondary=46,48]]
+    } catch (CustomException e) { // Noncompliant [[secondary=57,59]]
       // ...
     }
 
@@ -57,7 +68,7 @@ public class UnreachableCatchCheck {
       // ...
     } catch (ExtendsCustomException e) {
       // ...
-    } catch (CustomException e) { // Noncompliant [[secondary=58]]
+    } catch (CustomException e) { // Noncompliant [[secondary=69]]
       // ...
     }
 
@@ -68,7 +79,7 @@ public class UnreachableCatchCheck {
       // ...
     } catch (IOException e) { // Compliant
       // ...
-    } catch (CustomException e) { // Noncompliant [[secondary=67]]
+    } catch (CustomException e) { // Noncompliant [[secondary=78]]
       // ...
     }
 
@@ -77,7 +88,7 @@ public class UnreachableCatchCheck {
       throwIOException();
     } catch (ExtendsCustomException | IOException e) {
       // ...
-    } catch (CustomException e) { // Noncompliant [[secondary=78]]
+    } catch (CustomException e) { // Noncompliant [[secondary=89]]
       // ...
     }
 
@@ -275,6 +286,9 @@ public class UnreachableCatchCheck {
   }
 
   public static class ExtendsExtendsCustomException extends ExtendsCustomException {
+  }
+
+  public static class ExtendsOtherExtendsCustomException extends OtherExtendsCustomException {
   }
 
   class ThrowingExtendsCustomException {
