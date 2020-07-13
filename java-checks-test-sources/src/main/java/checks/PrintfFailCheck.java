@@ -86,7 +86,7 @@ public class PrintfFailCheck {
         "asd"); // Compliant
     String.format("value is %d", value); // Compliant
 
-    String.format("%0$s", "tmp"); // Noncompliant {{Arguments are numbered starting from 1.}}
+    String.format("%0$s", "tmp"); // Compliant, reported by S3457
 
     String.format("Dude's Birthday: %1$tm %<te,%<tY", c); // Compliant
     String.format("Dude's Birthday: %1$tm %1$te,%1$tY", c); // Compliant

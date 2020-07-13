@@ -112,7 +112,7 @@ public class PrintfMisuseCheck {
       "line1 %s " +
       "line2", "myValue");
 
-    String.format("%0$s", "tmp");
+    String.format("%0$s", "tmp"); // Noncompliant {{Arguments are numbered starting from 1.}}
 
     String.format("Dude's Birthday: %1$tm %<te,%<tY", c); // Compliant
     String.format("Dude's Birthday: %1$tm %1$te,%1$tY", c); // Compliant

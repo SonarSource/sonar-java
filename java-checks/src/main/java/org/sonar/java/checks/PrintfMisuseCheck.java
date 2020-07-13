@@ -167,6 +167,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
       if (param.contains("$")) {
         argIndex = getIndex(param) - 1;
         if (argIndex == -1) {
+          reportIssue(mit, "Arguments are numbered starting from 1.");
           return;
         }
         param = param.substring(param.indexOf('$') + 1);
