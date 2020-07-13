@@ -41,6 +41,26 @@ class NoTestInTestClassCheckTest {
   }
 
   @Test
+  void surefire_inclusions_class_name_pattern() {
+    NoTestInTestClassCheck check = new NoTestInTestClassCheck();
+    check.testClassNamePattern = "Test.*|.*(Test|Tests|TestCase)";
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/NoTestInTestClassCustomPattern.java")
+      .withCheck(check)
+      .verifyIssues();
+  }
+
+  @Test
+  void empty_class_name_pattern() {
+    NoTestInTestClassCheck check = new NoTestInTestClassCheck();
+    check.testClassNamePattern = "";
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/NoTestInTestClassCustomPattern.java")
+      .withCheck(check)
+      .verifyNoIssues();
+  }
+
+  @Test
   void testEnclosed() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/NoTestInTestClassCheckEnclosed.java")
