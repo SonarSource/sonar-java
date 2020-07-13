@@ -46,7 +46,7 @@ import static java.util.Collections.singletonList;
   UnitTestsTest.class,
   JavaTest.class,
   JavaComplexityTest.class,
-  SquidTest.class,
+  PackageInfoTest.class,
   Struts139Test.class,
   JavaClasspathTest.class,
   SuppressWarningTest.class,
@@ -73,7 +73,7 @@ public class JavaTestSuite {
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-java-complexity.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-filtered-issues.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-using-aar-dep.xml"))
-      .restoreProfileAtStartup(FileLocation.ofClasspath("/com/sonar/it/java/SquidTest/squid-backup.xml"));
+      .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-package-info.xml"));
     orchestratorBuilder.addPlugin(FileLocation.of(TestUtils.pluginJar("java-extension-plugin")));
     ORCHESTRATOR = orchestratorBuilder.build();
   }
