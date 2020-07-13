@@ -3,7 +3,8 @@ derived from E.</p>
 <p>These derived exceptions are handled in dedicated <code>catch</code> blocks prior to the <code>catch</code> block of the base exception E. </p>
 <p>The <code>catch</code> block of E is unreachable and should be considered dead code. It should be removed, or the entire try-catch structure should
 be refactored.</p>
-<p> </p>
+<p>It is also possible that a single exception type in a multi-catch block may be hidden while the catch block itself is still reachable. In that case
+it is enough to only remove the hidden exception type or to replace it with another type.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public class HiddenCatchBlock {
