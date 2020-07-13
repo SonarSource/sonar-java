@@ -23,9 +23,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
+import org.sonar.check.RuleProperty;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -49,6 +52,14 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   private final Set<String> testMethodAnnotations = new HashSet<>();
   private final Set<String> testFieldAnnotations = new HashSet<>();
   private final Set<String> seenAnnotations = new HashSet<>();
+
+  private static final String DEFAULT_TEST_CLASS_NAME_PATTERN = ".*(Test|Tests|TestCase)";
+
+  @RuleProperty(key = "TestClassNamePattern",
+    description = "Test class name pattern (regular expression)",
+    defaultValue = "" + DEFAULT_TEST_CLASS_NAME_PATTERN)
+  public String testClassNamePattern = DEFAULT_TEST_CLASS_NAME_PATTERN;
+  private Pattern testClassNamePatternRegEx;
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -86,11 +97,21 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
         if (isJunit3TestClass && containsJUnit3Tests(membersList)) {
           return;
         }
-        if (isJunit3TestClass || classSymbol.name().endsWith("Test")) {
+        if (isJunit3TestClass || isTestClassName(classSymbol.name())) {
           checkJunit4AndAboveTestClass(simpleName, classSymbol, membersList);
         }
       }
     }
+  }
+
+  private boolean isTestClassName(String className) {
+    if (StringUtils.isEmpty(testClassNamePattern)) {
+      return false;
+    }
+    if (testClassNamePatternRegEx == null) {
+      testClassNamePatternRegEx = Pattern.compile(testClassNamePattern);
+    }
+    return testClassNamePatternRegEx.matcher(className).matches();
   }
 
   private static boolean isArchUnitTestClass(Symbol.TypeSymbol classSymbol) {

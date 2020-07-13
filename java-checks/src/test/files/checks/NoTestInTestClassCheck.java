@@ -48,8 +48,24 @@ public class TestJUnit3With4_JUnit3_Style extends junit.framework.TestCase { // 
   }
 }
 
+class TestJUnit4WithJUnit3 { // Compliant, even if surefire-plugin includes this class as a test, it's too noisy
+                             // if this rule do the same.
+  public void test() {
+  }
+}
+
 class JUnit4WithJUnit3Test { // Noncompliant
   public void test() { // Simply naming test is not enough for JUnit 4
+  }
+}
+
+class JUnit4WithJUnit3Tests { // Noncompliant
+  public void test() {
+  }
+}
+
+class JUnit4WithJUnit3TestCase { // Noncompliant
+  public void test() {
   }
 }
 
