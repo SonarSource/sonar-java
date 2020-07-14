@@ -20,9 +20,12 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -35,8 +38,13 @@ import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
+
 @Rule(key = "S3457")
 public class PrintfMisuseCheck extends AbstractPrintfChecker {
+
+  private static final String ORG_SLF4J_LOGGER = "org.slf4j.Logger";
+  private static final String JAVA_UTIL_LOGGING_LOGGER = "java.util.logging.Logger";
 
   private static final MethodMatchers TO_STRING = MethodMatchers.create()
     .ofAnyType().names("toString").addWithoutParametersMatcher().build();
@@ -46,6 +54,49 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     MethodMatchers.create()
       .ofTypes(JAVA_UTIL_LOGGING_LOGGER).names("getAnonymousLogger").addParametersMatcher(JAVA_LANG_STRING).build());
 
+  private static final MethodMatchers JAVA_UTIL_LOGGER_LOG_LEVEL_STRING = MethodMatchers.create()
+    .ofTypes(JAVA_UTIL_LOGGING_LOGGER)
+    .names("log")
+    .addParametersMatcher("java.util.logging.Level", JAVA_LANG_STRING)
+    .build();
+  private static final MethodMatchers JAVA_UTIL_LOGGER_LOG_LEVEL_STRING_ANY = MethodMatchers.create()
+    .ofTypes(JAVA_UTIL_LOGGING_LOGGER)
+    .names("log")
+    .addParametersMatcher("java.util.logging.Level", JAVA_LANG_STRING, ANY)
+    .build();
+  private static final MethodMatchers JAVA_UTIL_LOGGER_LOG_MATCHER = MethodMatchers.or(
+    JAVA_UTIL_LOGGER_LOG_LEVEL_STRING,
+    JAVA_UTIL_LOGGER_LOG_LEVEL_STRING_ANY);
+
+  @Override
+  protected MethodMatchers getMethodInvocationMatchers() {
+    ArrayList<MethodMatchers> matchers = new ArrayList<>(slf4jMethods());
+    matchers.add(super.getMethodInvocationMatchers());
+    // Add log methods as they only apply to misuse and not error.
+    matchers.add(log4jMethods());
+    matchers.add(JAVA_UTIL_LOGGER_LOG_LEVEL_STRING);
+    matchers.add(JAVA_UTIL_LOGGER_LOG_LEVEL_STRING_ANY);
+    return MethodMatchers.or(matchers);
+  }
+
+  private static Collection<MethodMatchers> slf4jMethods() {
+    return LEVELS.stream()
+      .map(l -> MethodMatchers.create().ofTypes(ORG_SLF4J_LOGGER).names(l).withAnyParameters().build())
+      .collect(Collectors.toList());
+  }
+
+  private static MethodMatchers log4jMethods() {
+    List<String> methodNames = new ArrayList<>();
+    methodNames.add(PRINTF_METHOD_NAME);
+    methodNames.add("log");
+    methodNames.addAll(LEVELS);
+    return MethodMatchers.create()
+      .ofTypes(ORG_APACHE_LOGGING_LOG4J_LOGGER)
+      .names(methodNames.toArray(new String[0]))
+      .withAnyParameters()
+      .build();
+  }
+
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     boolean isMessageFormat = MESSAGE_FORMAT.matches(mit);
@@ -53,11 +104,11 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
       // only consider the static method
       return;
     }
+    if (!isMessageFormat && JAVA_UTIL_LOGGER_LOG_MATCHER.matches(mit) && hasResourceBundle(mit)) {
+      return;
+    }
     if (!isMessageFormat) {
-      isMessageFormat = JAVA_UTIL_LOGGER_LOG_MATCHER.matches(mit);
-      if (isMessageFormat && hasResourceBundle(mit)) {
-        return;
-      }
+      isMessageFormat = JAVA_UTIL_LOGGER_LOG_LEVEL_STRING_ANY.matches(mit);
     }
     if(!isMessageFormat) {
       isMessageFormat = isLoggingMethod(mit);
@@ -91,6 +142,15 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
 
   @Override
   protected void handlePrintfFormat(MethodInvocationTree mit, String formatString, List<ExpressionTree> args) {
+    handlePrintfFormat(mit, formatString, args, false);
+  }
+
+  @Override
+  protected void handlePrintfFormatCatchingErrors(MethodInvocationTree mit, String formatString, List<ExpressionTree> args) {
+    handlePrintfFormat(mit, formatString, args, true);
+  }
+
+  private void handlePrintfFormat(MethodInvocationTree mit, String formatString, List<ExpressionTree> args, boolean catchErrors) {
     List<String> params = getParameters(formatString, mit);
     if (usesMessageFormat(formatString, params)) {
       reportIssue(mit, "Looks like there is a confusion with the use of java.text.MessageFormat, parameters will be simply ignored here");
@@ -102,12 +162,21 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
       return;
     }
     cleanupLineSeparator(params);
-    if (!params.isEmpty() && argIndexes(params).size() <= args.size()) {
-      verifyParameters(mit, args, params);
+    if (!params.isEmpty()) {
+      if (argIndexes(params).size() <= args.size()) {
+        verifyParametersForMisuse(mit, args, params);
+      }
+      if (catchErrors) {
+        // Errors are caught, we can report them in this rule
+        if (checkArgumentNumber(mit, argIndexes(params).size(), args.size())) {
+          return;
+        }
+        verifyParametersForErrors(mit, args, params);
+      }
     }
   }
 
-  private void verifyParameters(MethodInvocationTree mit, List<ExpressionTree> args, List<String> params) {
+  private void verifyParametersForMisuse(MethodInvocationTree mit, List<ExpressionTree> args, List<String> params) {
     int index = 0;
     List<ExpressionTree> unusedArgs = new ArrayList<>(args);
     for (String rawParam : params) {
@@ -116,6 +185,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
       if (param.contains("$")) {
         argIndex = getIndex(param) - 1;
         if (argIndex == -1) {
+          reportIssue(mit, "Arguments are numbered starting from 1.");
           return;
         }
         param = param.substring(param.indexOf('$') + 1);
@@ -149,8 +219,67 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
       reportIssue(mit, "String contains no format specifiers.");
       return;
     }
+    if (checkArgumentNumber(mit, indexes.size(), transposedArgs.size())
+      || checkUnbalancedQuotes(mit, newFormatString)) {
+      return;
+    }
     checkToStringInvocation(transposedArgs);
     verifyParameters(mit, transposedArgs, indexes);
+  }
+
+  private boolean checkUnbalancedQuotes(MethodInvocationTree mit, String formatString) {
+    if(LEVELS.contains(mit.symbol().name())) {
+      return false;
+    }
+    String withoutParam = MESSAGE_FORMAT_PATTERN.matcher(formatString).replaceAll("");
+    int numberQuote = 0;
+    for (int i = 0; i < withoutParam.length(); ++i) {
+      if (withoutParam.charAt(i) == '\'') {
+        numberQuote++;
+      }
+    }
+    boolean unbalancedQuotes = (numberQuote % 2) != 0;
+    if (unbalancedQuotes) {
+      reportIssue(mit.arguments().get(0), "Single quote \"'\" must be escaped.");
+    }
+    return unbalancedQuotes;
+  }
+
+
+  @Nullable
+  private static List<ExpressionTree> transposeArgumentArrayAndRemoveThrowable(MethodInvocationTree mit, List<ExpressionTree> args) {
+    List<ExpressionTree> transposedArgs = args;
+    if (args.size() == 1) {
+      ExpressionTree firstArg = args.get(0);
+      if (firstArg.symbolType().isArray()) {
+        if (isNewArrayWithInitializers(firstArg)) {
+          transposedArgs = ((NewArrayTree) firstArg).initializers();
+        } else {
+          // size is unknown
+          return null;
+        }
+      }
+    }
+    if (lastArgumentShouldBeIgnored(mit, args, transposedArgs)) {
+      transposedArgs = transposedArgs.subList(0, transposedArgs.size() - 1);
+    }
+    return transposedArgs;
+  }
+
+  private static boolean lastArgumentShouldBeIgnored(MethodInvocationTree mit, List<ExpressionTree> args, List<ExpressionTree> transposedArgs) {
+    if (mit.symbol().owner().type().is(JAVA_UTIL_LOGGING_LOGGER)) {
+      return args.size() == 1 && isLastArgumentThrowable(args);
+    }
+    // org.apache.logging.log4j.Logger and org.slf4j.Logger
+    return isLastArgumentThrowable(transposedArgs);
+  }
+
+  private static boolean isLastArgumentThrowable(List<ExpressionTree> arguments) {
+    if (!arguments.isEmpty()) {
+      ExpressionTree lastArgument = arguments.get(arguments.size() - 1);
+      return lastArgument.symbolType().isSubtypeOf(JAVA_LANG_THROWABLE);
+    }
+    return false;
   }
 
   private void checkToStringInvocation(List<ExpressionTree> args) {
@@ -193,6 +322,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     List<ExpressionTree> unusedArgs = new ArrayList<>(args);
     for (int index : indexes) {
       if (index >= args.size()) {
+        reportIssue(mit, "Not enough arguments.");
         return;
       }
       unusedArgs.remove(args.get(index));
@@ -252,5 +382,10 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
 
   private static boolean isIncorrectConcatenation(ExpressionTree formatStringTree) {
     return formatStringTree.is(Tree.Kind.PLUS) && !formatStringTree.asConstant().isPresent();
+  }
+
+  private static boolean isLoggingMethod(MethodInvocationTree mit) {
+    String methodName = mit.symbol().name();
+    return "log".equals(methodName) || LEVELS.contains(methodName);
   }
 }

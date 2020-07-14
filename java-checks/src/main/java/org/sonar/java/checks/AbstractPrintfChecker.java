@@ -19,9 +19,9 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.Sets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -43,19 +43,21 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
-
 public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
 
+  private static final Set<String> TIME_CONVERSIONS = Sets.newHashSet(
+    "H", "I", "k", "l", "M", "S", "L", "N", "p", "z", "Z", "s", "Q",
+    "B", "b", "h", "A", "a", "C", "Y", "y", "j", "m", "d", "e",
+    "R", "T", "r", "D", "F", "c"
+  );
+
   protected static final String JAVA_LANG_STRING = "java.lang.String";
-  protected static final String JAVA_UTIL_LOGGING_LOGGER = "java.util.logging.Logger";
-  protected static final String ORG_APACHE_LOGGING_LOG4J_LOGGER = "org.apache.logging.log4j.Logger";
-  protected static final String ORG_SLF4J_LOGGER = "org.slf4j.Logger";
   protected static final String JAVA_LANG_THROWABLE = "java.lang.Throwable";
+  protected static final String ORG_APACHE_LOGGING_LOG4J_LOGGER = "org.apache.logging.log4j.Logger";
 
   private static final Pattern PRINTF_PARAM_PATTERN = Pattern.compile("%(\\d+\\$)?([-#+ 0,(\\<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%])");
 
-  private static final String PRINTF_METHOD_NAME = "printf";
+  protected static final String PRINTF_METHOD_NAME = "printf";
   private static final String FORMAT_METHOD_NAME = "format";
   protected static final List<String> LEVELS = Arrays.asList("debug", "error", "info", "trace", "warn", "fatal");
 
@@ -64,58 +66,21 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
     .names(FORMAT_METHOD_NAME)
     .withAnyParameters()
     .build();
-  protected static final MethodMatchers JAVA_UTIL_LOGGER_LOG_LEVEL_STRING = MethodMatchers.create()
-    .ofTypes(JAVA_UTIL_LOGGING_LOGGER)
-    .names("log")
-    .addParametersMatcher("java.util.logging.Level", JAVA_LANG_STRING)
-    .build();
-  protected static final MethodMatchers JAVA_UTIL_LOGGER_LOG_LEVEL_STRING_ANY = MethodMatchers.create()
-    .ofTypes(JAVA_UTIL_LOGGING_LOGGER)
-    .names("log")
-    .addParametersMatcher("java.util.logging.Level", JAVA_LANG_STRING, ANY)
-    .build();
-  protected static final MethodMatchers JAVA_UTIL_LOGGER_LOG_MATCHER = MethodMatchers.or(
-    JAVA_UTIL_LOGGER_LOG_LEVEL_STRING,
-    JAVA_UTIL_LOGGER_LOG_LEVEL_STRING_ANY);
-    
-  protected static final Pattern MESSAGE_FORMAT_PATTERN = Pattern.compile("\\{(?<index>\\d+)(?<type>,\\w+)?(?<style>,[^}]*)?\\}");
 
+  protected static final Pattern MESSAGE_FORMAT_PATTERN = Pattern.compile("\\{(?<index>\\d+)(?<type>,\\w+)?(?<style>,[^}]*)?\\}");
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
-    ArrayList<MethodMatchers> matchers = new ArrayList<>(slf4jMethods());
-    matchers.add(log4jMethods());
-    matchers.addAll(Arrays.asList(
-      MethodMatchers.create().ofTypes(JAVA_LANG_STRING).names(FORMAT_METHOD_NAME).withAnyParameters().build(),
+    return MethodMatchers.or(
+      MethodMatchers.create()
+        .ofTypes(JAVA_LANG_STRING).names(FORMAT_METHOD_NAME).withAnyParameters().build(),
       MethodMatchers.create()
         .ofTypes("java.util.Formatter").names(FORMAT_METHOD_NAME).withAnyParameters().build(),
       MethodMatchers.create()
         .ofTypes("java.io.PrintStream").names(FORMAT_METHOD_NAME, PRINTF_METHOD_NAME).withAnyParameters().build(),
       MethodMatchers.create()
         .ofTypes("java.io.PrintWriter").names(FORMAT_METHOD_NAME, PRINTF_METHOD_NAME).withAnyParameters().build(),
-      MESSAGE_FORMAT,
-      JAVA_UTIL_LOGGER_LOG_LEVEL_STRING,
-      JAVA_UTIL_LOGGER_LOG_LEVEL_STRING_ANY
-      ));
-    return MethodMatchers.or(matchers);
-  }
-
-  private static Collection<MethodMatchers> slf4jMethods() {
-    return LEVELS.stream()
-      .map(l -> MethodMatchers.create().ofTypes(ORG_SLF4J_LOGGER).names(l).withAnyParameters().build())
-      .collect(Collectors.toList());
-  }
-
-  private static MethodMatchers log4jMethods() {
-    List<String> methodNames = new ArrayList<>();
-    methodNames.add(PRINTF_METHOD_NAME);
-    methodNames.add("log");
-    methodNames.addAll(LEVELS);
-    return MethodMatchers.create()
-      .ofTypes(ORG_APACHE_LOGGING_LOG4J_LOGGER)
-      .names(methodNames.toArray(new String[0]))
-      .withAnyParameters()
-      .build();
+      MESSAGE_FORMAT);
   }
 
   protected final void checkFormatting(MethodInvocationTree mit, boolean isMessageFormat) {
@@ -142,7 +107,8 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
     if (formatTree.is(Tree.Kind.STRING_LITERAL)) {
       String formatString = LiteralUtils.trimQuotes(((LiteralTree) formatTree).value());
       if (isMessageFormat && isProbablyLog4jFormatterLogger(mit, formatString)) {
-        isMessageFormat = false;
+        handlePrintfFormatCatchingErrors(mit, formatString, args);
+        return;
       }
       if (isMessageFormat) {
         handleMessageFormat(mit, formatString, args);
@@ -161,6 +127,8 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
   }
 
   protected abstract void handlePrintfFormat(MethodInvocationTree mit, String formatString, List<ExpressionTree> args);
+
+  protected abstract void handlePrintfFormatCatchingErrors(MethodInvocationTree mit, String formatString, List<ExpressionTree> args);
 
   protected abstract void handleMessageFormat(MethodInvocationTree mit, String formatString, List<ExpressionTree> args);
 
@@ -234,7 +202,6 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
     }
   }
 
-
   protected static Set<Integer> argIndexes(List<String> params) {
     int index = 0;
     Set<Integer> result = new HashSet<>();
@@ -253,45 +220,92 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
     return params.isEmpty() && group != null && group.length() > 0 && group.charAt(0) == '<';
   }
 
-  @Nullable
-  protected static List<ExpressionTree> transposeArgumentArrayAndRemoveThrowable(MethodInvocationTree mit, List<ExpressionTree> args) {
-    List<ExpressionTree> transposedArgs = args;
-    if (args.size() == 1) {
-      ExpressionTree firstArg = args.get(0);
-      if (firstArg.symbolType().isArray()) {
-        if (isNewArrayWithInitializers(firstArg)) {
-          transposedArgs = ((NewArrayTree) firstArg).initializers();
-        } else {
-          // size is unknown
-          return null;
-        }
-      }
-    }
-    if (lastArgumentShouldBeIgnored(mit, args, transposedArgs)) {
-      transposedArgs = transposedArgs.subList(0, transposedArgs.size() - 1);
-    }
-    return transposedArgs;
-  }
-
-  private static boolean lastArgumentShouldBeIgnored(MethodInvocationTree mit, List<ExpressionTree> args, List<ExpressionTree> transposedArgs) {
-    if (mit.symbol().owner().type().is(JAVA_UTIL_LOGGING_LOGGER)) {
-      return args.size() == 1 && isLastArgumentThrowable(args);
-    }
-    // org.apache.logging.log4j.Logger and org.slf4j.Logger
-    return isLastArgumentThrowable(transposedArgs);
-  }
-
-  protected static boolean isLastArgumentThrowable(List<ExpressionTree> arguments) {
-    if (!arguments.isEmpty()) {
-      ExpressionTree lastArgument = arguments.get(arguments.size() - 1);
-      return lastArgument.symbolType().isSubtypeOf(JAVA_LANG_THROWABLE);
+  protected boolean checkArgumentNumber(MethodInvocationTree mit, int nbReadParams, int nbArgs) {
+    if (nbReadParams > nbArgs) {
+      reportIssue(mit, "Not enough arguments.");
+      return true;
     }
     return false;
   }
 
-  protected static boolean isLoggingMethod(MethodInvocationTree mit) {
-    String methodName = mit.symbol().name();
-    return "log".equals(methodName) || LEVELS.contains(methodName);
+  protected void verifyParametersForErrors(MethodInvocationTree mit, List<ExpressionTree> args, List<String> params) {
+    int index = 0;
+    for (String rawParam : params) {
+      String param = rawParam;
+      int argIndex = index;
+      if (param.contains("$")) {
+        argIndex = getIndex(param) - 1;
+        if (argIndex == -1) {
+          return;
+        }
+        param = param.substring(param.indexOf('$') + 1);
+      } else if (param.charAt(0) == '<') {
+        //refers to previous argument
+        argIndex = Math.max(0, argIndex - 1);
+      }else {
+        index++;
+      }
+      if (argIndex >= args.size()) {
+        int formatIndex = argIndex + 1;
+        reportIssue(mit, "Not enough arguments to feed formater at index " + formatIndex + ": '%" + formatIndex + "$'.");
+        return;
+      }
+      ExpressionTree argExpressionTree = args.get(argIndex);
+      Type argType = argExpressionTree.symbolType();
+      checkNumerical(mit, param, argType);
+      checkTimeConversion(mit, param, argType);
+    }
+  }
+
+  private void checkNumerical(MethodInvocationTree mit, String param, Type argType) {
+    if (param.charAt(0) == 'd' && !isNumerical(argType)) {
+      reportIssue(mit, "An 'int' is expected rather than a " + argType + ".");
+    }
+  }
+
+  private void checkTimeConversion(MethodInvocationTree mit, String param, Type argType) {
+    if (param.charAt(0) == 't' || param.charAt(0) == 'T') {
+      String timeConversion = param.substring(1);
+      if (timeConversion.isEmpty()) {
+        reportIssue(mit, "Time conversion requires a second character.");
+        checkTimeTypeArgument(mit, argType);
+        return;
+      }
+      if (!TIME_CONVERSIONS.contains(timeConversion)) {
+        reportIssue(mit, timeConversion + " is not a supported time conversion character");
+      }
+      checkTimeTypeArgument(mit, argType);
+    }
+  }
+
+
+  private void checkTimeTypeArgument(MethodInvocationTree mit, Type argType) {
+    if (!(argType.isNumerical()
+      || argType.is("java.lang.Long")
+      || isSubtypeOfAny(argType, "java.util.Date", "java.util.Calendar", "java.time.temporal.TemporalAccessor"))) {
+      reportIssue(mit, "Time argument is expected (long, Long, Calendar, Date and TemporalAccessor).");
+    }
+  }
+
+  private static boolean isNumerical(Type argType) {
+    return argType.isNumerical()
+      || isTypeOfAny(argType,
+      "java.math.BigInteger",
+      "java.math.BigDecimal",
+      "java.lang.Byte",
+      "java.lang.Short",
+      "java.lang.Integer",
+      "java.lang.Long",
+      "java.lang.Float",
+      "java.lang.Double");
+  }
+
+  private static boolean isTypeOfAny(Type argType, String... fullyQualifiedNames) {
+    return Arrays.stream(fullyQualifiedNames).anyMatch(argType::is);
+  }
+
+  private static boolean isSubtypeOfAny(Type argType, String... fullyQualifiedNames) {
+    return Arrays.stream(fullyQualifiedNames).anyMatch(argType::isSubtypeOf);
   }
 
 }
