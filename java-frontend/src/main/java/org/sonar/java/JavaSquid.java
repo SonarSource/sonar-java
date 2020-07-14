@@ -98,7 +98,7 @@ public class JavaSquid {
 
     //AstScanner for generated files
     astScannerForGeneratedFiles = new JavaAstScanner(sonarComponents);
-    astScannerForGeneratedFiles.setVisitorBridge(createVisitorBridge(jspCodeVisitors, classpath, javaVersion, sonarComponents, SymbolicExecutionMode.DISABLED));
+    astScannerForGeneratedFiles.setVisitorBridge(createVisitorBridge(jspCodeVisitors, jspClasspath, javaVersion, sonarComponents, SymbolicExecutionMode.DISABLED));
   }
 
   private static VisitorsBridge createVisitorBridge(
