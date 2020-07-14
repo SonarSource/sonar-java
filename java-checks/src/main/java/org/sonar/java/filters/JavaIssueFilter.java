@@ -20,14 +20,13 @@
 package org.sonar.java.filters;
 
 import java.util.Set;
-import org.sonar.api.rule.RuleKey;
-import org.sonar.java.AnalyzerMessage;
+import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 
 public interface JavaIssueFilter extends JavaFileScanner {
 
-  boolean accept(RuleKey ruleKey, AnalyzerMessage analyzerMessage);
+  boolean accept(FilterableIssue issue);
 
   Set<Class<? extends JavaCheck>> filteredRules();
 }

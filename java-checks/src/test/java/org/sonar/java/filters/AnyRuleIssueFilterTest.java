@@ -24,10 +24,9 @@ import javax.annotation.Nullable;
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.Before;
 import org.junit.Test;
-import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.java.AnalyzerMessage;
+import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.java.CheckTestUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridgeForTests;
@@ -47,14 +46,13 @@ public class AnyRuleIssueFilterTest {
   private static final String REPOSITORY_KEY = "walrus";
   private static final String RULE_KEY = "S42";
   private AnyRuleIssueFilter filter;
-  private RuleKey ruleKey;
-  private AnalyzerMessage issue;
+  private FilterableIssue issue;
 
   @Before
   public void setup() {
-    issue = mock(AnalyzerMessage.class);
-    when(issue.getInputComponent()).thenReturn(INPUT_FILE);
-    ruleKey = RuleKey.of(REPOSITORY_KEY, RULE_KEY);
+    issue = mock(FilterableIssue.class);
+    when(issue.componentKey()).thenReturn(INPUT_FILE.key());
+    when(issue.ruleKey()).thenReturn(RuleKey.of(REPOSITORY_KEY, RULE_KEY));
 
     filter = new AnyRuleOnVariableIssueFilter();
 
@@ -69,9 +67,7 @@ public class AnyRuleIssueFilterTest {
 
   @Test
   public void issue_on_other_component_are_ignored() {
-    InputComponent inputComponent = mock(InputComponent.class);
-    when(inputComponent.key()).thenReturn("tesT:test.MyOtherTest");
-    when(issue.getInputComponent()).thenReturn(inputComponent);
+    when(issue.componentKey()).thenReturn("tesT:test.MyOtherTest");
     assertThatIssueWillBeAccepted(2).isTrue();
   }
 
@@ -104,27 +100,27 @@ public class AnyRuleIssueFilterTest {
   @Test
   public void issues_from_any_rules_are_accepted() {
     // issue on file accepted
-    ruleKey = RuleKey.of(REPOSITORY_KEY, "OtherRule1");
+    when(issue.ruleKey()).thenReturn(RuleKey.of(REPOSITORY_KEY, "OtherRule1"));
     assertThatIssueWillBeAccepted(null).isTrue();
 
     // issue on field called 'field' rejected
-    ruleKey = RuleKey.of(REPOSITORY_KEY, "OtherRule2");
+    when(issue.ruleKey()).thenReturn(RuleKey.of(REPOSITORY_KEY, "OtherRule2"));
     assertThatIssueWillBeAccepted(4).isFalse();
 
-    ruleKey = RuleKey.of(REPOSITORY_KEY, "OtherRule3");
+    when(issue.ruleKey()).thenReturn(RuleKey.of(REPOSITORY_KEY, "OtherRule3"));
     assertThatIssueWillBeAccepted(5).isFalse();
 
-    ruleKey = RuleKey.of(REPOSITORY_KEY, "OtherRule4");
+    when(issue.ruleKey()).thenReturn(RuleKey.of(REPOSITORY_KEY, "OtherRule4"));
     assertThatIssueWillBeAccepted(6).isFalse();
 
     // issue on other variables are accepted
-    ruleKey = RuleKey.of(REPOSITORY_KEY, "OtherRule5");
+    when(issue.ruleKey()).thenReturn(RuleKey.of(REPOSITORY_KEY, "OtherRule5"));
     assertThatIssueWillBeAccepted(8).isTrue();
 
-    ruleKey = RuleKey.of(REPOSITORY_KEY, "OtherRule6");
+    when(issue.ruleKey()).thenReturn(RuleKey.of(REPOSITORY_KEY, "OtherRule6"));
     assertThatIssueWillBeAccepted(9).isTrue();
 
-    ruleKey = RuleKey.of(REPOSITORY_KEY, "OtherRule7");
+    when(issue.ruleKey()).thenReturn(RuleKey.of(REPOSITORY_KEY, "OtherRule7"));
     // issue on trivia from the field
     assertThatIssueWillBeAccepted(12).isFalse();
     // issue on field
@@ -132,8 +128,8 @@ public class AnyRuleIssueFilterTest {
   }
 
   private AbstractBooleanAssert<?> assertThatIssueWillBeAccepted(@Nullable Integer line) {
-    when(issue.getLine()).thenReturn(line);
-    return assertThat(filter.accept(ruleKey, issue));
+    when(issue.line()).thenReturn(line);
+    return assertThat(filter.accept(issue));
   }
 
   private static void scanFile(JavaIssueFilter filter) {

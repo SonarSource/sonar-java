@@ -63,7 +63,7 @@ public class SyntaxHighlighterVisitorTest {
   public void setUp() throws Exception {
     context = SensorContextTester.create(temp.getRoot());
     sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), context.fileSystem(),
-      mock(JavaClasspath.class), mock(JavaTestClasspath.class), mock(CheckFactory.class), null);
+      mock(JavaClasspath.class), mock(JavaTestClasspath.class), mock(CheckFactory.class));
     sonarComponents.setSensorContext(context);
     syntaxHighlighterVisitor = new SyntaxHighlighterVisitor(sonarComponents);
   }
