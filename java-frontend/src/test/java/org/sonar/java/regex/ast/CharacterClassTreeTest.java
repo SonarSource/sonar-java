@@ -19,6 +19,7 @@
  */
 package org.sonar.java.regex.ast;
 
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -156,8 +157,42 @@ class CharacterClassTreeTest {
   }
 
   @Test
+  void quotedStringInCharacterClass() {
+    assertPlainCharacterUnionCharacterClass("\\a-z]\\w", "[\\\\Q\\\\a-z]\\\\w\\\\E]");
+    assertPlainCharacterUnionCharacterClass("a-z", "[a\\\\Q-z\\\\E]");
+  }
+
+  @Test
+  void quotedStringInCharacterRange() {
+    RegexTree contents = assertCharacterClass(false, assertSuccessfulParse("[a-\\\\QzA-Z\\\\E#]"));
+    CharacterClassUnionTree union = assertType(CharacterClassUnionTree.class, contents);
+    assertListElements(union.getCharacterClasses(),
+      first -> assertCharacterRange('a', 'z', first),
+      second -> assertPlainCharacter('A', second),
+      third -> assertPlainCharacter('-', third),
+      fourth -> assertPlainCharacter('Z', fourth),
+      fifth -> assertPlainCharacter('#', fifth)
+    );
+  }
+
+  @Test
+  void quotedStringInCharacterIntersection() {
+    RegexTree contents = assertCharacterClass(false, assertSuccessfulParse("[\\\\QA-Z\\\\E&&]"));
+    CharacterClassIntersectionTree union = assertType(CharacterClassIntersectionTree.class, contents);
+    assertListElements(union.getCharacterClasses(),
+      first -> assertPlainCharacterUnion("A-Z", first),
+      second -> assertPlainCharacterUnion("", second)
+    );
+  }
+
+  @Test
   void unclosedCharacterClass() {
     assertFailParsing("[abc", "Expected ']', but found the end of the regex");
+  }
+
+  @Test
+  void unclosedQuote() {
+    assertFailParsing("[\\\\Q.-_]", "Expected '\\E', but found the end of the regex");
   }
 
   @Test
@@ -173,6 +208,20 @@ class CharacterClassTreeTest {
   @Test
   void illegalRangeWithEscape() {
     assertFailParsing("[a-\\\\w]", "Expected simple character, but found '\\\\w'");
+  }
+
+  private void assertPlainCharacterUnion(String expectedCharacters, RegexTree characterClassElement) {
+    CharacterClassUnionTree union = assertType(CharacterClassUnionTree.class, characterClassElement);
+    List<RegexTree> elements = union.getCharacterClasses();
+    assertListSize(expectedCharacters.length(), elements);
+    for (int i = 0; i < expectedCharacters.length(); i++) {
+      assertPlainCharacter(expectedCharacters.charAt(i), elements.get(i));
+    }
+  }
+
+  private void assertPlainCharacterUnionCharacterClass(String expectedCharacters, String regex) {
+    RegexTree contents = assertCharacterClass(false, assertSuccessfulParse(regex));
+    assertPlainCharacterUnion(expectedCharacters, contents);
   }
 
 }

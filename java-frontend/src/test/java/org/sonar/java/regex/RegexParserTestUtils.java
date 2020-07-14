@@ -106,7 +106,11 @@ public class RegexParserTestUtils {
   }
 
   public static void assertPlainString(String expected, String regex) {
-    assertPlainString(expected, assertSuccessfulParse(regex));
+    assertPlainString(expected, regex, false);
+  }
+
+  public static void assertPlainString(String expected, String regex, boolean freeSpacingMode) {
+    assertPlainString(expected, assertSuccessfulParse(regex, freeSpacingMode));
   }
 
   public static void assertPlainCharacter(char expected, @Nullable Boolean expectedEscape, RegexTree regex) {
