@@ -391,7 +391,7 @@ public class SonarComponentsTest {
     when(javaClasspath.getElements()).thenReturn(Collections.singletonList(someJar));
 
     File plugin = new File("target/classes");
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, mock(JavaTestClasspath.class), checkFactory, null);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, mock(JavaTestClasspath.class), checkFactory, new CheckRegistrar[0]);
     List<String> jspClassPath = sonarComponents.getJspClasspath().stream().map(File::getAbsolutePath).collect(Collectors.toList());
     assertThat(jspClassPath).containsExactly(plugin.getAbsolutePath(), someJar.getAbsolutePath());
   }

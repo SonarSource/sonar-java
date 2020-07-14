@@ -83,7 +83,7 @@ public class FilterVerifier {
       Integer issueLine = analyzerMessage.getLine();
       String ruleKey = AnnotationUtils.getAnnotation(analyzerMessage.getCheck().getClass(), Rule.class).key();
       FilterableIssue issue = mock(FilterableIssue.class);
-      when(issue.ruleKey()).thenReturn(RuleKey.of("repo", ruleKey));
+      when(issue.ruleKey()).thenReturn(RuleKey.of("java", ruleKey));
       when(issue.componentKey()).thenReturn(inputFile.key());
       when(issue.line()).thenReturn(issueLine);
 
