@@ -99,8 +99,12 @@ public class AssertJChainSimplificationCheckTest {
       .isNotEqualTo(null); // Noncompliant
 
     assertThat(getBoolean()).isEqualTo(true); // Noncompliant {{Use isTrue() instead.}}
+    assertThat(getObject()).isEqualTo(true); // Compliant
     assertThat(getBoolean()).isEqualTo(false); // Noncompliant {{Use isFalse() instead.}}
-    assertThat(x.equals(y)).isTrue(); // Noncompliant [[sc=29;ec=35;secondary=103]] {{Use assertThat(actual).isEqualTo(expected) instead.}}
+    assertThat(getObject()).isEqualTo(false); // Compliant
+    assertThat(getObject()).isEqualTo(""); // Compliant
+    assertThat(getObject()).isEqualTo(0); // Compliant
+    assertThat(x.equals(y)).isTrue(); // Noncompliant [[sc=29;ec=35;secondary=107]] {{Use assertThat(actual).isEqualTo(expected) instead.}}
     assertThat(x.equals(y)).isFalse(); // Noncompliant {{Use assertThat(actual).isNotEqualTo(expected) instead.}}
     assertThat(x == y).isTrue(); // Noncompliant {{Use assertThat(actual).isSameAs(expected) instead.}}
     assertThat(x == y).isFalse(); // Noncompliant {{Use assertThat(actual).isNotSameAs(expected) instead.}}
@@ -117,6 +121,7 @@ public class AssertJChainSimplificationCheckTest {
 
     assertThat(x.compareTo(y)).isEqualTo(0); // Noncompliant {{Use isZero() instead.}}
     assertThat(x.compareTo(y)).isNotEqualTo(0); // Noncompliant {{Use isNotZero() instead.}}
+    assertThat(getObject()).isNotEqualTo(0); // Compliant, can not use isNotZero on object
     assertThat(x.compareTo(y)).as("message").isNotEqualTo(0); // Noncompliant
     assertThat(x.compareTo(y)).isNotEqualTo(4).isNotEqualTo(null).isNotEqualTo(-1); // Noncompliant [[sc=48;ec=60]] - but only raise issue on the 'null' check
 
