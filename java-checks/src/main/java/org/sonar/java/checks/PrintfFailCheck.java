@@ -55,6 +55,27 @@ public class PrintfFailCheck extends AbstractPrintfChecker {
     checkUnbalancedBraces(mit, newFormatString);
   }
 
+  private void checkUnbalancedBraces(MethodInvocationTree mit, String formatString) {
+    String withoutParam = MESSAGE_FORMAT_PATTERN.matcher(formatString).replaceAll("");
+    int numberOpenBrace = 0;
+    for (int i = 0; i < withoutParam.length(); ++i) {
+      char ch = withoutParam.charAt(i);
+      switch (ch) {
+        case '{':
+          numberOpenBrace++;
+          break;
+        case '}':
+          numberOpenBrace--;
+          break;
+        default:
+          break;
+      }
+    }
+    if (numberOpenBrace > 0) {
+      reportIssue(mit.arguments().get(0), "Single left curly braces \"{\" must be escaped.");
+    }
+  }
+
   @Override
   protected void handlePrintfFormatCatchingErrors(MethodInvocationTree mit, String formatString, List<ExpressionTree> args) {
     // Do nothing, since the method invocation will catch the error.

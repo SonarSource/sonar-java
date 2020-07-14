@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -37,10 +38,13 @@ import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
+
 @Rule(key = "S3457")
 public class PrintfMisuseCheck extends AbstractPrintfChecker {
 
-  protected static final String ORG_SLF4J_LOGGER = "org.slf4j.Logger";
+  private static final String ORG_SLF4J_LOGGER = "org.slf4j.Logger";
+  private static final String JAVA_UTIL_LOGGING_LOGGER = "java.util.logging.Logger";
 
   private static final MethodMatchers TO_STRING = MethodMatchers.create()
     .ofAnyType().names("toString").addWithoutParametersMatcher().build();
@@ -49,6 +53,20 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
       .ofTypes(JAVA_UTIL_LOGGING_LOGGER).names("getLogger").addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING).build(),
     MethodMatchers.create()
       .ofTypes(JAVA_UTIL_LOGGING_LOGGER).names("getAnonymousLogger").addParametersMatcher(JAVA_LANG_STRING).build());
+
+  private static final MethodMatchers JAVA_UTIL_LOGGER_LOG_LEVEL_STRING = MethodMatchers.create()
+    .ofTypes(JAVA_UTIL_LOGGING_LOGGER)
+    .names("log")
+    .addParametersMatcher("java.util.logging.Level", JAVA_LANG_STRING)
+    .build();
+  private static final MethodMatchers JAVA_UTIL_LOGGER_LOG_LEVEL_STRING_ANY = MethodMatchers.create()
+    .ofTypes(JAVA_UTIL_LOGGING_LOGGER)
+    .names("log")
+    .addParametersMatcher("java.util.logging.Level", JAVA_LANG_STRING, ANY)
+    .build();
+  private static final MethodMatchers JAVA_UTIL_LOGGER_LOG_MATCHER = MethodMatchers.or(
+    JAVA_UTIL_LOGGER_LOG_LEVEL_STRING,
+    JAVA_UTIL_LOGGER_LOG_LEVEL_STRING_ANY);
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
@@ -207,6 +225,61 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     }
     checkToStringInvocation(transposedArgs);
     verifyParameters(mit, transposedArgs, indexes);
+  }
+
+  private boolean checkUnbalancedQuotes(MethodInvocationTree mit, String formatString) {
+    if(LEVELS.contains(mit.symbol().name())) {
+      return false;
+    }
+    String withoutParam = MESSAGE_FORMAT_PATTERN.matcher(formatString).replaceAll("");
+    int numberQuote = 0;
+    for (int i = 0; i < withoutParam.length(); ++i) {
+      if (withoutParam.charAt(i) == '\'') {
+        numberQuote++;
+      }
+    }
+    boolean unbalancedQuotes = (numberQuote % 2) != 0;
+    if (unbalancedQuotes) {
+      reportIssue(mit.arguments().get(0), "Single quote \"'\" must be escaped.");
+    }
+    return unbalancedQuotes;
+  }
+
+
+  @Nullable
+  private static List<ExpressionTree> transposeArgumentArrayAndRemoveThrowable(MethodInvocationTree mit, List<ExpressionTree> args) {
+    List<ExpressionTree> transposedArgs = args;
+    if (args.size() == 1) {
+      ExpressionTree firstArg = args.get(0);
+      if (firstArg.symbolType().isArray()) {
+        if (isNewArrayWithInitializers(firstArg)) {
+          transposedArgs = ((NewArrayTree) firstArg).initializers();
+        } else {
+          // size is unknown
+          return null;
+        }
+      }
+    }
+    if (lastArgumentShouldBeIgnored(mit, args, transposedArgs)) {
+      transposedArgs = transposedArgs.subList(0, transposedArgs.size() - 1);
+    }
+    return transposedArgs;
+  }
+
+  private static boolean lastArgumentShouldBeIgnored(MethodInvocationTree mit, List<ExpressionTree> args, List<ExpressionTree> transposedArgs) {
+    if (mit.symbol().owner().type().is(JAVA_UTIL_LOGGING_LOGGER)) {
+      return args.size() == 1 && isLastArgumentThrowable(args);
+    }
+    // org.apache.logging.log4j.Logger and org.slf4j.Logger
+    return isLastArgumentThrowable(transposedArgs);
+  }
+
+  private static boolean isLastArgumentThrowable(List<ExpressionTree> arguments) {
+    if (!arguments.isEmpty()) {
+      ExpressionTree lastArgument = arguments.get(arguments.size() - 1);
+      return lastArgument.symbolType().isSubtypeOf(JAVA_LANG_THROWABLE);
+    }
+    return false;
   }
 
   private void checkToStringInvocation(List<ExpressionTree> args) {

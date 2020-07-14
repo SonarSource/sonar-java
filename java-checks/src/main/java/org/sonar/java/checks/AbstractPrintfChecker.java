@@ -43,8 +43,6 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
-
 public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
 
   private static final Set<String> TIME_CONVERSIONS = Sets.newHashSet(
@@ -54,10 +52,8 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
   );
 
   protected static final String JAVA_LANG_STRING = "java.lang.String";
-  protected static final String JAVA_UTIL_LOGGING_LOGGER = "java.util.logging.Logger";
-  protected static final String ORG_APACHE_LOGGING_LOG4J_LOGGER = "org.apache.logging.log4j.Logger";
-
   protected static final String JAVA_LANG_THROWABLE = "java.lang.Throwable";
+  protected static final String ORG_APACHE_LOGGING_LOG4J_LOGGER = "org.apache.logging.log4j.Logger";
 
   private static final Pattern PRINTF_PARAM_PATTERN = Pattern.compile("%(\\d+\\$)?([-#+ 0,(\\<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%])");
 
@@ -70,22 +66,8 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
     .names(FORMAT_METHOD_NAME)
     .withAnyParameters()
     .build();
-  protected static final MethodMatchers JAVA_UTIL_LOGGER_LOG_LEVEL_STRING = MethodMatchers.create()
-    .ofTypes(JAVA_UTIL_LOGGING_LOGGER)
-    .names("log")
-    .addParametersMatcher("java.util.logging.Level", JAVA_LANG_STRING)
-    .build();
-  protected static final MethodMatchers JAVA_UTIL_LOGGER_LOG_LEVEL_STRING_ANY = MethodMatchers.create()
-    .ofTypes(JAVA_UTIL_LOGGING_LOGGER)
-    .names("log")
-    .addParametersMatcher("java.util.logging.Level", JAVA_LANG_STRING, ANY)
-    .build();
-  protected static final MethodMatchers JAVA_UTIL_LOGGER_LOG_MATCHER = MethodMatchers.or(
-    JAVA_UTIL_LOGGER_LOG_LEVEL_STRING,
-    JAVA_UTIL_LOGGER_LOG_LEVEL_STRING_ANY);
 
   protected static final Pattern MESSAGE_FORMAT_PATTERN = Pattern.compile("\\{(?<index>\\d+)(?<type>,\\w+)?(?<style>,[^}]*)?\\}");
-
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
@@ -220,7 +202,6 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
     }
   }
 
-
   protected static Set<Integer> argIndexes(List<String> params) {
     int index = 0;
     Set<Integer> result = new HashSet<>();
@@ -239,89 +220,12 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
     return params.isEmpty() && group != null && group.length() > 0 && group.charAt(0) == '<';
   }
 
-  @Nullable
-  protected static List<ExpressionTree> transposeArgumentArrayAndRemoveThrowable(MethodInvocationTree mit, List<ExpressionTree> args) {
-    List<ExpressionTree> transposedArgs = args;
-    if (args.size() == 1) {
-      ExpressionTree firstArg = args.get(0);
-      if (firstArg.symbolType().isArray()) {
-        if (isNewArrayWithInitializers(firstArg)) {
-          transposedArgs = ((NewArrayTree) firstArg).initializers();
-        } else {
-          // size is unknown
-          return null;
-        }
-      }
-    }
-    if (lastArgumentShouldBeIgnored(mit, args, transposedArgs)) {
-      transposedArgs = transposedArgs.subList(0, transposedArgs.size() - 1);
-    }
-    return transposedArgs;
-  }
-
-  private static boolean lastArgumentShouldBeIgnored(MethodInvocationTree mit, List<ExpressionTree> args, List<ExpressionTree> transposedArgs) {
-    if (mit.symbol().owner().type().is(JAVA_UTIL_LOGGING_LOGGER)) {
-      return args.size() == 1 && isLastArgumentThrowable(args);
-    }
-    // org.apache.logging.log4j.Logger and org.slf4j.Logger
-    return isLastArgumentThrowable(transposedArgs);
-  }
-
-  protected static boolean isLastArgumentThrowable(List<ExpressionTree> arguments) {
-    if (!arguments.isEmpty()) {
-      ExpressionTree lastArgument = arguments.get(arguments.size() - 1);
-      return lastArgument.symbolType().isSubtypeOf(JAVA_LANG_THROWABLE);
-    }
-    return false;
-  }
-
   protected boolean checkArgumentNumber(MethodInvocationTree mit, int nbReadParams, int nbArgs) {
     if (nbReadParams > nbArgs) {
       reportIssue(mit, "Not enough arguments.");
       return true;
     }
     return false;
-  }
-
-  protected boolean checkUnbalancedQuotes(MethodInvocationTree mit, String formatString) {
-    if(LEVELS.contains(mit.symbol().name())) {
-      return false;
-    }
-    String withoutParam = MESSAGE_FORMAT_PATTERN.matcher(formatString).replaceAll("");
-    int numberQuote = 0;
-    for (int i = 0; i < withoutParam.length(); ++i) {
-      if (withoutParam.charAt(i) == '\'') {
-        numberQuote++;
-      }
-    }
-    boolean unbalancedQuotes = (numberQuote % 2) != 0;
-    if (unbalancedQuotes) {
-      reportIssue(mit.arguments().get(0), "Single quote \"'\" must be escaped.");
-    }
-    return unbalancedQuotes;
-  }
-
-  protected boolean checkUnbalancedBraces(MethodInvocationTree mit, String formatString) {
-    String withoutParam = MESSAGE_FORMAT_PATTERN.matcher(formatString).replaceAll("");
-    int numberOpenBrace = 0;
-    for (int i = 0; i < withoutParam.length(); ++i) {
-      char ch = withoutParam.charAt(i);
-      switch (ch) {
-        case '{':
-          numberOpenBrace++;
-          break;
-        case '}':
-          numberOpenBrace--;
-          break;
-        default:
-          break;
-      }
-    }
-    boolean unbalancedBraces = numberOpenBrace > 0;
-    if (unbalancedBraces) {
-      reportIssue(mit.arguments().get(0), "Single left curly braces \"{\" must be escaped.");
-    }
-    return unbalancedBraces;
   }
 
   protected void verifyParametersForErrors(MethodInvocationTree mit, List<ExpressionTree> args, List<String> params) {
