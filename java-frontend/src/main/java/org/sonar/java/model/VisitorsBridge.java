@@ -76,7 +76,6 @@ public class VisitorsBridge {
   protected JavaVersion javaVersion;
   private final List<File> classpath;
   private final SquidClassLoader classLoader;
-  private final JavaFileScanner analysisIssueFilter;
   private IssuableSubsciptionVisitorsRunner issuableSubscriptionVisitorsRunner;
   private static final Predicate<JavaFileScanner> IS_ISSUABLE_SUBSCRIPTION_VISITOR = IssuableSubscriptionVisitor.class::isInstance;
 
@@ -88,24 +87,17 @@ public class VisitorsBridge {
   @VisibleForTesting
   public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath,
                         @Nullable SonarComponents sonarComponents) {
-    this(visitors, projectClasspath, sonarComponents, SymbolicExecutionMode.DISABLED, null);
+    this(visitors, projectClasspath, sonarComponents, SymbolicExecutionMode.DISABLED);
   }
 
   public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath,
                         @Nullable SonarComponents sonarComponents, SymbolicExecutionMode symbolicExecutionMode) {
-    this(visitors, projectClasspath, sonarComponents, symbolicExecutionMode, null);
-  }
-
-  public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath,
-                        @Nullable SonarComponents sonarComponents, SymbolicExecutionMode symbolicExecutionMode,
-                        @Nullable JavaFileScanner analysisIssueFilter) {
     this.allScanners = new ArrayList<>();
     for (Object visitor : visitors) {
       if (visitor instanceof JavaFileScanner) {
         allScanners.add((JavaFileScanner) visitor);
       }
     }
-    this.analysisIssueFilter = analysisIssueFilter;
     this.classpath = projectClasspath;
     this.executableScanners = allScanners.stream().filter(IS_ISSUABLE_SUBSCRIPTION_VISITOR.negate()).collect(Collectors.toList());
     this.issuableSubscriptionVisitorsRunner = new IssuableSubsciptionVisitorsRunner(allScanners);
@@ -139,15 +131,6 @@ public class VisitorsBridge {
     }
 
     JavaFileScannerContext javaFileScannerContext = createScannerContext(tree, tree.sema, sonarComponents, fileParsed);
-
-    // Prepare issue filter
-    if (analysisIssueFilter != null) {
-      try {
-        runScanner(javaFileScannerContext, analysisIssueFilter);
-      } catch (CheckFailureException e) {
-        interruptIfFailFast(e);
-      }
-    }
 
     // Symbolic execution checks
     if (symbolicExecutionEnabled) {

@@ -285,50 +285,6 @@ public class VisitorsBridgeTest {
   }
 
   @Test
-  public void swallow_exception_when_hidden_property_set_to_false_with_Filter() {
-    try {
-      visitorsBridge(Arrays.asList(), false, new Filter_ThrowingNPE())
-        .visitFile(COMPILATION_UNIT_TREE);
-    } catch (Exception e) {
-      e.printStackTrace();
-      Fail.fail("Exception should be swallowed when property is not set");
-    }
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
-    assertThat(logTester.logs(LoggerLevel.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
-      .containsExactlyInAnyOrder("Filter_ThrowingNPE - ");
-  }
-
-  @Test
-  public void rethrow_exception_when_hidden_property_set_to_true_with_Filter() {
-    try {
-      visitorsBridge(Arrays.asList(), true, new Filter_ThrowingNPE())
-        .visitFile(COMPILATION_UNIT_TREE);
-      Fail.fail("scanning of file should have raise an exception");
-    } catch (AnalysisException e) {
-      assertThat(e.getMessage()).contains("Failing check");
-      assertThat(e.getCause()).isInstanceOf(CheckFailureException.class);
-      assertThat(e.getCause().getCause()).isSameAs(NPE);
-    } catch (Exception e) {
-      Fail.fail("Should have been an AnalysisException");
-    }
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
-    assertThat(logTester.logs(LoggerLevel.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
-      .containsExactlyInAnyOrder("Filter_ThrowingNPE - ");
-  }
-
-  @Test
-  public void no_log_when_filter_execute_fine() {
-    try {
-      visitorsBridge(Arrays.asList(), true, new FilterNothing())
-        .visitFile(COMPILATION_UNIT_TREE);
-    } catch (Exception e) {
-      e.printStackTrace();
-      Fail.fail("No exception should be raised");
-    }
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(0);
-  }
-
-  @Test
   public void should_not_create_symbol_table_for_generated() {
     SonarComponents sonarComponents = mock(SonarComponents.class);
     VisitorsBridge bridge = new VisitorsBridge(Collections.emptySet(), Collections.emptyList(), sonarComponents);
@@ -351,17 +307,13 @@ public class VisitorsBridgeTest {
   }
 
   private final VisitorsBridge visitorsBridge(Collection<JavaFileScanner> visitors, boolean failOnException) {
-    return visitorsBridge(visitors, failOnException, null);
-  }
-
-  private final VisitorsBridge visitorsBridge(Collection<JavaFileScanner> visitors, boolean failOnException, JavaFileScanner analysisIssueFilter) {
     SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
     sensorContextTester.setSettings(new MapSettings().setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, failOnException));
 
-    sonarComponents = new SonarComponents(null, null, null, null, null, null);
+    sonarComponents = new SonarComponents(null, null, null, null, null);
     sonarComponents.setSensorContext(sensorContextTester);
 
-    VisitorsBridge visitorsBridge = new VisitorsBridge(visitors, new ArrayList<>(), sonarComponents, SymbolicExecutionMode.ENABLED_WITHOUT_X_FILE, analysisIssueFilter);
+    VisitorsBridge visitorsBridge = new VisitorsBridge(visitors, new ArrayList<>(), sonarComponents, SymbolicExecutionMode.ENABLED_WITHOUT_X_FILE);
     visitorsBridge.setCurrentFile(INPUT_FILE);
 
     return visitorsBridge;
@@ -469,20 +421,6 @@ public class VisitorsBridgeTest {
     @Override
     public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
       throw NPE;
-    }
-  }
-
-  private static class Filter_ThrowingNPE implements JavaFileScanner {
-    @Override
-    public void scanFile(JavaFileScannerContext context) {
-      throw NPE;
-    }
-  }
-
-  private static class FilterNothing implements JavaFileScanner {
-    @Override
-    public void scanFile(JavaFileScannerContext context) {
-      // Do nothing
     }
   }
 

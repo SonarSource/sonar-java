@@ -86,7 +86,7 @@ public class JavaSquidSensorTest {
 
   @Test
   public void test_toString() {
-    assertThat(new JavaSquidSensor(null, null, null, null, null, null).toString()).isEqualTo("JavaSquidSensor");
+    assertThat(new JavaSquidSensor(null, null, null, null, null).toString()).isEqualTo("JavaSquidSensor");
   }
 
   @Test
@@ -106,7 +106,7 @@ public class JavaSquidSensorTest {
     DefaultFileSystem fs = context.fileSystem();
     SonarComponents sonarComponents = createSonarComponentsMock(context);
     DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(new JavaClasspath(settings.asConfig(), fs));
-    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, null);
+    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter);
 
     jss.execute(context);
     // argument 98 refers to the comment on line #98 in this file
@@ -144,7 +144,7 @@ public class JavaSquidSensorTest {
     FileLinesContext fileLinesContext = mock(FileLinesContext.class);
     FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
     when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
-    SonarComponents sonarComponents = spy(new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null));
+    SonarComponents sonarComponents = spy(new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory));
     sonarComponents.setSensorContext(contextTester);
 
     BadMethodNameCheck check = new BadMethodNameCheck();
@@ -176,11 +176,11 @@ public class JavaSquidSensorTest {
     DefaultFileSystem fs = context.fileSystem().setWorkDir(tmp.getRoot().toPath());
     JavaClasspath javaClasspath = mock(JavaClasspath.class);
     JavaTestClasspath javaTestClasspath = mock(JavaTestClasspath.class);
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory);
     DefaultJavaResourceLocator javaResourceLocator = mock(DefaultJavaResourceLocator.class);
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
 
-    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, new MapSettings().asConfig(), noSonarFilter, null);
+    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, new MapSettings().asConfig(), noSonarFilter);
     jss.execute(context);
   }
 
@@ -201,7 +201,7 @@ public class JavaSquidSensorTest {
     Jasper jasper = mock(Jasper.class);
     when(jasper.generateFiles(any(), any())).thenReturn(asList(generatedFile));
     JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, context.fileSystem(), mock(JavaResourceLocator.class),
-      new MapSettings().asConfig(), mock(NoSonarFilter.class), null, jasper);
+      new MapSettings().asConfig(), mock(NoSonarFilter.class), jasper);
     jss.execute(context);
 
     ArgumentCaptor<JavaFileScannerContext> scannerContext = ArgumentCaptor.forClass(JavaFileScannerContext.class);

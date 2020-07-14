@@ -27,8 +27,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.sonar.api.rule.RuleKey;
-import org.sonar.java.AnalyzerMessage;
+import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -49,8 +48,8 @@ public abstract class AnyRuleIssueFilter extends BaseTreeVisitor implements Java
   }
 
   @Override
-  public boolean accept(RuleKey ruleKey, AnalyzerMessage analyzerMessage) {
-    return !(analyzerMessage.getInputComponent().key().equals(componentKey) && excludedLines.contains(analyzerMessage.getLine()));
+  public boolean accept(FilterableIssue issue) {
+    return !(issue.componentKey().equals(componentKey) && excludedLines.contains(issue.line()));
   }
 
   @Override
