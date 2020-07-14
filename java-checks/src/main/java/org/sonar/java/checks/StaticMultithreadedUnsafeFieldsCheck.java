@@ -22,10 +22,12 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -41,6 +43,11 @@ public class StaticMultithreadedUnsafeFieldsCheck extends IssuableSubscriptionVi
 
   private static final String JAVA_TEXT_SIMPLE_DATE_FORMAT = "java.text.SimpleDateFormat";
   private static final String[] FORBIDDEN_TYPES = {JAVA_TEXT_SIMPLE_DATE_FORMAT, "java.util.Calendar", "javax.xml.xpath.XPath", "javax.xml.validation.SchemaFactory"};
+  private static final MethodMatchers GET_DATE_INSTANCE = MethodMatchers.create()
+    .ofTypes("java.text.DateFormat")
+    .names("getDateInstance")
+    .addWithoutParametersMatcher()
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -51,7 +58,7 @@ public class StaticMultithreadedUnsafeFieldsCheck extends IssuableSubscriptionVi
   public void visitNode(Tree tree) {
     VariableTree variableTree = (VariableTree) tree;
     Type type = variableTree.type().symbolType();
-    if (ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.STATIC) && isForbiddenType(variableTree)) {
+    if (ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.STATIC) && isForbidden(variableTree)) {
       if (type.isSubtypeOf(JAVA_TEXT_SIMPLE_DATE_FORMAT) && onlySynchronizedUsages((Symbol.VariableSymbol) variableTree.symbol())) {
         return;
       }
@@ -60,9 +67,16 @@ public class StaticMultithreadedUnsafeFieldsCheck extends IssuableSubscriptionVi
     }
   }
 
-  private static boolean isForbiddenType(VariableTree variableTree) {
+  private static boolean isForbidden(VariableTree variableTree) {
+    if (isForbiddenType(variableTree.type().symbolType())) {
+      return true;
+    }
     ExpressionTree initializer = variableTree.initializer();
-    return isForbiddenType(variableTree.type().symbolType()) || (initializer != null && !initializer.is(Tree.Kind.NULL_LITERAL) && isForbiddenType(initializer.symbolType()));
+    if (initializer == null || initializer.is(Tree.Kind.NULL_LITERAL)) {
+      return false;
+    }
+    return isForbiddenType(initializer.symbolType())
+      || (initializer.is(Tree.Kind.METHOD_INVOCATION) && GET_DATE_INSTANCE.matches((MethodInvocationTree) initializer));
   }
 
   private static boolean isForbiddenType(Type type) {

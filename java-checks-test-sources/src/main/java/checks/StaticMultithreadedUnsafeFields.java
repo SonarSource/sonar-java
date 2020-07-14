@@ -1,10 +1,28 @@
+package checks;
+
 import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.Date;
 
-public class TestClass {
+public class StaticMultithreadedUnsafeFields {
 
   public static class ConcreteCalendar extends java.util.Calendar {
+    @Override public void computeTime() { }
+    @Override public void computeFields() { }
+    @Override public void add(int field, int amount) { }
+    @Override public void roll(int field, boolean up) { }
+    @Override public int getMinimum(int field) { return 0; }
+    @Override public int getMaximum(int field) { return 0; }
+    @Override public int getGreatestMinimum(int field) { return 0; }
+    @Override public int getLeastMaximum(int field) { return 0; }
   }
+
+  private static final DateFormat[] ARRAY = {}; // Compliant
+
+  private static final DateFormat DATE_FORMAT_1 = DateFormat.getDateInstance(); // Noncompliant {{Make "DATE_FORMAT_1" an instance variable.}}
+  private static final DateFormat DATE_FORMAT_2 = bar(); // Noncompliant {{Make "DATE_FORMAT_2" an instance variable.}}
+  private static final DateFormat DATE_FORMAT_3 = qix(); // Compliant
+  private static final DateFormat DATE_FORMAT_4 = ARRAY[0]; // Compliant
 
   private static int field; // Compliant
 
@@ -34,4 +52,7 @@ public class TestClass {
       format3.format(new Date()); // format3 not synchronized
     }
   }
+
+  static SimpleDateFormat bar() { return null; }
+  static DateFormat qix() { return null; }
 }
