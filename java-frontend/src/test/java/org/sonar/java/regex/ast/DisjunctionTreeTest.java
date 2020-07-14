@@ -21,10 +21,8 @@ package org.sonar.java.regex.ast;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.sonar.java.regex.RegexParserTestUtils.assertJavaCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
-import static org.sonar.java.regex.RegexParserTestUtils.assertLocation;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 import static org.sonar.java.regex.RegexParserTestUtils.assertType;
@@ -54,6 +52,30 @@ class DisjunctionTreeTest {
     assertListElements(disjunction.getOrOperators(),
       first -> assertJavaCharacter(1, '|', first),
       second -> assertJavaCharacter(3, '|', second)
+    );
+  }
+
+  @Test
+  void disjunctionWithQuoting() {
+    DisjunctionTree disjunction = assertType(DisjunctionTree.class, assertSuccessfulParse("\\\\Qa\\\\E|b"));
+    assertListElements(disjunction.getAlternatives(),
+      first -> assertPlainCharacter('a', first),
+      second -> assertPlainCharacter('b', second)
+    );
+    assertListElements(disjunction.getOrOperators(),
+      first -> assertJavaCharacter(7, '|', first)
+    );
+  }
+
+  @Test
+  void disjunctionWithQuoting2() {
+    DisjunctionTree disjunction = assertType(DisjunctionTree.class, assertSuccessfulParse("a\\\\Q\\\\E|b\\\\Q\\\\E"));
+    assertListElements(disjunction.getAlternatives(),
+      first -> assertPlainCharacter('a', first),
+      second -> assertPlainCharacter('b', second)
+    );
+    assertListElements(disjunction.getOrOperators(),
+      first -> assertJavaCharacter(7, '|', first)
     );
   }
 

@@ -88,6 +88,9 @@ public class RegexParser {
         characters.moveNext();
       }
     } while (characters.isNotAtEnd());
+    if (characters.isInQuotingMode()) {
+      expected("'\\E'");
+    }
     RegexTree result = combineTrees(results, (range, elements) -> new SequenceTree(source, range, elements));
     return new RegexParseResult(result, initialFlags, errors, characters.hasComments());
   }
@@ -124,6 +127,9 @@ public class RegexParser {
   @CheckForNull
   private RegexTree parseRepetition() {
     RegexTree element = parsePrimaryExpression();
+    if (characters.isInQuotingMode()) {
+      return element;
+    }
     Quantifier quantifier = parseQuantifier();
     if (element == null) {
       if (quantifier != null) {
@@ -223,6 +229,9 @@ public class RegexParser {
 
   @CheckForNull
   private RegexTree parsePrimaryExpression() {
+    if (characters.isInQuotingMode() && characters.isNotAtEnd()) {
+      return readPlainCharacter();
+    }
     switch (characters.getCurrentChar()) {
       case '(':
         return parseGroup();
@@ -244,13 +253,17 @@ public class RegexParser {
         return lineEnd;
       default:
         if (isPlainTextCharacter(characters.getCurrentChar())) {
-          JavaCharacter character = characters.getCurrent();
-          characters.moveNext();
-          return plainCharacter(character);
+          return readPlainCharacter();
         } else {
           return null;
         }
     }
+  }
+
+  private PlainCharacterTree readPlainCharacter() {
+    JavaCharacter character = characters.getCurrent();
+    characters.moveNext();
+    return plainCharacter(character);
   }
 
   private GroupTree parseGroup() {
@@ -440,8 +453,11 @@ public class RegexParser {
           return parseUnicodeEscape(backslash);
         case 'x':
           return parseHexEscape(backslash);
+        case 'E':
+          error("\\E used without \\Q");
+          // Fallthrough
         default:
-          // TODO other kind of escape sequences such as quotations, special characters, N, R or X
+          // TODO other kind of escape sequences such as special characters, N, R or X
           characters.moveNext();
           return new PlainCharacterTree(source, backslash.getRange().merge(character.getRange()), character);
       }
@@ -660,6 +676,9 @@ public class RegexParser {
 
   @CheckForNull
   private RegexTree parseCharacterClassElement(boolean isAtBeginning) {
+    if (characters.isInQuotingMode() && characters.isNotAtEnd()) {
+      return readPlainCharacter();
+    }
     if (characters.isAtEnd() || characters.currentIs("&&")) {
       return null;
     }
@@ -688,7 +707,7 @@ public class RegexParser {
   }
 
   private RegexTree parseCharacterRange(CharacterTree startCharacter) {
-    if (characters.currentIs('-')) {
+    if (characters.currentIs('-') && !characters.isInQuotingMode()) {
       int lookAhead = characters.lookAhead(1);
       if (lookAhead == EOF || lookAhead == ']') {
         return startCharacter;

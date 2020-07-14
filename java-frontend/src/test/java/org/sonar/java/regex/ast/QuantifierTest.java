@@ -38,15 +38,7 @@ class QuantifierTest {
 
   @Test
   void testGreedyStar() {
-    RegexTree regex = assertSuccessfulParse("x*");
-    RepetitionTree repetition = assertType(RepetitionTree.class, regex);
-    assertPlainCharacter('x', repetition.getElement());
-    SimpleQuantifier quantifier = assertType(SimpleQuantifier.class, repetition.getQuantifier());
-    assertEquals(SimpleQuantifier.Kind.STAR, quantifier.getKind(), "Quantifier should be a Kleene star.");
-    assertEquals(0, quantifier.getMinimumRepetitions(), "Lower bound should be 0.");
-    assertNull(quantifier.getMaximumRepetitions(), "Kleene star should have no upper bound.");
-    assertTrue(quantifier.isOpenEnded(), "Kleene star should be open ended.");
-    assertEquals(Quantifier.Modifier.GREEDY, quantifier.getModifier(), "Quantifier should be greedy.");
+    assertXWithKleeneStar("x*");
   }
 
   @Test
@@ -109,11 +101,29 @@ class QuantifierTest {
   }
 
   @Test
+  void quotesInRepetition() {
+    assertXWithKleeneStar("\\\\Qx\\\\E*");
+    assertXWithKleeneStar("x\\\\Q\\\\E*");
+  }
+
+  @Test
   void quantifiersWithoutOperand() {
     assertFailParsing("*", "Unexpected quantifier '*'");
     assertFailParsing("+", "Unexpected quantifier '+'");
     assertFailParsing("?", "Unexpected quantifier '?'");
     assertFailParsing("{1,10}", "Unexpected quantifier '{1,10}'");
+  }
+
+  private void assertXWithKleeneStar(String regexSource) {
+    RegexTree regex = assertSuccessfulParse(regexSource);
+    RepetitionTree repetition = assertType(RepetitionTree.class, regex);
+    assertPlainCharacter('x', repetition.getElement());
+    SimpleQuantifier quantifier = assertType(SimpleQuantifier.class, repetition.getQuantifier());
+    assertEquals(SimpleQuantifier.Kind.STAR, quantifier.getKind(), "Quantifier should be a Kleene star.");
+    assertEquals(0, quantifier.getMinimumRepetitions(), "Lower bound should be 0.");
+    assertNull(quantifier.getMaximumRepetitions(), "Kleene star should have no upper bound.");
+    assertTrue(quantifier.isOpenEnded(), "Kleene star should be open ended.");
+    assertEquals(Quantifier.Modifier.GREEDY, quantifier.getModifier(), "Quantifier should be greedy.");
   }
 
 }

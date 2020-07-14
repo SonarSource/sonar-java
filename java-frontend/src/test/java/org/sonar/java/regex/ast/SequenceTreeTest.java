@@ -21,10 +21,12 @@ package org.sonar.java.regex.ast;
 
 import org.junit.jupiter.api.Test;
 
+import static org.sonar.java.regex.RegexParserTestUtils.assertFailParsing;
 import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
 import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
 import static org.sonar.java.regex.RegexParserTestUtils.assertLocation;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
+import static org.sonar.java.regex.RegexParserTestUtils.assertPlainString;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 import static org.sonar.java.regex.RegexParserTestUtils.assertType;
 
@@ -65,6 +67,29 @@ class SequenceTreeTest {
         assertLocation(3, 4, second);
       }
     );
+  }
+
+  @Test
+  void quotedString() {
+    assertPlainString("a(b)\\w|cd*[]", "\\\\Qa(b)\\\\w|cd*[]\\\\E");
+    assertPlainString("a(b)\\w|cd*[]", "a\\\\Q(b)\\\\w|\\\\Ecd\\\\Q*[]\\\\E");
+    assertPlainString("a(b)\\w|cd*[]\\", "\\\\Qa(b)\\\\w|cd*[]\\\\\\\\E");
+  }
+
+  @Test
+  void quotedStringWithComments() {
+    assertPlainString("a#b", "\\\\Qa#b\\\\E", true);
+    assertPlainString("ab", "ab#\\\\Qc\\\\E", true);
+    assertPlainString("ab", "\\\\Qab\\\\E#\\\\Qb\\\\E", true);
+    assertPlainString("", "\\\\Q\\\\E#lala", true);
+    assertPlainString("a b", "\\\\Qa b\\\\E", true);
+    assertPlainString("ab", "\\\\Qa\\\\E \\\\Qb\\\\E", true);
+  }
+
+  @Test
+  void illegalQuotedString() {
+    assertFailParsing("abc\\\\E", "\\E used without \\Q");
+    assertFailParsing("\\\\Qabc", "Expected '\\E', but found the end of the regex");
   }
 
 }

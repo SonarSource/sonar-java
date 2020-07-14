@@ -41,6 +41,8 @@ public class RegexLexer {
 
   private boolean hasComments = false;
 
+  private boolean quotingMode = false;
+
   public RegexLexer(RegexSource source) {
     this.source = source;
     this.characters = new JavaCharacterParser(source);
@@ -109,11 +111,16 @@ public class RegexLexer {
   }
 
   public boolean isAtEnd() {
+    fillBuffer(1);
     return buffer.isEmpty() && characters.isAtEnd();
   }
 
   public boolean isNotAtEnd() {
     return !isAtEnd();
+  }
+
+  public boolean isInQuotingMode() {
+    return quotingMode;
   }
 
   public boolean currentIs(char ch) {
@@ -153,39 +160,57 @@ public class RegexLexer {
   }
 
   private void fillBuffer(int size) {
-    if (freeSpacingMode) {
-      skipCommentsAndWhiteSpace();
-    }
+    skipCommentsAndWhiteSpace();
     while (buffer.size() < size && characters.isNotAtEnd()) {
       JavaCharacter javaCharacter = characters.getCurrent();
-      consumeCharacter();
-      buffer.add(javaCharacter);
-      if (freeSpacingMode) {
-        skipCommentsAndWhiteSpace();
+      characters.moveNext();
+      if (!escaped && javaCharacter.getCharacter() == '\\') {
+        if (readQuotingDelimiter()) {
+          skipCommentsAndWhiteSpace();
+          continue;
+        } else {
+          escaped = !quotingMode;
+        }
+      } else {
+        escaped = false;
       }
+      buffer.add(javaCharacter);
+      skipCommentsAndWhiteSpace();
+    }
+  }
+
+  private boolean readQuotingDelimiter() {
+    if (characters.isAtEnd()) {
+      return false;
+    }
+    char ch = characters.getCurrent().getCharacter();
+    if ((!quotingMode && ch == 'Q') || (quotingMode && ch == 'E')) {
+      quotingMode = !quotingMode;
+      characters.moveNext();
+      return true;
+    } else {
+      return false;
     }
   }
 
   private void skipCommentsAndWhiteSpace() {
+    if (!freeSpacingMode) {
+      return;
+    }
     while (characters.isNotAtEnd() && isSkippable(characters.getCurrent().getCharacter())) {
       if (characters.getCurrent().getCharacter() == '#') {
         hasComments = true;
         while (characters.isNotAtEnd() && characters.getCurrent().getCharacter() != '\n') {
-          consumeCharacter();
+          characters.moveNext();
         }
       } else {
-        consumeCharacter();
+        characters.moveNext();
       }
     }
   }
 
-  private void consumeCharacter() {
-    escaped = !escaped && characters.getCurrent().getCharacter() == '\\';
-    characters.moveNext();
-  }
-
   private boolean isSkippable(char ch) {
-    return Character.isWhitespace(ch) || (!escaped && ch == '#');
+    return !quotingMode && !escaped && (Character.isWhitespace(ch) || ch == '#');
   }
 
 }

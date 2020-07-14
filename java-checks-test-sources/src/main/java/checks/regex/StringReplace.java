@@ -9,6 +9,7 @@ public class StringReplace {
     String changed = init.replaceAll("Bob is", "It's"); // Noncompliant [[sc=27;ec=37]] {{Replace this call to "replaceAll()" by a call to the "replace()" method.}}
     changed = init.replaceAll(PLANE, "UFO"); // Noncompliant [[sc=20;ec=30]]
     changed = init.replaceAll("\\.\\.\\.", ";"); // Noncompliant
+    changed = init.replaceAll("\\Q...\\E", ";"); // Noncompliant
     changed = init.replaceAll("\\\\", "It's"); // Noncompliant
     changed = init.replaceAll("\\.", "It's"); // Noncompliant
     changed = init.replaceAll("!", "."); // Noncompliant
