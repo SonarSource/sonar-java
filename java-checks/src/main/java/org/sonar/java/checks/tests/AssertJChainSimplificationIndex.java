@@ -107,12 +107,8 @@ public class AssertJChainSimplificationIndex {
   static final Map<String, List<SimplifierWithoutContext>> CONTEXT_FREE_SIMPLIFIERS = ImmutableMap.<String, List<SimplifierWithoutContext>>builder()
     .put(HAS_SIZE, Collections.singletonList(
       PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isZero, "isEmpty()")))
-    .put(IS_EQUAL_TO, ImmutableList.of(
-      PredicateSimplifierWithoutContext.withSingleArg(ExpressionUtils::isNullLiteral, "isNull()"),
-      PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isTrue, "isTrue()"),
-      PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isFalse, "isFalse()"),
-      PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isEmptyString, "isEmpty()"),
-      PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isZero, "isZero()")))
+    .put(IS_EQUAL_TO, Collections.singletonList(
+      PredicateSimplifierWithoutContext.withSingleArg(ExpressionUtils::isNullLiteral, "isNull()")))
     .put(IS_GREATER_THAN, ImmutableList.of(
       PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isNegOne, "isNotNegative()"),
       PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isZero, "isPositive()")))
@@ -125,10 +121,10 @@ public class AssertJChainSimplificationIndex {
     .put(IS_LESS_THAN_OR_EQUAL_TO, ImmutableList.of(
       PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isNegOne, "isNegative()"),
       PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isZero, "isNotPositive()")))
-    .put(IS_NOT_EQUAL_TO, ImmutableList.of(
+    .put(IS_NOT_EQUAL_TO, Collections.singletonList(
       PredicateSimplifierWithoutContext.withSingleArg(subject -> ExpressionUtils.isNullLiteral(subject) &&
-        !UnitTestUtils.isInUnitTestRelatedToObjectMethods(subject), "isNotNull()"),
-      PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isZero, "isNotZero()")))
+        !UnitTestUtils.isInUnitTestRelatedToObjectMethods(subject), "isNotNull()")
+      ))
     .build();
 
   /**
@@ -138,6 +134,10 @@ public class AssertJChainSimplificationIndex {
    */
   static final Map<String, List<SimplifierWithContext>> SIMPLIFIERS_WITH_CONTEXT = ImmutableMap.<String, List<AssertJChainSimplificationCheck.SimplifierWithContext>>builder()
     .put(IS_EQUAL_TO, ImmutableList.of(
+      withSubjectArgumentCondition(LiteralUtils::isTrue, AssertJChainSimplificationIndex::isNotObject, "isTrue()"),
+      withSubjectArgumentCondition(LiteralUtils::isFalse, AssertJChainSimplificationIndex::isNotObject, "isFalse()"),
+      withSubjectArgumentCondition(LiteralUtils::isEmptyString, AssertJChainSimplificationIndex::isNotObject, "isEmpty()"),
+      withSubjectArgumentCondition(LiteralUtils::isZero, AssertJChainSimplificationIndex::isNotObject, "isZero()"),
       methodCallInSubject(Matchers.TO_STRING, msgWithActualCustom("hasToString", "expectedString")),
       methodCallInSubject(predicateArg -> hasMethodCallAsArg(predicateArg, Matchers.HASH_CODE), Matchers.HASH_CODE, msgWithActualExpected("hasSameHashCodeAs")),
       compareToSimplifier(LiteralUtils::isZero, msgWithActualExpected("isEqualByComparingTo")),
@@ -186,6 +186,7 @@ public class AssertJChainSimplificationIndex {
       methodCallInSubject(Matchers.TRIM, msgWithActual(IS_NOT_BLANK)),
       methodCallInSubject(Matchers.FILE_LIST_AND_LIST_FILE, msgWithActual("isNotEmptyDirectory"))))
     .put(IS_NOT_EQUAL_TO, ImmutableList.of(
+      withSubjectArgumentCondition(LiteralUtils::isZero, AssertJChainSimplificationIndex::isNotObject, "isNotZero()"),
       compareToSimplifier(LiteralUtils::isZero, msgWithActualExpected("isNotEqualByComparingTo")),
       methodCallInSubject(LiteralUtils::isZero, Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpected(IS_NOT_EQUAL_TO_IGNORING_CASE)),
       indexOfSimplifier(LiteralUtils::isZero, DOES_NOT_START_WITH),
@@ -380,6 +381,10 @@ public class AssertJChainSimplificationIndex {
       return memberSelectExpressionTree.expression().symbolType().isArray() && LENGTH.equals(memberSelectExpressionTree.identifier().name());
     }
     return false;
+  }
+
+  private static boolean isNotObject(ExpressionTree expression) {
+    return !expression.symbolType().is("java.lang.Object");
   }
 
   private static class PredicateSimplifierWithoutContext implements SimplifierWithoutContext {
