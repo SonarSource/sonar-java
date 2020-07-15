@@ -110,7 +110,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     if (!isMessageFormat) {
       isMessageFormat = JAVA_UTIL_LOGGER_LOG_LEVEL_STRING_ANY.matches(mit);
     }
-    if(!isMessageFormat) {
+    if (!isMessageFormat) {
       isMessageFormat = isLoggingMethod(mit);
     }
     super.checkFormatting(mit, isMessageFormat);
@@ -192,7 +192,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
       } else if (param.charAt(0) == '<') {
         //refers to previous argument
         argIndex = Math.max(0, argIndex - 1);
-      }else {
+      } else {
         index++;
       }
       if (argIndex >= args.size()) {
@@ -228,7 +228,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
   }
 
   private boolean checkUnbalancedQuotes(MethodInvocationTree mit, String formatString) {
-    if(LEVELS.contains(mit.symbol().name())) {
+    if (LEVELS.contains(mit.symbol().name())) {
       return false;
     }
     String withoutParam = MESSAGE_FORMAT_PATTERN.matcher(formatString).replaceAll("");
@@ -271,7 +271,8 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
       return false;
     }
     if (mit.symbol().owner().type().is(JAVA_UTIL_LOGGING_LOGGER)) {
-      // Java util logging will always consider a throwable in the list (transposedArgs) as an object.
+      // Remove the last argument from the count if it's a throwable, since log(Level level, String msg, Throwable thrown) will be called.
+      // If the argument is an array, any exception in the array will be considered as Object, behaving as any others.
       return args.size() == 1 && isLastArgumentThrowable(args);
     }
     // org.apache.logging.log4j.Logger and org.slf4j.Logger
@@ -354,7 +355,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
       return "2nd";
     } else if (i < 3) {
       return "3rd";
-    } else  {
+    } else {
       return (i + 1) + "th";
     }
   }
