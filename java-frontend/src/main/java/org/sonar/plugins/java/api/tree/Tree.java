@@ -191,6 +191,13 @@ public interface Tree {
     BREAK_STATEMENT(BreakStatementTree.class),
 
     /**
+     * {@link YieldStatementTree}
+     *
+     * @since Java 14
+     */
+    YIELD_STATEMENT(YieldStatementTree.class),
+
+    /**
      * {@link ContinueStatementTree}
      */
     CONTINUE_STATEMENT(ContinueStatementTree.class),

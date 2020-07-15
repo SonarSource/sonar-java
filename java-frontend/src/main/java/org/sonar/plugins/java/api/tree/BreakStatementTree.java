@@ -33,12 +33,6 @@ import javax.annotation.Nullable;
  * </pre>
  *
  * @since Java 1.3
- *
- * <pre>
- *   break {@link #value()} ;
- * </pre>
- *
- * @since Java 12 (SonarJava 5.12 - Support of Java 12)
  */
 @Beta
 public interface BreakStatementTree extends StatementTree {
@@ -51,7 +45,10 @@ public interface BreakStatementTree extends StatementTree {
   /**
    * Within switch-expressions, break statements are used to return values.
    * @since SonarJava 5.12: Support of Java 12
+   * @deprecated scheduled for removal since SonarJava 6.6,
+   * use {@link #label()} or {@link YieldStatementTree#expression()} instead
    */
+  @Deprecated
   @Nullable
   ExpressionTree value();
 

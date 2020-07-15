@@ -206,6 +206,7 @@ import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
 import org.sonar.java.model.statement.ThrowStatementTreeImpl;
 import org.sonar.java.model.statement.TryStatementTreeImpl;
 import org.sonar.java.model.statement.WhileStatementTreeImpl;
+import org.sonar.java.model.statement.YieldStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -1712,14 +1713,8 @@ public class JParser {
       }
       case ASTNode.YIELD_STATEMENT: {
         YieldStatement e = (YieldStatement) node;
-        if (e.isImplicit()) {
-          return new ExpressionStatementTreeImpl(
-            convertExpression(e.getExpression()),
-            lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
-          );
-        }
-        return new BreakStatementTreeImpl(
-          firstTokenIn(e, ANY_TOKEN),
+        return new YieldStatementTreeImpl(
+          e.isImplicit() ? null : firstTokenIn(e, ANY_TOKEN),
           convertExpression(e.getExpression()),
           lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
         );

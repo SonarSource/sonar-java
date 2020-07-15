@@ -169,6 +169,11 @@ public class BaseTreeVisitor implements TreeVisitor {
   }
 
   @Override
+  public void visitYieldStatement(YieldStatementTree tree) {
+    scan(tree.expression());
+  }
+
+  @Override
   public void visitContinueStatement(ContinueStatementTree tree) {
     scan(tree.label());
   }

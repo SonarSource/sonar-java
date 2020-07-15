@@ -81,6 +81,7 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
+import org.sonar.plugins.java.api.tree.YieldStatementTree;
 
 public class CFG implements ControlFlowGraph {
 
@@ -514,6 +515,9 @@ public class CFG implements ControlFlowGraph {
       case BREAK_STATEMENT:
         buildBreakStatement((BreakStatementTree) tree);
         break;
+      case YIELD_STATEMENT:
+        buildYieldStatement((YieldStatementTree) tree);
+        break;
       case CONTINUE_STATEMENT:
         buildContinueStatement((ContinueStatementTree) tree);
         break;
@@ -829,6 +833,12 @@ public class CFG implements ControlFlowGraph {
     if(currentBlock.exitBlock != null) {
       currentBlock.exitBlock = null;
     }
+  }
+
+  private void buildYieldStatement(YieldStatementTree tree) {
+    currentBlock = createUnconditionalJump(tree, breakTargets.getLast(), currentBlock);
+    build(tree.expression());
+    currentBlock.exitBlock = null;
   }
 
   private void buildContinueStatement(ContinueStatementTree tree) {

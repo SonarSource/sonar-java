@@ -19,15 +19,32 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import org.junit.jupiter.api.Test;
+import com.google.common.annotations.Beta;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import javax.annotation.Nullable;
 
-class TreeTest {
+/**
+ * 'yield' statement.
+ *
+ * JLS14 14.21
+ *
+ * <pre>
+ *   yield {@link #expression()} ;
+ * </pre>
+ *
+ * @since Java 14
+ */
+@Beta
+public interface YieldStatementTree extends StatementTree {
 
-  @Test
-  void test() {
-    assertThat(Tree.Kind.values()).hasSize(121);
-  }
+  /**
+   * @return null in case of implicit yield-statement
+   */
+  @Nullable
+  SyntaxToken yieldKeyword();
+
+  ExpressionTree expression();
+
+  SyntaxToken semicolonToken();
 
 }

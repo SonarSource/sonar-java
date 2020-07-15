@@ -65,6 +65,8 @@ public interface TreeVisitor {
 
   void visitBreakStatement(BreakStatementTree tree);
 
+  void visitYieldStatement(YieldStatementTree tree);
+
   void visitContinueStatement(ContinueStatementTree tree);
 
   void visitReturnStatement(ReturnStatementTree tree);
