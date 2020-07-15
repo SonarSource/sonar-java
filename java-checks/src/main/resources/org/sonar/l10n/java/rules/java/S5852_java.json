@@ -8,8 +8,8 @@
   },
   "tags": [
     "cwe",
-    "regex",
-    "owasp-a6"
+    "owasp-a1",
+    "regex"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5852",
@@ -20,7 +20,7 @@
       400
     ],
     "OWASP": [
-      "A6"
+      "A1"
     ]
   }
 }
