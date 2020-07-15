@@ -12,9 +12,9 @@ use-cases:</p>
   <li> n ≥ 224 for ECDH and ECMQV (Examples: <code>secp192r1</code> is a non-compliant curve (<code>n</code> &lt; 224) but <code>secp224k1</code> is
   compliant (<code>n</code> &gt;= 224)) </li>
 </ul>
-<p><strong>Encryption and Decryption</strong>: </p>
+<p><strong>Symmetric keys</strong>: </p>
 <ul>
-  <li> AES-128, 192, 256 </li>
+  <li> key length ≥ 128 bits </li>
 </ul>
 <p>This rule will not raise issues for ciphers that are considered weak (no matter the key size) like <code>DES</code>, <code>Blowfish</code>.</p>
 <h2>Noncompliant Code Example</h2>

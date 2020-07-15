@@ -11,8 +11,7 @@
     "spring",
     "owasp-a6",
     "sans-top25-porous",
-    "owasp-a2",
-    "owasp-a3"
+    "owasp-a2"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5344",
@@ -25,8 +24,7 @@
     ],
     "OWASP": [
       "A2",
-      "A6",
-      "A3"
+      "A6"
     ]
   }
 }

@@ -3,21 +3,10 @@
   "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "tags": [
-    "cwe",
-    "owasp-a1",
-    "regex"
+    
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-4784",
   "sqKey": "S4784",
-  "scope": "Main",
-  "securityStandards": {
-    "CWE": [
-      624,
-      185
-    ],
-    "OWASP": [
-      "A1"
-    ]
-  }
+  "scope": "Main"
 }
