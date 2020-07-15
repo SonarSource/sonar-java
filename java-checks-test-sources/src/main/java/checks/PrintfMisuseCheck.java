@@ -143,6 +143,13 @@ public class PrintfMisuseCheck {
     MessageFormat.format("{0,number,#.#}{1}", new Object[42]); // Compliant - Not considered
     MessageFormat.format("value=\"'{'{0}'}'{1}\"", new Object[] {"value 1", "value 2"});
     MessageFormat.format("value=\"{0}'{'{1}'}'\"", new Object[] {"value 1", "value 2"});
+    MessageFormat.format("Result {0}", new Exception()); // Compliant
+    MessageFormat.format("Result {0}", 1,  new Exception()); // Noncompliant {{2nd argument is not used.}}
+    MessageFormat.format("Result {0}", new Exception().toString()); // Compliant
+    MessageFormat.format("Result {0} {1}", 1,  new Exception()); // Compliant
+    MessageFormat.format("Result {0} {1}", new Exception(), 1); // Compliant
+    MessageFormat.format("Result {0} {1}", 1, 2,  new Exception()); // Noncompliant {{3rd argument is not used.}}
+    MessageFormat.format("Result {0} {1}", new Exception()); // Noncompliant {{Not enough arguments.}}
 
     java.util.logging.Logger logger = java.util.logging.Logger.getLogger("");
     logger.log(java.util.logging.Level.SEVERE, "{0,number,$'#',##}", value); // Compliant
@@ -153,7 +160,12 @@ public class PrintfMisuseCheck {
     logger.log(java.util.logging.Level.SEVERE, "Result {0}!", myObject.hashCode()); // Compliant
     logger.log(java.util.logging.Level.SEVERE, "Result yeah!", 14); // Noncompliant {{String contains no format specifiers.}}
     logger.log(java.util.logging.Level.SEVERE, "Result yeah!", new Exception()); // compliant, throwable parameter
+    logger.log(java.util.logging.Level.SEVERE, "message", new Object[] {new Exception()}); // Noncompliant {{String contains no format specifiers.}}
     logger.log(java.util.logging.Level.SEVERE, "message {0}", new Object[] {new Exception()}); // Compliant, exceptions are not removed from argument list
+    logger.log(java.util.logging.Level.SEVERE, "message {0}", new Object[] {1, new Exception()}); // Noncompliant {{2nd argument is not used.}}
+    logger.log(java.util.logging.Level.SEVERE, "message {0} {1}", new Object[] {1, new Exception()}); // Compliant
+    logger.log(java.util.logging.Level.SEVERE, "message {0} {1}", new Object[] {1, 2, new Exception()}); // Noncompliant {{3rd argument is not used.}}
+    logger.log(java.util.logging.Level.SEVERE, "message {0} {1}", new Object[] {new Exception()}); // Noncompliant {{Not enough arguments.}}
     logger.log(java.util.logging.Level.SEVERE, "Result {0}", new Exception()); // Noncompliant {{Not enough arguments.}}
     logger.log(java.util.logging.Level.SEVERE, "Result {0}"); // Noncompliant {{Not enough arguments.}}
     logger.log(java.util.logging.Level.SEVERE, "Result {1}"); // Noncompliant {{Not enough arguments.}}
@@ -205,15 +217,30 @@ public class PrintfMisuseCheck {
     slf4jLog.error("message {}"); // Noncompliant {{Not enough arguments.}}
     slf4jLog.error("message {}", new Exception()); // Noncompliant {{Not enough arguments.}}
     slf4jLog.error("message {}", new Exception().toString());
+    slf4jLog.error("message {}", 1, new Exception()); // Compliant
     slf4jLog.error("message ", 1); // Noncompliant {{String contains no format specifiers.}}
     slf4jLog.error("message {}", 1);
     slf4jLog.error("message {}", 1, 2); // Noncompliant {{2nd argument is not used.}}
     slf4jLog.error("message ", new Exception());
     slf4jLog.error("message {} {}", 1); // Noncompliant {{Not enough arguments.}}
-    slf4jLog.error("message {} {}", 1, new Exception()); // Noncompliant {{Not enough arguments.}}
+    slf4jLog.error("message {} {}", 1, new Exception()); // Compliant, only a problem when we have only one throwable argument.
     slf4jLog.error("message {} {}", 1, new Exception().toString());
     slf4jLog.error("message {} {}", 1, 2, 3); // Noncompliant {{3rd argument is not used.}}
     slf4jLog.error("message {} {}", 1, 2, new Exception().toString()); // Noncompliant {{3rd argument is not used.}}
+    slf4jLog.error("message {} {}", 1, new Exception()); // Compliant
+    slf4jLog.error("message {} {}", 1, 2, new Exception()); // Compliant
+    slf4jLog.error("message {} {} {}", 1, new Exception()); // Noncompliant {{Not enough arguments.}}
+    slf4jLog.error("message {} {} {}", 1, 2, new Exception()); // Compliant
+    slf4jLog.error("message {} {} {}", 1, 2, 3, new Exception()); // Compliant
+    slf4jLog.error("message {} {} {}", 1, 2, new Exception(), 3); // Noncompliant {{4th argument is not used.}}
+    slf4jLog.error("message {} {} {}", 1, 2, 3, 4, new Exception()); // Noncompliant {{4th argument is not used.}}
+
+    slf4jLog.info("message {}", new Object[] {new Exception()}); // Noncompliant {{Not enough arguments.}}
+    slf4jLog.info("message {}", new Object[] {1, new Exception()}); // Compliant
+    slf4jLog.info("message {}", new Object[] {new Exception(), 1}); // Noncompliant {{2nd argument is not used.}}
+    slf4jLog.info("message {} {}", new Object[] {1, new Exception()}); // Compliant
+    slf4jLog.info("message {} {}", new Object[] {1, 2, new Exception()}); // Compliant
+    slf4jLog.info("message {} {}", new Object[] {1, 2, 3, new Exception()}); // Noncompliant {{3rd argument is not used.}}
 
     try {
     } catch (Exception e) {
@@ -324,15 +351,25 @@ public class PrintfMisuseCheck {
     log4j.error("message {}", new Exception()); // Noncompliant {{Not enough arguments.}}
     log4j.error("message {}", new Exception().toString());
     log4j.error("message {} {}", 1); // Noncompliant {{Not enough arguments.}}
-    log4j.error("message {} {}", 1, new Exception());  // Noncompliant {{Not enough arguments.}}
+    log4j.error("message {} {}", 1, new Exception());  // Compliant, only a problem when we have one throwable argument.
     log4j.error("message {} {}", 1, new Exception().toString());
     log4j.error("message {} {}", 1, 2, 3); // Noncompliant {{3rd argument is not used.}}
     log4j.error("message {} {}", 1, 2, new Exception().toString()); // Noncompliant {{3rd argument is not used.}}
+    log4j.error("message {} {}", 1, 2, new Exception()); // Compliant
+    log4j.error("message {} {} {}", 1, 2, new Exception()); // Compliant
+    log4j.error("message {} {} {}", 1, 2, 3, new Exception()); // Compliant
     log4j.error("message ", () -> 1); // Noncompliant {{String contains no format specifiers.}}
     log4j.error("message {}", () -> 1);
     log4j.error("message {} {}", () -> 1); // Noncompliant {{Not enough arguments.}}
     log4j.error(() -> "message " + param1);
     log4j.error(() -> "message " + param1, new Exception());
+
+    log4j.error("message {}", new Object[] {new Exception()}); // Noncompliant {{Not enough arguments.}}
+    log4j.error("message {}", new Object[] {1, new Exception()}); // Compliant
+    log4j.error("message {}", new Object[] {new Exception(), 1}); // Noncompliant {{2nd argument is not used.}}
+    log4j.error("message {} {}", new Object[] {1, new Exception()}); // Compliant
+    log4j.error("message {} {}", new Object[] {1, 2, new Exception()}); // Compliant
+    log4j.error("message {} {}", new Object[] {1, 2, 3, new Exception()}); // Noncompliant {{3rd argument is not used.}}
 
     log4j.debug(() -> "hello"); // Compliant
     log4j.debug("message {}", 1); // Compliant

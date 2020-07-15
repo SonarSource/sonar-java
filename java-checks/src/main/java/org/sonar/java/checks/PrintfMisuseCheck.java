@@ -110,7 +110,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     if (!isMessageFormat) {
       isMessageFormat = JAVA_UTIL_LOGGER_LOG_LEVEL_STRING_ANY.matches(mit);
     }
-    if(!isMessageFormat) {
+    if (!isMessageFormat) {
       isMessageFormat = isLoggingMethod(mit);
     }
     super.checkFormatting(mit, isMessageFormat);
@@ -192,7 +192,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
       } else if (param.charAt(0) == '<') {
         //refers to previous argument
         argIndex = Math.max(0, argIndex - 1);
-      }else {
+      } else {
         index++;
       }
       if (argIndex >= args.size()) {
@@ -211,7 +211,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
   protected void handleMessageFormat(MethodInvocationTree mit, String formatString, List<ExpressionTree> args) {
     String newFormatString = cleanupDoubleQuote(formatString);
     Set<Integer> indexes = getMessageFormatIndexes(newFormatString, mit);
-    List<ExpressionTree> transposedArgs = transposeArgumentArrayAndRemoveThrowable(mit, args);
+    List<ExpressionTree> transposedArgs = transposeArgumentArrayAndRemoveThrowable(mit, args, indexes);
     if (transposedArgs == null) {
       return;
     }
@@ -228,7 +228,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
   }
 
   private boolean checkUnbalancedQuotes(MethodInvocationTree mit, String formatString) {
-    if(LEVELS.contains(mit.symbol().name())) {
+    if (LEVELS.contains(mit.symbol().name())) {
       return false;
     }
     String withoutParam = MESSAGE_FORMAT_PATTERN.matcher(formatString).replaceAll("");
@@ -247,7 +247,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
 
 
   @Nullable
-  private static List<ExpressionTree> transposeArgumentArrayAndRemoveThrowable(MethodInvocationTree mit, List<ExpressionTree> args) {
+  private static List<ExpressionTree> transposeArgumentArrayAndRemoveThrowable(MethodInvocationTree mit, List<ExpressionTree> args, Set<Integer> indexes) {
     List<ExpressionTree> transposedArgs = args;
     if (args.size() == 1) {
       ExpressionTree firstArg = args.get(0);
@@ -260,18 +260,29 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
         }
       }
     }
-    if (lastArgumentShouldBeIgnored(mit, args, transposedArgs)) {
+    if (lastArgumentShouldBeIgnored(mit, args, transposedArgs, indexes)) {
       transposedArgs = transposedArgs.subList(0, transposedArgs.size() - 1);
     }
     return transposedArgs;
   }
 
-  private static boolean lastArgumentShouldBeIgnored(MethodInvocationTree mit, List<ExpressionTree> args, List<ExpressionTree> transposedArgs) {
+  private static boolean lastArgumentShouldBeIgnored(MethodInvocationTree mit, List<ExpressionTree> args, List<ExpressionTree> transposedArgs, Set<Integer> indexes) {
+    if (!isLoggingMethod(mit)) {
+      return false;
+    }
     if (mit.symbol().owner().type().is(JAVA_UTIL_LOGGING_LOGGER)) {
+      // Remove the last argument from the count if it's a throwable, since log(Level level, String msg, Throwable thrown) will be called.
+      // If the argument is an array, any exception in the array will be considered as Object, behaving as any others.
       return args.size() == 1 && isLastArgumentThrowable(args);
     }
     // org.apache.logging.log4j.Logger and org.slf4j.Logger
-    return isLastArgumentThrowable(transposedArgs);
+    if (transposedArgs.size() == 1) {
+      // Logging methods with only one throwable argument will treat it differently (and should be removed from the count).
+      return isLastArgumentThrowable(transposedArgs);
+    } else {
+      // One extra throwable argument can be consumed by logging methods, it should be removed from the count if it exists.
+      return (transposedArgs.size() > indexes.size()) && isLastArgumentThrowable(transposedArgs);
+    }
   }
 
   private static boolean isLastArgumentThrowable(List<ExpressionTree> arguments) {
@@ -344,7 +355,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
       return "2nd";
     } else if (i < 3) {
       return "3rd";
-    } else  {
+    } else {
       return (i + 1) + "th";
     }
   }
