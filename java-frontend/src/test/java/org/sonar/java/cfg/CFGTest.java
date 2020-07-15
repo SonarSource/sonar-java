@@ -66,6 +66,7 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.THROW_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.TRY_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.VARIABLE;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.WHILE_STATEMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.YIELD_STATEMENT;
 
 class CFGTest {
 
@@ -410,6 +411,7 @@ class CFGTest {
         case CONDITIONAL_AND:
         case CONDITIONAL_EXPRESSION:
         case BREAK_STATEMENT:
+        case YIELD_STATEMENT:
         case CONTINUE_STATEMENT:
         case SWITCH_STATEMENT:
         case SWITCH_EXPRESSION:
@@ -860,7 +862,7 @@ class CFGTest {
         element(IDENTIFIER, "fun"),
         element(IDENTIFIER, "bar2"),
         element(METHOD_INVOCATION),
-        element(PLUS)).hasCaseGroup().terminator(BREAK_STATEMENT).successors(1),
+        element(PLUS)).hasCaseGroup().terminator(YIELD_STATEMENT).successors(1),
       block(
         element(INT_LITERAL, "5"),
         element(STRING_LITERAL, "boom"),

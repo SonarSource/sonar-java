@@ -56,6 +56,7 @@ import org.sonar.java.model.statement.ForStatementTreeImpl;
 import org.sonar.java.model.statement.LabeledStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.model.statement.SwitchExpressionTreeImpl;
+import org.sonar.java.model.statement.YieldStatementTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -71,12 +72,12 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class JParserSemanticTest {
 
@@ -470,18 +471,26 @@ class JParserSemanticTest {
       .containsOnly(identifier);
   }
 
+  /**
+   * @see org.eclipse.jdt.core.dom.SwitchExpression
+   * @see org.eclipse.jdt.core.dom.YieldStatement
+   */
   @Test
   void expression_switch() {
     {
       SwitchExpressionTreeImpl switchExpression = (SwitchExpressionTreeImpl) expression("switch (0) { default: yield 0; }");
-      BreakStatementTreeImpl breakStatement = (BreakStatementTreeImpl) switchExpression.cases().get(0).body().get(0);
-      assertThat(breakStatement.breakKeyword().text()).isEqualTo("yield");
-      assertThat(breakStatement.value()).isNotNull();
+      YieldStatementTreeImpl statement = (YieldStatementTreeImpl) switchExpression.cases().get(0).body().get(0);
+      assertThat(statement.yieldKeyword().text()).isEqualTo("yield");
+      assertThat(statement.expression()).isNotNull();
     }
     {
       SwitchExpressionTreeImpl switchExpression = (SwitchExpressionTreeImpl) expression("switch (0) { default -> 0; case 0, 1 -> 0; }");
       assertThat(switchExpression).isInstanceOf(AbstractTypedTree.class);
       assertThat(switchExpression.symbolType().isUnknown()).isTrue();
+
+      YieldStatementTreeImpl statement = (YieldStatementTreeImpl) switchExpression.cases().get(0).body().get(0);
+      assertThat(statement.yieldKeyword()).as("implicit yield-statement").isNull();
+
       CaseLabelTree caseLabel = switchExpression.cases().get(1).labels().get(0);
       assertThat(caseLabel.colonOrArrowToken().text()).isEqualTo("->");
       assertThat(caseLabel.expressions()).hasSize(2);

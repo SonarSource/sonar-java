@@ -87,6 +87,7 @@ import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
+import org.sonar.plugins.java.api.tree.YieldStatementTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -219,7 +220,7 @@ class JavaTreeModelTest {
   }
 
   /**
-   * Switch Expressions (Preview) http://openjdk.java.net/jeps/354
+   * Switch Expressions http://openjdk.java.net/jeps/361
    *
    * @see org.eclipse.jdt.core.dom.SwitchExpression
    * @see org.eclipse.jdt.core.dom.YieldStatement
@@ -229,15 +230,16 @@ class JavaTreeModelTest {
     SwitchExpressionTree tree = (SwitchExpressionTree) expressionOfReturnStatement("class T { Object m() { return switch (0) { default -> 0; case 0 -> 0; }; } }");
     assertThat(tree.kind()).isEqualTo(Tree.Kind.SWITCH_EXPRESSION);
     assertThat(tree.cases()).hasSize(2);
-    ExpressionStatementTree expressionStatement = (ExpressionStatementTree) tree.cases().get(0).body().get(0);
-    assertThat(expressionStatement.expression().kind()).isEqualTo(Tree.Kind.INT_LITERAL);
+    YieldStatementTree statement = (YieldStatementTree) tree.cases().get(0).body().get(0);
+    assertThat(statement.yieldKeyword()).as("implicit yield-statement").isNull();
+    assertThat(statement.expression().kind()).isEqualTo(Tree.Kind.INT_LITERAL);
 
     tree = (SwitchExpressionTree) expressionOfReturnStatement("class T { Object m() { return switch (0) { default: yield 0; case 0: yield 0; }; } }");
     assertThat(tree.kind()).isEqualTo(Tree.Kind.SWITCH_EXPRESSION);
     assertThat(tree.cases()).hasSize(2);
-    BreakStatementTree breakStatement = (BreakStatementTree) tree.cases().get(0).body().get(0);
-    assertThat(breakStatement.breakKeyword().text()).isEqualTo("yield");
-    assertThat(breakStatement.value().kind()).isEqualTo(Tree.Kind.INT_LITERAL);
+    statement = (YieldStatementTree) tree.cases().get(0).body().get(0);
+    assertThat(statement.yieldKeyword().text()).isEqualTo("yield");
+    assertThat(statement.expression().kind()).isEqualTo(Tree.Kind.INT_LITERAL);
   }
 
   @Test
