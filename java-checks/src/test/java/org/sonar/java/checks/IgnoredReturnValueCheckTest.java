@@ -35,4 +35,14 @@ class IgnoredReturnValueCheckTest {
       .withCheck(new IgnoredReturnValueCheck())
       .verifyNoIssues();
   }
+
+  @Test
+  void java14_switch_expression() {
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/IgnoredReturnValueCheckJava14.java")
+      .withJavaVersion(14)
+      .withCheck(new IgnoredReturnValueCheck())
+      .verifyIssues();
+  }
+
 }
