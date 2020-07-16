@@ -72,7 +72,6 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
-import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
@@ -479,6 +478,8 @@ class JParserSemanticTest {
   void expression_switch() {
     {
       SwitchExpressionTreeImpl switchExpression = (SwitchExpressionTreeImpl) expression("switch (0) { default: yield 0; }");
+      assertThat(switchExpression.symbolType().isUnknown()).isFalse();
+
       YieldStatementTreeImpl statement = (YieldStatementTreeImpl) switchExpression.cases().get(0).body().get(0);
       assertThat(statement.yieldKeyword().text()).isEqualTo("yield");
       assertThat(statement.expression()).isNotNull();
@@ -486,7 +487,7 @@ class JParserSemanticTest {
     {
       SwitchExpressionTreeImpl switchExpression = (SwitchExpressionTreeImpl) expression("switch (0) { default -> 0; case 0, 1 -> 0; }");
       assertThat(switchExpression).isInstanceOf(AbstractTypedTree.class);
-      assertThat(switchExpression.symbolType().isUnknown()).isTrue();
+      assertThat(switchExpression.symbolType().isUnknown()).isFalse();
 
       YieldStatementTreeImpl statement = (YieldStatementTreeImpl) switchExpression.cases().get(0).body().get(0);
       assertThat(statement.yieldKeyword()).as("implicit yield-statement").isNull();
