@@ -27,6 +27,9 @@ import java.util.Collections;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.sonar.api.SonarEdition;
+import org.sonar.api.SonarQubeSide;
+import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -35,6 +38,7 @@ import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.utils.Version;
+import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
@@ -63,7 +67,7 @@ public class JavaSquidTest {
 
     String code = "/***/\nclass A {\n String foo() {\n  return foo();\n }\n}";
 
-    InputFile defaultFile = scanForErrors(code);
+    InputFile defaultFile = scanForErrorsInSonarLint(code);
 
     // No symbol table : check reference to foo is empty.
     assertThat(context.referencesForSymbolAt(defaultFile.key(), 3, 8)).isNull();
@@ -79,8 +83,24 @@ public class JavaSquidTest {
   }
 
   @Test
+  public void metrics_and_highlighting_in_sonarqube() throws Exception {
+
+    String code = "/***/\nclass A {\n String foo() {\n  return foo();\n }\n}";
+
+    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(7, 9), SonarQubeSide.SCANNER, SonarEdition.COMMUNITY);
+    InputFile defaultFile = scanForErrors(code, runtime);
+
+    // Metrics on lines
+    verify(fileLinesContext, times(1)).save();
+    // Highlighting
+    assertThat(context.highlightingTypeAt(defaultFile.key(), 1, 0)).isNotEmpty();
+    // Measures
+    assertThat(context.measures(defaultFile.key())).isNotEmpty();
+  }
+
+  @Test
   public void parsing_errors_should_be_reported_to_sonarlint() throws Exception {
-    scanForErrors("class A {");
+    scanForErrorsInSonarLint("class A {");
 
     assertThat(context.allAnalysisErrors()).hasSize(1);
     assertThat(context.allAnalysisErrors().iterator().next().message()).startsWith("Parse error at line 1 column 8");
@@ -89,19 +109,21 @@ public class JavaSquidTest {
   @org.junit.Ignore("new semantic analysis does not throw exception in this case")
   @Test
   public void semantic_errors_should_be_reported_to_sonarlint() throws Exception {
-    scanForErrors("class A {} class A {}");
+    scanForErrorsInSonarLint("class A {} class A {}");
 
     assertThat(context.allAnalysisErrors()).hasSize(1);
     assertThat(context.allAnalysisErrors().iterator().next().message()).isEqualTo("Registering class 2 times : A");
   }
 
 
-  private InputFile scanForErrors(String code) throws IOException {
+  private InputFile scanForErrorsInSonarLint(String code) throws IOException {
+    return scanForErrors(code, SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
+  }
+
+  private InputFile scanForErrors(String code, SonarRuntime runtime) throws IOException {
     File baseDir = temp.getRoot().getAbsoluteFile();
     context = SensorContextTester.create(baseDir);
-
-    // Set sonarLint runtime
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
+    context.setRuntime(runtime);
 
     InputFile inputFile = addFile(code, context);
 
@@ -114,9 +136,9 @@ public class JavaSquidTest {
     javaTestClasspath = mock(JavaTestClasspath.class);
     sonarComponents = new SonarComponents(fileLinesContextFactory, context.fileSystem(), javaClasspath, javaTestClasspath, mock(CheckFactory.class));
     sonarComponents.setSensorContext(context);
-    JavaSquid javaSquid = new JavaSquid(new JavaVersionImpl(), sonarComponents, new Measurer(context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), null);
+    SonarJavaIssueFilter passThroughFilter = (issue, chain) -> chain.accept(issue);
+    JavaSquid javaSquid = new JavaSquid(new JavaVersionImpl(), sonarComponents, new Measurer(context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), passThroughFilter);
     javaSquid.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
-
     return inputFile;
   }
 
