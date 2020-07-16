@@ -29,6 +29,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
+import org.eclipse.core.internal.resources.ProjectDescription;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,6 +38,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
+import org.sonar.api.batch.bootstrap.ProjectDefinition;
+import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
@@ -49,6 +53,8 @@ import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.Issue;
 import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
+import org.sonar.api.ce.posttask.Project;
+import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
@@ -195,6 +201,40 @@ public class SonarComponentsTest {
     assertThat(testChecks.iterator().next()).isEqualTo(expectedCheck);
 
     postTestExecutionChecks();
+  }
+
+  @Test
+  public void get_work_directory_from_parent() {
+    ProjectDefinition grandParentProjectDefinition = ProjectDefinition.create();
+    ProjectDefinition parentProjectDefinition = ProjectDefinition.create();
+    ProjectDefinition childProjectDefinition = ProjectDefinition.create();
+
+    grandParentProjectDefinition.setWorkDir(new File("grandParentWorkDir"));
+
+    grandParentProjectDefinition.addSubProject(parentProjectDefinition);
+    parentProjectDefinition.addSubProject(childProjectDefinition);
+
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory,
+      null, null, null, checkFactory, childProjectDefinition);
+    sonarComponents.setSensorContext(context);
+
+    assertThat(sonarComponents.workDir()).isEqualTo(new File("grandParentWorkDir"));
+    assertThat(sonarComponents.project()).isNull();
+  }
+
+  @Test
+  public void should_fail_analysis() {
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    SensorContextTester context = SensorContextTester.create(new File(""));
+    MapSettings mapSettings = new MapSettings();
+    mapSettings.setProperty("sonar.internal.analysis.failFast", "false");
+    context.setSettings(mapSettings);
+    sonarComponents.setSensorContext(context);
+
+    assertThat(sonarComponents.shouldFailAnalysisOnException()).isFalse();
+
+    mapSettings.setProperty("sonar.internal.analysis.failFast", "true");
+    assertThat(sonarComponents.shouldFailAnalysisOnException()).isTrue();
   }
 
   @Test
@@ -395,7 +435,6 @@ public class SonarComponentsTest {
     List<String> jspClassPath = sonarComponents.getJspClasspath().stream().map(File::getAbsolutePath).collect(Collectors.toList());
     assertThat(jspClassPath).containsExactly(plugin.getAbsolutePath(), someJar.getAbsolutePath());
   }
-
 
   private static CheckRegistrar getRegistrar(final JavaCheck expectedCheck) {
     return registrarContext -> registrarContext.registerClassesForRepository(REPOSITORY_NAME,
