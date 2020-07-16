@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Objects;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.AssessableExpressionTree;
-import org.sonar.java.resolve.Symbols;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
@@ -55,11 +53,6 @@ public class SwitchExpressionTreeImpl extends AssessableExpressionTree implement
     this.openBraceToken = openBraceToken;
     this.cases = ImmutableList.<CaseGroupTree>builder().addAll(Objects.requireNonNull(groups)).build();
     this.closeBraceToken = closeBraceToken;
-  }
-
-  @Override
-  public Type symbolType() {
-    return Symbols.unknownType;
   }
 
   @Override

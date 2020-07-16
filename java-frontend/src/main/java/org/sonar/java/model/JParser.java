@@ -1771,9 +1771,7 @@ public class JParser {
 
   private ExpressionTree convertExpression(Expression node) {
     ExpressionTree t = createExpression(node);
-    if (!t.is(Tree.Kind.SWITCH_EXPRESSION)) {
-      ((AbstractTypedTree) t).typeBinding = node.resolveTypeBinding();
-    }
+    ((AbstractTypedTree) t).typeBinding = node.resolveTypeBinding();
     return t;
   }
 
