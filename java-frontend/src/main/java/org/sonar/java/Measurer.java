@@ -25,11 +25,13 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import org.sonar.api.SonarProduct;
+import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Metric;
+import org.sonar.api.utils.Version;
 import org.sonar.java.ast.visitors.CognitiveComplexityVisitor;
 import org.sonar.java.ast.visitors.CommentLinesVisitor;
 import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
@@ -60,7 +62,15 @@ public class Measurer extends SubscriptionVisitor {
     public void scanFile(JavaFileScannerContext context) {
       sonarFile = context.getInputFile();
       createCommentLineVisitorAndFindNoSonar(context);
-      saveMetricOnFile(CoreMetrics.NCLOC, new LinesOfCodeVisitor().linesOfCode(context.getTree()));
+      if (isSonarQubeSupportingTestNLOC()) {
+        // SonarQube 8.5 supports NLOC for test code, and will take care of computing the difference.
+        saveMetricOnFile(CoreMetrics.NCLOC, new LinesOfCodeVisitor().linesOfCode(context.getTree()));
+      }
+    }
+
+    private boolean isSonarQubeSupportingTestNLOC() {
+      SonarRuntime runtime = sensorContext.runtime();
+      return runtime.getProduct() == SonarProduct.SONARQUBE && runtime.getApiVersion().isGreaterThanOrEqual(Version.create(8,5));
     }
   }
 
