@@ -60,6 +60,7 @@ public class Measurer extends SubscriptionVisitor {
     public void scanFile(JavaFileScannerContext context) {
       sonarFile = context.getInputFile();
       createCommentLineVisitorAndFindNoSonar(context);
+      saveMetricOnFile(CoreMetrics.NCLOC, new LinesOfCodeVisitor().linesOfCode(context.getTree()));
     }
   }
 
