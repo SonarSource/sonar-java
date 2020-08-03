@@ -114,7 +114,7 @@ class RulesSanityTest {
       fail(String.format("Should have been able to execute all the rules on all the test files. %d file(s) made at least 1 rule fail.", exceptions.size()));
     }
 
-    // only 4 errors, all related to parsing issues
+    // only 5 errors, all related to parsing issues
     List<LogAndArguments> errorLogs = logTester.getLogs(LoggerLevel.ERROR);
     List<String> parsingErrorFiles = errorLogs.stream()
       .map(LogAndArguments::getFormattedMsg)
@@ -122,11 +122,11 @@ class RulesSanityTest {
       .collect(Collectors.toList());
 
     assertThat(errorLogs)
-      .hasSize(4)
+      .hasSize(6)
       .allMatch(log -> log.getFormattedMsg().toLowerCase().contains("parse"));
     assertThat(parsingErrorFiles)
-      .hasSize(2)
-      .allMatch(log -> log.contains("KeywordAsIdentifierCheck"));
+      .hasSize(3)
+      .allMatch(log -> log.contains("KeywordAsIdentifierCheck") || log.contains("EmptyStatementsInImportsBug"));
 
   }
 
