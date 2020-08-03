@@ -40,11 +40,29 @@ class ParsingErrorCheckTest {
     when(sonarComponents.inputFileContents(any())).thenCallRealMethod();
 
     VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(new ParsingErrorCheck(), sonarComponents);
-    JavaAstScanner.scanSingleFileForTests(CheckTestUtils.inputFile("src/test/files/checks/ParsingError.java"), visitorsBridge);
+    JavaAstScanner.scanSingleFileForTests(CheckTestUtils.inputFile("src/test/files/checks/parsing/ParsingError.java"), visitorsBridge);
     Set<AnalyzerMessage> issues = visitorsBridge.lastCreatedTestContext().getIssues();
     assertThat(issues).hasSize(1);
     AnalyzerMessage issue = issues.iterator().next();
     assertThat(issue.getLine()).isEqualTo(1);
+    assertThat(issue.getMessage()).isEqualTo("Parse error");
+  }
+
+  /**
+   * Related to SONARJAVA-3486: discrepancies between JLS, javac (more tolerant than JLS) and ECJ (strict to JLS).
+   * According to JLS (§7.3 Compilation Units), empty statements are not allowed in import section.
+   */
+  @Test
+  void javacEmptyStatementsInImportsBug() {
+    SonarComponents sonarComponents = mock(SonarComponents.class);
+    when(sonarComponents.inputFileContents(any())).thenCallRealMethod();
+
+    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(new ParsingErrorCheck(), sonarComponents);
+    JavaAstScanner.scanSingleFileForTests(CheckTestUtils.inputFile("src/test/files/checks/parsing/EmptyStatementsInImportsBug.java"), visitorsBridge);
+    Set<AnalyzerMessage> issues = visitorsBridge.lastCreatedTestContext().getIssues();
+    assertThat(issues).hasSize(1);
+    AnalyzerMessage issue = issues.iterator().next();
+    assertThat(issue.getLine()).isEqualTo(3);
     assertThat(issue.getMessage()).isEqualTo("Parse error");
   }
 }
