@@ -5,7 +5,7 @@ every time the method is called, whether or not the log level is low enough to s
 <p>Instead, you should structure your code to pass static or pre-computed values into <code>Preconditions</code> conditions check and logging
 calls.</p>
 <p>Specifically, the built-in string formatting should be used instead of string concatenation, and if the message is the result of a method call,
-then <code>Preconditions</code> should be skipped altoghether, and the relevant exception should be conditionally thrown instead.</p>
+then <code>Preconditions</code> should be skipped altogether, and the relevant exception should be conditionally thrown instead.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 logger.log(Level.DEBUG, "Something went wrong: " + message);  // Noncompliant; string concatenation performed even when log level too high to show DEBUG messages
