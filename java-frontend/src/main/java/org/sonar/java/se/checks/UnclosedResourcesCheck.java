@@ -202,16 +202,11 @@ public class UnclosedResourcesCheck extends SECheck {
   }
 
   private boolean excludedByRuleOption(Type type) {
-    for (String excludedType : loadExcludedTypesList()) {
-      if (type.is(excludedType)) {
-        return true;
-      }
-    }
-    return false;
+    return loadExcludedTypesList().stream().anyMatch(type::is);
   }
 
   private List<String> loadExcludedTypesList() {
-    if ( excludedTypesList.isEmpty() && !StringUtils.isBlank(excludedTypes)) {
+    if (excludedTypesList.isEmpty() && !StringUtils.isBlank(excludedTypes)) {
       for (String excludedType : excludedTypes.split(",")) {
         excludedTypesList.add(excludedType.trim());
       }
