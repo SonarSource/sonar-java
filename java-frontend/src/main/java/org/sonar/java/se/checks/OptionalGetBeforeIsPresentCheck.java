@@ -205,6 +205,10 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
+      if (isInvocationOnClassInstanceField(tree)) {
+        return;
+      }
+
       SymbolicValue peek = programState.peekValue();
       if (OPTIONAL_TEST_METHODS.matches(tree)) {
         constraintManager.setValueFactory(() -> new OptionalTestMethodSymbolicValue(peek, tree.symbol()));
@@ -262,6 +266,18 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
         }
       }
       return "";
+    }
+
+    private static boolean isInvocationOnClassInstanceField(MethodInvocationTree mit) {
+      ExpressionTree mitExpression = mit.methodSelect();
+      if (mitExpression.is(Tree.Kind.MEMBER_SELECT)) {
+        ExpressionTree expression = ((MemberSelectExpressionTree) mitExpression).expression();
+        if (expression.is(Tree.Kind.MEMBER_SELECT)) {
+          IdentifierTree identifier = ((MemberSelectExpressionTree) expression).identifier();
+          return ProgramState.isField((identifier).symbol());
+        }
+      }
+      return false;
     }
 
   }
