@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.*;
+import java.sql.*;
 
 public class A {
 
@@ -68,4 +69,21 @@ public class A {
       // ...
     }
   }
+
+  private void doSelectByProjects(Connection conn, String sql) {
+    try {
+      try (PreparedStatement stmt = newStatement(conn, sql);
+        ResultSet rs = stmt.executeQuery()) {
+        doSomething();
+      }
+    } catch (SQLException e) {
+      throw new IllegalStateException();
+    }
+  }
+
+  private PreparedStatement newStatement(Connection conn, String sql) throws SQLException {
+    return conn.prepareStatement(sql);
+  }
+
+  private void doSomething() {}
 }

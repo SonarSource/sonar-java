@@ -33,6 +33,7 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.Flow;
@@ -51,6 +52,7 @@ import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -87,6 +89,8 @@ public class UnclosedResourcesCheck extends SECheck {
   public String excludedTypes = "";
   private final List<String> excludedTypesList = new ArrayList<>();
 
+  private final Set<TryStatementTree> tryWithResourcesTrees = new HashSet<>();
+  private final Set<Tree> knownResources = new HashSet<>();
   private Type visitedMethodOwnerType;
 
   private static final String JAVA_IO_AUTO_CLOSEABLE = "java.lang.AutoCloseable";
@@ -130,15 +134,57 @@ public class UnclosedResourcesCheck extends SECheck {
     .build();
 
   @Override
+  public void scanFile(JavaFileScannerContext context) {
+    this.tryWithResourcesTrees.clear();
+    this.knownResources.clear();
+    super.scanFile(context);
+  }
+
+  @Override
   public void init(MethodTree methodTree, CFG cfg) {
     this.visitedMethodOwnerType = methodTree.symbol().owner().type();
   }
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
+    collectTryWithResources(syntaxNode);
     final PreStatementVisitor visitor = new PreStatementVisitor(context);
     syntaxNode.accept(visitor);
     return visitor.programState;
+  }
+
+  private void collectTryWithResources(Tree syntaxNode) {
+    if (syntaxNode.is(Tree.Kind.TRY_STATEMENT)) {
+      TryStatementTree tryStatementTree = (TryStatementTree) syntaxNode;
+      ListTree<Tree> resourceList = tryStatementTree.resourceList();
+      if (!resourceList.isEmpty() && tryWithResourcesTrees.add(tryStatementTree)) {
+        knownResources.addAll(collectAllResourceTrees(resourceList));
+      }
+    }
+  }
+
+  private static Set<Tree> collectAllResourceTrees(Tree tree) {
+    JavaTree javaTree = (JavaTree) tree;
+    if (javaTree.isLeaf()) {
+      return Collections.emptySet();
+    }
+    Set<Tree> result = new HashSet<>();
+    if (javaTree.is(Tree.Kind.METHOD_INVOCATION, Tree.Kind.IDENTIFIER, Tree.Kind.NEW_CLASS)) {
+      // the only trees queried to check if these are resources
+      result.add(tree);
+    }
+    // also recursively collect all the possible matching trees, as we don't know from what potential tree it will be queried
+    // (a MethodInvocationTree contains Identifiers)
+    javaTree
+      .getChildren()
+      .stream()
+      .map(UnclosedResourcesCheck::collectAllResourceTrees)
+      .forEach(result::addAll);
+    return result;
+  }
+
+  private boolean isWithinTryHeader(Tree syntaxNode) {
+    return knownResources.contains(syntaxNode);
   }
 
   @Override
@@ -227,33 +273,6 @@ public class UnclosedResourcesCheck extends SECheck {
       return false;
     }
     return needsClosing(syntaxNode.symbolType());
-  }
-
-  private static boolean isWithinTryHeader(Tree syntaxNode) {
-    Tree parent = syntaxNode;
-    while (parent != null && !parent.is(Tree.Kind.VARIABLE) ) {
-      parent = parent.parent();
-    }
-    if (parent != null && parent.is(Tree.Kind.VARIABLE)) {
-      return isTryStatementResource(parent);
-    }
-    return false;
-  }
-
-  private static boolean isTryStatementResource(Tree tree) {
-    final TryStatementTree tryStatement = getEnclosingTryStatement(tree);
-    return tryStatement != null && tryStatement.resourceList().contains(tree);
-  }
-
-  private static TryStatementTree getEnclosingTryStatement(Tree syntaxNode) {
-    Tree parent = syntaxNode.parent();
-    while (parent != null) {
-      if (parent.is(Tree.Kind.TRY_STATEMENT)) {
-        return (TryStatementTree) parent;
-      }
-      parent = parent.parent();
-    }
-    return null;
   }
 
   private static class ResourceWrapperSymbolicValue extends SymbolicValue {
@@ -434,7 +453,7 @@ public class UnclosedResourcesCheck extends SECheck {
     @Override
     public void visitIdentifier(IdentifierTree tree) {
       // close resource as soon as it is encountered in the resource declaration
-      if (isTryStatementResource(tree)) {
+      if (isWithinTryHeader(tree)) {
         Symbol symbol = tree.symbol();
         closeResource(programState.getValue(symbol));
       }
