@@ -61,8 +61,8 @@ class BehaviorCacheTest {
   @Test
   void method_behavior_cache_should_be_filled_and_cleanup() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodBehavior.java");
-    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(4);
-    assertThat(sev.behaviorCache.behaviors.values().stream().filter(mb -> mb != null).count()).isEqualTo(4);
+    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(5);
+    assertThat(sev.behaviorCache.behaviors.values().stream().filter(mb -> mb != null).count()).isEqualTo(5);
     // check order of method exploration : last is the topMethod as it requires the other to get its behavior.
     // Then, as we explore fully a path before switching to another one (see the LIFO in EGW) : qix is handled before foo.
     assertThat(sev.behaviorCache.behaviors.keySet().stream().collect(Collectors.toList())).containsSequence(
@@ -76,15 +76,15 @@ class BehaviorCacheTest {
       .filter(s -> s.equals("#nativeMethod") || s.contains("#abstractMethod") || s.contains("#publicMethod"))
       .map(s -> sev.behaviorCache.behaviors.get(s))).isEmpty();
 
-    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(4);
+    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(5);
     sev.behaviorCache.cleanup();
-    assertThat(sev.behaviorCache.behaviors.entrySet()).isEmpty();
+    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(1);
   }
 
   @Test
   void compute_beahvior_only_once() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/ComputeBehaviorOnce.java");
-    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(5);
+    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(6);
     assertThat(logTester.logs(LoggerLevel.DEBUG)).containsOnlyOnce("Could not complete symbolic execution: ");
     assertThat(sev.behaviorCache.behaviors.values()).allMatch(MethodBehavior::isVisited);
   }
@@ -92,14 +92,17 @@ class BehaviorCacheTest {
   @Test
   void explore_method_with_recursive_call() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/RecursiveCall.java");
-    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(1);
-    assertThat(sev.behaviorCache.behaviors.keySet().iterator().next()).contains("#foo");
+    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(2);
+    assertThat(sev.behaviorCache.behaviors.keySet()).containsExactly(
+      "java.lang.Class#isInstance(Ljava/lang/Object;)Z",
+      "RecursiveCall#foo(I)I"
+    );
   }
 
   @Test
   void interrupted_exploration_does_not_create_method_yields() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/PartialMethodYieldMaxStep.java");
-    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(2);
+    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(3);
 
     MethodBehavior plopMethod = getMethodBehavior(sev, "foo");
     assertThat(plopMethod.isComplete()).isFalse();
@@ -189,7 +192,8 @@ class BehaviorCacheTest {
     assertThat(sev.behaviorCache.get("java.lang.Object#wait()V;").isComplete()).isFalse();
     assertThat(sev.behaviorCache.get("java.util.Optional#get()Ljava/lang/Object;").isComplete()).isFalse();
     assertThat(sev.behaviorCache.get("java.util.Optional#isPresent()Z").isComplete()).isFalse();
-    assertThat(sev.behaviorCache.behaviors.keySet()).isEmpty();
+    assertThat(sev.behaviorCache.behaviors.keySet())
+      .containsExactly("java.lang.Class#isInstance(Ljava/lang/Object;)Z");
   }
 
   @Test
@@ -233,7 +237,10 @@ class BehaviorCacheTest {
     assertThat(sev.behaviorCache.peek("org.foo.A#foo()Z").isComplete()).isTrue();
     assertThat(sev.behaviorCache.peek("org.foo.A#bar()Z").isComplete()).isFalse();
     assertThat(sev.behaviorCache.peek("org.foo.A#unknownMethod()Z")).isNull();
-    assertThat(sev.behaviorCache.behaviors.keySet()).containsOnly("org.foo.A#foo()Z");
+    assertThat(sev.behaviorCache.behaviors.keySet()).containsExactly(
+      "java.lang.Class#isInstance(Ljava/lang/Object;)Z",
+      "org.foo.A#foo()Z"
+    );
 
     assertThat(testedPre).containsOnly("foo", "bar", "isBlank");
     assertThat(testedPost).containsOnly("foo", "bar", "isBlank");

@@ -71,6 +71,10 @@ public class MethodBehavior {
     createYield(node, true);
   }
 
+  public void addYield(MethodYield yield) {
+    yields.add(yield);
+  }
+
   public void createYield(ExplodedGraph.Node node, boolean storeNodeForReporting) {
     ExplodedGraph.Node nodeForYield = null;
     if(storeNodeForReporting) {
