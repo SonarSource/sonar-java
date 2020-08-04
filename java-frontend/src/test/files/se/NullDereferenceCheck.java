@@ -667,6 +667,14 @@ class NullPointerTest {
     return checkSomething("HELLO") && c instanceof MyClass && ((MyClass) c).isLike("hello");
   }
 
+  public boolean checkIsInstance(@Nullable Object obj) {
+    return MyClass.class.isInstance(obj) && obj.toString().isEmpty();
+  }
+
+  public boolean checkNotIsInstance(@Nullable Object obj) {
+    return !MyClass.class.isInstance(obj) && obj.toString().isEmpty(); // Noncompliant {{A "NullPointerException" could be thrown; "obj" is nullable here.}}
+  }
+
   private static boolean checkSomething(String s) {
     return s.isEmpty();
   }

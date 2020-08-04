@@ -21,6 +21,7 @@ package org.sonar.java.se.xproc;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -31,6 +32,9 @@ import org.sonar.java.bytecode.se.BytecodeEGWalker;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.Sema;
 import org.sonar.java.se.SymbolicExecutionVisitor;
+import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.ConstraintsByDomain;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
 
@@ -40,9 +44,36 @@ public class BehaviorCache {
   private final boolean crossFileEnabled;
   private  SymbolicExecutionVisitor sev;
   private Sema semanticModel;
+
+  private static final MethodBehavior CLASS_IS_INSTANCE_BEHAVIOR = classIsInstanceBehavior();
   @VisibleForTesting
-  public final Map<String, MethodBehavior> behaviors = new LinkedHashMap<>();
+  public Map<String, MethodBehavior> behaviors = newDefaultBehaviorCache();
   private final Map<String, MethodBehavior> bytecodeBehaviors = new LinkedHashMap<>();
+
+  private static Map<String, MethodBehavior> newDefaultBehaviorCache() {
+    Map<String, MethodBehavior> cache = new LinkedHashMap<>();
+    cache.put(CLASS_IS_INSTANCE_BEHAVIOR.signature(), CLASS_IS_INSTANCE_BEHAVIOR);
+    return cache;
+  }
+
+  private static MethodBehavior classIsInstanceBehavior() {
+    MethodBehavior behavior = new MethodBehavior("java.lang.Class#isInstance(Ljava/lang/Object;)Z", false);
+    addYield(behavior, -1,
+      ConstraintsByDomain.empty().put(BooleanConstraint.TRUE),
+      ConstraintsByDomain.empty().put(ObjectConstraint.NOT_NULL));
+    addYield(behavior, -1,
+      ConstraintsByDomain.empty().put(BooleanConstraint.FALSE),
+      ConstraintsByDomain.empty());
+    behavior.completed();
+    return behavior;
+  }
+
+  private static void addYield(MethodBehavior methodBehavior, int resultIndex, ConstraintsByDomain resultConstraint, ConstraintsByDomain... parametersConstraints) {
+    HappyPathYield yield = new HappyPathYield(methodBehavior);
+    yield.setResult(resultIndex, resultConstraint);
+    yield.parametersConstraints.addAll(Arrays.asList(parametersConstraints));
+    methodBehavior.addYield(yield);
+  }
 
   // methods known to be well covered using bytecode-generated behavior
   private static final Set<String> WHITELIST = ImmutableSet.of(
@@ -113,7 +144,7 @@ public class BehaviorCache {
   }
 
   public void cleanup() {
-    behaviors.clear();
+    behaviors = newDefaultBehaviorCache();
   }
 
   public MethodBehavior methodBehaviorForSymbol(Symbol.MethodSymbol symbol) {
@@ -164,7 +195,7 @@ public class BehaviorCache {
   /**
    * Do not trigger any new computation of method behavior, just check if there is a known method behavior for the symbol.
    *
-   * @param symbol The targeted method.
+   * @param signature The targeted method.
    * @return null for methods having no computed method behavior yet, or its method behavior, based on bytecode or source
    */
   @CheckForNull
