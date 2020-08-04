@@ -112,6 +112,53 @@ abstract class A {
     op.get(); // Compliant - dead code
   }
 
+  private void fromLocalField() {
+    if (optional.isPresent() && optional.get() instanceof String) { // Compliant
+      // do something
+    }
+  }
+
+  private void fromField1() {
+    OptionalField optionalField = new OptionalField();
+    if (optionalField.op.isPresent() && optionalField.op.get() instanceof String) { // Compliant, from field
+      // do something
+    }
+  }
+
+  private void fromField2() {
+    OptionalField optionalField = new OptionalField();
+    if (optionalField.op.isPresent()) {
+      testSomething(optionalField.op.get()); // Compliant, from field
+    }
+  }
+
+  private void fromField3(OptionalField optionalField) {
+    if (optionalField.op.isPresent()) {
+      testSomething(optionalField.op.get()); // Compliant, from field
+    }
+  }
+
+  private void fromField4() {
+    Optional<String> op = new OptionalField().op;
+    if (op.isPresent() && op.get() instanceof String) { // Compliant
+      //do something
+    }
+  }
+
+  private void fromField6() {
+    OptionalField optionalField = new OptionalField();
+    if (optionalField.op.get() instanceof String) { // Compliant, FN, we can't know if the field can be empty
+      //do something
+    }
+  }
+
+  private void fromField7() {
+    Optional<String> op = new OptionalField().op;
+    if (op.get() instanceof String) { // Noncompliant
+      //do something
+    }
+  }
+
   abstract boolean testSomething(String s);
 
   abstract boolean testSomethingElse(String s);
@@ -129,5 +176,9 @@ class Location {
     op.get(); // Noncompliant [[sc=5;ec=7]]
   }
 
+}
+
+class OptionalField {
+  Optional<String> op = Optional.of("hello");
 }
 
