@@ -25,8 +25,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
@@ -399,18 +401,21 @@ public class UnclosedResourcesCheck extends SECheck {
       if (symbol.isMethodSymbol() && syntaxNode.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
         String methodName = symbol.name();
         SymbolicValue value = getTargetValue(syntaxNode);
-        if (CLOSE.equals(methodName)) {
-          closeResource(value);
-        } else if (GET_MORE_RESULTS.equals(methodName)) {
-          closeResultSetsRelatedTo(value);
-        } else if (GET_RESULT_SET.equals(methodName)) {
-          constraintManager.setValueFactory(new WrappedValueFactory(value));
+        if (value != null) {
+          if (CLOSE.equals(methodName)) {
+            closeResource(value);
+          } else if (GET_MORE_RESULTS.equals(methodName)) {
+            closeResultSetsRelatedTo(value);
+          } else if (GET_RESULT_SET.equals(methodName)) {
+            constraintManager.setValueFactory(new WrappedValueFactory(value));
+          }
         }
       }
       // close any resource used as argument, even for unknown methods
       closeArguments(syntaxNode.arguments());
     }
 
+    @CheckForNull
     private SymbolicValue getTargetValue(MethodInvocationTree syntaxNode) {
       ExpressionTree targetExpression = ((MemberSelectExpressionTree) syntaxNode.methodSelect()).expression();
       SymbolicValue value;
@@ -427,7 +432,7 @@ public class UnclosedResourcesCheck extends SECheck {
       for (SymbolicValue constrainedValue : programState.getValuesWithConstraints(OPEN)) {
         if (constrainedValue instanceof ResourceWrapperSymbolicValue) {
           ResourceWrapperSymbolicValue rValue = (ResourceWrapperSymbolicValue) constrainedValue;
-          if (value.equals(rValue.dependent)) {
+          if (rValue.dependent.equals(value)) {
             programState = programState.addConstraintTransitively(rValue, CLOSED);
           }
         }
@@ -470,7 +475,7 @@ public class UnclosedResourcesCheck extends SECheck {
 
     @Override
     public void visitNewClass(NewClassTree syntaxNode) {
-      final SymbolicValue instanceValue = programState.peekValue();
+      SymbolicValue instanceValue = Objects.requireNonNull(programState.peekValue());
       if (isOpeningResource(syntaxNode) && !passedCloseableParameter(instanceValue)) {
         programState = programState.addConstraintTransitively(instanceValue, OPEN);
       }
@@ -484,7 +489,7 @@ public class UnclosedResourcesCheck extends SECheck {
     @Override
     public void visitMethodInvocation(MethodInvocationTree syntaxNode) {
       if (methodOpeningResource(syntaxNode)) {
-        SymbolicValue peekedValue = programState.peekValue();
+        SymbolicValue peekedValue = Objects.requireNonNull(programState.peekValue());
         programState = programState.addConstraintTransitively(peekedValue, OPEN);
         // returned resource is not null
         programState = programState.addConstraint(peekedValue, ObjectConstraint.NOT_NULL);
