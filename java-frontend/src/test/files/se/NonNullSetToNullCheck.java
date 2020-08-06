@@ -345,3 +345,22 @@ class MultipleConstructors {
   }
 
 }
+
+class SpringJavaBean {
+
+  @javax.validation.constraints.NotNull // This annotation will be used by Bean Validation
+  private String field;
+
+  private SpringJavaBean() { // Compliant
+    // Java Bean's fields will be initialized and validated later
+  }
+
+  public String getField() {
+    return field;
+  }
+
+  public void setField(String field) {
+    this.field = field;
+  }
+
+}
