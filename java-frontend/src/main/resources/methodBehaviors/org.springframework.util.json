@@ -1,0 +1,784 @@
+[
+  {
+    "signature": "org.springframework.util.Assert#hasLength(Ljava/lang/String;)V",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#hasLength(Ljava/lang/String;Ljava/lang/String;)V",
+    "arity": 2,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.StringUtils#hasLength(Ljava/lang/String;)Z",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.TRUE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.FALSE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.StringUtils#hasLength(Ljava/lang/CharSequence;)Z",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.FALSE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.TRUE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#hasText(Ljava/lang/String;)V",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#hasText(Ljava/lang/String;Ljava/lang/String;)V",
+    "arity": 2,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.StringUtils#hasText(Ljava/lang/String;)Z",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.FALSE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.StringUtils#hasText(Ljava/lang/CharSequence;)Z",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.FALSE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#isAssignable(Ljava/lang/Class;Ljava/lang/Class;)V",
+    "arity": 2,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NULL"],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#isAssignable(Ljava/lang/Class;Ljava/lang/Class;Ljava/lang/String;)V",
+    "arity": 3,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NULL"],
+          [],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"],
+          [],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#notNull(Ljava/lang/Object;Ljava/lang/String;)V",
+    "arity": 2,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NULL"],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#isInstanceOf(Ljava/lang/Class;Ljava/lang/Object;)V",
+    "arity": 2,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NULL"],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#isInstanceOf(Ljava/lang/Class;Ljava/lang/Object;Ljava/lang/String;)V",
+    "arity": 3,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NULL"],
+          [],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"],
+          [],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#isNull(Ljava/lang/Object;)V",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NULL"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#isNull(Ljava/lang/Object;Ljava/lang/String;)V",
+    "arity": 2,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NULL"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#isTrue(Z)V",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.FALSE"]
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.TRUE"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#isTrue(ZLjava/lang/String;)V",
+    "arity": 2,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.FALSE"],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.TRUE"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#notEmpty(Ljava/util/Collection;)V",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#notEmpty(Ljava/util/Collection;Ljava/lang/String;)V",
+    "arity": 2,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.CollectionUtils#isEmpty(Ljava/util/Collection;)Z",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.TRUE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.FALSE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#notEmpty([Ljava/lang/Object;)V",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#notEmpty([Ljava/lang/Object;Ljava/lang/String;)V",
+    "arity": 2,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.ObjectUtils#isEmpty([Ljava/lang/Object;)Z",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.TRUE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.FALSE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#notEmpty(Ljava/util/Map;)V",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#notEmpty(Ljava/util/Map;Ljava/lang/String;)V",
+    "arity": 2,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.CollectionUtils#isEmpty(Ljava/util/Map;)Z",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.TRUE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.FALSE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#notNull(Ljava/lang/Object;)V",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NULL"]
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#state(Z)V",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.FALSE"]
+        ],
+        "exception": "java.lang.IllegalStateException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.TRUE"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.Assert#state(ZLjava/lang/String;)V",
+    "arity": 2,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.FALSE"],
+          []
+        ],
+        "exception": "java.lang.IllegalStateException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.TRUE"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.springframework.util.ObjectUtils#isEmpty(Ljava/lang/Object;)Z",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.TRUE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      }
+    ]
+  }
+]

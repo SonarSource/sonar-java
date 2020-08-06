@@ -1,0 +1,262 @@
+[
+  {
+    "signature": "com.google.common.base.Preconditions#checkArgument(Z)V",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.FALSE"]
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.TRUE"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "com.google.common.base.Preconditions#checkArgument(ZLjava/lang/Object;)V",
+    "arity": 2,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.FALSE"],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.TRUE"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "com.google.common.base.Preconditions#checkNotNull(Ljava/lang/Object;)Ljava/lang/Object;",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": 0,
+        "resultConstaint": [
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NULL"]
+        ],
+        "exception": "java.lang.NullPointerException",
+        "isExceptional": true
+      }
+    ]
+  },
+  {
+    "signature": "com.google.common.base.Preconditions#checkState(Z)V",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.FALSE"]
+        ],
+        "exception": "java.lang.IllegalStateException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.TRUE"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "com.google.common.base.Verify#verify(Z)V",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.FALSE"]
+        ],
+        "exception": "com.google.common.base.VerifyException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.TRUE"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "com.google.common.base.Verify#verify(ZLjava/lang/String;[Ljava/lang/Object;)V",
+    "arity": 3,
+    "varArgs": true,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.FALSE"],
+          [],
+          []
+        ],
+        "exception": "com.google.common.base.VerifyException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.TRUE"],
+          [],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "com.google.common.base.Verify#verifyNotNull(Ljava/lang/Object;)Ljava/lang/Object;",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NULL"]
+        ],
+        "exception": "com.google.common.base.VerifyException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": 0,
+        "resultConstaint": [
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "com.google.common.base.Verify#verifyNotNull(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;",
+    "arity": 3,
+    "varArgs": true,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NULL"],
+          [],
+          []
+        ],
+        "exception": "com.google.common.base.VerifyException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"],
+          [],
+          []
+        ],
+        "resultIndex": 0,
+        "resultConstaint": [
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "com.google.common.base.Strings#isNullOrEmpty(Ljava/lang/String;)Z",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.FALSE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.TRUE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "com.google.common.base.Platform#stringIsNullOrEmpty(Ljava/lang/String;)Z",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.TRUE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.FALSE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      }
+    ]
+  }
+]

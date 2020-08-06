@@ -33,6 +33,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.sonar.java.bytecode.se.BytecodeEGWalker;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
@@ -305,5 +307,38 @@ public class MethodBehavior {
 
   public void setDeclaredExceptions(List<String> declaredExceptions) {
     this.declaredExceptions = declaredExceptions;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null || getClass() != obj.getClass()) {
+      return false;
+    }
+    MethodBehavior other = (MethodBehavior) obj;
+    return new EqualsBuilder()
+      .append(signature, other.signature)
+      .append(arity, other.arity)
+      .append(varArgs, other.varArgs)
+      .append(complete, other.complete)
+      .append(visited, other.visited)
+      .append(declaredExceptions, other.declaredExceptions)
+      .append(yields, other.yields)
+      .isEquals();
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder(11, 74371)
+      .append(signature)
+      .append(arity)
+      .append(varArgs)
+      .append(complete)
+      .append(visited)
+      .append(declaredExceptions)
+      .append(yields)
+      .hashCode();
   }
 }

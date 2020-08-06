@@ -1,0 +1,29 @@
+[
+  {
+    "signature": "org.apache.logging.log4j.core.util.Assert#requireNonNull(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;",
+    "arity": 2,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"],
+          []
+        ],
+        "resultIndex": 0,
+        "resultConstaint": [
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NULL"],
+          []
+        ],
+        "exception": "java.lang.NullPointerException",
+        "isExceptional": true
+      }
+    ]
+  }
+]

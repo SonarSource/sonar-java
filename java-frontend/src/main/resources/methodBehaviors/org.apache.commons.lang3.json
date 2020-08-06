@@ -1,0 +1,246 @@
+[
+  {
+    "signature": "org.apache.commons.lang3.StringUtils#isEmpty(Ljava/lang/CharSequence;)Z",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.TRUE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.FALSE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.StringUtils#isNotEmpty(Ljava/lang/CharSequence;)Z",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.TRUE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.FALSE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.StringUtils#isBlank(Ljava/lang/CharSequence;)Z",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.TRUE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.FALSE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.StringUtils#isNotBlank(Ljava/lang/CharSequence;)Z",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.TRUE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [
+          "BooleanConstraint.FALSE",
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.Validate#notEmpty(Ljava/util/Collection;)Ljava/util/Collection;",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NULL"]
+        ],
+        "exception": "java.lang.NullPointerException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": 0,
+        "resultConstaint": [
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.Validate#notEmpty(Ljava/util/Collection;Ljava/lang/String;[Ljava/lang/Object;)Ljava/util/Collection;",
+    "arity": 3,
+    "varArgs": true,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"],
+          [],
+          []
+        ],
+        "resultIndex": 0,
+        "resultConstaint": [
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"],
+          [],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NULL"],
+          [],
+          []
+        ],
+        "exception": "java.lang.NullPointerException",
+        "isExceptional": true
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.Validate#notNull(Ljava/lang/Object;)Ljava/lang/Object;",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NULL"]
+        ],
+        "exception": "java.lang.NullPointerException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": 0,
+        "resultConstaint": [
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.Validate#notNull(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;",
+    "arity": 3,
+    "varArgs": true,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"],
+          [],
+          []
+        ],
+        "resultIndex": 0,
+        "resultConstaint": [
+          "ObjectConstraint.NOT_NULL"
+        ],
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NULL"],
+          [],
+          []
+        ],
+        "exception": "java.lang.NullPointerException",
+        "isExceptional": true
+      }
+    ]
+  }
+]
