@@ -150,6 +150,11 @@ class BehaviorCacheTest {
   }
 
   @Test
+  void objects_methods() {
+    verifyNoIssueOnFile("src/test/files/se/ObjectsMethodsMethodBehaviors.java");
+  }
+
+  @Test
   void guava_common_Strings() throws Exception {
     verifyNoIssueOnFile("src/test/files/se/GuavaCommonStrings.java");
   }

@@ -1,0 +1,154 @@
+[
+  {
+    "signature": "org.eclipse.core.runtime.Assert#isLegal(Z)Z",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.FALSE"]
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.TRUE"]
+        ],
+        "resultIndex": 0,
+        "resultConstaint": [
+          "BooleanConstraint.TRUE"
+        ],
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.eclipse.core.runtime.Assert#isLegal(ZLjava/lang/String;)Z",
+    "arity": 2,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.TRUE"],
+          []
+        ],
+        "resultIndex": 0,
+        "resultConstaint": [
+          "BooleanConstraint.TRUE"
+        ],
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.FALSE"],
+          []
+        ],
+        "exception": "java.lang.IllegalArgumentException",
+        "isExceptional": true
+      }
+    ]
+  },
+  {
+    "signature": "org.eclipse.core.runtime.Assert#isNotNull(Ljava/lang/Object;)V",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NULL"]
+        ],
+        "exception": "org.eclipse.core.runtime.AssertionFailedException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.eclipse.core.runtime.Assert#isNotNull(Ljava/lang/Object;Ljava/lang/String;)V",
+    "arity": 2,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NULL"],
+          []
+        ],
+        "exception": "org.eclipse.core.runtime.AssertionFailedException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"],
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.eclipse.core.runtime.Assert#isTrue(Z)Z",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.FALSE"]
+        ],
+        "exception": "org.eclipse.core.runtime.AssertionFailedException",
+        "isExceptional": true
+      },
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.TRUE"]
+        ],
+        "resultIndex": 0,
+        "resultConstaint": [
+          "BooleanConstraint.TRUE"
+        ],
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "org.eclipse.core.runtime.Assert#isTrue(ZLjava/lang/String;)Z",
+    "arity": 2,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.TRUE"],
+          []
+        ],
+        "resultIndex": 0,
+        "resultConstaint": [
+          "BooleanConstraint.TRUE"
+        ],
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          ["BooleanConstraint.FALSE"],
+          []
+        ],
+        "exception": "org.eclipse.core.runtime.AssertionFailedException",
+        "isExceptional": true
+      }
+    ]
+  }
+]

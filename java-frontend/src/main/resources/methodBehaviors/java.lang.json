@@ -1,0 +1,234 @@
+[
+  {
+    "signature": "java.lang.Class#isInstance(Ljava/lang/Object;)Z",
+    "arity": 1,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          ["ObjectConstraint.NOT_NULL"]
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [BooleanConstraint.TRUE],
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          []
+        ],
+        "resultIndex": -1,
+        "resultConstaint": [BooleanConstraint.FALSE],
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "java.lang.Math#max(DD)D",
+    "arity": 2,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "resultIndex": 1,
+        "resultConstaint": null,
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "resultIndex": 0,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "java.lang.Math#max(FF)F",
+    "arity": 2,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "resultIndex": 1,
+        "resultConstaint": null,
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "resultIndex": 0,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "java.lang.Math#max(II)I",
+    "arity": 2,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "resultIndex": 1,
+        "resultConstaint": null,
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "resultIndex": 0,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "java.lang.Math#max(JJ)J",
+    "arity": 2,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "resultIndex": 1,
+        "resultConstaint": null,
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "resultIndex": 0,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "java.lang.Math#min(DD)D",
+    "arity": 2,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "resultIndex": 1,
+        "resultConstaint": null,
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "resultIndex": 0,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "java.lang.Math#min(FF)F",
+    "arity": 2,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "resultIndex": 1,
+        "resultConstaint": null,
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "resultIndex": 0,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "java.lang.Math#min(II)I",
+    "arity": 2,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "resultIndex": 1,
+        "resultConstaint": null,
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "resultIndex": 0,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  },
+  {
+    "signature": "java.lang.Math#min(JJ)J",
+    "arity": 2,
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "resultIndex": 1,
+        "resultConstaint": null,
+        "isExceptional": false
+      },
+      {
+        "parametersConstraints": [
+          [],
+          []
+        ],
+        "resultIndex": 0,
+        "resultConstaint": null,
+        "isExceptional": false
+      }
+    ]
+  }
+]
