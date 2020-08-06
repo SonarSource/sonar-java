@@ -60,8 +60,12 @@ public class DivisionByZeroCheck extends SECheck {
     .ofTypes("java.math.BigInteger", "java.math.BigDecimal");
   private static final MethodMatchers BIG_INT_DEC_VALUE_OF = BIG_INTEGER_AND_DECIMAL
     .names("valueOf").addParametersMatcher(MethodMatchers.ANY).build();
-  private static final MethodMatchers BIG_INT_DEC_DIVIDE = BIG_INTEGER_AND_DECIMAL
-    .names("divide").addParametersMatcher(MethodMatchers.ANY).build();
+  private static final MethodMatchers BIG_INT_DEC_DIVIDE_REMAINDER = BIG_INTEGER_AND_DECIMAL
+    .names("divide", "remainder").addParametersMatcher(MethodMatchers.ANY).build();
+  private static final MethodMatchers BIG_INT_DEC_MULTIPLY = BIG_INTEGER_AND_DECIMAL
+    .names("multiply").addParametersMatcher(MethodMatchers.ANY).build();
+  private static final MethodMatchers BIG_INT_DEC_ADD_SUB = BIG_INTEGER_AND_DECIMAL
+    .names("add", "subtract").addParametersMatcher(MethodMatchers.ANY).build();
 
   @VisibleForTesting
   public enum ZeroConstraint implements Constraint {
@@ -179,9 +183,13 @@ public class DivisionByZeroCheck extends SECheck {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (BIG_INT_DEC_DIVIDE.matches(tree)) {
+      if (BIG_INT_DEC_DIVIDE_REMAINDER.matches(tree)) {
         ProgramState.SymbolicValueSymbol rightOp = programState.peekValueSymbol();
         handleDivide(tree, programState.peekValue(1), rightOp.symbolicValue(), rightOp.symbol());
+      } else if (BIG_INT_DEC_ADD_SUB.matches(tree)) {
+        handlePlusMinus(programState.peekValue(1), programState.peekValue(0));
+      } else if (BIG_INT_DEC_MULTIPLY.matches(tree)) {
+        handleMultiply(programState.peekValue(1), programState.peekValue(0));
       }
     }
 
@@ -355,6 +363,8 @@ public class DivisionByZeroCheck extends SECheck {
         if (arg instanceof LiteralTree) {
           handleLiteral(((LiteralTree) arg));
         }
+      } else {
+        checkDeferredConstraint();
       }
     }
 

@@ -511,4 +511,54 @@ class BigIntegerAndDecimal {
     BigDecimal z2 = z1;
     r = r.divide(z2); // Noncompliant
   }
+
+  void bigMultiply(BigInteger r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    BigInteger b1 = BigInteger.valueOf(4);
+    BigInteger mult1 = z1.multiply(b1);
+
+    r = r.divide(mult1); // Noncompliant
+  }
+
+  void bigMultiply2(BigInteger r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    BigInteger b1 = BigInteger.valueOf(4);
+    BigInteger mult2 = b1.multiply(z1);
+
+    r = r.divide(mult2); // Noncompliant
+  }
+
+  void bigMultiplyChained(BigInteger r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    BigInteger b1 = BigInteger.valueOf(4);
+    r = r.divide(z1.multiply(b1)); // Noncompliant
+  }
+
+  void bigPlus(BigInteger r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    BigInteger z2 = BigInteger.valueOf(0);
+    BigInteger sum1 = z1.add(z2);
+
+    r = r.divide(sum1); // Noncompliant
+  }
+
+  void bigMinus(BigInteger r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    BigInteger z2 = BigInteger.valueOf(0);
+    BigInteger sum1 = z1.subtract(z2);
+
+    r = r.divide(sum1); // Noncompliant
+  }
+
+  void bigRemainder(BigInteger r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    BigInteger v1 = BigInteger.valueOf(42);
+    BigInteger z2 = z1.multiply(v1);
+    r = r.remainder(z2); // Noncompliant
+  }
+
+  void simpleBigInt(BigInteger r, int value) {
+    BigInteger z1 = BigInteger.valueOf(value);
+    r = r.divide(z1); // Compliant
+  }
 }
