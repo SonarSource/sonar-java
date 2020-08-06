@@ -9,6 +9,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.Formatter;
 import java.util.jar.JarFile;
+import java.util.Properties;
 
 public class A {
   private final static int MAX_LOOP = 42;
@@ -576,4 +577,26 @@ public class App
     catch(SQLException se){}
     return con;
   }
+
+  public void loadPropertiesWrongHandeling() throws IOException {
+    Properties properties = new Properties();
+    InputStream in = new FileInputStream("file.properties"); // Noncompliant {{Use try-with-resources or close this "FileInputStream" in a "finally" clause.}}
+    OutputStream out = new FileOutputStream("file.properties"); // Noncompliant {{Use try-with-resources or close this "FileOutputStream" in a "finally" clause.}}
+    properties.load(in);
+    properties.store(out, "");
+    return properties;
+  }
+
+  public void loadPropertiesGoodHandeling() throws IOException {
+    Properties properties = new Properties();
+    FileInputStream in = new FileInputStream("file.properties");
+    try (OutputStream out = new FileOutputStream("file.properties")) {
+      properties.load(in);
+      properties.store(out, "");
+    } finally {
+      in.close();
+    }
+    return properties;
+  }
+
 }
