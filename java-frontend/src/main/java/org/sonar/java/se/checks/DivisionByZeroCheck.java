@@ -20,7 +20,11 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.annotations.VisibleForTesting;
-
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
@@ -33,6 +37,7 @@ import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -40,22 +45,23 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
-
-import javax.annotation.Nullable;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Rule(key = "S3518")
 public class DivisionByZeroCheck extends SECheck {
 
   private static final ExceptionalYieldChecker EXCEPTIONAL_YIELD_CHECKER = new ExceptionalYieldChecker(
     "A division by zero will occur when invoking method \"%s()\".");
+
+  private static final MethodMatchers.NameBuilder BIG_INTEGER_AND_DECIMAL = MethodMatchers.create()
+    .ofTypes("java.math.BigInteger", "java.math.BigDecimal");
+  private static final MethodMatchers BIG_INT_DEC_VALUE_OF = BIG_INTEGER_AND_DECIMAL
+    .names("valueOf").addParametersMatcher(MethodMatchers.ANY).build();
+  private static final MethodMatchers BIG_INT_DEC_DIVIDE = BIG_INTEGER_AND_DECIMAL
+    .names("divide").addParametersMatcher(MethodMatchers.ANY).build();
 
   @VisibleForTesting
   public enum ZeroConstraint implements Constraint {
@@ -171,6 +177,14 @@ public class DivisionByZeroCheck extends SECheck {
       }
     }
 
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      if (BIG_INT_DEC_DIVIDE.matches(tree)) {
+        ProgramState.SymbolicValueSymbol rightOp = programState.peekValueSymbol();
+        handleDivide(tree, programState.peekValue(1), rightOp.symbolicValue(), rightOp.symbol());
+      }
+    }
+
     private void checkExpression(Tree tree, SymbolicValue leftOp, SymbolicValue rightOp, Symbol rightOpSymbol) {
       switch (tree.kind()) {
         case MULTIPLY:
@@ -277,7 +291,13 @@ public class DivisionByZeroCheck extends SECheck {
     }
 
     private ExpressionTree getDenominator(Tree tree) {
-      return tree.is(Tree.Kind.DIVIDE, Tree.Kind.REMAINDER) ? ((BinaryExpressionTree) tree).rightOperand() : ((AssignmentExpressionTree) tree).expression();
+      if (tree.is(Tree.Kind.DIVIDE, Tree.Kind.REMAINDER)) {
+        return ((BinaryExpressionTree) tree).rightOperand();
+      } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+        return ((MethodInvocationTree) tree).arguments().get(0);
+      } else {
+        return ((AssignmentExpressionTree) tree).expression();
+      }
     }
 
     @Override
@@ -325,6 +345,20 @@ public class DivisionByZeroCheck extends SECheck {
 
     @Override
     public void visitLiteral(LiteralTree tree) {
+      handleLiteral(tree);
+    }
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      if (BIG_INT_DEC_VALUE_OF.matches(tree)) {
+        ExpressionTree arg = tree.arguments().get(0);
+        if (arg instanceof LiteralTree) {
+          handleLiteral(((LiteralTree) arg));
+        }
+      }
+    }
+
+    private void handleLiteral(LiteralTree tree) {
       String value = tree.value();
       SymbolicValue sv = programState.peekValue();
       if (tree.is(Tree.Kind.CHAR_LITERAL) && isNullCharacter(value)) {

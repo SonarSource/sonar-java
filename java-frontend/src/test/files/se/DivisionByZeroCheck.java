@@ -1,3 +1,6 @@
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 class A {
   void foo(int r) {
     int z1 = 0; // flow@foo {{Implies 'z1' is zero.}}
@@ -493,5 +496,19 @@ class RelationalOperators {
     } else {
       return y;
     }
+  }
+}
+
+class BigIntegerAndDecimal {
+  void simpleBigInt(BigInteger r) {
+    BigInteger z1 = BigInteger.valueOf(0); // flow@simpleBigInt {{'valueOf()' can return zero.}} flow@simpleBigInt {{Implies 'z1' can be zero.}}
+    BigInteger z2 = z1; // flow@simpleBigInt {{Implies 'z2' has the same value as 'z1'.}}
+    r = r.divide(z2); // Noncompliant [[flows=simpleBigInt]] {{Make sure "z2" can't be zero before doing this division.}} flow@simpleBigInt {{Division by zero.}}
+  }
+
+  void simpleBigDec(BigDecimal r) {
+    BigDecimal z1 = BigDecimal.valueOf(0);;
+    BigDecimal z2 = z1;
+    r = r.divide(z2); // Noncompliant
   }
 }
