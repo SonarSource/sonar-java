@@ -222,7 +222,9 @@ public class NullDereferenceCheck extends SECheck {
   }
 
   private static boolean isAnnotatedCheckForNull(MethodInvocationTree syntaxNode) {
-    return syntaxNode.symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull");
+    return syntaxNode.symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull")
+      // Despite the name, Spring Nullable is meant to be used as CheckForNull
+      || syntaxNode.symbol().metadata().isAnnotatedWith("org.springframework.lang.Nullable");
   }
 
   @Override

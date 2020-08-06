@@ -47,6 +47,11 @@ class NullPointerTest {
     return nullableField;
   }
 
+  @org.springframework.lang.Nullable
+  public Object[] springNullableMethod() {
+    return nullableField;
+  }
+
   public void testNotnullable(Object[] parameter) {
     int i;
     Object o;
@@ -94,6 +99,9 @@ class NullPointerTest {
     i = array2.length; // Compliant
 
     i = nullableMethod().length; // Compliant
+
+    // Spring nullable should be considered as a "CheckForNull".
+    i = springNullableMethod().length; // Noncompliant
   }
 
   class A {
