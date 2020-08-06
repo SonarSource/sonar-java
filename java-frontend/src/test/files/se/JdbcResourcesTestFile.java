@@ -1,4 +1,3 @@
-import java.nio.channels.SocketChannel;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -7,28 +6,28 @@ import java.sql.PreparedStatement;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
-class JdbcSample {
+abstract class JdbcSample {
   
-  public void directClose(String url) {
+  public void directClose(String url) throws SQLException {
     DriverManager.getConnection(url).close();
   }
   
-  public void unclosedConnection(String url) {
+  public void unclosedConnection(String url) throws SQLException {
     Connection connection = DriverManager.getConnection(url); // Noncompliant {{Use try-with-resources or close this "Connection" in a "finally" clause.}}
     Statement statement = connection.createStatement(); // Noncompliant {{Use try-with-resources or close this "Statement" in a "finally" clause.}}
   }
   
-  public void unclosedResultSet(String url, String query) {
+  public void unclosedResultSet(String url, String query) throws SQLException {
     try (Connection connection = DriverManager.getConnection(url);) {
       Statement statement = connection.createStatement(); // Noncompliant {{Use try-with-resources or close this "Statement" in a "finally" clause.}}
       PreparedStatement preparedStatement = connection.prepareStatement("SELECT"); // Noncompliant {{Use try-with-resources or close this "PreparedStatement" in a "finally" clause.}}
-      ResultSet result = statement.executeQuery(query); // Noncompliant {{Use try-with-resources or close this "ResultSet" in a "finally" clause.}}
-      ResultSet result2 = preparedStatement.executeQuery(); // Noncompliant {{Use try-with-resources or close this "ResultSet" in a "finally" clause.}}
+      ResultSet result = statement.executeQuery(query); // Compliant because closing the Statement will close the ResultSet, so it's enough to tell the user to close the Statement
+      ResultSet result2 = preparedStatement.executeQuery(); // Ditto
       String name = result.getString(0);
     }
   }
   
-  public void adequateHandling(String url, String query) {
+  public void adequateHandling(String url, String query) throws SQLException {
     try (Connection connection = DriverManager.getConnection(url);) {
       Statement statement = connection.createStatement();
       try {
@@ -44,7 +43,7 @@ class JdbcSample {
     }
   }
   
-  public void properHandling(String url, String query) {
+  public void properHandling(String url, String query) throws SQLException {
     try (Connection connection = DriverManager.getConnection(url);) {
       try (Statement statement = connection.createStatement();) {
         try (ResultSet result = statement.executeQuery(query);) {
@@ -53,43 +52,54 @@ class JdbcSample {
       }
     }
   }
+
+  public void properHandling2(String url, String query) throws SQLException {
+    try (Connection connection = DriverManager.getConnection(url);) {
+      try (Statement statement = connection.createStatement();) {
+        ResultSet result = statement.executeQuery("SELECT a FROM tbl"); // Compliant, will be closed when the next result set is retrieved or the statement is closed
+        String name = result.getString(0);
+      }
+    }
+  }
   
-  public void properHandlingWithMoreResults(String url, String query) {
+  public void properHandlingWithMoreResults(String url, String query) throws SQLException {
     try (Connection connection = DriverManager.getConnection(url);) {
       try (Statement statement = connection.createStatement();) {
         boolean hasResultSets = statement.execute(query);
         while (hasResultSets) {
-          ResultSet result = statement.getResultSet(); // Noncompliant {{Use try-with-resources or close this "ResultSet" in a "finally" clause.}}
+          ResultSet result = statement.getResultSet(); // same
           String name = result.getString(0);
           hasResultSets = statement.getMoreResults();
         }
       }
     }
   }
-  
+
   // The 4 methods below are testing the pattern of resources that are passed
   // to another object which could close them.
-  public Connection returnedConnection_1(String url) {
+  public Connection returnedConnection_1(String url) throws SQLException {
     Connection connection = DriverManager.getConnection(url);
     return connection;
   }
   
-  public Connection returnedConnection_2(String url) {
+  public Connection returnedConnection_2(String url) throws SQLException {
     return DriverManager.getConnection(url);
   }
   
-  public void delegatedConnection_1(String url) {
+  public void delegatedConnection_1(String url) throws SQLException {
     Connection connection = DriverManager.getConnection(url);
     processConnection(connection);
   }
   
-  public void delegatedConnection_2(String url) {
+  public void delegatedConnection_2(String url) throws SQLException {
     processConnection(DriverManager.getConnection(url));
   }
+
+  protected abstract void processConnection(Connection conn);
 }
 
-class A {
-  void foo() {
+abstract class A {
+  void foo() throws SQLException {
     PreparedStatement var1 = null;
     PreparedStatement var2 = null;
 
@@ -134,12 +144,12 @@ class DataSourceTest {
     }
   }
 
-  Connection returnConn1(DataSource dataSource) {
+  Connection returnConn1(DataSource dataSource) throws SQLException {
     Connection connection = dataSource.getConnection();
     return connection;
   }
 
-  Connection returnConn2(DataSource dataSource) {
+  Connection returnConn2(DataSource dataSource) throws SQLException {
     Connection connection = dataSource.getConnection(); // Noncompliant
     connection.setAutoCommit(false); // throws exception
     return connection;

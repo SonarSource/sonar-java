@@ -99,15 +99,11 @@ public class UnclosedResourcesCheck extends SECheck {
 
   private static final String JAVA_IO_AUTO_CLOSEABLE = "java.lang.AutoCloseable";
   private static final String JAVA_IO_CLOSEABLE = "java.io.Closeable";
-  private static final String JAVA_SQL_STATEMENT = "java.sql.Statement";
   private static final String JAVA_SQL_CONNECTION = "java.sql.Connection";
   private static final String JAVA_NIO_FILE_FILES = "java.nio.file.Files";
 
   private static final MethodMatchers JDBC_RESOURCE_CREATIONS = MethodMatchers.or(
     MethodMatchers.create().ofTypes(JAVA_SQL_CONNECTION).names("createStatement", "prepareStatement", "prepareCall").withAnyParameters().build(),
-    MethodMatchers.create().ofTypes(JAVA_SQL_STATEMENT).names("executeQuery").addParametersMatcher("java.lang.String").build(),
-    MethodMatchers.create().ofTypes(JAVA_SQL_STATEMENT).names(PreStatementVisitor.GET_RESULT_SET, "getGeneratedKeys").addWithoutParametersMatcher().build(),
-    MethodMatchers.create().ofTypes("java.sql.PreparedStatement").names("executeQuery").addWithoutParametersMatcher().build(),
     MethodMatchers.create().ofTypes("javax.sql.DataSource").names("getConnection").withAnyParameters().build(),
     MethodMatchers.create().ofTypes("java.sql.DriverManager").names("getConnection").withAnyParameters().build()
   );
@@ -259,8 +255,8 @@ public class UnclosedResourcesCheck extends SECheck {
     if (type.isSubtypeOf(STREAM_TOP_HIERARCHY)) {
       return false;
     }
-    for (String ignoredTypes : IGNORED_CLOSEABLE_SUBTYPES) {
-      if (type.isSubtypeOf(ignoredTypes)) {
+    for (String ignoredType : IGNORED_CLOSEABLE_SUBTYPES) {
+      if (type.isSubtypeOf(ignoredType)) {
         return false;
       }
     }
@@ -328,9 +324,6 @@ public class UnclosedResourcesCheck extends SECheck {
   private class PreStatementVisitor extends CheckerTreeNodeVisitor {
     // closing methods
     private static final String CLOSE = "close";
-    private static final String GET_MORE_RESULTS = "getMoreResults";
-    // opening resources method
-    private static final String GET_RESULT_SET = "getResultSet";
 
     private final ConstraintManager constraintManager;
 
@@ -419,14 +412,8 @@ public class UnclosedResourcesCheck extends SECheck {
       if (symbol.isMethodSymbol() && syntaxNode.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
         String methodName = symbol.name();
         SymbolicValue value = getTargetValue(syntaxNode);
-        if (value != null) {
-          if (CLOSE.equals(methodName)) {
-            closeResource(value);
-          } else if (GET_MORE_RESULTS.equals(methodName)) {
-            closeResultSetsRelatedTo(value);
-          } else if (GET_RESULT_SET.equals(methodName)) {
-            constraintManager.setValueFactory(new WrappedValueFactory(value));
-          }
+        if (value != null && CLOSE.equals(methodName)) {
+          closeResource(value);
         }
       }
       if (!KNOWN_METHODS_KEEPING_ARGUMENTS_OPEN.matches(syntaxNode)) {
@@ -446,17 +433,6 @@ public class UnclosedResourcesCheck extends SECheck {
         value = programState.peekValue();
       }
       return value;
-    }
-
-    private void closeResultSetsRelatedTo(SymbolicValue value) {
-      for (SymbolicValue constrainedValue : programState.getValuesWithConstraints(OPEN)) {
-        if (constrainedValue instanceof ResourceWrapperSymbolicValue) {
-          ResourceWrapperSymbolicValue rValue = (ResourceWrapperSymbolicValue) constrainedValue;
-          if (rValue.dependent.equals(value)) {
-            programState = programState.addConstraintTransitively(rValue, CLOSED);
-          }
-        }
-      }
     }
 
     private void closeArguments(final Arguments arguments) {
