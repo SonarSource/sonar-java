@@ -35,7 +35,6 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.Flow;
@@ -52,6 +51,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ListTree;
@@ -91,9 +91,11 @@ public class UnclosedResourcesCheck extends SECheck {
   public String excludedTypes = "";
   private final List<String> excludedTypesList = new ArrayList<>();
 
-  private final Set<TryStatementTree> tryWithResourcesTrees = new HashSet<>();
+  private final Set<TryStatementTree> visitedTryWithResourcesTrees = new HashSet<>();
   private final Set<Tree> knownResources = new HashSet<>();
   private Type visitedMethodOwnerType;
+
+  private static final Pattern METHOD_NAMES_OPENING_RESOURCES = Pattern.compile("(new|create|open).*");
 
   private static final String JAVA_IO_AUTO_CLOSEABLE = "java.lang.AutoCloseable";
   private static final String JAVA_IO_CLOSEABLE = "java.io.Closeable";
@@ -137,7 +139,7 @@ public class UnclosedResourcesCheck extends SECheck {
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    this.tryWithResourcesTrees.clear();
+    this.visitedTryWithResourcesTrees.clear();
     this.knownResources.clear();
     super.scanFile(context);
   }
@@ -159,30 +161,39 @@ public class UnclosedResourcesCheck extends SECheck {
     if (syntaxNode.is(Tree.Kind.TRY_STATEMENT)) {
       TryStatementTree tryStatementTree = (TryStatementTree) syntaxNode;
       ListTree<Tree> resourceList = tryStatementTree.resourceList();
-      if (!resourceList.isEmpty() && tryWithResourcesTrees.add(tryStatementTree)) {
-        knownResources.addAll(collectAllResourceTrees(resourceList));
+      if (!resourceList.isEmpty() && visitedTryWithResourcesTrees.add(tryStatementTree)) {
+        knownResources.addAll(ResourcesCollector.collect(resourceList));
       }
     }
   }
 
-  private static Set<Tree> collectAllResourceTrees(Tree tree) {
-    JavaTree javaTree = (JavaTree) tree;
-    if (javaTree.isLeaf()) {
-      return Collections.emptySet();
+  private static class ResourcesCollector extends BaseTreeVisitor {
+
+    private final Set<Tree> resources = new HashSet<>();
+
+    static Set<Tree> collect(ListTree<Tree> resources) {
+      ResourcesCollector collector = new ResourcesCollector();
+      resources.accept(collector);
+      return collector.resources;
     }
-    Set<Tree> result = new HashSet<>();
-    if (javaTree.is(Tree.Kind.METHOD_INVOCATION, Tree.Kind.IDENTIFIER, Tree.Kind.NEW_CLASS)) {
-      // the only trees queried to check if these are resources
-      result.add(tree);
+
+    @Override
+    public void visitIdentifier(IdentifierTree tree) {
+      resources.add(tree);
+      // almost a leaf, no need to call the super implementation
     }
-    // also recursively collect all the possible matching trees, as we don't know from what potential tree it will be queried
-    // (a MethodInvocationTree contains Identifiers)
-    javaTree
-      .getChildren()
-      .stream()
-      .map(UnclosedResourcesCheck::collectAllResourceTrees)
-      .forEach(result::addAll);
-    return result;
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      resources.add(tree);
+      super.visitMethodInvocation(tree);
+    }
+
+    @Override
+    public void visitNewClass(NewClassTree tree) {
+      resources.add(tree);
+      super.visitNewClass(tree);
+    }
   }
 
   private boolean isWithinTryHeader(Tree syntaxNode) {
@@ -467,7 +478,6 @@ public class UnclosedResourcesCheck extends SECheck {
 
   private class PostStatementVisitor extends CheckerTreeNodeVisitor {
 
-    private final Pattern methodNamesOpeningResource = Pattern.compile("(new|create|open).*");
 
     PostStatementVisitor(CheckerContext context) {
       super(context.getState());
@@ -518,7 +528,7 @@ public class UnclosedResourcesCheck extends SECheck {
       Symbol methodSymbol = mit.symbol();
       return !methodSymbol.isUnknown()
         && invocationOfMethodFromOtherClass(methodSymbol)
-        && methodNamesOpeningResource.matcher(methodSymbol.name()).matches();
+        && METHOD_NAMES_OPENING_RESOURCES.matcher(methodSymbol.name()).matches();
     }
 
     private boolean invocationOfMethodFromOtherClass(Symbol methodSymbol) {
