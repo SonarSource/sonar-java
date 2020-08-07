@@ -48,17 +48,27 @@ public final class NullableAnnotationUtils {
   private static final String ORG_SPRINGFRAMEWORK_LANG_NON_NULL_API = "org.springframework.lang.NonNullApi";
   private static final String ORG_SPRINGFRAMEWORK_LANG_NON_NULL_FIELDS = "org.springframework.lang.NonNullFields";
 
-  private static final Set<String> NULLABLE_ANNOTATIONS = ImmutableSet.of(
-    "android.support.annotation.Nullable",
-    "androidx.annotation.Nullable",
-    "edu.umd.cs.findbugs.annotations.Nullable",
+  /**
+   * Nullable annotations can be "strong", when one must check for nullness, or "weak", when it
+   * can be null, but it may be fine to not check it.
+   */
+  private static final Set<String> STRONG_NULLABLE_ANNOTATIONS = ImmutableSet.of(
     "javax.annotation.CheckForNull",
-    "javax.annotation.Nullable",
-    "org.eclipse.jdt.annotation.Nullable",
-    "org.jetbrains.annotations.Nullable",
-    "org.springframework.lang.Nullable",
-    "org.checkerframework.checker.nullness.qual.Nullable",
-    "org.checkerframework.checker.nullness.compatqual.NullableDecl");
+    // Despite the name, Spring Nullable is meant to be used as CheckForNull
+    "org.springframework.lang.Nullable");
+
+  private static final Set<String> NULLABLE_ANNOTATIONS = new ImmutableSet.Builder<String>()
+    .add("android.support.annotation.Nullable")
+    .add("androidx.annotation.Nullable")
+    .add("edu.umd.cs.findbugs.annotations.Nullable")
+    .add("javax.annotation.Nullable")
+    .add("org.eclipse.jdt.annotation.Nullable")
+    .add("org.jetbrains.annotations.Nullable")
+    .add("org.checkerframework.checker.nullness.qual.Nullable")
+    .add("org.checkerframework.checker.nullness.compatqual.NullableDecl")
+    .addAll(STRONG_NULLABLE_ANNOTATIONS)
+    .build();
+
   private static final Set<String> NONNULL_ANNOTATIONS = ImmutableSet.of(
     "android.support.annotation.NonNull",
     "androidx.annotation.NonNull",
@@ -246,6 +256,10 @@ public final class NullableAnnotationUtils {
       }
     }
     return new ArrayList<>(result);
+  }
+
+  public static boolean isAnnotatedWithStrongNullness(SymbolMetadata metadata) {
+    return STRONG_NULLABLE_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
   }
 
 }
