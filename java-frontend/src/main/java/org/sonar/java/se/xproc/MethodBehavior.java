@@ -310,6 +310,11 @@ public class MethodBehavior {
   }
 
   @Override
+  public String toString() {
+    return signature + " [" + yields.size() + " yield(s)]";
+  }
+
+  @Override
   public boolean equals(Object obj) {
     if (this == obj) {
       return true;

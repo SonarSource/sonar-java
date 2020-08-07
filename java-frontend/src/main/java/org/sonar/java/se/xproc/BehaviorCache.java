@@ -48,7 +48,8 @@ public class BehaviorCache {
   private static final MethodBehavior CLASS_IS_INSTANCE_BEHAVIOR = classIsInstanceBehavior();
   @VisibleForTesting
   public Map<String, MethodBehavior> behaviors = newDefaultBehaviorCache();
-  private final Map<String, MethodBehavior> bytecodeBehaviors = new LinkedHashMap<>();
+  @VisibleForTesting
+  public final Map<String, MethodBehavior> bytecodeBehaviors = new LinkedHashMap<>();
 
   private static Map<String, MethodBehavior> newDefaultBehaviorCache() {
     Map<String, MethodBehavior> cache = new LinkedHashMap<>();
