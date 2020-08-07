@@ -4,8 +4,7 @@ import java.util.function.Supplier;
 
 import static java.util.Objects.requireNonNull;
 
-public class ObjectsNullCheck {
-  Object o;
+abstract class ObjectsNullCheck {
 
   public void parameterMaybeNullable(Object a) {
     Object x = checkForNullMethod();
@@ -46,10 +45,5 @@ public class ObjectsNullCheck {
   }
 
   @CheckForNull
-  private Object checkForNullMethod() {
-    if (o == null) {
-      return null;
-    }
-    return o;
-  }
+  abstract Object checkForNullMethod();
 }

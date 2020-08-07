@@ -19,6 +19,15 @@
  */
 package org.sonar.java.se;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.io.File;
+import java.io.FileReader;
+import java.io.Reader;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,13 +35,21 @@ import java.util.stream.Collectors;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.java.TestUtils;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.Sema;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
+import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.ExceptionalYield;
 import org.sonar.java.se.xproc.MethodBehavior;
+import org.sonar.java.se.xproc.MethodBehaviorJsonAdapter;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -56,7 +73,6 @@ class BehaviorCacheTest {
 
   @Rule
   public LogTester logTester  = new LogTester();
-  private static NullDereferenceCheck nullDereferenceCheck = new NullDereferenceCheck();
 
   @Test
   void method_behavior_cache_should_be_filled_and_cleanup() {
@@ -127,6 +143,67 @@ class BehaviorCacheTest {
     List<ExceptionalYield> exceptionalYields = behavior.exceptionalPathYields().collect(Collectors.toList());
     assertThat(exceptionalYields).hasSize(3);
     assertThat(exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel).isUnknown())).hasSize(1);
+  }
+
+  @Test
+  void serialization_of_white_list() throws Exception {
+    BehaviorCache behaviorCache = new BehaviorCache(SETestUtils.CLASSLOADER, false);
+    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Collections.singletonList(new NullDereferenceCheck()), behaviorCache);
+
+    List<InputFile> inputFiles = Arrays.asList(
+      "src/test/files/se/JavaLangMathMethods.java",
+      "src/test/files/se/CommonsLang3StringUtilsMethods.java",
+      "src/test/files/se/CommonsLang2StringUtilsMethods.java",
+      "src/test/files/se/GuavaPreconditionsMethods.java",
+      "src/test/files/se/ObjectsMethodsMethodBehaviors.java",
+      "src/test/files/se/GuavaCommonStrings.java",
+      "src/test/files/se/GuavaVerifyMethods.java",
+      "src/test/files/se/CollectionUtilsIsEmpty.java",
+      "src/test/files/se/CommonsLangValidate.java",
+      "src/test/files/se/Log4jAssert.java",
+      "src/test/files/se/SpringAssert.java",
+      "src/test/files/se/EclipseAssert.java")
+      .stream()
+      .map(File::new)
+      .map(TestUtils::inputFile)
+      .collect(Collectors.toList());
+
+    Sema sema = null;
+    for (InputFile inputFile : inputFiles) {
+      CompilationUnitTreeImpl cut = (CompilationUnitTreeImpl) JParserTestUtils.parse("test", inputFile.contents(), SETestUtils.CLASS_PATH);
+      JavaFileScannerContext context = new DefaultJavaFileScannerContext(cut, inputFile, cut.sema, null, new JavaVersionImpl(8), true);
+      sev.scanFile(context);
+      sema = cut.sema;
+    }
+
+    assertThat(behaviorCache.behaviors).hasSize(1);
+    assertThat(behaviorCache.bytecodeBehaviors.keySet()).hasSize(80);
+
+    File serializedMethodBehaviorsFolder = new File("src/main/resources/methodBehaviors");
+    assertThat(serializedMethodBehaviorsFolder)
+      .exists()
+      .isDirectory();
+
+    File[] serializedMethodBehaviors = serializedMethodBehaviorsFolder.listFiles(f -> f.getName().endsWith(".json"));
+    assertThat(serializedMethodBehaviors).hasSize(9);
+
+    List<MethodBehavior> deserializedMethodBehaviors = new ArrayList<>();
+    Type ListOfMethodBehaviorType = new TypeToken<List<MethodBehavior>>() {}.getType();
+
+    Gson gson = MethodBehaviorJsonAdapter.gson(sema);
+    for (File serialized : serializedMethodBehaviors) {
+      try (Reader reader = new FileReader(serialized)) {
+        List<MethodBehavior> deserialized = gson.fromJson(reader, ListOfMethodBehaviorType);
+        deserializedMethodBehaviors.addAll(deserialized);
+      }
+    }
+
+    assertThat(deserializedMethodBehaviors.size())
+      .isEqualTo(behaviorCache.behaviors.size() + behaviorCache.bytecodeBehaviors.size())
+      .isEqualTo(81);
+    assertThat(deserializedMethodBehaviors)
+      .containsAll(behaviorCache.behaviors.values())
+      .containsAll(behaviorCache.bytecodeBehaviors.values());
   }
 
   @Test
@@ -252,6 +329,7 @@ class BehaviorCacheTest {
   }
 
   private static void verifyNoIssueOnFile(String fileName) {
+    SECheck nullDereferenceCheck = new NullDereferenceCheck();
     createSymbolicExecutionVisitorAndSemantic(fileName, false, nullDereferenceCheck);
     // verify we did not raise any issue, if we did, the context will get them reported.
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
