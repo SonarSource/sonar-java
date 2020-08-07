@@ -737,10 +737,6 @@ public class CFG implements ControlFlowGraph {
   }
 
   private void buildSwitchExpression(SwitchExpressionTree switchExpressionTree, Tree terminator) {
-    if (terminator.is(Tree.Kind.SWITCH_EXPRESSION)) {
-      // force a switch expression in the current block
-      currentBlock.elements.add(terminator);
-    }
     Block switchSuccessor = currentBlock;
     // process condition
     currentBlock = createBlock();
@@ -773,7 +769,7 @@ public class CFG implements ControlFlowGraph {
         currentBlock.setCaseGroup(caseGroupTree);
         switches.getLast().addSuccessor(currentBlock);
         if (!caseGroupTree.equals(firstCase)) {
-          // No block predecessing the first case group.
+          // No block preceding the first case group.
           currentBlock = createBlock(currentBlock);
         }
       }

@@ -821,7 +821,6 @@ class CFGTest {
       block(
         element(IDENTIFIER, "foo")).terminator(SWITCH_EXPRESSION).successors(3, 4, 5, 6),
       block(
-        element(SWITCH_EXPRESSION),
         element(VARIABLE, "a"),
         element(IDENTIFIER, "a")).terminator(RETURN_STATEMENT).successors(0));
     cfgChecker.check(cfg);
@@ -877,7 +876,6 @@ class CFGTest {
       block(
         element(IDENTIFIER, "foo")).terminator(SWITCH_EXPRESSION).successors(3, 4, 5, 6, 7),
       block(
-        element(SWITCH_EXPRESSION),
         element(VARIABLE, "a"),
         element(IDENTIFIER, "a")).terminator(RETURN_STATEMENT).successors(0));
     cfgChecker.check(cfg);
