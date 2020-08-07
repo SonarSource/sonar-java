@@ -50,6 +50,8 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedWithStrongNullness;
+
 @Rule(key = "S2259")
 public class NullDereferenceCheck extends SECheck {
 
@@ -211,7 +213,8 @@ public class NullDereferenceCheck extends SECheck {
 
   private static List<ProgramState> setNullConstraint(CheckerContext context, Tree syntaxNode) {
     SymbolicValue val = context.getState().peekValue();
-    if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION) && isAnnotatedCheckForNull((MethodInvocationTree) syntaxNode)) {
+    if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION) &&
+      isAnnotatedWithStrongNullness(((MethodInvocationTree) syntaxNode).symbol().metadata())) {
       Objects.requireNonNull(val);
       List<ProgramState> states = new ArrayList<>();
       states.addAll(val.setConstraint(context.getState(), ObjectConstraint.NULL));
@@ -219,12 +222,6 @@ public class NullDereferenceCheck extends SECheck {
       return states;
     }
     return Lists.newArrayList(context.getState());
-  }
-
-  private static boolean isAnnotatedCheckForNull(MethodInvocationTree syntaxNode) {
-    return syntaxNode.symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull")
-      // Despite the name, Spring Nullable is meant to be used as CheckForNull
-      || syntaxNode.symbol().metadata().isAnnotatedWith("org.springframework.lang.Nullable");
   }
 
   @Override
