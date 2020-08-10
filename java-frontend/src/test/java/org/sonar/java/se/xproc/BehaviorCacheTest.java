@@ -17,15 +17,9 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se;
+package org.sonar.java.se.xproc;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import java.io.File;
-import java.io.FileReader;
-import java.io.Reader;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -44,12 +38,17 @@ import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.Sema;
+import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.CheckerDispatcher;
+import org.sonar.java.se.Pair;
+import org.sonar.java.se.ProgramState;
+import org.sonar.java.se.SETestUtils;
+import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.ExceptionalYield;
 import org.sonar.java.se.xproc.MethodBehavior;
-import org.sonar.java.se.xproc.MethodBehaviorJsonAdapter;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -77,8 +76,8 @@ class BehaviorCacheTest {
   @Test
   void method_behavior_cache_should_be_filled_and_cleanup() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodBehavior.java");
-    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(5);
-    assertThat(sev.behaviorCache.behaviors.values().stream().filter(mb -> mb != null).count()).isEqualTo(5);
+    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(4);
+    assertThat(sev.behaviorCache.behaviors.values().stream().filter(mb -> mb != null).count()).isEqualTo(4);
     // check order of method exploration : last is the topMethod as it requires the other to get its behavior.
     // Then, as we explore fully a path before switching to another one (see the LIFO in EGW) : qix is handled before foo.
     assertThat(sev.behaviorCache.behaviors.keySet().stream().collect(Collectors.toList())).containsSequence(
@@ -92,15 +91,15 @@ class BehaviorCacheTest {
       .filter(s -> s.equals("#nativeMethod") || s.contains("#abstractMethod") || s.contains("#publicMethod"))
       .map(s -> sev.behaviorCache.behaviors.get(s))).isEmpty();
 
-    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(5);
+    assertThat(sev.behaviorCache.behaviors).hasSize(4);
     sev.behaviorCache.cleanup();
-    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(1);
+    assertThat(sev.behaviorCache.behaviors).isEmpty();
   }
 
   @Test
   void compute_beahvior_only_once() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/ComputeBehaviorOnce.java");
-    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(6);
+    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(5);
     assertThat(logTester.logs(LoggerLevel.DEBUG)).containsOnlyOnce("Could not complete symbolic execution: ");
     assertThat(sev.behaviorCache.behaviors.values()).allMatch(MethodBehavior::isVisited);
   }
@@ -108,17 +107,14 @@ class BehaviorCacheTest {
   @Test
   void explore_method_with_recursive_call() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/RecursiveCall.java");
-    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(2);
-    assertThat(sev.behaviorCache.behaviors.keySet()).containsExactly(
-      "java.lang.Class#isInstance(Ljava/lang/Object;)Z",
-      "RecursiveCall#foo(I)I"
-    );
+    assertThat(sev.behaviorCache.behaviors).hasSize(1);
+    assertThat(sev.behaviorCache.behaviors.keySet().iterator().next()).contains("#foo");
   }
 
   @Test
   void interrupted_exploration_does_not_create_method_yields() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/PartialMethodYieldMaxStep.java");
-    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(3);
+    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(2);
 
     MethodBehavior plopMethod = getMethodBehavior(sev, "foo");
     assertThat(plopMethod.isComplete()).isFalse();
@@ -146,7 +142,7 @@ class BehaviorCacheTest {
   }
 
   @Test
-  void serialization_of_white_list() throws Exception {
+  void hardcoded_behaviors() throws Exception {
     BehaviorCache behaviorCache = new BehaviorCache(SETestUtils.CLASSLOADER, false);
     SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Collections.singletonList(new NullDereferenceCheck()), behaviorCache);
 
@@ -168,42 +164,14 @@ class BehaviorCacheTest {
       .map(TestUtils::inputFile)
       .collect(Collectors.toList());
 
-    Sema sema = null;
     for (InputFile inputFile : inputFiles) {
       CompilationUnitTreeImpl cut = (CompilationUnitTreeImpl) JParserTestUtils.parse("test", inputFile.contents(), SETestUtils.CLASS_PATH);
       JavaFileScannerContext context = new DefaultJavaFileScannerContext(cut, inputFile, cut.sema, null, new JavaVersionImpl(8), true);
       sev.scanFile(context);
-      sema = cut.sema;
     }
 
-    assertThat(behaviorCache.behaviors).hasSize(1);
-    assertThat(behaviorCache.bytecodeBehaviors.keySet()).hasSize(80);
-
-    File serializedMethodBehaviorsFolder = new File("src/main/resources/methodBehaviors");
-    assertThat(serializedMethodBehaviorsFolder)
-      .exists()
-      .isDirectory();
-
-    File[] serializedMethodBehaviors = serializedMethodBehaviorsFolder.listFiles(f -> f.getName().endsWith(".json"));
-    assertThat(serializedMethodBehaviors).hasSize(9);
-
-    List<MethodBehavior> deserializedMethodBehaviors = new ArrayList<>();
-    Type ListOfMethodBehaviorType = new TypeToken<List<MethodBehavior>>() {}.getType();
-
-    Gson gson = MethodBehaviorJsonAdapter.gson(sema);
-    for (File serialized : serializedMethodBehaviors) {
-      try (Reader reader = new FileReader(serialized)) {
-        List<MethodBehavior> deserialized = gson.fromJson(reader, ListOfMethodBehaviorType);
-        deserializedMethodBehaviors.addAll(deserialized);
-      }
-    }
-
-    assertThat(deserializedMethodBehaviors.size())
-      .isEqualTo(behaviorCache.behaviors.size() + behaviorCache.bytecodeBehaviors.size())
-      .isEqualTo(81);
-    assertThat(deserializedMethodBehaviors)
-      .containsAll(behaviorCache.behaviors.values())
-      .containsAll(behaviorCache.bytecodeBehaviors.values());
+    assertThat(behaviorCache.behaviors).isEmpty();
+    assertThat(behaviorCache.hardcodedBehaviors).hasSize(81);
   }
 
   @Test
@@ -274,8 +242,7 @@ class BehaviorCacheTest {
     assertThat(sev.behaviorCache.get("java.lang.Object#wait()V;").isComplete()).isFalse();
     assertThat(sev.behaviorCache.get("java.util.Optional#get()Ljava/lang/Object;").isComplete()).isFalse();
     assertThat(sev.behaviorCache.get("java.util.Optional#isPresent()Z").isComplete()).isFalse();
-    assertThat(sev.behaviorCache.behaviors.keySet())
-      .containsExactly("java.lang.Class#isInstance(Ljava/lang/Object;)Z");
+    assertThat(sev.behaviorCache.behaviors).isEmpty();
   }
 
   @Test
@@ -289,7 +256,11 @@ class BehaviorCacheTest {
         if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
           Symbol.MethodSymbol symbol = (Symbol.MethodSymbol) ((MethodInvocationTree) syntaxNode).symbol();
           MethodBehavior peekMethodBehavior = ((CheckerDispatcher) context).peekMethodBehavior(symbol);
-          assertThat(peekMethodBehavior).isNull();
+          if ("isBlank".equals(symbol.name())) {
+            assertThat(peekMethodBehavior).isNotNull();
+          } else {
+            assertThat(peekMethodBehavior).isNull();
+          }
           testedPre.add(symbol.name());
         }
         return context.getState();
@@ -319,10 +290,7 @@ class BehaviorCacheTest {
     assertThat(sev.behaviorCache.peek("org.foo.A#foo()Z").isComplete()).isTrue();
     assertThat(sev.behaviorCache.peek("org.foo.A#bar()Z").isComplete()).isFalse();
     assertThat(sev.behaviorCache.peek("org.foo.A#unknownMethod()Z")).isNull();
-    assertThat(sev.behaviorCache.behaviors.keySet()).containsExactly(
-      "java.lang.Class#isInstance(Ljava/lang/Object;)Z",
-      "org.foo.A#foo()Z"
-    );
+    assertThat(sev.behaviorCache.behaviors.keySet()).containsOnly("org.foo.A#foo()Z");
 
     assertThat(testedPre).containsOnly("foo", "bar", "isBlank");
     assertThat(testedPost).containsOnly("foo", "bar", "isBlank");

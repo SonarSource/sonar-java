@@ -61,8 +61,36 @@ public class MethodBehavior {
     this.yields = new LinkedHashSet<>();
     this.parameters = new ArrayList<>();
     this.varArgs = varArgs;
-    this.arity = org.objectweb.asm.Type.getArgumentTypes(signature.substring(signature.indexOf('('))).length;
+    this.arity = numberOfArguments(signature);
     this.declaredExceptions = Collections.emptyList();
+  }
+
+  /**
+   * Based on ASM method org.objectweb.asm.Type.getArgumentTypes(String),
+   * initially used to compute the number of arguments from a method descriptor
+   *
+   * @param methodDescriptor the method signature containing the definition of arguments
+   * @return the arity of the method
+   */
+  private static int numberOfArguments(String signature) {
+    String methodDescriptor = signature.substring(signature.indexOf('('));
+    // First step: compute the number of argument types in methodDescriptor.
+    int numArgumentTypes = 0;
+    // Skip the first character, which is always a '('.
+    int currentOffset = 1;
+    // Parse the argument types, one at a each loop iteration.
+    while (methodDescriptor.charAt(currentOffset) != ')') {
+      while (methodDescriptor.charAt(currentOffset) == '[') {
+        currentOffset++;
+      }
+      if (methodDescriptor.charAt(currentOffset++) == 'L') {
+        // Skip the argument descriptor content.
+        int semiColumnOffset = methodDescriptor.indexOf(';', currentOffset);
+        currentOffset = Math.max(currentOffset, semiColumnOffset + 1);
+      }
+      ++numArgumentTypes;
+    }
+    return numArgumentTypes;
   }
 
   public MethodBehavior(String signature) {
