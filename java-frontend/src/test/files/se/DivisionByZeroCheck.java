@@ -607,4 +607,109 @@ class BigIntegerAndDecimal {
     BigInteger z1 = BigInteger.valueOf(j);
     r = r.divide(z1); // Noncompliant
   }
+
+  // Operations keeping constraints
+  void keepToBigInteger(BigInteger r) {
+    BigDecimal z1 = BigDecimal.valueOf(0);
+    BigInteger z2 = z1.toBigInteger();
+    r = r.divide(z2); // Noncompliant
+  }
+
+  void keepToBigIntegerExact(BigInteger r) {
+    BigDecimal z1 = BigDecimal.valueOf(0);
+    BigInteger z2 = z1.toBigIntegerExact();
+    r = r.divide(z2); // Noncompliant
+  }
+
+  void keepRound(BigDecimal r) {
+    MathContext mc = new MathContext(5);
+    BigDecimal z1 = BigDecimal.valueOf(0);
+    z1 = z1.round(mc);
+    r = r.divide(z1); // Noncompliant
+  }
+
+  void keepRemainder(BigDecimal r) {
+    BigDecimal z1 = BigDecimal.valueOf(0);
+    z1 = z1.remainder(r);
+    r = r.divide(z1); // Noncompliant
+  }
+
+  void keepPow(BigDecimal r) {
+    BigDecimal z1 = BigDecimal.valueOf(0);
+    z1 = z1.pow(42);
+    r = r.divide(z1); // Noncompliant
+  }
+
+  void keepLongValueExact(long r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    long l1 = z1.longValueExact();
+    r = r / l1; // Noncompliant
+  }
+
+  void keepLongValue(long r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    long l1 = z1.longValue();
+    r = r / l1; // Noncompliant
+  }
+
+  void keepIntValueExact(int r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    int l1 = z1.intValueExact();
+    r = r / l1; // Noncompliant
+  }
+
+  void keepIntValue(int r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    int l1 = z1.intValue();
+    r = r / l1; // Noncompliant
+  }
+
+  void keepFloatValue(float r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    float l1 = z1.floatValue();
+    r = r / l1; // Noncompliant
+  }
+
+  void keepDoubleValue(double r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    double l1 = z1.doubleValue();
+    r = r / l1; // Noncompliant
+  }
+
+  void keepShortValueExact(short r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    short s1 = z1.shortValueExact();
+    int res = r / s1; // Noncompliant
+  }
+
+  void keepShortValue(short r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    short s1 = z1.shortValue();
+    int res = r / s1; // Noncompliant
+  }
+
+  void keepByteValue(byte r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    byte s1 = z1.byteValue();
+    int res = r / s1; // Noncompliant
+  }
+
+  void keepByteValueExact(byte r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    byte s1 = z1.byteValueExact();
+    int res = r / s1; // Noncompliant
+  }
+
+  void keepAbs(BigInteger r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    BigInteger abs = z1.abs();
+    r = r.divide(abs); // Noncompliant
+  }
+
+  void keepShift(BigInteger r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    z1 = z1.shiftLeft(42);
+    z1 = z1.shiftRight(42);
+    r = r.divide(z1); // Noncompliant
+  }
 }

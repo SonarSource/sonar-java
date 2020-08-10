@@ -70,6 +70,11 @@ public class DivisionByZeroCheck extends SECheck {
     .names("multiply").addParametersMatcher(MethodMatchers.ANY).build();
   private static final MethodMatchers BIG_INT_DEC_ADD_SUB = BIG_INTEGER_AND_DECIMAL
     .names("add", "subtract").addParametersMatcher(MethodMatchers.ANY).build();
+  private static final MethodMatchers KEEPING_CONSTRAINTS_WITHOUT_PARAM = BIG_INTEGER_AND_DECIMAL
+    .names("toBigInteger", "toBigIntegerExact", "abs", "byteValueExact", "byteValue", "byteValueExact", "shortValue", "shortValueExact",
+    "doubleValue", "floatValue", "intValue", "intValueExact" , "longValue", "longValueExact").addParametersMatcher().build();
+  private static final MethodMatchers KEEPING_CONSTRAINTS_WITH_ONE_PARAM = BIG_INTEGER_AND_DECIMAL
+    .names("pow", "round", "shiftRight", "shiftLeft").addParametersMatcher(MethodMatchers.ANY).build();
 
   @VisibleForTesting
   public enum ZeroConstraint implements Constraint {
@@ -197,9 +202,15 @@ public class DivisionByZeroCheck extends SECheck {
       } else if (BIG_INT_DEC_VALUE_OF.matches(tree)) {
         ExpressionTree arg = tree.arguments().get(0);
         SymbolicValue sv = programState.peekValue();
-        if (arg.is(Tree.Kind.IDENTIFIER) && sv != null && isZero(sv)) {
+        if (arg.is(Tree.Kind.IDENTIFIER) && isZero(sv)) {
           reuseSymbolicValue(sv);
         }
+      } else if (KEEPING_CONSTRAINTS_WITHOUT_PARAM.matches(tree)) {
+        SymbolicValue sv = programState.peekValue();
+        reuseSymbolicValue(sv);
+      } else if (KEEPING_CONSTRAINTS_WITH_ONE_PARAM.matches(tree)) {
+        SymbolicValue sv = programState.peekValue(1);
+        reuseSymbolicValue(sv);
       }
     }
 
