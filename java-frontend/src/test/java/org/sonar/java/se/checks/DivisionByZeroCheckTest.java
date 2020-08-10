@@ -52,7 +52,7 @@ class DivisionByZeroCheckTest {
   @Test
   void invocation_leading_to_ArithmeticException() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/se/MethodInvocationLeadingToArithmeticException.java")
+      .onFile("src/test/files/se/MethodInvocationLeadingToDivisionByZero.java")
       .withCheck(new DivisionByZeroCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();

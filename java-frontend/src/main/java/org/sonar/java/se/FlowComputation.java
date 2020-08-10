@@ -332,11 +332,14 @@ public class FlowComputation {
 
     private Optional<JavaFileScannerContext.Location> flowFromThrownException(ExplodedGraph.Edge edge) {
       SymbolicValue peekValue = edge.child.programState.peekValue();
-      if (peekValue instanceof SymbolicValue.ExceptionalSymbolicValue
-        && (isMethodInvocationNode(edge.parent) || isDivByZeroExceptionalYield(edge))) {
-        Type type = ((SymbolicValue.ExceptionalSymbolicValue) peekValue).exceptionType();
-        String msg = String.format("%s is thrown.", exceptionName(type));
-        return Optional.of(location(edge.parent, msg));
+      if (peekValue instanceof SymbolicValue.ExceptionalSymbolicValue) {
+        if (isMethodInvocationNode(edge.parent)) {
+          Type type = ((SymbolicValue.ExceptionalSymbolicValue) peekValue).exceptionType();
+          String msg = String.format("%s is thrown.", exceptionName(type));
+          return Optional.of(location(edge.parent, msg));
+        } else if (isDivByZeroExceptionalYield(edge)) {
+          return Optional.of(location(edge.parent, "Division by zero."));
+        }
       }
       return Optional.empty();
     }
