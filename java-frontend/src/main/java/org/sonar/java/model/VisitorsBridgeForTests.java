@@ -58,7 +58,7 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
   }
 
   public VisitorsBridgeForTests(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
-    super(visitors, projectClasspath, sonarComponents, SymbolicExecutionMode.getMode(Iterables.<JavaCheck>toArray(visitors, JavaCheck.class), true));
+    super(visitors, projectClasspath, sonarComponents, SymbolicExecutionMode.getMode(Iterables.<JavaCheck>toArray(visitors, JavaCheck.class)));
   }
 
   @Override
@@ -130,7 +130,7 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
     }
 
     private AnalyzerMessage createAnalyzerMessage(JavaCheck javaCheck, Tree startTree, @Nullable Tree endTree, String message, List<Location> secondary, @Nullable Integer cost) {
-      List<List<Location>> flows = secondary.stream().map(Collections::singletonList).collect(Collectors.toList());  
+      List<List<Location>> flows = secondary.stream().map(Collections::singletonList).collect(Collectors.toList());
       return createAnalyzerMessage(getInputFile(), javaCheck, startTree, endTree, message, flows, cost);
     }
   }

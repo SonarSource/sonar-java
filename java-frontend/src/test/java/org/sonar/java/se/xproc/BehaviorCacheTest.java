@@ -97,11 +97,19 @@ class BehaviorCacheTest {
   }
 
   @Test
-  void compute_beahvior_only_once() throws Exception {
+  void compute_behavior_only_once() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/ComputeBehaviorOnce.java");
     assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(5);
     assertThat(logTester.logs(LoggerLevel.DEBUG)).containsOnlyOnce("Could not complete symbolic execution: ");
     assertThat(sev.behaviorCache.behaviors.values()).allMatch(MethodBehavior::isVisited);
+  }
+
+  @Test
+  void hardcoded_behaviors_requires_semantic() throws Exception {
+    BehaviorCache behaviorCache = new BehaviorCache();
+    assertThat(behaviorCache.hardcodedBehaviors()).isEmpty();
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/ComputeBehaviorOnce.java");
+    assertThat(sev.behaviorCache.hardcodedBehaviors()).isNotEmpty();
   }
 
   @Test
@@ -143,7 +151,7 @@ class BehaviorCacheTest {
 
   @Test
   void hardcoded_behaviors() throws Exception {
-    BehaviorCache behaviorCache = new BehaviorCache(SETestUtils.CLASSLOADER, false);
+    BehaviorCache behaviorCache = new BehaviorCache();
     SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Collections.singletonList(new NullDereferenceCheck()), behaviorCache);
 
     List<InputFile> inputFiles = Arrays.asList(
@@ -171,7 +179,7 @@ class BehaviorCacheTest {
     }
 
     assertThat(behaviorCache.behaviors).isEmpty();
-    assertThat(behaviorCache.hardcodedBehaviors).hasSize(81);
+    assertThat(behaviorCache.hardcodedBehaviors()).hasSize(81);
   }
 
   @Test
@@ -238,10 +246,10 @@ class BehaviorCacheTest {
   @Test
   void test_blacklist() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/BehaviorCacheBlacklist.java");
-    assertThat(sev.behaviorCache.get("java.lang.Class#getClassLoader()Ljava/lang/ClassLoader;").isComplete()).isFalse();
-    assertThat(sev.behaviorCache.get("java.lang.Object#wait()V;").isComplete()).isFalse();
-    assertThat(sev.behaviorCache.get("java.util.Optional#get()Ljava/lang/Object;").isComplete()).isFalse();
-    assertThat(sev.behaviorCache.get("java.util.Optional#isPresent()Z").isComplete()).isFalse();
+    assertThat(sev.behaviorCache.get("java.lang.Class#getClassLoader()Ljava/lang/ClassLoader;")).isNull();
+    assertThat(sev.behaviorCache.get("java.lang.Object#wait()V;")).isNull();
+    assertThat(sev.behaviorCache.get("java.util.Optional#get()Ljava/lang/Object;")).isNull();
+    assertThat(sev.behaviorCache.get("java.util.Optional#isPresent()Z")).isNull();
     assertThat(sev.behaviorCache.behaviors).isEmpty();
   }
 
@@ -272,12 +280,11 @@ class BehaviorCacheTest {
           Symbol.MethodSymbol symbol = (Symbol.MethodSymbol) ((MethodInvocationTree) syntaxNode).symbol();
           String methodName = symbol.name();
           MethodBehavior peekMethodBehavior = ((CheckerDispatcher) context).peekMethodBehavior(symbol);
-          assertThat(peekMethodBehavior).isNotNull();
           if ("foo".equals(methodName) || "isBlank".equals(methodName)) {
             // foo should have been computed
             assertThat(peekMethodBehavior.isComplete()).isTrue();
           } else if ("bar".equals(methodName)) {
-            assertThat(peekMethodBehavior.isComplete()).isFalse();
+            assertThat(peekMethodBehavior).isNull();
           }
           testedPost.add(methodName);
         }
@@ -288,7 +295,7 @@ class BehaviorCacheTest {
 
     assertThat(sev.behaviorCache.peek("org.apache.commons.lang.StringUtils#isBlank(Ljava/lang/String;)Z").isComplete()).isTrue();
     assertThat(sev.behaviorCache.peek("org.foo.A#foo()Z").isComplete()).isTrue();
-    assertThat(sev.behaviorCache.peek("org.foo.A#bar()Z").isComplete()).isFalse();
+    assertThat(sev.behaviorCache.peek("org.foo.A#bar()Z")).isNull();
     assertThat(sev.behaviorCache.peek("org.foo.A#unknownMethod()Z")).isNull();
     assertThat(sev.behaviorCache.behaviors.keySet()).containsOnly("org.foo.A#foo()Z");
 
@@ -298,7 +305,7 @@ class BehaviorCacheTest {
 
   private static void verifyNoIssueOnFile(String fileName) {
     SECheck nullDereferenceCheck = new NullDereferenceCheck();
-    createSymbolicExecutionVisitorAndSemantic(fileName, false, nullDereferenceCheck);
+    createSymbolicExecutionVisitorAndSemantic(fileName, nullDereferenceCheck);
     // verify we did not raise any issue, if we did, the context will get them reported.
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     nullDereferenceCheck.scanFile(context);

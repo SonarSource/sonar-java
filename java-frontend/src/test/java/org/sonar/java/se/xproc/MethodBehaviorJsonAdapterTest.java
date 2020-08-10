@@ -20,25 +20,16 @@
 package org.sonar.java.se.xproc;
 
 import com.google.gson.Gson;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.Sema;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
-import org.sonar.java.testing.FilesUtils;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 class MethodBehaviorJsonAdapterTest {
-
-  private static final List<File> CLASS_PATH = new ArrayList<>(FilesUtils.getClassPath("target/test-jars"));
-  private static final SquidClassLoader CLASSLOADER = new SquidClassLoader(CLASS_PATH);
 
   private static final String IS_INSTANCE_SIGNATURE = "java.lang.Class#isInstance(Ljava/lang/Object;)Z";
   private static final String IS_INSTANCE_METHOD_BEHAVIOR = "{\n"
@@ -77,8 +68,9 @@ class MethodBehaviorJsonAdapterTest {
 
   @BeforeEach
   void init() {
-    cache = new BehaviorCache(CLASSLOADER, false);
     Sema semanticModel = ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("class A { }")).sema;
+    cache = new BehaviorCache();
+    cache.setFileContext(null, semanticModel);
     gson = MethodBehaviorJsonAdapter.gson(semanticModel);
   }
 

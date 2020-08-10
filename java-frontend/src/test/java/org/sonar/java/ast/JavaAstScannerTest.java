@@ -204,7 +204,7 @@ class JavaAstScannerTest {
       public void init(MethodTree methodTree, CFG cfg) {
         throw new NullPointerException("nobody expect the spanish inquisition !");
       }
-    }), new ArrayList<>(), sonarComponent, SymbolicExecutionMode.ENABLED_WITHOUT_X_FILE));
+    }), new ArrayList<>(), sonarComponent, SymbolicExecutionMode.ENABLED));
     scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/se/MethodBehavior.java")));
     assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
     assertThat(logTester.logs(LoggerLevel.ERROR).get(0)).startsWith("Unable to run check class org.sonar.java.se.SymbolicExecutionVisitor");

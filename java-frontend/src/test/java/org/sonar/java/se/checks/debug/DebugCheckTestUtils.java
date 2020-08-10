@@ -19,9 +19,7 @@
  */
 package org.sonar.java.se.checks.debug;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.Sema;
 import org.sonar.java.se.ExplodedGraphWalker;
 import org.sonar.java.se.SETestUtils;
@@ -34,7 +32,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 public final class DebugCheckTestUtils {
 
   static void verifyIssuesWithMaxSteps(String sourcefile, SECheck check, int maxSteps) {
-    BehaviorCache behaviorCache = new BehaviorCache(new SquidClassLoader(new ArrayList<>()));
+    BehaviorCache behaviorCache = new BehaviorCache();
     SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Collections.singletonList(check), behaviorCache) {
       @Override
       protected ExplodedGraphWalker getWalker() {
