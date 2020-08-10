@@ -215,16 +215,14 @@ public class DivisionByZeroCheck extends SECheck {
         handleMultiply(programState.peekValue(1), programState.peekValue(0));
       } else if (BIG_INT_DEC_VALUE_OF.matches(tree)) {
         ExpressionTree arg = tree.arguments().get(0);
-        SymbolicValue sv = programState.peekValue();
+        SymbolicValue sv = programState.peekValue(0);
         if (arg.is(Tree.Kind.IDENTIFIER) && isZero(sv)) {
           reuseSymbolicValue(sv);
         }
       } else if (KEEPING_CONSTRAINTS_WITHOUT_PARAM.matches(tree)) {
-        SymbolicValue sv = programState.peekValue();
-        reuseSymbolicValue(sv);
+        reuseSymbolicValue(programState.peekValue(0));
       } else if (KEEPING_CONSTRAINTS_WITH_ONE_PARAM.matches(tree)) {
-        SymbolicValue sv = programState.peekValue(1);
-        reuseSymbolicValue(sv);
+        reuseSymbolicValue(programState.peekValue(1));
       }
     }
 
