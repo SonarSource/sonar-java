@@ -47,6 +47,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
@@ -60,6 +61,8 @@ public class DivisionByZeroCheck extends SECheck {
   private static final ExceptionalYieldChecker EXCEPTIONAL_YIELD_CHECKER = new ExceptionalYieldChecker(
     "A division by zero will occur when invoking method \"%s()\".");
 
+  private static final MethodMatchers BIG_DECIMAL_CONSTRUCTOR = MethodMatchers.create()
+    .ofTypes(BIG_DECIMAL).constructor().addParametersMatcher(MethodMatchers.ANY).build();
   private static final MethodMatchers.NameBuilder BIG_INTEGER_AND_DECIMAL = MethodMatchers.create()
     .ofTypes(BIG_INTEGER, BIG_DECIMAL);
   private static final MethodMatchers BIG_INT_DEC_VALUE_OF = BIG_INTEGER_AND_DECIMAL
@@ -72,7 +75,7 @@ public class DivisionByZeroCheck extends SECheck {
     .names("add", "subtract").addParametersMatcher(MethodMatchers.ANY).build();
   private static final MethodMatchers KEEPING_CONSTRAINTS_WITHOUT_PARAM = BIG_INTEGER_AND_DECIMAL
     .names("toBigInteger", "toBigIntegerExact", "abs", "byteValueExact", "byteValue", "byteValueExact", "shortValue", "shortValueExact",
-    "doubleValue", "floatValue", "intValue", "intValueExact" , "longValue", "longValueExact").addParametersMatcher().build();
+      "doubleValue", "floatValue", "intValue", "intValueExact", "longValue", "longValueExact").addParametersMatcher().build();
   private static final MethodMatchers KEEPING_CONSTRAINTS_WITH_ONE_PARAM = BIG_INTEGER_AND_DECIMAL
     .names("pow", "round", "shiftRight", "shiftLeft").addParametersMatcher(MethodMatchers.ANY).build();
 
@@ -187,6 +190,17 @@ public class DivisionByZeroCheck extends SECheck {
           break;
         default:
           // do nothing
+      }
+    }
+
+    @Override
+    public void visitNewClass(NewClassTree tree) {
+      if (BIG_DECIMAL_CONSTRUCTOR.matches(tree)) {
+        ExpressionTree arg = tree.arguments().get(0);
+        SymbolicValue sv = programState.peekValue(0);
+        if (arg.is(Tree.Kind.IDENTIFIER) && isZero(sv)) {
+          reuseSymbolicValue(sv);
+        }
       }
     }
 
@@ -378,15 +392,37 @@ public class DivisionByZeroCheck extends SECheck {
     }
 
     @Override
+    public void visitNewClass(NewClassTree tree) {
+      if (BIG_DECIMAL_CONSTRUCTOR.matches(tree)) {
+        handleArgument(tree.arguments().get(0));
+      } else {
+        checkDeferredConstraint();
+      }
+    }
+
+    @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       if (BIG_INT_DEC_VALUE_OF.matches(tree)) {
-        ExpressionTree arg = tree.arguments().get(0);
-        if (arg instanceof LiteralTree) {
-          handleLiteral(((LiteralTree) arg));
-          return;
-        }
+        handleArgument(tree.arguments().get(0));
+      } else {
+        checkDeferredConstraint();
       }
-      checkDeferredConstraint();
+    }
+
+    private void handleArgument(ExpressionTree arg) {
+      if (arg instanceof LiteralTree) {
+        if (arg.is(Tree.Kind.STRING_LITERAL)) {
+          // We want to add the constraint ZERO for String only from a method invocation, not for any literal.
+          LiteralTree literalTree = ((LiteralTree) arg);
+          if (isNumberZero(literalTree.value())) {
+            addZeroConstraint(programState.peekValue(0), ZeroConstraint.ZERO);
+          }
+        } else {
+          handleLiteral(((LiteralTree) arg));
+        }
+      } else {
+        checkDeferredConstraint();
+      }
     }
 
     @Override

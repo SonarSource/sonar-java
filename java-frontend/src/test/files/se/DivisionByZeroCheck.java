@@ -712,4 +712,38 @@ class BigIntegerAndDecimal {
     z1 = z1.shiftRight(42);
     r = r.divide(z1); // Noncompliant
   }
+
+  // BigDecimal constructor
+  void fromBigDecimalConstructorInt(BigDecimal r) {
+    BigDecimal z2 = new BigDecimal(0);
+    r = r.divide(z2); // Noncompliant
+  }
+
+  void fromBigDecimalConstructorString(BigDecimal r) {
+    BigDecimal z2 = new BigDecimal("0");
+    r = r.divide(z2); // Noncompliant
+  }
+
+  void fromBigDecimalConstructorStringCompliant(BigDecimal r) {
+    BigDecimal z2 = new BigDecimal("42");
+    r = r.divide(z2); // Compliant
+  }
+
+  void fromBigDecimalConstructorId(BigDecimal r) {
+    double z1 = 0.0;
+    BigDecimal z2 = new BigDecimal(z1);
+    r = r.divide(z2); // Noncompliant
+  }
+
+  void fromBigDecimalConstructorBigInt(BigDecimal r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    BigDecimal z2 = new BigDecimal(z1);
+    r = r.divide(z2); // Noncompliant
+  }
+
+  void fromBigDecimalConstructorBigIntCompliant(BigDecimal r) {
+    BigInteger z1 = BigInteger.valueOf(12);
+    BigDecimal z2 = new BigDecimal(z1);
+    r = r.divide(z2); // Compliant
+  }
 }
