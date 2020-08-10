@@ -308,9 +308,8 @@ class MethodYieldTest {
   @Test
   void catch_class_cast_exception() throws Exception {
     Map<String, MethodBehavior> behaviorCache = createSymbolicExecutionVisitor("src/test/files/se/XProcCatchClassCastException.java").behaviorCache.behaviors;
-    List<MethodBehavior> methodBehaviors = new ArrayList<>(behaviorCache.values());
-    assertThat(methodBehaviors).hasSize(2);
-    MethodBehavior methodBehavior = methodBehaviors.get(1);
+    assertThat(behaviorCache.values()).hasSize(1);
+    MethodBehavior methodBehavior = behaviorCache.values().iterator().next();
     assertThat(methodBehavior.yields()).hasSize(2);
     MethodYield[] expected = new MethodYield[] {
       buildMethodYield(0, null),

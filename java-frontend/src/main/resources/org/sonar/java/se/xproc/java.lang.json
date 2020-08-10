@@ -10,7 +10,7 @@
           ["ObjectConstraint.NOT_NULL"]
         ],
         "resultIndex": -1,
-        "resultConstaint": [BooleanConstraint.TRUE],
+        "resultConstaint": ["BooleanConstraint.TRUE"],
         "isExceptional": false
       },
       {
@@ -18,7 +18,7 @@
           []
         ],
         "resultIndex": -1,
-        "resultConstaint": [BooleanConstraint.FALSE],
+        "resultConstaint": ["BooleanConstraint.FALSE"],
         "isExceptional": false
       }
     ]

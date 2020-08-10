@@ -20,115 +20,79 @@
 package org.sonar.java.se.xproc;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableSet;
-import java.util.Arrays;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.lang.reflect.Type;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.bytecode.se.BytecodeEGWalker;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.Sema;
 import org.sonar.java.se.SymbolicExecutionVisitor;
-import org.sonar.java.se.constraint.BooleanConstraint;
-import org.sonar.java.se.constraint.ConstraintsByDomain;
-import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
 
 public class BehaviorCache {
 
+  private static final Logger LOG = Loggers.get(BehaviorCache.class);
+
   private final SquidClassLoader classLoader;
   private final boolean crossFileEnabled;
-  private  SymbolicExecutionVisitor sev;
+  private SymbolicExecutionVisitor sev;
   private Sema semanticModel;
 
-  private static final MethodBehavior CLASS_IS_INSTANCE_BEHAVIOR = classIsInstanceBehavior();
   @VisibleForTesting
-  public Map<String, MethodBehavior> behaviors = newDefaultBehaviorCache();
+  public Map<String, MethodBehavior> behaviors = new LinkedHashMap<>();
+
   @VisibleForTesting
-  public final Map<String, MethodBehavior> bytecodeBehaviors = new LinkedHashMap<>();
+  final Map<String, MethodBehavior> hardcodedBehaviors = hardcodedBehaviors();
 
-  private static Map<String, MethodBehavior> newDefaultBehaviorCache() {
-    Map<String, MethodBehavior> cache = new LinkedHashMap<>();
-    cache.put(CLASS_IS_INSTANCE_BEHAVIOR.signature(), CLASS_IS_INSTANCE_BEHAVIOR);
-    return cache;
+  private static Map<String, MethodBehavior> defaultHardcodedBehaviors = null;
+  private static final Type LIST_OF_METHOD_BEHAVIORS_TYPE = new TypeToken<List<MethodBehavior>>() {}.getType();
+
+  private Map<String, MethodBehavior> hardcodedBehaviors() {
+    if (defaultHardcodedBehaviors == null) {
+      defaultHardcodedBehaviors = loadHardcodedBehaviors();
+    }
+    return new LinkedHashMap<>(defaultHardcodedBehaviors);
   }
 
-  private static MethodBehavior classIsInstanceBehavior() {
-    MethodBehavior behavior = new MethodBehavior("java.lang.Class#isInstance(Ljava/lang/Object;)Z", false);
-    addYield(behavior, -1,
-      ConstraintsByDomain.empty().put(BooleanConstraint.TRUE),
-      ConstraintsByDomain.empty().put(ObjectConstraint.NOT_NULL));
-    addYield(behavior, -1,
-      ConstraintsByDomain.empty().put(BooleanConstraint.FALSE),
-      ConstraintsByDomain.empty());
-    behavior.completed();
-    return behavior;
+  private Map<String, MethodBehavior> loadHardcodedBehaviors() {
+    Map<String, MethodBehavior> result = new LinkedHashMap<>();
+    Gson gson = MethodBehaviorJsonAdapter.gson(semanticModel);
+    // one of the method behavior list, as resource target
+    URL hardcodedMethodBehaviorsURL = BehaviorCache.class.getResource("java.lang.json");
+    if (hardcodedMethodBehaviorsURL == null || !new File(hardcodedMethodBehaviorsURL.getPath()).exists()) {
+      LOG.debug("Unable to load hardcoded method behaviors");
+      return Collections.emptyMap();
+    }
+    File[] serializedMethodBehaviors = new File(hardcodedMethodBehaviorsURL.getPath())
+      .getParentFile()
+      .listFiles((dir, filename) -> filename.endsWith(".json"));
+    for (File serialized : serializedMethodBehaviors) {
+      try (Reader reader = Files.newBufferedReader(serialized.toPath(), StandardCharsets.UTF_8)) {
+        List<MethodBehavior> deserialized = gson.fromJson(reader, LIST_OF_METHOD_BEHAVIORS_TYPE);
+        deserialized.forEach(methodBehavior -> result.put(methodBehavior.signature(), methodBehavior));
+      } catch (IOException e) {
+        LOG.error(String.format("Unable to load hardcoded method behaviors of \"%s\". Defaulting to no hardcoded method behaviors.", serialized.getName()), e);
+        return Collections.emptyMap();
+      }
+    }
+    return result;
   }
-
-  private static void addYield(MethodBehavior methodBehavior, int resultIndex, ConstraintsByDomain resultConstraint, ConstraintsByDomain... parametersConstraints) {
-    HappyPathYield yield = new HappyPathYield(methodBehavior);
-    yield.setResult(resultIndex, resultConstraint);
-    yield.parametersConstraints.addAll(Arrays.asList(parametersConstraints));
-    methodBehavior.addYield(yield);
-  }
-
-  // methods known to be well covered using bytecode-generated behavior
-  private static final Set<String> WHITELIST = ImmutableSet.of(
-    "java.lang.Math#max",
-    "java.lang.Math#min",
-
-    "java.util.Objects#requireNonNull",
-    "java.util.Objects#nonNull",
-    "java.util.Objects#isNull",
-
-    "org.apache.commons.collections.CollectionUtils#isEmpty",
-    "org.apache.commons.collections.CollectionUtils#isNotEmpty",
-    "org.apache.commons.collections4.CollectionUtils#isEmpty",
-    "org.apache.commons.collections4.CollectionUtils#isNotEmpty",
-
-    "org.apache.commons.lang.StringUtils#isEmpty",
-    "org.apache.commons.lang.StringUtils#isNotEmpty",
-    "org.apache.commons.lang.StringUtils#isBlank",
-    "org.apache.commons.lang.StringUtils#isNotBlank",
-    "org.apache.commons.lang.Validate#notEmpty",
-    "org.apache.commons.lang.Validate#notNull",
-    "org.apache.commons.lang3.StringUtils#isEmpty",
-    "org.apache.commons.lang3.StringUtils#isNotEmpty",
-    "org.apache.commons.lang3.StringUtils#isBlank",
-    "org.apache.commons.lang3.StringUtils#isNotBlank",
-    "org.apache.commons.lang3.Validate#notEmpty",
-    "org.apache.commons.lang3.Validate#notNull",
-
-    "org.apache.logging.log4j.core.util.Assert#requireNonNull",
-
-    "org.springframework.util.CollectionUtils#isEmpty",
-    "org.springframework.util.Assert#hasLength",
-    "org.springframework.util.Assert#hasText",
-    "org.springframework.util.Assert#isAssignable",
-    "org.springframework.util.Assert#isInstanceOf",
-    "org.springframework.util.Assert#isNull",
-    "org.springframework.util.Assert#isTrue",
-    "org.springframework.util.Assert#notEmpty",
-    "org.springframework.util.Assert#notNull",
-    "org.springframework.util.Assert#state",
-    "org.springframework.util.ObjectUtils#isEmpty",
-    "org.springframework.util.StringUtils#hasLength",
-    "org.springframework.util.StringUtils#hasText",
-
-    "com.google.common.base.Preconditions#checkNotNull",
-    "com.google.common.base.Preconditions#checkArgument",
-    "com.google.common.base.Preconditions#checkState",
-
-    "com.google.common.base.Verify#verify",
-
-    "com.google.common.base.Strings#isNullOrEmpty",
-    "com.google.common.base.Platform#stringIsNullOrEmpty",
-
-    "org.eclipse.core.runtime.Assert#");
 
   public BehaviorCache(SquidClassLoader classLoader) {
     this(classLoader, true);
@@ -145,7 +109,7 @@ public class BehaviorCache {
   }
 
   public void cleanup() {
-    behaviors = newDefaultBehaviorCache();
+    behaviors.clear();
   }
 
   public MethodBehavior methodBehaviorForSymbol(Symbol.MethodSymbol symbol) {
@@ -155,7 +119,7 @@ public class BehaviorCache {
   }
 
   public MethodBehavior methodBehaviorForSymbol(String signature) {
-    return bytecodeBehaviors.computeIfAbsent(signature, k -> new MethodBehavior(signature));
+    return hardcodedBehaviors.computeIfAbsent(signature, k -> new MethodBehavior(signature));
   }
 
   @CheckForNull
@@ -183,21 +147,22 @@ public class BehaviorCache {
     }
 
     // disabled x-file analysis, behavior based on source code can still be used
-    if (!crossFileEnabled && !isKnownSignature(signature)) {
+    if (!crossFileEnabled && !hardcodedBehaviors.containsKey(signature)) {
       return null;
     }
 
-    if (!bytecodeBehaviors.containsKey(signature)) {
+    if (!hardcodedBehaviors.containsKey(signature)) {
+      // TODO remove me
       new BytecodeEGWalker(this, semanticModel).getMethodBehavior(signature, classLoader);
     }
-    return bytecodeBehaviors.get(signature);
+    return hardcodedBehaviors.get(signature);
   }
 
   /**
    * Do not trigger any new computation of method behavior, just check if there is a known method behavior for the symbol.
    *
    * @param signature The targeted method.
-   * @return null for methods having no computed method behavior yet, or its method behavior, based on bytecode or source
+   * @return null for methods having no computed method behavior yet, or its method behavior, based on source or hardcoded set
    */
   @CheckForNull
   public MethodBehavior peek(String signature) {
@@ -206,11 +171,7 @@ public class BehaviorCache {
     if (mb != null) {
       return mb;
     }
-    // check for bytecode signatures
-    return bytecodeBehaviors.get(signature);
-  }
-
-  private static boolean isKnownSignature(String signature) {
-    return WHITELIST.stream().anyMatch(signature::startsWith);
+    // check for hardcoded signatures
+    return hardcodedBehaviors.get(signature);
   }
 }

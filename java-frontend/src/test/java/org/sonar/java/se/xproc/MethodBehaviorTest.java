@@ -84,7 +84,7 @@ class MethodBehaviorTest {
     Pair<SymbolicExecutionVisitor, Sema> visitorAndSemantic = createSymbolicExecutionVisitorAndSemantic("src/test/resources/se/ReturnAndFinally.java");
     SymbolicExecutionVisitor sev = visitorAndSemantic.a;
     Sema semanticModel = visitorAndSemantic.b;
-    assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(6);
+    assertThat(sev.behaviorCache.behaviors).hasSize(5);
 
     MethodBehavior foo = getMethodBehavior(sev, "foo");
     assertThat(foo.yields()).hasSize(4);
