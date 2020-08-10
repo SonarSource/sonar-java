@@ -20,8 +20,6 @@
 package org.sonar.java.se;
 
 import org.junit.jupiter.api.Test;
-import org.objectweb.asm.Opcodes;
-import org.sonar.java.bytecode.cfg.Instructions;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFGTestUtils;
 
@@ -38,12 +36,4 @@ class ProgramPointTest {
     assertThat(pp).hasToString("B1.2  ");
   }
 
-  @Test
-  void test_program_point_on_bytecode_cfg() throws Exception {
-    ProgramPoint pp = new ProgramPoint(new Instructions().visitInsn(Opcodes.NOP).cfg().entry());
-    assertThat(pp)
-      .hasToString("B1.0  ")
-      .isNotEqualTo("");
-    assertThat(pp.syntaxTree()).isNull();
-  }
 }

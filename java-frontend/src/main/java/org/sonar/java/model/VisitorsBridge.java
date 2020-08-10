@@ -48,8 +48,6 @@ import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
-import org.sonar.java.bytecode.ClassLoaderBuilder;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.se.SymbolicExecutionMode;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.xproc.BehaviorCache;
@@ -75,7 +73,6 @@ public class VisitorsBridge {
   protected InputFile currentFile;
   protected JavaVersion javaVersion;
   private final List<File> classpath;
-  private final SquidClassLoader classLoader;
   private final JavaFileScanner analysisIssueFilter;
   private IssuableSubsciptionVisitorsRunner issuableSubscriptionVisitorsRunner;
   private static final Predicate<JavaFileScanner> IS_ISSUABLE_SUBSCRIPTION_VISITOR = IssuableSubscriptionVisitor.class::isInstance;
@@ -110,9 +107,8 @@ public class VisitorsBridge {
     this.executableScanners = allScanners.stream().filter(IS_ISSUABLE_SUBSCRIPTION_VISITOR.negate()).collect(Collectors.toList());
     this.issuableSubscriptionVisitorsRunner = new IssuableSubsciptionVisitorsRunner(allScanners);
     this.sonarComponents = sonarComponents;
-    this.classLoader = ClassLoaderBuilder.create(projectClasspath);
     this.symbolicExecutionEnabled = symbolicExecutionMode.isEnabled();
-    this.behaviorCache = new BehaviorCache(classLoader, symbolicExecutionMode.isCrossFileEnabled());
+    this.behaviorCache = new BehaviorCache();
   }
 
   public JavaVersion getJavaVersion() {
@@ -264,7 +260,6 @@ public class VisitorsBridge {
       .filter(s -> s instanceof EndOfAnalysisCheck)
       .map(EndOfAnalysisCheck.class::cast)
       .forEach(EndOfAnalysisCheck::endOfAnalysis);
-    classLoader.close();
   }
 
   private class IssuableSubsciptionVisitorsRunner {

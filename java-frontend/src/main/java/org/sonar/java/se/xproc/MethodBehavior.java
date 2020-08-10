@@ -35,7 +35,6 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.sonar.java.bytecode.se.BytecodeEGWalker;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.SECheck;
@@ -61,36 +60,8 @@ public class MethodBehavior {
     this.yields = new LinkedHashSet<>();
     this.parameters = new ArrayList<>();
     this.varArgs = varArgs;
-    this.arity = numberOfArguments(signature);
+    this.arity = SignatureUtils.numberOfArguments(signature);
     this.declaredExceptions = Collections.emptyList();
-  }
-
-  /**
-   * Based on ASM method org.objectweb.asm.Type.getArgumentTypes(String),
-   * initially used to compute the number of arguments from a method descriptor
-   *
-   * @param methodDescriptor the method signature containing the definition of arguments
-   * @return the arity of the method
-   */
-  private static int numberOfArguments(String signature) {
-    String methodDescriptor = signature.substring(signature.indexOf('('));
-    // First step: compute the number of argument types in methodDescriptor.
-    int numArgumentTypes = 0;
-    // Skip the first character, which is always a '('.
-    int currentOffset = 1;
-    // Parse the argument types, one at a each loop iteration.
-    while (methodDescriptor.charAt(currentOffset) != ')') {
-      while (methodDescriptor.charAt(currentOffset) == '[') {
-        currentOffset++;
-      }
-      if (methodDescriptor.charAt(currentOffset++) == 'L') {
-        // Skip the argument descriptor content.
-        int semiColumnOffset = methodDescriptor.indexOf(';', currentOffset);
-        currentOffset = Math.max(currentOffset, semiColumnOffset + 1);
-      }
-      ++numArgumentTypes;
-    }
-    return numArgumentTypes;
   }
 
   public MethodBehavior(String signature) {
@@ -111,7 +82,7 @@ public class MethodBehavior {
       nodeForYield = node;
     }
     MethodYield yield;
-    boolean expectReturnValue = !(isConstructor() || isVoidMethod());
+    boolean expectReturnValue = !(SignatureUtils.isConstructor(signature) || SignatureUtils.isVoidMethod(signature));
     SymbolicValue resultSV = node.programState.exitValue();
 
     if ((resultSV == null && expectReturnValue) || resultSV instanceof SymbolicValue.ExceptionalSymbolicValue) {
@@ -134,7 +105,7 @@ public class MethodBehavior {
     } else {
       HappyPathYield happyPathYield = new HappyPathYield(nodeForYield, this);
       if (expectReturnValue) {
-        ConstraintsByDomain cleanup = cleanup(node.programState.getConstraints(resultSV), org.objectweb.asm.Type.getReturnType(signature.substring(signature.indexOf('('))));
+        ConstraintsByDomain cleanup = cleanup(node.programState.getConstraints(resultSV), -1);
         if (cleanup.isEmpty()) {
           cleanup = null;
         }
@@ -155,20 +126,26 @@ public class MethodBehavior {
         constraints = ConstraintsByDomain.empty();
       } else {
         //cleanup based on signature
-        org.objectweb.asm.Type[] argumentTypes = org.objectweb.asm.Type.getArgumentTypes(signature.substring(signature.indexOf('(')));
-        constraints = cleanup(constraints, argumentTypes[index]);
+        constraints = cleanup(constraints, index);
       }
       yield.parametersConstraints.add(constraints);
       index++;
     }
   }
 
-  private static ConstraintsByDomain cleanup(@Nullable ConstraintsByDomain constraints, org.objectweb.asm.Type argumentType) {
+  /**
+   * cleanup constraints to remove useless ones.
+   *
+   * @param constraints known constraints
+   * @param argumentIndex the argument index to be cleaned, use -1 for result type
+   * @return the cleaned constraints for the given parameter or result type
+   */
+  private ConstraintsByDomain cleanup(@Nullable ConstraintsByDomain constraints, int argumentIndex) {
     if (constraints == null || constraints.isEmpty()) {
       return ConstraintsByDomain.empty();
     }
-    ConstraintsByDomain result = constraints.remove(BytecodeEGWalker.StackValueCategoryConstraint.class);
-    if (argumentType.getSort() == org.objectweb.asm.Type.BOOLEAN) {
+    ConstraintsByDomain result = constraints;
+    if (SignatureUtils.isBoolean(signature, argumentIndex)) {
       result = result.remove(DivisionByZeroCheck.ZeroConstraint.class);
     } else {
       result = result.remove(BooleanConstraint.class);
@@ -189,14 +166,6 @@ public class MethodBehavior {
 
   public int methodArity() {
     return arity;
-  }
-
-  private boolean isVoidMethod() {
-    return org.objectweb.asm.Type.getReturnType(signature.substring(signature.indexOf('('))) == org.objectweb.asm.Type.VOID_TYPE;
-  }
-
-  private boolean isConstructor() {
-    return signature.contains("<init>");
   }
 
   public List<MethodYield> yields() {

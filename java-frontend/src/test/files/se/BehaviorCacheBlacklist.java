@@ -9,6 +9,6 @@ class A {
   }
 
   void optional(Optional<Integer> op) {
-    int i = op.isPresent ? op.get() : 0;
+    int i = op.isPresent() ? op.get() : 0;
   }
 }

@@ -22,7 +22,8 @@ package org.sonar.java.se.constraint;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import org.sonar.java.bytecode.cfg.Instruction;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.java.se.ExplodedGraphWalker;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramState;
@@ -35,12 +36,6 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.Nullable;
-
-import java.util.List;
-
-import static org.objectweb.asm.Opcodes.*;
 
 public class ConstraintManager {
 
@@ -173,61 +168,5 @@ public class ConstraintManager {
     List<ProgramState> falseConstraint = sv.setConstraint(unstack.state, BooleanConstraint.FALSE);
     List<ProgramState> trueConstraint = sv.setConstraint(unstack.state, BooleanConstraint.TRUE);
     return new Pair<>(falseConstraint, trueConstraint);
-  }
-
-  public SymbolicValue createBinarySymbolicValue(Instruction inst, List<ProgramState.SymbolicValueSymbol> computedFrom) {
-    SymbolicValue result;
-    switch (inst.opcode) {
-      case IAND:
-      case LAND:
-        result = new SymbolicValue.AndSymbolicValue();
-        result.computedFrom(computedFrom);
-        break;
-      case IOR:
-      case LOR:
-        result = new SymbolicValue.OrSymbolicValue();
-        result.computedFrom(computedFrom);
-        break;
-      case IXOR:
-      case LXOR:
-        result = new SymbolicValue.XorSymbolicValue();
-        result.computedFrom(computedFrom);
-        break;
-      case IF_ICMPEQ:
-      case IF_ACMPEQ:
-      case IFEQ:
-      case IFNULL:
-        result = createRelationalSymbolicValue(Kind.EQUAL, computedFrom);
-        break;
-      case IFNE:
-      case IFNONNULL:
-      case IF_ICMPNE:
-      case IF_ACMPNE:
-        result = createRelationalSymbolicValue(Kind.NOT_EQUAL, computedFrom);
-        break;
-      case IF_ICMPLT:
-      case IFLT:
-        result = createRelationalSymbolicValue(Kind.LESS_THAN, computedFrom);
-        break;
-      case IF_ICMPGE:
-      case IFGE:
-        result = createRelationalSymbolicValue(Kind.GREATER_THAN_OR_EQUAL, computedFrom);
-        break;
-      case IF_ICMPGT:
-      case IFGT:
-        result = createRelationalSymbolicValue(Kind.LESS_THAN, Lists.reverse(computedFrom));
-        break;
-      case IF_ICMPLE:
-      case IFLE:
-        result = createRelationalSymbolicValue(Kind.GREATER_THAN_OR_EQUAL, Lists.reverse(computedFrom));
-        break;
-      default:
-        throw new IllegalStateException("Unexpected kind for binary SV");
-    }
-    return result;
-  }
-
-  public SymbolicValue createSymbolicValue(Instruction inst) {
-    return createDefaultSymbolicValue();
   }
 }

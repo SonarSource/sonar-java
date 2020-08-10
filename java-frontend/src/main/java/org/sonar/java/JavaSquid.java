@@ -53,12 +53,6 @@ public class JavaSquid {
   public JavaSquid(JavaVersion javaVersion,
     @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
     JavaResourceLocator javaResourceLocator, @Nullable JavaFileScanner postAnalysisIssueFilter, JavaCheck... visitors) {
-    this(javaVersion, false, sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, visitors);
-  }
-
-  public JavaSquid(JavaVersion javaVersion, boolean xFileEnabled,
-                   @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
-                   JavaResourceLocator javaResourceLocator, @Nullable JavaFileScanner postAnalysisIssueFilter, JavaCheck... visitors) {
 
     List<JavaCheck> commonVisitors = Lists.newArrayList(javaResourceLocator);
 
@@ -88,7 +82,7 @@ public class JavaSquid {
     //AstScanner for main files
     astScanner = new JavaAstScanner(sonarComponents);
     astScanner.setVisitorBridge(createVisitorBridge(codeVisitors, classpath, javaVersion, sonarComponents,
-      SymbolicExecutionMode.getMode(visitors, xFileEnabled), postAnalysisIssueFilter));
+      SymbolicExecutionMode.getMode(visitors), postAnalysisIssueFilter));
 
     //AstScanner for test files
     astScannerForTests = new JavaAstScanner(sonarComponents);

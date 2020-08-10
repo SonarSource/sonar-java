@@ -363,7 +363,7 @@ class VisitorsBridgeTest {
     sonarComponents = new SonarComponents(null, null, null, null, null, null);
     sonarComponents.setSensorContext(sensorContextTester);
 
-    VisitorsBridge visitorsBridge = new VisitorsBridge(visitors, new ArrayList<>(), sonarComponents, SymbolicExecutionMode.ENABLED_WITHOUT_X_FILE, analysisIssueFilter);
+    VisitorsBridge visitorsBridge = new VisitorsBridge(visitors, new ArrayList<>(), sonarComponents, SymbolicExecutionMode.ENABLED, analysisIssueFilter);
     visitorsBridge.setCurrentFile(INPUT_FILE);
 
     return visitorsBridge;

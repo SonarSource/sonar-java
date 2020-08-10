@@ -88,7 +88,6 @@
     <analyzer.commons.version>1.11.0.541</analyzer.commons.version>
     <orchestrator.version>3.27.0.2172</orchestrator.version>
     <sslr.version>1.23</sslr.version>
-    <asm.version>8.0.1</asm.version>
     <argLine>-Xmx512m</argLine>
     <gitRepositoryName>sonar-java</gitRepositoryName>
 
@@ -171,32 +170,6 @@
             <groupId>org.hamcrest</groupId>
           </exclusion>
         </exclusions>
-      </dependency>
-
-      <dependency>
-        <groupId>org.ow2.asm</groupId>
-        <artifactId>asm</artifactId>
-        <version>${asm.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ow2.asm</groupId>
-        <artifactId>asm-commons</artifactId>
-        <version>${asm.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ow2.asm</groupId>
-        <artifactId>asm-tree</artifactId>
-        <version>${asm.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ow2.asm</groupId>
-        <artifactId>asm-analysis</artifactId>
-        <version>${asm.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ow2.asm</groupId>
-        <artifactId>asm-util</artifactId>
-        <version>${asm.version}</version>
       </dependency>
 
       <dependency>

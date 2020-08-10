@@ -27,10 +27,6 @@ import java.util.Map;
 import java.util.Optional;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.TestUtils;
-import org.sonar.java.bytecode.cfg.BytecodeCFG;
-import org.sonar.java.bytecode.cfg.BytecodeCFGMethodVisitor;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
-import org.sonar.java.bytecode.se.MethodLookup;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
@@ -54,21 +50,15 @@ public class SETestUtils {
     CLASS_PATH.add(new File("target/test-classes"));
   }
 
-  public static final SquidClassLoader CLASSLOADER = new SquidClassLoader(CLASS_PATH);
-
   public static SymbolicExecutionVisitor createSymbolicExecutionVisitor(String fileName, SECheck... checks) {
     return createSymbolicExecutionVisitorAndSemantic(fileName, checks).a;
   }
 
   public static Pair<SymbolicExecutionVisitor, Sema> createSymbolicExecutionVisitorAndSemantic(String fileName, SECheck... checks) {
-    return createSymbolicExecutionVisitorAndSemantic(fileName, true, checks);
-  }
-
-  public static Pair<SymbolicExecutionVisitor, Sema> createSymbolicExecutionVisitorAndSemantic(String fileName, boolean crossFileEnabled, SECheck... checks) {
     InputFile inputFile = TestUtils.inputFile(fileName);
     JavaTree.CompilationUnitTreeImpl cut = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(inputFile.file(), CLASS_PATH);
     Sema semanticModel = cut.sema;
-    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Arrays.asList(checks), new BehaviorCache(CLASSLOADER, crossFileEnabled));
+    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Arrays.asList(checks), new BehaviorCache());
     sev.scanFile(new DefaultJavaFileScannerContext(cut, inputFile, semanticModel, null, new JavaVersionImpl(8), true));
     return new Pair<>(sev, semanticModel);
   }
@@ -109,18 +99,6 @@ public class SETestUtils {
     public int methodArity() {
       return arity;
     }
-  }
-
-  public static BytecodeCFG bytecodeCFG(String signature, SquidClassLoader classLoader) {
-    BytecodeCFGMethodVisitor cfgMethodVisitor = new BytecodeCFGMethodVisitor() {
-      @Override
-      public boolean shouldVisitMethod(int methodFlags, String methodSignature) {
-        return true;
-      }
-    };
-
-    MethodLookup.lookup(signature, classLoader, cfgMethodVisitor);
-    return cfgMethodVisitor.getCfg();
   }
 
   public static Symbol.VariableSymbol variable(String name) {

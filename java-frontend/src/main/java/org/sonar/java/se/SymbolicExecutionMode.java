@@ -25,12 +25,11 @@ import org.sonar.plugins.java.api.JavaCheck;
 
 public enum SymbolicExecutionMode {
   DISABLED,
-  ENABLED_WITHOUT_X_FILE,
   ENABLED;
 
-  public static SymbolicExecutionMode getMode(JavaCheck[] visitors, boolean xFileEnabled) {
+  public static SymbolicExecutionMode getMode(JavaCheck[] visitors) {
     if (hasASymbolicExecutionCheck(visitors)) {
-      return xFileEnabled ? SymbolicExecutionMode.ENABLED : SymbolicExecutionMode.ENABLED_WITHOUT_X_FILE;
+      return SymbolicExecutionMode.ENABLED;
     }
     return SymbolicExecutionMode.DISABLED;
   }
@@ -40,10 +39,6 @@ public enum SymbolicExecutionMode {
   }
 
   public boolean isEnabled() {
-    return this != DISABLED;
-  }
-
-  public boolean isCrossFileEnabled() {
     return this == ENABLED;
   }
 }

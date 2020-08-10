@@ -244,7 +244,6 @@ public class JavaRulingTest {
       .setProperty("dump.old", effectiveDumpOldFolder.resolve(projectName).toString())
       .setProperty("dump.new", FileLocation.of("target/actual/" + projectName).getFile().getAbsolutePath())
       .setProperty("lits.differences", litsDifferencesPath(projectName))
-      .setProperty("sonar.java.xfile", "false")
       .setProperty("sonar.internal.analysis.failFast", "true");
     BuildResult buildResult;
     if (buildQuietly) {

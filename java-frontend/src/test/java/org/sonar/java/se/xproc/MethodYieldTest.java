@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PMap;
 import org.sonar.java.model.JParserTestUtils;
@@ -219,7 +218,7 @@ class MethodYieldTest {
   void constraints_on_varargs() throws Exception {
     JavaTree.CompilationUnitTreeImpl cut = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(new File("src/test/files/se/VarArgsYields.java"));
     Sema semanticModel = cut.sema;
-    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Lists.newArrayList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>())));
+    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Lists.newArrayList(), new BehaviorCache());
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     when(context.getTree()).thenReturn(cut);
     when(context.getSemanticModel()).thenReturn(semanticModel);
