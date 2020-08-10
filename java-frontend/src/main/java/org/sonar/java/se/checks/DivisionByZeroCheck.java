@@ -61,7 +61,7 @@ public class DivisionByZeroCheck extends SECheck {
   private static final MethodMatchers BIG_INT_DEC_VALUE_OF = BIG_INTEGER_AND_DECIMAL
     .names("valueOf").addParametersMatcher(MethodMatchers.ANY).build();
   private static final MethodMatchers BIG_INT_DEC_DIVIDE_REMAINDER = BIG_INTEGER_AND_DECIMAL
-    .names("divide", "remainder").addParametersMatcher(MethodMatchers.ANY).build();
+    .names("divide", "remainder", "divideAndRemainder").addParametersMatcher(MethodMatchers.ANY).build();
   private static final MethodMatchers BIG_INT_DEC_MULTIPLY = BIG_INTEGER_AND_DECIMAL
     .names("multiply").addParametersMatcher(MethodMatchers.ANY).build();
   private static final MethodMatchers BIG_INT_DEC_ADD_SUB = BIG_INTEGER_AND_DECIMAL

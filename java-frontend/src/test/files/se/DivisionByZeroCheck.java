@@ -557,6 +557,11 @@ class BigIntegerAndDecimal {
     r = r.remainder(z2); // Noncompliant
   }
 
+  void simpleDivideAndRemainder(BigInteger r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    r.divideAndRemainder(z1); // Noncompliant
+  }
+
   void simpleBigInt(BigInteger r, int value) {
     BigInteger z1 = BigInteger.valueOf(value);
     r = r.divide(z1); // Compliant
