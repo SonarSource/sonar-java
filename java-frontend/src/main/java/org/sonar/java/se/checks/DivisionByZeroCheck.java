@@ -194,6 +194,12 @@ public class DivisionByZeroCheck extends SECheck {
         handlePlusMinus(programState.peekValue(1), programState.peekValue(0));
       } else if (BIG_INT_DEC_MULTIPLY.matches(tree)) {
         handleMultiply(programState.peekValue(1), programState.peekValue(0));
+      } else if (BIG_INT_DEC_VALUE_OF.matches(tree)) {
+        ExpressionTree arg = tree.arguments().get(0);
+        SymbolicValue sv = programState.peekValue();
+        if (arg.is(Tree.Kind.IDENTIFIER) && sv != null && isZero(sv)) {
+          reuseSymbolicValue(sv);
+        }
       }
     }
 
@@ -366,10 +372,10 @@ public class DivisionByZeroCheck extends SECheck {
         ExpressionTree arg = tree.arguments().get(0);
         if (arg instanceof LiteralTree) {
           handleLiteral(((LiteralTree) arg));
+          return;
         }
-      } else {
-        checkDeferredConstraint();
       }
+      checkDeferredConstraint();
     }
 
     @Override

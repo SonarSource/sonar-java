@@ -567,6 +567,7 @@ class BigIntegerAndDecimal {
     r = r.divide(z1); // Compliant
   }
 
+  // From Constant
   void simpleBigIntFromZeroConstant(BigInteger r) {
     BigInteger z1 = BigInteger.ZERO;
     r = r.divide(z1); // Noncompliant
@@ -585,5 +586,25 @@ class BigIntegerAndDecimal {
   void simpleBigDecFromTenConstant(BigDecimal r) {
     BigDecimal z1 = BigDecimal.TEN;
     r = r.divide(z1); // Compliant
+  }
+
+  // Keeping zero constraints
+  void keepZeroConstraint(BigInteger r) {
+    int i = 0;
+    BigInteger z1 = BigInteger.valueOf(i);
+    r = r.divide(z1); // Noncompliant
+  }
+
+  void keepZeroConstraint(BigDecimal r) {
+    double i = 0.0;
+    BigDecimal z1 = BigDecimal.valueOf(i);
+    r = r.divide(z1); // Noncompliant
+  }
+
+  void keepZeroConstraint2(BigInteger r) {
+    int i = 0;
+    long j = i;
+    BigInteger z1 = BigInteger.valueOf(j);
+    r = r.divide(z1); // Noncompliant
   }
 }
