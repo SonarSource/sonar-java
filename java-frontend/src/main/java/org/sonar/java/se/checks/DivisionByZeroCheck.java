@@ -45,6 +45,7 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
@@ -53,11 +54,14 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 @Rule(key = "S3518")
 public class DivisionByZeroCheck extends SECheck {
 
+  private static final String BIG_INTEGER = "java.math.BigInteger";
+  private static final String BIG_DECIMAL = "java.math.BigDecimal";
+
   private static final ExceptionalYieldChecker EXCEPTIONAL_YIELD_CHECKER = new ExceptionalYieldChecker(
     "A division by zero will occur when invoking method \"%s()\".");
 
   private static final MethodMatchers.NameBuilder BIG_INTEGER_AND_DECIMAL = MethodMatchers.create()
-    .ofTypes("java.math.BigInteger", "java.math.BigDecimal");
+    .ofTypes(BIG_INTEGER, BIG_DECIMAL);
   private static final MethodMatchers BIG_INT_DEC_VALUE_OF = BIG_INTEGER_AND_DECIMAL
     .names("valueOf").addParametersMatcher(MethodMatchers.ANY).build();
   private static final MethodMatchers BIG_INT_DEC_DIVIDE_REMAINDER = BIG_INTEGER_AND_DECIMAL
@@ -366,6 +370,22 @@ public class DivisionByZeroCheck extends SECheck {
       } else {
         checkDeferredConstraint();
       }
+    }
+
+    @Override
+    public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+      IdentifierTree id = tree.identifier();
+      Type idType = id.symbolType();
+      SymbolicValue sv = programState.peekValue();
+      if (sv != null && (idType.is(BIG_INTEGER) || idType.is(BIG_DECIMAL))) {
+        if ("ZERO".equals(id.name())) {
+          addZeroConstraint(sv, ZeroConstraint.ZERO);
+        } else {
+          addZeroConstraint(sv, ZeroConstraint.NON_ZERO);
+        }
+      }
+
+      super.visitMemberSelectExpression(tree);
     }
 
     private void handleLiteral(LiteralTree tree) {

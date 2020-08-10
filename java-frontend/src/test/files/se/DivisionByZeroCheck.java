@@ -566,4 +566,24 @@ class BigIntegerAndDecimal {
     BigInteger z1 = BigInteger.valueOf(value);
     r = r.divide(z1); // Compliant
   }
+
+  void simpleBigIntFromZeroConstant(BigInteger r) {
+    BigInteger z1 = BigInteger.ZERO;
+    r = r.divide(z1); // Noncompliant
+  }
+
+  void simpleBigDecFromZeroConstant(BigDecimal r) {
+    BigDecimal z1 = BigDecimal.ZERO;
+    r = r.divide(z1); // Noncompliant
+  }
+
+  void simpleBigIntFromOneConstant(BigInteger r) {
+    BigInteger z1 = BigInteger.ONE;
+    r = r.divide(z1); // Compliant
+  }
+
+  void simpleBigDecFromTenConstant(BigDecimal r) {
+    BigDecimal z1 = BigDecimal.TEN;
+    r = r.divide(z1); // Compliant
+  }
 }
