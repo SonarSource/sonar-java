@@ -119,6 +119,16 @@ class MinMaxRangeCheck {
     return Math.max(result, upper);
   }
 
+  public float doRangeCheckIntFloatNOK(int num) {
+    int result = Math.min(LOWER_INT, num);
+    return Math.max(UPPER_FLOAT, result); // Noncompliant
+  }
+
+  public double doRangeCheckDoubleIntNOK(double num) {
+    double result = Math.min(num, LOWER_DOUBLE);
+    return Math.max(result, UPPER_INT); // Noncompliant
+  }
+
   // do not remove this constant, it is used for other test
   public static final String DOT_AS_STRING = ".";
 
