@@ -634,3 +634,53 @@ class JavaxJms {
     }
   }
 }
+
+class UnknownExceptions {
+
+  public void wrongHandling() throws IOException {
+    FileInputStream stream = new FileInputStream("myFile"); // Noncompliant
+    try {
+      stream.read();
+    } finally {
+      // if cleanCanThrow throws an exception, stream will not be closed
+      cleanCanThrow();
+      stream.close();
+    }
+  }
+
+  public void goodHandling() throws IOException {
+    FileInputStream stream = new FileInputStream("myFile"); // Compliant
+    try {
+      stream.read();
+    } finally {
+      // Clean can throw a runtime, but we ignore them
+      clean();
+      stream.close();
+    }
+  }
+
+  public void goodHandling2() throws IOException {
+    FileInputStream stream = new FileInputStream("myFile"); // Compliant
+    try {
+      stream.read();
+    } finally {
+      // The engine defines that this method can possibly throw an unknown exeption, but it probably does not prevent the close to happen.
+      canThrowUnknown();
+      stream.close();
+    }
+  }
+
+  public static void cleanCanThrow() throws IOException {
+    throw new IOException();
+  }
+
+  public static void clean() {
+    throw new ArrayIndexOutOfBoundsException();
+  }
+
+  public static void canThrowUnknown() {
+    Object o = new Object();
+    o.toString();
+  }
+}
+
