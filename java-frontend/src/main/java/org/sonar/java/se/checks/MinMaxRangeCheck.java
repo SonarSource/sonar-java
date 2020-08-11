@@ -204,9 +204,7 @@ public class MinMaxRangeCheck extends SECheck {
       Number upperBound = arg0MinMaxValue.op == Operation.MIN ? arg0MinMaxValue.value : arg1MinMaxValue.value;
       Number lowerBound = arg0MinMaxValue.op == Operation.MAX ? arg0MinMaxValue.value : arg1MinMaxValue.value;
 
-      // all the used values are going to be Numbers
-      @SuppressWarnings("unchecked")
-      int comparedValue = ((Comparable<Number>) lowerBound).compareTo(upperBound);
+      int comparedValue = compareNumbers(lowerBound, upperBound);
 
       if (comparedValue > 0) {
         String issueMessage;
@@ -229,6 +227,13 @@ public class MinMaxRangeCheck extends SECheck {
         context.reportIssue(syntaxNode, this, issueMessage, flow);
       }
     }
+  }
+
+  private static int compareNumbers(Number n1, Number n2) {
+    Double n1Double = n1.doubleValue();
+    Double n2Double = n2.doubleValue();
+    // Could be imprecise for BigInteger/BigDecimal, but we only care about Math.min/max, not supporting such classes.
+    return n1Double.compareTo(n2Double);
   }
 
   private static ProgramState handleNumericalLiteral(CheckerContext context, @Nullable Number value) {
