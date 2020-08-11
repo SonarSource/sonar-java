@@ -134,11 +134,23 @@ public class UnclosedResourcesCheck extends SECheck {
     "org.springframework.context.ConfigurableApplicationContext"
   };
 
-  private static final MethodMatchers CLOSEABLE_EXCEPTIONS = MethodMatchers.create()
-    .ofTypes("java.nio.file.FileSystems")
-    .names("getDefault")
-    .addWithoutParametersMatcher()
-    .build();
+  private static final MethodMatchers CLOSEABLE_EXCEPTIONS = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes("java.nio.file.FileSystems")
+      .names("getDefault")
+      .addWithoutParametersMatcher()
+      .build(),
+    MethodMatchers.create()
+      .ofTypes("javax.jms.Connection")
+      .names("createSession")
+      .withAnyParameters()
+      .build(),
+    MethodMatchers.create()
+      .ofTypes("javax.jms.Session")
+      .names("createProducer", "createConsumer", "createDurableConsumer", "createSharedConsumer", "createSharedDurableConsumer")
+      .withAnyParameters()
+      .build()
+  );
 
   @Override
   public void scanFile(JavaFileScannerContext context) {

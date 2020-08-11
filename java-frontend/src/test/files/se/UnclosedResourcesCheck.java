@@ -11,6 +11,13 @@ import java.util.Formatter;
 import java.util.jar.JarFile;
 import java.util.Properties;
 
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageProducer;
+import javax.jms.ObjectMessage;
+import javax.jms.Session;
+
 public class A {
   private final static int MAX_LOOP = 42;
   public void fairHandling() {
@@ -599,4 +606,31 @@ public class App
     return properties;
   }
 
+}
+
+// There is no need to close the sessions, producers, and consumers of a closed javax.jms.Connection.
+// Similarly, there is no need to close the producers and consumers of a closed javax.jms.Session.
+class JavaxJms {
+  void closeInTryWithResources(ConnectionFactory connFactory) throws JMSException {
+    try (javax.jms.Connection connection = connFactory.createConnection()){
+      Session sess = connection.createSession(true, 1); // Compliant
+      MessageProducer producer = sess.createProducer(null); // Compliant
+      ObjectMessage msg = sess.createObjectMessage();
+      msg.setObject(null);
+      producer.send(msg);
+    }
+  }
+
+  void closeInFinally(javax.jms.Connection connection) throws JMSException {
+    try {
+      Session sess = connection.createSession(1);
+      MessageProducer producer = sess.createProducer(null); // Compliant
+      MessageConsumer consumer = sess.createConsumer(null); // Compliant
+      MessageConsumer durableConsumer = sess.createDurableConsumer(null, ""); // Compliant
+      MessageConsumer sharedConsumer = sess.createSharedConsumer(null, ""); // Compliant
+      MessageConsumer sharedDurableConsumer = sess.createSharedDurableConsumer(null, ""); // Compliant
+    } finally {
+      connection.close();
+    }
+  }
 }
