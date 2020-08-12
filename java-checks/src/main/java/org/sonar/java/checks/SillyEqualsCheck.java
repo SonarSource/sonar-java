@@ -108,7 +108,7 @@ public class SillyEqualsCheck extends AbstractMethodDetection {
   }
 
   private static boolean areNotRelated(Type type1, Type type2) {
-    return !type1.isSubtypeOf(type2) && !type2.isSubtypeOf(type1);
+    return !type1.isUnknown() && !type2.isUnknown() && !type1.isSubtypeOf(type2) && !type2.isSubtypeOf(type1);
   }
 
 }

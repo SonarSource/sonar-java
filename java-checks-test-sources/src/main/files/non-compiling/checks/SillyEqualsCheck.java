@@ -15,3 +15,18 @@ public class SillyEqualsCheck {
   }
 
 }
+
+class ExtendsUnknown extends Unknown {
+  @Override
+  public boolean equals(Object o) {
+    if (super.equals(o)) { // Compliant, super is unknown
+      return false;
+    }
+    return o.toString().equals("abc");
+  }
+
+  public void unknownArg(Unknown unknown, Object object) {
+    object.equals(unknown); // Compliant
+    unknown.equals(object); // Compliant
+  }
+}
