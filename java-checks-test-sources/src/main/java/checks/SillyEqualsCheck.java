@@ -1,6 +1,9 @@
+package checks;
+
+import java.util.ArrayList;
 import java.util.List;
 
-public class MyClass {
+public class SillyEqualsCheck {
 
   public enum MyEnum1 {
     VALUE;
@@ -23,7 +26,7 @@ public class MyClass {
   java.io.File file;
   java.io.Serializable serializable;
   Interface intf;
-  MyClass my;
+  SillyEqualsCheck my;
   MyEnum1 myEnum1;
   MyEnum2 myEnum2;
 
@@ -80,11 +83,11 @@ public class MyClass {
     Class<Object> that2 = Object.class;
     getClass().equals(that2); // False negative, if it is a Class<Object> then it cannot be a Class<MyClass>
 
-    List<String> listOfStrings;
-    List<java.io.File> listOfFiles;
+    List<String> listOfStrings = getList();
+    List<java.io.File> listOfFiles = getList();
     listOfStrings.equals(listOfFiles); // False negative, since String and File are not related
 
-    List<Object> listOfObjects;
+    List<Object> listOfObjects = getList();
     listOfObjects.equals(listOfStrings); // False negative, compliant if listOfObjects only contains strings, but it is not type-safe
     listOfStrings.equals(listOfObjects); // False negative, compliant if listOfObjects only contains strings, but it is not type-safe
 
@@ -92,7 +95,6 @@ public class MyClass {
     listOfObjectsExtended.equals(listOfStrings); // Compliant
 
     // Compliant
-    object.equals();
     object.hashCode();
   }
 
@@ -104,9 +106,8 @@ public class MyClass {
     equals(o); // False negative, String and MyClass are unrelated
   }
 
-  boolean foo(String x) {
-    lombok.val y = "Hello World";
-    return x.equals(y); // Noncompliant - FP - removed by the lombok filter
+  public <T> List<T> getList() {
+    return new ArrayList<>(); // Compliant
   }
 
 }
