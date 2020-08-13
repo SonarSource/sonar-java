@@ -22,6 +22,7 @@ package org.sonar.java.se.constraint;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.java.se.ExplodedGraphWalker;
@@ -44,6 +45,10 @@ public class ConstraintManager {
   public void setValueFactory(SymbolicValueFactory valueFactory) {
     Preconditions.checkState(symbolicValueFactory == null, "The symbolic value factory has already been defined by another checker!");
     symbolicValueFactory = valueFactory;
+  }
+
+  public SymbolicValue createEquality(ProgramState.SymbolicValueSymbol lhs, ProgramState.SymbolicValueSymbol rhs) {
+    return createRelationalSymbolicValue(Kind.EQUAL, Arrays.asList(lhs, rhs));
   }
 
   public SymbolicValue createSymbolicValue(Tree syntaxNode) {
