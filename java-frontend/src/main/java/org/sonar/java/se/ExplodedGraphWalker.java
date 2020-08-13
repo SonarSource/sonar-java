@@ -941,11 +941,15 @@ public class ExplodedGraphWalker {
     programState = svNewArray.setSingleConstraint(programState, ObjectConstraint.NOT_NULL);
   }
 
-  private void executeNewClass(NewClassTree tree) {
-    NewClassTree newClassTree = tree;
+  private void executeNewClass(NewClassTree newClassTree) {
     programState = programState.unstackValue(newClassTree.arguments().size()).state;
     // Enqueue exceptional paths
-    ((CFG.Block) node.programPoint.block).exceptions().forEach(b -> enqueue(new ProgramPoint(b), programState, !b.isCatchBlock()));
+    Symbol symbol = newClassTree.constructorSymbol();
+    if (((CFG.Block) node.programPoint.block).exceptions().stream().anyMatch(CFG.Block.IS_CATCH_BLOCK)) {
+      // To avoid noise, we only add unchecked exceptional paths (includingUnknownException) when we are in a try-catch block.
+      enqueueUncheckedExceptionalPaths(symbol);
+    }
+    enqueueThrownExceptionalPaths(symbol);
     SymbolicValue svNewClass = constraintManager.createSymbolicValue(newClassTree);
     programState = programState.stackValue(svNewClass);
     programState = svNewClass.setSingleConstraint(programState, ObjectConstraint.NOT_NULL);
