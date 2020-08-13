@@ -1,7 +1,4 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/batch/BatchReportReaderImpl.java':[
-74,
-],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/source/index/FileSourcesUpdaterHelper.java':[
 53,
 ],

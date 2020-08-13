@@ -157,7 +157,8 @@ public class A {
 
   public void closePrimary(String fileName) throws IOException {
     InputStream fileIn = new FileInputStream(fileName);
-    BufferedInputStream bufferIn = new BufferedInputStream(fileIn);
+    BufferedInputStream bufferIn = new BufferedInputStream(fileIn); // Noncompliant
+    // InputStreamReader can throw an exeption, if it is the case, there is no way to close bufferIn
     Reader reader = new InputStreamReader(bufferIn, "UTF-16");  // Noncompliant {{Use try-with-resources or close this "InputStreamReader" in a "finally" clause.}}
     reader.read(); // can fail
     fileIn.close();
@@ -165,7 +166,7 @@ public class A {
   
   public void closeSecondary(String fileName) throws IOException {
     InputStream fileIn = new FileInputStream(fileName);
-    BufferedInputStream bufferIn = new BufferedInputStream(fileIn);
+    BufferedInputStream bufferIn = new BufferedInputStream(fileIn); // Noncompliant
     Reader reader = new InputStreamReader(bufferIn, "UTF-16"); // Noncompliant {{Use try-with-resources or close this "InputStreamReader" in a "finally" clause.}}
     reader.read(); // can fail
     bufferIn.close();
@@ -173,10 +174,23 @@ public class A {
   
   public void closeTertiary(String fileName) throws IOException {
     InputStream fileIn = new FileInputStream(fileName);
-    BufferedInputStream bufferIn = new BufferedInputStream(fileIn);
+    BufferedInputStream bufferIn = new BufferedInputStream(fileIn); // Noncompliant
     Reader reader = new InputStreamReader(bufferIn, "UTF-16"); // Noncompliant {{Use try-with-resources or close this "InputStreamReader" in a "finally" clause.}}
     reader.read(); // can fail
     reader.close();
+  }
+
+  public void closeTertiary2(String fileName) throws IOException {
+    // If getBufferedInputStream() fails, there is not way to close fileIn
+    InputStream fileIn = new FileInputStream(fileName); // Noncompliant
+    BufferedInputStream bufferIn = getBufferedInputStream();
+    Reader reader = new InputStreamReader(bufferIn, "UTF-16"); // Noncompliant {{Use try-with-resources or close this "InputStreamReader" in a "finally" clause.}}
+    reader.read(); // can fail
+    reader.close();
+  }
+
+  private BufferedInputStream getBufferedInputStream() {
+    return new BufferedInputStream(fileIn);
   }
 
   public void forLoopHandling(int maxLoop) {
@@ -394,10 +408,19 @@ public class A {
   }
 
   public void methodNamedCloseQuietly() throws FileNotFoundException {
+    FileInputStream is = new FileInputStream("/tmp/foo"); // Noncompliant
+    try {
+    } finally {
+      // new FileInputStream can fail, preventing to clsoe the is stream.
+      closeQuietly(new FileInputStream("/tmp/foo"), is);
+    }
+  }
+
+  public void methodNamedCloseQuietly() throws FileNotFoundException {
     FileInputStream is = new FileInputStream("/tmp/foo"); // Compliant - used as parameter of closeQuietly method
     try {
     } finally {
-      closeQuietly(new FileInputStream("/tmp/foo"), is);
+      closeQuietly(is);
     }
   }
 

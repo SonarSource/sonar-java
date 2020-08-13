@@ -1728,10 +1728,12 @@ class VolatileFields {
       if (volatileField) {} // Compliant as this field is volatile, it can be modified by another thread
     }
   }
-class DITO {
-  DITO() throws MyExceptionFoo {}
-}
-  class MyExceptionFoo {}
+  class DITO {
+    DITO() throws MyExceptionFoo {}
+    DITO(String s) {}
+  }
+  class MyExceptionFoo extends Exception {}
+  class MyRuntimeExceptionFoo extends RuntimeException {}
   void plop(Object result) {
     if (result == null) {
       try {
@@ -1739,6 +1741,19 @@ class DITO {
       } catch (final MyExceptionFoo ie) {
       }
       if (result != null) { // compliant : constructor can throw an exception and so result is null
+        System.out.println("");;
+      }
+    }
+  }
+
+  void plopRuntime(Object result) {
+    if (result == null) {
+      try {
+        result = new DITO("s");
+      } catch (final MyRuntimeExceptionFoo ie) {
+      }
+      if (result != null) { // compliant : even if DITO(String) does not explicitly throws an exception, it's in a try-block, so we should consider the case.
+        // It can be a true negative if DITO(String) actually throws MyRuntimeExceptionFoo or a false negative otherwise.
         System.out.println("");;
       }
     }

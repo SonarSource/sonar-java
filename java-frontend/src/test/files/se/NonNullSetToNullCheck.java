@@ -274,6 +274,22 @@ class ExitWithException {
     self = getOtherSelf(); // Compliant
   }
 
+  public ExitWithException(@Nonnull String i) {
+    if (i == null) {
+      throw new RuntimeException(); // method exit on exception, OK
+    }
+    self = i;
+  }
+
+  public ExitWithException(String x, String y) { // Compliant
+    try {
+      Integer.valueOf(x);
+    } catch (NumberFormatException e) {
+      throw new RuntimeException(e);
+    }
+    this.self = x;
+  }
+
   @Nonnull
   public Object getSelf() throws IllegalArgumentException {
     return self;
