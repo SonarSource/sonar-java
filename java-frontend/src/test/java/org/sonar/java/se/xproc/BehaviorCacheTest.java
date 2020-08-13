@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.Rule;
@@ -46,9 +47,6 @@ import org.sonar.java.se.SETestUtils;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
-import org.sonar.java.se.xproc.BehaviorCache;
-import org.sonar.java.se.xproc.ExceptionalYield;
-import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -301,6 +299,22 @@ class BehaviorCacheTest {
 
     assertThat(testedPre).containsOnly("foo", "bar", "isBlank");
     assertThat(testedPost).containsOnly("foo", "bar", "isBlank");
+  }
+
+  @Test
+  void log_when_unable_to_load_resources_with_method_behavior() throws Exception {
+    CompilationUnitTreeImpl cut = (CompilationUnitTreeImpl) JParserTestUtils.parse("class A { }");
+    Map<String, MethodBehavior> result = BehaviorCache.HardcodedMethodBehaviors.loadHardcodedBehaviors(cut.sema, () -> BehaviorCacheTest.class.getResource("unknown"));
+    assertThat(result).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).containsOnlyOnce("Unable to load hardcoded method behaviors. Defaulting to no hardcoded method behaviors.");
+  }
+
+  @Test
+  void log_when_unable_to_load_resources_with_invalid_method_behaviors() throws Exception {
+    CompilationUnitTreeImpl cut = (CompilationUnitTreeImpl) JParserTestUtils.parse("class A { }");
+    Map<String, MethodBehavior> result = BehaviorCache.HardcodedMethodBehaviors.loadHardcodedBehaviors(cut.sema, () -> BehaviorCacheTest.class.getResource("invalid.json"));
+    assertThat(result).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.ERROR)).containsOnlyOnce("Unable to load hardcoded method behaviors of \"invalid.json\". Defaulting to no hardcoded method behaviors.");
   }
 
   private static void verifyNoIssueOnFile(String fileName) {
