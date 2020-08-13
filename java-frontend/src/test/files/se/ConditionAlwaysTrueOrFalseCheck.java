@@ -1,5 +1,8 @@
 package org.foo;
 
+import java.awt.*;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import java.awt.event.FocusEvent;
@@ -60,6 +63,17 @@ class Class extends SuperClass {
     if (!parameter) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
       if (!parameter) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
       }
+    }
+  }
+
+  void BigDecimalAreNotEqual() {
+    // In DivisionByZeroCheck, if we add a constraint ZERO to x, we end up having a FP here.
+    BigDecimal x = new BigDecimal(0);
+    BigDecimal y = new BigDecimal(0);
+    if (x == y) { // Compliant, will print 2.
+      System.out.println("1");
+    } else {
+      System.out.println("2");
     }
   }
 

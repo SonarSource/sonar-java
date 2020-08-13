@@ -72,7 +72,7 @@ public class DivisionByZeroCheck extends SECheck {
     .names("add", "subtract").addParametersMatcher(MethodMatchers.ANY).build();
   private static final MethodMatchers KEEPING_CONSTRAINTS_WITHOUT_PARAM = BIG_INTEGER_AND_DECIMAL
     .names("toBigInteger", "toBigIntegerExact", "abs", "byteValueExact", "byteValue", "byteValueExact", "shortValue", "shortValueExact",
-    "doubleValue", "floatValue", "intValue", "intValueExact" , "longValue", "longValueExact").addParametersMatcher().build();
+      "doubleValue", "floatValue", "intValue", "intValueExact", "longValue", "longValueExact").addParametersMatcher().build();
   private static final MethodMatchers KEEPING_CONSTRAINTS_WITH_ONE_PARAM = BIG_INTEGER_AND_DECIMAL
     .names("pow", "round", "shiftRight", "shiftLeft").addParametersMatcher(MethodMatchers.ANY).build();
 
@@ -449,7 +449,7 @@ public class DivisionByZeroCheck extends SECheck {
     }
 
     private void addZeroConstraint(SymbolicValue sv, @Nullable ZeroConstraint zeroConstraint) {
-      if(zeroConstraint == null) {
+      if (zeroConstraint == null) {
         programState = programState.removeConstraintsOnDomain(sv, ZeroConstraint.class);
       } else {
         programState = programState.addConstraint(sv, zeroConstraint);
