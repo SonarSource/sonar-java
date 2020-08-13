@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import junit.framework.AssertionFailedError;
 import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
@@ -13,48 +14,69 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AssertionInTryCatchCheck {
 
   @Test
-  public void test_non_compliant() {
+  public void test_non_compliant1() {
     // Test secondary issue location
     try {
       throwAssertionError(); // This test will pass even if we comment this line!
-      org.junit.Assert.fail("Expected an AssertionError!"); // Noncompliant [[sc=24;ec=28;secondary=21]] {{Don't use fail() inside a try-catch catching an AssertionError.}}
-    } catch (AssertionError e) {
+      org.junit.Assert.fail("Expected an AssertionError!"); // Noncompliant [[sc=24;ec=28;secondary=22]] {{Don't use fail() inside a try-catch catching an AssertionError.}}
+    } catch (AssertionError e) {}
+  }
 
-    }
+  @Test
+  public void test_non_compliant2() {
     try {
       throwAssertionError(); // This test will pass even if we comment this line!
-      fail("Expected an AssertionError!"); // Noncompliant [[sc=7;ec=11;secondary=29]]
+      fail("Expected an AssertionError!"); // Noncompliant [[sc=7;ec=11;secondary=32]]
     } catch (IllegalStateException e) {
 
-    } catch (AssertionError e) {
+    } catch (AssertionError e) {}
+  }
 
-    }
-
+  @Test
+  public void test_non_compliant3() {
     // Test other type of error catching AssertionError
     try {
       fail("Expected an AssertionError!", new IllegalArgumentException()); // Noncompliant
     } catch (AssertionFailedError e) {} // AssertionFailedError is a subtype of AssertionError and thrown by JUnit 5
+  }
 
+  @Test
+  public void test_non_compliant4() {
     try {
       fail(); // Noncompliant
     } catch (Error error) {}
+  }
 
+  @Test
+  public void test_non_compliant5() {
     try {
       org.assertj.core.api.Assertions.fail(""); // Noncompliant
     } catch (Error error) {}
+  }
 
+  @Test
+  public void test_non_compliant6() {
     try {
       org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown(IllegalArgumentException.class); // Noncompliant
     } catch (Error error) {}
+  }
 
+  @Test
+  public void test_non_compliant7() {
     try {
       fail(); // Noncompliant
     } catch (Throwable error) {}
+  }
 
+  @Test
+  public void test_non_compliant8() {
     try {
       fail("Expected an AssertionError!"); // Noncompliant
     } catch (AssertionError|OutOfMemoryError error) {}
+  }
 
+  @Test
+  public void test_non_compliant9() {
     //Test JUnit 4
     try {
       org.junit.Assert.assertArrayEquals(new String[1], new String[1]); // Noncompliant {{Don't use assertArrayEquals() inside a try-catch catching an AssertionError.}}
@@ -68,10 +90,11 @@ public class AssertionInTryCatchCheck {
       org.junit.Assert.assertTrue(false); // Noncompliant
       org.junit.Assert.assertThat(false, is(false)); // Noncompliant
       org.junit.Assert.fail("Expected an AssertionError!"); // Noncompliant
-    } catch (AssertionError e) {
+    } catch (AssertionError e) {}
+  }
 
-    }
-
+  @Test
+  public void test_non_compliant10() {
     //Test JUnit 5
     try {
       Executable executable = new Executable() {
@@ -96,24 +119,30 @@ public class AssertionInTryCatchCheck {
       assertTimeoutPreemptively(Duration.ZERO, executable); // Noncompliant
       assertThrows(AssertionError.class, () -> throwAssertionError()); // Noncompliant
       fail("Expected an AssertionError!"); // Noncompliant
-    } catch (AssertionError e) {
+    } catch (AssertionError e) {}
+  }
 
-    }
-
-    // Test other non compliant cases
+  @Test
+  public void test_non_compliant11() {
     try {
       fail("Expected an AssertionError!"); // Noncompliant
     } catch (AssertionError error) {
       Object e = "somethingElse";
       Assert.assertThat(e.toString(), is("Assertion error"));
     }
+  }
 
+  @Test
+  public void test_non_compliant12() {
     try {
       fail("Expected an AssertionError!"); // Noncompliant
     } catch (AssertionError error) {
       System.out.println("An unrelated message");
     }
+  }
 
+  @Test
+  public void test_non_compliant13() {
     try {
       if (something()) {
         throwAssertionError();
@@ -160,7 +189,7 @@ public class AssertionInTryCatchCheck {
     }
 
     try {
-      Runnable r = () -> fail(); // Compliant, nested assertions are not reported
+      Runnable r = Assertions::fail; // Compliant, nested assertions are not reported
       class Nested {
         Void f = fail(); // Compliant
         void f() {
