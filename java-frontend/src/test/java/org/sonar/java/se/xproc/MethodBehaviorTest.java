@@ -171,6 +171,68 @@ class MethodBehaviorTest {
   }
 
   @Test
+  void equality() {
+    MethodBehavior mb = new MethodBehavior("foo()Ljava/lang/Object;");
+    addYield(mb, ObjectConstraint.NOT_NULL);
+    addYield(mb, ObjectConstraint.NULL);
+
+    MethodBehavior sameYields = new MethodBehavior("foo()Ljava/lang/Object;");
+    addYield(sameYields, ObjectConstraint.NOT_NULL);
+    addYield(sameYields, ObjectConstraint.NULL);
+
+    MethodBehavior differentType = new MethodBehavior("foo()Ljava/lang/Object;") {
+      private Object o = new Object();
+    };
+    addYield(differentType, ObjectConstraint.NOT_NULL);
+    addYield(differentType, ObjectConstraint.NULL);
+
+    MethodBehavior differentSignature = new MethodBehavior("bar()Ljava/lang/Object;");
+    addYield(differentSignature, ObjectConstraint.NOT_NULL);
+    addYield(differentSignature, ObjectConstraint.NULL);
+
+    assertThat(mb)
+      .isEqualTo(mb)
+      .isEqualTo(sameYields)
+      .isNotEqualTo(differentType)
+      .isNotEqualTo(differentSignature)
+      .isNotEqualTo(null)
+      .isNotEqualTo(new Object());
+  }
+
+  @Test
+  void hashcode() {
+    MethodBehavior mb = new MethodBehavior("foo()Ljava/lang/Object;");
+    addYield(mb, ObjectConstraint.NOT_NULL);
+    addYield(mb, ObjectConstraint.NULL);
+
+    MethodBehavior sameSignatureAndYield = new MethodBehavior("foo()Ljava/lang/Object;");
+    addYield(sameSignatureAndYield, ObjectConstraint.NOT_NULL);
+    addYield(sameSignatureAndYield, ObjectConstraint.NULL);
+
+    MethodBehavior differentYield = new MethodBehavior("foo()Ljava/lang/Object;");
+    addYield(differentYield, ObjectConstraint.NULL);
+
+    MethodBehavior differentSignature = new MethodBehavior("bar()Ljava/lang/Object;");
+    addYield(differentSignature, ObjectConstraint.NOT_NULL);
+    addYield(differentSignature, ObjectConstraint.NULL);
+
+    assertThat(mb.hashCode())
+      .isEqualTo(sameSignatureAndYield.hashCode())
+      .isNotEqualTo(differentYield.hashCode())
+      .isNotEqualTo(differentSignature.hashCode());
+  }
+
+  @Test
+  void to_String_display_number_of_yields() {
+    String signature = "foo()Ljava/lang/Object;";
+    MethodBehavior mb1 = new MethodBehavior(signature);
+    addYield(mb1, ObjectConstraint.NOT_NULL);
+    addYield(mb1, ObjectConstraint.NULL);
+
+    assertThat(mb1).hasToString("foo()Ljava/lang/Object; [2 yield(s)]");
+  }
+
+  @Test
   void anonymous_classes_used_as_exception_should_be_resolved_to_supertype() {
     Pair<SymbolicExecutionVisitor, Sema> visitorAndSemantic = createSymbolicExecutionVisitorAndSemantic(
       "src/test/java/org/sonar/java/resolve/targets/TestExceptionSupertypeResolution.java");

@@ -26,6 +26,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
@@ -62,6 +63,7 @@ public class MethodBehaviorJsonAdapter implements JsonSerializer<MethodBehavior>
   public static Gson gson(Sema sema) {
     return new GsonBuilder()
       .registerTypeAdapter(MethodBehavior.class, new MethodBehaviorJsonAdapter(sema))
+      .serializeNulls()
       .setPrettyPrinting()
       .create();
   }
@@ -128,7 +130,8 @@ public class MethodBehaviorJsonAdapter implements JsonSerializer<MethodBehavior>
           constraintsByDomain = constraintsByDomain.put(BooleanConstraint.valueOf(constraint));
           break;
         default:
-          throw new IllegalStateException("Unsupported Domain constraint");
+          String msg = String.format("Unsupported Domain constraint \"%s\". Only BooleanConstraint (TRUE, FALSE) and ObjectConstraint (NULL, NOT_NULL) are supported.", domain);
+          throw new IllegalStateException(msg);
       }
     }
     return constraintsByDomain;
@@ -174,16 +177,15 @@ public class MethodBehaviorJsonAdapter implements JsonSerializer<MethodBehavior>
       isExceptional = true;
       yield.addProperty(JSON_THROWN_EXCEPTION, exceptionalYield.exceptionType(sema).fullyQualifiedName());
     } else {
-      throw new IllegalStateException("Generated yields should only be happy or exceptional");
+      throw new IllegalStateException("Hardcoded yields should only be HappyPathYield or ExceptionalYield.");
     }
     yield.addProperty(JSON_IS_EXCEPTIONAL, isExceptional);
     return yield;
   }
 
-  @CheckForNull
   private static JsonElement toJson(@Nullable ConstraintsByDomain constraints) {
     if (constraints == null) {
-      return null;
+      return JsonNull.INSTANCE;
     }
     JsonArray jsonConstraints = new JsonArray();
     constraints.forEach((domain, constraint) -> jsonConstraints.add(domain.getSimpleName() + JSON_CONSTRAINT_DELIMITER + constraint.toString()));
