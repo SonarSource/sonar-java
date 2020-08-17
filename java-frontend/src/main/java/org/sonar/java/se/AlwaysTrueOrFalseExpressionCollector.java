@@ -75,6 +75,7 @@ public class AlwaysTrueOrFalseExpressionCollector {
     return nodes.stream()
       .map(AlwaysTrueOrFalseExpressionCollector::flowFromNode)
       .flatMap(Set::stream)
+      .limit(FlowComputation.MAX_RETURNED_FLOWS)
       .filter(f -> !f.isEmpty())
       .collect(Collectors.toSet());
   }

@@ -28,6 +28,7 @@ import org.sonar.java.se.AlwaysTrueOrFalseExpressionCollector;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.SETestUtils;
 import org.sonar.java.testing.CheckVerifier;
+import org.sonar.java.testing.InternalCheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -96,6 +97,19 @@ class ConditionAlwaysTrueOrFalseCheckTest {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/ConditionAlwaysTrueOrFalseCheckReporting.java")
       .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
+  }
+
+  @Test
+  void max_returned_flows() {
+    ((InternalCheckVerifier) CheckVerifier.newVerifier())
+      .withCustomIssueVerifier(issues -> {
+        assertThat(issues).hasSize(2);
+        assertThat(issues.iterator().next().flows).hasSize(20);
+      })
+      .onFile("src/test/files/se/ConditionAlwaysTrueOrFalseCheckMaxReturnedFlows.java")
+      .withChecks(new BooleanGratuitousExpressionsCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
   }

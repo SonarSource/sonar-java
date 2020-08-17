@@ -77,6 +77,7 @@ public class FlowComputation {
   private static final String IMPLIES_SAME_VALUE = "Implies '%s' has the same value as '%s'.";
 
   private static final int MAX_FLOW_STEPS = 3_000_000;
+  public static final int MAX_RETURNED_FLOWS = 20;
   private static final Logger LOG = Loggers.get(FlowComputation.class);
   private final Predicate<Constraint> addToFlow;
   private final Predicate<Constraint> terminateTraversal;
@@ -166,6 +167,9 @@ public class FlowComputation {
       ExecutionPath path = workList.pop();
       if (path.finished) {
         flows.add(path.flow);
+        if (flows.size() == FlowComputation.MAX_RETURNED_FLOWS) {
+          return flows;
+        }
       } else {
         path.lastEdge.parent.edges().stream()
           .filter(path::notVisited)
