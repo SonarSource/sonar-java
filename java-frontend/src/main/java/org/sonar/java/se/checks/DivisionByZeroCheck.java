@@ -20,7 +20,11 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.annotations.VisibleForTesting;
-
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
@@ -33,6 +37,7 @@ import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -40,22 +45,36 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
-import javax.annotation.Nullable;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 @Rule(key = "S3518")
 public class DivisionByZeroCheck extends SECheck {
 
+  private static final String BIG_INTEGER = "java.math.BigInteger";
+  private static final String BIG_DECIMAL = "java.math.BigDecimal";
+
   private static final ExceptionalYieldChecker EXCEPTIONAL_YIELD_CHECKER = new ExceptionalYieldChecker(
     "A division by zero will occur when invoking method \"%s()\".");
+
+  private static final MethodMatchers.NameBuilder BIG_INTEGER_AND_DECIMAL = MethodMatchers.create()
+    .ofTypes(BIG_INTEGER, BIG_DECIMAL);
+  private static final MethodMatchers BIG_INT_DEC_VALUE_OF = BIG_INTEGER_AND_DECIMAL
+    .names("valueOf").addParametersMatcher(MethodMatchers.ANY).build();
+  private static final MethodMatchers BIG_INT_DEC_DIVIDE_REMAINDER = BIG_INTEGER_AND_DECIMAL
+    .names("divide", "remainder", "divideAndRemainder").addParametersMatcher(MethodMatchers.ANY).build();
+  private static final MethodMatchers BIG_INT_DEC_MULTIPLY = BIG_INTEGER_AND_DECIMAL
+    .names("multiply").addParametersMatcher(MethodMatchers.ANY).build();
+  private static final MethodMatchers BIG_INT_DEC_ADD_SUB = BIG_INTEGER_AND_DECIMAL
+    .names("add", "subtract").addParametersMatcher(MethodMatchers.ANY).build();
+  private static final MethodMatchers KEEPING_CONSTRAINTS_WITHOUT_PARAM = BIG_INTEGER_AND_DECIMAL
+    .names("toBigInteger", "toBigIntegerExact", "abs", "byteValueExact", "byteValue", "byteValueExact", "shortValue", "shortValueExact",
+      "doubleValue", "floatValue", "intValue", "intValueExact", "longValue", "longValueExact").addParametersMatcher().build();
+  private static final MethodMatchers KEEPING_CONSTRAINTS_WITH_ONE_PARAM = BIG_INTEGER_AND_DECIMAL
+    .names("pow", "round", "shiftRight", "shiftLeft").addParametersMatcher(MethodMatchers.ANY).build();
 
   @VisibleForTesting
   public enum ZeroConstraint implements Constraint {
@@ -171,6 +190,28 @@ public class DivisionByZeroCheck extends SECheck {
       }
     }
 
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      if (BIG_INT_DEC_DIVIDE_REMAINDER.matches(tree)) {
+        ProgramState.SymbolicValueSymbol rightOp = programState.peekValueSymbol();
+        handleDivide(tree, programState.peekValue(1), rightOp.symbolicValue(), rightOp.symbol());
+      } else if (BIG_INT_DEC_ADD_SUB.matches(tree)) {
+        handlePlusMinus(programState.peekValue(1), programState.peekValue(0));
+      } else if (BIG_INT_DEC_MULTIPLY.matches(tree)) {
+        handleMultiply(programState.peekValue(1), programState.peekValue(0));
+      } else if (BIG_INT_DEC_VALUE_OF.matches(tree)) {
+        ExpressionTree arg = tree.arguments().get(0);
+        SymbolicValue sv = programState.peekValue(0);
+        if (arg.is(Tree.Kind.IDENTIFIER) && isZero(sv)) {
+          reuseSymbolicValue(sv);
+        }
+      } else if (KEEPING_CONSTRAINTS_WITHOUT_PARAM.matches(tree)) {
+        reuseSymbolicValue(programState.peekValue(0));
+      } else if (KEEPING_CONSTRAINTS_WITH_ONE_PARAM.matches(tree)) {
+        reuseSymbolicValue(programState.peekValue(1));
+      }
+    }
+
     private void checkExpression(Tree tree, SymbolicValue leftOp, SymbolicValue rightOp, Symbol rightOpSymbol) {
       switch (tree.kind()) {
         case MULTIPLY:
@@ -277,7 +318,13 @@ public class DivisionByZeroCheck extends SECheck {
     }
 
     private ExpressionTree getDenominator(Tree tree) {
-      return tree.is(Tree.Kind.DIVIDE, Tree.Kind.REMAINDER) ? ((BinaryExpressionTree) tree).rightOperand() : ((AssignmentExpressionTree) tree).expression();
+      if (tree.is(Tree.Kind.DIVIDE, Tree.Kind.REMAINDER)) {
+        return ((BinaryExpressionTree) tree).rightOperand();
+      } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+        return ((MethodInvocationTree) tree).arguments().get(0);
+      } else {
+        return ((AssignmentExpressionTree) tree).expression();
+      }
     }
 
     @Override
@@ -325,6 +372,38 @@ public class DivisionByZeroCheck extends SECheck {
 
     @Override
     public void visitLiteral(LiteralTree tree) {
+      handleLiteral(tree);
+    }
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      if (BIG_INT_DEC_VALUE_OF.matches(tree)) {
+        ExpressionTree arg = tree.arguments().get(0);
+        if (arg instanceof LiteralTree) {
+          handleLiteral(((LiteralTree) arg));
+          return;
+        }
+      }
+      checkDeferredConstraint();
+    }
+
+    @Override
+    public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+      IdentifierTree id = tree.identifier();
+      Type idType = id.symbolType();
+      SymbolicValue sv = programState.peekValue();
+      if (sv != null && (idType.is(BIG_INTEGER) || idType.is(BIG_DECIMAL))) {
+        if ("ZERO".equals(id.name())) {
+          addZeroConstraint(sv, ZeroConstraint.ZERO);
+        } else {
+          addZeroConstraint(sv, ZeroConstraint.NON_ZERO);
+        }
+      }
+
+      super.visitMemberSelectExpression(tree);
+    }
+
+    private void handleLiteral(LiteralTree tree) {
       String value = tree.value();
       SymbolicValue sv = programState.peekValue();
       if (tree.is(Tree.Kind.CHAR_LITERAL) && isNullCharacter(value)) {
@@ -370,7 +449,7 @@ public class DivisionByZeroCheck extends SECheck {
     }
 
     private void addZeroConstraint(SymbolicValue sv, @Nullable ZeroConstraint zeroConstraint) {
-      if(zeroConstraint == null) {
+      if (zeroConstraint == null) {
         programState = programState.removeConstraintsOnDomain(sv, ZeroConstraint.class);
       } else {
         programState = programState.addConstraint(sv, zeroConstraint);

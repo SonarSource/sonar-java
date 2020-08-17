@@ -1,3 +1,6 @@
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 class A {
   void foo(int r) {
     int z1 = 0; // flow@foo {{Implies 'z1' is zero.}}
@@ -493,5 +496,220 @@ class RelationalOperators {
     } else {
       return y;
     }
+  }
+}
+
+class BigIntegerAndDecimal {
+  void simpleBigInt(BigInteger r) {
+    BigInteger z1 = BigInteger.valueOf(0); // flow@simpleBigInt {{'valueOf()' can return zero.}} flow@simpleBigInt {{Implies 'z1' can be zero.}}
+    BigInteger z2 = z1; // flow@simpleBigInt {{Implies 'z2' has the same value as 'z1'.}}
+    r = r.divide(z2); // Noncompliant [[flows=simpleBigInt]] {{Make sure "z2" can't be zero before doing this division.}} flow@simpleBigInt {{Division by zero.}}
+  }
+
+  void simpleBigDec(BigDecimal r) {
+    BigDecimal z1 = BigDecimal.valueOf(0);;
+    BigDecimal z2 = z1;
+    r = r.divide(z2); // Noncompliant
+  }
+
+  void bigMultiply(BigInteger r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    BigInteger b1 = BigInteger.valueOf(4);
+    BigInteger mult1 = z1.multiply(b1);
+
+    r = r.divide(mult1); // Noncompliant
+  }
+
+  void bigMultiply2(BigInteger r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    BigInteger b1 = BigInteger.valueOf(4);
+    BigInteger mult2 = b1.multiply(z1);
+
+    r = r.divide(mult2); // Noncompliant
+  }
+
+  void bigMultiplyChained(BigInteger r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    BigInteger b1 = BigInteger.valueOf(4);
+    r = r.divide(z1.multiply(b1)); // Noncompliant
+  }
+
+  void bigPlus(BigInteger r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    BigInteger z2 = BigInteger.valueOf(0);
+    BigInteger sum1 = z1.add(z2);
+
+    r = r.divide(sum1); // Noncompliant
+  }
+
+  void bigMinus(BigInteger r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    BigInteger z2 = BigInteger.valueOf(0);
+    BigInteger sum1 = z1.subtract(z2);
+
+    r = r.divide(sum1); // Noncompliant
+  }
+
+  void bigRemainder(BigInteger r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    BigInteger v1 = BigInteger.valueOf(42);
+    BigInteger z2 = z1.multiply(v1);
+    r = r.remainder(z2); // Noncompliant
+  }
+
+  void simpleDivideAndRemainder(BigInteger r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    r.divideAndRemainder(z1); // Noncompliant
+  }
+
+  void simpleBigInt(BigInteger r, int value) {
+    BigInteger z1 = BigInteger.valueOf(value);
+    r = r.divide(z1); // Compliant
+  }
+
+  // From Constant
+  void simpleBigIntFromZeroConstant(BigInteger r) {
+    BigInteger z1 = BigInteger.ZERO;
+    r = r.divide(z1); // Noncompliant
+  }
+
+  void simpleBigDecFromZeroConstant(BigDecimal r) {
+    BigDecimal z1 = BigDecimal.ZERO;
+    r = r.divide(z1); // Noncompliant
+  }
+
+  void simpleBigIntFromOneConstant(BigInteger r) {
+    BigInteger z1 = BigInteger.ONE;
+    r = r.divide(z1); // Compliant
+  }
+
+  void simpleBigDecFromTenConstant(BigDecimal r) {
+    BigDecimal z1 = BigDecimal.TEN;
+    r = r.divide(z1); // Compliant
+  }
+
+  // Keeping zero constraints
+  void keepZeroConstraint(BigInteger r) {
+    int i = 0;
+    BigInteger z1 = BigInteger.valueOf(i);
+    r = r.divide(z1); // Noncompliant
+  }
+
+  void keepZeroConstraint(BigDecimal r) {
+    double i = 0.0;
+    BigDecimal z1 = BigDecimal.valueOf(i);
+    r = r.divide(z1); // Noncompliant
+  }
+
+  void keepZeroConstraint2(BigInteger r) {
+    int i = 0;
+    long j = i;
+    BigInteger z1 = BigInteger.valueOf(j);
+    r = r.divide(z1); // Noncompliant
+  }
+
+  // Operations keeping constraints
+  void keepToBigInteger(BigInteger r) {
+    BigDecimal z1 = BigDecimal.valueOf(0);
+    BigInteger z2 = z1.toBigInteger();
+    r = r.divide(z2); // Noncompliant
+  }
+
+  void keepToBigIntegerExact(BigInteger r) {
+    BigDecimal z1 = BigDecimal.valueOf(0);
+    BigInteger z2 = z1.toBigIntegerExact();
+    r = r.divide(z2); // Noncompliant
+  }
+
+  void keepRound(BigDecimal r) {
+    MathContext mc = new MathContext(5);
+    BigDecimal z1 = BigDecimal.valueOf(0);
+    z1 = z1.round(mc);
+    r = r.divide(z1); // Noncompliant
+  }
+
+  void keepRemainder(BigDecimal r) {
+    BigDecimal z1 = BigDecimal.valueOf(0);
+    z1 = z1.remainder(r);
+    r = r.divide(z1); // Noncompliant
+  }
+
+  void keepPow(BigDecimal r) {
+    BigDecimal z1 = BigDecimal.valueOf(0);
+    z1 = z1.pow(42);
+    r = r.divide(z1); // Noncompliant
+  }
+
+  void keepLongValueExact(long r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    long l1 = z1.longValueExact();
+    r = r / l1; // Noncompliant
+  }
+
+  void keepLongValue(long r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    long l1 = z1.longValue();
+    r = r / l1; // Noncompliant
+  }
+
+  void keepIntValueExact(int r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    int l1 = z1.intValueExact();
+    r = r / l1; // Noncompliant
+  }
+
+  void keepIntValue(int r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    int l1 = z1.intValue();
+    r = r / l1; // Noncompliant
+  }
+
+  void keepFloatValue(float r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    float l1 = z1.floatValue();
+    r = r / l1; // Noncompliant
+  }
+
+  void keepDoubleValue(double r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    double l1 = z1.doubleValue();
+    r = r / l1; // Noncompliant
+  }
+
+  void keepShortValueExact(short r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    short s1 = z1.shortValueExact();
+    int res = r / s1; // Noncompliant
+  }
+
+  void keepShortValue(short r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    short s1 = z1.shortValue();
+    int res = r / s1; // Noncompliant
+  }
+
+  void keepByteValue(byte r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    byte s1 = z1.byteValue();
+    int res = r / s1; // Noncompliant
+  }
+
+  void keepByteValueExact(byte r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    byte s1 = z1.byteValueExact();
+    int res = r / s1; // Noncompliant
+  }
+
+  void keepAbs(BigInteger r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    BigInteger abs = z1.abs();
+    r = r.divide(abs); // Noncompliant
+  }
+
+  void keepShift(BigInteger r) {
+    BigInteger z1 = BigInteger.valueOf(0);
+    z1 = z1.shiftLeft(42);
+    z1 = z1.shiftRight(42);
+    r = r.divide(z1); // Noncompliant
   }
 }
