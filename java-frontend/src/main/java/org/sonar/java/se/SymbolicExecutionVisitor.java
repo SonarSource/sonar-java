@@ -49,7 +49,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    behaviorCache.setFileContext(this, (Sema) context.getSemanticModel());
+    behaviorCache.setFileContext(this);
     super.scanFile(context);
   }
 

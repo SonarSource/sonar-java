@@ -149,7 +149,7 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
     return new HashCodeBuilder(11, 1297)
       .appendSuper(super.hashCode())
       .append(check)
-      .hashCode();
+      .toHashCode();
   }
 
   @Override

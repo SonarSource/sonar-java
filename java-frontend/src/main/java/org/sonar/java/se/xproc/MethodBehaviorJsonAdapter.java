@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import org.sonar.java.model.Sema;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
@@ -54,15 +53,13 @@ public class MethodBehaviorJsonAdapter implements JsonSerializer<MethodBehavior>
   private static final String JSON_SIGNATURE = "signature";
   private static final String JSON_YIELDS = "yields";
 
-  private final Sema sema;
-
-  public MethodBehaviorJsonAdapter(Sema sema) {
-    this.sema = sema;
+  private MethodBehaviorJsonAdapter() {
   }
 
-  public static Gson gson(Sema sema) {
+  public static Gson gson() {
     return new GsonBuilder()
-      .registerTypeAdapter(MethodBehavior.class, new MethodBehaviorJsonAdapter(sema))
+      .registerTypeAdapter(MethodBehavior.class,
+        new MethodBehaviorJsonAdapter())
       .serializeNulls()
       .setPrettyPrinting()
       .create();
@@ -79,6 +76,7 @@ public class MethodBehaviorJsonAdapter implements JsonSerializer<MethodBehavior>
     jsonMB.get(JSON_DECLARED_EXCEPTIONS)
       .getAsJsonArray()
       .forEach(exception -> declaredExceptions.add(exception.getAsString()));
+    mb.setDeclaredExceptions(declaredExceptions);
 
     jsonMB.get(JSON_YIELDS)
       .getAsJsonArray()
@@ -160,7 +158,7 @@ public class MethodBehaviorJsonAdapter implements JsonSerializer<MethodBehavior>
     return mb;
   }
 
-  private JsonElement toJson(MethodYield methodYield, int arity) {
+  private static JsonElement toJson(MethodYield methodYield, int arity) {
     JsonObject yield = new JsonObject();
     JsonArray jsonParameterConstraints = new JsonArray();
     for (int i = 0; i < arity; i++) {
@@ -175,7 +173,7 @@ public class MethodBehaviorJsonAdapter implements JsonSerializer<MethodBehavior>
     } else if (methodYield instanceof ExceptionalYield) {
       ExceptionalYield exceptionalYield = (ExceptionalYield) methodYield;
       isExceptional = true;
-      yield.addProperty(JSON_THROWN_EXCEPTION, exceptionalYield.exceptionType(sema).fullyQualifiedName());
+      yield.addProperty(JSON_THROWN_EXCEPTION, exceptionalYield.getExceptionType());
     } else {
       throw new IllegalStateException("Hardcoded yields should only be HappyPathYield or ExceptionalYield.");
     }

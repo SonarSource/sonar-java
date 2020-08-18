@@ -21,22 +21,21 @@ package org.sonar.java.se.xproc;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.model.JParserTestUtils;
-import org.sonar.java.model.JavaTree;
-import org.sonar.java.model.Sema;
 import org.sonar.java.se.ProgramState;
+import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class MethodBehaviorJsonAdapterTest {
 
@@ -77,10 +76,9 @@ class MethodBehaviorJsonAdapterTest {
 
   @BeforeEach
   void init() {
-    Sema semanticModel = ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("class A { }")).sema;
     cache = new BehaviorCache();
-    cache.setFileContext(null, semanticModel);
-    gson = MethodBehaviorJsonAdapter.gson(semanticModel);
+    cache.setFileContext(null);
+    gson = MethodBehaviorJsonAdapter.gson();
   }
 
   @Test
@@ -126,6 +124,59 @@ class MethodBehaviorJsonAdapterTest {
     assertThat(gson.toJson(mb))
       .contains("\"resultConstaint\": null,")
       .contains("\"parametersConstraints\": [],");
+  }
+
+  @Test
+  void deserialization_serialization() {
+    MethodBehavior customBehavior = new MethodBehavior("org.bar.A#foo(Ljava/lang/Object;)Z");
+    customBehavior.setDeclaredExceptions(Arrays.asList("org.foo.MyException", "org.bar.MyOtherException"));
+    customBehavior.setVarArgs(true);
+    HappyPathYield hpy = new HappyPathYield(customBehavior);
+    hpy.setResult(-1, ConstraintsByDomain.empty().put(BooleanConstraint.TRUE));
+    hpy.parametersConstraints.add(ConstraintsByDomain.empty().put(ObjectConstraint.NOT_NULL));
+    customBehavior.addYield(hpy);
+    ExceptionalYield ey = new ExceptionalYield(customBehavior);
+    ey.setExceptionType("org.bar.MyOtherException");
+    ey.parametersConstraints.add(ConstraintsByDomain.empty().put(ObjectConstraint.NULL));
+    customBehavior.addYield(ey);
+    customBehavior.completed();
+
+    String serialized = gson.toJson(customBehavior);
+    assertThat(serialized).isEqualTo(
+      "{\n"
+      + "  \"signature\": \"org.bar.A#foo(Ljava/lang/Object;)Z\",\n"
+      + "  \"arity\": 1,\n"
+      + "  \"varArgs\": true,\n"
+      + "  \"declaredExceptions\": [\n"
+      + "    \"org.foo.MyException\",\n"
+      + "    \"org.bar.MyOtherException\"\n"
+      + "  ],\n"
+      + "  \"yields\": [\n"
+      + "    {\n"
+      + "      \"parametersConstraints\": [\n"
+      + "        [\n"
+      + "          \"ObjectConstraint.NULL\"\n"
+      + "        ]\n"
+      + "      ],\n"
+      + "      \"exception\": \"org.bar.MyOtherException\",\n"
+      + "      \"isExceptional\": true\n"
+      + "    },\n"
+      + "    {\n"
+      + "      \"parametersConstraints\": [\n"
+      + "        [\n"
+      + "          \"ObjectConstraint.NOT_NULL\"\n"
+      + "        ]\n"
+      + "      ],\n"
+      + "      \"resultIndex\": -1,\n"
+      + "      \"resultConstaint\": [\n"
+      + "        \"BooleanConstraint.TRUE\"\n"
+      + "      ],\n"
+      + "      \"isExceptional\": false\n"
+      + "    }\n"
+      + "  ]\n"
+      + "}");
+    MethodBehavior deserialized = gson.fromJson(serialized, MethodBehavior.class);
+    assertThat(deserialized).isEqualTo(customBehavior);
   }
 
   @Test

@@ -333,7 +333,7 @@ public class MethodBehavior {
 
   @Override
   public int hashCode() {
-    return new HashCodeBuilder(11, 74371)
+    return new HashCodeBuilder(11, 74377)
       .append(signature)
       .append(arity)
       .append(varArgs)
@@ -341,6 +341,6 @@ public class MethodBehavior {
       .append(visited)
       .append(declaredExceptions)
       .append(yields)
-      .hashCode();
+      .toHashCode();
   }
 }

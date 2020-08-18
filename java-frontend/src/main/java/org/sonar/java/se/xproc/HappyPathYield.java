@@ -108,7 +108,7 @@ public class HappyPathYield extends MethodYield {
       .appendSuper(super.hashCode())
       .append(resultIndex)
       .append(resultConstraint)
-      .hashCode();
+      .toHashCode();
   }
 
   @Override
