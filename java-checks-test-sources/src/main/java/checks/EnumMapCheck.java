@@ -1,19 +1,22 @@
+package checks;
+
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.LinkedHashMap;
 
-class MyClass {
+class EnumMapCheck {
 
   public enum COLOR {
     RED, GREEN, BLUE, ORANGE;
   }
   Map<COLOR, String> moodMapWithNullKey = new HashMap<COLOR, String>();  // compliant because using null literal as a key.
+  Map<COLOR, String> moodMapWithNullKey2 = new HashMap<COLOR, String>();  // compliant because using null literal as a key.
   public void noncompliant() {
     Map<COLOR, String> moodMap = new HashMap<COLOR, String>(); // Noncompliant [[sc=34;ec=62]]
     new HashMap<COLOR, String>(); // Noncompliant
     Map<COLOR, String> moodMap2 = new HashMap<>(); // Noncompliant
-    Map<MyClass.COLOR, String> moodMap3 = new HashMap(); // Noncompliant
+    Map<EnumMapCheck.COLOR, String> moodMap3 = new HashMap(); // Noncompliant
     Map moodMap4 = (new HashMap<COLOR, String>()); // Noncompliant
 
     Map<COLOR, String> map;
@@ -37,5 +40,9 @@ class MyClass {
     moodMapWithNullKey.put(COLOR.BLUE, "blue");
     moodMapWithNullKey.get(COLOR.BLUE);
     moodMapWithNullKey.put(null, "null");
+    this.moodMapWithNullKey2.put(null, "null");
+  }
+
+  private static void foo(Map<COLOR, String> moodMapWithNullKey) {
   }
 }

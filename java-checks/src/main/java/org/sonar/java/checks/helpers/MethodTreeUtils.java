@@ -104,9 +104,13 @@ public final class MethodTreeUtils {
       memberSelectExpressionParent = memberSelectExpressionParent.parent();
     }
     if (hasKind(memberSelectExpressionParent, Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) memberSelectExpressionParent;
-      Tree memberSelectParent = memberSelect.parent();
-      if (hasKind(memberSelectParent, Tree.Kind.METHOD_INVOCATION) && memberSelect.expression() == memberSelectExpression) {
+      if (((MemberSelectExpressionTree) memberSelectExpressionParent).identifier() == memberSelectExpression) {
+        // In the case: A.B.M(), B is the identifier of another member select, we want to go one level above.
+        memberSelectExpressionParent = memberSelectExpressionParent.parent();
+      }
+
+      Tree memberSelectParent = memberSelectExpressionParent.parent();
+      if (hasKind(memberSelectParent, Tree.Kind.METHOD_INVOCATION)) {
         return Optional.of((MethodInvocationTree) memberSelectParent);
       }
     }

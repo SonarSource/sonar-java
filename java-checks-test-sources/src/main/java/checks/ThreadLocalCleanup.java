@@ -1,11 +1,11 @@
-package test;
+package checks;
 
-public class UserSession {
+class UserSession {
 
   private static final ThreadLocal<UserSession> DELEGATE = new ThreadLocal<>(); // Noncompliant {{Call "remove()" on "DELEGATE".}}
   static final ThreadLocal<UserSession> NOT_PRIVATE = new ThreadLocal<>(); // Compliant, because not private
 
-  public ThreadLocalCleanup get() {
+  public UserSession get() throws Exception {
     UserSession session = DELEGATE.get();
     if (session != null) {
       return session;
@@ -21,23 +21,22 @@ public class UserSession {
     DELEGATE.set(null); // Noncompliant {{Use "remove()" instead of "set(null)".}}
   }
 
-
 }
 
 
 class UserSessionOk {
 
-  private static final ThreadLocal<UserSession> DELEGATE = new ThreadLocal<>();
+  private static final ThreadLocal<UserSessionOk> DELEGATE = new ThreadLocal<>();
 
-  public ThreadLocalCleanup get() {
-    UserSession session = DELEGATE.get();
+  public UserSessionOk get() throws Exception {
+    UserSessionOk session = DELEGATE.get();
     if (session != null) {
       return session;
     }
     throw new Exception("User is not authenticated");
   }
 
-  public void set(UserSession session) {
+  public void set(UserSessionOk session) {
     DELEGATE.set(session);
   }
 
@@ -46,6 +45,21 @@ class UserSessionOk {
   }
 }
 
+class UserSessionClosed {
+  private static final ThreadLocal<String> DELEGATE = new ThreadLocal<>(); // Compliant
+
+  void clean() {
+    UserSessionClosed.DELEGATE.remove();
+  }
+}
+
+class UserSessionClosed2 {
+  private static final ThreadLocal<String> DELEGATE = new ThreadLocal<>(); // Compliant
+
+  void clean() {
+    this.DELEGATE.remove();
+  }
+}
 
 class AnonymousSubclass {
 
@@ -56,7 +70,7 @@ class AnonymousSubclass {
     }
 
     void foo() {
-      set(1);
+      set(new char[] {'1'});
     }
   };
 
