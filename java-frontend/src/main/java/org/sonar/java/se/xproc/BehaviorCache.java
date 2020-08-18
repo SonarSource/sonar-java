@@ -38,7 +38,6 @@ import javax.annotation.Nullable;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.model.JUtils;
-import org.sonar.java.model.Sema;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -48,15 +47,13 @@ public class BehaviorCache {
   private static final Logger LOG = Loggers.get(BehaviorCache.class);
 
   private SymbolicExecutionVisitor sev;
-  private Sema semanticModel;
 
   @VisibleForTesting
   public final Map<String, MethodBehavior> behaviors = new LinkedHashMap<>();
   private Map<String, MethodBehavior> hardcodedBehaviors = null;
 
-  public void setFileContext(@Nullable SymbolicExecutionVisitor sev,@Nullable Sema semanticModel) {
+  public void setFileContext(@Nullable SymbolicExecutionVisitor sev) {
     this.sev = sev;
-    this.semanticModel = semanticModel;
   }
 
   public void cleanup() {
@@ -65,12 +62,8 @@ public class BehaviorCache {
 
   @VisibleForTesting
   Map<String, MethodBehavior> hardcodedBehaviors() {
-    if (semanticModel == null) {
-      // defensive, the method should be called only after #setFileContext() has been called
-      return Collections.emptyMap();
-    }
     if (hardcodedBehaviors == null) {
-      hardcodedBehaviors = HardcodedMethodBehaviors.load(semanticModel);
+      hardcodedBehaviors = HardcodedMethodBehaviors.load();
     }
     return hardcodedBehaviors;
   }
@@ -133,31 +126,31 @@ public class BehaviorCache {
 
     private final Map<String, MethodBehavior> storedHardcodedMethodBehaviors;
 
-    private HardcodedMethodBehaviors(Sema semanticModel) {
-      this.storedHardcodedMethodBehaviors = loadHardcodedBehaviors(semanticModel);
+    private HardcodedMethodBehaviors() {
+      this.storedHardcodedMethodBehaviors = loadHardcodedBehaviors();
     }
 
     private static HardcodedMethodBehaviors uniqueInstance = null;
 
-    private static HardcodedMethodBehaviors uniqueInstance(Sema semanticModel) {
+    private static HardcodedMethodBehaviors uniqueInstance() {
       if (uniqueInstance == null) {
-        uniqueInstance = new HardcodedMethodBehaviors(semanticModel);
+        uniqueInstance = new HardcodedMethodBehaviors();
       }
       return uniqueInstance;
     }
 
-    public static Map<String, MethodBehavior> load(Sema semanticModel) {
-      return uniqueInstance(semanticModel).storedHardcodedMethodBehaviors;
+    public static Map<String, MethodBehavior> load() {
+      return uniqueInstance().storedHardcodedMethodBehaviors;
     }
 
-    private static Map<String, MethodBehavior> loadHardcodedBehaviors(Sema semanticModel) {
-      return loadHardcodedBehaviors(semanticModel, () -> BehaviorCache.class.getResource(JAVA_LANG_METHOD_BEHAVIORS_RESOURCE_NAME));
+    private static Map<String, MethodBehavior> loadHardcodedBehaviors() {
+      return loadHardcodedBehaviors(() -> BehaviorCache.class.getResource(JAVA_LANG_METHOD_BEHAVIORS_RESOURCE_NAME));
     }
 
     @VisibleForTesting
-    static Map<String, MethodBehavior> loadHardcodedBehaviors(Sema semanticModel, Supplier<URL> methodBehaviorFileUrlSupplier) {
+    static Map<String, MethodBehavior> loadHardcodedBehaviors(Supplier<URL> methodBehaviorFileUrlSupplier) {
       Map<String, MethodBehavior> result = new LinkedHashMap<>();
-      Gson gson = MethodBehaviorJsonAdapter.gson(semanticModel);
+      Gson gson = MethodBehaviorJsonAdapter.gson();
       // one of the method behavior list, as resource target
       URL hardcodedMethodBehaviorsURL = methodBehaviorFileUrlSupplier.get();
       if (hardcodedMethodBehaviorsURL == null || !new File(hardcodedMethodBehaviorsURL.getPath()).exists()) {

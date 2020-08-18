@@ -61,6 +61,11 @@ public class ExceptionalYield extends MethodYield {
     this.exceptionType = exceptionType;
   }
 
+  @Nullable
+  public String getExceptionType() {
+    return exceptionType;
+  }
+
   public Type exceptionType(Sema semanticModel) {
     if (exceptionType == null) {
       return Symbols.unknownType;
@@ -81,7 +86,7 @@ public class ExceptionalYield extends MethodYield {
     return new HashCodeBuilder(3, 1295)
       .appendSuper(super.hashCode())
       .append(exceptionType)
-      .hashCode();
+      .toHashCode();
   }
 
   @Override

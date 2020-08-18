@@ -103,14 +103,6 @@ class BehaviorCacheTest {
   }
 
   @Test
-  void hardcoded_behaviors_requires_semantic() throws Exception {
-    BehaviorCache behaviorCache = new BehaviorCache();
-    assertThat(behaviorCache.hardcodedBehaviors()).isEmpty();
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/ComputeBehaviorOnce.java");
-    assertThat(sev.behaviorCache.hardcodedBehaviors()).isNotEmpty();
-  }
-
-  @Test
   void explore_method_with_recursive_call() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/RecursiveCall.java");
     assertThat(sev.behaviorCache.behaviors).hasSize(1);
@@ -303,16 +295,14 @@ class BehaviorCacheTest {
 
   @Test
   void log_when_unable_to_load_resources_with_method_behavior() throws Exception {
-    CompilationUnitTreeImpl cut = (CompilationUnitTreeImpl) JParserTestUtils.parse("class A { }");
-    Map<String, MethodBehavior> result = BehaviorCache.HardcodedMethodBehaviors.loadHardcodedBehaviors(cut.sema, () -> BehaviorCacheTest.class.getResource("unknown"));
+    Map<String, MethodBehavior> result = BehaviorCache.HardcodedMethodBehaviors.loadHardcodedBehaviors(() -> BehaviorCacheTest.class.getResource("unknown"));
     assertThat(result).isEmpty();
     assertThat(logTester.logs(LoggerLevel.DEBUG)).containsOnlyOnce("Unable to load hardcoded method behaviors. Defaulting to no hardcoded method behaviors.");
   }
 
   @Test
   void log_when_unable_to_load_resources_with_invalid_method_behaviors() throws Exception {
-    CompilationUnitTreeImpl cut = (CompilationUnitTreeImpl) JParserTestUtils.parse("class A { }");
-    Map<String, MethodBehavior> result = BehaviorCache.HardcodedMethodBehaviors.loadHardcodedBehaviors(cut.sema, () -> BehaviorCacheTest.class.getResource("invalid.json"));
+    Map<String, MethodBehavior> result = BehaviorCache.HardcodedMethodBehaviors.loadHardcodedBehaviors(() -> BehaviorCacheTest.class.getResource("invalid.json"));
     assertThat(result).isEmpty();
     assertThat(logTester.logs(LoggerLevel.ERROR)).containsOnlyOnce("Unable to load hardcoded method behaviors of \"invalid.json\". Defaulting to no hardcoded method behaviors.");
   }

@@ -109,7 +109,7 @@ public abstract class MethodYield {
   }
 
   /**
-   * For varArgs methods, only apply the constraint on single array parameter, in order to not 
+   * For varArgs methods, only apply the constraint on single array parameter, in order to not
    * wrongly apply it on all the elements of the array.
    */
   private boolean applicableOnVarArgs(int index, List<Type> types) {
@@ -154,7 +154,7 @@ public abstract class MethodYield {
   public int hashCode() {
     return new HashCodeBuilder(7, 1291)
       .append(parametersConstraints)
-      .hashCode();
+      .toHashCode();
   }
 
   @Override
