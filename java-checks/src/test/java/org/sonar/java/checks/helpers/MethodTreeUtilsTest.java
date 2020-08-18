@@ -75,7 +75,7 @@ class MethodTreeUtilsTest {
   @Test
   void consecutive_and_subsequent_method_invocation() {
     List<MethodInvocationTree> methodInvocationList = new ArrayList<>();
-    parseMethod("class A { void m(){ this.toString().toUpperCase().length(); int x = (getClass()).getMethods().length; } }")
+    parseMethod("class A { void m(){ this.a1.a2.toString().toUpperCase().length(); int x = (getClass()).getMethods().length; } A a1; A a2; }")
       .block()
       .accept(new BaseTreeVisitor() {
         @Override
@@ -98,9 +98,16 @@ class MethodTreeUtilsTest {
     assertThat(getClassMethod.symbol().name()).isEqualTo("getClass");
     assertThat(getMethodsMethod.symbol().name()).isEqualTo("getMethods");
 
-    IdentifierTree keywordThis = (IdentifierTree) ((MemberSelectExpressionTree) toStringMethod.methodSelect()).expression();
+    MemberSelectExpressionTree thisA1A2 = (MemberSelectExpressionTree) ((MemberSelectExpressionTree) toStringMethod.methodSelect()).expression();
+    MemberSelectExpressionTree thisA1 = (MemberSelectExpressionTree) thisA1A2.expression();
+    IdentifierTree a2 = thisA1A2.identifier();
+    IdentifierTree a1 = thisA1.identifier();
+    IdentifierTree keywordThis = (IdentifierTree) thisA1.expression();
 
-    assertThat(MethodTreeUtils.consecutiveMethodInvocation(keywordThis)).containsSame(toStringMethod);
+    assertThat(MethodTreeUtils.consecutiveMethodInvocation(keywordThis)).isEmpty();
+    assertThat(MethodTreeUtils.consecutiveMethodInvocation(a1)).isEmpty();
+    assertThat(MethodTreeUtils.consecutiveMethodInvocation(a2)).containsSame(toStringMethod);
+
     assertThat(MethodTreeUtils.consecutiveMethodInvocation(toStringMethod)).containsSame(toUpperCaseMethod);
     assertThat(MethodTreeUtils.consecutiveMethodInvocation(toUpperCaseMethod)).containsSame(lengthMethod);
     assertThat(MethodTreeUtils.consecutiveMethodInvocation(lengthMethod)).isEmpty();

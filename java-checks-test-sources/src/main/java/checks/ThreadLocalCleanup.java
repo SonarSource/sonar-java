@@ -45,6 +45,21 @@ class UserSessionOk {
   }
 }
 
+class UserSessionClosed {
+  private static final ThreadLocal<String> DELEGATE = new ThreadLocal<>(); // Compliant
+
+  void clean() {
+    UserSessionClosed.DELEGATE.remove();
+  }
+}
+
+class UserSessionClosed2 {
+  private static final ThreadLocal<String> DELEGATE = new ThreadLocal<>(); // Compliant
+
+  void clean() {
+    this.DELEGATE.remove();
+  }
+}
 
 class AnonymousSubclass {
 
