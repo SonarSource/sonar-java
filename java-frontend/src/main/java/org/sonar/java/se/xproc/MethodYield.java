@@ -181,7 +181,7 @@ public abstract class MethodYield {
     return result.build();
   }
 
-  public Set<Flow> flow(List<Integer> parameterIndices, List<Class<? extends Constraint>> domains) {
+  public Set<Flow> flow(List<Integer> parameterIndices, List<Class<? extends Constraint>> domains, int maxReturnedFlows) {
     Preconditions.checkArgument(!parameterIndices.isEmpty(), "computing flow on empty symbolic value list should never happen");
     if(node == null || behavior == null) {
       return Collections.emptySet();
@@ -194,7 +194,7 @@ public abstract class MethodYield {
       k -> {
         Set<SymbolicValue> symbolicValues = getSymbolicValues(parameterIndices);
         Set<Symbol> trackedSymbols = getReturnSymbolAsTrackedSymbols(parameterIndices);
-        return FlowComputation.flow(node, symbolicValues, c -> true, c -> false, domains, trackedSymbols);
+        return FlowComputation.flow(node, symbolicValues, c -> true, c -> false, domains, trackedSymbols, maxReturnedFlows);
       });
   }
 

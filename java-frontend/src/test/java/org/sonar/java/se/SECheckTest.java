@@ -38,7 +38,7 @@ class SECheckTest {
     ExplodedGraph eg = new ExplodedGraph();
     ExplodedGraph.Node node = eg.node(new ProgramPoint(cfg.blocks().get(3)), ProgramState.EMPTY_STATE);
     node.addParent(eg.node(new ProgramPoint(cfg.blocks().get(2)).next().next(), ProgramState.EMPTY_STATE), null);
-    Set<Flow> flows = FlowComputation.flow(node, new SymbolicValue(), Collections.singletonList(ObjectConstraint.class));
+    Set<Flow> flows = FlowComputation.flow(node, new SymbolicValue(), Collections.singletonList(ObjectConstraint.class), FlowComputation.MAX_REPORTED_FLOWS);
     assertThat(flows.iterator().next().isEmpty()).isTrue();
   }
 

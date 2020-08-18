@@ -40,6 +40,7 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.Sema;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.Flow;
+import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramPoint;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicExecutionVisitor;
@@ -67,7 +68,7 @@ import static org.mockito.Mockito.when;
 import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
 import static org.sonar.java.se.SETestUtils.getMethodBehavior;
 import static org.sonar.java.se.SETestUtils.mockMethodBehavior;
-import static org.sonar.java.se.SETestUtils.variable;;
+import static org.sonar.java.se.SETestUtils.variable;
 
 class MethodYieldTest {
   @Test
@@ -95,10 +96,10 @@ class MethodYieldTest {
     MethodYield methodYield = mb.happyPathYields()
       .filter(y -> y.resultConstraint() != null && y.resultConstraint().get(ObjectConstraint.class) != ObjectConstraint.NULL).findFirst().get();
 
-    Set<Flow> flowReturnValue = methodYield.flow(Collections.singletonList(-1), Lists.newArrayList(ObjectConstraint.class));
+    Set<Flow> flowReturnValue = methodYield.flow(Collections.singletonList(-1), Lists.newArrayList(ObjectConstraint.class), FlowComputation.MAX_REPORTED_FLOWS);
     assertThat(flowReturnValue.iterator().next().isEmpty()).isFalse();
 
-    Set<Flow> flowFirstParam = methodYield.flow(Collections.singletonList(0), Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class));
+    Set<Flow> flowFirstParam = methodYield.flow(Collections.singletonList(0), Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class), FlowComputation.MAX_REPORTED_FLOWS);
     assertThat(flowFirstParam.iterator().next().isEmpty()).isFalse();
   }
 
@@ -114,7 +115,7 @@ class MethodYieldTest {
   @Test
   void flow_is_empty_when_yield_has_no_node() {
     MethodYield methodYield = new HappyPathYield(null, mockMethodBehavior(1, false));
-    assertThat(methodYield.flow(Collections.singletonList(0), Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class))).isEmpty();
+    assertThat(methodYield.flow(Collections.singletonList(0), Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class), FlowComputation.MAX_REPORTED_FLOWS)).isEmpty();
   }
 
   @Test
@@ -123,7 +124,7 @@ class MethodYieldTest {
     List<Integer> parameters = Collections.emptyList();
     List<Class<? extends Constraint>> domains = Collections.singletonList(ObjectConstraint.class);
     try {
-      methodYield.flow(parameters, domains);
+      methodYield.flow(parameters, domains, FlowComputation.MAX_REPORTED_FLOWS);
       fail("calling flow with empty list should have failed");
     } catch (IllegalArgumentException iae) {
       assertThat(iae).hasMessage("computing flow on empty symbolic value list should never happen");

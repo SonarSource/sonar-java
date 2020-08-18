@@ -153,13 +153,13 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
   }
 
   @Override
-  public Set<Flow> flow(List<Integer> parameterIndices, List<Class<? extends Constraint>> domains) {
+  public Set<Flow> flow(List<Integer> parameterIndices, List<Class<? extends Constraint>> domains, int maxReturnedFlows) {
     return Collections.emptySet();
   }
 
-  public Set<Flow> exceptionFlows() {
+  public Set<Flow> exceptionFlows(int maxReturnedFlows) {
     List<Class<? extends Constraint>> domains = node.programState.getConstraints(svCausingException).domains().collect(Collectors.toList());
-    return FlowComputation.flow(node, svCausingException, domains);
+    return FlowComputation.flow(node, svCausingException, domains, maxReturnedFlows);
   }
 
   @Override

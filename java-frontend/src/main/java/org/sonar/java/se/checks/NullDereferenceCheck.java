@@ -164,7 +164,7 @@ public class NullDereferenceCheck extends SECheck {
       val = currentVal;
     }
     Symbol dereferencedSymbol = dereferencedSymbol(syntaxNode);
-    Set<Flow> flows = FlowComputation.flow(node, val, Lists.newArrayList(ObjectConstraint.class), dereferencedSymbol).stream()
+    Set<Flow> flows = FlowComputation.flow(node, val, Lists.newArrayList(ObjectConstraint.class), dereferencedSymbol, FlowComputation.MAX_REPORTED_FLOWS).stream()
       .filter(f -> !f.isEmpty())
       .map(f -> addDereferenceMessage(f, syntaxNode))
       .collect(Collectors.toSet());
