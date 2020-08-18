@@ -34,6 +34,7 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.api.SonarProduct;
+import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.batch.bootstrap.ProjectDefinition;
 import org.sonar.api.batch.fs.FileSystem;
@@ -47,6 +48,7 @@ import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.utils.Version;
 import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -279,6 +281,11 @@ public class SonarComponents {
 
   public boolean isSonarLintContext() {
     return context.runtime().getProduct() == SonarProduct.SONARLINT;
+  }
+
+  public boolean isSonarQubeSupportingTestNLOC() {
+    SonarRuntime runtime = context.runtime();
+    return runtime.getProduct() == SonarProduct.SONARQUBE && runtime.getApiVersion().isGreaterThanOrEqual(Version.create(8,5));
   }
 
   public List<String> fileLines(InputFile inputFile) {

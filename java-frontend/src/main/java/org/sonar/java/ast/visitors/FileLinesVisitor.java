@@ -75,9 +75,15 @@ public class FileLinesVisitor extends SubscriptionVisitor {
   private final SonarComponents sonarComponents;
   private final Set<Integer> linesOfCode = new HashSet<>();
   private final Set<Integer> executableLines = new HashSet<>();
+  private final boolean feedExecutableLines;
 
   public FileLinesVisitor(SonarComponents sonarComponents) {
+    this(sonarComponents, true);
+  }
+
+  public FileLinesVisitor(SonarComponents sonarComponents, boolean feedExecutableLines) {
     this.sonarComponents = sonarComponents;
+    this.feedExecutableLines = feedExecutableLines;
   }
 
   @Override
@@ -98,7 +104,9 @@ public class FileLinesVisitor extends SubscriptionVisitor {
     FileLinesContext fileLinesContext = sonarComponents.fileLinesContextFor(currentFile);
     for (int line = 1; line <= currentFile.lines(); line++) {
       fileLinesContext.setIntValue(CoreMetrics.NCLOC_DATA_KEY, line, linesOfCode.contains(line) ? 1 : 0);
-      fileLinesContext.setIntValue(CoreMetrics.EXECUTABLE_LINES_DATA_KEY, line, executableLines.contains(line) ? 1 : 0);
+      if (feedExecutableLines) {
+        fileLinesContext.setIntValue(CoreMetrics.EXECUTABLE_LINES_DATA_KEY, line, executableLines.contains(line) ? 1 : 0);
+      }
     }
     fileLinesContext.save();
 
