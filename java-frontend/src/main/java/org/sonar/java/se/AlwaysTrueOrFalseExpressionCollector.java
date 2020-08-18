@@ -61,9 +61,9 @@ public class AlwaysTrueOrFalseExpressionCollector {
     return Sets.difference(falseEvaluations.keySet(), trueEvaluations.keySet());
   }
 
-  public Set<Flow> flowForExpression(Tree expression) {
+  public Set<Flow> flowForExpression(Tree expression, int maxReturnedFlows) {
     Collection<ExplodedGraph.Node> nodes = getNodes(expression);
-    return collectFlow(nodes);
+    return collectFlow(nodes, maxReturnedFlows);
   }
 
   private Collection<ExplodedGraph.Node> getNodes(Tree expression) {
@@ -71,18 +71,18 @@ public class AlwaysTrueOrFalseExpressionCollector {
     return falseNodes.isEmpty() ? trueEvaluations.get(expression) : falseNodes;
   }
 
-  private static Set<Flow> collectFlow(Collection<ExplodedGraph.Node> nodes) {
+  private static Set<Flow> collectFlow(Collection<ExplodedGraph.Node> nodes, int maxReturnedFlows) {
     return nodes.stream()
-      .map(AlwaysTrueOrFalseExpressionCollector::flowFromNode)
+      .map(node -> flowFromNode(node, maxReturnedFlows))
       .flatMap(Set::stream)
-      .limit(FlowComputation.MAX_RETURNED_FLOWS)
+      .limit(maxReturnedFlows)
       .filter(f -> !f.isEmpty())
       .collect(Collectors.toSet());
   }
 
-  private static Set<Flow> flowFromNode(ExplodedGraph.Node node) {
+  private static Set<Flow> flowFromNode(ExplodedGraph.Node node, int maxReturnedFlows) {
     List<Class<? extends Constraint>> domains = Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class);
-    return FlowComputation.flow(node.parent(), node.programState.peekValue(), domains, node.programState.peekValueSymbol().symbol);
+    return FlowComputation.flow(node.parent(), node.programState.peekValue(), domains, node.programState.peekValueSymbol().symbol, maxReturnedFlows);
   }
 
   public static Flow addIssueLocation(Flow flow, Tree issueTree, boolean conditionIsAlwaysTrue) {

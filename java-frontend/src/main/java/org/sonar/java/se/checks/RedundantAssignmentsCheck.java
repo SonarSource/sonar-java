@@ -136,7 +136,7 @@ public class RedundantAssignmentsCheck extends SECheck {
     }
 
     public Set<Flow> flows() {
-      return FlowComputation.flow(node, newValue, Collections.emptyList(), fromSymbol);
+      return FlowComputation.flow(node, newValue, Collections.emptyList(), fromSymbol, FlowComputation.MAX_REPORTED_FLOWS);
     }
   }
 

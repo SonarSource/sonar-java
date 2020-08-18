@@ -82,8 +82,8 @@ public class ExceptionalYieldChecker {
     }
 
     Flow argumentChangingNameFlows = flowsForArgumentsChangingName(yield, mit);
-    Set<Flow> argumentsFlows = flowsForMethodArguments(node, mit, parameterCausingExceptionIndex);
-    Set<Flow> exceptionFlows = yield.exceptionFlows();
+    Set<Flow> argumentsFlows = flowsForMethodArguments(node, mit, parameterCausingExceptionIndex, FlowComputation.MAX_REPORTED_FLOWS);
+    Set<Flow> exceptionFlows = yield.exceptionFlows(FlowComputation.MAX_REPORTED_FLOWS);
 
     ImmutableSet.Builder<Flow> flows = ImmutableSet.builder();
     for (Flow argumentFlow : argumentsFlows) {
@@ -100,7 +100,7 @@ public class ExceptionalYieldChecker {
     check.reportIssue(reportTree, String.format(message, methodName), flows.build());
   }
 
-  private static Set<Flow> flowsForMethodArguments(ExplodedGraph.Node node, MethodInvocationTree mit, int parameterCausingExceptionIndex) {
+  private static Set<Flow> flowsForMethodArguments(ExplodedGraph.Node node, MethodInvocationTree mit, int parameterCausingExceptionIndex, int maxReturnedFlows) {
     ProgramState programState = node.programState;
     List<ProgramState.SymbolicValueSymbol> arguments = Lists.reverse(programState.peekValuesAndSymbols(mit.arguments().size()));
     SymbolicValue parameterCausingExceptionSV = arguments.get(parameterCausingExceptionIndex).symbolicValue();
@@ -118,7 +118,7 @@ public class ExceptionalYieldChecker {
       });
 
     List<Class<? extends Constraint>> domains = domainsFromArguments(programState, argSymbolicValues);
-    return FlowComputation.flow(node, argSymbolicValues, c -> true, c -> false, domains, argSymbols);
+    return FlowComputation.flow(node, argSymbolicValues, c -> true, c -> false, domains, argSymbols, maxReturnedFlows);
   }
 
   private static boolean hasConstraintOtherThanNonNull(ProgramState.SymbolicValueSymbol svs, ProgramState ps) {

@@ -77,21 +77,26 @@ public class FlowComputation {
   private static final String IMPLIES_SAME_VALUE = "Implies '%s' has the same value as '%s'.";
 
   private static final int MAX_FLOW_STEPS = 3_000_000;
-  public static final int MAX_RETURNED_FLOWS = 20;
+  public static final int FIRST_FLOW = 1;
+  public static final int MAX_REPORTED_FLOWS = 20;
+  public static final int MAX_LOOKUP_FLOWS = 500_000;
   private static final Logger LOG = Loggers.get(FlowComputation.class);
   private final Predicate<Constraint> addToFlow;
   private final Predicate<Constraint> terminateTraversal;
   private final Set<SymbolicValue> symbolicValues;
   private final List<Class<? extends Constraint>> domains;
   private final boolean skipExceptionMessages;
+  private final int maxReturnedFlows;
 
   private FlowComputation(Set<SymbolicValue> symbolicValues, Predicate<Constraint> addToFlow,
-                          Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains, boolean skipExceptionMessages) {
+                          Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains,
+                          boolean skipExceptionMessages, int maxReturnedFlows) {
     this.addToFlow = addToFlow;
     this.terminateTraversal = terminateTraversal;
     this.symbolicValues = symbolicValues;
     this.domains = domains;
     this.skipExceptionMessages = skipExceptionMessages;
+    this.maxReturnedFlows = maxReturnedFlows;
   }
 
   private static Set<SymbolicValue> computedFrom(@Nullable SymbolicValue symbolicValue) {
@@ -107,30 +112,32 @@ public class FlowComputation {
   // FIXME It is assumed that this will always return set with at least one element, which could be empty, because result is consumed in other places and messages are
   // added to returned flows. This design should be improved.
   public static Set<Flow> flow(ExplodedGraph.Node currentNode, Set<SymbolicValue> symbolicValues, Predicate<Constraint> addToFlow, Predicate<Constraint> terminateTraversal,
-    List<Class<? extends Constraint>> domains, Set<Symbol> symbols) {
-    return flow(currentNode, symbolicValues, addToFlow, terminateTraversal, domains, symbols, false);
+    List<Class<? extends Constraint>> domains, Set<Symbol> symbols, int maxReturnedFlows) {
+    return flow(currentNode, symbolicValues, addToFlow, terminateTraversal, domains, symbols, false, maxReturnedFlows);
   }
 
-  public static Set<Flow> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, List<Class<? extends Constraint>> domains) {
-    return flow(currentNode, setFromNullable(currentVal), constraint -> true, c -> false, domains, Collections.emptySet(), false);
+  public static Set<Flow> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, List<Class<? extends Constraint>> domains, int maxReturnedFlows) {
+    return flow(currentNode, setFromNullable(currentVal), constraint -> true, c -> false, domains, Collections.emptySet(), false, maxReturnedFlows);
   }
 
-  public static Set<Flow> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, List<Class<? extends Constraint>> domains, @Nullable Symbol trackSymbol) {
-    return flow(currentNode, setFromNullable(currentVal), c -> true, c -> false, domains, setFromNullable(trackSymbol), false);
-  }
-
-  public static Set<Flow> flowWithoutExceptions(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
-    List<Class<? extends Constraint>> domains) {
-    return flow(currentNode, setFromNullable(currentVal), addToFlow, c -> false, domains, Collections.emptySet(), true);
+  public static Set<Flow> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, List<Class<? extends Constraint>> domains, @Nullable Symbol trackSymbol,
+    int maxReturnedFlows) {
+    return flow(currentNode, setFromNullable(currentVal), c -> true, c -> false, domains, setFromNullable(trackSymbol), false, maxReturnedFlows);
   }
 
   public static Set<Flow> flowWithoutExceptions(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
-    Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains) {
-    return flow(currentNode, setFromNullable(currentVal), addToFlow, terminateTraversal, domains, Collections.emptySet(), true);
+    List<Class<? extends Constraint>> domains, int maxReturnedFlows) {
+    return flow(currentNode, setFromNullable(currentVal), addToFlow, c -> false, domains, Collections.emptySet(), true, maxReturnedFlows);
+  }
+
+  public static Set<Flow> flowWithoutExceptions(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
+    Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains, int maxReturnedFlows) {
+    return flow(currentNode, setFromNullable(currentVal), addToFlow, terminateTraversal, domains, Collections.emptySet(), true, maxReturnedFlows);
   }
 
   private static Set<Flow> flow(ExplodedGraph.Node currentNode, Set<SymbolicValue> symbolicValues, Predicate<Constraint> addToFlow,
-    Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains, Set<Symbol> symbols, boolean skipExceptionMessages) {
+    Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains, Set<Symbol> symbols,
+    boolean skipExceptionMessages, int maxReturnedFlows) {
     Set<SymbolicValue> allSymbolicValues = symbolicValues.stream()
       .map(FlowComputation::computedFrom)
       .flatMap(Set::stream)
@@ -148,7 +155,7 @@ public class FlowComputation {
         }
       }
     }
-    FlowComputation flowComputation = new FlowComputation(allSymbolicValues, addToFlow, terminateTraversal, domains, skipExceptionMessages);
+    FlowComputation flowComputation = new FlowComputation(allSymbolicValues, addToFlow, terminateTraversal, domains, skipExceptionMessages, maxReturnedFlows);
     return flowComputation.run(currentNode, trackedSymbols);
   }
 
@@ -167,13 +174,13 @@ public class FlowComputation {
       ExecutionPath path = workList.pop();
       if (path.finished) {
         flows.add(path.flow);
-        if (flows.size() == FlowComputation.MAX_RETURNED_FLOWS) {
+        if (flows.size() == maxReturnedFlows) {
           return flows;
         }
       } else {
         path.lastEdge.parent.edges().stream()
           .filter(path::notVisited)
-          .flatMap(path::addEdge)
+          .flatMap(edge -> path.addEdge(edge, maxReturnedFlows))
           .forEach(ep -> {
             if(visited.add(ep)) {
               workList.push(ep);
@@ -190,7 +197,7 @@ public class FlowComputation {
   }
 
   Stream<ExecutionPath> startPath(ExplodedGraph.Edge edge, PSet<Symbol> trackedSymbols, SameConstraints sameConstraints) {
-    return new ExecutionPath(null, PCollections.emptySet(), trackedSymbols, sameConstraints, Flow.empty(), false).addEdge(edge);
+    return new ExecutionPath(null, PCollections.emptySet(), trackedSymbols, sameConstraints, Flow.empty(), false).addEdge(edge, maxReturnedFlows);
   }
 
   private static class SameConstraints {
@@ -291,7 +298,7 @@ public class FlowComputation {
       return Objects.hash(trackedSymbols, lastEdge.parent, flow);
     }
 
-    Stream<ExecutionPath> addEdge(ExplodedGraph.Edge edge) {
+    Stream<ExecutionPath> addEdge(ExplodedGraph.Edge edge, int maxReturnedFlows) {
       Flow.Builder flowBuilder = Flow.builder();
       flowBuilder.addAll(flow);
 
@@ -325,7 +332,7 @@ public class FlowComputation {
       }
 
       Flow currentFlow = flowBuilder.build();
-      Set<Flow> yieldsFlows = flowFromYields(edge);
+      Set<Flow> yieldsFlows = flowFromYields(edge, maxReturnedFlows);
       if (yieldsFlows.isEmpty()) {
         return Stream.of(new ExecutionPath(edge, visited.add(edge), newTrackSymbols, newSameConstraints, Flow.of(currentFlow), endOfPath));
       }
@@ -702,7 +709,7 @@ public class FlowComputation {
         .allMatch(resultConstraint -> resultConstraint != null && constraint.equals(resultConstraint.get(constraint.getClass())));
     }
 
-    private Set<Flow> flowFromYields(ExplodedGraph.Edge edge) {
+    private Set<Flow> flowFromYields(ExplodedGraph.Edge edge, int maxReturnedFlows) {
       Set<MethodYield> methodYields = edge.yields();
       if (methodYields.isEmpty()) {
         return Collections.emptySet();
@@ -726,7 +733,7 @@ public class FlowComputation {
         return Collections.emptySet();
       }
       return methodYields.stream()
-        .map(y -> y.flow(argumentIndices, domains))
+        .map(y -> y.flow(argumentIndices, domains, maxReturnedFlows))
         .flatMap(Set::stream)
         .filter(f -> !f.isEmpty())
         .map(flowFromYield -> Flow.builder()

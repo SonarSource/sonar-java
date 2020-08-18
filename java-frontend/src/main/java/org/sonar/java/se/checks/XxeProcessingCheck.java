@@ -381,7 +381,7 @@ public class XxeProcessingCheck extends SECheck {
           c -> c == AttributeDTD.UNSECURED
             || c == AttributeSchema.UNSECURED
             || c == AttributeStyleSheet.UNSECURED
-          , FLOW_CONSTRAINT_DOMAIN));
+          , FLOW_CONSTRAINT_DOMAIN, FlowComputation.MAX_REPORTED_FLOWS));
     }
   }
 

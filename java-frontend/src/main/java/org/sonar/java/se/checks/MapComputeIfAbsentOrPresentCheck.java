@@ -191,7 +191,7 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
 
     private Set<Flow> flows() {
       // build nullness flows for value constraint
-      Set<Flow> flows = FlowComputation.flow(node, value, Collections.singletonList(ObjectConstraint.class));
+      Set<Flow> flows = FlowComputation.flow(node, value, Collections.singletonList(ObjectConstraint.class), FlowComputation.MAX_REPORTED_FLOWS);
       // enrich each flow with both map method invocations
       return flows.stream().map(flow -> Flow.builder()
         .add(new JavaFileScannerContext.Location("'Map.put()' is invoked with same key.", putInvocation.methodSelect()))

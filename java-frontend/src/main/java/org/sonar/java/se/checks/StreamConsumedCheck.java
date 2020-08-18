@@ -182,7 +182,7 @@ public class StreamConsumedCheck extends SECheck {
 
   private static Set<Flow> flow(SymbolicValue invocationTarget, ExplodedGraph.Node node) {
     Set<Flow> flows = FlowComputation.flow(node, Collections.singleton(invocationTarget), StreamPipelineConstraint.CONSUMED::equals, c -> false,
-      Collections.singletonList(StreamPipelineConstraint.class), Collections.emptySet());
+      Collections.singletonList(StreamPipelineConstraint.class), Collections.emptySet(), FlowComputation.MAX_REPORTED_FLOWS);
     // make copy with explicit message
     return flows.stream()
       .map(StreamConsumedCheck::copyFlowWithExplicitMessage)
