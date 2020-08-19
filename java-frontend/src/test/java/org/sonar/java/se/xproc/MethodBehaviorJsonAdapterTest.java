@@ -29,44 +29,42 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MethodBehaviorJsonAdapterTest {
 
   private static final String IS_INSTANCE_SIGNATURE = "java.lang.Class#isInstance(Ljava/lang/Object;)Z";
   private static final String IS_INSTANCE_METHOD_BEHAVIOR = "{\n"
     + "  \"signature\": \"java.lang.Class#isInstance(Ljava/lang/Object;)Z\",\n"
-    + "  \"arity\": 1,\n"
     + "  \"varArgs\": false,\n"
     + "  \"declaredExceptions\": [],\n"
     + "  \"yields\": [\n"
     + "    {\n"
     + "      \"parametersConstraints\": [\n"
     + "        [\n"
-    + "          \"ObjectConstraint.NOT_NULL\"\n"
+    + "          \"NOT_NULL\"\n"
     + "        ]\n"
     + "      ],\n"
     + "      \"resultIndex\": -1,\n"
-    + "      \"resultConstaint\": [\n"
-    + "        \"BooleanConstraint.TRUE\"\n"
-    + "      ],\n"
-    + "      \"isExceptional\": false\n"
+    + "      \"resultConstraint\": [\n"
+    + "        \"TRUE\"\n"
+    + "      ]\n"
     + "    },\n"
     + "    {\n"
     + "      \"parametersConstraints\": [\n"
     + "        []\n"
     + "      ],\n"
     + "      \"resultIndex\": -1,\n"
-    + "      \"resultConstaint\": [\n"
-    + "        \"BooleanConstraint.FALSE\"\n"
-    + "      ],\n"
-    + "      \"isExceptional\": false\n"
+    + "      \"resultConstraint\": [\n"
+    + "        \"FALSE\"\n"
+    + "      ]\n"
     + "    }\n"
     + "  ]\n"
     + "}";
@@ -93,23 +91,48 @@ class MethodBehaviorJsonAdapterTest {
   @Test
   void serialization_unknown_yield_type_should_throw_an_exception() {
     MethodBehavior mb = new MethodBehavior("org.bar.A#foo()Z");
-    MethodYield customMethodYield = new MethodYield(mb) {
-      @Override
-      public String toString() {
-        return "CustomYield";
-      }
-
-      @Override
-      public Stream<ProgramState> statesAfterInvocation(List<SymbolicValue> invocationArguments, List<Type> invocationTypes, ProgramState programState,
-        Supplier<SymbolicValue> svSupplier) {
-        return Stream.of(programState);
-      }
-    };
-    mb.addYield(customMethodYield);
+    mb.addYield(new CustomMethodYield(mb));
     mb.completed();
 
     IllegalStateException e = assertThrows(IllegalStateException.class, () -> gson.toJson(mb));
     assertThat(e).hasMessage("Hardcoded yields should only be HappyPathYield or ExceptionalYield.");
+  }
+
+  private static class CustomMethodYield extends MethodYield {
+    public CustomMethodYield(MethodBehavior behavior) {
+      super(behavior);
+    }
+
+    @Override
+    public String toString() {
+      return "CustomMethodYield";
+    }
+
+    @Override
+    public Stream<ProgramState> statesAfterInvocation(List<SymbolicValue> invocationArguments, List<Type> invocationTypes, ProgramState programState,
+      Supplier<SymbolicValue> svSupplier) {
+      return Stream.of(programState);
+    }
+  }
+
+  @Test
+  void serialization_unsupported_constraint_should_be_ignored() {
+    MethodBehavior mb = new MethodBehavior("org.bar.A#foo()Z");
+    HappyPathYield happyPathYield = new HappyPathYield(mb);
+    happyPathYield.setResult(-1, ConstraintsByDomain.empty().put(CustomConstraint.SQUARE).put(ObjectConstraint.NOT_NULL));
+
+    mb.addYield(happyPathYield);
+    mb.completed();
+
+    assertThat(gson.toJson(mb))
+    .contains("resultConstraint\": [\n"
+      + "        \"NOT_NULL\"\n"
+      + "      ]")
+    .doesNotContain("SQUARE");
+  }
+
+  private enum CustomConstraint implements Constraint {
+    SQUARE
   }
 
   @Test
@@ -122,8 +145,8 @@ class MethodBehaviorJsonAdapterTest {
     mb.completed();
 
     assertThat(gson.toJson(mb))
-      .contains("\"resultConstaint\": null,")
-      .contains("\"parametersConstraints\": [],");
+      .contains("\"resultConstraint\": null")
+      .contains("\"parametersConstraints\": []");
   }
 
   @Test
@@ -145,7 +168,6 @@ class MethodBehaviorJsonAdapterTest {
     assertThat(serialized).isEqualTo(
       "{\n"
       + "  \"signature\": \"org.bar.A#foo(Ljava/lang/Object;)Z\",\n"
-      + "  \"arity\": 1,\n"
       + "  \"varArgs\": true,\n"
       + "  \"declaredExceptions\": [\n"
       + "    \"org.foo.MyException\",\n"
@@ -155,23 +177,21 @@ class MethodBehaviorJsonAdapterTest {
       + "    {\n"
       + "      \"parametersConstraints\": [\n"
       + "        [\n"
-      + "          \"ObjectConstraint.NULL\"\n"
+      + "          \"NULL\"\n"
       + "        ]\n"
       + "      ],\n"
-      + "      \"exception\": \"org.bar.MyOtherException\",\n"
-      + "      \"isExceptional\": true\n"
+      + "      \"exception\": \"org.bar.MyOtherException\"\n"
       + "    },\n"
       + "    {\n"
       + "      \"parametersConstraints\": [\n"
       + "        [\n"
-      + "          \"ObjectConstraint.NOT_NULL\"\n"
+      + "          \"NOT_NULL\"\n"
       + "        ]\n"
       + "      ],\n"
       + "      \"resultIndex\": -1,\n"
-      + "      \"resultConstaint\": [\n"
-      + "        \"BooleanConstraint.TRUE\"\n"
-      + "      ],\n"
-      + "      \"isExceptional\": false\n"
+      + "      \"resultConstraint\": [\n"
+      + "        \"TRUE\"\n"
+      + "      ]\n"
       + "    }\n"
       + "  ]\n"
       + "}");
@@ -193,7 +213,6 @@ class MethodBehaviorJsonAdapterTest {
     String wronglySeperated = "BooleanConstraint:TRUE";
     String invalidMethodBehavior1 = "{\n"
       + "  \"signature\": \"org.bar.A#foo(Ljava/lang/Object;)Z\",\n"
-      + "  \"arity\": 1,\n"
       + "  \"varArgs\": false,\n"
       + "  \"declaredExceptions\": [],\n"
       + "  \"yields\": [\n"
@@ -202,8 +221,7 @@ class MethodBehaviorJsonAdapterTest {
       + "        []\n"
       + "      ],\n"
       + "      \"resultIndex\": -1,\n"
-      + "      \"resultConstaint\": [\"" + wronglySeperated + "\"],\n"
-      + "      \"isExceptional\": false\n"
+      + "      \"resultConstraint\": [\"" + wronglySeperated + "\"]\n"
       + "    }\n"
       + "  ]\n"
       + "}";
@@ -213,10 +231,9 @@ class MethodBehaviorJsonAdapterTest {
       () -> gson.fromJson(invalidMethodBehavior1, MethodBehavior.class));
     assertThat(e1).hasRootCauseInstanceOf(IllegalStateException.class);
 
-    String wronglyQualified = "BooleanConstraint..TRUE";
+    String wronglyQualified = ".TRUE";
     String invalidMethodBehavior2 = "{\n"
       + "  \"signature\": \"org.bar.A#foo(Ljava/lang/Object;)Z\",\n"
-      + "  \"arity\": 1,\n"
       + "  \"varArgs\": false,\n"
       + "  \"declaredExceptions\": [],\n"
       + "  \"yields\": [\n"
@@ -225,8 +242,7 @@ class MethodBehaviorJsonAdapterTest {
       + "        []\n"
       + "      ],\n"
       + "      \"resultIndex\": -1,\n"
-      + "      \"resultConstaint\": [\"" + wronglyQualified + "\"],\n"
-      + "      \"isExceptional\": false\n"
+      + "      \"resultConstraint\": [\"" + wronglyQualified + "\"]\n"
       + "    }\n"
       + "  ]\n"
       + "}";
@@ -239,10 +255,9 @@ class MethodBehaviorJsonAdapterTest {
 
   @Test
   void deserialization_unsupported_constraint() {
-    String wrongConstraint = "MyConstraint.SQUARE";
+    String wrongConstraint = CustomConstraint.SQUARE.name();
     String invalidMethodBehavior = "{\n"
       + "  \"signature\": \"org.bar.A#foo(Ljava/lang/Object;)Z\",\n"
-      + "  \"arity\": 1,\n"
       + "  \"varArgs\": false,\n"
       + "  \"declaredExceptions\": [],\n"
       + "  \"yields\": [\n"
@@ -251,8 +266,7 @@ class MethodBehaviorJsonAdapterTest {
       + "        []\n"
       + "      ],\n"
       + "      \"resultIndex\": -1,\n"
-      + "      \"resultConstaint\": [\"" + wrongConstraint + "\"],\n"
-      + "      \"isExceptional\": false\n"
+      + "      \"resultConstraint\": [\"" + wrongConstraint + "\"]\n"
       + "    }\n"
       + "  ]\n"
       + "}";
@@ -263,7 +277,7 @@ class MethodBehaviorJsonAdapterTest {
     assertThat(e)
       .hasRootCauseInstanceOf(IllegalStateException.class)
       .hasMessage(
-        "java.lang.IllegalStateException: Unsupported Domain constraint \"MyConstraint\". Only BooleanConstraint (TRUE, FALSE) and ObjectConstraint (NULL, NOT_NULL) are supported.");
+        "java.lang.IllegalStateException: Unsupported constraint \"SQUARE\". Only \"TRUE\", \"FALSE\", \"NULL\", and \"NOT_NULL\" are supported.");
   }
 
   @Test
@@ -280,11 +294,10 @@ class MethodBehaviorJsonAdapterTest {
       + "    {\n"
       + "      \"parametersConstraints\": [\n"
       + "        [\n"
-      + "          \"ObjectConstraint.NULL\"\n"
+      + "          \"NULL\"\n"
       + "        ]\n"
       + "      ],\n"
-      + "      \"exception\": \"java.lang.Exception\",\n"
-      + "      \"isExceptional\": true\n"
+      + "      \"exception\": \"java.lang.Exception\"\n"
       + "    }\n"
       + "  ]");
 

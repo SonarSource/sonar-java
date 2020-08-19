@@ -1,162 +1,147 @@
 [
   {
     "signature": "java.util.Objects#nonNull(Ljava/lang/Object;)Z",
-    "arity": 1,
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
       {
         "parametersConstraints": [
           [
-            "ObjectConstraint.NULL"
+            "NULL"
           ]
         ],
         "resultIndex": -1,
-        "resultConstaint": [
-          "BooleanConstraint.FALSE",
-          "ObjectConstraint.NOT_NULL"
-        ],
-        "isExceptional": false
+        "resultConstraint": [
+          "FALSE",
+          "NOT_NULL"
+        ]
       },
       {
         "parametersConstraints": [
           [
-            "ObjectConstraint.NOT_NULL"
+            "NOT_NULL"
           ]
         ],
         "resultIndex": -1,
-        "resultConstaint": [
-          "BooleanConstraint.TRUE",
-          "ObjectConstraint.NOT_NULL"
-        ],
-        "isExceptional": false
+        "resultConstraint": [
+          "TRUE",
+          "NOT_NULL"
+        ]
       }
     ]
   },
   {
     "signature": "java.util.Objects#isNull(Ljava/lang/Object;)Z",
-    "arity": 1,
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
       {
         "parametersConstraints": [
           [
-            "ObjectConstraint.NOT_NULL"
+            "NOT_NULL"
           ]
         ],
         "resultIndex": -1,
-        "resultConstaint": [
-          "BooleanConstraint.FALSE",
-          "ObjectConstraint.NOT_NULL"
-        ],
-        "isExceptional": false
+        "resultConstraint": [
+          "FALSE",
+          "NOT_NULL"
+        ]
       },
       {
         "parametersConstraints": [
           [
-            "ObjectConstraint.NULL"
+            "NULL"
           ]
         ],
         "resultIndex": -1,
-        "resultConstaint": [
-          "BooleanConstraint.TRUE",
-          "ObjectConstraint.NOT_NULL"
-        ],
-        "isExceptional": false
+        "resultConstraint": [
+          "TRUE",
+          "NOT_NULL"
+        ]
       }
     ]
   },
   {
     "signature": "java.util.Objects#requireNonNull(Ljava/lang/Object;)Ljava/lang/Object;",
-    "arity": 1,
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
       {
         "parametersConstraints": [
           [
-            "ObjectConstraint.NOT_NULL"
+            "NOT_NULL"
           ]
         ],
         "resultIndex": 0,
-        "resultConstaint": [
-          "ObjectConstraint.NOT_NULL"
-        ],
-        "isExceptional": false
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
       },
       {
         "parametersConstraints": [
           [
-            "ObjectConstraint.NULL"
+            "NULL"
           ]
         ],
-        "exception": "java.lang.NullPointerException",
-        "isExceptional": true
+        "exception": "java.lang.NullPointerException"
       }
     ]
   },
   {
     "signature": "java.util.Objects#requireNonNull(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;",
-    "arity": 2,
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
       {
         "parametersConstraints": [
           [
-            "ObjectConstraint.NOT_NULL"
+            "NOT_NULL"
           ],
           []
         ],
         "resultIndex": 0,
-        "resultConstaint": [
-          "ObjectConstraint.NOT_NULL"
-        ],
-        "isExceptional": false
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
       },
       {
         "parametersConstraints": [
           [
-            "ObjectConstraint.NULL"
+            "NULL"
           ],
           []
         ],
-        "exception": "java.lang.NullPointerException",
-        "isExceptional": true
+        "exception": "java.lang.NullPointerException"
       }
     ]
   },
   {
     "signature": "java.util.Objects#requireNonNull(Ljava/lang/Object;Ljava/util/function/Supplier;)Ljava/lang/Object;",
-    "arity": 2,
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
       {
         "parametersConstraints": [
           [
-            "ObjectConstraint.NOT_NULL"
+            "NOT_NULL"
           ],
           []
         ],
         "resultIndex": 0,
-        "resultConstaint": [
-          "ObjectConstraint.NOT_NULL"
-        ],
-        "isExceptional": false
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
       },
       {
         "parametersConstraints": [
           [
-            "ObjectConstraint.NULL"
+            "NULL"
           ],
           [
-            "ObjectConstraint.NOT_NULL"
+            "NOT_NULL"
           ]
         ],
-        "exception": "java.lang.NullPointerException",
-        "isExceptional": true
+        "exception": "java.lang.NullPointerException"
       }
     ]
   }
