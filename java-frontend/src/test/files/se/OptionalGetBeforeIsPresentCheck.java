@@ -182,3 +182,44 @@ class OptionalField {
   Optional<String> op = Optional.of("hello");
 }
 
+class OptionalField2 {
+  // Optional as field is a commonly agreed bad pattern that should be avoided, it is therefore acceptable to not be super precise for fields,
+  // and to focus mainly in avoiding FP, by reporting only if we are sure that the value is not present.
+  private Optional<String> state = Optional.of("hello");
+
+  public String useOptionalWithCallToMemberFunction() {
+    if (state.isPresent()) {
+      functionThatDoesNotChangeState();
+      return state.get(); // Compliant
+    }
+    return "";
+  }
+
+  public String useOptionalWithCallToMemberFunction2() {
+    if (state.isPresent()) {
+      changeState();
+      return state.get(); // FN
+    }
+    return "";
+  }
+
+  public String issueOnField() {
+    if (!state.isPresent()) {
+      return state.get(); // Noncompliant
+    }
+    return "";
+  }
+
+  public String issueOnField() {
+    return state.get(); // We can not know the exact state of the field, we don't report anything
+  }
+
+  public void functionThatDoesNotChangeState() {
+    // DO NOTHING
+  }
+
+  public void changeState() {
+    state = Optional.empty();
+  }
+
+}

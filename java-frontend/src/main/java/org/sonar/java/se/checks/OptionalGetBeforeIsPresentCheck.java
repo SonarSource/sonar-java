@@ -212,7 +212,7 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
       SymbolicValue peek = programState.peekValue();
       if (OPTIONAL_TEST_METHODS.matches(tree)) {
         constraintManager.setValueFactory(() -> new OptionalTestMethodSymbolicValue(peek, tree.symbol()));
-      } else if (OPTIONAL_GET.matches(tree) && presenceHasNotBeenChecked(peek)) {
+      } else if (OPTIONAL_GET.matches(tree) && presenceHasNotBeenChecked(programState.peekValueSymbol())) {
         context.addExceptionalYield(peek, programState, "java.util.NoSuchElementException", check);
         reportIssue(tree);
         // continue exploration after reporting, assuming the optional is now present (killing any noise after the initial issue)
@@ -254,8 +254,16 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
       context.reportIssue(reportTree, check, "Call \""+ issueMsg + "isPresent()\" before accessing the value.");
     }
 
-    private boolean presenceHasNotBeenChecked(SymbolicValue sv) {
-      return programState.getConstraint(sv, OptionalConstraint.class) != OptionalConstraint.PRESENT;
+    private boolean presenceHasNotBeenChecked(ProgramState.SymbolicValueSymbol symbolicValueSymbol) {
+      Constraint optionalConstraint = programState.getConstraint(symbolicValueSymbol.symbolicValue(), OptionalConstraint.class);
+      // optionalConstraint can be null, meaning that the symbolic value was never checked. For local variable or arguments,
+      // we can safely consider it as not checked, but for fields, the check could be done before, we return true only if we are sure it's not present.
+      // In addition, SE engine reset symbolic value for field when we have a local method invocation, we don't want an issue in this case as well.
+      Symbol symbol = symbolicValueSymbol.symbol();
+      if (symbol != null && ProgramState.isField(symbol)) {
+        return optionalConstraint == OptionalConstraint.NOT_PRESENT;
+      }
+      return optionalConstraint != OptionalConstraint.PRESENT;
     }
 
     private static String getIdentifierPart(ExpressionTree methodSelect) {
