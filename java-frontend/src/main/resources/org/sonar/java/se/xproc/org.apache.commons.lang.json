@@ -1,118 +1,103 @@
 [
   {
     "signature": "org.apache.commons.lang.Validate#notEmpty(Ljava/util/Collection;)V",
-    "arity": 1,
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
       {
         "parametersConstraints": [
-          ["ObjectConstraint.NOT_NULL"]
+          ["NOT_NULL"]
         ],
-        "exception": "java.lang.IllegalArgumentException",
-        "isExceptional": true
+        "exception": "java.lang.IllegalArgumentException"
       },
       {
         "parametersConstraints": [
-          ["ObjectConstraint.NULL"]
+          ["NULL"]
         ],
-        "exception": "java.lang.IllegalArgumentException",
-        "isExceptional": true
+        "exception": "java.lang.IllegalArgumentException"
       },
       {
         "parametersConstraints": [
-          ["ObjectConstraint.NOT_NULL"]
+          ["NOT_NULL"]
         ],
         "resultIndex": -1,
-        "resultConstaint": null,
-        "isExceptional": false
+        "resultConstraint": null
       }
     ]
   },
   {
     "signature": "org.apache.commons.lang.Validate#notEmpty(Ljava/util/Collection;Ljava/lang/String;)V",
-    "arity": 2,
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
       {
         "parametersConstraints": [
-          ["ObjectConstraint.NULL"],
+          ["NULL"],
           []
         ],
-        "exception": "java.lang.IllegalArgumentException",
-        "isExceptional": true
+        "exception": "java.lang.IllegalArgumentException"
       },
       {
         "parametersConstraints": [
-          ["ObjectConstraint.NOT_NULL"],
+          ["NOT_NULL"],
           []
         ],
-        "exception": "java.lang.IllegalArgumentException",
-        "isExceptional": true
+        "exception": "java.lang.IllegalArgumentException"
       },
       {
         "parametersConstraints": [
-          ["ObjectConstraint.NOT_NULL"],
+          ["NOT_NULL"],
           []
         ],
         "resultIndex": -1,
-        "resultConstaint": null,
-        "isExceptional": false
+        "resultConstraint": null
       }
     ]
   },
   {
     "signature": "org.apache.commons.lang.Validate#notNull(Ljava/lang/Object;)V",
-    "arity": 1,
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
       {
         "parametersConstraints": [
-          ["ObjectConstraint.NULL"]
+          ["NULL"]
         ],
-        "exception": "java.lang.IllegalArgumentException",
-        "isExceptional": true
+        "exception": "java.lang.IllegalArgumentException"
       },
       {
         "parametersConstraints": [
-          ["ObjectConstraint.NOT_NULL"]
+          ["NOT_NULL"]
         ],
         "resultIndex": -1,
-        "resultConstaint": null,
-        "isExceptional": false
+        "resultConstraint": null
       }
     ]
   },
   {
     "signature": "org.apache.commons.lang.Validate#notNull(Ljava/lang/Object;Ljava/lang/String;)V",
-    "arity": 2,
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
       {
         "parametersConstraints": [
-          ["ObjectConstraint.NULL"],
+          ["NULL"],
           []
         ],
-        "exception": "java.lang.IllegalArgumentException",
-        "isExceptional": true
+        "exception": "java.lang.IllegalArgumentException"
       },
       {
         "parametersConstraints": [
-          ["ObjectConstraint.NOT_NULL"],
+          ["NOT_NULL"],
           []
         ],
         "resultIndex": -1,
-        "resultConstaint": null,
-        "isExceptional": false
+        "resultConstraint": null
       }
     ]
   },
   {
     "signature": "org.apache.commons.lang.StringUtils#isEmpty(Ljava/lang/String;)Z",
-    "arity": 1,
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
@@ -121,58 +106,52 @@
           []
         ],
         "resultIndex": -1,
-        "resultConstaint": [
-          "BooleanConstraint.TRUE",
-          "ObjectConstraint.NOT_NULL"
-        ],
-        "isExceptional": false
+        "resultConstraint": [
+          "TRUE",
+          "NOT_NULL"
+        ]
       },
       {
         "parametersConstraints": [
-          ["ObjectConstraint.NOT_NULL"]
+          ["NOT_NULL"]
         ],
         "resultIndex": -1,
-        "resultConstaint": [
-          "BooleanConstraint.FALSE",
-          "ObjectConstraint.NOT_NULL"
-        ],
-        "isExceptional": false
+        "resultConstraint": [
+          "FALSE",
+          "NOT_NULL"
+        ]
       }
     ]
   },
   {
     "signature": "org.apache.commons.lang.StringUtils#isNotEmpty(Ljava/lang/String;)Z",
-    "arity": 1,
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
       {
         "parametersConstraints": [
-          ["ObjectConstraint.NOT_NULL"]
+          ["NOT_NULL"]
         ],
         "resultIndex": -1,
-        "resultConstaint": [
-          "BooleanConstraint.TRUE",
-          "ObjectConstraint.NOT_NULL"
-        ],
-        "isExceptional": false
+        "resultConstraint": [
+          "TRUE",
+          "NOT_NULL"
+        ]
       },
       {
         "parametersConstraints": [
           []
         ],
         "resultIndex": -1,
-        "resultConstaint": [
-          "BooleanConstraint.FALSE",
-          "ObjectConstraint.NOT_NULL"
-        ],
-        "isExceptional": false
+        "resultConstraint": [
+          "FALSE",
+          "NOT_NULL"
+        ]
       }
     ]
   },
   {
     "signature": "org.apache.commons.lang.StringUtils#isBlank(Ljava/lang/String;)Z",
-    "arity": 1,
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
@@ -181,52 +160,47 @@
           []
         ],
         "resultIndex": -1,
-        "resultConstaint": [
-          "BooleanConstraint.TRUE",
-          "ObjectConstraint.NOT_NULL"
-        ],
-        "isExceptional": false
+        "resultConstraint": [
+          "TRUE",
+          "NOT_NULL"
+        ]
       },
       {
         "parametersConstraints": [
-          ["ObjectConstraint.NOT_NULL"]
+          ["NOT_NULL"]
         ],
         "resultIndex": -1,
-        "resultConstaint": [
-          "BooleanConstraint.FALSE",
-          "ObjectConstraint.NOT_NULL"
-        ],
-        "isExceptional": false
+        "resultConstraint": [
+          "FALSE",
+          "NOT_NULL"
+        ]
       }
     ]
   },
   {
     "signature": "org.apache.commons.lang.StringUtils#isNotBlank(Ljava/lang/String;)Z",
-    "arity": 1,
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
       {
         "parametersConstraints": [
-          ["ObjectConstraint.NOT_NULL"]
+          ["NOT_NULL"]
         ],
         "resultIndex": -1,
-        "resultConstaint": [
-          "BooleanConstraint.TRUE",
-          "ObjectConstraint.NOT_NULL"
-        ],
-        "isExceptional": false
+        "resultConstraint": [
+          "TRUE",
+          "NOT_NULL"
+        ]
       },
       {
         "parametersConstraints": [
           []
         ],
         "resultIndex": -1,
-        "resultConstaint": [
-          "BooleanConstraint.FALSE",
-          "ObjectConstraint.NOT_NULL"
-        ],
-        "isExceptional": false
+        "resultConstraint": [
+          "FALSE",
+          "NOT_NULL"
+        ]
       }
     ]
   }

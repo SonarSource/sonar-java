@@ -1,237 +1,209 @@
 [
   {
     "signature": "com.google.common.base.Preconditions#checkArgument(Z)V",
-    "arity": 1,
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
       {
         "parametersConstraints": [
-          ["BooleanConstraint.FALSE"]
+          ["FALSE"]
         ],
-        "exception": "java.lang.IllegalArgumentException",
-        "isExceptional": true
+        "exception": "java.lang.IllegalArgumentException"
       },
       {
         "parametersConstraints": [
-          ["BooleanConstraint.TRUE"]
+          ["TRUE"]
         ],
         "resultIndex": -1,
-        "resultConstaint": null,
-        "isExceptional": false
+        "resultConstraint": null
       }
     ]
   },
   {
     "signature": "com.google.common.base.Preconditions#checkArgument(ZLjava/lang/Object;)V",
-    "arity": 2,
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
       {
         "parametersConstraints": [
-          ["BooleanConstraint.FALSE"],
+          ["FALSE"],
           []
         ],
-        "exception": "java.lang.IllegalArgumentException",
-        "isExceptional": true
+        "exception": "java.lang.IllegalArgumentException"
       },
       {
         "parametersConstraints": [
-          ["BooleanConstraint.TRUE"],
+          ["TRUE"],
           []
         ],
         "resultIndex": -1,
-        "resultConstaint": null,
-        "isExceptional": false
+        "resultConstraint": null
       }
     ]
   },
   {
     "signature": "com.google.common.base.Preconditions#checkNotNull(Ljava/lang/Object;)Ljava/lang/Object;",
-    "arity": 1,
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
       {
         "parametersConstraints": [
-          ["ObjectConstraint.NOT_NULL"]
+          ["NOT_NULL"]
         ],
         "resultIndex": 0,
-        "resultConstaint": [
-          "ObjectConstraint.NOT_NULL"
-        ],
-        "isExceptional": false
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
       },
       {
         "parametersConstraints": [
-          ["ObjectConstraint.NULL"]
+          ["NULL"]
         ],
-        "exception": "java.lang.NullPointerException",
-        "isExceptional": true
+        "exception": "java.lang.NullPointerException"
       }
     ]
   },
   {
     "signature": "com.google.common.base.Preconditions#checkState(Z)V",
-    "arity": 1,
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
       {
         "parametersConstraints": [
-          ["BooleanConstraint.FALSE"]
+          ["FALSE"]
         ],
-        "exception": "java.lang.IllegalStateException",
-        "isExceptional": true
+        "exception": "java.lang.IllegalStateException"
       },
       {
         "parametersConstraints": [
-          ["BooleanConstraint.TRUE"]
+          ["TRUE"]
         ],
         "resultIndex": -1,
-        "resultConstaint": null,
-        "isExceptional": false
+        "resultConstraint": null
       }
     ]
   },
   {
     "signature": "com.google.common.base.Verify#verify(Z)V",
-    "arity": 1,
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
       {
         "parametersConstraints": [
-          ["BooleanConstraint.FALSE"]
+          ["FALSE"]
         ],
-        "exception": "com.google.common.base.VerifyException",
-        "isExceptional": true
+        "exception": "com.google.common.base.VerifyException"
       },
       {
         "parametersConstraints": [
-          ["BooleanConstraint.TRUE"]
+          ["TRUE"]
         ],
         "resultIndex": -1,
-        "resultConstaint": null,
-        "isExceptional": false
+        "resultConstraint": null
       }
     ]
   },
   {
     "signature": "com.google.common.base.Verify#verify(ZLjava/lang/String;[Ljava/lang/Object;)V",
-    "arity": 3,
     "varArgs": true,
     "declaredExceptions": [],
     "yields": [
       {
         "parametersConstraints": [
-          ["BooleanConstraint.FALSE"],
+          ["FALSE"],
           [],
           []
         ],
-        "exception": "com.google.common.base.VerifyException",
-        "isExceptional": true
+        "exception": "com.google.common.base.VerifyException"
       },
       {
         "parametersConstraints": [
-          ["BooleanConstraint.TRUE"],
+          ["TRUE"],
           [],
           []
         ],
         "resultIndex": -1,
-        "resultConstaint": null,
-        "isExceptional": false
+        "resultConstraint": null
       }
     ]
   },
   {
     "signature": "com.google.common.base.Verify#verifyNotNull(Ljava/lang/Object;)Ljava/lang/Object;",
-    "arity": 1,
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
       {
         "parametersConstraints": [
-          ["ObjectConstraint.NULL"]
+          ["NULL"]
         ],
-        "exception": "com.google.common.base.VerifyException",
-        "isExceptional": true
+        "exception": "com.google.common.base.VerifyException"
       },
       {
         "parametersConstraints": [
-          ["ObjectConstraint.NOT_NULL"]
+          ["NOT_NULL"]
         ],
         "resultIndex": 0,
-        "resultConstaint": [
-          "ObjectConstraint.NOT_NULL"
-        ],
-        "isExceptional": false
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
       }
     ]
   },
   {
     "signature": "com.google.common.base.Verify#verifyNotNull(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;",
-    "arity": 3,
     "varArgs": true,
     "declaredExceptions": [],
     "yields": [
       {
         "parametersConstraints": [
-          ["ObjectConstraint.NULL"],
+          ["NULL"],
           [],
           []
         ],
-        "exception": "com.google.common.base.VerifyException",
-        "isExceptional": true
+        "exception": "com.google.common.base.VerifyException"
       },
       {
         "parametersConstraints": [
-          ["ObjectConstraint.NOT_NULL"],
+          ["NOT_NULL"],
           [],
           []
         ],
         "resultIndex": 0,
-        "resultConstaint": [
-          "ObjectConstraint.NOT_NULL"
-        ],
-        "isExceptional": false
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
       }
     ]
   },
   {
     "signature": "com.google.common.base.Strings#isNullOrEmpty(Ljava/lang/String;)Z",
-    "arity": 1,
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
       {
         "parametersConstraints": [
-          ["ObjectConstraint.NOT_NULL"]
+          ["NOT_NULL"]
         ],
         "resultIndex": -1,
-        "resultConstaint": [
-          "BooleanConstraint.FALSE",
-          "ObjectConstraint.NOT_NULL"
-        ],
-        "isExceptional": false
+        "resultConstraint": [
+          "FALSE",
+          "NOT_NULL"
+        ]
       },
       {
         "parametersConstraints": [
           []
         ],
         "resultIndex": -1,
-        "resultConstaint": [
-          "BooleanConstraint.TRUE",
-          "ObjectConstraint.NOT_NULL"
-        ],
-        "isExceptional": false
+        "resultConstraint": [
+          "TRUE",
+          "NOT_NULL"
+        ]
       }
     ]
   },
   {
     "signature": "com.google.common.base.Platform#stringIsNullOrEmpty(Ljava/lang/String;)Z",
-    "arity": 1,
     "varArgs": false,
     "declaredExceptions": [],
     "yields": [
@@ -240,22 +212,20 @@
           []
         ],
         "resultIndex": -1,
-        "resultConstaint": [
-          "BooleanConstraint.TRUE",
-          "ObjectConstraint.NOT_NULL"
-        ],
-        "isExceptional": false
+        "resultConstraint": [
+          "TRUE",
+          "NOT_NULL"
+        ]
       },
       {
         "parametersConstraints": [
-          ["ObjectConstraint.NOT_NULL"]
+          ["NOT_NULL"]
         ],
         "resultIndex": -1,
-        "resultConstaint": [
-          "BooleanConstraint.FALSE",
-          "ObjectConstraint.NOT_NULL"
-        ],
-        "isExceptional": false
+        "resultConstraint": [
+          "FALSE",
+          "NOT_NULL"
+        ]
       }
     ]
   }

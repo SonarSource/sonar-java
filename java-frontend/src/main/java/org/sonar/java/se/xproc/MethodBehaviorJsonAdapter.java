@@ -36,20 +36,18 @@ import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
 
 public class MethodBehaviorJsonAdapter implements JsonSerializer<MethodBehavior>, JsonDeserializer<MethodBehavior> {
 
-  private static final String JSON_CONSTRAINT_DELIMITER = ".";
-  private static final String JSON_IS_EXCEPTIONAL = "isExceptional";
   private static final String JSON_THROWN_EXCEPTION = "exception";
-  private static final String JSON_RESULT_CONSTRAINTS = "resultConstaint";
+  private static final String JSON_RESULT_CONSTRAINTS = "resultConstraint";
   private static final String JSON_RESULT_INDEX = "resultIndex";
   private static final String JSON_PARAMETERS_CONSTRAINTS = "parametersConstraints";
   private static final String JSON_DECLARED_EXCEPTIONS = "declaredExceptions";
   private static final String JSON_VARARGS = "varArgs";
-  private static final String JSON_ARITY = "arity";
   private static final String JSON_SIGNATURE = "signature";
   private static final String JSON_YIELDS = "yields";
 
@@ -80,15 +78,15 @@ public class MethodBehaviorJsonAdapter implements JsonSerializer<MethodBehavior>
 
     jsonMB.get(JSON_YIELDS)
       .getAsJsonArray()
-      .forEach(yield -> mb.addYield(yieldsFromJson(mb, jsonMB.get(JSON_ARITY).getAsInt(), (JsonObject) yield)));
+      .forEach(yield -> mb.addYield(yieldsFromJson(mb, (JsonObject) yield)));
 
     mb.completed();
     return mb;
   }
 
-  private static MethodYield yieldsFromJson(MethodBehavior behavior, int arity, JsonObject methodYield) {
+  private static MethodYield yieldsFromJson(MethodBehavior behavior, JsonObject methodYield) {
     MethodYield result;
-    if (methodYield.get(JSON_IS_EXCEPTIONAL).getAsBoolean()) {
+    if (methodYield.has(JSON_THROWN_EXCEPTION)) {
       ExceptionalYield exceptionalYield = new ExceptionalYield(behavior);
       exceptionalYield.setExceptionType(methodYield.get(JSON_THROWN_EXCEPTION).getAsString());
       result = exceptionalYield;
@@ -97,7 +95,7 @@ public class MethodBehaviorJsonAdapter implements JsonSerializer<MethodBehavior>
       happyPathYield.setResult(methodYield.get(JSON_RESULT_INDEX).getAsInt(), constraintsByDomainFromJson(methodYield.get(JSON_RESULT_CONSTRAINTS)));
       result = happyPathYield;
     }
-    result.parametersConstraints.addAll(constraintsFromJson(arity, methodYield.get(JSON_PARAMETERS_CONSTRAINTS).getAsJsonArray()));
+    result.parametersConstraints.addAll(constraintsFromJson(behavior.methodArity(), methodYield.get(JSON_PARAMETERS_CONSTRAINTS).getAsJsonArray()));
     return result;
   }
 
@@ -115,22 +113,22 @@ public class MethodBehaviorJsonAdapter implements JsonSerializer<MethodBehavior>
     JsonArray constraintsByDomainJsonArray = jsonConstraintsByDomain.getAsJsonArray();
     ConstraintsByDomain constraintsByDomain = ConstraintsByDomain.empty();
     for (int i = 0; i < constraintsByDomainJsonArray.size(); i++) {
-      String domainConstraint = constraintsByDomainJsonArray.get(i).getAsString();
-      int delimiterPosition = domainConstraint.indexOf(JSON_CONSTRAINT_DELIMITER);
-      Preconditions.checkState(delimiterPosition != -1 && delimiterPosition == domainConstraint.lastIndexOf(JSON_CONSTRAINT_DELIMITER));
-      String domain = domainConstraint.substring(0, delimiterPosition);
-      String constraint = domainConstraint.substring(delimiterPosition + 1);
-      switch (domain) {
-        case "ObjectConstraint":
-          constraintsByDomain = constraintsByDomain.put(ObjectConstraint.valueOf(constraint));
+      String constraintAsString = constraintsByDomainJsonArray.get(i).getAsString();
+      Constraint constraint;
+      switch (constraintAsString) {
+        case "NULL":
+        case "NOT_NULL":
+          constraint = ObjectConstraint.valueOf(constraintAsString);
           break;
-        case "BooleanConstraint":
-          constraintsByDomain = constraintsByDomain.put(BooleanConstraint.valueOf(constraint));
+        case "TRUE":
+        case "FALSE":
+          constraint = BooleanConstraint.valueOf(constraintAsString);
           break;
         default:
-          String msg = String.format("Unsupported Domain constraint \"%s\". Only BooleanConstraint (TRUE, FALSE) and ObjectConstraint (NULL, NOT_NULL) are supported.", domain);
+          String msg = String.format("Unsupported constraint \"%s\". Only \"TRUE\", \"FALSE\", \"NULL\", and \"NOT_NULL\" are supported.", constraintAsString);
           throw new IllegalStateException(msg);
       }
+      constraintsByDomain = constraintsByDomain.put(constraint);
     }
     return constraintsByDomain;
   }
@@ -141,7 +139,6 @@ public class MethodBehaviorJsonAdapter implements JsonSerializer<MethodBehavior>
 
     JsonObject mb = new JsonObject();
     mb.addProperty(JSON_SIGNATURE, src.signature());
-    mb.addProperty(JSON_ARITY, src.methodArity());
     mb.addProperty(JSON_VARARGS, src.isMethodVarArgs());
 
     List<String> declaredExceptions = src.getDeclaredExceptions();
@@ -165,19 +162,16 @@ public class MethodBehaviorJsonAdapter implements JsonSerializer<MethodBehavior>
       jsonParameterConstraints.add(toJson(methodYield.parametersConstraints.get(i)));
     }
     yield.add(JSON_PARAMETERS_CONSTRAINTS, jsonParameterConstraints);
-    boolean isExceptional = false;
     if (methodYield instanceof HappyPathYield) {
       HappyPathYield happyPathYield = (HappyPathYield) methodYield;
       yield.addProperty(JSON_RESULT_INDEX, happyPathYield.resultIndex());
       yield.add(JSON_RESULT_CONSTRAINTS, toJson(happyPathYield.resultConstraint()));
     } else if (methodYield instanceof ExceptionalYield) {
       ExceptionalYield exceptionalYield = (ExceptionalYield) methodYield;
-      isExceptional = true;
       yield.addProperty(JSON_THROWN_EXCEPTION, exceptionalYield.getExceptionType());
     } else {
       throw new IllegalStateException("Hardcoded yields should only be HappyPathYield or ExceptionalYield.");
     }
-    yield.addProperty(JSON_IS_EXCEPTIONAL, isExceptional);
     return yield;
   }
 
@@ -186,7 +180,11 @@ public class MethodBehaviorJsonAdapter implements JsonSerializer<MethodBehavior>
       return JsonNull.INSTANCE;
     }
     JsonArray jsonConstraints = new JsonArray();
-    constraints.forEach((domain, constraint) -> jsonConstraints.add(domain.getSimpleName() + JSON_CONSTRAINT_DELIMITER + constraint.toString()));
+    constraints.forEach((domain, constraint) -> {
+      if (constraint instanceof ObjectConstraint || constraint instanceof BooleanConstraint) {
+        jsonConstraints.add(constraint.toString());
+      }
+    });
     return jsonConstraints;
   }
 }
