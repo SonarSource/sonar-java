@@ -143,25 +143,6 @@ ruling_win_task:
     - mvn package -Pit-ruling -Dsonar.runtimeVersion=LATEST_RELEASE[7.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V
   cleanup_before_cache_script: cleanup_maven_repository
 
-semantic_task:
-  depends_on:
-    - build
-  <<: *ONLY_SONARSOURCE_QA
-  gke_container:
-    <<: *CONTAINER_DEFINITION
-    cpu: 4
-    memory: 8G
-  maven_cache:
-    folder: ${CIRRUS_WORKING_DIR}/.m2/repository
-  submodules_script:
-    - git submodule update --init
-  semantic_script:
-    - source cirrus-env QA
-    - source set_maven_build_version $BUILD_NUMBER
-    - cd its/semantic
-    - mvn package -Pit-semantic -Dsonar.runtimeVersion=LATEST_RELEASE[7.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V
-  cleanup_before_cache_script: cleanup_maven_repository
-
 promote_task:
   depends_on:
     - qa_os_win
@@ -169,7 +150,6 @@ promote_task:
     - ruling
     - ruling_win
     - plugin_qa
-    - semantic
   <<: *ONLY_SONARSOURCE_QA
   gke_container:    
     <<: *CONTAINER_DEFINITION
