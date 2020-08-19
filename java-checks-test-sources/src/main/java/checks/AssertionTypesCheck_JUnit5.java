@@ -1,5 +1,13 @@
 package checks;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,7 +32,7 @@ public class AssertionTypesCheck_JUnit5 {
     assertNull(doublePrimitive(), () -> "msg"); // Noncompliant
 
     assertEquals(
-      null, // Noncompliant [[sc=7;ec=11;secondary=28]] {{Change the assertion arguments to not compare dissimilar types.}}
+      null, // Noncompliant [[sc=7;ec=11;secondary=36]] {{Change the assertion arguments to not compare dissimilar types.}}
       doublePrimitive());
     assertEquals(null, booleanPrimitive(), "msg"); // Noncompliant
 
@@ -125,6 +133,20 @@ public class AssertionTypesCheck_JUnit5 {
     assertNotEquals(Integer.valueOf(5), Long.valueOf(5)); // Noncompliant
     assertNotEquals(Long.valueOf(5), Integer.valueOf(5)); // Noncompliant
   }
+
+  @Test
+  void test_date_and_time() {
+    // JUnit does not support date and time comparison as AssertJ
+    assertEquals(new Date(0), "1970-01-01T01:00:00"); // Noncompliant
+    assertEquals(LocalDate.parse("1970-01-01"), "1970-01-01"); // Noncompliant
+    assertEquals(LocalDateTime.parse("2007-12-03T10:15:30"), "2007-12-03T10:15:30"); // Noncompliant
+    assertEquals(ZonedDateTime.parse("2007-12-03T10:15:30+01:00"), "2007-12-03T10:15:30+01:00"); // Noncompliant
+    assertEquals(OffsetDateTime.parse("2007-12-03T10:15:30+01:00"), "2007-12-03T10:15:30+01:00"); // Noncompliant
+    assertEquals(OffsetTime.parse("10:15:30+01:00"), "10:15:30+01:00"); // Noncompliant
+    assertEquals(LocalTime.parse("10:15"), "10:15"); // Noncompliant
+    assertEquals(Instant.parse("2007-12-03T10:15:30.00Z"), "2007-12-03T10:15:30.00Z"); // Noncompliant
+  }
+
 
   void test_equals_method() {
     A a = new A();

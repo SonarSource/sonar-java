@@ -119,26 +119,34 @@ public class AssertionTypesCheck extends IssuableSubscriptionVisitor {
     .addParametersMatcher(MethodMatchers.ANY)
     .build();
 
-  private static final MethodMatchers ASSERTJ_NULL_AND_NOT_NULL = MethodMatchers.create()
-    .ofAnyType()
+  private static final MethodMatchers.NameBuilder MATCHER_ANY_TYPE = MethodMatchers.create().ofAnyType();
+
+  private static final MethodMatchers ASSERTJ_NULL_AND_NOT_NULL = MATCHER_ANY_TYPE
     .names("isNull", "isNotNull")
     .addWithoutParametersMatcher()
     .build();
 
-  private static final MethodMatchers ASSERTJ_POSITIVE_PREDICATES = MethodMatchers.create()
-    .ofAnyType()
-    .names("isEqualTo", "isSameAs")
+  private static final MethodMatchers ASSERTJ_EQUAL_TO_PREDICATE = MATCHER_ANY_TYPE
+    .names("isEqualTo")
     .addParametersMatcher(MethodMatchers.ANY)
     .build();
 
-  private static final MethodMatchers ASSERTJ_NEGATIVE_PREDICATES = MethodMatchers.create()
-    .ofAnyType()
-    .names("isNotEqualTo", "isNotSameAs")
+  private static final MethodMatchers ASSERTJ_IS_SAME_AS_PREDICATE = MATCHER_ANY_TYPE
+    .names("isSameAs")
     .addParametersMatcher(MethodMatchers.ANY)
     .build();
 
-  private static final MethodMatchers ASSERTJ_CONFIGURATION = MethodMatchers.create()
-    .ofAnyType()
+  private static final MethodMatchers ASSERTJ_IS_NOT_EQUAL_TO_PREDICATE = MATCHER_ANY_TYPE
+    .names("isNotEqualTo")
+    .addParametersMatcher(MethodMatchers.ANY)
+    .build();
+
+  private static final MethodMatchers ASSERTJ_IS_NOT_SAME_AS_PREDICATE = MATCHER_ANY_TYPE
+    .names("isNotSameAs")
+    .addParametersMatcher(MethodMatchers.ANY)
+    .build();
+
+  private static final MethodMatchers ASSERTJ_CONFIGURATION = MATCHER_ANY_TYPE
     .names("as", "describedAs", "withFailMessage", "overridingErrorMessage")
     .withAnyParameters()
     .build();
@@ -179,9 +187,13 @@ public class AssertionTypesCheck extends IssuableSubscriptionVisitor {
         boolean checkFollowingMethod = true;
         if (ASSERTJ_NULL_AND_NOT_NULL.matches(mit)) {
           checkNullableAssertion(ExpressionUtils.methodName(mit), actual);
-        } else if (ASSERTJ_POSITIVE_PREDICATES.matches(mit)) {
+        } else if (ASSERTJ_EQUAL_TO_PREDICATE.matches(mit)) {
+          checkCompatibleAssertJEqualTypes(mit, actual, new Argument(mit, 0), Option.ACCEPT_DISSIMILAR_INTERFACE);
+        } else if (ASSERTJ_IS_SAME_AS_PREDICATE.matches(mit)) {
           checkCompatibleTypes(mit, actual, new Argument(mit, 0), Option.ACCEPT_DISSIMILAR_INTERFACE);
-        } else if (ASSERTJ_NEGATIVE_PREDICATES.matches(mit)) {
+        } else if (ASSERTJ_IS_NOT_EQUAL_TO_PREDICATE.matches(mit)) {
+          checkCompatibleAssertJEqualTypes(mit, actual, new Argument(mit, 0), Option.REJECT_DISSIMILAR_INTERFACE);
+        } else if (ASSERTJ_IS_NOT_SAME_AS_PREDICATE.matches(mit)) {
           checkCompatibleTypes(mit, actual, new Argument(mit, 0), Option.REJECT_DISSIMILAR_INTERFACE);
         } else if (!ASSERTJ_CONFIGURATION.matches(mit)) {
           // stop checking when methods like: extracting, using*, filtered*
@@ -201,6 +213,16 @@ public class AssertionTypesCheck extends IssuableSubscriptionVisitor {
     if (actual.isPrimitive()) {
       reportIssue(issueLocation, "Change the assertion arguments to not compare a primitive value with null.");
     }
+  }
+
+  private void checkCompatibleAssertJEqualTypes(MethodInvocationTree mit, Argument actual, Argument expected, Option option) {
+    Type type = mit.symbolType();
+    if (type.isSubtypeOf("org.assertj.core.api.AbstractTemporalAssert")
+      || type.isSubtypeOf("org.assertj.core.api.AbstractDateAssert")) {
+      // AssertJ supports Date/Temporal comparison with String.
+      return;
+    }
+    checkCompatibleTypes(mit, actual, expected, option);
   }
 
   private void checkCompatibleTypes(MethodInvocationTree mit, Argument actual, Argument expected, Option option) {

@@ -1,5 +1,13 @@
 package checks;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,7 +32,7 @@ public class AssertionTypesCheck_AssertJ {
 
     assertThat(doublePrimitive())
       .withFailMessage("msg", 42)
-      .isNotEqualTo(null); // Noncompliant [[sc=21;ec=25;secondary=25]] {{Change the assertion arguments to not compare dissimilar types.}}
+      .isNotEqualTo(null); // Noncompliant [[sc=21;ec=25;secondary=33]] {{Change the assertion arguments to not compare dissimilar types.}}
 
     assertThat(booleanPrimitive())
       .describedAs("msg")
@@ -155,6 +163,27 @@ public class AssertionTypesCheck_AssertJ {
     assertThat(Integer.valueOf(5)).isNotEqualTo(Long.valueOf(5)); // Noncompliant
   }
 
+  @Test
+  void test_assertj_date_and_time() {
+    // AssertJ supports date and time comparison with string.
+    assertThat(getDate()).isEqualTo("1970-01-01T01:00:00"); // Compliant
+    assertThat(getDate()).isNotEqualTo("2020-01-01T01:00:00"); // Compliant
+
+    assertThat(new Date(0)).isEqualTo("1970-01-01T01:00:00"); // Compliant
+    assertThat(LocalDate.parse("1970-01-01")).isEqualTo("1970-01-01"); // Compliant
+    assertThat(LocalDateTime.parse("2007-12-03T10:15:30")).isEqualTo("2007-12-03T10:15:30"); // Compliant
+    assertThat(ZonedDateTime.parse("2007-12-03T10:15:30+01:00")).isEqualTo("2007-12-03T10:15:30+01:00"); // Compliant
+    assertThat(OffsetDateTime.parse("2007-12-03T10:15:30+01:00")).isEqualTo("2007-12-03T10:15:30+01:00"); // Compliant
+    assertThat(OffsetTime.parse("10:15:30+01:00")).isEqualTo("10:15:30+01:00"); // Compliant
+    assertThat(LocalTime.parse("10:15")).isEqualTo("10:15"); // Compliant
+    assertThat(Instant.parse("2007-12-03T10:15:30.00Z")).isEqualTo("2007-12-03T10:15:30.00Z"); // Compliant
+
+    assertThat(getDate().hashCode()).isEqualTo("1970-01-01T01:00:00"); // Noncompliant
+    assertThat(OffsetDateTime.timeLineOrder()).isEqualTo("2007-12-03T10:15:30+01:00"); // Noncompliant
+    assertThat("1970-01-01T01:00:00").isEqualTo(getDate()); // Noncompliant
+    assertThat(getDate()).isSameAs("1970-01-01T01:00:00"); // Noncompliant
+  }
+
   interface I1 {
   }
 
@@ -203,6 +232,10 @@ public class AssertionTypesCheck_AssertJ {
 
   char charPrimitive() {
     return 'a';
+  }
+
+  Date getDate() {
+    return new Date(0);
   }
 
   String getString() {
