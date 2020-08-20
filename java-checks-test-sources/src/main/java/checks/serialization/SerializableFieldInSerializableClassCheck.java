@@ -1,0 +1,322 @@
+package checks.serialization;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+
+import java.util.Set;
+import javax.inject.Inject;
+import javax.ejb.EJB;
+
+class Address {
+}
+class Person implements Serializable {
+  Address address; // Noncompliant [[sc=11;ec=18]] {{Make "address" transient or serializable.}}
+  SerializableFieldInSerializableClassCheckA a;
+  static Address address2;//Compliant : static field
+  transient Address address3;
+}
+enum SerializableFieldInSerializableClassCheckA {
+  B;
+  Address address;
+  Address[][] addressArray;
+}
+
+class Person2 implements Serializable {
+  Address address; //Compliant: read/write methods are implemented
+  transient Address address2;
+  private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {}
+  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {}
+}
+interface MyCustomInterface extends Serializable {}
+class Person3 implements MyCustomInterface {
+  Address address; // Noncompliant {{Make "address" transient or serializable.}}
+}
+class Person4<T extends Serializable, S extends Address> implements MyCustomInterface {
+  T t; //Compliant
+  S s; // Noncompliant {{Make "s" transient or serializable.}}
+}
+class Person5 implements Serializable {
+  int[][] matrix; //Compliant
+  Integer integer; //Compliant
+}
+
+class SerializableFieldInSerializableClassCheckB<T> {}
+
+class Person6<E, F extends Serializable> implements Serializable {
+  private SerializableFieldInSerializableClassCheckB<Object> bs; // Noncompliant
+  private List<Person6> persons; // Compliant
+  private List things; // Noncompliant {{Make "things" transient or serializable.}}
+  private List<MyObject> objects; // Noncompliant {{Make "objects" transient or serializable.}}
+  private List<? extends MyObject> otherObjects; // Noncompliant {{Make "otherObjects" transient or serializable.}}
+  private List<? extends Person6> otherPersons; // Compliant
+  private List<? extends E> otherThings; // Noncompliant {{Make "otherThings" transient or serializable.}}
+  private List<? extends F> otherSerializableThings; // Compliant
+  private List<?> otherUnknown; // Noncompliant {{Make "otherUnknown" transient or serializable.}}
+  private List<? super F> super1;
+  private List<? super E> super2; // Noncompliant
+
+  public List<Person6> persons1; // Noncompliant {{Make "persons1" private or transient.}}
+  transient public List<Person6> persons2; // Compliant - transient
+  private List<Person6> persons3 = new ArrayList<>(); // Compliant - ArrayList is serializable
+  private List<Person6> persons4 = new MyNonSerializableList<>(); // Noncompliant
+}
+
+class Person7 implements Serializable {
+  private Map<Object, Object> both; // Noncompliant {{Make "both" transient or serializable.}}
+  private Map<String, Object> right; // Noncompliant {{Make "right" transient or serializable.}}
+  private Map<Object, String> left; // Noncompliant {{Make "left" transient or serializable.}}
+  private Map<String, String> ok; // Compliant
+
+  private Map<String, List<String>> nestedOk; // Compliant
+  private Map<String, List<Object>> nestedLeft; // Noncompliant {{Make "nestedLeft" transient or serializable.}}
+
+  private Map<String, String> nok1 = new MyNonSerializableMap<>(); // Noncompliant
+  private MyNonSerializableMap<String, String> nok2; // Noncompliant
+
+  void foo() {
+    ok = new MyNonSerializableMap<>(); // Noncompliant
+    nok2 = new MyNonSerializableMap<>(); // Noncompliant
+    ok = nok2; // Noncompliant
+    ok = null; // Compliant
+    ok = bar(); // Compliant
+    ok = MyAbstractNonSerializableMap.foo(); // Noncompliant
+    ok = new HashMap<>(); // Compliant
+    if (ok.isEmpty()) {
+      Object myVar = ok;
+    }
+  }
+
+  Map bar() {
+    return null;
+  }
+}
+
+class Person8 implements Serializable {
+  @Inject Address address; // Compliant field is injected
+  @EJB Address address2; // Compliant
+
+  @Inject Address address3; // Compliant
+  @EJB Address address4; // Compliant
+
+  @Deprecated Address address5; // Noncompliant
+}
+
+class IncompleteSerializableMethods1 implements Serializable {
+  Address address; // Noncompliant - read/write methods are not exactly matching signatures (throwing wrong types)
+  private void writeObject(java.io.ObjectOutputStream out) {}
+  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException {}
+}
+
+class IncompleteSerializableMethods2 implements Serializable {
+  Address address; // Noncompliant - write methods is wrongly implemented
+  private void writeObject(java.io.ObjectOutputStream out) throws ClassCastException {} // wrong thrown type
+  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {}
+}
+class MyServlet extends javax.servlet.http.HttpServlet {
+  private Map<String, String> nok1 = new MyNonSerializableMap<>();
+}
+
+class Person9 implements Serializable {
+  private HashMap<Object, Object> both2; // Noncompliant
+  private ArrayList<Object> objects2; // Noncompliant
+  private ArrayList<String> lines = null; // Compliant: ArrayList, String, and null are serializable
+}
+
+class MyObject {
+
+}
+
+class MyNonSerializableList<E> implements List<E> {
+  MyNonSerializableList() {}
+
+  @Override
+  public int size() {
+    return 0;
+  }
+
+  @Override
+  public boolean isEmpty() {
+    return false;
+  }
+
+  @Override
+  public boolean contains(Object o) {
+    return false;
+  }
+
+  @Override
+  public Iterator<E> iterator() {
+    return null;
+  }
+
+  @Override
+  public Object[] toArray() {
+    return new Object[0];
+  }
+
+  @Override
+  public <T> T[] toArray(T[] a) {
+    return null;
+  }
+
+  @Override
+  public boolean add(E e) {
+    return false;
+  }
+
+  @Override
+  public boolean remove(Object o) {
+    return false;
+  }
+
+  @Override
+  public boolean containsAll(Collection<?> c) {
+    return false;
+  }
+
+  @Override
+  public boolean addAll(Collection<? extends E> c) {
+    return false;
+  }
+
+  @Override
+  public boolean addAll(int index, Collection<? extends E> c) {
+    return false;
+  }
+
+  @Override
+  public boolean removeAll(Collection<?> c) {
+    return false;
+  }
+
+  @Override
+  public boolean retainAll(Collection<?> c) {
+    return false;
+  }
+
+  @Override
+  public void clear() {
+
+  }
+
+  @Override
+  public E get(int index) {
+    return null;
+  }
+
+  @Override
+  public E set(int index, E element) {
+    return null;
+  }
+
+  @Override
+  public void add(int index, E element) {
+
+  }
+
+  @Override
+  public E remove(int index) {
+    return null;
+  }
+
+  @Override
+  public int indexOf(Object o) {
+    return 0;
+  }
+
+  @Override
+  public int lastIndexOf(Object o) {
+    return 0;
+  }
+
+  @Override
+  public ListIterator<E> listIterator() {
+    return null;
+  }
+
+  @Override
+  public ListIterator<E> listIterator(int index) {
+    return null;
+  }
+
+  @Override
+  public List<E> subList(int fromIndex, int toIndex) {
+    return null;
+  }
+}
+
+class MyNonSerializableMap<K, V> implements Map<K, V> {
+  MyNonSerializableMap() {}
+
+  @Override
+  public int size() {
+    return 0;
+  }
+
+  @Override
+  public boolean isEmpty() {
+    return false;
+  }
+
+  @Override
+  public boolean containsKey(Object key) {
+    return false;
+  }
+
+  @Override
+  public boolean containsValue(Object value) {
+    return false;
+  }
+
+  @Override
+  public V get(Object key) {
+    return null;
+  }
+
+  @Override
+  public V put(K key, V value) {
+    return null;
+  }
+
+  @Override
+  public V remove(Object key) {
+    return null;
+  }
+
+  @Override
+  public void putAll(Map<? extends K, ? extends V> m) {
+
+  }
+
+  @Override
+  public void clear() {
+
+  }
+
+  @Override
+  public Set<K> keySet() {
+    return null;
+  }
+
+  @Override
+  public Collection<V> values() {
+    return null;
+  }
+
+  @Override
+  public Set<Entry<K, V>> entrySet() {
+    return null;
+  }
+}
+
+class MyAbstractNonSerializableMap<K,V> extends MyNonSerializableMap<K,V> {
+  static MyAbstractNonSerializableMap foo() {
+    return null;
+  }
+}
