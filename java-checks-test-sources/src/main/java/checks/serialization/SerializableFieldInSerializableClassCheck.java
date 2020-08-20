@@ -67,6 +67,14 @@ class Person6<E, F extends Serializable> implements Serializable {
   private List<Person6> persons4 = new MyNonSerializableList<>(); // Noncompliant
 }
 
+class Person6_1<T extends MySimpleInterface & Serializable> implements Serializable {
+  T t; //Compliant
+}
+
+class Person6_2<T extends Serializable & MySimpleInterface> implements Serializable {
+  T t; //Compliant
+}
+
 class Person7 implements Serializable {
   private Map<Object, Object> both; // Noncompliant {{Make "both" transient or serializable.}}
   private Map<String, Object> right; // Noncompliant {{Make "right" transient or serializable.}}
@@ -129,6 +137,10 @@ class Person9 implements Serializable {
 }
 
 class MyObject {
+
+}
+
+interface MySimpleInterface {
 
 }
 

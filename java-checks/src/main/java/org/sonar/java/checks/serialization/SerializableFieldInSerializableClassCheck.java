@@ -159,7 +159,7 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
       return implementsSerializable(((Type.ArrayType) type).elementType());
     }
     if (type.isClass() || JUtils.isTypeVar(type)) {
-      return type.erasure().isSubtypeOf("java.io.Serializable");
+      return type.isSubtypeOf("java.io.Serializable");
     }
     return false;
   }
