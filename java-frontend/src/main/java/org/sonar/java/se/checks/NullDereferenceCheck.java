@@ -43,11 +43,13 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
+import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedWithStrongNullness;
@@ -198,12 +200,32 @@ public class NullDereferenceCheck extends SECheck {
 
   @Override
   public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
-    if (syntaxNode.is(Tree.Kind.SWITCH_STATEMENT, Tree.Kind.THROW_STATEMENT) && context.getConstraintManager().isNull(context.getState(), context.getState().peekValue())) {
-      NullDereferenceIssue issue = new NullDereferenceIssue(context.getNode(), context.getState().peekValue(), syntaxNode);
+    NullDereferenceIssue issue = null;
+    if (syntaxNode.is(Tree.Kind.SWITCH_STATEMENT)) {
+      int numberOfCaseValues = ((SwitchStatementTree) syntaxNode)
+        .cases()
+        .stream()
+        .flatMap(c -> c.labels().stream())
+        .map(CaseLabelTree::expressions)
+        .mapToInt(List::size)
+        .sum();
+      SymbolicValue conditionSymbolicValue = context.getState().peekValue(numberOfCaseValues);
+
+      if (context.getConstraintManager().isNull(context.getState(), conditionSymbolicValue)) {
+        issue = new NullDereferenceIssue(context.getNode(), conditionSymbolicValue, syntaxNode);
+      }
+    }
+
+    if (syntaxNode.is(Tree.Kind.THROW_STATEMENT) && context.getConstraintManager().isNull(context.getState(), context.getState().peekValue())) {
+      issue = new NullDereferenceIssue(context.getNode(), context.getState().peekValue(), syntaxNode);
+    }
+
+    if (issue != null) {
       detectedIssues.peek().add(issue);
       context.createSink();
       return context.getState();
     }
+
     List<ProgramState> programStates = setNullConstraint(context, syntaxNode);
     for (ProgramState programState : programStates) {
       context.addTransition(programState);

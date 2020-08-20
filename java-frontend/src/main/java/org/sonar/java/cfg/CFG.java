@@ -746,14 +746,15 @@ public class CFG implements ControlFlowGraph {
     currentBlock = createBlock();
     currentBlock.terminator = terminator;
     Block switchBlock = currentBlock;
-    build(switchExpressionTree.expression());
-    switchExpressionTree.cases()
+    List<ExpressionTree> switchCasesExpressions = switchExpressionTree.cases()
       .stream()
       .map(CaseGroupTree::labels)
       .flatMap(List::stream)
       .map(CaseLabelTree::expressions)
-      .flatMap(List::stream)
-      .forEach(this::build);
+      .flatMap(List::stream).collect(Collectors.toList());
+    Lists.reverse(switchCasesExpressions).forEach(this::build);
+
+    build(switchExpressionTree.expression());
     Block conditionBlock = currentBlock;
     // process body
     currentBlock = createBlock(switchSuccessor);

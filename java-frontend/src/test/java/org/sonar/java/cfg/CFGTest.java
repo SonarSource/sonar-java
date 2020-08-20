@@ -643,9 +643,9 @@ class CFGTest {
         ).hasCaseGroup().successors(0),
       block(
         element(Tree.Kind.VARIABLE, "a"),
-        element(Tree.Kind.INT_LITERAL, 2),
+        element(Tree.Kind.IDENTIFIER, "foo"),
         element(Tree.Kind.INT_LITERAL, 1),
-        element(Tree.Kind.IDENTIFIER, "foo")
+        element(Tree.Kind.INT_LITERAL, 2)
         ).terminator(Tree.Kind.SWITCH_STATEMENT).successors(2, 3, 4));
     cfgChecker.check(cfg);
   }
@@ -687,11 +687,11 @@ class CFGTest {
         element(Tree.Kind.METHOD_INVOCATION)).hasCaseGroup().successors(0),
       block(
         element(Tree.Kind.VARIABLE, "a"),
-        element(Tree.Kind.INT_LITERAL, 4),
-        element(Tree.Kind.INT_LITERAL, 3),
-        element(Tree.Kind.INT_LITERAL, 2),
+        element(Tree.Kind.IDENTIFIER, "foo"),
         element(Tree.Kind.INT_LITERAL, 1),
-        element(Tree.Kind.IDENTIFIER, "foo")).terminator(Tree.Kind.SWITCH_STATEMENT).successors(2, 3, 4));
+        element(Tree.Kind.INT_LITERAL, 2),
+        element(Tree.Kind.INT_LITERAL, 3),
+        element(Tree.Kind.INT_LITERAL, 4)).terminator(Tree.Kind.SWITCH_STATEMENT).successors(2, 3, 4));
     cfgChecker.check(cfg);
   }
 
@@ -723,9 +723,9 @@ class CFGTest {
         element(Tree.Kind.METHOD_INVOCATION)).terminator(Tree.Kind.BREAK_STATEMENT).hasCaseGroup().successors(1),
       block(
         element(Tree.Kind.VARIABLE, "a"),
-        element(Tree.Kind.INT_LITERAL, 2),
+        element(Tree.Kind.IDENTIFIER, "foo"),
         element(Tree.Kind.INT_LITERAL, 1),
-        element(Tree.Kind.IDENTIFIER, "foo")).terminator(Tree.Kind.SWITCH_STATEMENT).successors(1, 3, 4),
+        element(Tree.Kind.INT_LITERAL, 2)).terminator(Tree.Kind.SWITCH_STATEMENT).successors(1, 3, 4),
       block(
         element(Tree.Kind.IDENTIFIER, "Integer"),
         element(Tree.Kind.IDENTIFIER, "foo"),
@@ -782,13 +782,13 @@ class CFGTest {
         element(METHOD_INVOCATION)).hasCaseGroup().successors(1),
       block(
         element(VARIABLE, "a"),
-        element(Tree.Kind.INT_LITERAL, 6),
-        element(Tree.Kind.INT_LITERAL, 5),
-        element(Tree.Kind.INT_LITERAL, 4),
-        element(Tree.Kind.INT_LITERAL, 3),
-        element(Tree.Kind.INT_LITERAL, 2),
+        element(IDENTIFIER, "foo"),
         element(Tree.Kind.INT_LITERAL, 1),
-        element(IDENTIFIER, "foo")).terminator(SWITCH_STATEMENT).successors(3, 4, 5, 6, 7),
+        element(Tree.Kind.INT_LITERAL, 2),
+        element(Tree.Kind.INT_LITERAL, 3),
+        element(Tree.Kind.INT_LITERAL, 4),
+        element(Tree.Kind.INT_LITERAL, 5),
+        element(Tree.Kind.INT_LITERAL, 6)).terminator(SWITCH_STATEMENT).successors(3, 4, 5, 6, 7),
       block(
         element(IDENTIFIER, "Integer"),
         element(IDENTIFIER, "foo"),
@@ -832,12 +832,12 @@ class CFGTest {
         element(IDENTIFIER, "def"),
         element(METHOD_INVOCATION)).hasCaseGroup().successors(1),
       block(
-        element(Tree.Kind.INT_LITERAL, 5),
-        element(Tree.Kind.INT_LITERAL, 4),
-        element(Tree.Kind.INT_LITERAL, 3),
-        element(Tree.Kind.INT_LITERAL, 2),
+        element(IDENTIFIER, "foo"),
         element(Tree.Kind.INT_LITERAL, 1),
-        element(IDENTIFIER, "foo")).terminator(SWITCH_EXPRESSION).successors(3, 4, 5, 6),
+        element(Tree.Kind.INT_LITERAL, 2),
+        element(Tree.Kind.INT_LITERAL, 3),
+        element(Tree.Kind.INT_LITERAL, 4),
+        element(Tree.Kind.INT_LITERAL, 5)).terminator(SWITCH_EXPRESSION).successors(3, 4, 5, 6),
       block(
         element(VARIABLE, "a"),
         element(IDENTIFIER, "a")).terminator(RETURN_STATEMENT).successors(0));
@@ -891,13 +891,13 @@ class CFGTest {
         element(IDENTIFIER, "def"),
         element(METHOD_INVOCATION)).hasCaseGroup().successors(1),
       block(
-        element(Tree.Kind.INT_LITERAL, 6),
-        element(Tree.Kind.INT_LITERAL, 5),
-        element(Tree.Kind.INT_LITERAL, 4),
-        element(Tree.Kind.INT_LITERAL, 3),
-        element(Tree.Kind.INT_LITERAL, 2),
+        element(IDENTIFIER, "foo"),
         element(Tree.Kind.INT_LITERAL, 1),
-        element(IDENTIFIER, "foo")).terminator(SWITCH_EXPRESSION).successors(3, 4, 5, 6, 7),
+        element(Tree.Kind.INT_LITERAL, 2),
+        element(Tree.Kind.INT_LITERAL, 3),
+        element(Tree.Kind.INT_LITERAL, 4),
+        element(Tree.Kind.INT_LITERAL, 5),
+        element(Tree.Kind.INT_LITERAL, 6)).terminator(SWITCH_EXPRESSION).successors(3, 4, 5, 6, 7),
       block(
         element(VARIABLE, "a"),
         element(IDENTIFIER, "a")).terminator(RETURN_STATEMENT).successors(0));
