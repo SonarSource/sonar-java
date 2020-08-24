@@ -216,8 +216,11 @@ public class NullDereferenceCheck extends SECheck {
       }
     }
 
-    if (syntaxNode.is(Tree.Kind.THROW_STATEMENT) && context.getConstraintManager().isNull(context.getState(), context.getState().peekValue())) {
-      issue = new NullDereferenceIssue(context.getNode(), context.getState().peekValue(), syntaxNode);
+    if (syntaxNode.is(Tree.Kind.THROW_STATEMENT)) {
+      SymbolicValue peek = context.getState().peekValue();
+      if (peek != null && context.getConstraintManager().isNull(context.getState(), peek)) {
+        issue = new NullDereferenceIssue(context.getNode(), peek, syntaxNode);
+      }
     }
 
     if (issue != null) {

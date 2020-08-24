@@ -530,14 +530,14 @@ public class ExplodedGraphWalker {
     ProgramState.Pop poppedSwitchValue = state.unstackValue(1);
     ProgramState.SymbolicValueSymbol switchValue = poppedSwitchValue.valuesAndSymbols.get(0);
 
-    ProgramState elseState = poppedSwitchValue.state; // TODO: verify
+    ProgramState elseState = poppedSwitchValue.state;
     // The block that will be taken when all case-conditions are false. This will either be the default-block or, if no
     // default block exists, the block after the switch statement.
     CFG.Block elseBlock = null;
     for (CFG.Block successor : programPosition.successors()) {
       CaseGroupTree caseGroup = successor.caseGroup();
       if (caseGroup == null || !caseValues.containsKey(caseGroup)) {
-        assert(elseBlock == null);
+        Preconditions.checkState(elseBlock == null);
         elseBlock = successor;
         continue;
       }
@@ -549,11 +549,11 @@ public class ExplodedGraphWalker {
         elseState = setConstraint(elseState, equality, BooleanConstraint.FALSE);
       }
       if (successor.isDefaultBlock()) {
-        assert(elseBlock == null);
+        Preconditions.checkState(elseBlock == null);
         elseBlock = successor;
       }
     }
-    assert(elseBlock != null);
+    Objects.requireNonNull(elseBlock);
     enqueue(new ProgramPoint(elseBlock), elseState, node.exitPath);
   }
 
@@ -562,7 +562,7 @@ public class ExplodedGraphWalker {
     if (states.isEmpty()) {
       return state;
     }
-    assert(states.size() == 1);
+    Preconditions.checkState(states.size() == 1);
     return states.get(0);
   }
 
