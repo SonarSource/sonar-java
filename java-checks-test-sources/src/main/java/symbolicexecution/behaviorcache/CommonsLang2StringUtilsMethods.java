@@ -1,6 +1,8 @@
-import org.apache.commons.lang3.StringUtils;
+package symbolicexecution.behaviorcache;
 
-class StringUtilsMethods {
+import org.apache.commons.lang.StringUtils;
+
+class StringUtilsMethodsLang2 {
   void isEmpty() {
     String param = null;
     if(!StringUtils.isEmpty(param)) {

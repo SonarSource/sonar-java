@@ -1,3 +1,5 @@
+package symbolicexecution.behaviorcache;
+
 import org.apache.commons.lang.Validate;
 
 import java.util.List;
@@ -25,8 +27,5 @@ class CommonsLangValidate {
   void checkNotNull3(@javax.annotation.Nullable Object param) {
     org.apache.commons.lang3.Validate.notNull(param, "some message %s", "format");
     param.toString();
-  }
-  void fun() {
-    Validate.validState(1<2);
   }
 }

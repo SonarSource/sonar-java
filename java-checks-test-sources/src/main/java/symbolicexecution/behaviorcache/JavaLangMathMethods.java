@@ -1,6 +1,8 @@
+package symbolicexecution.behaviorcache;
+
 import javax.annotation.Nullable;
 
-class A {
+class JavaLangMathMethods {
   void max(double a, double b, @Nullable Object o) {
     double c = Math.max(a, b);
     if (c == a || c == b) {

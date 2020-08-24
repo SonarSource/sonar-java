@@ -20,15 +20,33 @@
 package org.sonar.java;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestUtils {
   private TestUtils() {
     // utility class, forbidden constructor
+  }
+
+  private static final String TEST_SOURCES_DIR = "../java-checks-test-sources/src/main/java/";
+
+  public static String testSourcesPath(String path) {
+    return getFileFrom(path, TEST_SOURCES_DIR);
+  }
+
+  private static String getFileFrom(String path, String relocated) {
+    File file = new File((relocated + path).replace('/', File.separatorChar));
+    assertTrue(file.exists(), "Path '" + path + "' should exist.");
+    try {
+      return file.getCanonicalPath();
+    } catch (IOException e) {
+      throw new IllegalStateException("Invalid canonical path for '" + path + "'.", e);
+    }
   }
 
   public static int[] computeLineEndOffsets(int[] lineStartOffsets, int lastValidOffset) {

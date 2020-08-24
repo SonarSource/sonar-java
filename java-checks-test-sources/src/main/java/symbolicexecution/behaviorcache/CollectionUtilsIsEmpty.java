@@ -1,3 +1,5 @@
+package symbolicexecution.behaviorcache;
+
 import org.apache.commons.collections.CollectionUtils;
 import java.util.List;
 
@@ -27,7 +29,6 @@ class CollectionUtilsIsEmpty {
     }
   }
   void fun4() {
-    CollectionUtils.emptyCollection();
     List<Object> objects = null;
     if (CollectionUtils.isNotEmpty(objects)) { // returns false if objects is null
       objects.size();
@@ -35,4 +36,7 @@ class CollectionUtilsIsEmpty {
       doSomethingElse();
     }
   }
+
+  void doSomething() { }
+  void doSomethingElse() { }
 }

@@ -1,3 +1,5 @@
+package symbolicexecution.behaviorcache;
+
 import com.google.common.base.Strings;
 import javax.annotation.Nullable;
 
