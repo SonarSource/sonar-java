@@ -1,3 +1,5 @@
+package symbolicexecution.behaviorcache;
+
 import org.eclipse.core.runtime.Assert;
 
 class EclipseAssert {

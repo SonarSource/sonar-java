@@ -16,6 +16,7 @@
 
   <properties>
     <sonar.skip>true</sonar.skip>
+    <forbiddenapis.skip>true</forbiddenapis.skip>
   </properties>
 
   <!--
@@ -454,6 +455,11 @@
       <artifactId>org.eclipse.osgi</artifactId>
       <version>3.7.1</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.equinox</groupId>
+      <artifactId>common</artifactId>
+      <version>3.6.200-v20130402-1505</version>
     </dependency>
     <dependency>
       <groupId>org.easymock</groupId>
