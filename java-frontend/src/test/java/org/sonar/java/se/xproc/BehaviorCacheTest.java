@@ -169,7 +169,7 @@ class BehaviorCacheTest {
     }
 
     assertThat(behaviorCache.behaviors).isEmpty();
-    assertThat(behaviorCache.hardcodedBehaviors()).hasSize(81);
+    assertThat(behaviorCache.hardcodedBehaviors()).hasSize(174);
   }
 
   @Test
