@@ -513,12 +513,10 @@ public class ExplodedGraphWalker {
   }
 
   private void handleSwitch(CFG.Block programPosition, List<CaseGroupTree> caseGroups) {
-    ProgramState.Pop poppedSwitchValue = programState.unstackValue(1);
-    ProgramState.SymbolicValueSymbol switchValue = poppedSwitchValue.valuesAndSymbols.get(0);
-    ProgramState state = poppedSwitchValue.state;
+    ProgramState state = programState;
 
     Map<CaseGroupTree, List<ProgramState.SymbolicValueSymbol>> caseValues = new HashMap<>();
-    for (CaseGroupTree caseGroup : caseGroups) {
+    for (CaseGroupTree caseGroup : Lists.reverse(caseGroups)) {
       int numberOfCaseValues = caseGroup.labels()
         .stream()
         .map(CaseLabelTree::expressions)
@@ -529,7 +527,10 @@ public class ExplodedGraphWalker {
       caseValues.put(caseGroup, poppedCaseValues.valuesAndSymbols);
     }
 
-    ProgramState elseState = state;
+    ProgramState.Pop poppedSwitchValue = state.unstackValue(1);
+    ProgramState.SymbolicValueSymbol switchValue = poppedSwitchValue.valuesAndSymbols.get(0);
+
+    ProgramState elseState = poppedSwitchValue.state; // TODO: verify
     // The block that will be taken when all case-conditions are false. This will either be the default-block or, if no
     // default block exists, the block after the switch statement.
     CFG.Block elseBlock = null;
