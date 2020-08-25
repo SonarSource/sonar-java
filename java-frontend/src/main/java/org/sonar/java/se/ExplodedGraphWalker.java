@@ -76,6 +76,8 @@ import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.CaseGroupTree;
+import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -89,6 +91,8 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
@@ -409,6 +413,12 @@ public class ExplodedGraphWalker {
           ExpressionTree ifCondition = ((IfStatementTree) terminator).condition();
           handleBranch(block, cleanupCondition(ifCondition), verifyCondition(ifCondition));
           return;
+        case SWITCH_STATEMENT:
+          handleSwitch(block, ((SwitchStatementTree) terminator).cases());
+          return;
+        case SWITCH_EXPRESSION:
+          handleSwitch(block, ((SwitchExpressionTree) terminator).cases());
+          return;
         case CONDITIONAL_OR:
         case CONDITIONAL_AND:
           handleBranch(block, ((BinaryExpressionTree) terminator).leftOperand());
@@ -456,7 +466,7 @@ public class ExplodedGraphWalker {
           // do nothing by default.
       }
     }
-    // unconditional jumps, for-statement, switch-statement, synchronized:
+    // unconditional jumps, for-statement, synchronized:
     if (exitPath) {
       if (block.exitBlock() != null) {
         enqueue(new ProgramPoint(block.exitBlock()), programState, true);
@@ -500,6 +510,60 @@ public class ExplodedGraphWalker {
       cleanedUpCondition = cleanupCondition(((BinaryExpressionTree) cleanedUpCondition).rightOperand());
     }
     return cleanedUpCondition;
+  }
+
+  private void handleSwitch(CFG.Block programPosition, List<CaseGroupTree> caseGroups) {
+    ProgramState state = programState;
+
+    Map<CaseGroupTree, List<ProgramState.SymbolicValueSymbol>> caseValues = new HashMap<>();
+    for (CaseGroupTree caseGroup : Lists.reverse(caseGroups)) {
+      int numberOfCaseValues = caseGroup.labels()
+        .stream()
+        .map(CaseLabelTree::expressions)
+        .mapToInt(List::size)
+        .sum();
+      ProgramState.Pop poppedCaseValues = state.unstackValue(numberOfCaseValues);
+      state = poppedCaseValues.state;
+      caseValues.put(caseGroup, poppedCaseValues.valuesAndSymbols);
+    }
+
+    ProgramState.Pop poppedSwitchValue = state.unstackValue(1);
+    ProgramState.SymbolicValueSymbol switchValue = poppedSwitchValue.valuesAndSymbols.get(0);
+
+    ProgramState elseState = poppedSwitchValue.state;
+    // The block that will be taken when all case-conditions are false. This will either be the default-block or, if no
+    // default block exists, the block after the switch statement.
+    CFG.Block elseBlock = null;
+    for (CFG.Block successor : programPosition.successors()) {
+      CaseGroupTree caseGroup = successor.caseGroup();
+      if (caseGroup == null || !caseValues.containsKey(caseGroup)) {
+        Preconditions.checkState(elseBlock == null);
+        elseBlock = successor;
+        continue;
+      }
+
+      for (ProgramState.SymbolicValueSymbol caseValue : caseValues.get(caseGroup)) {
+        SymbolicValue equality = constraintManager.createEquality(switchValue, caseValue);
+        ProgramState ps = setConstraint(state, equality, BooleanConstraint.TRUE);
+        enqueue(new ProgramPoint(successor), ps, node.exitPath);
+        elseState = setConstraint(elseState, equality, BooleanConstraint.FALSE);
+      }
+      if (successor.isDefaultBlock()) {
+        Preconditions.checkState(elseBlock == null);
+        elseBlock = successor;
+      }
+    }
+    Objects.requireNonNull(elseBlock);
+    enqueue(new ProgramPoint(elseBlock), elseState, node.exitPath);
+  }
+
+  private static ProgramState setConstraint(ProgramState state, SymbolicValue condition, BooleanConstraint constraint) {
+    List<ProgramState> states = condition.setConstraint(state, constraint);
+    if (states.isEmpty()) {
+      return state;
+    }
+    Preconditions.checkState(states.size() == 1);
+    return states.get(0);
   }
 
   private void handleBranch(CFG.Block programPosition, Tree condition) {

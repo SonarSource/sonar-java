@@ -361,6 +361,91 @@ class A {
     }
   }
 
+  int ifStatement(int x) {
+    if (x == 0) {
+      return 42/x; // Noncompliant
+    } else if (x == 1) {
+      return 23/x;
+    } else {
+      return 13/x;
+    }
+  }
+
+  int switchStatement1(int x) {
+    switch (x) {
+      case 0:
+        return 42/x; // Noncompliant
+      case 1:
+        return 23/x; // Compliant
+      default:
+        return 13/x; // Compliant
+    }
+  }
+
+  int switchStatement2(int x) {
+    switch (x) {
+      case 0:
+      case 42:
+        return 42/x; // Noncompliant
+      case 1:
+        return 23/x; // Compliant
+      default:
+        return 13/x; // Compliant
+    }
+  }
+
+  int switchStatement3(int x) {
+    switch (x) {
+      case 0:
+        return 42;
+    }
+    return 42/x; // Compliant
+  }
+
+  int switchStatement4(int x) {
+    switch (x) {
+      case 0:
+        break;
+    }
+    return 42/x; // Noncompliant
+  }
+
+  int nestedSwitchStatement(int x, int y) {
+    switch(x) {
+      case 0:
+        switch(y) {
+          case 0:
+            x=1;
+            y=1;
+        }
+      case 42:
+        y = 1;
+        break;
+      default:
+        switch (y) {
+          case 0:
+            y=1;
+        }
+    }
+    return x/y; // Compliant
+  }
+
+  int switchExpression1(int x) {
+    return switch (x) {
+      case 0, 42 -> 42/x; // Noncompliant
+      case 1 -> 23/x; // Compliant
+      default -> 13/x; // Compliant
+    };
+  }
+
+  int switchExpression2(int x) {
+    return 42 / (switch (x) { case 0 -> x; default -> 42;} + 0); // Noncompliant
+  }
+
+  int switchExpression3(int x) {
+    return 42 / (switch (x) { case 0 -> 42; default -> x;} + 0); // Compliant
+  }
+
   void dsdf(int a, int b) {
     int c = 0;
     int d = c + b + (a*c);

@@ -22,7 +22,6 @@ package org.sonar.java.cfg;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -119,7 +118,6 @@ public class CFG implements ControlFlowGraph {
     }
   }
 
-  private final Deque<Block> switches = new LinkedList<>();
   private String pendingLabel = null;
   private Map<String, Block> labelsBreakTarget = new HashMap<>();
   private Map<String, Block> labelsContinueTarget = new HashMap<>();
@@ -187,6 +185,7 @@ public class CFG implements ControlFlowGraph {
 
     private boolean isFinallyBlock;
     private boolean isCatchBlock = false;
+    private boolean isDefaultBlock = false;
 
     public Block(int id) {
       this.id = id;
@@ -217,8 +216,13 @@ public class CFG implements ControlFlowGraph {
     public boolean isFinallyBlock() {
       return isFinallyBlock;
     }
+
     public boolean isCatchBlock() {
       return isCatchBlock;
+    }
+
+    public boolean isDefaultBlock() {
+      return isDefaultBlock;
     }
 
     void addSuccessor(Block successor) {
@@ -737,15 +741,19 @@ public class CFG implements ControlFlowGraph {
   }
 
   private void buildSwitchExpression(SwitchExpressionTree switchExpressionTree, Tree terminator) {
-    if (terminator.is(Tree.Kind.SWITCH_EXPRESSION)) {
-      // force a switch expression in the current block
-      currentBlock.elements.add(terminator);
-    }
     Block switchSuccessor = currentBlock;
     // process condition
     currentBlock = createBlock();
     currentBlock.terminator = terminator;
-    switches.addLast(currentBlock);
+    Block switchBlock = currentBlock;
+    List<ExpressionTree> switchCasesExpressions = switchExpressionTree.cases()
+      .stream()
+      .map(CaseGroupTree::labels)
+      .flatMap(List::stream)
+      .map(CaseLabelTree::expressions)
+      .flatMap(List::stream).collect(Collectors.toList());
+    Lists.reverse(switchCasesExpressions).forEach(this::build);
+
     build(switchExpressionTree.expression());
     Block conditionBlock = currentBlock;
     // process body
@@ -761,26 +769,22 @@ public class CFG implements ControlFlowGraph {
           currentBlock.addSuccessor(switchSuccessor);
         }
         build(caseGroupTree.body());
-        List<CaseLabelTree> labels = caseGroupTree.labels();
-        Lists.reverse(labels).stream()
-          .map(CaseLabelTree::expressions)
-          .map(Lists::reverse)
-          .flatMap(Collection::stream)
-          .forEach(this::build);
+        currentBlock.elements.add(caseGroupTree);
         if (!hasDefaultCase) {
-          hasDefaultCase = containsDefaultCase(labels);
+          hasDefaultCase = containsDefaultCase(caseGroupTree.labels());
+          currentBlock.isDefaultBlock = hasDefaultCase;
         }
         currentBlock.setCaseGroup(caseGroupTree);
-        switches.getLast().addSuccessor(currentBlock);
+        switchBlock.addSuccessor(currentBlock);
         if (!caseGroupTree.equals(firstCase)) {
-          // No block predecessing the first case group.
+          // No block preceding the first case group.
           currentBlock = createBlock(currentBlock);
         }
       }
     }
     breakTargets.removeLast();
     // process condition
-    currentBlock = switches.removeLast();
+    currentBlock = switchBlock;
     if (!hasDefaultCase) {
       currentBlock.addSuccessor(switchSuccessor);
     }

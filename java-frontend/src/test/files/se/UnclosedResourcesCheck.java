@@ -459,6 +459,22 @@ public class A {
     }
   }
 
+  void switchTest(int x) {
+    MyCloseable a = new MyCloseable(); // Compliant because all paths close a
+    (switch (x) { case 0 -> a; default -> a;}).close();
+  }
+
+  void switchTest2(int x) {
+    MyCloseable a = new MyCloseable(); // Noncompliant
+    MyCloseable b = new MyCloseable(); // Noncompliant
+    (switch (x) { case 0 -> a; default -> b;}).close();
+  }
+
+}
+
+class MyCloseable implements Closeable {
+  @Override
+  void close() {}
 }
 
 class B {
