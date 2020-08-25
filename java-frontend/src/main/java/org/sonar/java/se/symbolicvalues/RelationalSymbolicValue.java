@@ -88,6 +88,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
   }
 
   final Kind kind;
+  private int hashCode;
 
   public RelationalSymbolicValue(Kind kind) {
     this.kind = kind;
@@ -428,8 +429,11 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
 
   @Override
   public int hashCode() {
-    // hashCode doesn't depend on order of operands, to make commutative operators equal when operands are swapped
-    return kind.hashCode() + leftOp.hashCode() + rightOp.hashCode();
+    if (hashCode == 0) {
+      // hashCode doesn't depend on order of operands, to make commutative operators equal when operands are swapped
+      hashCode = kind.hashCode() + leftOp.hashCode() + rightOp.hashCode();
+    }
+    return hashCode;
   }
 
   @Override
