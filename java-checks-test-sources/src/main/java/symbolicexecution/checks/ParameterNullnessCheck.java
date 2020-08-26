@@ -1,9 +1,11 @@
+package symbolicexecution.checks;
+
 import com.google.common.base.Preconditions;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-abstract class A {
+abstract class ParameterNullnessCheck {
 
   Object field;
 
@@ -14,7 +16,6 @@ abstract class A {
     bar(null, o); // Noncompliant [[sc=5;ec=8]]
 
     equals(null);
-    unknownMethod(null);
     B.foo(null);
     if (o != null) {
       foo(o);
@@ -29,9 +30,10 @@ abstract class A {
     C c2 = new C(o, // Noncompliant [[sc=16;ec=17;flows=A]] {{Annotate the parameter with @javax.annotation.Nullable in constructor declaration, or make sure that null can not be passed as argument.}}
       null); // flow@A [[order=1]] {{Argument can be null.}}
     B b = new B();
+  }
 
-    Preconditions.checkNotNull( // Noncompliant [[sc=19;ec=31;flows=checkNotNull]] 
-      null); // flow@checkNotNull [[order=1]] {{Argument can be null.}}
+  void qix(@Nullable Object o) {
+    Preconditions.checkNotNull(o); // Compliant - a way to be sure it will be not null
   }
 
   boolean checkerFrameworkNullableAnnotations(
@@ -69,14 +71,14 @@ abstract class A {
   abstract void qix();
   abstract void gul(Object ... objects);
   abstract void gul2(String s, Object ... objects);
-}
 
-class B {
-  static void foo(Object o) { }
-}
+  static class B {
+    static void foo(Object o) { }
+  }
 
-@ParametersAreNonnullByDefault
-class C {
-  C(String s) { }
-  C(Object o1, Object o2) { } // flow@A [[order=2]] {{Constructor declaration.}}
+  @ParametersAreNonnullByDefault
+  static class C {
+    C(String s) { }
+    C(Object o1, Object o2) { } // flow@A [[order=2]] {{Constructor declaration.}}
+  }
 }

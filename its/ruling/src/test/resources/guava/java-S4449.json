@@ -8,9 +8,6 @@
 177,
 215,
 ],
-'com.google.guava:guava:src/com/google/common/base/MoreObjects.java':[
-56,
-],
 'com.google.guava:guava:src/com/google/common/base/Preconditions.java':[
 146,
 199,
@@ -97,9 +94,6 @@
 ],
 'com.google.guava:guava:src/com/google/common/collect/TreeRangeMap.java':[
 550,
-],
-'com.google.guava:guava:src/com/google/common/reflect/TypeToken.java':[
-1033,
 ],
 'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java':[
 512,

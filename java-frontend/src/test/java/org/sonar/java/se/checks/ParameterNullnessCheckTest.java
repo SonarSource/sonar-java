@@ -20,6 +20,7 @@
 package org.sonar.java.se.checks;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.java.TestUtils;
 import org.sonar.java.se.SETestUtils;
 import org.sonar.java.testing.CheckVerifier;
 
@@ -28,7 +29,7 @@ class ParameterNullnessCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/se/ParameterNullnessCheck.java")
+      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/ParameterNullnessCheck.java"))
       .withCheck(new ParameterNullnessCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();

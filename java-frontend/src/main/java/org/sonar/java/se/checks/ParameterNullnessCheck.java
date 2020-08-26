@@ -32,6 +32,7 @@ import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -46,6 +47,9 @@ import static org.sonar.java.se.NullableAnnotationUtils.nonNullAnnotationOnParam
 
 @Rule(key = "S4449")
 public class ParameterNullnessCheck extends SECheck {
+
+  private static final MethodMatchers AUTHORIZED_METHODS = MethodMatchers
+    .create().ofTypes("com.google.common.base.Preconditions").names("checkNotNull").withAnyParameters().build();
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
@@ -65,7 +69,7 @@ public class ParameterNullnessCheck extends SECheck {
       return;
     }
     Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
-    if (nonNullAnnotationOnParameters(methodSymbol) == null) {
+    if (nonNullAnnotationOnParameters(methodSymbol) == null || AUTHORIZED_METHODS.matches(symbol)) {
       // method is not annotated (locally or globally)
       return;
     }
