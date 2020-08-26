@@ -1,4 +1,6 @@
-class a {
+package checks;
+
+class DefaultInitializedFieldCheck {
   byte b = 0; // Noncompliant {{Remove this initialization to "0", the compiler will do that for you.}}
   byte b2;
   short s = 0; // Noncompliant {{Remove this initialization to "0", the compiler will do that for you.}}
@@ -51,4 +53,6 @@ class a {
   static {
     staticInit = 0; // Compliant, post init for a final field
   }
+
+  static class Bar<T> { }
 }
