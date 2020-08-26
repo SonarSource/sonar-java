@@ -127,9 +127,6 @@
 71,
 72,
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/notification/AbstractNewIssuesEmailTemplate.java':[
-77,
-],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/notification/DoNotFixNotificationDispatcher.java':[
 65,
 ],
@@ -367,13 +364,11 @@
 232,
 282,
 286,
-423,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/RuleCreator.java':[
 165,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/RuleUpdater.java':[
-216,
 303,
 305,
 ],
