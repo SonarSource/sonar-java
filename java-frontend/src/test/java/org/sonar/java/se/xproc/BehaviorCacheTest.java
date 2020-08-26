@@ -20,6 +20,7 @@
 package org.sonar.java.se.xproc;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -170,6 +171,7 @@ class BehaviorCacheTest {
 
     assertThat(behaviorCache.behaviors).isEmpty();
     assertThat(behaviorCache.hardcodedBehaviors()).hasSize(174);
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).containsOnly("[SE] Loaded 174 hardcoded method behaviors.");
   }
 
   @Test
@@ -296,16 +298,18 @@ class BehaviorCacheTest {
 
   @Test
   void log_when_unable_to_load_resources_with_method_behavior() throws Exception {
-    Map<String, MethodBehavior> result = BehaviorCache.HardcodedMethodBehaviors.loadHardcodedBehaviors(() -> BehaviorCacheTest.class.getResource("unknown"));
+    Map<String, MethodBehavior> result = BehaviorCache.HardcodedMethodBehaviors
+      .loadHardcodedBehaviors(() -> Collections.singletonList((InputStream) null));
     assertThat(result).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).containsOnlyOnce("Unable to load hardcoded method behaviors. Defaulting to no hardcoded method behaviors.");
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).containsOnlyOnce("[SE] Unable to load hardcoded method behaviors. Defaulting to no hardcoded method behaviors.");
   }
 
   @Test
   void log_when_unable_to_load_resources_with_invalid_method_behaviors() throws Exception {
-    Map<String, MethodBehavior> result = BehaviorCache.HardcodedMethodBehaviors.loadHardcodedBehaviors(() -> BehaviorCacheTest.class.getResource("invalid.json"));
+    Map<String, MethodBehavior> result = BehaviorCache.HardcodedMethodBehaviors
+      .loadHardcodedBehaviors(() -> Collections.singletonList(BehaviorCacheTest.class.getResourceAsStream("invalid.json")));
     assertThat(result).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.ERROR)).containsOnlyOnce("Unable to load hardcoded method behaviors of \"invalid.json\". Defaulting to no hardcoded method behaviors.");
+    assertThat(logTester.logs(LoggerLevel.ERROR)).containsOnlyOnce("[SE] Unable to load hardcoded method behaviors. Defaulting to no hardcoded method behaviors.");
   }
 
   private static void verifyNoIssueOnFile(String fileName) {

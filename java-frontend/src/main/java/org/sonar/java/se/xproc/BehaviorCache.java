@@ -22,17 +22,18 @@ package org.sonar.java.se.xproc;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Type;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.api.utils.log.Logger;
@@ -64,6 +65,7 @@ public class BehaviorCache {
   Map<String, MethodBehavior> hardcodedBehaviors() {
     if (hardcodedBehaviors == null) {
       hardcodedBehaviors = HardcodedMethodBehaviors.load();
+      LOG.debug(String.format("[SE] Loaded %d hardcoded method behaviors.", hardcodedBehaviors.size()));
     }
     return hardcodedBehaviors;
   }
@@ -119,8 +121,19 @@ public class BehaviorCache {
   }
 
   static class HardcodedMethodBehaviors {
+    private static final String UNABLE_LOAD_MSG = "[SE] Unable to load hardcoded method behaviors. Defaulting to no hardcoded method behaviors.";
 
-    private static final String JAVA_LANG_METHOD_BEHAVIORS_RESOURCE_NAME = "java.lang.json";
+    private static final String[] BEHAVIORS_RESOURCES = {
+      "java.lang.json",
+      "java.util.json",
+      "com.google.common.base.json",
+      "org.apache.commons.collections.json",
+      "org.apache.commons.lang.json",
+      "org.apache.commons.lang3.json",
+      "org.apache.logging.log4j.core.util.json",
+      "org.eclipse.core.runtime.json",
+      "org.springframework.util.json"
+    };
 
     private static final Type LIST_OF_METHOD_BEHAVIORS_TYPE = new TypeToken<List<MethodBehavior>>() {}.getType();
 
@@ -144,28 +157,26 @@ public class BehaviorCache {
     }
 
     private static Map<String, MethodBehavior> loadHardcodedBehaviors() {
-      return loadHardcodedBehaviors(() -> BehaviorCache.class.getResource(JAVA_LANG_METHOD_BEHAVIORS_RESOURCE_NAME));
+      return loadHardcodedBehaviors(
+        () -> Arrays.stream(BEHAVIORS_RESOURCES)
+          .map(BehaviorCache.class::getResourceAsStream)
+          .collect(Collectors.toList()));
     }
 
     @VisibleForTesting
-    static Map<String, MethodBehavior> loadHardcodedBehaviors(Supplier<URL> methodBehaviorFileUrlSupplier) {
+    static Map<String, MethodBehavior> loadHardcodedBehaviors(Supplier<List<InputStream>> methodBehaviorStreamsSupplier) {
       Map<String, MethodBehavior> result = new LinkedHashMap<>();
       Gson gson = MethodBehaviorJsonAdapter.gson();
-      // one of the method behavior list, as resource target
-      URL hardcodedMethodBehaviorsURL = methodBehaviorFileUrlSupplier.get();
-      if (hardcodedMethodBehaviorsURL == null || !new File(hardcodedMethodBehaviorsURL.getPath()).exists()) {
-        LOG.debug("Unable to load hardcoded method behaviors. Defaulting to no hardcoded method behaviors.");
-        return Collections.emptyMap();
-      }
-      File[] serializedMethodBehaviors = new File(hardcodedMethodBehaviorsURL.getPath())
-        .getParentFile()
-        .listFiles((dir, filename) -> filename.endsWith(".json"));
-      for (File serialized : serializedMethodBehaviors) {
-        try (Reader reader = Files.newBufferedReader(serialized.toPath(), StandardCharsets.UTF_8)) {
+      for (InputStream serializedStream : methodBehaviorStreamsSupplier.get()) {
+        if (serializedStream == null) {
+          LOG.debug(UNABLE_LOAD_MSG);
+          return Collections.emptyMap();
+        }
+        try (Reader reader = new InputStreamReader(serializedStream, StandardCharsets.UTF_8)) {
           List<MethodBehavior> deserialized = gson.fromJson(reader, LIST_OF_METHOD_BEHAVIORS_TYPE);
           deserialized.forEach(methodBehavior -> result.put(methodBehavior.signature(), methodBehavior));
         } catch (Exception e) {
-          LOG.error(String.format("Unable to load hardcoded method behaviors of \"%s\". Defaulting to no hardcoded method behaviors.", serialized.getName()), e);
+          LOG.error(UNABLE_LOAD_MSG, e);
           return Collections.emptyMap();
         }
       }
