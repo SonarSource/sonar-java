@@ -74,6 +74,7 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
     return metadata.isAnnotatedWith("org.springframework.beans.factory.annotation.Autowired")
       || metadata.isAnnotatedWith("javax.inject.Inject")
       || metadata.isAnnotatedWith("javax.annotation.Resource")
+      || metadata.isAnnotatedWith("javax.persistence.PersistenceContext")
       || metadata.isAnnotatedWith("org.springframework.beans.factory.annotation.Value");
   }
 
