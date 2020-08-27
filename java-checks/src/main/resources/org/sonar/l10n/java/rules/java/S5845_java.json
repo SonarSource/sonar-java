@@ -1,5 +1,5 @@
 {
-  "title": "Assertions of dissimilar types should not be made",
+  "title": "Assertions comparing incompatible types should not be made",
   "type": "BUG",
   "status": "ready",
   "remediation": {
