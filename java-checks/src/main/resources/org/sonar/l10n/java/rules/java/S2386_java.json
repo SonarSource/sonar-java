@@ -1,6 +1,6 @@
 {
   "title": "Mutable fields should not be \"public static\"",
-  "type": "VULNERABILITY",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
