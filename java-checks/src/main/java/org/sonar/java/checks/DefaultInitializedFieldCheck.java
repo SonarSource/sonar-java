@@ -19,6 +19,9 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
@@ -29,28 +32,24 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Rule(key = "S3052")
 public class DefaultInitializedFieldCheck extends IssuableSubscriptionVisitor {
 
   @Override
-  public List<Kind> nodesToVisit() {
-    return Arrays.asList(Kind.CLASS, Kind.ENUM);
+  public List<Tree.Kind> nodesToVisit() {
+    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.ENUM);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    List<Tree> members = ((ClassTree) tree).members();
-    for (Tree member : members) {
-      if (member.is(Kind.VARIABLE)) {
-        checkVariable((VariableTree) member);
-      }
-    }
+    ((ClassTree) tree).members()
+      .stream()
+      .filter(member -> member.is(Tree.Kind.VARIABLE))
+      .map(VariableTree.class::cast)
+      .forEach(this::checkVariable);
   }
 
   private void checkVariable(VariableTree member) {
@@ -59,33 +58,41 @@ public class DefaultInitializedFieldCheck extends IssuableSubscriptionVisitor {
     }
     ExpressionTree initializer = member.initializer();
     if (initializer != null) {
-      initializer = ExpressionUtils.skipParentheses(initializer);
-      if (isDefault(initializer, member.type().symbolType().isPrimitive())) {
-        reportIssue(initializer, "Remove this initialization to \"" + ((LiteralTree) initializer).value() + "\", the compiler will do that for you.");
-      }
+      ExpressionTree cleanedInitializer = ExpressionUtils.skipParentheses(initializer);
+      getIfDefault(cleanedInitializer, member.type().symbolType().isPrimitive())
+        .ifPresent(value -> reportIssue(cleanedInitializer, String.format("Remove this initialization to \"%s\", the compiler will do that for you.", value)));
     }
   }
 
-  private static boolean isDefault(ExpressionTree expression, boolean isPrimitive) {
-    if(!isPrimitive) {
-      return expression.is(Kind.NULL_LITERAL);
+  private static Optional<String> getIfDefault(ExpressionTree expression, boolean isPrimitive) {
+    if (!isPrimitive && !expression.is(Tree.Kind.TYPE_CAST)) {
+      return expression.is(Tree.Kind.NULL_LITERAL) ? literalValue(expression) : Optional.empty();
     }
     switch (expression.kind()) {
       case CHAR_LITERAL:
-        String charValue = ((LiteralTree) expression).value();
-        return "'\\u0000'".equals(charValue) || "'\\0'".equals(charValue);
+        return literalValue(expression)
+          .filter(charValue -> "'\\u0000'".equals(charValue) || "'\\0'".equals(charValue));
       case BOOLEAN_LITERAL:
-        return LiteralUtils.isFalse(expression);
+        return literalValue(expression)
+          .filter(booleanValue -> LiteralUtils.isFalse(expression));
       case INT_LITERAL:
       case LONG_LITERAL:
-        Long value = LiteralUtils.longLiteralValue(expression);
-        return value != null && value == 0;
+        return Optional.ofNullable(LiteralUtils.longLiteralValue(expression))
+          .filter(numericalValue -> numericalValue == 0)
+          .flatMap(numericalValue -> literalValue(expression));
       case FLOAT_LITERAL:
       case DOUBLE_LITERAL:
-        return Double.doubleToLongBits(Double.valueOf(((LiteralTree) expression).value())) == 0;
+        return literalValue(expression)
+          .filter(numericalValue -> Double.doubleToLongBits(Double.valueOf(numericalValue)) == 0);
+      case TYPE_CAST:
+        return getIfDefault(((TypeCastTree) expression).expression(), isPrimitive);
       default:
-        return false;
+        return Optional.empty();
     }
+  }
+
+  private static Optional<String> literalValue(ExpressionTree expression) {
+    return Optional.of(((LiteralTree) expression).value());
   }
 
 }
