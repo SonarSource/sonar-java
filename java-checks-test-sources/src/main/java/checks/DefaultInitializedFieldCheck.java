@@ -41,6 +41,13 @@ class DefaultInitializedFieldCheck {
   Integer int1 = null;  // Noncompliant {{Remove this initialization to "null", the compiler will do that for you.}}
   Integer int2 = 0;
 
+  byte castedByte = (byte) 0; // Noncompliant {{Remove this initialization to "0", the compiler will do that for you.}}
+  float castedFloat = (float) 0.0; // Noncompliant {{Remove this initialization to "0.0", the compiler will do that for you.}}
+  Integer castedInteger = (Integer) null; // Noncompliant {{Remove this initialization to "null", the compiler will do that for you.}}
+
+  Object other1 = new Object();
+  int other2 = Integer.valueOf(42);
+
   void method() {}
 
   class ExplicitInit {
