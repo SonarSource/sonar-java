@@ -68,7 +68,7 @@ public class LiteralUtils {
     if (expression.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
       String value = trimLongSuffix(((LiteralTree) expression).value());
       // long as hexadecimal can be written using underscore to separate groups
-      value = value.replaceAll("\\_", "");
+      value = value.replace("_", "");
       try {
         if (value.startsWith("0b") || value.startsWith("0B")) {
           return sign * Long.valueOf(value.substring(2), 2);

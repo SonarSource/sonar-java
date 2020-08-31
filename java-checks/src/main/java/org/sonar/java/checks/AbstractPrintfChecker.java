@@ -139,7 +139,7 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
   }
 
   protected static String cleanupDoubleQuote(String formatString) {
-    return formatString.replaceAll("\'\'", "");
+    return formatString.replace("''", "");
   }
 
   protected static Set<Integer> getMessageFormatIndexes(String formatString, MethodInvocationTree mit) {
