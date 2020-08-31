@@ -830,10 +830,6 @@ public class CFG implements ControlFlowGraph {
       }
     }
     currentBlock = createUnconditionalJump(tree, targetBlock, currentBlock);
-    ExpressionTree value = tree.value();
-    if (value != null && !isLabel) {
-      build(value);
-    }
     if(currentBlock.exitBlock != null) {
       currentBlock.exitBlock = null;
     }

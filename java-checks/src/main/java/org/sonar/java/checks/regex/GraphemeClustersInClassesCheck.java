@@ -21,7 +21,6 @@ package org.sonar.java.checks.regex;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.CharacterClassTree;
