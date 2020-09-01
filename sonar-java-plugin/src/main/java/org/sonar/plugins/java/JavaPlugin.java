@@ -90,7 +90,7 @@ public class JavaPlugin implements Plugin {
     context.addExtensions(builder.build());
   }
 
-  private boolean supportJspTranspilation(Context context) {
+  private static boolean supportJspTranspilation(Context context) {
     if (context.getRuntime().getProduct() != SonarProduct.SONARQUBE) {
       return false;
     }
