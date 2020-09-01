@@ -27,6 +27,7 @@ import org.sonar.java.checks.EmptyStatementUsageCheck;
 import org.sonar.java.checks.EqualsOverridenWithHashCodeCheck;
 import org.sonar.java.checks.MissingDeprecatedCheck;
 import org.sonar.java.checks.ObjectFinalizeCheck;
+import org.sonar.java.checks.RawTypeCheck;
 import org.sonar.java.checks.RedundantTypeCastCheck;
 import org.sonar.java.checks.ReturnInFinallyCheck;
 import org.sonar.java.checks.StaticMembersAccessCheck;
@@ -63,7 +64,8 @@ class SuppressWarningFilterTest {
       new ReturnInFinallyCheck(),
       new EqualsOverridenWithHashCodeCheck(),
       new StaticMembersAccessCheck(),
-      new SerialVersionUidCheck()
+      new SerialVersionUidCheck(),
+      new RawTypeCheck()
     );
   }
 
