@@ -22,6 +22,7 @@ import java.io.Serializable;
  * - EqualsOverridenWithHashCodeCheck
  * - StaticMembersAccessCheck
  * - SerialVersionUidCheck
+ * - RawTypeCheck
  */
 class Test {
   class UnusedPrivateFieldCheck {
@@ -160,7 +161,7 @@ class Javadoc {
 
 }
 
-// cast supresses S1905
+// cast suppresses S1905
 @SuppressWarnings("cast") // WithIssue
 class Cast {
   void f() {
@@ -169,7 +170,7 @@ class Cast {
   }
 }
 
-// deprecation supresses S1874 (but not S5738)
+// deprecation suppresses S1874 (but not S5738)
 @SuppressWarnings("deprecation") // WithIssue
 class Deprecation1 {
 
@@ -185,7 +186,7 @@ class Deprecation1 {
   }
 }
 
-// removal supresses S5738 (but not S1874)
+// removal suppresses S5738 (but not S1874)
 @SuppressWarnings("removal") // WithIssue
 class Deprecation2 {
 
@@ -201,7 +202,7 @@ class Deprecation2 {
   }
 }
 
-// dep-ann supresses S1123
+// dep-ann suppresses S1123
 @SuppressWarnings("dep-ann") // WithIssue
 class Deprecation3 {
   @Deprecated
@@ -216,7 +217,7 @@ class Deprecation3 {
 
 }
 
-// divzero supresses S3518
+// divzero suppresses S3518
 @SuppressWarnings("divzero") // WithIssue
 class Divzero {
   void f() {
@@ -224,7 +225,7 @@ class Divzero {
   }
 }
 
-// empty supresses S108, S1116
+// empty suppresses S108, S1116
 @SuppressWarnings("empty") // WithIssue
 class Empty {
   void f(boolean b) {
@@ -233,7 +234,7 @@ class Empty {
   }
 }
 
-// fallthrough supresses S128
+// fallthrough suppresses S128
 @SuppressWarnings("fallthrough") // WithIssue
 class FallThough {
   private String s; // WithIssue
@@ -249,7 +250,7 @@ class FallThough {
   }
 }
 
-// finally supresses S1143
+// finally suppresses S1143
 @SuppressWarnings("finally") // WithIssue
 class Finally {
   void f() {
@@ -261,7 +262,7 @@ class Finally {
   }
 }
 
-// overrides supresses S1206
+// overrides suppresses S1206
 @SuppressWarnings("overrides") // WithIssue
 class Overrides {
   @Override
@@ -270,16 +271,28 @@ class Overrides {
   }
 }
 
-// serial supresses S2209
+// serial suppresses S2209
 @SuppressWarnings("serial") // WithIssue
 class Serial implements Serializable { // NoIssue
 }
 
-// static supresses S2209
+// static suppresses S2209
 @SuppressWarnings("static") // WithIssue
 class Static {
   public static int counter = 0;
   void f() {
     this.counter ++; // NoIssue
   }
+}
+
+class RawTypes {
+  // rawtypes suppresses S3740
+  @SuppressWarnings("rawtypes") // WithIssue
+  void f(java.util.List myList) { } // NoIssue
+
+  //rawtypes suppresses S3740
+  @SuppressWarnings("java:S3740") // WithIssue
+  void g(java.util.List myList) { } // NoIssue
+
+  void h(java.util.List myList) { } // WithIssue
 }

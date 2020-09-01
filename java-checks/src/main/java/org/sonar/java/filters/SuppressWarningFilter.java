@@ -65,6 +65,7 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
       .put("removal", "java:S5738")
       .put("serial", "java:S2057")
       .put("static", "java:S2209")
+      .put("rawtypes", "java:S3740")
       .build();
 
   private final Map<String, Multimap<String, Integer>> excludedLinesByComponent = new HashMap<>();
