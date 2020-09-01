@@ -52,13 +52,13 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
     this(Collections.singletonList(visitor), new ArrayList<>(), sonarComponents);
   }
 
-  public VisitorsBridgeForTests(Iterable visitors, @Nullable SonarComponents sonarComponents) {
+  public VisitorsBridgeForTests(Iterable<? extends JavaCheck> visitors, @Nullable SonarComponents sonarComponents) {
     super(visitors, new ArrayList<>(), sonarComponents, SymbolicExecutionMode.DISABLED);
     enableSemantic = false;
   }
 
-  public VisitorsBridgeForTests(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
-    super(visitors, projectClasspath, sonarComponents, SymbolicExecutionMode.getMode(Iterables.<JavaCheck>toArray(visitors, JavaCheck.class)));
+  public VisitorsBridgeForTests(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
+    super(visitors, projectClasspath, sonarComponents, SymbolicExecutionMode.getMode(Iterables.toArray(visitors, JavaCheck.class)));
   }
 
   @Override

@@ -502,6 +502,7 @@ public class JParser {
     return comments;
   }
 
+  @SuppressWarnings({"unchecked", "rawtypes"})
   private void addEmptyDeclarationsToList(int tokenIndex, List list) {
     while (true) {
       Token token;
@@ -619,7 +620,7 @@ public class JParser {
     }
   }
 
-  private ModuleNameListTreeImpl convertModuleNames(List list) {
+  private ModuleNameListTreeImpl convertModuleNames(List<?> list) {
     ModuleNameListTreeImpl t = new ModuleNameListTreeImpl(new ArrayList<>(), new ArrayList<>());
     for (int i = 0; i < list.size(); i++) {
       Name o = (Name) list.get(i);
@@ -826,7 +827,7 @@ public class JParser {
       case INTERFACE:
       case RECORD:
       case ENUM: {
-        List superInterfaceTypes = superInterfaceTypes(e);
+        List<?> superInterfaceTypes = superInterfaceTypes(e);
         if (!superInterfaceTypes.isEmpty()) {
           QualifiedIdentifierListTreeImpl superInterfaces = new QualifiedIdentifierListTreeImpl(
             new ArrayList<>(),
@@ -856,7 +857,7 @@ public class JParser {
     return t;
   }
 
-  private static List superInterfaceTypes(AbstractTypeDeclaration e) {
+  private static List<?> superInterfaceTypes(AbstractTypeDeclaration e) {
     switch (e.getNodeType()) {
       case ASTNode.TYPE_DECLARATION:
         return ((TypeDeclaration) e).superInterfaceTypes();
@@ -1089,7 +1090,7 @@ public class JParser {
 
   private ArgumentListTreeImpl convertArguments(
     InternalSyntaxToken openParen,
-    List list,
+    List<?> list,
     InternalSyntaxToken closeParen
   ) {
     ArgumentListTreeImpl arguments = new ArgumentListTreeImpl(new ArrayList<>(), new ArrayList<>()).complete(openParen, closeParen);
@@ -1104,7 +1105,7 @@ public class JParser {
   }
 
   @Nullable
-  private TypeArgumentListTreeImpl convertTypeArguments(List list) {
+  private TypeArgumentListTreeImpl convertTypeArguments(List<?> list) {
     if (list.isEmpty()) {
       return null;
     }
@@ -1123,7 +1124,7 @@ public class JParser {
 
   private TypeArgumentListTreeImpl convertTypeArguments(
     InternalSyntaxToken l,
-    List list,
+    List<?> list,
     InternalSyntaxToken g
   ) {
     TypeArgumentListTreeImpl typeArguments = new TypeArgumentListTreeImpl(l, new ArrayList<>(), new ArrayList<>(), g);
@@ -1137,7 +1138,7 @@ public class JParser {
     return typeArguments;
   }
 
-  private TypeParameterListTreeImpl convertTypeParameters(List list) {
+  private TypeParameterListTreeImpl convertTypeParameters(List<?> list) {
     if (list.isEmpty()) {
       return new TypeParameterListTreeImpl();
     }
@@ -1167,7 +1168,7 @@ public class JParser {
     // TODO why ECJ uses IExtendedModifier here instead of Annotation ?
     i.complete(convertAnnotations(e.modifiers()));
     TypeParameterTreeImpl t;
-    List typeBounds = e.typeBounds();
+    List<?> typeBounds = e.typeBounds();
     if (typeBounds.isEmpty()) {
       t = new TypeParameterTreeImpl(i);
     } else {
@@ -1193,7 +1194,7 @@ public class JParser {
   /**
    * @param extraDimensions list of {@link org.eclipse.jdt.core.dom.Dimension}
    */
-  private TypeTree applyExtraDimensions(TypeTree type, List extraDimensions) {
+  private TypeTree applyExtraDimensions(TypeTree type, List<?> extraDimensions) {
     ITypeBinding typeBinding = ((AbstractTypedTree) type).typeBinding;
     for (int i = 0; i < extraDimensions.size(); i++) {
       Dimension e = (Dimension) extraDimensions.get(i);
@@ -1243,6 +1244,7 @@ public class JParser {
     return t;
   }
 
+  @SuppressWarnings({"unchecked", "rawtypes"})
   private void addVariableToList(VariableDeclarationExpression e2, List list) {
     ModifiersTreeImpl modifiers = convertModifiers(e2.modifiers());
     TypeTree type = convertType(e2.getType());
@@ -1724,7 +1726,7 @@ public class JParser {
     }
   }
 
-  private List<CaseGroupTreeImpl> convertSwitchStatements(List list) {
+  private List<CaseGroupTreeImpl> convertSwitchStatements(List<?> list) {
     List<CaseGroupTreeImpl> groups = new ArrayList<>();
     List<CaseLabelTreeImpl> caselabels = null;
     BlockStatementListTreeImpl body = null;
@@ -2622,7 +2624,7 @@ public class JParser {
     return null;
   }
 
-  private List<AnnotationTree> convertAnnotations(List e) {
+  private List<AnnotationTree> convertAnnotations(List<?> e) {
     List<AnnotationTree> annotations = new ArrayList<>();
     for (Object o : e) {
       annotations.add((AnnotationTree) convertExpression(
@@ -2632,7 +2634,7 @@ public class JParser {
     return annotations;
   }
 
-  private ModifiersTreeImpl convertModifiers(List source) {
+  private ModifiersTreeImpl convertModifiers(List<?> source) {
     List<ModifierTree> modifiers = new ArrayList<>();
     for (Object o : source) {
       modifiers.add(convertModifier((IExtendedModifier) o));

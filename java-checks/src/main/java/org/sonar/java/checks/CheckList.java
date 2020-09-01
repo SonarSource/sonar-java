@@ -211,8 +211,8 @@ public final class CheckList {
   private CheckList() {
   }
 
-  public static List<Class> getChecks() {
-    return ImmutableList.<Class>builder()
+  public static List<Class<?>> getChecks() {
+    return ImmutableList.<Class<?>>builder()
       .addAll(getJavaChecks())
       .addAll(getJavaTestChecks())
       .addAll(getXmlChecks())

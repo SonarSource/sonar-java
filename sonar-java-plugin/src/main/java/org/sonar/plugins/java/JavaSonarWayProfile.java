@@ -67,7 +67,7 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
 
   private static Map<String, String> legacyKeys() {
     Map<String, String> result = new HashMap<>();
-    for (Class checkClass : CheckList.getChecks()) {
+    for (Class<?> checkClass : CheckList.getChecks()) {
       org.sonar.check.Rule ruleAnnotation = AnnotationUtils.getAnnotation(checkClass, org.sonar.check.Rule.class);
       String key = ruleAnnotation.key();
       org.sonar.java.RspecKey rspecKeyAnnotation = AnnotationUtils.getAnnotation(checkClass, org.sonar.java.RspecKey.class);
@@ -93,6 +93,7 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
     }
   }
 
+  @SuppressWarnings("unchecked")
   @VisibleForTesting
   static Set<RuleKey> getSecurityRuleKeys(boolean sonarSecurityBefore78) {
     try {

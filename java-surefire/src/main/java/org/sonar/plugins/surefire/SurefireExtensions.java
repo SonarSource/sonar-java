@@ -33,6 +33,7 @@ public final class SurefireExtensions {
   private SurefireExtensions() {
   }
 
+  @SuppressWarnings("rawtypes")
   public static List getExtensions() {
     return ImmutableList.of(
         /**

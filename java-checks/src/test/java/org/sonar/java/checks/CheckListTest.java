@@ -43,6 +43,7 @@ import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.java.se.checks.SECheck;
+import org.sonar.plugins.java.api.JavaCheck;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
@@ -93,7 +94,7 @@ class CheckListTest {
         .createRepository(CheckList.REPOSITORY_KEY, language)
         .setName("SonarQube");
 
-      List<Class> checks = CheckList.getChecks();
+      List<Class<?>> checks = CheckList.getChecks();
       new RulesDefinitionAnnotationLoader().load(repository, checks.toArray(new Class[checks.size()]));
 
       for (NewRule rule : repository.rules()) {
@@ -119,9 +120,8 @@ class CheckListTest {
    */
   @Test
   void test() {
-    List<Class> checks = CheckList.getChecks();
     Map<String, String> keyMap = new HashMap<>();
-    for (Class cls : checks) {
+    for (Class<?> cls : CheckList.getChecks()) {
       String testName = '/' + cls.getName().replace('.', '/') + "Test.class";
       String simpleName = cls.getSimpleName();
       // Handle legacy keys.
@@ -162,7 +162,7 @@ class CheckListTest {
     }
   }
 
-  private static String getKey(Class cls, Rule ruleAnnotation) {
+  private static String getKey(Class<?> cls, Rule ruleAnnotation) {
     String key = ruleAnnotation.key();
     RspecKey rspecKeyAnnotation = AnnotationUtils.getAnnotation(cls, RspecKey.class);
     if (rspecKeyAnnotation != null) {
@@ -174,13 +174,13 @@ class CheckListTest {
   @Test
   void enforce_CheckList_registration() {
     List<File> files = (List<File>) FileUtils.listFiles(new File("src/main/java/org/sonar/java/checks/"), new String[] {"java"}, false);
-    List<Class> checks = CheckList.getChecks();
+    List<Class<?>> checks = CheckList.getChecks();
     for (File file : files) {
       String name = file.getName();
       if (name.endsWith("Check.java")) {
         String className = name.substring(0, name.length() - 5);
         try {
-          Class aClass = Class.forName("org.sonar.java.checks." + className);
+          Class<?> aClass = Class.forName("org.sonar.java.checks." + className);
           assertThat(checks).as(className + " is not declared in CheckList").contains(aClass);
         } catch (ClassNotFoundException e) {
           Throwables.propagate(e);
@@ -191,9 +191,9 @@ class CheckListTest {
 
   @Test
   void rules_targeting_tests_should_have_tests_tag() throws Exception {
-    Set<Class> testChecks = new HashSet<>(CheckList.getJavaTestChecks());
+    Set<Class<? extends JavaCheck>> testChecks = new HashSet<>(CheckList.getJavaTestChecks());
 
-    for (Class cls : CheckList.getChecks()) {
+    for (Class<?> cls : CheckList.getChecks()) {
       String key = getKey(cls, AnnotationUtils.getAnnotation(cls, Rule.class));
       URL metadataURL = getClass().getResource("/org/sonar/l10n/java/rules/" + CheckList.REPOSITORY_KEY + "/" + key + "_java.json");
       File metadataFile = new File(metadataURL.toURI());
@@ -216,7 +216,7 @@ class CheckListTest {
 
   @Test
   void private_constructor() throws Exception {
-    Constructor constructor = CheckList.class.getDeclaredConstructor();
+    Constructor<CheckList> constructor = CheckList.class.getDeclaredConstructor();
     assertThat(constructor.isAccessible()).isFalse();
     constructor.setAccessible(true);
     constructor.newInstance();

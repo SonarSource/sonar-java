@@ -41,6 +41,7 @@ import org.sonar.plugins.surefire.SurefireExtensions;
 public class JavaPlugin implements Plugin {
 
 
+  @SuppressWarnings("unchecked")
   @Override
   public void define(Context context) {
     ImmutableList.Builder<Object> builder = ImmutableList.builder();
@@ -89,7 +90,7 @@ public class JavaPlugin implements Plugin {
     context.addExtensions(builder.build());
   }
 
-  private boolean supportJspTranspilation(Context context) {
+  private static boolean supportJspTranspilation(Context context) {
     if (context.getRuntime().getProduct() != SonarProduct.SONARQUBE) {
       return false;
     }
