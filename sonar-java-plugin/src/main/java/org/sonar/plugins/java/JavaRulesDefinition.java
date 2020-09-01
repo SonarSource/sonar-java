@@ -75,6 +75,7 @@ public class JavaRulesDefinition implements RulesDefinition {
     this.isDebugEnabled = settings.getBoolean(Java.DEBUG_RULE_KEY).orElse(false);
   }
 
+  @SuppressWarnings("rawtypes")
   @Override
   public void define(Context context) {
     NewRepository repository = context
@@ -89,6 +90,7 @@ public class JavaRulesDefinition implements RulesDefinition {
     repository.done();
   }
 
+  @SuppressWarnings("rawtypes")
   private List<Class> getChecks() {
     ImmutableList.Builder<Class> checksBuilder = ImmutableList.<Class>builder().addAll(CheckList.getChecks());
     if (isDebugEnabled) {

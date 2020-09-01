@@ -41,6 +41,7 @@ import org.sonar.plugins.surefire.SurefireExtensions;
 public class JavaPlugin implements Plugin {
 
 
+  @SuppressWarnings("unchecked")
   @Override
   public void define(Context context) {
     ImmutableList.Builder<Object> builder = ImmutableList.builder();
