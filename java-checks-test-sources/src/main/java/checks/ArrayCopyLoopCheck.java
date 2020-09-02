@@ -1,11 +1,14 @@
+package checks;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-class A extends Collection<Integer> {
+
+abstract class ArrayCopyLoopCheck implements Collection<Integer> {
 
   int x;
 
-  void f() {
+  void f() throws InterruptedException {
     int i = 0, from = 0, to = 0;
     char c = 0;
     byte b = 0;
@@ -150,7 +153,7 @@ class A extends Collection<Integer> {
       dst[j] = src[j];
     }
 
-    for (int j = 0; j < src.length; c = c + 1) {
+    for (int j = 0; j < src.length; c = (char)(c + 1)) {
       dst[j] = src[j];
     }
 
@@ -194,11 +197,7 @@ class A extends Collection<Integer> {
       i = j;
     }
 
-    for (int j = 0; !false; ++j) {
-      dst[j] = src[j];
-    }
-
-    for (int n : new ArrayList<>()) {
+    for (int n : new ArrayList<Integer>()) {
       list.add(n);
     }
 
@@ -349,6 +348,10 @@ class A extends Collection<Integer> {
 
     for (int n : src) {
       list().add(n);
+    }
+
+    for (int j = 0; !false; ++j) {
+      dst[j] = src[j];
     }
   }
 
