@@ -105,8 +105,6 @@ public class CFG implements ControlFlowGraph {
     Map<Type, Block> catches = new LinkedHashMap<>();
     List<Block> runtimeCatches = new ArrayList<>();
 
-    Block successorBlock;
-
     public void addCatch(Type type, Block catchBlock) {
       if (type.is("java.lang.Exception")
         || type.is("java.lang.Throwable")
@@ -129,7 +127,6 @@ public class CFG implements ControlFlowGraph {
     exitBlocks.add(createBlock());
     currentBlock = createBlock(exitBlock());
     outerTry = new TryStatement();
-    outerTry.successorBlock = exitBlocks.peek();
     enclosingTry.add(outerTry);
     enclosedByCatch.push(false);
     build(trees);
@@ -969,7 +966,6 @@ public class CFG implements ControlFlowGraph {
     Block finallyOrEndBlock = currentBlock;
     Block beforeFinally = createBlock(currentBlock);
     TryStatement tryStatement = new TryStatement();
-    tryStatement.successorBlock = finallyOrEndBlock;
     enclosingTry.push(tryStatement);
     enclosedByCatch.push(false);
     for (CatchTree catchTree : Lists.reverse(tryStatementTree.catches())) {
