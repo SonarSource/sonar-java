@@ -245,25 +245,15 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     return unbalancedQuotes;
   }
 
-
   @Nullable
   private static List<ExpressionTree> transposeArgumentArrayAndRemoveThrowable(MethodInvocationTree mit, List<ExpressionTree> args, Set<Integer> indexes) {
-    List<ExpressionTree> transposedArgs = args;
-    if (args.size() == 1) {
-      ExpressionTree firstArg = args.get(0);
-      if (firstArg.symbolType().isArray()) {
-        if (isNewArrayWithInitializers(firstArg)) {
-          transposedArgs = ((NewArrayTree) firstArg).initializers();
-        } else {
-          // size is unknown
-          return null;
-        }
+    return transposeArgumentArray(args).map(transposedArgs -> {
+      if (lastArgumentShouldBeIgnored(mit, args, transposedArgs, indexes)) {
+        return transposedArgs.subList(0, transposedArgs.size() - 1);
+      } else {
+        return transposedArgs;
       }
-    }
-    if (lastArgumentShouldBeIgnored(mit, args, transposedArgs, indexes)) {
-      transposedArgs = transposedArgs.subList(0, transposedArgs.size() - 1);
-    }
-    return transposedArgs;
+    }).orElse(null);
   }
 
   private static boolean lastArgumentShouldBeIgnored(MethodInvocationTree mit, List<ExpressionTree> args, List<ExpressionTree> transposedArgs, Set<Integer> indexes) {
