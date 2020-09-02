@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -113,11 +114,28 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
       if (isMessageFormat) {
         handleMessageFormat(mit, formatString, args);
       } else {
-        handlePrintfFormat(mit, formatString, args);
+        transposeArgumentArray(args).ifPresent(transposedArgs ->
+          handlePrintfFormat(mit, formatString, transposedArgs)
+        );
       }
     } else {
       handleOtherFormatTree(mit, formatTree, args);
     }
+  }
+
+  protected static Optional<List<ExpressionTree>> transposeArgumentArray(List<ExpressionTree> args) {
+    if (args.size() == 1) {
+      ExpressionTree firstArg = args.get(0);
+      if (firstArg.symbolType().isArray()) {
+        if (isNewArrayWithInitializers(firstArg)) {
+          args = ((NewArrayTree) firstArg).initializers();
+        } else {
+          // array content is unknown, declared somewhere else, we can not know the size
+          return Optional.empty();
+        }
+      }
+    }
+    return Optional.of(args);
   }
 
   private static boolean isProbablyLog4jFormatterLogger(MethodInvocationTree mit, String formatString) {

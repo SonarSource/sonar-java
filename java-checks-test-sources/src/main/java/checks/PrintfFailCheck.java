@@ -8,10 +8,13 @@ import java.util.Calendar;
 import java.util.Formatter;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.stream.IntStream;
 
 public class PrintfFailCheck {
   void foo(Calendar c) throws java.io.IOException {
     Object myObject = new Object();
+    Object[] objs = new Object[]{14};
+
     double value = 1.0;
     String.format("The value of my integer is %d", "Hello World");  // Noncompliant {{An 'int' is expected rather than a String.}}
     String.format("First {0} and then {1}", "foo", "bar");
@@ -29,6 +32,20 @@ public class PrintfFailCheck {
     String.format("Is myObject null ? %b", myObject);
     String.format("value is " + value); // Compliant
     String.format("string without arguments");
+    String.format("%d %d", new Object[]{1,2}); // Compliant
+    String.format("%d %d", new Object[]{1,2,3}); // Compliant, too many arguments but no errors, reported by S3457
+    String.format("%d %d", new Object[]{1}); // Noncompliant {{Not enough arguments.}}
+    String.format("%d %d", objs); // Compliant, not initialized inside the call
+    String.format("%d %d", new Object[42]); // Compliant
+    String.format("%d%d", IntStream.range(0, 2).mapToObj(Integer::valueOf).toArray()); // Compliant
+    String.format("%d%d", IntStream.range(0, 1).mapToObj(Integer::valueOf).toArray()); // FN, acceptable to avoid noise
+    String.format("%d%d", IntStream.range(0, 2).mapToObj(Integer::valueOf).toArray(Object[]::new)); // Compliant
+    String.format("Result %s %s",new Exception(),new Exception(),new Exception()); // Compliant, reported by S3457
+    String.format("Result %s %s",new Object[] {new Exception(),new Exception(),new Exception()}); // Compliant, reported by S3457
+    String.format("Result %s %s",new Exception(),new Exception()); // Compliant
+    String.format("Result %s %s",new Object[] {new Exception(),new Exception()}); // Compliant
+    String.format("Result %s %s",new Exception()); // Noncompliant {{Not enough arguments.}}
+    String.format("Result %s %s",new Object[] {new Exception()});  // Noncompliant {{Not enough arguments.}}
 
     PrintWriter pr = new PrintWriter("file");
     PrintStream ps = new PrintStream("file");
@@ -97,7 +114,6 @@ public class PrintfFailCheck {
     messageFormat.format(new Object()); // Compliant - Not considered
     messageFormat.format("");  // Compliant - Not considered
 
-    Object[] objs = new Object[]{14};
     MessageFormat.format("{0,number,$'#',##}", value); // Compliant
     MessageFormat.format("Result ''{0}''.", 14); // Compliant
     MessageFormat.format("Result '{0}'", 14);

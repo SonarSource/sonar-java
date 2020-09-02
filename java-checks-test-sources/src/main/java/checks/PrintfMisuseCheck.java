@@ -10,6 +10,7 @@ import java.util.Formatter;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.Random;
+import java.util.stream.IntStream;
 import org.apache.logging.log4j.LogManager;
 
 public class PrintfMisuseCheck {
@@ -21,6 +22,7 @@ public class PrintfMisuseCheck {
   java.util.logging.Logger loggerField = java.util.logging.Logger.getAnonymousLogger("som.foo.resources.i18n.LogMessages");
   void foo(Calendar c) throws IOException {
     Object myObject = new Object();
+    Object[] objs = new Object[]{14};
     double value = 1.0;
     String.format("The value of my integer is %d", "Hello World");
     String.format("First {0} and then {1}", "foo", "bar");  // Noncompliant  {{Looks like there is a confusion with the use of java.text.MessageFormat, parameters will be simply ignored here}}
@@ -46,6 +48,19 @@ public class PrintfMisuseCheck {
     String.format("value is " + COMPILE_TIME_CONSTANT);
     String.format("string without arguments"); // Noncompliant {{String contains no format specifiers.}}
     String.format("%s", new Exception());
+    String.format("%d %d", new Object[]{1,2}); // Compliant
+    String.format("%d %d", new Object[]{1,2,3}); // Noncompliant {{3rd argument is not used.}}
+    String.format("%d %d", new Object[]{1}); // Compliant, reported by S2275
+    String.format("%d %d", objs); // Compliant, not initialized inside the call
+    String.format("%d %d", new Object[42]); // Compliant
+    String.format("%d%d", IntStream.range(0, 2).mapToObj(Integer::valueOf).toArray()); // Compliant
+    String.format("%d%d", IntStream.range(0, 2).mapToObj(Integer::valueOf).toArray(Object[]::new)); // Compliant
+    String.format("Result %s %s",new Exception(),new Exception(),new Exception()); // Noncompliant {{3rd argument is not used.}}
+    String.format("Result %s %s",new Object[] {new Exception(),new Exception(),new Exception()}); // Noncompliant {{3rd argument is not used.}}
+    String.format("Result %s %s",new Exception(),new Exception()); // Compliant
+    String.format("Result %s %s",new Object[] {new Exception(),new Exception()}); // Compliant
+    String.format("Result %s %s",new Exception()); // Compliant, reported by S2275
+    String.format("Result %s %s",new Object[] {new Exception()}); // Compliant, reported by S2275
 
     PrintWriter pr = new PrintWriter("file");
     PrintStream ps = new PrintStream("file");
@@ -123,7 +138,6 @@ public class PrintfMisuseCheck {
     messageFormat.format(new Object()); // Compliant - Not considered
     messageFormat.format("");  // Compliant - Not considered
 
-    Object[] objs = new Object[]{14};
     MessageFormat.format("{0,number,$'#',##}", value); // Compliant
     MessageFormat.format("Result ''{0}''.", 14); // Compliant
     MessageFormat.format("Result '{0}'", 14); // Noncompliant {{String contains no format specifiers.}}
