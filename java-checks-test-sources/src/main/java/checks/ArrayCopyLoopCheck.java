@@ -3,6 +3,7 @@ package checks;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 abstract class ArrayCopyLoopCheck implements Collection<Integer> {
 
@@ -12,8 +13,8 @@ abstract class ArrayCopyLoopCheck implements Collection<Integer> {
     int i = 0, from = 0, to = 0;
     char c = 0;
     byte b = 0;
-    int[] src = new int[] {1, 2, 3, 4, 5};
-    int[] dst = new int[src.length];
+    Integer[] src = new Integer[] {1, 2, 3, 4, 5};
+    Integer[] dst = new Integer[src.length];
     List<Integer> list = new ArrayList<>();
 
     for (int j = 0; j < src.length; ++j) {
@@ -34,14 +35,14 @@ abstract class ArrayCopyLoopCheck implements Collection<Integer> {
       ++i;
     }
 
-    for (int n : src) {
+    for (Integer n : src) {
       list.add(n); // Noncompliant
     }
 
-    for (int n : src)
+    for (Integer n : src)
       list.add(n); // Noncompliant
 
-    for (int n : new int[]{1, 2, 3, 4, 5}) {
+    for (Integer n : new Integer[]{1, 2, 3, 4, 5}) {
       list.add(n); // Noncompliant
     }
 
@@ -352,6 +353,135 @@ abstract class ArrayCopyLoopCheck implements Collection<Integer> {
 
     for (int j = 0; !false; ++j) {
       dst[j] = src[j];
+    }
+  }
+
+  void arraysOfPrimitives() {
+    int i = 0, from = 0, to = 0;
+    char c = 0;
+    byte b = 0;
+    int[] src = new int[]{1, 2, 3, 4, 5};
+    int[] dst = new int[src.length];
+    List<Integer> list = new ArrayList<>();
+
+    for (int j = 0; j < src.length; ++j) {
+      dst[j] = src[j]; // Noncompliant {{Use "Arrays.copyOf", "Arrays.asList", "Collections.addAll" or "System.arraycopy" instead.}}
+    }
+
+    for (int j = 0; j < src.length; ++j) {
+      list.add(src[j]); // Compliant, no helper can copy an array of primitive into a collection
+      // Collections.addAll(list, src); does not compile
+      // Arrays.asList(src) will return a List<int[]>
+    }
+
+    while (i < src.length) {
+      dst[i] = src[i]; // Noncompliant
+      ++i;
+    }
+
+    while (i < src.length) {
+      list.add(src[i]); // Compliant, no helper can copy an array of primitive into a collection
+      ++i;
+    }
+
+    for (int n : src) {
+      list.add(n); // Compliant, no helper can copy an array of primitive into a collection
+    }
+
+    for (int n : src)
+      list.add(n); // Compliant, no helper can copy an array of primitive into a collection
+
+    for (int n : new int[]{1, 2, 3, 4, 5}) {
+      list.add(n); // Compliant, no helper can copy an array of primitive into a collection
+    }
+
+    for (int n : new Integer[]{1, 2, 3, 4, 5}) {
+      list.add(n); // Compliant, acceptable FN to avoid noise
+    }
+
+    for (; from < to; ++from) {
+      dst[from] = src[from]; // Noncompliant
+    }
+
+    for (; from < to; ++from) {
+      list.add(src[from]); // Compliant, no helper can copy an array of primitive into a collection
+    }
+
+    while (from < to) {
+      list.add(src[from]); // Compliant, no helper can copy an array of primitive into a collection
+      ++from;
+    }
+
+    for (int j = 0; j < 5; ++j) {
+      dst[j] = src[j]; // Noncompliant
+    }
+
+    for (int j = 0; j < 5 + 3; ++j) {
+      dst[j] = src[j]; // Noncompliant
+    }
+
+    for (int j = 0; j < src.length; j++) {
+      dst[j] = src[j]; // Noncompliant
+    }
+
+    for (int j = 0; j < src.length; j += 1) {
+      dst[j] = src[j]; // Noncompliant
+    }
+
+    for (int j = 0; j < src.length; j = j + 1) {
+      dst[j] = src[j]; // Noncompliant
+    }
+
+    for (int j = 0; j < src.length; j = 1 + j) {
+      dst[j] = src[j]; // Noncompliant
+    }
+
+    while (i < src.length) {
+      list.add(src[i]); // Compliant, no helper can copy an array of primitive into a collection
+      i++;
+    }
+
+    while (i < src.length) {
+      list.add(src[i]); // Compliant, no helper can copy an array of primitive into a collection
+      i += 1;
+    }
+
+    while (i < src.length) {
+      list.add(src[i]); // Compliant, no helper can copy an array of primitive into a collection
+      i = i + 1;
+    }
+
+    while (i < src.length) {
+      list.add(src[i]); // Compliant, no helper can copy an array of primitive into a collection
+      i = 1 + i;
+    }
+
+    for (int j = 0; j != src.length; ++j) {
+      dst[j] = src[j]; // Noncompliant
+    }
+
+    for (int j = 0; j <= src.length - 1; ++j) {
+      dst[j] = src[j]; // Noncompliant
+    }
+
+    for (int j = 0; src.length > j; ++j) {
+      dst[j] = src[j]; // Noncompliant
+    }
+
+    for (int j = 0; src.length - 1 >= j; ++j) {
+      dst[j] = src[j]; // Noncompliant
+    }
+  }
+
+  public void copy(Collection<Integer> target, int[] source) {
+    for (int s : source) {
+      target.add(s); // FP: S3012
+    }
+  }
+
+  private static void copyToSet(long[] array, Set<Long> set) {
+    for (long labelId : array) {
+      set.add(labelId); // Compliant
     }
   }
 

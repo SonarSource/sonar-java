@@ -239,7 +239,7 @@ public class ArrayCopyLoopCheck extends IssuableSubscriptionVisitor {
         MemberSelectExpressionTree select = (MemberSelectExpressionTree) invocation.methodSelect();
         if (select.expression().is(Kind.IDENTIFIER)) {
           ExpressionTree argument = invocation.arguments().get(0);
-          if (argument.is(Kind.ARRAY_ACCESS_EXPRESSION)) {
+          if (argument.is(Kind.ARRAY_ACCESS_EXPRESSION) && !argument.symbolType().isPrimitive()) {
             ArrayAccessExpressionTree access = (ArrayAccessExpressionTree) argument;
             return access.expression().is(Kind.IDENTIFIER) && isCounter(access.dimension().expression(), counter);
           }
@@ -259,7 +259,7 @@ public class ArrayCopyLoopCheck extends IssuableSubscriptionVisitor {
           if (select.expression().is(Kind.IDENTIFIER)) {
             ExpressionTree argument = invocation.arguments().get(0);
             Symbol identifier = getIdentifier(argument);
-            return identifier != null && identifier.equals(iterated.symbol());
+            return identifier != null && identifier.equals(iterated.symbol()) && !argument.symbolType().isPrimitive();
           }
         }
       }
