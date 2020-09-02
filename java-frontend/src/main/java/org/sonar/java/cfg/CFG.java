@@ -85,6 +85,7 @@ import org.sonar.plugins.java.api.tree.YieldStatementTree;
 public class CFG implements ControlFlowGraph {
 
   private final boolean ignoreBreakAndContinue;
+  @Nullable
   private Symbol.MethodSymbol methodSymbol;
   private Block currentBlock;
 
@@ -122,7 +123,7 @@ public class CFG implements ControlFlowGraph {
   private Map<String, Block> labelsBreakTarget = new HashMap<>();
   private Map<String, Block> labelsContinueTarget = new HashMap<>();
 
-  private CFG(List<? extends Tree> trees, Symbol.MethodSymbol symbol, boolean ignoreBreakAndContinue) {
+  private CFG(List<? extends Tree> trees, @Nullable Symbol.MethodSymbol symbol, boolean ignoreBreakAndContinue) {
     methodSymbol = symbol;
     this.ignoreBreakAndContinue = ignoreBreakAndContinue;
     exitBlocks.add(createBlock());
@@ -141,6 +142,7 @@ public class CFG implements ControlFlowGraph {
     return exitBlocks.peek();
   }
 
+  @Nullable
   public Symbol.MethodSymbol methodSymbol() {
     return methodSymbol;
   }

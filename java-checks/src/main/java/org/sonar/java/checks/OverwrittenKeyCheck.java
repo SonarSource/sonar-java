@@ -28,6 +28,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -115,7 +116,7 @@ public class OverwrittenKeyCheck extends IssuableSubscriptionVisitor {
     private final boolean isArray;
     private ExpressionTree rhs;
 
-    private CollectionAndKey(Symbol collection, Tree keyTree, Object key, boolean isArray, ExpressionTree expression) {
+    private CollectionAndKey(Symbol collection, Tree keyTree, Object key, boolean isArray, @Nullable ExpressionTree expression) {
       this.collection = collection;
       this.keyTree = keyTree;
       this.key = key;

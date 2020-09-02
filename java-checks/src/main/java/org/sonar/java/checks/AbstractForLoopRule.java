@@ -175,7 +175,7 @@ public abstract class AbstractForLoopRule extends IssuableSubscriptionVisitor {
     }
 
     @CheckForNull
-    private static ForLoopIncrement increment(ExpressionTree expression, Integer value) {
+    private static ForLoopIncrement increment(ExpressionTree expression, @Nullable Integer value) {
       if (expression.is(Tree.Kind.IDENTIFIER)) {
         return new ForLoopIncrement((IdentifierTree) expression, value);
       }

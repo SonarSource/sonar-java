@@ -33,7 +33,7 @@ import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
@@ -128,6 +128,7 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
     return ModifiersUtils.hasModifier(modifiers, Modifier.PUBLIC);
   }
 
+  @CheckForNull
   private static String getTypeIdentifier(Tree tree) {
     Tree actualTree = tree.is(Tree.Kind.PARAMETERIZED_TYPE) ? ((ParameterizedTypeTree) tree).type() : tree;
     return actualTree.is(Tree.Kind.IDENTIFIER) ? ((IdentifierTree) actualTree).name() : null;
