@@ -1,0 +1,31 @@
+<p>Annotating unit test with more than one test related annotation is not only useless, but could also result in unexpected behavior like failing unit
+test or unwanted side-effects.</p>
+<p>This rule report an issue when a test method is annotated with more than one of the following competing annotation:</p>
+<ul>
+  <li> @Test </li>
+  <li> @RepeatedTest </li>
+  <li> @ParameterizedTest </li>
+  <li> @TestFactory </li>
+  <li> @TestTemplate </li>
+</ul>
+<h2>Noncompliant Code Example</h2>
+<pre>
+@Test
+@RepeatedTest(2) // Noncompliant, this test will be repeated 3 times
+void test() { }
+
+@ParameterizedTest
+@Test
+@MethodSource("methodSource")
+void test2(int argument) { } // Noncompliant, this test will fail with ParameterResolutionException
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+@RepeatedTest(2)
+void test() { }
+
+@ParameterizedTest
+@MethodSource("methodSource")
+void test2(int argument) { }
+</pre>
+
