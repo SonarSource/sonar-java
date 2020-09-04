@@ -21,24 +21,27 @@ package org.sonar.java.checks.tests;
 
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Rule(key = "S5967")
 public class JUnitCompatibleAnnotationsCheck extends IssuableSubscriptionVisitor {
 
-  private static final Set<String> annotations = new HashSet<>(Arrays.asList(
+  private static final Set<String> ANNOTATIONS = new HashSet<>(Arrays.asList(
     "org.junit.jupiter.api.Test",
     "org.junit.jupiter.api.RepeatedTest",
     "org.junit.jupiter.api.TestFactory",
     "org.junit.jupiter.api.TestTemplate",
-    "org.junit.jupiter.params.ParameterizedTest"
-  ));
+    "org.junit.jupiter.params.ParameterizedTest"));
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -48,12 +51,15 @@ public class JUnitCompatibleAnnotationsCheck extends IssuableSubscriptionVisitor
   @Override
   public void visitNode(Tree tree) {
     MethodTree method = (MethodTree) tree;
-    Symbol.MethodSymbol symbol = method.symbol();
-    List<SymbolMetadata.AnnotationInstance> filteredAnnotations = symbol.metadata().annotations().stream()
-      .filter(annotation -> annotations.contains(annotation.symbol().type().fullyQualifiedName()))
+    List<AnnotationTree> annotationTrees = method.modifiers().annotations();
+
+    List<JavaFileScannerContext.Location> locations = annotationTrees.stream()
+      .filter(annotation -> ANNOTATIONS.contains(annotation.annotationType().symbolType().fullyQualifiedName()))
+      .map(annotationTree -> new JavaFileScannerContext.Location("Incompatible annotation", annotationTree))
       .collect(Collectors.toList());
-    if (filteredAnnotations.size() > 1) {
-      reportIssue(method.simpleName(), "Remove one of these conflicting annotations."); //TODO Add secondary location
+
+    if (locations.size() > 1) {
+      reportIssue(method.simpleName(), "Remove one of these conflicting annotations.", locations, null);
     }
   }
 }
