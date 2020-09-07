@@ -1,0 +1,8 @@
+{
+'org.eclipse.jetty:jetty-project:jetty-maven-plugin/src/main/java/org/eclipse/jetty/maven/plugin/JettyDistroForker.java':[
+227,
+],
+'org.eclipse.jetty:jetty-project:jetty-websocket/websocket-javax-tests/src/main/java/org/eclipse/jetty/websocket/javax/tests/LocalFuzzer.java':[
+66,
+],
+}

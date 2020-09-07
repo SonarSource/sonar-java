@@ -1,0 +1,12 @@
+{
+'org.eclipse.jetty:jetty-project:jetty-http2/http2-common/src/main/java/org/eclipse/jetty/http2/BufferingFlowControlStrategy.java':[
+118,
+153,
+],
+'org.eclipse.jetty:jetty-project:jetty-openid/src/main/java/org/eclipse/jetty/security/openid/OpenIdCredentials.java':[
+129,
+],
+'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java':[
+1043,
+],
+}

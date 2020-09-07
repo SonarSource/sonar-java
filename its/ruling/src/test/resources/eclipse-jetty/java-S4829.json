@@ -1,0 +1,14 @@
+{
+'org.eclipse.jetty:jetty-project:jetty-maven-plugin/src/main/java/org/eclipse/jetty/maven/plugin/ConsoleReader.java':[
+60,
+],
+'org.eclipse.jetty:jetty-project:jetty-start/src/main/java/org/eclipse/jetty/start/Licensing.java':[
+98,
+],
+'org.eclipse.jetty:jetty-project:jetty-start/src/main/java/org/eclipse/jetty/start/Main.java':[
+466,
+],
+'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/security/Password.java':[
+226,
+],
+}

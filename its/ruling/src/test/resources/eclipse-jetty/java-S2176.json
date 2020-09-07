@@ -1,0 +1,17 @@
+{
+'org.eclipse.jetty:jetty-project:jetty-client/src/main/java/org/eclipse/jetty/client/GZIPContentDecoder.java':[
+28,
+],
+'org.eclipse.jetty:jetty-project:jetty-jndi/src/main/java/org/eclipse/jetty/jndi/InitialContextFactory.java':[
+41,
+],
+'org.eclipse.jetty:jetty-project:jetty-osgi/jetty-osgi-boot/src/main/java/org/eclipse/jetty/osgi/annotations/AnnotationConfiguration.java':[
+44,
+],
+'org.eclipse.jetty:jetty-project:jetty-osgi/jetty-osgi-boot/src/main/java/org/eclipse/jetty/osgi/annotations/AnnotationParser.java':[
+42,
+],
+'org.eclipse.jetty:jetty-project:jetty-webapp/src/main/java/org/eclipse/jetty/webapp/DecoratingListener.java':[
+28,
+],
+}

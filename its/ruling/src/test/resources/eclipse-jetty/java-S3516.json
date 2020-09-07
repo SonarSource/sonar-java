@@ -1,0 +1,11 @@
+{
+'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java':[
+471,
+],
+'org.eclipse.jetty:jetty-project:jetty-http2/http2-common/src/main/java/org/eclipse/jetty/http2/HTTP2Stream.java':[
+570,
+],
+'org.eclipse.jetty:jetty-project:jetty-rewrite/src/main/java/org/eclipse/jetty/rewrite/handler/CookiePatternRule.java':[
+74,
+],
+}

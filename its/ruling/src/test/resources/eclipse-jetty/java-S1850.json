@@ -1,0 +1,8 @@
+{
+'org.eclipse.jetty:jetty-project:apache-jsp/src/main/java/org/eclipse/jetty/jsp/JettyJspServlet.java':[
+51,
+],
+'org.eclipse.jetty:jetty-project:jetty-security/src/main/java/org/eclipse/jetty/security/authentication/DeferredAuthentication.java':[
+128,
+],
+}

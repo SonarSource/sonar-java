@@ -1,0 +1,8 @@
+{
+'org.eclipse.jetty:jetty-project:jetty-osgi/jetty-osgi-boot/src/main/java/org/eclipse/jetty/osgi/boot/utils/internal/PackageAdminServiceTracker.java':[
+64,
+],
+'org.eclipse.jetty:jetty-project:jetty-osgi/jetty-osgi-httpservice/src/main/java/org/eclipse/jetty/osgi/httpservice/HttpServiceErrorPageErrorHandler.java':[
+46,
+],
+}

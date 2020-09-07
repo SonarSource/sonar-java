@@ -1,0 +1,14 @@
+{
+'org.eclipse.jetty:jetty-project:jetty-ant/src/main/java/org/eclipse/jetty/ant/AntMetaInfConfiguration.java':[
+65,
+],
+'org.eclipse.jetty:jetty-project:jetty-osgi/jetty-osgi-boot/src/main/java/org/eclipse/jetty/osgi/boot/OSGiMetaInfConfiguration.java':[
+338,
+],
+'org.eclipse.jetty:jetty-project:jetty-start/src/main/java/org/eclipse/jetty/start/Props.java':[
+250,
+],
+'org.eclipse.jetty:jetty-project:jetty-webapp/src/main/java/org/eclipse/jetty/webapp/MetaInfConfiguration.java':[
+304,
+],
+}

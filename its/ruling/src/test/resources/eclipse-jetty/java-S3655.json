@@ -1,0 +1,12 @@
+{
+'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/LowResourceMonitor.java':[
+243,
+],
+'org.eclipse.jetty:jetty-project:jetty-start/src/main/java/org/eclipse/jetty/start/Modules.java':[
+444,
+],
+'org.eclipse.jetty:jetty-project:jetty-websocket/websocket-javax-common/src/main/java/org/eclipse/jetty/websocket/javax/common/encoders/AvailableEncoders.java':[
+211,
+247,
+],
+}

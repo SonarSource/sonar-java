@@ -1,0 +1,8 @@
+{
+'org.eclipse.jetty:jetty-project:jetty-client/src/main/java/org/eclipse/jetty/client/util/DeferredContentProvider.java':[
+96,
+],
+'org.eclipse.jetty:jetty-project:jetty-client/src/main/java/org/eclipse/jetty/client/util/InputStreamResponseListener.java':[
+82,
+],
+}

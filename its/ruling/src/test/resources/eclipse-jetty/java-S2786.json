@@ -1,0 +1,12 @@
+{
+'org.eclipse.jetty:jetty-project:jetty-osgi/jetty-osgi-boot/src/main/java/org/eclipse/jetty/osgi/boot/utils/internal/DefaultBundleClassLoaderHelper.java':[
+40,
+],
+'org.eclipse.jetty:jetty-project:jetty-start/src/main/java/org/eclipse/jetty/start/Version.java':[
+71,
+],
+'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java':[
+504,
+697,
+],
+}

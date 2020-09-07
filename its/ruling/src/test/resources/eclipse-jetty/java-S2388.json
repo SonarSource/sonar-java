@@ -1,0 +1,15 @@
+{
+'org.eclipse.jetty:jetty-project:jetty-client/src/main/java/org/eclipse/jetty/client/http/HttpConnectionOverHTTP.java':[
+288,
+318,
+],
+'org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java':[
+542,
+570,
+804,
+889,
+1139,
+1203,
+1234,
+],
+}

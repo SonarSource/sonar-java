@@ -1,0 +1,14 @@
+{
+'org.eclipse.jetty:jetty-project:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java':[
+509,
+],
+'org.eclipse.jetty:jetty-project:tests/test-sessions/test-sessions-common/src/main/java/org/eclipse/jetty/server/session/AbstractClusteredInvalidationSessionTest.java':[
+158,
+],
+'org.eclipse.jetty:jetty-project:tests/test-sessions/test-sessions-common/src/main/java/org/eclipse/jetty/server/session/AbstractClusteredOrphanedSessionTest.java':[
+132,
+],
+'org.eclipse.jetty:jetty-project:tests/test-webapps/test-jetty-webapp/src/main/java/com/acme/LoginServlet.java':[
+57,
+],
+}

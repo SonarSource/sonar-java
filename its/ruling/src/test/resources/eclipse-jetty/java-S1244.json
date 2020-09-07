@@ -1,0 +1,10 @@
+{
+'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedQualityCSV.java':[
+140,
+192,
+],
+'org.eclipse.jetty:jetty-project:tests/test-webapps/test-jndi-webapp/src/main/java/com/acme/JNDITest.java':[
+70,
+92,
+],
+}
