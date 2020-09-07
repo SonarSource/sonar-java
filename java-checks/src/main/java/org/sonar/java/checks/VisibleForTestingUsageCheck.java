@@ -49,12 +49,20 @@ public class VisibleForTestingUsageCheck extends IssuableSubscriptionVisitor {
     IdentifierTree identifier = (IdentifierTree) tree;
     Symbol symbol = identifier.symbol();
     SymbolMetadata metadata = symbol.metadata();
+    if (metadata.annotations().isEmpty()) {
+      return;
+    }
+
     boolean inTheSameFile = symbol.declaration() != null;
-    Symbol owner = symbol.owner();
-    if (owner != null && owner.isTypeSymbol() && !inTheSameFile
+    if (isFieldMethodOrClass(symbol) && !inTheSameFile
       && (ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith))) {
       reportIssue(identifier, String.format("Remove this usage of \"%s\", it is annotated with @VisibleForTesting and should not be accessed from production code.",
         identifier.name()));
     }
+  }
+
+  private static boolean isFieldMethodOrClass(Symbol symbol) {
+    Symbol owner = symbol.owner();
+    return ((owner != null) && owner.isTypeSymbol()) || symbol.isTypeSymbol();
   }
 }

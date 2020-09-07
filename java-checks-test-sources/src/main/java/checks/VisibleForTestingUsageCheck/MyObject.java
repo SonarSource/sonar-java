@@ -20,4 +20,10 @@ public class MyObject {
   int answer(int result) {
     return result;
   }
+
+  @VisibleForTesting
+  class Nested {}
 }
+
+@VisibleForTesting
+class Outer {}

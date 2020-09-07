@@ -1,8 +1,16 @@
 package checks.VisibleForTestingUsageCheck;
 
+import com.google.common.annotations.VisibleForTesting;
+
 public class Service {
 
   public String f(int param) {
+
+    TestOnly testOnly = null; // Compliant, TestOnly class visible if it is private
+
+    MyObject.Nested nested = null; // Noncompliant {{Remove this usage of "Nested", it is annotated with @VisibleForTesting and should not be accessed from production code.}}
+
+    Outer outer = null; // Noncompliant {{Remove this usage of "Outer", it is annotated with @VisibleForTesting and should not be accessed from production code.}}
 
     String foo = new MyObj().bar; // False negative MyObj and Service are in the same file but if 'bar' is private it wouldn't be visible here)
 
@@ -11,7 +19,7 @@ public class Service {
     return new MyObject().foo; // Noncompliant {{Remove this usage of "foo", it is annotated with @VisibleForTesting and should not be accessed from production code.}}
   }
 
-  public int g(int param) {
+  public int g(@Deprecated int param) {
     MyObject myObject = new MyObject();
 
     myObject.answer(123); // Compliant, no annotation
@@ -22,8 +30,14 @@ public class Service {
 }
 
 class MyObj {
-  @com.google.common.annotations.VisibleForTesting
+  @VisibleForTesting
   String bar;
+}
+
+
+@VisibleForTesting
+class TestOnly {
+
 }
 
 
