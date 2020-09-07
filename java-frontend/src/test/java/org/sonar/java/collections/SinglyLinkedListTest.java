@@ -84,14 +84,13 @@ class SinglyLinkedListTest {
     PStack<Object> s1 = PCollections.emptyStack().push(b).push(a);
     PStack<Object> s2 = PCollections.emptyStack().push(b).push(a);
 
-    // twice to cover hashCode cache
-    assertThat(s1.hashCode()).isEqualTo(s2.hashCode());
-    assertThat(s1.hashCode()).isEqualTo(s2.hashCode());
-
     assertThat(s1)
       .isNotNull()
       .isEqualTo(s2)
-      .isEqualTo(s1);
+      .isEqualTo(s1)
+      // twice to cover hashCode cache
+      .hasSameHashCodeAs(s2)
+      .hasSameHashCodeAs(s2);
 
     s1 = PCollections.emptyStack().push(b).push(a);
     s2 = PCollections.emptyStack().push(c).push(a);

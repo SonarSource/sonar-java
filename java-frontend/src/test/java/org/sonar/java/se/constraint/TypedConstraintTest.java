@@ -34,8 +34,8 @@ class TypedConstraintTest {
       .isEqualTo(object1)
       .isEqualTo(object2)
       .isNotEqualTo(null)
-      .isNotEqualTo(new Object());
-    assertThat(object1.hashCode()).isEqualTo(object2.hashCode());
+      .isNotEqualTo(new Object())
+      .hasSameHashCodeAs(object2);
 
     TypedConstraint nullTC1 = new TypedConstraint(Symbols.unknownType.fullyQualifiedName());
     TypedConstraint nullTC2 = new TypedConstraint(Symbols.unknownType.fullyQualifiedName());

@@ -60,7 +60,7 @@ class LocationTest {
     JavaFileScannerContext.Location location = new JavaFileScannerContext.Location(message, node);
 
     // same message, same node
-    assertThat(location.hashCode()).isEqualTo(new JavaFileScannerContext.Location(message, node).hashCode());
+    assertThat(location).hasSameHashCodeAs(new JavaFileScannerContext.Location(message, node));
     // different location
     assertThat(location.hashCode()).isNotEqualTo(new JavaFileScannerContext.Location("msg", node).hashCode());
   }
