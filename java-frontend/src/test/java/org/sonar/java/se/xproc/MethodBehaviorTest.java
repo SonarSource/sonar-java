@@ -216,8 +216,8 @@ class MethodBehaviorTest {
     addYield(differentSignature, ObjectConstraint.NOT_NULL);
     addYield(differentSignature, ObjectConstraint.NULL);
 
+    assertThat(mb).hasSameHashCodeAs(sameSignatureAndYield);
     assertThat(mb.hashCode())
-      .isEqualTo(sameSignatureAndYield.hashCode())
       .isNotEqualTo(differentYield.hashCode())
       .isNotEqualTo(differentSignature.hashCode());
   }

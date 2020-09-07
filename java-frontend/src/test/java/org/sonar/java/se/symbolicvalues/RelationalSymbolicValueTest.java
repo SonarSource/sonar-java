@@ -254,17 +254,20 @@ class RelationalSymbolicValueTest {
   void test_equals_hashCode() throws Exception {
     SymbolicValue ab = relationalSV(Tree.Kind.EQUAL_TO, a, b);
     SymbolicValue ba = relationalSV(Tree.Kind.EQUAL_TO, b, a);
-    assertThat(ab).isEqualTo(ba);
-    assertThat(ab.hashCode()).isEqualTo(ba.hashCode());
+    assertThat(ab)
+      .isEqualTo(ba)
+      .hasSameHashCodeAs(ba);
 
     ab = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.METHOD_EQUALS, a, b);
     ba = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.METHOD_EQUALS, b, a);
-    assertThat(ab).isEqualTo(ba);
-    assertThat(ab.hashCode()).isEqualTo(ba.hashCode());
+    assertThat(ab)
+      .isEqualTo(ba)
+      .hasSameHashCodeAs(ba);
 
     ab = relationalSV(Tree.Kind.LESS_THAN, a, b);
     ba = relationalSV(Tree.Kind.LESS_THAN, b, a);
-    assertThat(ab).isNotEqualTo(ba);
+    assertThat(ab)
+      .isNotEqualTo(ba);
 
     SymbolicValue eq = relationalSV(Tree.Kind.EQUAL_TO, a, b);
     SymbolicValue eq1 = relationalSV(Tree.Kind.EQUAL_TO, b, b);

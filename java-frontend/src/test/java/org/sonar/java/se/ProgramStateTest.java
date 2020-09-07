@@ -199,8 +199,9 @@ class ProgramStateTest {
     ProgramState ps2 = ProgramState.EMPTY_STATE;
     ps2 = ps2.put(var2, sv);
     ps2 = ps2.put(var1, sv);
-    assertThat(ps1).isEqualTo(ps2);
-    assertThat(ps1.hashCode()).isEqualTo(ps2.hashCode());
+    assertThat(ps1)
+      .isEqualTo(ps2)
+      .hasSameHashCodeAs(ps2);
   }
 
   @Test

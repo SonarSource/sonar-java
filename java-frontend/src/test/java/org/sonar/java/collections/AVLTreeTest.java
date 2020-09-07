@@ -83,9 +83,9 @@ class AVLTreeTest {
 
     assertThat(t.hashCode())
       .isEqualTo(((31 * k1.hashCode()) ^ "v1".hashCode()) + ((31 * k2.hashCode()) ^ "v2".hashCode()));
-    assertThat(t2.hashCode())
+    assertThat(t2)
       .as("hashCode doesn't depend on order of operations")
-      .isEqualTo(t.hashCode());
+      .hasSameHashCodeAs(t);
 
     assertThat(t.get(k1))
       .isEqualTo("v1");
@@ -187,14 +187,16 @@ class AVLTreeTest {
     AVLTree<Object, Object> t2 = AVLTree.create().add(o2).add(o1);
     assertThat(t1.key()).as("shape is different").isNotEqualTo(t2.key());
 
-    assertThat(t1.hashCode()).isEqualTo(t2.hashCode());
-    assertThat(t1).isEqualTo(t2);
+    assertThat(t1)
+      .hasSameHashCodeAs(t2)
+      .isEqualTo(t2);
     assertThat(t2).isEqualTo(t1);
 
     Object o3 = new Key(0, "o3");
     AVLTree<Object, Object> t3 = t1.add(o3);
-    assertThat(t1.hashCode()).isEqualTo(t3.hashCode());
-    assertThat(t1).isNotEqualTo(t3);
+    assertThat(t1)
+      .hasSameHashCodeAs(t3)
+      .isNotEqualTo(t3);
     assertThat(t3).isNotEqualTo(t1);
   }
 

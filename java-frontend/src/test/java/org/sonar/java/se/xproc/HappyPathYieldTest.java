@@ -76,7 +76,7 @@ class HappyPathYieldTest {
     HappyPathYield other = new HappyPathYield(mb);
 
     // same values for same yields
-    assertThat(methodYield.hashCode()).isEqualTo(other.hashCode());
+    assertThat(methodYield).hasSameHashCodeAs(other);
 
     // different values for different yields
     other.setResult(-1, NOT_NULL_CONSTRAINT);

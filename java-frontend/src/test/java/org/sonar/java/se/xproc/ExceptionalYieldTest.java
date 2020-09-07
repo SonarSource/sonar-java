@@ -72,7 +72,7 @@ class ExceptionalYieldTest {
     ExceptionalYield other = new ExceptionalYield(methodBehavior);
 
     // same values for same yields
-    assertThat(methodYield.hashCode()).isEqualTo(other.hashCode());
+    assertThat(methodYield).hasSameHashCodeAs(other);
 
     // different values for different yields
     other.setExceptionType("java.lang.Exception");
