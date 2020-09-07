@@ -190,27 +190,6 @@ public class JavaRulingTest {
     executeDebugBuildWithCommonProperties(build, projectName);
   }
 
-  /**
-   * Relevant to test lack of semantic, because we don't construct semantic for files in java/lang package.
-   */
-  @org.junit.Ignore
-  @Test
-  public void jdk_1_6_source() throws Exception {
-    String projectName = "jdk6";
-    prepareProject(projectName, projectName);
-    SonarScanner build = SonarScanner.create(FileLocation.of("../sources/jdk6").getFile())
-      .setProjectKey(projectName)
-      .setProjectName(projectName)
-      .setProjectVersion("0.1.0-SNAPSHOT")
-      .setSourceEncoding("UTF-8")
-      .setSourceDirs(".")
-      .setProperty("sonar.java.source", "1.5")
-      // Dummy sonar.java.binaries to pass validation
-      .setProperty("sonar.java.binaries", "launcher")
-      .setProperty("sonar.inclusions", "java/**/*.java");
-    executeBuildWithCommonProperties(build, projectName);
-  }
-
   private static MavenBuild test_project(String projectKey, String projectName) throws IOException {
     return test_project(projectKey, null, projectName);
   }
