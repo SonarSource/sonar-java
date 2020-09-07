@@ -20,32 +20,41 @@
 package org.sonar.java.checks;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+@Rule(key = "S5803")
 public class VisibleForTestingUsageCheck extends IssuableSubscriptionVisitor {
+
+  private static final List<String> ANNOTATIONS = Arrays.asList(
+    "com.google.common.annotations.VisibleForTesting",
+    "org.assertj.core.util.VisibleForTesting",
+    "androidx.annotation.VisibleForTesting",
+    "org.apache.flink.annotation.VisibleForTesting"
+  );
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.IDENTIFIER);
+    return Collections.singletonList(Tree.Kind.IDENTIFIER);
   }
 
   @Override
   public void visitNode(Tree tree) {
     IdentifierTree identifier = (IdentifierTree) tree;
-
     Symbol symbol = identifier.symbol();
+    SymbolMetadata metadata = symbol.metadata();
+    boolean inTheSameFile = symbol.declaration() != null;
     Symbol owner = symbol.owner();
-    SymbolMetadata metadata = owner.metadata();
-    if (metadata.isAnnotatedWith("com.google.common.annotations.VisibleForTesting")) {
-      reportIssue(identifier, "Remove this usage of \"" + identifier.name() + "\", it is annotated with @VisibleForTesting and should not be accessed from production code.");
+    if (owner != null && owner.isTypeSymbol() && !inTheSameFile
+      && (ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith))) {
+      reportIssue(identifier, String.format("Remove this usage of \"%s\", it is annotated with @VisibleForTesting and should not be accessed from production code.",
+        identifier.name()));
     }
-//
-//    boolean variableSymbol = identifier.symbol().isVariableSymbol();
-//    System.out.println(name + ": " + variableSymbol);
   }
 }

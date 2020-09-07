@@ -20,17 +20,20 @@
 package org.sonar.java.checks;
 
 import java.io.File;
-import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.testing.FilesUtils;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
 class VisibleForTestingUsageCheckTest {
   @Test
   void test() {
+    List<File> classPath = FilesUtils.getClassPath(FilesUtils.DEFAULT_TEST_JARS_DIRECTORY);
+    classPath.add(new File("../java-checks-test-sources/target/classes"));
     JavaCheckVerifier.newVerifier()
-      .withClassPath(Collections.singletonList(new File("../java-checks-test-sources/target/classes")))
+      .withClassPath(classPath)
       .onFile(testSourcesPath("checks/VisibleForTestingUsageCheck/Service.java"))
       .withCheck(new VisibleForTestingUsageCheck())
       .verifyIssues();
