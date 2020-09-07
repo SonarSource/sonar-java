@@ -30,7 +30,7 @@ import org.codehaus.staxmate.SMInputFactory;
 import org.codehaus.staxmate.in.SMHierarchicCursor;
 import org.sonar.plugins.surefire.data.SurefireStaxHandler;
 import org.sonar.plugins.surefire.data.UnitTestIndex;
-import org.sonarsource.analyzer.commons.xml.SafetyFactory;
+import org.sonarsource.analyzer.commons.xml.SafeStaxParserFactory;
 
 public class StaxParser {
 
@@ -39,7 +39,7 @@ public class StaxParser {
 
   public StaxParser(UnitTestIndex index) {
     this.streamHandler = new SurefireStaxHandler(index);
-    XMLInputFactory xmlInputFactory = SafetyFactory.createXMLInputFactory();
+    XMLInputFactory xmlInputFactory = SafeStaxParserFactory.createXMLInputFactory();
     if (xmlInputFactory instanceof WstxInputFactory) {
       WstxInputFactory wstxInputfactory = (WstxInputFactory) xmlInputFactory;
       wstxInputfactory.configureForLowMemUsage();

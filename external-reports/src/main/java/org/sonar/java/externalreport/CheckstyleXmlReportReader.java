@@ -33,7 +33,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
-import org.sonarsource.analyzer.commons.xml.SafetyFactory;
+import org.sonarsource.analyzer.commons.xml.SafeStaxParserFactory;
 
 class CheckstyleXmlReportReader {
 
@@ -72,7 +72,7 @@ class CheckstyleXmlReportReader {
   }
 
   private void read(InputStream in) throws XMLStreamException, IOException {
-    XMLEventReader reader = SafetyFactory.createXMLInputFactory().createXMLEventReader(in);
+    XMLEventReader reader = SafeStaxParserFactory.createXMLInputFactory().createXMLEventReader(in);
 
     while (reader.hasNext()) {
       XMLEvent event = reader.nextEvent();
