@@ -42,7 +42,7 @@ import org.sonar.api.rules.RuleType;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonarsource.analyzer.commons.ExternalRuleLoader;
-import org.sonarsource.analyzer.commons.xml.SafetyFactory;
+import org.sonarsource.analyzer.commons.xml.SafeStaxParserFactory;
 
 public class PmdXmlReportReader {
 
@@ -71,7 +71,7 @@ public class PmdXmlReportReader {
 
   private void parse() throws XMLStreamException, IOException {
     try (InputStream inputStream = new FileInputStream(reportFile)) {
-      XMLEventReader reader = SafetyFactory.createXMLInputFactory().createXMLEventReader(inputStream);
+      XMLEventReader reader = SafeStaxParserFactory.createXMLInputFactory().createXMLEventReader(inputStream);
       while (reader.hasNext()) {
         onXmlEvent(reader.nextEvent());
       }

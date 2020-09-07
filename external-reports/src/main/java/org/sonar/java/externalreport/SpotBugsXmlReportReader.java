@@ -39,7 +39,7 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonarsource.analyzer.commons.ExternalRuleLoader;
-import org.sonarsource.analyzer.commons.xml.SafetyFactory;
+import org.sonarsource.analyzer.commons.xml.SafeStaxParserFactory;
 
 public class SpotBugsXmlReportReader {
 
@@ -72,7 +72,7 @@ public class SpotBugsXmlReportReader {
   }
 
   private void read(InputStream in) throws XMLStreamException, IOException {
-    XMLEventReader reader = SafetyFactory.createXMLInputFactory().createXMLEventReader(in);
+    XMLEventReader reader = SafeStaxParserFactory.createXMLInputFactory().createXMLEventReader(in);
     Deque<String> elementStack = new LinkedList<>();
     while (reader.hasNext()) {
       XMLEvent event = reader.nextEvent();
