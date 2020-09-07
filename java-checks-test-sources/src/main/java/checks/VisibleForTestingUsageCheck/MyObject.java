@@ -3,6 +3,12 @@ package checks.VisibleForTestingUsageCheck;
 import com.google.common.annotations.VisibleForTesting;
 
 public class MyObject {
+
+  MyObject() {}
+
+  @VisibleForTesting
+  MyObject(int i) {}
+
   @VisibleForTesting
   String foo;
 
