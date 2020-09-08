@@ -21,18 +21,22 @@ package org.sonar.java.checks;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S5803")
 public class VisibleForTestingUsageCheck extends IssuableSubscriptionVisitor {
+  
+  private final Set<Symbol> reportedSymbols = new HashSet<>();
 
   private static final List<String> ANNOTATIONS = Arrays.asList(
     "com.google.common.annotations.VisibleForTesting",
@@ -49,38 +53,41 @@ public class VisibleForTestingUsageCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     IdentifierTree identifier = (IdentifierTree) tree;
+
     Symbol symbol = identifier.symbol();
-    SymbolMetadata metadata = symbol.metadata();
-    if (symbol.isUnknown() || metadata.annotations().isEmpty()) {
+    if (symbol.isUnknown() || symbol.metadata().annotations().isEmpty() || reportedSymbols.contains(symbol)) {
       return;
     }
-    Symbol owner = Objects.requireNonNull(symbol.owner(), "Owner is never null if unknown symbols are filtered out");
-
-    if (isFieldMethodOrClass(symbol, owner) && !inTheSameFile(symbol)
-      && isAnnotatedWithVisibleForTesting(metadata)
-      && !isAnnotatedWithVisibleForTesting(owner.metadata())) {
-
+    if (isMisusedVisibleForTesting(symbol)) {
+      List<JavaFileScannerContext.Location> locations = symbol.usages().stream()
+        .filter(identifierTree -> isMisusedVisibleForTesting(identifierTree.symbol()))
+        .map(identifierTree -> new JavaFileScannerContext.Location("usage of @VisibleForTesting in production", identifierTree))
+        .collect(Collectors.toList());
 
       reportIssue(identifier, String.format("Remove this usage of \"%s\", it is annotated with @VisibleForTesting and should not be accessed from production code.",
-        identifier.name()));
+        identifier.name()), locations, null);
+
+      reportedSymbols.add(symbol);
     }
   }
 
-  @Override
-  public void scanFile(JavaFileScannerContext context) {
-    super.scanFile(context);
-
+  private static boolean isMisusedVisibleForTesting(Symbol symbol) {
+    Symbol owner = Objects.requireNonNull(symbol.owner(), "Owner is never null if unknown symbols are filtered out");
+    return isFieldMethodOrClass(symbol, owner) && !inTheSameFile(symbol)
+      && ANNOTATIONS.stream().anyMatch(symbol.metadata()::isAnnotatedWith);
   }
 
   private static boolean inTheSameFile(Symbol symbol) {
     return symbol.declaration() != null;
   }
 
-  private static boolean isAnnotatedWithVisibleForTesting(SymbolMetadata metadata) {
-    return ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
-  }
-
   private static boolean isFieldMethodOrClass(Symbol symbol, Symbol owner) {
     return symbol.isTypeSymbol() || owner.isTypeSymbol();
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    reportedSymbols.clear();
+    super.leaveFile(context);
   }
 }
