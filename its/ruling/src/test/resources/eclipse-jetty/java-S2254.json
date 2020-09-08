@@ -5,15 +5,4 @@
 'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java':[
 1591,
 ],
-'org.eclipse.jetty:jetty-project:jetty-servlets/src/main/java/org/eclipse/jetty/servlets/DoSFilter.java':[
-1512,
-1515,
-1518,
-],
-'org.eclipse.jetty:jetty-project:tests/test-webapps/test-jetty-webapp/src/main/java/com/acme/Dump.java':[
-498,
-],
-'org.eclipse.jetty:jetty-project:tests/test-webapps/test-jetty-webapp/src/main/java/com/acme/RegTest.java':[
-140,
-],
 }

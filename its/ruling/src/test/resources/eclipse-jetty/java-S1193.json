@@ -1,11 +1,5 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-jaas/src/main/java/org/eclipse/jetty/jaas/spi/AbstractLoginModule.java':[
-284,
-],
 'org.eclipse.jetty:jetty-project:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONCollectionConvertor.java':[
 50,
-],
-'org.eclipse.jetty:jetty-project:jetty-websocket/websocket-core-common/src/main/java/org/eclipse/jetty/websocket/core/internal/Parser.java':[
-238,
 ],
 }

@@ -5,18 +5,6 @@
 'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/DateParser.java':[
 58,
 ],
-'org.eclipse.jetty:jetty-project:jetty-jaspi/src/main/java/org/eclipse/jetty/security/jaspi/ServletCallbackHandler.java':[
-47,
-48,
-129,
-136,
-],
-'org.eclipse.jetty:jetty-project:jetty-jndi/src/main/java/org/eclipse/jetty/jndi/ContextFactory.java':[
-72,
-78,
-247,
-259,
-],
 'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java':[
 280,
 ],
@@ -42,8 +30,5 @@
 ],
 'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/Pool.java':[
 68,
-],
-'org.eclipse.jetty:jetty-project:tests/jetty-jmh/src/main/java/org/eclipse/jetty/requestlog/jmh/RequestLogBenchmark.java':[
-80,
 ],
 }

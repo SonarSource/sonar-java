@@ -1,7 +1,4 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-webapp/src/main/java/org/eclipse/jetty/webapp/WebDescriptor.java':[
-294,
-],
 'org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java':[
 77,
 ],

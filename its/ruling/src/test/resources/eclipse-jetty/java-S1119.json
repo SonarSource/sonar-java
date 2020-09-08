@@ -1,7 +1,4 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-http2/http2-hpack/src/main/java/org/eclipse/jetty/http2/hpack/HpackDecoder.java':[
-174,
-],
 'org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/WriteFlusher.java':[
 311,
 ],
@@ -49,8 +46,5 @@
 ],
 'org.eclipse.jetty:jetty-project:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/HttpTester.java':[
 449,
-],
-'org.eclipse.jetty:jetty-project:tests/test-webapps/test-servlet-spec/test-spec-webapp/src/main/java/com/acme/test/MultiPartTest.java':[
-114,
 ],
 }

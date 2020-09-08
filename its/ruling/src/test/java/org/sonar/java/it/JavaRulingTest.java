@@ -168,11 +168,8 @@ public class JavaRulingTest {
   public void eclipse_jetty() throws Exception {
     String projectName = "eclipse-jetty";
     MavenBuild build = test_project("org.eclipse.jetty:jetty-project", projectName)
-      .setProperty("sonar.exclusions", "" +
-        "**/src/main/resources/*.java," +
-        "**/src/test/resources/*.java," +
-        "jetty-server/src/main/java/org/eclipse/jetty/server/HttpInput.java," +
-        "jetty-osgi/jetty-osgi-boot/src/main/java/org/eclipse/jetty/osgi/boot/internal/serverfactory/ServerInstanceWrapper.java")
+      .setProperty("sonar.exclusions", "jetty-server/src/main/java/org/eclipse/jetty/server/HttpInput.java," +
+          "jetty-osgi/jetty-osgi-boot/src/main/java/org/eclipse/jetty/osgi/boot/internal/serverfactory/ServerInstanceWrapper.java")
       .addArgument("-Dpmd.skip=true")
       .addArgument("-Dcheckstyle.skip=true");
     executeBuildWithCommonProperties(build, projectName);

@@ -1,8 +1,0 @@
-{
-'org.eclipse.jetty:jetty-project:jetty-documentation/src/main/java/embedded/server/http2/HTTP2ServerDocs.java':[
-262,
-],
-'org.eclipse.jetty:jetty-project:jetty-http2/http2-common/src/main/java/org/eclipse/jetty/http2/HTTP2Flusher.java':[
-412,
-],
-}

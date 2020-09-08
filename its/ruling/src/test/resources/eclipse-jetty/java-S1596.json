@@ -7,7 +7,4 @@
 'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java':[
 154,
 ],
-'org.eclipse.jetty:jetty-project:jetty-servlet/src/main/java/org/eclipse/jetty/servlet/Holder.java':[
-85,
-],
 }

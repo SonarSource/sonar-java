@@ -1,10 +1,4 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-plus/src/main/java/org/eclipse/jetty/plus/security/DataSourceLoginService.java':[
-381,
-401,
-420,
-423,
-],
 'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java':[
 333,
 352,

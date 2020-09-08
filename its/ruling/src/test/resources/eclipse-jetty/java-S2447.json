@@ -2,7 +2,4 @@
 'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/IncludeExcludeSet.java':[
 183,
 ],
-'org.eclipse.jetty:jetty-project:jetty-websocket/websocket-javax-server/src/main/java/org/eclipse/jetty/websocket/javax/server/config/JavaxWebSocketServletContainerInitializer.java':[
-84,
-],
 }

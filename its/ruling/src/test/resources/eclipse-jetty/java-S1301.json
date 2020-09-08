@@ -27,10 +27,4 @@
 'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/URIUtil.java':[
 365,
 ],
-'org.eclipse.jetty:jetty-project:jetty-websocket/websocket-jetty-common/src/main/java/org/eclipse/jetty/websocket/common/JettyWebSocketFrameHandler.java':[
-433,
-],
-'org.eclipse.jetty:jetty-project:tests/jetty-jmh/src/main/java/org/eclipse/jetty/util/thread/jmh/ReservedThreadPoolBenchmark.java':[
-68,
-],
 }

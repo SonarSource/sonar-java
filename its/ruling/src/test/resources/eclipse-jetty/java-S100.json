@@ -1,12 +1,4 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-client/src/main/java/org/eclipse/jetty/client/HttpClient.java':[
-336,
-351,
-366,
-381,
-393,
-404,
-],
 'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/security/UnixCrypt.java':[
 340,
 349,

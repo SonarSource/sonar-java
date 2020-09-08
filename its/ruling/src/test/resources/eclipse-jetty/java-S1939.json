@@ -5,12 +5,6 @@
 'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedQualityCSV.java':[
 41,
 ],
-'org.eclipse.jetty:jetty-project:jetty-http2/http2-server/src/main/java/org/eclipse/jetty/http2/server/HTTP2ServerConnection.java':[
-355,
-],
-'org.eclipse.jetty:jetty-project:jetty-security/src/main/java/org/eclipse/jetty/security/authentication/SessionAuthentication.java':[
-44,
-],
 'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/InetAccessSet.java':[
 33,
 ],
@@ -25,14 +19,5 @@
 ],
 'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/thread/QueuedThreadPool.java':[
 48,
-],
-'org.eclipse.jetty:jetty-project:jetty-websocket/websocket-javax-tests/src/main/java/org/eclipse/jetty/websocket/javax/tests/LocalFuzzer.java':[
-43,
-],
-'org.eclipse.jetty:jetty-project:jetty-websocket/websocket-javax-tests/src/main/java/org/eclipse/jetty/websocket/javax/tests/NetworkFuzzer.java':[
-48,
-],
-'org.eclipse.jetty:jetty-project:jetty-websocket/websocket-javax-tests/src/main/java/org/eclipse/jetty/websocket/javax/tests/WSServer.java':[
-50,
 ],
 }

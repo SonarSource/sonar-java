@@ -1,10 +1,4 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-quickstart/src/main/java/org/eclipse/jetty/quickstart/QuickStartGeneratorConfiguration.java':[
-758,
-],
-'org.eclipse.jetty:jetty-project:jetty-start/src/main/java/org/eclipse/jetty/start/StartArgs.java':[
-228,
-],
 'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/FutureCallback.java':[
 34,
 ],
@@ -13,8 +7,5 @@
 ],
 'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/RolloverFileOutputStream.java':[
 405,
-],
-'org.eclipse.jetty:jetty-project:jetty-websocket/websocket-util/src/main/java/org/eclipse/jetty/websocket/util/messages/MessageInputStream.java':[
-51,
 ],
 }

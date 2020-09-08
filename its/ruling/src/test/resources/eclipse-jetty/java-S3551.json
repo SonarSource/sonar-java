@@ -1,8 +1,4 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-proxy/src/main/java/org/eclipse/jetty/proxy/AfterContentTransformer.java':[
-360,
-403,
-],
 'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ByteArrayOutputStream2.java':[
 68,
 ],

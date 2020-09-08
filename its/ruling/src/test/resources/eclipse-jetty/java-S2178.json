@@ -2,13 +2,4 @@
 'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpTokens.java':[
 67,
 ],
-'org.eclipse.jetty:jetty-project:jetty-http2/http2-server/src/main/java/org/eclipse/jetty/http2/server/HttpChannelOverHTTP2.java':[
-271,
-],
-'org.eclipse.jetty:jetty-project:jetty-jspc-maven-plugin/src/main/java/org/eclipse/jetty/jspc/plugin/JspcMojo.java':[
-339,
-],
-'org.eclipse.jetty:jetty-project:tests/test-webapps/test-jetty-webapp/src/main/java/com/acme/ChatServlet.java':[
-211,
-],
 }

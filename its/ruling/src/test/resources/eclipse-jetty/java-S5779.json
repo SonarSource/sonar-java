@@ -1,8 +1,4 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-client/src/test/java/org/eclipse/jetty/client/HttpClientCustomProxyTest.java':[
-243,
-244,
-],
 'org.eclipse.jetty:jetty-project:jetty-io/src/test/java/org/eclipse/jetty/io/SocketChannelEndPointTest.java':[
 510,
 511,

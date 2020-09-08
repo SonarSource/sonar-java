@@ -8,13 +8,4 @@
 'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelState.java':[
 40,
 ],
-'org.eclipse.jetty:jetty-project:jetty-websocket/websocket-javax-tests/src/main/java/org/eclipse/jetty/websocket/javax/tests/WSEndpointTracker.java':[
-36,
-],
-'org.eclipse.jetty:jetty-project:jetty-websocket/websocket-javax-tests/src/main/java/org/eclipse/jetty/websocket/javax/tests/WSEventTracker.java':[
-38,
-],
-'org.eclipse.jetty:jetty-project:tests/test-sessions/test-sessions-common/src/main/java/org/eclipse/jetty/server/session/AbstractSessionDataStoreTest.java':[
-40,
-],
 }

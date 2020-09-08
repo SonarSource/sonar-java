@@ -5,9 +5,6 @@
 'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/DefaultSessionIdManager.java':[
 65,
 ],
-'org.eclipse.jetty:jetty-project:jetty-start/src/main/java/org/eclipse/jetty/start/config/JettyHomeConfigSource.java':[
-30,
-],
 'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/BufferUtil.java':[
 874,
 914,
@@ -43,8 +40,5 @@
 421,
 422,
 422,
-],
-'org.eclipse.jetty:jetty-project:tests/jetty-jmh/src/main/java/org/eclipse/jetty/util/thread/strategy/jmh/TestConnection.java':[
-46,
 ],
 }

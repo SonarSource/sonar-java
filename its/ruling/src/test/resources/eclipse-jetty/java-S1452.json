@@ -6,15 +6,6 @@
 'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpContent.java':[
 78,
 ],
-'org.eclipse.jetty:jetty-project:jetty-jaas/src/main/java/org/eclipse/jetty/jaas/callback/RequestParameterCallback.java':[
-51,
-],
-'org.eclipse.jetty:jetty-project:jetty-plus/src/main/java/org/eclipse/jetty/plus/jndi/NamingEntryUtil.java':[
-116,
-],
-'org.eclipse.jetty:jetty-project:jetty-security/src/main/java/org/eclipse/jetty/security/authentication/ClientCertAuthenticator.java':[
-194,
-],
 'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/ResourceCollators.java':[
 55,
 67,

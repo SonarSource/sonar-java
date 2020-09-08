@@ -2,10 +2,4 @@
 'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceService.java':[
 634,
 ],
-'org.eclipse.jetty:jetty-project:tests/test-webapps/test-jetty-webapp/src/main/java/com/acme/ChatServlet.java':[
-193,
-],
-'org.eclipse.jetty:jetty-project:tests/test-webapps/test-jetty-webapp/src/main/java/com/acme/RegTest.java':[
-63,
-],
 }

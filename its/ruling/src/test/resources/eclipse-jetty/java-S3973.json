@@ -1,9 +1,0 @@
-{
-'org.eclipse.jetty:jetty-project:jetty-webapp/src/main/java/org/eclipse/jetty/webapp/WebInfConfiguration.java':[
-296,
-426,
-],
-'org.eclipse.jetty:jetty-project:tests/test-webapps/test-cdi-common-webapp/src/main/java/org/eclipse/jetty/test/InfoServlet.java':[
-53,
-],
-}

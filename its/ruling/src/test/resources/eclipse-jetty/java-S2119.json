@@ -1,9 +1,0 @@
-{
-'org.eclipse.jetty:jetty-project:jetty-client/src/main/java/org/eclipse/jetty/client/util/MultiPartRequestContent.java':[
-70,
-],
-'org.eclipse.jetty:jetty-project:jetty-maven-plugin/src/main/java/org/eclipse/jetty/maven/plugin/AbstractWebAppMojo.java':[
-500,
-519,
-],
-}

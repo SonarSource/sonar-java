@@ -1,8 +1,0 @@
-{
-'org.eclipse.jetty:jetty-project:jetty-osgi/jetty-osgi-boot/src/main/java/org/eclipse/jetty/osgi/boot/BundleWebAppProvider.java':[
-213,
-],
-'org.eclipse.jetty:jetty-project:jetty-quickstart/src/main/java/org/eclipse/jetty/quickstart/PreconfigureQuickStartWar.java':[
-129,
-],
-}
