@@ -25,13 +25,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import org.sonar.java.testing.FilesUtils;
 
+import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
 class VisibleForTestingUsageCheckTest {
   @Test
   void test() {
     List<File> classPath = FilesUtils.getClassPath(FilesUtils.DEFAULT_TEST_JARS_DIRECTORY);
-    classPath.add(new File("../java-checks-test-sources/target/classes"));
+    classPath.add(new File("../java-checks-test-sources/target/classes/"));
     JavaCheckVerifier.newVerifier()
       .withClassPath(classPath)
       .onFile(testSourcesPath("checks/VisibleForTestingUsageCheck/Service.java"))
@@ -39,4 +40,11 @@ class VisibleForTestingUsageCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_non_compiling() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/VisibleForTestingUsageCheck.java"))
+      .withCheck(new VisibleForTestingUsageCheck())
+      .verifyNoIssues();
+  }
 }

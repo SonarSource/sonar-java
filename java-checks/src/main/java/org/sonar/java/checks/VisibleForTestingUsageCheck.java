@@ -22,8 +22,10 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -49,20 +51,36 @@ public class VisibleForTestingUsageCheck extends IssuableSubscriptionVisitor {
     IdentifierTree identifier = (IdentifierTree) tree;
     Symbol symbol = identifier.symbol();
     SymbolMetadata metadata = symbol.metadata();
-    if (metadata.annotations().isEmpty()) {
+    if (symbol.isUnknown() || metadata.annotations().isEmpty()) {
       return;
     }
+    Symbol owner = Objects.requireNonNull(symbol.owner(), "Owner is never null if unknown symbols are filtered out");
 
-    boolean inTheSameFile = symbol.declaration() != null;
-    if (isFieldMethodOrClass(symbol) && !inTheSameFile
-      && (ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith))) {
+    if (isFieldMethodOrClass(symbol, owner) && !inTheSameFile(symbol)
+      && isAnnotatedWithVisibleForTesting(metadata)
+      && !isAnnotatedWithVisibleForTesting(owner.metadata())) {
+
+
       reportIssue(identifier, String.format("Remove this usage of \"%s\", it is annotated with @VisibleForTesting and should not be accessed from production code.",
         identifier.name()));
     }
   }
 
-  private static boolean isFieldMethodOrClass(Symbol symbol) {
-    Symbol owner = symbol.owner();
-    return ((owner != null) && owner.isTypeSymbol()) || symbol.isTypeSymbol();
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    super.scanFile(context);
+
+  }
+
+  private static boolean inTheSameFile(Symbol symbol) {
+    return symbol.declaration() != null;
+  }
+
+  private static boolean isAnnotatedWithVisibleForTesting(SymbolMetadata metadata) {
+    return ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
+  }
+
+  private static boolean isFieldMethodOrClass(Symbol symbol, Symbol owner) {
+    return symbol.isTypeSymbol() || owner.isTypeSymbol();
   }
 }

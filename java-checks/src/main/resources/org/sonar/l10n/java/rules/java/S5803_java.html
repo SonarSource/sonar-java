@@ -1,12 +1,23 @@
-<p><code>@VisibleForTesting</code>&nbsp;can be used to mark methods and fields whose visibility restrictions have been relaxed more than necessary for
-the API to allow for easier unit testing.</p>
-<p>Access to such methods and fields only possible thanks to this relaxed visibility is fine for test code, but it should be avoided in production
-code.</p>
+<p>@VisibleForTesting can be used to mark methods, fields and classes whose visibility restrictions have been relaxed more than necessary for the API
+to allow for easier unit testing.</p>
+<p>Access to such methods, fields and classes only possible thanks to this relaxed visibility is fine for test code, but it should be avoided in
+production code.</p>
 <p>Supported framework:</p>
-<p> * Guava (com.google.common.annotations.VisibleForTestin)</p>
-<p> * AssertJ (org.assertj.core.util.VisibleForTesting)</p>
-<p> * Android (androidx.annotation.VisibleForTesting)</p>
-<p> * Apache Flink (org.apache.flink.annotation.VisibleForTesting)</p>
+<p> * Guava</p>
+<pre>
+com.google.common.annotations.VisibleForTesting{code}
+
+ * AssertJ
+{code:java}
+<p>org.assertj.core.util.VisibleForTesting{code}</p>
+<p> * Android</p>
+<pre>
+androidx.annotation.VisibleForTesting{code}
+
+ * Apache Flink
+{code:java}
+<p>org.apache.flink.annotation.VisibleForTesting{code}</p>
+
 <h2>Noncompliant Code Example</h2>
 <pre>
 /** src/main/java/MyObject.java */
@@ -17,6 +28,7 @@ code.</p>
 
 new MyObject().foo; // Noncompliant, foo is accessed from production code
 </pre>
+
 <h2>Compliant Solution</h2>
 <pre>
 /** src/main/java/MyObject.java */
@@ -27,4 +39,5 @@ new MyObject().foo; // Noncompliant, foo is accessed from production code
 
 new MyObject().foo; // Compliant, foo is accessed from test code
 </pre>
+</pre></pre>
 
