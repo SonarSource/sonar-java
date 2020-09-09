@@ -129,6 +129,7 @@ import org.sonar.java.checks.tests.AssertJChainSimplificationCheck;
 import org.sonar.java.checks.tests.AssertJConsecutiveAssertionCheck;
 import org.sonar.java.checks.tests.AssertJContextBeforeAssertionCheck;
 import org.sonar.java.checks.tests.AssertJTestForEmptinessCheck;
+import org.sonar.java.checks.tests.AssertThatThrownByAloneCheck;
 import org.sonar.java.checks.tests.AssertTrueInsteadOfDedicatedAssertCheck;
 import org.sonar.java.checks.tests.AssertionArgumentOrderCheck;
 import org.sonar.java.checks.tests.AssertionCompareToSelfCheck;
@@ -787,6 +788,7 @@ public final class CheckList {
       AssertJConsecutiveAssertionCheck.class,
       AssertJContextBeforeAssertionCheck.class,
       AssertJTestForEmptinessCheck.class,
+      AssertThatThrownByAloneCheck.class,
       AssertTrueInsteadOfDedicatedAssertCheck.class,
       BadTestClassNameCheck.class,
       BadTestMethodNameCheck.class,
