@@ -1,0 +1,12 @@
+{
+  "title": "AssertJ \"assertThatThrownBy\" should not be used alone",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "tags": [
+    "tests"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-5958",
+  "sqKey": "S5958",
+  "scope": "Tests"
+}
