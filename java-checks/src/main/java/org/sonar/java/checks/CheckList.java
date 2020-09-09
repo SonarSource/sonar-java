@@ -745,6 +745,7 @@ public final class CheckList {
       VarArgCheck.class,
       VariableDeclarationScopeCheck.class,
       VerifiedServerHostnamesCheck.class,
+      VisibleForTestingUsageCheck.class,
       VolatileNonPrimitiveFieldCheck.class,
       VolatileVariablesOperationsCheck.class,
       WaitInSynchronizeCheck.class,

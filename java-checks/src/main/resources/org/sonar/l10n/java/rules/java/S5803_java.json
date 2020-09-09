@@ -1,0 +1,12 @@
+{
+  "title": "Class members annotated with \"@VisibleForTesting\" should not be accessed from production code",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "tags": [
+    "pitfall"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-5803",
+  "sqKey": "S5803",
+  "scope": "Main"
+}
