@@ -165,6 +165,17 @@ public class JavaRulingTest {
   }
 
   @Test
+  public void eclipse_jetty() throws Exception {
+    String projectName = "eclipse-jetty";
+    MavenBuild build = test_project("org.eclipse.jetty:jetty-project", projectName)
+      .setProperty("sonar.exclusions", "jetty-server/src/main/java/org/eclipse/jetty/server/HttpInput.java," +
+          "jetty-osgi/jetty-osgi-boot/src/main/java/org/eclipse/jetty/osgi/boot/internal/serverfactory/ServerInstanceWrapper.java")
+      .addArgument("-Dpmd.skip=true")
+      .addArgument("-Dcheckstyle.skip=true");
+    executeBuildWithCommonProperties(build, projectName);
+  }
+
+  @Test
   public void sonarqube_server() throws Exception {
     // sonarqube-6.5/server/sonar-server (v.6.5)
     String projectName = "sonar-server";
