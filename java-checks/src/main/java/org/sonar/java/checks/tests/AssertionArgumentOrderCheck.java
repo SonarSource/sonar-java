@@ -39,7 +39,13 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S3415")
 public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
 
+  private static final String ASSERT_EQUALS = "assertEquals";
+  private static final String ASSERT_NOT_EQUALS = "assertNotEquals";
+  private static final String ASSERT_SAME = "assertSame";
+  private static final String ASSERT_NOT_SAME = "assertNotSame";
+
   private static final String ORG_JUNIT_ASSERT = "org.junit.Assert";
+  private static final String ORG_TESTNG_ASSERT = "org.testng.Assert";
   private static final String ORG_JUNIT5_ASSERTIONS = "org.junit.jupiter.api.Assertions";
   private static final Tree.Kind[] LITERAL_KINDS = {Tree.Kind.STRING_LITERAL, Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL, Tree.Kind.CHAR_LITERAL,
     Tree.Kind.NULL_LITERAL, Tree.Kind.BOOLEAN_LITERAL, Tree.Kind.DOUBLE_LITERAL, Tree.Kind.FLOAT_LITERAL};
@@ -59,12 +65,17 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
   protected MethodMatchers getMethodInvocationMatchers() {
     return MethodMatchers.or(
       MethodMatchers.create().ofTypes(ORG_JUNIT_ASSERT)
-        .names("assertEquals", "assertSame", "assertNotSame")
+        .names(ASSERT_EQUALS, ASSERT_SAME, ASSERT_NOT_SAME)
+        .withAnyParameters()
+        .build(),
+      // TestNG
+      MethodMatchers.create().ofTypes(ORG_TESTNG_ASSERT)
+        .names(ASSERT_EQUALS, ASSERT_NOT_EQUALS, ASSERT_SAME, ASSERT_NOT_SAME)
         .withAnyParameters()
         .build(),
       // JUnit 5
       MethodMatchers.create().ofTypes(ORG_JUNIT5_ASSERTIONS)
-        .names("assertArrayEquals", "assertEquals", "assertIterableEquals", "assertLinesMatch", "assertNotEquals", "assertNotSame", "assertSame")
+        .names("assertArrayEquals", ASSERT_EQUALS, "assertIterableEquals", "assertLinesMatch", ASSERT_NOT_EQUALS, ASSERT_NOT_SAME, ASSERT_SAME)
         .withAnyParameters()
         .build(),
       // AssertJ
@@ -77,11 +88,14 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    if (mit.symbol().owner().type().is(ORG_JUNIT5_ASSERTIONS)) {
+    Type ownerType = mit.symbol().owner().type();
+    if (ownerType.is(ORG_JUNIT5_ASSERTIONS)) {
       checkArguments(mit.arguments().get(0), mit.arguments().get(1), "expected value, actual value");
-    } else if (mit.symbol().owner().type().is(ORG_JUNIT_ASSERT)) {
+    } else if (ownerType.is(ORG_JUNIT_ASSERT)) {
       ExpressionTree argToCheck = getActualArgument(mit);
       checkArguments(previousArg(argToCheck, mit), argToCheck, "expected value, actual value");
+    } else if (ownerType.is(ORG_TESTNG_ASSERT)) {
+      checkArguments(mit.arguments().get(1), mit.arguments().get(0), "actual value, expected value");
     } else {
       Optional<ExpressionTree> expectedValue = getExpectedValue(mit);
       ExpressionTree actualValue = mit.arguments().get(0);
