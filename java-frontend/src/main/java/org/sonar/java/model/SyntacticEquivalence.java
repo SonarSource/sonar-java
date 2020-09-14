@@ -19,14 +19,14 @@
  */
 package org.sonar.java.model;
 
-import org.sonar.plugins.java.api.tree.SyntaxToken;
-import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.Nullable;
-
+import com.google.common.annotations.VisibleForTesting;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiPredicate;
+import javax.annotation.Nullable;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
 
 public final class SyntacticEquivalence {
 
@@ -37,13 +37,21 @@ public final class SyntacticEquivalence {
    * @return true, if nodes are syntactically equivalent
    */
   public static boolean areEquivalent(List<? extends Tree> leftList, List<? extends Tree> rightList) {
+    return areEquivalent(leftList, rightList, (t1, t2) -> false);
+  }
+
+  /**
+   * @return true, if nodes are syntactically equivalent
+   * Use equivalenceFilter to force the equivalence of two nodes
+   */
+  public static boolean areEquivalent(List<? extends Tree> leftList, List<? extends Tree> rightList, BiPredicate<JavaTree, JavaTree> equivalenceFilter) {
     if (leftList.size() != rightList.size()) {
       return false;
     }
     for (int i = 0; i < leftList.size(); i++) {
       Tree left = leftList.get(i);
       Tree right = rightList.get(i);
-      if (!areEquivalent(left, right)) {
+      if (!areEquivalent(left, right, equivalenceFilter)) {
         return false;
       }
     }
@@ -51,18 +59,30 @@ public final class SyntacticEquivalence {
   }
 
   /**
-  * @return true, if nodes are syntactically equivalent
-  */
+   * @return true, if nodes are syntactically equivalent
+   */
   public static boolean areEquivalent(@Nullable Tree leftNode, @Nullable Tree rightNode) {
-    return areEquivalent((JavaTree) leftNode, (JavaTree) rightNode);
+    return areEquivalent(leftNode, rightNode, (t1, t2) -> false);
   }
 
-  private static boolean areEquivalent(@Nullable JavaTree leftNode, @Nullable JavaTree rightNode) {
+  /**
+   * @return true, if nodes are syntactically equivalent
+   * Use equivalenceFilter to force the equivalence of two nodes
+   */
+  @VisibleForTesting
+  static boolean areEquivalent(@Nullable Tree leftNode, @Nullable Tree rightNode, BiPredicate<JavaTree, JavaTree> equivalenceFilter) {
+    return areEquivalent((JavaTree) leftNode, (JavaTree) rightNode, equivalenceFilter);
+  }
+
+  private static boolean areEquivalent(@Nullable JavaTree leftNode, @Nullable JavaTree rightNode, BiPredicate<JavaTree, JavaTree> equivalenceFilter) {
     if (leftNode == rightNode) {
       return true;
     }
     if (leftNode == null || rightNode == null) {
       return false;
+    }
+    if (equivalenceFilter.test(leftNode, rightNode)) {
+      return true;
     }
     if (leftNode.kind() != rightNode.kind() || leftNode.is(Tree.Kind.OTHER)) {
       return false;
@@ -73,7 +93,7 @@ public final class SyntacticEquivalence {
     Iterator<Tree> iteratorB = rightNode.getChildren().iterator();
 
     while (iteratorA.hasNext() && iteratorB.hasNext()) {
-      if (!areEquivalent(iteratorA.next(), iteratorB.next())) {
+      if (!areEquivalent(iteratorA.next(), iteratorB.next(), equivalenceFilter)) {
         return false;
       }
     }

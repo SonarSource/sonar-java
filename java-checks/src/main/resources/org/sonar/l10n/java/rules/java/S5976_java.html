@@ -1,0 +1,57 @@
+<p>When multiple tests differ only by a few hardcoded values they should be refactored as a single "parameterized" test. This reduces the chances of
+adding a bug and makes them more readable. Parameterized tests exist in most test frameworks (JUnit, TestNG, etc...).</p>
+<h2>Noncompliant Code Example</h2>
+<p>with JUnit 5</p>
+<pre>
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+
+public class AppTest
+{
+    @Test
+    void testSum11() {  // Noncompliant. These tests differ only by a few hardcoded numbers.
+        assertEquals(Integer.sum(1, 1), 2);
+    }
+
+    @Test
+    void testSum12() {  // Similar test
+        assertEquals(Integer.sum(1, 2), 3);
+    }
+
+    @Test
+    void testSum22() {  // Similar test
+        assertEquals(Integer.sum(2, 2), 4);
+    }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+
+public class AppTest
+{
+    @ParameterizedTest
+    @CsvSource({
+        "1, 1, 2",
+        "1, 2, 3",
+        "2, 2, 4",
+    })
+    void testSum(int a, int b, int result) {
+        assertEquals(Integer.sum(a, b), result);
+    }
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://phauer.com/2019/modern-best-practices-testing-java/#use-parameterized-tests">Modern Best Practices for Testing in Java -
+  Philipp Hauer</a> </li>
+  <li> <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests">JUnit 5 documentation - Parameterized tests</a>
+  </li>
+  <li> <a href="https://www.testwithspring.com/lesson/writing-parameterized-tests-with-junit-4/">Writing Parameterized Tests With JUnit 4</a> </li>
+  <li> <a href="https://testng.org/doc/documentation-main.html#parameters">TestNG documentation - Parameters</a> </li>
+</ul>
+
