@@ -42,4 +42,12 @@ class AssertionArgumentOrderCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_TestNG() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/AssertionArgumentOrderCheck_TestNG.java"))
+      .withCheck(new AssertionArgumentOrderCheck())
+      .verifyIssues();
+  }
+
 }
