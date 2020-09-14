@@ -690,6 +690,15 @@
     </dependency>
   </dependencies>
 
+  <profiles>
+    <profile>
+      <id>analyze-tests</id>
+      <properties>
+        <sonar.skip>false</sonar.skip>
+      </properties>
+    </profile>
+  </profiles>
+
   <build>
     <plugins>
       <!--
