@@ -157,6 +157,7 @@ import org.sonar.java.checks.tests.OneExpectedRuntimeExceptionCheck;
 import org.sonar.java.checks.tests.TestAnnotationWithExpectedExceptionCheck;
 import org.sonar.java.checks.tests.TestsStabilityCheck;
 import org.sonar.java.checks.tests.ThreadSleepInTestsCheck;
+import org.sonar.java.checks.tests.TooManyAssertionsCheck;
 import org.sonar.java.checks.unused.UnusedLabelCheck;
 import org.sonar.java.checks.unused.UnusedLocalVariableCheck;
 import org.sonar.java.checks.unused.UnusedMethodParameterCheck;
@@ -811,6 +812,7 @@ public final class CheckList {
       TestAnnotationWithExpectedExceptionCheck.class,
       TestsStabilityCheck.class,
       ThreadSleepInTestsCheck.class,
+      TooManyAssertionsCheck.class,
       UnusedTestRuleCheck.class);
   }
 

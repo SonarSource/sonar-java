@@ -47,6 +47,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.sonar.java.checks.helpers.UnitTestUtils.hasJUnit5TestAnnotation;
+import static org.sonar.java.checks.helpers.UnitTestUtils.isUnitTest;
 import static org.sonar.java.model.ExpressionUtils.methodName;
 
 @Rule(key = "S2699")
@@ -170,23 +171,6 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
       }
     }
     return false;
-  }
-
-  private static boolean isUnitTest(MethodTree methodTree) {
-    Symbol.MethodSymbol symbol = methodTree.symbol();
-    while (symbol != null) {
-      if (symbol.metadata().isAnnotatedWith("org.junit.Test")) {
-        return true;
-      }
-      symbol = symbol.overriddenSymbol();
-    }
-
-    if (hasJUnit5TestAnnotation(methodTree)) {
-      // contrary to JUnit 4, JUnit 5 Test annotations are not inherited when method is overridden, so no need to check overridden symbols
-      return true;
-    }
-    Symbol.TypeSymbol enclosingClass = methodTree.symbol().enclosingClass();
-    return enclosingClass != null && enclosingClass.type().isSubtypeOf("junit.framework.TestCase") && methodTree.simpleName().name().startsWith("test");
   }
 
   private class AssertionVisitor extends BaseTreeVisitor {
