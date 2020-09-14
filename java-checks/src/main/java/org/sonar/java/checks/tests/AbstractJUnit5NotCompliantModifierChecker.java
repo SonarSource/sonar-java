@@ -24,15 +24,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 public abstract class AbstractJUnit5NotCompliantModifierChecker extends IssuableSubscriptionVisitor {
 
-  protected abstract boolean isNotCompliant(Modifier modifier);
+  protected abstract boolean isNotCompliantModifier(Modifier modifier, boolean isMethod);
+
+  protected abstract boolean isNotCompliantReturnType(TypeTree returnType, MethodSymbol symbol);
 
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.CLASS);
@@ -40,10 +44,6 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
-
     ClassTree classTree = (ClassTree) tree;
     List<MethodTree> testMethods = classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
@@ -51,18 +51,29 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
       .filter(UnitTestUtils::hasJUnit5TestAnnotation)
       .collect(Collectors.toList());
 
-    testMethods.stream().map(MethodTree::modifiers).forEach(this::raiseIssueOnNotCompliantModifiers);
+    for (MethodTree testMethod : testMethods) {
+      raiseIssueOnNotCompliantModifiers(testMethod.modifiers(), true);
+      raiseIssueOnNotCompliantReturnType(testMethod);
+    }
 
     if (!testMethods.isEmpty()) {
-      raiseIssueOnNotCompliantModifiers(classTree.modifiers());
+      raiseIssueOnNotCompliantModifiers(classTree.modifiers(), false);
     }
   }
 
-  private void raiseIssueOnNotCompliantModifiers(ModifiersTree modifierTree) {
+  private void raiseIssueOnNotCompliantModifiers(ModifiersTree modifierTree, boolean isMethod) {
     modifierTree.modifiers().stream()
-      .filter(modifier -> isNotCompliant(modifier.modifier()))
+      .filter(modifier -> isNotCompliantModifier(modifier.modifier(), isMethod))
       .findFirst()
       .ifPresent(modifier -> reportIssue(modifier, "Remove this '" + modifier.keyword().text() + "' modifier."));
+  }
+
+  private void raiseIssueOnNotCompliantReturnType(MethodTree methodTree) {
+    // Return type of METHOD is never null (unlike CONSTRUCTOR)
+    TypeTree returnType = methodTree.returnType();
+    if (isNotCompliantReturnType(returnType, methodTree.symbol())) {
+      reportIssue(returnType, "Replace the return type by void.");
+    }
   }
 
 }

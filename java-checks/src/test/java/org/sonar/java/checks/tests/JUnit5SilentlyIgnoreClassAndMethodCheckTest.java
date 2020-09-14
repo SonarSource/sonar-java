@@ -22,24 +22,36 @@ package org.sonar.java.checks.tests;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-class JUnit5PrivateClassAndMethodCheckTest {
+class JUnit5SilentlyIgnoreClassAndMethodCheckTest {
 
-  private static final String testSourcePath = testSourcesPath("checks/JUnit5PrivateClassAndMethodCheck.java");
+  private static final String SOURCE_PATH = "checks/JUnit5SilentlyIgnoreClassAndMethodCheck.java";
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcePath)
-      .withCheck(new JUnit5PrivateClassAndMethodCheck())
+      .onFile(testSourcesPath(SOURCE_PATH))
+      .withCheck(new JUnit5SilentlyIgnoreClassAndMethodCheck())
       .verifyIssues();
+  }
 
+  @Test
+  void test_without_semantic() {
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcePath)
-      .withCheck(new JUnit5PrivateClassAndMethodCheck())
+      .onFile(testSourcesPath(SOURCE_PATH))
+      .withCheck(new JUnit5SilentlyIgnoreClassAndMethodCheck())
       .withoutSemantic()
       .verifyNoIssues();
+  }
+
+  @Test
+  void test_unknown_symbols() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath(SOURCE_PATH))
+      .withCheck(new JUnit5SilentlyIgnoreClassAndMethodCheck())
+      .verifyIssues();
   }
 
 }

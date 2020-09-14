@@ -8,10 +8,19 @@ class JUnit5DefaultPackageClassAndMethodCheck {
   public void testPublic() {} // Noncompliant [[sc=3;ec=9]] {{Remove this 'public' modifier.}}
 
   @Test
+  public static void testPublicStatic() {} // Noncompliant {{Remove this 'public' modifier.}}
+
+  @Test
   protected void testProtected() {} // Noncompliant
 
   @Test
   private void testPrivate() {} // Compliant, bug raises by S5810
+
+  @Test
+  static void testStatic() {} // Compliant, bug raises by S5810
+
+  @Test
+  int testReturnValue() { return 0; } // Compliant, bug raises by S5810
 
   @Test
   void testDefault() {} // Compliant

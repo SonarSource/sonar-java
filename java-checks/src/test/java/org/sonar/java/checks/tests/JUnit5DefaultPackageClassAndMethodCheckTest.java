@@ -34,7 +34,10 @@ class JUnit5DefaultPackageClassAndMethodCheckTest {
       .onFile(testSourcePath)
       .withCheck(new JUnit5DefaultPackageClassAndMethodCheck())
       .verifyIssues();
+  }
 
+  @Test
+  void test_without_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcePath)
       .withCheck(new JUnit5DefaultPackageClassAndMethodCheck())

@@ -20,15 +20,22 @@
 package org.sonar.java.checks.tests;
 
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 @Rule(key = "S5786")
 public class JUnit5DefaultPackageClassAndMethodCheck extends AbstractJUnit5NotCompliantModifierChecker {
 
   @Override
-  protected boolean isNotCompliant(Modifier modifier) {
+  protected boolean isNotCompliantModifier(Modifier modifier, boolean isMethod) {
     // All visibility modifiers except 'private' handled by S5810
     return modifier == Modifier.PUBLIC || modifier == Modifier.PROTECTED;
+  }
+
+  @Override
+  protected boolean isNotCompliantReturnType(TypeTree returnType, MethodSymbol symbol) {
+    return false;
   }
 
 }
