@@ -20,8 +20,8 @@
 package org.sonar.java.checks.tests;
 
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
@@ -34,10 +34,14 @@ public class JUnit5SilentlyIgnoreClassAndMethodCheck extends AbstractJUnit5NotCo
   }
 
   @Override
-  protected boolean isNotCompliantReturnType(TypeTree returnType, MethodSymbol methodSymbol) {
+  protected void raiseIssueOnNotCompliantReturnType(MethodTree methodTree) {
+    TypeTree returnType = methodTree.returnType();
+    // returnType of METHOD is never null (unlike CONSTRUCTOR)
     Type type = returnType.symbolType();
     boolean methodReturnAValue = !type.isUnknown() && !type.isVoid();
-    return methodReturnAValue && !methodSymbol.metadata().isAnnotatedWith("org.junit.jupiter.api.TestFactory");
+    if(methodReturnAValue && !methodTree.symbol().metadata().isAnnotatedWith("org.junit.jupiter.api.TestFactory")) {
+      reportIssue(returnType, "Replace the return type by void.");
+    }
   }
 
 }

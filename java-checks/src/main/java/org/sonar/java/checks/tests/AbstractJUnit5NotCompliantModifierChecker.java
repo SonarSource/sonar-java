@@ -24,19 +24,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TypeTree;
 
 public abstract class AbstractJUnit5NotCompliantModifierChecker extends IssuableSubscriptionVisitor {
 
   protected abstract boolean isNotCompliantModifier(Modifier modifier, boolean isMethod);
 
-  protected abstract boolean isNotCompliantReturnType(TypeTree returnType, MethodSymbol symbol);
+  protected abstract void raiseIssueOnNotCompliantReturnType(MethodTree methodTree);
 
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.CLASS);
@@ -66,14 +64,6 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
       .filter(modifier -> isNotCompliantModifier(modifier.modifier(), isMethod))
       .findFirst()
       .ifPresent(modifier -> reportIssue(modifier, "Remove this '" + modifier.keyword().text() + "' modifier."));
-  }
-
-  private void raiseIssueOnNotCompliantReturnType(MethodTree methodTree) {
-    // Return type of METHOD is never null (unlike CONSTRUCTOR)
-    TypeTree returnType = methodTree.returnType();
-    if (isNotCompliantReturnType(returnType, methodTree.symbol())) {
-      reportIssue(returnType, "Replace the return type by void.");
-    }
   }
 
 }

@@ -20,9 +20,8 @@
 package org.sonar.java.checks.tests;
 
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
-import org.sonar.plugins.java.api.tree.TypeTree;
 
 @Rule(key = "S5786")
 public class JUnit5DefaultPackageClassAndMethodCheck extends AbstractJUnit5NotCompliantModifierChecker {
@@ -34,8 +33,8 @@ public class JUnit5DefaultPackageClassAndMethodCheck extends AbstractJUnit5NotCo
   }
 
   @Override
-  protected boolean isNotCompliantReturnType(TypeTree returnType, MethodSymbol symbol) {
-    return false;
+  protected void raiseIssueOnNotCompliantReturnType(MethodTree methodTree) {
+    // Handled by S5810
   }
 
 }
