@@ -1,46 +1,48 @@
+package checks.tests;
+
 import org.junit.Test;
 
-class A { // Noncompliant {{Rename class "A" to match the regular expression: '^((Test|IT)[a-zA-Z0-9]+|[A-Z][a-zA-Z0-9]*(Test|Tests|TestCase|IT|ITCase))$'}}
+class BadTestClassNameCheck { // Noncompliant {{Rename class "BadTestClassNameCheck" to match the regular expression: '^((Test|IT)[a-zA-Z0-9]+|[A-Z][a-zA-Z0-9]*(Test|Tests|TestCase|IT|ITCase))$'}}
   @Test
   void foo() {}
 }
 
-class ATest { // Compliant
+class BadTestClassNameCheckTest { // Compliant
   @org.testng.annotations.Test
   void foo() {}
 }
 
-class SomeTests { // Compliant
+class BadTestClassNameCheckSomeTests { // Compliant
   @Test
   void foo() {}
 }
 
-class B { // Compliant
+class BadTestClassNameCheck2 { // Compliant
   void foo() {}
 
-  A a = new A() {};
+  BadTestClassNameCheck a = new BadTestClassNameCheck() {};
 }
-class TestA {
+class TestBadTestClassNameCheck {
   @Test
   void foo() {
   }
 }
-class ATestCase {
+class BadTestClassNameCheckTestCase {
   @Test
   void foo() {
   }
 }
-class ITanIntegration {
+class ITBadTestClassNameCheck {
   @Test
   void foo() {
   }
 }
-class AnIT {
+class BadTestClassNameCheckIT {
   @Test
   void foo() {
   }
 }
-class AnITCase {
+class BadTestClassNameCheckITCase {
   @Test
   void foo() {
   }
