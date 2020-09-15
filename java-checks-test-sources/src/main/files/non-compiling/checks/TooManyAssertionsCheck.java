@@ -58,7 +58,7 @@ public class TooManyAssertionsNonCompilingCheck {
   }
 
   @Test
-  public void verifyRestAssured() { // Noncompliant [[sc=15;ec=32]]{{Refactor this method in order to have less than 10 assertions.}}
+  public void verifyRestAssured() { // Noncompliant [[sc=15;ec=32]]{{Refactor this method in order to have less than 25 assertions.}}
     given().when().get("/garage").then()
       .body("name",equalTo("Acme garage"))
       .body("info.slots",equalTo(150))
@@ -68,6 +68,21 @@ public class TooManyAssertionsNonCompilingCheck {
       .header("s", "s1")
       .cookie("cookie1")
       .cookie("cookie2")
+      .cookie("cookie3")
+      .cookie("cookie4")
+      .cookie("cookie5")
+      .cookie("cookie6")
+      .cookie("cookie7")
+      .cookie("cookie8")
+      .cookie("cookie9")
+      .cookie("cookie10")
+      .cookie("cookie11")
+      .cookie("cookie12")
+      .cookie("cookie13")
+      .cookie("cookie14")
+      .cookie("cookie15")
+      .cookie("cookie16")
+      .cookie("cookie17")
       .spec(null)
       .specification(null)
       .statusCode(200);

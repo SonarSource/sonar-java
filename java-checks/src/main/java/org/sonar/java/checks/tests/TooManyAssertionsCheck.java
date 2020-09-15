@@ -19,12 +19,16 @@
  */
 package org.sonar.java.checks.tests;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.model.ModifiersUtils;
-import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -43,43 +47,54 @@ import static org.sonar.java.checks.helpers.UnitTestUtils.isUnitTest;
 import static org.sonar.java.model.ExpressionUtils.methodName;
 
 @Rule(key = "S5961")
-public class TooManyAssertionsCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class TooManyAssertionsCheck extends IssuableSubscriptionVisitor {
 
-  private static final int DEFAULT_MAX = 10;
+  private static final int DEFAULT_MAX = 25;
 
   @RuleProperty(key = "MaximumAssertionNumber", description = "The maximum authorized number of assertions in a test method", defaultValue = "" + DEFAULT_MAX)
-  public int maximumAssertionNumber = DEFAULT_MAX;
+  public int maximum = DEFAULT_MAX;
 
-  private final Map<Symbol, Integer> assertionsInMethod = new HashMap<>();
-  private JavaFileScannerContext context;
+  private final Map<Symbol, List<Tree>> assertionsInMethod = new HashMap<>();
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    assertionsInMethod.clear();
-    scan(context.getTree());
-    assertionsInMethod.clear();
+  public List<Tree.Kind> nodesToVisit() {
+    return Collections.singletonList(Tree.Kind.METHOD);
   }
 
   @Override
-  public void visitMethod(MethodTree methodTree) {
+  public void visitNode(Tree tree) {
+    MethodTree methodTree = (MethodTree) tree;
     if (ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.ABSTRACT)) {
       return;
     }
 
-    if (isUnitTest(methodTree) && numberOfAssertions(methodTree.symbol()) > maximumAssertionNumber) {
-      context.reportIssue(this, methodTree.simpleName(), String.format("Refactor this method in order to have less than %d assertions.", maximumAssertionNumber));
+    if (isUnitTest(methodTree)) {
+      List<Tree> assertionsTree = collectAssertionsInMethod(methodTree.symbol());
+      if (assertionsTree.size() > maximum) {
+        List<JavaFileScannerContext.Location> locations = assertionsTree.stream()
+          .map(assertionTree -> new JavaFileScannerContext.Location("Assertion", assertionTree))
+          .collect(Collectors.toList());
+
+        reportIssue(methodTree.simpleName(), String.format("Refactor this method in order to have less than %d assertions.", maximum), locations, null);
+      }
     }
   }
 
-  private int numberOfAssertions(Symbol symbol) {
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    assertionsInMethod.clear();
+    super.leaveFile(context);
+  }
+
+  private List<Tree> collectAssertionsInMethod(Symbol symbol) {
     if (!assertionsInMethod.containsKey(symbol)) {
-      assertionsInMethod.put(symbol, 0);
       Tree declaration = symbol.declaration();
       if (declaration != null) {
         AssertionsCounterVisitor assertionsCounterVisitor = new AssertionsCounterVisitor();
         declaration.accept(assertionsCounterVisitor);
-        assertionsInMethod.put(symbol, assertionsCounterVisitor.numberOfAssertions);
+        assertionsInMethod.put(symbol, assertionsCounterVisitor.assertions);
+      } else {
+        assertionsInMethod.put(symbol, Collections.emptyList());
       }
     }
 
@@ -88,13 +103,13 @@ public class TooManyAssertionsCheck extends BaseTreeVisitor implements JavaFileS
 
   private class AssertionsCounterVisitor extends BaseTreeVisitor {
 
-    int numberOfAssertions = 0;
+    List<Tree> assertions = new ArrayList<>();
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
       super.visitMethodInvocation(mit);
       if (isAssertion(methodName(mit), mit.symbol())) {
-        numberOfAssertions++;
+        assertions.add(mit);
       }
     }
 
@@ -102,14 +117,14 @@ public class TooManyAssertionsCheck extends BaseTreeVisitor implements JavaFileS
     public void visitMethodReference(MethodReferenceTree methodReferenceTree) {
       super.visitMethodReference(methodReferenceTree);
       if (isAssertion(methodReferenceTree.method(), methodReferenceTree.method().symbol())) {
-        numberOfAssertions++;
+        assertions.add(methodReferenceTree);
       }
     }
 
     private boolean isAssertion(IdentifierTree method, Symbol methodSymbol) {
       return matchesAssertionMethodPattern(method, methodSymbol)
         || ASSERTION_INVOCATION_MATCHERS.matches(methodSymbol)
-        || numberOfAssertions(methodSymbol) > 0;
+        || !collectAssertionsInMethod(methodSymbol).isEmpty();
     }
 
     private boolean matchesAssertionMethodPattern(IdentifierTree method, Symbol methodSymbol) {

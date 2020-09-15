@@ -29,13 +29,13 @@ import static org.sonar.java.CheckTestUtils.testSourcesPath;
 class TooManyAssertionsCheckTest {
   @Test
   void detected() {
-    assertThat(new TooManyAssertionsCheck().maximumAssertionNumber).isEqualTo(10);
+    assertThat(new TooManyAssertionsCheck().maximum).isEqualTo(25);
   }
 
   @Test
   void custom_at_2() {
     TooManyAssertionsCheck check = new TooManyAssertionsCheck();
-    check.maximumAssertionNumber = 2;
+    check.maximum = 2;
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/TooManyAssertionsCheckCustom2.java"))
       .withCheck(check)
@@ -45,7 +45,7 @@ class TooManyAssertionsCheckTest {
   @Test
   void custom_at_25() {
     TooManyAssertionsCheck check = new TooManyAssertionsCheck();
-    check.maximumAssertionNumber = 25;
+    check.maximum = 25;
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/TooManyAssertionsCheckCustom25.java"))
       .withCheck(check)
