@@ -88,13 +88,12 @@ public class TooManyAssertionsCheck extends IssuableSubscriptionVisitor {
 
   private List<Tree> collectAssertionsInMethod(Symbol symbol) {
     if (!assertionsInMethod.containsKey(symbol)) {
+      assertionsInMethod.put(symbol, Collections.emptyList());
       Tree declaration = symbol.declaration();
       if (declaration != null) {
         AssertionsCounterVisitor assertionsCounterVisitor = new AssertionsCounterVisitor();
         declaration.accept(assertionsCounterVisitor);
         assertionsInMethod.put(symbol, assertionsCounterVisitor.assertions);
-      } else {
-        assertionsInMethod.put(symbol, Collections.emptyList());
       }
     }
 
