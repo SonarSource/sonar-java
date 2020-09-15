@@ -44,7 +44,7 @@ If you need to deactivate a rule (or all rules) for an entire file, then [issue 
 
 ## Handling Java Source Version
 
-The Java Analyzer is able to react to the java version used for sources. This feature allows the deactivation of rules that target higher versions of Java than the one in use in the project so that false positives aren't generated from irrelevant rules.
+Java analysis is able to react to the java version used for sources. This feature allows the deactivation of rules that target higher versions of Java than the one in use in the project so that false positives aren't generated from irrelevant rules.
 
 The feature relies entirely on the `sonar.java.source` property, which is automatically filled by most of the scanners used for analyses (Maven, Gradle). Java version-specific rules are not disabled when `sonar.java.source` is not provided. Concretely, rules which are designed to target specific java versions (tagged "java7" or "java8") are activated by default in the Sonar Way Java profile. From a user perspective, the feature is fully automatic, but it means that you probably want your projects to be correctly configured.
 
@@ -56,9 +56,9 @@ Example: `sonar.java.source=1.6`
 
 If the property is provided, the analysis will take the source version into account, and execute related rules accordingly. At run time, each of these rules will be executed – or not – depending of the Java version used by sources within the project. For instance, on a correctly configured project built with Java 6, rules targeting Java 7 and Java 8 will never raise issues, even though they are enabled in the associated rule profile.
 
-## Analysing JSP and Thymeleaf for XSS vulnerabilities
+## Analyzing JSP and Thymeleaf for XSS vulnerabilities
 
-In SonarQube Developer and Enterprise editions and on SonarCloud you can benefit from advanced security rules including XSS vulnerability detection. Java analyzer supports analysis of Thymeleaf and JSP views when used with Java Servlets or Spring. To benefit from this analysis you need to make your views part of the project sources using `sonar.sources` property. In practice this usually means adding the following in your Maven `pom.xml` file
+In SonarQube Developer and Enterprise editions and on SonarCloud you can benefit from advanced security rules including XSS vulnerability detection. Java analysis supports analysis of Thymeleaf and JSP views when used with Java Servlets or Spring. To benefit from this analysis you need to make your views part of the project sources using `sonar.sources` property. In practice this usually means adding the following in your Maven `pom.xml` file
 
 ```xml
      <properties>
