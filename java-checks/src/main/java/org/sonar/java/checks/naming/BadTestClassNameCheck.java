@@ -38,7 +38,9 @@ import java.util.regex.Pattern;
 @Rule(key = "S3577")
 public class BadTestClassNameCheck extends IssuableSubscriptionVisitor {
 
-  private static final String DEFAULT_FORMAT = "^((Test|IT)[a-zA-Z0-9]+|[A-Z][a-zA-Z0-9]*(Test|Tests|TestCase|IT|ITCase))$";
+  private static final String STARTING_WITH_TEST = "(Test|IT)[a-zA-Z0-9_]+";
+  private static final String ENDING_WITH_TEST = "[A-Z][a-zA-Z0-9_]*(Test|Tests|TestCase|IT|ITCase)";
+  private static final String DEFAULT_FORMAT = "^(" + STARTING_WITH_TEST + "|" + ENDING_WITH_TEST + ")$";
 
   @RuleProperty(
     key = "format",
