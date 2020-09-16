@@ -691,6 +691,7 @@ public final class CheckList {
       SystemOutOrErrUsageCheck.class,
       TabCharacterCheck.class,
       TernaryOperatorCheck.class,
+      TestsInSeparateFolderCheck.class,
       ThisExposedFromConstructorCheck.class,
       ThreadAsRunnableArgumentCheck.class,
       ThreadLocalCleanupCheck.class,

@@ -1,0 +1,16 @@
+{
+  "title": "Tests should be kept in a dedicated source directory",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "suspicious"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-3414",
+  "sqKey": "S3414",
+  "scope": "Main"
+}
