@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -46,45 +45,17 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-import static org.sonar.java.checks.helpers.UnitTestUtils.hasJUnit5TestAnnotation;
+import static org.sonar.java.checks.helpers.UnitTestUtils.ASSERTION_INVOCATION_MATCHERS;
+import static org.sonar.java.checks.helpers.UnitTestUtils.ASSERTION_METHODS_PATTERN;
+import static org.sonar.java.checks.helpers.UnitTestUtils.REACTIVE_X_TEST_METHODS;
+import static org.sonar.java.checks.helpers.UnitTestUtils.TEST_METHODS_PATTERN;
+import static org.sonar.java.checks.helpers.UnitTestUtils.isUnitTest;
 import static org.sonar.java.model.ExpressionUtils.methodName;
 
 @Rule(key = "S2699")
 public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final Logger LOG = Loggers.get(AssertionsInTestsCheck.class);
-
-  private static final Pattern ASSERTION_METHODS_PATTERN = Pattern.compile("(assert|verify|fail|should|check|expect|validate).*");
-  private static final Pattern TEST_METHODS_PATTERN = Pattern.compile("test.*|.*Test");
-
-  private static final MethodMatchers ASSERTION_INVOCATION_MATCHERS = MethodMatchers.or(
-    // fest 1.x / 2.X
-    MethodMatchers.create().ofSubTypes("org.fest.assertions.GenericAssert", "org.fest.assertions.api.AbstractAssert").anyName().withAnyParameters().build(),
-    // rest assured 2.0
-    MethodMatchers.create().ofTypes("io.restassured.response.ValidatableResponseOptions")
-      .name(name -> name.equals("body") ||
-        name.equals("time") ||
-        name.startsWith("time") ||
-        name.startsWith("content") ||
-        name.startsWith("status") ||
-        name.startsWith("header") ||
-        name.startsWith("cookie") ||
-        name.startsWith("spec"))
-      .withAnyParameters()
-      .build(),
-    // assertJ
-    MethodMatchers.create().ofSubTypes("org.assertj.core.api.AbstractAssert").anyName().withAnyParameters().build(),
-    // spring
-    MethodMatchers.create().ofTypes("org.springframework.test.web.servlet.ResultActions").names("andExpect").addParametersMatcher(t -> true).build(),
-    // JMockit
-    MethodMatchers.create().ofTypes("mockit.Verifications").constructor().withAnyParameters().build(),
-    // Eclipse Vert.x
-    MethodMatchers.create().ofTypes("io.vertx.ext.unit.TestContext").name(name -> name.startsWith("asyncAssert")).addWithoutParametersMatcher().build(),
-    // Awaitility
-    MethodMatchers.create().ofTypes("org.awaitility.core.ConditionFactory").name(name -> name.startsWith("until")).withAnyParameters().build());
-
-  private static final MethodMatchers REACTIVE_X_TEST_METHODS =
-    MethodMatchers.create().ofSubTypes("rx.Observable", "io.reactivex.Observable").names("test").withAnyParameters().build();
 
   @RuleProperty(
     key = "customAssertionMethods",
@@ -170,23 +141,6 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
       }
     }
     return false;
-  }
-
-  private static boolean isUnitTest(MethodTree methodTree) {
-    Symbol.MethodSymbol symbol = methodTree.symbol();
-    while (symbol != null) {
-      if (symbol.metadata().isAnnotatedWith("org.junit.Test")) {
-        return true;
-      }
-      symbol = symbol.overriddenSymbol();
-    }
-
-    if (hasJUnit5TestAnnotation(methodTree)) {
-      // contrary to JUnit 4, JUnit 5 Test annotations are not inherited when method is overridden, so no need to check overridden symbols
-      return true;
-    }
-    Symbol.TypeSymbol enclosingClass = methodTree.symbol().enclosingClass();
-    return enclosingClass != null && enclosingClass.type().isSubtypeOf("junit.framework.TestCase") && methodTree.simpleName().name().startsWith("test");
   }
 
   private class AssertionVisitor extends BaseTreeVisitor {

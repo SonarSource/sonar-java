@@ -20,11 +20,13 @@
 package org.sonar.java.checks.helpers;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -33,6 +35,38 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import static java.util.Arrays.asList;
 
 public final class UnitTestUtils {
+
+  public static final Pattern ASSERTION_METHODS_PATTERN = Pattern.compile("(assert|verify|fail|should|check|expect|validate).*");
+  public static final Pattern TEST_METHODS_PATTERN = Pattern.compile("test.*|.*Test");
+
+  public static final MethodMatchers ASSERTION_INVOCATION_MATCHERS = MethodMatchers.or(
+    // fest 1.x / 2.X
+    MethodMatchers.create().ofSubTypes("org.fest.assertions.GenericAssert", "org.fest.assertions.api.AbstractAssert").anyName().withAnyParameters().build(),
+    // rest assured 2.0
+    MethodMatchers.create().ofTypes("io.restassured.response.ValidatableResponseOptions")
+      .name(name -> name.equals("body") ||
+        name.equals("time") ||
+        name.startsWith("time") ||
+        name.startsWith("content") ||
+        name.startsWith("status") ||
+        name.startsWith("header") ||
+        name.startsWith("cookie") ||
+        name.startsWith("spec"))
+      .withAnyParameters()
+      .build(),
+    // assertJ
+    MethodMatchers.create().ofSubTypes("org.assertj.core.api.AbstractAssert").anyName().withAnyParameters().build(),
+    // spring
+    MethodMatchers.create().ofTypes("org.springframework.test.web.servlet.ResultActions").names("andExpect").addParametersMatcher(t -> true).build(),
+    // JMockit
+    MethodMatchers.create().ofTypes("mockit.Verifications").constructor().withAnyParameters().build(),
+    // Eclipse Vert.x
+    MethodMatchers.create().ofTypes("io.vertx.ext.unit.TestContext").name(name -> name.startsWith("asyncAssert")).addWithoutParametersMatcher().build(),
+    // Awaitility
+    MethodMatchers.create().ofTypes("org.awaitility.core.ConditionFactory").name(name -> name.startsWith("until")).withAnyParameters().build());
+
+  public static final MethodMatchers REACTIVE_X_TEST_METHODS =
+    MethodMatchers.create().ofSubTypes("rx.Observable", "io.reactivex.Observable").names("test").withAnyParameters().build();
 
   public static final MethodMatchers FAIL_METHOD_MATCHER = MethodMatchers.or(
     MethodMatchers.create().ofTypes(
@@ -117,4 +151,20 @@ public final class UnitTestUtils {
     return method != null && UNIT_TEST_NAME_RELATED_TO_OBJECT_METHODS_REGEX.matcher(method.simpleName().name()).find();
   }
 
+  public static boolean isUnitTest(MethodTree methodTree) {
+    Symbol.MethodSymbol symbol = methodTree.symbol();
+    while (symbol != null) {
+      if (symbol.metadata().isAnnotatedWith("org.junit.Test")) {
+        return true;
+      }
+      symbol = symbol.overriddenSymbol();
+    }
+
+    if (hasJUnit5TestAnnotation(methodTree)) {
+      // contrary to JUnit 4, JUnit 5 Test annotations are not inherited when method is overridden, so no need to check overridden symbols
+      return true;
+    }
+    Symbol.TypeSymbol enclosingClass = Objects.requireNonNull(methodTree.symbol().enclosingClass(), "Must not be null for method symbols");
+    return enclosingClass.type().isSubtypeOf("junit.framework.TestCase") && methodTree.simpleName().name().startsWith("test");
+  }
 }
