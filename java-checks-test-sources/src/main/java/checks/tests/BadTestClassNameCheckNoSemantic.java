@@ -16,3 +16,8 @@ class BadTestClassNameCheckNoSemantic2 { // Compliant
   @Test // not resolved without semantic
   void foo() {}
 }
+
+abstract class AbstractBadTestClassNameCheckNoSemantic { // compliant
+  @org.junit.Test
+  void foo() {}
+}

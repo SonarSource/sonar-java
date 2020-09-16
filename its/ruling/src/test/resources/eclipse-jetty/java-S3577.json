@@ -1,8 +1,0 @@
-{
-'org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ConnectorCloseTestBase.java':[
-38,
-],
-'org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpServerTestBase.java':[
-71,
-],
-}
