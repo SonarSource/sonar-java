@@ -23,11 +23,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -50,8 +50,8 @@ public class RandomizedTestDataCheck extends IssuableSubscriptionVisitor {
   private static final String LOCATIONS_TEXT = "usage of random data in test";
   private static final String MESSAGE = "Replace randomly generated values with fixed ones.";
 
-  private boolean reportedUUIDRandom = false;
   private final List<Tree> randomSecondaryLocations = new ArrayList<>();
+  private final List<Tree> randomUUIDSecondaryLocations = new ArrayList<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -64,9 +64,9 @@ public class RandomizedTestDataCheck extends IssuableSubscriptionVisitor {
       NewClassTree newClassTree = (NewClassTree) tree;
       checkForRandomConstructorUsage(newClassTree);
     }
-    if (!reportedUUIDRandom && tree.is(Tree.Kind.METHOD_INVOCATION)) {
+    if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
-      checkAndReportUUIDRandomUsage(methodInvocationTree);
+      checkUUIDRandomUsage(methodInvocationTree);
     }
   }
 
@@ -76,27 +76,32 @@ public class RandomizedTestDataCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private void checkAndReportUUIDRandomUsage(MethodInvocationTree methodInvocationTree) {
-    Symbol symbol = methodInvocationTree.symbol();
+  private void checkUUIDRandomUsage(MethodInvocationTree methodInvocationTree) {
     if (RANDOM_UUID_MATCHER.matches(methodInvocationTree)) {
-      reportedUUIDRandom = true;
-      List<JavaFileScannerContext.Location> locations = symbol.usages().stream()
-        .map(identifierTree -> new JavaFileScannerContext.Location(LOCATIONS_TEXT, identifierTree))
-        .collect(Collectors.toList());
-      reportIssue(methodInvocationTree, MESSAGE, locations, null);
+      randomUUIDSecondaryLocations.add(methodInvocationTree);
     }
   }
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {
     if (!randomSecondaryLocations.isEmpty()) {
-      List<JavaFileScannerContext.Location> locations = randomSecondaryLocations.stream()
-        .map(tree -> new JavaFileScannerContext.Location(LOCATIONS_TEXT, tree))
-        .collect(Collectors.toList());
-      reportIssue(randomSecondaryLocations.get(0), MESSAGE, locations, null);
+      reportIssue(randomSecondaryLocations.get(0), MESSAGE, convertToLocations(randomSecondaryLocations.stream().skip(1)), null);
     }
-    reportedUUIDRandom = false;
-    randomSecondaryLocations.clear();
+    if (!randomUUIDSecondaryLocations.isEmpty()) {
+      reportIssue(randomUUIDSecondaryLocations.get(0), MESSAGE, convertToLocations(randomUUIDSecondaryLocations.stream().skip(1)), null);
+    }
+    cleanup();
     super.leaveFile(context);
+  }
+
+  private void cleanup() {
+    randomSecondaryLocations.clear();
+    randomUUIDSecondaryLocations.clear();
+  }
+
+  private static List<JavaFileScannerContext.Location> convertToLocations(Stream<Tree> trees) {
+    return trees
+      .map(tree -> new JavaFileScannerContext.Location(LOCATIONS_TEXT, tree))
+      .collect(Collectors.toList());
   }
 }

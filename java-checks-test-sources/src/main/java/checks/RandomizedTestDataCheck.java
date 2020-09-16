@@ -8,8 +8,8 @@ public class RandomizedTestDataCheck {
 
   @Test
   public void randomizedTest() {
-    int userAge = new Random().nextInt(42);  // Noncompliant[[sc=19;ec=31;secondary=11,25,27,29,31,33,42]]{{Replace randomly generated values with fixed ones.}}
-    UUID userID = UUID.randomUUID(); // Noncompliant[[sc=19;ec=36;secondary=12,26,28,30,32,34]]{{Replace randomly generated values with fixed ones.}}
+    int userAge = new Random().nextInt(42);  // Noncompliant[[sc=19;ec=31;secondary=25,27,29,31,33,42]]{{Replace randomly generated values with fixed ones.}}
+    UUID userID = UUID.randomUUID(); // Noncompliant[[sc=19;ec=36;secondary=26,28,30,32,34]]{{Replace randomly generated values with fixed ones.}}
 
     MyRandom myRandom = new MyRandom(); // Compliant
   }
