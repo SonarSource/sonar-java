@@ -76,6 +76,12 @@ With for instance the `ORCHESTRATOR_CONFIG_URL` variable being set as:
 
 Before running the ITs, be sure your MAVEN_HOME environment variable is set.
 
+#### Sanity Test
+
+The "Sanity Test" is a test which runs all checks against all the test sources files without taking into account the result of the analysis. It verifies that rules are not crashing on any file in our test sources. By default, this test is excluded from the build. To launch it:
+
+    mvn clean install -P sanity
+
 #### Plugin Test
 
 The "Plugin Test" is an integration test suite which verifies plugin features such as metric calculation, coverage etc. To launch it:
