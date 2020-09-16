@@ -63,9 +63,6 @@ public class BadTestClassNameCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     ClassTree classTree = (ClassTree) tree;
     IdentifierTree simpleName = classTree.simpleName();
     if (hasInvalidName(simpleName) && isTestClass(classTree)) {

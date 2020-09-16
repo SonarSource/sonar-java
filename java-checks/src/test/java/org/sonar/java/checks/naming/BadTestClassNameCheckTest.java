@@ -39,12 +39,15 @@ class BadTestClassNameCheckTest {
       .onFile(TEST_FILE)
       .withCheck(check)
       .verifyIssues();
+  }
 
+  @Test
+  void test_no_semantic() {
     JavaCheckVerifier.newVerifier()
-      .onFile(TEST_FILE)
-      .withCheck(check)
+      .onFile(testSourcesPath("checks/tests/BadTestClassNameCheckNoSemantic.java"))
+      .withCheck(new BadTestClassNameCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyIssues();
   }
 
   @Test
