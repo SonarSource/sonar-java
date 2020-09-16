@@ -154,6 +154,7 @@ import org.sonar.java.checks.tests.JunitNestedAnnotationCheck;
 import org.sonar.java.checks.tests.NoTestInTestClassCheck;
 import org.sonar.java.checks.tests.OneExpectedCheckedExceptionCheck;
 import org.sonar.java.checks.tests.OneExpectedRuntimeExceptionCheck;
+import org.sonar.java.checks.tests.RandomizedTestDataCheck;
 import org.sonar.java.checks.tests.TestAnnotationWithExpectedExceptionCheck;
 import org.sonar.java.checks.tests.TestsStabilityCheck;
 import org.sonar.java.checks.tests.ThreadSleepInTestsCheck;
@@ -809,6 +810,7 @@ public final class CheckList {
       NoTestInTestClassCheck.class,
       OneExpectedCheckedExceptionCheck.class,
       OneExpectedRuntimeExceptionCheck.class,
+      RandomizedTestDataCheck.class,
       TestAnnotationWithExpectedExceptionCheck.class,
       TestsStabilityCheck.class,
       ThreadSleepInTestsCheck.class,
