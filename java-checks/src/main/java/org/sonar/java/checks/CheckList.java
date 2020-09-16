@@ -151,6 +151,7 @@ import org.sonar.java.checks.tests.JUnit5SilentlyIgnoreClassAndMethodCheck;
 import org.sonar.java.checks.tests.JUnitCompatibleAnnotationsCheck;
 import org.sonar.java.checks.tests.JunitMethodDeclarationCheck;
 import org.sonar.java.checks.tests.JunitNestedAnnotationCheck;
+import org.sonar.java.checks.tests.MockingAllMethodsCheck;
 import org.sonar.java.checks.tests.NoTestInTestClassCheck;
 import org.sonar.java.checks.tests.OneExpectedCheckedExceptionCheck;
 import org.sonar.java.checks.tests.OneExpectedRuntimeExceptionCheck;
@@ -807,6 +808,7 @@ public final class CheckList {
       JUnit5SilentlyIgnoreClassAndMethodCheck.class,
       JunitMethodDeclarationCheck.class,
       JunitNestedAnnotationCheck.class,
+      MockingAllMethodsCheck.class,
       NoTestInTestClassCheck.class,
       OneExpectedCheckedExceptionCheck.class,
       OneExpectedRuntimeExceptionCheck.class,
