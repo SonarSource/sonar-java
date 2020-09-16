@@ -2,7 +2,7 @@ package checks.tests;
 
 import org.junit.Test;
 
-class BadTestClassNameCheckNoSemantic { // Noncompliant {{Rename class "BadTestClassNameCheckNoSemantic" to match the regular expression: '^((Test|IT)[a-zA-Z0-9]+|[A-Z][a-zA-Z0-9]*(Test|Tests|TestCase|IT|ITCase))$'}}
+class BadTestClassNameCheckNoSemantic { // Noncompliant {{Rename class "BadTestClassNameCheckNoSemantic" to match the regular expression: '^((Test|IT)[a-zA-Z0-9_]+|[A-Z][a-zA-Z0-9_]*(Test|Tests|TestCase|IT|ITCase))$'}}
   @org.junit.Test // resolved because fully qualified name is used
   void foo() {}
 }

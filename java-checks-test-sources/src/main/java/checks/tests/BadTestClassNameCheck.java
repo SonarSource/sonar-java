@@ -2,7 +2,12 @@ package checks.tests;
 
 import org.junit.Test;
 
-class BadTestClassNameCheck { // Noncompliant {{Rename class "BadTestClassNameCheck" to match the regular expression: '^((Test|IT)[a-zA-Z0-9]+|[A-Z][a-zA-Z0-9]*(Test|Tests|TestCase|IT|ITCase))$'}}
+class BadTestClassNameCheck { // Noncompliant {{Rename class "BadTestClassNameCheck" to match the regular expression: '^((Test|IT)[a-zA-Z0-9_]+|[A-Z][a-zA-Z0-9_]*(Test|Tests|TestCase|IT|ITCase))$'}}
+  @Test
+  void foo() {}
+}
+
+class BadTestClassName_Check { // Noncompliant
   @Test
   void foo() {}
 }
@@ -13,6 +18,11 @@ class BadTestClassNameCheckTest { // Compliant
 }
 
 class BadTestClassNameCheckSomeTests { // Compliant
+  @Test
+  void foo() {}
+}
+
+class Bad_Test_Class_Name_Check_Some_Tests { // Compliant
   @Test
   void foo() {}
 }
