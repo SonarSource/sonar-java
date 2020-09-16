@@ -1,9 +1,13 @@
 package checks;
 
+import java.util.Collection;
+import java.util.Collections;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 
-class JUnit5PrivateClassAndMethodCheck {
+class JUnit5SilentlyIgnoreClassAndMethodCheck {
 
   @Test
   private void testPrivate() {} // Noncompliant [[sc=3;ec=10]] {{Remove this 'private' modifier.}}
@@ -23,7 +27,7 @@ class JUnit5PrivateClassAndMethodCheck {
   private void testWithJUnit4Annotation() {} // Compliant, this rule does not target JUnit4
 
   @Test
-  static final void staticFinalTestMethod() {} // Compliant
+  final void finalTestMethod() {} // Compliant
 
   @Nested
   private class PrivateWithoutTest { // Compliant
@@ -46,6 +50,24 @@ class JUnit5PrivateClassAndMethodCheck {
   class DefaultWithOneTest { // Compliant
     @Test
     void test() {}
+  }
+
+  @Test
+  static void staticTest() {} // Noncompliant [[sc=3;ec=9]] {{Remove this 'static' modifier.}}
+
+  @Test
+  int testReturningValue() { return 0; } // Noncompliant [[sc=3;ec=6]] {{Replace the return type by void.}}
+
+  @TestFactory
+  Collection<DynamicTest> testFactory() { // Compliant, TestFactory returning a value
+    return Collections.emptyList();
+  }
+
+  @Nested
+  static class AnnotatedStaticNestedClassWithTests {  // Compliant, bug raises by S5790
+    @Test
+    void test() {
+    }
   }
 
 }

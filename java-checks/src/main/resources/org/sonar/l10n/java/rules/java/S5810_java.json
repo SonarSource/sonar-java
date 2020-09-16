@@ -1,5 +1,5 @@
 {
-  "title": "JUnit5 test classes and methods should not have private visibility",
+  "title": "JUnit5 test classes and methods should not be silently ignored",
   "type": "BUG",
   "status": "ready",
   "remediation": {

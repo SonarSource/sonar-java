@@ -20,14 +20,28 @@
 package org.sonar.java.checks.tests;
 
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 @Rule(key = "S5810")
-public class JUnit5PrivateClassAndMethodCheck extends AbstractJUnit5NotCompliantModifierChecker {
+public class JUnit5SilentlyIgnoreClassAndMethodCheck extends AbstractJUnit5NotCompliantModifierChecker {
 
   @Override
-  protected boolean isNotCompliant(Modifier modifier) {
-    return modifier == Modifier.PRIVATE;
+  protected boolean isNotCompliantModifier(Modifier modifier, boolean isMethod) {
+    return modifier == Modifier.PRIVATE || (isMethod && modifier == Modifier.STATIC);
+  }
+
+  @Override
+  protected void raiseIssueOnNotCompliantReturnType(MethodTree methodTree) {
+    TypeTree returnType = methodTree.returnType();
+    // returnType of METHOD is never null (unlike CONSTRUCTOR)
+    Type type = returnType.symbolType();
+    boolean methodReturnAValue = !type.isUnknown() && !type.isVoid();
+    if(methodReturnAValue && !methodTree.symbol().metadata().isAnnotatedWith("org.junit.jupiter.api.TestFactory")) {
+      reportIssue(returnType, "Replace the return type by void.");
+    }
   }
 
 }

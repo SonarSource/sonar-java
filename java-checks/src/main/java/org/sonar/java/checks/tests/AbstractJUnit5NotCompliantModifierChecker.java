@@ -32,7 +32,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 public abstract class AbstractJUnit5NotCompliantModifierChecker extends IssuableSubscriptionVisitor {
 
-  protected abstract boolean isNotCompliant(Modifier modifier);
+  protected abstract boolean isNotCompliantModifier(Modifier modifier, boolean isMethod);
+
+  protected abstract void raiseIssueOnNotCompliantReturnType(MethodTree methodTree);
 
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.CLASS);
@@ -40,10 +42,6 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
-
     ClassTree classTree = (ClassTree) tree;
     List<MethodTree> testMethods = classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
@@ -51,16 +49,19 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
       .filter(UnitTestUtils::hasJUnit5TestAnnotation)
       .collect(Collectors.toList());
 
-    testMethods.stream().map(MethodTree::modifiers).forEach(this::raiseIssueOnNotCompliantModifiers);
+    for (MethodTree testMethod : testMethods) {
+      raiseIssueOnNotCompliantModifiers(testMethod.modifiers(), true);
+      raiseIssueOnNotCompliantReturnType(testMethod);
+    }
 
     if (!testMethods.isEmpty()) {
-      raiseIssueOnNotCompliantModifiers(classTree.modifiers());
+      raiseIssueOnNotCompliantModifiers(classTree.modifiers(), false);
     }
   }
 
-  private void raiseIssueOnNotCompliantModifiers(ModifiersTree modifierTree) {
+  private void raiseIssueOnNotCompliantModifiers(ModifiersTree modifierTree, boolean isMethod) {
     modifierTree.modifiers().stream()
-      .filter(modifier -> isNotCompliant(modifier.modifier()))
+      .filter(modifier -> isNotCompliantModifier(modifier.modifier(), isMethod))
       .findFirst()
       .ifPresent(modifier -> reportIssue(modifier, "Remove this '" + modifier.keyword().text() + "' modifier."));
   }
