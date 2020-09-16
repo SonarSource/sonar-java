@@ -1,0 +1,29 @@
+<p>Tests should always:</p>
+<ul>
+  <li> Make sure that production code behaves as expected, including edge cases. </li>
+  <li> Be easy to debug, i.e. understandable and reproducible. </li>
+</ul>
+<p>Using random values in tests will not necessarily check edge cases, and it will make test logs a lot harder to read. If you don't use a seed your
+test will not be reproducible, and if you do use a seed there is no point in using random data. Use instead easily readable hardcoded values. If this
+makes your code bigger you can use helper functions.</p>
+<p>Note that there is one valid use cases for randomized data in tests: detect cases which you didn't think of. However when you do this you need to
+be sure that you can retrieve the generated values and add new failing cases to the test suite. It is easier to do so with a property-based testing
+library, such as <a href="https://github.com/jlink/jqwik">jqwik</a>.</p>
+<p>This rule raises an issue when <code>new Random()</code> or <code>UUID.randomUUID()</code> are called in test code.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+int userAge = new Random().nextInt(42);  // Noncompliant
+UUID userID = UUID.randomUUID(); // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+int userAge = 31;
+UUID userID = UUID.fromString("00000000-000-0000-0000-000000000001");
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://phauer.com/2019/modern-best-practices-testing-java/#use-parameterized-tests">Modern Best Practices for Testing in Java -
+  Philipp Hauer</a> </li>
+  <li> <a href="https://jqwik.net/">Jqwik test engine</a> </li>
+</ul>
+
