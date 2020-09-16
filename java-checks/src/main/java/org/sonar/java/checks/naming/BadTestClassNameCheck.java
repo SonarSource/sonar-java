@@ -24,6 +24,7 @@ import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -77,12 +78,14 @@ public class BadTestClassNameCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isTestClass(ClassTree classTree) {
-    return isTopLevelClass(classTree)
+    Symbol.TypeSymbol classSymbol = classTree.symbol();
+    return !classSymbol.isAbstract()
+      && isTopLevelClass(classSymbol)
       && (hasTestMethod(classTree.members()) || hasNestedClass(classTree));
   }
 
-  private static boolean isTopLevelClass(ClassTree classTree) {
-    return classTree.symbol().owner().isPackageSymbol();
+  private static boolean isTopLevelClass(Symbol.TypeSymbol classSymbol) {
+    return classSymbol.owner().isPackageSymbol();
   }
 
   private static boolean hasTestMethod(List<Tree> members) {

@@ -7,6 +7,11 @@ class BadTestClassNameCheck { // Noncompliant {{Rename class "BadTestClassNameCh
   void foo() {}
 }
 
+abstract class AbstractBadTestClassNameCheck { // compliant
+  @Test
+  void foo() {}
+}
+
 class BadTestClassName_Check { // Noncompliant
   @Test
   void foo() {}
