@@ -1,0 +1,31 @@
+<p>The Spring framework comes with dedicated classes to help writing better and simpler unit tests. In particular, when testing applications built on
+top of Spring MVC, it is recommended to use Spring's <code>ModelAndViewAssert</code> assertions class, instead of manually testing MVC's
+properties.</p>
+<p>&nbsp;</p>
+<p>This rule raises an issue when&nbsp;Spring's <code>ModelAndViewAssert</code> assertions should be used instead of manual testing.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+ModelAndView mav = getMyModelAndView();
+
+Assert.assertEquals("register", mav.getViewName());
+Assert.assertTrue((Boolean) mav.getModelMap().get("myAttribute"));
+Assert.assertFalse((Boolean) mav.getModelMap().get("myAttribute"));
+Assert.assertEquals(myObject, mav.getModelMap().get("myAttribute"));
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+ModelAndView mav = getMyModelAndView();
+
+ModelAndViewAssert.assertViewName(mav, "register");
+ModelAndViewAssert.assertModelAttributeValue(mav, "myAttribute", Boolean.TRUE);
+ModelAndViewAssert.assertModelAttributeValue(mav, "myAttribute", Boolean.FALSE);
+ModelAndViewAssert.assertModelAttributeValue(mav, "myAttribute", myObject);
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/testing.html#unit-testing-spring-mvc">Unit Testing
+  Spring MVC</a> </li>
+  <li> <a
+  href="https://docs.spring.io/spring-framework/docs/5.2.8.RELEASE/javadoc-api/org/springframework/test/web/ModelAndViewAssert.html">ModelAndViewAssert Javadoc</a> </li>
+</ul>
+
