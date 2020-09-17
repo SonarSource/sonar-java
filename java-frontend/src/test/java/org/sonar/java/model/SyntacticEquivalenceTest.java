@@ -73,6 +73,13 @@ class SyntacticEquivalenceTest {
     assertThat(SyntacticEquivalence.areEquivalent(notImplementedTree, new JavaTree.NotImplementedTreeImpl())).isFalse();
   }
 
+  @Test
+  void extra_permissive_equivalence() {
+    assertThat(SyntacticEquivalence.areEquivalent(compilationUnitTree("class A{}"), compilationUnitTree("class B{}"))).isFalse();
+    assertThat(SyntacticEquivalence.areEquivalent(compilationUnitTree("class A{}"), compilationUnitTree("class B{}"), (l,r) -> false)).isFalse();
+    assertThat(SyntacticEquivalence.areEquivalent(compilationUnitTree("class A{}"), compilationUnitTree("class B{}"), (l,r) -> true)).isTrue();
+  }
+
   private void assertAreEquivalent(String statement1, String statement2) {
     assertAreEquivalent(Lists.newArrayList(statement1), Lists.newArrayList(statement2));
   }
