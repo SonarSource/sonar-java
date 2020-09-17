@@ -77,28 +77,30 @@ public class ParameterizedTestCheck extends IssuableSubscriptionVisitor {
     Set<MethodTree> handled = new HashSet<>();
     for (int i = 0; i < methods.size(); i++) {
       MethodTree method = methods.get(i);
+      if (handled.contains(method)) {
+        continue;
+      }
       List<StatementTree> methodBody = method.block().body();
       // In addition to filtering literals, we want to count the number of differences since they will represent the number of parameter
       // that would be required to transform the tests to a single parametrized one.
       CollectAndFilter collectAndFilter = new CollectAndFilter();
 
-      List<MethodTree> equivalentMethods = methods.stream()
-        .skip(i + 1L)
-        // avoid reporting multiple times
-        .filter(otherMethod -> !handled.contains(otherMethod))
-        // only consider method syntactically equivalent, ignoring literals
-        .filter(otherMethod -> {
+      List<MethodTree> equivalentMethods = new ArrayList<>();
+
+      for (int j = i + 1; j < methods.size(); j++) {
+        MethodTree otherMethod = methods.get(j);
+        if (!handled.contains(otherMethod)) {
           boolean areEquivalent = SyntacticEquivalence.areEquivalent(methodBody, otherMethod.block().body(), collectAndFilter);
           if (areEquivalent) {
             // If methods where not equivalent, we don't want to pollute the set of node to parameterize.
-            collectAndFilter.validateCollection();
+            equivalentMethods.add(otherMethod);
+            collectAndFilter.finishCollect();
           }
-          return areEquivalent;
-        })
-        .collect(Collectors.toList());
+          collectAndFilter.clearCurrentNodes();
+        }
+      }
 
       if (equivalentMethods.size() + 1 >= MIN_SIMILAR_METHODS) {
-        handled.add(method);
         handled.addAll(equivalentMethods);
 
         if (collectAndFilter.nodeToParametrize.size() > MAX_NUMBER_PARAMETER) {
@@ -114,7 +116,7 @@ public class ParameterizedTestCheck extends IssuableSubscriptionVisitor {
           new JavaFileScannerContext.Location("Related test", equivalentMethod.simpleName()))
           .forEach(secondaries::add);
 
-        reportIssue(method.simpleName(), String.format(MESSAGE, equivalentMethods.size() + 1) , secondaries, null);
+        reportIssue(method.simpleName(), String.format(MESSAGE, equivalentMethods.size() + 1), secondaries, null);
       }
     }
   }
@@ -144,8 +146,12 @@ public class ParameterizedTestCheck extends IssuableSubscriptionVisitor {
       return false;
     }
 
-    public void validateCollection() {
+    public void finishCollect() {
       nodeToParametrize.addAll(currentNodeToParameterize);
+    }
+
+    public void clearCurrentNodes() {
+      currentNodeToParameterize.clear();
     }
 
     private static boolean isLiteral(@Nullable JavaTree node) {
