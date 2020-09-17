@@ -19,6 +19,9 @@
  */
 package org.sonar.java.checks.serialization;
 
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.ModifiersUtils;
@@ -37,10 +40,6 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
-
 @Rule(key = "S1948")
 public class SerializableFieldInSerializableClassCheck extends IssuableSubscriptionVisitor {
 
@@ -51,9 +50,6 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
 
   @Override
   public void visitNode(Tree tree) {
-    if(!hasSemantic()) {
-      return;
-    }
     ClassTree classTree = (ClassTree) tree;
     if (isSerializable(classTree)
       && !SerializableContract.hasSpecialHandlingSerializationMethods(classTree)
@@ -78,7 +74,11 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
         }
         checkCollectionAssignments(variableTree.symbol().usages());
       } else {
-        reportIssue(simpleName);
+        ExpressionTree initializer = variableTree.initializer();
+        Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) variableTree.symbol();
+        if (initializer == null || !(variableSymbol.isFinal() && implementsSerializable(initializer.symbolType()))) {
+          reportIssue(simpleName);
+        }
       }
     }
   }
@@ -134,7 +134,9 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
       return true;
     }
     SymbolMetadata metadata = member.symbol().metadata();
-    return metadata.isAnnotatedWith("javax.inject.Inject") || metadata.isAnnotatedWith("javax.ejb.EJB");
+    return metadata.isAnnotatedWith("javax.inject.Inject")
+      || metadata.isAnnotatedWith("javax.ejb.EJB")
+      || metadata.annotations().stream().anyMatch(annotation -> annotation.symbol().isUnknown());
   }
 
   private static boolean isSerializable(Tree tree) {
