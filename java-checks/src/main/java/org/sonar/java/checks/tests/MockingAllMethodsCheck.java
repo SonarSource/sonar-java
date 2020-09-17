@@ -93,7 +93,7 @@ public class MockingAllMethodsCheck extends AbstractMethodDetection {
           Set<Symbol> declaredMethods = mockedObject.type().symbol().memberSymbols().stream()
             .filter(MockingAllMethodsCheck::isNonPrivateMethod)
             .collect(Collectors.toSet());
-          if (mockedMethods.size() > 1 && mockedMethods.equals(declaredMethods)) {
+          if (declaredMethods.size() > 1 && mockedMethods.containsAll(declaredMethods)) {
             List<JavaFileScannerContext.Location> secondaries = mockedMethods.stream()
               .map(method -> new JavaFileScannerContext.Location("Method mocked here", whenCalls.get(method)))
               .collect(Collectors.toList());

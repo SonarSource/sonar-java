@@ -197,4 +197,34 @@ public class MockingAllMethodsCheck {
     when(staticMockedObject.g()).thenReturn(2);
   }
 
+  // Tests involving inheritance
+
+  void test_mocking_Child() {
+    // Just mocking the methods from child is enough to trigger the rule because we don't look at the parent class
+    Child childMock = mock(Child.class); // Noncompliant [[secondary=205,206]]
+    when(childMock.h()).thenReturn(1);
+    when(childMock.i()).thenReturn(2);
+  }
+
+  void test_mocking_Child_and_Parent_methods() {
+    // Mocking methods other than the ones we're looking at won't make the issue disappear
+    Child childMock = mock(Child.class); // Noncompliant [[secondary=212,213,214,215]]
+    when(childMock.f()).thenReturn(1);
+    when(childMock.g()).thenReturn(2);
+    when(childMock.h()).thenReturn(3);
+    when(childMock.i()).thenReturn(4);
+
+  }
+
+  interface Parent {
+    int f();
+    int g();
+  }
+
+  interface Child extends Parent {
+    int h();
+    int i();
+  }
+
+
 }
