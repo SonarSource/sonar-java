@@ -20,6 +20,7 @@
 package org.sonar.java.checks.helpers;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -31,6 +32,7 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import static java.util.Arrays.asList;
 
@@ -166,5 +168,31 @@ public final class UnitTestUtils {
     }
     Symbol.TypeSymbol enclosingClass = Objects.requireNonNull(methodTree.symbol().enclosingClass(), "Must not be null for method symbols");
     return enclosingClass.type().isSubtypeOf("junit.framework.TestCase") && methodTree.simpleName().name().startsWith("test");
+  }
+
+  public static boolean isTestClass(ClassTree classTree) {
+    Symbol.TypeSymbol classSymbol = classTree.symbol();
+    return !classSymbol.isAbstract()
+      && isTopLevelClass(classSymbol)
+      && (hasTestMethod(classTree.members()) || hasNestedClass(classTree));
+  }
+
+  private static boolean isTopLevelClass(Symbol.TypeSymbol classSymbol) {
+    return classSymbol.owner().isPackageSymbol();
+  }
+
+  private static boolean hasTestMethod(List<Tree> members) {
+    return members.stream()
+      .filter(member -> member.is(Tree.Kind.METHOD))
+      .map(MethodTree.class::cast)
+      .anyMatch(UnitTestUtils::hasTestAnnotation);
+  }
+
+  private static boolean hasNestedClass(ClassTree classTree) {
+    return classTree.members()
+      .stream()
+      .filter(member -> member.is(Tree.Kind.CLASS))
+      .map(ClassTree.class::cast)
+      .anyMatch(UnitTestUtils::hasNestedAnnotation);
   }
 }

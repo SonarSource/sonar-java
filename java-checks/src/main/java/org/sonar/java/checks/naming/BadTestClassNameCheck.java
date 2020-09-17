@@ -19,22 +19,19 @@
  */
 package org.sonar.java.checks.naming;
 
-import org.sonar.check.Rule;
-import org.sonar.check.RuleProperty;
-import org.sonar.java.checks.helpers.UnitTestUtils;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.Nullable;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
+import org.sonar.check.Rule;
+import org.sonar.check.RuleProperty;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import static org.sonar.java.checks.helpers.UnitTestUtils.isTestClass;
 
 @Rule(key = "S3577")
 public class BadTestClassNameCheck extends IssuableSubscriptionVisitor {
@@ -75,32 +72,6 @@ public class BadTestClassNameCheck extends IssuableSubscriptionVisitor {
 
   private boolean hasInvalidName(@Nullable IdentifierTree className) {
     return className != null && !pattern.matcher(className.name()).matches();
-  }
-
-  private static boolean isTestClass(ClassTree classTree) {
-    Symbol.TypeSymbol classSymbol = classTree.symbol();
-    return !classSymbol.isAbstract()
-      && isTopLevelClass(classSymbol)
-      && (hasTestMethod(classTree.members()) || hasNestedClass(classTree));
-  }
-
-  private static boolean isTopLevelClass(Symbol.TypeSymbol classSymbol) {
-    return classSymbol.owner().isPackageSymbol();
-  }
-
-  private static boolean hasTestMethod(List<Tree> members) {
-    return members.stream()
-      .filter(member -> member.is(Tree.Kind.METHOD))
-      .map(MethodTree.class::cast)
-      .anyMatch(UnitTestUtils::hasTestAnnotation);
-  }
-
-  private static boolean hasNestedClass(ClassTree classTree) {
-    return classTree.members()
-      .stream()
-      .filter(member -> member.is(Tree.Kind.CLASS))
-      .map(ClassTree.class::cast)
-      .anyMatch(UnitTestUtils::hasNestedAnnotation);
   }
 
 }
