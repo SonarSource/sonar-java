@@ -19,9 +19,9 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -47,11 +47,17 @@ public class InterfaceAsConstantContainerCheck extends IssuableSubscriptionVisit
   }
 
   private static List<JavaFileScannerContext.Location> collectConstantsLocation(ClassTree tree) {
-    return tree.members().stream()
-      .filter(member -> member.is(Tree.Kind.VARIABLE))
-      .map(VariableTree.class::cast)
-      .map(VariableTree::simpleName)
-      .map(id -> new JavaFileScannerContext.Location("", id))
-      .collect(Collectors.toList());
+    List<JavaFileScannerContext.Location> constantLocations = new ArrayList<>();
+    for (Tree member : tree.members()) {
+      if (!member.is(Tree.Kind.VARIABLE, Tree.Kind.EMPTY_STATEMENT)) {
+        // the interface doesn't hold only constants
+        return Collections.emptyList();
+      }
+      if (member.is(Tree.Kind.EMPTY_STATEMENT)) {
+        continue;
+      }
+      constantLocations.add(new JavaFileScannerContext.Location("", ((VariableTree) member).simpleName()));
+    }
+    return constantLocations;
   }
 }
