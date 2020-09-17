@@ -19,18 +19,22 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Collections;
-import java.util.List;
-
 @Rule(key = "S1215")
 public class GarbageCollectorCalledCheck extends IssuableSubscriptionVisitor {
+  private static final MethodMatchers GC_METHOD_MATCHER = MethodMatchers.create()
+    .ofTypes("java.lang.Runtime", "java.lang.System")
+    .names("gc", "runFinalization")
+    .addWithoutParametersMatcher()
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -40,31 +44,8 @@ public class GarbageCollectorCalledCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodInvocationTree mit = (MethodInvocationTree) tree;
-    if (mit.arguments().isEmpty() && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree mset = (MemberSelectExpressionTree) mit.methodSelect();
-      if (isGarbageCollectorCall(mset)) {
-        reportIssue(mset.identifier(), "Don't try to be smarter than the JVM, remove this call to run the garbage collector.");
-      }
+    if (GC_METHOD_MATCHER.matches(mit)) {
+      reportIssue(ExpressionUtils.methodName(mit), "Don't try to be smarter than the JVM, remove this call to run the garbage collector.");
     }
   }
-
-  private static boolean isGarbageCollectorCall(MemberSelectExpressionTree mset) {
-    if ("gc".equals(mset.identifier().name())) {
-      if (mset.expression().is(Tree.Kind.IDENTIFIER)) {
-        //detect call to System.gc()
-        return "System".equals(((IdentifierTree) mset.expression()).name());
-      } else if (mset.expression().is(Tree.Kind.METHOD_INVOCATION)) {
-        MethodInvocationTree mit = (MethodInvocationTree) mset.expression();
-        if (mit.arguments().isEmpty() && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-          MemberSelectExpressionTree subMset = (MemberSelectExpressionTree) mit.methodSelect();
-          //detect call to Runtime.getRuntime().gc()
-          return "getRuntime".equals(subMset.identifier().name())
-            && subMset.expression().is(Tree.Kind.IDENTIFIER)
-            && "Runtime".equals(((IdentifierTree) subMset.expression()).name());
-        }
-      }
-    }
-    return false;
-  }
-
 }
