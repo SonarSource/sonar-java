@@ -107,7 +107,7 @@ public class ParameterizedTestCheck {
   }
   // strings
   @Test
-  void testString1() { // Noncompliant [[secondary=112,112,115,120]]
+  void testString1() { // Noncompliant [[secondary=112,112,115,120,132]]
     setup();
     assertEquals(getObject("1"), "1");
   }
@@ -127,9 +127,15 @@ public class ParameterizedTestCheck {
     setup();
     assertEquals(getObject('1'), '1');
   }
+  // null
+  @Test
+  void testNull() { // null and string are compatible, the method can be parameterized together with testString1
+    setup();
+    assertEquals(getObject(null), null);
+  }
   // booleans
   @Test
-  void testBoolean1() { // Noncompliant [[secondary=134,134,137,142]]
+  void testBoolean1() { // Noncompliant [[secondary=140,140,143,148]]
     setup();
     assertEquals(getObject(true), true);
   }
@@ -142,12 +148,6 @@ public class ParameterizedTestCheck {
   void testBoolean3() {
     setup();
     assertEquals(getObject(false), false);
-  }
-  // null
-  @Test
-  void testNull() {
-    setup();
-    assertEquals(getObject(null), null);
   }
 
   @Test

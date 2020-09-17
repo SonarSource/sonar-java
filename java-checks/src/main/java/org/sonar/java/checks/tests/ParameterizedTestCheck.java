@@ -137,7 +137,7 @@ public class ParameterizedTestCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public boolean test(JavaTree leftNode, JavaTree rightNode) {
-      if (isLiteral(leftNode) && isLiteral(rightNode) && leftNode.is(rightNode.kind())) {
+      if (isCompatibleTypes(leftNode, rightNode)) {
         if (!SyntacticEquivalence.areEquivalent(leftNode, rightNode)) {
           // If the two literals are not equivalent, it means that we will have to create a parameter for it.
           currentNodeToParameterize.add(leftNode);
@@ -155,8 +155,13 @@ public class ParameterizedTestCheck extends IssuableSubscriptionVisitor {
       currentNodeToParameterize.clear();
     }
 
-    private static boolean isLiteral(@Nullable JavaTree node) {
-      return node instanceof LiteralTree;
+    private static boolean isCompatibleTypes(@Nullable JavaTree leftNode, @Nullable JavaTree rightNode) {
+      return leftNode instanceof LiteralTree
+        && rightNode instanceof LiteralTree
+        && (leftNode.is(rightNode.kind()) ||
+        (leftNode.is(Tree.Kind.STRING_LITERAL, Tree.Kind.NULL_LITERAL) &&
+          rightNode.is(Tree.Kind.STRING_LITERAL, Tree.Kind.NULL_LITERAL))
+      );
     }
   }
 
