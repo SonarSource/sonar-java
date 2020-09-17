@@ -32,7 +32,9 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -102,12 +104,21 @@ public class TooManyAssertionsCheck extends IssuableSubscriptionVisitor {
 
   private class AssertionsCounterVisitor extends BaseTreeVisitor {
 
-    List<Tree> assertions = new ArrayList<>();
+    private final List<Tree> assertions = new ArrayList<>();
+    private final List<Tree> chainedAssertions = new ArrayList<>();
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
       super.visitMethodInvocation(mit);
       if (isAssertion(methodName(mit), mit.symbol())) {
+        ExpressionTree methodSelect = mit.methodSelect();
+        if(methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+          ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
+          if(assertions.contains(expression) || chainedAssertions.contains(expression)) {
+            chainedAssertions.add(mit);
+            return;
+          }
+        }
         assertions.add(mit);
       }
     }

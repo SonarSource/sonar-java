@@ -57,7 +57,7 @@ class TooManyAssertionsCheckTest {
     JavaCheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/TooManyAssertionsCheck.java"))
       .withCheck(new TooManyAssertionsCheck())
-      .verifyIssues();
+      .verifyNoIssues();
   }
 
 }

@@ -58,7 +58,7 @@ public class TooManyAssertionsNonCompilingCheck {
   }
 
   @Test
-  public void verifyRestAssured() { // Noncompliant [[sc=15;ec=32]]{{Refactor this method in order to have less than 25 assertions.}}
+  public void verifyRestAssured() { // Compliant, considered as one assertion, can be revisited in the future and considered as false negative
     given().when().get("/garage").then()
       .body("name",equalTo("Acme garage"))
       .body("info.slots",equalTo(150))

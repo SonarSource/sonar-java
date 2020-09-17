@@ -1,10 +1,20 @@
 package checks;
 
+import java.net.URI;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.Assert.assertEquals;
 
 public class TooManyAssertionsCheckCustom25 {
+
+  private static final String GITLAB_AUTH_URL = "";
+  private static final String GITLAB_AUTH_ENABLED = "";
+  private static final String GITLAB_AUTH_APPLICATION_ID = "";
+  private static final String GITLAB_AUTH_SECRET = "";
+  private static final String GITLAB_AUTH_ALLOW_USERS_TO_SIGNUP = "";
+  private static final String GITLAB_AUTH_SYNC_USER_GROUPS = "";
 
   @Test
   void test1() { // Compliant
@@ -67,6 +77,69 @@ public class TooManyAssertionsCheckCustom25 {
 
   int g(int x) {
     return x + 100;
+  }
+
+  @Test
+  void starngeTest() { //Compliant
+    Config config = new Config();
+    Settings settings = new Settings();
+
+    assertThat(config.url()).isEqualTo("https://gitlab.com");
+    settings.setProperty(GITLAB_AUTH_URL, "https://gitlab.com/api/");
+    assertThat(config.url()).isEqualTo("https://gitlab.com/api");
+    settings.setProperty(GITLAB_AUTH_URL, "https://gitlab.com/api");
+    assertThat(config.url()).isEqualTo("https://gitlab.com/api");
+    assertThat(config.isEnabled()).isFalse();
+    settings.setProperty(GITLAB_AUTH_ENABLED, "true");
+    assertThat(config.isEnabled()).isFalse();
+    settings.setProperty(GITLAB_AUTH_APPLICATION_ID, "1234");
+    assertThat(config.isEnabled()).isFalse().doesNotHave(null);
+    settings.setProperty(GITLAB_AUTH_SECRET, "5678");
+    assertThat(config.isEnabled()).isTrue();
+    assertThat(config.applicationId()).isEqualTo("1234");
+    assertThat(config.secret()).isEqualTo("5678");
+    assertThat(config.allowUsersToSignUp()).isTrue();
+    settings.setProperty(GITLAB_AUTH_ALLOW_USERS_TO_SIGNUP, "false");
+    assertThat(config.allowUsersToSignUp()).isFalse();
+    assertThat(config.syncUserGroups()).isFalse();
+    settings.setProperty(GITLAB_AUTH_SYNC_USER_GROUPS, true);
+
+    assertThat(URI.create(""))
+      .hasFragment("1")
+      .hasFragment("2")
+      .hasFragment("3")
+      .hasHost("");
+  }
+
+  private static class Config {
+    public String url() {
+      return "";
+    }
+
+    public boolean isEnabled() {
+      return false;
+    }
+
+    public String applicationId() {
+      return null;
+    }
+
+    public String secret() {
+      return null;
+    }
+
+    public boolean allowUsersToSignUp() {
+      return false;
+    }
+
+    public boolean syncUserGroups() {
+      return false;
+    }
+  }
+
+  private static class Settings {
+    private void setProperty(String k, Object v) {
+    }
   }
 
 }
