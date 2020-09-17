@@ -39,7 +39,6 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TypeCastTree;
 
 import static java.util.Arrays.asList;
 
@@ -136,7 +135,7 @@ public class ParameterizedTestCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public boolean test(JavaTree leftNode, JavaTree rightNode) {
-      if (isLiteral(leftNode) && isLiteral(rightNode)) {
+      if (isLiteral(leftNode) && isLiteral(rightNode) && leftNode.is(rightNode.kind()) ) {
         if (!SyntacticEquivalence.areEquivalent(leftNode, rightNode)) {
           // If the two literals are not equivalent, it means that we will have to create a parameter for it.
           currentNodeToParameterize.add(leftNode);
@@ -155,10 +154,6 @@ public class ParameterizedTestCheck extends IssuableSubscriptionVisitor {
     }
 
     private static boolean isLiteral(@Nullable JavaTree node) {
-      if (node instanceof TypeCastTree) {
-        // If the node is a cast of literal, we consider it as literal as well.
-        return isLiteral((JavaTree) ((TypeCastTree) node).expression());
-      }
       return node instanceof LiteralTree;
     }
   }

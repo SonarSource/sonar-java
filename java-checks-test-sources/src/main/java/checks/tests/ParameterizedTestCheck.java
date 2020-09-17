@@ -51,7 +51,7 @@ public class ParameterizedTestCheck {
   // Only consider ints,shorts,bytes,longs,floats,doubles,chars,strings,boolean. Types does not need to be the same
   // ints
   @Test
-  void testInt1() {  // Noncompliant [[secondary=56,56,59,65,71,77,83,89,95,101,107,112,118]] {{Replace these 12 tests with a single Parameterized one.}}
+  void testInt1() {  // Noncompliant [[secondary=56,56,59,64]] {{Replace these 3 tests with a single Parameterized one.}}
     setup();
     assertEquals(getObject(1), 1);
   }
@@ -60,17 +60,38 @@ public class ParameterizedTestCheck {
     setup();
     assertEquals(getObject(2), 2);
   }
+  @Test
+  void testInt3() {
+    setup();
+    assertEquals(getObject(3), 3);
+  }
   // shorts
   @Test
-  void testShort1() {
+  void testShort1() { // Noncompliant [[secondary=72,72,75,80]]
     setup();
     assertEquals(getObject((short) 1), 1);
   }
+  @Test
+  void testShort2() {
+    setup();
+    assertEquals(getObject((short) 2), 2);
+  }
+  @Test
+  void testShort3() {
+    setup();
+    assertEquals(getObject((short) 3), 3);
+  }
   // bytes
   @Test
-  void testByte1() {
+  void testByte1() { // Not a secondary from testShort1, getObject is not always the same method
     setup();
     assertEquals(getObject((byte) 1), 1);
+  }
+  // floats
+  @Test
+  void testFloat1() { // Not a secondary from testShort1, getObject is not the same method
+    setup();
+    assertEquals(getObject((float) 1), 0.1);
   }
   // longs
   @Test
@@ -78,38 +99,47 @@ public class ParameterizedTestCheck {
     setup();
     assertEquals(getObject(1L), 1);
   }
-  // floats
-  @Test
-  void testFloat1() {
-    setup();
-    assertEquals(getObject((float) 0.1), 0.1);
-  }
   // doubles
   @Test
   void testDouble1() {
     setup();
     assertEquals(getObject(0.1), 0.1);
   }
-  // chars
-  @Test
-  void testChar1() {
-    setup();
-    assertEquals(getObject('1'), '1');
-  }
   // strings
   @Test
-  void testString1() {
+  void testString1() { // Noncompliant [[secondary=112,112,115,120]]
     setup();
     assertEquals(getObject("1"), "1");
   }
+  @Test
+  void testString2() {
+    setup();
+    assertEquals(getObject("2"), "2");
+  }
+  @Test
+  void testString3() {
+    setup();
+    assertEquals(getObject("3"), "3");
+  }
+  // chars
+  @Test
+  void testChar1() { // Not a secondary of testString1
+    setup();
+    assertEquals(getObject('1'), '1');
+  }
   // booleans
   @Test
-  void testClass1() {
+  void testBoolean1() { // Noncompliant [[secondary=134,134,137,142]]
     setup();
     assertEquals(getObject(true), true);
   }
   @Test
-  void testClass2() {
+  void testBoolean2() {
+    setup();
+    assertEquals(getObject(true), false);
+  }
+  @Test
+  void testBoolean3() {
     setup();
     assertEquals(getObject(false), false);
   }
@@ -247,6 +277,10 @@ public class ParameterizedTestCheck {
     return o;
   }
 
+  Object getObject(short o) {
+    return o;
+  }
+
   void setup() {}
 
   void setup(String s) {}
@@ -286,4 +320,27 @@ abstract class ParameterizedTestCheckOneCandidate {
 
   @Test
   abstract void abstractTest();
+}
+
+class ParameterizedTestCheckNotSameLiteralTypes {
+  @Test
+  void test1() { // Compliant "compute(1)" and "compute(2.0f)" is not related to the same method
+    int a = compute(1);
+    assertEquals(a, 0);
+  }
+
+  @Test
+  void test2() {
+    int a = compute(2.0f);
+    assertEquals(a, 0);
+  }
+
+  @Test
+  void test3() {
+    int a = compute(3);
+    assertEquals(a, 0);
+  }
+
+  int compute(int a) { return 0;  }
+  int compute(float a) { return 0; }
 }
