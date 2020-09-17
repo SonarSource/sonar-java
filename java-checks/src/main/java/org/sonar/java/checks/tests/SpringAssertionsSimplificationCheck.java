@@ -26,10 +26,10 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import static org.sonar.java.checks.helpers.MethodTreeUtils.subsequentMethodInvocation;
 import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
 @Rule(key = "S5970")
@@ -47,28 +47,48 @@ public class SpringAssertionsSimplificationCheck extends IssuableSubscriptionVis
     "org.junit.jupiter.api.Assertions"
   };
 
-  public static final MethodMatchers ASSERT_EQUALS_MATCHER = MethodMatchers.create()
+  private static final String[] ASSERT_J_AND_FEST_ASSERT = {"org.assertj.core.api.AbstractAssert", "org.fest.assertions.GenericAssert"};
+
+  private static final MethodMatchers ASSERT_EQUALS_MATCHER = MethodMatchers.create()
     .ofTypes(ASSERTION_CLASSES)
     .names("assertEquals")
     .addParametersMatcher(ANY, ANY)
     .build();
 
-  public static final MethodMatchers ASSERT_TRUE_FALSE_EQUALS_MATCHER = MethodMatchers.create()
+  private static final MethodMatchers ASSERT_TRUE_FALSE_EQUALS_MATCHER = MethodMatchers.create()
     .ofTypes(ASSERTION_CLASSES)
     .names("assertEquals", "assertTrue", "assertFalse")
     .withAnyParameters()
     .build();
 
-  public static final MethodMatchers MODEL_VIEW_GET_VIEW_NAME = MethodMatchers.create()
+  private static final MethodMatchers MODEL_VIEW_GET_VIEW_NAME = MethodMatchers.create()
     .ofTypes("org.springframework.web.servlet.ModelAndView")
     .names("getViewName")
     .addWithoutParametersMatcher()
     .build();
 
-  public static final MethodMatchers MODEL_MAP_GET = MethodMatchers.create()
+  private static final MethodMatchers MODEL_MAP_GET = MethodMatchers.create()
     .ofTypes("org.springframework.ui.ModelMap")
     .names("get")
     .addParametersMatcher("java.lang.Object")
+    .build();
+
+  private static final MethodMatchers ASSERT_THAT = MethodMatchers.create()
+    .ofTypes("org.assertj.core.api.Assertions", "org.fest.assertions.Assertions")
+    .names("assertThat")
+    .withAnyParameters()
+    .build();
+
+  private static final MethodMatchers IS_EQUAL_TO = MethodMatchers.create()
+    .ofSubTypes(ASSERT_J_AND_FEST_ASSERT)
+    .names("isEqualTo")
+    .withAnyParameters()
+    .build();
+
+  private static final MethodMatchers IS_EQUAL_TO_IS_FALSE_IS_TRUE = MethodMatchers.create()
+    .ofSubTypes(ASSERT_J_AND_FEST_ASSERT)
+    .names("isEqualTo", "isTrue", "isFalse")
+    .withAnyParameters()
     .build();
 
   @Override
@@ -80,26 +100,31 @@ public class SpringAssertionsSimplificationCheck extends IssuableSubscriptionVis
   public void visitNode(Tree tree) {
     MethodInvocationTree mit = (MethodInvocationTree) tree;
     if (MODEL_VIEW_GET_VIEW_NAME.matches(mit)) {
-      getNestingCall(tree, ASSERT_EQUALS_MATCHER).ifPresent(id ->
-        reportIssue(id, String.format(MESSAGE_TEMPLATE, "ModelAndViewAssert.assertViewName"))
+      getNestingCall(tree).ifPresent(call -> {
+          if (ASSERT_EQUALS_MATCHER.matches(call) ||
+            (ASSERT_THAT.matches(call) && subsequentMethodInvocation(call, IS_EQUAL_TO).isPresent())) {
+            reportIssue(ExpressionUtils.methodName(call), String.format(MESSAGE_TEMPLATE, "ModelAndViewAssert.assertViewName"));
+          }
+        }
       );
     } else if (MODEL_MAP_GET.matches(mit)) {
-      getNestingCall(tree, ASSERT_TRUE_FALSE_EQUALS_MATCHER).ifPresent(id ->
-        reportIssue(id, String.format(MESSAGE_TEMPLATE, "ModelAndViewAssert.assertModelAttributeValue"))
-      );
+      getNestingCall(tree).ifPresent(call -> {
+        if (ASSERT_TRUE_FALSE_EQUALS_MATCHER.matches(call) ||
+          (ASSERT_THAT.matches(call) && subsequentMethodInvocation(call, IS_EQUAL_TO_IS_FALSE_IS_TRUE).isPresent())) {
+          reportIssue(ExpressionUtils.methodName(call), String.format(MESSAGE_TEMPLATE, "ModelAndViewAssert.assertModelAttributeValue"));
+        }
+      });
     }
   }
 
-  private static Optional<IdentifierTree> getNestingCall(Tree nestedTree, MethodMatchers enclosingCall) {
+  private static Optional<MethodInvocationTree> getNestingCall(Tree nestedTree) {
     Tree parent = nestedTree.parent();
+    // This pattern should be used with care, since it is not efficient and can hit performance.
+    // It is acceptable in this case though, since we will call this method only when facing Spring methods and
+    // situation that will hardly ever occur compared to common assertions.
     while (parent != null && !parent.is(Tree.Kind.METHOD)) {
       if (parent.is(Tree.Kind.METHOD_INVOCATION)) {
-        MethodInvocationTree parentMit = (MethodInvocationTree) parent;
-        if (enclosingCall.matches(parentMit)) {
-          return Optional.of(ExpressionUtils.methodName(parentMit));
-        } else {
-          return Optional.empty();
-        }
+        return Optional.of((MethodInvocationTree) parent);
       }
       parent = parent.parent();
     }
