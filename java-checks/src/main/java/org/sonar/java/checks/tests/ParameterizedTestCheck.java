@@ -82,33 +82,33 @@ public class ParameterizedTestCheck extends IssuableSubscriptionVisitor {
       List<StatementTree> methodBody = method.block().body();
       // In addition to filtering literals, we want to count the number of differences since they will represent the number of parameter
       // that would be required to transform the tests to a single parametrized one.
-      CollectAndFilter collectAndFilter = new CollectAndFilter();
+      CollectAndIgnoreLiterals collectAndIgnoreLiterals = new CollectAndIgnoreLiterals();
 
       List<MethodTree> equivalentMethods = new ArrayList<>();
 
       for (int j = i + 1; j < methods.size(); j++) {
         MethodTree otherMethod = methods.get(j);
         if (!handled.contains(otherMethod)) {
-          boolean areEquivalent = SyntacticEquivalence.areEquivalent(methodBody, otherMethod.block().body(), collectAndFilter);
+          boolean areEquivalent = SyntacticEquivalence.areEquivalent(methodBody, otherMethod.block().body(), collectAndIgnoreLiterals);
           if (areEquivalent) {
             // If methods where not equivalent, we don't want to pollute the set of node to parameterize.
             equivalentMethods.add(otherMethod);
-            collectAndFilter.finishCollect();
+            collectAndIgnoreLiterals.finishCollect();
           }
-          collectAndFilter.clearCurrentNodes();
+          collectAndIgnoreLiterals.clearCurrentNodes();
         }
       }
 
       if (equivalentMethods.size() + 1 >= MIN_SIMILAR_METHODS) {
         handled.addAll(equivalentMethods);
 
-        if (collectAndFilter.nodeToParametrize.size() > MAX_NUMBER_PARAMETER) {
+        if (collectAndIgnoreLiterals.nodeToParametrize.size() > MAX_NUMBER_PARAMETER) {
           // We don't report an issue if the change would result in too many parameters.
           // We still add it to "handled" to not report a subset of candidate methods.
           continue;
         }
 
-        List<JavaFileScannerContext.Location> secondaries = collectAndFilter.nodeToParametrize.stream().map(param ->
+        List<JavaFileScannerContext.Location> secondaries = collectAndIgnoreLiterals.nodeToParametrize.stream().map(param ->
           new JavaFileScannerContext.Location("Value to parameterize", param)).collect(Collectors.toCollection(ArrayList::new));
 
         equivalentMethods.stream().map(equivalentMethod ->
@@ -128,7 +128,7 @@ public class ParameterizedTestCheck extends IssuableSubscriptionVisitor {
       TEST_ANNOTATIONS.stream().anyMatch(symbolMetadata::isAnnotatedWith);
   }
 
-  static class CollectAndFilter implements BiPredicate<JavaTree, JavaTree> {
+  static class CollectAndIgnoreLiterals implements BiPredicate<JavaTree, JavaTree> {
 
     Set<JavaTree> nodeToParametrize = new HashSet<>();
     private final Set<JavaTree> currentNodeToParameterize = new HashSet<>();

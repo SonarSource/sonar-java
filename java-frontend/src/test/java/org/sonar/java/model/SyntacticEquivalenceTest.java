@@ -74,7 +74,7 @@ class SyntacticEquivalenceTest {
   }
 
   @Test
-  void extra_filter_equivalence() {
+  void extra_permissive_equivalence() {
     assertThat(SyntacticEquivalence.areEquivalent(compilationUnitTree("class A{}"), compilationUnitTree("class B{}"))).isFalse();
     assertThat(SyntacticEquivalence.areEquivalent(compilationUnitTree("class A{}"), compilationUnitTree("class B{}"), (l,r) -> false)).isFalse();
     assertThat(SyntacticEquivalence.areEquivalent(compilationUnitTree("class A{}"), compilationUnitTree("class B{}"), (l,r) -> true)).isTrue();

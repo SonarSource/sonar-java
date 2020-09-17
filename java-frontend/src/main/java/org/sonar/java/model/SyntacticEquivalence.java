@@ -42,16 +42,17 @@ public final class SyntacticEquivalence {
 
   /**
    * @return true, if nodes are syntactically equivalent
-   * Use equivalenceFilter to force the equivalence of two nodes
+   * Use permissiveEquivalence to force the equivalence of two nodes
+   * Use permissiveEquivalence to force the equivalence of two nodes
    */
-  public static boolean areEquivalent(List<? extends Tree> leftList, List<? extends Tree> rightList, BiPredicate<JavaTree, JavaTree> equivalenceFilter) {
+  public static boolean areEquivalent(List<? extends Tree> leftList, List<? extends Tree> rightList, BiPredicate<JavaTree, JavaTree> permissiveEquivalence) {
     if (leftList.size() != rightList.size()) {
       return false;
     }
     for (int i = 0; i < leftList.size(); i++) {
       Tree left = leftList.get(i);
       Tree right = rightList.get(i);
-      if (!areEquivalent(left, right, equivalenceFilter)) {
+      if (!areEquivalent(left, right, permissiveEquivalence)) {
         return false;
       }
     }
@@ -67,21 +68,21 @@ public final class SyntacticEquivalence {
 
   /**
    * @return true, if nodes are syntactically equivalent
-   * Use equivalenceFilter to force the equivalence of two nodes
+   * Use permissiveEquivalence to force the equivalence of two nodes
    */
   @VisibleForTesting
-  static boolean areEquivalent(@Nullable Tree leftNode, @Nullable Tree rightNode, BiPredicate<JavaTree, JavaTree> equivalenceFilter) {
-    return areEquivalent((JavaTree) leftNode, (JavaTree) rightNode, equivalenceFilter);
+  static boolean areEquivalent(@Nullable Tree leftNode, @Nullable Tree rightNode, BiPredicate<JavaTree, JavaTree> permissiveEquivalence) {
+    return areEquivalent((JavaTree) leftNode, (JavaTree) rightNode, permissiveEquivalence);
   }
 
-  private static boolean areEquivalent(@Nullable JavaTree leftNode, @Nullable JavaTree rightNode, BiPredicate<JavaTree, JavaTree> equivalenceFilter) {
+  private static boolean areEquivalent(@Nullable JavaTree leftNode, @Nullable JavaTree rightNode, BiPredicate<JavaTree, JavaTree> permissiveEquivalence) {
     if (leftNode == rightNode) {
       return true;
     }
     if (leftNode == null || rightNode == null) {
       return false;
     }
-    if (equivalenceFilter.test(leftNode, rightNode)) {
+    if (permissiveEquivalence.test(leftNode, rightNode)) {
       return true;
     }
     if (leftNode.kind() != rightNode.kind() || leftNode.is(Tree.Kind.OTHER)) {
@@ -93,7 +94,7 @@ public final class SyntacticEquivalence {
     Iterator<Tree> iteratorB = rightNode.getChildren().iterator();
 
     while (iteratorA.hasNext() && iteratorB.hasNext()) {
-      if (!areEquivalent(iteratorA.next(), iteratorB.next(), equivalenceFilter)) {
+      if (!areEquivalent(iteratorA.next(), iteratorB.next(), permissiveEquivalence)) {
         return false;
       }
     }
