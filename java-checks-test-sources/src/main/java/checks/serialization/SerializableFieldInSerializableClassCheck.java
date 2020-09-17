@@ -332,3 +332,34 @@ class MyAbstractNonSerializableMap<K,V> extends MyNonSerializableMap<K,V> {
     return null;
   }
 }
+
+class A implements java.io.Serializable {
+  private NonSerializableInterface field = new SerializableImpl(); // Noncompliant
+  private final NonSerializableInterface field1 = new SerializableImpl(); // Compliant, is final
+  private NonSerializableInterface field2; // Noncompliant
+  private NonSerializableInterface field3 = init(); // Noncompliant
+  private NonSerializableInterface field4 = initWithSerializable(); // Noncompliant, is not final
+  private final NonSerializableInterface field5 = initWithSerializable(); // Compliant, is final
+  private final NonSerializableInterface field6 = init(); // Noncompliant
+
+  private NonSerializableInterface init() {
+    throw new RuntimeException();
+  }
+
+  private SerializableImpl initWithSerializable() {
+    throw new RuntimeException();
+  }
+
+  void mess() {
+    field = null;
+    field4 = null;
+  }
+}
+
+class SerializableImpl implements NonSerializableInterface, java.io.Serializable {
+  @Override public void doSomething() { }
+}
+
+interface NonSerializableInterface {
+  void doSomething();
+}

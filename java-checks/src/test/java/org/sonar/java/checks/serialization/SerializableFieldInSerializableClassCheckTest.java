@@ -39,4 +39,18 @@ class SerializableFieldInSerializableClassCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void testWithoutSemantic() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/serialization/SerializableFieldInSerializableClassCheck.java"))
+      .withCheck(new SerializableFieldInSerializableClassCheck())
+      .withoutSemantic()
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/serialization/SerializableFieldInSerializableClassCheck.java"))
+      .withCheck(new SerializableFieldInSerializableClassCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
+
 }
