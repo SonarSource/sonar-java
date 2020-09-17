@@ -8,6 +8,7 @@
   If a nonfinal class implements a constant interface,</p>
   <p>all of its subclasses will have their namespaces polluted by the constants in the interface.</p>
 </blockquote>
+<p>This rule raises an issue when an interface consists solely of fields, without any other members.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 interface Status {                      // Noncompliant

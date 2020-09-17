@@ -3,52 +3,45 @@ package checks;
 interface InterfaceAsConstantContainerCheck {
 }
 
-interface InterfaceAsConstantContainerCheckB {
-}
-
-interface InterfaceAsConstantContainerCheckC { // Noncompliant [[sc=11;ec=45;secondary=10,11]] {{Move constants defined in this interfaces to another class or enum.}}
+interface InterfaceAsConstantContainerCheckA { // Noncompliant [[sc=11;ec=45;secondary=7,8]] {{Move constants defined in this interfaces to another class or enum.}}
   int a = 0;
   int b = 0;
 }
 
-interface InterfaceAsConstantContainerCheckD {
+interface InterfaceAsConstantContainerCheckB {
   void f();
 }
 
-interface InterfaceAsConstantContainerCheckE { // Noncompliant
+interface InterfaceAsConstantContainerCheckC { // Compliant
   int a = 0;
   void f();
 }
 
-interface InterfaceAsConstantContainerCheckF { // Noncompliant
+interface InterfaceAsConstantContainerCheckD { // Compliant
   void f();
   int a = 0;
 }
 
-interface InterfaceAsConstantContainerCheckG { // Noncompliant
-  int a = 0;
-  int f();
-}
-
-interface InterfaceAsConstantContainerCheckH { // Noncompliant
-  int f();
-  int a = 0;
-}
-
-interface InterfaceAsConstantContainerCheckI {
+interface InterfaceAsConstantContainerCheckE {
   int f();
   void g();
 }
 
-interface InterfaceAsConstantContainerCheckJ {
+interface InterfaceAsConstantContainerCheckF {
   int f();
 
-  interface InterfaceAsConstantContainerCheckK { // Noncompliant
+  interface InterfaceAsConstantContainerCheckG { // Compliant
     void f();
     int a = 0;
   }
+
+  interface InterfaceAsConstantContainerCheckH { // Noncompliant
+    int a = 0;
+    ;
+    int b = 0;
+  }
 }
 
-interface InterfaceAsConstantContainerCheckL {
+interface InterfaceAsConstantContainerCheckI {
   ;
 }
