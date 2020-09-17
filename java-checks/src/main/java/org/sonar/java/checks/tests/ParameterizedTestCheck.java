@@ -99,15 +99,17 @@ public class ParameterizedTestCheck extends IssuableSubscriptionVisitor {
         }
       }
 
-      if (equivalentMethods.size() + 1 >= MIN_SIMILAR_METHODS) {
-        handled.addAll(equivalentMethods);
+      reportIfIssue(handled, method, collectAndIgnoreLiterals, equivalentMethods);
+    }
+  }
 
-        if (collectAndIgnoreLiterals.nodeToParametrize.size() > MAX_NUMBER_PARAMETER) {
-          // We don't report an issue if the change would result in too many parameters.
-          // We still add it to "handled" to not report a subset of candidate methods.
-          continue;
-        }
+  private void reportIfIssue(Set<MethodTree> handled, MethodTree method, CollectAndIgnoreLiterals collectAndIgnoreLiterals, List<MethodTree> equivalentMethods) {
+    if (equivalentMethods.size() + 1 >= MIN_SIMILAR_METHODS) {
+      handled.addAll(equivalentMethods);
 
+      if (collectAndIgnoreLiterals.nodeToParametrize.size() <= MAX_NUMBER_PARAMETER) {
+        // We don't report an issue if the change would result in too many parameters.
+        // We still add it to "handled" to not report a subset of candidate methods.
         List<JavaFileScannerContext.Location> secondaries = collectAndIgnoreLiterals.nodeToParametrize.stream().map(param ->
           new JavaFileScannerContext.Location("Value to parameterize", param)).collect(Collectors.toCollection(ArrayList::new));
 
@@ -135,7 +137,7 @@ public class ParameterizedTestCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public boolean test(JavaTree leftNode, JavaTree rightNode) {
-      if (isLiteral(leftNode) && isLiteral(rightNode) && leftNode.is(rightNode.kind()) ) {
+      if (isLiteral(leftNode) && isLiteral(rightNode) && leftNode.is(rightNode.kind())) {
         if (!SyntacticEquivalence.areEquivalent(leftNode, rightNode)) {
           // If the two literals are not equivalent, it means that we will have to create a parameter for it.
           currentNodeToParameterize.add(leftNode);
