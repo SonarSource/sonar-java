@@ -20,9 +20,6 @@
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/component/ws/ProjectMeasuresQueryFactoryTest.java':[
 70,
 ],
-'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/formula/AverageFormulaTest.java':[
-104,
-],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/step/LoadPeriodsStepTest.java':[
 133,
 ],
@@ -55,6 +52,9 @@
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/project/ws/IndexActionTest.java':[
 69,
+],
+'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualitygate/QualityGateConditionsUpdaterTest.java':[
+195,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/serverid/ws/GenerateActionTest.java':[
 126,
