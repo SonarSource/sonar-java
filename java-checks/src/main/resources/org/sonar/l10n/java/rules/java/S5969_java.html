@@ -1,0 +1,63 @@
+<p>If you end up mocking every non-private method of a class in order to write tests, it is a strong sign that your test became too complex, or that
+you misunderstood the way you are supposed to use the mocking mechanism.</p>
+<p>You should either refactor the test code into multiple units, or consider using the class itself, by either directly instantiating it, or creating
+a new one inheriting from it, with the expected behavior.</p>
+<p>This rule reports an issue when every member of a given class are mocked.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+@Test
+void test_requiring_MyClass() {
+  MyClass myClassMock = mock(MyClass.class); // Noncompliant
+  when(myClassMock.f()).thenReturn(1);
+  when(myClassMock.g()).thenReturn(2);
+  //...
+}
+
+abstract class MyClass {
+  abstract int f();
+  abstract int g();
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+@Test
+void test_requiring_MyClass() {
+  MyClass myClass = new MyClassForTest();
+  //...
+}
+
+class MyClassForTest extends MyClass {
+
+  @Override
+  int f() {
+    return 1;
+  }
+
+  @Override
+  int g() {
+    return 2;
+  }
+}
+</pre>
+<p>or</p>
+<pre>
+@Test
+void test_requiring_f() {
+  MyClass myClassMock = mock(MyClass.class);
+  when(myClassMock.f()).thenReturn(1);
+  //...
+}
+
+@Test
+void test_requiring_g() {
+  MyClass myClassMock = mock(MyClass.class);
+  when(myClassMock.g()).thenReturn(2);
+  //...
+}
+
+abstract class MyClass {
+  abstract int f();
+  abstract int g();
+}
+</pre>
+

@@ -1,0 +1,13 @@
+{
+  "title": "Mocking all non-private methods of a class should be avoided",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "tags": [
+    "tests",
+    "mockito"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-5969",
+  "sqKey": "S5969",
+  "scope": "Tests"
+}
