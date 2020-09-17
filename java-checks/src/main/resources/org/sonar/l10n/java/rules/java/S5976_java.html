@@ -1,7 +1,9 @@
 <p>When multiple tests differ only by a few hardcoded values they should be refactored as a single "parameterized" test. This reduces the chances of
 adding a bug and makes them more readable. Parameterized tests exist in most test frameworks (JUnit, TestNG, etc...).</p>
-<p>This rule raises an issue when at least 3 tests, containing more than 2 statements could be refactored to one&nbsp;parameterized test with no more
-than 3 differents parameters.</p>
+<p>The right balance needs of course to be found. There is no point in factorizing test methods when the parameterized version is a lot more complex
+than initial tests.</p>
+<p>This rule raises an issue when at least 3 tests, containing more than 2 statements could be refactored to one parameterized test with less than 4
+parameters.</p>
 <h2>Noncompliant Code Example</h2>
 <p>with JUnit 5</p>
 <pre>
@@ -77,10 +79,12 @@ public class AppTest
 }
 </pre>
 <h2>See</h2>
-<p> * <a href="https://phauer.com/2019/modern-best-practices-testing-java/#use-parameterized-tests">Modern Best Practices for Testing in Java -
-Philipp Hauer</a></p>
-<p> * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests">JUnit 5 documentation - Parameterized
-tests</a></p>
-<p> * <a href="https://www.testwithspring.com/lesson/writing-parameterized-tests-with-junit-4/">Writing Parameterized Tests With JUnit 4</a></p>
-<p> * <a href="https://testng.org/doc/documentation-main.html#parameters">TestNG documentation - Parameters</a></p>
+<ul>
+  <li> <a href="https://phauer.com/2019/modern-best-practices-testing-java/#use-parameterized-tests">Modern Best Practices for Testing in Java -
+  Philipp Hauer</a> </li>
+  <li> <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests">JUnit 5 documentation - Parameterized tests</a>
+  </li>
+  <li> <a href="https://www.testwithspring.com/lesson/writing-parameterized-tests-with-junit-4/">Writing Parameterized Tests With JUnit 4</a> </li>
+  <li> <a href="https://testng.org/doc/documentation-main.html#parameters">TestNG documentation - Parameters</a> </li>
+</ul>
 

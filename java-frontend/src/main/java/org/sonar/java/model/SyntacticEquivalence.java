@@ -43,7 +43,6 @@ public final class SyntacticEquivalence {
   /**
    * @return true, if nodes are syntactically equivalent
    * Use permissiveEquivalence to force the equivalence of two nodes
-   * Use permissiveEquivalence to force the equivalence of two nodes
    */
   public static boolean areEquivalent(List<? extends Tree> leftList, List<? extends Tree> rightList, BiPredicate<JavaTree, JavaTree> permissiveEquivalence) {
     if (leftList.size() != rightList.size()) {
