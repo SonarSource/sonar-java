@@ -40,7 +40,7 @@ public class TestsInSeparateFolderCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     if (isTestClass(classTree)) {
-      reportIssue(classTree.simpleName(), "Move this test class to a separate assembly in this solution.");
+      reportIssue(classTree.simpleName(), "Move this test class to the test folder in current project.");
     }
   }
 }
