@@ -35,6 +35,14 @@ class AssertionsInProductionCodeCheckTest {
   }
 
   @Test
+  void test_specific_package_name() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/tests/AssertionsInProductionCodeCheck.java"))
+      .withCheck(new AssertionsInProductionCodeCheck())
+      .verifyNoIssues();
+  }
+
+  @Test
   void test_without_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/AssertionsInProductionCodeCheck.java"))
