@@ -2,8 +2,8 @@
 adding a bug and makes them more readable. Parameterized tests exist in most test frameworks (JUnit, TestNG, etc...).</p>
 <p>The right balance needs of course to be found. There is no point in factorizing test methods when the parameterized version is a lot more complex
 than initial tests.</p>
-<p>This rule raises an issue when at least 3 tests, containing more than 2 statements could be refactored to one parameterized test with less than 4
-parameters.</p>
+<p>This rule raises an issue when at least 3 tests could be refactored as one parameterized test with less than 4 parameters. Only test methods which
+have at least one duplicated statement are considered.</p>
 <h2>Noncompliant Code Example</h2>
 <p>with JUnit 5</p>
 <pre>
@@ -15,38 +15,41 @@ public class AppTest
 {
     @Test
     void test_not_null1() {  // Noncompliant. The 3 following tests differ only by one hardcoded number.
-      setup();
+      setupTax();
       assertNotNull(getTax(1));
     }
 
     @Test
     void test_not_null2() {
-      setup();
+      setupTax();
       assertNotNull(getTax(2));
     }
 
     @Test
     void test_not_nul3l() {
-      setup();
+      setupTax();
       assertNotNull(getTax(3));
     }
 
     @Test
-    void testSum11() {  // Noncompliant. The 3 following differ only by a few hardcoded numbers.
-        setup();
-        assertEquals(Integer.sum(1, 1), 2);
+    void testLevel1() {  // Noncompliant. The 3 following tests differ only by a few hardcoded numbers.
+        setLevel(1);
+        runGame();
+        assertEquals(playerHealth(), 100);
     }
 
     @Test
-    void testSum12() {  // Similar test
-        setup();
-        assertEquals(Integer.sum(1, 2), 3);
+    void testLevel2() {  // Similar test
+        setLevel(2);
+        runGame();
+        assertEquals(playerHealth(), 200);
     }
 
     @Test
-    void testSum22() {  // Similar test
-        setup();
-        assertEquals(Integer.sum(2, 2), 4);
+    void testLevel3() {  // Similar test
+        setLevel(3);
+        runGame();
+        assertEquals(playerHealth(), 300);
     }
 }
 </pre>
@@ -63,18 +66,20 @@ public class AppTest
    @ParameterizedTest
    @ValueSource(ints = {1, 2, 3})
    void test_not_null(int arg) {
+     setupTax();
      assertNotNull(getTax(arg));
    }
 
     @ParameterizedTest
     @CsvSource({
-        "1, 1, 2",
-        "1, 2, 3",
-        "2, 2, 4",
+        "1, 100",
+        "2, 200",
+        "3, 300",
     })
-    void testSum(int a, int b, int result) {
-        setup();
-        assertEquals(Integer.sum(a, b), result);
+    void testLevels(int level, int health) {  // Similar test
+        setLevel(level);
+        runGame();
+        assertEquals(playerHealth(), health);
     }
 }
 </pre>

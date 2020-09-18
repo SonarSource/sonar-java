@@ -107,8 +107,11 @@ public class ParameterizedTestCheck extends IssuableSubscriptionVisitor {
     if (equivalentMethods.size() + 1 >= MIN_SIMILAR_METHODS) {
       handled.addAll(equivalentMethods);
 
-      if (collectAndIgnoreLiterals.nodeToParametrize.size() <= MAX_NUMBER_PARAMETER) {
+      int nParameters = collectAndIgnoreLiterals.nodeToParametrize.size();
+      if (nParameters <= MAX_NUMBER_PARAMETER
+        && method.block().body().size() > nParameters) {
         // We don't report an issue if the change would result in too many parameters.
+        // or if no statement would be duplicated.
         // We still add it to "handled" to not report a subset of candidate methods.
         List<JavaFileScannerContext.Location> secondaries = collectAndIgnoreLiterals.nodeToParametrize.stream().map(param ->
           new JavaFileScannerContext.Location("Value to parameterize", param)).collect(Collectors.toCollection(ArrayList::new));
