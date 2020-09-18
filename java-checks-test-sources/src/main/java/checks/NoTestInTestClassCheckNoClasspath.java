@@ -1,8 +1,10 @@
+package checks;
+
 class A extends junit.framework.TestCase {
   void testFoo() {
   }
 }
-class B extends junit.framework.TestCase {
+class BBB extends junit.framework.TestCase {
   void foo() {
   }
 }
@@ -27,6 +29,6 @@ class AnonymousClass extends junit.framework.TestCase{
   void testfoo(){}
 }
 
-public abstract class AbstractIntegrationTest { //designed for extension should not raise issue.
+abstract class AbstractIntegrationTest { //designed for extension should not raise issue.
 
 }

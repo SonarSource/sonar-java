@@ -1,17 +1,19 @@
+package checks;
+
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
-@org.junit.runner.RunWith(org.junit.experimental.runners.Enclosed.class)
-public class MyNewTest { // Noncompliant {{Add some tests to this class.}}
+@RunWith(Enclosed.class)
+class MyNewTest { // Noncompliant {{Add some tests to this class.}}
 }
 
 @RunWith(Enclosed.class)
-public class MyNew2Test { // Noncompliant {{Add some tests to this class.}}
+class MyNew2Test { // Noncompliant {{Add some tests to this class.}}
 }
 
 @RunWith(Enclosed.class)
-public class EnclosedNoInnerClassesTest { // Noncompliant {{Add some tests to this class.}}
+class EnclosedNoInnerClassesTest { // Noncompliant {{Add some tests to this class.}}
   @Test
   public void something() {
   }

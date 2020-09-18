@@ -1,3 +1,5 @@
+package checks;
+
 import java.lang.Deprecated;
 import org.junit.experimental.runners.Enclosed;
 import cucumber.api.junit.Cucumber;
@@ -136,7 +138,7 @@ class OtherTest extends BaseTest {
   }
 }
 
-@org.junit.runner.RunWith(cucumber.api.junit.Cucumber.class)
+@RunWith(cucumber.api.junit.Cucumber.class)
 public class MyCucumberTest { // should not raise an issue
 }
 @RunWith(Cucumber.class)
@@ -157,7 +159,7 @@ public class MyCucumber5Test { // Noncompliant - does not compile, not a class l
 }
 
 public class CTest {
-  @org.junit.jupiter.api.Test // no issue, junit5 annotation
+  @Test // no issue, junit5 annotation
   public void testFoo() {
     assertThat(new A().foo(null)).isEqualTo(0);
   }
@@ -231,7 +233,7 @@ abstract class AbstractCrazyHierarchyTest implements TestB { }
 interface TestB extends TestA { }
 
 class MyUnitTest { // Compliant
-  @org.junit.jupiter.params.ParameterizedTest
+  @ParameterizedTest
   void foo() {
     assertThat(plop);
   }

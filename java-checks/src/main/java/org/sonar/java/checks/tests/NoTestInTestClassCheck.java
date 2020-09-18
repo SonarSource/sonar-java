@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks.tests;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -76,12 +77,8 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   }
 
   private void resetAnnotationCache() {
-    testMethodAnnotations.clear();
-    testFieldAnnotations.clear();
-    seenAnnotations.clear();
-    testMethodAnnotations.add("org.junit.Test");
-    testMethodAnnotations.add("org.testng.annotations.Test");
-    testMethodAnnotations.add("org.junit.jupiter.api.Test");
+    Arrays.asList(testFieldAnnotations, testMethodAnnotations, seenAnnotations).forEach(Set::clear);
+    testMethodAnnotations.addAll(Arrays.asList("org.junit.Test", "org.testng.annotations.Test", "org.junit.jupiter.api.Test"));
   }
 
   private void checkClass(ClassTree classTree) {
