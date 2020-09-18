@@ -51,22 +51,25 @@ public class InstanceofUsedOnExceptionCheck extends IssuableSubscriptionVisitor 
   @Override
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.CATCH)) {
-      CatchTree catchTree = (CatchTree) tree;
-      caughtVariables.add(catchTree.parameter().simpleName().name());
-    } else if (isLeftOperandAnException((InstanceOfTree) tree)) {
-      reportIssue(((InstanceOfTree) tree).instanceofKeyword(), "Replace the usage of the \"instanceof\" operator by a catch block.");
+      caughtVariables.add(((CatchTree) tree).parameter().simpleName().name());
+    } else {
+      InstanceOfTree instanceOfTree = (InstanceOfTree) tree;
+      if (isLeftOperandAndException(instanceOfTree)
+        && instanceOfTree.type().symbolType().isSubtypeOf("java.lang.Throwable")) {
+        reportIssue(instanceOfTree.instanceofKeyword(), "Replace the usage of the \"instanceof\" operator by a catch block.");
+      }
     }
   }
 
   @Override
   public void leaveNode(Tree tree) {
     if(tree.is(Tree.Kind.CATCH)) {
-      CatchTree catchTree = (CatchTree) tree;
-      caughtVariables.remove(catchTree.parameter().simpleName().name());
+      caughtVariables.remove(((CatchTree) tree).parameter().simpleName().name());
     }
   }
 
-  private boolean isLeftOperandAnException(InstanceOfTree tree) {
-    return tree.expression().is(Tree.Kind.IDENTIFIER) && caughtVariables.contains(((IdentifierTree) tree.expression()).name());
+  private boolean isLeftOperandAndException(InstanceOfTree tree) {
+    return tree.expression().is(Tree.Kind.IDENTIFIER)
+      && caughtVariables.contains(((IdentifierTree) tree.expression()).name());
   }
 }
