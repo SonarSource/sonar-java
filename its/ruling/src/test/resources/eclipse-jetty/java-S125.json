@@ -13,7 +13,6 @@
 ],
 'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java':[
 678,
-683,
 ],
 'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/PushBuilderImpl.java':[
 187,
