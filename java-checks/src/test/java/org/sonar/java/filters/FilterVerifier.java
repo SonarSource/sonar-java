@@ -52,8 +52,6 @@ import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class FilterVerifier {
 
@@ -78,13 +76,13 @@ public class FilterVerifier {
     VisitorsBridgeForTests.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
 
     Multimap<Integer, String> issuesByLines = HashMultimap.create();
-    for (AnalyzerMessage analyzerMessage : testJavaFileScannerContext.getIssues()) {
+    Set<AnalyzerMessage> issues = testJavaFileScannerContext.getIssues();
+    for (AnalyzerMessage analyzerMessage : issues) {
       Integer issueLine = analyzerMessage.getLine();
       String ruleKeyName = AnnotationUtils.getAnnotation(analyzerMessage.getCheck().getClass(), Rule.class).key();
       RuleKey ruleKey = RuleKey.of("java", ruleKeyName);
 
       if (issueCollector.rejectedIssuesLines.contains(issueLine)) {
-
         assertThat(filter.accept(ruleKey, analyzerMessage))
           .overridingErrorMessage("Line #" + issueLine + " has been marked with 'NoIssue' but issue of rule '" + ruleKey + "' has been accepted!")
           .isFalse();

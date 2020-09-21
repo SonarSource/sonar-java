@@ -118,7 +118,7 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
   public void visitImport(ImportTree tree) {
     String fullyQualifiedName = ExpressionsHelper.concatenate((ExpressionTree) tree.qualifiedIdentifier());
 
-    excludeLinesIfTrue(fullyQualifiedName.startsWith("lombok."), tree, UselessImportCheck.class);
+    excludeLinesIfTrue("lombok.var".equals(fullyQualifiedName) || LOMBOK_VAL.equals(fullyQualifiedName), tree, UselessImportCheck.class);
 
     super.visitImport(tree);
   }
