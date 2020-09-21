@@ -86,7 +86,7 @@
 
     <sonar.version>7.9</sonar.version>
     <analyzer.commons.version>1.12.0.632</analyzer.commons.version>
-    <orchestrator.version>3.27.0.2172</orchestrator.version>
+    <orchestrator.version>3.30.0.2630</orchestrator.version>
     <sslr.version>1.23</sslr.version>
     <argLine>-Xmx512m</argLine>
     <gitRepositoryName>sonar-java</gitRepositoryName>
