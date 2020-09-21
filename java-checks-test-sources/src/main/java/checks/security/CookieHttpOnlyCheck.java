@@ -1,18 +1,18 @@
-import java.util.Date;
+package checks.security;
+
 import java.net.HttpCookie;
+import java.util.Date;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.NewCookie;
 import org.apache.shiro.web.servlet.SimpleCookie;
 import org.springframework.security.web.savedrequest.SavedCookie;
 
-class S3330 {
+class CookieHttpOnlyCheck {
 
   private static final boolean FALSE_CONSTANT = false;
   private static final String XSRF_TOKEN = "XSRF-TOKEN";
   play.mvc.Http.CookieBuilder xsfrTokenProp;
-  play.mvc.Http.CookieBuilder xsfrTokenProp2;
 
   Cookie field1 = new Cookie("name", "value"); // FN
   HttpCookie field2 = new HttpCookie("name", "value"); // FN
@@ -20,13 +20,11 @@ class S3330 {
   Cookie field4;
   HttpCookie field5;
   Cookie field6;
-  UnknownCookie field7;
 
   void servletCookie(boolean param, Cookie c0) {
 
     c0.setHttpOnly(false); // Noncompliant [[sc=19;ec=26]] {{Make sure creating this cookie without the "HttpOnly" flag is safe.}}
     field6.setHttpOnly(false); // Noncompliant
-    field7.setHttpOnly(false);
 
     Cookie c1 = new Cookie("name", "value");
     if (param) {
@@ -51,7 +49,6 @@ class S3330 {
     Cookie c6 = new Cookie("name", "value");
     c6.setHttpOnly(param);
 
-    Cookie c7 = new UnknownCookie("name", "value"); // Noncompliant
     Object c8 = new Cookie("name", "value"); // Noncompliant
 
     Cookie c9;
@@ -68,21 +65,9 @@ class S3330 {
     Object c12;
     c12 = new Cookie("name", "value"); // Noncompliant
 
-    Cookie c13;
-    c13 = new UnknownCookie("name", "value"); // Noncompliant
-
     Cookie c14 = new Cookie("name", "value");
     boolean bValue = true;
     c14.setHttpOnly(!bValue); // FN
-
-    field4 = new Cookie("name, value"); // FN
-
-    X x;
-    x = new X("name", "value");
-  }
-
-  Cookie getC0() {
-    return new UnknownCookie("name", "value"); // FN
   }
 
   Cookie getC1() {
@@ -119,8 +104,6 @@ class S3330 {
     HttpCookie c5;
     c5 = new HttpCookie("name", "value");
     c5.setHttpOnly(false); // Noncompliant
-
-    field5 = new HttpCookie("name, value"); // FN
   }
 
   HttpCookie getC2() {
@@ -181,7 +164,7 @@ class S3330 {
     return new play.mvc.Http.Cookie("1", "2", 3, "4", "5", true, false); // Noncompliant
   }
 
-  play.mvc.Http.Cookie getC6() {
+  play.mvc.Http.CookieBuilder getC6() {
     return play.mvc.Http.Cookie.builder("theme", "blue").withHttpOnly(false); // Noncompliant
   }
 
@@ -233,23 +216,12 @@ class S3330 {
     this.xsfrTokenProp = play.mvc.Http.Cookie.builder("XSRF-TOKEN", "2");
     this.xsfrTokenProp.withHttpOnly(false);
 
-    this.getXsfrTokenProp2().withHttpOnly(false);
-
-    this.unknown = play.mvc.Http.Cookie.builder("XSRF-TOKEN", "2"); // Coverage
-    unknown = play.mvc.Http.Cookie.builder("XSRF-TOKEN", "2"); // Coverage
-    boolean secure = play.mvc.Http.Cookie.secure(); // Coverage
-
     return new Cookie("XSRF-TOKEN", "value");
   }
 
-  play.mvc.Http.Cookie getXsfrTokenProp2() {
-    return this.xsfrTokenProp2;
-  }
-
-  void compliant(Cookie c1, HttpCookie c2, javax.ws.rs.core.Cookie c3, NewCookie c4, SimpleCookie c5) {
+  void compliant(Cookie c1, HttpCookie c2, NewCookie c4, SimpleCookie c5) {
     c1.isHttpOnly();
     c2.isHttpOnly();
-    c3.isHttpOnly();
     c4.isHttpOnly();
     c5.isHttpOnly();
     SavedCookie c6 = new SavedCookie(c1); // Spring cookies are HttpOnly, without possibility to change that
@@ -261,8 +233,13 @@ class S3330 {
   }
 }
 
-class A extends Cookie {
+class CookieHttpOnlyCheckCookieA extends Cookie {
   public Cookie c;
+
+  public CookieHttpOnlyCheckCookieA() {
+    super("name", "value");
+  }
+
   public void setHttpOnly(boolean isHttpOnly) { }
   void foo() {
     setHttpOnly(false); // Noncompliant
@@ -275,21 +252,19 @@ class A extends Cookie {
   }
 }
 
-class B {
-  A a;
+class CookieHttpOnlyCheckCookieB {
+  CookieHttpOnlyCheckCookieA a;
   public void setHttpOnly(boolean isHttpOnly) { }
   void foo() {
     setHttpOnly(false);
   }
   void bar() { return; }
-  A getA() {
-    return new A(); // Noncompliant
+  CookieHttpOnlyCheckCookieA getA() {
+    return new CookieHttpOnlyCheckCookieA(); // Noncompliant
   }
   void baw() {
     int i;
     i = 1;
     a.c = new Cookie("1", "2"); // FN
-    unknown = new A("1", "2");
-    Unknown.unkown(() -> { Class<String> v = unknown(); });
   }
 }
