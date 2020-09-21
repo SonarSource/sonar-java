@@ -1,6 +1,6 @@
 package checks;
 
-class A extends junit.framework.TestCase {
+class AAA extends junit.framework.TestCase {
   void testFoo() {
   }
 }

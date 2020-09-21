@@ -688,6 +688,24 @@
       <version>5.15.9</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>au.com.dius.pact.provider</groupId>
+      <artifactId>junit5</artifactId>
+      <version>4.1.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>au.com.dius</groupId>
+      <artifactId>pact-jvm-provider-junit</artifactId>
+      <version>4.0.10</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>au.com.dius</groupId>
+      <artifactId>pact-jvm-provider-spring_2.12</artifactId>
+      <version>3.6.15</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <profiles>

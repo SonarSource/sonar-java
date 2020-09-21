@@ -91,4 +91,12 @@ class NoTestInTestClassCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void pactUnit() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/NoTestsInTestClassCheckPactTest.java"))
+      .withCheck(new NoTestInTestClassCheck())
+      .verifyIssues();
+  }
+
 }

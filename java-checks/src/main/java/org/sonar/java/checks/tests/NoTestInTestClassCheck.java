@@ -50,6 +50,8 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   public static final String ARCH_UNIT_ANALYZE_CLASSES = "com.tngtech.archunit.junit.AnalyzeClasses";
   public static final String ARCH_UNIT_TEST = "com.tngtech.archunit.junit.ArchTest";
 
+  private static final List<String> PACT_UNIT_TEST = Arrays.asList("au.com.dius.pact.provider.junit.State", "au.com.dius.pact.provider.junitsupport.State");
+
   private final Set<String> testMethodAnnotations = new HashSet<>();
   private final Set<String> testFieldAnnotations = new HashSet<>();
   private final Set<String> seenAnnotations = new HashSet<>();
@@ -135,11 +137,13 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   }
 
   private void addUsedAnnotations(Symbol.TypeSymbol classSymbol) {
-    if (runWitZohhak(classSymbol)) {
+    if (runWithZohhak(classSymbol)) {
       testMethodAnnotations.add("com.googlecode.zohhak.api.TestWith");
     } else if (isArchUnitTestClass(classSymbol)) {
       testMethodAnnotations.add(ARCH_UNIT_TEST);
       testFieldAnnotations.add(ARCH_UNIT_TEST);
+    } else if (runWithPact(classSymbol)) {
+      testMethodAnnotations.addAll(PACT_UNIT_TEST);
     }
   }
 
@@ -147,8 +151,12 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     return checkRunWith(symbol, "Cucumber", "Suite", "Theories");
   }
 
-  private static boolean runWitZohhak(Symbol.TypeSymbol symbol) {
+  private static boolean runWithZohhak(Symbol.TypeSymbol symbol) {
     return checkRunWith(symbol, "ZohhakRunner");
+  }
+
+  private static boolean runWithPact(Symbol.TypeSymbol symbol) {
+    return checkRunWith(symbol, "PactRunner") || checkRunWith(symbol, "RestPactRunner");
   }
 
   private static boolean checkRunWith(Symbol.TypeSymbol symbol, String... runnerClasses) {
