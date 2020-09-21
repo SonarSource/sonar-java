@@ -142,9 +142,11 @@ class CookieHttpOnlyCheck {
     return new SimpleCookie(); // compliant
   }
 
-  void playFw() {
+  void playFw(play.mvc.Http.Cookie.SameSite sameSite) {
     play.mvc.Http.Cookie c1 = new play.mvc.Http.Cookie("1", "2", 3, "4", "5", true, false); // Noncompliant
     play.mvc.Http.Cookie c2 = new play.mvc.Http.Cookie("1", "2", 3, "4", "5", true, true);
+    play.mvc.Http.Cookie c21 = new play.mvc.Http.Cookie("1", "2", 3, "4", "5", true, false, sameSite); // Noncompliant
+    play.mvc.Http.Cookie c22 = new play.mvc.Http.Cookie("1", "2", 3, "4", "5", true, true, sameSite);
     play.mvc.Http.CookieBuilder cb1 = play.mvc.Http.Cookie.builder("1", "2");
     cb1.withHttpOnly(false); // Noncompliant
     cb1.withHttpOnly(true); // is ignored, so above is a FN
