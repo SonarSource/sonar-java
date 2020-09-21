@@ -1,13 +1,17 @@
-import lombok.val;
+/* unused */ import java.util.List; // WithIssue
+import java.util.regex.Pattern;
+
+import lombok.val; // NoIssue
 import lombok.var; // NoIssue
-import java.util.List; // WithIssue
-import static lombok.AccessLevel.PRIVATE;
-import static lombok.AccessLevel.PROTECTED;
-import static lombok.AccessLevel.PUBLIC;
+/* unused */ import lombok.SneakyThrows; // WithIssue
+
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.stereotype.Repository;
-import java.util.regex.Pattern;
+
+import static lombok.AccessLevel.PRIVATE;
+import static lombok.AccessLevel.PROTECTED;
+import static lombok.AccessLevel.PUBLIC;
 
 class Fields {
   @lombok.Getter
