@@ -22,16 +22,35 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 class SecureCookieCheckTest {
+
+  private static final String SOURCE_PATH = "checks/security/SecureCookieCheck.java";
+  private static final String TEST_SOURCE_PATH = testSourcesPath(SOURCE_PATH);
+  private static final String NON_COMPILING_TEST_SOURCE_PATH = nonCompilingTestSourcesPath(SOURCE_PATH);
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/security/SecureCookieCheck.java")
+      .onFile(TEST_SOURCE_PATH)
       .withCheck(new SecureCookieCheck())
       .verifyIssues();
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/security/SecureCookieCheck.java")
+      .onFile(TEST_SOURCE_PATH)
+      .withCheck(new SecureCookieCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
+  @Test
+  void test_non_compiling() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(NON_COMPILING_TEST_SOURCE_PATH)
+      .withCheck(new SecureCookieCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(NON_COMPILING_TEST_SOURCE_PATH)
       .withCheck(new SecureCookieCheck())
       .withoutSemantic()
       .verifyNoIssues();
