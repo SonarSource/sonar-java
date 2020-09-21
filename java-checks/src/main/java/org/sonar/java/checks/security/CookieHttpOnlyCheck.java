@@ -119,6 +119,12 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
     .addParametersMatcher(JAVA_LANG_STRING)
     .build();
 
+  private static final MethodMatchers CONSTRUCTORS_WITH_HTTP_ONLY_PARAM_BEFORE_LAST = MethodMatchers.create()
+    .ofTypes(ClassName.PLAY_COOKIE)
+    .constructor()
+    .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, "java.lang.Integer", JAVA_LANG_STRING, JAVA_LANG_STRING, BOOLEAN, BOOLEAN, "play.mvc.Http$Cookie$SameSite")
+    .build();
+
   @Override
   public void setContext(JavaFileScannerContext context) {
     ignoredVariables.clear();
@@ -270,10 +276,13 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isCompliantConstructorCall(NewClassTree newClassTree) {
+    Arguments arguments = newClassTree.arguments();
     if (CONSTRUCTORS_WITH_HTTP_ONLY_PARAM.matches(newClassTree)) {
-      Arguments arguments = newClassTree.arguments();
       ExpressionTree lastArgument = arguments.get(arguments.size() - 1);
       return LiteralUtils.isTrue(lastArgument);
+    } else if (CONSTRUCTORS_WITH_HTTP_ONLY_PARAM_BEFORE_LAST.matches(newClassTree)) {
+      ExpressionTree beforeLastArgument = arguments.get(arguments.size() - 2);
+      return LiteralUtils.isTrue(beforeLastArgument);
     } else {
       return CONSTRUCTORS_WITH_GOOD_DEFAULT.matches(newClassTree);
     }
