@@ -4,6 +4,9 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
+import org.mockito.MockSettings;
+import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -19,11 +22,11 @@ public class OneExpectedRuntimeExceptionCheck {
     assertThrows(IllegalStateException.class, () -> foo(foo(1)) ); // Noncompliant
     assertThrows(IllegalStateException.class, () -> foo(foo(1)), "Message"); // Noncompliant
     assertThrows(IllegalStateException.class, () -> foo(foo(1)), () -> "message"); // Noncompliant
-    assertThrows(IllegalStateException.class, () -> { // Noncompliant [[sc=5;ec=17;secondary=23,24] {{Refactor the code of the lambda to have only one invocation throwing an exception.}}
+    assertThrows(IllegalStateException.class, () -> { // Noncompliant [[sc=5;ec=17;secondary=26,27] {{Refactor the code of the lambda to have only one invocation throwing an exception.}}
       if (foo(1) ==
         foo(1)) {}
     } );
-    assertThrows(IllegalStateException.class, () -> // Noncompliant [[sc=5;ec=17;secondary=27,28]]
+    assertThrows(IllegalStateException.class, () -> // Noncompliant [[sc=5;ec=17;secondary=30,31]]
       new NestedClass(
         foo(1)
       ) );
@@ -43,8 +46,20 @@ public class OneExpectedRuntimeExceptionCheck {
   }
 
   @Test
+  public void mockito() {
+    assertThrows(IllegalStateException.class, () -> bar(Mockito.mock(NestedClass.class, "myMock"))); // Compliant
+    assertThrows(IllegalStateException.class, () -> bar(Mockito.mock(NestedClass.class))); // Compliant
+
+    // these methods require complex configuration of their mocks, and are therefore marked as Noncompliant
+    MockSettings settings = Mockito.withSettings();
+    Answer<NestedClass> answer = invoc -> new NestedClass(42);
+    assertThrows(IllegalStateException.class, () -> bar(Mockito.mock(NestedClass.class, settings))); // Noncompliant
+    assertThrows(IllegalStateException.class, () -> bar(Mockito.mock(NestedClass.class, answer))); // Noncompliant
+  }
+
+  @Test
   public void testGTryCatchIdiom() {
-    try { // Noncompliant [[sc=5;ec=8;secondary=48,49]] {{Refactor the body of this try/catch to have only one invocation throwing an exception.}}
+    try { // Noncompliant [[sc=5;ec=8;secondary=63,64]] {{Refactor the body of this try/catch to have only one invocation throwing an exception.}}
       foo(
         foo(1)
       );
@@ -137,7 +152,7 @@ public class OneExpectedRuntimeExceptionCheck {
   public void test_AssertJ() {
 
     Throwable thrown = org.assertj.core.api.Assertions
-      .catchThrowableOfType(  // Noncompliant [[sc=8;ec=28;secondary=141,142]] {{Refactor the code of the lambda to have only one invocation throwing an exception.}}
+      .catchThrowableOfType(  // Noncompliant [[sc=8;ec=28;secondary=156,157]] {{Refactor the code of the lambda to have only one invocation throwing an exception.}}
         () -> foo(
           foo(1)),
         IllegalStateException.class);
@@ -192,6 +207,10 @@ public class OneExpectedRuntimeExceptionCheck {
 
   int throwCheckedException(int x) throws IOException {
     return x;
+  }
+
+  int bar(NestedClass nc) {
+    return 42;
   }
 
   class NestedClass {
