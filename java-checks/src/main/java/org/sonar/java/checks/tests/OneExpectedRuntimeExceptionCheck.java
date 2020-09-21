@@ -22,6 +22,7 @@ package org.sonar.java.checks.tests;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -29,6 +30,13 @@ import static org.sonar.java.checks.helpers.UnitTestUtils.FAIL_METHOD_MATCHER;
 
 @Rule(key = "S5778")
 public class OneExpectedRuntimeExceptionCheck extends AbstractOneExpectedExceptionRule {
+
+  private static final MethodMatchers MOCKITO_MOCK_METHOD_MATCHERS = MethodMatchers.create()
+    .ofTypes("org.mockito.Mockito")
+    .names("mock")
+    .addParametersMatcher("java.lang.Class").addParametersMatcher("java.lang.Class", "java.lang.String")
+    .build();
+  private static final MethodMatchers AUTHORIZED_METHODS = MethodMatchers.or(FAIL_METHOD_MATCHER, MOCKITO_MOCK_METHOD_MATCHERS);
 
   @Override
   void reportMultipleCallInTree(List<Type> expectedExceptions, Tree treeToVisit, Tree reportLocation, String placeToRefactor) {
@@ -40,7 +48,7 @@ public class OneExpectedRuntimeExceptionCheck extends AbstractOneExpectedExcepti
       return;
     }
 
-    MethodInvocationCollector visitor = new MethodInvocationCollector(symbol -> !FAIL_METHOD_MATCHER.matches(symbol));
+    MethodInvocationCollector visitor = new MethodInvocationCollector(symbol -> !AUTHORIZED_METHODS.matches(symbol));
     treeToVisit.accept(visitor);
     List<Tree> invocationTree = visitor.invocationTree;
     if (invocationTree.size() > 1) {
