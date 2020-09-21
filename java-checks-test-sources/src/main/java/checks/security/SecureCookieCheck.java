@@ -1,14 +1,16 @@
-import java.util.Date;
+package checks.security;
+
 import java.net.HttpCookie;
+import java.util.Date;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.NewCookie;
 import org.apache.shiro.web.servlet.SimpleCookie;
 import org.springframework.security.web.savedrequest.SavedCookie;
+import play.mvc.Http;
 import play.mvc.Http.CookieBuilder;
 
-class A {
+class SecureCookieCheck {
 
   Cookie field1 = new Cookie("name", "value"); // Noncompliant
   HttpCookie field2 = new HttpCookie("name", "value");
@@ -19,7 +21,7 @@ class A {
   Cookie field4;
   Cookie field5;
   HttpCookie field6;
-  UnknownCookie field7;
+
   private static final boolean FALSE_CONSTANT = false;
 
   void foo(Cookie cookie) {
@@ -35,7 +37,6 @@ class A {
     firstParam.setSecure(false); // Noncompliant [[sc=25;ec=32]] {{Make sure creating this cookie without the "secure" flag is safe here.}}
     secondParam.setSecure(true);
 
-    field4 = new Cookie("name, value"); // Noncompliant
     field5.setSecure(false); // Noncompliant
     this.field4 = new Cookie("name", "value"); // Noncompliant
 
@@ -60,7 +61,7 @@ class A {
 
     Cookie c7 = new Cookie("name", "value");
     boolean b = false;
-    c7.setSecure(b); // Noncompliant [[secondary=62]]
+    c7.setSecure(b); // Noncompliant [[secondary=63]]
 
     Cookie c8 = new Cookie("name", "value");
     c8.setSecure(param);
@@ -96,10 +97,6 @@ class A {
     HttpCookie c5;
     c5 = new HttpCookie("name", "value");
     c5.setSecure(false);  // Noncompliant
-
-    field6 = new HttpCookie("name, value"); // Noncompliant
-
-    unknown = new HttpCookie("name, value"); // Noncompliant
 
     return new HttpCookie("name", "value"); // Noncompliant
   }
@@ -170,17 +167,22 @@ class A {
     return new play.mvc.Http.Cookie("1", "2", 3, "4", "5", false, true); // Noncompliant
   }
 
-  play.mvc.Http.Cookie getC5() {
+  play.mvc.Http.Cookie getC6() {
     return new play.mvc.Http.Cookie("1", "2", 3, "4", "5", true, true);
   }
 
-  play.mvc.Http.Cookie getC6() {
+  Http.CookieBuilder getC7() {
     return play.mvc.Http.Cookie.builder("theme", "blue").withSecure(false); // Noncompliant
   }
 }
 
-class B extends Cookie {
+class SecureCookieCheckB extends Cookie {
   public Cookie c;
+
+  public SecureCookieCheckB(String name, String value) {
+    super(name, value);
+  }
+
   public void setSecure(boolean bool) { }
   void foo() {
     setSecure(false); // FN (to avoid implementation complexity)
@@ -194,7 +196,7 @@ class B extends Cookie {
     return; // code coverage
   }
   Date codeCoverage(Cookie cookie) {
-    A a = new A();
+    SecureCookieCheck a = new SecureCookieCheck();
     a.foo(cookie);
     Date d1 = new Date();
     Date d2;
@@ -202,8 +204,6 @@ class B extends Cookie {
     d2 = new Date();
     d = d1;
     d = new Date();
-    UnknownClass c = new UnknownClass();
-    c.setSecure(true);
     return new Date();
   }
 
