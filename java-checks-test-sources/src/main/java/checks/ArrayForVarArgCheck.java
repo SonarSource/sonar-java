@@ -1,5 +1,7 @@
 package checks;
 
+import java.io.IOException;
+
 class ArrayForVarArgCheckBar {}
 class ArrayForVarArgCheckFoo extends ArrayForVarArgCheckBar {}
 class ArrayForVarArgCheck {
@@ -7,12 +9,13 @@ class ArrayForVarArgCheck {
 
   ArrayForVarArgCheck(String ... params) { }
   <X> ArrayForVarArgCheck(int i, X ... xs) { }
-  public void callTheThing(String s) {
+  public void callTheThing(String s) throws IOException {
     doTheThing(new String[] { "s1", "s2"});  // Noncompliant {{Remove this array creation and simply pass the elements.}} [[sc=16;ec=42]]
     doTheThing(new String[12]);
     doTheThing(new String[0]);  // Noncompliant {{Remove this array creation.}}
     doTheThing(new String[] {});  // Noncompliant {{Remove this array creation.}}
     doTheThing("s1", "s2");
+    doTheThing("s1");
     doTheThing2(new ArrayForVarArgCheckFoo[] {foo, foo});  // Noncompliant {{Disambiguate this call by either casting as "ArrayForVarArgCheckBar" or "ArrayForVarArgCheckBar[]".}}
     doTheThing2(new ArrayForVarArgCheckFoo[12]);  // Noncompliant {{Disambiguate this call by either casting as "ArrayForVarArgCheckBar" or "ArrayForVarArgCheckBar[]".}}
     doTheThing2(new ArrayForVarArgCheckFoo[0]);  // Noncompliant {{Disambiguate this call by either casting as "ArrayForVarArgCheckBar" or "ArrayForVarArgCheckBar[]".}}
@@ -28,12 +31,24 @@ class ArrayForVarArgCheck {
     foo(new String[]{"hello", "world"}); // Noncompliant {{Remove this array creation and simply pass the elements.}}
 
     new ArrayForVarArgCheck(14, new String[]{"hello", "world"}); // Noncompliant {{Remove this array creation and simply pass the elements.}}
+
+    arrayThenVarargs(new int[0]); // Compliant, not the varargs argument
+    arrayThenVarargs(new int[]{1,2,3});
+    arrayThenVarargs(new int[]{1,2,3}, "s1", "s2");
+    arrayThenVarargs(new int[]{1,2,3}, new String[]{"hello", "world"}); // Noncompliant
+    arrayThenVarargs(new int[]{1,2,3}, new String[0]); // Noncompliant
+
+    java.nio.file.Files.write(java.nio.file.Paths.get("myPath"), new byte[0]); // Compliant, byte array is not a varargs
+    java.nio.file.Files.write(java.nio.file.Paths.get("myPath"), new byte[] {' ', 'A', 'B', 'C'}); // Compliant, byte array is not a varargs
   }
 
   public void doTheThing (String ... args) {
   }
   public void doTheThing2 (ArrayForVarArgCheckBar... args) {
   }
+  public void arrayThenVarargs (int[] array, String... args) {
+  }
+
   public static <T> void foo(T... ts) {
     return;
   }
