@@ -1,19 +1,25 @@
-class Bar{}
-class Foo extends Bar {}
+package checks;
+
+import java.io.IOException;
+
+class ArrayForVarArgCheckBar {}
+class ArrayForVarArgCheckFoo extends ArrayForVarArgCheckBar {}
 class ArrayForVarArgCheck {
+  ArrayForVarArgCheckFoo foo = new ArrayForVarArgCheckFoo();
+
   ArrayForVarArgCheck(String ... params) { }
   <X> ArrayForVarArgCheck(int i, X ... xs) { }
-  public void callTheThing(String s) {
+  public void callTheThing(String s) throws IOException {
     doTheThing(new String[] { "s1", "s2"});  // Noncompliant {{Remove this array creation and simply pass the elements.}} [[sc=16;ec=42]]
     doTheThing(new String[12]);
     doTheThing(new String[0]);  // Noncompliant {{Remove this array creation.}}
     doTheThing(new String[] {});  // Noncompliant {{Remove this array creation.}}
     doTheThing("s1", "s2");
-    doTheThing2(new Foo[] { "s1", "s2"});  // Noncompliant {{Disambiguate this call by either casting as "Bar" or "Bar[]".}}
-    doTheThing2(new Foo[12]);  // Noncompliant {{Disambiguate this call by either casting as "Bar" or "Bar[]".}}
-    doTheThing2(new Foo[0]);  // Noncompliant {{Disambiguate this call by either casting as "Bar" or "Bar[]".}}
-    doTheThing2(new Foo(), new Bar());
-    unknown(new Foo[0]);
+    doTheThing("s1");
+    doTheThing2(new ArrayForVarArgCheckFoo[] {foo, foo});  // Noncompliant {{Disambiguate this call by either casting as "ArrayForVarArgCheckBar" or "ArrayForVarArgCheckBar[]".}}
+    doTheThing2(new ArrayForVarArgCheckFoo[12]);  // Noncompliant {{Disambiguate this call by either casting as "ArrayForVarArgCheckBar" or "ArrayForVarArgCheckBar[]".}}
+    doTheThing2(new ArrayForVarArgCheckFoo[0]);  // Noncompliant {{Disambiguate this call by either casting as "ArrayForVarArgCheckBar" or "ArrayForVarArgCheckBar[]".}}
+    doTheThing2(new ArrayForVarArgCheckFoo(), new ArrayForVarArgCheckBar());
     callTheThing("");
     new ArrayForVarArgCheck();
     new ArrayForVarArgCheck(new String[0]); // Noncompliant {{Remove this array creation.}}
@@ -25,23 +31,38 @@ class ArrayForVarArgCheck {
     foo(new String[]{"hello", "world"}); // Noncompliant {{Remove this array creation and simply pass the elements.}}
 
     new ArrayForVarArgCheck(14, new String[]{"hello", "world"}); // Noncompliant {{Remove this array creation and simply pass the elements.}}
+
+    arrayThenVarargs(new int[0]); // Compliant, not the varargs argument
+    arrayThenVarargs(new int[]{1,2,3});
+    arrayThenVarargs(new int[]{1,2,3}, "s1", "s2");
+    arrayThenVarargs(new int[]{1,2,3}, new String[]{"hello", "world"}); // Noncompliant
+    arrayThenVarargs(new int[]{1,2,3}, new String[0]); // Noncompliant
+
+    java.nio.file.Files.write(java.nio.file.Paths.get("myPath"), new byte[0]); // Compliant, byte array is not a varargs
+    java.nio.file.Files.write(java.nio.file.Paths.get("myPath"), new byte[] {' ', 'A', 'B', 'C'}); // Compliant, byte array is not a varargs
   }
 
   public void doTheThing (String ... args) {
   }
-  public void doTheThing2 (Bar ... args) {
+  public void doTheThing2 (ArrayForVarArgCheckBar... args) {
   }
+  public void arrayThenVarargs (int[] array, String... args) {
+  }
+
   public static <T> void foo(T... ts) {
     return;
   }
 }
 
 class Overload{
-  Object o = fun(12, new String[0]); // Noncompliant
   Overload(int i) {
     this(i, new String[0]);
   }
   Overload(int i, String ... params) {
+  }
+
+  void useFun() {
+    fun(12, new String[0]); // Noncompliant
   }
 
 

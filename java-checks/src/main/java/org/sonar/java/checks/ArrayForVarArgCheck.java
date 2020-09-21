@@ -60,14 +60,17 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
       args = mit.arguments();
     }
 
-    if (sym.isMethodSymbol() && !args.isEmpty()) {
-      ExpressionTree lastArg = args.get(args.size() - 1);
-      checkInvokedMethod((Symbol.MethodSymbol) sym, lastArg);
+    if (sym.isMethodSymbol()) {
+      Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) sym;
+      if (isLastArgumentVarargs(methodSymbol, args)) {
+        ExpressionTree lastArg = args.get(args.size() - 1);
+        checkInvokedMethod(methodSymbol, lastArg);
+      }
     }
   }
 
   private void checkInvokedMethod(Symbol.MethodSymbol methodSymbol, ExpressionTree lastArg) {
-    if (JUtils.isVarArgsMethod(methodSymbol) && lastArg.is(Tree.Kind.NEW_ARRAY)) {
+    if (lastArg.is(Tree.Kind.NEW_ARRAY)) {
       if (lastParamHasSameType(methodSymbol, lastArg.symbolType())) {
         String message = "Remove this array creation";
         NewArrayTree newArrayTree = (NewArrayTree) lastArg;
@@ -86,6 +89,12 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
         reportIssue(lastArg, "Disambiguate this call by either casting as \"" + type + "\" or \"" + type + "[]\".");
       }
     }
+  }
+
+  private static boolean isLastArgumentVarargs(Symbol.MethodSymbol methodSymbol, Arguments args) {
+    // If we have less arguments than parameter types, it means that no arguments was pass to the varargs.
+    // If we have more, the last argument can not be an array.
+    return !args.isEmpty() && JUtils.isVarArgsMethod(methodSymbol) && args.size() == methodSymbol.parameterTypes().size();
   }
 
   private static boolean lastParamHasSameType(Symbol.MethodSymbol methodSymbol, Type lastArgType) {
