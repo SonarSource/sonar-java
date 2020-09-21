@@ -31,7 +31,7 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
  */
 public class RegexSource {
 
-  private final List<LiteralTree> stringLiterals;
+  final List<LiteralTree> stringLiterals;
   private final String sourceText;
   private final TreeMap<Integer, Integer> indices;
 
