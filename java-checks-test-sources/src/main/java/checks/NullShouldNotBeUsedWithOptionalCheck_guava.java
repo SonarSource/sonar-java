@@ -40,14 +40,14 @@ class NullShouldNotBeUsedWithOptionalCheck_guavaClassA {
   }
 
   public int doSomething3(Optional<String> arg) {
-    if (arg == null) { // Noncompliant [[sc=9;ec=20]] {{Remove this null-check of an "Optional".}}
+    if (arg == null) { // Noncompliant [[sc=9;ec=20]] {{Ensure this "Optional" could never be null and remove this null-check.}}
       return 0;
     }
 
     Optional<String> optional = getOptionalOk();
-    if (optional == null) { // Noncompliant [[sc=9;ec=25]] {{Remove this null-check of an "Optional".}}
+    if (optional == null) { // Noncompliant [[sc=9;ec=25]] {{Ensure this "Optional" could never be null and remove this null-check.}}
       return 0;
-    } else if (null != optional) { // Noncompliant [[sc=16;ec=32]] {{Remove this null-check of an "Optional".}}
+    } else if (null != optional) { // Noncompliant [[sc=16;ec=32]] {{Ensure this "Optional" could never be null and remove this null-check.}}
       return 0;
     }
 
@@ -59,7 +59,7 @@ class NullShouldNotBeUsedWithOptionalCheck_guavaClassA {
     }
 
     Optional<String> optional3 = getOptionalOk();
-    return optional3 == null ? 0 : 1; // Noncompliant [[sc=12;ec=29]] {{Remove this null-check of an "Optional".}}
+    return optional3 == null ? 0 : 1; // Noncompliant [[sc=12;ec=29]] {{Ensure this "Optional" could never be null and remove this null-check.}}
   }
 
   public Optional<String> doSomething4(List<String> myList) {
