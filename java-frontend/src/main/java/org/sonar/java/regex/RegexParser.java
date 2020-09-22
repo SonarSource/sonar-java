@@ -43,6 +43,7 @@ import org.sonar.java.regex.ast.GroupTree;
 import org.sonar.java.regex.ast.IndexRange;
 import org.sonar.java.regex.ast.JavaCharacter;
 import org.sonar.java.regex.ast.LookAroundTree;
+import org.sonar.java.regex.ast.MiscEscapeSequenceTree;
 import org.sonar.java.regex.ast.NonCapturingGroupTree;
 import org.sonar.java.regex.ast.PlainCharacterTree;
 import org.sonar.java.regex.ast.Quantifier;
@@ -453,14 +454,71 @@ public class RegexParser {
           return parseUnicodeEscape(backslash);
         case 'x':
           return parseHexEscape(backslash);
+        case 't':
+        case 'n':
+        case 'r':
+        case 'f':
+        case 'a':
+        case 'e':
+          characters.moveNext();
+          char c = simpleEscapeToCharacter(character.getCharacter());
+          IndexRange range = backslash.getRange().extendTo(characters.getCurrentStartIndex());
+          return plainCharacter(new JavaCharacter(source, range, c, true));
+        case 'c':
+          return parseControlSequence(backslash);
+        case 'N':
+          return parseNamedUnicodeCharacter(backslash);
+        case 'R':
+        case 'X':
+          characters.moveNext();
+          return new MiscEscapeSequenceTree(source, backslash.getRange().extendTo(characters.getCurrentStartIndex()));
         case 'E':
           error("\\E used without \\Q");
           // Fallthrough
         default:
-          // TODO other kind of escape sequences such as special characters, N, R or X
           characters.moveNext();
           return new PlainCharacterTree(source, backslash.getRange().merge(character.getRange()), character);
       }
+    }
+  }
+
+  private RegexTree parseNamedUnicodeCharacter(JavaCharacter backslash) {
+    return parseEscapedSequence('{', '}', "a Unicode character name", content ->
+      // TODO: Once we move to Java 9+, use Character.codePointOf to produce a PlainCharacterTree with the named Unicode
+      //       character instead of a MiscEscapeSequenceTree and produce a syntax error for illegal character names
+      new MiscEscapeSequenceTree(source, backslash.getRange().merge(content.closer.getRange()))
+    );
+  }
+
+  private RegexTree parseControlSequence(JavaCharacter backslash) {
+    JavaCharacter c = characters.getCurrent();
+    characters.moveNext();
+    if (characters.isAtEnd()) {
+      expected("any character");
+      return plainCharacter(c);
+    }
+    char controlCharacter = (char) (0x40 ^ characters.getCurrentChar());
+    characters.moveNext();
+    IndexRange range = backslash.getRange().extendTo(characters.getCurrentStartIndex());
+    return plainCharacter(new JavaCharacter(source, range, controlCharacter, true));
+  }
+
+  private static char simpleEscapeToCharacter(char escapeCharacter) {
+    switch (escapeCharacter) {
+      case 't':
+        return '\t';
+      case 'n':
+        return '\n';
+      case 'r':
+        return '\r';
+      case 'f':
+        return '\f';
+      case 'a':
+        return '\u0007';
+      case 'e':
+        return '\u001B';
+      default:
+        throw new IllegalArgumentException("Unsupported argument for simpleEscapeToCharacter: " + escapeCharacter);
     }
   }
 

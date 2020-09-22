@@ -44,6 +44,30 @@ class PlainCharacterTreeTest {
   }
 
   @Test
+  void testDoubleEscapedSimpleEscapeSequences() {
+    assertPlainCharacter('\t', true, "\\\\t");
+    assertPlainCharacter('\n', true, "\\\\n");
+    assertPlainCharacter('\f', true, "\\\\f");
+    assertPlainCharacter('\r', true, "\\\\r");
+    assertPlainCharacter('\u0007', true, "\\\\a");
+    assertPlainCharacter('\u001B', true, "\\\\e");
+  }
+
+  @Test
+  void testControlCharacters() {
+    assertPlainCharacter('\u0000', true, "\\\\c@");
+    assertPlainCharacter('\u0001', true, "\\\\cA");
+    assertPlainCharacter('\u001A', true, "\\\\cZ");
+    assertPlainCharacter('\u001B', true, "\\\\c[");
+    assertPlainCharacter('\u001C', true, "\\\\c\\\\");
+    assertPlainCharacter('\u001D', true, "\\\\c]");
+    assertPlainCharacter('\u001E', true, "\\\\c^");
+    assertPlainCharacter('\u001F', true, "\\\\c_");
+    assertPlainCharacter('\u007F', true, "\\\\c?");
+    assertFailParsing("\\\\c", "Expected any character, but found the end of the regex");
+  }
+
+  @Test
   void octalEscapeSequences() {
     assertPlainCharacter('\n', true, "\\012");
     assertPlainCharacter('\n', true, "\\12");

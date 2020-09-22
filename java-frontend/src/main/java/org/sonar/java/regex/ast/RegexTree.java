@@ -39,6 +39,7 @@ public abstract class RegexTree extends RegexSyntaxElement {
     REPETITION,
     SEQUENCE,
     UNICODE_CODE_POINT,
+    MISC_ESCAPE_SEQUENCE,
   }
 
   public RegexTree(RegexSource source, IndexRange range) {
