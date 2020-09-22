@@ -1,10 +1,11 @@
-package checks;
+package checks.tests;
 
-class AAA extends junit.framework.TestCase {
+class TestCaseA extends junit.framework.TestCase {
   void testFoo() {
   }
 }
-class BBB extends junit.framework.TestCase {
+
+class TestCaseB extends junit.framework.TestCase {
   void foo() {
   }
 }
@@ -18,13 +19,16 @@ class ATest { // Noncompliant {{Add some tests to this class.}}
     };
   }
 }
+
 class BTest {
   @org.junit.Test
   void foo()  {
     class MyInnerTest { }
   }
 }
+
 enum MyTest {}
+
 class AnonymousClass extends junit.framework.TestCase{
   void testfoo(){}
 }

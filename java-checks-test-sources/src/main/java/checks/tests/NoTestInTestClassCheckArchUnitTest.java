@@ -1,4 +1,4 @@
-package checks;
+package checks.tests;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.junit.AnalyzeClasses;

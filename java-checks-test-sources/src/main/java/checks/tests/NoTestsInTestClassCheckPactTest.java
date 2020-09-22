@@ -1,10 +1,10 @@
-package checks;
+package checks.tests;
 
 import au.com.dius.pact.provider.junit.PactRunner;
 import au.com.dius.pact.provider.junit.RestPactRunner;
-import au.com.dius.pact.provider.junitsupport.State;
 import au.com.dius.pact.provider.junitsupport.Consumer;
 import au.com.dius.pact.provider.junitsupport.Provider;
+import au.com.dius.pact.provider.junitsupport.State;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
 import org.junit.runner.RunWith;
 

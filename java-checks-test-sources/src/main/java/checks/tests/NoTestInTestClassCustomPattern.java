@@ -1,4 +1,4 @@
-package checks;
+package checks.tests;
 
 public class NoTestInTestClassCustomPattern {
 }
