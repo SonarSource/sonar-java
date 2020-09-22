@@ -26,6 +26,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -74,7 +75,7 @@ public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implem
       ExpressionTree left = binaryExpression.leftOperand();
       ExpressionTree right = binaryExpression.rightOperand();
       if ((isOptional(left) && isNull(right)) || (isNull(left) && isOptional(right))) {
-        context.reportIssue(this, binaryExpression, "Remove this null-check of an \"Optional\".");
+        context.reportIssue(this, binaryExpression, "Ensure this \"Optional\" could never be null and remove this null-check.");
       }
     }
 
@@ -82,9 +83,21 @@ public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implem
   }
 
   @Override
+  public void visitAssignmentExpression(AssignmentExpressionTree assignment) {
+    if (isOptional(assignment.variable()) && isNull(assignment.expression())) {
+      context.reportIssue(this, assignment.expression(), "Replace this null literal by an \"Optional\" object.");
+    }
+    super.visitAssignmentExpression(assignment);
+  }
+
+  @Override
   public void visitVariable(VariableTree variable) {
     if (isOptionalType(variable.type())) {
       checkNullableAnnotation(variable.modifiers(), "\"Optional\" variables should not be \"@Nullable\".");
+      ExpressionTree initializer = variable.initializer();
+      if (initializer != null && isNull(initializer)) {
+        context.reportIssue(this, initializer, "Replace this null literal by an \"Optional\" object.");
+      }
     }
 
     super.visitVariable(variable);

@@ -7,6 +7,8 @@ public void doSomething () {
   if (optional != null) {  // Noncompliant
     // do something with optional...
   }
+  Optional&lt;String&gt; text = null; // Noncompliant, a variable whose type is Optional should never itself be null
+  // ...
 }
 
 @Nullable // Noncompliant
@@ -22,6 +24,8 @@ public void doSomething () {
   optional.ifPresent(
     // do something with optional...
   );
+  Optional&lt;String&gt; text = Optional.empty();
+  // ...
 }
 
 public Optional&lt;String&gt; getOptional() {

@@ -40,18 +40,22 @@ class NullShouldNotBeUsedWithOptionalCheck_jdkClassA {
   }
 
   public int doSomething3(Optional<String> arg) {
-    if (arg == null) { // Noncompliant [[sc=9;ec=20]] {{Remove this null-check of an "Optional".}}
+    if (arg == null) { // Noncompliant [[sc=9;ec=20]] {{Ensure this "Optional" could never be null and remove this null-check.}}
       return 0;
     }
 
     Optional<String> optional = getOptionalOk();
-    if (optional == null) { // Noncompliant [[sc=9;ec=25]] {{Remove this null-check of an "Optional".}}
+    if (optional == null) { // Noncompliant [[sc=9;ec=25]] {{Ensure this "Optional" could never be null and remove this null-check.}}
       return 0;
-    } else if (null != optional) { // Noncompliant [[sc=16;ec=32]] {{Remove this null-check of an "Optional".}}
+    } else if (null != optional) { // Noncompliant [[sc=16;ec=32]] {{Ensure this "Optional" could never be null and remove this null-check.}}
       return 0;
     }
 
-    Optional<String> optional2 = getOptionalOk();
+    Optional<String> optional2 = null; // Noncompliant [[sc=34;ec=38]] {{Replace this null literal by an "Optional" object.}}
+    String notOptional = null; // Compliant
+    optional = null; // Noncompliant [[sc=16;ec=20]] {{Replace this null literal by an "Optional" object.}}
+    optional = Optional.empty(); // Compliant
+    notOptional = null; // Compliant
     if (optional == optional2) {
       return 0;
     } else if (null == null) {
@@ -59,7 +63,7 @@ class NullShouldNotBeUsedWithOptionalCheck_jdkClassA {
     }
 
     Optional<String> optional3 = getOptionalOk();
-    return optional3 == null ? 0 : 1; // Noncompliant [[sc=12;ec=29]] {{Remove this null-check of an "Optional".}}
+    return optional3 == null ? 0 : 1; // Noncompliant [[sc=12;ec=29]] {{Ensure this "Optional" could never be null and remove this null-check.}}
   }
 
   public Optional<String> doSomething4(List<String> myList) {
@@ -78,7 +82,7 @@ class NullShouldNotBeUsedWithOptionalCheck_jdkClassA {
   }
 
   @Nullable // Noncompliant [[sc=3;ec=12]] {{"Optional" variables should not be "@Nullable".}}
-  private Optional<String> field;
+  private Optional<String> field = null; // Noncompliant [[sc=36;ec=40]] {{Replace this null literal by an "Optional" object.}}
 
   public void doSomething6(@Nullable Optional<String> arg) { // Noncompliant [[sc=28;ec=37]] {{"Optional" variables should not be "@Nullable".}}
   }
