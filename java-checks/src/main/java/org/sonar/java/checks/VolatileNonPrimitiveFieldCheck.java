@@ -56,12 +56,10 @@ public class VolatileNonPrimitiveFieldCheck extends IssuableSubscriptionVisitor 
     "java.net.Inet6Address",
     "java.net.URL",
     "java.time.Clock",
-    "java.time.DayOfWeek",
     "java.time.Instant",
     "java.time.LocalDate",
     "java.time.LocalDateTime",
     "java.time.LocalTime",
-    "java.time.Month",
     "java.time.MonthDay",
     "java.time.OffsetDateTime",
     "java.time.OffsetTime",
@@ -93,7 +91,7 @@ public class VolatileNonPrimitiveFieldCheck extends IssuableSubscriptionVisitor 
   }
 
   private static boolean isImmutableType(Type type) {
-    return STANDARD_IMMUTABLE_TYPES.stream().anyMatch(type::is);
+    return type.symbol().isEnum() || STANDARD_IMMUTABLE_TYPES.stream().anyMatch(type::is);
   }
 
   private static String getMessage(VariableTree variableTree) {

@@ -38,6 +38,10 @@ class A {
   private volatile Date myDate;  // Noncompliant [[sc=11;ec=24]] {{Use a thread-safe type; adding "volatile" is not enough to make this field thread-safe.}}
   private AtomicIntegerArray vInts2;
   private MyObj myObj2;
+  // enums are considered as immutable
+  private volatile DayOfWeek myDayOfWeek;
+  private volatile Month myMonth;
+  private volatile MyEnum myEnum;
   // Following variable declarations are compliant: standard immutable types
   // (One can use ([^\s]+\.)([A-Z][a-z]+)(")(,)? to match names from the list defined in the check)
   private volatile Color myColor;
@@ -59,12 +63,10 @@ class A {
   private volatile Inet6Address myInet6Address;
   private volatile URL myURL;
   private volatile Clock myClock;
-  private volatile DayOfWeek myDayOfWeek;
   private volatile Instant myInstant;
   private volatile LocalDate myLocalDate;
   private volatile LocalDateTime myLocalDateTime;
   private volatile LocalTime myLocalTime;
-  private volatile Month myMonth;
   private volatile MonthDay myMonthDay;
   private volatile OffsetDateTime myOffsetDateTime;
   private volatile OffsetTime myOffsetTime;
