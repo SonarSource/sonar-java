@@ -82,9 +82,10 @@ public class CommentedCode {
          for (Visitor visitor : visitors) { }
      */
 
-    // Noncompliant@+2 [[sc=16;ec=52]]
+    // Noncompliant@+2 [[sc=16;ec=50;secondary=88]]
     // Leading spaces are not highlighted
-    //         for (Visitor visitor : visitors) { }
+    //         for (Visitor visitor : visitors) {
+    //         }
 
     // TODO
     /**
@@ -113,7 +114,7 @@ public class CommentedCode {
   }
   }-*/
 
-  // Noncompliant@+3
+  // Noncompliant@+3 [[sc=6;ec=40;secondary=121,122]]
   /*
    * This is not a documentation comment
    * for (Visitor visitor : visitors) {

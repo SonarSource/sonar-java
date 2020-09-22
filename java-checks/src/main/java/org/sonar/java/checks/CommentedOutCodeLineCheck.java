@@ -19,10 +19,10 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;
@@ -57,33 +57,42 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitToken(SyntaxToken syntaxToken) {
-    Set<Integer> commentedOutLinesOfCode = new HashSet<>();
+    List<AnalyzerMessage> issues = new ArrayList<>();
+    AnalyzerMessage previousRelatedIssue = null;
+    int previousCommentLine = -1;
     for (SyntaxTrivia syntaxTrivia : syntaxToken.trivias()) {
+      if (syntaxTrivia.startLine() != previousCommentLine + 1 && syntaxTrivia.startLine() != previousCommentLine) {
+        previousRelatedIssue = null;
+      }
       if (!isHeader(syntaxTrivia) && !isJavadoc(syntaxTrivia.comment()) && !isJSNI(syntaxTrivia.comment())) {
-        checkTrivia(syntaxTrivia, commentedOutLinesOfCode);
+        previousRelatedIssue = collectIssues(issues, syntaxTrivia, previousRelatedIssue);
+        previousCommentLine = syntaxTrivia.startLine();
       }
     }
+    DefaultJavaFileScannerContext scannerContext = (DefaultJavaFileScannerContext) this.context;
+    issues.forEach(scannerContext::reportIssue);
   }
 
-  public void checkTrivia(SyntaxTrivia syntaxTrivia, Set<Integer> commentedOutLinesOfCode) {
+  public AnalyzerMessage collectIssues(List<AnalyzerMessage> issues, SyntaxTrivia syntaxTrivia, @Nullable AnalyzerMessage previousRelatedIssue) {
     String[] lines = syntaxTrivia.comment().split("\r\n?|\n");
-    boolean markAllSubsequentLinesAsCommentedOutCode = false;
+    AnalyzerMessage issue = previousRelatedIssue;
     for (int lineOffset = 0; lineOffset < lines.length; lineOffset++) {
       String line = lines[lineOffset];
-      int startLine = syntaxTrivia.startLine() + lineOffset;
-      if (markAllSubsequentLinesAsCommentedOutCode || commentedOutLinesOfCode.contains(startLine - 1)) {
-        // all comments consecutive to commented-out code, are also considered as commented-out code
-        commentedOutLinesOfCode.add(startLine);
-      } else if (!commentedOutLinesOfCode.contains(startLine) && codeRecognizer.isLineOfCode(line) && !isJavadocLink(line)) {
-        commentedOutLinesOfCode.add(startLine);
-        markAllSubsequentLinesAsCommentedOutCode = true;
+      if (!isJavadocLink(line) && codeRecognizer.isLineOfCode(line)) {
+        int startLine = syntaxTrivia.startLine() + lineOffset;
         int startColumn = (lineOffset == 0 ? syntaxTrivia.column() : 0);
-        reportIssue(startLine, startColumn, line);
+        if (issue != null) {
+          issue.flows.add(Collections.singletonList(createAnalyzerMessage(startLine, startColumn, line, "Code")));
+        } else {
+          issue = createAnalyzerMessage(startLine, startColumn, line, MESSAGE);
+          issues.add(issue);
+        }
       }
     }
+    return issue;
   }
 
-  private void reportIssue(int startLine, int startColumn, String line) {
+  private AnalyzerMessage createAnalyzerMessage(int startLine, int startColumn, String line, String message) {
     String lineWithoutCommentPrefix = line.replaceFirst("^(//|/\\*\\*?|[ \t]*\\*)?[ \t]*+", "");
     int prefixSize = line.length() - lineWithoutCommentPrefix.length();
     String lineWithoutCommentPrefixAndSuffix = lineWithoutCommentPrefix.replaceFirst("[ \t]+(\\*/)?$", "");
@@ -94,8 +103,7 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
       startLine,
       startColumn + prefixSize + lineWithoutCommentPrefixAndSuffix.length());
 
-    AnalyzerMessage message = new AnalyzerMessage(this, context.getInputFile(), textSpan, MESSAGE, 0);
-    ((DefaultJavaFileScannerContext) context).reportIssue(message);
+    return new AnalyzerMessage(this, context.getInputFile(), textSpan, message, 0);
   }
 
   /**
