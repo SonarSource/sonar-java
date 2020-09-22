@@ -1,8 +1,4 @@
 {
-'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java':[
-165,
-166,
-],
 'org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractEndPoint.java':[
 38,
 ],
@@ -42,12 +38,6 @@
 ],
 'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/DateCache.java':[
 54,
-],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/component/AbstractLifeCycle.java':[
-58,
-],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/component/ContainerLifeCycle.java':[
-763,
 ],
 'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java':[
 64,
