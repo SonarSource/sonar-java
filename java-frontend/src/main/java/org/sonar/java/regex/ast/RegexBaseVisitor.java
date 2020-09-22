@@ -192,4 +192,9 @@ public class RegexBaseVisitor implements RegexVisitor {
     // no children to visit
   }
 
+  @Override
+  public void visitMiscEscapeSequence(MiscEscapeSequenceTree tree) {
+    // no children to visit
+  }
+
 }
