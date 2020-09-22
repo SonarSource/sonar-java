@@ -1,8 +1,11 @@
-class A extends junit.framework.TestCase {
+package checks.tests;
+
+class TestCaseA extends junit.framework.TestCase {
   void testFoo() {
   }
 }
-class B extends junit.framework.TestCase {
+
+class TestCaseB extends junit.framework.TestCase {
   void foo() {
   }
 }
@@ -16,17 +19,20 @@ class ATest { // Noncompliant {{Add some tests to this class.}}
     };
   }
 }
+
 class BTest {
   @org.junit.Test
   void foo()  {
     class MyInnerTest { }
   }
 }
+
 enum MyTest {}
+
 class AnonymousClass extends junit.framework.TestCase{
   void testfoo(){}
 }
 
-public abstract class AbstractIntegrationTest { //designed for extension should not raise issue.
+abstract class AbstractIntegrationTest { //designed for extension should not raise issue.
 
 }
