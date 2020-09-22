@@ -30,27 +30,24 @@ public void testToString() {
     Object obj = get();
     Assert.assertThrows(IndexOutOfBoundsException.class, () -&gt; obj.toString());
     Assert.assertEquals(0, 1);
-} {code}
-
-* For JUnit &lt; 4.13, use the [try-catch idiom|https://github.com/junit-team/junit4/wiki/Exception-testing#trycatch-idiom]:
-{code:java}
-<p>@Test</p>
-<p>public void testShouldFail() {</p>
-<p>    Object obj = get();</p>
-<p>    try {</p>
-<p>        obj.toString();</p>
-<p>        Assert.fail("Expected an IndexOutOfBoundsException to be thrown");</p>
-<p>    } catch (IndexOutOfBoundsException e) {}</p>
-<p>    Assert.assertEquals(0, 1); // Correctly fails.</p>
-<p>}</p>
+}
+</pre>
+<ul>
+  <li> For JUnit &lt; 4.13, use the <a href="https://github.com/junit-team/junit4/wiki/Exception-testing#trycatch-idiom">try-catch idiom</a>: </li>
+</ul>
 <pre>
+@Test
+public void testShouldFail() {
+    Object obj = get();
+    try {
+        obj.toString();
+        Assert.fail("Expected an IndexOutOfBoundsException to be thrown");
+    } catch (IndexOutOfBoundsException e) {}
+    Assert.assertEquals(0, 1); // Correctly fails.
+}
 </pre>
-
 <h2>See</h2>
-
-  <ul>
-
-    <li> <a href="https://github.com/junit-team/junit4/wiki/Exception-testing">JUnit exception testing documentation</a> </li>
-  </ul>
-</pre>
+<ul>
+  <li> <a href="https://github.com/junit-team/junit4/wiki/Exception-testing">JUnit exception testing documentation</a> </li>
+</ul>
 

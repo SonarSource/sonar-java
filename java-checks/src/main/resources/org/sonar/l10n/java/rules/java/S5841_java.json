@@ -3,7 +3,8 @@
   "type": "BUG",
   "status": "ready",
   "tags": [
-    "tests"
+    "tests",
+    "assertj"
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-5841",

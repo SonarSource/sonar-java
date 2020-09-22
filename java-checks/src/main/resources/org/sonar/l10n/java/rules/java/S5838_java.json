@@ -3,7 +3,8 @@
   "type": "CODE_SMELL",
   "status": "ready",
   "tags": [
-    "tests"
+    "tests",
+    "assertj"
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-5838",

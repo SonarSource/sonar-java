@@ -76,7 +76,7 @@ public class AppTest
         "2, 200",
         "3, 300",
     })
-    void testLevels(int level, int health) {  // Similar test
+    void testLevels(int level, int health) {
         setLevel(level);
         runGame();
         assertEquals(playerHealth(), health);

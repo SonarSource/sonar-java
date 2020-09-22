@@ -6,7 +6,8 @@ will be done under the hood by the JVM because the behavior will depend on its v
   <li> Will the JVM simply ignore the call? </li>
   <li> ... </li>
 </ul>
-<p>Like for <code>System.gc()</code>, there is no reason to manually call <code>runFinalization()</code> to force the call of finalization methods of any objects pending finalization.</p>
-<p>An application relying on these unpredictable methods is also unpredictable and therefore broken. The task of running the garbage collector and calling <code>finalize()</code> methods should
-be left exclusively to the JVM.</p>
+<p>Like for <code>System.gc()</code>, there is no reason to manually call <code>runFinalization()</code> to force the call of finalization methods of
+any objects pending finalization.</p>
+<p>An application relying on these unpredictable methods is also unpredictable and therefore broken. The task of running the garbage collector and
+calling <code>finalize()</code> methods should be left exclusively to the JVM.</p>
 
