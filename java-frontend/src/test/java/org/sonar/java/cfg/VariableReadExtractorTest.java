@@ -19,7 +19,11 @@
  */
 package org.sonar.java.cfg;
 
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -35,13 +39,30 @@ class VariableReadExtractorTest {
     return (MethodTree) ((ClassTree) cut.types().get(0)).members().get(2);
   }
 
-  @Test
-  void should_extract_local_vars_read() {
-    MethodTree methodTree = buildMethodTree("void foo(boolean a) { new Object() { void foo() { System.out.println(a);} };  }");
+  @ParameterizedTest(name = "[{index}] With includeFields={1}, {2} read variable should be extracted from method code: {0}]")
+  @MethodSource("provideExtractionTest")
+  void should_extract_correctly(String methodCode, boolean includeFields, int size) {
+    MethodTree methodTree = buildMethodTree(methodCode);
     StatementTree statementTree = methodTree.block().body().get(0);
-    VariableReadExtractor extractor = new VariableReadExtractor(methodTree.symbol(), false);
+    VariableReadExtractor extractor = new VariableReadExtractor(methodTree.symbol(), includeFields);
     statementTree.accept(extractor);
-    assertThat(extractor.usedVariables()).hasSize(1);
+    assertThat(extractor.usedVariables()).hasSize(size);
+  }
+
+  private static Stream<Arguments> provideExtractionTest() {
+    return Stream.of(
+      // should extract local variable read
+      Arguments.of("void foo(boolean a) { new Object() { void foo() { System.out.println(a);} };  }", false, 1),
+      // should not extract variable declared, only "a" should be detected
+      Arguments.of("void foo(boolean a) { boolean b = a; }", true, 1),
+      // should not extract fields read: local variable "a" and fields "field1" and "field2"
+      Arguments.of("void foo(int a) { bar(p -> { System.out.println(a + field1); foo(this.field2); }); } void bar(java.util.function.Consumer<Object> consumer) {}"
+        , true, 3),
+      // should not extract fields written: local variable "a" and field "field"
+      Arguments.of("void foo(boolean a) { new Object() { void foo() { new A().field1 = 0; a = false;} };  }", true, 0),
+      // should extract local variable read
+      Arguments.of("void foo(boolean a) { new Object() { void foo() { foo(a); bar(a); } }; }", false, 1)
+    );
   }
 
   @Test
@@ -54,48 +75,6 @@ class VariableReadExtractorTest {
     methodTree = buildMethodTree("void foo(boolean a) { new Object() { void foo() { a = !a;} };  }");
     statementTree = methodTree.block().body().get(0);
     extractor = new VariableReadExtractor(methodTree.symbol(), false);
-    statementTree.accept(extractor);
-    assertThat(extractor.usedVariables()).hasSize(1);
-  }
-
-  @Test
-  void should_extract_fields_read() {
-    MethodTree methodTree = buildMethodTree(
-      "void foo(int a) { bar(p -> { System.out.println(a + field1); foo(this.field2); }); } " +
-      "void bar(java.util.function.Consumer<Object> consumer) {}"
-    );
-    StatementTree statementTree = methodTree.block().body().get(0);
-    VariableReadExtractor extractor = new VariableReadExtractor(methodTree.symbol(), true);
-    statementTree.accept(extractor);
-    // local variable "a" and fields "field1" and "field2"
-    assertThat(extractor.usedVariables()).hasSize(3);
-  }
-
-  @Test
-  void should_not_extract_fields_written() throws Exception {
-    MethodTree methodTree = buildMethodTree("void foo(boolean a) { new Object() { void foo() { new A().field1 = 0; a = false;} };  }");
-    StatementTree statementTree = methodTree.block().body().get(0);
-    VariableReadExtractor extractor = new VariableReadExtractor(methodTree.symbol(), true);
-    statementTree.accept(extractor);
-    // local variable "a" and field "field"
-    assertThat(extractor.usedVariables()).isEmpty();
-  }
-
-  @Test
-  void should_not_extract_variable_declared() throws Exception {
-    MethodTree methodTree = buildMethodTree("void foo(boolean a) { boolean b = a; }");
-    StatementTree statementTree = methodTree.block().body().get(0);
-    VariableReadExtractor extractor = new VariableReadExtractor(methodTree.symbol(), true);
-    statementTree.accept(extractor);
-    // only "a" should be detected
-    assertThat(extractor.usedVariables()).hasSize(1);
-  }
-
-  @Test
-  void should_return_symbol_once() {
-    MethodTree methodTree = buildMethodTree("void foo(boolean a) { new Object() { void foo() { foo(a); bar(a); } }; }");
-    StatementTree statementTree = methodTree.block().body().get(0);
-    VariableReadExtractor extractor = new VariableReadExtractor(methodTree.symbol(), false);
     statementTree.accept(extractor);
     assertThat(extractor.usedVariables()).hasSize(1);
   }

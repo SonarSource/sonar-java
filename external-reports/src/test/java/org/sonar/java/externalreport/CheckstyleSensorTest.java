@@ -29,6 +29,8 @@ import javax.annotation.Nullable;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.rule.Severity;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
@@ -144,31 +146,14 @@ class CheckstyleSensorTest {
       .endsWith("invalid-path.txt");
   }
 
-  @Test
-  void no_issues_with_invalid_checkstyle_file() throws IOException {
-    List<ExternalIssue> externalIssues = executeSensorImporting("not-checkstyle-file.xml");
+  @ParameterizedTest
+  @ValueSource(strings = {"not-checkstyle-file.xml", "checkstyle-with-invalid-line.xml", "invalid-file.xml"})
+  void no_issues_with_invalid_report(String fileName) throws IOException {
+    List<ExternalIssue> externalIssues = executeSensorImporting(fileName);
     assertThat(externalIssues).isEmpty();
     assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.ERROR)))
       .startsWith("Failed to import external issues report:")
-      .endsWith("not-checkstyle-file.xml");
-  }
-
-  @Test
-  void no_issues_with_invalid_line_number() throws IOException {
-    List<ExternalIssue> externalIssues = executeSensorImporting("checkstyle-with-invalid-line.xml");
-    assertThat(externalIssues).isEmpty();
-    assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.ERROR)))
-      .startsWith("Failed to import external issues report:")
-      .endsWith("checkstyle-with-invalid-line.xml");
-  }
-
-  @Test
-  void no_issues_with_invalid_xml_report() throws IOException {
-    List<ExternalIssue> externalIssues = executeSensorImporting("invalid-file.xml");
-    assertThat(externalIssues).isEmpty();
-    assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.ERROR)))
-      .startsWith("Failed to import external issues report:")
-      .endsWith("invalid-file.xml");
+      .endsWith(fileName);
   }
 
   @Test

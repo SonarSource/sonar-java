@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.sonar.java.checks.helpers.JParserTestUtils;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -69,17 +71,10 @@ class AbstractRegexCheckTest {
       .containsExactly((LiteralTree) expr);
   }
 
-  @Test
-  void test_GetLiterals_other_literals() {
-    ExpressionTree expr = getArg(/* not a String */"42").expr;
-
-    Optional<LiteralTree[]> result = getLiterals(expr);
-    assertThat(result).isEmpty();
-  }
-
-  @Test
-  void test_GetLiterals_unknown_variable() {
-    ExpressionTree expr = getArg("unknown").expr;
+  @ParameterizedTest(name = "[{index}] getLiterals({0}) should be empty")
+  @ValueSource(strings = {/* not a String */ "42", "unknown", "\"a\" + unknown", "unknown + \"a\""})
+  void test_GetLiterals_is_empty(String arg) {
+    ExpressionTree expr = getArg(arg).expr;
 
     Optional<LiteralTree[]> result = getLiterals(expr);
     assertThat(result).isEmpty();
@@ -193,22 +188,6 @@ class AbstractRegexCheckTest {
       .hasSize(3)
       .allMatch(t -> t.is(Tree.Kind.STRING_LITERAL))
       .containsExactly((LiteralTree) a, (LiteralTree) b, (LiteralTree) c);
-  }
-
-  @Test
-  void test_GetLiterals_string_concatenation_with_unknown_1() {
-    ExpressionTree expr = getArg("\"a\" + unknown").expr;
-
-    Optional<LiteralTree[]> result = getLiterals(expr);
-    assertThat(result).isEmpty();
-  }
-
-  @Test
-  void test_GetLiterals_string_concatenation_with_unknown_2() {
-    ExpressionTree expr = getArg("unknown + \"a\"").expr;
-
-    Optional<LiteralTree[]> result = getLiterals(expr);
-    assertThat(result).isEmpty();
   }
 
   @Test

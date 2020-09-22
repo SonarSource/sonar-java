@@ -36,6 +36,8 @@ import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -1159,9 +1161,16 @@ class JParserSemanticTest {
     assertThat(cu.sema.declarations.get(m.methodBinding)).isSameAs(m);
   }
 
-  @Test
-  void type_primitive() {
-    CompilationUnitTree cu = test("interface I { int v; }");
+  @ParameterizedTest(name="[{index}] Type bindings of variable v should not be null in \"{0}\"")
+  @ValueSource(strings = {
+    "interface I { int v; }", // primitive
+    "interface I<T> { I<String> v; }", // parameterized
+    "interface I { I1.I2 v; interface I2 {} }", // simple
+    "interface I1<T> { I1<String>. @Annotation I2 v; interface I2 {} }", // qualified
+    "interface I1 { I1. @Annotation I2 v; interface I2 {} }", // name qualified
+  })
+  void test_abstract_type_tree_is_not_null(String source) {
+    CompilationUnitTree cu = test(source);
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     VariableTreeImpl v = (VariableTreeImpl) c.members().get(0);
     AbstractTypedTree t = (AbstractTypedTree) v.type();
@@ -1179,42 +1188,6 @@ class JParserSemanticTest {
     t = (JavaTree.ArrayTypeTreeImpl) t.type();
     assertThat(t.typeBinding).isNotNull();
     assertThat(t.typeBinding.getDimensions()).isEqualTo(1);
-  }
-
-  @Test
-  void type_parameterized() {
-    CompilationUnitTree cu = test("interface I<T> { I<String> v; }");
-    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
-    VariableTreeImpl v = (VariableTreeImpl) c.members().get(0);
-    AbstractTypedTree t = (AbstractTypedTree) v.type();
-    assertThat(t.typeBinding).isNotNull();
-  }
-
-  @Test
-  void type_simple() {
-    CompilationUnitTree cu = test("interface I { I1.I2 v; interface I2 {} }");
-    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
-    VariableTreeImpl v = (VariableTreeImpl) c.members().get(0);
-    AbstractTypedTree t = (AbstractTypedTree) v.type();
-    assertThat(t.typeBinding).isNotNull();
-  }
-
-  @Test
-  void type_qualified() {
-    CompilationUnitTree cu = test("interface I1<T> { I1<String>. @Annotation I2 v; interface I2 {} }");
-    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
-    VariableTreeImpl v = (VariableTreeImpl) c.members().get(0);
-    AbstractTypedTree t = (AbstractTypedTree) v.type();
-    assertThat(t.typeBinding).isNotNull();
-  }
-
-  @Test
-  void type_name_qualified() {
-    CompilationUnitTree cu = test("interface I1 { I1. @Annotation I2 v; interface I2 {} }");
-    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
-    VariableTreeImpl v = (VariableTreeImpl) c.members().get(0);
-    AbstractTypedTree t = (AbstractTypedTree) v.type();
-    assertThat(t.typeBinding).isNotNull();
   }
 
   @Test

@@ -28,6 +28,8 @@ import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.rule.CheckFactory;
@@ -79,25 +81,10 @@ class SyntaxHighlighterVisitorTest {
     verify(spy, never()).newHighlighting();
   }
 
-  @Test
-  void test_LF() throws Exception {
-    this.eol = "\n";
-    InputFile inputFile = generateDefaultTestFile();
-    scan(inputFile);
-    verifyHighlighting(inputFile);
-  }
-
-  @Test
-  void test_CR_LF() throws Exception {
-    this.eol = "\r\n";
-    InputFile inputFile = generateDefaultTestFile();
-    scan(inputFile);
-    verifyHighlighting(inputFile);
-  }
-
-  @Test
-  void test_CR() throws Exception {
-    this.eol = "\r";
+  @ParameterizedTest
+  @ValueSource(strings = {"\n", "\r\n", "\r"})
+  void test_different_end_of_line(String eol) throws IOException {
+    this.eol = eol;
     InputFile inputFile = generateDefaultTestFile();
     scan(inputFile);
     verifyHighlighting(inputFile);
