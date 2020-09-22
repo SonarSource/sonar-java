@@ -19,7 +19,11 @@
  */
 package org.sonar.java.regex.ast;
 
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.sonar.java.regex.RegexParserTestUtils.assertJavaCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
@@ -29,15 +33,24 @@ import static org.sonar.java.regex.RegexParserTestUtils.assertType;
 
 class DisjunctionTreeTest {
 
-  @Test
-  void disjunctionWithTwoAlternatives() {
-    DisjunctionTree disjunction = assertType(DisjunctionTree.class, assertSuccessfulParse("a|b"));
+  @ParameterizedTest
+  @MethodSource("provideDisjunctionWithTwoAlternatives")
+  void disjunctionWithTwoAlternatives(String regex, int expectedCharacterIndex) {
+    DisjunctionTree disjunction = assertType(DisjunctionTree.class, assertSuccessfulParse(regex));
     assertListElements(disjunction.getAlternatives(),
       first -> assertPlainCharacter('a', first),
       second -> assertPlainCharacter('b', second)
     );
     assertListElements(disjunction.getOrOperators(),
-      first -> assertJavaCharacter(1, '|', first)
+      first -> assertJavaCharacter(expectedCharacterIndex, '|', first)
+    );
+  }
+
+  private static Stream<Arguments> provideDisjunctionWithTwoAlternatives() {
+    return Stream.of(
+      Arguments.of("a|b", 1),
+      Arguments.of("\\\\Qa\\\\E|b", 7),
+      Arguments.of("a\\\\Q\\\\E|b\\\\Q\\\\E", 7)
     );
   }
 
@@ -52,30 +65,6 @@ class DisjunctionTreeTest {
     assertListElements(disjunction.getOrOperators(),
       first -> assertJavaCharacter(1, '|', first),
       second -> assertJavaCharacter(3, '|', second)
-    );
-  }
-
-  @Test
-  void disjunctionWithQuoting() {
-    DisjunctionTree disjunction = assertType(DisjunctionTree.class, assertSuccessfulParse("\\\\Qa\\\\E|b"));
-    assertListElements(disjunction.getAlternatives(),
-      first -> assertPlainCharacter('a', first),
-      second -> assertPlainCharacter('b', second)
-    );
-    assertListElements(disjunction.getOrOperators(),
-      first -> assertJavaCharacter(7, '|', first)
-    );
-  }
-
-  @Test
-  void disjunctionWithQuoting2() {
-    DisjunctionTree disjunction = assertType(DisjunctionTree.class, assertSuccessfulParse("a\\\\Q\\\\E|b\\\\Q\\\\E"));
-    assertListElements(disjunction.getAlternatives(),
-      first -> assertPlainCharacter('a', first),
-      second -> assertPlainCharacter('b', second)
-    );
-    assertListElements(disjunction.getOrOperators(),
-      first -> assertJavaCharacter(7, '|', first)
     );
   }
 

@@ -20,6 +20,8 @@
 package org.sonar.java.se.checks;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -50,36 +52,18 @@ class SyntaxTreeNameFinderTest {
     assertThat(SyntaxTreeNameFinder.getName(mse)).isEqualTo("obj");
   }
 
-  @Test
-  void testSwitch() {
-    MethodTree tree = buildSyntaxTree("public void test() {int i; switch (i) { case 0: break;}}");
+  @ParameterizedTest(name="[{index}] Name of method content {1} should be {2} in method code: {0}")
+  @CsvSource({
+    "public void test() {int i; switch (i) { case 0: break;}}, 1, i",
+    "public void test() {String s; s.length();}, 1, length",
+    "public void test() {int i = checkForNullMethod().length();}, 0, length",
+    "public void test() {int i = checkForNullMethod().length;}, 0, checkForNullMethod",
+  })
+  void testNameOfElementOfBlock(String methodCode, int blockPosition, String name) {
+    MethodTree tree = buildSyntaxTree(methodCode);
     BlockTree block = tree.block();
-    StatementTree statementTree = block.body().get(1);
-    assertThat(SyntaxTreeNameFinder.getName(statementTree)).isEqualTo("i");
-  }
-
-  @Test
-  void testMethodInvocationOnIdentifier() {
-    MethodTree tree = buildSyntaxTree("public void test() {String s; s.length();}");
-    BlockTree block = tree.block();
-    StatementTree statementTree = block.body().get(1);
-    assertThat(SyntaxTreeNameFinder.getName(statementTree)).isEqualTo("length");
-  }
-
-  @Test
-  void testMethodInvocationOnOtherInvocation() {
-    MethodTree tree = buildSyntaxTree("public void test() {int i = checkForNullMethod().length();}");
-    BlockTree block = tree.block();
-    StatementTree statementTree = block.body().get(0);
-    assertThat(SyntaxTreeNameFinder.getName(statementTree)).isEqualTo("length");
-  }
-
-  @Test
-  void testMemberSelectOnMethodInvocation() {
-    MethodTree tree = buildSyntaxTree("public void test() {int i = checkForNullMethod().length;}");
-    BlockTree block = tree.block();
-    StatementTree statementTree = block.body().get(0);
-    assertThat(SyntaxTreeNameFinder.getName(statementTree)).isEqualTo("checkForNullMethod");
+    StatementTree statementTree = block.body().get(blockPosition);
+    assertThat(SyntaxTreeNameFinder.getName(statementTree)).isEqualTo(name);
   }
 
   @Test
