@@ -199,11 +199,19 @@ class CheckListTest {
       File metadataFile = new File(metadataURL.toURI());
       assertThat(metadataFile).exists();
       try (FileReader jsonReader = new FileReader(metadataFile)) {
-        DummyMetatada metatada = gson.fromJson(jsonReader, DummyMetatada.class);
-        if (testChecks.contains(cls)) {
-          assertThat(metatada.tags).as("Rule " + key + " is targeting tests sources and should contain the 'tests' tag.").contains("tests");
-        } else {
-          assertThat(metatada.tags).as("Rule " + key + " is targeting main sources and should not contain the 'tests' tag.").doesNotContain("tests");
+        DummyMetatada metadata = gson.fromJson(jsonReader, DummyMetatada.class);
+
+        if (!"deprecated".equals(metadata.status)) {
+          // deprecated rules usually have no tags
+          if (testChecks.contains(cls)) {
+            assertThat(metadata.tags)
+              .as("Rule " + key + " is targeting tests sources and should contain the 'tests' tag.")
+              .contains("tests");
+          } else {
+            assertThat(metadata.tags)
+              .as("Rule " + key + " is targeting main sources and should not contain the 'tests' tag.")
+              .doesNotContain("tests");
+          }
         }
       }
     }
@@ -212,6 +220,7 @@ class CheckListTest {
   private static class DummyMetatada {
     // ignore all the other fields
     String[] tags;
+    String status;
   }
 
   @Test
