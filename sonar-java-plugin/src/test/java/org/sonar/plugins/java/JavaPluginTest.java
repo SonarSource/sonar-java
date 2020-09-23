@@ -33,6 +33,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JavaPluginTest {
 
   private static final Version VERSION_7_9 = Version.create(7, 9);
+  private static final SonarRuntime SQ_79_RUNTIME = SonarRuntimeImpl.forSonarQube(VERSION_7_9, SonarQubeSide.SERVER, SonarEdition.COMMUNITY);
+
   private JavaPlugin javaPlugin = new JavaPlugin();
 
   @Test
@@ -46,10 +48,11 @@ class JavaPluginTest {
 
   @Test
   void sonarqube_7_9_extensions() {
-    Plugin.Context context = new Plugin.Context(SonarVersion.SQ_79_RUNTIME);
+    Plugin.Context context = new Plugin.Context(SQ_79_RUNTIME);
     javaPlugin.define(context);
-    assertThat(context.getExtensions()).hasSize(32);
-    assertThat(context.getExtensions()).doesNotContain(Jasper.class);
+    assertThat(context.getExtensions())
+      .hasSize(32)
+      .doesNotContain(Jasper.class);
   }
 
   @Test
@@ -57,8 +60,9 @@ class JavaPluginTest {
     SonarRuntime sqEnterprise = SonarRuntimeImpl.forSonarQube(VERSION_7_9, SonarQubeSide.SCANNER, SonarEdition.ENTERPRISE);
     Plugin.Context context = new Plugin.Context(sqEnterprise);
     javaPlugin.define(context);
-    assertThat(context.getExtensions()).hasSize(32);
-    assertThat(context.getExtensions()).doesNotContain(Jasper.class);
+    assertThat(context.getExtensions())
+      .hasSize(32)
+      .doesNotContain(Jasper.class);
   }
 
   @Test
@@ -66,8 +70,9 @@ class JavaPluginTest {
     SonarRuntime sqEnterprise = SonarRuntimeImpl.forSonarQube(Version.create(8, 3), SonarQubeSide.SCANNER, SonarEdition.ENTERPRISE);
     Plugin.Context context = new Plugin.Context(sqEnterprise);
     javaPlugin.define(context);
-    assertThat(context.getExtensions()).hasSize(33);
-    assertThat(context.getExtensions()).contains(Jasper.class);
+    assertThat(context.getExtensions())
+      .hasSize(33)
+      .contains(Jasper.class);
   }
 
 
