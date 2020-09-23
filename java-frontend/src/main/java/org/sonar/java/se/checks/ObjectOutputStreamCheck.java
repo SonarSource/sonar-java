@@ -61,10 +61,10 @@ public class ObjectOutputStreamCheck extends SECheck {
           ProgramState psBeforeInvocation = context.getNode().programState;
           BooleanConstraint argConstraint = psBeforeInvocation.getConstraint(psBeforeInvocation.peekValue(), BooleanConstraint.class);
           if (argConstraint == BooleanConstraint.TRUE) {
-            programState = programState.addConstraint(programState.peekValue(), new FileOutputStreamAppendConstraint(newClassTree));
+            return programState.addConstraint(programState.peekValue(), new FileOutputStreamAppendConstraint(newClassTree));
           }
         }
-        break;
+        return programState;
       case METHOD_INVOCATION:
         MethodInvocationTree mit = (MethodInvocationTree) syntaxNode;
         if (FILES_NEW_OUTPUT_STREAM.matches(mit)) {
@@ -73,20 +73,18 @@ public class ObjectOutputStreamCheck extends SECheck {
           for (int i = 0; i < optionsNumber; i++) {
             FileOutputStreamAppendConstraint argConstraint = psBeforeInvocation.getConstraint(psBeforeInvocation.peekValue(i), FileOutputStreamAppendConstraint.class);
             if (argConstraint != null) {
-              programState = programState.addConstraint(programState.peekValue(), new FileOutputStreamAppendConstraint(mit));
-              break;
+              return programState.addConstraint(programState.peekValue(), new FileOutputStreamAppendConstraint(mit));
             }
           }
         }
-        break;
+        return programState;
       case MEMBER_SELECT:
-        programState = handleOpenOptionAppend(programState, ((MemberSelectExpressionTree) syntaxNode).identifier());
-        break;
+        return handleOpenOptionAppend(programState, ((MemberSelectExpressionTree) syntaxNode).identifier());
       case IDENTIFIER:
-        programState = handleOpenOptionAppend(programState, (IdentifierTree) syntaxNode);
-        break;
+        return handleOpenOptionAppend(programState, (IdentifierTree) syntaxNode);
+      default:
+        return programState;
     }
-    return programState;
   }
 
   private static ProgramState handleOpenOptionAppend(ProgramState programState, IdentifierTree identifier) {
