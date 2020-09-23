@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.annotations.VisibleForTesting;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -76,7 +75,6 @@ public class DivisionByZeroCheck extends SECheck {
   private static final MethodMatchers KEEPING_CONSTRAINTS_WITH_ONE_PARAM = BIG_INTEGER_AND_DECIMAL
     .names("pow", "round", "shiftRight", "shiftLeft").addParametersMatcher(MethodMatchers.ANY).build();
 
-  @VisibleForTesting
   public enum ZeroConstraint implements Constraint {
     ZERO,
     NON_ZERO;

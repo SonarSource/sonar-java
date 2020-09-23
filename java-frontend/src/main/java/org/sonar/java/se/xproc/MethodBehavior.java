@@ -68,53 +68,53 @@ public class MethodBehavior {
     this(signature, false);
   }
 
-  public void createYield(ExplodedGraph.Node node) {
-    createYield(node, true);
-  }
-
   public void addYield(MethodYield yield) {
     yields.add(yield);
   }
 
-  public void createYield(ExplodedGraph.Node node, boolean storeNodeForReporting) {
-    ExplodedGraph.Node nodeForYield = null;
-    if(storeNodeForReporting) {
-      nodeForYield = node;
-    }
-    MethodYield yield;
+  public void createYield(ExplodedGraph.Node node) {
     boolean expectReturnValue = !(SignatureUtils.isConstructor(signature) || SignatureUtils.isVoidMethod(signature));
     SymbolicValue resultSV = node.programState.exitValue();
 
+    MethodYield yield;
     if ((resultSV == null && expectReturnValue) || resultSV instanceof SymbolicValue.ExceptionalSymbolicValue) {
-      ExceptionalYield exceptionalYield = new ExceptionalYield(nodeForYield, this);
-      if (resultSV != null) {
-        Type type = ((SymbolicValue.ExceptionalSymbolicValue) resultSV).exceptionType();
-        String typeName = null;
-
-        while (type != null && type.symbol().owner().isMethodSymbol()) {
-          // skip anonymous or classes nested in methods to the closest exception type
-          // because bytecode visitor does not support them (see org.sonar.java.resolve.BytecodeVisitor.visitOuterClass)
-          type = type.symbol().superClass();
-        }
-        if(type != null) {
-          typeName = type.fullyQualifiedName();
-        }
-        exceptionalYield.setExceptionType(typeName);
-      }
-      yield = exceptionalYield;
+      yield = newExceptionalYield(node, resultSV);
     } else {
-      HappyPathYield happyPathYield = new HappyPathYield(nodeForYield, this);
-      if (expectReturnValue) {
-        ConstraintsByDomain cleanup = cleanup(node.programState.getConstraints(resultSV), -1);
-        if (cleanup.isEmpty()) {
-          cleanup = null;
-        }
-        happyPathYield.setResult(parameters.indexOf(resultSV), cleanup);
-      }
-      yield = happyPathYield;
+      yield = newHappyPathYield(node, expectReturnValue, resultSV);
     }
     addParameterConstraints(node, yield);
     yields.add(yield);
+  }
+
+  private MethodYield newExceptionalYield(ExplodedGraph.Node nodeForYield, @Nullable SymbolicValue resultSV) {
+    ExceptionalYield exceptionalYield = new ExceptionalYield(nodeForYield, this);
+    if (resultSV != null) {
+      Type type = ((SymbolicValue.ExceptionalSymbolicValue) resultSV).exceptionType();
+      String typeName = null;
+
+      while (type != null && type.symbol().owner().isMethodSymbol()) {
+        // skip anonymous or classes nested in methods to the closest exception type
+        // because bytecode visitor does not support them (see org.sonar.java.resolve.BytecodeVisitor.visitOuterClass)
+        type = type.symbol().superClass();
+      }
+      if(type != null) {
+        typeName = type.fullyQualifiedName();
+      }
+      exceptionalYield.setExceptionType(typeName);
+    }
+    return exceptionalYield;
+  }
+
+  private MethodYield newHappyPathYield(ExplodedGraph.Node nodeForYield, boolean expectReturnValue, @Nullable SymbolicValue resultSV) {
+    HappyPathYield happyPathYield = new HappyPathYield(nodeForYield, this);
+    if (expectReturnValue) {
+      ConstraintsByDomain cleanup = cleanup(nodeForYield.programState.getConstraints(resultSV), -1);
+      if (cleanup.isEmpty()) {
+        cleanup = null;
+      }
+      happyPathYield.setResult(parameters.indexOf(resultSV), cleanup);
+    }
+    return happyPathYield;
   }
 
   private void addParameterConstraints(ExplodedGraph.Node node, MethodYield yield) {
