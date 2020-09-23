@@ -22,10 +22,14 @@ package org.sonar.java.checks;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
+import org.sonar.java.AnalyzerMessage;
+import org.sonar.java.AnalyzerMessage.TextSpan;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
@@ -38,10 +42,9 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
   private static final double THRESHOLD = 0.9;
   private static final String START_JSNI = "/*-{";
   private static final String END_JSNI = "}-*/";
+  private static final String MESSAGE = "This block of commented-out lines of code should be removed.";
 
   private final CodeRecognizer codeRecognizer;
-
-  private List<SyntaxTrivia> comments = new ArrayList<>();
 
   public CommentedOutCodeLineCheck() {
     codeRecognizer = new CodeRecognizer(THRESHOLD, new JavaFootprint());
@@ -49,14 +52,58 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.TRIVIA);
+    return Collections.singletonList(Tree.Kind.TOKEN);
   }
 
   @Override
-  public void visitTrivia(SyntaxTrivia syntaxTrivia) {
-    if (!isHeader(syntaxTrivia) && !isJavadoc(syntaxTrivia.comment()) && !isJSNI(syntaxTrivia.comment())) {
-      comments.add(syntaxTrivia);
+  public void visitToken(SyntaxToken syntaxToken) {
+    List<AnalyzerMessage> issues = new ArrayList<>();
+    AnalyzerMessage previousRelatedIssue = null;
+    int previousCommentLine = -1;
+    for (SyntaxTrivia syntaxTrivia : syntaxToken.trivias()) {
+      if (syntaxTrivia.startLine() != previousCommentLine + 1 && syntaxTrivia.startLine() != previousCommentLine) {
+        previousRelatedIssue = null;
+      }
+      if (!isHeader(syntaxTrivia) && !isJavadoc(syntaxTrivia.comment()) && !isJSNI(syntaxTrivia.comment())) {
+        previousRelatedIssue = collectIssues(issues, syntaxTrivia, previousRelatedIssue);
+        previousCommentLine = syntaxTrivia.startLine();
+      }
     }
+    DefaultJavaFileScannerContext scannerContext = (DefaultJavaFileScannerContext) this.context;
+    issues.forEach(scannerContext::reportIssue);
+  }
+
+  public AnalyzerMessage collectIssues(List<AnalyzerMessage> issues, SyntaxTrivia syntaxTrivia, @Nullable AnalyzerMessage previousRelatedIssue) {
+    String[] lines = syntaxTrivia.comment().split("\r\n?|\n");
+    AnalyzerMessage issue = previousRelatedIssue;
+    for (int lineOffset = 0; lineOffset < lines.length; lineOffset++) {
+      String line = lines[lineOffset];
+      if (!isJavadocLink(line) && codeRecognizer.isLineOfCode(line)) {
+        int startLine = syntaxTrivia.startLine() + lineOffset;
+        int startColumn = (lineOffset == 0 ? syntaxTrivia.column() : 0);
+        if (issue != null) {
+          issue.flows.add(Collections.singletonList(createAnalyzerMessage(startLine, startColumn, line, "Code")));
+        } else {
+          issue = createAnalyzerMessage(startLine, startColumn, line, MESSAGE);
+          issues.add(issue);
+        }
+      }
+    }
+    return issue;
+  }
+
+  private AnalyzerMessage createAnalyzerMessage(int startLine, int startColumn, String line, String message) {
+    String lineWithoutCommentPrefix = line.replaceFirst("^(//|/\\*\\*?|[ \t]*\\*)?[ \t]*+", "");
+    int prefixSize = line.length() - lineWithoutCommentPrefix.length();
+    String lineWithoutCommentPrefixAndSuffix = lineWithoutCommentPrefix.replaceFirst("[ \t]+(\\*/)?$", "");
+
+    TextSpan textSpan = new TextSpan(
+      startLine,
+      startColumn + prefixSize,
+      startLine,
+      startColumn + prefixSize + lineWithoutCommentPrefixAndSuffix.length());
+
+    return new AnalyzerMessage(this, context.getInputFile(), textSpan, message, 0);
   }
 
   /**
@@ -66,45 +113,6 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
    */
   private static boolean isHeader(SyntaxTrivia syntaxTrivia) {
     return syntaxTrivia.startLine() == 1;
-  }
-
-  /**
-   * Detects commented-out code in remaining candidates.
-   */
-  @Override
-  public void leaveFile(JavaFileScannerContext context) {
-    List<Integer> commentedOutCodeLines = new ArrayList<>();
-    for (SyntaxTrivia syntaxTrivia : comments) {
-      commentedOutCodeLines.addAll(handleCommentsForTrivia(syntaxTrivia));
-    }
-
-    // Greedy algorithm to split lines on blocks and to report only one violation per block
-    Collections.sort(commentedOutCodeLines);
-    int prev = Integer.MIN_VALUE;
-    for (Integer commentedOutCodeLine : commentedOutCodeLines) {
-      if (prev + 1 < commentedOutCodeLine) {
-        addIssue(commentedOutCodeLine, "This block of commented-out lines of code should be removed.");
-      }
-      prev = commentedOutCodeLine;
-    }
-
-    comments.clear();
-  }
-
-  private List<Integer> handleCommentsForTrivia(SyntaxTrivia syntaxTrivia) {
-    List<Integer> commentedOutCodeLines = new ArrayList<>();
-    String[] lines = syntaxTrivia.comment().split("\r\n?|\n");
-    for (int i = 0; i < lines.length; i++) {
-      String line = lines[i];
-      if (codeRecognizer.isLineOfCode(line) && !isJavadocLink(line)) {
-        // Mark all remaining lines from this comment as a commented out lines of code
-        for (int j = i; j < lines.length; j++) {
-          commentedOutCodeLines.add(syntaxTrivia.startLine() + j);
-        }
-        break;
-      }
-    }
-    return commentedOutCodeLines;
   }
 
   private static boolean isJavadocLink(String line) {

@@ -51,6 +51,42 @@ public class CommentedCode {
     /*   continue; */
     /* } */
 
+    // Noncompliant@+2 [[sc=8;ec=42]]
+    /* Limitation: only the first line of a commented block is highlighted
+     * for (Visitor visitor : visitors) {
+     *   continue;
+     * }
+     */
+
+    // Noncompliant@+2 [[sc=8;ec=44]]
+    // Only one issue is highlighted per list of consecutive comments
+    /* for (Visitor visitor : visitors) { } */     /* for (Visitor visitor : visitors) { } */
+
+    // Noncompliant@+3
+    // Noncompliant@+2
+    // Several issues are highlighted for non consecutive comments
+    if (/* for (Visitor visitor : visitors) { } */field == 0) { /* for (Visitor visitor : visitors) { } */
+    }
+
+    // Noncompliant@+2 [[sc=16;ec=52]]
+    // Comment prefix and suffix are not highlighted
+    /*         for (Visitor visitor : visitors) { }           */
+
+    // Noncompliant@+2 [[sc=10;ec=46]]
+    /* Leading star is not highlighted
+     *   for (Visitor visitor : visitors) { }
+     */
+
+    // Noncompliant@+2 [[sc=10;ec=46]]
+    /* Leading spaces are not highlighted
+         for (Visitor visitor : visitors) { }
+     */
+
+    // Noncompliant@+2 [[sc=16;ec=50;secondary=88]]
+    // Leading spaces are not highlighted
+    //         for (Visitor visitor : visitors) {
+    //         }
+
     // TODO
     /**
      * This is not Javadoc, even if it looks like Javadoc and before declaration of variable
@@ -78,7 +114,7 @@ public class CommentedCode {
   }
   }-*/
 
-  // Noncompliant@+3
+  // Noncompliant@+3 [[sc=6;ec=40;secondary=121,122]]
   /*
    * This is not a documentation comment
    * for (Visitor visitor : visitors) {
@@ -98,7 +134,7 @@ public class CommentedCode {
     return field;
   }
 
-  /**
+  /*
    * FIXME: the following method calls {@link CommentedCode#method(String)}
    */
   public void foo() {
