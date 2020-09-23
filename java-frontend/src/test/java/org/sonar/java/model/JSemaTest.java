@@ -71,7 +71,7 @@ class JSemaTest {
 
   @BeforeEach
   void setup() {
-    ASTParser astParser = ASTParser.newParser(AST.JLS13);
+    ASTParser astParser = ASTParser.newParser(AST.JLS14);
     astParser.setEnvironment(
       new String[]{"target/test-classes"},
       new String[]{},
