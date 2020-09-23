@@ -39,6 +39,6 @@ public class OpeningQuote extends RegexSyntaxElement {
 
   @Override
   public List<Location> getLocations() {
-    return Collections.singletonList(new Location(getSource().stringLiterals.get(0), -1, 0));
+    return Collections.singletonList(new Location(getSource().getStringLiterals().get(0), -1, 0));
   }
 }

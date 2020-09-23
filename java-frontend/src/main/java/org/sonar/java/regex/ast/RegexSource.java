@@ -20,6 +20,7 @@
 package org.sonar.java.regex.ast;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -31,7 +32,7 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
  */
 public class RegexSource {
 
-  final List<LiteralTree> stringLiterals;
+  private final List<LiteralTree> stringLiterals;
   private final String sourceText;
   private final TreeMap<Integer, Integer> indices;
 
@@ -58,6 +59,10 @@ public class RegexSource {
 
   public int length() {
     return sourceText.length();
+  }
+
+  List<LiteralTree> getStringLiterals() {
+    return Collections.unmodifiableList(stringLiterals);
   }
 
   public List<Location> locationsFor(IndexRange range) {
