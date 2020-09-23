@@ -90,7 +90,7 @@ class MethodBehaviorJsonAdapterTest {
 
   @Test
   void serialization_unknown_yield_type_should_throw_an_exception() {
-    MethodBehavior mb = new MethodBehavior("org.bar.A#foo()Z");
+    MethodBehavior mb = newMethodBehavior("org.bar.A#foo()Z");
     mb.addYield(new CustomMethodYield(mb));
     mb.completed();
 
@@ -117,7 +117,7 @@ class MethodBehaviorJsonAdapterTest {
 
   @Test
   void serialization_unsupported_constraint_should_be_ignored() {
-    MethodBehavior mb = new MethodBehavior("org.bar.A#foo()Z");
+    MethodBehavior mb = newMethodBehavior("org.bar.A#foo()Z");
     HappyPathYield happyPathYield = new HappyPathYield(mb);
     happyPathYield.setResult(-1, ConstraintsByDomain.empty().put(CustomConstraint.SQUARE).put(ObjectConstraint.NOT_NULL));
 
@@ -137,7 +137,7 @@ class MethodBehaviorJsonAdapterTest {
 
   @Test
   void serialization_null_constraints_should_be_stored_as_null() {
-    MethodBehavior mb = new MethodBehavior("org.bar.A#foo()Z");
+    MethodBehavior mb = newMethodBehavior("org.bar.A#foo()Z");
     HappyPathYield happyPathYield = new HappyPathYield(mb);
     happyPathYield.setResult(-1, null);
 
@@ -151,7 +151,7 @@ class MethodBehaviorJsonAdapterTest {
 
   @Test
   void deserialization_serialization() {
-    MethodBehavior customBehavior = new MethodBehavior("org.bar.A#foo(Ljava/lang/Object;)Z");
+    MethodBehavior customBehavior = newMethodBehavior("org.bar.A#foo(Ljava/lang/Object;)Z");
     customBehavior.setDeclaredExceptions(Arrays.asList("org.foo.MyException", "org.bar.MyOtherException"));
     customBehavior.setVarArgs(true);
     HappyPathYield hpy = new HappyPathYield(customBehavior);
@@ -282,7 +282,7 @@ class MethodBehaviorJsonAdapterTest {
 
   @Test
   void exceptional_yield_serialization_deserialaization() {
-    MethodBehavior mb = new MethodBehavior("org.foo.A.bar(Ljava/lang/Object;)Z");
+    MethodBehavior mb = newMethodBehavior("org.foo.A.bar(Ljava/lang/Object;)Z");
     ExceptionalYield yield = new ExceptionalYield(mb);
     yield.setExceptionType("java.lang.Exception");
     yield.parametersConstraints.add(ConstraintsByDomain.empty().put(ObjectConstraint.NULL));
@@ -303,5 +303,9 @@ class MethodBehaviorJsonAdapterTest {
 
     MethodBehavior deserialized = gson.fromJson(serialized, MethodBehavior.class);
     assertThat(deserialized).isEqualTo(mb);
+  }
+
+  private static MethodBehavior newMethodBehavior(String signature) {
+    return new MethodBehavior(signature, false);
   }
 }

@@ -126,14 +126,14 @@ class MethodBehaviorTest {
 
   @Test
   void test_reducing_of_yields_on_arguments() {
-    MethodBehavior mb = new MethodBehavior("foo(Ljava/lang/Object;)V");
+    MethodBehavior mb = newMethodBehavior("foo(Ljava/lang/Object;)V");
     addYield(mb, null, ObjectConstraint.NOT_NULL);
     addYield(mb, null, ObjectConstraint.NULL);
     mb.completed();
     assertThat(mb.yields()).hasSize(1);
     assertThat(mb.yields().get(0).parametersConstraints).contains(ConstraintsByDomain.empty());
 
-    mb = new MethodBehavior("foo(Z)V");
+    mb = newMethodBehavior("foo(Z)V");
     addYield(mb, null, BooleanConstraint.TRUE);
     addYield(mb, null, BooleanConstraint.FALSE);
     mb.completed();
@@ -143,14 +143,14 @@ class MethodBehaviorTest {
 
   @Test
   void result_with_boolean_constraint_should_be_reduced() {
-    MethodBehavior mb = new MethodBehavior("foo()Z");
+    MethodBehavior mb = newMethodBehavior("foo()Z");
     addYield(mb, BooleanConstraint.TRUE);
     addYield(mb, BooleanConstraint.FALSE);
     mb.completed();
     assertThat(mb.yields()).hasSize(1);
     assertThat(((HappyPathYield) mb.yields().get(0)).resultConstraint()).isNull();
 
-    mb = new MethodBehavior("foo()Z");
+    mb = newMethodBehavior("foo()Z");
     addYield(mb, BooleanConstraint.TRUE, ObjectConstraint.NULL);
     addYield(mb, BooleanConstraint.FALSE, ObjectConstraint.NOT_NULL);
     mb.completed();
@@ -161,7 +161,7 @@ class MethodBehaviorTest {
 
   @Test
   void result_with_unreducible_constraint_should_not_be_reduced() {
-    MethodBehavior mb = new MethodBehavior("foo()Ljava/lang/Object;");
+    MethodBehavior mb = newMethodBehavior("foo()Ljava/lang/Object;");
     addYield(mb, ObjectConstraint.NOT_NULL);
     addYield(mb, ObjectConstraint.NULL);
     mb.completed();
@@ -172,21 +172,21 @@ class MethodBehaviorTest {
 
   @Test
   void equality() {
-    MethodBehavior mb = new MethodBehavior("foo()Ljava/lang/Object;");
+    MethodBehavior mb = newMethodBehavior("foo()Ljava/lang/Object;");
     addYield(mb, ObjectConstraint.NOT_NULL);
     addYield(mb, ObjectConstraint.NULL);
 
-    MethodBehavior sameYields = new MethodBehavior("foo()Ljava/lang/Object;");
+    MethodBehavior sameYields = newMethodBehavior("foo()Ljava/lang/Object;");
     addYield(sameYields, ObjectConstraint.NOT_NULL);
     addYield(sameYields, ObjectConstraint.NULL);
 
-    MethodBehavior differentType = new MethodBehavior("foo()Ljava/lang/Object;") {
+    MethodBehavior differentType = new MethodBehavior("foo()Ljava/lang/Object;", false) {
       private Object o = new Object();
     };
     addYield(differentType, ObjectConstraint.NOT_NULL);
     addYield(differentType, ObjectConstraint.NULL);
 
-    MethodBehavior differentSignature = new MethodBehavior("bar()Ljava/lang/Object;");
+    MethodBehavior differentSignature = newMethodBehavior("bar()Ljava/lang/Object;");
     addYield(differentSignature, ObjectConstraint.NOT_NULL);
     addYield(differentSignature, ObjectConstraint.NULL);
 
@@ -201,18 +201,18 @@ class MethodBehaviorTest {
 
   @Test
   void hashcode() {
-    MethodBehavior mb = new MethodBehavior("foo()Ljava/lang/Object;");
+    MethodBehavior mb = newMethodBehavior("foo()Ljava/lang/Object;");
     addYield(mb, ObjectConstraint.NOT_NULL);
     addYield(mb, ObjectConstraint.NULL);
 
-    MethodBehavior sameSignatureAndYield = new MethodBehavior("foo()Ljava/lang/Object;");
+    MethodBehavior sameSignatureAndYield = newMethodBehavior("foo()Ljava/lang/Object;");
     addYield(sameSignatureAndYield, ObjectConstraint.NOT_NULL);
     addYield(sameSignatureAndYield, ObjectConstraint.NULL);
 
-    MethodBehavior differentYield = new MethodBehavior("foo()Ljava/lang/Object;");
+    MethodBehavior differentYield = newMethodBehavior("foo()Ljava/lang/Object;");
     addYield(differentYield, ObjectConstraint.NULL);
 
-    MethodBehavior differentSignature = new MethodBehavior("bar()Ljava/lang/Object;");
+    MethodBehavior differentSignature = newMethodBehavior("bar()Ljava/lang/Object;");
     addYield(differentSignature, ObjectConstraint.NOT_NULL);
     addYield(differentSignature, ObjectConstraint.NULL);
 
@@ -225,7 +225,7 @@ class MethodBehaviorTest {
   @Test
   void to_String_display_number_of_yields() {
     String signature = "foo()Ljava/lang/Object;";
-    MethodBehavior mb1 = new MethodBehavior(signature);
+    MethodBehavior mb1 = newMethodBehavior(signature);
     addYield(mb1, ObjectConstraint.NOT_NULL);
     addYield(mb1, ObjectConstraint.NULL);
 
@@ -256,7 +256,10 @@ class MethodBehaviorTest {
     if (result != null) {
       yield.setResult(-1, ConstraintsByDomain.empty().put(result));
     }
-    mb.yields.add(yield);
+    mb.addYield(yield);
   }
 
+  private static MethodBehavior newMethodBehavior(String signature) {
+    return new MethodBehavior(signature, false);
+  }
 }
