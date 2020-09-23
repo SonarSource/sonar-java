@@ -246,7 +246,7 @@ class JavaAstScannerTest {
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
     sonarComponents.setSensorContext(sensorContextTester);
 
-    VisitorsBridge visitorsBridge = new VisitorsBridge(new ArrayList(), new ArrayList<>(), sonarComponents);
+    VisitorsBridge visitorsBridge = new VisitorsBridge(new ArrayList<>(), new ArrayList<>(), sonarComponents);
 
     JavaAstScanner.scanSingleFileForTests(file, visitorsBridge, new JavaVersionImpl(), sonarComponents);
   }

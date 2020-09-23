@@ -32,7 +32,7 @@ class ExpressionsHelperTest extends JParserTestUtils {
 
   @Test
   void private_constructor() throws Exception {
-    Constructor constructor = ExpressionsHelper.class.getDeclaredConstructor();
+    Constructor<ExpressionsHelper> constructor = ExpressionsHelper.class.getDeclaredConstructor();
     assertThat(constructor.isAccessible()).isFalse();
     constructor.setAccessible(true);
     constructor.newInstance();

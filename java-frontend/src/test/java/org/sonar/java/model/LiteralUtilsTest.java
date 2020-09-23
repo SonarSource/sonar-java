@@ -96,7 +96,7 @@ class LiteralUtilsTest {
 
   @Test
   void private_constructor() throws Exception {
-    Constructor constructor = LiteralUtils.class.getDeclaredConstructor();
+    Constructor<LiteralUtils> constructor = LiteralUtils.class.getDeclaredConstructor();
     assertThat(constructor.isAccessible()).isFalse();
     // call for coverage
     constructor.setAccessible(true);

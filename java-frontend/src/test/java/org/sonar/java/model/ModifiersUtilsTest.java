@@ -36,7 +36,7 @@ class ModifiersUtilsTest {
   @Test
   void private_constructor() throws Exception {
     assertThat(isFinal(ModifiersUtils.class.getModifiers())).isTrue();
-    Constructor constructor = ModifiersUtils.class.getDeclaredConstructor();
+    Constructor<ModifiersUtils> constructor = ModifiersUtils.class.getDeclaredConstructor();
     assertThat(isPrivate(constructor.getModifiers())).isTrue();
     assertThat(constructor.isAccessible()).isFalse();
     constructor.setAccessible(true);

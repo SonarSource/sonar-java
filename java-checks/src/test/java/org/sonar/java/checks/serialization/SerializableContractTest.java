@@ -29,7 +29,7 @@ class SerializableContractTest {
 
   @Test
   void private_constructor() throws Exception {
-    Constructor constructor = SerializableContract.class.getDeclaredConstructor();
+    Constructor<SerializableContract> constructor = SerializableContract.class.getDeclaredConstructor();
     assertThat(constructor.isAccessible()).isFalse();
     constructor.setAccessible(true);
     constructor.newInstance();
