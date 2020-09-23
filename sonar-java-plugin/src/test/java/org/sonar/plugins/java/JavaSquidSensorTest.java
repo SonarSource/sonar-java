@@ -154,38 +154,6 @@ class JavaSquidSensorTest {
     return sonarComponents;
   }
 
-  private SensorContextTester createParseErrorContext() throws IOException {
-    File file = new File("src/test/files/ParseError.java");
-    SensorContextTester context = SensorContextTester.create(file.getParentFile().getAbsoluteFile());
-
-    DefaultInputFile defaultFile = new TestInputFileBuilder(file.getParentFile().getPath(), file.getName())
-      .setLanguage("java")
-      .initMetadata(new String(Files.readAllBytes(file.getAbsoluteFile().toPath()), StandardCharsets.UTF_8))
-      .setCharset(StandardCharsets.UTF_8)
-      .build();
-    context.fileSystem().add(defaultFile);
-    return context;
-  }
-
-  private void executeJavaSquidSensor(SensorContextTester context) {
-
-    context.setRuntime(SonarVersion.SQ_79_RUNTIME);
-    // Mock visitor for metrics.
-    FileLinesContext fileLinesContext = mock(FileLinesContext.class);
-    FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
-    when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
-
-    DefaultFileSystem fs = context.fileSystem().setWorkDir(tmp.getRoot().toPath());
-    JavaClasspath javaClasspath = mock(JavaClasspath.class);
-    JavaTestClasspath javaTestClasspath = mock(JavaTestClasspath.class);
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null);
-    DefaultJavaResourceLocator javaResourceLocator = mock(DefaultJavaResourceLocator.class);
-    NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
-
-    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, new MapSettings().asConfig(), noSonarFilter, null);
-    jss.execute(context);
-  }
-
   @Test
   void should_invoke_visitors_on_generated_code() throws Exception {
     Path base = tmp.newFolder().toPath();
