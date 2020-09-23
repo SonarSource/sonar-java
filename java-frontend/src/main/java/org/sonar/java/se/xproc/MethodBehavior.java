@@ -48,7 +48,7 @@ public class MethodBehavior {
   private boolean varArgs;
   private final int arity;
 
-  final Set<MethodYield> yields;
+  private final Set<MethodYield> yields;
   private final List<SymbolicValue> parameters;
   private final String signature;
   private boolean complete = false;
@@ -62,10 +62,6 @@ public class MethodBehavior {
     this.varArgs = varArgs;
     this.arity = SignatureUtils.numberOfArguments(signature);
     this.declaredExceptions = Collections.emptyList();
-  }
-
-  public MethodBehavior(String signature) {
-    this(signature, false);
   }
 
   public void addYield(MethodYield yield) {
