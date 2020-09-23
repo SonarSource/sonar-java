@@ -38,7 +38,7 @@ class PCollectionsTest {
   @Test
   void private_constructor() throws Exception {
     assertThat(Modifier.isFinal(PCollections.class.getModifiers())).isTrue();
-    Constructor constructor = PCollections.class.getDeclaredConstructor();
+    Constructor<PCollections> constructor = PCollections.class.getDeclaredConstructor();
     assertThat(Modifier.isPrivate(constructor.getModifiers())).isTrue();
     assertThat(constructor.isAccessible()).isFalse();
     constructor.setAccessible(true);
