@@ -22,6 +22,8 @@ package org.sonar.java.regex;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.java.regex.ast.FlagSet;
+import org.sonar.java.regex.ast.OpeningQuote;
+import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.java.regex.ast.RegexTree;
 
 public class RegexParseResult {
@@ -60,4 +62,12 @@ public class RegexParseResult {
   public boolean containsComments() {
     return containsComments;
   }
+
+  /**
+   * Returns a syntax element representing the first opening quote of the string literal(s) making up the regex
+   */
+  public RegexSyntaxElement openingQuote() {
+    return new OpeningQuote(result.getSource());
+  }
+
 }

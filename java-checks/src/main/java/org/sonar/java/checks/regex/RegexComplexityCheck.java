@@ -185,13 +185,8 @@ public class RegexComplexityCheck extends AbstractRegexCheck {
 
     List<RegexIssueLocation> components = new ArrayList<>();
 
-    private RegexSyntaxElement firstComponent = null;
-
     private void increaseComplexity(RegexSyntaxElement syntaxElement, int increment) {
       complexity += increment;
-      if (firstComponent == null) {
-        firstComponent = syntaxElement;
-      }
       String message = "+" + increment;
       if (increment > 1) {
         message += " (incl " + (increment - 1) + " for nesting)";
@@ -277,7 +272,7 @@ public class RegexComplexityCheck extends AbstractRegexCheck {
     @Override
     protected void after(RegexParseResult regexParseResult) {
       if (complexity > max) {
-        reportIssue(firstComponent, String.format(MESSAGE, complexity, max), complexity - max , components);
+        reportIssue(regexParseResult.openingQuote(), String.format(MESSAGE, complexity, max), complexity - max , components);
       }
     }
   }
