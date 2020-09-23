@@ -328,15 +328,10 @@ public class ProgramState {
     return addConstraints(sv, newConstraintForSv);
   }
 
-  @VisibleForTesting
-  public ProgramState put(int index, SymbolicValue value) {
-    SymbolicValue sv = valuesByIndex.get(index);
-    if(sv == null || sv != value) {
-      return new ProgramState(values, valuesByIndex.put(index, value), references, constraints, visitedPoints, stack, exitSymbolicValue);
-    }
-    return this;
-  }
-
+  /**
+   * To be used only by the ExplodedGraphWalker only, when manipulating program states.
+   * Only made 'public' because of some method yield tests.
+   */
   @VisibleForTesting
   public ProgramState put(Symbol symbol, SymbolicValue value) {
     if (symbol.isUnknown() || isVolatileField(symbol)) {

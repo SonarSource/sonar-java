@@ -57,7 +57,7 @@ public class ExceptionalYield extends MethodYield {
       .distinct();
   }
 
-  public void setExceptionType(String exceptionType) {
+  public void setExceptionType(@Nullable String exceptionType) {
     this.exceptionType = exceptionType;
   }
 
