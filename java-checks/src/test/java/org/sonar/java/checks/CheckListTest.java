@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.common.reflect.ClassPath;
@@ -183,7 +182,7 @@ class CheckListTest {
           Class<?> aClass = Class.forName("org.sonar.java.checks." + className);
           assertThat(checks).as(className + " is not declared in CheckList").contains(aClass);
         } catch (ClassNotFoundException e) {
-          Throwables.propagate(e);
+          throw new IllegalStateException(e);
         }
       }
     }
