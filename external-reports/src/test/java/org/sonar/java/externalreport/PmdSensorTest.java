@@ -54,7 +54,7 @@ class PmdSensorTest {
   private static final Path PROJECT_DIR = Paths.get("src", "test", "resources", "pmd");
   private static final String PROJECT_ID = "pmd-test";
 
-  private static PmdSensor sensor = new PmdSensor();
+  private static final PmdSensor sensor = new PmdSensor();
 
   @Rule
   public LogTester logTester = new LogTester();
@@ -141,42 +141,48 @@ class PmdSensorTest {
       .contains("invalid-text-range.xml");
   }
 
-
   @Test
   void issues() throws IOException {
     List<ExternalIssue> externalIssues = execute("pmd-report.xml");
     assertThat(externalIssues).hasSize(3);
 
     ExternalIssue first = externalIssues.get(0);
-    assertThat(first.primaryLocation().inputComponent().key()).isEqualTo(PROJECT_ID + ":file1.java");
-    assertThat(first.engineId()).isEqualTo("pmd");
-    assertThat(first.ruleId()).isEqualTo("UnusedFormalParameter");
-    assertThat(first.ruleKey().rule()).isEqualTo("UnusedFormalParameter");
-    assertThat(first.type()).isEqualTo(RuleType.CODE_SMELL);
-    assertThat(first.severity()).isEqualTo(Severity.MAJOR);
-    assertThat(first.primaryLocation().message()).isEqualTo("Avoid unused constructor parameters such as 'arg2'.");
-    assertThat(first.primaryLocation().textRange()).isEqualTo(
-      new DefaultTextRange(new DefaultTextPointer(3, 34), new DefaultTextPointer(3, 38)));
-    assertThat(first.remediationEffort()).isEqualTo(5);
+
+    ExternalIssueAssert.assertThat(first)
+      .hasFileName(PROJECT_ID + ":file1.java")
+      .hasEngineId("pmd")
+      .hasRuleId("UnusedFormalParameter")
+      .hasRuleKey("UnusedFormalParameter")
+      .hasRuleType(RuleType.CODE_SMELL)
+      .hasSeverity(Severity.MAJOR)
+      .hasMessage("Avoid unused constructor parameters such as 'arg2'.")
+      .hasTextRange(new DefaultTextRange(new DefaultTextPointer(3, 34), new DefaultTextPointer(3, 38)))
+      .hasRemediationEffort(5)
+      .verify();
 
     ExternalIssue second = externalIssues.get(1);
-    assertThat(second.primaryLocation().inputComponent().key()).isEqualTo(PROJECT_ID + ":file1.java");
-    assertThat(second.ruleKey().rule()).isEqualTo("UnusedLocalVariable");
-    assertThat(second.type()).isEqualTo(RuleType.CODE_SMELL);
-    assertThat(second.severity()).isEqualTo(Severity.MAJOR);
-    assertThat(second.primaryLocation().message()).isEqualTo("Avoid unused local variables such as 'x'.");
-    assertThat(second.primaryLocation().textRange()).isEqualTo(
-      new DefaultTextRange(new DefaultTextPointer(4, 8), new DefaultTextPointer(5, 10)));
-    assertThat(second.remediationEffort()).isEqualTo(5);
+
+    ExternalIssueAssert.assertThat(second)
+      .hasFileName(PROJECT_ID + ":file1.java")
+      .hasRuleKey("UnusedLocalVariable")
+      .hasRuleType(RuleType.CODE_SMELL)
+      .hasSeverity(Severity.MAJOR)
+      .hasMessage("Avoid unused local variables such as 'x'.")
+      .hasTextRange(new DefaultTextRange(new DefaultTextPointer(4, 8), new DefaultTextPointer(5, 10)))
+      .hasRemediationEffort(5)
+      .verify();
 
     ExternalIssue third = externalIssues.get(2);
-    assertThat(third.primaryLocation().inputComponent().key()).isEqualTo(PROJECT_ID + ":file2.java");
-    assertThat(third.ruleKey().rule()).isEqualTo("UnusedPrivateMethod");
-    assertThat(third.type()).isEqualTo(RuleType.CODE_SMELL);
-    assertThat(third.severity()).isEqualTo(Severity.CRITICAL);
-    assertThat(third.primaryLocation().message()).isEqualTo("Avoid unused private methods such as 'privateMethod()'.");
-    assertThat(third.primaryLocation().textRange().start().line()).isEqualTo(5);
-    assertThat(third.remediationEffort()).isEqualTo(5);
+
+    ExternalIssueAssert.assertThat(third)
+      .hasFileName(PROJECT_ID + ":file2.java")
+      .hasRuleKey("UnusedPrivateMethod")
+      .hasRuleType(RuleType.CODE_SMELL)
+      .hasSeverity(Severity.CRITICAL)
+      .hasMessage("Avoid unused private methods such as 'privateMethod()'.")
+      .hasTextRangeStartLine(5)
+      .hasRemediationEffort(5)
+      .verify();
 
     assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.WARN)).containsExactly("No input file found for unknown-file.java. No PMD issue will be imported on this file.");
