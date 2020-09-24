@@ -30,11 +30,28 @@ public class Controller {
     return "Hello from get";
   }
 
-  @RequestMapping(path = "/delete", method = {RequestMethod.GET, RequestMethod.POST}) // Noncompliant [[sc=46;ec=85]] {{Consider narrowing this list of methods to one.}}
+  @RequestMapping(path = "/delete", method = {RequestMethod.GET, RequestMethod.POST}) // Noncompliant [[sc=46;ec=85]] {{Make sure allowing safe and unsafe HTTP methods is safe here.}}
   String delete(@RequestParam("id") String id) {
     return "Hello from delete";
   }
 
+  @RequestMapping(path = "/safe", method = {RequestMethod.GET, RequestMethod.HEAD, RequestMethod.OPTIONS, RequestMethod.TRACE}) // Compliant
+  String safe(@RequestParam("id") String id) {
+    return "safe";
+  }
+
+  @RequestMapping(path = "/unsafe", method = {RequestMethod.DELETE, RequestMethod.PATCH, RequestMethod.POST, RequestMethod.PUT}) // Compliant
+  String unsafe(@RequestParam("id") String id) {
+    return "unsafe";
+  }
+
+  @RequestMapping(path = "/all", method = { // Noncompliant
+    RequestMethod.GET, RequestMethod.HEAD, RequestMethod.OPTIONS, RequestMethod.TRACE,
+    RequestMethod.DELETE, RequestMethod.PATCH, RequestMethod.POST, RequestMethod.PUT
+  })
+  String all(@RequestParam("id") String id) {
+    return "all";
+  }
 }
 
 @RestController

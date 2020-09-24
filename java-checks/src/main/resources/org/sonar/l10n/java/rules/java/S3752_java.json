@@ -1,5 +1,5 @@
 {
-  "title": "\"@RequestMapping\" methods should specify HTTP method",
+  "title": "Allowing both safe and unsafe HTTP methods is security-sensitive",
   "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {

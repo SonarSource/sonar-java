@@ -1,38 +1,46 @@
-<p>A <code>@RequestMapping</code> method handles all matching requests by default. That means that a method you intended only to be
-<code>POST</code>-ed to could also be called by a <code>GET</code>, thereby allowing hackers to call the method inappropriately. For example a
-"transferFunds" method might be invoked like so: <code>&lt;img
-src="http://bank.com/actions/transferFunds?reciepientRouting=000000&amp;receipientAccount=11111111&amp;amount=200.00" width="1"
-height="1"/&gt;</code></p>
-<p>For that reason, you should always explicitly list the single HTTP method with which you expect your <code>@RequestMapping</code> Java method to be
-called. This rule raises an issue when <code>method</code> is missing and when the <code>method</code> parameter is configured with more than one
-verb. Mixing GET and POST verbs can lead to information leakage. It's easier to setup Spring Security’s CSRF protection when there is only one verb
-per <code>@RequestMapping</code>.</p>
-<h2>Noncompliant Code Example</h2>
+<p>An HTTP method is safe when used to perform a read-only operation, such as retrieving information. In contrast, an unsafe HTTP method is used to
+change the state of an application, for instance to update a user's profile on a web application.</p>
+<p>Common safe HTTP methods are GET, HEAD, or OPTIONS.</p>
+<p>Common unsafe HTTP methods are POST, PUT and DELETE.</p>
+<p>Allowing both safe and unsafe HTTP methods to perform a specific operation on a web application could impact its security, for example CSRF
+protections are most of the time only protecting operations performed by unsafe HTTP methods.</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> HTTP methods are not defined at all for a route/controller of the application. </li>
+  <li> Safe HTTP methods are defined and used for a route/controller that can change the state of an application. </li>
+</ul>
+<p>There is a risk if you answered yes to any of those questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>For all the routes/controllers of an application, the authorized HTTP methods should be explicitly defined and safe HTTP methods should only be
+used to perform read-only operations.</p>
+<h2>Sensitive Code Example</h2>
 <pre>
-@RequestMapping("/greet")  // Noncompliant
-public String greet(String greetee) {
+@RequestMapping("/delete_user")  // Sensitive: by default all HTTP methods are allowed
+public String delete1(String username) {
+// state of the application will be changed here
 }
 
-@RequestMapping(path = "/delete", method = {RequestMethod.GET, RequestMethod.POST}) // Noncompliant
-String delete(@RequestParam("id") String id) {
-  return "Hello from delete";
+@RequestMapping(path = "/delete_user", method = {RequestMethod.GET, RequestMethod.POST}) // Sensitive: both safe and unsafe methods are allowed
+String delete2(@RequestParam("id") String id) {
+// state of the application will be changed here
 }
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-  @RequestMapping("/greet", method = GET)
-  public String greet(String greetee) {
-  }
+@RequestMapping("/delete_user", method = RequestMethod.POST)  // Compliant
+public String delete1(String username) {
+// state of the application will be changed here
+}
 
-  @RequestMapping(path = "/delete", method = RequestMethod.GET)
-  String delete(@RequestParam("id") String id) {
-   return "Hello from delete";
-  }
+@RequestMapping(path = "/delete_user", method = RequestMethod.POST) // Compliant
+String delete2(@RequestParam("id") String id) {
+// state of the application will be changed here
+}
 </pre>
 <h2>See</h2>
 <ul>
-  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A6-Security_Misconfiguration">OWASP Top 10 2017 Category A6</a> - Security
-  Misconfiguration </li>
+  <li> <a href="https://owasp.org/www-project-top-ten/OWASP_Top_Ten_2017/Top_10-2017_A5-Broken_Access_Control">OWASP Top 10 2017 Category A5</a> -
+  Broken Access Control </li>
   <li> <a href="https://cwe.mitre.org/data/definitions/352.html">MITRE, CWE-352</a> - Cross-Site Request Forgery (CSRF) </li>
   <li> <a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29">OWASP: Cross-Site Request Forgery</a> </li>
   <li> <a href="https://www.sans.org/top25-software-errors/#cat1">SANS Top 25</a> - Insecure Interaction Between Components </li>
