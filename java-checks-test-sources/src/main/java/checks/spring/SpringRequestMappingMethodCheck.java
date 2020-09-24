@@ -1,4 +1,4 @@
-package files.checks.spring;
+package checks.spring;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/home")
-public class Controller {
+public class SpringRequestMappingMethodCheck {
 
   @RequestMapping("/") // Noncompliant [[sc=4;ec=18]] {{Add a "method" parameter to this "@RequestMapping" annotation.}}
-  String get() {
+  String home() {
     return "Hello from get";
   }
 
@@ -52,50 +52,51 @@ public class Controller {
   String all(@RequestParam("id") String id) {
     return "all";
   }
-}
 
-@RestController
-@RequestMapping(path = "/other", method = RequestMethod.GET)
-public class OtherController {
+  @RestController
+  @RequestMapping(path = "/other", method = RequestMethod.GET)
+  public static class OtherController {
 
-  @RequestMapping("/")
-  String get() {
-    return "Hello from get";
+    @RequestMapping("/")
+    String get() {
+      return "Hello from get";
+    }
+
   }
 
-}
+  public static class DerivedController extends OtherController {
 
-public class DerivedController extends OtherController {
+    @RequestMapping("/")
+    String get() {
+      return "Hello from get";
+    }
 
-  @RequestMapping("/")
-  String get() {
-    return "Hello from get";
   }
 
-}
+  interface X {}
 
-interface X {}
-
-@RequestMapping(path = "/other", method = RequestMethod.GET)
-interface InterfaceController extends X {
-}
-
-@RestController
-public class ControllerImpl implements InterfaceController {
-
-  @RequestMapping("/")
-  String get() {
-    return "Hello from get";
+  @RequestMapping(path = "/other", method = RequestMethod.GET)
+  interface InterfaceController extends X {
   }
 
-}
+  @RestController
+  public static class ControllerImpl implements InterfaceController {
 
-interface Dummy { }
+    @RequestMapping("/")
+    String get() {
+      return "Hello from get";
+    }
 
-public class DummyFoo implements Dummy {
-
-  @RequestMapping(path = "/other") // Noncompliant
-  String get() {
-    return "Hello from get";
   }
+
+  interface Dummy { }
+
+  public static class DummyFoo implements Dummy {
+
+    @RequestMapping(path = "/other") // Noncompliant
+    String get() {
+      return "Hello from get";
+    }
+  }
+
 }
