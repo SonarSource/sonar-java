@@ -21,6 +21,7 @@ package org.sonar.java.externalreport;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.assertj.core.api.AbstractAssert;
 import org.sonar.api.batch.fs.TextRange;
 import org.sonar.api.batch.rule.Severity;
 import org.sonar.api.batch.sensor.issue.ExternalIssue;
@@ -28,26 +29,29 @@ import org.sonar.api.rules.RuleType;
 
 import static org.assertj.core.api.Assertions.fail;
 
-class ExternalIssueAssert {
+public class ExternalIssueAssert extends AbstractAssert<ExternalIssueAssert, ExternalIssueAssert.ExternalIssueData> {
   static ExternalIssueAssert assertThat(ExternalIssue issue) {
-    return new ExternalIssueAssert(issue);
+    return new ExternalIssueAssert(convertToData(issue));
   }
 
-  private final ExternalIssueData actual;
   private final List<String> errorMessages = new ArrayList<>();
 
-  public ExternalIssueAssert(ExternalIssue issue) {
-    this.actual = new ExternalIssueData();
-    actual.fileName = issue.primaryLocation().inputComponent().key();
-    actual.engineId = issue.engineId();
-    actual.ruleId = issue.ruleId();
-    actual.ruleKey = issue.ruleKey().rule();
-    actual.ruleType = issue.type();
-    actual.severity = issue.severity();
-    actual.message = issue.primaryLocation().message();
-    actual.textRange = issue.primaryLocation().textRange();
-    actual.textRangeStartLine = issue.primaryLocation().textRange().start().line();
-    actual.remediationEffort = issue.remediationEffort();
+  public ExternalIssueAssert(ExternalIssueData actual) {
+    super(actual, ExternalIssueAssert.class);
+  }
+  public static ExternalIssueData convertToData(ExternalIssue issue) {
+    ExternalIssueData data = new ExternalIssueData();
+    data.fileName = issue.primaryLocation().inputComponent().key();
+    data.engineId = issue.engineId();
+    data.ruleId = issue.ruleId();
+    data.ruleKey = issue.ruleKey().rule();
+    data.ruleType = issue.type();
+    data.severity = issue.severity();
+    data.message = issue.primaryLocation().message();
+    data.textRange = issue.primaryLocation().textRange();
+    data.textRangeStartLine = issue.primaryLocation().textRange().start().line();
+    data.remediationEffort = issue.remediationEffort();
+    return data;
   }
 
   public ExternalIssueAssert hasFileName(String fileName) {
@@ -126,7 +130,7 @@ class ExternalIssueAssert {
     }
   }
 
-  private static class ExternalIssueData {
+  static class ExternalIssueData {
     private String fileName;
     private String engineId;
     private String ruleId;
