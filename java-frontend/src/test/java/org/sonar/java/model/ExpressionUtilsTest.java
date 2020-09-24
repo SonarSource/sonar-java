@@ -45,6 +45,7 @@ import static java.lang.reflect.Modifier.isPrivate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.sonar.java.model.ExpressionUtils.isInvocationOnVariable;
+import static org.sonar.java.model.assertions.TreeAssert.assertThat;
 
 class ExpressionUtilsTest {
 
@@ -69,10 +70,10 @@ class ExpressionUtilsTest {
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(0);
     ExpressionTree parenthesis = ((ReturnStatementTree) methodTree.block().body().get(0)).expression();
 
-    assertThat(parenthesis.is(Tree.Kind.PARENTHESIZED_EXPRESSION)).isTrue();
+    assertThat(parenthesis).is(Tree.Kind.PARENTHESIZED_EXPRESSION);
     ExpressionTree skipped = ExpressionUtils.skipParentheses(parenthesis);
-    assertThat(skipped.is(Tree.Kind.CONDITIONAL_AND)).isTrue();
-    assertThat(ExpressionUtils.skipParentheses(((BinaryExpressionTree) skipped).leftOperand()).is(Tree.Kind.IDENTIFIER)).isTrue();
+    assertThat(skipped).is(Tree.Kind.CONDITIONAL_AND);
+    assertThat(ExpressionUtils.skipParentheses(((BinaryExpressionTree) skipped).leftOperand())).is(Tree.Kind.IDENTIFIER);
   }
 
   @Test

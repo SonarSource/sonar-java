@@ -27,12 +27,11 @@ import org.sonar.java.model.declaration.EnumConstantTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
-import org.sonar.java.resolve.Symbols;
-
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.model.assertions.SymbolAssert.assertThat;
 
 class JSymbolTest {
 
@@ -42,15 +41,16 @@ class JSymbolTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl constructor = (MethodTreeImpl) c.members().get(0);
     MethodTreeImpl method = (MethodTreeImpl) c.members().get(1);
-    assertThat(cu.sema.typeSymbol(c.typeBinding).name())
-      .isEqualTo(c.symbol().name())
-      .isEqualTo("C");
-    assertThat(cu.sema.methodSymbol(constructor.methodBinding).name())
-      .isEqualTo(constructor.symbol().name())
-      .isEqualTo("<init>");
-    assertThat(cu.sema.methodSymbol(method.methodBinding).name())
-      .isEqualTo(method.symbol().name())
-      .isEqualTo("m");
+
+    assertThat(cu.sema.typeSymbol(c.typeBinding))
+      .hasSameNameAs(c.symbol())
+      .hasName("C");
+    assertThat(cu.sema.methodSymbol(constructor.methodBinding))
+      .hasSameNameAs(constructor.symbol())
+      .hasName("<init>");
+    assertThat(cu.sema.methodSymbol(method.methodBinding))
+      .hasSameNameAs(method.symbol())
+      .hasName("m");
   }
 
   @Test
@@ -63,29 +63,29 @@ class JSymbolTest {
     VariableTreeImpl p = (VariableTreeImpl) m.parameters().get(0);
     ClassTreeImpl c3 = (ClassTreeImpl) m.block().body().get(0);
 
-    assertThat(cu.sema.typeSymbol(c1.typeBinding).owner())
+    assertThat(cu.sema.typeSymbol(c1.typeBinding))
       .as("of top-level class")
-      .isSameAs(cu.sema.packageSymbol(c1.typeBinding.getPackage()));
+      .hasOwner(cu.sema.packageSymbol(c1.typeBinding.getPackage()));
 
-    assertThat(cu.sema.typeSymbol(c2.typeBinding).owner())
+    assertThat(cu.sema.typeSymbol(c2.typeBinding))
       .as("of nested class")
-      .isSameAs(cu.sema.typeSymbol(c1.typeBinding));
+      .hasOwner(cu.sema.typeSymbol(c1.typeBinding));
 
-    assertThat(cu.sema.typeSymbol(c3.typeBinding).owner())
+    assertThat(cu.sema.typeSymbol(c3.typeBinding))
       .as("of local class")
-      .isSameAs(cu.sema.methodSymbol(m.methodBinding));
+      .hasOwner(cu.sema.methodSymbol(m.methodBinding));
 
-    assertThat(cu.sema.methodSymbol(m.methodBinding).owner())
+    assertThat(cu.sema.methodSymbol(m.methodBinding))
       .as("of method")
-      .isSameAs(cu.sema.typeSymbol(c1.typeBinding));
+      .hasOwner(cu.sema.typeSymbol(c1.typeBinding));
 
-    assertThat(cu.sema.variableSymbol(f.variableBinding).owner())
+    assertThat(cu.sema.variableSymbol(f.variableBinding))
       .as("of field")
-      .isSameAs(cu.sema.typeSymbol(c1.typeBinding));
+      .hasOwner(cu.sema.typeSymbol(c1.typeBinding));
 
-    assertThat(cu.sema.variableSymbol(p.variableBinding).owner())
+    assertThat(cu.sema.variableSymbol(p.variableBinding))
       .as("of method parameter")
-      .isSameAs(cu.sema.methodSymbol(m.methodBinding));
+      .hasOwner(cu.sema.methodSymbol(m.methodBinding));
   }
 
   @Test
@@ -98,29 +98,29 @@ class JSymbolTest {
     VariableTreeImpl p = (VariableTreeImpl) m.parameters().get(0);
     ClassTreeImpl c3 = (ClassTreeImpl) m.block().body().get(0);
 
-    assertThat(cu.sema.typeSymbol(c1.typeBinding).enclosingClass())
+    assertThat(cu.sema.typeSymbol(c1.typeBinding))
       .as("of top-level class")
-      .isSameAs(cu.sema.typeSymbol(c1.typeBinding));
+      .hasEnclosingClass(cu.sema.typeSymbol(c1.typeBinding));
 
-    assertThat(cu.sema.typeSymbol(c2.typeBinding).enclosingClass())
+    assertThat(cu.sema.typeSymbol(c2.typeBinding))
       .as("of nested class")
-      .isSameAs(cu.sema.typeSymbol(c1.typeBinding));
+      .hasEnclosingClass(cu.sema.typeSymbol(c1.typeBinding));
 
-    assertThat(cu.sema.typeSymbol(c3.typeBinding).enclosingClass())
+    assertThat(cu.sema.typeSymbol(c3.typeBinding))
       .as("of local class")
-      .isSameAs(cu.sema.typeSymbol(c1.typeBinding));
+      .hasEnclosingClass(cu.sema.typeSymbol(c1.typeBinding));
 
-    assertThat(cu.sema.methodSymbol(m.methodBinding).enclosingClass())
+    assertThat(cu.sema.methodSymbol(m.methodBinding))
       .as("of method")
-      .isSameAs(cu.sema.typeSymbol(c1.typeBinding));
+      .hasEnclosingClass(cu.sema.typeSymbol(c1.typeBinding));
 
-    assertThat(cu.sema.variableSymbol(f.variableBinding).enclosingClass())
+    assertThat(cu.sema.variableSymbol(f.variableBinding))
       .as("of field")
-      .isSameAs(cu.sema.typeSymbol(c1.typeBinding));
+      .hasEnclosingClass(cu.sema.typeSymbol(c1.typeBinding));
 
-    assertThat(cu.sema.variableSymbol(p.variableBinding).enclosingClass())
+    assertThat(cu.sema.variableSymbol(p.variableBinding))
       .as("of method parameter")
-      .isSameAs(cu.sema.typeSymbol(c1.typeBinding));
+      .hasEnclosingClass(cu.sema.typeSymbol(c1.typeBinding));
   }
 
   @Test
@@ -129,12 +129,14 @@ class JSymbolTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     BlockTreeImpl b = (BlockTreeImpl) c.members().get(1);
     VariableTreeImpl v = (VariableTreeImpl) b.body().get(0);
-    assertThat(cu.sema.variableSymbol(v.variableBinding).owner())
-      .isSameAs(cu.sema.typeSymbol(((ClassTreeImpl) v.symbol().owner().declaration()).typeBinding))
-      .isSameAs(cu.sema.typeSymbol(c.typeBinding));
-    assertThat(cu.sema.variableSymbol(v.variableBinding).enclosingClass())
-      .isSameAs(cu.sema.typeSymbol(((ClassTreeImpl) v.symbol().owner().declaration()).typeBinding))
-      .isSameAs(cu.sema.typeSymbol(c.typeBinding));
+
+    assertThat(cu.sema.variableSymbol(v.variableBinding))
+      .hasOwner(cu.sema.typeSymbol(((ClassTreeImpl) v.symbol().owner().declaration()).typeBinding))
+      .hasOwner(cu.sema.typeSymbol(c.typeBinding));
+
+    assertThat(cu.sema.variableSymbol(v.variableBinding))
+      .hasEnclosingClass(cu.sema.typeSymbol(((ClassTreeImpl) v.symbol().owner().declaration()).typeBinding))
+      .hasEnclosingClass(cu.sema.typeSymbol(c.typeBinding));
   }
 
   @Test
@@ -144,18 +146,17 @@ class JSymbolTest {
     VariableTreeImpl field = (VariableTreeImpl) c.members().get(0);
     MethodTreeImpl method = (MethodTreeImpl) c.members().get(1);
 
-    assertThat(cu.sema.typeSymbol(c.typeBinding).owner().type())
-      .isSameAs(c.symbol().owner().type())
-      .isNull();
+    assertThat(cu.sema.typeSymbol(c.typeBinding).owner())
+      .isOfSameTypeAs(c.symbol().owner())
+      .isHavingNullType();
 
-    assertThat(cu.sema.typeSymbol(c.typeBinding).type())
-      .isSameAs(cu.sema.type(c.typeBinding));
+    assertThat(cu.sema.typeSymbol(c.typeBinding))
+      .isOfType(cu.sema.type(c.typeBinding));
 
-    assertThat(cu.sema.variableSymbol(field.variableBinding).type())
-      .isSameAs(cu.sema.type(field.variableBinding.getType()));
+    assertThat(cu.sema.variableSymbol(field.variableBinding))
+      .isOfType(cu.sema.type(field.variableBinding.getType()));
 
-    assertThat(cu.sema.methodSymbol(method.methodBinding).type())
-      .isSameAs(Symbols.unknownType);
+    assertThat(cu.sema.methodSymbol(method.methodBinding)).isOfUnknownType();
   }
 
   @Test
@@ -165,14 +166,14 @@ class JSymbolTest {
     MethodTreeImpl method = (MethodTreeImpl) c.members().get(0);
     VariableTreeImpl variable = (VariableTreeImpl) method.block().body().get(0);
 
-    assertThat(variable.type().symbolType().fullyQualifiedName())
-      .isEqualTo("java.util.ArrayList");
+    assertThat(variable.type().symbolType().symbol())
+      .isOfType("java.util.ArrayList");
 
-    assertThat(variable.symbol().type().fullyQualifiedName())
-      .isEqualTo("java.util.ArrayList");
+    assertThat(variable.symbol())
+      .isOfType("java.util.ArrayList");
 
-    assertThat(cu.sema.variableSymbol(variable.variableBinding).type())
-      .isSameAs(cu.sema.type(variable.variableBinding.getType()));
+    assertThat(cu.sema.variableSymbol(variable.variableBinding))
+      .isOfType(cu.sema.type(variable.variableBinding.getType()));
   }
 
   @Test
@@ -183,16 +184,13 @@ class JSymbolTest {
     VariableTreeImpl field = (VariableTreeImpl) c.members().get(0);
     LambdaExpressionTree lambda = (LambdaExpressionTree) field.initializer();
 
-    assertThat(field.symbol().type().fullyQualifiedName())
-      .isEqualTo("java.util.function.BiFunction");
+    assertThat(field.symbol()).isOfType("java.util.function.BiFunction");
 
     VariableTree x = lambda.parameters().get(0);
-    assertThat(x.symbol().type().fullyQualifiedName())
-      .isEqualTo("java.lang.Long");
+    assertThat(x.symbol()).isOfType("java.lang.Long");
 
     VariableTree y = lambda.parameters().get(1);
-    assertThat(y.symbol().type().fullyQualifiedName())
-      .isEqualTo("java.lang.Boolean");
+    assertThat(y.symbol()).isOfType("java.lang.Boolean");
   }
 
   @Nested

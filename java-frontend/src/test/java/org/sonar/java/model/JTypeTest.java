@@ -40,6 +40,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.sonar.java.model.assertions.TypeAssert.assertThat;
 
 class JTypeTest {
 
@@ -102,9 +103,9 @@ class JTypeTest {
     ExpressionStatementTreeImpl s = (ExpressionStatementTreeImpl) Objects.requireNonNull(m.block()).body().get(0);
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) s.expression());
 
-    assertThat(cu.sema.type(e.typeBinding).typeArguments().toString())
-      .isEqualTo(e.symbolType().typeArguments().toString())
-      .isEqualTo("[Integer, String]");
+    assertThat(cu.sema.type(e.typeBinding).typeArguments())
+      .hasToString(e.symbolType().typeArguments().toString())
+      .hasToString("[Integer, String]");
 
     assertThat(cu.sema.type(c.typeBinding).typeArguments())
       .isEqualTo(c.symbol().type().typeArguments())
@@ -148,12 +149,10 @@ class JTypeTest {
   @ParameterizedTest
   @MethodSource("names")
   void names(String expectedFullyQualifiedName, String expectedName) {
-    JType type = type(expectedFullyQualifiedName);
-    assertThat(type.fullyQualifiedName())
-      .isEqualTo(expectedFullyQualifiedName);
-    assertThat(type.name())
-      .isEqualTo(expectedName);
-    assertThat(type).hasToString(expectedName);
+    assertThat(type(expectedFullyQualifiedName))
+      .is(expectedFullyQualifiedName)
+      .hasName(expectedName)
+      .hasToString(expectedName);
   }
 
   private static Stream<Arguments> names() {
@@ -174,13 +173,12 @@ class JTypeTest {
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) m.returnType());
     JType parameterizedType = cu.sema.type(Objects.requireNonNull(e.typeBinding));
-    assertThat(parameterizedType.name())
-      .isEqualTo(e.symbolType().name())
-      .isEqualTo(cu.sema.typeSymbol(e.typeBinding).name())
-      .isEqualTo("List");
-    assertThat(parameterizedType.fullyQualifiedName())
-      .isEqualTo(e.symbolType().fullyQualifiedName())
-      .isEqualTo("java.util.List");
+
+    assertThat(parameterizedType)
+      .hasSameNameAs(e.symbolType())
+      .hasSameNameAs(cu.sema.typeSymbol(e.typeBinding).type())
+      .is("java.util.List")
+      .hasName("List");
   }
 
   @Test
@@ -190,13 +188,12 @@ class JTypeTest {
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) m.returnType());
     JType typeVariable = cu.sema.type(Objects.requireNonNull(e.typeBinding));
-    assertThat(typeVariable.name())
-      .isEqualTo(e.symbolType().name())
-      .isEqualTo(cu.sema.typeSymbol(e.typeBinding).name())
-      .isEqualTo("T");
-    assertThat(typeVariable.fullyQualifiedName())
-      .isEqualTo(e.symbolType().fullyQualifiedName())
-      .isEqualTo("T");
+    assertThat(typeVariable)
+      .hasSameNameAs(e.symbolType())
+      .hasSameNameAs(cu.sema.typeSymbol(e.typeBinding).type())
+      .hasName("T")
+      .is(e.symbolType().fullyQualifiedName())
+      .is("T");
   }
 
   @Test
@@ -241,35 +238,24 @@ class JTypeTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     ReturnStatementTreeImpl s = (ReturnStatementTreeImpl) Objects.requireNonNull(m.block()).body().get(0);
+
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) s.expression());
-    JType nullType = cu.sema.type(Objects.requireNonNull(e.typeBinding));
-
-    assertThat(nullType.name())
-      .isEqualTo(e.symbolType().name())
-      .isEqualTo("<nulltype>");
-    assertThat(nullType.fullyQualifiedName())
-      .isEqualTo(e.symbolType().fullyQualifiedName())
-      .isEqualTo("<nulltype>");
-    assertThat(nullType.is("<nulltype>"))
-      .isEqualTo(e.symbolType().is("<nulltype>"))
-      .isTrue();
-
-    JType classType = cu.sema.type(Objects.requireNonNull(c.typeBinding));
-    assertThat(nullType.isSubtypeOf(classType))
-      .isSameAs(e.symbolType().isSubtypeOf(c.symbol().type()))
-      .isTrue();
-
     AbstractTypedTree primitive = (AbstractTypedTree) m.parameters().get(0).type();
-    JType primitiveType = cu.sema.type(Objects.requireNonNull(primitive.typeBinding));
-    assertThat(nullType.isSubtypeOf(primitiveType))
-      .isSameAs(e.symbolType().isSubtypeOf(primitive.symbolType()))
-      .isFalse();
-
     AbstractTypedTree array = (AbstractTypedTree) m.parameters().get(1).type();
+
+    JType nullType = cu.sema.type(Objects.requireNonNull(e.typeBinding));
+    JType classType = cu.sema.type(Objects.requireNonNull(c.typeBinding));
+    JType primitiveType = cu.sema.type(Objects.requireNonNull(primitive.typeBinding));
     JType arrayType = cu.sema.type(Objects.requireNonNull(array.typeBinding));
-    assertThat(nullType.isSubtypeOf(arrayType))
-      .isSameAs(e.symbolType().isSubtypeOf(array.symbolType()))
-      .isTrue();
+
+    assertThat(nullType)
+      .hasSameNameAs(e.symbolType())
+      .hasName("<nulltype>")
+      .is(e.symbolType().fullyQualifiedName())
+      .is("<nulltype>")
+      .isSubtypeOf(classType)
+      .isSubtypeOf(arrayType)
+      .isNotSubtypeOf(primitiveType);
   }
 
   @Test
@@ -284,6 +270,7 @@ class JTypeTest {
     JType wildcardType1 = cu.sema.type(Objects.requireNonNull(w1.typeBinding));
     JType wildcardType2 = cu.sema.type(Objects.requireNonNull(w2.typeBinding));
     JType wildcardType3 = cu.sema.type(Objects.requireNonNull(w3.typeBinding));
+
     assertThat(wildcardType1)
       .isEqualTo(wildcardType2)
       .isNotEqualTo(wildcardType3);

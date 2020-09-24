@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.sonar.java.model.assertions.TypeAssert.assertThat;
 import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
 import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitorAndSemantic;
 import static org.sonar.java.se.SETestUtils.getMethodBehavior;
@@ -93,9 +94,10 @@ class ExceptionalCheckBasedYieldTest {
 
     ExceptionalCheckBasedYield seCheckExceptionalYield = (ExceptionalCheckBasedYield) exceptionalYield;
     assertThat(seCheckExceptionalYield.check()).isEqualTo(TestSECheck.class);
-    assertThat(seCheckExceptionalYield.exceptionType(semanticModel)).isNotNull();
-    assertThat(seCheckExceptionalYield.exceptionType(semanticModel).is("java.lang.UnsupportedOperationException")).isTrue();
-    assertThat(seCheckExceptionalYield.exceptionType(semanticModel).isSubtypeOf("java.lang.RuntimeException")).isTrue();
+    assertThat(seCheckExceptionalYield.exceptionType(semanticModel))
+      .isNotNull()
+      .is("java.lang.UnsupportedOperationException")
+      .isSubtypeOf("java.lang.RuntimeException");
     assertThat(seCheckExceptionalYield.generatedByCheck(check)).isTrue();
     assertThat(seCheckExceptionalYield.generatedByCheck(new SECheck() { })).isFalse();
     assertThat(seCheckExceptionalYield.parameterCausingExceptionIndex()).isZero();
