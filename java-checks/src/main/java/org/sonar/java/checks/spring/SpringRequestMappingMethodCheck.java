@@ -19,9 +19,12 @@
  */
 package org.sonar.java.checks.spring;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -29,12 +32,12 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
-import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S3752")
@@ -53,9 +56,9 @@ public class SpringRequestMappingMethodCheck extends IssuableSubscriptionVisitor
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     findRequestMappingAnnotation(classTree.modifiers())
-      .flatMap(SpringRequestMappingMethodCheck::findRequestMethod)
-      .filter(SpringRequestMappingMethodCheck::hasMoreThanOneValue)
-      .ifPresent(assignment -> reportIssue(assignment.expression(), "Consider narrowing this list of methods to one."));
+      .flatMap(SpringRequestMappingMethodCheck::findRequestMethods)
+      .filter(SpringRequestMappingMethodCheck::mixSafeAndUnsafeMethods)
+      .ifPresent(methods -> reportIssue(methods, "Make sure allowing safe and unsafe HTTP methods is safe here."));
 
     classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
@@ -64,13 +67,13 @@ public class SpringRequestMappingMethodCheck extends IssuableSubscriptionVisitor
 
   private void checkMethod(MethodTree method, Symbol.TypeSymbol classSymbol) {
     Optional<AnnotationTree> requestMappingAnnotation = findRequestMappingAnnotation(method.modifiers());
-    Optional<AssignmentExpressionTree> requestMethod = requestMappingAnnotation
-      .flatMap(SpringRequestMappingMethodCheck::findRequestMethod);
+    Optional<ExpressionTree> requestMethods = requestMappingAnnotation
+      .flatMap(SpringRequestMappingMethodCheck::findRequestMethods);
 
-    if (requestMethod.isPresent()) {
-      requestMethod
-        .filter(SpringRequestMappingMethodCheck::hasMoreThanOneValue)
-        .ifPresent(assignment -> reportIssue(assignment.expression(), "Consider narrowing this list of methods to one."));
+    if (requestMethods.isPresent()) {
+      requestMethods
+        .filter(SpringRequestMappingMethodCheck::mixSafeAndUnsafeMethods)
+        .ifPresent(methods -> reportIssue(methods, "Make sure allowing safe and unsafe HTTP methods is safe here."));
     } else if (requestMappingAnnotation.isPresent() && !inheritRequestMethod(classSymbol)) {
       reportIssue(requestMappingAnnotation.get().annotationType(), "Add a \"method\" parameter to this \"@RequestMapping\" annotation.");
     }
@@ -82,30 +85,13 @@ public class SpringRequestMappingMethodCheck extends IssuableSubscriptionVisitor
       .findFirst();
   }
 
-  private static Optional<AssignmentExpressionTree> findRequestMethod(AnnotationTree annotation) {
+  private static Optional<ExpressionTree> findRequestMethods(AnnotationTree annotation) {
     return annotation.arguments().stream()
-      .map(SpringRequestMappingMethodCheck::findRequestMethod)
-      .filter(Optional::isPresent)
-      .map(Optional::get)
+      .filter(argument -> argument.is(Tree.Kind.ASSIGNMENT))
+      .map(AssignmentExpressionTree.class::cast)
+      .filter(assignment -> REQUEST_METHOD.equals(((IdentifierTree) assignment.variable()).name()))
+      .map(AssignmentExpressionTree::expression)
       .findFirst();
-  }
-
-  private static Optional<AssignmentExpressionTree> findRequestMethod(ExpressionTree argument) {
-    if (argument.is(Tree.Kind.ASSIGNMENT)) {
-      AssignmentExpressionTree assignment = (AssignmentExpressionTree) argument;
-      // assignment.variable() in annotation is always a Tree.Kind.IDENTIFIER
-      if (REQUEST_METHOD.equals(((IdentifierTree) assignment.variable()).name())) {
-        return Optional.of(assignment);
-      }
-    }
-    return Optional.empty();
-  }
-
-  private static boolean hasMoreThanOneValue(AssignmentExpressionTree assignment) {
-    if (assignment.expression().is(Tree.Kind.NEW_ARRAY)) {
-      return ((NewArrayTree) assignment.expression()).initializers().size() > 1;
-    }
-    return false;
   }
 
   private static boolean inheritRequestMethod(Symbol.TypeSymbol symbol) {
@@ -124,4 +110,25 @@ public class SpringRequestMappingMethodCheck extends IssuableSubscriptionVisitor
     }
     return false;
   }
+
+  private static boolean mixSafeAndUnsafeMethods(ExpressionTree requestMethodsAssignment) {
+    HttpMethodVisitor visitor = new HttpMethodVisitor();
+    requestMethodsAssignment.accept(visitor);
+    return visitor.hasSafeMethods && visitor.hasUnsafeMethods;
+  }
+
+  private static class HttpMethodVisitor extends BaseTreeVisitor {
+    private static final Set<String> SAFE_METHODS = new HashSet<>(Arrays.asList("GET", "HEAD", "OPTIONS", "TRACE"));
+    private static final Set<String> UNSAFE_METHODS = new HashSet<>(Arrays.asList("DELETE", "PATCH", "POST", "PUT"));
+
+    private boolean hasSafeMethods = false;
+    private boolean hasUnsafeMethods = false;
+
+    @Override
+    public void visitIdentifier(IdentifierTree tree) {
+      hasSafeMethods |= SAFE_METHODS.contains(tree.name());
+      hasUnsafeMethods |= UNSAFE_METHODS.contains(tree.name());
+    }
+  }
+
 }
