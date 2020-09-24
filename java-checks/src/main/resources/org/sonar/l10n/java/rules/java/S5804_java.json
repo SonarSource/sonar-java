@@ -4,7 +4,7 @@
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": null
+    "constantCost": "10min"
   },
   "tags": [
     "cwe",
