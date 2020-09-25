@@ -20,7 +20,6 @@
 package org.sonar.java.checks.security;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.DeprecatedHashAlgorithmCheck;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
@@ -31,11 +30,11 @@ class DataHashingCheckTest {
   void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/security/DeprecatedHashAlgorithmCheck.java"))
-      .withCheck(new DeprecatedHashAlgorithmCheck())
+      .withCheck(new DataHashingCheck())
       .verifyIssues();
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/security/DeprecatedHashAlgorithmCheck.java"))
-      .withCheck(new DeprecatedHashAlgorithmCheck())
+      .withCheck(new DataHashingCheck())
       .withoutSemantic()
       .verifyNoIssues();
   }
