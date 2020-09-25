@@ -143,6 +143,9 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
     .put("sha1Hex", SHA1)
     .put("sha", SHA1)
     .put("shaHex", SHA1)
+    .put("md5Digest", MD5)
+    .put("md5DigestAsHex", MD5)
+    .put("appendMd5DigestAsHex", MD5)
     .build();
 
   @Override
@@ -155,7 +158,8 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
         .addParametersMatcher(JAVA_LANG_STRING)
         .build());
 
-    matchers.add(MethodMatchers.create()
+    matchers
+      .add(MethodMatchers.create()
       .ofTypes("org.apache.commons.codec.digest.DigestUtils")
       .name(ALGORITHM_BY_METHOD_NAME::containsKey)
       .withAnyParameters()
@@ -167,6 +171,13 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
         .names(GET_INSTANCE)
         .addParametersMatcher(JAVA_LANG_STRING)
         .addParametersMatcher(JAVA_LANG_STRING, ANY)
+        .build());
+
+    matchers
+      .add(MethodMatchers.create()
+        .ofTypes("org.springframework.util.DigestUtils")
+        .names("appendMd5DigestAsHex", "md5Digest", "md5DigestAsHex")
+        .withAnyParameters()
         .build());
 
     for (DeprecatedSpringPasswordEncoder pe : DeprecatedSpringPasswordEncoder.values()) {
