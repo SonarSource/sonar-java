@@ -2,6 +2,7 @@ package checks.security;
 
 import java.util.Collection;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.AuthenticationException;
@@ -17,12 +18,18 @@ public class UserEnumerationCheck {
 
     MyUserDetailsService s1 = new MyUserDetailsService();
     UserDetails u1 = s1.loadUserByUsername(username);
+    UserDetails u2 = s1.loadUserByUsername(username());
+
 
     if(u1 == null) {
-      throw new BadCredentialsException(username+" doesn't exist in our database"); // Noncompliant
+      throw new BadCredentialsException(username + " doesn't exist in our database"); // Noncompliant
     }
 
     return "";
+  }
+
+  private String username() {
+    return "username";
   }
 
   public String compliantAuthenticate(String username, String password) throws AuthenticationException {
@@ -30,6 +37,7 @@ public class UserEnumerationCheck {
     try {
       MyUserDetailsService s1 = new MyUserDetailsService();
       user = s1.loadUserByUsername(username);
+      user.new NestedClass();
     } catch (UsernameNotFoundException | DataAccessException e) {
       // Hide this exception reason to not disclose that the username doesn't exist
     }
@@ -45,6 +53,7 @@ public class UserEnumerationCheck {
     daoauth.setUserDetailsService(new MyUserDetailsService());
     daoauth.setPasswordEncoder(new BCryptPasswordEncoder());
     daoauth.setHideUserNotFoundExceptions(false); // Noncompliant {{Make sure allowing user enumeration is safe here.}}
+    throw new UsernameNotFoundException("userName not found"); // Noncompliant
   }
 
   public void compliantConfig() {
@@ -55,6 +64,8 @@ public class UserEnumerationCheck {
     daoauth.setPasswordEncoder(new BCryptPasswordEncoder());
     daoauth.setHideUserNotFoundExceptions(true); // Compliant
     daoauth.setHideUserNotFoundExceptions(b); // Compliant
+
+    throw new AuthenticationCredentialsNotFoundException("username not found"); // Compliant
   }
 
 
@@ -106,5 +117,7 @@ public class UserEnumerationCheck {
     public boolean isEnabled() {
       return false;
     }
+
+    public class NestedClass {}
   }
 }

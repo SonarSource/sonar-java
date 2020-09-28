@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
@@ -30,11 +30,13 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S5804")
 public class UserEnumerationCheck extends IssuableSubscriptionVisitor {
 
+  public static final String MESSAGE = "Make sure allowing user enumeration is safe here.";
   private final MethodMatchers setHideUserMatcher = MethodMatchers.create()
     .ofSubTypes("org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider")
     .names("setHideUserNotFoundExceptions")
@@ -49,21 +51,28 @@ public class UserEnumerationCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.METHOD_INVOCATION);
+    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.THROW_STATEMENT);
   }
 
   @Override
   public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.THROW_STATEMENT)) {
+      ThrowStatementTree throwStatementTree = (ThrowStatementTree) tree;
+      if (throwStatementTree.expression().symbolType().is("org.springframework.security.core.userdetails.UsernameNotFoundException")) {
+        reportIssue(tree, MESSAGE);
+      }
+      return;
+    }
     MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
     ExpressionTree expression = methodInvocationTree.arguments().get(0);
     if (setHideUserMatcher.matches(methodInvocationTree) && isFalseLiteral(expression)) {
-      reportIssue(tree, "Make sure allowing user enumeration is safe here.");
+      reportIssue(tree, MESSAGE);
     }
     if (loadUserMatcher.matches(methodInvocationTree) && expression.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifierTree = (IdentifierTree) expression;
       Optional<IdentifierTree> incompliantUsage = identifierTree.symbol().usages()
         .stream().filter(UserEnumerationCheck::isExceptionArgument).findFirst();
-      incompliantUsage.ifPresent(value -> reportIssue(value, "Make sure allowing user enumeration is safe here."));
+      incompliantUsage.ifPresent(value -> reportIssue(value, MESSAGE));
     }
   }
 
@@ -72,12 +81,12 @@ public class UserEnumerationCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isExceptionArgument(Tree tree) {
-    return checkParentRecursively(tree,3);
+    return checkParentIsThrowable(tree,4);
   }
 
-  private static boolean checkParentRecursively(Tree tree, int attempts) {
+  private static boolean checkParentIsThrowable(Tree tree, int depth) {
     Tree current = tree.parent();
-    while (current != null && attempts > 0) {
+    while (current != null && depth > 0) {
       if (current.is(Tree.Kind.NEW_CLASS)) {
         NewClassTree newClassTree = (NewClassTree) current;
         if (newClassTree.symbolType().isSubtypeOf("java.lang.Throwable")) {
@@ -85,7 +94,7 @@ public class UserEnumerationCheck extends IssuableSubscriptionVisitor {
         }
       }
       current = current.parent();
-      attempts--;
+      depth--;
     }
     return false;
   }
