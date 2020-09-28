@@ -119,6 +119,7 @@ import org.sonar.java.checks.spring.SpringIncompatibleTransactionalCheck;
 import org.sonar.java.checks.spring.SpringRequestMappingMethodCheck;
 import org.sonar.java.checks.spring.SpringScanDefaultPackageCheck;
 import org.sonar.java.checks.spring.SpringSecurityDisableCSRFCheck;
+import org.sonar.java.checks.spring.SpringSessionFixationCheck;
 import org.sonar.java.checks.synchronization.DoubleCheckedLockingCheck;
 import org.sonar.java.checks.synchronization.SynchronizationOnGetClassCheck;
 import org.sonar.java.checks.synchronization.TwoLocksWaitCheck;
@@ -155,9 +156,9 @@ import org.sonar.java.checks.tests.MockingAllMethodsCheck;
 import org.sonar.java.checks.tests.NoTestInTestClassCheck;
 import org.sonar.java.checks.tests.OneExpectedCheckedExceptionCheck;
 import org.sonar.java.checks.tests.OneExpectedRuntimeExceptionCheck;
+import org.sonar.java.checks.tests.ParameterizedTestCheck;
 import org.sonar.java.checks.tests.RandomizedTestDataCheck;
 import org.sonar.java.checks.tests.SpringAssertionsSimplificationCheck;
-import org.sonar.java.checks.tests.ParameterizedTestCheck;
 import org.sonar.java.checks.tests.TestAnnotationWithExpectedExceptionCheck;
 import org.sonar.java.checks.tests.TestsStabilityCheck;
 import org.sonar.java.checks.tests.ThreadSleepInTestsCheck;
@@ -641,6 +642,7 @@ public final class CheckList {
       SpringRequestMappingMethodCheck.class,
       SpringScanDefaultPackageCheck.class,
       SpringSecurityDisableCSRFCheck.class,
+      SpringSessionFixationCheck.class,
       SQLInjectionCheck.class,
       StandardCharsetsConstantsCheck.class,
       StandardFunctionalInterfaceCheck.class,
