@@ -98,15 +98,49 @@ public class AuthorizationsStrongDecisionsCheck {
     }
   }
 
-  // Return something else, but nothing complex, still make sense to recommend returning ACCESS_DENIED, and not own int.
+  abstract class ReturnVariableCompliant implements AccessDecisionVoter {
+    @Override
+    public int vote(Authentication authentication, Object object, Collection collection) { // Compliant
+      int access = ACCESS_DENIED;
+      if(testAccess(authentication, object, collection)) {
+        access = ACCESS_GRANTED;
+      }
+      return access;
+    }
+  }
+
+  abstract class ReturnVariableGranted implements AccessDecisionVoter {
+    @Override
+    public int vote(Authentication authentication, Object object, Collection collection) { // Compliant, FN
+      int access = ACCESS_ABSTAIN;
+      if(testAccess(authentication, object, collection)) {
+        access = ACCESS_GRANTED;
+      }
+      return access;
+    }
+  }
+
+  abstract class ReturnVariableComplex implements AccessDecisionVoter {
+    @Override
+    public int vote(Authentication authentication, Object object, Collection collection) { // Compliant
+      int access = ACCESS_ABSTAIN;
+      if(testAccess(authentication, object, collection)) {
+        access = getVote(authentication);
+      }
+      return access;
+    }
+
+    protected abstract int getVote(Authentication authentication);
+  }
+
+  // Return literals, but nothing complex, still make sense to recommend returning ACCESS_DENIED, and not own int.
   abstract class ReturnSomethingElse implements AccessDecisionVoter {
     @Override
     public int vote(Authentication authentication, Object object, Collection collection) { // Noncompliant
-      int myAccessGranted = -1;
-      if(collection.isEmpty()) {
+      if (collection.isEmpty()) {
         return 1;
       } else if (object.equals("a")) {
-        return myAccessGranted;
+        return -1;
       }
       return ACCESS_GRANTED;
     }
@@ -194,6 +228,36 @@ public class AuthorizationsStrongDecisionsCheck {
     }
   }
 
+  class NonTrivialReturn2 implements PermissionEvaluator {
+
+    @Override
+    public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) { // Compliant
+      boolean hasPermission = true;
+      if (permission.equals("+")) {
+        hasPermission = false;
+      }
+      return hasPermission;
+    }
+
+    @Override
+    public boolean hasPermission(Authentication authentication, Serializable serializable, String s, Object o) {
+      // Compliant, FN, but boolean variable always equals to true will be reported by others rules
+      boolean hasPermission = true;
+      if (s.equals("+")) {
+        hasPermission = true;
+      }
+      return hasPermission;
+    }
+
+    private boolean getPermission(Authentication authentication) {
+      if (authentication.isAuthenticated()) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+
   class ReturnInOtherScope implements PermissionEvaluator {
 
     @Override
@@ -225,6 +289,10 @@ public class AuthorizationsStrongDecisionsCheck {
       }
       return true;
     }
+  }
+
+  boolean testAccess(Authentication authentication, Object object, Collection collection) {
+    return true;
   }
 
 }

@@ -63,10 +63,9 @@ public class AuthorizationsStrongDecisionsCheck extends IssuableSubscriptionVisi
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
     if (ACCESS_DECISION_VOTER_VOTE.matches(methodTree)) {
-      reportNoStrongDecision(methodTree,
-        e -> e.is(Tree.Kind.IDENTIFIER) && "ACCESS_DENIED".equals(((IdentifierTree) e).name()), "vote", "ACCESS_DENIED");
+      reportNoStrongDecision(methodTree, AuthorizationsStrongDecisionsCheck::isStrongVoteDecision, "vote", "ACCESS_DENIED");
     } else if (PERMISSION_EVALUATOR_HAS_PERMISSION.matches(methodTree)) {
-      reportNoStrongDecision(methodTree, e -> e.asConstant(Boolean.class).filter(Boolean.FALSE::equals).isPresent(), "hasPermission", "false");
+      reportNoStrongDecision(methodTree, AuthorizationsStrongDecisionsCheck::isStrongHasPermissionDecision, "hasPermission", "false");
     }
   }
 
@@ -78,10 +77,32 @@ public class AuthorizationsStrongDecisionsCheck extends IssuableSubscriptionVisi
     }
   }
 
+  private static boolean isStrongVoteDecision(ExpressionTree expression) {
+    if (expression instanceof LiteralTree || expression.is(Tree.Kind.UNARY_MINUS, Tree.Kind.UNARY_PLUS)) {
+      // Returning literals (even the value for DENIED) is considered as not strong.
+      return false;
+    } else if (expression.is(Tree.Kind.IDENTIFIER)) {
+      String name = ((IdentifierTree) expression).name();
+      if ("ACCESS_DENIED".equals(name)) {
+        return true;
+      } else if ("ACCESS_GRANTED".equals(name) || "ACCESS_ABSTAIN".equals(name)) {
+        return false;
+      }
+    }
+    // Expression is not a literal or a known identifier, we consider it as strong to avoid FPs.
+    return true;
+  }
+
+  private static boolean isStrongHasPermissionDecision(ExpressionTree expression) {
+    if (expression instanceof LiteralTree) {
+      return expression.asConstant(Boolean.class).filter(Boolean.FALSE::equals).isPresent();
+    }
+    return true;
+  }
+
   private static class ReturnStatementVisitor extends BaseTreeVisitor {
 
     private final Predicate<ExpressionTree> isStrongDecision;
-    private boolean containsComplexReturn = false;
     private boolean takesStrongDecision = false;
 
     ReturnStatementVisitor(Predicate<ExpressionTree> isStrongDecision) {
@@ -89,20 +110,14 @@ public class AuthorizationsStrongDecisionsCheck extends IssuableSubscriptionVisi
     }
 
     public boolean takesStrongDecision() {
-      // We don't compute the return value when the expression is complex (method call, expression),
-      // and consider it as strong decision to avoid FP
-      return takesStrongDecision || containsComplexReturn;
+      return takesStrongDecision;
     }
 
     @Override
     public void visitReturnStatement(ReturnStatementTree tree) {
       ExpressionTree expression = tree.expression();
-      if (expression != null && (expression instanceof LiteralTree || expression.is(Tree.Kind.IDENTIFIER))) {
-        if (isStrongDecision.test(expression)) {
-          takesStrongDecision = true;
-        }
-      } else {
-        containsComplexReturn = true;
+      if (expression != null && isStrongDecision.test(expression)) {
+        takesStrongDecision = true;
       }
     }
 
