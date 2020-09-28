@@ -80,8 +80,6 @@ public class UserEnumerationCheck {
     throw new AuthenticationCredentialsNotFoundException("username not found"); // Compliant
   }
 
-
-
   public static class MyUserDetailsService implements UserDetailsService {
     @Override
     public MyUserDetails loadUserByUsername(String s) throws UsernameNotFoundException {

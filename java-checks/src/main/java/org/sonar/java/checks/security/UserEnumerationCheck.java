@@ -36,17 +36,26 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S5804")
 public class UserEnumerationCheck extends IssuableSubscriptionVisitor {
 
-  public static final String MESSAGE = "Make sure allowing user enumeration is safe here.";
+  private static final String MESSAGE = "Make sure allowing user enumeration is safe here.";
+  private static final String ABSTRACT_USER_DETAILS_AUTHENTICATION_PROVIDER = "org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider";
+  private static final String USER_DETAILS_SERVICE = "org.springframework.security.core.userdetails.UserDetailsService";
+  private static final String USERNAME_NOT_FOUND_EXCEPTION = "org.springframework.security.core.userdetails.UsernameNotFoundException";
+  private static final String HIDE_USER_NOT_FOUND_EXCEPTIONS = "setHideUserNotFoundExceptions";
+  private static final String LOAD_USER_BY_USERNAME = "loadUserByUsername";
+  private static final String BOOLEAN = "boolean";
+  private static final String STRING = "java.lang.String";
+  private static final String THROWABLE = "java.lang.Throwable";
+
   private final MethodMatchers setHideUserMatcher = MethodMatchers.create()
-    .ofSubTypes("org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider")
-    .names("setHideUserNotFoundExceptions")
-    .addParametersMatcher("boolean")
+    .ofSubTypes(ABSTRACT_USER_DETAILS_AUTHENTICATION_PROVIDER)
+    .names(HIDE_USER_NOT_FOUND_EXCEPTIONS)
+    .addParametersMatcher(BOOLEAN)
     .build();
 
   private final MethodMatchers loadUserMatcher = MethodMatchers.create()
-    .ofSubTypes("org.springframework.security.core.userdetails.UserDetailsService")
-    .names("loadUserByUsername")
-    .addParametersMatcher("java.lang.String")
+    .ofSubTypes(USER_DETAILS_SERVICE)
+    .names(LOAD_USER_BY_USERNAME)
+    .addParametersMatcher(STRING)
     .build();
 
   @Override
@@ -57,10 +66,7 @@ public class UserEnumerationCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.THROW_STATEMENT)) {
-      ThrowStatementTree throwStatementTree = (ThrowStatementTree) tree;
-      if (throwStatementTree.expression().symbolType().is("org.springframework.security.core.userdetails.UsernameNotFoundException")) {
-        reportIssue(tree, MESSAGE);
-      }
+      checkThrowUsernameNotFoundException(((ThrowStatementTree) tree));
       return;
     }
 
@@ -69,17 +75,31 @@ public class UserEnumerationCheck extends IssuableSubscriptionVisitor {
     if (arguments.isEmpty()){
       return;
     }
-
     ExpressionTree expression = arguments.get(0);
-    if (setHideUserMatcher.matches(methodInvocationTree) && isFalseLiteral(expression)) {
-      reportIssue(tree, MESSAGE);
-    }
 
+    checkHiddenUserNotFoundException(methodInvocationTree, expression);
+
+    checkLoadUserArgUsedInExceptions(methodInvocationTree, expression);
+  }
+
+  private void checkLoadUserArgUsedInExceptions(MethodInvocationTree methodInvocationTree, ExpressionTree expression) {
     if (loadUserMatcher.matches(methodInvocationTree) && expression.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifierTree = (IdentifierTree) expression;
       identifierTree.symbol().usages()
         .stream().filter(UserEnumerationCheck::checkParentIsThrowable)
         .forEach(value -> reportIssue(value, MESSAGE));
+    }
+  }
+
+  private void checkHiddenUserNotFoundException(MethodInvocationTree methodInvocationTree, ExpressionTree expression) {
+    if (setHideUserMatcher.matches(methodInvocationTree) && isFalseLiteral(expression)) {
+      reportIssue(methodInvocationTree, MESSAGE);
+    }
+  }
+
+  private void checkThrowUsernameNotFoundException(ThrowStatementTree tree) {
+    if (tree.expression().symbolType().is(USERNAME_NOT_FOUND_EXCEPTION)) {
+      reportIssue(tree, MESSAGE);
     }
   }
 
@@ -89,10 +109,10 @@ public class UserEnumerationCheck extends IssuableSubscriptionVisitor {
 
   private static boolean checkParentIsThrowable(Tree tree) {
     Tree current = tree.parent();
-    while ((current instanceof ExpressionTree || current instanceof Arguments)) {
+    while (current instanceof ExpressionTree || current instanceof Arguments) {
       if (current.is(Tree.Kind.NEW_CLASS)) {
         NewClassTree newClassTree = (NewClassTree) current;
-        if (newClassTree.symbolType().isSubtypeOf("java.lang.Throwable")) {
+        if (newClassTree.symbolType().isSubtypeOf(THROWABLE)) {
           return true;
         }
       }
