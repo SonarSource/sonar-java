@@ -1,9 +1,13 @@
-class A {
+package checks;
 
-  A(int a, long l) {}
+import java.util.List;
+
+class CastArithmeticOperandCheck {
+
+  CastArithmeticOperandCheck(int a, long l) {}
 
   void foo() {
-    A a = new A(1 + 2, 1 + 2); // Noncompliant {{Cast one of the operands of this addition operation to a "long".}}
+    CastArithmeticOperandCheck a = new CastArithmeticOperandCheck(1 + 2, 1 + 2); // Noncompliant {{Cast one of the operands of this addition operation to a "long".}}
     long l1 = 1000 * 3600 * 24 * 365; // Noncompliant [[sc=32;ec=33]] {{Cast one of the operands of this multiplication operation to a "long".}}
     l1 += 10 + 2;
     long l2 = 1000L * 3600 * 24 * 365;
@@ -24,7 +28,6 @@ class A {
     floatMethod(1 + 2, 1 + 2f); // Compliant
     foo(); //Compliant
     double tst = 1 | 2; // Compliant
-    unknownMethod(1 + 2); // Compliant
     longMethod(12 / 7, 12 / 7);   // Compliant dividing two ints into and widening into a long can't cause any harm
     double d2  = 1 / 2 / 2 * 0.5; // Noncompliant
   }
@@ -68,5 +71,27 @@ class A {
     java.util.Date date1 = new java.util.Date(2 + 1); // Noncompliant {{Cast one of the operands of this addition operation to a "long".}}
     java.util.Date date2 = new java.util.Date("today"); // Compliant
   }
+
+  double test_nested_class(List<Integer> list) {
+    long sum = list.stream().mapToLong(i -> {
+      return i * i; // Compliant, not a return of the "test_nested_class" scope
+    }).sum();
+    return sum;
+  }
+
+  double test_nested_method() {
+    Nested n = new Nested() {
+      float f() {
+        // Only one issue, no issue for "test_nested_method" scope.
+        return 1 + 2; // Noncompliant {{Cast one of the operands of this addition operation to a "float".}}
+      }
+      int i() {
+        return 1 + 2; // Compliant
+      }
+    };
+    return 1.2;
+  }
+
+  abstract class Nested { }
 }
 
