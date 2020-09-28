@@ -64,6 +64,13 @@ public class RedundantModifierCheck extends IssuableSubscriptionVisitor {
         checkRedundantModifier(modifiers, Modifier.FINAL);
       } else if(member.is(Kind.CONSTRUCTOR) && tree.is(Kind.ENUM)) {
         checkRedundantModifier(((MethodTree) member).modifiers(), Modifier.PRIVATE);
+      } else if (member.is(Kind.CLASS, Kind.INTERFACE) && isInterfaceOrAnnotation(tree)) {
+        ClassTree nested = (ClassTree) member;
+        ModifiersTree modifiers = nested.modifiers();
+        checkRedundantModifier(modifiers, Modifier.PUBLIC);
+        checkRedundantModifier(modifiers, Modifier.STATIC);
+      } else if (member.is(Kind.INTERFACE) && tree.is(Kind.CLASS, Kind.ENUM)) {
+        checkRedundantModifier(((ClassTree) member).modifiers(), Modifier.STATIC);
       }
     }
   }
