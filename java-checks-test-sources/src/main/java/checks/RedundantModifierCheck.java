@@ -1,9 +1,6 @@
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package checks;
 
-interface MyInterface {
+interface RedundantModifierInterface {
   void method1();
   public void method2(); // Noncompliant [[sc=3;ec=9]] {{"public" is redundant in this context.}}
   abstract void method3(); // Noncompliant {{"abstract" is redundant in this context.}}
@@ -13,28 +10,33 @@ interface MyInterface {
   final int field4 = 1; // Noncompliant {{"final" is redundant in this context.}}
 }
 
-public @interface MyAnnotation {
-  String method2();
+public @interface RedundantModifierCheck {
+  String method1();
   public String method2(); // Noncompliant
 }
 
-final class MyClass {
+@interface RedundantModifierAnnotation {
+  String method1();
+  public String method2(); // Noncompliant
+}
+
+final class RedundantModifierClassFinal {
   void method1() {}
   final void method2() {} // Noncompliant
   final int field = 1;
   final class InnerClass {}
 }
 
-class NonFinalClass {
+class RedundantModifierNonFinalClass {
   final void method2() {}
 }
-enum Foo {
-  FoO("");
+enum RedundantModifierFoo {
+  RedundantModifierFoo("");
 
-  private Foo(String s) {} // Noncompliant {{"private" is redundant in this context.}}
+  private RedundantModifierFoo(String s) {} // Noncompliant {{"private" is redundant in this context.}}
 }
-enum Foo2 {
-  FoO("");
+enum RedundantModifierFoo2 {
+  RedundantModifierFoo2("");
 
-  Foo(String s) {}
+  RedundantModifierFoo2(String s) {}
 }
