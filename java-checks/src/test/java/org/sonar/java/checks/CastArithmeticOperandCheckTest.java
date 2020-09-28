@@ -22,12 +22,22 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 class CastArithmeticOperandCheckTest {
+
+  private static final String TEST_FILE_PATH = "checks/CastArithmeticOperandCheck.java";
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/CastArithmeticOperandCheck.java")
+      .onFile(testSourcesPath(TEST_FILE_PATH))
+      .withCheck(new CastArithmeticOperandCheck())
+      .verifyIssues();
+
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath(TEST_FILE_PATH))
       .withCheck(new CastArithmeticOperandCheck())
       .verifyIssues();
   }
@@ -35,7 +45,7 @@ class CastArithmeticOperandCheckTest {
   @Test
   void test_no_semantic() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/CastArithmeticOperandCheck.java")
+      .onFile(testSourcesPath(TEST_FILE_PATH))
       .withCheck(new CastArithmeticOperandCheck())
       .withoutSemantic()
       .verifyNoIssues();

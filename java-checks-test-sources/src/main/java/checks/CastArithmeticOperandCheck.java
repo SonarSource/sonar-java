@@ -1,9 +1,11 @@
-class A {
+package checks;
 
-  A(int a, long l) {}
+class CastArithmeticOperandCheck {
+
+  CastArithmeticOperandCheck(int a, long l) {}
 
   void foo() {
-    A a = new A(1 + 2, 1 + 2); // Noncompliant {{Cast one of the operands of this addition operation to a "long".}}
+    CastArithmeticOperandCheck a = new CastArithmeticOperandCheck(1 + 2, 1 + 2); // Noncompliant {{Cast one of the operands of this addition operation to a "long".}}
     long l1 = 1000 * 3600 * 24 * 365; // Noncompliant [[sc=32;ec=33]] {{Cast one of the operands of this multiplication operation to a "long".}}
     l1 += 10 + 2;
     long l2 = 1000L * 3600 * 24 * 365;
@@ -24,7 +26,6 @@ class A {
     floatMethod(1 + 2, 1 + 2f); // Compliant
     foo(); //Compliant
     double tst = 1 | 2; // Compliant
-    unknownMethod(1 + 2); // Compliant
     longMethod(12 / 7, 12 / 7);   // Compliant dividing two ints into and widening into a long can't cause any harm
     double d2  = 1 / 2 / 2 * 0.5; // Noncompliant
   }
