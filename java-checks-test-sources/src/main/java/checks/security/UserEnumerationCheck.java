@@ -25,11 +25,23 @@ public class UserEnumerationCheck {
       throw new BadCredentialsException(username + " doesn't exist in our database"); // Noncompliant
     }
 
-    return "";
+    throw new RuntimeException(new StringBuffer(username + " doesn't exist in our database").toString()); // Noncompliant
   }
 
   private String username() {
     return "username";
+  }
+
+  public String authenticate2(String username, String password) {
+
+    MyUserDetailsService s1 = new MyUserDetailsService();
+    UserDetails u1 = s1.loadUserByUsername(username);
+
+    if(u1 == null) {
+      throw new RuntimeException(new StringBuffer(username + " doesn't exist in our database").toString()); // Noncompliant
+    }
+
+    return "";
   }
 
   public String compliantAuthenticate(String username, String password) throws AuthenticationException {

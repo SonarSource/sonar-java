@@ -21,10 +21,10 @@ package org.sonar.java.checks.security;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -63,16 +63,23 @@ public class UserEnumerationCheck extends IssuableSubscriptionVisitor {
       }
       return;
     }
+
     MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
-    ExpressionTree expression = methodInvocationTree.arguments().get(0);
+    Arguments arguments = methodInvocationTree.arguments();
+    if (arguments.isEmpty()){
+      return;
+    }
+
+    ExpressionTree expression = arguments.get(0);
     if (setHideUserMatcher.matches(methodInvocationTree) && isFalseLiteral(expression)) {
       reportIssue(tree, MESSAGE);
     }
+
     if (loadUserMatcher.matches(methodInvocationTree) && expression.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifierTree = (IdentifierTree) expression;
-      Optional<IdentifierTree> incompliantUsage = identifierTree.symbol().usages()
-        .stream().filter(UserEnumerationCheck::isExceptionArgument).findFirst();
-      incompliantUsage.ifPresent(value -> reportIssue(value, MESSAGE));
+      identifierTree.symbol().usages()
+        .stream().filter(UserEnumerationCheck::checkParentIsThrowable)
+        .forEach(value -> reportIssue(value, MESSAGE));
     }
   }
 
@@ -80,13 +87,9 @@ public class UserEnumerationCheck extends IssuableSubscriptionVisitor {
     return expression.is(Tree.Kind.BOOLEAN_LITERAL) && !Boolean.parseBoolean(((LiteralTree) expression).value());
   }
 
-  private static boolean isExceptionArgument(Tree tree) {
-    return checkParentIsThrowable(tree,4);
-  }
-
-  private static boolean checkParentIsThrowable(Tree tree, int depth) {
+  private static boolean checkParentIsThrowable(Tree tree) {
     Tree current = tree.parent();
-    while (current != null && depth > 0) {
+    while ((current instanceof ExpressionTree || current instanceof Arguments)) {
       if (current.is(Tree.Kind.NEW_CLASS)) {
         NewClassTree newClassTree = (NewClassTree) current;
         if (newClassTree.symbolType().isSubtypeOf("java.lang.Throwable")) {
@@ -94,7 +97,6 @@ public class UserEnumerationCheck extends IssuableSubscriptionVisitor {
         }
       }
       current = current.parent();
-      depth--;
     }
     return false;
   }
