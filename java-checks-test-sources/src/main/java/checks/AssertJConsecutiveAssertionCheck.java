@@ -263,3 +263,81 @@ class FieldOfField {
   FieldOfField field = new FieldOfField();
   String[] list = new String[1];
 }
+
+class CustomAssertions {
+
+  MyType myType = new MyType();
+
+  @Test
+  void nonCompliantTypeTest1() {
+    assertThat(myType).isNotNull(); // Noncompliant [[secondary=274]]
+    assertThat(myType).isEqualTo(new MyType());
+
+    CustomAssert.assertThat(myType).isFoo(); // Noncompliant [[secondary=277]]
+    CustomAssert.assertThat(myType).isBar();
+  }
+
+  @Test
+  void nonCompliantTypeTest2() {
+    CustomAssert.assertThat(myType).isFoo(); // Noncompliant [[secondary=283,285,286]]
+    CustomAssert.assertThat(myType).isBar();
+
+    assertThat(myType).isNotNull(); // will be included
+    assertThat(myType).isEqualTo(new MyType());
+  }
+
+  @Test
+  void nonCompliantTypeTest3() {
+    CustomAssert.assertThat(myType) // Noncompliant [[secondary=295]]
+      .isFoo()
+      .isBar();
+
+    assertThat(myType)
+      .isNotNull()
+      .isEqualTo(new MyType());
+  }
+
+  @Test
+  void nonCompliantTypeTest4() {
+    assertThat(myType).isNotNull(); // Compliant - mixed, can not be chained
+    CustomAssert.assertThat(myType).isBar(); // Noncompliant [[secondary=304,305]]
+    assertThat(myType).isEqualTo(new MyType());
+    CustomAssert.assertThat(myType).isBar();
+  }
+
+  @Test
+  void compliantTypeTest1() {
+    assertThat(myType)
+      .isNotNull()
+      .isEqualTo(new MyType());
+
+    CustomAssert.assertThat(myType) // can not be chained if written in that order
+      .isFoo()
+      .isBar();
+  }
+
+  @Test
+  void compliantTypeTest2() {
+    CustomAssert.assertThat(myType)
+      .isFoo()
+      .isBar()
+      .isNotNull()
+      .isEqualTo(new MyType());
+  }
+
+  @Test
+  void compliantTypeTest3() {
+    CustomAssert.assertThat(myType).isFoo();
+
+    assertThat(myType);
+  }
+
+  public static class CustomAssert extends org.assertj.core.api.AbstractAssert<CustomAssert, MyType> {
+    private CustomAssert(MyType actual) { super(actual, CustomAssert.class); }
+    public static CustomAssert assertThat(MyType actual) { return new CustomAssert(actual); }
+    public CustomAssert isFoo() { return this; }
+    public CustomAssert isBar() { return this; }
+  }
+
+  public static class MyType { }
+}
