@@ -20,6 +20,9 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -29,7 +32,9 @@ import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -37,11 +42,6 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.Nullable;
-
-import java.util.List;
-import java.util.Map;
 
 @Rule(key = "S2184")
 public class CastArithmeticOperandCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -168,6 +168,16 @@ public class CastArithmeticOperandCheck extends BaseTreeVisitor implements JavaF
     @Override
     public void visitReturnStatement(ReturnStatementTree tree) {
       checkExpression(returnType, tree.expression());
+    }
+
+    @Override
+    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+      // skip lambdas
+    }
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      // skip inner classes
     }
   }
 

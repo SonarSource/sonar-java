@@ -1,5 +1,7 @@
 package checks;
 
+import java.util.List;
+
 class CastArithmeticOperandCheck {
 
   CastArithmeticOperandCheck(int a, long l) {}
@@ -69,5 +71,27 @@ class CastArithmeticOperandCheck {
     java.util.Date date1 = new java.util.Date(2 + 1); // Noncompliant {{Cast one of the operands of this addition operation to a "long".}}
     java.util.Date date2 = new java.util.Date("today"); // Compliant
   }
+
+  double test_nested_class(List<Integer> list) {
+    long sum = list.stream().mapToLong(i -> {
+      return i * i; // Compliant, not a return of the "test_nested_class" scope
+    }).sum();
+    return sum;
+  }
+
+  double test_nested_method() {
+    Nested n = new Nested() {
+      float f() {
+        // Only one issue, no issue for "test_nested_method" scope.
+        return 1 + 2; // Noncompliant {{Cast one of the operands of this addition operation to a "float".}}
+      }
+      int i() {
+        return 1 + 2; // Compliant
+      }
+    };
+    return 1.2;
+  }
+
+  abstract class Nested { }
 }
 
