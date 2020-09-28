@@ -188,7 +188,8 @@ class SyntaxHighlighterVisitorTest {
     scan(inputFile);
 
     String componentKey = inputFile.key();
-    assertThatHasBeenHighlighted(componentKey, 3, 12, 5, 5, TypeOfText.STRING);
+    assertThatHasBeenHighlighted(componentKey, 3, 27, 5, 6, TypeOfText.STRING);
+    assertThatHasBeenHighlighted(componentKey, 8, 12, 10, 8, TypeOfText.STRING);
   }
 
   private void scan(InputFile inputFile) {
