@@ -14,6 +14,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class UserEnumerationCheck {
 
+  public static final boolean MY_CONSTANT = false;
+
   public String authenticate(String username, String password) {
 
     MyUserDetailsService s1 = new MyUserDetailsService();
@@ -41,7 +43,26 @@ public class UserEnumerationCheck {
       throw new RuntimeException(new StringBuffer(username + " doesn't exist in our database").toString()); // Noncompliant
     }
 
+    try {
+      doSomethingThrowingUsernameNotFoundException();
+    } catch (UsernameNotFoundException e) {
+      if (u1 == null) {
+        doSomething();
+      } else {
+        throw e; // Noncompliant
+      }
+
+    }
+
     return "";
+  }
+
+  private void doSomething() {
+    System.out.println("Hello!");
+  }
+
+  private void doSomethingThrowingUsernameNotFoundException() {
+    throw new UsernameNotFoundException(""); // Noncompliant
   }
 
   public String compliantAuthenticate(String username, String password) throws AuthenticationException {
@@ -65,6 +86,9 @@ public class UserEnumerationCheck {
     daoauth.setUserDetailsService(new MyUserDetailsService());
     daoauth.setPasswordEncoder(new BCryptPasswordEncoder());
     daoauth.setHideUserNotFoundExceptions(false); // Noncompliant {{Make sure allowing user enumeration is safe here.}}
+    daoauth.setHideUserNotFoundExceptions(MY_CONSTANT); // Noncompliant {{Make sure allowing user enumeration is safe here.}}
+    boolean variableFalse = false;
+    daoauth.setHideUserNotFoundExceptions(variableFalse); // Compliant, not a constant
     throw new UsernameNotFoundException("userName not found"); // Noncompliant
   }
 
@@ -85,6 +109,26 @@ public class UserEnumerationCheck {
     public MyUserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
       return null;
     }
+  }
+
+  public static class MyUserDetailsService2 implements UserDetailsService {
+    @Override
+    public MyUserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+      throw new UsernameNotFoundException(""); // Compliant
+    }
+  }
+
+
+  public static class MyUserDetailsService3 implements UserDetailsService {
+    @Override
+    public MyUserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+       throwUserNotFoundException();
+       return null;
+    }
+  }
+
+  public static void throwUserNotFoundException() {
+    throw new UsernameNotFoundException(""); // Noncompliant
   }
 
   public static class MyUserDetails implements UserDetails {

@@ -25,10 +25,11 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -46,13 +47,13 @@ public class UserEnumerationCheck extends IssuableSubscriptionVisitor {
   private static final String STRING = "java.lang.String";
   private static final String THROWABLE = "java.lang.Throwable";
 
-  private final MethodMatchers setHideUserMatcher = MethodMatchers.create()
+  private static final MethodMatchers setHideUserMatcher = MethodMatchers.create()
     .ofSubTypes(ABSTRACT_USER_DETAILS_AUTHENTICATION_PROVIDER)
     .names(HIDE_USER_NOT_FOUND_EXCEPTIONS)
     .addParametersMatcher(BOOLEAN)
     .build();
 
-  private final MethodMatchers loadUserMatcher = MethodMatchers.create()
+  private static final MethodMatchers loadUserMatcher = MethodMatchers.create()
     .ofSubTypes(USER_DETAILS_SERVICE)
     .names(LOAD_USER_BY_USERNAME)
     .addParametersMatcher(STRING)
@@ -75,11 +76,10 @@ public class UserEnumerationCheck extends IssuableSubscriptionVisitor {
     if (arguments.isEmpty()){
       return;
     }
-    ExpressionTree expression = arguments.get(0);
+    ExpressionTree firstArgument = arguments.get(0);
 
-    checkHiddenUserNotFoundException(methodInvocationTree, expression);
-
-    checkLoadUserArgUsedInExceptions(methodInvocationTree, expression);
+    checkHiddenUserNotFoundException(methodInvocationTree, firstArgument);
+    checkLoadUserArgUsedInExceptions(methodInvocationTree, firstArgument);
   }
 
   private void checkLoadUserArgUsedInExceptions(MethodInvocationTree methodInvocationTree, ExpressionTree expression) {
@@ -92,32 +92,38 @@ public class UserEnumerationCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkHiddenUserNotFoundException(MethodInvocationTree methodInvocationTree, ExpressionTree expression) {
-    if (setHideUserMatcher.matches(methodInvocationTree) && isFalseLiteral(expression)) {
+    if (setHideUserMatcher.matches(methodInvocationTree) && !expression.asConstant(Boolean.class).orElse(true)) {
       reportIssue(methodInvocationTree, MESSAGE);
     }
   }
 
   private void checkThrowUsernameNotFoundException(ThrowStatementTree tree) {
-    if (tree.expression().symbolType().is(USERNAME_NOT_FOUND_EXCEPTION)) {
-      reportIssue(tree, MESSAGE);
+    if (tree.expression().symbolType().is(USERNAME_NOT_FOUND_EXCEPTION) && !isInsideLoadUserByUserName(tree)) {
+      reportIssue(tree.expression(), MESSAGE);
     }
-  }
-
-  private static boolean isFalseLiteral(ExpressionTree expression) {
-    return expression.is(Tree.Kind.BOOLEAN_LITERAL) && !Boolean.parseBoolean(((LiteralTree) expression).value());
   }
 
   private static boolean checkParentIsThrowable(Tree tree) {
     Tree current = tree.parent();
     while (current instanceof ExpressionTree || current instanceof Arguments) {
-      if (current.is(Tree.Kind.NEW_CLASS)) {
-        NewClassTree newClassTree = (NewClassTree) current;
-        if (newClassTree.symbolType().isSubtypeOf(THROWABLE)) {
-          return true;
-        }
+      if (current.is(Tree.Kind.NEW_CLASS) && ((NewClassTree) current).symbolType().isSubtypeOf(THROWABLE)) {
+        return true;
       }
       current = current.parent();
     }
     return false;
   }
+
+  private static boolean isInsideLoadUserByUserName(Tree tree) {
+    Tree current = tree.parent();
+    while (current instanceof BlockTree || current instanceof MethodTree) {
+      if (current.is(Tree.Kind.METHOD) && loadUserMatcher.matches(((MethodTree) current))) {
+        return true;
+      }
+      current = current.parent();
+    }
+    return false;
+  }
+
+
 }
