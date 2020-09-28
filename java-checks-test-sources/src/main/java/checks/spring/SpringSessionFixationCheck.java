@@ -14,7 +14,7 @@ public class SpringSessionFixationCheck {
 
       http.sessionManagement()
         .sessionFixation()
-          .none(); // Noncompliant [[sc=12;ec=16]] {{Create a new session during user authentication.}}
+          .none(); // Noncompliant [[sc=12;ec=16]] {{Create a new session during user authentication to prevent session fixation attacks.}}
 
       http.sessionManagement()
         .sessionFixation()

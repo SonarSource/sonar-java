@@ -48,7 +48,7 @@ public class SpringSessionFixationCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree methodInvocation) {
-    reportIssue(ExpressionUtils.methodName(methodInvocation), "Create a new session during user authentication.");
+    reportIssue(ExpressionUtils.methodName(methodInvocation), "Create a new session during user authentication to prevent session fixation attacks.");
   }
 
 }
