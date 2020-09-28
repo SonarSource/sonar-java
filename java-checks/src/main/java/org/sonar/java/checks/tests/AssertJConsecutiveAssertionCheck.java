@@ -83,7 +83,7 @@ public class AssertJConsecutiveAssertionCheck extends IssuableSubscriptionVisito
         AssertSubject assertSubject = assertThatInvocation.get();
         if (currentSubject == null) {
           currentSubject = assertSubject;
-        } else if (areEquivalent(currentSubject.arg, assertSubject.arg)) {
+        } else if (assertSubject.hasEquivalentArgument(currentSubject)) {
           equivalentInvocations.add(assertSubject.mit);
         } else {
           reportIssueIfMultipleCalls(currentSubject, equivalentInvocations);
@@ -136,10 +136,6 @@ public class AssertJConsecutiveAssertionCheck extends IssuableSubscriptionVisito
     return Optional.empty();
   }
 
-  private static boolean areEquivalent(@Nullable ExpressionTree e1, ExpressionTree e2) {
-    return SyntacticEquivalence.areEquivalent(e1, e2);
-  }
-
   private void reportIssueIfMultipleCalls(@Nullable AssertSubject assertSubject, List<MethodInvocationTree> equivalentAssertions) {
     if (assertSubject != null && !equivalentAssertions.isEmpty()) {
       reportIssue(ExpressionUtils.methodName(assertSubject.mit),
@@ -156,6 +152,10 @@ public class AssertJConsecutiveAssertionCheck extends IssuableSubscriptionVisito
     AssertSubject(MethodInvocationTree mit, ExpressionTree arg) {
       this.mit = mit;
       this.arg = arg;
+    }
+
+    boolean hasEquivalentArgument(AssertSubject other) {
+      return SyntacticEquivalence.areEquivalent(arg, other.arg);
     }
   }
 
