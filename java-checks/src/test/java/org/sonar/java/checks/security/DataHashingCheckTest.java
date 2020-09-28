@@ -22,18 +22,21 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 class DataHashingCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/security/DataHashingCheck.java")
+      .onFile(testSourcesPath("checks/security/DeprecatedHashAlgorithmCheck.java"))
       .withCheck(new DataHashingCheck())
       .verifyIssues();
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/security/DataHashingCheck.java")
+      .onFile(testSourcesPath("checks/security/DeprecatedHashAlgorithmCheck.java"))
       .withCheck(new DataHashingCheck())
       .withoutSemantic()
       .verifyNoIssues();
   }
+
 }

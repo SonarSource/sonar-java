@@ -1,7 +1,14 @@
+package checks.security;
+
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.Provider;
 import java.util.Properties;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,8 +20,8 @@ import org.springframework.security.crypto.password.StandardPasswordEncoder;
 
 import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 
-class A {
-  void myMethod(String algorithm, Provider provider, Properties props) {
+class HashMethodsCheck {
+  void myMethod(String algorithm, Provider provider, Properties props) throws NoSuchAlgorithmException, NoSuchProviderException {
     MessageDigest md = null;
     md = MessageDigest.getInstance("MD2"); // Noncompliant [[sc=24;ec=35]] {{Use a stronger hashing algorithm than MD2.}}
     md = MessageDigest.getInstance("MD4"); // Noncompliant {{Use a stronger hashing algorithm than MD4.}}
@@ -28,8 +35,8 @@ class A {
     md = MessageDigest.getInstance("RIPEMD160"); // Noncompliant {{Use a stronger hashing algorithm than RIPEMD.}}
     md = MessageDigest.getInstance("HMACRIPEMD160"); // Noncompliant {{Use a stronger hashing algorithm than RIPEMD.}}
     md = MessageDigest.getInstance("SHA-256");
-    md = org.apache.commons.codec.digest.DigestUtils.getDigest("MD2"); // Noncompliant
-    md = org.apache.commons.codec.digest.DigestUtils.getDigest("MD5"); // Noncompliant
+    md = DigestUtils.getDigest("MD2"); // Noncompliant
+    md = DigestUtils.getDigest("MD5"); // Noncompliant
     md = DigestUtils.getDigest("SHA-1"); // Noncompliant
     md = DigestUtils.getDigest("SHA-256");
     md = DigestUtils.getMd5Digest(); // Noncompliant
@@ -70,8 +77,12 @@ class A {
 
 }
 
-class B extends java.io.File {
-  void myMethod() {
+class ExtendedFile extends java.io.File {
+  public ExtendedFile(@NotNull String pathname) {
+    super(pathname);
+  }
+
+  void myMethod() throws NoSuchAlgorithmException {
     MessageDigest md = null;
     md = MessageDigest.getInstance(separator);
   }
@@ -79,13 +90,13 @@ class B extends java.io.File {
 
 class CryptoAPIs {
 
-  void mac() {
+  void mac() throws NoSuchAlgorithmException {
     javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacMD5"); // Noncompliant {{Use a stronger hashing algorithm than MD5.}}
     mac = javax.crypto.Mac.getInstance("HmacSHA1"); // Noncompliant {{Use a stronger hashing algorithm than SHA-1.}}
     mac = javax.crypto.Mac.getInstance("HmacSHA256");
   }
 
-  void signature() {
+  void signature() throws NoSuchAlgorithmException {
     java.security.Signature signature = java.security.Signature.getInstance("SHA1withDSA"); // Noncompliant {{Use a stronger hashing algorithm than SHA-1.}}
     signature = java.security.Signature.getInstance("SHA1withRSA"); // Noncompliant {{Use a stronger hashing algorithm than SHA-1.}}
     signature = java.security.Signature.getInstance("MD2withRSA"); // Noncompliant {{Use a stronger hashing algorithm than MD2.}}
@@ -93,15 +104,15 @@ class CryptoAPIs {
     signature = java.security.Signature.getInstance("SHA256withRSA"); // Compliant
   }
 
-  void keys() {
+  void keys() throws NoSuchAlgorithmException {
     javax.crypto.KeyGenerator keyGenerator = javax.crypto.KeyGenerator.getInstance("HmacSHA1"); // Noncompliant {{Use a stronger hashing algorithm than SHA-1.}}
     keyGenerator = javax.crypto.KeyGenerator.getInstance("HmacSHA256");
     keyGenerator = javax.crypto.KeyGenerator.getInstance("AES");
 
-    javax.crypto.KeyPairGenerator keyPair = java.security.KeyPairGenerator.getInstance("HmacSHA1"); // Noncompliant {{Use a stronger hashing algorithm than SHA-1.}}
+    java.security.KeyPairGenerator keyPair = java.security.KeyPairGenerator.getInstance("HmacSHA1"); // Noncompliant {{Use a stronger hashing algorithm than SHA-1.}}
   }
 
-  void dsa() {
+  void dsa() throws NoSuchAlgorithmException {
     java.security.AlgorithmParameters.getInstance("DSA"); // Noncompliant {{Use a stronger hashing algorithm than DSA.}}
     java.security.AlgorithmParameters.getInstance("DiffieHellman");
     java.security.AlgorithmParameterGenerator.getInstance("DSA"); // Noncompliant {{Use a stronger hashing algorithm than DSA.}}
@@ -127,4 +138,17 @@ class DeprecatedSpring {
     new StandardPasswordEncoder("foo"); // Noncompliant {{Use a stronger hashing algorithm.}}
     new BCryptPasswordEncoder();
   }
+}
+
+class SpringDigestUtils {
+
+  void digestUtils() throws IOException {
+    org.springframework.util.DigestUtils.appendMd5DigestAsHex(new byte[10], new StringBuilder()); // Noncompliant {{Use a stronger hashing algorithm than MD5.}}
+    org.springframework.util.DigestUtils.appendMd5DigestAsHex(new FileInputStream(""), new StringBuilder()); // Noncompliant
+    org.springframework.util.DigestUtils.md5Digest(new byte[10]); // Noncompliant
+    org.springframework.util.DigestUtils.md5Digest(new FileInputStream("")); // Noncompliant {{Use a stronger hashing algorithm than MD5.}}
+    org.springframework.util.DigestUtils.md5DigestAsHex(new byte[10]); // Noncompliant
+    org.springframework.util.DigestUtils.md5DigestAsHex(new FileInputStream("")); // Noncompliant
+  }
+
 }
