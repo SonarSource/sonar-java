@@ -1,5 +1,6 @@
 package checks.security;
 
+import java.util.Arrays;
 import java.util.Collection;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -124,6 +125,29 @@ public class UserEnumerationCheck {
     public MyUserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
        throwUserNotFoundException();
        return null;
+    }
+  }
+
+  public static class MyUserDetailsService4 implements UserDetailsService {
+    @Override
+    public MyUserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+      Arrays.asList("1", "2").stream().map(str -> {
+        return str + "123";
+      });
+
+      if (s.equals("yolo"))
+        return null;
+
+      if (s.equals("yolo"))
+        throw new UsernameNotFoundException(""); // Compliant
+
+      switch(s) {
+        case "admin":
+          throw new UsernameNotFoundException(""); // Compliant
+        case "batman":
+          break;
+      }
+      return null;
     }
   }
 

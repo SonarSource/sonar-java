@@ -19,13 +19,15 @@
  */
 package org.sonar.java.checks.security;
 
+import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
-import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -47,33 +49,50 @@ public class UserEnumerationCheck extends IssuableSubscriptionVisitor {
   private static final String STRING = "java.lang.String";
   private static final String THROWABLE = "java.lang.Throwable";
 
-  private static final MethodMatchers setHideUserMatcher = MethodMatchers.create()
+  private final Deque<MethodTree> stack = new ArrayDeque<>();
+
+  private static final MethodMatchers SET_HIDE_USER_MATCHER = MethodMatchers.create()
     .ofSubTypes(ABSTRACT_USER_DETAILS_AUTHENTICATION_PROVIDER)
     .names(HIDE_USER_NOT_FOUND_EXCEPTIONS)
     .addParametersMatcher(BOOLEAN)
     .build();
 
-  private static final MethodMatchers loadUserMatcher = MethodMatchers.create()
+  private static final MethodMatchers LOAD_USER_MATCHER = MethodMatchers.create()
     .ofSubTypes(USER_DETAILS_SERVICE)
     .names(LOAD_USER_BY_USERNAME)
     .addParametersMatcher(STRING)
     .build();
 
+
+  @Override
+  public void setContext(JavaFileScannerContext context) {
+    super.setContext(context);
+    stack.clear();
+  }
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.THROW_STATEMENT);
+    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.THROW_STATEMENT, Tree.Kind.METHOD);
   }
 
   @Override
   public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.METHOD)) {
+      stack.push(((MethodTree) tree));
+      return;
+    }
+
     if (tree.is(Tree.Kind.THROW_STATEMENT)) {
-      checkThrowUsernameNotFoundException(((ThrowStatementTree) tree));
+      ThrowStatementTree throwStatementTree = (ThrowStatementTree) tree;
+      if (throwStatementTree.expression().symbolType().is(USERNAME_NOT_FOUND_EXCEPTION) && !isInsideLoadUserByUserName()) {
+        reportIssue(throwStatementTree.expression(), MESSAGE);
+      }
       return;
     }
 
     MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
     Arguments arguments = methodInvocationTree.arguments();
-    if (arguments.isEmpty()){
+    if (arguments.isEmpty()) {
       return;
     }
     ExpressionTree firstArgument = arguments.get(0);
@@ -82,8 +101,15 @@ public class UserEnumerationCheck extends IssuableSubscriptionVisitor {
     checkLoadUserArgUsedInExceptions(methodInvocationTree, firstArgument);
   }
 
+  @Override
+  public void leaveNode(Tree tree) {
+    if (tree.is(Tree.Kind.METHOD)) {
+      stack.pop();
+    }
+  }
+
   private void checkLoadUserArgUsedInExceptions(MethodInvocationTree methodInvocationTree, ExpressionTree expression) {
-    if (loadUserMatcher.matches(methodInvocationTree) && expression.is(Tree.Kind.IDENTIFIER)) {
+    if (LOAD_USER_MATCHER.matches(methodInvocationTree) && expression.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifierTree = (IdentifierTree) expression;
       identifierTree.symbol().usages()
         .stream().filter(UserEnumerationCheck::checkParentIsThrowable)
@@ -92,14 +118,8 @@ public class UserEnumerationCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkHiddenUserNotFoundException(MethodInvocationTree methodInvocationTree, ExpressionTree expression) {
-    if (setHideUserMatcher.matches(methodInvocationTree) && !expression.asConstant(Boolean.class).orElse(true)) {
+    if (SET_HIDE_USER_MATCHER.matches(methodInvocationTree) && !expression.asConstant(Boolean.class).orElse(true)) {
       reportIssue(methodInvocationTree, MESSAGE);
-    }
-  }
-
-  private void checkThrowUsernameNotFoundException(ThrowStatementTree tree) {
-    if (tree.expression().symbolType().is(USERNAME_NOT_FOUND_EXCEPTION) && !isInsideLoadUserByUserName(tree)) {
-      reportIssue(tree.expression(), MESSAGE);
     }
   }
 
@@ -114,16 +134,7 @@ public class UserEnumerationCheck extends IssuableSubscriptionVisitor {
     return false;
   }
 
-  private static boolean isInsideLoadUserByUserName(Tree tree) {
-    Tree current = tree.parent();
-    while (current instanceof BlockTree || current instanceof MethodTree) {
-      if (current.is(Tree.Kind.METHOD) && loadUserMatcher.matches(((MethodTree) current))) {
-        return true;
-      }
-      current = current.parent();
-    }
-    return false;
+  private boolean isInsideLoadUserByUserName() {
+    return LOAD_USER_MATCHER.matches(stack.peekFirst());
   }
-
-
 }
