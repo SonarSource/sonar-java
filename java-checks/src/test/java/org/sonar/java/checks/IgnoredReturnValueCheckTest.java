@@ -22,26 +22,37 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 class IgnoredReturnValueCheckTest {
+
+  private static final IgnoredReturnValueCheck CHECK = new IgnoredReturnValueCheck();
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/IgnoredReturnValueCheck.java")
-      .withCheck(new IgnoredReturnValueCheck())
+      .onFile(testSourcesPath("checks/S2201_IgnoredReturnValueCheck.java"))
+      .withCheck(CHECK)
       .verifyIssues();
+
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/IgnoredReturnValueCheckInternalCalls.java")
-      .withCheck(new IgnoredReturnValueCheck())
+      .onFile(nonCompilingTestSourcesPath("checks/S2201_IgnoredReturnValueCheck.java"))
+      .withCheck(CHECK)
+      .verifyIssues();
+
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/S2201_IgnoredReturnValueCheckInternalCalls.java"))
+      .withCheck(CHECK)
       .verifyNoIssues();
   }
 
   @Test
   void java14_switch_expression() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/IgnoredReturnValueCheckJava14.java")
+      .onFile(nonCompilingTestSourcesPath("checks/S2201_IgnoredReturnValueCheckJava14.java"))
       .withJavaVersion(14)
-      .withCheck(new IgnoredReturnValueCheck())
+      .withCheck(CHECK)
       .verifyIssues();
   }
 
