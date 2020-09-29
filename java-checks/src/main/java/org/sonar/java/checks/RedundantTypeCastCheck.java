@@ -53,9 +53,6 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     TypeCastTree typeCastTree = (TypeCastTree) tree;
     Type expressionType = typeCastTree.expression().symbolType();
     if (isPrimitiveWrapperInConditional(expressionType, typeCastTree) || requiredForMemberAccess(typeCastTree)) {
