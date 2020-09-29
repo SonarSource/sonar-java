@@ -30,6 +30,30 @@ the function call is useless and should be dropped or the source code doesn't be
   <li> <code>java.math.BigDecimal</code> </li>
   <li> <code>java.util.Optional</code> </li>
 </ul>
+<p>As well as methods of the following classes:</p>
+<ul>
+  <li> <code>java.util.Collection</code>:
+    <ul>
+      <li> <code>size()</code> </li>
+      <li> <code>isEmpty()</code> </li>
+      <li> <code>contains(...)</code> </li>
+      <li> <code>containsAll(...)</code> </li>
+      <li> <code>iterator()</code> </li>
+      <li> <code>toArray()</code> </li>
+    </ul> </li>
+  <li> <code>java.util.Map</code>:
+    <ul>
+      <li> <code>size()</code> </li>
+      <li> <code>isEmpty()</code> </li>
+      <li> <code>containsKey(...)</code> </li>
+      <li> <code>containsValue(...)</code> </li>
+      <li> <code>get(...)</code> </li>
+      <li> <code>getOrDefault(...)</code> </li>
+      <li> <code>keySet()</code> </li>
+      <li> <code>entrySet()</code> </li>
+      <li> <code>values()</code> </li>
+    </ul> </li>
+</ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public void handle(String command){
