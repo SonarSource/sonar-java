@@ -80,6 +80,23 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
   private static final MethodMatchers STRING_GET_BYTES = MethodMatchers.create()
     .ofTypes(JAVA_LANG_STRING).names("getBytes").addParametersMatcher("java.nio.charset.Charset").build();
 
+  private static final MethodMatchers COLLECTION_METHODS = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofSubTypes("java.util.Collection")
+      .names("size", "isEmpty", "contains", "containsAll", "iterator")
+      .withAnyParameters()
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes("java.util.Collection")
+      .names("toArray")
+      .addWithoutParametersMatcher()
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes("java.util.Map")
+      .names("get", "getOrDefault", "size", "isEmpty", "containsKey", "containsValue", "keySet", "entrySet", "values")
+      .withAnyParameters()
+      .build());
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.EXPRESSION_STATEMENT);
@@ -93,15 +110,19 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
       if (isExcluded(mit)) {
         return;
       }
-      Symbol methodSymbol = mit.symbol();
-      if (!isVoidOrUnknown(mit.symbolType())
-          && isCheckedType(methodSymbol.owner().type())
-          && methodSymbol.isPublic()
-          && !isConstructor(methodSymbol)) {
+      if (shouldUseReturnValue(mit)) {
         IdentifierTree methodName = ExpressionUtils.methodName(mit);
         reportIssue(methodName, "The return value of \"" + methodName.name() + "\" must be used.");
       }
     }
+  }
+
+  private static boolean shouldUseReturnValue(MethodInvocationTree mit) {
+    Symbol symbol = mit.symbol();
+    return !isVoidOrUnknown(mit.symbolType())
+      && !isConstructor(symbol)
+      && symbol.isPublic()
+      && (isCheckedType(symbol.owner().type()) || COLLECTION_METHODS.matches(symbol));
   }
 
   private static boolean isExcluded(MethodInvocationTree mit) {

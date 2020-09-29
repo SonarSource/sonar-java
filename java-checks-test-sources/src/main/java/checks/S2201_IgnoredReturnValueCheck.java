@@ -1,6 +1,7 @@
 package checks;
 
-import java.util.List;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
@@ -15,13 +16,19 @@ import java.time.Period;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.ZonedDateTime;
-import java.math.BigInteger;
-import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 class S2201_IgnoredReturnValueCheck {
   List<String> list;
+  HashSet<String> set;
+  Map<Object, Object> map;
+  HashMap<Object, Object> hashmap;
   void voidMethod() {}
   int intMethod() { return 0; }
   void foo() {
@@ -64,6 +71,30 @@ class S2201_IgnoredReturnValueCheck {
     Character c = Character.valueOf('c');
     c.toChars(0, new char[42], 21); // Compliant
     s.getBytes(java.nio.charset.Charset.forName("UTF-8")); // Noncompliant not within a try/catch
+
+    list.size(); // Noncompliant
+    list.iterator(); // Noncompliant
+    list.contains(new Object()); // Noncompliant
+    list.toArray(); // Noncompliant
+
+    set.containsAll(Collections.singletonList(new Object())); // Noncompliant
+    set.isEmpty(); // Noncompliant
+
+    map.get("yolo"); // Noncompliant
+    map.getOrDefault("yolo", "yes"); // Noncompliant
+    map.size(); // Noncompliant
+    map.isEmpty(); // Noncompliant
+    hashmap.values(); // Noncompliant
+    hashmap.keySet(); // Noncompliant
+    hashmap.entrySet(); // Noncompliant
+    hashmap.containsValue(new Object()); // Noncompliant
+    hashmap.containsKey(new Object()); // Noncompliant
+
+    Object[] arr = new Object[42];
+
+    set.add("hello"); // Compliant
+    list.toArray(arr);
+    map.put(new Object(), null);
   }
 
   private boolean textIsInteger(String textToCheck) {
