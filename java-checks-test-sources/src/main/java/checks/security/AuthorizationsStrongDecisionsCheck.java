@@ -133,6 +133,18 @@ public class AuthorizationsStrongDecisionsCheck {
     protected abstract int getVote(Authentication authentication);
   }
 
+  abstract class ReturnQualifiedName implements AccessDecisionVoter {
+    @Override
+    public int vote(Authentication authentication, Object object, Collection collection) { // Noncompliant
+      if(testAccess(authentication, object, collection)) {
+        return AccessDecisionVoter.ACCESS_GRANTED;
+      } else if (collection.isEmpty()) {
+        return ReturnQualifiedName.ACCESS_ABSTAIN;
+      }
+      return AccessDecisionVoter.ACCESS_ABSTAIN;
+    }
+  }
+
   // Return literals, but nothing complex, still make sense to recommend returning ACCESS_DENIED, and not own int.
   abstract class ReturnSomethingElse implements AccessDecisionVoter {
     @Override
@@ -247,14 +259,6 @@ public class AuthorizationsStrongDecisionsCheck {
         hasPermission = true;
       }
       return hasPermission;
-    }
-
-    private boolean getPermission(Authentication authentication) {
-      if (authentication.isAuthenticated()) {
-        return true;
-      } else {
-        return false;
-      }
     }
   }
 

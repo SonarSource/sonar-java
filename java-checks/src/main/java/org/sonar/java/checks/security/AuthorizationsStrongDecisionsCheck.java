@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -78,6 +79,9 @@ public class AuthorizationsStrongDecisionsCheck extends IssuableSubscriptionVisi
   }
 
   private static boolean isStrongVoteDecision(ExpressionTree expression) {
+    if (expression.is(Tree.Kind.MEMBER_SELECT)) {
+      expression = ((MemberSelectExpressionTree) expression).identifier();
+    }
     if (expression instanceof LiteralTree || expression.is(Tree.Kind.UNARY_MINUS, Tree.Kind.UNARY_PLUS)) {
       // Returning literals (even the value for DENIED) is considered as not strong.
       return false;
