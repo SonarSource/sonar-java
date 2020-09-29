@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
@@ -31,6 +30,8 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+
+import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNullable;
 
 @Rule(key = "S2447")
 public class BooleanMethodReturnCheck extends IssuableSubscriptionVisitor {
@@ -46,15 +47,9 @@ public class BooleanMethodReturnCheck extends IssuableSubscriptionVisitor {
       return;
     }
     MethodTree methodTree = (MethodTree) tree;
-    if (!isAnnotatedWithCheckForNull(methodTree) && returnsBoolean(methodTree)) {
+    if (returnsBoolean(methodTree) && !isAnnotatedNullable(methodTree.symbol().metadata())) {
       methodTree.accept(new ReturnStatementVisitor());
     }
-  }
-
-  private static boolean isAnnotatedWithCheckForNull(MethodTree methodTree) {
-    SymbolMetadata methodMetadata = methodTree.symbol().metadata();
-    return methodMetadata.isAnnotatedWith("javax.annotation.CheckForNull")
-      || methodMetadata.isAnnotatedWith("javax.annotation.Nullable");
   }
 
   private static boolean returnsBoolean(MethodTree methodTree) {

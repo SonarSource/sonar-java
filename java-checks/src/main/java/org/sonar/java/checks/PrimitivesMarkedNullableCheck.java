@@ -21,10 +21,9 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import org.sonar.check.Rule;
+import org.sonar.java.se.NullableAnnotationUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -46,19 +45,10 @@ public final class PrimitivesMarkedNullableCheck extends IssuableSubscriptionVis
     MethodTree methodTree = (MethodTree) tree;
     TypeTree returnType = methodTree.returnType();
     if (returnType.symbolType().isPrimitive()) {
-      findNullableAnnotation(methodTree)
-        .ifPresent(annotation -> reportIssue(returnType, String.format("\"%s\" annotation should not be used on primitive types", annotation)));
+      NullableAnnotationUtils.nullableAnnotation(methodTree.modifiers())
+        .map(annotation -> annotation.annotationType().symbolType().name())
+        .ifPresent(annotation -> reportIssue(returnType, String.format("\"@%s\" annotation should not be used on primitive types", annotation)));
     }
-  }
-
-  private static Optional<String> findNullableAnnotation(MethodTree methodTree) {
-    SymbolMetadata methodMetadata = methodTree.symbol().metadata();
-    if (methodMetadata.isAnnotatedWith("javax.annotation.CheckForNull")) {
-      return Optional.of("@CheckForNull");
-    } else if (methodMetadata.isAnnotatedWith("javax.annotation.Nullable")) {
-      return Optional.of("@Nullable");
-    }
-    return Optional.empty();
   }
 
 }

@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.se.NullableAnnotationUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -44,7 +44,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final List<String> OPTIONAL_CLASSES = Arrays.asList("java.util.Optional", "com.google.common.base.Optional");
-  private static final String NULLABLE = "javax.annotation.Nullable";
 
   private JavaFileScannerContext context;
 
@@ -59,7 +58,7 @@ public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implem
     if (!method.is(Tree.Kind.CONSTRUCTOR) && returnsOptional(method)) {
 
       // check that the method is not annotated with @Nullable
-      checkNullableAnnotation(method.modifiers(), "Methods with an \"Optional\" return type should not be \"@Nullable\".");
+      checkNullableAnnotation(method.modifiers(), "Methods with an \"Optional\" return type should not be \"%s\".");
 
       // check that the method does not return "null"
       method.accept(new ReturnNullVisitor());
@@ -93,7 +92,7 @@ public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implem
   @Override
   public void visitVariable(VariableTree variable) {
     if (isOptionalType(variable.type())) {
-      checkNullableAnnotation(variable.modifiers(), "\"Optional\" variables should not be \"@Nullable\".");
+      checkNullableAnnotation(variable.modifiers(), "\"Optional\" variables should not be \"%s\".");
       ExpressionTree initializer = variable.initializer();
       if (initializer != null && isNull(initializer)) {
         context.reportIssue(this, initializer, "Replace this null literal by an \"Optional\" object.");
@@ -164,15 +163,10 @@ public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implem
     return expression.is(Tree.Kind.NULL_LITERAL);
   }
 
-  private void checkNullableAnnotation(ModifiersTree modifiers, String message) {
-    for (AnnotationTree annotation : modifiers.annotations()) {
-      if (hasNullableAnnotation(annotation)) {
-        context.reportIssue(this, annotation, message);
-      }
-    }
+  private void checkNullableAnnotation(ModifiersTree modifiers, String messageFormat) {
+    NullableAnnotationUtils.nullableAnnotation(modifiers)
+      .ifPresent(annotation -> context.reportIssue(this, annotation,
+        String.format(messageFormat, "@" + annotation.annotationType().symbolType().name())));
   }
 
-  private static boolean hasNullableAnnotation(AnnotationTree annotation) {
-    return annotation.annotationType().symbolType().is(NULLABLE);
-  }
 }

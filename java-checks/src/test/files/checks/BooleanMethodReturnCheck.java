@@ -21,6 +21,11 @@ class A {
   public Boolean foo() {
     return null; // Compliant
   }
+
+  @org.jetbrains.annotations.Nullable
+  public Boolean bar() {
+    return null; // Compliant
+  }
 }
 
 class B {
