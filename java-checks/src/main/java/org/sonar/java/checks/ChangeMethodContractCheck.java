@@ -24,20 +24,16 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.model.JUtils;
+import org.sonar.java.se.NullableAnnotationUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
-import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S2638")
 public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
-
-  private static final String JAVAX_ANNOTATION_CHECK_FOR_NULL = "javax.annotation.CheckForNull";
-  private static final String JAVAX_ANNOTATION_NULLABLE = "javax.annotation.Nullable";
-  private static final String JAVAX_ANNOTATION_NONNULL = "javax.annotation.Nonnull";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -46,9 +42,6 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if(!hasSemantic()) {
-      return;
-    }
     MethodTree methodTree = (MethodTree) tree;
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
     Symbol.MethodSymbol overridee = methodSymbol.overriddenSymbol();
@@ -58,40 +51,27 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkContractChange(MethodTree methodTree, Symbol.MethodSymbol overridee) {
-    if (MethodTreeUtils.isEqualsMethod(methodTree) && methodTree.parameters().get(0).symbol().metadata().isAnnotatedWith(JAVAX_ANNOTATION_NONNULL)) {
-      reportIssue(methodTree.parameters().get(0), "Equals method should accept null parameters and return false.");
+    if (MethodTreeUtils.isEqualsMethod(methodTree)) {
+      NullableAnnotationUtils.nonNullAnnotation(methodTree.parameters().get(0).modifiers())
+        .ifPresent(annotation -> reportIssue(annotation, "Equals method should accept null parameters and return false."));
       return;
     }
     for (int i = 0; i < methodTree.parameters().size(); i++) {
       VariableTree parameter = methodTree.parameters().get(i);
       checkParameter(parameter, JUtils.parameterAnnotations(overridee, i));
     }
-    if (nonNullVsNull(overridee, methodTree.symbol().metadata())) {
-      for (AnnotationTree annotationTree : methodTree.modifiers().annotations()) {
-        if(annotationTree.symbolType().is(JAVAX_ANNOTATION_NULLABLE) || annotationTree.symbolType().is(JAVAX_ANNOTATION_CHECK_FOR_NULL)) {
-          reportIssue(annotationTree, "Remove this \""+ annotationTree.symbolType().name() +"\" annotation to honor the overridden method's contract.");
-        }
-      }
+    if (NullableAnnotationUtils.isAnnotatedNonNull(overridee)) {
+      NullableAnnotationUtils.nullableAnnotation(methodTree.modifiers())
+        .ifPresent(annotation -> reportIssue(annotation, "Remove this \""+ annotation.symbolType().name() +"\" annotation to honor the overridden method's contract."));
     }
   }
 
   private void checkParameter(VariableTree parameter, SymbolMetadata overrideeParamMetadata) {
-    Tree reportTree = parameter;
-    if (nonNullVsNull(parameter.symbol(), overrideeParamMetadata)) {
-      for (AnnotationTree annotationTree : parameter.modifiers().annotations()) {
-        if(annotationTree.symbolType().is(JAVAX_ANNOTATION_NONNULL)) {
-          reportTree = annotationTree;
-        }
-      }
-      reportIssue(reportTree, "Remove this \"Nonnull\" annotation to honor the overridden method's contract.");
+    if (NullableAnnotationUtils.isAnnotatedNullable(overrideeParamMetadata)) {
+      NullableAnnotationUtils.nonNullAnnotation(parameter.modifiers())
+        .ifPresent(annotation -> reportIssue(annotation,
+          "Remove this \"" + annotation.annotationType().symbolType().name() + "\" annotation to honor the overridden method's contract."));
     }
-  }
-
-  private static boolean nonNullVsNull(Symbol sym1, SymbolMetadata metadata2) {
-    return sym1.metadata().isAnnotatedWith(JAVAX_ANNOTATION_NONNULL) &&
-      (metadata2.isAnnotatedWith(JAVAX_ANNOTATION_NULLABLE)
-      || metadata2.isAnnotatedWith(JAVAX_ANNOTATION_CHECK_FOR_NULL));
-
   }
 
 }

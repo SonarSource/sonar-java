@@ -35,12 +35,15 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.Sema;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.MethodTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNonNull;
 import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNullable;
+import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedWithStrongNullness;
 import static org.sonar.java.se.NullableAnnotationUtils.isGloballyAnnotatedParameterNonNull;
 import static org.sonar.java.se.NullableAnnotationUtils.nonNullAnnotation;
+import static org.sonar.java.se.NullableAnnotationUtils.nullableAnnotation;
 
 class NullableAnnotationUtilsTest {
 
@@ -78,6 +81,7 @@ class NullableAnnotationUtilsTest {
 
     assertThat(isAnnotatedNonNull(getSymbol(semanticModel, "org.foo.bar.C", "getStringNullable"))).isFalse();
     assertThat(nonNullAnnotation(getSymbol(semanticModel, "org.foo.bar.C", "getStringNullable"))).isNull();
+    assertThat(nonNullAnnotation(getSymbol(semanticModel, "org.foo.bar.C", "getStringNullable").metadata())).isNull();
 
     semanticModel = getSemanticModel("src/test/files/se/annotations/eclipse/org/foo/foo/Eclipse.java", classPath);
     getMethods(semanticModel, "org.foo.foo.A").forEach(NullableAnnotationUtilsTest::testMethods);
@@ -98,13 +102,16 @@ class NullableAnnotationUtilsTest {
     getMethods(semanticModel, "org.foo.bar.A").forEach(NullableAnnotationUtilsTest::testMethods);
     assertThat(isAnnotatedNonNull(getSymbol(semanticModel, "org.foo.bar.B", "field"))).isFalse();
     assertThat(nonNullAnnotation(getSymbol(semanticModel, "org.foo.bar.B", "field"))).isNull();
+    assertThat(nonNullAnnotation(getSymbol(semanticModel, "org.foo.bar.B", "field").metadata())).isNull();
     assertThat(isAnnotatedNonNull(getSymbol(semanticModel, "org.foo.bar.C", "getStringNullable"))).isFalse();
     assertThat(nonNullAnnotation(getSymbol(semanticModel, "org.foo.bar.C", "getStringNullable"))).isNull();
+    assertThat(nonNullAnnotation(getSymbol(semanticModel, "org.foo.bar.C", "getStringNullable").metadata())).isNull();
 
     semanticModel = getSemanticModel("src/test/files/se/annotations/springframework/org/foo/foo/Spring.java", classPath);
     getMethods(semanticModel, "org.foo.foo.A").forEach(NullableAnnotationUtilsTest::testMethods);
     assertThat(isAnnotatedNonNull(getSymbol(semanticModel, "org.foo.foo.B", "field1"))).isTrue();
     assertThat(nonNullAnnotation(getSymbol(semanticModel, "org.foo.foo.B", "field1"))).isEqualTo("org.springframework.lang.NonNullFields");
+    assertThat(nonNullAnnotation(getSymbol(semanticModel, "org.foo.foo.B", "field1").metadata())).isNull(); // @NonNullFields declared at package level
     assertThat(isAnnotatedNonNull(getSymbol(semanticModel, "org.foo.foo.B", "field2"))).isFalse();
     assertThat(nonNullAnnotation(getSymbol(semanticModel, "org.foo.foo.B", "field2"))).isNull();
   }
@@ -151,6 +158,56 @@ class NullableAnnotationUtilsTest {
       assertThat(isAnnotatedNonNull(s)).as(s.name() + " should be recognized as Nonnull.").isTrue();
       assertThat(isAnnotatedNullable(s.metadata())).as(s.name() + " should NOT be recognized as Nullable.").isFalse();
     });
+
+    assertThat(isAnnotatedNonNull(getSymbol("nullable6"))).isFalse();
+    assertThat(isAnnotatedNonNull(getSymbol("nullable7"))).isFalse();
+  }
+
+  @Test
+  void testNullableAnnotationOnModifiers() {
+    assertThat(nullableAnnotation(getMethodTree("foo").modifiers())).isNotPresent();
+    assertThat(nullableAnnotation(getMethodTree("bar").modifiers())).isNotPresent();
+    assertThat(nullableAnnotation(getMethodTree("nullable1").modifiers()))
+      .hasValueSatisfying(annotation -> assertThat(annotation.annotationType().symbolType().fullyQualifiedName())
+        .isEqualTo("javax.annotation.Nullable"));
+    assertThat(nullableAnnotation(getMethodTree("nullable2").modifiers()))
+      .hasValueSatisfying(annotation -> assertThat(annotation.annotationType().symbolType().fullyQualifiedName())
+        .isEqualTo("javax.annotation.CheckForNull"));
+  }
+
+  @Test
+  void testNonNullAnnotationOnModifiers() {
+    assertThat(nonNullAnnotation(getMethodTree("foo").modifiers())).isNotPresent();
+    assertThat(nonNullAnnotation(getMethodTree("bar").modifiers())).isNotPresent();
+    assertThat(nonNullAnnotation(getMethodTree("nullable1").modifiers())).isNotPresent();
+    assertThat(nonNullAnnotation(getMethodTree("nullable6").modifiers())).isNotPresent();
+    assertThat(nonNullAnnotation(getMethodTree("nonnull1").modifiers()))
+      .hasValueSatisfying(annotation -> assertThat(annotation.annotationType().symbolType().fullyQualifiedName())
+        .isEqualTo("javax.annotation.Nonnull"));
+  }
+
+  @Test
+  void testNonNullAnnotationOnMetadata() {
+    assertThat(nonNullAnnotation(getSymbol("nullable1").metadata())).isNull();
+    assertThat(nonNullAnnotation(getSymbol("nullable6").metadata())).isNull();
+    assertThat(nonNullAnnotation(getSymbol("nonnull1").metadata())).isEqualTo("javax.annotation.Nonnull");
+  }
+
+  @Test
+  void testNonNullAnnotationOnSymbol() {
+    assertThat(nonNullAnnotation(getSymbol("nullable1"))).isNull();
+    assertThat(nonNullAnnotation(getSymbol("nullable6"))).isNull();
+    assertThat(nonNullAnnotation(getSymbol("nonnull1"))).isEqualTo("javax.annotation.Nonnull");
+  }
+
+  @Test
+  void testStrongNullness() {
+    assertThat(isAnnotatedWithStrongNullness(getSymbol("nullable1").metadata())).isFalse();
+    assertThat(isAnnotatedWithStrongNullness(getSymbol("nullable2").metadata())).isTrue();
+  }
+
+  private static MethodTree getMethodTree(String name) {
+    return ((MethodTree) getSymbol(name).declaration());
   }
 
   private static Symbol getSymbol(String name) {

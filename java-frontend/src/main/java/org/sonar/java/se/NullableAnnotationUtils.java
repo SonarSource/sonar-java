@@ -32,9 +32,12 @@ import javax.annotation.CheckForNull;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationInstance;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -54,48 +57,93 @@ public final class NullableAnnotationUtils {
    */
   private static final Set<String> STRONG_NULLABLE_ANNOTATIONS = ImmutableSet.of(
     "javax.annotation.CheckForNull",
+    "edu.umd.cs.findbugs.annotations.CheckForNull",
+    "org.netbeans.api.annotations.common.CheckForNull",
     // Despite the name, Spring Nullable is meant to be used as CheckForNull
     "org.springframework.lang.Nullable");
 
   private static final Set<String> NULLABLE_ANNOTATIONS = new ImmutableSet.Builder<String>()
+    .add("android.annotation.Nullable")
     .add("android.support.annotation.Nullable")
     .add("androidx.annotation.Nullable")
+    .add("com.sun.istack.internal.Nullable")
     .add("edu.umd.cs.findbugs.annotations.Nullable")
+    .add("io.reactivex.annotations.Nullable")
+    .add("io.reactivex.rxjava3.annotations.Nullable")
     .add("javax.annotation.Nullable")
-    .add("org.eclipse.jdt.annotation.Nullable")
-    .add("org.jetbrains.annotations.Nullable")
-    .add("org.checkerframework.checker.nullness.qual.Nullable")
     .add("org.checkerframework.checker.nullness.compatqual.NullableDecl")
+    .add("org.checkerframework.checker.nullness.compatqual.NullableType")
+    .add("org.checkerframework.checker.nullness.qual.Nullable")
+    .add("org.eclipse.jdt.annotation.Nullable")
+    .add("org.eclipse.jgit.annotations.Nullable")
+    .add("org.jetbrains.annotations.Nullable")
+    .add("org.jmlspecs.annotation.Nullable")
+    .add("org.netbeans.api.annotations.common.NullAllowed")
+    .add("org.netbeans.api.annotations.common.NullUnknown")
     .addAll(STRONG_NULLABLE_ANNOTATIONS)
     .build();
 
   private static final Set<String> NONNULL_ANNOTATIONS = ImmutableSet.of(
+    "android.annotation.NonNull",
+    "android.support.annotation.NonNull",
     "android.support.annotation.NonNull",
     "androidx.annotation.NonNull",
+    "com.sun.istack.internal.NotNull",
     "edu.umd.cs.findbugs.annotations.NonNull",
+    "io.reactivex.annotations.NonNull",
+    "io.reactivex.rxjava3.annotations.NonNull",
     "javax.annotation.Nonnull",
     "javax.validation.constraints.NotNull",
     "lombok.NonNull",
-    "org.eclipse.jdt.annotation.NonNull",
-    "org.jetbrains.annotations.NotNull",
-    "org.springframework.lang.NonNull",
+    "org.checkerframework.checker.nullness.compatqual.NonNullDecl",
+    "org.checkerframework.checker.nullness.compatqual.NonNullType",
     "org.checkerframework.checker.nullness.qual.NonNull",
-    "org.checkerframework.checker.nullness.compatqual.NonNullDecl");
+    "org.eclipse.jdt.annotation.NonNull",
+    "org.eclipse.jgit.annotations.NonNull",
+    "org.jetbrains.annotations.NotNull",
+    "org.jmlspecs.annotation.NonNull",
+    "org.netbeans.api.annotations.common.NonNull",
+    "org.springframework.lang.NonNull");
+
+  public static Optional<AnnotationTree> nullableAnnotation(ModifiersTree modifiers) {
+    for (AnnotationTree annotation : modifiers.annotations()) {
+      if (NULLABLE_ANNOTATIONS.contains(annotation.annotationType().symbolType().fullyQualifiedName())) {
+        return Optional.of(annotation);
+      }
+    }
+    return Optional.empty();
+  }
+
+  public static Optional<AnnotationTree> nonNullAnnotation(ModifiersTree modifiers) {
+    for (AnnotationTree annotation : modifiers.annotations()) {
+      if (NONNULL_ANNOTATIONS.contains(annotation.annotationType().symbolType().fullyQualifiedName()) && annotation.arguments().isEmpty()) {
+        return Optional.of(annotation);
+      }
+    }
+    return Optional.empty();
+  }
 
   public static boolean isAnnotatedNullable(SymbolMetadata metadata) {
     return isUsingNullable(metadata) || collectMetaAnnotations(metadata).stream().map(Symbol::metadata).anyMatch(NullableAnnotationUtils::isUsingNullable);
   }
 
   private static boolean isUsingNullable(SymbolMetadata metadata) {
-    return NULLABLE_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith) || isNullableThroughNonNull(metadata);
+    for (AnnotationInstance annotation : metadata.annotations()) {
+      if (NULLABLE_ANNOTATIONS.contains(annotation.symbol().type().fullyQualifiedName())) {
+        return true;
+      }
+      if (isNullableThroughNonNull(annotation)) {
+        return true;
+      }
+    }
+    return false;
   }
 
-  private static boolean isNullableThroughNonNull(SymbolMetadata metadata) {
-    List<SymbolMetadata.AnnotationValue> valuesForAnnotation = metadata.valuesForAnnotation("javax.annotation.Nonnull");
-    if (valuesForAnnotation == null || valuesForAnnotation.isEmpty()) {
-      return false;
-    }
-    return checkAnnotationParameter(valuesForAnnotation, "when", "MAYBE") || checkAnnotationParameter(valuesForAnnotation, "when", "UNKNOWN");
+  private static boolean isNullableThroughNonNull(AnnotationInstance annotation) {
+    return "javax.annotation.Nonnull".equals(annotation.symbol().type().fullyQualifiedName()) &&
+      !annotation.values().isEmpty() &&
+      (checkAnnotationParameter(annotation.values(), "when", "MAYBE") ||
+        checkAnnotationParameter(annotation.values(), "when", "UNKNOWN"));
   }
 
   private static boolean checkAnnotationParameter(List<SymbolMetadata.AnnotationValue> valuesForAnnotation, String fieldName, String expectedValue) {
@@ -145,13 +193,17 @@ public final class NullableAnnotationUtils {
   }
 
   private static boolean isUsingNonNull(Symbol symbol) {
-    if (isNullableThroughNonNull(symbol.metadata())) {
-      return false;
-    }
     SymbolMetadata metadata = symbol.metadata();
-    return NONNULL_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith)
-      || nonNullReturnTypeAnnotation(symbol) != null
-      || nonNullFieldAnnotation(symbol) != null;
+    for (AnnotationInstance annotation : metadata.annotations()) {
+      if (isNullableThroughNonNull(annotation)) {
+        return false;
+      }
+      Type type = annotation.symbol().type();
+      if (NONNULL_ANNOTATIONS.contains(type.fullyQualifiedName())) {
+        return true;
+      }
+    }
+    return nonNullReturnTypeAnnotation(symbol) != null || nonNullFieldAnnotation(symbol) != null;
   }
 
   @CheckForNull
@@ -181,7 +233,9 @@ public final class NullableAnnotationUtils {
     if (isAnnotatedNullable(metadata)) {
       return null;
     }
-    return NONNULL_ANNOTATIONS.stream().filter(metadata::isAnnotatedWith).findFirst().orElse(null);
+    return findFirst(NONNULL_ANNOTATIONS, metadata)
+      .map(annotation -> annotation.symbol().type().fullyQualifiedName())
+      .orElse(null);
   }
 
   @CheckForNull
@@ -190,9 +244,9 @@ public final class NullableAnnotationUtils {
     if (isAnnotatedNullable(symbol.metadata())) {
       return null;
     }
-    Optional<String> result = NONNULL_ANNOTATIONS.stream().filter(metadata::isAnnotatedWith).findFirst();
-    if (result.isPresent()) {
-      return result.get();
+    Optional<AnnotationInstance> annotation = findFirst(NONNULL_ANNOTATIONS, metadata);
+    if (annotation.isPresent()) {
+      return annotation.get().symbol().type().fullyQualifiedName();
     }
     String nonNullReturnAnnotation = nonNullReturnTypeAnnotation(symbol);
     if (nonNullReturnAnnotation != null) {
@@ -244,7 +298,7 @@ public final class NullableAnnotationUtils {
 
   private static ArrayList<Symbol> collectMetaAnnotations(SymbolMetadata metadata, Set<Type> knownTypes) {
     List<Symbol> result = new ArrayList<>();
-    for (SymbolMetadata.AnnotationInstance annotationInstance : metadata.annotations()) {
+    for (AnnotationInstance annotationInstance : metadata.annotations()) {
       Symbol annotationSymbol = annotationInstance.symbol();
       Type annotationType = annotationSymbol.type();
       if (!knownTypes.contains(annotationType)) {
@@ -259,7 +313,16 @@ public final class NullableAnnotationUtils {
   }
 
   public static boolean isAnnotatedWithStrongNullness(SymbolMetadata metadata) {
-    return STRONG_NULLABLE_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
+    return findFirst(STRONG_NULLABLE_ANNOTATIONS, metadata).isPresent();
+  }
+
+  private static Optional<AnnotationInstance> findFirst(Set<String> annotationNames, SymbolMetadata metadata) {
+    for (AnnotationInstance annotation : metadata.annotations()) {
+      if (annotationNames.contains(annotation.symbol().type().fullyQualifiedName())) {
+        return Optional.of(annotation);
+      }
+    }
+    return Optional.empty();
   }
 
 }

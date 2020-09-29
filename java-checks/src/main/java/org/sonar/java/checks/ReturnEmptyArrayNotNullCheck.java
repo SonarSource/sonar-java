@@ -31,8 +31,6 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
-import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -40,6 +38,8 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNullable;
 
 @Rule(key = "S1168")
 public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
@@ -142,7 +142,7 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
     }
     if (tree.is(Tree.Kind.METHOD)) {
       MethodTree methodTree = (MethodTree) tree;
-      if (isAllowingNull(methodTree)) {
+      if (isAnnotatedNullable(methodTree.symbol().metadata()) || requiresReturnNull(methodTree)) {
         returnType.push(Returns.OTHERS);
       } else {
         returnType.push(Returns.getReturnType(methodTree.returnType()));
@@ -174,16 +174,6 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
   private static boolean isReturningNull(ReturnStatementTree tree) {
     ExpressionTree expression = tree.expression();
     return expression != null && expression.is(Tree.Kind.NULL_LITERAL);
-  }
-
-  private static boolean isAllowingNull(MethodTree methodTree) {
-    for (AnnotationTree annotation : methodTree.modifiers().annotations()) {
-      Type type = annotation.annotationType().symbolType();
-      if (type.is("javax.annotation.Nullable") || type.is("javax.annotation.CheckForNull")) {
-        return true;
-      }
-    }
-    return requiresReturnNull(methodTree);
   }
 
   private static boolean requiresReturnNull(MethodTree methodTree) {
