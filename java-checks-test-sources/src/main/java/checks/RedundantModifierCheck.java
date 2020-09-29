@@ -31,6 +31,12 @@ public @interface RedundantModifierCheck {
 }
 
 final class RedundantModifierClassFinal {
+  static {
+
+  }
+  private RedundantModifierClassFinal() { // Compliant
+
+  }
   void method1() {}
   final void method2() {} // Noncompliant
   final int field = 1;

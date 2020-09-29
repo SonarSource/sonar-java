@@ -47,31 +47,58 @@ public class RedundantModifierCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     for (Tree member : classTree.members()) {
-      if (member.is(Tree.Kind.METHOD)) {
-        MethodTree methodTree = (MethodTree) member;
-        ModifiersTree modifiers = methodTree.modifiers();
-        if (isInterfaceOrAnnotation(tree)) {
-          checkRedundantModifier(modifiers, Modifier.ABSTRACT);
-          checkRedundantModifier(modifiers, Modifier.PUBLIC);
-        } else if (ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.FINAL)) {
-          checkRedundantModifier(modifiers, Modifier.FINAL);
-        }
-      } else if (member.is(Tree.Kind.VARIABLE) && isInterfaceOrAnnotation(tree)) {
-        VariableTree variableTree = (VariableTree) member;
-        ModifiersTree modifiers = variableTree.modifiers();
-        checkRedundantModifier(modifiers, Modifier.PUBLIC);
-        checkRedundantModifier(modifiers, Modifier.STATIC);
-        checkRedundantModifier(modifiers, Modifier.FINAL);
-      } else if(member.is(Kind.CONSTRUCTOR) && tree.is(Kind.ENUM)) {
-        checkRedundantModifier(((MethodTree) member).modifiers(), Modifier.PRIVATE);
-      } else if (member.is(Kind.CLASS, Kind.INTERFACE) && isInterfaceOrAnnotation(tree)) {
-        ClassTree nested = (ClassTree) member;
-        ModifiersTree modifiers = nested.modifiers();
-        checkRedundantModifier(modifiers, Modifier.PUBLIC);
-        checkRedundantModifier(modifiers, Modifier.STATIC);
-      } else if (member.is(Kind.INTERFACE) && tree.is(Kind.CLASS, Kind.ENUM)) {
-        checkRedundantModifier(((ClassTree) member).modifiers(), Modifier.STATIC);
+      switch (member.kind()) {
+        case METHOD:
+          checkMethod((MethodTree) member, classTree);
+          break;
+        case VARIABLE:
+          checkVariable((VariableTree) member, classTree);
+          break;
+        case CONSTRUCTOR:
+          if (tree.is(Kind.ENUM)) {
+            checkRedundantModifier(((MethodTree) member).modifiers(), Modifier.PRIVATE);
+          }
+          break;
+        case INTERFACE:
+          ClassTree nestedClass = (ClassTree) member;
+          checkNestedInterface(nestedClass, classTree);
+          checkNestedClass(nestedClass, classTree);
+          break;
+        case CLASS:
+          checkNestedClass((ClassTree) member, classTree);
+          break;
+        default:
+          // Do nothing for others members
       }
+    }
+  }
+
+  private void checkMethod(MethodTree methodTree, ClassTree classTree) {
+    ModifiersTree modifiers = methodTree.modifiers();
+    if (isInterfaceOrAnnotation(classTree)) {
+      checkRedundantModifier(modifiers, Modifier.ABSTRACT, Modifier.PUBLIC);
+    } else if (ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.FINAL)) {
+      checkRedundantModifier(modifiers, Modifier.FINAL);
+    }
+  }
+
+  private void checkVariable(VariableTree variableTree, ClassTree classTree) {
+    if (isInterfaceOrAnnotation(classTree)) {
+      ModifiersTree modifiers = variableTree.modifiers();
+      checkRedundantModifier(modifiers, Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL);
+    }
+  }
+
+  private void checkNestedClass(ClassTree nested, ClassTree classTree) {
+    if (isInterfaceOrAnnotation(classTree)) {
+      ModifiersTree modifiers = nested.modifiers();
+      checkRedundantModifier(modifiers, Modifier.PUBLIC, Modifier.STATIC);
+    }
+  }
+
+  private void checkNestedInterface(ClassTree nested, ClassTree classTree) {
+    if (classTree.is(Kind.CLASS, Kind.ENUM)) {
+      checkRedundantModifier(nested.modifiers(), Modifier.STATIC);
     }
   }
 
@@ -79,10 +106,12 @@ public class RedundantModifierCheck extends IssuableSubscriptionVisitor {
     return tree.is(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE);
   }
 
-  private void checkRedundantModifier(ModifiersTree modifiersTree, Modifier modifier) {
-    ModifierKeywordTree foundModifier = ModifiersUtils.getModifier(modifiersTree, modifier);
-    if (foundModifier != null) {
-      reportIssue(foundModifier, "\"" + modifier.toString().toLowerCase(Locale.US) + "\" is redundant in this context.");
+  private void checkRedundantModifier(ModifiersTree modifiersTree, Modifier... modifiers) {
+    for (Modifier modifier : modifiers) {
+      ModifierKeywordTree foundModifier = ModifiersUtils.getModifier(modifiersTree, modifier);
+      if (foundModifier != null) {
+        reportIssue(foundModifier, "\"" + modifier.toString().toLowerCase(Locale.US) + "\" is redundant in this context.");
+      }
     }
   }
 
