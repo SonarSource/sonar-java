@@ -62,6 +62,7 @@ import org.sonar.java.checks.security.AESAlgorithmCheck;
 import org.sonar.java.checks.security.AndroidBroadcastingCheck;
 import org.sonar.java.checks.security.AndroidExternalStorageCheck;
 import org.sonar.java.checks.security.AndroidSSLConnectionCheck;
+import org.sonar.java.checks.security.AuthorizationsStrongDecisionsCheck;
 import org.sonar.java.checks.security.CipherBlockChainingCheck;
 import org.sonar.java.checks.security.CommandLineArgumentsCheck;
 import org.sonar.java.checks.security.ControllingPermissionsCheck;
@@ -255,6 +256,7 @@ public final class CheckList {
       AssertsOnParametersOfPublicMethodCheck.class,
       AssignmentInSubExpressionCheck.class,
       AtLeastOneConstructorCheck.class,
+      AuthorizationsStrongDecisionsCheck.class,
       AvoidDESCheck.class,
       BadAbstractClassNameCheck.class,
       BadClassNameCheck.class,
