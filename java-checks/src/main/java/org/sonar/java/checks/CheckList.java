@@ -573,6 +573,7 @@ public final class CheckList {
       PrivateReadResolveCheck.class,
       ProtectedMemberInFinalClassCheck.class,
       PseudoRandomCheck.class,
+      PublicConstructorInAbstractClassCheck.class,
       PublicStaticFieldShouldBeFinalCheck.class,
       PublicStaticMutableMembersCheck.class,
       RandomFloatToIntCheck.class,
