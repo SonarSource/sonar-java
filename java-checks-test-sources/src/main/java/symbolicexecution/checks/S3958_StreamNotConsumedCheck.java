@@ -1,7 +1,9 @@
+package symbolicexecution.checks;
+
 import java.util.stream.*;
 import java.util.List;
 
-abstract class A {
+abstract class S3958_StreamNotConsumedCheck {
 
   void test() {
     Stream<Integer> stream = Stream.of(1, 2, 3);
@@ -43,18 +45,18 @@ abstract class A {
     }
   }
 
-  void testUnknown() {
-    s = Stream.of("a", "b", "c").skip(1).unknown();   // Compliant, unknown method
-  }
+  // void testUnknown() {
+  // s = Stream.of("a", "b", "c").skip(1).unknown(); // Compliant, unknown method
+  // }
 
   void streamPassAsArg() {
-    s = Stream.concat(
+    IntStream s = IntStream.concat(
       IntStream.range(0, 3).filter(i -> true), // Compliant, passed outside of method
-      Stream.of(2));
+      IntStream.of(2));
   }
 
   IntStream returningStream() {
-    return IntStream.range(0, 10).filter(i -> i % 2); // Compliant, returned
+    return IntStream.range(0, 10).filter(i -> i % 2 == 0); // Compliant, returned
   }
 
   Stream<Object> streamField;
@@ -148,7 +150,7 @@ abstract class A {
   }
 
   class StreamParamInConstructor {
-    public StreamParamInConstructor(Stream stream) {
+    public StreamParamInConstructor(IntStream stream) {
     }
   }
 }

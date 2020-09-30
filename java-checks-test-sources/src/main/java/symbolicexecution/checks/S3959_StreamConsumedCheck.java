@@ -1,7 +1,9 @@
+package symbolicexecution.checks;
+
 import java.util.stream.*;
 import java.util.List;
 
-abstract class A {
+abstract class S3959_StreamConsumedCheck {
 
   void test() {
     Stream<Integer> stream = Stream.of(1, 2, 3);
