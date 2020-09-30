@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.TestUtils;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.Sema;
@@ -139,6 +140,16 @@ class ExplodedGraphWalkerTest {
       .onFile("src/test/files/se/ConstraintsOnFields.java")
       .withChecks(seChecks())
       .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
+  }
+
+  @Test
+  void switchExpression() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.nonCompilingTestSourcesPath("symbolicexecution/engine/SwitchExpressions.java"))
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .withJavaVersion(14)
       .verifyIssues();
   }
 

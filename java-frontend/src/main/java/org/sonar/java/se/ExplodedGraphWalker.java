@@ -553,8 +553,10 @@ public class ExplodedGraphWalker {
         elseBlock = successor;
       }
     }
-    Objects.requireNonNull(elseBlock);
-    enqueue(new ProgramPoint(elseBlock), elseState, node.exitPath);
+    if (elseBlock != null) {
+      // for a switch covering all items from an enum, there will be no elseState
+      enqueue(new ProgramPoint(elseBlock), elseState, node.exitPath);
+    }
   }
 
   private static ProgramState setConstraint(ProgramState state, SymbolicValue condition, BooleanConstraint constraint) {
