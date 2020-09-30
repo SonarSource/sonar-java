@@ -295,4 +295,29 @@ public class CollectionInappropriateCallsCheck {
       colorAnimalMap.get(a); // Noncompliant {{"ColorAnimalMap" is a "Map<Color, Animal>" which cannot contain a "Animal" in a "Color" type.}}
     }
   }
+
+  class AutoBoxingToNumber {
+    void simpleList() {
+      List<Integer> integerList = new ArrayList<>();
+      integerList.contains(1); // Compliant, auto-boxing to Integer
+      integerList.contains(Integer.valueOf(1)); // Compliant, auto-boxing to Integer
+      integerList.contains(1.2); // Noncompliant {{A "List<Integer>" cannot contain a "double".}}
+      integerList.contains(Double.valueOf(1.2)); // Noncompliant {{A "List<Integer>" cannot contain a "Double".}}
+
+      List<Number> numberList = new ArrayList<>();
+      numberList.contains(1); // Compliant, auto-boxing to Integer, which is a subtype of Number.
+      numberList.contains(Integer.valueOf(1)); // Compliant
+      numberList.contains(Double.valueOf(1.2)); // Compliant
+      numberList.contains(1.2); // Compliant, auto-boxing to Double, which is a subtype of Number.
+    }
+
+    void mapWithNumberAsKey(int intArgs, double doubleArg) {
+      Map<Number, String> testMap = new HashMap<>();
+      testMap.put(Integer.valueOf(1), "one");
+      if (testMap.containsKey(intArgs)) { // Compliant, auto-boxing to Integer, which is a subtype of Number.
+        testMap.get(intArgs); // Compliant, auto-boxing to Integer, which is a subtype of Number.
+        testMap.get(doubleArg); // Compliant, auto-boxing to Integer, which is a subtype of Number.
+      }
+    }
+  }
 }
