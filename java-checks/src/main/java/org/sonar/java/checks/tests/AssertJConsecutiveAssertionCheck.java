@@ -27,14 +27,17 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -47,13 +50,15 @@ import static org.sonar.java.checks.helpers.UnitTestUtils.hasTestAnnotation;
 public class AssertJConsecutiveAssertionCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodMatchers ASSERT_THAT_MATCHER = MethodMatchers.create()
-    .ofSubTypes("org.assertj.core.api.Assertions").names("assertThat").addParametersMatcher(MethodMatchers.ANY).build();
+    .ofSubTypes("org.assertj.core.api.Assertions", "org.assertj.core.api.Assert")
+    .names("assertThat")
+    .addParametersMatcher(MethodMatchers.ANY)
+    .build();
 
   public static final MethodMatchers ASSERTJ_SET_CONTEXT_METHODS = MethodMatchers.create()
     .ofSubTypes("org.assertj.core.api.AbstractAssert")
-    .name(name ->
-      name.startsWith("extracting") || name.startsWith("using") || name.startsWith("filtered")
-    ).withAnyParameters()
+    .name(name -> name.startsWith("extracting") || name.startsWith("using") || name.startsWith("filtered"))
+    .withAnyParameters()
     .build();
 
   @Override
@@ -74,7 +79,7 @@ public class AssertJConsecutiveAssertionCheck extends IssuableSubscriptionVisito
 
   private void reportConsecutiveAssertions(List<StatementTree> statements) {
     AssertSubject currentSubject = null;
-    List<MethodInvocationTree> equivalentInvocations = new ArrayList<>();
+    List<AssertSubject> equivalentInvocations = new ArrayList<>();
 
     for (StatementTree statement : statements) {
       Optional<AssertSubject> assertThatInvocation = getSimpleAssertSubject(statement);
@@ -83,8 +88,8 @@ public class AssertJConsecutiveAssertionCheck extends IssuableSubscriptionVisito
         AssertSubject assertSubject = assertThatInvocation.get();
         if (currentSubject == null) {
           currentSubject = assertSubject;
-        } else if (areEquivalent(currentSubject.arg, assertSubject.arg)) {
-          equivalentInvocations.add(assertSubject.mit);
+        } else if (currentSubject.hasEquivalentArgument(assertSubject)) {
+          equivalentInvocations.add(assertSubject);
         } else {
           reportIssueIfMultipleCalls(currentSubject, equivalentInvocations);
           currentSubject = assertSubject;
@@ -136,26 +141,44 @@ public class AssertJConsecutiveAssertionCheck extends IssuableSubscriptionVisito
     return Optional.empty();
   }
 
-  private static boolean areEquivalent(@Nullable ExpressionTree e1, ExpressionTree e2) {
-    return SyntacticEquivalence.areEquivalent(e1, e2);
-  }
-
-  private void reportIssueIfMultipleCalls(@Nullable AssertSubject assertSubject, List<MethodInvocationTree> equivalentAssertions) {
+  private void reportIssueIfMultipleCalls(@Nullable AssertSubject assertSubject, List<AssertSubject> equivalentAssertions) {
     if (assertSubject != null && !equivalentAssertions.isEmpty()) {
-      reportIssue(ExpressionUtils.methodName(assertSubject.mit),
+      reportIssue(assertSubject.methodName(),
         "Join these multiple assertions subject to one assertion chain.",
-        equivalentAssertions.stream().map(mit -> new JavaFileScannerContext.Location("Other assertThat", ExpressionUtils.methodName(mit))).collect(Collectors.toList()),
+        equivalentAssertions.stream().map(AssertSubject::toSecondaryLocation).collect(Collectors.toList()),
         null);
     }
   }
 
   private static class AssertSubject {
     final MethodInvocationTree mit;
+    final Type assertionType;
     final ExpressionTree arg;
 
     AssertSubject(MethodInvocationTree mit, ExpressionTree arg) {
       this.mit = mit;
+      this.assertionType = mit.symbolType().erasure();
       this.arg = arg;
+    }
+
+    boolean hasEquivalentArgument(AssertSubject other) {
+      return SyntacticEquivalence.areEquivalent(arg, other.arg)
+        && (other.assertionType.isSubtypeOf(assertionType) || couldBeChained(other));
+    }
+
+    boolean couldBeChained(AssertSubject other) {
+      return MethodTreeUtils.consecutiveMethodInvocation(other.mit)
+        .map(chainedNextMethod -> chainedNextMethod.symbol().owner().type().erasure())
+        .map(mit.symbol().owner().type().erasure()::isSubtypeOf)
+        .orElse(false);
+    }
+
+    IdentifierTree methodName() {
+      return ExpressionUtils.methodName(mit);
+    }
+
+    JavaFileScannerContext.Location toSecondaryLocation() {
+      return new JavaFileScannerContext.Location("Other assertThat", methodName());
     }
   }
 
