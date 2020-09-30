@@ -51,7 +51,7 @@ public class PublicConstructorInAbstractClassCheck extends IssuableSubscriptionV
         .filter(PublicConstructorInAbstractClassCheck::isaConstructor)
         .map(member -> ((MethodTree) member))
         .map(methodTree -> ModifiersUtils.findModifier(methodTree.modifiers(), Modifier.PUBLIC))
-        .filter(optional -> !optional.isPresent())
+        .filter(Optional::isPresent)
         .map(Optional::get)
         .forEach(modifier -> reportIssue(modifier, "Change the visibility of this constructor to \"protected\".",
           Collections.singletonList(secondaryLocation), null));
