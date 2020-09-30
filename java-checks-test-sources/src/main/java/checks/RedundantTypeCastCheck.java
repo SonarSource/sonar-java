@@ -1,5 +1,6 @@
 package checks;
 
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.Arrays;
 import java.util.Collection;
@@ -9,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Comparator;
 import java.util.Set;
+import java.util.function.Supplier;
 
 class Outer {
   class A {
@@ -406,3 +408,29 @@ enum MyPrivateEnum {
 
   }
 }
+
+class FP_S1905 {
+  static class Overloaded {
+    static String f() {
+      return "";
+    }
+
+    static String f(String a) {
+      return "";
+    }
+  }
+
+  void main() {
+    foo((Supplier<String>) Overloaded::f); // Compliant, cast is mandatory
+    foo((Function<String, String>) Overloaded::f); // Compliant, cast is mandatory
+
+    foo((Supplier<String>) String::new); // Compliant
+    foo((Function<String, String>) String::new); // Compliant
+  }
+
+  void foo(Supplier<String> supplier) {
+  }
+  void foo(Function<String, String> function) {
+  }
+}
+

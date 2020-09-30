@@ -1,6 +1,8 @@
 package checks;
 
 import java.util.function.Predicate;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -415,4 +417,25 @@ enum MyPrivateEnum {
   MyPrivateEnum(byte b) {
 
   }
-}
+
+  class FP_S1905 {
+    static class Overloaded {
+      static String f() {
+        return "";
+      }
+
+      static String f(String a) {
+        return "";
+      }
+    }
+
+    void main() {
+      foo(Overloaded::f); // Does not compile without cast
+      foo(String::new); // Does not compile without cast
+    }
+
+    void foo(Supplier<String> supplier) {
+    }
+    void foo(Function<String, String> function) {
+    }
+  }}
