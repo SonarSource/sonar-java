@@ -185,6 +185,14 @@ class G<T> {
     public static Number choose(Integer i, Float f, boolean takeFirst) {
       return takeFirst ? (Number) i : f;
     }
+
+    public static Number choose2(Integer i, Float f, boolean takeFirst) {
+      return takeFirst ? (int) i : f;
+    }
+
+    public static float choose3(int i, double f, boolean takeFirst) {
+      return takeFirst ? i : (float)f;
+    }
   }
 
   class I {
@@ -404,14 +412,15 @@ enum MyPrivateEnum {
   @lombok.Getter
   private byte value;
 
-  MyPrivateEnum(byte b) {
-
-  }
 }
 
 class FP_S1905 {
   static class Overloaded {
     static String f() {
+      return "";
+    }
+
+    static String fff() {
       return "";
     }
 
@@ -422,6 +431,10 @@ class FP_S1905 {
 
   void main() {
     foo((Supplier<String>) Overloaded::f); // Compliant, cast is mandatory
+    foo((Supplier<String>) Overloaded::fff); // Noncompliant, cast is redundant
+    bar((Supplier<String>) Overloaded::fff); // Noncompliant, cast is redundant
+    bar((Supplier<String>) Overloaded::f); // Noncompliant, cast is redundant
+    rawBar((Supplier<String>) Overloaded::fff); // Noncompliant, cast is redundant
     foo((Function<String, String>) Overloaded::f); // Compliant, cast is mandatory
 
     foo((Supplier<String>) String::new); // Compliant
@@ -431,6 +444,13 @@ class FP_S1905 {
   void foo(Supplier<String> supplier) {
   }
   void foo(Function<String, String> function) {
+  }
+
+  void bar(Supplier<String> supplier) {
+  }
+
+  void rawBar(Supplier s) {
+
   }
 }
 
