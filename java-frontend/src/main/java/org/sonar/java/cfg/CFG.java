@@ -784,7 +784,7 @@ public class CFG implements ControlFlowGraph {
     breakTargets.removeLast();
     // process condition
     currentBlock = switchBlock;
-    if (!hasDefaultCase) {
+    if (!hasDefaultCase && !terminator.is(Tree.Kind.SWITCH_EXPRESSION)) {
       currentBlock.addSuccessor(switchSuccessor);
     }
     currentBlock = conditionBlock;

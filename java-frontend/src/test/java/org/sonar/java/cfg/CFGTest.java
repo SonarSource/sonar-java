@@ -797,6 +797,33 @@ class CFGTest {
   }
 
   @Test
+  void switch_expression_without_default() {
+    final CFG cfg = buildCFG("int fun(MyEnum foo) {\n" +
+      "    int a = switch (foo) {\n" +
+      "      case BAR -> 1;\n" +
+      "      case QIX -> 2;\n" +
+      "    };\n" +
+      "    return a;\n" +
+      "  }\n"
+      + "enum MyEnum { BAR, QIX; }");
+    final CFGChecker cfgChecker = checker(
+      block(
+        element(Tree.Kind.CASE_GROUP),
+        element(Tree.Kind.INT_LITERAL, 1)).hasCaseGroup().successors(1),
+      block(
+        element(Tree.Kind.CASE_GROUP),
+        element(Tree.Kind.INT_LITERAL, 2)).hasCaseGroup().successors(1),
+      block(
+        element(IDENTIFIER, "foo"),
+        element(IDENTIFIER, "BAR"),
+        element(IDENTIFIER, "QIX")).terminator(SWITCH_EXPRESSION).successors(3, 4),
+      block(
+        element(VARIABLE, "a"),
+        element(IDENTIFIER, "a")).terminator(RETURN_STATEMENT).successors(0));
+    cfgChecker.check(cfg);
+  }
+
+  @Test
   void switch_expression_without_fallthrough() {
     final CFG cfg = buildCFG("int fun(int foo) throws Exception {\n" +
       "    int a = switch (foo) {\n" +
