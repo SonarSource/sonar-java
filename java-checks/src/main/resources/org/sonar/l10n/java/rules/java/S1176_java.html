@@ -22,6 +22,18 @@ to understand of the contract of the API. Documenting an API with Javadoc increa
   <li> Empty constructors. </li>
   <li> Static constants. </li>
 </ul>
+<p>For the parameters of the rule, the following rules are applied:</p>
+<ul>
+  <li> <code>?</code> matches a single character </li>
+  <li> <code>*</code> matches zero or more characters </li>
+  <li> <code>**</code> matches zero or more packages </li>
+</ul>
+<p>Examples:</p>
+<ul>
+  <li> <code>java.internal.InternalClass</code> will match only <code>InternalClass</code> class. </li>
+  <li> <code>java.internal.*</code> will match any member of <code>java.internal</code> package. </li>
+  <li> <code>java.internal.**</code> same as above, but including sub-packages. </li>
+</ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
 /**
