@@ -34,4 +34,14 @@ class StreamConsumedCheckTest {
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
   }
+
+  @Test
+  void swtichExpression() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.nonCompilingTestSourcesPath("symbolicexecution/checks/S3959_SwitchExpression.java"))
+      .withCheck(new StreamConsumedCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .withJavaVersion(14)
+      .verifyIssues();
+  }
 }
