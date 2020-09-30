@@ -1,0 +1,26 @@
+{
+  "title": "Allowing user enumeration is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "cwe",
+    "spring",
+    "owasp-a2"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-5804",
+  "sqKey": "S5804",
+  "scope": "All",
+  "securityStandards": {
+    "CWE": [
+      200
+    ],
+    "OWASP": [
+      "A2"
+    ]
+  }
+}
