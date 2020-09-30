@@ -1,5 +1,7 @@
 package checks;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,7 +34,7 @@ public class AssertionTypesCheck_AssertJ {
 
     assertThat(doublePrimitive())
       .withFailMessage("msg", 42)
-      .isNotEqualTo(null); // Noncompliant [[sc=21;ec=25;secondary=33]] {{Change the assertion arguments to not compare dissimilar types.}}
+      .isNotEqualTo(null); // Noncompliant [[sc=21;ec=25;secondary=35]] {{Change the assertion arguments to not compare dissimilar types.}}
 
     assertThat(booleanPrimitive())
       .describedAs("msg")
@@ -184,6 +186,22 @@ public class AssertionTypesCheck_AssertJ {
     assertThat(getDate()).isSameAs("1970-01-01T01:00:00"); // Noncompliant
   }
 
+  @Test
+  void test_assertj_big_integer_and_decimal() {
+    // AssertJ supports BigDecimal and BigInteger comparison with string.
+    assertThat(BigDecimal.valueOf(123)).isEqualTo("123"); // Compliant
+    assertThat(getBigDecimal()).isEqualTo("123"); // Compliant
+    assertThat(getBigDecimal()).isEqualTo(BigDecimal.valueOf(123)); // Compliant
+    assertThat(getBigDecimal().toString()).isEqualTo("123"); // Compliant
+    assertThat(getBigDecimal().hashCode()).isEqualTo("123"); // Noncompliant
+
+    assertThat(BigInteger.valueOf(123)).isEqualTo("123"); // Compliant
+    assertThat(getBigInteger()).isEqualTo("123"); // Compliant
+    assertThat(getBigInteger()).isEqualTo(BigInteger.valueOf(123)); // Compliant
+    assertThat(getBigInteger().toString()).isEqualTo("123"); // Compliant
+    assertThat(getBigInteger().hashCode()).isEqualTo("123"); // Noncompliant
+  }
+
   interface I1 {
   }
 
@@ -240,6 +258,14 @@ public class AssertionTypesCheck_AssertJ {
 
   String getString() {
     return "a";
+  }
+
+  BigDecimal getBigDecimal() {
+    return BigDecimal.valueOf(123);
+  }
+
+  BigInteger getBigInteger() {
+    return BigInteger.valueOf(123);
   }
 
   Character getCharacter() {
