@@ -228,7 +228,7 @@ class NullableAnnotationUtilsTest {
 
   private static Stream<Symbol.MethodSymbol> getMethods(Sema semanticModel, String owner) {
     return semanticModel.getClassType(owner).symbol().memberSymbols().stream()
-      .filter(s -> s.isMethodSymbol())
+      .filter(Symbol::isMethodSymbol)
       .map(Symbol.MethodSymbol.class::cast)
       .filter(s -> !"<init>".equals(s.name()));
   }

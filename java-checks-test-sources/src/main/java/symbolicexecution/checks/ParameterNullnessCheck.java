@@ -16,7 +16,7 @@ abstract class ParameterNullnessCheck {
     bar(null, o); // Noncompliant [[sc=5;ec=8]]
 
     equals(null);
-    B.foo(null);
+    B.foo(null); // Compliant
     if (o != null) {
       foo(o);
     }
