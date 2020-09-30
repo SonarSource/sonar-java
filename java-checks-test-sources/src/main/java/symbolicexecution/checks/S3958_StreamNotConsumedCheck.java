@@ -45,10 +45,6 @@ abstract class S3958_StreamNotConsumedCheck {
     }
   }
 
-  // void testUnknown() {
-  // s = Stream.of("a", "b", "c").skip(1).unknown(); // Compliant, unknown method
-  // }
-
   void streamPassAsArg() {
     IntStream s = IntStream.concat(
       IntStream.range(0, 3).filter(i -> true), // Compliant, passed outside of method

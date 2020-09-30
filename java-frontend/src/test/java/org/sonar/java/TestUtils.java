@@ -34,9 +34,14 @@ public class TestUtils {
   }
 
   private static final String TEST_SOURCES_DIR = "../java-checks-test-sources/src/main/java/";
+  private static final String NON_COMPILING_TEST_SOURCES_DIR = "../java-checks-test-sources/src/main/files/non-compiling/";
 
   public static String testSourcesPath(String path) {
     return getFileFrom(path, TEST_SOURCES_DIR);
+  }
+
+  public static String nonCompilingTestSourcesPath(String path) {
+    return getFileFrom(path, NON_COMPILING_TEST_SOURCES_DIR);
   }
 
   private static String getFileFrom(String path, String relocated) {
