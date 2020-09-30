@@ -3,4 +3,16 @@ creating collections of attributes and behaviors called classes which can be bas
 a deep inheritance tree can lead to very complex and unmaintainable source code. Most of the time a too deep inheritance tree is due to bad object
 oriented design which has led to systematically use 'inheritance' when for instance 'composition' would suit better.</p>
 <p>This rule raises an issue when the inheritance tree, starting from <code>Object</code> has a greater depth than is allowed. </p>
+<p>For the parameter of the rule, the following rules are applied:</p>
+<ul>
+  <li> <code>?</code> matches a single character </li>
+  <li> <code>*</code> matches zero or more characters </li>
+  <li> <code>**</code> matches zero or more packages </li>
+</ul>
+<p>Examples:</p>
+<ul>
+  <li> <code>java.fwk.AbstractFwkClass</code> will stop count when AbstractFwkClassclass is reached. </li>
+  <li> <code>java.fwkPackage.*</code> will stop count when any member of java.internal package is reached. </li>
+  <li> <code>java.fwkPackage.**</code> same as above, but including sub-packages. </li>
+</ul>
 
