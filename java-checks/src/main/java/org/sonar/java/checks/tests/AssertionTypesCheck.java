@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks.tests;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -151,6 +152,12 @@ public class AssertionTypesCheck extends IssuableSubscriptionVisitor {
     .withAnyParameters()
     .build();
 
+  private static final List<String> ASSERTJ_EXCEPTIONS = Arrays.asList(
+    "org.assertj.core.api.AbstractTemporalAssert",
+    "org.assertj.core.api.AbstractDateAssert",
+    "org.assertj.core.api.AbstractBigIntegerAssert",
+    "org.assertj.core.api.AbstractBigDecimalAssert");
+
   private enum Option {
     ACCEPT_DISSIMILAR_INTERFACE,
     REJECT_DISSIMILAR_INTERFACE,
@@ -217,9 +224,8 @@ public class AssertionTypesCheck extends IssuableSubscriptionVisitor {
 
   private void checkCompatibleAssertJEqualTypes(MethodInvocationTree mit, Argument actual, Argument expected, Option option) {
     Type type = mit.symbolType();
-    if (type.isSubtypeOf("org.assertj.core.api.AbstractTemporalAssert")
-      || type.isSubtypeOf("org.assertj.core.api.AbstractDateAssert")) {
-      // AssertJ supports Date/Temporal comparison with String.
+    if (ASSERTJ_EXCEPTIONS.stream().anyMatch(type::isSubtypeOf)) {
+      // AssertJ supports Date/Temporal and BigInteger/BigDecimal comparison with String.
       return;
     }
     checkCompatibleTypes(mit, actual, expected, option);
@@ -302,7 +308,7 @@ public class AssertionTypesCheck extends IssuableSubscriptionVisitor {
   private void createIssue(Argument actual, Argument expected) {
     reportIssue(
       expected.expression,
-    "Change the assertion arguments to not compare dissimilar types.",
+      "Change the assertion arguments to not compare dissimilar types.",
       Collections.singletonList(new JavaFileScannerContext.Location("Actual", actual.expression)),
       null);
   }

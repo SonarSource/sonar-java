@@ -1,5 +1,7 @@
 package checks;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,7 +34,7 @@ public class AssertionTypesCheck_JUnit5 {
     assertNull(doublePrimitive(), () -> "msg"); // Noncompliant
 
     assertEquals(
-      null, // Noncompliant [[sc=7;ec=11;secondary=36]] {{Change the assertion arguments to not compare dissimilar types.}}
+      null, // Noncompliant [[sc=7;ec=11;secondary=38]] {{Change the assertion arguments to not compare dissimilar types.}}
       doublePrimitive());
     assertEquals(null, booleanPrimitive(), "msg"); // Noncompliant
 
@@ -147,6 +149,15 @@ public class AssertionTypesCheck_JUnit5 {
     assertEquals(Instant.parse("2007-12-03T10:15:30.00Z"), "2007-12-03T10:15:30.00Z"); // Noncompliant
   }
 
+  @Test
+  void test_assertj_big_integer_and_decimal() {
+    // JUnit does not support BigDecimal and BigInteger comparison with string, unlike AssertJ.
+    assertEquals(getBigDecimal(), "123"); // Noncompliant
+    assertEquals(getBigDecimal(), BigDecimal.valueOf(123)); // Compliant
+
+    assertEquals(getBigInteger(), "123"); // Noncompliant
+    assertEquals(getBigInteger(), BigInteger.valueOf(123)); // Compliant
+  }
 
   void test_equals_method() {
     A a = new A();
@@ -206,6 +217,14 @@ public class AssertionTypesCheck_JUnit5 {
 
   String getString() {
     return "a";
+  }
+
+  BigDecimal getBigDecimal() {
+    return BigDecimal.valueOf(123);
+  }
+
+  BigInteger getBigInteger() {
+    return BigInteger.valueOf(123);
   }
 
   Character getCharacter() {
