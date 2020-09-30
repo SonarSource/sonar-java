@@ -164,7 +164,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isUnnecessarySubtypeCast(Type childType, TypeCastTree typeCastTree, Type parentType) {
     boolean isArgument = skipParentheses(typeCastTree.parent()).is(Tree.Kind.ARGUMENTS);
-    if (isArgument && typeCastTree.expression().is(Tree.Kind.METHOD_REFERENCE) && isAmbigiousMethodReference(typeCastTree)) {
+    if (isArgument && typeCastTree.expression().is(Tree.Kind.METHOD_REFERENCE) && isAmbiguousMethodReference(typeCastTree)) {
       return false;
     }
     return !childType.isPrimitive()
@@ -172,10 +172,10 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
       && (typeCastTree.type().symbolType().equals(childType)
         || (isArgument && childType.equals(parentType)) || (!isArgument && childType.isSubtypeOf(parentType)))
       && (!ExpressionUtils.skipParentheses(typeCastTree.expression()).is(Tree.Kind.LAMBDA_EXPRESSION)
-        || (isUnnecessaryLambdaCast(childType, parentType)));
+        || isUnnecessaryLambdaCast(childType, parentType));
   }
 
-  private static boolean isAmbigiousMethodReference(TypeCastTree typeCastTree) {
+  private static boolean isAmbiguousMethodReference(TypeCastTree typeCastTree) {
     MethodReferenceTree methodReferenceTree = (MethodReferenceTree) typeCastTree.expression();
     Symbol.TypeSymbol methodRefOwner = (Symbol.TypeSymbol) methodReferenceTree.method().symbol().owner();
     long numberMethodRefsOverloads = getOverloadsCount(methodRefOwner,methodReferenceTree.method().symbol().name());
