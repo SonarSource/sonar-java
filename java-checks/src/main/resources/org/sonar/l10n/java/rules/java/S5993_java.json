@@ -1,0 +1,16 @@
+{
+  "title": "Constructors of an \"abstract\" class should not be declared \"public\"",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "design"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-5993",
+  "sqKey": "S5993",
+  "scope": "Main"
+}
