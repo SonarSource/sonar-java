@@ -50,7 +50,11 @@ reported.</p>
       <td><code>assertThat(getObject()).isInstanceOf(MyClass.class)</code></td>
     </tr>
     <tr>
-      <td><code>assertThat(x.compareTo(y)).isEqualTo(0)</code></td>
+      <th>Related to <code>Comparable</code></th>
+      <th>&nbsp;</th>
+    </tr>
+    <tr>
+      <td><code>assertThat(x.compareTo(y)).isZero()</code></td>
       <td><code>assertThat(x).isEqualByComparingTo(y)</code></td>
     </tr>
     <tr>
@@ -278,8 +282,8 @@ reported.</p>
       <td><code>assertThat(getMap()).containsEntry(key, value)</code></td>
     </tr>
     <tr>
-      <th> Related to <code>Optional</code></th>
-      <th> </th>
+      <th>Related to <code>Optional</code></th>
+      <th>&nbsp;</th>
     </tr>
     <tr>
       <td><code>assertThat(getOptional().isPresent()).isTrue()</code></td>

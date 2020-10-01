@@ -39,6 +39,19 @@ public String authenticate(String username, String password) {
 </pre>
 <ul>
   <li> <a
+  href="https://docs.spring.io/spring-security/site/docs/3.0.x/apidocs/org/springframework/security/core/userdetails/UsernameNotFoundException.html">UsernameNotFoundException</a> is thrown (except when it is in the loadUserByUsername method): </li>
+</ul>
+<pre>
+public String authenticate(String username, String password) {
+  // ....
+  if(user == null) {
+      throw new UsernameNotFoundException("user not found"); // Sensitive
+  }
+  // ....
+}
+</pre>
+<ul>
+  <li> <a
   href="https://docs.spring.io/spring-security/site/docs/4.0.x/apidocs/org/springframework/security/authentication/dao/AbstractUserDetailsAuthenticationProvider.html#setHideUserNotFoundExceptions-boolean-">HideUserNotFoundExceptions</a> is set to false: </li>
 </ul>
 <pre>
