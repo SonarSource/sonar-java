@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -53,9 +54,6 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     TypeCastTree typeCastTree = (TypeCastTree) tree;
     Type expressionType = typeCastTree.expression().symbolType();
     if (isPrimitiveWrapperInConditional(expressionType, typeCastTree) || requiredForMemberAccess(typeCastTree)) {
@@ -86,7 +84,9 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isPrimitiveWrapperInConditional(Type expressionType, TypeCastTree typeCastTree) {
     Tree parent = skipParentheses(typeCastTree.parent());
-    return parent.is(Tree.Kind.CONDITIONAL_EXPRESSION) && (JUtils.isPrimitiveWrapper(expressionType) || expressionType.isPrimitive());
+    return parent.is(Tree.Kind.CONDITIONAL_EXPRESSION) &&
+      (JUtils.isPrimitiveWrapper(expressionType)
+        || expressionType.isPrimitive());
   }
 
   @CheckForNull
@@ -163,13 +163,40 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isUnnecessarySubtypeCast(Type childType, TypeCastTree typeCastTree, Type parentType) {
-    boolean isArgument = skipParentheses(typeCastTree.parent()).is(Tree.Kind.ARGUMENTS);
+    Tree parentTree = skipParentheses(typeCastTree.parent());
+    boolean isArgument = parentTree.is(Tree.Kind.ARGUMENTS);
+
     return !childType.isPrimitive()
       // Exception: subtype cast are tolerated in method or constructor call arguments
       && (typeCastTree.type().symbolType().equals(childType)
         || (isArgument && childType.equals(parentType)) || (!isArgument && childType.isSubtypeOf(parentType)))
       && (!ExpressionUtils.skipParentheses(typeCastTree.expression()).is(Tree.Kind.LAMBDA_EXPRESSION)
-        || isUnnecessaryLambdaCast(childType, parentType));
+        || isUnnecessaryLambdaCast(childType, parentType))
+      && !(isArgument && isMandatoryMethodReferenceCast(typeCastTree, parentTree));
+  }
+
+  private static boolean isMandatoryMethodReferenceCast(TypeCastTree typeCastTree, Tree parentTree) {
+    Tree preParent = skipParentheses(parentTree.parent());
+    ExpressionTree castExpression = typeCastTree.expression();
+    if (castExpression.is(Tree.Kind.METHOD_REFERENCE) && preParent.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodReferenceTree expression = (MethodReferenceTree) castExpression;
+      MethodInvocationTree methodInvocationTree = (MethodInvocationTree) preParent;
+      Symbol methodAsArg = expression.method().symbol();
+      Symbol methodCaller = methodInvocationTree.symbol();
+      return hasOverloads(methodAsArg) && hasOverloads(methodCaller);
+    }
+    return false;
+  }
+
+  private static boolean hasOverloads(Symbol symbol) {
+    Symbol owner = symbol.owner();
+    return owner.isTypeSymbol() && calcOverloads((Symbol.TypeSymbol) owner, symbol.name()) > 1;
+  }
+
+  private static long calcOverloads(Symbol.TypeSymbol owner, String methodName) {
+    return owner.memberSymbols().stream()
+      .filter(member -> member.isMethodSymbol() && member.name().equals(methodName))
+      .count();
   }
 
   private static boolean isUnnecessaryLambdaCast(Type childType, Type parentType) {

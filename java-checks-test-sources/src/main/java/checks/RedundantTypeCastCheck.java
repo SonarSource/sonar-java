@@ -1,3 +1,7 @@
+package checks;
+
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.Arrays;
 import java.util.Collection;
@@ -7,34 +11,35 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Comparator;
 import java.util.Set;
+import java.util.function.Supplier;
 
 class Outer {
-  class A {
+  class Nested {
   }
-  class B extends A { }
+  class ExtendedNested extends Nested { }
   List list;
   List<String> foo() {
-    Object obj;
+    Object obj = null;
     Object o1 = (List<String>) foo(); // Noncompliant [[sc=18;ec=30]] {{Remove this unnecessary cast to "List".}}
     Object o2 = (List<? extends String>) foo(); // Noncompliant {{Remove this unnecessary cast to "List".}}
     Object o3 = (List<? super String>) foo(); // Noncompliant {{Remove this unnecessary cast to "List".}}
     String s1 = (String) obj; // Compliant
     String s2 = (String) s1; // Noncompliant {{Remove this unnecessary cast to "String".}}
-    A a = (A) new B(); // Noncompliant {{Remove this unnecessary cast to "A".}}
-    A[][] as = (A[][]) new B[1][1]; // Noncompliant {{Remove this unnecessary cast to "A[][]".}}
-    B b;
+    Nested a = (Nested) new ExtendedNested(); // Noncompliant {{Remove this unnecessary cast to "Nested".}}
+    Nested[][] as = (Nested[][]) new ExtendedNested[1][1]; // Noncompliant {{Remove this unnecessary cast to "Nested[][]".}}
+    ExtendedNested b = null;
     fun(b);
-    fun((B) b); // Noncompliant
-    fun((A) b); // Compliant - exception to distinguish the method to call
-    funBParameter((A) b); // Noncompliant
-    List<B> bees = new java.util.ArrayList<B>();
-    java.util.List<A> aaas = (java.util.List) bees;
-    C c = new C((A) null); // Compliant - exception to distinguish the constructor to call
-    C c2 = new C((B) b); // Noncompliant
-    foo((List<List<A>>) (List<?>) foo2()); // compliant
-    obj = (Unknown<String>) unknown;
+    fun((ExtendedNested) b); // Noncompliant
+    fun((Nested) b); // Compliant - exception to distinguish the method to call
+    List<ExtendedNested> bees = new java.util.ArrayList<ExtendedNested>();
+    List<Nested> aaas = (List) bees;
+    C c = new C((Nested) null); // Compliant - exception to distinguish the constructor to call
+    foo((List<List<Nested>>) (List<?>) foo2()); // compliant
+
     String[] stringList = (String[]) list.toArray(new String[0]); // Compliant
+    return null;
   }
+
   List<String> foo2() {
 
     int a = 1;
@@ -49,7 +54,7 @@ class Outer {
     return (char) ((c | 0x20) - 'a'); // Compliant
   }
 
-  void foo(List<List<A>> a) {}
+  void foo(List<List<Nested>> a) {}
 
   void castInArguments(List<String> p) {
     Collection<String> v1 = Collections.emptyList();
@@ -58,21 +63,21 @@ class Outer {
     castInArguments((List<String>) v2); // Noncompliant
   }
 
-  List<List<B>> foo3() {
+  List<List<ExtendedNested>> foo3() {
     return null;
   }
-  void fun(A a) {
+  void fun(Nested a) {
   }
 
-  void fun(B b) {
+  void fun(ExtendedNested b) {
   }
 
-  void funBParameter(B b) {
+  void funBParameter(ExtendedNested b) {
   }
 
   class C {
-    C(A a) {}
-    C(B a) throws Exception {
+    C(Nested a) {}
+    C(ExtendedNested a) throws Exception {
       Object o = (Object) fun().newInstance(); // Noncompliant {{Remove this unnecessary cast to "Object".}}
     }
     Class fun() { return null;}
@@ -83,10 +88,6 @@ class Outer {
     }
     String[] fun2(){
       return (String[]) null; // Noncompliant {{Remove this unnecessary cast to "String[]".}}
-    }
-    void fun3() {
-      Object[] a = null;
-      java.util.Collection<C> c = (java.util.Collection<C>) Arrays.asList(a);
     }
   }
 }
@@ -184,6 +185,14 @@ class G<T> {
     }
     public static Number choose(Integer i, Float f, boolean takeFirst) {
       return takeFirst ? (Number) i : f;
+    }
+
+    public static Number choose2(Integer i, Float f, boolean takeFirst) {
+      return takeFirst ? (int) i : f;
+    }
+
+    public static float choose3(int i, double f, boolean takeFirst) {
+      return takeFirst ? i : (float)f;
     }
   }
 
@@ -311,10 +320,6 @@ abstract class MyClass {
     return ((MyOtherClass) foo()).bar(); // Compliant
   }
 
-  String qix2() {
-    return ((MyOtherClass) unknown()).bar(); // Compliant
-  }
-
   MyClass qix3() {
     return ((MyOtherClass) foo()); // Noncompliant
   }
@@ -367,6 +372,10 @@ class ClassWithAnnotation {
 }
 
 class ClassWithVariadicFunction {
+  public ClassWithVariadicFunction(int i) {
+
+  }
+
   void variadicFunction(int ... p) {}
   void fun() {
     variadicFunction(1, 2, (int) 3.4);
@@ -391,16 +400,69 @@ class GenericClass<T> {
 
 class CastRawType {
   public static void paramsErrorMessage(Class clazz) {
-    Outer.A r = (Outer.A) clazz.getAnnotation(Outer.A.class); // Handle cast of raw types
+    Outer.Nested r = (Outer.Nested) clazz.getAnnotation(Outer.Nested.class); // Handle cast of raw types
   }
 }
 
-@lombok.AllArgsConstructor
-enum MyEnum {
+class FP_S1905 {
+  static class Overloaded {
+    static String f() {
+      return "";
+    }
 
-  A((byte) 1), // constructor can not be resolved by ECJ, as it is generated by lombok
-  B((byte) 2);
+    static String fff() {
+      return "";
+    }
 
-  @lombok.Getter
-  private byte value;
+    static String f(String a) {
+      return "";
+    }
+  }
+
+  static class NotOverloaded {
+    static String notOverloded() {
+      return "";
+    }
+  }
+
+  void main() {
+    foo((Supplier<String>) Overloaded::f); // Compliant, cast is mandatory
+    foo((Function<String, String>) Overloaded::f); // Compliant, cast is mandatory
+
+    foo((Supplier<String>) Overloaded::fff); // Noncompliant, cast is redundant
+    bar((Supplier<String>) Overloaded::fff); // Noncompliant, cast is redundant
+    bar((Supplier<String>) Overloaded::f); // Compliant - FN
+
+    bar((Supplier<String>) NotOverloaded::notOverloded); // Noncompliant, cast is redundant
+    foo((Supplier<String>) NotOverloaded::notOverloded); // Noncompliant, cast is redundant
+
+    rawBar((Supplier<String>) Overloaded::fff); // Noncompliant, cast is redundant
+    rawBar((Supplier<String>) Overloaded::f); // Noncompliant, cast is redundant
+    foobar((Supplier<String>) Overloaded::fff); // Noncompliant, cast is redundant
+    foobar((Supplier<String>) NotOverloaded::notOverloded); // Noncompliant, cast is redundant
+
+    Supplier supplier = (Supplier<String>) Overloaded::f; // Noncompliant
+
+    bar(((Supplier<String>) Overloaded::fff));  // Noncompliant, cast is redundant
+
+    foo((Supplier<String>) String::new); // Compliant
+    foo((Function<String, String>) String::new); // Compliant
+  }
+
+  void foo(Supplier<String> supplier) {
+  }
+  void foo(Function<String, String> function) {
+  }
+
+  void bar(Supplier<String> supplier) {
+  }
+
+  void foobar(Supplier<String> supplier) {
+  }
+
+  void bar(BiFunction<String, String, String> biFunction) {
+  }
+
+  void rawBar(Supplier s) {
+  }
 }

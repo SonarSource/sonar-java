@@ -22,17 +22,35 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 class RedundantTypeCastCheckTest {
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/RedundantTypeCastCheck.java")
+      .onFile(testSourcesPath("checks/RedundantTypeCastCheck.java"))
       .withCheck(new RedundantTypeCastCheck())
       .verifyIssues();
+
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/RedundantTypeCastCheck.java")
+      .onFile(nonCompilingTestSourcesPath("checks/RedundantTypeCastCheck.java"))
+      .withCheck(new RedundantTypeCastCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void testWithoutSemantic() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/RedundantTypeCastCheck.java"))
       .withCheck(new RedundantTypeCastCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyIssues();
+
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/RedundantTypeCastCheck.java"))
+      .withCheck(new RedundantTypeCastCheck())
+      .withoutSemantic()
+      .verifyIssues();
   }
 }
