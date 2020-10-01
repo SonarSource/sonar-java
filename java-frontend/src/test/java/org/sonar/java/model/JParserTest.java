@@ -21,9 +21,15 @@ package org.sonar.java.model;
 
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.ProviderNotFoundException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -31,6 +37,7 @@ import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -118,8 +125,7 @@ class JParserTest {
     EnumConstantTree c = (EnumConstantTree) t.members().get(0);
     assertSame(
       c.simpleName(),
-      c.initializer().identifier()
-    );
+      c.initializer().identifier());
   }
 
   @Test
@@ -132,6 +138,45 @@ class JParserTest {
     VariableTree s1 = (VariableTree) s.body().get(0);
     VariableTree s2 = (VariableTree) s.body().get(1);
     assertSame(s1.type(), s2.type());
+  }
+
+  @Test
+  void doesnt_include_running_VM_Bootclasspath_if_jvm_sdk_already_provided_in_classpath(@TempDir Path tempFolder) throws IOException {
+    VariableTree s1 = parseAndGetVariable("class C { void m() { String a; } }");
+    assertThat(s1.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.String");
+
+    Path fakeRt = tempFolder.resolve("rt.jar");
+    Files.createFile(fakeRt);
+    s1 = parseAndGetVariable("class C { void m() { String a; } }", fakeRt.toFile());
+    assertThat(s1.type().symbolType().fullyQualifiedName()).isEqualTo("Recovered#typeBindingLString;0");
+
+    Path fakeAndroidSdk = tempFolder.resolve("android.jar");
+    Files.createFile(fakeAndroidSdk);
+    s1 = parseAndGetVariable("class C { void m() { String a; } }", fakeAndroidSdk.toFile());
+    assertThat(s1.type().symbolType().fullyQualifiedName()).isEqualTo("Recovered#typeBindingLString;0");
+
+    Path fakeJrtFs = tempFolder.resolve("lib/jrt-fs.jar");
+    Files.createDirectories(fakeJrtFs.getParent());
+    Files.createFile(fakeJrtFs);
+    String javaVersion = System.getProperty("java.version");
+    if (javaVersion != null && javaVersion.startsWith("1.8")) {
+      File fakeJrtFsFile = fakeJrtFs.toFile();
+      RecognitionException expected = assertThrows(RecognitionException.class, () -> parseAndGetVariable("class C { void m() { String a; } }", fakeJrtFsFile));
+      assertThat(expected).hasCauseExactlyInstanceOf(ProviderNotFoundException.class).hasRootCauseMessage("Provider \"jrt\" not found");
+    } else {
+      // Seems that it will still fallback on the parent classloader so there will be no error
+    }
+
+  }
+
+  private VariableTree parseAndGetVariable(String code, File... classpath) {
+    CompilationUnitTree t = JParserTestUtils.parse("Foo.java", code, Arrays.asList(classpath));
+    ClassTree c = (ClassTree) t.types().get(0);
+    MethodTree m = (MethodTree) c.members().get(0);
+    BlockTree s = m.block();
+    assertNotNull(s);
+    VariableTree s1 = (VariableTree) s.body().get(0);
+    return s1;
   }
 
   private static void testExpression(String expression) {
