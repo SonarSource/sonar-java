@@ -1,4 +1,4 @@
-package checks.SpringComponentWithNonAutowiredMembersCheck;
+package checks.S3749_SpringComponentWithNonAutowiredMembersCheck;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 @Controller
-public class DefaultAnnotations {
+public class S3749_DefaultAnnotations {
 
   private String name = null; // Noncompliant [[sc=18;ec=22]] {{Annotate this member with "@Autowired", "@Resource", "@Inject", or "@Value", or remove it.}}
   public String address = null; // Noncompliant [[sc=17;ec=24]] {{Annotate this member with "@Autowired", "@Resource", "@Inject", or "@Value", or remove it.}}
@@ -34,7 +34,7 @@ public class DefaultAnnotations {
   @Value("${some.config.key}")
   String someConfigKey; // Compliant
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultAnnotations.class); // Compliant
+  private static final Logger LOGGER = LoggerFactory.getLogger(S3749_DefaultAnnotations.class); // Compliant
   void someMethod(){}
 }
 
