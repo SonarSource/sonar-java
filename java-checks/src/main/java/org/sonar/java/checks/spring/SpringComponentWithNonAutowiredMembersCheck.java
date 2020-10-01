@@ -20,6 +20,7 @@
 package org.sonar.java.checks.spring;
 
 import com.google.common.base.Splitter;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -48,6 +49,19 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
     defaultValue = "")
   public String customInjectionAnnotations = "";
 
+  private static final List<String> SPRING_INJECTION_ANNOTATION = Arrays.asList(
+    "org.springframework.beans.factory.annotation.Autowired",
+    "javax.inject.Inject",
+    "javax.annotation.Resource",
+    "javax.persistence.PersistenceContext",
+    "org.springframework.beans.factory.annotation.Value");
+
+  private static final List<String> SPRING_SINGLETON_ANNOTATION = Arrays.asList(
+    "org.springframework.stereotype.Controller",
+    "org.springframework.stereotype.Service",
+    "org.springframework.stereotype.Component",
+    "org.springframework.stereotype.Repository");
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.CLASS);
@@ -56,12 +70,11 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
   @Override
   public void visitNode(Tree tree) {
     ClassTree clazzTree = (ClassTree) tree;
-    SymbolMetadata clazzMeta = clazzTree.symbol().metadata();
     Set<Symbol> symbolsUsedInConstructors = symbolsUsedInConstructors(clazzTree);
 
-    if (isSpringSingletonComponent(clazzMeta)) {
+    if (isSpringSingletonComponent(clazzTree.symbol().metadata())) {
       clazzTree.members().stream().filter(v -> v.is(Kind.VARIABLE))
-        .map(m -> (VariableTree) m)
+        .map(VariableTree.class::cast)
         .filter(v -> !v.symbol().isStatic())
         .filter(v -> !isSpringInjectionAnnotated(v.symbol().metadata()))
         .filter(v -> !isCustomInjectionAnnotated(v.symbol().metadata()))
@@ -71,11 +84,7 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
   }
 
   private static boolean isSpringInjectionAnnotated(SymbolMetadata metadata) {
-    return metadata.isAnnotatedWith("org.springframework.beans.factory.annotation.Autowired")
-      || metadata.isAnnotatedWith("javax.inject.Inject")
-      || metadata.isAnnotatedWith("javax.annotation.Resource")
-      || metadata.isAnnotatedWith("javax.persistence.PersistenceContext")
-      || metadata.isAnnotatedWith("org.springframework.beans.factory.annotation.Value");
+    return SPRING_INJECTION_ANNOTATION.stream().anyMatch(metadata::isAnnotatedWith);
   }
 
   private boolean isCustomInjectionAnnotated(SymbolMetadata metadata) {
@@ -86,11 +95,13 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
   }
 
   private static boolean isSpringSingletonComponent(SymbolMetadata clazzMeta) {
-    return (clazzMeta.isAnnotatedWith("org.springframework.stereotype.Controller")
-      || clazzMeta.isAnnotatedWith("org.springframework.stereotype.Service")
-      || clazzMeta.isAnnotatedWith("org.springframework.stereotype.Component")
-      || clazzMeta.isAnnotatedWith("org.springframework.stereotype.Repository"))
+    return SPRING_SINGLETON_ANNOTATION.stream().anyMatch(clazzMeta::isAnnotatedWith)
+      && !isUsingConfigurationProperties(clazzMeta)
       && isScopeSingleton(clazzMeta);
+  }
+
+  private static boolean isUsingConfigurationProperties(SymbolMetadata classMeta) {
+    return classMeta.isAnnotatedWith("org.springframework.boot.context.properties.ConfigurationProperties");
   }
 
   private Set<Symbol> symbolsUsedInConstructors(ClassTree clazzTree) {

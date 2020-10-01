@@ -1,5 +1,6 @@
 package checks.S3749_SpringComponentWithNonAutowiredMembersCheck;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
@@ -156,4 +158,22 @@ class MyRepo {
   private EntityManager em; // Compliant
 
   // ...
+}
+
+@Component
+@ConfigurationProperties("token.cachemanager")
+class TokenCacheManagerConfigProperties {
+
+  private long expiryMinutes = 25; // Compliant
+
+  @PostConstruct
+  public void postConstruct() {
+    isTrue(expiryMinutes > 0L && expiryMinutes < 30, "token.cachemanager.expiryminutes is a required configuration, a positive value less than 30");
+  }
+
+  private static void isTrue(boolean condition, String message) {
+    if (!condition) {
+      throw new IllegalStateException(message);
+    }
+  }
 }
