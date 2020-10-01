@@ -50,19 +50,24 @@ public class PublicConstructorInAbstractClassCheck extends IssuableSubscriptionV
     Optional<ModifierKeywordTree> abstractKeyword = ModifiersUtils.findModifier(classTree.modifiers(), Modifier.ABSTRACT);
 
     abstractKeyword.ifPresent(keyword -> {
-      JavaFileScannerContext.Location secondaryLocation = new JavaFileScannerContext.Location("This class is \"abstract\".", keyword);
+      JavaFileScannerContext.Location keywordLocation = new JavaFileScannerContext.Location("This class is \"abstract\".", keyword);
+      List<JavaFileScannerContext.Location> secondaryLocations = Collections.singletonList(keywordLocation);
       classTree.members().stream()
-        .filter(PublicConstructorInAbstractClassCheck::isaConstructor)
-        .map(member -> ((MethodTree) member))
-        .map(methodTree -> ModifiersUtils.findModifier(methodTree.modifiers(), Modifier.PUBLIC))
+        .filter(PublicConstructorInAbstractClassCheck::isConstructor)
+        .map(MethodTree.class::cast)
+        .map(PublicConstructorInAbstractClassCheck::isPublic)
         .filter(Optional::isPresent)
         .map(Optional::get)
         .forEach(modifier -> reportIssue(modifier, "Change the visibility of this constructor to \"protected\".",
-          Collections.singletonList(secondaryLocation), null));
+          secondaryLocations, null));
     });
   }
 
-  private static boolean isaConstructor(Tree member) {
+  private static Optional<ModifierKeywordTree> isPublic(MethodTree methodTree) {
+    return ModifiersUtils.findModifier(methodTree.modifiers(), Modifier.PUBLIC);
+  }
+
+  private static boolean isConstructor(Tree member) {
     return member.is(Tree.Kind.CONSTRUCTOR);
   }
 }
