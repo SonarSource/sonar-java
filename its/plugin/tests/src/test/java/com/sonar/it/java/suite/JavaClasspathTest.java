@@ -25,15 +25,21 @@ import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.locator.MavenLocation;
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import org.apache.commons.lang.SystemUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.sonarqube.ws.Issues.Issue;
 
 import static com.sonar.it.java.suite.JavaTestSuite.getMeasureAsInteger;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 /**
  * SONARJAVA-160
@@ -157,7 +163,7 @@ public class JavaClasspathTest {
 
     assertThat(buildResult.getLogs()).contains(
       "sonar.binaries and sonar.libraries are not supported since version 4.0 of the SonarSource Java Analyzer," +
-      " please use sonar.java.binaries and sonar.java.libraries instead");
+        " please use sonar.java.binaries and sonar.java.libraries instead");
     assertThat(buildResult.isSuccess()).isFalse();
   }
 
@@ -181,6 +187,78 @@ public class JavaClasspathTest {
     TestUtils.provisionProject(ORCHESTRATOR, projectKey, projectKey, "java", "dit-check");
     ORCHESTRATOR.executeBuild(scanner);
     assertThat(getNumberOfViolations(projectKey)).isEqualTo(1);
+  }
+
+  @Test
+  public void analyzeJava8ProjectUsingAModularRuntime() {
+    String projectKey = "use-jdk8-only-api";
+    SonarScanner scanner = SonarScanner.create(TestUtils.projectDir("use-jdk8-only-api"))
+      .setProperty("sonar.projectKey", projectKey)
+      .setProperty("sonar.projectName", "jvm-type-resolution")
+      .setProperty("sonar.projectVersion", "1.0-SNAPSHOT")
+      .setProperty("sonar.sources", "src/main/java")
+      .setProperty("sonar.java.binaries", "fakeoutput")
+      .setProperty("sonar.java.source", "8");
+
+    // assume tests are executed with a JVM 11+
+    Path modularJvmHome = Paths.get(System.getProperty("java.home"));
+    Path jrtFsPath = modularJvmHome.resolve("lib/jrt-fs.jar");
+    assertThat(jrtFsPath).exists();
+
+    Path jre8Home = Paths.get("target/jre/jdk8u265-b01-jre");
+    if (SystemUtils.IS_OS_MAC_OSX) {
+      jre8Home = jre8Home.resolve("Contents/Home");
+    }
+    Path rtJar = jre8Home.resolve("lib/rt.jar");
+    assertThat(rtJar).exists();
+
+    scanner.setEnvironmentVariable("JAVA_HOME", modularJvmHome.toAbsolutePath().toString());
+    scanner.setProperty("sonar.java.libraries", rtJar.toAbsolutePath().toString());
+
+    TestUtils.provisionProject(ORCHESTRATOR, projectKey, projectKey, "java", "depends-on-jdk-types");
+    ORCHESTRATOR.executeBuild(scanner);
+
+    List<Issue> issues = TestUtils.issuesForComponent(ORCHESTRATOR, projectKey);
+    assertThat(issues).extracting(Issue::getComponent, Issue::getRule, Issue::getMessage, Issue::getLine)
+      .containsOnly(
+        tuple("use-jdk8-only-api:src/main/java/foo/Main.java", "java:S4551", "Use \"==\" to perform this enum comparison instead of using \"equals\"", 11),
+        tuple("use-jdk8-only-api:src/main/java/foo/Main.java", "java:S4551", "Use \"==\" to perform this enum comparison instead of using \"equals\"", 16),
+        tuple("use-jdk8-only-api:src/main/java/foo/Main.java", "java:S4551", "Use \"==\" to perform this enum comparison instead of using \"equals\"", 21));
+  }
+
+  @Test
+  public void analyzeJava11PlusProjectUsingAJava8Runtime() {
+    String projectKey = "jvm-type-resolution";
+    SonarScanner scanner = SonarScanner.create(TestUtils.projectDir("jvm-type-resolution"))
+      .setProperty("sonar.projectKey", projectKey)
+      .setProperty("sonar.projectName", "jvm-type-resolution")
+      .setProperty("sonar.projectVersion", "1.0-SNAPSHOT")
+      .setProperty("sonar.sources", "src/main/java")
+      .setProperty("sonar.java.source", "11")
+      .setProperty("sonar.java.binaries", "fakeoutput");
+
+    // assume tests are executed with a JVM 11+
+    Path modularJvmHome = Paths.get(System.getProperty("java.home"));
+    Path jrtFsPath = modularJvmHome.resolve("lib/jrt-fs.jar");
+    assertThat(jrtFsPath).exists();
+
+    Path jre8Home = Paths.get("target/jre/jdk8u265-b01-jre");
+    if (SystemUtils.IS_OS_MAC_OSX) {
+      jre8Home = jre8Home.resolve("Contents/Home");
+    }
+    Path rtJar = jre8Home.resolve("lib/rt.jar");
+    assertThat(rtJar).exists();
+
+    scanner.setEnvironmentVariable("JAVA_HOME", jre8Home.toAbsolutePath().toString());
+    scanner.setProperty("sonar.java.libraries", jrtFsPath.toAbsolutePath().toString());
+
+    TestUtils.provisionProject(ORCHESTRATOR, projectKey, projectKey, "java", "depends-on-jdk-types");
+    ORCHESTRATOR.executeBuild(scanner);
+
+    List<Issue> issues = TestUtils.issuesForComponent(ORCHESTRATOR, projectKey);
+    assertThat(issues).extracting(Issue::getComponent, Issue::getRule, Issue::getMessage, Issue::getLine)
+      .containsOnly(
+        tuple("jvm-type-resolution:src/main/java/foo/Main.java", "java:S1481", "Remove this unused \"unused\" local variable.", 13));
   }
 
   private static void buildDitProject() {
