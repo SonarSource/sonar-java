@@ -43,6 +43,10 @@ public class PublicConstructorInAbstractClassCheck extends IssuableSubscriptionV
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
+    if (ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.PRIVATE)) {
+      return;
+    }
+
     Optional<ModifierKeywordTree> abstractKeyword = ModifiersUtils.findModifier(classTree.modifiers(), Modifier.ABSTRACT);
 
     abstractKeyword.ifPresent(keyword -> {

@@ -10,4 +10,10 @@ abstract class AbstractClass2 {
   protected AbstractClass2 () { // Compliant
     //do sth here
   }
+
+  private abstract class NestedAbstractClass {
+    public NestedAbstractClass() { // Compliant, the class is itself private
+
+    }
+  }
 }
