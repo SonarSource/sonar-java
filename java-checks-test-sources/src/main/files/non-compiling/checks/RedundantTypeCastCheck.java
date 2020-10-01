@@ -116,24 +116,49 @@ enum MyPrivateEnum {
   private byte value;
 
 
-  class FP_S1905 {
-    static class Overloaded {
-      static String f() {
-        return "";
-      }
+}
 
-      static String f(String a) {
-        return "";
-      }
+class FP_S1905 {
+  static class Overloaded {
+    static String f() {
+      return "";
     }
 
-    void main() {
-      foo(Overloaded::f); // Does not compile without cast
-      foo(String::new); // Does not compile without cast
+    static String f(String a) {
+      return "";
     }
+  }
 
-    void foo(Supplier<String> supplier) {
-    }
-    void foo(Function<String, String> function) {
-    }
-  }}
+  void main() {
+    foo(Overloaded::f); // Does not compile without cast
+    foo(String::new); // Does not compile without cast
+
+    bar(((Supplier<String>) Overloaded::fff));
+    foo((Supplier<String>) Overloaded::unknown);
+    unknown((Supplier<String>) Overloaded::fff);
+  }
+
+  void main2() {
+    foo((Supplier<String>) Overloaded::f); // Compliant, cast is mandatory
+    foo((Function<String, String>) Overloaded::f); // Compliant, cast is mandatory
+
+    foo((Supplier<String>) Overloaded::fff); // Compliant
+    bar((Supplier<String>) Overloaded::fff); // Compliant
+    bar((Supplier<String>) Overloaded::f); // Compliant
+
+    bar((Supplier<String>) NotOverloaded::notOverloded); // Compliant
+    foo((Supplier<String>) NotOverloaded::notOverloded); // Compliant
+
+    rawBar((Supplier<String>) Overloaded::fff); // Compliant, cast is redundant
+
+
+    foo((Supplier<String>) String::new); // Compliant
+    foo((Function<String, String>) String::new); // Compliant
+  }
+
+  void foo(Supplier<String> supplier) {
+  }
+
+  void foo(Function<String, String> function) {
+  }
+}

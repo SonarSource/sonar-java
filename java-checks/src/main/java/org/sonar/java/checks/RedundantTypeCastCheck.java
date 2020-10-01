@@ -71,7 +71,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     ExpressionTree expression = typeCastTree.expression();
     if (!expression.is(Tree.Kind.METHOD_INVOCATION)) {
       Tree parent = typeCastTree.parent();
-      return expression.is(Tree.Kind.METHOD_REFERENCE) && skipParentheses(parent).is(Tree.Kind.MEMBER_SELECT);
+      return expression.is(Tree.Kind.METHOD_REFERENCE) && parent != null && skipParentheses(parent).is(Tree.Kind.MEMBER_SELECT);
     }
     Symbol symbol = ((MethodInvocationTree) expression).symbol();
     if (!symbol.isMethodSymbol()) {
@@ -163,32 +163,38 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isUnnecessarySubtypeCast(Type childType, TypeCastTree typeCastTree, Type parentType) {
-    boolean isArgument = skipParentheses(typeCastTree.parent()).is(Tree.Kind.ARGUMENTS);
-    if (isArgument && typeCastTree.expression().is(Tree.Kind.METHOD_REFERENCE) && isAmbiguousMethodReference(typeCastTree)) {
-      return false;
-    }
+    Tree parentTree = skipParentheses(typeCastTree.parent());
+    boolean isArgument = parentTree.is(Tree.Kind.ARGUMENTS);
+
     return !childType.isPrimitive()
       // Exception: subtype cast are tolerated in method or constructor call arguments
       && (typeCastTree.type().symbolType().equals(childType)
         || (isArgument && childType.equals(parentType)) || (!isArgument && childType.isSubtypeOf(parentType)))
       && (!ExpressionUtils.skipParentheses(typeCastTree.expression()).is(Tree.Kind.LAMBDA_EXPRESSION)
-        || isUnnecessaryLambdaCast(childType, parentType));
+        || isUnnecessaryLambdaCast(childType, parentType))
+      && !(isArgument && isMandatoryMethodReferenceCast(typeCastTree, parentTree));
   }
 
-  private static boolean isAmbiguousMethodReference(TypeCastTree typeCastTree) {
-    MethodReferenceTree methodReferenceTree = (MethodReferenceTree) typeCastTree.expression();
-    Symbol.TypeSymbol methodRefOwner = (Symbol.TypeSymbol) methodReferenceTree.method().symbol().owner();
-    long numberMethodRefsOverloads = getOverloadsCount(methodRefOwner,methodReferenceTree.method().symbol().name());
-
-    MethodInvocationTree methodInvocationTree = (MethodInvocationTree) typeCastTree.parent().parent();
-    Symbol.TypeSymbol owner = (Symbol.TypeSymbol) methodInvocationTree.symbol().owner();
-    long numberOfMethodsOverloads = getOverloadsCount(owner, methodInvocationTree.symbol().name());
-
-    return numberMethodRefsOverloads > 1 && numberOfMethodsOverloads > 1;
+  private static boolean isMandatoryMethodReferenceCast(TypeCastTree typeCastTree, Tree parentTree) {
+    Tree preParent = skipParentheses(parentTree.parent());
+    ExpressionTree castExpression = typeCastTree.expression();
+    if (castExpression.is(Tree.Kind.METHOD_REFERENCE) && preParent.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodReferenceTree expression = (MethodReferenceTree) castExpression;
+      MethodInvocationTree methodInvocationTree = (MethodInvocationTree) preParent;
+      Symbol methodAsArg = expression.method().symbol();
+      Symbol methodCaller = methodInvocationTree.symbol();
+      return hasOverloads(methodAsArg) && hasOverloads(methodCaller);
+    }
+    return false;
   }
 
-  private static long getOverloadsCount(Symbol.TypeSymbol type, String methodName) {
-    return type.memberSymbols().stream()
+  private static boolean hasOverloads(Symbol symbol) {
+    Symbol owner = symbol.owner();
+    return owner.isTypeSymbol() && calcOverloads((Symbol.TypeSymbol) owner, symbol.name()) > 1;
+  }
+
+  private static long calcOverloads(Symbol.TypeSymbol owner, String methodName) {
+    return owner.memberSymbols().stream()
       .filter(member -> member.isMethodSymbol() && member.name().equals(methodName))
       .count();
   }
