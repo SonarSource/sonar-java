@@ -34,6 +34,7 @@ import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -170,7 +171,11 @@ class JParserTest {
   }
 
   @Test
-  void dont_include_running_VM_Bootclasspath_if_jvm_jrt_fs_jar_already_provided_in_classpath(@TempDir Path tempFolder) throws IOException {
+  void dont_include_running_VM_Bootclasspath_if_jvm_jrt_fs_jar_already_provided_in_classpath() throws IOException {
+    // Don't use JUnit TempFolder as the fake jrt-fs.jar remains locked on Windows because of the JrtFsLoader URLClassloader
+    Path tempFolder = Files.createTempDirectory("sonarjava");
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> FileUtils.deleteQuietly(tempFolder.toFile())));
+
     VariableTree s1 = parseAndGetVariable("class C { void m() { String a; } }");
     assertThat(s1.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.String");
 
