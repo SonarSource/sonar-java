@@ -163,7 +163,7 @@ public class JavaClasspathTest {
 
     assertThat(buildResult.getLogs()).contains(
       "sonar.binaries and sonar.libraries are not supported since version 4.0 of the SonarSource Java Analyzer," +
-        " please use sonar.java.binaries and sonar.java.libraries instead");
+      " please use sonar.java.binaries and sonar.java.libraries instead");
     assertThat(buildResult.isSuccess()).isFalse();
   }
 

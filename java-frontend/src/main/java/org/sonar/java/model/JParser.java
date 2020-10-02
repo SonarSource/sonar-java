@@ -31,7 +31,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.eclipse.jdt.core.JavaCore;
@@ -137,6 +136,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @ParametersAreNonnullByDefault
 public class JParser {
 
+  private static final HashSet<String> JRE_JARS = new HashSet<>(Arrays.asList("rt.jar", "jrt-fs.jar", "android.jar"));
+
   private static final Logger LOG = Loggers.get(JParser.class);
 
   public static final String MAXIMUM_SUPPORTED_JAVA_VERSION = "14";
@@ -160,9 +161,8 @@ public class JParser {
     }
 
     astParser.setCompilerOptions(options);
-    
-    Set<String> jdkJarsNames = new HashSet<>(Arrays.asList("rt.jar", "jrt-fs.jar", "android.jar"));
-    boolean includeRunningVMBootclasspath = classpath.stream().noneMatch(f -> jdkJarsNames.contains(f.getName()));
+
+    boolean includeRunningVMBootclasspath = classpath.stream().noneMatch(f -> JRE_JARS.contains(f.getName()));
 
     astParser.setEnvironment(
       classpath.stream().map(File::getAbsolutePath).toArray(String[]::new),
