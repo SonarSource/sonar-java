@@ -19,9 +19,34 @@
  */
 package org.sonar.java.checks.security;
 
+import com.google.common.collect.ImmutableSet;
+import java.util.Optional;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.AbstractHashAlgorithmChecker;
 
 @Rule(key = "S4790")
 public class DataHashingCheck extends AbstractHashAlgorithmChecker {
+
+  public static final Set<String> DEPRECATED_HASH_CLASSES = ImmutableSet.of(
+    DeprecatedSpringPasswordEncoder.MD5.classFqn,
+    DeprecatedSpringPasswordEncoder.SHA.classFqn,
+    DeprecatedSpringPasswordEncoder.LDAP.classFqn,
+    DeprecatedSpringPasswordEncoder.MD4.classFqn,
+    DeprecatedSpringPasswordEncoder.MESSAGE_DIGEST.classFqn,
+    DeprecatedSpringPasswordEncoder.NO_OP.classFqn,
+    DeprecatedSpringPasswordEncoder.STANDARD.classFqn
+  );
+
+  private static final String MESSAGE = "Make sure this weak hash algorithm is not used in a sensitive context here.";
+
+  @Override
+  protected Optional<String> getMessageForClass(String className) {
+    return DEPRECATED_HASH_CLASSES.contains(className) ? Optional.of(MESSAGE) : Optional.empty();
+  }
+
+  @Override
+  protected String getMessageForAlgorithm(String algorithmName) {
+    return MESSAGE;
+  }
 }

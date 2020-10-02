@@ -29,11 +29,11 @@ class DeprecatedHashAlgorithmCheckTest {
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/DeprecatedHashAlgorithmCheck.java"))
+      .onFile(testSourcesPath("checks/DeprecatedHashAlgorithmCheck.java"))
       .withCheck(new DeprecatedHashAlgorithmCheck())
       .verifyIssues();
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/DeprecatedHashAlgorithmCheck.java"))
+      .onFile(testSourcesPath("checks/DeprecatedHashAlgorithmCheck.java"))
       .withCheck(new DeprecatedHashAlgorithmCheck())
       .withoutSemantic()
       .verifyNoIssues();
