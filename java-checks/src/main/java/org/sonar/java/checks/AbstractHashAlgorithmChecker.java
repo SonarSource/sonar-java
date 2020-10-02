@@ -62,17 +62,6 @@ public abstract class AbstractHashAlgorithmChecker extends AbstractMethodDetecti
     .put("appendMd5DigestAsHex", InsecureAlgorithm.MD5)
     .build();
 
-  public static final Map<String, String> MESSAGE_PER_CLASS = ImmutableMap.<String, String>builder()
-    .put(DeprecatedSpringPasswordEncoder.MD5.classFqn, "Use a stronger hashing algorithm than MD5.")
-    .put(DeprecatedSpringPasswordEncoder.SHA.classFqn, "Don't rely on " + DeprecatedSpringPasswordEncoder.SHA.className + " because it is deprecated.")
-    .put(DeprecatedSpringPasswordEncoder.LDAP.classFqn, String.format(DeprecatedSpringPasswordEncoder.MESSAGE_FORMAT, DeprecatedSpringPasswordEncoder.LDAP.className))
-    .put(DeprecatedSpringPasswordEncoder.MD4.classFqn, String.format(DeprecatedSpringPasswordEncoder.MESSAGE_FORMAT, DeprecatedSpringPasswordEncoder.MD4.className))
-    .put(DeprecatedSpringPasswordEncoder.MESSAGE_DIGEST.classFqn,
-      String.format(DeprecatedSpringPasswordEncoder.MESSAGE_FORMAT, DeprecatedSpringPasswordEncoder.MESSAGE_DIGEST.className))
-    .put(DeprecatedSpringPasswordEncoder.NO_OP.classFqn, "Use a stronger hashing algorithm than this fake one.")
-    .put(DeprecatedSpringPasswordEncoder.STANDARD.classFqn, "Use a stronger hashing algorithm.")
-    .build();
-
   private static final String CONSTRUCTOR = "<init>";
 
   /**
@@ -128,8 +117,6 @@ public abstract class AbstractHashAlgorithmChecker extends AbstractMethodDetecti
     STANDARD("org.springframework.security.crypto.password.StandardPasswordEncoder", CONSTRUCTOR),
     NO_OP("org.springframework.security.crypto.password.NoOpPasswordEncoder", GET_INSTANCE);
 
-    private static final String MESSAGE_FORMAT = "Don't rely on %s because it is deprecated and use a stronger hashing algorithm.";
-
     public final String classFqn;
     public final String methodName;
     public final String className;
@@ -142,6 +129,8 @@ public abstract class AbstractHashAlgorithmChecker extends AbstractMethodDetecti
     }
   }
 
+  protected abstract Optional<String> getMessageForClass(String className);
+  protected abstract String getMessageForAlgorithm(String algorithmName);
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
@@ -151,9 +140,9 @@ public abstract class AbstractHashAlgorithmChecker extends AbstractMethodDetecti
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     IdentifierTree methodName = ExpressionUtils.methodName(mit);
-    String message = MESSAGE_PER_CLASS.get(methodName.symbol().owner().type().fullyQualifiedName());
-    if (message != null) {
-      reportIssue(methodName, message);
+    Optional<String> message = getMessageForClass(methodName.symbol().owner().type().fullyQualifiedName());
+    if (message.isPresent()) {
+      reportIssue(methodName, message.get());
       return;
     }
     InsecureAlgorithm algorithm = ALGORITHM_BY_METHOD_NAME.get(methodName.name());
@@ -161,14 +150,14 @@ public abstract class AbstractHashAlgorithmChecker extends AbstractMethodDetecti
       algorithm = algorithm(mit.arguments().get(0)).orElse(null);
     }
     if (algorithm != null) {
-      reportIssue(methodName, "Use a stronger hashing algorithm than " + algorithm.toString() + ".");
+      reportIssue(methodName, getMessageForAlgorithm(algorithm.toString()));
     }
   }
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
-    String message = MESSAGE_PER_CLASS.get(newClassTree.identifier().symbolType().fullyQualifiedName());
-    reportIssue(newClassTree.identifier(), message);
+    getMessageForClass(newClassTree.identifier().symbolType().fullyQualifiedName())
+      .ifPresent(message ->  reportIssue(newClassTree.identifier(), message));
   }
 
   private static MethodMatchers getWeakHashMethodInvocationMatchers() {

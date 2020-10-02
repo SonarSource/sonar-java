@@ -1,4 +1,4 @@
-package checks.security;
+package checks;
 
 import java.io.FileInputStream;
 import java.io.IOException;

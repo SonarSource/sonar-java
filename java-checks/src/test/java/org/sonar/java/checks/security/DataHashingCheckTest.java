@@ -29,11 +29,11 @@ class DataHashingCheckTest {
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/DeprecatedHashAlgorithmCheck.java"))
+      .onFile(testSourcesPath("checks/security/DataHashingCheck.java"))
       .withCheck(new DataHashingCheck())
       .verifyIssues();
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/DeprecatedHashAlgorithmCheck.java"))
+      .onFile(testSourcesPath("checks/security/DataHashingCheck.java"))
       .withCheck(new DataHashingCheck())
       .withoutSemantic()
       .verifyNoIssues();
