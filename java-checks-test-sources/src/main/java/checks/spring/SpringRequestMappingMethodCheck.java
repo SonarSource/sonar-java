@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/home")
 public class SpringRequestMappingMethodCheck {
 
-  @RequestMapping("/") // Noncompliant [[sc=4;ec=18]] {{Add a "method" parameter to this "@RequestMapping" annotation.}}
+  @RequestMapping("/") // Noncompliant [[sc=4;ec=18]] {{Make sure allowing safe and unsafe HTTP methods is safe here.}}
   String home() {
     return "Hello from get";
   }
