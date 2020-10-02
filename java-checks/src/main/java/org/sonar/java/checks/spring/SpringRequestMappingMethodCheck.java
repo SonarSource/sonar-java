@@ -46,6 +46,7 @@ public class SpringRequestMappingMethodCheck extends IssuableSubscriptionVisitor
   private static final String REQUEST_MAPPING_CLASS = "org.springframework.web.bind.annotation.RequestMapping";
 
   private static final String REQUEST_METHOD = "method";
+  public static final String MESSAGE = "Make sure allowing safe and unsafe HTTP methods is safe here.";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -58,7 +59,7 @@ public class SpringRequestMappingMethodCheck extends IssuableSubscriptionVisitor
     findRequestMappingAnnotation(classTree.modifiers())
       .flatMap(SpringRequestMappingMethodCheck::findRequestMethods)
       .filter(SpringRequestMappingMethodCheck::mixSafeAndUnsafeMethods)
-      .ifPresent(methods -> reportIssue(methods, "Make sure allowing safe and unsafe HTTP methods is safe here."));
+      .ifPresent(methods -> reportIssue(methods, MESSAGE));
 
     classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
@@ -73,9 +74,9 @@ public class SpringRequestMappingMethodCheck extends IssuableSubscriptionVisitor
     if (requestMethods.isPresent()) {
       requestMethods
         .filter(SpringRequestMappingMethodCheck::mixSafeAndUnsafeMethods)
-        .ifPresent(methods -> reportIssue(methods, "Make sure allowing safe and unsafe HTTP methods is safe here."));
+        .ifPresent(methods -> reportIssue(methods, MESSAGE));
     } else if (requestMappingAnnotation.isPresent() && !inheritRequestMethod(classSymbol)) {
-      reportIssue(requestMappingAnnotation.get().annotationType(), "Add a \"method\" parameter to this \"@RequestMapping\" annotation.");
+      reportIssue(requestMappingAnnotation.get().annotationType(), MESSAGE);
     }
   }
 
