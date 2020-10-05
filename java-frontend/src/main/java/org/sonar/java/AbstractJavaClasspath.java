@@ -66,7 +66,7 @@ public abstract class AbstractJavaClasspath {
   protected boolean validateLibraries;
   protected boolean initialized;
 
-  public AbstractJavaClasspath(Configuration settings, FileSystem fs, InputFile.Type fileType) {
+  protected AbstractJavaClasspath(Configuration settings, FileSystem fs, InputFile.Type fileType) {
     this.settings = settings;
     this.fs = fs;
     this.fileType = fileType;

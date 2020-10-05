@@ -45,7 +45,7 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
   private final Multimap<String, Integer> excludedLinesByRule;
   private final Map<Class<? extends JavaCheck>, String> rulesKeysByRulesClass;
 
-  public BaseTreeVisitorIssueFilter() {
+  protected BaseTreeVisitorIssueFilter() {
     excludedLinesByRule = HashMultimap.create();
     rulesKeysByRulesClass = rulesKeysByRulesClass(filteredRules());
   }

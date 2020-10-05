@@ -39,12 +39,12 @@ public abstract class ListTreeImpl<T extends Tree> extends JavaTree implements L
   private final List<T> list;
   private final List<SyntaxToken> separators;
 
-  public ListTreeImpl(List<T> list) {
+  protected ListTreeImpl(List<T> list) {
     this.list = list;
     this.separators = new ArrayList<>();
   }
 
-  public ListTreeImpl(List<T> list, List<SyntaxToken> separators) {
+  protected ListTreeImpl(List<T> list, List<SyntaxToken> separators) {
     this.list = list;
     this.separators = separators;
   }
