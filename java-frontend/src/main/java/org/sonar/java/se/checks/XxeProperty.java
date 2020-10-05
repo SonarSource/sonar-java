@@ -76,7 +76,7 @@ public interface XxeProperty {
       || arg1.asConstant(String.class).filter("true"::equalsIgnoreCase).isPresent();
   }
 
-  static class XxePropertyHolder {
+  class XxePropertyHolder {
     private final String propertyName;
 
     private final BiPredicate<SymbolicValue, ExpressionTree> securing;
