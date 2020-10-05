@@ -27,7 +27,7 @@ public abstract class RegexSyntaxElement {
 
   private final IndexRange range;
 
-  public RegexSyntaxElement(RegexSource source, IndexRange range) {
+  protected RegexSyntaxElement(RegexSource source, IndexRange range) {
     this.source = source;
     this.range = range;
   }

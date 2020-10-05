@@ -58,13 +58,13 @@ public abstract class MethodYield {
   private final MethodBehavior behavior;
   List<ConstraintsByDomain> parametersConstraints;
 
-  public MethodYield(MethodBehavior behavior) {
+  protected MethodYield(MethodBehavior behavior) {
     this.parametersConstraints = new ArrayList<>();
     this.node = null;
     this.behavior = behavior;
   }
 
-  public MethodYield(ExplodedGraph.Node node, MethodBehavior behavior) {
+  protected MethodYield(ExplodedGraph.Node node, MethodBehavior behavior) {
     this.parametersConstraints = new ArrayList<>();
     this.node = node;
     this.behavior = behavior;

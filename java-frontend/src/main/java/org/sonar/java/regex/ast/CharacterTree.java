@@ -24,7 +24,7 @@ package org.sonar.java.regex.ast;
  */
 public abstract class CharacterTree extends RegexTree {
 
-  public CharacterTree(RegexSource source, IndexRange range) {
+  protected CharacterTree(RegexSource source, IndexRange range) {
     super(source, range);
   }
 

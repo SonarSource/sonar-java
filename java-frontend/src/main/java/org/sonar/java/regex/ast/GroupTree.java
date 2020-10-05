@@ -31,7 +31,7 @@ public abstract class GroupTree extends RegexTree {
   @Nullable
   private final RegexToken groupHeader;
 
-  public GroupTree(RegexSource source, RegexTree.Kind kind, @Nullable RegexTree element, IndexRange range) {
+  protected GroupTree(RegexSource source, RegexTree.Kind kind, @Nullable RegexTree element, IndexRange range) {
     super(source, range);
     this.kind = kind;
     this.element = element;

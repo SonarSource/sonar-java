@@ -42,7 +42,7 @@ public abstract class RegexTree extends RegexSyntaxElement {
     MISC_ESCAPE_SEQUENCE,
   }
 
-  public RegexTree(RegexSource source, IndexRange range) {
+  protected RegexTree(RegexSource source, IndexRange range) {
     super(source, range);
   }
 
