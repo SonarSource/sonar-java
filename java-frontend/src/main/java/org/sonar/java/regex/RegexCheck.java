@@ -35,7 +35,7 @@ public interface RegexCheck extends JavaCheck {
   /**
    * Issue location holder, replacing regex syntax elements into text spans for reporting
    */
-  public static class RegexIssueLocation {
+  class RegexIssueLocation {
 
     private final List<AnalyzerMessage.TextSpan> locations;
     private final String message;

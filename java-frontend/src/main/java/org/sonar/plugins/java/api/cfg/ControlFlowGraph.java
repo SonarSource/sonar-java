@@ -34,7 +34,7 @@ public interface ControlFlowGraph {
 
   Block exitBlock();
 
-  public interface Block {
+  interface Block {
     int id();
 
     List<Tree> elements();
