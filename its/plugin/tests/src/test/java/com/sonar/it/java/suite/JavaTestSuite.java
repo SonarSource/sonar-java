@@ -73,7 +73,8 @@ public class JavaTestSuite {
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-java-complexity.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-filtered-issues.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-using-aar-dep.xml"))
-      .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-package-info.xml"));
+      .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-package-info.xml"))
+      .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-depends-on-jdk-types.xml"));
     orchestratorBuilder.addPlugin(FileLocation.of(TestUtils.pluginJar("java-extension-plugin")));
     ORCHESTRATOR = orchestratorBuilder.build();
   }

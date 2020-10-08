@@ -20,10 +20,23 @@
 package org.sonar.java.model;
 
 import com.sonar.sslr.api.RecognitionException;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.ProviderNotFoundException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -31,6 +44,7 @@ import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -132,6 +146,130 @@ class JParserTest {
     VariableTree s1 = (VariableTree) s.body().get(0);
     VariableTree s2 = (VariableTree) s.body().get(1);
     assertSame(s1.type(), s2.type());
+  }
+
+  @Test
+  void dont_include_running_VM_Bootclasspath_if_jvm_rt_jar_already_provided_in_classpath(@TempDir Path tempFolder) throws IOException {
+    VariableTree s1 = parseAndGetVariable("class C { void m() { String a; } }");
+    assertThat(s1.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.String");
+
+    Path fakeRt = tempFolder.resolve("rt.jar");
+    Files.createFile(fakeRt);
+    s1 = parseAndGetVariable("class C { void m() { String a; } }", fakeRt.toFile());
+    assertThat(s1.type().symbolType().fullyQualifiedName()).isEqualTo("Recovered#typeBindingLString;0");
+  }
+
+  @Test
+  void dont_include_running_VM_Bootclasspath_if_android_runtime_already_provided_in_classpath(@TempDir Path tempFolder) throws IOException {
+    VariableTree s1 = parseAndGetVariable("class C { void m() { String a; } }");
+    assertThat(s1.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.String");
+
+    Path fakeAndroidSdk = tempFolder.resolve("android.jar");
+    Files.createFile(fakeAndroidSdk);
+    s1 = parseAndGetVariable("class C { void m() { String a; } }", fakeAndroidSdk.toFile());
+    assertThat(s1.type().symbolType().fullyQualifiedName()).isEqualTo("Recovered#typeBindingLString;0");
+  }
+
+  @Test
+  void dont_include_running_VM_Bootclasspath_if_jvm_jrt_fs_jar_already_provided_in_classpath() throws IOException {
+    // Don't use JUnit TempFolder as the fake jrt-fs.jar remains locked on Windows because of the JrtFsLoader URLClassloader
+    Path tempFolder = Files.createTempDirectory("sonarjava");
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> FileUtils.deleteQuietly(tempFolder.toFile())));
+
+    VariableTree s1 = parseAndGetVariable("class C { void m() { String a; } }");
+    assertThat(s1.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.String");
+
+    Path fakeJrtFs = createFakeJrtFs(tempFolder);
+
+    File fakeJrtFsFile = fakeJrtFs.toFile();
+    Throwable expected = assertThrows(Throwable.class, () -> parseAndGetVariable("class C { void m() { String a; } }", fakeJrtFsFile));
+    String javaVersion = System.getProperty("java.version");
+    if (javaVersion != null && javaVersion.startsWith("1.8")) {
+      assertThat(expected).hasCauseExactlyInstanceOf(ProviderNotFoundException.class).hasRootCauseMessage("Provider \"jrt\" not found");
+    } else {
+      assertThat(expected).isInstanceOf(ClassFormatError.class).hasMessage("Truncated class file");
+    }
+  }
+
+  private Path createFakeJrtFs(Path tempFolder) throws IOException {
+    // We have to put a fake JrtFileSystemProvider in the JAR to make JrtFsLoader crash and by this way verify that this is truely our JAR
+    // that was loaded
+    Path fakeJrtFSProviderClass = tempFolder.resolve("jdk/internal/jrtfs/JrtFileSystemProvider.class");
+    Files.createDirectories(fakeJrtFSProviderClass.getParent());
+    Files.createFile(fakeJrtFSProviderClass);
+
+    Path fakeJrtFs = tempFolder.resolve("lib/jrt-fs.jar");
+    Files.createDirectories(fakeJrtFs.getParent());
+
+    Manifest manifest = new Manifest();
+    manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+    try (JarOutputStream target = new JarOutputStream(Files.newOutputStream(fakeJrtFs), manifest)) {
+      add(tempFolder.resolve("jdk").toFile(), tempFolder.toFile(), target);
+    }
+    return fakeJrtFs;
+  }
+
+  // https://stackoverflow.com/a/59351837/534773
+  private static void add(File source, File baseDir, JarOutputStream target) {
+    BufferedInputStream in = null;
+
+    try {
+      if (!source.exists()) {
+        throw new IOException("Source directory is empty");
+        }
+        if (source.isDirectory()) {
+          // For Jar entries, all path separates should be '/'(OS independent)
+          String entryName = baseDir.toPath().relativize(source.toPath()).toFile().getPath().replace("\\", "/");
+          if (!entryName.isEmpty()) {
+            if (!entryName.endsWith("/")) {
+              entryName += "/";
+            }
+            JarEntry entry = new JarEntry(entryName);
+            entry.setTime(source.lastModified());
+            target.putNextEntry(entry);
+            target.closeEntry();
+          }
+          for (File nestedFile : source.listFiles()) {
+            add(nestedFile, baseDir, target);
+          }
+          return;
+        }
+
+        String entryName = baseDir.toPath().relativize(source.toPath()).toFile().getPath().replace("\\", "/");
+        JarEntry entry = new JarEntry(entryName);
+        entry.setTime(source.lastModified());
+        target.putNextEntry(entry);
+        in = new BufferedInputStream(new FileInputStream(source));
+
+        byte[] buffer = new byte[1024];
+        while (true) {
+          int count = in.read(buffer);
+          if (count == -1) {
+            break;
+          }
+          target.write(buffer, 0, count);
+        }
+        target.closeEntry();
+      } catch (Exception ignored) {
+
+    } finally {
+      if (in != null) {
+        try {
+          in.close();
+        } catch (Exception ignored) {
+          throw new RuntimeException(ignored);
+        }
+      }
+    }
+  }
+
+  private VariableTree parseAndGetVariable(String code, File... classpath) {
+    CompilationUnitTree t = JParserTestUtils.parse("Foo.java", code, Arrays.asList(classpath));
+    ClassTree c = (ClassTree) t.types().get(0);
+    MethodTree m = (MethodTree) c.members().get(0);
+    BlockTree s = m.block();
+    assertNotNull(s);
+    return (VariableTree) s.body().get(0);
   }
 
   private static void testExpression(String expression) {
