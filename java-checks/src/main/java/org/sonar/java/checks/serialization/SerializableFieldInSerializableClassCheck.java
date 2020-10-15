@@ -136,6 +136,7 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
     SymbolMetadata metadata = member.symbol().metadata();
     return metadata.isAnnotatedWith("javax.inject.Inject")
       || metadata.isAnnotatedWith("javax.ejb.EJB")
+      || metadata.isAnnotatedWith("org.apache.wicket.spring.injection.annot.SpringBean")
       || metadata.annotations().stream().anyMatch(annotation -> annotation.symbol().isUnknown());
   }
 

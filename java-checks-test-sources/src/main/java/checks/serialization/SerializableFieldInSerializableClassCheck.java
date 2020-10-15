@@ -1,5 +1,8 @@
 package checks.serialization;
 
+import org.apache.wicket.markup.html.panel.GenericPanel;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.stereotype.Component;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -362,4 +365,18 @@ class SerializableImpl implements NonSerializableInterface, java.io.Serializable
 
 interface NonSerializableInterface {
   void doSomething();
+}
+
+@Component
+class MyBean {
+}
+
+class WicketComponentWithSpringBean extends GenericPanel<String> {
+
+  @SpringBean
+  private MyBean myBean; // Compliant
+
+  public WicketComponentWithSpringBean(String id) {
+    super(id);
+  }
 }
