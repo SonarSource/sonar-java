@@ -66,7 +66,8 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
     if (!isExcluded(variableTree)) {
       IdentifierTree simpleName = variableTree.simpleName();
       if (isCollectionOfSerializable(variableTree.type())) {
-        if (!ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.PRIVATE)) {
+        if (!ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.PRIVATE)
+          && !implementsSerializable(variableTree.type().symbolType())) {
           reportIssue(simpleName, "Make \"" + simpleName.name() + "\" private or transient.");
         } else if (isUnserializableCollection(variableTree.type().symbolType())
           || isUnserializableCollection(variableTree.initializer())) {
