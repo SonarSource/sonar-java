@@ -1,5 +1,6 @@
 package checks.serialization;
 
+import com.google.common.collect.*;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.stereotype.Component;
@@ -379,4 +380,18 @@ class WicketComponentWithSpringBean extends GenericPanel<String> {
   public WicketComponentWithSpringBean(String id) {
     super(id);
   }
+}
+
+class GuavaImmutable implements Serializable {
+  ImmutableList<String> immutableList; // Compliant
+  ImmutableSet<String> immutableSet; // Compliant
+  ImmutableCollection<String> immutableCollection; // Compliant
+  ImmutableMap<String, String> immutableMap; // Compliant
+  ImmutableBiMap<String, String> immutableBiMap; // Compliant
+  ImmutableMultiset<String> immutableMultiset; // Compliant
+
+  ImmutableRangeMap<String, String> immutableRangeMap; // Compliant
+  ImmutableRangeSet<String> immutableRangeSet; // Compliant
+  ImmutableTable<String, String, String> immutableTable; // Compliant
+  ImmutableMultimap<String, String> immutableMultimap; // Compliant
 }
