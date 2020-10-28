@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -73,7 +74,7 @@ public class EscapedUnicodeCharactersCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isPrintableEscapedUnicode(String input) {
-    String hexValue = input.substring(input.length() - 4);
+    String hexValue = input.substring(input.length() - 4).toUpperCase(Locale.ROOT);
     if (UNICODE_WHITESPACES.contains(hexValue)) {
       return false;
     }
