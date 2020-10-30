@@ -44,8 +44,11 @@ public final class UnitTestUtils {
   public static final MethodMatchers ASSERTION_INVOCATION_MATCHERS = MethodMatchers.or(
     // fest 1.x / 2.X
     MethodMatchers.create().ofSubTypes("org.fest.assertions.GenericAssert", "org.fest.assertions.api.AbstractAssert").anyName().withAnyParameters().build(),
-    // rest assured 2.0
-    MethodMatchers.create().ofTypes("io.restassured.response.ValidatableResponseOptions")
+    // rest assured 2.x, 3.x, 4.x
+    MethodMatchers.create().ofTypes(
+      "com.jayway.restassured.response.ValidatableResponseOptions", //restassured 2.x
+      "io.restassured.response.ValidatableResponseOptions" //restassured 3.x and 4.x
+    )
       .name(name -> name.equals("body") ||
         name.equals("time") ||
         name.startsWith("time") ||

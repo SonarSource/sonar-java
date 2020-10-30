@@ -59,6 +59,7 @@ class AssertionsInTestsCheckTest {
     "ReactiveX1",
     "ReactiveX2",
     "RestAssured",
+    "RestAssured2",
     "Mockito",
     "JMock",
     "WireMock",
