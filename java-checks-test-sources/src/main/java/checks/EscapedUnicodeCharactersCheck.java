@@ -33,6 +33,7 @@ class EscapedUnicodeCharactersCheck {
     // Unicode characters with White_Space property
     prefix = "a\u0085" + "a\u00A0" + "a\u1680" + "a\u2000" + "a\u2001" + "a\u2002" + "a\u2003" + "a\u2004" + "a\u2005";
     prefix = "a\u2006" + "a\u2007" + "a\u2008" + "a\u2009" + "a\u200A" + "a\u2028" + "a\u2029" + "a\u202F" + "a\u205F" + "a\u3000";
+    prefix = "a\u00a0" + "a\u200a" + "a\u202f" + "a\u205f" + "a\u00a0";
 
     // Related Unicode characters without White_Space property
     prefix = "a\u180E" + "a\u200B" + "a\u200C" + "a\u200D" + "a\u2060" + "a\uFEFF";
