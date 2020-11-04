@@ -26,4 +26,23 @@
 
   <bean id="scf5" class="org.springframework.jms.connection.SingleConnectionFactory" p:reconnectOnException="false"> <!-- Noncompliant {{Add a "reconnectOnException" property, set to "true"}} -->
   </bean>
+
+  <bean id="scf6" class="org.springframework.jms.connection.SingleConnectionFactory"> <!-- Compliant -->
+    <property name="reconnectOnException" value="true">
+    </property>
+  </bean>
+
+  <bean id="scf7" class="org.springframework.jms.connection.SingleConnectionFactory"> <!-- Noncompliant {{Add a "reconnectOnException" property, set to "true"}} -->
+    <property name="reconnectOnException" value="false">
+    </property>
+  </bean>
+
+  <bean id="scf8" class="org.springframework.jms.connection.SingleConnectionFactory"> <!-- Compliant -->
+    <property name="reconnectOnException" value="true"/>
+  </bean>
+
+  <bean id="scf9" class="org.springframework.jms.connection.SingleConnectionFactory"> <!-- Noncompliant {{Add a "reconnectOnException" property, set to "true"}} -->
+    <property name="reconnectOnException" value="false" />
+  </bean>
+
 </beans>
