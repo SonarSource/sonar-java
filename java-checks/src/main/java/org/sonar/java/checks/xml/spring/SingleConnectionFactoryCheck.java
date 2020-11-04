@@ -19,26 +19,36 @@
  */
 package org.sonar.java.checks.xml.spring;
 
+import java.util.stream.IntStream;
+
 import javax.xml.xpath.XPathExpression;
 import org.sonar.check.Rule;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
 import org.sonarsource.analyzer.commons.xml.checks.SimpleXPathBasedCheck;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+
 
 @Rule(key = "S3438")
 public class SingleConnectionFactoryCheck extends SimpleXPathBasedCheck {
 
   private XPathExpression singleConnectionFactoryBeansExpression = getXPathExpression("beans/bean[@class='org.springframework.jms.connection.SingleConnectionFactory']");
-  private XPathExpression reconnectOnExceptionPropertyValueExpression = getXPathExpression("property[@name='reconnectOnException' and value='true']");
+  private XPathExpression reconnectOnExceptionPropertyExpression = getXPathExpression("property[@name='reconnectOnException']");
+  private XPathExpression valueExpression = getXPathExpression("value[text()='true']");
 
   @Override
   public void scanFile(XmlFile file) {
     evaluateAsList(singleConnectionFactoryBeansExpression, file.getNamespaceUnawareDocument()).forEach(bean -> {
-      if (!hasPropertyAsAttribute(bean) && !hasPropertyAsChild(bean)) {
+      if (!hasReconnectOnExceptionPropertyEnabled(bean)) {
         reportIssue(bean, "Add a \"reconnectOnException\" property, set to \"true\"");
       }
     });
+  }
+
+  private boolean hasReconnectOnExceptionPropertyEnabled(Node bean) {
+    return hasPropertyAsAttribute(bean) ||
+      hasAttributeValue(bean, "reconnectOnException") ||
+      hasPropertyAsChild(bean, reconnectOnExceptionPropertyExpression);
   }
 
   private static boolean hasPropertyAsAttribute(Node bean) {
@@ -46,9 +56,17 @@ public class SingleConnectionFactoryCheck extends SimpleXPathBasedCheck {
     return attribute != null && "true".equals(attribute.getNodeValue());
   }
 
-  private boolean hasPropertyAsChild(Node bean) {
-    NodeList nodeList = evaluate(reconnectOnExceptionPropertyValueExpression, bean);
-    return nodeList != null && nodeList.getLength() != 0;
+  private static boolean hasAttributeValue(Node bean, String attributeName) {
+    NamedNodeMap attributes = bean.getAttributes();
+    return IntStream.range(0, attributes.getLength())
+      .mapToObj(attributes::item)
+      // ignore namespace
+      .anyMatch(attribute -> attribute.getNodeName().endsWith(attributeName) && "true".equals(attribute.getNodeValue()));
+  }
+
+  private boolean hasPropertyAsChild(Node bean, XPathExpression expression) {
+    return evaluateAsList(expression, bean).stream()
+      .anyMatch(property -> hasAttributeValue(property, "value") || evaluate(valueExpression, property).getLength() > 0);
   }
 
 }
