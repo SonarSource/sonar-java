@@ -59,6 +59,25 @@ class Fields {
     private int foo; // WithIssue
   }
 
+  // SONARJAVA-3579 No FP for non-static final fields with Builder.Default
+  @lombok.Builder
+  class Builder3 { // NoIssue
+    @lombok.Builder.Default
+    public final int bar = 1; // NoIssue
+  }
+
+  // Final fields with Builder.Default that aren't in a Builder class should still complain
+  class Builder4 { // WithIssue
+    @lombok.Builder.Default
+    public final int bar = 1; // WithIssue
+  }
+
+  // Final fields without Builder.Default should still complain
+  @lombok.Builder
+  class Builder5 { // WithIssue
+    public final int foo = 1; // WithIssue
+  }
+
   @lombok.ToString
   class ToString { // WithIssue
     private int foo; // NoIssue
