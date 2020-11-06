@@ -53,10 +53,16 @@ class Fields {
   @lombok.Builder
   class Builder { // WithIssue
     private int foo; // NoIssue
+
+    @lombok.Builder.Default
+    private final int bar = 1; // NoIssue
   }
 
   class Builder2 { // WithIssue
     private int foo; // WithIssue
+
+    @lombok.Builder.Default
+    private final int bar = 1; // WithIssue
   }
 
   @lombok.ToString

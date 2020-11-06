@@ -75,6 +75,8 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     RegexPatternsNeedlesslyCheck.class,
     StaticMethodCheck.class);
 
+  private static final String LOMBOK_BUILDER = "lombok.Builder";
+  private static final String LOMBOK_BUILDER_DEFAULT = "lombok.Builder$Default";
   private static final String LOMBOK_VAL = "lombok.val";
   private static final String LOMBOK_VALUE = "lombok.Value";
   private static final String LOMBOK_FIELD_DEFAULTS = "lombok.experimental.FieldDefaults";
@@ -154,6 +156,15 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
         .map(VariableTree.class::cast)
         .filter(v -> !generatesNonFinal(v))
         .forEach(v -> excludeLines(v, ExceptionsShouldBeImmutableCheck.class));
+    }
+
+    // Exclude final fields annotated with @Builder.Default in a @Builder class
+    if (usesAnnotation(tree, Collections.singletonList(LOMBOK_BUILDER))) {
+      tree.members().stream()
+        .filter(t -> t.is(Tree.Kind.VARIABLE))
+        .map(VariableTree.class::cast)
+        .filter(v -> v.symbol().isFinal() && v.symbol().metadata().isAnnotatedWith(LOMBOK_BUILDER_DEFAULT))
+        .forEach(v -> excludeLines(v, ConstantsShouldBeStaticFinalCheck.class));
     }
 
     super.visitClass(tree);
