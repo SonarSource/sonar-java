@@ -21,26 +21,33 @@ package org.sonar.java.regex.ast;
 
 import javax.annotation.Nonnull;
 
-public class DotTree extends RegexTree {
+public interface CharacterClassElementTree extends RegexSyntaxElement {
 
-  public DotTree(RegexSource source, IndexRange range) {
-    super(source, range);
-  }
-
-  @Override
-  public void accept(RegexVisitor visitor) {
-    visitor.visitDot(this);
-  }
-
-  @Override
-  public Kind kind() {
-    return RegexTree.Kind.DOT;
+  enum Kind {
+    INTERSECTION,
+    UNION,
+    NEGATION,
+    CHARACTER_RANGE,
+    ESCAPED_CHARACTER_CLASS,
+    PLAIN_CHARACTER,
+    UNICODE_CODE_POINT,
+    MISC_ESCAPE_SEQUENCE,
+    NESTED_CHARACTER_CLASS
   }
 
   @Nonnull
-  @Override
-  public TransitionType incomingTransitionType() {
-    return TransitionType.CHARACTER;
+  Kind characterClassElementKind();
+
+  void accept(RegexVisitor visitor);
+
+  default boolean is(Kind... kinds) {
+    Kind thisKind = characterClassElementKind();
+    for (Kind kind : kinds) {
+      if (thisKind == kind) {
+        return true;
+      }
+    }
+    return false;
   }
 
 }

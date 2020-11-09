@@ -55,6 +55,8 @@ class MiscEscapeSequenceTreeTest {
     assertKind(RegexTree.Kind.MISC_ESCAPE_SEQUENCE, escapeSequence);
     assertEquals(regex, escapeSequence.getText());
     assertLocation(0, regex.length(), escapeSequence);
+    assertEquals(AutomatonState.TransitionType.CHARACTER, escapeSequence.incomingTransitionType());
+    assertEquals(CharacterClassElementTree.Kind.MISC_ESCAPE_SEQUENCE, escapeSequence.characterClassElementKind());
   }
 
 }

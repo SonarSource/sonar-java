@@ -19,15 +19,13 @@
  */
 package org.sonar.java.regex.ast;
 
-public abstract class RegexTree extends RegexSyntaxElement {
+import javax.annotation.Nonnull;
+
+public abstract class RegexTree extends AbstractRegexSyntaxElement implements AutomatonState {
   public enum Kind {
     BACK_REFERENCE,
     BOUNDARY,
     CHARACTER_CLASS,
-    CHARACTER_CLASS_INTERSECTION,
-    CHARACTER_CLASS_UNION,
-    CHARACTER_CLASS_NEGATION,
-    CHARACTER_RANGE,
     DISJUNCTION,
     DOT,
     ESCAPED_CHARACTER_CLASS,
@@ -62,6 +60,23 @@ public abstract class RegexTree extends RegexSyntaxElement {
       }
     }
     return false;
+  }
+
+  private AutomatonState continuation;
+
+  @Nonnull
+  public AutomatonState continuation() {
+    if (this.continuation == null) {
+      throw new IllegalStateException("RegexTree.continuation() called before setContinuation");
+    }
+    return continuation;
+  }
+
+  public void setContinuation(AutomatonState continuation) {
+    if (this.continuation != null) {
+      throw new IllegalStateException("RegexTree.setContinuation called more than once");
+    }
+    this.continuation = continuation;
   }
 
 }

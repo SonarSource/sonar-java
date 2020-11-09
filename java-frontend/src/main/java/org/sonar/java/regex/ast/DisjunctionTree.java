@@ -21,6 +21,7 @@ package org.sonar.java.regex.ast;
 
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public class DisjunctionTree extends RegexTree {
 
@@ -50,6 +51,26 @@ public class DisjunctionTree extends RegexTree {
   @Override
   public Kind kind() {
     return Kind.DISJUNCTION;
+  }
+
+  @Nonnull
+  @Override
+  public TransitionType incomingTransitionType() {
+    return TransitionType.EPSILON;
+  }
+
+  @Nonnull
+  @Override
+  public List<? extends AutomatonState> successors() {
+    return alternatives;
+  }
+
+  @Override
+  public void setContinuation(AutomatonState continuation) {
+    super.setContinuation(continuation);
+    for (RegexTree alternative : alternatives) {
+      alternative.setContinuation(continuation);
+    }
   }
 
 }

@@ -21,20 +21,21 @@ package org.sonar.java.regex.ast;
 
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class CharacterClassIntersectionTree extends RegexTree {
+public class CharacterClassIntersectionTree extends AbstractRegexSyntaxElement implements CharacterClassElementTree {
 
-  private final List<RegexTree> characterClasses;
+  private final List<CharacterClassElementTree> characterClasses;
 
   private final List<RegexToken> andOperators;
 
-  public CharacterClassIntersectionTree(RegexSource source, IndexRange range, List<RegexTree> characterClasses, List<RegexToken> andOperators) {
+  public CharacterClassIntersectionTree(RegexSource source, IndexRange range, List<CharacterClassElementTree> characterClasses, List<RegexToken> andOperators) {
     super(source, range);
     this.characterClasses = Collections.unmodifiableList(characterClasses);
     this.andOperators = Collections.unmodifiableList(andOperators);
   }
 
-  public List<RegexTree> getCharacterClasses() {
+  public List<CharacterClassElementTree> getCharacterClasses() {
     return characterClasses;
   }
 
@@ -47,9 +48,10 @@ public class CharacterClassIntersectionTree extends RegexTree {
     visitor.visitCharacterClassIntersection(this);
   }
 
+  @Nonnull
   @Override
-  public Kind kind() {
-    return Kind.CHARACTER_CLASS_INTERSECTION;
+  public Kind characterClassElementKind() {
+    return Kind.INTERSECTION;
   }
 
 }

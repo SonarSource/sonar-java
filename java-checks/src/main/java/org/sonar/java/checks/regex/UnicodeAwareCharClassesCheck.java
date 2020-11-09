@@ -57,7 +57,7 @@ public class UnicodeAwareCharClassesCheck extends AbstractRegexCheck {
   private class UnicodeUnawareCharClassFinder extends RegexBaseVisitor {
 
     private final MethodInvocationTree mit;
-    private final List<RegexTree> unicodeUnawareRange = new ArrayList<>();
+    private final List<CharacterRangeTree> unicodeUnawareRanges = new ArrayList<>();
     private final List<RegexTree> unicodeAwareWithFlag = new ArrayList<>();
     private boolean containsUnicodeCharacterFlag = false;
 
@@ -72,12 +72,12 @@ public class UnicodeAwareCharClassesCheck extends AbstractRegexCheck {
 
     @Override
     protected void after(RegexParseResult regexParseResult) {
-      int unicodeUnawareRangeSize = unicodeUnawareRange.size();
+      int unicodeUnawareRangeSize = unicodeUnawareRanges.size();
       if (unicodeUnawareRangeSize == 1) {
-        reportIssue(unicodeUnawareRange.get(0),
+        reportIssue(unicodeUnawareRanges.get(0),
           "Replace this character range with a Unicode-aware character class.", null, Collections.emptyList());
       } else if (unicodeUnawareRangeSize > 1) {
-        List<RegexCheck.RegexIssueLocation> secondaries = unicodeUnawareRange.stream()
+        List<RegexCheck.RegexIssueLocation> secondaries = unicodeUnawareRanges.stream()
           .map(tree -> new RegexIssueLocation(tree, "Character range"))
           .collect(Collectors.toList());
 
@@ -101,7 +101,7 @@ public class UnicodeAwareCharClassesCheck extends AbstractRegexCheck {
       if (lowerBound < 0xFFFF) {
         Character expectedUpperBoundChar = unicodeUnawareCharacterRanges.get((char) lowerBound);
         if (expectedUpperBoundChar != null && expectedUpperBoundChar == tree.getUpperBound().codePointOrUnit()) {
-          unicodeUnawareRange.add(tree);
+          unicodeUnawareRanges.add(tree);
         }
       }
     }

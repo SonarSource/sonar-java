@@ -21,12 +21,14 @@ package org.sonar.java.regex.ast;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.sonar.java.regex.RegexParserTestUtils.assertFailParsing;
 import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
 import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
 import static org.sonar.java.regex.RegexParserTestUtils.assertLocation;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainString;
+import static org.sonar.java.regex.RegexParserTestUtils.assertSingleEdge;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 import static org.sonar.java.regex.RegexParserTestUtils.assertType;
 
@@ -37,6 +39,8 @@ class SequenceTreeTest {
     RegexTree regex = assertSuccessfulParse("");
     assertLocation(0, 0, regex);
     assertKind(RegexTree.Kind.SEQUENCE, regex);
+    assertEquals(AutomatonState.TransitionType.EPSILON, regex.incomingTransitionType());
+    assertSingleEdge(regex, regex.continuation(), AutomatonState.TransitionType.EPSILON);
   }
 
   @Test
@@ -52,6 +56,10 @@ class SequenceTreeTest {
         assertLocation(4, 8, second);
       }
     );
+    assertEquals(AutomatonState.TransitionType.EPSILON, sequence.incomingTransitionType());
+    assertSingleEdge(sequence, sequence.getItems().get(0), AutomatonState.TransitionType.CHARACTER);
+    assertSingleEdge(sequence.getItems().get(0), sequence.getItems().get(1), AutomatonState.TransitionType.CHARACTER);
+    assertSingleEdge(sequence.getItems().get(1), sequence.continuation(), AutomatonState.TransitionType.EPSILON);
   }
 
   @Test
@@ -67,6 +75,10 @@ class SequenceTreeTest {
         assertLocation(3, 4, second);
       }
     );
+    assertEquals(AutomatonState.TransitionType.EPSILON, sequence.incomingTransitionType());
+    assertSingleEdge(sequence, sequence.getItems().get(0), AutomatonState.TransitionType.CHARACTER);
+    assertSingleEdge(sequence.getItems().get(0), sequence.getItems().get(1), AutomatonState.TransitionType.CHARACTER);
+    assertSingleEdge(sequence.getItems().get(1), sequence.continuation(), AutomatonState.TransitionType.EPSILON);
   }
 
   @Test

@@ -29,6 +29,7 @@ import org.sonar.java.regex.ast.AtomicGroupTree;
 import org.sonar.java.regex.ast.BackReferenceTree;
 import org.sonar.java.regex.ast.BoundaryTree;
 import org.sonar.java.regex.ast.CapturingGroupTree;
+import org.sonar.java.regex.ast.CharacterClassElementTree;
 import org.sonar.java.regex.ast.CharacterClassIntersectionTree;
 import org.sonar.java.regex.ast.CharacterClassTree;
 import org.sonar.java.regex.ast.CharacterClassUnionTree;
@@ -684,7 +685,7 @@ public class RegexParser {
     return new BoundaryTree(source, BoundaryTree.Type.forKey(boundary.getCharacter()), backslash.getRange().merge(boundary.getRange()));
   }
 
-  private RegexTree parseCharacterClass() {
+  private CharacterClassTree parseCharacterClass() {
     JavaCharacter openingBracket = characters.getCurrent();
     characters.moveNext();
     boolean negated = false;
@@ -692,7 +693,7 @@ public class RegexParser {
       characters.moveNext();
       negated = true;
     }
-    RegexTree contents = parseCharacterClassIntersection();
+    CharacterClassElementTree contents = parseCharacterClassIntersection();
     if (characters.currentIs(']')) {
       characters.moveNext();
     } else {
@@ -702,8 +703,8 @@ public class RegexParser {
     return new CharacterClassTree(source, range, openingBracket, negated, contents);
   }
 
-  private RegexTree parseCharacterClassIntersection() {
-    List<RegexTree> elements = new ArrayList<>();
+  private CharacterClassElementTree parseCharacterClassIntersection() {
+    List<CharacterClassElementTree> elements = new ArrayList<>();
     List<RegexToken> andOperators = new ArrayList<>();
     elements.add(parseCharacterClassUnion(true));
     while (characters.currentIs("&&")) {
@@ -717,9 +718,9 @@ public class RegexParser {
     return combineTrees(elements, (range, items) -> new CharacterClassIntersectionTree(source, range, items, andOperators));
   }
 
-  private RegexTree parseCharacterClassUnion(boolean isAtBeginning) {
-    List<RegexTree> elements = new ArrayList<>();
-    RegexTree element = parseCharacterClassElement(isAtBeginning);
+  private CharacterClassElementTree parseCharacterClassUnion(boolean isAtBeginning) {
+    List<CharacterClassElementTree> elements = new ArrayList<>();
+    CharacterClassElementTree element = parseCharacterClassElement(isAtBeginning);
     while (element != null) {
       elements.add(element);
       element = parseCharacterClassElement(false);
@@ -733,7 +734,7 @@ public class RegexParser {
   }
 
   @CheckForNull
-  private RegexTree parseCharacterClassElement(boolean isAtBeginning) {
+  private CharacterClassElementTree parseCharacterClassElement(boolean isAtBeginning) {
     if (characters.isInQuotingMode() && characters.isNotAtEnd()) {
       return readPlainCharacter();
     }
@@ -746,8 +747,13 @@ public class RegexParser {
         RegexTree escape = parseEscapeSequence();
         if (escape.is(RegexTree.Kind.PLAIN_CHARACTER, RegexTree.Kind.UNICODE_CODE_POINT)) {
           return parseCharacterRange((CharacterTree) escape);
+        } else if (escape instanceof CharacterClassElementTree) {
+          return (CharacterClassElementTree) escape;
         } else {
-          return escape;
+          errors.add(new SyntaxError(escape, "Invalid escape sequence inside character class"));
+          // Produce dummy AST and keep parsing to catch more errors.
+          // The 'x' here doesn't matter because we're not going to actually use the AST when there are syntax errors.
+          return plainCharacter(new JavaCharacter(source, escape.getRange(), 'x'));
         }
       case '[':
         return parseCharacterClass();
@@ -764,7 +770,7 @@ public class RegexParser {
     }
   }
 
-  private RegexTree parseCharacterRange(CharacterTree startCharacter) {
+  private CharacterClassElementTree parseCharacterRange(CharacterTree startCharacter) {
     if (characters.currentIs('-') && !characters.isInQuotingMode()) {
       int lookAhead = characters.lookAhead(1);
       if (lookAhead == EOF || lookAhead == ']') {
@@ -826,7 +832,7 @@ public class RegexParser {
     errors.add(new SyntaxError(offendingToken, message));
   }
 
-  private static RegexTree combineTrees(List<RegexTree> elements, TreeConstructor treeConstructor) {
+  private static <T extends RegexSyntaxElement> T combineTrees(List<T> elements, TreeConstructor<T> treeConstructor) {
     if (elements.size() == 1) {
       return elements.get(0);
     } else {
@@ -835,8 +841,8 @@ public class RegexParser {
     }
   }
 
-  private interface TreeConstructor {
-    RegexTree construct(IndexRange range, List<RegexTree> elements);
+  private interface TreeConstructor<T> {
+    T construct(IndexRange range, List<T> elements);
   }
 
   private interface GroupConstructor {

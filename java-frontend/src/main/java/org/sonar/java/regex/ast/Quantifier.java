@@ -21,7 +21,7 @@ package org.sonar.java.regex.ast;
 
 import javax.annotation.CheckForNull;
 
-public abstract class Quantifier extends RegexSyntaxElement {
+public abstract class Quantifier extends AbstractRegexSyntaxElement {
 
   public enum Modifier {
     GREEDY, RELUCTANT, POSSESSIVE

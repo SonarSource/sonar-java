@@ -19,7 +19,9 @@
  */
 package org.sonar.java.regex.ast;
 
-public class CharacterRangeTree extends RegexTree {
+import javax.annotation.Nonnull;
+
+public class CharacterRangeTree extends AbstractRegexSyntaxElement implements CharacterClassElementTree {
 
   private final CharacterTree lowerBound;
 
@@ -44,8 +46,9 @@ public class CharacterRangeTree extends RegexTree {
     visitor.visitCharacterRange(this);
   }
 
+  @Nonnull
   @Override
-  public Kind kind() {
+  public Kind characterClassElementKind() {
     return Kind.CHARACTER_RANGE;
   }
 

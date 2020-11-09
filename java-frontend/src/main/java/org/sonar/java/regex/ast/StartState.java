@@ -19,28 +19,26 @@
  */
 package org.sonar.java.regex.ast;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-public class DotTree extends RegexTree {
+public class StartState implements AutomatonState {
 
-  public DotTree(RegexSource source, IndexRange range) {
-    super(source, range);
+  private final AutomatonState continuation;
+
+  public StartState(AutomatonState continuation) {
+    this.continuation = continuation;
   }
 
+  @CheckForNull
   @Override
-  public void accept(RegexVisitor visitor) {
-    visitor.visitDot(this);
-  }
-
-  @Override
-  public Kind kind() {
-    return RegexTree.Kind.DOT;
+  public AutomatonState continuation() {
+    return continuation;
   }
 
   @Nonnull
   @Override
   public TransitionType incomingTransitionType() {
-    return TransitionType.CHARACTER;
+    return TransitionType.EPSILON;
   }
-
 }

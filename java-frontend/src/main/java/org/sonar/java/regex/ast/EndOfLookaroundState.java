@@ -21,26 +21,27 @@ package org.sonar.java.regex.ast;
 
 import javax.annotation.Nonnull;
 
-public class DotTree extends RegexTree {
+public class EndOfLookaroundState implements AutomatonState {
 
-  public DotTree(RegexSource source, IndexRange range) {
-    super(source, range);
+  private final LookAroundTree parent;
+
+  public EndOfLookaroundState(LookAroundTree parent) {
+    this.parent = parent;
   }
 
+  @Nonnull
   @Override
-  public void accept(RegexVisitor visitor) {
-    visitor.visitDot(this);
-  }
-
-  @Override
-  public Kind kind() {
-    return RegexTree.Kind.DOT;
+  public AutomatonState continuation() {
+    return parent.continuation();
   }
 
   @Nonnull
   @Override
   public TransitionType incomingTransitionType() {
-    return TransitionType.CHARACTER;
+    if (parent.getDirection() == LookAroundTree.Direction.BEHIND) {
+      return TransitionType.EPSILON;
+    } else {
+      return TransitionType.LOOKAROUND_BACKTRACKING;
+    }
   }
-
 }

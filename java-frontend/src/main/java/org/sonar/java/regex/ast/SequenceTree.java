@@ -21,6 +21,7 @@ package org.sonar.java.regex.ast;
 
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public class SequenceTree extends RegexTree {
 
@@ -29,6 +30,9 @@ public class SequenceTree extends RegexTree {
   public SequenceTree(RegexSource source, IndexRange range, List<RegexTree> items) {
     super(source, range);
     this.items = items;
+    for (int i = 0; i < items.size() - 1; i++) {
+      items.get(i).setContinuation(items.get(i + 1));
+    }
   }
 
   public List<RegexTree> getItems() {
@@ -45,4 +49,27 @@ public class SequenceTree extends RegexTree {
     return Kind.SEQUENCE;
   }
 
+  @Nonnull
+  @Override
+  public TransitionType incomingTransitionType() {
+    return TransitionType.EPSILON;
+  }
+
+  @Nonnull
+  @Override
+  public List<AutomatonState> successors() {
+    if (items.isEmpty()) {
+      return Collections.singletonList(continuation());
+    } else {
+      return Collections.singletonList(items.get(0));
+    }
+  }
+
+  @Override
+  public void setContinuation(AutomatonState continuation) {
+    super.setContinuation(continuation);
+    if (!items.isEmpty()) {
+      items.get(items.size() - 1).setContinuation(continuation);
+    }
+  }
 }

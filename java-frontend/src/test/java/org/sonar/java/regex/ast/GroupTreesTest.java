@@ -34,9 +34,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.sonar.java.regex.RegexParserTestUtils.assertFailParsing;
 import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
 import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
+import static org.sonar.java.regex.RegexParserTestUtils.assertListSize;
 import static org.sonar.java.regex.RegexParserTestUtils.assertLocation;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainString;
+import static org.sonar.java.regex.RegexParserTestUtils.assertSingleEdge;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 import static org.sonar.java.regex.RegexParserTestUtils.assertToken;
 import static org.sonar.java.regex.RegexParserTestUtils.assertType;
@@ -151,6 +153,10 @@ class GroupTreesTest {
     assertNull(group.getGroupHeader());
     assertNull(group.getElement());
     assertEquals(Pattern.UNIX_LINES | Pattern.MULTILINE | Pattern.DOTALL, group.getEnabledFlags().getMask());
+
+    FinalState finalState = assertType(FinalState.class, group.continuation());
+    assertEquals(AutomatonState.TransitionType.EPSILON, group.incomingTransitionType());
+    assertSingleEdge(group, finalState, AutomatonState.TransitionType.EPSILON);
   }
 
   @Test
@@ -178,7 +184,15 @@ class GroupTreesTest {
     assertEquals(LookAroundTree.Polarity.POSITIVE, lookAround.getPolarity());
     assertEquals(LookAroundTree.Direction.AHEAD, lookAround.getDirection());
     assertNotNull(lookAround.getElement());
-    assertPlainCharacter('x', lookAround.getElement());
+    RegexTree x = lookAround.getElement();
+    assertPlainCharacter('x', x);
+
+    FinalState finalState = assertType(FinalState.class, regex.continuation());
+    assertEquals(AutomatonState.TransitionType.EPSILON, lookAround.incomingTransitionType());
+    assertSingleEdge(lookAround, x, AutomatonState.TransitionType.CHARACTER);
+    EndOfLookaroundState endOfLookaroundState = assertType(EndOfLookaroundState.class, x.continuation());
+    assertSingleEdge(x, endOfLookaroundState, AutomatonState.TransitionType.LOOKAROUND_BACKTRACKING);
+    assertSingleEdge(endOfLookaroundState, finalState, AutomatonState.TransitionType.EPSILON);
   }
 
   @Test
@@ -189,7 +203,15 @@ class GroupTreesTest {
     assertEquals(LookAroundTree.Polarity.POSITIVE, lookAround.getPolarity());
     assertEquals(LookAroundTree.Direction.BEHIND, lookAround.getDirection());
     assertNotNull(lookAround.getElement());
-    assertPlainCharacter('x', lookAround.getElement());
+    RegexTree x = lookAround.getElement();
+    assertPlainCharacter('x', x);
+
+    FinalState finalState = assertType(FinalState.class, regex.continuation());
+    assertEquals(AutomatonState.TransitionType.LOOKAROUND_BACKTRACKING, lookAround.incomingTransitionType());
+    assertSingleEdge(lookAround, x, AutomatonState.TransitionType.CHARACTER);
+    EndOfLookaroundState endOfLookaroundState = assertType(EndOfLookaroundState.class, x.continuation());
+    assertSingleEdge(x, endOfLookaroundState, AutomatonState.TransitionType.EPSILON);
+    assertSingleEdge(endOfLookaroundState, finalState, AutomatonState.TransitionType.EPSILON);
   }
 
   @Test
@@ -200,7 +222,18 @@ class GroupTreesTest {
     assertEquals(LookAroundTree.Polarity.NEGATIVE, lookAround.getPolarity());
     assertEquals(LookAroundTree.Direction.AHEAD, lookAround.getDirection());
     assertNotNull(lookAround.getElement());
-    assertPlainCharacter('x', lookAround.getElement());
+    RegexTree x = lookAround.getElement();
+    assertPlainCharacter('x', x);
+
+    FinalState finalState = assertType(FinalState.class, regex.continuation());
+    assertEquals(AutomatonState.TransitionType.EPSILON, lookAround.incomingTransitionType());
+    assertListSize(1, lookAround.successors());
+    NegationState negationState = assertType(NegationState.class, lookAround.successors().get(0));
+    assertSingleEdge(lookAround, negationState, AutomatonState.TransitionType.NEGATION);
+    assertSingleEdge(negationState, x, AutomatonState.TransitionType.CHARACTER);
+    EndOfLookaroundState endOfLookaroundState = assertType(EndOfLookaroundState.class, x.continuation());
+    assertSingleEdge(x, endOfLookaroundState, AutomatonState.TransitionType.LOOKAROUND_BACKTRACKING);
+    assertSingleEdge(endOfLookaroundState, finalState, AutomatonState.TransitionType.EPSILON);
   }
 
   @Test
@@ -211,7 +244,19 @@ class GroupTreesTest {
     assertEquals(LookAroundTree.Polarity.NEGATIVE, lookAround.getPolarity());
     assertEquals(LookAroundTree.Direction.BEHIND, lookAround.getDirection());
     assertNotNull(lookAround.getElement());
-    assertPlainCharacter('x', lookAround.getElement());
+    RegexTree x = lookAround.getElement();
+    assertPlainCharacter('x', x);
+
+    FinalState finalState = assertType(FinalState.class, regex.continuation());
+    assertEquals(AutomatonState.TransitionType.LOOKAROUND_BACKTRACKING, lookAround.incomingTransitionType());
+    assertListSize(1, lookAround.successors());
+    NegationState negationState = assertType(NegationState.class, lookAround.successors().get(0));
+    assertSingleEdge(lookAround, negationState, AutomatonState.TransitionType.NEGATION);
+    assertSingleEdge(negationState, x, AutomatonState.TransitionType.CHARACTER);
+    EndOfLookaroundState endOfLookaroundState = assertType(EndOfLookaroundState.class, x.continuation());
+    assertSingleEdge(x, endOfLookaroundState, AutomatonState.TransitionType.EPSILON);
+    assertSingleEdge(endOfLookaroundState, finalState, AutomatonState.TransitionType.EPSILON);
+
   }
 
   @Test

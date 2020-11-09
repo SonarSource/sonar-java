@@ -19,9 +19,10 @@
  */
 package org.sonar.java.regex.ast;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class EscapedCharacterClassTree extends RegexTree {
+public class EscapedCharacterClassTree extends RegexTree implements CharacterClassElementTree {
 
   private final char type;
 
@@ -56,6 +57,12 @@ public class EscapedCharacterClassTree extends RegexTree {
     }
   }
 
+  @Nonnull
+  @Override
+  public CharacterClassElementTree.Kind characterClassElementKind() {
+    return CharacterClassElementTree.Kind.ESCAPED_CHARACTER_CLASS;
+  }
+
   @Override
   public void accept(RegexVisitor visitor) {
     visitor.visitEscapedCharacterClass(this);
@@ -86,4 +93,9 @@ public class EscapedCharacterClassTree extends RegexTree {
     return type;
   }
 
+  @Nonnull
+  @Override
+  public TransitionType incomingTransitionType() {
+    return TransitionType.CHARACTER;
+  }
 }

@@ -27,6 +27,8 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.opentest4j.AssertionFailedError;
 import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.regex.ast.AutomatonState;
+import org.sonar.java.regex.ast.CharacterClassElementTree;
 import org.sonar.java.regex.ast.CharacterClassTree;
 import org.sonar.java.regex.ast.CharacterRangeTree;
 import org.sonar.java.regex.ast.FlagSet;
@@ -47,6 +49,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RegexParserTestUtils {
@@ -70,6 +74,13 @@ public class RegexParserTestUtils {
     if (!result.getSyntaxErrors().isEmpty()) {
       throw new AssertionFailedError("Parsing should complete with no errors.", "no errors", result.getSyntaxErrors());
     }
+    assertSame(result.getResult(), result.getStartState().continuation());
+    assertSingleEdge(result.getStartState(), result.getResult(), result.getResult().incomingTransitionType());
+    assertSame(result.getFinalState(), result.getResult().continuation());
+    assertEquals(AutomatonState.TransitionType.EPSILON, result.getFinalState().incomingTransitionType());
+    assertEquals(AutomatonState.TransitionType.EPSILON, result.getStartState().incomingTransitionType());
+    assertListSize(0, result.getFinalState().successors());
+    assertNull(result.getFinalState().continuation());
     return result;
   }
 
@@ -94,6 +105,17 @@ public class RegexParserTestUtils {
     assertThat(errors.stream().map(SyntaxError::getMessage)).contains(expectedError);
   }
 
+  public static Consumer<AutomatonState> assertEdge(AutomatonState target, AutomatonState.TransitionType type) {
+    return actualTarget -> {
+      assertSame(target, actualTarget);
+      assertEquals(type, actualTarget.incomingTransitionType());
+    };
+  }
+
+  public static void assertSingleEdge(AutomatonState source, AutomatonState target, AutomatonState.TransitionType type) {
+    assertListElements(source.successors(), assertEdge(target, type));
+  }
+
   public static void assertPlainString(String expected, RegexTree regex) {
     SequenceTree sequence = assertType(SequenceTree.class, regex);
     int expectedSize = expected.length();
@@ -113,18 +135,20 @@ public class RegexParserTestUtils {
     assertPlainString(expected, assertSuccessfulParse(regex, freeSpacingMode));
   }
 
-  public static void assertPlainCharacter(char expected, @Nullable Boolean expectedEscape, RegexTree regex) {
-    assertKind(RegexTree.Kind.PLAIN_CHARACTER, regex);
+  public static void assertPlainCharacter(char expected, @Nullable Boolean expectedEscape, RegexSyntaxElement regex) {
     PlainCharacterTree characterTree = assertType(PlainCharacterTree.class, regex);
+    assertKind(RegexTree.Kind.PLAIN_CHARACTER, characterTree);
+    assertKind(CharacterClassElementTree.Kind.PLAIN_CHARACTER, characterTree);
     assertEquals(expected, characterTree.getCharacter(), "Regex should contain the right characters.");
     assertEquals(expected, characterTree.codePointOrUnit(), "Code unit should equal character.");
     assertEquals("" + expected, characterTree.characterAsString());
+    assertEquals(AutomatonState.TransitionType.CHARACTER, characterTree.incomingTransitionType());
     if (expectedEscape != null) {
       assertEquals(expectedEscape, characterTree.isEscapeSequence());
     }
   }
 
-  public static void assertPlainCharacter(char expected, RegexTree regex) {
+  public static void assertPlainCharacter(char expected, RegexSyntaxElement regex) {
     assertPlainCharacter(expected, null, regex);
   }
 
@@ -149,8 +173,11 @@ public class RegexParserTestUtils {
     assertPlainCharacter(expected, null, regexSource);
   }
 
-  public static RegexTree assertCharacterClass(boolean expectNegated, RegexTree actual) {
+  public static CharacterClassElementTree assertCharacterClass(boolean expectNegated, RegexSyntaxElement actual) {
     CharacterClassTree characterClass = assertType(CharacterClassTree.class, actual);
+    assertEquals(AutomatonState.TransitionType.CHARACTER, characterClass.incomingTransitionType());
+    assertKind(RegexTree.Kind.CHARACTER_CLASS, characterClass);
+    assertKind(CharacterClassElementTree.Kind.NESTED_CHARACTER_CLASS, characterClass);
     if (expectNegated) {
       assertTrue(characterClass.isNegated(), "Character class should be negated.");
     } else {
@@ -159,8 +186,9 @@ public class RegexParserTestUtils {
     return characterClass.getContents();
   }
 
-  public static void assertCharacterRange(int expectedLowerBound, int expectedUpperBound, RegexTree actual) {
+  public static void assertCharacterRange(int expectedLowerBound, int expectedUpperBound, CharacterClassElementTree actual) {
     CharacterRangeTree range = assertType(CharacterRangeTree.class, actual);
+    assertKind(CharacterClassElementTree.Kind.CHARACTER_RANGE, range);
     assertEquals(expectedLowerBound, range.getLowerBound().codePointOrUnit(), "Lower bound should be '" + expectedLowerBound + "'.");
     assertEquals(expectedUpperBound, range.getUpperBound().codePointOrUnit(), "Upper bound should be '" + expectedUpperBound + "'.");
   }
@@ -181,7 +209,7 @@ public class RegexParserTestUtils {
   }
 
   @SafeVarargs
-  public static <T> void assertListElements(List<T> actual, Consumer<T>... assertions) {
+  public static <T> void assertListElements(List<? extends T> actual, Consumer<T>... assertions) {
     assertListSize(assertions.length, actual);
     for (int i = 0; i < actual.size(); i++) {
       assertions[i].accept(actual.get(i));
@@ -192,6 +220,12 @@ public class RegexParserTestUtils {
     assertEquals(expected, actual.kind(), "Regex should have kind " + expected);
     assertTrue(actual.is(expected), "`is` should return true when the kinds match.");
     assertTrue(actual.is(RegexTree.Kind.PLAIN_CHARACTER, RegexTree.Kind.DISJUNCTION, expected), "`is` should return true when one of the kinds match.");
+  }
+
+  public static void assertKind(CharacterClassElementTree.Kind expected, CharacterClassElementTree actual) {
+    assertEquals(expected, actual.characterClassElementKind(), "Regex should have kind " + expected);
+    assertTrue(actual.is(expected), "`is` should return true when the kinds match.");
+    assertTrue(actual.is(CharacterClassElementTree.Kind.PLAIN_CHARACTER, expected), "`is` should return true when one of the kinds match.");
   }
 
   public static void assertLocation(int expectedStart, int expectedEnd, RegexSyntaxElement element) {

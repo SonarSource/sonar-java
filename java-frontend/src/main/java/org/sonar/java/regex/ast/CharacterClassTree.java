@@ -19,22 +19,24 @@
  */
 package org.sonar.java.regex.ast;
 
-public class CharacterClassTree extends RegexTree {
+import javax.annotation.Nonnull;
+
+public class CharacterClassTree extends RegexTree implements CharacterClassElementTree {
 
   private final JavaCharacter openingBracket;
 
-  private final RegexTree contents;
+  private final CharacterClassElementTree contents;
 
   private final boolean negated;
 
-  public CharacterClassTree(RegexSource source, IndexRange range, JavaCharacter openingBracket, boolean negated, RegexTree contents) {
+  public CharacterClassTree(RegexSource source, IndexRange range, JavaCharacter openingBracket, boolean negated, CharacterClassElementTree contents) {
     super(source, range);
     this.negated = negated;
     this.contents = contents;
     this.openingBracket = openingBracket;
   }
 
-  public RegexTree getContents() {
+  public CharacterClassElementTree getContents() {
     return contents;
   }
 
@@ -52,8 +54,20 @@ public class CharacterClassTree extends RegexTree {
   }
 
   @Override
-  public Kind kind() {
+  public RegexTree.Kind kind() {
     return RegexTree.Kind.CHARACTER_CLASS;
+  }
+
+  @Nonnull
+  @Override
+  public CharacterClassElementTree.Kind characterClassElementKind() {
+    return CharacterClassElementTree.Kind.NESTED_CHARACTER_CLASS;
+  }
+
+  @Nonnull
+  @Override
+  public TransitionType incomingTransitionType() {
+    return TransitionType.CHARACTER;
   }
 
 }

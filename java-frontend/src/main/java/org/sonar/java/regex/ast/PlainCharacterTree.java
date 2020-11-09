@@ -19,6 +19,8 @@
  */
 package org.sonar.java.regex.ast;
 
+import javax.annotation.Nonnull;
+
 public class PlainCharacterTree extends CharacterTree {
 
   private final JavaCharacter contents;
@@ -57,8 +59,14 @@ public class PlainCharacterTree extends CharacterTree {
   }
 
   @Override
-  public Kind kind() {
-    return Kind.PLAIN_CHARACTER;
+  public RegexTree.Kind kind() {
+    return RegexTree.Kind.PLAIN_CHARACTER;
+  }
+
+  @Nonnull
+  @Override
+  public CharacterClassElementTree.Kind characterClassElementKind() {
+    return CharacterClassElementTree.Kind.PLAIN_CHARACTER;
   }
 
 }

@@ -19,6 +19,7 @@
  */
 package org.sonar.java.regex.ast;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class BackReferenceTree extends RegexTree {
@@ -71,4 +72,9 @@ public class BackReferenceTree extends RegexTree {
     return Integer.parseInt(groupName);
   }
 
+  @Nonnull
+  @Override
+  public TransitionType incomingTransitionType() {
+    return TransitionType.BACK_REFERENCE;
+  }
 }

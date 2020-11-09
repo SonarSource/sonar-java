@@ -19,6 +19,9 @@
  */
 package org.sonar.java.regex.ast;
 
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public abstract class GroupTree extends RegexTree {
@@ -61,6 +64,30 @@ public abstract class GroupTree extends RegexTree {
   @Nullable
   public RegexTree getElement() {
     return element;
+  }
+
+  @Nonnull
+  @Override
+  public List<AutomatonState> successors() {
+    return Collections.singletonList(element != null ? element : continuation());
+  }
+
+  @Nonnull
+  @Override
+  public TransitionType incomingTransitionType() {
+    return TransitionType.EPSILON;
+  }
+
+  @Override
+  public void setContinuation(AutomatonState continuation) {
+    setContinuation(continuation, element);
+  }
+
+  protected void setContinuation(AutomatonState continuation, @Nullable RegexTree element) {
+    super.setContinuation(continuation);
+    if (element != null) {
+      element.setContinuation(continuation);
+    }
   }
 
 }
