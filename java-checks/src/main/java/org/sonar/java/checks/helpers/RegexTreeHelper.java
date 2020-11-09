@@ -38,12 +38,12 @@ public class RegexTreeHelper {
     // Utils class
   }
 
-  public static List<RegexCheck.RegexIssueLocation> getGraphemeInList(List<RegexTree> trees) {
+  public static List<RegexCheck.RegexIssueLocation> getGraphemeInList(List<? extends RegexSyntaxElement> trees) {
     List<RegexCheck.RegexIssueLocation> result = new ArrayList<>();
     RegexSyntaxElement startGrapheme = null;
     RegexSyntaxElement endGrapheme = null;
-    for (RegexTree child : trees) {
-      if (child.is(RegexTree.Kind.PLAIN_CHARACTER, RegexTree.Kind.UNICODE_CODE_POINT)) {
+    for (RegexSyntaxElement child : trees) {
+      if (child instanceof CharacterTree) {
         CharacterTree currentCharacter = (CharacterTree) child;
         if (!currentCharacter.isEscapeSequence()) {
           if (!isMark(currentCharacter)) {

@@ -19,28 +19,29 @@
  */
 package org.sonar.java.regex.ast;
 
+import java.util.Collections;
+import java.util.List;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public class DotTree extends RegexTree {
+public interface AutomatonState {
 
-  public DotTree(RegexSource source, IndexRange range) {
-    super(source, range);
-  }
+  /**
+   * This will only return null when called on the end-of-regex state
+   */
+  @Nullable
+  AutomatonState continuation();
 
-  @Override
-  public void accept(RegexVisitor visitor) {
-    visitor.visitDot(this);
-  }
-
-  @Override
-  public Kind kind() {
-    return RegexTree.Kind.DOT;
+  @Nonnull
+  default List<? extends AutomatonState> successors() {
+    return Collections.singletonList(continuation());
   }
 
   @Nonnull
-  @Override
-  public TransitionType incomingTransitionType() {
-    return TransitionType.CHARACTER;
+  TransitionType incomingTransitionType();
+
+  enum TransitionType {
+    EPSILON, CHARACTER, BACK_REFERENCE, LOOKAROUND_BACKTRACKING, NEGATION
   }
 
 }

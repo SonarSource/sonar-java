@@ -19,6 +19,8 @@
  */
 package org.sonar.java.regex.ast;
 
+import javax.annotation.Nonnull;
+
 /**
  * Represents the \\x{N...N} sequence in a regular expression, which specifies a single Unicode code point.
  * This differs from PlainCharacterTree in that it will match a single code point even if it consists of
@@ -54,7 +56,14 @@ public class UnicodeCodePointTree extends CharacterTree {
   }
 
   @Override
-  public Kind kind() {
-    return Kind.UNICODE_CODE_POINT;
+  public RegexTree.Kind kind() {
+    return RegexTree.Kind.UNICODE_CODE_POINT;
   }
+
+  @Nonnull
+  @Override
+  public CharacterClassElementTree.Kind characterClassElementKind() {
+    return CharacterClassElementTree.Kind.UNICODE_CODE_POINT;
+  }
+
 }

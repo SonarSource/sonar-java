@@ -19,7 +19,7 @@
  */
 package org.sonar.java.regex.ast;
 
-public class RegexToken extends RegexSyntaxElement {
+public class RegexToken extends AbstractRegexSyntaxElement {
 
   private final String value;
 

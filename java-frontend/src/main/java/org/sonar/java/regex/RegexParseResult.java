@@ -21,10 +21,12 @@ package org.sonar.java.regex;
 
 import java.util.Collections;
 import java.util.List;
+import org.sonar.java.regex.ast.FinalState;
 import org.sonar.java.regex.ast.FlagSet;
 import org.sonar.java.regex.ast.OpeningQuote;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.java.regex.ast.RegexTree;
+import org.sonar.java.regex.ast.StartState;
 
 public class RegexParseResult {
 
@@ -36,11 +38,18 @@ public class RegexParseResult {
 
   private final boolean containsComments;
 
+  private final StartState startState;
+
+  private final FinalState finalState;
+
   public RegexParseResult(RegexTree result, FlagSet initialFlags, List<SyntaxError> syntaxErrors, boolean containsComments) {
     this.result = result;
     this.initialFlags = initialFlags;
     this.syntaxErrors = Collections.unmodifiableList(syntaxErrors);
     this.containsComments = containsComments;
+    startState = new StartState(result);
+    finalState = new FinalState();
+    result.setContinuation(finalState);
   }
 
   public RegexTree getResult() {
@@ -68,6 +77,14 @@ public class RegexParseResult {
    */
   public RegexSyntaxElement openingQuote() {
     return new OpeningQuote(result.getSource());
+  }
+
+  public FinalState getFinalState() {
+    return finalState;
+  }
+
+  public StartState getStartState() {
+    return startState;
   }
 
 }

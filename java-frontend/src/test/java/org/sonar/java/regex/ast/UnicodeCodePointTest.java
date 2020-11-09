@@ -66,10 +66,12 @@ class UnicodeCodePointTest {
   void assertCodePoint(String expectedString, int expectedCodePoint, int start, int end, RegexTree regex) {
     UnicodeCodePointTree unicodeCodePoint = assertType(UnicodeCodePointTree.class, regex);
     assertKind(RegexTree.Kind.UNICODE_CODE_POINT, unicodeCodePoint);
+    assertKind(CharacterClassElementTree.Kind.UNICODE_CODE_POINT, unicodeCodePoint);
     assertEquals(expectedString, unicodeCodePoint.characterAsString());
     assertEquals(expectedCodePoint, unicodeCodePoint.codePointOrUnit());
     assertLocation(start, end, unicodeCodePoint);
     assertTrue(unicodeCodePoint.isEscapeSequence());
+    assertEquals(AutomatonState.TransitionType.CHARACTER, unicodeCodePoint.incomingTransitionType());
   }
 
 }

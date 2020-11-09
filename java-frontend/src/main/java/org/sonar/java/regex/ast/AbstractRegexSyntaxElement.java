@@ -19,28 +19,37 @@
  */
 package org.sonar.java.regex.ast;
 
-import javax.annotation.Nonnull;
+import java.util.List;
 
-public class DotTree extends RegexTree {
+public abstract class AbstractRegexSyntaxElement implements RegexSyntaxElement {
 
-  public DotTree(RegexSource source, IndexRange range) {
-    super(source, range);
+  private final RegexSource source;
+
+  private final IndexRange range;
+
+  protected AbstractRegexSyntaxElement(RegexSource source, IndexRange range) {
+    this.source = source;
+    this.range = range;
   }
 
   @Override
-  public void accept(RegexVisitor visitor) {
-    visitor.visitDot(this);
+  public List<Location> getLocations() {
+    return source.locationsFor(range);
   }
 
   @Override
-  public Kind kind() {
-    return RegexTree.Kind.DOT;
+  public String getText() {
+    return source.substringAt(range);
   }
 
-  @Nonnull
   @Override
-  public TransitionType incomingTransitionType() {
-    return TransitionType.CHARACTER;
+  public IndexRange getRange() {
+    return range;
+  }
+
+  @Override
+  public RegexSource getSource() {
+    return source;
   }
 
 }

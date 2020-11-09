@@ -21,26 +21,23 @@ package org.sonar.java.regex.ast;
 
 import javax.annotation.Nonnull;
 
-public class DotTree extends RegexTree {
+public class NegationState implements AutomatonState {
 
-  public DotTree(RegexSource source, IndexRange range) {
-    super(source, range);
+  private final AutomatonState continuation;
+
+  public NegationState(AutomatonState continuation) {
+    this.continuation = continuation;
   }
 
+  @Nonnull
   @Override
-  public void accept(RegexVisitor visitor) {
-    visitor.visitDot(this);
-  }
-
-  @Override
-  public Kind kind() {
-    return RegexTree.Kind.DOT;
+  public AutomatonState continuation() {
+    return continuation;
   }
 
   @Nonnull
   @Override
   public TransitionType incomingTransitionType() {
-    return TransitionType.CHARACTER;
+    return TransitionType.NEGATION;
   }
-
 }

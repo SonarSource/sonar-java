@@ -19,10 +19,12 @@
  */
 package org.sonar.java.regex.ast;
 
+import javax.annotation.Nonnull;
+
 /**
  * Base class for PlainCharacterTree and UnicodeCodePointTree
  */
-public abstract class CharacterTree extends RegexTree {
+public abstract class CharacterTree extends RegexTree implements CharacterClassElementTree {
 
   protected CharacterTree(RegexSource source, IndexRange range) {
     super(source, range);
@@ -34,4 +36,9 @@ public abstract class CharacterTree extends RegexTree {
 
   public abstract boolean isEscapeSequence();
 
+  @Nonnull
+  @Override
+  public TransitionType incomingTransitionType() {
+    return TransitionType.CHARACTER;
+  }
 }

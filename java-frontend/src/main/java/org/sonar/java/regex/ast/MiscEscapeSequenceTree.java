@@ -19,11 +19,13 @@
  */
 package org.sonar.java.regex.ast;
 
+import javax.annotation.Nonnull;
+
 /**
  * This class represents escape sequences inside regular expression that we don't particularly care about.
  * Therefore the tree provides no information about the escape sequence other than its text.
  */
-public class MiscEscapeSequenceTree extends RegexTree {
+public class MiscEscapeSequenceTree extends RegexTree implements CharacterClassElementTree {
 
   public MiscEscapeSequenceTree(RegexSource source, IndexRange range) {
     super(source, range);
@@ -35,8 +37,20 @@ public class MiscEscapeSequenceTree extends RegexTree {
   }
 
   @Override
-  public Kind kind() {
-    return Kind.MISC_ESCAPE_SEQUENCE;
+  public RegexTree.Kind kind() {
+    return RegexTree.Kind.MISC_ESCAPE_SEQUENCE;
+  }
+
+  @Nonnull
+  @Override
+  public CharacterClassElementTree.Kind characterClassElementKind() {
+    return CharacterClassElementTree.Kind.MISC_ESCAPE_SEQUENCE;
+  }
+
+  @Nonnull
+  @Override
+  public TransitionType incomingTransitionType() {
+    return TransitionType.CHARACTER;
   }
 
 }

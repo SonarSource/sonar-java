@@ -19,6 +19,7 @@
  */
 package org.sonar.java.regex.ast;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class BoundaryTree extends RegexTree {
@@ -71,6 +72,12 @@ public class BoundaryTree extends RegexTree {
 
   public Type type() {
     return type;
+  }
+
+  @Nonnull
+  @Override
+  public TransitionType incomingTransitionType() {
+    return TransitionType.EPSILON;
   }
 
 }

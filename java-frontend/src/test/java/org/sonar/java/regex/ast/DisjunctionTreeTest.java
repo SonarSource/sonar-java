@@ -25,9 +25,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.sonar.java.regex.RegexParserTestUtils.assertJavaCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
+import static org.sonar.java.regex.RegexParserTestUtils.assertSingleEdge;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 import static org.sonar.java.regex.RegexParserTestUtils.assertType;
 
@@ -43,6 +45,14 @@ class DisjunctionTreeTest {
     );
     assertListElements(disjunction.getOrOperators(),
       first -> assertJavaCharacter(expectedCharacterIndex, '|', first)
+    );
+
+    FinalState finalState = assertType(FinalState.class, disjunction.continuation());
+    assertEquals(AutomatonState.TransitionType.EPSILON, disjunction.incomingTransitionType());
+    assertEquals(disjunction.getAlternatives(), disjunction.successors());
+    assertListElements(disjunction.successors(),
+      first -> testAlternative(first, finalState),
+      second -> testAlternative(second, finalState)
     );
   }
 
@@ -66,6 +76,20 @@ class DisjunctionTreeTest {
       first -> assertJavaCharacter(1, '|', first),
       second -> assertJavaCharacter(3, '|', second)
     );
+
+    FinalState finalState = assertType(FinalState.class, disjunction.continuation());
+    assertEquals(AutomatonState.TransitionType.EPSILON, disjunction.incomingTransitionType());
+    assertEquals(disjunction.getAlternatives(), disjunction.successors());
+    assertListElements(disjunction.successors(),
+      first -> testAlternative(first, finalState),
+      second -> testAlternative(second, finalState),
+      third -> testAlternative(third, finalState)
+    );
+  }
+
+  private void testAlternative(AutomatonState alternative, FinalState finalState) {
+    assertEquals(AutomatonState.TransitionType.CHARACTER, alternative.incomingTransitionType());
+    assertSingleEdge(alternative, finalState, AutomatonState.TransitionType.EPSILON);
   }
 
 }

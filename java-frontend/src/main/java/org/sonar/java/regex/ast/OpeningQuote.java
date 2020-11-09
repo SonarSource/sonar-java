@@ -26,7 +26,7 @@ import java.util.List;
  * This class should only be instantiated by RegexParseResult.openingQuote() and only used when using
  * the opening quote of a regex as an issue location. It should never appear within a regex AST.
  */
-public class OpeningQuote extends RegexSyntaxElement {
+public class OpeningQuote extends AbstractRegexSyntaxElement {
 
   public OpeningQuote(RegexSource source) {
     super(source, new IndexRange(-1, 0));

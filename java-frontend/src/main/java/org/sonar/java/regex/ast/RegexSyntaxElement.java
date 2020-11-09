@@ -21,31 +21,14 @@ package org.sonar.java.regex.ast;
 
 import java.util.List;
 
-public abstract class RegexSyntaxElement {
+public interface RegexSyntaxElement {
 
-  private final RegexSource source;
+  List<Location> getLocations();
 
-  private final IndexRange range;
+  String getText();
 
-  protected RegexSyntaxElement(RegexSource source, IndexRange range) {
-    this.source = source;
-    this.range = range;
-  }
+  IndexRange getRange();
 
-  public List<Location> getLocations() {
-    return source.locationsFor(range);
-  }
-
-  public String getText() {
-    return source.substringAt(range);
-  }
-
-  public IndexRange getRange() {
-    return range;
-  }
-
-  public RegexSource getSource() {
-    return source;
-  }
+  RegexSource getSource();
 
 }

@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.regex.RegexParseResult;
+import org.sonar.java.regex.ast.CharacterClassElementTree;
 import org.sonar.java.regex.ast.CharacterClassUnionTree;
 import org.sonar.java.regex.ast.CharacterRangeTree;
 import org.sonar.java.regex.ast.CharacterTree;
@@ -49,13 +50,13 @@ public class DuplicatesInCharacterClassCheck extends AbstractRegexCheck {
 
     @Override
     public void visitCharacterClassUnion(CharacterClassUnionTree tree) {
-      List<RegexTree> duplicates = new ArrayList<>();
+      List<CharacterClassElementTree> duplicates = new ArrayList<>();
       TreeMap<Integer, Boolean> inCharacterClass = new TreeMap<>();
-      for (RegexTree element : tree.getCharacterClasses()) {
-        if (element.is(RegexTree.Kind.PLAIN_CHARACTER, RegexTree.Kind.UNICODE_CODE_POINT)) {
+      for (CharacterClassElementTree element : tree.getCharacterClasses()) {
+        if (element.is(CharacterClassElementTree.Kind.PLAIN_CHARACTER, CharacterClassElementTree.Kind.UNICODE_CODE_POINT)) {
           int ch = ((CharacterTree) element).codePointOrUnit();
           processRange(duplicates, inCharacterClass, ch, ch, element);
-        } else if (element.is(RegexTree.Kind.CHARACTER_RANGE)) {
+        } else if (element.is(CharacterClassElementTree.Kind.CHARACTER_RANGE)) {
           CharacterRangeTree range = (CharacterRangeTree) element;
           int lower = range.getLowerBound().codePointOrUnit();
           int upper = range.getUpperBound().codePointOrUnit();
@@ -72,7 +73,7 @@ public class DuplicatesInCharacterClassCheck extends AbstractRegexCheck {
       super.visitCharacterClassUnion(tree);
     }
 
-    void processRange(List<RegexTree> duplicates, TreeMap<Integer, Boolean> inCharacterClass, int from, int to, RegexTree tree) {
+    void processRange(List<CharacterClassElementTree> duplicates, TreeMap<Integer, Boolean> inCharacterClass, int from, int to, CharacterClassElementTree tree) {
       if (to < from) {
         return;
       }

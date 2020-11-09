@@ -28,8 +28,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.sonar.java.regex.RegexParserTestUtils.assertEdge;
 import static org.sonar.java.regex.RegexParserTestUtils.assertFailParsing;
+import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
+import static org.sonar.java.regex.RegexParserTestUtils.assertSingleEdge;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 import static org.sonar.java.regex.RegexParserTestUtils.assertType;
 import static org.sonar.java.regex.RegexParserTestUtils.parseRegex;
@@ -52,19 +55,29 @@ class QuantifierTest {
     assertNull(quantifier.getMaximumRepetitions(), "Plus should have no upper bound.");
     assertTrue(quantifier.isOpenEnded(), "Plus should be open ended.");
     assertEquals(Quantifier.Modifier.GREEDY, quantifier.getModifier(), "Quantifier should be greedy.");
+
+    CurlyBraceQuantifierTest.testAutomaton(repetition, false);
   }
 
   @Test
   void testGreedyQuestionMark() {
     RegexTree regex = assertSuccessfulParse("x?");
     RepetitionTree repetition = assertType(RepetitionTree.class, regex);
-    assertPlainCharacter('x', repetition.getElement());
+    RegexTree x = repetition.getElement();
+    assertPlainCharacter('x', x);
     SimpleQuantifier quantifier = assertType(SimpleQuantifier.class, repetition.getQuantifier());
     assertEquals(SimpleQuantifier.Kind.QUESTION_MARK, quantifier.getKind(), "Quantifier should be a question mark.");
     assertEquals(0, quantifier.getMinimumRepetitions(), "Lower bound should be 0.");
     assertEquals(1, quantifier.getMaximumRepetitions(), "The upper bound of a question mark quantifier should be 1.");
     assertFalse(quantifier.isOpenEnded(), "Question mark should not be open ended.");
     assertEquals(Quantifier.Modifier.GREEDY, quantifier.getModifier(), "Quantifier should be greedy.");
+
+    FinalState finalState = assertType(FinalState.class, repetition.continuation());
+    assertListElements(repetition.successors(),
+      assertEdge(x, AutomatonState.TransitionType.CHARACTER),
+      assertEdge(finalState, AutomatonState.TransitionType.EPSILON)
+    );
+    assertSingleEdge(x, finalState, AutomatonState.TransitionType.EPSILON);
   }
 
   @Test
@@ -75,6 +88,8 @@ class QuantifierTest {
     SimpleQuantifier quantifier = assertType(SimpleQuantifier.class, repetition.getQuantifier());
     assertEquals(SimpleQuantifier.Kind.STAR, quantifier.getKind(), "Quantifier should be a Kleene star.");
     assertEquals(Quantifier.Modifier.RELUCTANT, quantifier.getModifier(), "Quantifier should be reluctant.");
+
+    testStarAutomaton(repetition, true);
   }
 
   @Test
@@ -85,6 +100,8 @@ class QuantifierTest {
     SimpleQuantifier quantifier = assertType(SimpleQuantifier.class, repetition.getQuantifier());
     assertEquals(SimpleQuantifier.Kind.STAR, quantifier.getKind(), "Quantifier should be a Kleene star.");
     assertEquals(Quantifier.Modifier.POSSESSIVE, quantifier.getModifier(), "Quantifier should be possessive.");
+
+    testStarAutomaton(repetition, false);
   }
 
   @Test
@@ -124,6 +141,26 @@ class QuantifierTest {
     assertNull(quantifier.getMaximumRepetitions(), "Kleene star should have no upper bound.");
     assertTrue(quantifier.isOpenEnded(), "Kleene star should be open ended.");
     assertEquals(Quantifier.Modifier.GREEDY, quantifier.getModifier(), "Quantifier should be greedy.");
+
+    testStarAutomaton(repetition, false);
+  }
+
+  private static void testStarAutomaton(RepetitionTree repetition, boolean reluctant) {
+    FinalState finalState = assertType(FinalState.class, repetition.continuation());
+    RegexTree x = repetition.getElement();
+    assertEquals(AutomatonState.TransitionType.EPSILON, repetition.incomingTransitionType());
+    if (reluctant) {
+      assertListElements(repetition.successors(),
+        assertEdge(finalState, AutomatonState.TransitionType.EPSILON),
+        assertEdge(x, AutomatonState.TransitionType.CHARACTER)
+      );
+    } else {
+      assertListElements(repetition.successors(),
+        assertEdge(x, AutomatonState.TransitionType.CHARACTER),
+        assertEdge(finalState, AutomatonState.TransitionType.EPSILON)
+      );
+    }
+    assertSingleEdge(x, repetition, AutomatonState.TransitionType.EPSILON);
   }
 
 }

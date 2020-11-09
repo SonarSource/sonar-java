@@ -24,7 +24,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
+import static org.sonar.java.regex.RegexParserTestUtils.assertSingleEdge;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
+import static org.sonar.java.regex.RegexParserTestUtils.assertType;
 
 class CapturingGroupTreeTest {
 
@@ -62,6 +64,26 @@ class CapturingGroupTreeTest {
     CapturingGroupTree c = ((CapturingGroupTree) bcItems.get(1));
     assertThat(c.getGroupNumber()).isEqualTo(4);
     assertThat(c.getName()).hasValue("groupC");
+
+    testAutomaton(abc, abcItems, a, bc, bcItems, c);
+  }
+
+  private void testAutomaton(GroupTree abc, List<RegexTree> abcItems, GroupTree a, GroupTree bc, List<RegexTree> bcItems, GroupTree c) {
+    assertThat(abc.incomingTransitionType()).isEqualTo(AutomatonState.TransitionType.EPSILON);
+    assertSingleEdge(abc, abc.getElement(), AutomatonState.TransitionType.EPSILON);
+    assertSingleEdge(abc.getElement(), a, AutomatonState.TransitionType.EPSILON);
+    assertSingleEdge(a, a.getElement(), AutomatonState.TransitionType.CHARACTER);
+    NonCapturingGroupTree n = assertType(NonCapturingGroupTree.class, abcItems.get(1));
+    RegexTree nElement = n.getElement();
+    assertThat(nElement).isNotNull();
+    assertSingleEdge(a.getElement(), n, AutomatonState.TransitionType.EPSILON);
+    assertSingleEdge(n, nElement, AutomatonState.TransitionType.CHARACTER);
+    assertSingleEdge(nElement, bc, AutomatonState.TransitionType.EPSILON);
+    assertSingleEdge(bc, bc.getElement(), AutomatonState.TransitionType.EPSILON);
+    assertSingleEdge(bc.getElement(), bcItems.get(0), AutomatonState.TransitionType.CHARACTER);
+    assertSingleEdge(bcItems.get(0), c, AutomatonState.TransitionType.EPSILON);
+    assertSingleEdge(c, c.getElement(), AutomatonState.TransitionType.CHARACTER);
+    assertSingleEdge(c.getElement(), abc.continuation(), AutomatonState.TransitionType.EPSILON);
   }
 
 }

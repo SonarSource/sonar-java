@@ -19,6 +19,11 @@
  */
 package org.sonar.java.regex.ast;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nonnull;
+
 public class RepetitionTree extends RegexTree {
 
   private final RegexTree element;
@@ -49,4 +54,46 @@ public class RepetitionTree extends RegexTree {
     return Kind.REPETITION;
   }
 
+  @Nonnull
+  @Override
+  public TransitionType incomingTransitionType() {
+    return TransitionType.EPSILON;
+  }
+
+  @Nonnull
+  @Override
+  public List<AutomatonState> successors() {
+    if (quantifier.getMinimumRepetitions() == 0) {
+      Integer max = quantifier.getMaximumRepetitions();
+      if (max != null && max == 0) {
+        return Collections.singletonList(continuation());
+      } else {
+        return flipIfReluctant(element, continuation());
+      }
+    } else {
+      return Collections.singletonList(element);
+    }
+  }
+
+  @Override
+  public void setContinuation(AutomatonState continuation) {
+    super.setContinuation(continuation);
+    int min = quantifier.getMinimumRepetitions();
+    Integer max = quantifier.getMaximumRepetitions();
+    if (max != null && max == 1) {
+      element.setContinuation(continuation);
+    } else if (min >= 1) {
+      element.setContinuation(new BranchState(this, flipIfReluctant(this, continuation)));
+    } else {
+      element.setContinuation(this);
+    }
+  }
+
+  private List<AutomatonState> flipIfReluctant(AutomatonState tree1, AutomatonState tree2) {
+    if (quantifier.getModifier() == Quantifier.Modifier.RELUCTANT) {
+      return Arrays.asList(tree2, tree1);
+    } else {
+      return Arrays.asList(tree1, tree2);
+    }
+  }
 }

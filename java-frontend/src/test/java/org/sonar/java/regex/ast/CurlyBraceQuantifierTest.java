@@ -27,10 +27,14 @@ import org.sonar.java.regex.SyntaxError;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.sonar.java.regex.RegexParserTestUtils.assertEdge;
 import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
+import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
 import static org.sonar.java.regex.RegexParserTestUtils.assertLocation;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
+import static org.sonar.java.regex.RegexParserTestUtils.assertSingleEdge;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 import static org.sonar.java.regex.RegexParserTestUtils.assertType;
 import static org.sonar.java.regex.RegexParserTestUtils.parseRegex;
@@ -52,6 +56,8 @@ class CurlyBraceQuantifierTest {
     assertFalse(quantifier.isOpenEnded(), "Quantifier should not be open ended.");
     assertFalse(quantifier.isFixed(), "Quantifier should not be marked as only having a single number.");
     assertEquals(Quantifier.Modifier.GREEDY, quantifier.getModifier(), "Quantifier should be greedy.");
+
+    testAutomaton(repetition, false);
   }
 
   @Test
@@ -66,6 +72,8 @@ class CurlyBraceQuantifierTest {
     assertTrue(quantifier.isOpenEnded(), "Quantifier should be open ended.");
     assertFalse(quantifier.isFixed(), "Quantifier should not be marked as only having a single number.");
     assertEquals(Quantifier.Modifier.GREEDY, quantifier.getModifier(), "Quantifier should be greedy.");
+
+    testAutomaton(repetition, false);
   }
 
   @Test
@@ -79,6 +87,8 @@ class CurlyBraceQuantifierTest {
     assertFalse(quantifier.isOpenEnded(), "Quantifier should not be open ended.");
     assertTrue(quantifier.isFixed(), "Quantifier should be marked as only having a single number.");
     assertEquals(Quantifier.Modifier.GREEDY, quantifier.getModifier(), "Quantifier should be greedy.");
+
+    testAutomaton(repetition, false);
   }
 
   @Test
@@ -90,6 +100,8 @@ class CurlyBraceQuantifierTest {
     assertEquals(23, quantifier.getMinimumRepetitions(), "Lower bound should be 23.");
     assertEquals(42, quantifier.getMaximumRepetitions(), "Upper bound should be 42.");
     assertEquals(Quantifier.Modifier.RELUCTANT, quantifier.getModifier(), "Quantifier should be reluctant.");
+
+    testAutomaton(repetition, true);
   }
 
   @Test
@@ -101,6 +113,41 @@ class CurlyBraceQuantifierTest {
     assertEquals(23, quantifier.getMinimumRepetitions(), "Lower bound should be 23.");
     assertEquals(42, quantifier.getMaximumRepetitions(), "Upper bound should be 42.");
     assertEquals(Quantifier.Modifier.POSSESSIVE, quantifier.getModifier(), "Quantifier should be possessive.");
+
+    testAutomaton(repetition, false);
+  }
+
+  @Test
+  void testOneOneCurlyBracedQuantifier() {
+    RegexTree regex = assertSuccessfulParse("x{1,1}");
+    RepetitionTree repetition = assertType(RepetitionTree.class, regex);
+    RegexTree x = repetition.getElement();
+    assertPlainCharacter('x', x);
+    CurlyBraceQuantifier quantifier = assertType(CurlyBraceQuantifier.class, repetition.getQuantifier());
+    assertEquals(1, quantifier.getMinimumRepetitions(), "Lower bound should be 1.");
+    assertEquals(1, quantifier.getMaximumRepetitions(), "Upper bound should be 1.");
+    assertEquals(Quantifier.Modifier.GREEDY, quantifier.getModifier(), "Quantifier should be possessive.");
+
+    FinalState finalState = assertType(FinalState.class, repetition.continuation());
+    assertEquals(AutomatonState.TransitionType.EPSILON, repetition.incomingTransitionType());
+    assertSingleEdge(repetition, x, AutomatonState.TransitionType.CHARACTER);
+    assertSingleEdge(x, finalState, AutomatonState.TransitionType.EPSILON);
+  }
+
+  @Test
+  void testZeroZeroCurlyBracedQuantifier() {
+    RegexTree regex = assertSuccessfulParse("x{0,0}");
+    RepetitionTree repetition = assertType(RepetitionTree.class, regex);
+    RegexTree x = repetition.getElement();
+    assertPlainCharacter('x', x);
+    CurlyBraceQuantifier quantifier = assertType(CurlyBraceQuantifier.class, repetition.getQuantifier());
+    assertEquals(0, quantifier.getMinimumRepetitions(), "Lower bound should be 0.");
+    assertEquals(0, quantifier.getMaximumRepetitions(), "Upper bound should be 0.");
+    assertEquals(Quantifier.Modifier.GREEDY, quantifier.getModifier(), "Quantifier should be possessive.");
+
+    FinalState finalState = assertType(FinalState.class, repetition.continuation());
+    assertEquals(AutomatonState.TransitionType.EPSILON, repetition.incomingTransitionType());
+    assertSingleEdge(repetition, finalState, AutomatonState.TransitionType.EPSILON);
   }
 
   @Test
@@ -188,5 +235,26 @@ class CurlyBraceQuantifierTest {
     List<Location> locations = error.getLocations();
     assertEquals(1, locations.size(), "Error should only have one location.");
     assertEquals(new IndexRange(1, 6), locations.get(0).getIndexRange(), "Error should have the right location.");
+  }
+
+  static void testAutomaton(RepetitionTree repetition, boolean reluctant) {
+    RegexTree x = repetition.getElement();
+    FinalState finalState = assertType(FinalState.class, repetition.continuation());
+    assertEquals(AutomatonState.TransitionType.EPSILON, repetition.incomingTransitionType());
+    assertSingleEdge(repetition, x, AutomatonState.TransitionType.CHARACTER);
+    BranchState branch = assertType(BranchState.class, x.continuation());
+    assertSingleEdge(x, branch, AutomatonState.TransitionType.EPSILON);
+    assertSame(finalState, branch.continuation());
+    if (reluctant) {
+      assertListElements(branch.successors(),
+        assertEdge(finalState, AutomatonState.TransitionType.EPSILON),
+        assertEdge(repetition, AutomatonState.TransitionType.EPSILON)
+      );
+    } else {
+      assertListElements(branch.successors(),
+        assertEdge(repetition, AutomatonState.TransitionType.EPSILON),
+        assertEdge(finalState, AutomatonState.TransitionType.EPSILON)
+      );
+    }
   }
 }

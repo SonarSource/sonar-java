@@ -51,8 +51,16 @@ public class RegexBaseVisitor implements RegexVisitor {
     tree.accept(this);
   }
 
+  protected void visitInCharClass(CharacterClassElementTree tree) {
+    tree.accept(this);
+  }
+
   private void visit(List<RegexTree> trees) {
     trees.forEach(this::visit);
+  }
+
+  private void visitInCharClass(List<CharacterClassElementTree> trees) {
+    trees.forEach(this::visitInCharClass);
   }
 
   @Override
@@ -159,7 +167,7 @@ public class RegexBaseVisitor implements RegexVisitor {
 
   @Override
   public void visitCharacterClass(CharacterClassTree tree) {
-    visit(tree.getContents());
+    visitInCharClass(tree.getContents());
   }
 
   @Override
@@ -169,12 +177,12 @@ public class RegexBaseVisitor implements RegexVisitor {
 
   @Override
   public void visitCharacterClassUnion(CharacterClassUnionTree tree) {
-    visit(tree.getCharacterClasses());
+    visitInCharClass(tree.getCharacterClasses());
   }
 
   @Override
   public void visitCharacterClassIntersection(CharacterClassIntersectionTree tree) {
-    visit(tree.getCharacterClasses());
+    visitInCharClass(tree.getCharacterClasses());
   }
 
   @Override

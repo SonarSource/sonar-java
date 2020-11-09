@@ -21,17 +21,18 @@ package org.sonar.java.regex.ast;
 
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class CharacterClassUnionTree extends RegexTree {
+public class CharacterClassUnionTree extends AbstractRegexSyntaxElement implements CharacterClassElementTree {
 
-  private final List<RegexTree> characterClasses;
+  private final List<CharacterClassElementTree> characterClasses;
 
-  public CharacterClassUnionTree(RegexSource source, IndexRange range, List<RegexTree> characterClasses) {
+  public CharacterClassUnionTree(RegexSource source, IndexRange range, List<CharacterClassElementTree> characterClasses) {
     super(source, range);
     this.characterClasses = Collections.unmodifiableList(characterClasses);
   }
 
-  public List<RegexTree> getCharacterClasses() {
+  public List<CharacterClassElementTree> getCharacterClasses() {
     return characterClasses;
   }
 
@@ -40,9 +41,10 @@ public class CharacterClassUnionTree extends RegexTree {
     visitor.visitCharacterClassUnion(this);
   }
 
+  @Nonnull
   @Override
-  public RegexTree.Kind kind() {
-    return Kind.CHARACTER_CLASS_UNION;
+  public Kind characterClassElementKind() {
+    return Kind.UNION;
   }
 
 }

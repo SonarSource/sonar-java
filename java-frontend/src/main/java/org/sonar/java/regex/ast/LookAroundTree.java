@@ -19,6 +19,10 @@
  */
 package org.sonar.java.regex.ast;
 
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nonnull;
+
 public class LookAroundTree extends GroupTree {
 
   public enum Direction {
@@ -33,10 +37,18 @@ public class LookAroundTree extends GroupTree {
 
   private final Direction direction;
 
+  private final List<AutomatonState> successors;
+
   public LookAroundTree(RegexSource source, IndexRange range, Polarity polarity, Direction direction, RegexTree element) {
     super(source, RegexTree.Kind.LOOK_AROUND, element, range);
     this.polarity = polarity;
     this.direction = direction;
+    element.setContinuation(new EndOfLookaroundState(this));
+    if (polarity == Polarity.NEGATIVE) {
+      successors = Collections.singletonList(new NegationState(element));
+    } else {
+      successors = Collections.singletonList(element);
+    }
   }
 
   public Polarity getPolarity() {
@@ -50,6 +62,27 @@ public class LookAroundTree extends GroupTree {
   @Override
   public void accept(RegexVisitor visitor) {
     visitor.visitLookAround(this);
+  }
+
+  @Nonnull
+  @Override
+  public TransitionType incomingTransitionType() {
+    if (getDirection() == Direction.BEHIND) {
+      return TransitionType.LOOKAROUND_BACKTRACKING;
+    } else {
+      return TransitionType.EPSILON;
+    }
+  }
+
+  @Override
+  public void setContinuation(AutomatonState continuation) {
+    setContinuation(continuation, null);
+  }
+
+  @Nonnull
+  @Override
+  public List<AutomatonState> successors() {
+    return successors;
   }
 
   public static LookAroundTree positiveLookAhead(RegexSource source, IndexRange range, RegexTree element) {

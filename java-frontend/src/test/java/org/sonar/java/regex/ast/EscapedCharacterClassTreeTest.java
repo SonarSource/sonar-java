@@ -105,6 +105,8 @@ class EscapedCharacterClassTreeTest {
       assertThat(escapedProperty.getType()).isEqualTo(isNegation ? 'P' : 'p');
       assertThat(escapedProperty.property()).isNotNull().isEqualTo(expectedProperty);
       assertThat(escapedProperty.isNegation()).isEqualTo(isNegation);
+      assertThat(escapedProperty.characterClassElementKind()).isEqualTo(CharacterClassElementTree.Kind.ESCAPED_CHARACTER_CLASS);
+      assertThat(escapedProperty.incomingTransitionType()).isEqualTo(AutomatonState.TransitionType.CHARACTER);
     }
 
   }
@@ -168,6 +170,8 @@ class EscapedCharacterClassTreeTest {
       assertThat(escapedClass.property()).isNull();
       assertThat(escapedClass.getType()).isEqualTo(expectedType);
       assertThat(escapedClass.isNegation()).isEqualTo(isNegation);
+      assertThat(escapedClass.characterClassElementKind()).isEqualTo(CharacterClassElementTree.Kind.ESCAPED_CHARACTER_CLASS);
+      assertThat(escapedClass.incomingTransitionType()).isEqualTo(AutomatonState.TransitionType.CHARACTER);
     }
 
   }

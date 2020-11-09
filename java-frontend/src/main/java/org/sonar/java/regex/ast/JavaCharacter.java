@@ -19,7 +19,7 @@
  */
 package org.sonar.java.regex.ast;
 
-public class JavaCharacter extends RegexSyntaxElement {
+public class JavaCharacter extends AbstractRegexSyntaxElement {
 
   private final char character;
   private final boolean isEscapeSequence;
