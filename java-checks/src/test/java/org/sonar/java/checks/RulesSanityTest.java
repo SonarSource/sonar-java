@@ -238,7 +238,7 @@ class RulesSanityTest {
     SensorContextTester context = SensorContextTester.create(moduleBaseDir).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
     context.setSettings(new MapSettings().setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, true));
     DefaultFileSystem fileSystem = context.fileSystem();
-    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null, null) {
+    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null) {
       @Override
       public boolean reportAnalysisError(RecognitionException re, InputFile inputFile) {
         return false;

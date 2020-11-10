@@ -29,10 +29,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
-import org.sonar.api.rule.RuleKey;
+import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
-import org.sonar.java.AnalyzerMessage;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -73,8 +72,8 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
   }
 
   @Override
-  public boolean accept(RuleKey ruleKey, AnalyzerMessage analyzerMessage) {
-    return !(analyzerMessage.getInputComponent().key().equals(componentKey) && excludedLinesByRule.get(ruleKey.rule()).contains(analyzerMessage.getLine()));
+  public boolean accept(FilterableIssue issue) {
+    return !(issue.componentKey().equals(componentKey) && excludedLinesByRule.get(issue.ruleKey().rule()).contains(issue.line()));
   }
 
   public Multimap<String, Integer> excludedLinesByRule() {

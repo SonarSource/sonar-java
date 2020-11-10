@@ -20,10 +20,7 @@
 package com.sonar.it.java.suite;
 
 import com.sonar.orchestrator.Orchestrator;
-import com.sonar.orchestrator.OrchestratorBuilder;
 import com.sonar.orchestrator.build.MavenBuild;
-import com.sonar.orchestrator.locator.FileLocation;
-import java.io.File;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import org.junit.ClassRule;
@@ -38,17 +35,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SuppressWarningTest {
 
   @ClassRule
-  public static final Orchestrator ORCHESTRATOR;
+  public static final Orchestrator ORCHESTRATOR = JavaTestSuite.ORCHESTRATOR;
   public static final String PROJECT_KEY = "org.sonarsource.it.projects:example";
-
-  static {
-    OrchestratorBuilder orchestratorBuilder = Orchestrator.builderEnv()
-      .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE[7.9]"))
-      .addPlugin(FileLocation.byWildcardMavenFilename(new File("../../../sonar-java-plugin/target"), "sonar-java-plugin-*.jar"))
-      .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-suppress-warnings.xml"));
-    orchestratorBuilder.addPlugin(FileLocation.of(TestUtils.pluginJar("java-extension-plugin")));
-    ORCHESTRATOR = orchestratorBuilder.build();
-  }
 
   /**
    * SONARJAVA-19
@@ -62,7 +50,7 @@ public class SuppressWarningTest {
 
     ORCHESTRATOR.executeBuild(build);
 
-    assertThat(parseInt(getMeasure(PROJECT_KEY, "violations").getValue())).isEqualTo(4);
+    assertThat(parseInt(getMeasure(PROJECT_KEY, "violations").getValue())).isEqualTo(5);
   }
 
   @CheckForNull

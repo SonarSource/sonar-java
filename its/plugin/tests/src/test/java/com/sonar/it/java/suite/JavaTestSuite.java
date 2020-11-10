@@ -52,12 +52,11 @@ import static java.util.Collections.singletonList;
   SuppressWarningTest.class,
   SonarLintTest.class,
   ExternalReportTest.class,
-  DuplicationTest.class,
-  JspTest.class
+  DuplicationTest.class
 })
 public class JavaTestSuite {
 
-  static final FileLocation JAVA_PLUGIN_LOCATION = FileLocation.byWildcardMavenFilename(new File("../../../sonar-java-plugin/target"), "sonar-java-plugin-*.jar");
+  public static final FileLocation JAVA_PLUGIN_LOCATION = FileLocation.byWildcardMavenFilename(new File("../../../sonar-java-plugin/target"), "sonar-java-plugin-*.jar");
 
   @ClassRule
   public static final Orchestrator ORCHESTRATOR;
@@ -74,6 +73,7 @@ public class JavaTestSuite {
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-filtered-issues.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-using-aar-dep.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-package-info.xml"))
+      .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-suppress-warnings.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-depends-on-jdk-types.xml"));
     orchestratorBuilder.addPlugin(FileLocation.of(TestUtils.pluginJar("java-extension-plugin")));
     ORCHESTRATOR = orchestratorBuilder.build();

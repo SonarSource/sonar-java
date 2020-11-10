@@ -78,7 +78,7 @@ class TestDefaultJavaFileScannerContextWithSensorContextTester {
   @BeforeEach
   void setup() throws IOException {
     sensorContext = SensorContextTester.create(Paths.get(""));
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, sensorContext.fileSystem(), javaClasspath, javaTestClasspath, checkFactory, null);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, sensorContext.fileSystem(), javaClasspath, javaTestClasspath, checkFactory);
     sonarComponents.setSensorContext(sensorContext);
 
     // spy getRuleKey call, to avoid mocking CheckFactory and Checks
