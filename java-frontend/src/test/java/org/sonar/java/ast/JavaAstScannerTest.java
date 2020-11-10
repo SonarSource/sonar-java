@@ -137,7 +137,7 @@ class JavaAstScannerTest {
         JavaAstScannerTest.this.context.setCancelled(true);
       }
     });
-    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null);
     sonarComponents.setSensorContext(context);
     JavaAstScanner scanner = new JavaAstScanner(sonarComponents);
     scanner.setVisitorBridge(new VisitorsBridge(Lists.newArrayList(visitor), new ArrayList<>(), sonarComponents));
@@ -174,7 +174,7 @@ class JavaAstScannerTest {
   @Test
   void should_swallow_log_and_report_checks_exceptions() {
     JavaAstScanner scanner = new JavaAstScanner(null);
-    SonarComponents sonarComponent = new SonarComponents(null, context.fileSystem(), null, null, null, null);
+    SonarComponents sonarComponent = new SonarComponents(null, context.fileSystem(), null, null, null);
     sonarComponent.setSensorContext(context);
     scanner.setVisitorBridge(new VisitorsBridge(Collections.singleton(new CheckThrowingException(new NullPointerException("foo"))), new ArrayList<>(), sonarComponent));
     InputFile scannedFile = TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt");
@@ -196,7 +196,7 @@ class JavaAstScannerTest {
   void should_swallow_log_and_report_checks_exceptions_for_symbolic_execution() {
     JavaAstScanner scanner = new JavaAstScanner(null);
     logTester.clear();
-    SonarComponents sonarComponent = new SonarComponents(null, context.fileSystem(), null, null, null, null);
+    SonarComponents sonarComponent = new SonarComponents(null, context.fileSystem(), null, null, null);
     context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
     sonarComponent.setSensorContext(context);
     scanner.setVisitorBridge(new VisitorsBridge(Collections.singletonList(new SECheck() {
@@ -243,7 +243,7 @@ class JavaAstScannerTest {
     SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
     sensorContextTester.setSettings(new MapSettings().setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, failOnException));
 
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
     sonarComponents.setSensorContext(sensorContextTester);
 
     VisitorsBridge visitorsBridge = new VisitorsBridge(new ArrayList<>(), new ArrayList<>(), sonarComponents);

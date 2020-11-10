@@ -42,7 +42,7 @@ class FileLinesVisitorTest {
   private File baseDir;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     baseDir = new File("src/test/files/metrics");
   }
 

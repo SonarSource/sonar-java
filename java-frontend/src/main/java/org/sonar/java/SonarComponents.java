@@ -47,7 +47,6 @@ import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
@@ -69,13 +68,12 @@ public class SonarComponents {
   private final List<Checks<JavaCheck>> checks;
   private final List<Checks<JavaCheck>> testChecks;
   private final List<Checks<JavaCheck>> allChecks;
-  private final SonarJavaIssueFilter issueFilter;
   private SensorContext context;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
-                         CheckFactory checkFactory, SonarJavaIssueFilter postAnalysisIssueFilter) {
-    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null, null, postAnalysisIssueFilter);
+                         CheckFactory checkFactory) {
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null, null);
   }
 
   /**
@@ -83,8 +81,8 @@ public class SonarComponents {
    */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
-                         @Nullable CheckRegistrar[] checkRegistrars, SonarJavaIssueFilter postAnalysisIssueFilter) {
-    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, checkRegistrars, null, postAnalysisIssueFilter);
+                         @Nullable CheckRegistrar[] checkRegistrars) {
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, checkRegistrars, null);
   }
 
   /**
@@ -92,8 +90,8 @@ public class SonarComponents {
    */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
-                         @Nullable ProjectDefinition projectDefinition, SonarJavaIssueFilter postAnalysisIssueFilter) {
-    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null, projectDefinition, postAnalysisIssueFilter);
+                         @Nullable ProjectDefinition projectDefinition) {
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null, projectDefinition);
   }
 
   /**
@@ -101,8 +99,7 @@ public class SonarComponents {
    */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
-                         @Nullable CheckRegistrar[] checkRegistrars, @Nullable ProjectDefinition projectDefinition,
-                         SonarJavaIssueFilter postAnalysisIssueFilter) {
+                         @Nullable CheckRegistrar[] checkRegistrars, @Nullable ProjectDefinition projectDefinition) {
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.fs = fs;
     this.javaClasspath = javaClasspath;
@@ -112,7 +109,6 @@ public class SonarComponents {
     this.checks = new ArrayList<>();
     this.testChecks = new ArrayList<>();
     this.allChecks = new ArrayList<>();
-    this.issueFilter = postAnalysisIssueFilter;
     if (checkRegistrars != null) {
       CheckRegistrar.RegistrarContext registrarContext = new CheckRegistrar.RegistrarContext();
       for (CheckRegistrar checkClassesRegister : checkRegistrars) {
@@ -238,9 +234,6 @@ public class SonarComponents {
     if (inputComponent == null) {
       return;
     }
-    if (issueFilter != null && !issueFilter.accept(key, analyzerMessage)) {
-      return;
-    }
     Double cost = analyzerMessage.getCost();
     reportIssue(analyzerMessage, key, inputComponent, cost);
   }
@@ -324,5 +317,4 @@ public class SonarComponents {
     // TODO to be changed to context.project() once LTS 7.x has been released
     return context.module();
   }
-
 }

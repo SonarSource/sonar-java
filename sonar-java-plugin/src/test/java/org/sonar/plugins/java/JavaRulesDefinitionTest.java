@@ -48,7 +48,7 @@ class JavaRulesDefinitionTest {
   private static final String REPOSITORY_KEY = "java";
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     settings = new MapSettings().asConfig();
   }
 

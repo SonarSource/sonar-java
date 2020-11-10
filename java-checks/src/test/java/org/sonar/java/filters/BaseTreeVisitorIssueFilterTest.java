@@ -30,8 +30,8 @@ import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.check.Rule;
-import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.CheckTestUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridgeForTests;
@@ -52,14 +52,13 @@ class BaseTreeVisitorIssueFilterTest {
   private static final String REPOSITORY_KEY = "octopus";
   private static final String RULE_KEY = "S42";
   private BaseTreeVisitorIssueFilter filter;
-  private AnalyzerMessage issue;
-  private RuleKey ruleKey;
+  private FilterableIssue issue;
 
   @BeforeEach
   public void setup() {
-    issue = mock(AnalyzerMessage.class);
-    ruleKey = RuleKey.of(REPOSITORY_KEY, RULE_KEY);
-    when(issue.getInputComponent()).thenReturn(INPUT_FILE);
+    issue = mock(FilterableIssue.class);
+    when(issue.componentKey()).thenReturn(INPUT_FILE.key());
+    when(issue.ruleKey()).thenReturn(RuleKey.of(REPOSITORY_KEY, RULE_KEY));
 
     filter = new FakeJavaIssueFilterOnClassAndVariable();
 
@@ -83,7 +82,7 @@ class BaseTreeVisitorIssueFilterTest {
   @Test
   void issues_from_non_targeted_rules_are_accepted() {
     // other rule
-    ruleKey = RuleKey.of(REPOSITORY_KEY, "OtherRule");
+    when(issue.ruleKey()).thenReturn(RuleKey.of(REPOSITORY_KEY, "OtherRule"));
 
     // issue on file accepted
     assertThatIssueWillBeAccepted(null).isTrue();
@@ -125,10 +124,8 @@ class BaseTreeVisitorIssueFilterTest {
 
   @Test
   void issues_from_other_component_are_accepted() {
-    InputComponent inputComponent = mock(InputComponent.class);
-    when(inputComponent.key()).thenReturn("UnknownComponent");
     // targeted rule
-    when(issue.getInputComponent()).thenReturn(inputComponent);
+    when(issue.componentKey()).thenReturn("UnknownComponent");
 
     // issue on file accepted
     assertThatIssueWillBeAccepted(null).isTrue();
@@ -143,8 +140,8 @@ class BaseTreeVisitorIssueFilterTest {
   }
 
   private AbstractBooleanAssert<?> assertThatIssueWillBeAccepted(@Nullable Integer line) {
-    when(issue.getLine()).thenReturn(line);
-    return assertThat(filter.accept(ruleKey, issue));
+    when(issue.line()).thenReturn(line);
+    return assertThat(filter.accept(issue));
   }
 
   private static class FakeJavaIssueFilterOnClassAndVariable extends BaseTreeVisitorIssueFilter {

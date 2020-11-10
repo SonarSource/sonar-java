@@ -20,51 +20,47 @@
 package org.sonar.java.filters;
 
 import com.google.common.annotations.VisibleForTesting;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import org.sonar.api.rule.RuleKey;
-import org.sonar.java.AnalyzerMessage;
+import java.util.function.Supplier;
+import org.sonar.api.scan.issue.filter.FilterableIssue;
+import org.sonar.api.scan.issue.filter.IssueFilterChain;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonarsource.api.sonarlint.SonarLintSide;
-import org.sonar.api.scanner.ScannerSide;
 
-@ScannerSide
-@SonarLintSide
 public class PostAnalysisIssueFilter implements JavaFileScanner, SonarJavaIssueFilter {
 
-  private static final Iterable<JavaIssueFilter> DEFAULT_ISSUE_FILTERS = Arrays.asList(
+  private static final Supplier<Iterable<JavaIssueFilter>> DEFAULT_ISSUE_FILTERS = () -> Arrays.asList(
     new EclipseI18NFilter(),
     new LombokFilter(),
     new GoogleAutoFilter(),
     new SuppressWarningFilter(),
     new GeneratedCodeFilter());
+
   private Iterable<JavaIssueFilter> issueFilers;
 
   @VisibleForTesting
-  void setIssueFilters(Iterable<? extends JavaIssueFilter> issueFilters) {
-    ArrayList<JavaIssueFilter> javaIssueFilters = new ArrayList<>();
-    issueFilters.forEach(javaIssueFilters::add);
-    this.issueFilers = Collections.unmodifiableList(javaIssueFilters);
+  void setIssueFilters(Collection<? extends JavaIssueFilter> issueFilters) {
+    this.issueFilers = Collections.unmodifiableCollection(issueFilters);
   }
 
   @VisibleForTesting
   Iterable<JavaIssueFilter> getIssueFilters() {
     if (issueFilers == null) {
-      issueFilers = DEFAULT_ISSUE_FILTERS;
+      issueFilers = DEFAULT_ISSUE_FILTERS.get();
     }
     return issueFilers;
   }
 
   @Override
-  public boolean accept(RuleKey ruleKey, AnalyzerMessage analyzerMessage) {
+  public boolean accept(FilterableIssue issue, IssueFilterChain chain) {
     for (JavaIssueFilter javaIssueFilter : getIssueFilters()) {
-      if (!javaIssueFilter.accept(ruleKey, analyzerMessage)) {
+      if (!javaIssueFilter.accept(issue)) {
         return false;
       }
     }
-    return true;
+    return chain.accept(issue);
   }
 
   @Override

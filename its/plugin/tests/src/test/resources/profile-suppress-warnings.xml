@@ -9,6 +9,11 @@
       <priority>MAJOR</priority>
     </rule>
     <rule>
+      <repositoryKey>java</repositoryKey>
+      <key>S3518</key>
+      <priority>MAJOR</priority>
+    </rule>
+    <rule>
       <repositoryKey>java-extension</repositoryKey>
       <key>example</key>
       <priority>MINOR</priority>

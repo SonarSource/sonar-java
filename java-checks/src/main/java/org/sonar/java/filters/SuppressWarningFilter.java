@@ -34,9 +34,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
-import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.checks.CheckList;
 import org.sonar.java.checks.SuppressWarningsCheck;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -102,20 +102,20 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
   }
 
   @Override
-  public boolean accept(RuleKey ruleKey, AnalyzerMessage analyzerMessage) {
+  public boolean accept(FilterableIssue issue) {
     Multimap<String, Integer> excludedLinesByRule = HashMultimap.create();
-    String componentKey = analyzerMessage.getInputComponent().key();
-    if (excludedLinesByComponent.containsKey(componentKey)) {
-      excludedLinesByRule = excludedLinesByComponent.get(componentKey);
+    if (excludedLinesByComponent.containsKey(issue.componentKey())) {
+      excludedLinesByRule = excludedLinesByComponent.get(issue.componentKey());
     }
-    return !issueShouldNotBeReported(ruleKey, analyzerMessage, excludedLinesByRule);
+    return !issueShouldNotBeReported(issue, excludedLinesByRule);
   }
 
-  private static boolean issueShouldNotBeReported(RuleKey issueRuleKey, AnalyzerMessage analyzerMessage, Multimap<String, Integer> excludedLineByRule) {
+  private static boolean issueShouldNotBeReported(FilterableIssue issue, Multimap<String, Integer> excludedLineByRule) {
+    RuleKey issueRuleKey = issue.ruleKey();
     for (String excludedRule : excludedLineByRule.keySet()) {
       if (("all".equals(excludedRule) || isRuleKey(excludedRule, issueRuleKey)) && !isSuppressWarningRule(issueRuleKey)) {
         Collection<Integer> excludedLines = excludedLineByRule.get(excludedRule);
-        if (excludedLines.contains(analyzerMessage.getLine())) {
+        if (excludedLines.contains(issue.line())) {
           return true;
         }
       }

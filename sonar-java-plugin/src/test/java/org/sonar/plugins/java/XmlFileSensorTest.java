@@ -59,7 +59,7 @@ class XmlFileSensorTest {
   private SensorContextTester context;
 
   @BeforeEach
-  public void setUp() throws Exception {
+  void setUp() throws Exception {
     context = SensorContextTester.create(temporaryFolder.newFolder());
   }
 

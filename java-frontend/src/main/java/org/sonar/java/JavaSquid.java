@@ -35,10 +35,10 @@ import org.sonar.api.utils.log.Profiler;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
+import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.se.SymbolicExecutionMode;
 import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
 
@@ -52,9 +52,12 @@ public class JavaSquid {
 
   public JavaSquid(JavaVersion javaVersion,
     @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
-    JavaResourceLocator javaResourceLocator, @Nullable JavaFileScanner postAnalysisIssueFilter, JavaCheck... visitors) {
+    JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
 
     List<JavaCheck> commonVisitors = Lists.newArrayList(javaResourceLocator);
+    if (postAnalysisIssueFilter != null) {
+      commonVisitors.add(postAnalysisIssueFilter);
+    }
 
     Iterable<JavaCheck> codeVisitors = Iterables.concat(commonVisitors, Arrays.asList(visitors));
     Collection<JavaCheck> testCodeVisitors = Lists.newArrayList(commonVisitors);
@@ -82,23 +85,21 @@ public class JavaSquid {
     //AstScanner for main files
     astScanner = new JavaAstScanner(sonarComponents);
     astScanner.setVisitorBridge(createVisitorBridge(codeVisitors, classpath, javaVersion, sonarComponents,
-      SymbolicExecutionMode.getMode(visitors), postAnalysisIssueFilter));
+      SymbolicExecutionMode.getMode(visitors)));
 
     //AstScanner for test files
     astScannerForTests = new JavaAstScanner(sonarComponents);
-    astScannerForTests.setVisitorBridge(createVisitorBridge(testCodeVisitors, testClasspath, javaVersion, sonarComponents,
-      SymbolicExecutionMode.DISABLED, postAnalysisIssueFilter));
+    astScannerForTests.setVisitorBridge(createVisitorBridge(testCodeVisitors, testClasspath, javaVersion, sonarComponents, SymbolicExecutionMode.DISABLED));
 
     //AstScanner for generated files
     astScannerForGeneratedFiles = new JavaAstScanner(sonarComponents);
     astScannerForGeneratedFiles.setVisitorBridge(createVisitorBridge(jspCodeVisitors, jspClasspath, javaVersion, sonarComponents,
-      SymbolicExecutionMode.DISABLED, postAnalysisIssueFilter));
+      SymbolicExecutionMode.DISABLED));
   }
 
   private static VisitorsBridge createVisitorBridge(
-    Iterable<JavaCheck> codeVisitors, List<File> classpath, JavaVersion javaVersion, @Nullable SonarComponents sonarComponents,
-    SymbolicExecutionMode symbolicExecutionMode, @Nullable JavaFileScanner postAnalysisIssueFilter) {
-    VisitorsBridge visitorsBridge = new VisitorsBridge(codeVisitors, classpath, sonarComponents, symbolicExecutionMode, postAnalysisIssueFilter);
+    Iterable<JavaCheck> codeVisitors, List<File> classpath, JavaVersion javaVersion, @Nullable SonarComponents sonarComponents, SymbolicExecutionMode symbolicExecutionMode) {
+    VisitorsBridge visitorsBridge = new VisitorsBridge(codeVisitors, classpath, sonarComponents, symbolicExecutionMode);
     visitorsBridge.setJavaVersion(javaVersion);
     return visitorsBridge;
   }

@@ -39,7 +39,7 @@ class JavaVersionAwareVisitorTest {
   private List<String> messages;
 
   @BeforeEach
-  public void setUp() throws Exception {
+  void setUp() throws Exception {
     messages = Lists.newLinkedList();
     javaChecks = new JavaCheck[] {
       new JavaVersionCheck(7, messages),

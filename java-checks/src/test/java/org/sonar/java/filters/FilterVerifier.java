@@ -37,6 +37,7 @@ import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.Version;
 import org.sonar.check.Rule;
@@ -52,6 +53,8 @@ import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class FilterVerifier {
 
@@ -79,20 +82,23 @@ public class FilterVerifier {
     Set<AnalyzerMessage> issues = testJavaFileScannerContext.getIssues();
     for (AnalyzerMessage analyzerMessage : issues) {
       Integer issueLine = analyzerMessage.getLine();
-      String ruleKeyName = AnnotationUtils.getAnnotation(analyzerMessage.getCheck().getClass(), Rule.class).key();
-      RuleKey ruleKey = RuleKey.of("java", ruleKeyName);
+      String ruleKey = AnnotationUtils.getAnnotation(analyzerMessage.getCheck().getClass(), Rule.class).key();
+      FilterableIssue issue = mock(FilterableIssue.class);
+      when(issue.ruleKey()).thenReturn(RuleKey.of("java", ruleKey));
+      when(issue.componentKey()).thenReturn(inputFile.key());
+      when(issue.line()).thenReturn(issueLine);
 
       if (issueCollector.rejectedIssuesLines.contains(issueLine)) {
-        assertThat(filter.accept(ruleKey, analyzerMessage))
+        assertThat(filter.accept(issue))
           .overridingErrorMessage("Line #" + issueLine + " has been marked with 'NoIssue' but issue of rule '" + ruleKey + "' has been accepted!")
           .isFalse();
       } else if (issueCollector.acceptedIssuesLines.contains(issueLine)) {
         // force check on accepted issues
-        assertThat(filter.accept(ruleKey, analyzerMessage))
+        assertThat(filter.accept(issue))
           .overridingErrorMessage("Line #" + issueLine + " has been marked with 'WithIssue' but no issue have been raised!")
           .isTrue();
       } else {
-        issuesByLines.put(issueLine, ruleKeyName);
+        issuesByLines.put(issueLine, ruleKey);
       }
     }
 
@@ -147,7 +153,7 @@ public class FilterVerifier {
   private static SonarComponents sonarComponents(InputFile inputFile) {
     SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
     context.setSettings(new MapSettings().setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, true));
-    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null, null) {
+    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null) {
       @Override
       public boolean reportAnalysisError(RecognitionException re, InputFile inputFile) {
         throw new AssertionError(String.format("Should not fail analysis (%s)", re.getMessage()));
