@@ -54,6 +54,7 @@ import org.sonar.java.checks.regex.InvalidRegexCheck;
 import org.sonar.java.checks.regex.RedosCheck;
 import org.sonar.java.checks.regex.RegexComplexityCheck;
 import org.sonar.java.checks.regex.ReluctantQuantifierCheck;
+import org.sonar.java.checks.regex.SingleCharacterAlternationCheck;
 import org.sonar.java.checks.regex.StringReplaceCheck;
 import org.sonar.java.checks.regex.UnicodeAwareCharClassesCheck;
 import org.sonar.java.checks.regex.UnicodeCaseCheck;
@@ -630,6 +631,7 @@ public final class CheckList {
       SillyEqualsCheck.class,
       SillyStringOperationsCheck.class,
       SimpleClassNameCheck.class,
+      SingleCharacterAlternationCheck.class,
       SMTPSSLServerIdentityCheck.class,
       SocketUsageCheck.class,
       SpecializedFunctionalInterfacesCheck.class,
