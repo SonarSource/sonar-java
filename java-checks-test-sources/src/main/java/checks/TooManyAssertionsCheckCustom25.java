@@ -4,7 +4,6 @@ import java.net.URI;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.Assert.assertEquals;
 
 public class TooManyAssertionsCheckCustom25 {
@@ -46,7 +45,7 @@ public class TooManyAssertionsCheckCustom25 {
   }
 
   @Test
-  void test2() { // Noncompliant [[sc=8;ec=13]]{{Refactor this method in order to have less than 25 assertions.}}
+  void test2() { // Noncompliant [[sc=8;ec=13]]{{Refactor this method to reduce the number of assertions from 26 to less than 25.}}
     assertEquals(101, g(1));
     assertEquals(102, g(2));
     assertEquals(103, g(3));
