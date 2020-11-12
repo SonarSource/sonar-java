@@ -22,7 +22,7 @@ public class OneExpectedCheckedExceptionCheck {
     assertThrows(IOException.class, () -> throwIOException2(throwIOException(1)) ); // Noncompliant
     assertThrows(IOException.class, () -> throwIOException2(throwIOException(1)), "Message"); // Noncompliant
     assertThrows(IOException.class, () -> throwIOException2(throwIOException(1)), () -> "message"); // Noncompliant
-    assertThrows(IOException.class, () -> { // Noncompliant [[sc=5;ec=17;secondary=25,26] {{Refactor the code of the lambda to have only one invocation throwing an exception.}}
+    assertThrows(IOException.class, () -> { // Noncompliant [[sc=5;ec=17;secondary=25,26] {{Refactor the code of the lambda to not have multiple invocations throwing the same checked exception.}}
         if (throwIOException2(1) ==
           throwIOException(1)) {}
       } );
@@ -51,7 +51,7 @@ public class OneExpectedCheckedExceptionCheck {
 
   @Test
   public void testGTryCatchIdiom() {
-    try { // Noncompliant [[sc=5;ec=8;secondary=55,56]] {{Refactor the body of this try/catch to have only one invocation throwing an exception.}}
+    try { // Noncompliant [[sc=5;ec=8;secondary=55,56]] {{Refactor the body of this try/catch to not have multiple invocations throwing the same checked exception.}}
       throwIOException2(
         throwIOException(1)
       );
@@ -157,7 +157,7 @@ public class OneExpectedCheckedExceptionCheck {
   public void test_AssertJ() {
 
     Throwable thrown = org.assertj.core.api.Assertions
-      .catchThrowableOfType(  // Noncompliant [[sc=8;ec=28;secondary=161,162]] {{Refactor the code of the lambda to have only one invocation throwing an exception.}}
+      .catchThrowableOfType(  // Noncompliant [[sc=8;ec=28;secondary=161,162]] {{Refactor the code of the lambda to not have multiple invocations throwing the same checked exception.}}
       () -> throwIOException2(
         throwIOException(1)),
       IOException.class);

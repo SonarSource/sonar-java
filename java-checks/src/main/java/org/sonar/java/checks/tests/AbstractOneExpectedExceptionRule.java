@@ -189,9 +189,9 @@ public abstract class AbstractOneExpectedExceptionRule extends IssuableSubscript
     return !type.isSubtypeOf("java.lang.RuntimeException") && !type.isSubtypeOf("java.lang.Error");
   }
 
-  static List<JavaFileScannerContext.Location> secondaryLocations(List<Tree> methodInvocationTrees) {
+  static List<JavaFileScannerContext.Location> secondaryLocations(List<Tree> methodInvocationTrees, String message) {
     return methodInvocationTrees.stream()
-      .map(expr -> new JavaFileScannerContext.Location("Throws an exception", expr))
+      .map(expr -> new JavaFileScannerContext.Location(message, expr))
       .collect(Collectors.toList());
   }
 

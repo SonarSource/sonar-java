@@ -44,8 +44,8 @@ public class OneExpectedCheckedExceptionCheck extends AbstractOneExpectedExcepti
     List<Tree> invocationTree = visitor.invocationTree;
     if (invocationTree.size() > 1) {
       reportIssue(reportLocation,
-        String.format("Refactor the %s to have only one invocation throwing an exception.", placeToRefactor),
-        secondaryLocations(invocationTree),
+        String.format("Refactor the %s to not have multiple invocations throwing the same checked exception.", placeToRefactor),
+        secondaryLocations(invocationTree, "Throws an exception"),
         null);
     }
   }
