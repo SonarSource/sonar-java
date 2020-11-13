@@ -42,5 +42,22 @@ class S2390D extends S2390C { }
 
 class S2390V<T>  {
   private static class VSub extends S2390V {}
-  static S2390V V1 = new VSub(); // Noncompliant
+  static S2390V V1 = new VSub(); // Compliant
+}
+
+class ParentNested {
+
+  private static class ChildNested extends ParentNested {
+    static int version = 6;
+    static int getVersion() {
+      return 0;
+    }
+  }
+
+  public static final ParentNested INSTANCE1 = new ChildNested(); // Compliant
+  static int childVersion1 = ChildNested.version; // Compliant
+  static int childVersion2 = ChildNested.getVersion(); // Compliant
+
+  static int otherChildVersion1 = ChildS2390.version; // Compliant, not a child of ParentNested
+  static int otherChildVersion2 = ChildS2390.getVersion(); // Compliant, not a child of ParentNested
 }
