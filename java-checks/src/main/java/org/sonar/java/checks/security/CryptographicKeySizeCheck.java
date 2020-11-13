@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.security;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -28,6 +27,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.checks.helpers.MapBuilder;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
@@ -53,12 +53,13 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
   private static final int EC_MIN_KEY = 224;
   private static final Pattern EC_KEY_PATTERN = Pattern.compile("^(secp|prime|sect|c2tnb)(\\d+)");
 
-  private static final Map<String, Integer> ALGORITHM_KEY_SIZE_MAP = ImmutableMap.of(
-    "RSA", 2048,
-    "DH", 2048,
-    "DIFFIEHELLMAN", 2048,
-    "DSA", 2048,
-    "AES", 128);
+  private static final Map<String, Integer> ALGORITHM_KEY_SIZE_MAP = MapBuilder.<String, Integer>newMap()
+    .add("RSA", 2048)
+    .add("DH", 2048)
+    .add("DIFFIEHELLMAN", 2048)
+    .add("DSA", 2048)
+    .add("AES", 128)
+    .build();
 
   private static final MethodMatchers KEY_GEN = MethodMatchers.or(
     MethodMatchers.create()

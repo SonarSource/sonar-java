@@ -19,12 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableMap;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MapBuilder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -36,10 +35,10 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 @Rule(key = "S2178")
 public class NonShortCircuitLogicCheck extends IssuableSubscriptionVisitor {
 
-  private static final Map<String, String> REPLACEMENTS =
-    ImmutableMap.of(
-      "&", "&&",
-      "|", "||");
+  private static final Map<String, String> REPLACEMENTS = MapBuilder.<String,String>newMap()
+    .add("&", "&&")
+    .add("|", "||")
+    .build();
 
   @Override
   public List<Kind> nodesToVisit() {

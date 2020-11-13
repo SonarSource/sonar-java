@@ -19,11 +19,11 @@
  */
 package org.sonar.java.checks.tests;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MapBuilder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -31,17 +31,17 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S5793")
 public class JUnit4AnnotationsCheck extends IssuableSubscriptionVisitor {
 
-  private static final Map<String, String> OLD_NEW_ANNOTATIONS_MAP = new ImmutableMap.Builder<String, String>()
-    .put("org.junit.Test", "org.junit.jupiter.api.Test")
-    .put("org.junit.Before", "org.junit.jupiter.api.BeforeEach")
-    .put("org.junit.After", "org.junit.jupiter.api.AfterEach")
-    .put("org.junit.BeforeClass", "org.junit.jupiter.api.BeforeAll")
-    .put("org.junit.AfterClass", "org.junit.jupiter.api.AfterAll")
-    .put("org.junit.Ignore", "org.junit.jupiter.api.Disabled")
-    .put("org.junit.experimental.categories.Category", "org.junit.jupiter.api.Tag")
-    .put("org.junit.Rule", "org.junit.jupiter.api.extension.ExtendWith")
-    .put("org.junit.ClassRule", "org.junit.jupiter.api.extension.RegisterExtension")
-    .put("org.junit.runner.RunWith", "org.junit.jupiter.api.extension.ExtendWith")
+  private static final Map<String, String> OLD_NEW_ANNOTATIONS_MAP = MapBuilder.<String, String>newMap()
+    .add("org.junit.Test", "org.junit.jupiter.api.Test")
+    .add("org.junit.Before", "org.junit.jupiter.api.BeforeEach")
+    .add("org.junit.After", "org.junit.jupiter.api.AfterEach")
+    .add("org.junit.BeforeClass", "org.junit.jupiter.api.BeforeAll")
+    .add("org.junit.AfterClass", "org.junit.jupiter.api.AfterAll")
+    .add("org.junit.Ignore", "org.junit.jupiter.api.Disabled")
+    .add("org.junit.experimental.categories.Category", "org.junit.jupiter.api.Tag")
+    .add("org.junit.Rule", "org.junit.jupiter.api.extension.ExtendWith")
+    .add("org.junit.ClassRule", "org.junit.jupiter.api.extension.RegisterExtension")
+    .add("org.junit.runner.RunWith", "org.junit.jupiter.api.extension.ExtendWith")
     .build();
 
   @Override

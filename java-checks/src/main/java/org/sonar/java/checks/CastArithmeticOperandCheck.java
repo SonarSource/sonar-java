@@ -19,11 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MapBuilder;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -46,11 +46,11 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S2184")
 public class CastArithmeticOperandCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final Map<Tree.Kind, String> OPERATION_BY_KIND = ImmutableMap.<Tree.Kind, String>builder()
-    .put(Tree.Kind.PLUS, "addition")
-    .put(Tree.Kind.MINUS, "subtraction")
-    .put(Tree.Kind.MULTIPLY, "multiplication")
-    .put(Tree.Kind.DIVIDE, "division")
+  private static final Map<Tree.Kind, String> OPERATION_BY_KIND = MapBuilder.<Tree.Kind, String>newMap()
+    .add(Tree.Kind.PLUS, "addition")
+    .add(Tree.Kind.MINUS, "subtraction")
+    .add(Tree.Kind.MULTIPLY, "multiplication")
+    .add(Tree.Kind.DIVIDE, "division")
     .build();
   private JavaFileScannerContext context;
 

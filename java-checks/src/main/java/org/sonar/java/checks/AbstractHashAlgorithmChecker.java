@@ -19,13 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import org.sonar.java.checks.helpers.JavaPropertiesHelper;
+import org.sonar.java.checks.helpers.MapBuilder;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
@@ -44,22 +44,22 @@ public abstract class AbstractHashAlgorithmChecker extends AbstractMethodDetecti
   public static final String GET_INSTANCE = "getInstance";
   public static final String JAVA_LANG_STRING = "java.lang.String";
 
-  public static final Map<String, InsecureAlgorithm> ALGORITHM_BY_METHOD_NAME = ImmutableMap.<String, InsecureAlgorithm>builder()
-    .put("getMd2Digest", InsecureAlgorithm.MD2)
-    .put("getMd5Digest", InsecureAlgorithm.MD5)
-    .put("getShaDigest", InsecureAlgorithm.SHA1)
-    .put("getSha1Digest", InsecureAlgorithm.SHA1)
-    .put("md2", InsecureAlgorithm.MD2)
-    .put("md2Hex", InsecureAlgorithm.MD2)
-    .put("md5", InsecureAlgorithm.MD5)
-    .put("md5Hex", InsecureAlgorithm.MD5)
-    .put("sha1", InsecureAlgorithm.SHA1)
-    .put("sha1Hex", InsecureAlgorithm.SHA1)
-    .put("sha", InsecureAlgorithm.SHA1)
-    .put("shaHex", InsecureAlgorithm.SHA1)
-    .put("md5Digest", InsecureAlgorithm.MD5)
-    .put("md5DigestAsHex", InsecureAlgorithm.MD5)
-    .put("appendMd5DigestAsHex", InsecureAlgorithm.MD5)
+  protected static final Map<String, InsecureAlgorithm> ALGORITHM_BY_METHOD_NAME = MapBuilder.<String, InsecureAlgorithm>newMap()
+    .add("getMd2Digest", InsecureAlgorithm.MD2)
+    .add("getMd5Digest", InsecureAlgorithm.MD5)
+    .add("getShaDigest", InsecureAlgorithm.SHA1)
+    .add("getSha1Digest", InsecureAlgorithm.SHA1)
+    .add("md2", InsecureAlgorithm.MD2)
+    .add("md2Hex", InsecureAlgorithm.MD2)
+    .add("md5", InsecureAlgorithm.MD5)
+    .add("md5Hex", InsecureAlgorithm.MD5)
+    .add("sha1", InsecureAlgorithm.SHA1)
+    .add("sha1Hex", InsecureAlgorithm.SHA1)
+    .add("sha", InsecureAlgorithm.SHA1)
+    .add("shaHex", InsecureAlgorithm.SHA1)
+    .add("md5Digest", InsecureAlgorithm.MD5)
+    .add("md5DigestAsHex", InsecureAlgorithm.MD5)
+    .add("appendMd5DigestAsHex", InsecureAlgorithm.MD5)
     .build();
 
   private static final String CONSTRUCTOR = "<init>";

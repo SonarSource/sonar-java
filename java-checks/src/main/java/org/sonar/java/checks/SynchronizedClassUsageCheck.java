@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +30,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.checks.helpers.MapBuilder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -47,11 +47,11 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S1149")
 public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
 
-  private static final Map<String, String> REPLACEMENTS = ImmutableMap.<String, String>builder()
-    .put("java.util.Vector", "\"ArrayList\" or \"LinkedList\"")
-    .put("java.util.Hashtable", "\"HashMap\"")
-    .put("java.lang.StringBuffer", "\"StringBuilder\"")
-    .put("java.util.Stack", "\"Deque\"")
+  private static final Map<String, String> REPLACEMENTS = MapBuilder.<String, String>newMap()
+    .add("java.util.Vector", "\"ArrayList\" or \"LinkedList\"")
+    .add("java.util.Hashtable", "\"HashMap\"")
+    .add("java.lang.StringBuffer", "\"StringBuilder\"")
+    .add("java.util.Stack", "\"Deque\"")
     .build();
 
   private final Deque<Set<String>> exclusions = new ArrayDeque<>();

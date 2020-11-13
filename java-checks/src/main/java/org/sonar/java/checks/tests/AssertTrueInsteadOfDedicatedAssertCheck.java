@@ -19,11 +19,11 @@
  */
 package org.sonar.java.checks.tests;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MapBuilder;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -58,13 +58,13 @@ public class AssertTrueInsteadOfDedicatedAssertCheck extends AbstractMethodDetec
     "org.junit.jupiter.api.Assertions"
   };
 
-  private static final Map<Assertion, Assertion> COMPLEMENTS = ImmutableMap.<Assertion, Assertion>builder()
-    .put(Assertion.NULL, Assertion.NOT_NULL)
-    .put(Assertion.NOT_NULL, Assertion.NULL)
-    .put(Assertion.SAME, Assertion.NOT_SAME)
-    .put(Assertion.NOT_SAME, Assertion.SAME)
-    .put(Assertion.EQUALS, Assertion.NOT_EQUALS)
-    .put(Assertion.NOT_EQUALS, Assertion.EQUALS)
+  private static final Map<Assertion, Assertion> COMPLEMENTS = MapBuilder.<Assertion, Assertion>newMap()
+    .add(Assertion.NULL, Assertion.NOT_NULL)
+    .add(Assertion.NOT_NULL, Assertion.NULL)
+    .add(Assertion.SAME, Assertion.NOT_SAME)
+    .add(Assertion.NOT_SAME, Assertion.SAME)
+    .add(Assertion.EQUALS, Assertion.NOT_EQUALS)
+    .add(Assertion.NOT_EQUALS, Assertion.EQUALS)
     .build();
 
   private enum Assertion {
