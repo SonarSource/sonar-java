@@ -39,21 +39,10 @@ public class SingleConnectionFactoryCheck extends SimpleXPathBasedCheck {
   @Override
   public void scanFile(XmlFile file) {
     evaluateAsList(singleConnectionFactoryBeansExpression, file.getNamespaceUnawareDocument()).forEach(bean -> {
-      if (!hasReconnectOnExceptionPropertyEnabled(bean)) {
+      if (!hasAttributeValue(bean, "p:reconnectOnException") && !hasPropertyAsChild(bean, reconnectOnExceptionPropertyExpression)) {
         reportIssue(bean, "Add a \"reconnectOnException\" property, set to \"true\"");
       }
     });
-  }
-
-  private boolean hasReconnectOnExceptionPropertyEnabled(Node bean) {
-    return hasPropertyAsAttribute(bean) ||
-      hasAttributeValue(bean, "reconnectOnException") ||
-      hasPropertyAsChild(bean, reconnectOnExceptionPropertyExpression);
-  }
-
-  private static boolean hasPropertyAsAttribute(Node bean) {
-    Node attribute = XmlFile.nodeAttribute(bean, "p:reconnectOnException");
-    return attribute != null && "true".equals(attribute.getNodeValue());
   }
 
   private static boolean hasAttributeValue(Node bean, String attributeName) {

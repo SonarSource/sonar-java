@@ -37,4 +37,12 @@
     </property>
   </bean>
 
+  <bean id="scf8" class="org.springframework.jms.connection.SingleConnectionFactory"> <!-- Compliant -->
+    <property name="reconnectOnException" value="true"/>
+  </bean>
+
+  <bean id="scf9" class="org.springframework.jms.connection.SingleConnectionFactory"> <!-- Noncompliant {{Add a "reconnectOnException" property, set to "true"}} -->
+    <property name="reconnectOnException" value="false" />
+  </bean>
+
 </beans>
