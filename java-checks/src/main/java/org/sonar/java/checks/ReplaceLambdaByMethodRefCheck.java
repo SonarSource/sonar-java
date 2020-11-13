@@ -26,8 +26,8 @@ import java.util.stream.IntStream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -39,13 +39,13 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S1612")
-public class ReplaceLambdaByMethodRefCheck extends SubscriptionVisitor {
+public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -54,68 +54,95 @@ public class ReplaceLambdaByMethodRefCheck extends SubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     visitLambdaExpression((LambdaExpressionTree) tree);
   }
 
   private void visitLambdaExpression(LambdaExpressionTree tree) {
-    if (isReplaceableSingleMethodInvocation(tree) || isBodyBlockInvokingMethod(tree)) {
-      context.reportIssue(this, tree.arrowToken(), "Replace this lambda with a method reference." + context.getJavaVersion().java8CompatibilityMessage());
+    if (isMethodInvocation(tree.body(), tree) || isBodyBlockInvokingMethod(tree)) {
+      reportIssue(tree.arrowToken(), "Replace this lambda with a method reference." + context.getJavaVersion().java8CompatibilityMessage());
     } else {
+      getTypeCast(tree)
+        .ifPresent(type -> reportIssue(tree.arrowToken(),
+          "Replace this lambda with method reference '" + type + ".class::cast'." + context.getJavaVersion().java8CompatibilityMessage()));
       getNullCheck(tree)
-        .ifPresent(nullMethod ->
-          context.reportIssue(this, tree.arrowToken(),
-            "Replace this lambda with method reference 'Objects::" + nullMethod + "'." + context.getJavaVersion().java8CompatibilityMessage())
-        );
+        .ifPresent(nullMethod -> reportIssue(tree.arrowToken(),
+          "Replace this lambda with method reference 'Objects::" + nullMethod + "'." + context.getJavaVersion().java8CompatibilityMessage()));
     }
   }
 
   private static Optional<String> getNullCheck(LambdaExpressionTree lambda) {
-    Tree lambdaBody = lambda.body();
-    if (isBlockWithOneStatement(lambdaBody)) {
-      return getNullCheckFromReturn(((BlockTree) lambdaBody).body().get(0), lambda);
-    }
-    return getNullCheck(lambdaBody, lambda);
+    return getLambdaSingleParamSymbol(lambda).flatMap(symbol -> {
+      Tree lambdaBody = lambda.body();
+      return (isBlockWithOneStatement(lambdaBody)) ? 
+        getNullCheckFromReturn(((BlockTree) lambdaBody).body().get(0), symbol) :
+        getNullCheck(lambdaBody, symbol);
+    });
   }
 
-  private static Optional<String> getNullCheckFromReturn(Tree statement, LambdaExpressionTree lambda) {
-    if (statement.is(Tree.Kind.RETURN_STATEMENT)) {
-      return getNullCheck(((ReturnStatementTree) statement).expression(), lambda);
-    }
-    return Optional.empty();
+  private static Optional<String> getNullCheckFromReturn(Tree statement, Symbol paramSymbol) {
+    return statement.is(Tree.Kind.RETURN_STATEMENT) ?
+      getNullCheck(((ReturnStatementTree) statement).expression(), paramSymbol) :
+      Optional.empty();
   }
 
-  private static Optional<String> getNullCheck(@Nullable Tree statement, LambdaExpressionTree tree) {
-    if (statement == null) {
+  private static Optional<String> getNullCheck(@Nullable Tree statement, Symbol paramSymbol) {
+    return expressionWithoutParentheses(statement).flatMap(expr -> {
+      if (expr.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
+        BinaryExpressionTree bet = (BinaryExpressionTree) expr;
+        ExpressionTree leftOperand = ExpressionUtils.skipParentheses(bet.leftOperand());
+        ExpressionTree rightOperand = ExpressionUtils.skipParentheses(bet.rightOperand());
+        if (nullAgainstParam(leftOperand, rightOperand, paramSymbol) || nullAgainstParam(rightOperand, leftOperand, paramSymbol)) {
+          return Optional.of(expr.is(Tree.Kind.EQUAL_TO) ? "isNull" : "nonNull");
+        }
+      }
       return Optional.empty();
-    }
-    Tree expr = statement;
-    if (expr.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      expr = ExpressionUtils.skipParentheses((ParenthesizedTree) statement);
-    }
-    if (expr.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
-      BinaryExpressionTree bet = (BinaryExpressionTree) expr;
-      ExpressionTree leftOperand = ExpressionUtils.skipParentheses(bet.leftOperand());
-      ExpressionTree rightOperand = ExpressionUtils.skipParentheses(bet.rightOperand());
-      if (nullAgainstParam(leftOperand, rightOperand, tree) || nullAgainstParam(rightOperand, leftOperand, tree)) {
-        return Optional.of(expr.is(Tree.Kind.EQUAL_TO) ? "isNull" : "nonNull");
+    });
+  }
+
+  private static boolean nullAgainstParam(ExpressionTree o1, ExpressionTree o2, Symbol paramSymbol) {
+    return o1.is(Tree.Kind.NULL_LITERAL) &&
+      o2.is(Tree.Kind.IDENTIFIER) && 
+      paramSymbol.equals(((IdentifierTree) o2).symbol());
+  }
+
+  private static Optional<String> getTypeCast(LambdaExpressionTree lambda) {
+    return getLambdaSingleParamSymbol(lambda).flatMap(symbol -> {
+      Tree lambdaBody = lambda.body();
+      return isBlockWithOneStatement(lambdaBody) ? 
+        getTypeCastFromReturn(((BlockTree) lambdaBody).body().get(0), symbol) : 
+        getTypeCast(lambdaBody, symbol);
+    });
+  }
+
+  private static Optional<String> getTypeCastFromReturn(Tree statement, Symbol symbol) {
+    return statement.is(Tree.Kind.RETURN_STATEMENT) ?
+      getTypeCast(((ReturnStatementTree) statement).expression(), symbol) :
+      Optional.empty();
+  }
+
+  private static Optional<String> getTypeCast(@Nullable Tree statement, Symbol symbol) {
+    return statement == null ?
+      Optional.empty() :
+      expressionWithoutParentheses(statement).flatMap(expr -> getTypeCastName(symbol, expr));
+  }
+
+  private static Optional<String> getTypeCastName(Symbol symbol, ExpressionTree expr) {
+    if (expr.is(Tree.Kind.TYPE_CAST)) {
+      TypeCastTree typeCastTree = (TypeCastTree) expr;
+      if (isSingleParamCast(typeCastTree.expression(), symbol)) {
+        return Optional.of(typeCastTree.type().symbolType().name());
       }
     }
     return Optional.empty();
   }
 
-  private static boolean nullAgainstParam(ExpressionTree o1, ExpressionTree o2, LambdaExpressionTree tree) {
-    if (o1.is(Tree.Kind.NULL_LITERAL) && o2.is(Tree.Kind.IDENTIFIER)) {
-      List<VariableTree> parameters = tree.parameters();
-      return parameters.size() == 1 && parameters.get(0).symbol().equals(((IdentifierTree) o2).symbol());
-    }
-    return false;
+  private static boolean isSingleParamCast(ExpressionTree expression, Symbol symbol) {
+    return expression.is(Tree.Kind.IDENTIFIER) && symbol.equals(((IdentifierTree) expression).symbol());
   }
 
-  private static boolean isReplaceableSingleMethodInvocation(LambdaExpressionTree lambdaTree) {
-    return isMethodInvocation(lambdaTree.body(), lambdaTree);
+  private static Optional<Symbol> getLambdaSingleParamSymbol(LambdaExpressionTree tree) {
+    List<VariableTree> parameters = tree.parameters();
+    return parameters.size() == 1 ? Optional.of(parameters.get(0).symbol()) : Optional.empty();
   }
 
   private static boolean isBodyBlockInvokingMethod(LambdaExpressionTree lambdaTree) {
@@ -231,6 +258,14 @@ public class ReplaceLambdaByMethodRefCheck extends SubscriptionVisitor {
     return false;
   }
 
+  public static Optional<ExpressionTree> expressionWithoutParentheses(@Nullable Tree tree) {
+    if (!(tree instanceof ExpressionTree)) {
+      return Optional.empty();
+    }
+    ExpressionTree result = ((ExpressionTree) tree);
+    return Optional.of(ExpressionUtils.skipParentheses(result));
+  }
+
   /**
    * This is a crude way to shutdown the FPs when method reference is ambiguous in case of lambda like x -> x.foo()
    * Full resolution algorithm is described in JLS 15.13.1
@@ -247,7 +282,7 @@ public class ReplaceLambdaByMethodRefCheck extends SubscriptionVisitor {
       .filter(Symbol::isMethodSymbol)
       .map(s -> (Symbol.MethodSymbol) s)
       .filter(m -> (!m.isStatic() && m.parameterTypes().isEmpty())
-        ||  (m.isStatic() && m.parameterTypes().size() == 1 && parameterSymbol.type().isSubtypeOf(m.parameterTypes().get(0))))
+        || (m.isStatic() && m.parameterTypes().size() == 1 && parameterSymbol.type().isSubtypeOf(m.parameterTypes().get(0))))
       .count() > 1;
   }
 }
