@@ -22,12 +22,19 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 class CompareStringsBoxedTypesWithEqualsCheckTest {
 
   @Test
   void detected() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/CompareStringsBoxedTypesWithEqualsCheck.java")
+      .onFile(testSourcesPath("checks/CompareStringsBoxedTypesWithEqualsCheck.java"))
+      .withCheck(new CompareStringsBoxedTypesWithEqualsCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/CompareStringsBoxedTypesWithEqualsCheck.java"))
       .withCheck(new CompareStringsBoxedTypesWithEqualsCheck())
       .verifyIssues();
   }
@@ -35,7 +42,13 @@ class CompareStringsBoxedTypesWithEqualsCheckTest {
   @Test
   void no_issue_without_semantic() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/CompareStringsBoxedTypesWithEqualsCheck.java")
+      .onFile(testSourcesPath("checks/CompareStringsBoxedTypesWithEqualsCheck.java"))
+      .withCheck(new CompareStringsBoxedTypesWithEqualsCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/CompareStringsBoxedTypesWithEqualsCheck.java"))
       .withCheck(new CompareStringsBoxedTypesWithEqualsCheck())
       .withoutSemantic()
       .verifyNoIssues();
