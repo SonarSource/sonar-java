@@ -35,9 +35,15 @@ import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
+import org.sonar.api.scan.issue.filter.FilterableIssue;
+import org.sonar.api.scan.issue.filter.IssueFilterChain;
 import org.sonar.api.utils.Version;
+import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -56,6 +62,7 @@ class JavaSquidTest {
   private FileLinesContext fileLinesContext;
   private JavaClasspath javaClasspath;
   private JavaTestClasspath javaTestClasspath;
+  private TestIssueFilter testIssueFilter;
 
   private SonarComponents sonarComponents;
   private SensorContextTester context;
@@ -65,7 +72,7 @@ class JavaSquidTest {
 
     String code = "/***/\nclass A {\n String foo() {\n  return foo();\n }\n}";
 
-    InputFile defaultFile = scanForErrors(code);
+    InputFile defaultFile = scan(code);
 
     // No symbol table : check reference to foo is empty.
     assertThat(context.referencesForSymbolAt(defaultFile.key(), 3, 8)).isNull();
@@ -82,23 +89,31 @@ class JavaSquidTest {
 
   @Test
   void parsing_errors_should_be_reported_to_sonarlint() throws Exception {
-    scanForErrors("class A {");
+    scan("class A {");
 
     assertThat(context.allAnalysisErrors()).hasSize(1);
     assertThat(context.allAnalysisErrors().iterator().next().message()).startsWith("Parse error at line 1 column 8");
   }
 
+  @Test
+  void should_add_issue_filter_to_JavaSquid_scanners() throws IOException {
+    testIssueFilter = new TestIssueFilter();
+    scan("class A { }");
+    assertThat(context.allAnalysisErrors()).isEmpty();
+    assertThat(testIssueFilter.lastScannedTree).isInstanceOf(CompilationUnitTree.class);
+  }
+
   @org.junit.jupiter.api.Disabled("new semantic analysis does not throw exception in this case")
   @Test
   void semantic_errors_should_be_reported_to_sonarlint() throws Exception {
-    scanForErrors("class A {} class A {}");
+    scan("class A {} class A {}");
 
     assertThat(context.allAnalysisErrors()).hasSize(1);
     assertThat(context.allAnalysisErrors().iterator().next().message()).isEqualTo("Registering class 2 times : A");
   }
 
 
-  private InputFile scanForErrors(String code) throws IOException {
+  private InputFile scan(String code) throws IOException {
     File baseDir = temp.getRoot().getAbsoluteFile();
     context = SensorContextTester.create(baseDir);
 
@@ -116,7 +131,7 @@ class JavaSquidTest {
     javaTestClasspath = mock(JavaTestClasspath.class);
     sonarComponents = new SonarComponents(fileLinesContextFactory, context.fileSystem(), javaClasspath, javaTestClasspath, mock(CheckFactory.class));
     sonarComponents.setSensorContext(context);
-    JavaSquid javaSquid = new JavaSquid(new JavaVersionImpl(), sonarComponents, new Measurer(context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), null);
+    JavaSquid javaSquid = new JavaSquid(new JavaVersionImpl(), sonarComponents, new Measurer(context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), testIssueFilter);
     javaSquid.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
 
     return inputFile;
@@ -128,5 +143,17 @@ class JavaSquidTest {
     InputFile defaultFile = TestUtils.inputFile(context.fileSystem().baseDir().getAbsolutePath(), file);
     context.fileSystem().add(defaultFile);
     return defaultFile;
+  }
+
+  private static class TestIssueFilter implements JavaFileScanner, SonarJavaIssueFilter {
+    CompilationUnitTree lastScannedTree = null;
+    @Override
+    public void scanFile(JavaFileScannerContext context) {
+      lastScannedTree = context.getTree();
+    }
+    @Override
+    public boolean accept(FilterableIssue issue, IssueFilterChain chain) {
+      return true;
+    }
   }
 }

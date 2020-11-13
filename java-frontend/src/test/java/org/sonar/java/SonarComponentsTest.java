@@ -37,6 +37,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
+import org.sonar.api.batch.bootstrap.ProjectDefinition;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
@@ -118,6 +119,21 @@ class SonarComponentsTest {
 
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, null, mock(JavaTestClasspath.class), checkFactory);
 
+    assertThat(sonarComponents.workDir()).isEqualTo(workDir);
+  }
+
+  @Test
+  void set_work_directory_using_project_definition() {
+    File baseDir = new File("");
+    File workDir = new File("target");
+    SensorContextTester context = SensorContextTester.create(baseDir);
+    DefaultFileSystem fs = context.fileSystem();
+    fs.setWorkDir(workDir.toPath());
+    ProjectDefinition parentProjectDefinition = ProjectDefinition.create();
+    parentProjectDefinition.setWorkDir(workDir);
+    ProjectDefinition childProjectDefinition = ProjectDefinition.create();
+    parentProjectDefinition.addSubProject(childProjectDefinition);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, null, mock(JavaTestClasspath.class), checkFactory, childProjectDefinition);
     assertThat(sonarComponents.workDir()).isEqualTo(workDir);
   }
 
@@ -311,7 +327,8 @@ class SonarComponentsTest {
 
   @Test
   void cancellation() {
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, null, null,
+      null, null, (ProjectDefinition)null);
     SensorContextTester context = SensorContextTester.create(new File(""));
     sonarComponents.setSensorContext(context);
 
