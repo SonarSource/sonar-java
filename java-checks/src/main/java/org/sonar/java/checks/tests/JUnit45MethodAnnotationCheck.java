@@ -28,7 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MapBuilder;
+import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -46,10 +46,10 @@ public class JUnit45MethodAnnotationCheck extends IssuableSubscriptionVisitor {
   private static final String ORG_JUNIT_BEFORE = "org.junit.Before";
 
   private static final Map<String, String> JUNIT4_TO_JUNIT5 = MapBuilder.<String, String>newMap()
-    .add(ORG_JUNIT_BEFORE, "org.junit.jupiter.api.BeforeEach")
-    .add("org.junit.BeforeClass", "org.junit.jupiter.api.BeforeAll")
-    .add(ORG_JUNIT_AFTER, "org.junit.jupiter.api.AfterEach")
-    .add("org.junit.AfterClass", "org.junit.jupiter.api.AfterAll")
+    .put(ORG_JUNIT_BEFORE, "org.junit.jupiter.api.BeforeEach")
+    .put("org.junit.BeforeClass", "org.junit.jupiter.api.BeforeAll")
+    .put(ORG_JUNIT_AFTER, "org.junit.jupiter.api.AfterEach")
+    .put("org.junit.AfterClass", "org.junit.jupiter.api.AfterAll")
     .build();
 
   private static final Set<String> JUNIT4_ANNOTATIONS = JUNIT4_TO_JUNIT5.keySet();

@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.checks.helpers.MapBuilder;
+import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
@@ -54,11 +54,11 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
   private static final Pattern EC_KEY_PATTERN = Pattern.compile("^(secp|prime|sect|c2tnb)(\\d+)");
 
   private static final Map<String, Integer> ALGORITHM_KEY_SIZE_MAP = MapBuilder.<String, Integer>newMap()
-    .add("RSA", 2048)
-    .add("DH", 2048)
-    .add("DIFFIEHELLMAN", 2048)
-    .add("DSA", 2048)
-    .add("AES", 128)
+    .put("RSA", 2048)
+    .put("DH", 2048)
+    .put("DIFFIEHELLMAN", 2048)
+    .put("DSA", 2048)
+    .put("AES", 128)
     .build();
 
   private static final MethodMatchers KEY_GEN = MethodMatchers.or(

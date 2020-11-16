@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MapBuilder;
+import org.sonar.java.collections.MapBuilder;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -42,8 +42,8 @@ import java.util.Map;
 public class ImmediatelyReturnedVariableCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final Map<Kind, String> MESSAGE_KEYS = MapBuilder.<Kind, String>newMap()
-    .add(Kind.THROW_STATEMENT, "throw")
-    .add(Kind.RETURN_STATEMENT, "return")
+    .put(Kind.THROW_STATEMENT, "throw")
+    .put(Kind.RETURN_STATEMENT, "return")
     .build();
 
   private JavaFileScannerContext context;

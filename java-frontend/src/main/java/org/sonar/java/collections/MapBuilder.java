@@ -17,12 +17,17 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks.helpers;
+package org.sonar.java.collections;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class is used for Java < 9 to simplify the creation of maps.
+ * After moving to Java > 9, should be replaced by Immutable Map Static Factory Methods
+ * @see <a href="https://docs.oracle.com/javase/9/docs/api/java/util/Map.html#immutable">Immutable Map Static Factory Methods</a>
+ */
 public final class MapBuilder<K, V> {
 
   public static <K, V> MapBuilder<K,V> newMap() {
@@ -35,7 +40,7 @@ public final class MapBuilder<K, V> {
     this.map = new HashMap<>();
   }
 
-  public MapBuilder<K, V> add(K key, V value) {
+  public MapBuilder<K, V> put(K key, V value) {
     map.put(key, value);
     return this;
   }

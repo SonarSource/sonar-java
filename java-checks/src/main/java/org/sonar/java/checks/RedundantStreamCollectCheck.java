@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import java.util.Map;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MapBuilder;
+import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -53,14 +53,14 @@ public class RedundantStreamCollectCheck extends AbstractMethodDetection {
   }
 
   private static final Map<MethodMatchers, String> REPLACEMENTS = MapBuilder.<MethodMatchers, String>newMap()
-    .add(COUNTING, "count()")
-    .add(MAX_BY, "max()")
-    .add(MIN_BY, "min()")
-    .add(MAPPING, "map(...).collect()")
-    .add(REDUCING, "reduce(...).collect()")
-    .add(SUMMING_INT, "mapToInt(...).sum()")
-    .add(SUMMING_LONG, "mapToLong(...).sum()")
-    .add(SUMMING_DOUBLE, "mapToDouble(...).sum()")
+    .put(COUNTING, "count()")
+    .put(MAX_BY, "max()")
+    .put(MIN_BY, "min()")
+    .put(MAPPING, "map(...).collect()")
+    .put(REDUCING, "reduce(...).collect()")
+    .put(SUMMING_INT, "mapToInt(...).sum()")
+    .put(SUMMING_LONG, "mapToLong(...).sum()")
+    .put(SUMMING_DOUBLE, "mapToDouble(...).sum()")
     .build();
 
   @Override

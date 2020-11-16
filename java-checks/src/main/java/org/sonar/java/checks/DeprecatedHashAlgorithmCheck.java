@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import java.util.Map;
 import java.util.Optional;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MapBuilder;
+import org.sonar.java.collections.MapBuilder;
 
 @Rule(key = "S2070")
 public class DeprecatedHashAlgorithmCheck extends AbstractHashAlgorithmChecker {
@@ -30,14 +30,14 @@ public class DeprecatedHashAlgorithmCheck extends AbstractHashAlgorithmChecker {
   private static final String MESSAGE_FORMAT = "Don't rely on %s because it is deprecated and use a stronger hashing algorithm.";
   
   private static final Map<String, String> MESSAGE_PER_CLASS = MapBuilder.<String, String>newMap()
-    .add(DeprecatedSpringPasswordEncoder.MD5.classFqn, "Use a stronger hashing algorithm than MD5.")
-    .add(DeprecatedSpringPasswordEncoder.SHA.classFqn, "Don't rely on " + DeprecatedSpringPasswordEncoder.SHA.className + " because it is deprecated.")
-    .add(DeprecatedSpringPasswordEncoder.LDAP.classFqn, String.format(MESSAGE_FORMAT, DeprecatedSpringPasswordEncoder.LDAP.className))
-    .add(DeprecatedSpringPasswordEncoder.MD4.classFqn, String.format(MESSAGE_FORMAT, DeprecatedSpringPasswordEncoder.MD4.className))
-    .add(DeprecatedSpringPasswordEncoder.MESSAGE_DIGEST.classFqn,
+    .put(DeprecatedSpringPasswordEncoder.MD5.classFqn, "Use a stronger hashing algorithm than MD5.")
+    .put(DeprecatedSpringPasswordEncoder.SHA.classFqn, "Don't rely on " + DeprecatedSpringPasswordEncoder.SHA.className + " because it is deprecated.")
+    .put(DeprecatedSpringPasswordEncoder.LDAP.classFqn, String.format(MESSAGE_FORMAT, DeprecatedSpringPasswordEncoder.LDAP.className))
+    .put(DeprecatedSpringPasswordEncoder.MD4.classFqn, String.format(MESSAGE_FORMAT, DeprecatedSpringPasswordEncoder.MD4.className))
+    .put(DeprecatedSpringPasswordEncoder.MESSAGE_DIGEST.classFqn,
       String.format(MESSAGE_FORMAT, DeprecatedSpringPasswordEncoder.MESSAGE_DIGEST.className))
-    .add(DeprecatedSpringPasswordEncoder.NO_OP.classFqn, "Use a stronger hashing algorithm than this fake one.")
-    .add(DeprecatedSpringPasswordEncoder.STANDARD.classFqn, "Use a stronger hashing algorithm.")
+    .put(DeprecatedSpringPasswordEncoder.NO_OP.classFqn, "Use a stronger hashing algorithm than this fake one.")
+    .put(DeprecatedSpringPasswordEncoder.STANDARD.classFqn, "Use a stronger hashing algorithm.")
     .build();
 
 

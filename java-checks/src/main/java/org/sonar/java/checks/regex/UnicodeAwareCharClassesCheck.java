@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MapBuilder;
+import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.RegexParseResult;
@@ -47,8 +47,8 @@ public class UnicodeAwareCharClassesCheck extends AbstractRegexCheck {
     "Lower", "Upper", "Alpha", "Alnum", "Punct", "Graph", "Print", "Blank", "Space");
 
   private static final Map<Character, Character> unicodeUnawareCharacterRanges = MapBuilder.<Character, Character>newMap()
-    .add('a', 'z')
-    .add('A', 'Z')
+    .put('a', 'z')
+    .put('A', 'Z')
     .build();
 
   @Override

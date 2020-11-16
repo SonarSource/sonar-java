@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MapBuilder;
+import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -36,12 +36,12 @@ import java.util.Map;
 public class BooleanInversionCheck extends IssuableSubscriptionVisitor {
 
   private static final Map<String, String> OPERATORS = MapBuilder.<String, String>newMap()
-    .add("==", "!=")
-    .add("!=", "==")
-    .add("<", ">=")
-    .add(">", "<=")
-    .add("<=", ">")
-    .add(">=", "<")
+    .put("==", "!=")
+    .put("!=", "==")
+    .put("<", ">=")
+    .put(">", "<=")
+    .put("<=", ">")
+    .put(">=", "<")
     .build();
 
   @Override

@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MapBuilder;
+import org.sonar.java.collections.MapBuilder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -45,14 +45,14 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
 
   private static final Map<String, String> PRIMITIVE_TYPES_BY_WRAPPER = MapBuilder.<String, String>newMap()
-    .add("java.lang.Boolean", "boolean")
-    .add("java.lang.Byte", "byte")
-    .add("java.lang.Double", "double")
-    .add("java.lang.Float", "float")
-    .add("java.lang.Integer", "int")
-    .add("java.lang.Long", "long")
-    .add("java.lang.Short", "short")
-    .add("java.lang.Character", "char")
+    .put("java.lang.Boolean", "boolean")
+    .put("java.lang.Byte", "byte")
+    .put("java.lang.Double", "double")
+    .put("java.lang.Float", "float")
+    .put("java.lang.Integer", "int")
+    .put("java.lang.Long", "long")
+    .put("java.lang.Short", "short")
+    .put("java.lang.Character", "char")
     .build();
 
   private static final MethodMatchers unboxingInvocationMatchers = unboxingInvocationMatchers();

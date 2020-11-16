@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MapBuilder;
+import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -50,39 +50,39 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
   private static final String SORTED_SET = "SortedSet";
 
   private static final Map<String, String> MAPPING = MapBuilder.<String, String> newMap()
-    .add("ArrayDeque", DEQUE)
-    .add("ConcurrentLinkedDeque", DEQUE)
+    .put("ArrayDeque", DEQUE)
+    .put("ConcurrentLinkedDeque", DEQUE)
 
-    .add("AbstractList", LIST)
-    .add("AbstractSequentialList", LIST)
-    .add("ArrayList", LIST)
-    .add("CopyOnWriteArrayList", LIST)
-    .add("LinkedList", LIST)
+    .put("AbstractList", LIST)
+    .put("AbstractSequentialList", LIST)
+    .put("ArrayList", LIST)
+    .put("CopyOnWriteArrayList", LIST)
+    .put("LinkedList", LIST)
 
-    .add("AbstractMap", MAP)
-    .add("EnumMap", MAP)
-    .add("HashMap", MAP)
-    .add("Hashtable", MAP)
-    .add("IdentityHashMap", MAP)
-    .add("LinkedHashMap", MAP)
-    .add("WeakHashMap", MAP)
+    .put("AbstractMap", MAP)
+    .put("EnumMap", MAP)
+    .put("HashMap", MAP)
+    .put("Hashtable", MAP)
+    .put("IdentityHashMap", MAP)
+    .put("LinkedHashMap", MAP)
+    .put("WeakHashMap", MAP)
 
-    .add("ConcurrentHashMap", CONCURRENT_MAP)
-    .add("ConcurrentSkipListMap", CONCURRENT_MAP)
+    .put("ConcurrentHashMap", CONCURRENT_MAP)
+    .put("ConcurrentSkipListMap", CONCURRENT_MAP)
 
-    .add("AbstractQueue", QUEUE)
-    .add("ConcurrentLinkedQueue", QUEUE)
-    .add("SynchronousQueue", QUEUE)
+    .put("AbstractQueue", QUEUE)
+    .put("ConcurrentLinkedQueue", QUEUE)
+    .put("SynchronousQueue", QUEUE)
 
-    .add("AbstractSet", SET)
-    .add("CopyOnWriteArraySet", SET)
-    .add("EnumSet", SET)
-    .add("HashSet", SET)
-    .add("LinkedHashSet", SET)
+    .put("AbstractSet", SET)
+    .put("CopyOnWriteArraySet", SET)
+    .put("EnumSet", SET)
+    .put("HashSet", SET)
+    .put("LinkedHashSet", SET)
 
-    .add("TreeMap", SORTED_MAP)
+    .put("TreeMap", SORTED_MAP)
 
-    .add("TreeSet", SORTED_SET)
+    .put("TreeSet", SORTED_SET)
     .build();
 
   private JavaFileScannerContext context;

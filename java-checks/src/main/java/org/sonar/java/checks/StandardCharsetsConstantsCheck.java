@@ -30,7 +30,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
-import org.sonar.java.checks.helpers.MapBuilder;
+import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -204,10 +204,10 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
     MapBuilder<String, String> constantNames = MapBuilder.newMap();
     for (Charset charset : STANDARD_CHARSETS) {
       String constantName = charset.name().replace("-", "_");
-      constantNames.add(charset.name(), constantName);
+      constantNames.put(charset.name(), constantName);
 
       for (String alias : charset.aliases()) {
-        constantNames.add(alias.toUpperCase(Locale.ROOT), constantName);
+        constantNames.put(alias.toUpperCase(Locale.ROOT), constantName);
       }
     }
 
