@@ -308,7 +308,7 @@ public class PrintfMisuseCheck {
     logger4.log(level, "message {0} {1}", new Object[] {param1, param2, param3}); // Noncompliant {{3rd argument is not used.}}
     logger4.log(level, "message " + param1); // Noncompliant {{Format specifiers or lambda should be used instead of string concatenation.}}
     logger4.log(level, "message " + "...");
-    logger4.log(level, "message " + param1, new Exception()); // Noncompliant {{Lambda should be used to differ string concatenation.}}
+    logger4.log(level, "message " + param1, new Exception()); // Noncompliant {{Lambda should be used to defer string concatenation.}}
 
     org.apache.logging.log4j.Logger log4j = org.apache.logging.log4j.LogManager.getLogger();
     org.apache.logging.log4j.Logger formatterLogger = LogManager.getFormatterLogger();

@@ -371,7 +371,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     if (isIncorrectConcatenation(formatTree)) {
       if (JAVA_UTIL_LOGGER_LOG_MATCHER.matches(mit)) {
         if (isLastArgumentThrowable(args)) {
-          reportIssue(mit, "Lambda should be used to differ string concatenation.");
+          reportIssue(mit, "Lambda should be used to defer string concatenation.");
         } else {
           reportIssue(mit, "Format specifiers or lambda should be used instead of string concatenation.");
         }
