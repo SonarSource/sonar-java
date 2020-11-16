@@ -22,16 +22,31 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 class StaticMemberAccessCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/StaticMemberAccess.java")
+      .onFile(testSourcesPath("checks/StaticMemberAccess.java"))
+      .withCheck(new StaticMemberAccessCheck())
+      .verifyNoIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/StaticMemberAccess.java"))
+      .withCheck(new StaticMemberAccessCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
+
+  void testNonCompiling() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/StaticMemberAccess.java"))
       .withCheck(new StaticMemberAccessCheck())
       .verifyIssues();
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/StaticMemberAccess.java")
+      .onFile(nonCompilingTestSourcesPath("checks/StaticMemberAccess.java"))
       .withCheck(new StaticMemberAccessCheck())
       .withoutSemantic()
       .verifyNoIssues();
