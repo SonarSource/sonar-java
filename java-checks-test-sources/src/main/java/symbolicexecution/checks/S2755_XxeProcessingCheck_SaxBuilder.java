@@ -1,3 +1,5 @@
+package symbolicexecution.checks;
+
 import java.io.File;
 import javax.xml.parsers.ParserConfigurationException;
 import org.jdom2.Document;
@@ -6,7 +8,6 @@ import org.jdom2.input.SAXBuilder;
 import org.xml.sax.SAXException;
 import javax.xml.XMLConstants;
 import java.io.IOException;
-
 
 class SAXBuilderTest {
 

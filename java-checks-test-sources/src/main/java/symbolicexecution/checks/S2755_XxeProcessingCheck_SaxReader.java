@@ -1,3 +1,5 @@
+package symbolicexecution.checks;
+
 import java.io.IOException;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;

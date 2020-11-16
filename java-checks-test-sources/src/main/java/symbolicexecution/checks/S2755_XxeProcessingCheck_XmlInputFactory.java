@@ -1,3 +1,5 @@
+package symbolicexecution.checks;
+
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.XMLConstants;
 import javax.xml.stream.XMLStreamException;
@@ -40,35 +42,35 @@ class XMLInputFactoryTest {
     return factory;
   }
 
-  XMLInputFactory dtd_from_local_declaration_false() {
+  XMLInputFactory dtd_from_local_declaration_false_1() {
     XMLInputFactory factory = XMLInputFactory.newInstance(); // Compliant
     String value = XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES;
     factory.setProperty(value, false);
     return factory;
   }
 
-  XMLInputFactory dtd_from_local_declaration_false() {
+  XMLInputFactory dtd_from_local_declaration_false_2() {
     XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant
     String value = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
     factory.setProperty(value, false);
     return factory;
   }
 
-  XMLInputFactory dtd_from_local_declaration_false() {
+  XMLInputFactory dtd_from_local_declaration_fals_3() {
     XMLInputFactory factory = XMLInputFactory.newInstance(); // Compliant
     boolean b = false;
     factory.setProperty(XMLInputFactory.SUPPORT_DTD, b);
     return factory;
   }
 
-  XMLInputFactory dtd_from_local_declaration_false() {
+  XMLInputFactory dtd_from_local_declaration_false_4() {
     XMLInputFactory factory = XMLInputFactory.newInstance(); // Compliant
     String value = "javax.xml.stream.supportDTD";
     factory.setProperty(value, false);
     return factory;
   }
 
-  XMLInputFactory dtd_from_local_declaration_false_1() {
+  XMLInputFactory dtd_from_local_declaration_false_5() {
     XMLInputFactory factory = XMLInputFactory.newInstance(); // Compliant
     String value1 = "javax.xml.stream.supportDTD";
     String value2 = value1;
@@ -76,7 +78,7 @@ class XMLInputFactoryTest {
     return factory;
   }
 
-  XMLInputFactory dtd_from_local_declaration_false_2() {
+  XMLInputFactory dtd_from_local_declaration_false_6() {
     XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant
     String value = "other.xml";
     factory.setProperty(value, false);
