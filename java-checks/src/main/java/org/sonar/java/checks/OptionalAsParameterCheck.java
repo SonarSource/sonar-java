@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -38,11 +36,10 @@ public class OptionalAsParameterCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_UTIL_OPTIONAL = "java.util.Optional";
   private static final String GUAVA_OPTIONAL = "com.google.common.base.Optional";
-  private static final List<String> PRIMITIVE_OPTIONALS = ImmutableList.<String>builder()
-    .add("java.util.OptionalDouble")
-    .add("java.util.OptionalInt")
-    .add("java.util.OptionalLong")
-    .build();
+  private static final List<String> PRIMITIVE_OPTIONALS = Arrays.asList(
+    "java.util.OptionalDouble",
+    "java.util.OptionalInt",
+    "java.util.OptionalLong");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

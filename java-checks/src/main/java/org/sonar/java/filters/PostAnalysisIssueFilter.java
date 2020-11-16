@@ -20,7 +20,9 @@
 package org.sonar.java.filters;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -32,7 +34,7 @@ import org.sonar.api.scanner.ScannerSide;
 @SonarLintSide
 public class PostAnalysisIssueFilter implements JavaFileScanner, SonarJavaIssueFilter {
 
-  private static final Iterable<JavaIssueFilter> DEFAULT_ISSUE_FILTERS = ImmutableList.<JavaIssueFilter>of(
+  private static final Iterable<JavaIssueFilter> DEFAULT_ISSUE_FILTERS = Arrays.asList(
     new EclipseI18NFilter(),
     new LombokFilter(),
     new GoogleAutoFilter(),
@@ -42,7 +44,9 @@ public class PostAnalysisIssueFilter implements JavaFileScanner, SonarJavaIssueF
 
   @VisibleForTesting
   void setIssueFilters(Iterable<? extends JavaIssueFilter> issueFilters) {
-    this.issueFilers = ImmutableList.<JavaIssueFilter>builder().addAll(issueFilters).build();
+    ArrayList<JavaIssueFilter> javaIssueFilters = new ArrayList<>();
+    issueFilters.forEach(javaIssueFilters::add);
+    this.issueFilers = Collections.unmodifiableList(javaIssueFilters);
   }
 
   @VisibleForTesting

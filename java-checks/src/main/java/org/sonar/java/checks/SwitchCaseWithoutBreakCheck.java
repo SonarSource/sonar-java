@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -102,8 +101,10 @@ public class SwitchCaseWithoutBreakCheck extends IssuableSubscriptionVisitor {
   private static boolean intentionalFallThrough(Tree caseGroup, Tree nextCaseGroup) {
     // Check first token of next case group when comment is last element of case group it is attached to next group.
     FallThroughCommentVisitor visitor = new FallThroughCommentVisitor();
-    List<Tree> treesToScan = ImmutableList.<Tree>builder().addAll(((CaseGroupTree) caseGroup).body())
-      .add(nextCaseGroup.firstToken()).build();
+    CaseGroupTree caseGroupTree = (CaseGroupTree) caseGroup;
+    List<Tree> treesToScan = Stream.of(caseGroupTree.body(), Collections.singletonList(nextCaseGroup.firstToken()))
+      .flatMap(List::stream)
+      .collect(Collectors.toList());
     visitor.scan(treesToScan);
     return visitor.hasComment;
   }

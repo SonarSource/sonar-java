@@ -19,10 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.model.ModifiersUtils;
@@ -121,13 +120,11 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
   }
 
   private static List<MethodTree> getExplicitConstructors(ClassTree classTree) {
-    ImmutableList.Builder<MethodTree> builder = ImmutableList.builder();
-    for (Tree member : classTree.members()) {
-      if (isConstructor(member)) {
-        builder.add((MethodTree) member);
-      }
-    }
-    return builder.build();
+    return Collections.unmodifiableList(
+      classTree.members().stream()
+        .filter(UtilityClassWithPublicConstructorCheck::isConstructor)
+        .map(MethodTree.class::cast)
+        .collect(Collectors.toList()));
   }
 
   private static boolean isConstructor(Tree tree) {
