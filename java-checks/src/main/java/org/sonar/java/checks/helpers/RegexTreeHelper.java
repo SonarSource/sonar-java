@@ -26,7 +26,6 @@ import javax.annotation.Nullable;
 import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.ast.CharacterTree;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
-import org.sonar.java.regex.ast.RegexTree;
 
 public class RegexTreeHelper {
 

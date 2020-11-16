@@ -33,6 +33,10 @@ public class RegexBaseVisitor implements RegexVisitor {
     return activeFlags.getMask();
   }
 
+  protected FlagSet getActiveFlagSet() {
+    return activeFlags;
+  }
+
   protected boolean flagActive(int flag) {
     return activeFlags.contains(flag);
   }
@@ -71,6 +75,11 @@ public class RegexBaseVisitor implements RegexVisitor {
       visit(regexParseResult.getResult());
       after(regexParseResult);
     }
+  }
+
+  public void visitInCharClass(CharacterClassElementTree tree, FlagSet flags) {
+    activeFlags = flags;
+    visitInCharClass(tree);
   }
 
   /**
