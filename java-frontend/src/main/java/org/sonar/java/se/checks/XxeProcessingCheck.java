@@ -19,13 +19,15 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
@@ -189,22 +191,23 @@ public class XxeProcessingCheck extends SECheck {
     MethodMatchers.create().ofSubTypes(SAX_READER).names("read").withAnyParameters().build()
   );
 
-  private static final List<XxeProperty> PROPERTIES_TO_CHECK = ImmutableList.<XxeProperty>builder()
-    .add(FeatureSupportDtd.values())
-    .add(FeatureIsSupportingExternalEntities.values())
-    .add(FeatureDisallowDoctypeDecl.values())
-    .add(FeatureExternalGeneralEntities.values())
-    .add(FeatureLoadExternalDtd.values())
-    .add(AttributeDTD.values())
-    .add(AttributeSchema.values())
-    .add(AttributeStyleSheet.values())
-    .build();
+  private static final List<XxeProperty> PROPERTIES_TO_CHECK = Arrays.asList(
+    FeatureSupportDtd.values(),
+    FeatureIsSupportingExternalEntities.values(),
+    FeatureDisallowDoctypeDecl.values(),
+    FeatureExternalGeneralEntities.values(),
+    FeatureLoadExternalDtd.values(),
+    AttributeDTD.values(),
+    AttributeSchema.values(),
+    AttributeStyleSheet.values())
+    .stream()
+    .flatMap(Stream::of)
+    .collect(Collectors.toList());
 
-  private static final List<Class<? extends Constraint>> FLOW_CONSTRAINT_DOMAIN = ImmutableList.<Class<? extends Constraint>>builder()
-    .add(AttributeDTD.class)
-    .add(AttributeSchema.class)
-    .add(AttributeStyleSheet.class)
-    .build();
+  private static final List<Class<? extends Constraint>> FLOW_CONSTRAINT_DOMAIN = Arrays.asList(
+    AttributeDTD.class,
+    AttributeSchema.class,
+    AttributeStyleSheet.class);
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
