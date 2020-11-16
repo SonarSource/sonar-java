@@ -20,10 +20,6 @@
 package org.sonar.java.testing;
 
 import com.google.common.annotations.Beta;
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multiset;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.nio.file.Files;
@@ -103,7 +99,7 @@ public class InternalCheckVerifier implements CheckVerifier {
   }
 
   @Override
-  public CheckVerifier withChecks(JavaFileScanner... checks) {
+  public InternalCheckVerifier withChecks(JavaFileScanner... checks) {
     requiresNull(this.checks, CHECK_OR_CHECKS);
     requiresNonEmpty(Arrays.asList(checks), "check");
     this.checks = Arrays.asList(checks);
@@ -274,7 +270,7 @@ public class InternalCheckVerifier implements CheckVerifier {
       String issueNumberMessage = issues.isEmpty() ? "none has been raised" : String.format("%d issues have been raised", issues.size());
       throw new AssertionError(String.format("A single issue is expected on the %s, but %s", component, issueNumberMessage));
     }
-    AnalyzerMessage issue = Iterables.getFirst(issues, null);
+    AnalyzerMessage issue = issues.iterator().next();
     if (issue.getLine() != null) {
       throw new AssertionError(String.format("Expected an issue directly on %s but was raised on line %d", component, issue.getLine()));
     }
@@ -293,14 +289,14 @@ public class InternalCheckVerifier implements CheckVerifier {
     }
     List<Integer> unexpectedLines = new LinkedList<>();
     Expectations.RemediationFunction remediationFunction = Expectations.remediationFunction(issues.iterator().next());
-    Multimap<Integer, Expectations.Issue> expected = expectations.issues;
+    Map<Integer, List<Expectations.Issue>> expected = expectations.issues;
 
     for (AnalyzerMessage issue : issues) {
       validateIssue(expected, unexpectedLines, issue, remediationFunction);
     }
     if (!expected.isEmpty() || !unexpectedLines.isEmpty()) {
       Collections.sort(unexpectedLines);
-      List<Integer> expectedLines = expected.keys().stream().sorted().collect(Collectors.toList());
+      List<Integer> expectedLines = expected.keySet().stream().sorted().collect(Collectors.toList());
       throw new AssertionError(new StringBuilder()
         .append(expectedLines.isEmpty() ? "" : String.format("Expected at %s", expectedLines))
         .append(expectedLines.isEmpty() || unexpectedLines.isEmpty() ? "" : ", ")
@@ -311,17 +307,21 @@ public class InternalCheckVerifier implements CheckVerifier {
   }
 
   private void validateIssue(
-    Multimap<Integer, Expectations.Issue> expected,
+    Map<Integer, List<Expectations.Issue>> expected,
     List<Integer> unexpectedLines,
     AnalyzerMessage issue,
     @Nullable Expectations.RemediationFunction remediationFunction) {
 
     int line = issue.getLine();
     if (expected.containsKey(line)) {
-      Expectations.Issue attrs = Iterables.getFirst(expected.get(line), null);
+      Expectations.Issue attrs = expected.get(line).get(0);
       validateRemediationFunction(attrs, issue, remediationFunction);
       validateAnalyzerMessageAttributes(attrs, issue);
-      expected.remove(line, attrs);
+      expected.computeIfPresent(line, (l, issues) -> {
+        issues.remove(attrs);
+        // remove the key if nothing remaining
+        return issues.isEmpty() ? null : issues;
+      });
     } else {
       unexpectedLines.add(line);
     }
@@ -379,8 +379,7 @@ public class InternalCheckVerifier implements CheckVerifier {
   }
 
   private static void validateSecondaryLocations(AnalyzerMessage parentIssue, List<AnalyzerMessage> actual, List<Integer> expected) {
-    Multiset<Integer> actualLines = HashMultiset.create();
-    actualLines.addAll(actual.stream().map(AnalyzerMessage::getLine).collect(Collectors.toList()));
+    List<Integer> actualLines = actual.stream().map(AnalyzerMessage::getLine).collect(Collectors.toList());
     List<Integer> unexpected = new ArrayList<>();
     for (Integer actualLine : actualLines) {
       if (expected.contains(actualLine)) {

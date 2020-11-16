@@ -20,14 +20,6 @@
 package org.sonar.java.testing;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Strings;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
-import com.google.common.collect.SortedSetMultimap;
-import com.google.common.collect.TreeMultimap;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import java.io.IOException;
@@ -40,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +40,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 import java.util.function.UnaryOperator;
@@ -62,6 +57,7 @@ import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.RspecKey;
+import org.sonar.java.collections.MapBuilder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -80,7 +76,7 @@ import static org.sonar.java.testing.Expectations.IssueAttribute.START_COLUMN;
 
 class Expectations {
 
-  private static final Map<String, IssueAttribute> ATTRIBUTE_MAP = ImmutableMap.<String, IssueAttribute>builder()
+  private static final Map<String, IssueAttribute> ATTRIBUTE_MAP = MapBuilder.<String, IssueAttribute>newMap()
     .put("message", MESSAGE)
     .put("effortToFix", EFFORT_TO_FIX)
     .put("sc", START_COLUMN)
@@ -118,9 +114,14 @@ class Expectations {
     }
 
     private static <T> Function<String, List<T>> multiValueAttribute(Function<String, T> convert) {
-      return (String input) -> Strings.isNullOrEmpty(input) ? Collections.emptyList() : Arrays.stream(input.split(",")).map(String::trim).map(convert).collect(toList());
+      return (String input) -> isNullOrEmpty(input) ? Collections.emptyList() : Arrays.stream(input.split(",")).map(String::trim).map(convert).collect(toList());
     }
 
+    private static boolean isNullOrEmpty(@Nullable String input) {
+      return input == null || input.trim().isEmpty();
+    }
+
+    @SuppressWarnings("unchecked")
     <T> T get(Map<IssueAttribute, Object> values) {
       Object rawValue = values.get(this);
       return rawValue == null ? null : (T) getter.apply(rawValue);
@@ -177,8 +178,8 @@ class Expectations {
     }
   }
 
-  final Multimap<Integer, Issue> issues = ArrayListMultimap.create();
-  final SortedSetMultimap<String, FlowComment> flows = TreeMultimap.create(String::compareTo, Collections.reverseOrder(FlowComment::compareTo));
+  final Map<Integer, List<Expectations.Issue>> issues = new HashMap<>();
+  final Map<String, SortedSet<FlowComment>> flows = new HashMap<>();
   private boolean expectNoIssues = false;
   private String expectedProjectIssue = null;
   private String expectedFileIssue = null;
@@ -230,7 +231,7 @@ class Expectations {
       return Optional.empty();
     }
     if (expectedFlows.size() == 1) {
-      String flowId = Iterables.getOnlyElement(expectedFlows);
+      String flowId = expectedFlows.iterator().next();
       seenFlowIds.add(flowId);
       return Optional.of(flowId);
     }
@@ -247,7 +248,9 @@ class Expectations {
   }
 
   Set<String> unseenFlowIds() {
-    return Sets.difference(flows.keySet(), seenFlowIds);
+    Set<String> result = new HashSet<>(flows.keySet());
+    result.removeAll(seenFlowIds);
+    return result;
   }
 
   private static <T> List<Integer> flowToLines(Collection<T> flow, ToIntFunction<T> toLineFunction) {
@@ -282,10 +285,10 @@ class Expectations {
     private static final Pattern FLOW_COMMENT = Pattern.compile("//\\s+flow");
     private static final Pattern FLOW = Pattern.compile("flow@(?<ids>\\S+).*?(?=flow@)?");
 
-    private final Multimap<String, FlowComment> flows;
-    private final Multimap<Integer, Issue> issues;
+    private final Map<Integer, List<Issue>> issues;
+    private final Map<String, SortedSet<FlowComment>> flows;
 
-    private Parser(Multimap<Integer, Issue> issues, Multimap<String, FlowComment> flows) {
+    private Parser(Map<Integer, List<Issue>> issues, Map<String, SortedSet<FlowComment>> flows) {
       this.issues = issues;
       this.flows = flows;
     }
@@ -304,12 +307,16 @@ class Expectations {
     void collectExpectedIssues(String comment, int line) {
       if (nonCompliantComment.matcher(comment).find()) {
         ParsedComment parsedComment = parseIssue(comment, line);
-        issues.put(LINE.get(parsedComment.issue), parsedComment.issue);
-        parsedComment.flows.forEach(f -> flows.put(f.id, f));
+        issues.computeIfAbsent(LINE.get(parsedComment.issue), k -> new ArrayList<>()).add(parsedComment.issue);
+        parsedComment.flows.forEach(f -> flows.computeIfAbsent(f.id, k -> newFlowSet()).add(f));
       }
       if (FLOW_COMMENT.matcher(comment).find()) {
-        parseFlows(comment, line).forEach(f -> flows.put(f.id, f));
+        parseFlows(comment, line).forEach(f -> flows.computeIfAbsent(f.id, k -> newFlowSet()).add(f));
       }
+    }
+
+    private static TreeSet<FlowComment> newFlowSet() {
+      return new TreeSet<>(Collections.reverseOrder(FlowComment::compareTo));
     }
 
     @VisibleForTesting
