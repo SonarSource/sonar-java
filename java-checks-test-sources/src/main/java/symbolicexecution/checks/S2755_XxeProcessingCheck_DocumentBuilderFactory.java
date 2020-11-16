@@ -1,3 +1,5 @@
+package symbolicexecution.checks;
+
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
