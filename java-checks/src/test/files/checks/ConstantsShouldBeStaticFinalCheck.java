@@ -1,13 +1,16 @@
-class A {
+class A extends B {
   private final int f1 = 0;                             // Noncompliant [[sc=21;ec=23]] {{Make this final field static too.}}
   private final static int f2 = 0;                      // Compliant
   private static final int f3 = 0;                      // Compliant
   public final int f4 = MyEnumOrInterface.MY_CONSTANT;  // Noncompliant
   private final int f5 = new Integer(42);               // Compliant
   private final int f6 = foo();                         // Compliant
+  private final int f62 = this.foo;                     // Compliant
+  private final int f63 = super.foo;                    // Compliant
   private int f7 = 0;                                   // Compliant
   private int f8;                                       // Compliant
   private final int f9;                                 // Compliant
+  private final A myA = this;                           // Compliant
   private final int
    f10 = 0,                                             // Noncompliant
    f11,                                                 // Compliant
