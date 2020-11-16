@@ -31,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.sonar.java.regex.RegexParserTestUtils.assertEdge;
 import static org.sonar.java.regex.RegexParserTestUtils.assertFailParsing;
 import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
 import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
@@ -189,7 +190,10 @@ class GroupTreesTest {
 
     FinalState finalState = assertType(FinalState.class, regex.continuation());
     assertEquals(AutomatonState.TransitionType.EPSILON, lookAround.incomingTransitionType());
-    assertSingleEdge(lookAround, x, AutomatonState.TransitionType.CHARACTER);
+    assertListElements(lookAround.successors(),
+      assertEdge(x, AutomatonState.TransitionType.CHARACTER),
+      assertEdge(finalState, AutomatonState.TransitionType.EPSILON)
+    );
     EndOfLookaroundState endOfLookaroundState = assertType(EndOfLookaroundState.class, x.continuation());
     assertSingleEdge(x, endOfLookaroundState, AutomatonState.TransitionType.LOOKAROUND_BACKTRACKING);
     assertSingleEdge(endOfLookaroundState, finalState, AutomatonState.TransitionType.EPSILON);
@@ -208,7 +212,10 @@ class GroupTreesTest {
 
     FinalState finalState = assertType(FinalState.class, regex.continuation());
     assertEquals(AutomatonState.TransitionType.LOOKAROUND_BACKTRACKING, lookAround.incomingTransitionType());
-    assertSingleEdge(lookAround, x, AutomatonState.TransitionType.CHARACTER);
+    assertListElements(lookAround.successors(),
+      assertEdge(x, AutomatonState.TransitionType.CHARACTER),
+      assertEdge(finalState, AutomatonState.TransitionType.EPSILON)
+    );
     EndOfLookaroundState endOfLookaroundState = assertType(EndOfLookaroundState.class, x.continuation());
     assertSingleEdge(x, endOfLookaroundState, AutomatonState.TransitionType.EPSILON);
     assertSingleEdge(endOfLookaroundState, finalState, AutomatonState.TransitionType.EPSILON);
@@ -227,9 +234,12 @@ class GroupTreesTest {
 
     FinalState finalState = assertType(FinalState.class, regex.continuation());
     assertEquals(AutomatonState.TransitionType.EPSILON, lookAround.incomingTransitionType());
-    assertListSize(1, lookAround.successors());
+    assertListSize(2, lookAround.successors());
     NegationState negationState = assertType(NegationState.class, lookAround.successors().get(0));
-    assertSingleEdge(lookAround, negationState, AutomatonState.TransitionType.NEGATION);
+    assertListElements(lookAround.successors(),
+      assertEdge(negationState, AutomatonState.TransitionType.NEGATION),
+      assertEdge(finalState, AutomatonState.TransitionType.EPSILON)
+    );
     assertSingleEdge(negationState, x, AutomatonState.TransitionType.CHARACTER);
     EndOfLookaroundState endOfLookaroundState = assertType(EndOfLookaroundState.class, x.continuation());
     assertSingleEdge(x, endOfLookaroundState, AutomatonState.TransitionType.LOOKAROUND_BACKTRACKING);
@@ -249,9 +259,12 @@ class GroupTreesTest {
 
     FinalState finalState = assertType(FinalState.class, regex.continuation());
     assertEquals(AutomatonState.TransitionType.LOOKAROUND_BACKTRACKING, lookAround.incomingTransitionType());
-    assertListSize(1, lookAround.successors());
+    assertListSize(2, lookAround.successors());
     NegationState negationState = assertType(NegationState.class, lookAround.successors().get(0));
-    assertSingleEdge(lookAround, negationState, AutomatonState.TransitionType.NEGATION);
+    assertListElements(lookAround.successors(),
+      assertEdge(negationState, AutomatonState.TransitionType.NEGATION),
+      assertEdge(finalState, AutomatonState.TransitionType.EPSILON)
+    );
     assertSingleEdge(negationState, x, AutomatonState.TransitionType.CHARACTER);
     EndOfLookaroundState endOfLookaroundState = assertType(EndOfLookaroundState.class, x.continuation());
     assertSingleEdge(x, endOfLookaroundState, AutomatonState.TransitionType.EPSILON);
