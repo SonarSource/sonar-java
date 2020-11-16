@@ -235,3 +235,27 @@ class E extends D {
     return super.foo5(new Object());
   }
 }
+
+@javax.transaction.Transactional
+class F extends A {
+  @Override
+  protected void bar2() {
+    super.bar2();
+  }
+}
+
+@org.springframework.transaction.annotation.Transactional
+class G extends A {
+  @Override
+  protected void bar2() {
+    super.bar2();
+  }
+}
+
+@AnotherAnnotation
+class G extends A {
+  @Override
+  protected void bar2() { // Noncompliant
+    super.bar2();
+  }
+}
