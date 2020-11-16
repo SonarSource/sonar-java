@@ -1,3 +1,5 @@
+package symbolicexecution.checks;
+
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;

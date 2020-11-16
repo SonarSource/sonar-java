@@ -1,9 +1,12 @@
+package symbolicexecution.checks;
+
+import java.io.IOException;
 import javax.xml.XMLConstants;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-class TransformerFactoryTest {
+class XmlReaderTest {
 
   // Vulnerable when nothing is made to protect against xxe
 
