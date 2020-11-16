@@ -19,7 +19,7 @@
  */
 package org.sonar.java.regex.ast;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nonnull;
 
@@ -37,18 +37,14 @@ public class LookAroundTree extends GroupTree {
 
   private final Direction direction;
 
-  private final List<AutomatonState> successors;
+  private final AutomatonState inner;
 
   public LookAroundTree(RegexSource source, IndexRange range, Polarity polarity, Direction direction, RegexTree element) {
     super(source, RegexTree.Kind.LOOK_AROUND, element, range);
     this.polarity = polarity;
     this.direction = direction;
     element.setContinuation(new EndOfLookaroundState(this));
-    if (polarity == Polarity.NEGATIVE) {
-      successors = Collections.singletonList(new NegationState(element));
-    } else {
-      successors = Collections.singletonList(element);
-    }
+    inner = polarity == Polarity.NEGATIVE ? new NegationState(element) : element;
   }
 
   public Polarity getPolarity() {
@@ -82,7 +78,7 @@ public class LookAroundTree extends GroupTree {
   @Nonnull
   @Override
   public List<AutomatonState> successors() {
-    return successors;
+    return Arrays.asList(inner, continuation());
   }
 
   public static LookAroundTree positiveLookAhead(RegexSource source, IndexRange range, RegexTree element) {

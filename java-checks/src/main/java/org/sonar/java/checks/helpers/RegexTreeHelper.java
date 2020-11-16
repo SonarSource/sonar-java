@@ -20,12 +20,18 @@
 package org.sonar.java.checks.helpers;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.sonar.java.regex.RegexCheck;
+import org.sonar.java.regex.ast.AutomatonState;
 import org.sonar.java.regex.ast.CharacterTree;
+import org.sonar.java.regex.ast.EndOfLookaroundState;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
+
+import static org.sonar.java.regex.ast.AutomatonState.TransitionType.EPSILON;
 
 public class RegexTreeHelper {
 
@@ -71,6 +77,31 @@ public class RegexTreeHelper {
     if (start != null && end != null) {
       result.add(new RegexCheck.RegexIssueLocation(start, end, ""));
     }
+  }
+
+  public static boolean canReachWithoutConsumingInput(AutomatonState start, AutomatonState goal) {
+    return canReachWithoutConsumingInput(start, goal, new HashSet<>());
+  }
+
+  private static boolean canReachWithoutConsumingInput(AutomatonState start, AutomatonState goal, Set<AutomatonState> visited) {
+    if (start == goal) {
+      return true;
+    }
+    if (visited.contains(start)) {
+      return false;
+    }
+    visited.add(start);
+    for (AutomatonState successor : start.successors()) {
+      // We don't generally consider elements behind backtracking edges to be 0-input reachable because what comes
+      // after the edge won't directly follow what's before the edge. However, we do consider the end-of-lookahead
+      // state itself reachable (but not any state behind it), so that we can check whether the end of the lookahead
+      // can be reached without input from a given place within the lookahead.
+      if ((successor.incomingTransitionType() == EPSILON && canReachWithoutConsumingInput(successor, goal, visited))
+        || (successor instanceof EndOfLookaroundState && successor == goal)) {
+        return true;
+      }
+    }
+    return false;
   }
 
 }
