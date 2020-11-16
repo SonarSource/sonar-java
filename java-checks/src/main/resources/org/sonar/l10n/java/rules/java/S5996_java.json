@@ -1,0 +1,16 @@
+{
+  "title": "Regex boundaries should not be used in a way that can never be matched",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "regex"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-5996",
+  "sqKey": "S5996",
+  "scope": "Main"
+}
