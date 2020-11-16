@@ -19,6 +19,7 @@
  */
 package org.sonar.java.testing;
 
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.sonar.check.Rule;
@@ -542,6 +543,41 @@ class InternalCheckVerifierTest {
         .withChecks(FILE_LINE_ISSUE_CHECK)
         .verifyIssues();
     }
+
+    @Test
+    void order_of_expected_issue_on_same_line_is_relevant() {
+      InternalCheckVerifier.newInstance()
+        .onFile("src/test/files/testing/MultipleIssuesSameLine.java")
+        .withChecks(new MultipleIssuePerLineCheck())
+        .verifyIssues();
+    }
+
+    @Test
+    void wrong_order_of_expected_issue_on_same_line_should_fail() {
+      MultipleIssuePerLineCheck check = new MultipleIssuePerLineCheck();
+      check.flipOrder = true;
+
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFile("src/test/files/testing/MultipleIssuesSameLine.java")
+        .withChecks(check)
+        .verifyIssues());
+
+      assertThat(e)
+        .isInstanceOf(AssertionError.class)
+        .hasMessage("line 7 attribute mismatch for 'MESSAGE'. Expected: 'msg 1', but was: 'msg 2'");
+    }
+
+    @Test
+    void wrong_message_of_expected_issue_on_same_line_should_fail() {
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFile("src/test/files/testing/MultipleIssuesSameLine.java")
+        .withChecks(new MultipleIssuePerLineCheck("msg 1", "wrong message"))
+        .verifyIssues());
+
+      assertThat(e)
+        .isInstanceOf(AssertionError.class)
+        .hasMessage("line 4 attribute mismatch for 'MESSAGE'. Expected: 'msg 2', but was: 'wrong message'");
+    }
   }
 
   @Rule(key = "FailingCheck")
@@ -585,6 +621,38 @@ class InternalCheckVerifierTest {
     @Override
     public void scanFile(JavaFileScannerContext context) {
       context.addIssueOnProject(this, "issueOnProject");
+    }
+  }
+
+  @Rule(key = "MultipleIssuePerLineCheck")
+  private static final class MultipleIssuePerLineCheck implements JavaFileScanner {
+
+    private final String msg1;
+    private final String msg2;
+    private boolean flipOrder = false;
+
+    MultipleIssuePerLineCheck() {
+      this("msg 1", "msg 2");
+    }
+
+    MultipleIssuePerLineCheck(String msg1, String msg2) {
+      this.msg1 = msg1;
+      this.msg2 = msg2;
+    }
+
+    @Override
+    public void scanFile(JavaFileScannerContext context) {
+      String[] msgs = {msg1, msg2};
+      report(context, 4, msgs);
+
+      if (flipOrder) {
+        msgs = new String[] {msg2, msg1};
+      }
+      report(context, 7, msgs);
+    }
+
+    private void report(JavaFileScannerContext context, int line, String... messages) {
+      Stream.of(messages).forEach(msg -> context.addIssue(line, this, msg));
     }
   }
 }
