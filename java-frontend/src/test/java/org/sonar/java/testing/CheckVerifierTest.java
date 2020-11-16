@@ -19,15 +19,15 @@
  */
 package org.sonar.java.testing;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.Test;
@@ -473,9 +473,9 @@ class CheckVerifierTest {
   @Rule(key = "JavaCheckVerifier-Tester")
   private static class FakeVisitor extends IssuableSubscriptionVisitor implements IssueWithFlowBuilder {
 
-    ListMultimap<Integer, String> issues = LinkedListMultimap.create();
-    ListMultimap<Integer, AnalyzerMessage> preciseIssues = LinkedListMultimap.create();
-    List<String> issuesOnFile = Lists.newLinkedList();
+    Map<Integer, List<String>> issues = new LinkedHashMap<>();
+    Map<Integer, List<AnalyzerMessage>> preciseIssues = new LinkedHashMap<>();
+    List<String> issuesOnFile = new LinkedList<>();
     private static final InputFile FAKE_INPUT_FILE = TestUtils.emptyInputFile("a");
     private static final InputFile OTHER_FAKE_INPUT_FILE = TestUtils.emptyInputFile("f");
     private AnalyzerMessage issueWithFlow;
@@ -497,18 +497,18 @@ class CheckVerifierTest {
     }
 
     private FakeVisitor withPreciseIssue(AnalyzerMessage message) {
-      preciseIssues.put(message.getLine(), message);
+      preciseIssues.computeIfAbsent(message.getLine(), key -> new LinkedList<>()).add(message);
       return this;
     }
 
     private FakeVisitor withIssue(int line, String message) {
-      issues.put(line, message);
+      issues.computeIfAbsent(line, key -> new LinkedList<>()).add(message);
       return this;
     }
 
     private FakeVisitor withoutIssue(int line) {
-      issues.removeAll(line);
-      preciseIssues.removeAll(line);
+      issues.remove(line);
+      preciseIssues.remove(line);
       return this;
     }
 
@@ -526,13 +526,13 @@ class CheckVerifierTest {
     }
 
     private FakeVisitor issueWithFlow(@Nullable String message, AnalyzerMessage.TextSpan location) {
-      Preconditions.checkState(issueWithFlow == null, "Finish previous issueWithFlow by calling #add");
+      checkState(issueWithFlow == null, "Finish previous issueWithFlow by calling #add");
       issueWithFlow = new AnalyzerMessage(this, OTHER_FAKE_INPUT_FILE, location, message, 0);
       return this;
     }
 
     private FakeVisitor flow() {
-      Preconditions.checkNotNull(issueWithFlow, "Finish previous issueWithFlow by calling #add");
+      Objects.requireNonNull(issueWithFlow, "Finish previous issueWithFlow by calling #add");
       issueWithFlow.flows.add(new LinkedList<>());
       return this;
     }
@@ -553,7 +553,7 @@ class CheckVerifierTest {
 
     private FakeVisitor flowItem(@Nullable String msg, AnalyzerMessage.TextSpan textSpan) {
       List<List<AnalyzerMessage>> flows = issueWithFlow.flows;
-      Preconditions.checkState(!flows.isEmpty(), "Call #flow first to create a flow");
+      checkState(!flows.isEmpty(), "Call #flow first to create a flow");
       AnalyzerMessage flowItem = new AnalyzerMessage(this, OTHER_FAKE_INPUT_FILE, textSpan, msg, 0);
       flows.get(flows.size() - 1).add(flowItem);
       return this;
@@ -580,7 +580,10 @@ class CheckVerifierTest {
           addIssue(line, message);
         }
       }
-      for (AnalyzerMessage analyzerMessage : preciseIssues.values()) {
+      List<AnalyzerMessage> anamyerMessages = preciseIssues.values().stream()
+        .flatMap(List::stream)
+        .collect(Collectors.toList());
+      for (AnalyzerMessage analyzerMessage : anamyerMessages) {
         Double messageCost = analyzerMessage.getCost();
         Integer cost = messageCost != null ? messageCost.intValue() : null;
         List<JavaFileScannerContext.Location> secLocations = new ArrayList<>();
@@ -614,7 +617,14 @@ class CheckVerifierTest {
     }
   }
 
+  private static void checkState(boolean condition, String errorMessage) {
+    if (!condition) {
+      throw new IllegalStateException(errorMessage);
+    }
+  }
+
   private interface IssueWithFlowBuilder {
 
   }
+
 }

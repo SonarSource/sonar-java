@@ -19,14 +19,14 @@
  */
 package org.sonar.java.checks.verifier;
 
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.Test;
@@ -349,8 +349,8 @@ class JavaCheckVerifierTest {
   @Rule(key = "ConstantJSON")
   static class FakeVisitor extends IssuableSubscriptionVisitor {
 
-    Multimap<Integer, String> issues = LinkedListMultimap.create();
-    Multimap<Integer, AnalyzerMessage> preciseIssues = LinkedListMultimap.create();
+    Map<Integer, List<String>> issues = new LinkedHashMap<>();
+    Map<Integer, List<AnalyzerMessage>> preciseIssues = new LinkedHashMap<>();
     List<String> issuesOnFile = new LinkedList<>();
     List<String> issuesOnProject = new LinkedList<>();
 
@@ -370,19 +370,19 @@ class JavaCheckVerifierTest {
         .withIssue(17, "message17");
     }
 
-    protected FakeVisitor withPreciseIssue(AnalyzerMessage message) {
-      preciseIssues.put(message.getLine(), message);
+    FakeVisitor withPreciseIssue(AnalyzerMessage message) {
+      preciseIssues.computeIfAbsent(message.getLine(), key -> new LinkedList<>()).add(message);
       return this;
     }
 
-    protected FakeVisitor withIssue(int line, String message) {
-      issues.put(line, message);
+    FakeVisitor withIssue(int line, String message) {
+      issues.computeIfAbsent(line, key -> new LinkedList<>()).add(message);
       return this;
     }
 
     protected FakeVisitor withoutIssue(int line) {
-      issues.removeAll(line);
-      preciseIssues.removeAll(line);
+      issues.remove(line);
+      preciseIssues.remove(line);
       return this;
     }
 
@@ -409,7 +409,10 @@ class JavaCheckVerifierTest {
           addIssue(line, message);
         }
       }
-      for (AnalyzerMessage analyzerMessage : preciseIssues.values()) {
+      List<AnalyzerMessage> anamyerMessages = preciseIssues.values().stream()
+        .flatMap(List::stream)
+        .collect(Collectors.toList());
+      for (AnalyzerMessage analyzerMessage : anamyerMessages) {
         Double messageCost = analyzerMessage.getCost();
         Integer cost = messageCost != null ? messageCost.intValue() : null;
         List<JavaFileScannerContext.Location> secLocations = analyzerMessage.flows.stream()
