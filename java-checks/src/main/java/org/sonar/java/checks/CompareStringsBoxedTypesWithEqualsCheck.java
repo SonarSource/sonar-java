@@ -20,8 +20,10 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 
 @Rule(key = "S4973")
 public class CompareStringsBoxedTypesWithEqualsCheck extends CompareWithEqualsVisitor {
@@ -31,9 +33,15 @@ public class CompareStringsBoxedTypesWithEqualsCheck extends CompareWithEqualsVi
     Type leftOpType = tree.leftOperand().symbolType();
     Type rightOpType = tree.rightOperand().symbolType();
     if (!isNullComparison(leftOpType, rightOpType)
+      && !isCompareWithBooleanConstant(tree.leftOperand(), tree.rightOperand())
       && (isStringType(leftOpType, rightOpType) || isBoxedType(leftOpType, rightOpType))) {
       reportIssue(tree.operatorToken());
     }
+  }
+  
+  private static boolean isCompareWithBooleanConstant(ExpressionTree left, ExpressionTree right) {
+    return ExpressionsHelper.getConstantValueAsBoolean(left).value() != null ||
+      ExpressionsHelper.getConstantValueAsBoolean(right).value() != null;
   }
 
 }
