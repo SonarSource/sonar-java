@@ -19,8 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -41,35 +41,34 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
-  private static final List<String> CHECKED_TYPES = ImmutableList.<String>builder()
-      .add(JAVA_LANG_STRING)
-      .add("java.lang.Boolean")
-      .add("java.lang.Integer")
-      .add("java.lang.Double")
-      .add("java.lang.Float")
-      .add("java.lang.Byte")
-      .add("java.lang.Character")
-      .add("java.lang.Short")
-      .add("java.lang.StackTraceElement")
-      .add("java.time.DayOfWeek")
-      .add("java.time.Duration")
-      .add("java.time.Instant")
-      .add("java.time.LocalDate")
-      .add("java.time.LocalDateTime")
-      .add("java.time.LocalTime")
-      .add("java.time.Month")
-      .add("java.time.MonthDay")
-      .add("java.time.OffsetDateTime")
-      .add("java.time.OffsetTime")
-      .add("java.time.Period")
-      .add("java.time.Year")
-      .add("java.time.YearMonth")
-      .add("java.time.ZonedDateTime")
-      .add("java.math.BigInteger")
-      .add("java.math.BigDecimal")
-      .add("java.util.Optional")
-      .add("com.google.common.base.Optional")
-      .build();
+  private static final List<String> CHECKED_TYPES = Arrays.asList(
+    JAVA_LANG_STRING,
+    "java.lang.Boolean",
+    "java.lang.Integer",
+    "java.lang.Double",
+    "java.lang.Float",
+    "java.lang.Byte",
+    "java.lang.Character",
+    "java.lang.Short",
+    "java.lang.StackTraceElement",
+    "java.time.DayOfWeek",
+    "java.time.Duration",
+    "java.time.Instant",
+    "java.time.LocalDate",
+    "java.time.LocalDateTime",
+    "java.time.LocalTime",
+    "java.time.Month",
+    "java.time.MonthDay",
+    "java.time.OffsetDateTime",
+    "java.time.OffsetTime",
+    "java.time.Period",
+    "java.time.Year",
+    "java.time.YearMonth",
+    "java.time.ZonedDateTime",
+    "java.math.BigInteger",
+    "java.math.BigDecimal",
+    "java.util.Optional",
+    "com.google.common.base.Optional");
 
   private static final Set<String> EXCLUDED_PREFIX = ImmutableSet.of("parse", "format", "decode", "valueOf");
 
@@ -132,7 +131,7 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isInTryCatch(MethodInvocationTree mit) {
-    Tree parent =  mit.parent();
+    Tree parent = mit.parent();
     while (parent != null && !parent.is(Tree.Kind.TRY_STATEMENT)) {
       parent = parent.parent();
     }

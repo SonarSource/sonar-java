@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -81,7 +80,7 @@ public class StringToPrimitiveConversionCheck extends IssuableSubscriptionVisito
   }
 
   private List<PrimitiveCheck> buildPrimitiveChecks() {
-    return ImmutableList.of(
+    return Arrays.asList(
       new PrimitiveCheck("int", "Integer", Type.Primitives.INT),
       new PrimitiveCheck("boolean", "Boolean", Type.Primitives.BOOLEAN),
       new PrimitiveCheck("byte", "Byte", Type.Primitives.BYTE),

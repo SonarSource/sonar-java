@@ -19,10 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -59,13 +58,10 @@ public class ThrowsSeveralCheckedExceptionCheck extends IssuableSubscriptionVisi
   }
 
   private static List<String> getThrownCheckedExceptions(MethodTree methodTree) {
-    ImmutableList.Builder<String> builder = ImmutableList.builder();
-    for (Type thrownClass : methodTree.symbol().thrownTypes()) {
-      if (!thrownClass.isUnknown() && !isSubClassOfRuntimeException(thrownClass)) {
-        builder.add(thrownClass.fullyQualifiedName());
-      }
-    }
-    return builder.build();
+    return methodTree.symbol().thrownTypes().stream()
+      .filter(type -> !type.isUnknown() && !isSubClassOfRuntimeException(type))
+      .map(Type::fullyQualifiedName)
+      .collect(Collectors.toList());
   }
 
   private static boolean isSubClassOfRuntimeException(Type thrownClass) {

@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -126,7 +126,7 @@ public class ForLoopTerminationConditionCheck extends AbstractForLoopRule {
     public static IntInequality of(BinaryExpressionTree binaryExp) {
       Integer value = null;
       IdentifierTree identifier = null;
-      for (ExpressionTree expressionTree : ImmutableList.of(binaryExp.leftOperand(), binaryExp.rightOperand())) {
+      for (ExpressionTree expressionTree : Arrays.asList(binaryExp.leftOperand(), binaryExp.rightOperand())) {
         if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
           identifier = (IdentifierTree) expressionTree;
         } else {

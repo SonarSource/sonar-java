@@ -19,7 +19,6 @@
  */
 package org.sonar.java.filters;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import java.util.Arrays;
 import java.util.Collections;
@@ -81,35 +80,28 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
   private static final String LOMBOK_VALUE = "lombok.Value";
   private static final String LOMBOK_FIELD_DEFAULTS = "lombok.experimental.FieldDefaults";
 
-  private static final List<String> GENERATE_UNUSED_FIELD_RELATED_METHODS = ImmutableList.<String>builder()
-    .add("lombok.Getter")
-    .add("lombok.Setter")
-    .add(LOMBOK_BUILDER)
-    .add("lombok.ToString")
-    .add("lombok.AllArgsConstructor")
-    .add("lombok.NoArgsConstructor")
-    .add("lombok.RequiredArgsConstructor")
-    .build();
+  private static final List<String> GENERATE_UNUSED_FIELD_RELATED_METHODS = Arrays.asList(
+    "lombok.Getter",
+    "lombok.Setter",
+    LOMBOK_BUILDER,
+    "lombok.ToString",
+    "lombok.AllArgsConstructor",
+    "lombok.NoArgsConstructor",
+    "lombok.RequiredArgsConstructor");
 
-  private static final List<String> GENERATE_CONSTRUCTOR = ImmutableList.<String>builder()
-    .add("lombok.AllArgsConstructor")
-    .add("lombok.NoArgsConstructor")
-    .add("lombok.RequiredArgsConstructor")
-    .build();
+  private static final List<String> GENERATE_CONSTRUCTOR = Arrays.asList(
+    "lombok.AllArgsConstructor",
+    "lombok.NoArgsConstructor",
+    "lombok.RequiredArgsConstructor");
 
-  private static final List<String> GENERATE_EQUALS = ImmutableList.<String>builder()
-    .add("lombok.EqualsAndHashCode")
-    .add("lombok.Data")
-    .add(LOMBOK_VALUE)
-    .build();
+  private static final List<String> GENERATE_EQUALS = Arrays.asList(
+    "lombok.EqualsAndHashCode",
+    "lombok.Data",
+    LOMBOK_VALUE);
 
-  private static final List<String> UTILITY_CLASS = ImmutableList.<String>builder()
-    .add("lombok.experimental.UtilityClass")
-    .build();
+  private static final List<String> UTILITY_CLASS = Collections.singletonList("lombok.experimental.UtilityClass");
 
-  private static final List<String> NON_FINAL = ImmutableList.<String>builder()
-    .add("lombok.experimental.NonFinal")
-    .build();
+  private static final List<String> NON_FINAL = Collections.singletonList("lombok.experimental.NonFinal");
 
   @Override
   public Set<Class<? extends JavaCheck>> filteredRules() {
@@ -216,8 +208,7 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
       annotationValues.stream()
         .filter(Objects::nonNull)
         .anyMatch(
-          av -> "level".equals(av.name()) && "PRIVATE".equals(getAccessLevelValue(av.value()))
-        );
+          av -> "level".equals(av.name()) && "PRIVATE".equals(getAccessLevelValue(av.value())));
   }
 
   private static boolean generatesPackagePrivateAccess(VariableTree tree) {
@@ -234,8 +225,7 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
       annotationValues.stream()
         .filter(Objects::nonNull)
         .anyMatch(
-          av -> "makeFinal".equals(av.name()) && getMakeFinalValue(av.value())
-        );
+          av -> "makeFinal".equals(av.name()) && getMakeFinalValue(av.value()));
   }
 
   private static boolean generatesNonFinal(VariableTree tree) {

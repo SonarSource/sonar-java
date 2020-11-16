@@ -19,9 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.sonar.java.DebugCheck;
 import org.sonar.java.checks.naming.BadAbstractClassNameCheck;
 import org.sonar.java.checks.naming.BadClassNameCheck;
@@ -222,12 +223,9 @@ public final class CheckList {
   private CheckList() {
   }
 
-  public static List<Class<?>> getChecks() {
-    return ImmutableList.<Class<?>>builder()
-      .addAll(getJavaChecks())
-      .addAll(getJavaTestChecks())
-      .addAll(getXmlChecks())
-      .build();
+  public static List<Class<?>> getChecks() { 
+    return Stream.of(getJavaChecks(), getJavaTestChecks(), getXmlChecks())
+      .flatMap(List::stream).collect(Collectors.toList());
   }
 
   // Rule classes are listed alphabetically

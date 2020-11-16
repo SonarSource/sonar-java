@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -51,7 +51,7 @@ public class TooManyParametersCheck extends BaseTreeVisitor implements JavaFileS
 
   private JavaFileScannerContext context;
 
-  private static final List<String> WHITE_LIST = ImmutableList.of(
+  private static final List<String> WHITE_LIST = Arrays.asList(
     "org.springframework.web.bind.annotation.RequestMapping",
     "org.springframework.web.bind.annotation.GetMapping",
     "org.springframework.web.bind.annotation.PostMapping",

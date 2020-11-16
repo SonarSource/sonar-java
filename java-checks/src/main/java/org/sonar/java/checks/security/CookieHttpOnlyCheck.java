@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.security;
 
-import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -56,7 +55,7 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
   private final List<MethodInvocationTree> settersToReport = new ArrayList<>();
   private final List<TypeTree> newClassToReport = new ArrayList<>();
 
-  private static final List<String> IGNORED_COOKIE_NAMES = ImmutableList.of("csrf", "xsrf");
+  private static final List<String> IGNORED_COOKIE_NAMES = Arrays.asList("csrf", "xsrf");
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String JAVA_UTIL_DATE = "java.util.Date";

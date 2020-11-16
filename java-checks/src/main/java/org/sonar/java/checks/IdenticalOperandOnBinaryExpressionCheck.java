@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -57,15 +56,14 @@ public class IdenticalOperandOnBinaryExpressionCheck extends IssuableSubscriptio
   /**
    * symetric operators : a OP b is equivalent to b OP a
    */
-  private static final List<Tree.Kind> SYMMETRIC_OPERATORS = ImmutableList.<Tree.Kind>builder()
-    .add(Tree.Kind.EQUAL_TO)
-    .add(Tree.Kind.NOT_EQUAL_TO)
-    .add(Tree.Kind.AND)
-    .add(Tree.Kind.XOR)
-    .add(Tree.Kind.OR)
-    .add(Tree.Kind.CONDITIONAL_AND)
-    .add(Tree.Kind.CONDITIONAL_OR)
-    .build();
+  private static final List<Tree.Kind> SYMMETRIC_OPERATORS = Arrays.asList(
+    Tree.Kind.EQUAL_TO,
+    Tree.Kind.NOT_EQUAL_TO,
+    Tree.Kind.AND,
+    Tree.Kind.XOR,
+    Tree.Kind.OR,
+    Tree.Kind.CONDITIONAL_AND,
+    Tree.Kind.CONDITIONAL_OR);
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

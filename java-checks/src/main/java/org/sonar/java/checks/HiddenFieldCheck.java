@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JavaTree;
@@ -173,7 +172,7 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
     }
 
     public List<Tree.Kind> excludedNodes() {
-      return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.NEW_CLASS);
+      return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.NEW_CLASS);
     }
 
     private void visit(Tree tree) {

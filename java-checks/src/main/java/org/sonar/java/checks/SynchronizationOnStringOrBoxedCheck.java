@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -33,7 +33,7 @@ import java.util.List;
 @Rule(key = "S1860")
 public class SynchronizationOnStringOrBoxedCheck extends IssuableSubscriptionVisitor {
 
-  private static final List<String> FORBIDDEN_TYPES = ImmutableList.of(
+  private static final List<String> FORBIDDEN_TYPES = Arrays.asList(
     "java.lang.Boolean",
     "java.lang.Byte",
     "java.lang.Character",
