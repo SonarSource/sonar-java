@@ -22,12 +22,20 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 class SimpleClassNameCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/SimpleClassNameCheck.java")
+      .onFile(testSourcesPath("checks/SimpleClassNameCheck.java"))
+      .withCheck(new SimpleClassNameCheck())
+      .verifyNoIssues();
+
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/SimpleClassNameCheck.java"))
       .withCheck(new SimpleClassNameCheck())
       .verifyIssues();
   }
@@ -35,7 +43,7 @@ class SimpleClassNameCheckTest {
   @Test
   void test_file_with_wildcard_import() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/SimpleClassNameCheckWithWildCard.java")
+      .onFile(testSourcesPath("checks/SimpleClassNameCheckWithWildCard.java"))
       .withCheck(new SimpleClassNameCheck())
       .verifyNoIssues();
   }
@@ -43,7 +51,13 @@ class SimpleClassNameCheckTest {
   @Test
   void test_without_semantic() throws Exception {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/SimpleClassNameCheck.java")
+      .onFile(testSourcesPath("checks/SimpleClassNameCheck.java"))
+      .withCheck(new SimpleClassNameCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+ 
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/SimpleClassNameCheck.java"))
       .withCheck(new SimpleClassNameCheck())
       .withoutSemantic()
       .verifyNoIssues();
