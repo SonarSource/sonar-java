@@ -25,7 +25,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -75,7 +75,7 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
 
   public static class TestJavaFileScannerContext extends DefaultJavaFileScannerContext {
 
-    private final Set<AnalyzerMessage> issues = new HashSet<>();
+    private final Set<AnalyzerMessage> issues = new LinkedHashSet<>();
     private final SonarComponents sonarComponents;
 
     public TestJavaFileScannerContext(CompilationUnitTree tree, InputFile inputFile, Sema semanticModel,
