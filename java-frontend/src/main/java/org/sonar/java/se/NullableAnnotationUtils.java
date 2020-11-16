@@ -60,8 +60,10 @@ public final class NullableAnnotationUtils {
     "javax.annotation.CheckForNull",
     "edu.umd.cs.findbugs.annotations.CheckForNull",
     "org.netbeans.api.annotations.common.CheckForNull",
-    // Despite the name, Spring Nullable is meant to be used as CheckForNull
-    "org.springframework.lang.Nullable");
+    // Despite the name, some Nullable annotations are meant to be used as CheckForNull
+    // as the are using meta-annotation from javax: @Nonnull(When.MAYBE), same as javax @CheckForNull.
+    "org.springframework.lang.Nullable",
+    "reactor.util.annotation.Nullable");
 
   private static final Set<String> NULLABLE_ANNOTATIONS = new ImmutableSet.Builder<String>()
     .add("android.annotation.Nullable")
@@ -104,7 +106,8 @@ public final class NullableAnnotationUtils {
     "org.jetbrains.annotations.NotNull",
     "org.jmlspecs.annotation.NonNull",
     "org.netbeans.api.annotations.common.NonNull",
-    "org.springframework.lang.NonNull");
+    "org.springframework.lang.NonNull",
+    "reactor.util.annotation.NonNull");
 
   public static Optional<AnnotationTree> nullableAnnotation(ModifiersTree modifiers) {
     return modifiers.annotations().stream().filter(NullableAnnotationUtils::isNullableAnnotation).findFirst();
