@@ -318,7 +318,7 @@ public class InternalCheckVerifier implements CheckVerifier {
 
     int line = issue.getLine();
     if (expected.containsKey(line)) {
-      Expectations.Issue attrs = Iterables.getLast(expected.get(line));
+      Expectations.Issue attrs = Iterables.getFirst(expected.get(line), null);
       validateRemediationFunction(attrs, issue, remediationFunction);
       validateAnalyzerMessageAttributes(attrs, issue);
       expected.remove(line, attrs);
