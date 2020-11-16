@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.tests;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -29,6 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -45,8 +45,7 @@ public class JUnit45MethodAnnotationCheck extends IssuableSubscriptionVisitor {
   private static final String ORG_JUNIT_AFTER = "org.junit.After";
   private static final String ORG_JUNIT_BEFORE = "org.junit.Before";
 
-  private static final Map<String, String> JUNIT4_TO_JUNIT5 = ImmutableMap
-    .<String, String>builder()
+  private static final Map<String, String> JUNIT4_TO_JUNIT5 = MapBuilder.<String, String>newMap()
     .put(ORG_JUNIT_BEFORE, "org.junit.jupiter.api.BeforeEach")
     .put("org.junit.BeforeClass", "org.junit.jupiter.api.BeforeAll")
     .put(ORG_JUNIT_AFTER, "org.junit.jupiter.api.AfterEach")

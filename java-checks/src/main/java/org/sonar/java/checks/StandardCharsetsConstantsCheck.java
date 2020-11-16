@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -31,6 +30,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -201,7 +201,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
       .build());
 
   private static Map<String, String> createAliasToConstantNameMap() {
-    ImmutableMap.Builder<String, String> constantNames = ImmutableMap.builder();
+    MapBuilder<String, String> constantNames = MapBuilder.newMap();
     for (Charset charset : STANDARD_CHARSETS) {
       String constantName = charset.name().replace("-", "_");
       constantNames.put(charset.name(), constantName);

@@ -19,12 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -40,14 +40,14 @@ public class ReplaceGuavaWithJava8Check extends AbstractMethodDetection implemen
   private static final String GUAVA_BASE_ENCODING = "com.google.common.io.BaseEncoding";
   private static final String GUAVA_OPTIONAL = "com.google.common.base.Optional";
 
-  private static final Map<String, String> GUAVA_TO_JAVA_UTIL_TYPES = ImmutableMap.<String, String>builder()
+  private static final Map<String, String> GUAVA_TO_JAVA_UTIL_TYPES = MapBuilder.<String, String>newMap()
     .put("com.google.common.base.Predicate", "java.util.function.Predicate")
     .put("com.google.common.base.Function", "java.util.function.Function")
     .put("com.google.common.base.Supplier", "java.util.function.Supplier")
     .put(GUAVA_OPTIONAL, "java.util.Optional")
     .build();
 
-  private static final Map<String, String> GUAVA_OPTIONAL_TO_JAVA_UTIL_METHODS = ImmutableMap.<String, String>builder()
+  private static final Map<String, String> GUAVA_OPTIONAL_TO_JAVA_UTIL_METHODS = MapBuilder.<String, String>newMap()
     .put("of", "of")
     .put("absent", "empty")
     .put("fromNullable", "ofNullable")

@@ -19,10 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -36,7 +36,7 @@ public class FilesExistsJDK8Check extends AbstractMethodDetection implements Jav
   private static final String JAVA_NIO_FILE_FILES = "java.nio.file.Files";
   private static final String EXISTS = "exists";
   private static final String IS_DIRECTORY = "isDirectory";
-  private static final Map<String, String> messageParam = ImmutableMap.<String, String>builder()
+  private static final Map<String, String> messageParam = MapBuilder.<String, String>newMap()
     .put(EXISTS, EXISTS)
     .put("notExists", EXISTS)
     .put("isRegularFile", "isFile")

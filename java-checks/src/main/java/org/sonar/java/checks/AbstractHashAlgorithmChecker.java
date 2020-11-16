@@ -19,13 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import org.sonar.java.checks.helpers.JavaPropertiesHelper;
+import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
@@ -44,7 +44,7 @@ public abstract class AbstractHashAlgorithmChecker extends AbstractMethodDetecti
   public static final String GET_INSTANCE = "getInstance";
   public static final String JAVA_LANG_STRING = "java.lang.String";
 
-  public static final Map<String, InsecureAlgorithm> ALGORITHM_BY_METHOD_NAME = ImmutableMap.<String, InsecureAlgorithm>builder()
+  protected static final Map<String, InsecureAlgorithm> ALGORITHM_BY_METHOD_NAME = MapBuilder.<String, InsecureAlgorithm>newMap()
     .put("getMd2Digest", InsecureAlgorithm.MD2)
     .put("getMd5Digest", InsecureAlgorithm.MD5)
     .put("getShaDigest", InsecureAlgorithm.SHA1)

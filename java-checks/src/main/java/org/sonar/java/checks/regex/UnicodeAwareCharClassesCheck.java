@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.regex;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,6 +28,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.RegexParseResult;
@@ -46,8 +46,10 @@ public class UnicodeAwareCharClassesCheck extends AbstractRegexCheck {
   private static final Set<String> unicodeAwarePropertiesWithFlag = ImmutableSet.of(
     "Lower", "Upper", "Alpha", "Alnum", "Punct", "Graph", "Print", "Blank", "Space");
 
-  private static final Map<Character, Character> unicodeUnawareCharacterRanges = ImmutableMap.of(
-    'a', 'z', 'A', 'Z');
+  private static final Map<Character, Character> unicodeUnawareCharacterRanges = MapBuilder.<Character, Character>newMap()
+    .put('a', 'z')
+    .put('A', 'Z')
+    .build();
 
   @Override
   public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {

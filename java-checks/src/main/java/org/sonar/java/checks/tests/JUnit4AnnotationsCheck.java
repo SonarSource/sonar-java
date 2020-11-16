@@ -19,11 +19,11 @@
  */
 package org.sonar.java.checks.tests;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.sonar.check.Rule;
+import org.sonar.java.collections.MapBuilder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -31,7 +31,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S5793")
 public class JUnit4AnnotationsCheck extends IssuableSubscriptionVisitor {
 
-  private static final Map<String, String> OLD_NEW_ANNOTATIONS_MAP = new ImmutableMap.Builder<String, String>()
+  private static final Map<String, String> OLD_NEW_ANNOTATIONS_MAP = MapBuilder.<String, String>newMap()
     .put("org.junit.Test", "org.junit.jupiter.api.Test")
     .put("org.junit.Before", "org.junit.jupiter.api.BeforeEach")
     .put("org.junit.After", "org.junit.jupiter.api.AfterEach")

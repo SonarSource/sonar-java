@@ -28,7 +28,7 @@ import org.sonar.java.checks.AbstractHashAlgorithmChecker;
 @Rule(key = "S4790")
 public class DataHashingCheck extends AbstractHashAlgorithmChecker {
 
-  public static final Set<String> DEPRECATED_HASH_CLASSES = ImmutableSet.of(
+  private static final Set<String> DEPRECATED_HASH_CLASSES = ImmutableSet.of(
     DeprecatedSpringPasswordEncoder.MD5.classFqn,
     DeprecatedSpringPasswordEncoder.SHA.classFqn,
     DeprecatedSpringPasswordEncoder.LDAP.classFqn,

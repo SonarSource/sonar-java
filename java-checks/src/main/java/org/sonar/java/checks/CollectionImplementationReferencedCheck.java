@@ -19,8 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableMap;
 import org.sonar.check.Rule;
+import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -49,7 +49,7 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
   private static final String SORTED_MAP = "SortedMap";
   private static final String SORTED_SET = "SortedSet";
 
-  private static final Map<String, String> MAPPING = ImmutableMap.<String, String> builder()
+  private static final Map<String, String> MAPPING = MapBuilder.<String, String> newMap()
     .put("ArrayDeque", DEQUE)
     .put("ConcurrentLinkedDeque", DEQUE)
 

@@ -19,9 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import org.sonar.check.Rule;
+import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -52,7 +52,7 @@ public class RedundantStreamCollectCheck extends AbstractMethodDetection {
     return MethodMatchers.create().ofTypes("java.util.stream.Collectors");
   }
 
-  private static final Map<MethodMatchers, String> REPLACEMENTS = ImmutableMap.<MethodMatchers, String>builder()
+  private static final Map<MethodMatchers, String> REPLACEMENTS = MapBuilder.<MethodMatchers, String>newMap()
     .put(COUNTING, "count()")
     .put(MAX_BY, "max()")
     .put(MIN_BY, "min()")

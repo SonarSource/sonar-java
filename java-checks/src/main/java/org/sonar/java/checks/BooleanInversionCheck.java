@@ -19,8 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableMap;
 import org.sonar.check.Rule;
+import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -35,7 +35,7 @@ import java.util.Map;
 @Rule(key = "S1940")
 public class BooleanInversionCheck extends IssuableSubscriptionVisitor {
 
-  private static final Map<String, String> OPERATORS = ImmutableMap.<String, String>builder()
+  private static final Map<String, String> OPERATORS = MapBuilder.<String, String>newMap()
     .put("==", "!=")
     .put("!=", "==")
     .put("<", ">=")
