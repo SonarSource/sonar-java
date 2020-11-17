@@ -96,14 +96,20 @@ public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisit
       if (init.is(Tree.Kind.NEW_ARRAY)) {
         return false;
       }
-      return !containsChildMatchingPredicate((JavaTree) init, tree -> {
-          if (tree.is(Tree.Kind.IDENTIFIER)) {
-            String name = ((IdentifierTree) tree).name();
-            return "super".equals(name) || "this".equals(name);
-          }
-          return tree.is(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
-        }
-      );
+      return !containsChildMatchingPredicate((JavaTree) init,
+        ((Predicate<Tree>) ConstantsShouldBeStaticFinalCheck::isIgnoredKind).or(ConstantsShouldBeStaticFinalCheck::isThisOrSuper));
+    }
+    return false;
+  }
+
+  private static boolean isIgnoredKind(Tree tree) {
+    return tree.is(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
+  }
+
+  private static boolean isThisOrSuper(Tree tree) {
+    if (tree.is(Tree.Kind.IDENTIFIER)) {
+      String name = ((IdentifierTree) tree).name();
+      return "super".equals(name) || "this".equals(name);
     }
     return false;
   }
