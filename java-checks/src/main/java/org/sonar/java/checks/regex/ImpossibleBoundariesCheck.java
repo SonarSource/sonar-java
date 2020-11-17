@@ -57,7 +57,7 @@ public class ImpossibleBoundariesCheck extends AbstractRegexCheck {
       // of the regex. This avoids false positives for cases like `(?=.*$)foo` or `foo(?<=^...)`.
       if (tree.getDirection() == LookAroundTree.Direction.BEHIND) {
         AutomatonState oldStart = start;
-        start = tree;
+        start = tree.getElement();
         super.visitLookAround(tree);
         start = oldStart;
       } else {

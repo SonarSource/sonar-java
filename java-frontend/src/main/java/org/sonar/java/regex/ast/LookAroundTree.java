@@ -37,7 +37,7 @@ public class LookAroundTree extends GroupTree {
 
   private final Direction direction;
 
-  private final AutomatonState inner;
+  private AutomatonState inner;
 
   public LookAroundTree(RegexSource source, IndexRange range, Polarity polarity, Direction direction, RegexTree element) {
     super(source, RegexTree.Kind.LOOK_AROUND, element, range);
@@ -45,6 +45,9 @@ public class LookAroundTree extends GroupTree {
     this.direction = direction;
     element.setContinuation(new EndOfLookaroundState(this));
     inner = polarity == Polarity.NEGATIVE ? new NegationState(element) : element;
+    if (direction == Direction.BEHIND) {
+      inner = new StartOfLookBehindState(inner);
+    }
   }
 
   public Polarity getPolarity() {
@@ -63,11 +66,7 @@ public class LookAroundTree extends GroupTree {
   @Nonnull
   @Override
   public TransitionType incomingTransitionType() {
-    if (getDirection() == Direction.BEHIND) {
-      return TransitionType.LOOKAROUND_BACKTRACKING;
-    } else {
-      return TransitionType.EPSILON;
-    }
+    return TransitionType.EPSILON;
   }
 
   @Override

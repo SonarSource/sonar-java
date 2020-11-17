@@ -37,6 +37,7 @@ public class ImpossibleBoundariesCheck {
     str.matches("(?=abc)^abc$");
     str.matches("(?=^abc$)abc");
     str.matches("abc(?<=^abc$)");
+    str.matches("^\\d$(?<!3)");
     str.matches("(?=$)");
     str.matches("(?i)(true)(?=(?:[^']|'[^']*')*$)");
     str.matches("(?:abc(X|$))*Y?");
