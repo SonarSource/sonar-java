@@ -20,7 +20,6 @@
 package org.sonar.java.checks.helpers;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,6 +35,7 @@ import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.java.ast.visitors.PublicApiChecker;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -102,7 +102,7 @@ public final class Javadoc {
   private static final Tree.Kind[] METHOD_KINDS = PublicApiChecker.methodKinds();
   private static final List<String> GENERIC_EXCEPTIONS = Arrays.asList("Exception", "java.lang.Exception");
   private static final Pattern BLOCK_TAG_LINE_PATTERN = Pattern.compile("^@\\S+.*");
-  private static final Set<String> PLACEHOLDERS = ImmutableSet.of("TODO", "FIXME", "...", ".");
+  private static final Set<String> PLACEHOLDERS = SetUtils.immutableSetOf("TODO", "FIXME", "...", ".");
 
   private final List<String> elementParameters;
   private final List<String> elementExceptionNames;

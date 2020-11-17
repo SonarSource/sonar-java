@@ -19,11 +19,11 @@
  */
 package org.sonar.java.checks.tests;
 
-import com.google.common.collect.ImmutableSet;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -58,11 +58,11 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
       .build()
   );
 
-  private static final Set<String> ASSERT_METHODS_WITH_ONE_PARAM = ImmutableSet.of("assertNull", "assertNotNull");
-  private static final Set<String> ASSERT_METHODS_WITH_TWO_PARAMS = ImmutableSet.of("assertEquals", "assertSame", "assertNotSame", "assertThat");
-  private static final Set<String> JUNIT5_ASSERT_METHODS_IGNORED = ImmutableSet.of("assertAll", "assertLinesMatch");
-  private static final Set<String> JUNIT5_ASSERT_METHODS_WITH_ONE_PARAM = ImmutableSet.of("assertTrue", "assertFalse", "assertNull", "assertNotNull", "assertDoesNotThrow");
-  private static final Set<String> JUNIT5_ASSERT_METHODS_WITH_DELTA = ImmutableSet.of("assertArrayEquals", "assertEquals");
+  private static final Set<String> ASSERT_METHODS_WITH_ONE_PARAM = SetUtils.immutableSetOf("assertNull", "assertNotNull");
+  private static final Set<String> ASSERT_METHODS_WITH_TWO_PARAMS = SetUtils.immutableSetOf("assertEquals", "assertSame", "assertNotSame", "assertThat");
+  private static final Set<String> JUNIT5_ASSERT_METHODS_IGNORED = SetUtils.immutableSetOf("assertAll", "assertLinesMatch");
+  private static final Set<String> JUNIT5_ASSERT_METHODS_WITH_ONE_PARAM = SetUtils.immutableSetOf("assertTrue", "assertFalse", "assertNull", "assertNotNull", "assertDoesNotThrow");
+  private static final Set<String> JUNIT5_ASSERT_METHODS_WITH_DELTA = SetUtils.immutableSetOf("assertArrayEquals", "assertEquals");
 
   private static final MethodMatchers FEST_LIKE_ABSTRACT_ASSERT = MethodMatchers.create()
     .ofSubTypes(FEST_GENERIC_ASSERT, ASSERTJ_ABSTRACT_ASSERT).anyName().withAnyParameters().build();

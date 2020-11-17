@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableSet;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
@@ -28,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -44,7 +44,7 @@ import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNullable;
 @Rule(key = "S1168")
 public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
 
-  private static final Set<String> COLLECTION_TYPES = ImmutableSet.of(
+  private static final Set<String> COLLECTION_TYPES = SetUtils.immutableSetOf(
     "Collection",
     "BeanContext",
     "BeanContextServices",

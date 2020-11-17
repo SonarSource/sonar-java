@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 import com.google.common.reflect.ClassPath;
 import com.google.gson.Gson;
 import java.io.File;
@@ -41,6 +39,7 @@ import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaCheck;
 
@@ -54,7 +53,7 @@ class CheckListTest {
   private static List<String> SE_CHEKS;
   private final Gson gson = new Gson();
 
-  private static final Set<String> BLACK_LIST = ImmutableSet.of(
+  private static final Set<String> BLACK_LIST = SetUtils.immutableSetOf(
     "AbstractXPathBasedCheck.java",
     "AbstractWebXmlXPathBasedCheck.java",
     "AbstractRegexCheck.java");
@@ -136,7 +135,7 @@ class CheckListTest {
     }
 
     Set<String> keys = new HashSet<>();
-    Set<String> names = Sets.newHashSet();
+    Set<String> names = new HashSet<>();
     CustomRulesDefinition definition = new CustomRulesDefinition();
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);

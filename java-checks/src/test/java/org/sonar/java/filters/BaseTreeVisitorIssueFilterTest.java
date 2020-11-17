@@ -19,7 +19,6 @@
  */
 package org.sonar.java.filters;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import java.util.Collections;
 import java.util.Set;
@@ -34,6 +33,7 @@ import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.check.Rule;
 import org.sonar.java.CheckTestUtils;
 import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -43,7 +43,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
 class BaseTreeVisitorIssueFilterTest {
@@ -147,7 +146,7 @@ class BaseTreeVisitorIssueFilterTest {
   private static class FakeJavaIssueFilterOnClassAndVariable extends BaseTreeVisitorIssueFilter {
     @Override
     public Set<Class<? extends JavaCheck>> filteredRules() {
-      return ImmutableSet.<Class<? extends JavaCheck>>of(FakeRule.class, FakeRuleWithoutKey.class);
+      return SetUtils.immutableSetOf(FakeRule.class, FakeRuleWithoutKey.class);
     }
 
     @Override

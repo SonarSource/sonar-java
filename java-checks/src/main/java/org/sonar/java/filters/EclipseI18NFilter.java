@@ -19,18 +19,16 @@
  */
 package org.sonar.java.filters;
 
-import com.google.common.collect.ImmutableSet;
-
+import java.util.Set;
 import org.sonar.java.checks.ClassVariableVisibilityCheck;
 import org.sonar.java.checks.PublicStaticFieldShouldBeFinalCheck;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.ClassTree;
 
-import java.util.Set;
-
 public class EclipseI18NFilter extends BaseTreeVisitorIssueFilter {
 
-  private static final Set<Class<? extends JavaCheck>> FILTERED_RULES = ImmutableSet.<Class<? extends JavaCheck>>of(
+  private static final Set<Class<? extends JavaCheck>> FILTERED_RULES = SetUtils.immutableSetOf(
     PublicStaticFieldShouldBeFinalCheck.class,
     ClassVariableVisibilityCheck.class);
 

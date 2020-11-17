@@ -19,7 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.Arrays;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -31,13 +32,11 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Set;
-
 @Rule(key = "S1317")
 public class StringBufferAndBuilderWithCharCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;
-  private static final Set<String> TARGETED_CLASS = ImmutableSet.of("StringBuilder", "StringBuffer");
+  private static final List<String> TARGETED_CLASS = Arrays.asList("StringBuilder", "StringBuffer");
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -47,7 +46,7 @@ public class StringBufferAndBuilderWithCharCheck extends BaseTreeVisitor impleme
 
   @Override
   public void visitNewClass(NewClassTree tree) {
-    if (TARGETED_CLASS.contains(getclassName(tree)) && tree.arguments().size() == 1) {
+    if (TARGETED_CLASS.contains(getClassName(tree)) && tree.arguments().size() == 1) {
       ExpressionTree argument = tree.arguments().get(0);
 
       if (argument.is(Tree.Kind.CHAR_LITERAL)) {
@@ -57,7 +56,7 @@ public class StringBufferAndBuilderWithCharCheck extends BaseTreeVisitor impleme
     }
   }
 
-  public static String getclassName(NewClassTree newClasstree) {
+  private static String getClassName(NewClassTree newClasstree) {
     if (newClasstree.identifier().is(Tree.Kind.MEMBER_SELECT)) {
       return ((MemberSelectExpressionTree) newClasstree.identifier()).identifier().name();
     } else if (newClasstree.identifier().is(Tree.Kind.IDENTIFIER)) {

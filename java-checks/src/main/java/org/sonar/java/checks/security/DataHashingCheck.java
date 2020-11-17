@@ -19,16 +19,16 @@
  */
 package org.sonar.java.checks.security;
 
-import com.google.common.collect.ImmutableSet;
 import java.util.Optional;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.AbstractHashAlgorithmChecker;
+import org.sonar.java.collections.SetUtils;
 
 @Rule(key = "S4790")
 public class DataHashingCheck extends AbstractHashAlgorithmChecker {
 
-  private static final Set<String> DEPRECATED_HASH_CLASSES = ImmutableSet.of(
+  private static final Set<String> DEPRECATED_HASH_CLASSES = SetUtils.immutableSetOf(
     DeprecatedSpringPasswordEncoder.MD5.classFqn,
     DeprecatedSpringPasswordEncoder.SHA.classFqn,
     DeprecatedSpringPasswordEncoder.LDAP.classFqn,

@@ -19,8 +19,8 @@
  */
 package org.sonar.java.checks.regex;
 
-import com.google.common.collect.ImmutableSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.collections.MapBuilder;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.RegexParseResult;
@@ -42,8 +43,8 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 @Rule(key = "S5867")
 public class UnicodeAwareCharClassesCheck extends AbstractRegexCheck {
 
-  private static final Set<Character> unicodeAwareClassesWithFlag = ImmutableSet.of('s', 'S', 'w', 'W');
-  private static final Set<String> unicodeAwarePropertiesWithFlag = ImmutableSet.of(
+  private static final List<Character> unicodeAwareClassesWithFlag = Arrays.asList('s', 'S', 'w', 'W');
+  private static final Set<String> unicodeAwarePropertiesWithFlag = SetUtils.immutableSetOf(
     "Lower", "Upper", "Alpha", "Alnum", "Punct", "Graph", "Print", "Blank", "Space");
 
   private static final Map<Character, Character> unicodeUnawareCharacterRanges = MapBuilder.<Character, Character>newMap()
