@@ -48,6 +48,7 @@ public class PrintfMisuseCheck {
     String.format(value + "value is "); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
     String.format("value is " + NON_COMPILE_TIME_CONSTANT); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
     String.format("value is " + COMPILE_TIME_CONSTANT);
+    String.format("%s " + value, new Exception()); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
     String.format("string without arguments"); // Noncompliant {{String contains no format specifiers.}}
     String.format("%s", new Exception());
     String.format("%d %d", new Object[]{1,2}); // Compliant
@@ -203,6 +204,11 @@ public class PrintfMisuseCheck {
     logger.log(java.util.logging.Level.SEVERE, "Result {0}!", new String[] {myObject.toString()}); // Noncompliant {{No need to call "toString()" method since an array of Objects can be used here.}}
     logger.log(java.util.logging.Level.SEVERE, "Result {0} {1}!", new Object[] {myObject.toString(), myObject}); // Noncompliant {{No need to call "toString()" method as formatting and string conversion is done by the Formatter.}}
 
+    logger.log(java.util.logging.Level.SEVERE, "message " + value); // Noncompliant {{Format specifiers or lambda should be used instead of string concatenation.}}
+    logger.log(java.util.logging.Level.SEVERE, "message " + value, new Exception()); // Noncompliant {{Lambda should be used to defer string concatenation.}}
+    logger.log(java.util.logging.Level.SEVERE, new Exception(), () -> "Result " + value); // Compliant
+    logger.log(java.util.logging.Level.SEVERE, "message {0} " + value, value); // Noncompliant {{Format specifiers or lambda should be used instead of string concatenation.}}
+
     java.util.logging.Logger logger2 = java.util.logging.Logger.getLogger("som.foo", "som.foo.resources.i18n.LogMessages");
     logger2.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404);
     getLog().log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404); // Noncompliant
@@ -318,6 +324,12 @@ public class PrintfMisuseCheck {
     slf4jLog.warn("message ", new Exception());
     slf4jLog.warn("message {}", new Exception()); // Noncompliant {{Not enough arguments.}}
 
+    slf4jLog.error("message: " + value); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
+    slf4jLog.error("message: {}" + value, value); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
+    slf4jLog.error("message:" + value, new Exception()); // Compliant, using error(String, Object, Object) would compile, but no guarantee that
+    // the last argument will be treated as a Throwable
+    slf4jLog.error("message: {}", value, new Exception()); // Compliant, but may not print the stack trace depending on the underlying framework
+
     // log4j ===========================================================================================================
     org.apache.logging.log4j.Logger log4j = org.apache.logging.log4j.LogManager.getLogger();
     org.apache.logging.log4j.Logger formatterLogger = LogManager.getFormatterLogger();
@@ -401,6 +413,11 @@ public class PrintfMisuseCheck {
     log4j.debug("message %s message %d %s", "hello", 42); // Noncompliant {{Not enough arguments.}}
 
     log4j.printf(org.apache.logging.log4j.Level.DEBUG, "message %s %d", "hello", 42); // Compliant - Java formatters
+
+    log4j.error("message: " + value); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
+    log4j.error("message: {}" + value, value); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
+    log4j.error("message:" + value, new Exception()); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
+    log4j.error("message: {}", value, new Exception()); // Compliant, print the stack-trace as expected
   }
 
   private java.util.logging.Logger getLog() {

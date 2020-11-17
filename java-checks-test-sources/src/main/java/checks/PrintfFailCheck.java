@@ -47,6 +47,8 @@ public class PrintfFailCheck {
     String.format("Result %s %s",new Object[] {new Exception(),new Exception()}); // Compliant
     String.format("Result %s %s",new Exception()); // Noncompliant {{Not enough arguments.}}
     String.format("Result %s %s",new Object[] {new Exception()});  // Noncompliant {{Not enough arguments.}}
+    String.format("%s " + value, new Exception()); // Compliant, reported by S3457
+    String.format("%s " + value); // Compliant, reported by S3457
 
     String.format("Too many arguments %d and %d and %d", 1, 2, 3, 4);
     String.format("normal %d%% ", 1);  //Compliant
@@ -164,6 +166,11 @@ public class PrintfFailCheck {
     logger.log(java.util.logging.Level.SEVERE, "value=\"'{'{0}'}'{1}\"", new Object[] {"value 1", "value 2"});
     logger.log(java.util.logging.Level.SEVERE, "value=\"{0}'{'{1}'}'\"", new Object[] {"value 1", "value 2"});
 
+    logger.log(java.util.logging.Level.SEVERE, "message " + value); // Compliant, reported by S3457
+    logger.log(java.util.logging.Level.SEVERE, "message " + value, new Exception()); // Compliant
+    logger.log(java.util.logging.Level.SEVERE, "message {0} " + value, value); // Compliant, reported by S3457
+    logger.log(java.util.logging.Level.SEVERE, new Exception(), () -> "Result " + value); // Compliant
+
     // slf4jLog ========================================================================================================
     // slf4jLog is a facade, various logging frameworks can be used under it. It implies that we will only report issues when
     // there are obvious mistakes, not when it depends on the underlying framework (even if it works correctly with the common one).
@@ -224,6 +231,11 @@ public class PrintfFailCheck {
     slf4jLog.warn("The resource for '{}' is not found, drilling down to the details of this test won't be possible", fileKey);
     slf4jLog.warn("The resource for is not found, drilling down to the details of this test won't be possible");
 
+    slf4jLog.error("message: " + value); // Compliant, reported by S3457
+    slf4jLog.error("message: {}" + value, value); // Compliant, reported by S3457
+    slf4jLog.error("message:" + value, new Exception()); // Compliant
+    slf4jLog.error("message: {}", value, new Exception()); // Compliant
+
     // log4j ===========================================================================================================
     org.apache.logging.log4j.Logger log4j = org.apache.logging.log4j.LogManager.getLogger();
     log4j.log(org.apache.logging.log4j.Level.DEBUG, "message");  // Compliant
@@ -261,5 +273,10 @@ public class PrintfFailCheck {
     log4j.debug("message %s message %d %s", "hello", 42); // Compliant, wrong string formatting but no error: will be reported by S3457
 
     log4j.printf(org.apache.logging.log4j.Level.DEBUG, "message %s %d", "hello", 42); // Compliant - Java formatters
+
+    log4j.error("message: " + value); // Compliant, reported by S3457
+    log4j.error("message: {}" + value, value); // Compliant, reported by S3457
+    log4j.error("message:" + value, new Exception()); // Compliant, reported by S3457
+    log4j.error("message: {}", value, new Exception()); // Compliant
   }
 }
