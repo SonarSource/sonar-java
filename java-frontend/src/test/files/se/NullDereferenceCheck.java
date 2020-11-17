@@ -47,7 +47,13 @@ class NullPointerTest {
     return nullableField;
   }
 
+  // Despite the name, some Nullable annotations are meant to be used as CheckForNull
+  // as they are using meta-annotation from javax: @Nonnull(When.MAYBE), same as javax @CheckForNull.
   @org.springframework.lang.Nullable
+  public Object[] springNullableMethod() {
+    return nullableField;
+  }
+  @reactor.util.annotation.Nullable
   public Object[] springNullableMethod() {
     return nullableField;
   }

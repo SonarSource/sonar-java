@@ -380,3 +380,16 @@ class SpringJavaBean {
   }
 
 }
+
+class DifferentAnnotations {
+  @org.springframework.lang.NonNull
+  private String nonNullSpring;
+
+  @reactor.util.annotation.NonNull
+  private String nonNullReactor;
+
+  DifferentAnnotations() {
+    nonNullSpring = null; // Noncompliant
+    nonNullReactor = null; // Noncompliant
+  }
+}
