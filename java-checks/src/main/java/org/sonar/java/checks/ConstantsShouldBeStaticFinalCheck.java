@@ -19,9 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
@@ -96,7 +96,20 @@ public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisit
       if (init.is(Tree.Kind.NEW_ARRAY)) {
         return false;
       }
-      return !containsChildrenOfKind((JavaTree) init, Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
+      return !containsChildMatchingPredicate((JavaTree) init,
+        (tree -> isIgnoredKind(tree) || isThisOrSuper(tree)));
+    }
+    return false;
+  }
+
+  private static boolean isIgnoredKind(Tree tree) {
+    return tree.is(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
+  }
+
+  private static boolean isThisOrSuper(Tree tree) {
+    if (tree.is(Tree.Kind.IDENTIFIER)) {
+      String name = ((IdentifierTree) tree).name();
+      return "super".equals(name) || "this".equals(name);
     }
     return false;
   }
@@ -105,13 +118,13 @@ public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisit
     return expression.is(Tree.Kind.IDENTIFIER) && !((IdentifierTree) expression).symbol().isStatic();
   }
 
-  private static boolean containsChildrenOfKind(JavaTree tree, Tree.Kind... kinds) {
-    if (Arrays.asList(kinds).contains(tree.kind())) {
+  private static boolean containsChildMatchingPredicate(JavaTree tree, Predicate<Tree> predicate) {
+    if (predicate.test(tree)) {
       return true;
     }
     if (!tree.isLeaf()) {
       for (Tree javaTree : tree.getChildren()) {
-        if (javaTree != null && containsChildrenOfKind((JavaTree) javaTree, kinds)) {
+        if (javaTree != null && containsChildMatchingPredicate((JavaTree) javaTree, predicate)) {
           return true;
         }
       }
