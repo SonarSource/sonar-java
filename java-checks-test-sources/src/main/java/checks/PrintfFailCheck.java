@@ -14,7 +14,8 @@ public class PrintfFailCheck {
   void foo(Calendar c) throws java.io.IOException {
     Object myObject = new Object();
     Object[] objs = new Object[]{14};
-
+    Locale loc = Locale.US;
+    // String format ===================================================================================================
     double value = 1.0;
     String.format("The value of my integer is %d", "Hello World");  // Noncompliant {{An 'int' is expected rather than a String.}}
     String.format("First {0} and then {1}", "foo", "bar");
@@ -47,21 +48,6 @@ public class PrintfFailCheck {
     String.format("Result %s %s",new Exception()); // Noncompliant {{Not enough arguments.}}
     String.format("Result %s %s",new Object[] {new Exception()});  // Noncompliant {{Not enough arguments.}}
 
-    PrintWriter pr = new PrintWriter("file");
-    PrintStream ps = new PrintStream("file");
-    Formatter formatter = new Formatter();
-    Locale loc = Locale.US;
-
-    pr.format("The value of my integer is %d", "Hello World");  // Noncompliant {{An 'int' is expected rather than a String.}}
-    pr.printf("The value of my integer is %d", "Hello World");  // Noncompliant {{An 'int' is expected rather than a String.}}
-    ps.format("The value of my integer is %d", "Hello World");  // Noncompliant {{An 'int' is expected rather than a String.}}
-    ps.printf(loc, "The value of my integer is %d", "Hello World");  // Noncompliant {{An 'int' is expected rather than a String.}}
-    formatter.format("The value of my integer is %d", "Hello World");  // Noncompliant {{An 'int' is expected rather than a String.}}
-    pr.format("%s:\tintCompact %d\tintVal %d\tscale %d\tprecision %d%n","", 1, 1, 1, 1);
-    pr.format("%s:\tintCompact %n%n%n%d\tintVal %d\tscale %d\tprecision %d%n","", 1, 1, 1, 1);
-    pr.format("%TH", 1l);
-    pr.format("%d", new Long(12));
-    pr.format("%d", new java.math.BigInteger("12"));
     String.format("Too many arguments %d and %d and %d", 1, 2, 3, 4);
     String.format("normal %d%% ", 1);  //Compliant
     String.format("Duke's Birthday year is %t", 12l);  // Noncompliant {{Time conversion requires a second character.}}
@@ -75,6 +61,28 @@ public class PrintfFailCheck {
     String.format("Duke's Birthday year is %t", loc);  // Noncompliant
     String.format("Accessed before %tF%n", java.time.LocalDate.now()); // Compliant
     System.out.printf("%1$ty_%1$tm_%1$td_%1$tH_%1$tM_%1$tS", java.time.LocalDateTime.now()); // Compliant
+
+    String.format("Dude's Birthday: %1$tm %<te,%<tY", c); // Compliant
+    String.format("Dude's Birthday: %1$tm %1$te,%1$tY", c); // Compliant
+    String.format("log/protocol_%tY_%<tm_%<td_%<tH_%<tM_%<tS.zip", new java.util.Date());
+    String.format("value is %d", value); // Compliant
+    String.format("%0$s", "tmp"); // Compliant, reported by S3457
+
+    // Print Writer / Stream / Formatter ===============================================================================
+    PrintWriter pr = new PrintWriter("file");
+    PrintStream ps = new PrintStream("file");
+    Formatter formatter = new Formatter();
+
+    pr.format("The value of my integer is %d", "Hello World");  // Noncompliant {{An 'int' is expected rather than a String.}}
+    pr.printf("The value of my integer is %d", "Hello World");  // Noncompliant {{An 'int' is expected rather than a String.}}
+    ps.format("The value of my integer is %d", "Hello World");  // Noncompliant {{An 'int' is expected rather than a String.}}
+    ps.printf(loc, "The value of my integer is %d", "Hello World");  // Noncompliant {{An 'int' is expected rather than a String.}}
+    formatter.format("The value of my integer is %d", "Hello World");  // Noncompliant {{An 'int' is expected rather than a String.}}
+    pr.format("%s:\tintCompact %d\tintVal %d\tscale %d\tprecision %d%n","", 1, 1, 1, 1);
+    pr.format("%s:\tintCompact %n%n%n%d\tintVal %d\tscale %d\tprecision %d%n","", 1, 1, 1, 1);
+    pr.format("%TH", 1l);
+    pr.format("%d", new Long(12));
+    pr.format("%d", new java.math.BigInteger("12"));
 
     pr.format("string without arguments");
     pr.format(loc, "string without arguments");
@@ -101,14 +109,8 @@ public class PrintfFailCheck {
     pr.format("value is "+"asd");
     pr.format("value is "+
         "asd"); // Compliant
-    String.format("value is %d", value); // Compliant
 
-    String.format("%0$s", "tmp"); // Compliant, reported by S3457
-
-    String.format("Dude's Birthday: %1$tm %<te,%<tY", c); // Compliant
-    String.format("Dude's Birthday: %1$tm %1$te,%1$tY", c); // Compliant
-    String.format("log/protocol_%tY_%<tm_%<td_%<tH_%<tM_%<tS.zip", new java.util.Date());
-
+    // MessageFormat ===================================================================================================
     MessageFormat messageFormat = new MessageFormat("{0}");
     messageFormat.format(new Object(), new StringBuffer(), new FieldPosition(0)); // Compliant - Not considered
     messageFormat.format(new Object()); // Compliant - Not considered
@@ -134,6 +136,8 @@ public class PrintfFailCheck {
     MessageFormat.format("value=\"'{'{0}'}'{1}\"", new Object[] {"value 1", "value 2"});
     MessageFormat.format("value=\"{0}'{'{1}'}'\"", new Object[] {"value 1", "value 2"});
 
+    // LOGGERS =========================================================================================================
+    // java.util.logging.Logger ========================================================================================
     java.util.logging.Logger logger =  java.util.logging.Logger.getLogger("");
     logger.log(java.util.logging.Level.SEVERE, "Result {0}"); // Compliant, wrong string formatting but no error: will be reported by S3457
     logger.log(java.util.logging.Level.SEVERE, "Result {1}"); // Compliant, wrong string formatting but no error: will be reported by S3457
@@ -160,6 +164,9 @@ public class PrintfFailCheck {
     logger.log(java.util.logging.Level.SEVERE, "value=\"'{'{0}'}'{1}\"", new Object[] {"value 1", "value 2"});
     logger.log(java.util.logging.Level.SEVERE, "value=\"{0}'{'{1}'}'\"", new Object[] {"value 1", "value 2"});
 
+    // slf4jLog ========================================================================================================
+    // slf4jLog is a facade, various logging frameworks can be used under it. It implies that we will only report issues when
+    // there are obvious mistakes, not when it depends on the underlying framework (even if it works correctly with the common one).
     org.slf4j.Logger slf4jLog = org.slf4j.LoggerFactory.getLogger("");
     org.slf4j.Marker marker = org.slf4j.MarkerFactory.getMarker("");
 
@@ -217,6 +224,7 @@ public class PrintfFailCheck {
     slf4jLog.warn("The resource for '{}' is not found, drilling down to the details of this test won't be possible", fileKey);
     slf4jLog.warn("The resource for is not found, drilling down to the details of this test won't be possible");
 
+    // log4j ===========================================================================================================
     org.apache.logging.log4j.Logger log4j = org.apache.logging.log4j.LogManager.getLogger();
     log4j.log(org.apache.logging.log4j.Level.DEBUG, "message");  // Compliant
     log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {}");  // Compliant, wrong string formatting but no error: will be reported by S3457

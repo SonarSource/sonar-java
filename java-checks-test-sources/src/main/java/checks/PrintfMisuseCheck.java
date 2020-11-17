@@ -24,6 +24,8 @@ public class PrintfMisuseCheck {
     Object myObject = new Object();
     Object[] objs = new Object[]{14};
     double value = 1.0;
+    Locale loc = Locale.US;
+    // String format ===================================================================================================
     String.format("The value of my integer is %d", "Hello World");
     String.format("First {0} and then {1}", "foo", "bar");  // Noncompliant  {{Looks like there is a confusion with the use of java.text.MessageFormat, parameters will be simply ignored here}}
     String.format("{1}", "foo", "bar");  // Noncompliant
@@ -32,8 +34,8 @@ public class PrintfMisuseCheck {
     String.format("Display %2$d and then %2$d", 1, 2);   // Noncompliant {{first argument is not used.}}
     String.format("Too many arguments %d and %d", 1, 2, 3);  // Noncompliant {{3rd argument is not used.}}
     String.format("Not enough arguments %d and %d", 1);
-    String.format("%1$d %2$d %9$-3.3s", 1, 2, "hello");  // Compliant - not eough arguments but this will be caught by other rule
-    String.format("%12$s", 1, 2, "hello");  // Compliant - not eough arguments but this will be caught by other rule
+    String.format("%1$d %2$d %9$-3.3s", 1, 2, "hello");  // Compliant - not enough arguments but this will be caught by S2275
+    String.format("%12$s", 1, 2, "hello");  // Compliant - not enough arguments but this will be caught by S2275
     String.format("First Line\n %d", 1); // Noncompliant {{%n should be used in place of \n to produce the platform-specific line separator.}}
     String.format("First Line");   // Noncompliant {{String contains no format specifiers.}}
     String.format("First Line%%"); // Noncompliant {{String contains no format specifiers.}}
@@ -62,21 +64,6 @@ public class PrintfMisuseCheck {
     String.format("Result %s %s",new Exception()); // Compliant, reported by S2275
     String.format("Result %s %s",new Object[] {new Exception()}); // Compliant, reported by S2275
 
-    PrintWriter pr = new PrintWriter("file");
-    PrintStream ps = new PrintStream("file");
-    Formatter formatter = new Formatter();
-    Locale loc = Locale.US;
-
-    pr.format("The value of my integer is %d", "Hello World");
-    pr.printf("The value of my integer is %d", "Hello World");
-    ps.format("The value of my integer is %d", "Hello World");
-    ps.printf(loc, "The value of my integer is %d", "Hello World");
-    formatter.format("The value of my integer is %d", "Hello World");
-    pr.format("%s:\tintCompact %d\tintVal %d\tscale %d\tprecision %d%n","", 1, 1, 1, 1);
-    pr.format("%s:\tintCompact %n%n%n%d\tintVal %d\tscale %d\tprecision %d%n","", 1, 1, 1, 1);
-    pr.format("%TH", 1l);
-    pr.format("%d", new Long(12));
-    pr.format("%d", new java.math.BigInteger("12"));
     String.format("Too many arguments %d and %d and %d", 1, 2, 3, 4);  // Noncompliant {{4th argument is not used.}}
     String.format("normal %d%% ", 1);  //Compliant
     String.format("Duke's Birthday year is %t", 12l);
@@ -89,6 +76,27 @@ public class PrintfMisuseCheck {
     String.format("Duke's Birthday year is %t", loc);
     String.format("Accessed before %tF%n", java.time.LocalDate.now()); // Compliant
     System.out.printf("%1$ty_%1$tm_%1$td_%1$tH_%1$tM_%1$tS", java.time.LocalDateTime.now()); // Compliant
+
+    String.format("%0$s", "tmp"); // Noncompliant {{Arguments are numbered starting from 1.}}
+    String.format("Dude's Birthday: %1$tm %<te,%<tY", c); // Compliant
+    String.format("Dude's Birthday: %1$tm %1$te,%1$tY", c); // Compliant
+    String.format("log/protocol_%tY_%<tm_%<td_%<tH_%<tM_%<tS.zip", new java.util.Date());
+
+    // Print Writer / Stream / Formatter ===============================================================================
+    PrintWriter pr = new PrintWriter("file");
+    PrintStream ps = new PrintStream("file");
+    Formatter formatter = new Formatter();
+
+    pr.format("The value of my integer is %d", "Hello World");
+    pr.printf("The value of my integer is %d", "Hello World");
+    ps.format("The value of my integer is %d", "Hello World");
+    ps.printf(loc, "The value of my integer is %d", "Hello World");
+    formatter.format("The value of my integer is %d", "Hello World");
+    pr.format("%s:\tintCompact %d\tintVal %d\tscale %d\tprecision %d%n","", 1, 1, 1, 1);
+    pr.format("%s:\tintCompact %n%n%n%d\tintVal %d\tscale %d\tprecision %d%n","", 1, 1, 1, 1);
+    pr.format("%TH", 1l);
+    pr.format("%d", new Long(12));
+    pr.format("%d", new java.math.BigInteger("12"));
 
     pr.format("string without arguments"); // Noncompliant  {{String contains no format specifiers.}}
     pr.format(loc, "string without arguments"); // Noncompliant  {{String contains no format specifiers.}}
@@ -127,12 +135,7 @@ public class PrintfMisuseCheck {
       "line1 %s " +
       "line2", "myValue");
 
-    String.format("%0$s", "tmp"); // Noncompliant {{Arguments are numbered starting from 1.}}
-
-    String.format("Dude's Birthday: %1$tm %<te,%<tY", c); // Compliant
-    String.format("Dude's Birthday: %1$tm %1$te,%1$tY", c); // Compliant
-    String.format("log/protocol_%tY_%<tm_%<td_%<tH_%<tM_%<tS.zip", new java.util.Date());
-
+    // MessageFormat ===================================================================================================
     MessageFormat messageFormat = new MessageFormat("{0}");
     messageFormat.format(new Object(), new StringBuffer(), new FieldPosition(0)); // Compliant - Not considered
     messageFormat.format(new Object()); // Compliant - Not considered
@@ -165,6 +168,8 @@ public class PrintfMisuseCheck {
     MessageFormat.format("Result {0} {1}", 1, 2,  new Exception()); // Noncompliant {{3rd argument is not used.}}
     MessageFormat.format("Result {0} {1}", new Exception()); // Noncompliant {{Not enough arguments.}}
 
+    // LOGGERS =========================================================================================================
+    // java.util.logging.Logger ========================================================================================
     java.util.logging.Logger logger = java.util.logging.Logger.getLogger("");
     logger.log(java.util.logging.Level.SEVERE, "{0,number,$'#',##}", value); // Compliant
     logger.log(java.util.logging.Level.SEVERE, "Result ''{0}''.", 14); // Compliant
@@ -198,6 +203,39 @@ public class PrintfMisuseCheck {
     logger.log(java.util.logging.Level.SEVERE, "Result {0}!", new String[] {myObject.toString()}); // Noncompliant {{No need to call "toString()" method since an array of Objects can be used here.}}
     logger.log(java.util.logging.Level.SEVERE, "Result {0} {1}!", new Object[] {myObject.toString(), myObject}); // Noncompliant {{No need to call "toString()" method as formatting and string conversion is done by the Formatter.}}
 
+    java.util.logging.Logger logger2 = java.util.logging.Logger.getLogger("som.foo", "som.foo.resources.i18n.LogMessages");
+    logger2.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404);
+    getLog().log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404); // Noncompliant
+
+    java.util.logging.Logger logger3 = java.util.logging.Logger.getLogger("");
+    logger3.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404); // Noncompliant
+
+    java.util.logging.Logger logger4 = getLog();
+    logger4.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404); // Noncompliant
+    this.loggerField.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404);
+    String param1 = "p1";
+    String param2 = "p2";
+    String param3 = "p3";
+    java.util.logging.Level level = java.util.logging.Level.WARNING;
+    logger4.log(level, () -> "message 01 " + param1);
+    logger4.log(level, new Exception(), () -> "message 02 " + param1);
+    logger4.log(level, "message ");
+    logger4.log(level, "message ", new Exception());
+    logger4.log(level, "message {0}", param1);
+    logger4.log(level, "message {1}", param1);  // Noncompliant {{Not enough arguments.}}
+    logger4.log(level, "message {0}", new Exception());  // Noncompliant {{Not enough arguments.}}
+    logger4.log(level, "message {0}", new Object[] {param1});
+    logger4.log(level, "message {1}", new Object[] {param1});  // Noncompliant {{Not enough arguments.}}
+    logger4.log(level, "message {0}", new Object[] {param1, new Exception()}); // Noncompliant {{2nd argument is not used.}}
+    logger4.log(level, "message {0} {1}", new Object[] {param1, param2});
+    logger4.log(level, "message {0} {1}", new Object[] {param1, param2, param3}); // Noncompliant {{3rd argument is not used.}}
+    logger4.log(level, "message " + param1); // Noncompliant {{Format specifiers or lambda should be used instead of string concatenation.}}
+    logger4.log(level, "message " + "...");
+    logger4.log(level, "message " + param1, new Exception()); // Noncompliant {{Lambda should be used to defer string concatenation.}}
+
+    // slf4jLog ========================================================================================================
+    // slf4jLog is a facade, various logging frameworks can be used under it. It implies that we will only report issues when
+    // there are obvious mistakes, not when it depends on the underlying framework (even if it works correctly with the common one).
     org.slf4j.Logger slf4jLog = org.slf4j.LoggerFactory.getLogger("");
     org.slf4j.Marker marker = org.slf4j.MarkerFactory.getMarker("");
 
@@ -280,36 +318,7 @@ public class PrintfMisuseCheck {
     slf4jLog.warn("message ", new Exception());
     slf4jLog.warn("message {}", new Exception()); // Noncompliant {{Not enough arguments.}}
 
-    java.util.logging.Logger logger2 = java.util.logging.Logger.getLogger("som.foo", "som.foo.resources.i18n.LogMessages");
-    logger2.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404);
-    getLog().log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404); // Noncompliant
-
-    java.util.logging.Logger logger3 = java.util.logging.Logger.getLogger("");
-    logger3.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404); // Noncompliant
-
-    java.util.logging.Logger logger4 = getLog();
-    logger4.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404); // Noncompliant
-    this.loggerField.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404);
-    String param1 = "p1";
-    String param2 = "p2";
-    String param3 = "p3";
-    java.util.logging.Level level = java.util.logging.Level.WARNING;
-    logger4.log(level, () -> "message 01 " + param1);
-    logger4.log(level, new Exception(), () -> "message 02 " + param1);
-    logger4.log(level, "message ");
-    logger4.log(level, "message ", new Exception());
-    logger4.log(level, "message {0}", param1);
-    logger4.log(level, "message {1}", param1);  // Noncompliant {{Not enough arguments.}}
-    logger4.log(level, "message {0}", new Exception());  // Noncompliant {{Not enough arguments.}}
-    logger4.log(level, "message {0}", new Object[] {param1});
-    logger4.log(level, "message {1}", new Object[] {param1});  // Noncompliant {{Not enough arguments.}}
-    logger4.log(level, "message {0}", new Object[] {param1, new Exception()}); // Noncompliant {{2nd argument is not used.}}
-    logger4.log(level, "message {0} {1}", new Object[] {param1, param2});
-    logger4.log(level, "message {0} {1}", new Object[] {param1, param2, param3}); // Noncompliant {{3rd argument is not used.}}
-    logger4.log(level, "message " + param1); // Noncompliant {{Format specifiers or lambda should be used instead of string concatenation.}}
-    logger4.log(level, "message " + "...");
-    logger4.log(level, "message " + param1, new Exception()); // Noncompliant {{Lambda should be used to defer string concatenation.}}
-
+    // log4j ===========================================================================================================
     org.apache.logging.log4j.Logger log4j = org.apache.logging.log4j.LogManager.getLogger();
     org.apache.logging.log4j.Logger formatterLogger = LogManager.getFormatterLogger();
 
