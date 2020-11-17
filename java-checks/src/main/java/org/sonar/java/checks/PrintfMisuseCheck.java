@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -68,21 +67,20 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     JAVA_UTIL_LOGGER_LOG_LEVEL_STRING,
     JAVA_UTIL_LOGGER_LOG_LEVEL_STRING_ANY);
 
+  private static final MethodMatchers SLF4J_METHOD_MATCHERS = MethodMatchers.or(LEVELS.stream()
+    .map(l -> MethodMatchers.create().ofTypes(ORG_SLF4J_LOGGER).names(l).withAnyParameters().build())
+    .collect(Collectors.toList()));
+
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
-    ArrayList<MethodMatchers> matchers = new ArrayList<>(slf4jMethods());
+    ArrayList<MethodMatchers> matchers = new ArrayList<>();
+    matchers.add(SLF4J_METHOD_MATCHERS);
     matchers.add(super.getMethodInvocationMatchers());
     // Add log methods as they only apply to misuse and not error.
     matchers.add(log4jMethods());
     matchers.add(JAVA_UTIL_LOGGER_LOG_LEVEL_STRING);
     matchers.add(JAVA_UTIL_LOGGER_LOG_LEVEL_STRING_ANY);
     return MethodMatchers.or(matchers);
-  }
-
-  private static Collection<MethodMatchers> slf4jMethods() {
-    return LEVELS.stream()
-      .map(l -> MethodMatchers.create().ofTypes(ORG_SLF4J_LOGGER).names(l).withAnyParameters().build())
-      .collect(Collectors.toList());
   }
 
   private static MethodMatchers log4jMethods() {
@@ -369,13 +367,14 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
   @Override
   protected void handleOtherFormatTree(MethodInvocationTree mit, ExpressionTree formatTree, List<ExpressionTree> args) {
     if (isIncorrectConcatenation(formatTree)) {
+      boolean lastArgumentThrowable = isLastArgumentThrowable(args);
       if (JAVA_UTIL_LOGGER_LOG_MATCHER.matches(mit)) {
-        if (isLastArgumentThrowable(args)) {
+        if (lastArgumentThrowable) {
           reportIssue(mit, "Lambda should be used to defer string concatenation.");
         } else {
           reportIssue(mit, "Format specifiers or lambda should be used instead of string concatenation.");
         }
-      } else {
+      } else if (!(lastArgumentThrowable && SLF4J_METHOD_MATCHERS.matches(mit))) {
         reportIssue(mit, "Format specifiers should be used instead of string concatenation.");
       }
     }
