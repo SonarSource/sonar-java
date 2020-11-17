@@ -26,6 +26,7 @@ import org.sonar.java.regex.RegexLexer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.sonar.java.regex.RegexParserTestUtils.assertCharacterClass;
 import static org.sonar.java.regex.RegexParserTestUtils.assertFailParsing;
 import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
@@ -71,6 +72,7 @@ class EscapedCharacterClassTreeTest {
       assertEscapedProperty("\\\\p{Lu}", "Lu", false);
       assertEscapedProperty("\\\\p{IsAlphabetic}", "IsAlphabetic", false);
       assertEscapedProperty("\\\\p{Sc}", "Sc", false);
+      assertEscapedProperty(assertCharacterClass(false, assertSuccessfulParse("[\\\\p{IsLatin}]")), "IsLatin", false);
     }
 
     @Test
@@ -97,15 +99,19 @@ class EscapedCharacterClassTreeTest {
 
     private void assertEscapedProperty(String regex, String expectedProperty, boolean isNegation) {
       RegexTree tree = assertSuccessfulParse(regex);
-      assertThat(tree).isInstanceOf(EscapedCharacterClassTree.class);
-      assertKind(RegexTree.Kind.ESCAPED_CHARACTER_CLASS, tree);
+      assertEscapedProperty(tree, expectedProperty, isNegation);
+    }
 
+    private void assertEscapedProperty(RegexSyntaxElement tree, String expectedProperty, boolean isNegation) {
+      assertThat(tree).isInstanceOf(EscapedCharacterClassTree.class);
       EscapedCharacterClassTree escapedProperty = (EscapedCharacterClassTree) tree;
+      assertKind(RegexTree.Kind.ESCAPED_CHARACTER_CLASS, escapedProperty);
+      assertKind(CharacterClassElementTree.Kind.ESCAPED_CHARACTER_CLASS, escapedProperty);
+
       assertThat(escapedProperty.isProperty()).isTrue();
       assertThat(escapedProperty.getType()).isEqualTo(isNegation ? 'P' : 'p');
       assertThat(escapedProperty.property()).isNotNull().isEqualTo(expectedProperty);
       assertThat(escapedProperty.isNegation()).isEqualTo(isNegation);
-      assertThat(escapedProperty.characterClassElementKind()).isEqualTo(CharacterClassElementTree.Kind.ESCAPED_CHARACTER_CLASS);
       assertThat(escapedProperty.incomingTransitionType()).isEqualTo(AutomatonState.TransitionType.CHARACTER);
     }
 
