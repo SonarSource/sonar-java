@@ -51,7 +51,7 @@ class JavaPluginTest {
     Plugin.Context context = new Plugin.Context(SQ_79_RUNTIME);
     javaPlugin.define(context);
     assertThat(context.getExtensions())
-      .hasSize(32)
+      .hasSize(31)
       .doesNotContain(Jasper.class);
   }
 
@@ -61,7 +61,7 @@ class JavaPluginTest {
     Plugin.Context context = new Plugin.Context(sqEnterprise);
     javaPlugin.define(context);
     assertThat(context.getExtensions())
-      .hasSize(32)
+      .hasSize(31)
       .doesNotContain(Jasper.class);
   }
 
@@ -71,7 +71,7 @@ class JavaPluginTest {
     Plugin.Context context = new Plugin.Context(sqEnterprise);
     javaPlugin.define(context);
     assertThat(context.getExtensions())
-      .hasSize(33)
+      .hasSize(32)
       .contains(Jasper.class);
   }
 

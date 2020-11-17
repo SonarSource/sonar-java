@@ -52,12 +52,6 @@ public class JavaPlugin implements Plugin {
       builder.add(DroppedPropertiesSensor.class);
       builder.add(JavaSonarWayProfile.class);
       builder.add(JavaClasspath.class);
-      builder.add(PropertyDefinition.builder(SonarComponents.FAIL_ON_EXCEPTION_KEY)
-        .defaultValue("false")
-        .hidden()
-        .name("Fail on exceptions")
-        .description("when set to true, if an exception is thrown by the analyzer the analysis will fail")
-        .build());
 
       ExternalReportExtensions.define(context);
     }
