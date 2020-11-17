@@ -97,7 +97,7 @@ public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisit
         return false;
       }
       return !containsChildMatchingPredicate((JavaTree) init,
-        ((Predicate<Tree>) ConstantsShouldBeStaticFinalCheck::isIgnoredKind).or(ConstantsShouldBeStaticFinalCheck::isThisOrSuper));
+        (tree -> isIgnoredKind(tree) || isThisOrSuper(tree)));
     }
     return false;
   }
