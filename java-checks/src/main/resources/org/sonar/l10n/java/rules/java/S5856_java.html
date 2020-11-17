@@ -9,9 +9,7 @@ flag or methods that don't use regular expressions should be used.</p>
 Pattern.compile("([");
 str.matches("([");
 str.replaceAll("([", "{");
-
 str.matches("(\\w+-(\\d+)");
-str.matches("(?&lt;name&gt;\\w+)-\\k&lt;nae&gt;");
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
@@ -19,8 +17,6 @@ Pattern.compile("\\(\\[");
 Pattern.compile("([", Pattern.LITERAL);
 str.equals("([");
 str.replace("([", "{");
-
 str.matches("(\\w+)-(\\d+)");
-str.matches("(?&lt;name&gt;\\w+)-\\k&lt;name&gt;");
 </pre>
 
