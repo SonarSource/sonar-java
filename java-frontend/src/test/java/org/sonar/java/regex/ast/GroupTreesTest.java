@@ -211,11 +211,14 @@ class GroupTreesTest {
     assertPlainCharacter('x', x);
 
     FinalState finalState = assertType(FinalState.class, regex.continuation());
-    assertEquals(AutomatonState.TransitionType.LOOKAROUND_BACKTRACKING, lookAround.incomingTransitionType());
+    assertEquals(AutomatonState.TransitionType.EPSILON, lookAround.incomingTransitionType());
+    assertListSize(2, lookAround.successors());
+    StartOfLookBehindState start = assertType(StartOfLookBehindState.class, lookAround.successors().get(0));
     assertListElements(lookAround.successors(),
-      assertEdge(x, AutomatonState.TransitionType.CHARACTER),
+      assertEdge(start, AutomatonState.TransitionType.LOOKAROUND_BACKTRACKING),
       assertEdge(finalState, AutomatonState.TransitionType.EPSILON)
     );
+    assertSingleEdge(start, x, AutomatonState.TransitionType.CHARACTER);
     EndOfLookaroundState endOfLookaroundState = assertType(EndOfLookaroundState.class, x.continuation());
     assertSingleEdge(x, endOfLookaroundState, AutomatonState.TransitionType.EPSILON);
     assertSingleEdge(endOfLookaroundState, finalState, AutomatonState.TransitionType.EPSILON);
@@ -258,13 +261,16 @@ class GroupTreesTest {
     assertPlainCharacter('x', x);
 
     FinalState finalState = assertType(FinalState.class, regex.continuation());
-    assertEquals(AutomatonState.TransitionType.LOOKAROUND_BACKTRACKING, lookAround.incomingTransitionType());
+    assertEquals(AutomatonState.TransitionType.EPSILON, lookAround.incomingTransitionType());
     assertListSize(2, lookAround.successors());
-    NegationState negationState = assertType(NegationState.class, lookAround.successors().get(0));
+    StartOfLookBehindState start = assertType(StartOfLookBehindState.class, lookAround.successors().get(0));
     assertListElements(lookAround.successors(),
-      assertEdge(negationState, AutomatonState.TransitionType.NEGATION),
+      assertEdge(start, AutomatonState.TransitionType.LOOKAROUND_BACKTRACKING),
       assertEdge(finalState, AutomatonState.TransitionType.EPSILON)
     );
+    assertListSize(1, start.successors());
+    NegationState negationState = assertType(NegationState.class, start.successors().get(0));
+    assertSingleEdge(start, negationState, AutomatonState.TransitionType.NEGATION);
     assertSingleEdge(negationState, x, AutomatonState.TransitionType.CHARACTER);
     EndOfLookaroundState endOfLookaroundState = assertType(EndOfLookaroundState.class, x.continuation());
     assertSingleEdge(x, endOfLookaroundState, AutomatonState.TransitionType.EPSILON);
