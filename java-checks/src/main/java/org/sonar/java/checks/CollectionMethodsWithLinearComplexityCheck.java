@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableSet;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +28,7 @@ import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.collections.MapBuilder;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -58,19 +58,20 @@ public class CollectionMethodsWithLinearComplexityCheck extends IssuableSubscrip
 
   private static final Map<MethodMatchers, Set<String>> matcherActualTypeMap;
   static {
-    MapBuilder<MethodMatchers, Set<String>> builder = MapBuilder.<MethodMatchers, Set<String>>newMap();
+    MapBuilder<MethodMatchers, Set<String>> builder = MapBuilder.newMap();
 
     MethodMatchers collectionContains = COLLECTION_METHOD_MATCHER.names("contains").addParametersMatcher("java.lang.Object").build();
-    builder.put(collectionContains, ImmutableSet.of(ARRAY_LIST, LINKED_LIST, COPY_ON_WRITE_ARRAY_LIST, COPY_ON_WRITE_ARRAY_SET, CONCURRENT_LINKED_QUEUE, CONCURRENT_LINKED_DEQUE));
+    builder.put(collectionContains, SetUtils.immutableSetOf(
+      ARRAY_LIST, LINKED_LIST, COPY_ON_WRITE_ARRAY_LIST, COPY_ON_WRITE_ARRAY_SET, CONCURRENT_LINKED_QUEUE, CONCURRENT_LINKED_DEQUE));
 
     MethodMatchers collectionSize = COLLECTION_METHOD_MATCHER.names("size").addWithoutParametersMatcher().build();
-    builder.put(collectionSize, ImmutableSet.of(CONCURRENT_LINKED_QUEUE, CONCURRENT_LINKED_DEQUE));
+    builder.put(collectionSize, SetUtils.immutableSetOf(CONCURRENT_LINKED_QUEUE, CONCURRENT_LINKED_DEQUE));
 
     MethodMatchers collectionAdd = COLLECTION_METHOD_MATCHER.names("add").addParametersMatcher(ANY).build();
-    builder.put(collectionAdd, ImmutableSet.of(COPY_ON_WRITE_ARRAY_SET, COPY_ON_WRITE_ARRAY_LIST));
+    builder.put(collectionAdd, SetUtils.immutableSetOf(COPY_ON_WRITE_ARRAY_SET, COPY_ON_WRITE_ARRAY_LIST));
 
     MethodMatchers collectionRemove = COLLECTION_METHOD_MATCHER.names("remove").addParametersMatcher("java.lang.Object").build();
-    builder.put(collectionRemove, ImmutableSet.of(ARRAY_LIST, COPY_ON_WRITE_ARRAY_SET, COPY_ON_WRITE_ARRAY_LIST));
+    builder.put(collectionRemove, SetUtils.immutableSetOf(ARRAY_LIST, COPY_ON_WRITE_ARRAY_SET, COPY_ON_WRITE_ARRAY_LIST));
 
     MethodMatchers listGet = MethodMatchers.create().ofSubTypes("java.util.List").names("get").addParametersMatcher("int").build();
     builder.put(listGet, Collections.singleton(LINKED_LIST));

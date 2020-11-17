@@ -19,7 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -28,14 +30,10 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 @Rule(key = "S2653")
 public class MainInServletCheck extends IssuableSubscriptionVisitor {
 
-  private static final Set<String> SERVLET_AND_EJB_CLASSES = ImmutableSet.of(
+  private static final List<String> SERVLET_AND_EJB_CLASSES = Arrays.asList(
     "javax.servlet.http.HttpServlet",
     "org.apache.struts.action.Action",
     "javax.ejb.EnterpriseBean"

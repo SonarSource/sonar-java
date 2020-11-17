@@ -19,8 +19,10 @@
  */
 package org.sonar.java.checks.synchronization;
 
-import com.google.common.collect.ImmutableSet;
-
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -30,15 +32,10 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Pattern;
-
 @Rule(key = "S3436")
 public class ValueBasedObjectUsedForLockCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
-  private static final Set<String> VALUE_BASED_TYPES = ImmutableSet.of(
+  private static final List<String> VALUE_BASED_TYPES = Arrays.asList(
     "java.time.chrono.HijrahDate",
     "java.time.chrono.JapaneseDate",
     "java.time.chrono.MinguoDate",

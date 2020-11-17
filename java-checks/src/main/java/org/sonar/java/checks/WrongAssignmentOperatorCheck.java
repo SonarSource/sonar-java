@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.Arrays;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -33,7 +33,7 @@ import java.util.Set;
 @Rule(key = "S2757")
 public class WrongAssignmentOperatorCheck extends IssuableSubscriptionVisitor {
 
-  private static final Set<String> SUSPICIOUS_TOKEN_VALUES = ImmutableSet.of("!", "+", "-");
+  private static final List<String> SUSPICIOUS_TOKEN_VALUES = Arrays.asList("!", "+", "-");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

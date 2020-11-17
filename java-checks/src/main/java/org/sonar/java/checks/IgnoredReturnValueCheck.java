@@ -19,11 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableSet;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -70,7 +68,7 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
     "java.util.Optional",
     "com.google.common.base.Optional");
 
-  private static final Set<String> EXCLUDED_PREFIX = ImmutableSet.of("parse", "format", "decode", "valueOf");
+  private static final List<String> EXCLUDED_PREFIX = Arrays.asList("parse", "format", "decode", "valueOf");
 
   private static final MethodMatchers EXCLUDED = MethodMatchers.or(
     MethodMatchers.create().ofTypes("java.lang.Character").names("toChars").addParametersMatcher("int", "char[]", "int").build(),

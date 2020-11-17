@@ -19,11 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableSet;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -89,7 +87,7 @@ public class JacksonDeserializationCheck extends IssuableSubscriptionVisitor {
       if (tree.is(Tree.Kind.ASSIGNMENT)) {
         AssignmentExpressionTree assignment = (AssignmentExpressionTree) tree;
         if (((IdentifierTree) assignment.variable()).name().equals("use")
-            && isJsonTypeIdEnumValue(assignment.expression(), ImmutableSet.of("CLASS", "MINIMAL_CLASS"))) {
+            && isJsonTypeIdEnumValue(assignment.expression())) {
           return Optional.of(assignment.expression());
         }
       }
@@ -97,7 +95,7 @@ public class JacksonDeserializationCheck extends IssuableSubscriptionVisitor {
     return Optional.empty();
   }
 
-  private static boolean isJsonTypeIdEnumValue(ExpressionTree tree, Set<String> values) {
+  private static boolean isJsonTypeIdEnumValue(ExpressionTree tree) {
     if (!isJsonTypeId(tree)) {
       return false;
     }
@@ -107,7 +105,7 @@ public class JacksonDeserializationCheck extends IssuableSubscriptionVisitor {
     } else {
       valueName = ((IdentifierTree) tree).name();
     }
-    return values.contains(valueName);
+    return valueName.equals("CLASS") || valueName.equals("MINIMAL_CLASS");
   }
 
   private static boolean isJsonTypeId(ExpressionTree tree) {

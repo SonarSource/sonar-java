@@ -19,8 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
@@ -41,10 +42,14 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 @Rule(key = "S112")
 public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final Set<String> RAW_EXCEPTIONS = ImmutableSet.of("java.lang.Throwable", "java.lang.Error", "java.lang.Exception", "java.lang.RuntimeException");
+  private static final List<String> RAW_EXCEPTIONS = Arrays.asList(
+    "java.lang.Throwable",
+    "java.lang.Error",
+    "java.lang.Exception",
+    "java.lang.RuntimeException");
 
   private JavaFileScannerContext context;
-  private Set<Type> exceptionsThrownByMethodInvocations = new HashSet<>();
+  private final Set<Type> exceptionsThrownByMethodInvocations = new HashSet<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -85,9 +90,7 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
     if (tree.symbol().isMethodSymbol()) {
-      for (Type thrownType : ((Symbol.MethodSymbol) tree.symbol()).thrownTypes()) {
-        exceptionsThrownByMethodInvocations.add(thrownType);
-      }
+      exceptionsThrownByMethodInvocations.addAll(((Symbol.MethodSymbol) tree.symbol()).thrownTypes());
     }
     super.visitMethodInvocation(tree);
   }

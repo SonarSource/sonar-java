@@ -19,11 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableSet;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -41,7 +41,7 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
   private static final MethodMatchers MATH_RANDOM_MATCHER = MethodMatchers.create()
     .ofTypes("java.lang.Math").names("random").addWithoutParametersMatcher().build();
 
-  private static final Set<String> RANDOM_STATIC_TYPES = ImmutableSet.of(
+  private static final Set<String> RANDOM_STATIC_TYPES = SetUtils.immutableSetOf(
     "java.util.concurrent.ThreadLocalRandom",
     "org.apache.commons.lang.math.RandomUtils",
     "org.apache.commons.lang3.RandomUtils",
@@ -49,7 +49,7 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
     "org.apache.commons.lang3.RandomStringUtils"
   );
 
-  private static final Set<String> RANDOM_CONSTRUCTOR_TYPES = ImmutableSet.of(
+  private static final Set<String> RANDOM_CONSTRUCTOR_TYPES = SetUtils.immutableSetOf(
     "java.util.Random",
     "org.apache.commons.lang.math.JVMRandom"
   );

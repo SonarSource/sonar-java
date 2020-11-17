@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -51,16 +50,16 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S2386")
 public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor {
 
-  private static final Set<String> ALWAYS_MUTABLE_TYPES = ImmutableSet.of(
+  private static final List<String> ALWAYS_MUTABLE_TYPES = Arrays.asList(
     "java.awt.Point",
     "java.util.Date"
   );
 
-  private static final Set<String> MUTABLE_TYPES = ImmutableSet.<String>builder()
-    .addAll(ALWAYS_MUTABLE_TYPES)
-    .add("java.util.Collection")
-    .add("java.util.Map")
-    .build();
+  private static final List<String> MUTABLE_TYPES = Arrays.asList(
+    "java.awt.Point",
+    "java.util.Date",
+    "java.util.Collection",
+    "java.util.Map");
 
   private static final String DECORATE = "decorate";
   // java.util and apache commons
@@ -88,12 +87,12 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
   private static final MethodMatchers ARRAYS_AS_LIST = MethodMatchers.create()
     .ofTypes("java.util.Arrays").names("asList").withAnyParameters().build();
 
-  private static final Set<String> ACCEPTED_TYPES = ImmutableSet.of(
+  private static final List<String> ACCEPTED_TYPES = Arrays.asList(
     "com.google.common.collect.ImmutableMap",
     "com.google.common.collect.ImmutableCollection"
   );
 
-  private static final Set<String> ACCEPTED_NEW_TYPES = Collections.singleton(
+  private static final List<String> ACCEPTED_NEW_TYPES = Collections.singletonList(
     "org.apache.commons.collections4.list.UnmodifiableList"
   );
 
@@ -218,7 +217,7 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
     return type.isUnknown() || isAcceptedType(type, ACCEPTED_TYPES) || UNMODIFIABLE_METHOD_CALLS.matches(mit);
   }
 
-  private static boolean isAcceptedType(Type type, Set<String> accepted) {
+  private static boolean isAcceptedType(Type type, List<String> accepted) {
     for (String acceptedType : accepted) {
       if (type.isSubtypeOf(acceptedType)) {
         return true;

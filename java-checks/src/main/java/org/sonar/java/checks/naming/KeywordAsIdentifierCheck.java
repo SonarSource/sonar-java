@@ -19,22 +19,21 @@
  */
 package org.sonar.java.checks.naming;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.Set;
-
 @Rule(key = "S1190")
 public class KeywordAsIdentifierCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;
 
-  private static final Set<String> FORBIDDEN_IDENTIFIERS = ImmutableSet.of("enum", "_","assert");
+  private static final Set<String> FORBIDDEN_IDENTIFIERS = SetUtils.immutableSetOf("enum", "_","assert");
 
   @Override
   public void scanFile(JavaFileScannerContext context) {

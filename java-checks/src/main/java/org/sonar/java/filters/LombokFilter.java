@@ -19,7 +19,6 @@
  */
 package org.sonar.java.filters;
 
-import com.google.common.collect.ImmutableSet;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -44,6 +43,7 @@ import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.naming.BadFieldNameCheck;
 import org.sonar.java.checks.spring.SpringComponentWithNonAutowiredMembersCheck;
 import org.sonar.java.checks.unused.UnusedPrivateFieldCheck;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -56,7 +56,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 public class LombokFilter extends BaseTreeVisitorIssueFilter {
 
-  private static final Set<Class<? extends JavaCheck>> FILTERED_RULES = ImmutableSet.<Class<? extends JavaCheck>>of(
+  private static final Set<Class<? extends JavaCheck>> FILTERED_RULES = SetUtils.immutableSetOf(
     UnusedPrivateFieldCheck.class,
     PrivateFieldUsedLocallyCheck.class,
     EqualsNotOverriddenInSubclassCheck.class,

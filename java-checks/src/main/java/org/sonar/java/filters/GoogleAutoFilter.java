@@ -19,20 +19,20 @@
  */
 package org.sonar.java.filters;
 
-import com.google.common.collect.ImmutableSet;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import org.sonar.java.checks.AbstractClassNoFieldShouldBeInterfaceCheck;
 import org.sonar.java.checks.EqualsNotOverridenWithCompareToCheck;
 import org.sonar.java.checks.EqualsOverridenWithHashCodeCheck;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 
 public class GoogleAutoFilter extends BaseTreeVisitorIssueFilter {
 
-  private static final Set<Class<? extends JavaCheck>> FILTERED_RULES = ImmutableSet.<Class<? extends JavaCheck>>of(
+  private static final Set<Class<? extends JavaCheck>> FILTERED_RULES = SetUtils.immutableSetOf(
     EqualsOverridenWithHashCodeCheck.class,
     EqualsNotOverridenWithCompareToCheck.class,
     AbstractClassNoFieldShouldBeInterfaceCheck.class);
