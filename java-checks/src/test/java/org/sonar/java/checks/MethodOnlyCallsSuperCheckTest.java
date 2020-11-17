@@ -42,13 +42,4 @@ class MethodOnlyCallsSuperCheckTest {
       .verifyIssues();
   }
 
-  @Test
-  void no_issue_without_semantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile(FILE)
-      .withCheck(new MethodOnlyCallsSuperCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
-
 }
