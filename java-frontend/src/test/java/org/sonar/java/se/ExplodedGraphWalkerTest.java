@@ -51,7 +51,6 @@ import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.checks.StreamNotConsumedCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.java.se.checks.XxeProcessingCheck;
-import org.sonar.java.se.checks.debug.DebugMethodYieldsCheck;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
@@ -669,7 +668,6 @@ class ExplodedGraphWalkerTest {
       StreamNotConsumedCheck.class,
       MapComputeIfAbsentOrPresentCheck.class,
       ObjectOutputStreamCheck.class,
-      DebugMethodYieldsCheck.class,
       MinMaxRangeCheck.class,
       ParameterNullnessCheck.class,
       XxeProcessingCheck.class)

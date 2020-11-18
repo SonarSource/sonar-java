@@ -21,9 +21,6 @@ package org.sonar.plugins.java;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.DependsUpon;
@@ -45,7 +42,6 @@ import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JavaVersionImpl;
-import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
 
@@ -91,10 +87,7 @@ public class JavaSquidSensor implements Sensor {
   public void execute(SensorContext context) {
     sonarComponents.setSensorContext(context);
 
-    List<Class<? extends JavaCheck>> checks = Stream.of(CheckList.getJavaChecks(), CheckList.getDebugChecks())
-      .flatMap(List::stream)
-      .collect(Collectors.toList());
-    sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, checks);
+    sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaChecks());
     sonarComponents.registerTestCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
 
     Measurer measurer = new Measurer(context, noSonarFilter);

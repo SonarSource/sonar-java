@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.sonar.java.DebugCheck;
 import org.sonar.java.checks.naming.BadAbstractClassNameCheck;
 import org.sonar.java.checks.naming.BadClassNameCheck;
 import org.sonar.java.checks.naming.BadConstantNameCheck;
@@ -212,9 +211,6 @@ import org.sonar.java.se.checks.StreamConsumedCheck;
 import org.sonar.java.se.checks.StreamNotConsumedCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.java.se.checks.XxeProcessingCheck;
-import org.sonar.java.se.checks.debug.DebugInterruptedExecutionCheck;
-import org.sonar.java.se.checks.debug.DebugMethodYieldsCheck;
-import org.sonar.java.se.checks.debug.DebugMethodYieldsOnInvocationsCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
 
@@ -778,14 +774,6 @@ public final class CheckList {
       XxeActiveMQCheck.class,
       XxeProcessingCheck.class,
       ZipEntryCheck.class);
-  }
-
-  // Rule classes are listed alphabetically
-  public static List<Class<? extends DebugCheck>> getDebugChecks() {
-    return Arrays.asList(
-      DebugInterruptedExecutionCheck.class,
-      DebugMethodYieldsCheck.class,
-      DebugMethodYieldsOnInvocationsCheck.class);
   }
 
   // Rule classes are listed alphabetically

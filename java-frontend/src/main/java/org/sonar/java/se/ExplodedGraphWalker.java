@@ -25,7 +25,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
@@ -41,13 +40,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
-import org.sonar.java.DebugCheck;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.Sema;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
@@ -113,10 +108,8 @@ public class ExplodedGraphWalker {
   public static final int MAX_NESTED_BOOLEAN_STATES = 10_000;
   // would correspond to 10 parameters annotated with @Nullable
   private static final int MAX_STARTING_STATES = 1_024;
-  private static final Logger LOG = Loggers.get(ExplodedGraphWalker.class);
   private static final Set<String> THIS_SUPER = ImmutableSet.of("this", "super");
 
-  private static final boolean DEBUG_MODE_ACTIVATED = false;
   @VisibleForTesting
   static final int MAX_EXEC_PROGRAM_POINT = 2;
 
@@ -237,9 +230,6 @@ public class ExplodedGraphWalker {
     workList = new LinkedList<>();
     // Linked hashSet is required to guarantee order of yields to be generated
     endOfExecutionPath = new LinkedHashSet<>();
-    if(DEBUG_MODE_ACTIVATED) {
-      LOG.debug("Exploring Exploded Graph for method " + tree.simpleName().name() + " at line " + ((JavaTree) tree).getLine());
-    }
     programState = ProgramState.EMPTY_STATE;
     steps = 0;
     for (ProgramState startingState : startingStates(tree, programState)) {
@@ -747,7 +737,6 @@ public class ExplodedGraphWalker {
     setSymbolicValueOnFields(mit);
     // unstack arguments and method identifier
     ProgramState.Pop unstack = programState.unstackValue(mit.arguments().size() + 1);
-    logState(mit);
 
     programState = unstack.state;
 
@@ -1153,20 +1142,6 @@ public class ExplodedGraphWalker {
     programState = programState.resetFieldValues(constraintManager, resetOnlyStaticFields);
   }
 
-  private void logState(MethodInvocationTree mit) {
-    if (mit.methodSelect().is(Tree.Kind.IDENTIFIER) && "printState".equals(((IdentifierTree) mit.methodSelect()).name())) {
-      debugPrint(((JavaTree) mit).getLine(), node);
-    }
-  }
-
-  private static void debugPrint(Object... toPrint) {
-    if (DEBUG_MODE_ACTIVATED) {
-      LOG.error(Arrays.stream(toPrint)
-        .map(Object::toString)
-        .collect(Collectors.joining(" - ")));
-    }
-  }
-
   public void enqueue(ProgramPoint programPoint, ProgramState programState) {
     enqueue(programPoint, programState, false);
   }
@@ -1188,7 +1163,6 @@ public class ExplodedGraphWalker {
         // reached the max number of visit by program point, so take the false branch with current program state
         programPoint = new ProgramPoint(((CFG.Block) programPoint.block).falseBlock());
       } else {
-        debugPrint(programPoint);
         return;
       }
     }
@@ -1238,20 +1212,10 @@ public class ExplodedGraphWalker {
     final List<SECheck> seChecks = new ArrayList<>();
 
     public ExplodedGraphWalkerFactory(List<JavaFileScanner> scanners) {
-      List<SECheck> debugChecks = new ArrayList<>();
-      List<SECheck> checks = new ArrayList<>();
-      for (JavaFileScanner scanner : scanners) {
-        if (scanner instanceof SECheck) {
-          if (scanner instanceof DebugCheck) {
-            debugChecks.add((SECheck) scanner);
-          } else {
-            checks.add((SECheck) scanner);
-          }
-        }
-      }
-
-      // Debug checks should be inserted before others to be able to report before branches are potentially interrupted
-      seChecks.addAll(debugChecks);
+      List<SECheck> checks = scanners.stream()
+        .filter(SECheck.class::isInstance)
+        .map(SECheck.class::cast)
+        .collect(Collectors.toList());
 
       // This order of the mandatory SE checks is required by the ExplodedGraphWalker
       seChecks.add(removeOrDefault(checks, new NullDereferenceCheck()));

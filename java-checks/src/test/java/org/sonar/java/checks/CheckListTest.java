@@ -109,11 +109,6 @@ class CheckListTest {
     }
   }
 
-  @Test
-  void debugTests() {
-    assertThat(CheckList.getDebugChecks()).hasSize(3);
-  }
-
   /**
    * Enforces that each check has test, name and description.
    */
