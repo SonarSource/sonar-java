@@ -54,11 +54,6 @@ public class Java extends AbstractLanguage {
   public static final String DEFAULT_FILE_SUFFIXES = ".java,.jav";
 
   /**
-   * Key of the java version used for sources
-   */
-  public static final String SOURCE_VERSION = "sonar.java.source";
-
-  /**
    * Turn ON debug rules
    */
   public static final String DEBUG_RULE_KEY = "sonar.java.debug";
