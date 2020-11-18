@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.tests;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import org.sonar.java.checks.helpers.UnitTestUtils;
+import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -104,7 +104,7 @@ public class AssertJChainSimplificationIndex {
    * {@code PredicateSimplifierWithoutContext.withSingleArg(arg -> isZero(arg), "isEmpty()")} then it can be read as:
    * "<b>{@code hasSize}</b> with an argument that is <b>zero</b> can be simplified to <b>{@code isEmpty()}</b>".
    */
-  static final Map<String, List<SimplifierWithoutContext>> CONTEXT_FREE_SIMPLIFIERS = ImmutableMap.<String, List<SimplifierWithoutContext>>builder()
+  static final Map<String, List<SimplifierWithoutContext>> CONTEXT_FREE_SIMPLIFIERS = MapBuilder.<String, List<SimplifierWithoutContext>>newMap()
     .put(HAS_SIZE, Collections.singletonList(
       PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isZero, "isEmpty()")))
     .put(IS_EQUAL_TO, Collections.singletonList(
@@ -132,7 +132,7 @@ public class AssertJChainSimplificationIndex {
    * simplifiers in this map, though, have access to the subject as well (i.e. the {@code assertThat(...)} method
    * and its argument).
    */
-  static final Map<String, List<SimplifierWithContext>> SIMPLIFIERS_WITH_CONTEXT = ImmutableMap.<String, List<AssertJChainSimplificationCheck.SimplifierWithContext>>builder()
+  static final Map<String, List<SimplifierWithContext>> SIMPLIFIERS_WITH_CONTEXT = MapBuilder.<String, List<AssertJChainSimplificationCheck.SimplifierWithContext>>newMap()
     .put(IS_EQUAL_TO, Arrays.asList(
       withSubjectArgumentCondition(LiteralUtils::isTrue, AssertJChainSimplificationIndex::isNotObject, "isTrue()"),
       withSubjectArgumentCondition(LiteralUtils::isFalse, AssertJChainSimplificationIndex::isNotObject, "isFalse()"),

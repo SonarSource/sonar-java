@@ -19,8 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +53,7 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
     defaultValue = "" + DEFAULT_THRESHOLD)
   public int threshold = DEFAULT_THRESHOLD;
 
-  private final Multimap<String, LiteralTree> occurrences = ArrayListMultimap.create();
+  private final Map<String, List<LiteralTree>> occurrences = new HashMap<>();
   private final Map<String, VariableTree> constants = new HashMap<>();
 
   @Override
@@ -62,11 +61,10 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
     occurrences.clear();
     constants.clear();
     scan(context.getTree());
-    for (String entry : occurrences.keySet()) {
-      Collection<LiteralTree> literalTrees = occurrences.get(entry);
+    occurrences.forEach((key, literalTrees) -> {
       int literalOccurrence = literalTrees.size();
-      if (constants.containsKey(entry)) {
-        VariableTree constant = constants.get(entry);
+      if (constants.containsKey(key)) {
+        VariableTree constant = constants.get(key);
         List<LiteralTree> duplications = literalTrees.stream().filter(literal -> literal.parent() != constant).collect(Collectors.toList());
         context.reportIssue(this, duplications.iterator().next(),
           "Use already-defined constant '" + constant.simpleName() + "' instead of duplicating its value here.",
@@ -75,10 +73,10 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
         context.reportIssue(
           this,
           literalTrees.iterator().next(),
-          "Define a constant instead of duplicating this literal " + entry + " " + literalOccurrence + " times.",
+          "Define a constant instead of duplicating this literal " + key + " " + literalOccurrence + " times.",
           secondaryLocations(literalTrees), literalOccurrence);
       }
-    }
+    });
   }
 
   private static List<JavaFileScannerContext.Location> secondaryLocations(Collection<LiteralTree> literalTrees) {
@@ -90,7 +88,7 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
     if (tree.is(Tree.Kind.STRING_LITERAL)) {
       String literal = tree.value();
       if (literal.length() >= MINIMAL_LITERAL_LENGTH) {
-        occurrences.put(literal, tree);
+        occurrences.computeIfAbsent(literal, k -> new ArrayList<>()).add(tree);
       }
     }
   }

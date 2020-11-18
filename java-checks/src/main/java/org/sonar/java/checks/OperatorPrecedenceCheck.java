@@ -19,11 +19,17 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Table;
+import java.util.Deque;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -43,16 +49,10 @@ import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
-import java.util.Deque;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
-
 @Rule(key = "S864")
 public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final Table<Tree.Kind, Tree.Kind, Boolean> OPERATORS_RELATION_TABLE;
+  private static final Map<OperatorRelation, Boolean> OPERATORS_RELATION_TABLE = new HashMap<>();
 
   private static final Set<Tree.Kind> ARITHMETIC_OPERATORS = EnumSet.of(
     Tree.Kind.MINUS,
@@ -83,12 +83,11 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   };
 
   static {
-    OPERATORS_RELATION_TABLE = HashBasedTable.create();
-    put(ARITHMETIC_OPERATORS, Iterables.concat(SHIFT_OPERATORS, EnumSet.of(Tree.Kind.AND, Tree.Kind.XOR, Tree.Kind.OR)));
-    put(SHIFT_OPERATORS, Iterables.concat(ARITHMETIC_OPERATORS, EnumSet.of(Tree.Kind.AND, Tree.Kind.XOR, Tree.Kind.OR)));
-    put(EnumSet.of(Tree.Kind.AND), Iterables.concat(ARITHMETIC_OPERATORS, SHIFT_OPERATORS, EnumSet.of(Tree.Kind.XOR, Tree.Kind.OR)));
-    put(EnumSet.of(Tree.Kind.XOR), Iterables.concat(ARITHMETIC_OPERATORS, SHIFT_OPERATORS, EnumSet.of(Tree.Kind.AND, Tree.Kind.OR)));
-    put(EnumSet.of(Tree.Kind.OR), Iterables.concat(ARITHMETIC_OPERATORS, SHIFT_OPERATORS, EnumSet.of(Tree.Kind.AND, Tree.Kind.XOR)));
+    put(ARITHMETIC_OPERATORS, SetUtils.concat(SHIFT_OPERATORS, EnumSet.of(Tree.Kind.AND, Tree.Kind.XOR, Tree.Kind.OR)));
+    put(SHIFT_OPERATORS, SetUtils.concat(ARITHMETIC_OPERATORS, EnumSet.of(Tree.Kind.AND, Tree.Kind.XOR, Tree.Kind.OR)));
+    put(EnumSet.of(Tree.Kind.AND), SetUtils.concat(ARITHMETIC_OPERATORS, SHIFT_OPERATORS, EnumSet.of(Tree.Kind.XOR, Tree.Kind.OR)));
+    put(EnumSet.of(Tree.Kind.XOR), SetUtils.concat(ARITHMETIC_OPERATORS, SHIFT_OPERATORS, EnumSet.of(Tree.Kind.AND, Tree.Kind.OR)));
+    put(EnumSet.of(Tree.Kind.OR), SetUtils.concat(ARITHMETIC_OPERATORS, SHIFT_OPERATORS, EnumSet.of(Tree.Kind.AND, Tree.Kind.XOR)));
     put(EnumSet.of(Tree.Kind.CONDITIONAL_AND), EnumSet.of(Tree.Kind.CONDITIONAL_OR));
     put(EnumSet.of(Tree.Kind.CONDITIONAL_OR), EnumSet.of(Tree.Kind.CONDITIONAL_AND));
   }
@@ -100,7 +99,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   private static void put(Iterable<Tree.Kind> firstSet, Iterable<Tree.Kind> secondSet) {
     for (Tree.Kind first : firstSet) {
       for (Tree.Kind second : secondSet) {
-        OPERATORS_RELATION_TABLE.put(first, second, true);
+        OPERATORS_RELATION_TABLE.put(new OperatorRelation(first, second), true);
       }
     }
   }
@@ -147,7 +146,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   }
 
   private static boolean requiresParenthesis(Tree.Kind kind1, Tree.Kind kind2) {
-    return BooleanUtils.isTrue(OPERATORS_RELATION_TABLE.get(kind1, kind2));
+    return BooleanUtils.isTrue(OPERATORS_RELATION_TABLE.get(new OperatorRelation(kind1, kind2)));
   }
 
   @Override
@@ -223,5 +222,33 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
       context.reportIssue(this, tree, "Add parentheses to make the operator precedence explicit.");
     }
   }
+  
+  private static final class OperatorRelation {
+    private final Tree.Kind first;
+    private final Tree.Kind second;
+
+    public OperatorRelation(Tree.Kind first, Tree.Kind second) {
+      this.first = first;
+      this.second = second;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      OperatorRelation that = (OperatorRelation) o;
+      return first == that.first &&
+        second == that.second;
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(first, second);
+    }
+  } 
 
 }

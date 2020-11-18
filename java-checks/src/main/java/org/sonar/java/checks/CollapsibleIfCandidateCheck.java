@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Lists;
+import java.util.Collections;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -50,7 +50,7 @@ public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements Java
 
     if (!outerIf.isEmpty() && !hasElseClause(tree)) {
       context.reportIssue(this, tree.ifKeyword(), "Merge this if statement with the enclosing one.",
-          Lists.newArrayList(new JavaFileScannerContext.Location("", outerIf.peek().ifKeyword())), null);
+        Collections.singletonList(new JavaFileScannerContext.Location("", outerIf.peek().ifKeyword())), null);
     }
 
     if (!hasElseClause(tree) && hasBodySingleIfStatement(tree.thenStatement())) {

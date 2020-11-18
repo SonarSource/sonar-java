@@ -19,8 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Multimap;
-
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
@@ -29,9 +31,6 @@ import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Rule(key = "S3923")
 public class AllBranchesAreIdenticalCheck extends IdenticalCasesInSwitchCheck {
@@ -47,7 +46,7 @@ public class AllBranchesAreIdenticalCheck extends IdenticalCasesInSwitchCheck {
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.SWITCH_STATEMENT)) {
       SwitchStatementTree switchStatement = (SwitchStatementTree) tree;
-      Multimap<CaseGroupTree, CaseGroupTree> identicalBranches = checkSwitchStatement(switchStatement);
+      Map<CaseGroupTree, Set<CaseGroupTree>> identicalBranches = checkSwitchStatement(switchStatement);
       if (hasDefaultClause(switchStatement) && allBranchesSame(identicalBranches, switchStatement.cases().size())) {
         reportIssue(switchStatement.switchKeyword(), IF_SWITCH_MSG);
       }

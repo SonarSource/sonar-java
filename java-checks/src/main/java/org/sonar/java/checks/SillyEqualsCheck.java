@@ -19,9 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Iterables;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -50,7 +50,7 @@ public class SillyEqualsCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree tree) {
-    ExpressionTree firstArgument = Iterables.getOnlyElement(tree.arguments());
+    ExpressionTree firstArgument = ListUtils.getOnlyElement(tree.arguments());
     Type argumentType = firstArgument.symbolType().erasure();
     if (argumentType.isPrimitive()) {
       argumentType = JUtils.primitiveWrapperType(argumentType);

@@ -19,10 +19,15 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.SetMultimap;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -33,11 +38,6 @@ import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Arrays;
-import java.util.List;
 
 @Rule(key = "S1871")
 public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
@@ -51,11 +51,11 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree node) {
     if (node.is(Tree.Kind.SWITCH_STATEMENT)) {
       SwitchStatementTree switchStatement = (SwitchStatementTree) node;
-      Multimap<CaseGroupTree, CaseGroupTree> identicalBranches = checkSwitchStatement(switchStatement);
+      Map<CaseGroupTree, Set<CaseGroupTree>> identicalBranches = checkSwitchStatement(switchStatement);
       boolean allBranchesSame = allBranchesSame(identicalBranches, switchStatement.cases().size());
       boolean allBranchesSameWithoutDefault = allBranchesSame && !hasDefaultClause(switchStatement);
       if (!allBranchesSame || allBranchesSameWithoutDefault) {
-        identicalBranches.asMap().forEach((first, others) -> {
+        identicalBranches.forEach((first, others) -> {
           if (!isTrivialCase(first.body()) || allBranchesSameWithoutDefault) {
             others.forEach(other -> createIssue(other, issueMessage("case", first), first));
           }
@@ -68,26 +68,33 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  protected static boolean allBranchesSame(Multimap<? extends Tree, ? extends Tree> identicalBranches, int size) {
-    return identicalBranches.keySet().size() == 1 && identicalBranches.size() == size - 1;
+  protected static boolean allBranchesSame(Map<? extends Tree, ? extends Set<? extends Tree>> identicalBranches, int size) {
+    return identicalBranches.keySet().size() == 1 && identicalBranchesSize(identicalBranches) == size - 1;
   }
-
+  
+  private static long identicalBranchesSize(Map<? extends Tree, ? extends Set<? extends Tree>> identicalBranches) {
+    return identicalBranches.values().stream().flatMap(Collection::stream).count();
+  }
+  
   private static boolean isTrivialCase(List<StatementTree> body) {
     return body.size() == 1 || (body.size() == 2 && body.get(1).is(Tree.Kind.BREAK_STATEMENT));
   }
 
-  protected Multimap<CaseGroupTree, CaseGroupTree> checkSwitchStatement(SwitchStatementTree node) {
-    SetMultimap<CaseGroupTree, CaseGroupTree> identicalBranches = HashMultimap.create();
+  protected Map<CaseGroupTree, Set<CaseGroupTree>> checkSwitchStatement(SwitchStatementTree node) {
+    Map<CaseGroupTree, Set<CaseGroupTree>> identicalBranches = new HashMap<>();
     int index = 0;
     List<CaseGroupTree> cases = node.cases();
+    Set<CaseGroupTree> duplicates = new HashSet<>();
     for (CaseGroupTree caseGroupTree : cases) {
       index++;
-      if (identicalBranches.containsValue(caseGroupTree)) {
+      if (duplicates.contains(caseGroupTree)) {
         continue;
       }
       for (int i = index; i < cases.size(); i++) {
-        if (SyntacticEquivalence.areEquivalent(caseGroupTree.body(), cases.get(i).body())) {
-          identicalBranches.put(caseGroupTree, cases.get(i));
+        CaseGroupTree caseI = cases.get(i);
+        if (SyntacticEquivalence.areEquivalent(caseGroupTree.body(), caseI.body())) {
+          duplicates.add(caseI);
+          identicalBranches.computeIfAbsent(caseGroupTree, k -> new HashSet<>()).add(caseI);
         }
       }
     }
@@ -95,7 +102,7 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
   }
 
   protected static class IfElseChain {
-    Multimap<StatementTree, StatementTree> branches = HashMultimap.create();
+    Map<StatementTree, Set<StatementTree>> branches = new HashMap<>();
     int totalBranchCount;
   }
 
@@ -118,13 +125,17 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
 
   private static IfElseChain collectIdenticalBranches(List<StatementTree> allBranches) {
     IfElseChain ifElseChain = new IfElseChain();
+    Set<StatementTree> duplicates = new HashSet<>();
     for (int i = 0; i < allBranches.size(); i++) {
-      if (ifElseChain.branches.containsValue(allBranches.get(i))) {
+      if (duplicates.contains(allBranches.get(i))) {
         continue;
       }
       for (int j = i + 1; j < allBranches.size(); j++) {
-        if (SyntacticEquivalence.areEquivalent(allBranches.get(i), allBranches.get(j))) {
-          ifElseChain.branches.put(allBranches.get(i), allBranches.get(j));
+        StatementTree statement1 = allBranches.get(i);
+        StatementTree statement2 = allBranches.get(j);
+        if (SyntacticEquivalence.areEquivalent(statement1, statement2)) {
+          duplicates.add(statement2);
+          ifElseChain.branches.computeIfAbsent(statement1, k -> new HashSet<>()).add(statement2);
         }
       }
     }
@@ -132,11 +143,11 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
     return ifElseChain;
   }
 
-  private void reportIdenticalIfChainBranches(Multimap<StatementTree, StatementTree> identicalBranches, int totalBranchCount, boolean withElseClause) {
+  private void reportIdenticalIfChainBranches(Map<StatementTree, Set<StatementTree>> identicalBranches, int totalBranchCount, boolean withElseClause) {
     boolean allBranchesSame = allBranchesSame(identicalBranches, totalBranchCount);
     boolean allBranchesSameWithoutElse = allBranchesSame && !withElseClause;
     if (!allBranchesSame || allBranchesSameWithoutElse) {
-      identicalBranches.asMap().forEach((first, others) -> {
+      identicalBranches.forEach((first, others) -> {
         if (!isTrivialIfStatement(first) || allBranchesSameWithoutElse) {
           others.forEach(other -> createIssue(other, issueMessage("branch", first), first));
         }

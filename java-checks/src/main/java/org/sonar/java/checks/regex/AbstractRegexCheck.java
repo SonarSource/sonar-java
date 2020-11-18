@@ -20,13 +20,13 @@
 package org.sonar.java.checks.regex;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Streams;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
@@ -134,7 +134,7 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
     if (!rightLiterals.isPresent()) {
       return Optional.empty();
     }
-    LiteralTree[] combined = Streams.concat(Arrays.stream(leftLiterals.get()), Arrays.stream(rightLiterals.get())).toArray(LiteralTree[]::new);
+    LiteralTree[] combined = Stream.of(leftLiterals.get(), rightLiterals.get()).flatMap(Arrays::stream).toArray(LiteralTree[]::new);
     return Optional.of(combined);
   }
 

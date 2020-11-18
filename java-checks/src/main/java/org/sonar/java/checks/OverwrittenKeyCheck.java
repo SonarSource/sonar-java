@@ -19,11 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Multimaps;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -69,18 +69,18 @@ public class OverwrittenKeyCheck extends IssuableSubscriptionVisitor {
       return;
     }
 
-    ListMultimap<CollectionAndKey, Tree> usedKeys = ArrayListMultimap.create();
+    Map<CollectionAndKey, List<Tree>> usedKeys = new HashMap<>();
     for (StatementTree statementTree: ((BlockTree) tree).body()){
       CollectionAndKey mapPut = isMapPut(statementTree);
       if (mapPut != null) {
-        usedKeys.put(mapPut, mapPut.keyTree);
+        usedKeys.computeIfAbsent(mapPut, k -> new ArrayList<>()).add(mapPut.keyTree);
       } else {
         CollectionAndKey arrayAssignment = isArrayAssignment(statementTree);
         if (arrayAssignment != null) {
           if (arrayAssignment.collectionOnRHS()) {
             usedKeys.clear();
           }
-          usedKeys.put(arrayAssignment, arrayAssignment.keyTree);
+          usedKeys.computeIfAbsent(arrayAssignment, k -> new ArrayList<>()).add(arrayAssignment.keyTree);
         } else {
           // sequence of setting collection values is interrupted
           reportOverwrittenKeys(usedKeys);
@@ -91,8 +91,8 @@ public class OverwrittenKeyCheck extends IssuableSubscriptionVisitor {
     reportOverwrittenKeys(usedKeys);
   }
 
-  private void reportOverwrittenKeys(ListMultimap<CollectionAndKey, Tree> usedKeys) {
-    Multimaps.asMap(usedKeys).forEach( (key, trees) -> {
+  private void reportOverwrittenKeys(Map<CollectionAndKey, List<Tree>> usedKeys) {
+    usedKeys.forEach( (key, trees) -> {
       if (trees.size() > 1) {
         Tree firstUse = trees.get(0);
         Tree firstOverwrite = trees.get(1);

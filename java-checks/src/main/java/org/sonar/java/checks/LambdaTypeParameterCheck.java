@@ -19,25 +19,23 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Iterables;
-
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Rule(key = "S2211")
 public class LambdaTypeParameterCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.LAMBDA_EXPRESSION);
+    return Collections.singletonList(Tree.Kind.LAMBDA_EXPRESSION);
   }
 
   @Override
@@ -56,7 +54,7 @@ public class LambdaTypeParameterCheck extends IssuableSubscriptionVisitor {
       .collect(Collectors.joining(", "));
 
     if (!missingTypeParameters.isEmpty()) {
-      reportIssue(parameters.get(0), Iterables.getLast(parameters), String.format("Specify a type for: %s", missingTypeParameters));
+      reportIssue(parameters.get(0), ListUtils.getLast(parameters), String.format("Specify a type for: %s", missingTypeParameters));
     }
   }
 }

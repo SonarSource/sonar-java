@@ -19,14 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -68,7 +68,7 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
   private class UnreachableCatchFinder {
     Map<Type, Tree> typeToTypeTree = new HashMap<>();
     List<CatchClauseInfo> catchClauses = new ArrayList<>();
-    Multimap<Type, Type> baseToSubtype = HashMultimap.create();
+    Map<Type, Set<Type>> baseToSubtype = new HashMap<>();
     TryStatementTree tryStatementTree;
     List<Type> thrownTypes;
 
@@ -94,7 +94,7 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
 
       for (CatchClauseInfo catchClause : catchClauses) {
         List<Type> hiddenTypes = catchClause.types.stream()
-          .filter(type -> isUnreachable(type, baseToSubtype.get(type), thrownTypes))
+          .filter(type -> isUnreachable(type, baseToSubtype.getOrDefault(type, Collections.emptySet()), thrownTypes))
           .collect(Collectors.toList());
 
         if (hiddenTypes.size() == catchClause.types.size()) {
@@ -148,7 +148,7 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
         for (int j = i + 1; j < catchTypes.size(); j++) {
           Type bottomType = catchTypes.get(j);
           if (topType.isSubtypeOf(bottomType)) {
-            baseToSubtype.put(bottomType, topType);
+            baseToSubtype.computeIfAbsent(bottomType, k -> new HashSet<>()).add(topType);
           }
         }
       }

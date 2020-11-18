@@ -19,12 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
-
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -55,7 +54,7 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
     }
     ClassTree classTree = (ClassTree) tree;
     List<Symbol> allMembers = retrieveMembers(classTree.symbol());
-    Multimap<String, Symbol> membersByName = sortByName(allMembers);
+    Map<String, List<Symbol>> membersByName = allMembers.stream().collect(Collectors.groupingBy(Symbol::name));
     for (Tree member : classTree.members()) {
       if (member.is(Tree.Kind.METHOD)) {
         MethodTree methodTree = (MethodTree) member;
@@ -67,7 +66,7 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
     }
   }
 
-  private void checkForIssue(Symbol symbol, IdentifierTree reportTree, Multimap<String, Symbol> membersByName) {
+  private void checkForIssue(Symbol symbol, IdentifierTree reportTree, Map<String, List<Symbol>> membersByName) {
     String name = symbol.name();
     for (String knownMemberName : membersByName.keySet()) {
       if (name.equalsIgnoreCase(knownMemberName)) {
@@ -187,15 +186,7 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
   private static String getSymbolKindName(Symbol symbol) {
     return symbol.isMethodSymbol() ? "method" : "field";
   }
-
-  private static Multimap<String, Symbol> sortByName(List<Symbol> members) {
-    Multimap<String, Symbol> membersByName = LinkedListMultimap.create();
-    for (Symbol member : members) {
-      membersByName.put(member.name(), member);
-    }
-    return membersByName;
-  }
-
+  
   private static List<Symbol> retrieveMembers(Symbol.TypeSymbol classSymbol) {
     List<Symbol> results = new LinkedList<>();
     results.addAll(extractMembers(classSymbol, false));

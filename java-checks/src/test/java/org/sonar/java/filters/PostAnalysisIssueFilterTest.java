@@ -19,8 +19,10 @@
  */
 package org.sonar.java.filters;
 
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +43,7 @@ class PostAnalysisIssueFilterTest {
   private static JavaFileScannerContext context;
   private PostAnalysisIssueFilter postAnalysisIssueFilter;
   private static final FakeJavaIssueFilter acceptingIssueFilter = new FakeJavaIssueFilter(true);
-  private static final ArrayList<FakeJavaIssueFilter> ISSUE_FILTERS = Lists.newArrayList(acceptingIssueFilter, new FakeJavaIssueFilter(false));
+  private static final List<FakeJavaIssueFilter> ISSUE_FILTERS = Arrays.asList(acceptingIssueFilter, new FakeJavaIssueFilter(false));
 
   @BeforeEach
   public void setUp() {
@@ -58,7 +60,7 @@ class PostAnalysisIssueFilterTest {
 
   @Test
   void issue_filter_should_accept_issue() {
-    postAnalysisIssueFilter.setIssueFilters(Lists.newArrayList(acceptingIssueFilter));
+    postAnalysisIssueFilter.setIssueFilters(Collections.singletonList(acceptingIssueFilter));
     IssueFilterChain chain = mock(IssueFilterChain.class);
     when(chain.accept(null)).thenReturn(true);
     assertThat(postAnalysisIssueFilter.accept(null, chain)).isTrue();

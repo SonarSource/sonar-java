@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Sets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -34,6 +33,7 @@ import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -46,7 +46,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
 
-  private static final Set<String> TIME_CONVERSIONS = Sets.newHashSet(
+  private static final Set<String> TIME_CONVERSIONS = SetUtils.immutableSetOf(
     "H", "I", "k", "l", "M", "S", "L", "N", "p", "z", "Z", "s", "Q",
     "B", "b", "h", "A", "a", "C", "Y", "y", "j", "m", "d", "e",
     "R", "T", "r", "D", "F", "c"

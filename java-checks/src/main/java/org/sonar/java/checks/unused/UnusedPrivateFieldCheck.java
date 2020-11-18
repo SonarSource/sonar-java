@@ -19,13 +19,13 @@
  */
 package org.sonar.java.checks.unused;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
-
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
@@ -64,9 +64,9 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
     Tree.Kind.XOR_ASSIGNMENT,
     Tree.Kind.OR_ASSIGNMENT};
 
-  private List<ClassTree> classes = new ArrayList<>();
-  private ListMultimap<Symbol, IdentifierTree> assignments = ArrayListMultimap.create();
-  private Set<String> unknownIdentifiers = new HashSet<>();
+  private final List<ClassTree> classes = new ArrayList<>();
+  private final Map<Symbol, List<IdentifierTree>> assignments = new HashMap<>();
+  private final Set<String> unknownIdentifiers = new HashSet<>();
   private boolean hasNativeMethod = false;
 
   @Override
@@ -156,7 +156,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
   }
 
   private boolean onlyUsedInVariableAssignment(Symbol symbol) {
-    return symbol.usages().size() == assignments.get(symbol).size();
+    return symbol.usages().size() == assignments.getOrDefault(symbol, Collections.emptyList()).size();
   }
 
   private static boolean hasNoAnnotation(VariableTree tree) {
@@ -181,7 +181,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
   private void addAssignment(IdentifierTree identifier) {
     Symbol reference = identifier.symbol();
     if (!reference.isUnknown()) {
-      assignments.put(reference, identifier);
+      assignments.computeIfAbsent(reference, k -> new ArrayList<>()).add(identifier);
     }
   }
 

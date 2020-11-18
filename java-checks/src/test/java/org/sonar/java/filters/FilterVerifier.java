@@ -19,16 +19,16 @@
  */
 package org.sonar.java.filters;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Fail;
@@ -60,17 +60,17 @@ public class FilterVerifier {
 
   public static void verify(String filename, JavaIssueFilter filter, JavaCheck... extraJavaChecks) {
     IssueCollector issueCollector = new IssueCollector();
-    ArrayList<JavaCheck> visitors = Lists.<JavaCheck>newArrayList(filter, issueCollector);
+    List<JavaCheck> visitors = new ArrayList<>();
+    visitors.add(filter);
+    visitors.add(issueCollector);
 
     // instantiate the rules filtered by the filter
     visitors.addAll(instantiateRules(filter.filteredRules()));
 
-    for (JavaCheck visitor : extraJavaChecks) {
-      visitors.add(visitor);
-    }
+    visitors.addAll(Arrays.asList(extraJavaChecks));
 
     Collection<File> classpath = FileUtils.listFiles(new File(FilesUtils.DEFAULT_TEST_JARS_DIRECTORY), new String[] {"jar", "zip"}, true);
-    List<File> projectClasspath = Lists.newArrayList(classpath);
+    List<File> projectClasspath = new ArrayList<>(classpath);
     projectClasspath.add(new File("target/test-classes"));
 
     InputFile inputFile = CheckTestUtils.inputFile(filename);
@@ -78,7 +78,7 @@ public class FilterVerifier {
     JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge);
     VisitorsBridgeForTests.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
 
-    Multimap<Integer, String> issuesByLines = HashMultimap.create();
+    Map<Integer, Set<String>> issuesByLines = new HashMap<>();
     Set<AnalyzerMessage> issues = testJavaFileScannerContext.getIssues();
     for (AnalyzerMessage analyzerMessage : issues) {
       Integer issueLine = analyzerMessage.getLine();
@@ -98,12 +98,12 @@ public class FilterVerifier {
           .overridingErrorMessage("Line #" + issueLine + " has been marked with 'WithIssue' but no issue have been raised!")
           .isTrue();
       } else {
-        issuesByLines.put(issueLine, ruleKey);
+        issuesByLines.computeIfAbsent(issueLine, k -> new HashSet<>()).add(ruleKey);
       }
     }
 
     if (!issuesByLines.isEmpty()) {
-      List<Integer> lines = Lists.newArrayList(issuesByLines.keySet());
+      List<Integer> lines = new ArrayList<>(issuesByLines.keySet());
       Collections.sort(lines);
       StringBuilder builder = new StringBuilder();
       for (Integer line : lines) {

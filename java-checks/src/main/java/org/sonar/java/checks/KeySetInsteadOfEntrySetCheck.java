@@ -19,11 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Iterables;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -118,7 +118,7 @@ public class KeySetInsteadOfEntrySetCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       if (MAP_GET_METHOD.matches(tree)) {
-        Tree firstArgument = Iterables.getOnlyElement(tree.arguments());
+        Tree firstArgument = ListUtils.getOnlyElement(tree.arguments());
         if (mapSymbol.equals(getOwnerSymbol(tree)) && firstArgument.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) firstArgument).symbol().equals(variable)) {
           result = true;
           return;

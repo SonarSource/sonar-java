@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
@@ -100,7 +99,7 @@ public class SyncGetterAndSetterCheck extends IssuableSubscriptionVisitor {
         .map(symbol -> (MethodTree) symbol.declaration())
         .filter(pairMethod -> pairPredicate.apply(pairMethod) && !isSynchronized(pairMethod))
         .forEach(pairMethod -> reportIssue(pairMethod.simpleName(), "Synchronize this method to match the synchronization on \"" + methodTree.simpleName().name() + "\".",
-          Lists.newArrayList(new JavaFileScannerContext.Location("", methodTree.simpleName())), null));
+          Collections.singletonList(new JavaFileScannerContext.Location("", methodTree.simpleName())), null));
     }
   }
 
