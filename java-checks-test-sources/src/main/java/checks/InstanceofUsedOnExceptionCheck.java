@@ -15,7 +15,7 @@ class InstanceofUsedOnExceptionCheck {
 
     try {
     } catch (Exception e) {
-      if (e instanceof IOException) { // Noncompliant
+      if (e instanceof IOException) { // Compliant
 
       } else if (e instanceof IllegalArgumentException && anotherCondition()) { // Compliant, not possible to refactor in a nicer way
 
@@ -77,7 +77,7 @@ class InstanceofUsedOnExceptionCheck {
   private void withoutTrivialInstanceOf() {
     try {
     } catch (Exception e) {
-      if (e instanceof IOException) { // Noncompliant
+      if (e instanceof IOException) { // Compliant, all or nothing, if one block can not be created, we do not report an issue.
         doSomething();
       }
       if (e instanceof IllegalArgumentException && anotherCondition()) { // Compliant, not possible to refactor in a nicer way
@@ -90,7 +90,27 @@ class InstanceofUsedOnExceptionCheck {
       if (e instanceof IOException) { // Noncompliant
         doSomething();
       } else {
+        doSomethingElse();
+      }
+    }
+
+    try {
+    } catch (Exception e) {
+      if (anotherCondition()) {
         doSomething();
+        if (e instanceof IOException) { // Compliant, nested, not trivial to refactor
+          doSomethingElse();
+        }
+      }
+    }
+
+    try {
+    } catch (Exception e) {
+      if (anotherCondition()) {
+        doSomething();
+      }
+      if (e instanceof IllegalArgumentException) { // Compliant, can not refactor without code duplication
+        doSomethingElse();
       }
     }
   }
@@ -107,14 +127,11 @@ class InstanceofUsedOnExceptionCheck {
 
     try {
     } catch (Exception e) {
-      if (e instanceof IOException) { // Noncompliant
-
+      if (e instanceof IOException) { // Compliant
         doSomething();
       } else if (e instanceof IllegalArgumentException && anotherCondition()) { // Compliant, not possible to refactor in a nicer way
-
-      } else if (e instanceof MyException) { // Noncompliant
-
         doSomethingElse();
+      } else if (e instanceof MyException) { // Compliant
         doSomething();
       }
     }

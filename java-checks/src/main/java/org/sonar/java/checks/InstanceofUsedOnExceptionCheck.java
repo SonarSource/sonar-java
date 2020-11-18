@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -54,17 +55,19 @@ public class InstanceofUsedOnExceptionCheck extends IssuableSubscriptionVisitor 
   }
 
   private void reportSimpleInstanceOf(List<StatementTree> body, String caughtVariable) {
-    body.stream()
+    List<ExpressionTree> conditions = body.stream()
       .filter(statement -> statement.is(Tree.Kind.IF_STATEMENT))
       .map(IfStatementTree.class::cast)
       .flatMap(InstanceofUsedOnExceptionCheck::getFollowingElseIf)
       .map(IfStatementTree::condition)
-      .filter(cond -> cond.is(Tree.Kind.INSTANCE_OF))
-      .map(InstanceOfTree.class::cast)
-      .filter(instanceOfTree -> isLeftOperandAndException(instanceOfTree, caughtVariable))
-      .forEach(instanceOfTree ->
-        reportIssue(instanceOfTree.instanceofKeyword(), "Replace the usage of the \"instanceof\" operator by a catch block.")
-      );
+      .collect(Collectors.toList());
+
+    if (conditions.stream().allMatch(cond -> cond.is(Tree.Kind.INSTANCE_OF) && isLeftOperandAndException((InstanceOfTree) cond, caughtVariable))) {
+      conditions.stream()
+        .map(InstanceOfTree.class::cast)
+        .forEach(instanceOfTree ->
+          reportIssue(instanceOfTree.instanceofKeyword(), "Replace the usage of the \"instanceof\" operator by a catch block."));
+    }
   }
 
   private static boolean isLeftOperandAndException(InstanceOfTree instanceOfTree, String caughtVariable) {
