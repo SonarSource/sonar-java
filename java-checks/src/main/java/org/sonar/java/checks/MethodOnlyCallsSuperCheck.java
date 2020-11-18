@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -26,6 +27,7 @@ import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -44,6 +46,9 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S1185")
 public class MethodOnlyCallsSuperCheck extends IssuableSubscriptionVisitor {
 
+  private static final List<String> TRANSACTIONAL_ANNOTATIONS = Arrays.asList("javax.transaction.Transactional",
+    "org.springframework.transaction.annotation.Transactional");
+
   private static final MethodMatchers ALLOWED_METHODS = MethodMatchers.or(
     MethodMatchers.create().ofAnyType().names("toString", "hashCode").addWithoutParametersMatcher().build(),
     MethodMatchers.create().ofAnyType().names("equals").addParametersMatcher("java.lang.Object").build());
@@ -55,15 +60,15 @@ public class MethodOnlyCallsSuperCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     MethodTree methodTree = (MethodTree) tree;
     if (ALLOWED_METHODS.matches(methodTree)) {
       return;
     }
-    if (isSingleStatementMethod(methodTree) && isUselessSuperCall(methodTree)
-      && !hasAnnotationDifferentFromOverride(methodTree.modifiers().annotations()) && !isFinal(methodTree)) {
+    if (isSingleStatementMethod(methodTree)
+      && isUselessSuperCall(methodTree)
+      && !hasAnnotationDifferentFromOverride(methodTree.modifiers().annotations())
+      && !isFinal(methodTree)
+      && !isClassAnnotatedWithTransactional(methodTree)) {
       reportIssue(methodTree.simpleName(), "Remove this method to simply inherit it.");
     }
   }
@@ -154,6 +159,11 @@ public class MethodOnlyCallsSuperCheck extends IssuableSubscriptionVisitor {
       }
     }
     return false;
+  }
+
+  private static boolean isClassAnnotatedWithTransactional(MethodTree methodTree) {
+    SymbolMetadata metadata = methodTree.symbol().enclosingClass().metadata();
+    return TRANSACTIONAL_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
   }
 
 }

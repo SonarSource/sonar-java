@@ -22,25 +22,24 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 class MethodOnlyCallsSuperCheckTest {
 
-  private static final String FILE = "src/test/files/checks/MethodOnlyCallsSuperCheck.java";
+  private static final String FILE = testSourcesPath("checks/MethodOnlyCallsSuperCheck.java");
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile(FILE)
+      .onFile(testSourcesPath("checks/MethodOnlyCallsSuperCheck.java"))
       .withCheck(new MethodOnlyCallsSuperCheck())
       .verifyIssues();
-  }
 
-  @Test
-  void no_issue_without_semantic() {
     JavaCheckVerifier.newVerifier()
-      .onFile(FILE)
+      .onFile(nonCompilingTestSourcesPath("checks/MethodOnlyCallsSuperCheck.java"))
       .withCheck(new MethodOnlyCallsSuperCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
+      .verifyIssues();
   }
 
 }
