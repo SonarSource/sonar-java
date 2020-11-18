@@ -162,13 +162,8 @@ public class MethodOnlyCallsSuperCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isClassAnnotatedWithTransactional(MethodTree methodTree) {
-    Symbol.TypeSymbol typeSymbol = methodTree.symbol().enclosingClass();
-    if (typeSymbol != null){
-      SymbolMetadata metadata = typeSymbol.metadata();
-      return TRANSACTIONAL_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
-    }
-    // Defensive programming, should not be possible, enclosingClass returns null only for package symbol.
-    return false;
+    SymbolMetadata metadata = methodTree.symbol().enclosingClass().metadata();
+    return TRANSACTIONAL_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
   }
 
 }
