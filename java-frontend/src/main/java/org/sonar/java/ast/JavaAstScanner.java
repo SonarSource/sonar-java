@@ -42,8 +42,15 @@ import org.sonarsource.analyzer.commons.ProgressReport;
 public class JavaAstScanner {
   private static final Logger LOG = Loggers.get(JavaAstScanner.class);
 
+  private static final String LOG_ERROR_STACKOVERFLOW = "A stack overflow error occurred while analyzing file: '%s'";
+  private static final String LOG_ERROR_UNABLE_TO_PARSE_FILE = "Unable to parse source file : '%s'";
+  private static final String LOG_WARN_MISCONFIGURED_JAVA_VERSION = "Analyzing '%s' file with misconfigured Java version."
+    + " Please check that property '%s' is correctly configured (currently set to: %d) or exclude 'module-info.java' files from analysis."
+    + " Such files only exist in Java9+ projects.";
+
   private final SonarComponents sonarComponents;
   private VisitorsBridge visitor;
+  private boolean reportedMisconfiguredVersion = false;
 
   public JavaAstScanner(@Nullable SonarComponents sonarComponents) {
     this.sonarComponents = sonarComponents;
@@ -82,23 +89,26 @@ public class JavaAstScanner {
   private void simpleScan(InputFile inputFile) {
     visitor.setCurrentFile(inputFile);
     try {
-      String fileContent = inputFile.contents();
-      final String version;
-      if (visitor.getJavaVersion() == null || visitor.getJavaVersion().asInt() < 0) {
+      String version;
+      JavaVersion javaVersion = visitor.getJavaVersion();
+      if (javaVersion == null || javaVersion.asInt() < 0) {
+        version = /* default */ JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
+      } else if ("module-info.java".equals(inputFile.filename()) && javaVersion.asInt() <= 8) {
+        logMisconfiguredVersion(inputFile, javaVersion);
         version = /* default */ JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
       } else {
-        version = Integer.toString(visitor.getJavaVersion().asInt());
+        version = Integer.toString(javaVersion.asInt());
       }
       Tree ast = JParser.parse(
         version,
         inputFile.filename(),
-        fileContent,
+        inputFile.contents(),
         visitor.getClasspath()
       );
       visitor.visitFile(ast);
     } catch (RecognitionException e) {
       checkInterrupted(e);
-      LOG.error(String.format("Unable to parse source file : '%s'", inputFile));
+      LOG.error(String.format(LOG_ERROR_UNABLE_TO_PARSE_FILE, inputFile));
       LOG.error(e.getMessage());
 
       parseErrorWalkAndVisit(e, inputFile);
@@ -108,8 +118,15 @@ public class JavaAstScanner {
       checkInterrupted(e);
       interruptIfFailFast(e, inputFile);
     } catch (StackOverflowError error) {
-      LOG.error(String.format("A stack overflow error occurred while analyzing file: '%s'", inputFile), error);
+      LOG.error(String.format(LOG_ERROR_STACKOVERFLOW, inputFile), error);
       throw error;
+    }
+  }
+
+  void logMisconfiguredVersion(InputFile inputFile, JavaVersion javaVersion) {
+    if (!reportedMisconfiguredVersion) {
+      LOG.warn(String.format(LOG_WARN_MISCONFIGURED_JAVA_VERSION, inputFile, JavaVersion.SOURCE_VERSION, javaVersion.asInt()));
+      reportedMisconfiguredVersion = true;
     }
   }
 

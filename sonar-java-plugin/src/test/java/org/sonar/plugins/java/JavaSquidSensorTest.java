@@ -58,6 +58,7 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JspCodeVisitor;
 
 import static java.util.Arrays.asList;
@@ -111,14 +112,14 @@ class JavaSquidSensorTest {
     JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, null);
 
     jss.execute(context);
-    // argument 100 refers to the comment on line #98 in this file
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(100));
+    // argument 101 refers to the comment on line #101 in this file
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(101));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
-    settings.setProperty(Java.SOURCE_VERSION, "wrongFormat");
+    settings.setProperty(JavaVersion.SOURCE_VERSION, "wrongFormat");
     jss.execute(context);
 
-    settings.setProperty(Java.SOURCE_VERSION, "1.7");
+    settings.setProperty(JavaVersion.SOURCE_VERSION, "1.7");
     jss.execute(context);
   }
 

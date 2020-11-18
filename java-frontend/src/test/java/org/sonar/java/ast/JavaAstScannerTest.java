@@ -228,6 +228,31 @@ class JavaAstScannerTest {
   }
 
   @Test
+  void should_report_misconfigured_java_version() {
+    VisitorsBridge visitorsBridge = new VisitorsBridge(new JavaFileScanner() {
+      @Override
+      public void scanFile(JavaFileScannerContext context) { /* do nothing */ }
+    });
+    visitorsBridge.setJavaVersion(new JavaVersionImpl(8));
+
+    InputFile inputFile = TestUtils.inputFile("src/test/resources/module-info.java");
+    List<InputFile> files = Arrays.asList(inputFile, inputFile);
+
+    JavaAstScanner scanner = new JavaAstScanner(null);
+    scanner.setVisitorBridge(visitorsBridge);
+    scanner.scan(files);
+
+    assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.WARN))
+      // two files, only one log
+      .hasSize(1)
+      // skipping start of logs which contains path, and depends of OS
+      .allMatch(log -> log.endsWith("module-info.java' file with misconfigured Java version."
+        + " Please check that property 'sonar.java.source' is correctly configured (currently set to: 8) or exclude 'module-info.java' files from analysis."
+        + " Such files only exist in Java9+ projects."));
+  }
+
+  @Test
   void should_report_analysis_error_in_sonarLint_context_withSQ_6_0() {
     JavaAstScanner scanner = new JavaAstScanner(null);
     FakeAuditListener listener = spy(new FakeAuditListener());

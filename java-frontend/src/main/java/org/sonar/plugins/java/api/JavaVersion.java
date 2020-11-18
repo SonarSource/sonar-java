@@ -29,6 +29,11 @@ import com.google.common.annotations.Beta;
 public interface JavaVersion {
 
   /**
+   * Key of the java version used for sources
+   */
+  String SOURCE_VERSION = "sonar.java.source";
+
+  /**
    * Test if java version of the project is greater than or equal to 6.
    * @return true if java version used is >= 6
    */
