@@ -20,7 +20,6 @@
 package org.sonar.plugins.java;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.io.Resources;
@@ -33,7 +32,6 @@ import java.util.Locale;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
-import org.sonar.api.config.Configuration;
 import org.sonar.api.rule.RuleStatus;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.debt.DebtRemediationFunction;
@@ -61,19 +59,6 @@ public class JavaRulesDefinition implements RulesDefinition {
     "S3688",
     "S3546",
     "S4011");
-  private final boolean isDebugEnabled;
-
-  /**
-   * 'Configuration' does exists yet in SonarLint context, consequently, in standalone mode, this constructor will be used.
-   * See {@link https://jira.sonarsource.com/browse/SLCORE-159}
-   */
-  public JavaRulesDefinition() {
-    this.isDebugEnabled = false;
-  }
-
-  public JavaRulesDefinition(Configuration settings) {
-    this.isDebugEnabled = settings.getBoolean(Java.DEBUG_RULE_KEY).orElse(false);
-  }
 
   @SuppressWarnings("rawtypes")
   @Override
@@ -81,22 +66,13 @@ public class JavaRulesDefinition implements RulesDefinition {
     NewRepository repository = context
       .createRepository(CheckList.REPOSITORY_KEY, Java.KEY)
       .setName("SonarAnalyzer");
-    List<Class> checks = getChecks();
+    List<Class<?>> checks = CheckList.getChecks();
     new RulesDefinitionAnnotationLoader().load(repository, Iterables.toArray(checks, Class.class));
     JavaSonarWayProfile.Profile profile = JavaSonarWayProfile.readProfile();
     for (Class ruleClass : checks) {
       newRule(ruleClass, repository, profile);
     }
     repository.done();
-  }
-
-  @SuppressWarnings("rawtypes")
-  private List<Class> getChecks() {
-    ImmutableList.Builder<Class> checksBuilder = ImmutableList.<Class>builder().addAll(CheckList.getChecks());
-    if (isDebugEnabled) {
-      checksBuilder.addAll(CheckList.getDebugChecks());
-    }
-    return checksBuilder.build();
   }
 
   @VisibleForTesting

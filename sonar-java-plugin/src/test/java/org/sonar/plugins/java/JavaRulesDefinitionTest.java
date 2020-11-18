@@ -22,10 +22,7 @@ package org.sonar.plugins.java;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.regex.Pattern;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.sonar.api.config.Configuration;
-import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
@@ -43,18 +40,11 @@ import static org.mockito.Mockito.when;
 
 class JavaRulesDefinitionTest {
 
-  private Configuration settings;
-
   private static final String REPOSITORY_KEY = "java";
-
-  @BeforeEach
-  void setUp() {
-    settings = new MapSettings().asConfig();
-  }
 
   @Test
   void test_creation_of_rules() {
-    JavaRulesDefinition definition = new JavaRulesDefinition(settings);
+    JavaRulesDefinition definition = new JavaRulesDefinition();
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
@@ -101,25 +91,11 @@ class JavaRulesDefinitionTest {
   }
 
   @Test
-  void debug_rules() {
-    MapSettings settings = new MapSettings();
-    settings.setProperty("sonar.java.debug", true);
-    JavaRulesDefinition definition = new JavaRulesDefinition(settings.asConfig());
-    RulesDefinition.Context context = new RulesDefinition.Context();
-    definition.define(context);
-    RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
-
-    assertThat(repository.name()).isEqualTo("SonarAnalyzer");
-    assertThat(repository.language()).isEqualTo("java");
-    assertThat(repository.rules()).hasSize(CheckList.getChecks().size() + CheckList.getDebugChecks().size());
-  }
-
-  @Test
   void test_invalid_checks() throws Exception {
     RulesDefinition.Context context = new RulesDefinition.Context();
     RulesDefinition.NewRepository newRepository = context.createRepository("test", "java");
     newRepository.createRule("correctRule");
-    JavaRulesDefinition definition = new JavaRulesDefinition(settings);
+    JavaRulesDefinition definition = new JavaRulesDefinition();
     JavaSonarWayProfile.Profile profile = new JavaSonarWayProfile.Profile();
     profile.ruleKeys = new ArrayList<>();
     try {
@@ -146,7 +122,7 @@ class JavaRulesDefinitionTest {
 
   @Test
   void test_security_hotspot() throws Exception {
-    JavaRulesDefinition definition = new JavaRulesDefinition(settings);
+    JavaRulesDefinition definition = new JavaRulesDefinition();
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
@@ -159,7 +135,7 @@ class JavaRulesDefinitionTest {
 
   @Test
   void test_security_standards() throws Exception {
-    JavaRulesDefinition definition = new JavaRulesDefinition(settings);
+    JavaRulesDefinition definition = new JavaRulesDefinition();
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
@@ -171,7 +147,7 @@ class JavaRulesDefinitionTest {
 
   @Test
   void test_deprecated_key() {
-    JavaRulesDefinition definition = new JavaRulesDefinition(settings);
+    JavaRulesDefinition definition = new JavaRulesDefinition();
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
@@ -198,7 +174,7 @@ class JavaRulesDefinitionTest {
 
   @Test
   void test_security_standards_not_set_when_unsupported() throws Exception {
-    JavaRulesDefinition definition = new JavaRulesDefinition(settings);
+    JavaRulesDefinition definition = new JavaRulesDefinition();
     RulesDefinition.NewRepository repository = mock(RulesDefinition.NewRepository.class);
     RulesDefinition.NewRule newRule = mock(RulesDefinition.NewRule.class);
     when(repository.rule(any())).thenReturn(newRule);
