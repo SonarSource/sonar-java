@@ -20,13 +20,14 @@
 package org.sonar.java.ast;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Throwables;
-import com.google.common.collect.Iterables;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.InterruptedIOException;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -58,7 +59,7 @@ public class JavaAstScanner {
 
   public void scan(Iterable<? extends InputFile> inputFiles) {
     ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
-    progressReport.start(Iterables.transform(inputFiles, InputFile::toString));
+    progressReport.start(StreamSupport.stream(inputFiles.spliterator(), false).map(InputFile::toString).collect(Collectors.toList()));
 
     boolean successfullyCompleted = false;
     boolean cancelled = false;
@@ -137,7 +138,7 @@ public class JavaAstScanner {
   }
 
   private static void checkInterrupted(Exception e) {
-    Throwable cause = Throwables.getRootCause(e);
+    Throwable cause = ExceptionUtils.getRootCause(e);
     if (cause instanceof InterruptedException || cause instanceof InterruptedIOException) {
       throw new AnalysisException("Analysis cancelled", e);
     }

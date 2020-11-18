@@ -19,10 +19,11 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.common.collect.ImmutableList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.DependsUpon;
@@ -90,10 +91,9 @@ public class JavaSquidSensor implements Sensor {
   public void execute(SensorContext context) {
     sonarComponents.setSensorContext(context);
 
-    List<Class<? extends JavaCheck>> checks = ImmutableList.<Class<? extends JavaCheck>>builder()
-      .addAll(CheckList.getJavaChecks())
-      .addAll(CheckList.getDebugChecks())
-      .build();
+    List<Class<? extends JavaCheck>> checks = Stream.of(CheckList.getJavaChecks(), CheckList.getDebugChecks())
+      .flatMap(List::stream)
+      .collect(Collectors.toList());
     sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, checks);
     sonarComponents.registerTestCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
 

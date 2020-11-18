@@ -19,9 +19,7 @@
  */
 package org.sonar.java.ast;
 
-import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
-
 import java.io.File;
 import java.io.InterruptedIOException;
 import java.util.ArrayList;
@@ -140,7 +138,7 @@ class JavaAstScannerTest {
     SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null);
     sonarComponents.setSensorContext(context);
     JavaAstScanner scanner = new JavaAstScanner(sonarComponents);
-    scanner.setVisitorBridge(new VisitorsBridge(Lists.newArrayList(visitor), new ArrayList<>(), sonarComponents));
+    scanner.setVisitorBridge(new VisitorsBridge(Collections.singletonList(visitor), new ArrayList<>(), sonarComponents));
     scanner.scan(Arrays.asList(
       TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java")
@@ -258,7 +256,7 @@ class JavaAstScannerTest {
     FakeAuditListener listener = spy(new FakeAuditListener());
     SonarComponents sonarComponents = mock(SonarComponents.class);
     when(sonarComponents.reportAnalysisError(any(RecognitionException.class), any(InputFile.class))).thenReturn(true);
-    scanner.setVisitorBridge(new VisitorsBridge(Lists.newArrayList(listener), new ArrayList<>(), sonarComponents));
+    scanner.setVisitorBridge(new VisitorsBridge(Collections.singletonList(listener), new ArrayList<>(), sonarComponents));
     scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerParseError.txt")));
     verify(sonarComponents).reportAnalysisError(any(RecognitionException.class), any(InputFile.class));
     verifyZeroInteractions(listener);
