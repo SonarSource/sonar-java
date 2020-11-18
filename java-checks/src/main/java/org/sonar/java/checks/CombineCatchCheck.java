@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.model.SyntacticEquivalence;
@@ -59,7 +58,7 @@ public class CombineCatchCheck extends IssuableSubscriptionVisitor implements Ja
   private void reportIssue(CatchTree catchTree, CatchTree catchTreeToBeCompared) {
     String message = "Combine this catch with the one at line " + catchTreeToBeCompared.catchKeyword().line()
       + ", which has the same body." + context.getJavaVersion().java7CompatibilityMessage();
-    List<JavaFileScannerContext.Location> flow = Lists.newArrayList(new JavaFileScannerContext.Location("Combine with this catch", catchTreeToBeCompared));
+    List<JavaFileScannerContext.Location> flow = Collections.singletonList(new JavaFileScannerContext.Location("Combine with this catch", catchTreeToBeCompared));
     reportIssue(catchTree.parameter(), message, flow, null);
   }
 

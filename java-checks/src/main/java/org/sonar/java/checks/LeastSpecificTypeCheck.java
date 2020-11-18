@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -149,7 +148,9 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
       boolean definesSymbol = definesSymbol(m, typeSymbol);
       boolean isSpecialization = !startType.isParameterized() && type.isParameterized();
       if (definesSymbol && !isSpecialization && result.isEmpty()) {
-        result.add(Lists.newArrayList(type));
+        ArrayList<Type> list = new ArrayList<>();
+        list.add(type);
+        result.add(list);
       }
       return result;
     }

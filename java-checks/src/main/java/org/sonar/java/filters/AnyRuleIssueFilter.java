@@ -19,14 +19,12 @@
  */
 package org.sonar.java.filters;
 
-import com.google.common.collect.ContiguousSet;
-import com.google.common.collect.DiscreteDomain;
-import com.google.common.collect.Range;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -74,7 +72,7 @@ public abstract class AnyRuleIssueFilter extends BaseTreeVisitor implements Java
         startLine = trivias.get(0).startLine();
       }
 
-      return ContiguousSet.create(Range.closed(startLine, endLine), DiscreteDomain.integers());
+      return IntStream.rangeClosed(startLine, endLine).boxed().collect(Collectors.toSet());
     }
     return new HashSet<>();
   }

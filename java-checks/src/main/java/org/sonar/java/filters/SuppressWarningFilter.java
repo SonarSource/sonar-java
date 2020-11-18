@@ -19,13 +19,6 @@
  */
 package org.sonar.java.filters;
 
-import com.google.common.collect.ContiguousSet;
-import com.google.common.collect.DiscreteDomain;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Range;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,12 +26,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.CheckList;
 import org.sonar.java.checks.SuppressWarningsCheck;
+import org.sonar.java.collections.MapBuilder;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -53,22 +50,22 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
 
-  private static final Multimap<String, String> JAVAC_WARNING_SUPPRESSING_RULES = new ImmutableMultimap.Builder<String, String>()
-      .put("cast", "java:S1905")
-      .put("deprecation", "java:S1874")
-      .put("dep-ann", "java:S1123")
-      .put("divzero", "java:S3518")
-      .putAll("empty", "java:S1116", "java:S108")
-      .put("fallthrough", "java:S128")
-      .put("finally", "java:S1143")
-      .put("overrides", "java:S1206")
-      .put("removal", "java:S5738")
-      .put("serial", "java:S2057")
-      .put("static", "java:S2209")
-      .put("rawtypes", "java:S3740")
+  private static final Map<String, Set<String>> JAVAC_WARNING_SUPPRESSING_RULES = MapBuilder.<String, Set<String>>newMap()
+      .put("cast", Collections.singleton("java:S1905"))
+      .put("deprecation", Collections.singleton("java:S1874"))
+      .put("dep-ann", Collections.singleton("java:S1123"))
+      .put("divzero", Collections.singleton("java:S3518"))
+      .put("empty", SetUtils.immutableSetOf("java:S1116", "java:S108"))
+      .put("fallthrough", Collections.singleton("java:S128"))
+      .put("finally", Collections.singleton("java:S1143"))
+      .put("overrides", Collections.singleton("java:S1206"))
+      .put("removal", Collections.singleton("java:S5738"))
+      .put("serial", Collections.singleton("java:S2057"))
+      .put("static", Collections.singleton("java:S2209"))
+      .put("rawtypes", Collections.singleton("java:S3740"))
       .build();
 
-  private final Map<String, Multimap<String, Integer>> excludedLinesByComponent = new HashMap<>();
+  private final Map<String, Map<String, Set<Integer>>> excludedLinesByComponent = new HashMap<>();
 
   private static final String SUPPRESS_WARNING_RULE_KEY = getSuppressWarningRuleKey();
 
@@ -86,7 +83,7 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
   @Override
   public void scanFile(JavaFileScannerContext context) {
     super.scanFile(context);
-    excludedLinesByComponent.put(getComponentKey(), HashMultimap.create(excludedLinesByRule()));
+    excludedLinesByComponent.put(getComponentKey(), excludedLinesByRule());
   }
 
   private static Map<String, RuleKey> getDeprecatedRuleKeys() {
@@ -103,14 +100,14 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
 
   @Override
   public boolean accept(FilterableIssue issue) {
-    Multimap<String, Integer> excludedLinesByRule = HashMultimap.create();
+    Map<String, Set<Integer>> excludedLinesByRule = new HashMap<>();
     if (excludedLinesByComponent.containsKey(issue.componentKey())) {
       excludedLinesByRule = excludedLinesByComponent.get(issue.componentKey());
     }
     return !issueShouldNotBeReported(issue, excludedLinesByRule);
   }
 
-  private static boolean issueShouldNotBeReported(FilterableIssue issue, Multimap<String, Integer> excludedLineByRule) {
+  private static boolean issueShouldNotBeReported(FilterableIssue issue, Map<String, Set<Integer>> excludedLineByRule) {
     RuleKey issueRuleKey = issue.ruleKey();
     for (String excludedRule : excludedLineByRule.keySet()) {
       if (("all".equals(excludedRule) || isRuleKey(excludedRule, issueRuleKey)) && !isSuppressWarningRule(issueRuleKey)) {
@@ -170,7 +167,7 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
 
     if (startLine != -1) {
       int endLine = tree.lastToken().line();
-      Set<Integer> filteredlines = ContiguousSet.create(Range.closed(startLine, endLine), DiscreteDomain.integers());
+      Set<Integer> filteredlines = IntStream.rangeClosed(startLine, endLine).boxed().collect(Collectors.toSet()); 
       for (String rule : rules) {
         excludeLines(filteredlines, rule);
       }

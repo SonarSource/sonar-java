@@ -29,24 +29,55 @@ import static org.assertj.core.api.Assertions.assertThat;
 final class SetUtilsTest {
   
   @Test
-  void test_returns_unmodifiable_map() {
+  void test_returns_unmodifiable_set() {
     Set<String> set = SetUtils.immutableSetOf();
     Assertions.assertThrows(UnsupportedOperationException.class, () -> set.add("value"));
   }
 
   @Test
-  void test_construct_strings_map() {
+  void test_construct_strings_set() {
     Set<String> set = SetUtils.immutableSetOf("value1", "value2");
     
     assertThat(set).containsExactlyInAnyOrder("value1", "value2");
   }
 
   @Test
-  void test_construct_any_map() {
-
+  void test_construct_any_set() {
     Set<SomeType> set = SetUtils.immutableSetOf(new SomeType("value1"), new SomeType("value2"));
     
     assertThat(set).containsExactlyInAnyOrder(new SomeType("value1"), new SomeType("value2"));
+  }
+
+  @Test
+  void test_concat_any_set() {
+    Set<SomeType> set1 = SetUtils.immutableSetOf(new SomeType("value1"), new SomeType("value2"));
+    Set<SomeType> set2 = SetUtils.immutableSetOf(new SomeType("value3"), new SomeType("value4"));
+    
+    assertThat(SetUtils.concat(set1, set2))
+      .containsExactlyInAnyOrder(new SomeType("value1"), new SomeType("value2"), 
+        new SomeType("value3"), new SomeType("value4"));
+  }
+
+  @Test
+  void test_concat_many_sets() {
+    Set<SomeType> set1 = SetUtils.immutableSetOf(new SomeType("value1"), new SomeType("value2"));
+    Set<SomeType> set2 = SetUtils.immutableSetOf(new SomeType("value3"), new SomeType("value4"));
+    Set<SomeType> set3 = SetUtils.immutableSetOf(new SomeType("value5"), new SomeType("value6"));
+    Set<SomeType> set4 = SetUtils.immutableSetOf(new SomeType("value7"), new SomeType("value8"));
+    Set<SomeType> set5 = SetUtils.immutableSetOf(new SomeType("value9"), new SomeType("value10"));
+    Set<SomeType> set6 = SetUtils.immutableSetOf(new SomeType("value11"), new SomeType("value12"));
+    Set<SomeType> set7 = SetUtils.immutableSetOf(new SomeType("value13"), new SomeType("value14"));
+    
+    assertThat(SetUtils.concat(set1, set2, set3, set4, set5, set6, set7))
+      .containsExactlyInAnyOrder(
+        new SomeType("value1"), new SomeType("value2"), 
+        new SomeType("value3"), new SomeType("value4"),
+        new SomeType("value5"), new SomeType("value6"),
+        new SomeType("value7"), new SomeType("value8"),
+        new SomeType("value9"), new SomeType("value10"),
+        new SomeType("value11"), new SomeType("value12"),
+        new SomeType("value13"), new SomeType("value14")
+      );
   }
   
   private static class SomeType {

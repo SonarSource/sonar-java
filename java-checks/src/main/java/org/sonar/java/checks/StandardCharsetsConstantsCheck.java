@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Iterables;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -30,6 +29,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -298,7 +298,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
       case "IOUtils.toInputStream":
       case "IOUtils.write":
       case "IOUtils.writeLines":
-        return Optional.of(Iterables.getLast(stringArguments));
+        return Optional.of(ListUtils.getLast(stringArguments));
       case "LockableFileWriter.<init>":
         return Optional.of(stringArguments.get(0));
       default:

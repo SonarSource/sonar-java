@@ -19,32 +19,21 @@
  */
 package org.sonar.java.collections;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 
-/**
- * This class is used for Java < 9 to simplify the creation of maps.
- * After moving to Java > 9, should be replaced by Immutable Set Static Factory Methods
- * @see <a href="https://docs.oracle.com/javase/9/docs/api/java/util/Set.html#immutable">Immutable Set Static Factory Methods</a>
- */
-public final class SetUtils {
+public final class ListUtils {
 
-  private SetUtils() {
+  private ListUtils() {
+  }
+  
+  public static <T> T getLast(List<T> list) {
+    return list.get(list.size() - 1);
   }
 
-  @SafeVarargs
-  public static <T> Set<T> immutableSetOf(T ... elements) {
-    Set<T> set = new HashSet<>(Arrays.asList(elements));
-    return Collections.unmodifiableSet(set);
-  }
-
-  @SafeVarargs
-  public static <T> Set<T> concat(Set<T>... sets) {
-    return Arrays.stream(sets)
-      .flatMap(Set::stream)
-      .collect(Collectors.toSet());
+  public static <T> T getOnlyElement(List<T> list) {
+    if (list.size() == 1) {
+      return list.get(0);
+    }
+    throw new IllegalArgumentException(String.format("Expected list of size 1, but was list of size %d.", list.size()));
   }
 }

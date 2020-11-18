@@ -19,15 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multiset;
-
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
@@ -79,14 +76,14 @@ public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
   }
 
   private class MethodInvocationVisitor extends BaseTreeVisitor {
-    private final Map<Symbol.TypeSymbol, Multiset<Symbol>> usagesByInnerClass = new HashMap<>();
-    private final Multimap<String, MethodInvocationTree> unknownInvocations = HashMultimap.create();
+    private final Map<Symbol.TypeSymbol, Map<Symbol, Integer>> usagesByInnerClass = new HashMap<>();
+    private final Map<String, Set<MethodInvocationTree>> unknownInvocations = new HashMap<>();
     private Symbol.TypeSymbol classSymbol;
-    private Multiset<Symbol> usages;
+    private Map<Symbol, Integer> usages;
 
     public void setClassSymbol(Symbol.TypeSymbol classSymbol) {
       this.classSymbol = classSymbol;
-      usages = HashMultiset.create();
+      usages = new HashMap<>();
       usagesByInnerClass.put(classSymbol, usages);
     }
 
@@ -94,13 +91,14 @@ public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
     public void visitMethodInvocation(MethodInvocationTree tree) {
       Symbol symbol = tree.symbol();
       if(symbol.isUnknown()) {
-        unknownInvocations.put(ExpressionUtils.methodName(tree).name(), tree);
+        String name = ExpressionUtils.methodName(tree).name();
+        unknownInvocations.computeIfAbsent(name, k ->  new HashSet<>()).add(tree);
       } else if (isPrivateMethodOfOuterClass(symbol)) {
         if (JUtils.isParametrizedMethod((Symbol.MethodSymbol) symbol) && symbol.declaration() != null) {
           // generic methods requires to use their declaration symbol rather than the parameterized one
           symbol = ((Symbol.MethodSymbol) symbol).declaration().symbol();
         }
-        usages.add(symbol);
+        usages.compute(symbol, (k, v) -> v == null ? 1 : (v + 1));
       }
       super.visitMethodInvocation(tree);
     }
@@ -110,19 +108,17 @@ public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
     }
 
     void checkUsages() {
-      for (Map.Entry<Symbol.TypeSymbol, Multiset<Symbol>> usageByInnerClassEntry : usagesByInnerClass.entrySet()) {
-        Multiset<Symbol> innerClassUsages = usageByInnerClassEntry.getValue();
-        for (Symbol methodUsed : innerClassUsages.elementSet()) {
-          boolean matchArity = unknownInvocations.get(methodUsed.name())
-            .stream()
-            .anyMatch(mit -> hasSameArity((Symbol.MethodSymbol) methodUsed, mit));
+      
+      usagesByInnerClass.forEach((symbol, innerClassUsages) -> innerClassUsages.forEach((methodUsed, count) -> {
+        boolean matchArity = unknownInvocations.getOrDefault(methodUsed.name(), new HashSet<>())
+          .stream()
+          .anyMatch(mit -> hasSameArity((Symbol.MethodSymbol) methodUsed, mit));
 
-          // if an unknown method has same name and same arity, do not report, likely a FP.
-          if (!matchArity && methodUsed.usages().size() == innerClassUsages.count(methodUsed)) {
-            reportIssueOnMethod((MethodTree) methodUsed.declaration(), usageByInnerClassEntry.getKey());
-          }
+        // if an unknown method has same name and same arity, do not report, likely a FP.
+        if (!matchArity && methodUsed.usages().size() == count) {
+          reportIssueOnMethod((MethodTree) methodUsed.declaration(), symbol);
         }
-      }
+      }));
     }
 
     private boolean hasSameArity(Symbol.MethodSymbol methodUsed, MethodInvocationTree mit) {

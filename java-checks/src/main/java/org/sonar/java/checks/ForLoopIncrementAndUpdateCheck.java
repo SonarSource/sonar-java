@@ -19,9 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -111,10 +108,9 @@ public class ForLoopIncrementAndUpdateCheck extends IssuableSubscriptionVisitor 
     return updateTrees.stream().map(t -> new JavaFileScannerContext.Location("", t)).collect(Collectors.toList());
   }
 
-  private static Map<Symbol, Tree> updatedOnlyOnceWithUnaryExpression(Multimap<Symbol, Tree> updatesInBody, StatementTree forStatementBody) {
+  private static Map<Symbol, Tree> updatedOnlyOnceWithUnaryExpression(Map<Symbol, List<Tree>> updatesInBody, StatementTree forStatementBody) {
     Map<Symbol, Tree> result = new HashMap<>();
-    for (Symbol updatedSymbol : updatesInBody.keySet()) {
-      Collection<Tree> updateTrees = updatesInBody.get(updatedSymbol);
+    updatesInBody.forEach((updatedSymbol, updateTrees) -> {
       if (updateTrees.size() == 1) {
         Tree updateTree = updateTrees.iterator().next();
         if (updateTree.is(Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.PREFIX_INCREMENT, Tree.Kind.PREFIX_DECREMENT)
@@ -123,7 +119,7 @@ public class ForLoopIncrementAndUpdateCheck extends IssuableSubscriptionVisitor 
           result.put(updatedSymbol, updateTree);
         }
       }
-    }
+    });
     return result;
   }
 
@@ -180,7 +176,7 @@ public class ForLoopIncrementAndUpdateCheck extends IssuableSubscriptionVisitor 
 
   private static class UpdatesInBodyVisitor extends BaseTreeVisitor {
     private final Collection<Symbol> targets;
-    private final Multimap<Symbol, Tree> updates = ArrayListMultimap.create();
+    private final Map<Symbol, List<Tree>> updates = new HashMap<>();
 
     private UpdatesInBodyVisitor(Collection<Symbol> targets) {
       this.targets = targets;
@@ -210,7 +206,7 @@ public class ForLoopIncrementAndUpdateCheck extends IssuableSubscriptionVisitor 
     private void addSymbol(IdentifierTree identifierTree, Tree root) {
       Symbol symbol = identifierTree.symbol();
       if (targets.contains(symbol)) {
-        updates.put(symbol, root);
+        updates.computeIfAbsent(symbol, k -> new ArrayList<>()).add(root);
       }
     }
   }

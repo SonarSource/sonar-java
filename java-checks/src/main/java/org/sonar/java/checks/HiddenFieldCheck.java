@@ -19,8 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableMap;
+import java.util.Map;
 import org.sonar.check.Rule;
+import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -46,7 +47,7 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 @Rule(key = "S1117")
 public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
 
-  private final Deque<ImmutableMap<String, VariableTree>> fields = new LinkedList<>();
+  private final Deque<Map<String, VariableTree>> fields = new LinkedList<>();
   private final Deque<List<VariableTree>> excludedVariables = new LinkedList<>();
   private final List<VariableTree> flattenExcludedVariables = new ArrayList<>();
 
@@ -79,7 +80,7 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
     }
     if (isClassTree(tree)) {
       ClassTree classTree = (ClassTree) tree;
-      ImmutableMap.Builder<String, VariableTree> builder = ImmutableMap.builder();
+      MapBuilder<String, VariableTree> builder = MapBuilder.newMap();
       for (Tree member : classTree.members()) {
         if (member.is(Tree.Kind.VARIABLE)) {
           VariableTree variableTree = (VariableTree) member;
@@ -104,7 +105,7 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
   }
 
   private void isVariableHidingField(VariableTree variableTree) {
-    for (ImmutableMap<String, VariableTree> variables : fields) {
+    for (Map<String, VariableTree> variables : fields) {
       if (variables.values().contains(variableTree)) {
         return;
       }

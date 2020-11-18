@@ -19,11 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Iterables;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -98,7 +98,7 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends IssuableSubs
 
   private static boolean isLastStatement(@Nullable BlockTree blockTree, MethodInvocationTree lastStatementTree) {
     if (blockTree != null) {
-      StatementTree last = Iterables.getLast(blockTree.body());
+      StatementTree last = ListUtils.getLast(blockTree.body());
       if (last.is(Kind.EXPRESSION_STATEMENT)) {
         return lastStatementTree.equals(((ExpressionStatementTree) last).expression());
       } else if (last.is(Kind.TRY_STATEMENT)) {

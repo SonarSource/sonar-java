@@ -19,13 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -97,7 +98,7 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
   );
 
   private static final Set<Symbol> IMMUTABLE_CANDIDATES = new HashSet<>();
-  private static final Multimap<Tree, Symbol> CLASS_IMMUTABLE_CANDIDATES = ArrayListMultimap.create();
+  private static final Map<Tree, List<Symbol>> CLASS_IMMUTABLE_CANDIDATES = new HashMap<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -134,7 +135,7 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
         reportIssue(variableTree.simpleName(), message);
       } else {
         IMMUTABLE_CANDIDATES.add(symbol);
-        CLASS_IMMUTABLE_CANDIDATES.put(owner, symbol);
+        CLASS_IMMUTABLE_CANDIDATES.computeIfAbsent(owner, key -> new ArrayList<>()).add(symbol);
       }
     }
   }
@@ -158,7 +159,7 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
   public void leaveNode(Tree tree) {
     // cleanup
     if (tree.is(Tree.Kind.CLASS, Tree.Kind.ENUM)) {
-      IMMUTABLE_CANDIDATES.removeAll(CLASS_IMMUTABLE_CANDIDATES.get(tree));
+      IMMUTABLE_CANDIDATES.removeAll(CLASS_IMMUTABLE_CANDIDATES.getOrDefault(tree, Collections.emptyList()));
     }
   }
 

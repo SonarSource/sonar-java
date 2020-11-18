@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Lists;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -90,7 +90,9 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
   private void checkElements(CFG.Block block, Set<Symbol> blockOut, Symbol.MethodSymbol methodSymbol) {
     Set<Symbol> out = new HashSet<>(blockOut);
     Set<Tree> assignmentLHS = new HashSet<>();
-    Lists.reverse(block.elements()).forEach(element -> checkElement(methodSymbol, out, assignmentLHS, element));
+    new ArrayDeque<>(block.elements()).descendingIterator().forEachRemaining(
+      element -> checkElement(methodSymbol, out, assignmentLHS, element)
+    );
   }
 
   private Set<Symbol> checkElement(Symbol.MethodSymbol methodSymbol, Set<Symbol> outVar, Set<Tree> assignmentLHS, Tree element) {

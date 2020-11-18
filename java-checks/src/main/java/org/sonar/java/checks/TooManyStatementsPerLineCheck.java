@@ -19,9 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.Multiset.Entry;
+import java.util.HashMap;
+import java.util.Map;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AssertStatementTree;
@@ -72,17 +71,16 @@ public class TooManyStatementsPerLineCheck extends IssuableSubscriptionVisitor {
     if (block != null) {
       StatementVisitor visitor = new StatementVisitor();
       block.accept(visitor);
-      for (Entry<Integer> entry : visitor.statementsPerLine.entrySet()) {
-        int count = entry.getCount();
+      visitor.statementsPerLine.forEach((line, count) -> {
         if (count > 1) {
-          addIssue(entry.getElement(), "At most one statement is allowed per line, but " + count + " statements were found on this line.");
+          addIssue(line, "At most one statement is allowed per line, but " + count + " statements were found on this line.");
         }
-      }
+      });
     }
   }
 
   private static class StatementVisitor extends BaseTreeVisitor {
-    private final Multiset<Integer> statementsPerLine = HashMultiset.create();
+    private final Map<Integer, Integer> statementsPerLine = new HashMap<>();
 
     @Override
     public void visitClass(ClassTree tree) {
@@ -141,7 +139,7 @@ public class TooManyStatementsPerLineCheck extends IssuableSubscriptionVisitor {
     private void addLineOfCloseBrace(SyntaxToken startToken, StatementTree tree) {
       if (tree.is(Tree.Kind.BLOCK)) {
         SyntaxToken closeBraceToken = ((BlockTree) tree).closeBraceToken();
-        if (startToken.line() != closeBraceToken.line() && !statementsPerLine.contains(closeBraceToken.line())) {
+        if (startToken.line() != closeBraceToken.line() && !statementsPerLine.containsKey(closeBraceToken.line())) {
           addLine(closeBraceToken);
         }
       }
@@ -220,7 +218,7 @@ public class TooManyStatementsPerLineCheck extends IssuableSubscriptionVisitor {
     }
 
     private void addLine(SyntaxToken token) {
-      statementsPerLine.add(token.line());
+      statementsPerLine.compute(token.line(), (k, v) -> (v == null) ? 1 : (v + 1));
     }
 
     private void addLines(SyntaxToken startToken, SyntaxToken endToken) {

@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Lists;
+import java.util.Collections;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
@@ -56,7 +56,7 @@ public class LambdaTooBigCheck extends BaseTreeVisitor implements JavaFileScanne
       SyntaxToken lastSyntaxToken = lambdaExpressionTree.lastToken();
       JavaFileScannerContext.Location lastTokenLocation = new JavaFileScannerContext.Location(lines + " lines", lastSyntaxToken);
       context.reportIssue(this, firstToken, lambdaExpressionTree.arrowToken(),
-        "Reduce this lambda expression number of lines from " + lines + " to at most " + max + ".", Lists.newArrayList(lastTokenLocation), null);
+        "Reduce this lambda expression number of lines from " + lines + " to at most " + max + ".", Collections.singletonList(lastTokenLocation), null);
     }
     super.visitLambdaExpression(lambdaExpressionTree);
   }

@@ -19,14 +19,13 @@
  */
 package org.sonar.java.filters;
 
-import com.google.common.collect.Multimap;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
@@ -97,7 +96,7 @@ class BaseTreeVisitorIssueFilterTest {
 
   @Test
   void excluded_lines_are_correct() {
-    Multimap<String, Integer> excludedLinesByRule = filter.excludedLinesByRule();
+    Map<String, Set<Integer>> excludedLinesByRule = filter.excludedLinesByRule();
     assertThat(excludedLinesByRule).isNotNull();
     assertThat(excludedLinesByRule.isEmpty()).isFalse();
     assertThat(excludedLinesByRule.keySet()).containsOnly(RULE_KEY);
@@ -116,7 +115,7 @@ class BaseTreeVisitorIssueFilterTest {
     // no component is set
     scanFile(filter);
 
-    Multimap<String, Integer> excludedLinesByRule = filter.excludedLinesByRule();
+    Map<String, Set<Integer>> excludedLinesByRule = filter.excludedLinesByRule();
     assertThat(excludedLinesByRule).isNotNull();
     assertThat(excludedLinesByRule.isEmpty()).isTrue();
   }

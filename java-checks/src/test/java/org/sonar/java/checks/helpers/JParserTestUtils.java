@@ -19,8 +19,8 @@
  */
 package org.sonar.java.checks.helpers;
 
-import com.google.common.collect.Lists;
 import com.google.common.io.Files;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.io.File;
@@ -84,7 +84,7 @@ public abstract class JParserTestUtils {
   }
 
   public static CompilationUnitTree parse(String source) {
-    List<File> classpath = Lists.newArrayList(new File("target/test-classes"), new File("target/classes"));
+    List<File> classpath = Arrays.asList(new File("target/test-classes"), new File("target/classes"));
     return JParser.parse(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, "test", source, classpath);
   }
 

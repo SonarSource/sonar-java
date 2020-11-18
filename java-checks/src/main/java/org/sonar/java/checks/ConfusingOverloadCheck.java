@@ -19,12 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Sets;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -33,7 +32,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S2177")
 public class ConfusingOverloadCheck extends IssuableSubscriptionVisitor {
-  private static final Set<String> SERIALIZATION_METHOD_NAME = Sets.newHashSet("writeObject", "readObject", "readObjectNoData", "writeReplace", "readResolve");
+  private static final Set<String> SERIALIZATION_METHOD_NAME = SetUtils.immutableSetOf("writeObject", "readObject", "readObjectNoData", "writeReplace", "readResolve");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

@@ -19,9 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Iterables;
 import java.text.MessageFormat;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,9 +62,9 @@ public class SelectorMethodArgumentCheck extends IssuableSubscriptionVisitor {
 
     if (isPublic(methodTree) && blockTree != null && !booleanParameterSymbols.isEmpty()) {
       for (Symbol variable : booleanParameterSymbols) {
-        Collection<IdentifierTree> usages = variable.usages();
+        List<IdentifierTree> usages = variable.usages();
         if (usages.size() == 1) {
-          blockTree.accept(new ConditionalStatementVisitor(variable.name(), Iterables.get(usages, 0), methodTree));
+          blockTree.accept(new ConditionalStatementVisitor(variable.name(), usages.get(0), methodTree));
         }
       }
     }
@@ -94,7 +92,7 @@ public class SelectorMethodArgumentCheck extends IssuableSubscriptionVisitor {
 
     private final String variableName;
     private final MethodTree method;
-    private IdentifierTree usage;
+    private final IdentifierTree usage;
 
     public ConditionalStatementVisitor(String variableName, IdentifierTree usage, MethodTree method) {
       this.variableName = variableName;

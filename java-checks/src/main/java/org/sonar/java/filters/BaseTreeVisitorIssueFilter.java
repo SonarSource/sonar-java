@@ -19,15 +19,13 @@
  */
 package org.sonar.java.filters;
 
-import com.google.common.collect.ContiguousSet;
-import com.google.common.collect.DiscreteDomain;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Range;
-
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
@@ -41,11 +39,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor implements JavaIssueFilter {
 
   private String componentKey;
-  private final Multimap<String, Integer> excludedLinesByRule;
+  private final Map<String, Set<Integer>> excludedLinesByRule;
   private final Map<Class<? extends JavaCheck>, String> rulesKeysByRulesClass;
 
   protected BaseTreeVisitorIssueFilter() {
-    excludedLinesByRule = HashMultimap.create();
+    excludedLinesByRule = new HashMap<>();
     rulesKeysByRulesClass = rulesKeysByRulesClass(filteredRules());
   }
 
@@ -73,10 +71,10 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
 
   @Override
   public boolean accept(FilterableIssue issue) {
-    return !(issue.componentKey().equals(componentKey) && excludedLinesByRule.get(issue.ruleKey().rule()).contains(issue.line()));
+    return !(issue.componentKey().equals(componentKey) && excludedLinesByRule.getOrDefault(issue.ruleKey().rule(), new HashSet<>()).contains(issue.line()));
   }
 
-  public Multimap<String, Integer> excludedLinesByRule() {
+  public Map<String, Set<Integer>> excludedLinesByRule() {
     return excludedLinesByRule;
   }
 
@@ -111,16 +109,16 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
     SyntaxToken firstSyntaxToken = tree.firstToken();
     SyntaxToken lastSyntaxToken = tree.lastToken();
     if (firstSyntaxToken != null && lastSyntaxToken != null) {
-      Set<Integer> filteredlines = ContiguousSet.create(Range.closed(firstSyntaxToken.line(), lastSyntaxToken.line()), DiscreteDomain.integers());
-      computeFilteredLinesForRule(filteredlines, rulesKeysByRulesClass.get(filteredRule), excludeLine);
+      Set<Integer> filteredLines = IntStream.rangeClosed(firstSyntaxToken.line(), lastSyntaxToken.line()).boxed().collect(Collectors.toSet());
+      computeFilteredLinesForRule(filteredLines, rulesKeysByRulesClass.get(filteredRule), excludeLine);
     }
   }
 
   private void computeFilteredLinesForRule(Set<Integer> lines, String ruleKey, boolean excludeLine) {
     if (excludeLine) {
-      excludedLinesByRule.putAll(ruleKey, lines);
+      excludedLinesByRule.computeIfAbsent(ruleKey, k -> new HashSet<>()).addAll(lines);
     } else {
-      excludedLinesByRule.get(ruleKey).removeAll(lines);
+      excludedLinesByRule.getOrDefault(ruleKey, Collections.emptySet()).removeAll(lines);
     }
   }
 }

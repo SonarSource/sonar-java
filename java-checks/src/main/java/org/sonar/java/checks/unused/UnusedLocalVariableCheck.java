@@ -19,9 +19,9 @@
  */
 package org.sonar.java.checks.unused;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
-
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.UnresolvedIdentifiersVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -68,8 +68,8 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
     Tree.Kind.PREFIX_INCREMENT
   };
 
-  private List<VariableTree> variables = new ArrayList<>();
-  private ListMultimap<Symbol, IdentifierTree> assignments = ArrayListMultimap.create();
+  private final List<VariableTree> variables = new ArrayList<>();
+  private final Map<Symbol, List<IdentifierTree>> assignments = new HashMap<>();
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -115,7 +115,7 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
   private void checkVariableUsages() {
     for (VariableTree variableTree : variables) {
       Symbol symbol = variableTree.symbol();
-      if (symbol.usages().size() == assignments.get(symbol).size()) {
+      if (symbol.usages().size() == assignments.getOrDefault(symbol, Collections.emptyList()).size()) {
         reportIssue(variableTree.simpleName(), "Remove this unused \"" + symbol.name() + "\" local variable.");
       }
     }
@@ -146,7 +146,7 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
   private void addAssignment(IdentifierTree identifier) {
     Symbol reference = identifier.symbol();
     if (!reference.isUnknown()) {
-      assignments.put(reference, identifier);
+      assignments.computeIfAbsent(reference, k -> new ArrayList<>()).add(identifier);
     }
   }
 
