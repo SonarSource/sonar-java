@@ -78,6 +78,10 @@ public class SpringConfigurationWithAutowiredFieldsCheck extends IssuableSubscri
       return;
     }
     VariableTree variable = (VariableTree) tree;
+    if (variable.initializer() != null) {
+      // Common pattern used to define a default value.
+      return;
+    }
     Symbol variableSymbol = variable.symbol();
     if (AUTOWIRED_ANNOTATIONS.stream().anyMatch(a -> variableSymbol.metadata().isAnnotatedWith(a))) {
       autowiredFields.put(variableSymbol, variable);

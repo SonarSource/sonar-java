@@ -22,6 +22,7 @@ class SpringConfigurationWithAutowiredFieldsCheck {
     @Autowired private Bar notUsedInBeanMethod;
     @Autowired private Bar notUsed;
     private Bar notAutowired;
+    @Autowired(required=false) private Bar withInitializer = new Bar();
 
     @Bean
     public Foo method() {
@@ -50,6 +51,11 @@ class SpringConfigurationWithAutowiredFieldsCheck {
     @Bean
     public Foo method5() {
       return new Foo(this.notAutowired);
+    }
+
+    @Bean
+    public Foo method6() {
+      return new Foo(this.withInitializer);
     }
   }
 
