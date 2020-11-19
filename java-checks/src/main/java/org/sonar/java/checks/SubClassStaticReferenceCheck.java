@@ -19,6 +19,9 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -31,10 +34,6 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
 
 @Rule(key = "S2390")
 public class SubClassStaticReferenceCheck extends IssuableSubscriptionVisitor {
@@ -82,10 +81,10 @@ public class SubClassStaticReferenceCheck extends IssuableSubscriptionVisitor {
 
 
   private class StaticAccessVisitor extends BaseTreeVisitor {
-    private final Type classType;
+    private final Type classTypeErasure;
 
     public StaticAccessVisitor(Type classType) {
-      this.classType = classType;
+      this.classTypeErasure = classType.erasure();
     }
 
     @Override
@@ -116,14 +115,21 @@ public class SubClassStaticReferenceCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitIdentifier(IdentifierTree tree) {
       Type type = tree.symbolType();
-      if (!sameErasure(type) && type.isSubtypeOf(classType.erasure())) {
+      if (!sameErasure(type) && type.isSubtypeOf(classTypeErasure) && !isNestedSubtype(type)) {
         reportIssue(tree, String.format("Remove this reference to \"%s\".", type.symbol().name()));
       }
     }
 
     private boolean sameErasure(Type type) {
-      return classType.erasure().equals(type.erasure());
+      return classTypeErasure.equals(type.erasure());
     }
+
+    private boolean isNestedSubtype(Type type) {
+      // The owner cannot be null in this context thanks to the checks in visitIdentifier.
+      Type ownerType = Objects.requireNonNull(type.symbol().owner()).type();
+      return ownerType != null && ownerType.erasure().isSubtypeOf(classTypeErasure);
+    }
+
   }
 
 }

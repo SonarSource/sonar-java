@@ -1,8 +1,4 @@
 {
-'com.google.guava:guava:src/com/google/common/collect/ComparisonChain.java':[
-131,
-133,
-],
 'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMultiset.java':[
 57,
 ],
@@ -11,12 +7,5 @@
 ],
 'com.google.guava:guava:src/com/google/common/collect/ImmutableTable.java':[
 46,
-],
-'com.google.guava:guava:src/com/google/common/io/BaseEncoding.java':[
-317,
-337,
-359,
-379,
-397,
 ],
 }
