@@ -20,7 +20,7 @@
 package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class Convert {
 
