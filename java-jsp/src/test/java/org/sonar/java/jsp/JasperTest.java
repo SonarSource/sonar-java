@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.file.PathUtils;
 import org.junit.Rule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -90,7 +90,7 @@ class JasperTest {
 
   @AfterEach
   void tearDown() throws Exception {
-    FileUtils.deleteDirectory(tempFolder.toFile());
+    PathUtils.delete(tempFolder);
   }
 
   @Test
@@ -225,7 +225,6 @@ class JasperTest {
     InputFile generatedFile = generatedFiles.iterator().next();
     List<String> generatedCode = Files.readAllLines(generatedFile.path());
     assertThat(generatedCode).contains("      out.write(\"<html>\\n<body>\\n<h2>Hello World!</h2>\\n</body>\\n</html>\");");
-
   }
 
   @Test
