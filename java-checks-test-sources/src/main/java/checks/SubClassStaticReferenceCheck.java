@@ -61,3 +61,13 @@ class ParentNested {
   static int otherChildVersion1 = ChildS2390.version; // Compliant, not a child of ParentNested
   static int otherChildVersion2 = ChildS2390.getVersion(); // Compliant, not a child of ParentNested
 }
+
+class ParentNotNested {
+  static int childVersion1 = UnrelatedNestingClass.ChildNested.version; // Noncompliant
+}
+
+class UnrelatedNestingClass {
+  static class ChildNested extends ParentNotNested {
+    static int version = 6;
+  }
+}
