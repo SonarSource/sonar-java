@@ -15,14 +15,18 @@ class SpringConfigurationWithAutowiredFieldsCheck {
 
   @Configuration
   class A {
-
     @Autowired private Bar singleUsage; // Noncompliant [[sc=28;ec=39]] {{Inject this field value directly into "method", the only method that uses it.}}
     @Inject private Bar jsr330; // Noncompliant [[sc=25;ec=31]] {{Inject this field value directly into "jsr330", the only method that uses it.}}
     @Autowired private Bar multipleUsage;
     @Autowired private Bar notUsedInBeanMethod;
     @Autowired private Bar notUsed;
     private Bar notAutowired;
-    @Autowired(required=false) private Bar withInitializer = new Bar();
+    @Autowired(required=false) private Bar withInitializer = new Bar(); // Compliant, use to define a default value if the bean is not resolved
+    @Autowired(required=false) private Bar withoutInitializer; // Noncompliant
+    // Default value for required is true.
+    // When set to true, Spring will throw an exception if Bean cannot be resolved, still makes sense to report an issue.
+    @Autowired(required=true) private Bar withInitializerRequiredTrue = new Bar(); // Noncompliant
+    @Autowired private Bar withInitializerRequiredDefault = new Bar(); // Noncompliant
 
     @Bean
     public Foo method() {
@@ -55,7 +59,22 @@ class SpringConfigurationWithAutowiredFieldsCheck {
 
     @Bean
     public Foo method6() {
+      return new Foo(this.withInitializerRequiredTrue);
+    }
+
+    @Bean
+    public Foo method7() {
       return new Foo(this.withInitializer);
+    }
+
+    @Bean
+    public Foo method8() {
+      return new Foo(this.withInitializerRequiredDefault);
+    }
+
+    @Bean
+    public Foo method9() {
+      return new Foo(this.withoutInitializer);
     }
   }
 
