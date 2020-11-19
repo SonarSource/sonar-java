@@ -25,7 +25,6 @@ import java.util.Objects;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -116,7 +115,7 @@ public class SubClassStaticReferenceCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitIdentifier(IdentifierTree tree) {
       Type type = tree.symbolType();
-      if (!sameErasure(type) && type.isSubtypeOf(classTypeErasure) && !isNestedIntoParent(type)) {
+      if (!sameErasure(type) && type.isSubtypeOf(classTypeErasure) && !isNestedSubtype(type)) {
         reportIssue(tree, String.format("Remove this reference to \"%s\".", type.symbol().name()));
       }
     }
@@ -125,13 +124,10 @@ public class SubClassStaticReferenceCheck extends IssuableSubscriptionVisitor {
       return classTypeErasure.equals(type.erasure());
     }
 
-    private boolean isNestedIntoParent(Type type) {
-      Symbol ownerSymbol = type.symbol().owner();
-      if (ownerSymbol != null) {
-        Type ownerType = ownerSymbol.type();
-        return ownerType != null && ownerType.isSubtypeOf(classTypeErasure);
-      }
-      return false;
+    private boolean isNestedSubtype(Type type) {
+      // The owner cannot be null in this context thanks to the checks in visitIdentifier.
+      Type ownerType = Objects.requireNonNull(type.symbol().owner()).type();
+      return ownerType != null && ownerType.erasure().isSubtypeOf(classTypeErasure);
     }
 
   }
