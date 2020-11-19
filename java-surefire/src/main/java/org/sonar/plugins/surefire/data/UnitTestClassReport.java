@@ -22,7 +22,7 @@ package org.sonar.plugins.surefire.data;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public final class UnitTestClassReport {
   private int errors = 0;
