@@ -1,0 +1,33 @@
+<p>Mockito provides <em>argument matchers</em> for flexibly stubbing or verifying method calls.</p>
+<p><code>Mockito.verify()</code>, <code>Mockito.when()</code>, <code>Stubber.when()</code> and <code>BDDMockito.given()</code> each have overloads
+with and without argument matchers.</p>
+<p>However, the default matching behavior (i.e. without argument matchers) uses <code>equals()</code>. If only the matcher
+<code>org.mockito.ArgumentMatchers.eq()</code> is used, the call is equivalent to the call without matchers, i.e. the <code>eq()</code> is not
+necessary and can be omitted. The resulting code is shorter and easier to read.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+@Test
+public void myTest() {
+  given(foo.bar(eq(v1), eq(v2), eq(v3))).willReturn(null);   // Noncompliant
+  when(foo.baz(eq(v4), eq(v5))).thenReturn("foo");   // Noncompliant
+  doThrow(new RuntimeException()).when(foo).quux(eq(42));    // Noncompliant
+  verify(foo).bar(eq(v1), eq(v2), eq(v3));   // Noncompliant
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+@Test
+public void myTest() {
+  given(foo.bar(v1, v2, v3)).willReturn(null);
+  when(foo.baz(v4, v5)).thenReturn("foo");
+  doThrow(new RuntimeException()).when(foo).quux(42);
+  verify(foo).bar(v1, v2, v3);
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#argument_matchers">Mockito documentation</a> -
+  argument matchers </li>
+  <li> {rule:squid:S6073} - Mockito argument matchers should be used on all parameters </li>
+</ul>
+
