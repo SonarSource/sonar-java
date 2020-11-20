@@ -166,7 +166,7 @@ class CastCheck {
   }
 
   private static <I, R> Function<I, R> castingIdentity() {
-    return i -> (R) i; // Compliant, 'R.class::cast' wont compile.
+    return i -> (R) i; // Compliant, 'R.class::cast' won't compile.
   }
 
   void test3(Object param) {
@@ -188,5 +188,4 @@ class CastCheck {
     });
   }
 }
-
 
