@@ -27,7 +27,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.expression.IdentifierTreeImpl;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -158,7 +158,7 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isGeneric(IdentifierTree identifierTree) {
-    return (identifierTree instanceof IdentifierTreeImpl) && ((IdentifierTreeImpl) identifierTree).binding.toString().matches("<[A-Z]>");
+    return JUtils.isTypeVar(identifierTree.symbolType());
   }
   
   private static boolean isSingleParamCast(ExpressionTree expression, Symbol symbol) {
