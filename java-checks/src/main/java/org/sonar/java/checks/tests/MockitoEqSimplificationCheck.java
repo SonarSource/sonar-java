@@ -38,20 +38,20 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class MockitoEqSimplificationCheck extends IssuableSubscriptionVisitor {
   private static final String MOCKITO = "org.mockito.Mockito";
 
-  private static final MethodMatchers MOCKITO_EQ_USED_IN_ARGUMENTS = MethodMatchers.or(
+  private static final MethodMatchers METHODS_USING_EQ_IN_ARGUMENTS = MethodMatchers.or(
     MethodMatchers.create().ofTypes(MOCKITO).names("when")
       .addParametersMatcher(MethodMatchers.ANY).build(),
     MethodMatchers.create().ofTypes("org.mockito.BDDMockito").names("given")
       .addParametersMatcher(MethodMatchers.ANY).build()
   );
 
-  private static final MethodMatchers MOCKITO_EQ_USED_IN_CONSECUTIVE_CALL = MethodMatchers.or(
+  private static final MethodMatchers METHODS_USING_EQ_IN_CONSECUTIVE_CALL = MethodMatchers.or(
     MethodMatchers.create().ofTypes(MOCKITO).names("verify").withAnyParameters().build(),
     MethodMatchers.create().ofTypes("org.mockito.InOrder").names("verify").withAnyParameters().build(),
     MethodMatchers.create().ofTypes("org.mockito.stubbing.Stubber").names("when").withAnyParameters().build()
   );
 
-  private static final MethodMatchers MOCKITO_EQ_MATCHERS = MethodMatchers.create()
+  private static final MethodMatchers MOCKITO_EQ = MethodMatchers.create()
     .ofTypes("org.mockito.Matchers")
     .names("eq").withAnyParameters().build();
 
@@ -64,12 +64,13 @@ public class MockitoEqSimplificationCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     MethodInvocationTree mit = (MethodInvocationTree) tree;
 
-    if (MOCKITO_EQ_USED_IN_ARGUMENTS.matches(mit)) {
+    if (METHODS_USING_EQ_IN_ARGUMENTS.matches(mit)) {
       ExpressionTree argument = mit.arguments().get(0);
+      argument = ExpressionUtils.skipParentheses(argument);
       if (argument.is(Tree.Kind.METHOD_INVOCATION)) {
         reportUselessEqUsage(((MethodInvocationTree) argument).arguments());
       }
-    } else if (MOCKITO_EQ_USED_IN_CONSECUTIVE_CALL.matches(mit)) {
+    } else if (METHODS_USING_EQ_IN_CONSECUTIVE_CALL.matches(mit)) {
       MethodTreeUtils.consecutiveMethodInvocation(mit).ifPresent(m -> reportUselessEqUsage(m.arguments()));
     }
   }
@@ -77,17 +78,19 @@ public class MockitoEqSimplificationCheck extends IssuableSubscriptionVisitor {
   private void reportUselessEqUsage(Arguments arguments) {
     List<MethodInvocationTree> eqs = new ArrayList<>();
 
-    for (Tree t : arguments) {
-      if (t.is(Tree.Kind.METHOD_INVOCATION) && MOCKITO_EQ_MATCHERS.matches((MethodInvocationTree) t)) {
-        eqs.add((MethodInvocationTree) t);
+    for (ExpressionTree arg : arguments) {
+      arg = ExpressionUtils.skipParentheses(arg);
+      if (arg.is(Tree.Kind.METHOD_INVOCATION) && MOCKITO_EQ.matches((MethodInvocationTree) arg)) {
+        eqs.add((MethodInvocationTree) arg);
       } else {
+        // If arguments contain anything else than a call to eq(...), we do not report an issue
         return;
       }
     }
 
     if (!eqs.isEmpty()) {
       reportIssue(ExpressionUtils.methodName(eqs.get(0)), String.format(
-        "Remove %s useless \"eq\" invocation and directly use the value.", eqs.size() == 1 ? "this" : "these"),
+        "Remove this%s useless \"eq(...)\" invocation; pass the values directly.", eqs.size() == 1 ? "" : " and every subsequent"),
         eqs.stream()
           .skip(1)
           .map(eq -> new JavaFileScannerContext.Location("", ExpressionUtils.methodName(eq)))
