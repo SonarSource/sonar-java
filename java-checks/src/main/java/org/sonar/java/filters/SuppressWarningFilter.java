@@ -20,7 +20,6 @@
 package org.sonar.java.filters;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -109,15 +108,12 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
 
   private static boolean issueShouldNotBeReported(FilterableIssue issue, Map<String, Set<Integer>> excludedLineByRule) {
     RuleKey issueRuleKey = issue.ruleKey();
-    for (String excludedRule : excludedLineByRule.keySet()) {
-      if (("all".equals(excludedRule) || isRuleKey(excludedRule, issueRuleKey)) && !isSuppressWarningRule(issueRuleKey)) {
-        Collection<Integer> excludedLines = excludedLineByRule.get(excludedRule);
-        if (excludedLines.contains(issue.line())) {
-          return true;
-        }
-      }
-    }
-    return false;
+    return excludedLineByRule.entrySet().stream().anyMatch(excludedRule -> {
+      String suppressedWarning = excludedRule.getKey();
+      return ("all".equals(suppressedWarning) || isRuleKey(suppressedWarning, issueRuleKey))
+        && !isSuppressWarningRule(issueRuleKey)
+        && excludedRule.getValue().contains(issue.line());
+    });
   }
 
   private static boolean isRuleKey(String rule, RuleKey ruleKey) {
@@ -167,7 +163,7 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
 
     if (startLine != -1) {
       int endLine = tree.lastToken().line();
-      Set<Integer> filteredlines = IntStream.rangeClosed(startLine, endLine).boxed().collect(Collectors.toSet()); 
+      Set<Integer> filteredlines = IntStream.rangeClosed(startLine, endLine).boxed().collect(Collectors.toSet());
       for (String rule : rules) {
         excludeLines(filteredlines, rule);
       }

@@ -68,9 +68,9 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
 
   private void checkForIssue(Symbol symbol, IdentifierTree reportTree, Map<String, List<Symbol>> membersByName) {
     String name = symbol.name();
-    for (String knownMemberName : membersByName.keySet()) {
-      if (name.equalsIgnoreCase(knownMemberName)) {
-        membersByName.get(knownMemberName).stream()
+    for (Map.Entry<String, List<Symbol>> knownMemberName : membersByName.entrySet()) {
+      if (name.equalsIgnoreCase(knownMemberName.getKey())) {
+        knownMemberName.getValue().stream()
           .filter(knownMemberSymbol -> !symbol.equals(knownMemberSymbol) && isValidIssueLocation(symbol, knownMemberSymbol) && isInvalidMember(symbol, knownMemberSymbol))
           .findFirst()
           .ifPresent(conflictingSymbol ->
@@ -78,7 +78,7 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
               "Rename "
                 + getSymbolKindName(symbol) + " \"" + name + "\" "
                 + "to prevent any misunderstanding/clash with "
-                + getSymbolKindName(conflictingSymbol) + " \"" + knownMemberName + "\""
+                + getSymbolKindName(conflictingSymbol) + " \"" + knownMemberName.getKey() + "\""
                 + getDefinitionPlace(symbol, conflictingSymbol) + "."));
       }
     }
