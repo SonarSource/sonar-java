@@ -97,9 +97,10 @@ class BaseTreeVisitorIssueFilterTest {
   @Test
   void excluded_lines_are_correct() {
     Map<String, Set<Integer>> excludedLinesByRule = filter.excludedLinesByRule();
-    assertThat(excludedLinesByRule).isNotNull();
-    assertThat(excludedLinesByRule.isEmpty()).isFalse();
-    assertThat(excludedLinesByRule.keySet()).containsOnly(RULE_KEY);
+    assertThat(excludedLinesByRule)
+      .isNotNull()
+      .isNotEmpty()
+      .containsOnlyKeys(RULE_KEY);
     assertThat(excludedLinesByRule.get(RULE_KEY)).containsOnly(3, 4, 5, 6, 7, 8, 9, 10, 11, 15);
   }
 
@@ -116,8 +117,9 @@ class BaseTreeVisitorIssueFilterTest {
     scanFile(filter);
 
     Map<String, Set<Integer>> excludedLinesByRule = filter.excludedLinesByRule();
-    assertThat(excludedLinesByRule).isNotNull();
-    assertThat(excludedLinesByRule.isEmpty()).isTrue();
+    assertThat(excludedLinesByRule)
+      .isNotNull()
+      .isEmpty();
   }
 
   @Test

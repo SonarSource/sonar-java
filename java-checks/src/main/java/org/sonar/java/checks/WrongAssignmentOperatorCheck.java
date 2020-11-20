@@ -28,7 +28,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 @Rule(key = "S2757")
 public class WrongAssignmentOperatorCheck extends IssuableSubscriptionVisitor {
