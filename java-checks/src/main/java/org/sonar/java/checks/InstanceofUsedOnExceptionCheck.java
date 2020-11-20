@@ -19,57 +19,81 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CatchTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Rule(key = "S1193")
 public class InstanceofUsedOnExceptionCheck extends IssuableSubscriptionVisitor {
 
-  private final Set<String> caughtVariables = new HashSet<>();
-
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CATCH, Tree.Kind.INSTANCE_OF);
-  }
-
-  @Override
-  public void setContext(JavaFileScannerContext context) {
-    caughtVariables.clear();
-    super.setContext(context);
+    return Collections.singletonList(Tree.Kind.CATCH);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.CATCH)) {
-      caughtVariables.add(((CatchTree) tree).parameter().simpleName().name());
-    } else {
-      InstanceOfTree instanceOfTree = (InstanceOfTree) tree;
-      if (isLeftOperandAndException(instanceOfTree)
-        && instanceOfTree.type().symbolType().isSubtypeOf("java.lang.Throwable")) {
-        reportIssue(instanceOfTree.instanceofKeyword(), "Replace the usage of the \"instanceof\" operator by a catch block.");
+    CatchTree catchTree = ((CatchTree) tree);
+
+    String caughtVariable = catchTree.parameter().simpleName().name();
+
+    List<StatementTree> body = catchTree.block().body();
+    if (body.stream().allMatch(statement -> statement.is(Tree.Kind.RETURN_STATEMENT, Tree.Kind.THROW_STATEMENT, Tree.Kind.IF_STATEMENT))) {
+      reportSimpleInstanceOf(body, caughtVariable);
+    }
+  }
+
+  private void reportSimpleInstanceOf(List<StatementTree> body, String caughtVariable) {
+    List<ExpressionTree> conditions = body.stream()
+      .filter(statement -> statement.is(Tree.Kind.IF_STATEMENT))
+      .map(IfStatementTree.class::cast)
+      .flatMap(InstanceofUsedOnExceptionCheck::getFollowingElseIf)
+      .map(IfStatementTree::condition)
+      .collect(Collectors.toList());
+
+    if (conditions.stream().allMatch(cond -> cond.is(Tree.Kind.INSTANCE_OF) && isLeftOperandAndException((InstanceOfTree) cond, caughtVariable))) {
+      conditions.stream()
+        .map(InstanceOfTree.class::cast)
+        .forEach(instanceOfTree ->
+          reportIssue(instanceOfTree.instanceofKeyword(), "Replace the usage of the \"instanceof\" operator by a catch block."));
+    }
+  }
+
+  private static boolean isLeftOperandAndException(InstanceOfTree instanceOfTree, String caughtVariable) {
+    ExpressionTree expression = instanceOfTree.expression();
+    if (expression.is(Tree.Kind.IDENTIFIER)) {
+      return caughtVariable.equals(((IdentifierTree) expression).name())
+        && instanceOfTree.type().symbolType().isSubtypeOf("java.lang.Throwable");
+    }
+    return false;
+  }
+
+  private static Stream<IfStatementTree> getFollowingElseIf(IfStatementTree ifStatementTree) {
+    List<IfStatementTree> ifStatements = new ArrayList<>();
+    ifStatements.add(ifStatementTree);
+
+    StatementTree elseStatement = ifStatementTree.elseStatement();
+    while (elseStatement != null) {
+      if (elseStatement.is(Tree.Kind.IF_STATEMENT)) {
+        IfStatementTree elseIfStatement = (IfStatementTree) elseStatement;
+        ifStatements.add(elseIfStatement);
+        elseStatement = elseIfStatement.elseStatement();
+      } else {
+        elseStatement = null;
       }
     }
-  }
 
-  @Override
-  public void leaveNode(Tree tree) {
-    if(tree.is(Tree.Kind.CATCH)) {
-      caughtVariables.remove(((CatchTree) tree).parameter().simpleName().name());
-    }
-  }
-
-  private boolean isLeftOperandAndException(InstanceOfTree tree) {
-    return tree.expression().is(Tree.Kind.IDENTIFIER)
-      && caughtVariables.contains(((IdentifierTree) tree.expression()).name());
+    return ifStatements.stream();
   }
 }
