@@ -125,6 +125,11 @@ class CastCheck {
   void bar2(java.util.function.BiFunction<Object, Object, String> function) { /* ... */ }
   void bar3(java.util.function.Function<Object, List<String>> function) { /* ... */ }
   void bar4(java.util.function.Function<Object, TestA> function) { /* ... */ }
+  void bar5(java.util.function.Function<Object, TestA[]> function) { /* ... */ }
+  void bar6(java.util.function.Function<Object, TestA[][]> function) { /* ... */ }
+  void bar7(java.util.function.Function<Object, List<TestA[][]>> function) { /* ... */ }
+  void bar8(java.util.function.Function<Object, List<TestA[][]>[]> function) { /* ... */ }
+  void bar9(java.util.function.Function<Object, Character> f) { /* ... */ }
 
   void test(Object param) {
     bar((o) -> (String)o); // Noncompliant {{Replace this lambda with method reference 'String.class::cast'.}}
@@ -135,12 +140,33 @@ class CastCheck {
   
     bar3(List.class::cast); //Compliant
     bar3((o) -> (List<String>) o); // Noncompliant {{Replace this lambda with method reference 'List.class::cast'.}}
+
+    bar5(TestA[].class::cast); //Compliant
+    bar5((o) -> (TestA[]) o); // Noncompliant {{Replace this lambda with method reference 'TestA[].class::cast'.}}
+
+    bar6(TestA[][].class::cast); //Compliant
+    bar6((o) -> (TestA[][]) o); // Noncompliant {{Replace this lambda with method reference 'TestA[][].class::cast'.}}
+
+    bar7(List.class::cast); //Compliant
+    bar7((o) -> (List<TestA[][]>) o); // Noncompliant {{Replace this lambda with method reference 'List.class::cast'.}}
+
+    bar8(List[].class::cast); //Compliant
+    bar8((o) -> (List<TestA[][]>[]) o); // Noncompliant {{Replace this lambda with method reference 'List[].class::cast'.}}
+
+    bar9(char.class::cast); //Compliant
+    bar9(Character.class::cast); //Compliant
+    bar9((o) -> (char) o); // Noncompliant {{Replace this lambda with method reference 'char.class::cast'.}}
+    bar9((o) -> (Character) o); // Noncompliant {{Replace this lambda with method reference 'Character.class::cast'.}}
   }
 
   void test2(Object param) {
     bar((o) -> { // Noncompliant {{Replace this lambda with method reference 'String.class::cast'.}}
       return (String)o;
     });
+  }
+
+  private static <I, R> Function<I, R> castingIdentity() {
+    return i -> (R) i; // Compliant, 'R.class::cast' won't compile.
   }
 
   void test3(Object param) {
@@ -162,5 +188,4 @@ class CastCheck {
     });
   }
 }
-
 
