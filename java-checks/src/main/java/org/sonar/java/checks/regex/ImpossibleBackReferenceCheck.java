@@ -22,6 +22,7 @@ package org.sonar.java.checks.regex;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,7 +31,11 @@ import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.AutomatonState;
 import org.sonar.java.regex.ast.BackReferenceTree;
 import org.sonar.java.regex.ast.CapturingGroupTree;
+import org.sonar.java.regex.ast.DisjunctionTree;
+import org.sonar.java.regex.ast.EndOfCapturingGroupState;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
+import org.sonar.java.regex.ast.RegexTree;
+import org.sonar.java.regex.ast.RepetitionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 @Rule(key = "S6001")
@@ -38,89 +43,89 @@ public class ImpossibleBackReferenceCheck extends AbstractRegexCheck {
 
   @Override
   public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
-    ValidBackReferenceFinder finder = new ValidBackReferenceFinder();
-    finder.findIn(regexForLiterals.getStartState());
-    CapturingGroupCollector groupCollector = new CapturingGroupCollector();
-    groupCollector.visit(regexForLiterals);
-    new ImpossibleBackReferenceFinder(finder.legalBackReferences, groupCollector.capturingGroups)
-      .visit(regexForLiterals);
-  }
-
-  private static class CapturingGroupCollector extends RegexBaseVisitor {
-    private final Map<String, CapturingGroupTree> capturingGroups = new HashMap<>();
-    @Override
-    public void visitCapturingGroup(CapturingGroupTree group) {
-      capturingGroups.put("" + group.getGroupNumber(), group);
-      group.getName().ifPresent(name -> capturingGroups.put(name, group));
-      super.visitCapturingGroup(group);
-    }
-  }
-
-  private static class ValidBackReferenceFinder {
-    private final Set<BackReferenceTree> legalBackReferences = new HashSet<>();
-    private final Set<String> groupNames = new HashSet<>();
-    private final Set<AutomatonState> visited = new HashSet<>();
-
-    public void findIn(AutomatonState state) {
-      if (visited.contains(state) || impossiblePath(state)) {
-        return;
-      }
-      visited.add(state);
-      for (AutomatonState succ : state.successors()) {
-        findIn(succ);
-      }
-      if (state instanceof CapturingGroupTree) {
-        CapturingGroupTree group = (CapturingGroupTree) state;
-        markBackReferences(group, group.continuation(), new HashSet<>());
-        groupNames.add("" + group.getGroupNumber());
-        group.getName().ifPresent(groupNames::add);
-      }
-    }
-
-    private boolean impossiblePath(AutomatonState state) {
-      return state instanceof BackReferenceTree && !groupNames.contains(((BackReferenceTree) state).groupName());
-    }
-
-    private void markBackReferences(CapturingGroupTree group, AutomatonState state, Set<AutomatonState> visited) {
-      if (visited.contains(state)) {
-        return;
-      }
-      visited.add(state);
-      if (state instanceof BackReferenceTree) {
-        BackReferenceTree backReference = (BackReferenceTree) state;
-        if ((backReference.isNumerical() && backReference.groupNumber() == group.getGroupNumber())
-          || (backReference.isNamedGroup() && group.getName().filter(name -> name.equals(backReference.groupName())).isPresent())) {
-          legalBackReferences.add(backReference);
-        }
-      }
-      for (AutomatonState successor : state.successors()) {
-        markBackReferences(group, successor, visited);
-      }
-    }
+    new ImpossibleBackReferenceFinder().visit(regexForLiterals);
   }
 
   private class ImpossibleBackReferenceFinder extends RegexBaseVisitor {
-    private final Set<BackReferenceTree> legalBackReferences;
-    private final Map<String, CapturingGroupTree> capturingGroups;
-
-    public ImpossibleBackReferenceFinder(Set<BackReferenceTree> legalBackReferences, Map<String, CapturingGroupTree> capturingGroups) {
-      this.legalBackReferences = legalBackReferences;
-      this.capturingGroups = capturingGroups;
-    }
+    private Set<BackReferenceTree> impossibleBackReferences = new LinkedHashSet<>();
+    private Map<String, CapturingGroupTree> capturingGroups = new HashMap<>();
 
     @Override
     public void visitBackReference(BackReferenceTree tree) {
-      if (!legalBackReferences.contains(tree)) {
+      if (!capturingGroups.containsKey(tree.groupName())) {
+        impossibleBackReferences.add(tree);
+      }
+    }
+
+    @Override
+    public void visitCapturingGroup(CapturingGroupTree group) {
+      super.visitCapturingGroup(group);
+      addGroup(group);
+    }
+
+    private void addGroup(CapturingGroupTree group) {
+      capturingGroups.put("" + group.getGroupNumber(), group);
+      group.getName().ifPresent(name -> capturingGroups.put(name, group));
+    }
+
+    @Override
+    public void visitDisjunction(DisjunctionTree tree) {
+      Map<String, CapturingGroupTree> originalCapturingGroups = capturingGroups;
+      Map<String, CapturingGroupTree> allCapturingGroups = new HashMap<>();
+      for (RegexTree alternative : tree.getAlternatives()) {
+        capturingGroups = new HashMap<>(originalCapturingGroups);
+        visit(alternative);
+        allCapturingGroups.putAll(capturingGroups);
+      }
+      capturingGroups = allCapturingGroups;
+    }
+
+    @Override
+    public void visitRepetition(RepetitionTree tree) {
+      Integer maximumRepetitions = tree.getQuantifier().getMaximumRepetitions();
+      if (maximumRepetitions != null && maximumRepetitions < 2) {
+        super.visitRepetition(tree);
+        return;
+      }
+      Set<BackReferenceTree> originalImpossibleBackReferences = impossibleBackReferences;
+      impossibleBackReferences = new LinkedHashSet<>();
+      Map<String, CapturingGroupTree> originalCapturingGroups = new HashMap<>(capturingGroups);
+      super.visitRepetition(tree);
+      if (!impossibleBackReferences.isEmpty()) {
+        capturingGroups = originalCapturingGroups;
+        findReachableGroups(tree.getElement(), tree.continuation(), impossibleBackReferences, new HashSet<>());
+        // Visit the body of the loop a second time, this time with the groups that could be set in the first iteration
+        impossibleBackReferences = originalImpossibleBackReferences;
+        super.visitRepetition(tree);
+      }
+    }
+
+    private void findReachableGroups(AutomatonState start, AutomatonState stop, Set<BackReferenceTree> preliminaryImpossibleReferences, Set<AutomatonState> visited) {
+      if (start == stop || (start instanceof BackReferenceTree && preliminaryImpossibleReferences.contains(start)) || visited.contains(start)) {
+        return;
+      }
+      visited.add(start);
+      if (start instanceof EndOfCapturingGroupState) {
+        addGroup(((EndOfCapturingGroupState) start).group());
+      }
+      for (AutomatonState successor: start.successors()) {
+        findReachableGroups(successor, stop, preliminaryImpossibleReferences, visited);
+      }
+    }
+
+    @Override
+    protected void after(RegexParseResult regexParseResult) {
+      for (BackReferenceTree backReference : impossibleBackReferences) {
         String message;
         List<RegexIssueLocation> secondaries = new ArrayList<>();
-        if (capturingGroups.containsKey(tree.groupName())) {
+        if (capturingGroups.containsKey(backReference.groupName())) {
           message = "Fix this backreference, so that it refers to a group that can be matched before it.";
-          CapturingGroupTree group = capturingGroups.get(tree.groupName());
+          CapturingGroupTree group = capturingGroups.get(backReference.groupName());
           secondaries.add(new RegexIssueLocation(group, "This group is used in a backreference before it is defined"));
         } else {
           message = "Fix this backreference - it refers to a capturing group that doesn't exist.";
         }
-        reportIssue(tree, message, null, secondaries);
+        reportIssue(backReference, message, null, secondaries);
       }
     }
   }

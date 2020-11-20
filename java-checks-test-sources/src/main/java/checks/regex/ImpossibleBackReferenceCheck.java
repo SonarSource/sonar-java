@@ -18,15 +18,29 @@ public class ImpossibleBackReferenceCheck {
     str.matches("(?<name>.)|\\k<name>"); // Noncompliant
     str.matches("(?:\\1(.))*"); // Noncompliant
     str.matches("\\1|(.)"); // Noncompliant
+    str.matches("(.)\\2(.)\\1"); // Noncompliant
+    str.matches("(?:\\1\\2|x(.))*"); // Noncompliant
+    str.matches("(.)(?:\\1\\2\\3|x(.))*"); // Noncompliant
+    str.matches("(\\1)"); // Noncompliant
+    str.matches("(\\1)*"); // Noncompliant
+    str.matches("(?:\\1|x(.))?"); // Noncompliant
+    str.matches("(?:\\1|x(.)){1,1}"); // Noncompliant
   }
 
   void compliant(String str) {
     str.matches("(.)\\1");
+    str.matches("(?:(.)\\1)*");
+    str.matches("(.)\\1(.)\\2");
     str.matches("(?:x(.)|\\1)*");
     str.matches("(?<name>)\\k<name>");
     str.matches("(?<name>)\\1");
     // This produces an FP in IntelliJ
     str.matches("(?:\\1|x(.))*");
+    str.matches("(?:\\1|x(.))+");
+    str.matches("(?:\\1|x(.)){0,2}");
+    str.matches("(?:\\1|x(.)){1,2}");
+    str.matches("(?:\\1\\2|(x)(.))*");
+    str.matches("(.)(?:\\1\\2|x(.))*");
   }
 
 }

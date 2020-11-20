@@ -68,7 +68,7 @@ class CapturingGroupTreeTest {
     testAutomaton(abc, abcItems, a, bc, bcItems, c);
   }
 
-  private void testAutomaton(GroupTree abc, List<RegexTree> abcItems, GroupTree a, GroupTree bc, List<RegexTree> bcItems, GroupTree c) {
+  private void testAutomaton(CapturingGroupTree abc, List<RegexTree> abcItems, CapturingGroupTree a, CapturingGroupTree bc, List<RegexTree> bcItems, CapturingGroupTree c) {
     assertThat(abc.incomingTransitionType()).isEqualTo(AutomatonState.TransitionType.EPSILON);
     assertSingleEdge(abc, abc.getElement(), AutomatonState.TransitionType.EPSILON);
     assertSingleEdge(abc.getElement(), a, AutomatonState.TransitionType.EPSILON);
@@ -76,14 +76,28 @@ class CapturingGroupTreeTest {
     NonCapturingGroupTree n = assertType(NonCapturingGroupTree.class, abcItems.get(1));
     RegexTree nElement = n.getElement();
     assertThat(nElement).isNotNull();
-    assertSingleEdge(a.getElement(), n, AutomatonState.TransitionType.EPSILON);
+    EndOfCapturingGroupState endOfA = getAndAssertEndOfCapturingGroup(a);
+    assertSingleEdge(a.getElement(), endOfA, AutomatonState.TransitionType.EPSILON);
+    assertSingleEdge(endOfA, n, AutomatonState.TransitionType.EPSILON);
     assertSingleEdge(n, nElement, AutomatonState.TransitionType.CHARACTER);
     assertSingleEdge(nElement, bc, AutomatonState.TransitionType.EPSILON);
     assertSingleEdge(bc, bc.getElement(), AutomatonState.TransitionType.EPSILON);
     assertSingleEdge(bc.getElement(), bcItems.get(0), AutomatonState.TransitionType.CHARACTER);
     assertSingleEdge(bcItems.get(0), c, AutomatonState.TransitionType.EPSILON);
     assertSingleEdge(c, c.getElement(), AutomatonState.TransitionType.CHARACTER);
-    assertSingleEdge(c.getElement(), abc.continuation(), AutomatonState.TransitionType.EPSILON);
+    EndOfCapturingGroupState endOfC = getAndAssertEndOfCapturingGroup(c);
+    EndOfCapturingGroupState endOfBC = getAndAssertEndOfCapturingGroup(bc);
+    EndOfCapturingGroupState endOfABC = getAndAssertEndOfCapturingGroup(abc);
+    assertSingleEdge(c.getElement(), endOfC, AutomatonState.TransitionType.EPSILON);
+    assertSingleEdge(endOfC, endOfBC, AutomatonState.TransitionType.EPSILON);
+    assertSingleEdge(endOfBC, endOfABC, AutomatonState.TransitionType.EPSILON);
+    assertSingleEdge(endOfABC, abc.continuation(), AutomatonState.TransitionType.EPSILON);
+  }
+
+  private EndOfCapturingGroupState getAndAssertEndOfCapturingGroup(CapturingGroupTree group) {
+    EndOfCapturingGroupState endOfGroup = assertType(EndOfCapturingGroupState.class, group.getElement().continuation());
+    assertThat(endOfGroup.group()).isSameAs(group);
+    return endOfGroup;
   }
 
 }
