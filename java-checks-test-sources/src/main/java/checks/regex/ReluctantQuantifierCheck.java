@@ -4,7 +4,21 @@ public class ReluctantQuantifierCheck {
 
   void noncompliant(String str) {
     str.matches("<.+?>"); // Noncompliant [[sc=19;ec=22]] {{Replace this use of a reluctant quantifier with "[^>]++".}}
+    str.matches("<\\S+?>"); // Noncompliant [[sc=19;ec=24]] {{Replace this use of a reluctant quantifier with "[^>\\s]++".}}
+    str.matches("<\\D+?>"); // Noncompliant [[sc=19;ec=24]] {{Replace this use of a reluctant quantifier with "[^>\\d]++".}}
+    str.matches("<\\W+?>"); // Noncompliant [[sc=19;ec=24]] {{Replace this use of a reluctant quantifier with "[^>\\w]++".}}
+    str.matches("<\\s+?>"); // Noncompliant [[sc=19;ec=24]] {{Replace this use of a reluctant quantifier with "[^>\\S]++".}}
+    str.matches("<\\d+?>"); // Noncompliant [[sc=19;ec=24]] {{Replace this use of a reluctant quantifier with "[^>\\D]++".}}
+    str.matches("<\\w+?>"); // Noncompliant [[sc=19;ec=24]] {{Replace this use of a reluctant quantifier with "[^>\\W]++".}}
+
     str.matches("<.{2,5}?>"); // Noncompliant [[sc=19;ec=26]] {{Replace this use of a reluctant quantifier with "[^>]{2,5}+".}}
+    str.matches("<\\S{2,5}?>"); // Noncompliant [[sc=19;ec=28]] {{Replace this use of a reluctant quantifier with "[^>\\s]{2,5}+".}}
+    str.matches("<\\D{2,5}?>"); // Noncompliant [[sc=19;ec=28]] {{Replace this use of a reluctant quantifier with "[^>\\d]{2,5}+".}}
+    str.matches("<\\W{2,5}?>"); // Noncompliant [[sc=19;ec=28]] {{Replace this use of a reluctant quantifier with "[^>\\w]{2,5}+".}}
+    str.matches("<\\s{2,5}?>"); // Noncompliant [[sc=19;ec=28]] {{Replace this use of a reluctant quantifier with "[^>\\S]{2,5}+".}}
+    str.matches("<\\d{2,5}?>"); // Noncompliant [[sc=19;ec=28]] {{Replace this use of a reluctant quantifier with "[^>\\D]{2,5}+".}}
+    str.matches("<\\w{2,5}?>"); // Noncompliant [[sc=19;ec=28]] {{Replace this use of a reluctant quantifier with "[^>\\W]{2,5}+".}}
+
     str.matches("<.{2,}?>"); // Noncompliant [[sc=19;ec=25]] {{Replace this use of a reluctant quantifier with "[^>]{2,}+".}}
     str.matches("\".*?\""); // Noncompliant [[sc=20;ec=23]] {{Replace this use of a reluctant quantifier with "[^\"]*+".}}
     str.matches(".*?\\w"); // Noncompliant [[sc=18;ec=21]] {{Replace this use of a reluctant quantifier with "\\W*+".}}
@@ -18,17 +32,41 @@ public class ReluctantQuantifierCheck {
     str.matches("<abc.*?>"); // Noncompliant [[sc=22;ec=25]] {{Replace this use of a reluctant quantifier with "[^>]*+".}}
     str.matches("<.+?>|otherstuff"); // Noncompliant [[sc=19;ec=22]] {{Replace this use of a reluctant quantifier with "[^>]++".}}
     str.matches("(<.+?>)*"); // Noncompliant [[sc=20;ec=23]] {{Replace this use of a reluctant quantifier with "[^>]++".}}
+
+    str.matches("\\S+?[abc]"); // Noncompliant [[sc=18;ec=23]] {{Replace this use of a reluctant quantifier with "[^abc\\s]++".}}
+    str.matches("\\D+?[abc]"); // Noncompliant [[sc=18;ec=23]] {{Replace this use of a reluctant quantifier with "[^abc\\d]++".}}
+    str.matches("\\W+?[abc]"); // Noncompliant [[sc=18;ec=23]] {{Replace this use of a reluctant quantifier with "[^abc\\w]++".}}
+    str.matches("\\s+?[abc]"); // Noncompliant [[sc=18;ec=23]] {{Replace this use of a reluctant quantifier with "[^abc\\S]++".}}
+    str.matches("\\d+?[abc]"); // Noncompliant [[sc=18;ec=23]] {{Replace this use of a reluctant quantifier with "[^abc\\D]++".}}
+    str.matches("\\w+?[abc]"); // Noncompliant [[sc=18;ec=23]] {{Replace this use of a reluctant quantifier with "[^abc\\W]++".}}
+
+    str.matches("\\S*?[abc]"); // Noncompliant [[sc=18;ec=23]] {{Replace this use of a reluctant quantifier with "[^abc\\s]*+".}}
+    str.matches("\\D*?[abc]"); // Noncompliant [[sc=18;ec=23]] {{Replace this use of a reluctant quantifier with "[^abc\\d]*+".}}
+    str.matches("\\W*?[abc]"); // Noncompliant [[sc=18;ec=23]] {{Replace this use of a reluctant quantifier with "[^abc\\w]*+".}}
+    str.matches("\\s*?[abc]"); // Noncompliant [[sc=18;ec=23]] {{Replace this use of a reluctant quantifier with "[^abc\\S]*+".}}
+    str.matches("\\d*?[abc]"); // Noncompliant [[sc=18;ec=23]] {{Replace this use of a reluctant quantifier with "[^abc\\D]*+".}}
+    str.matches("\\w*?[abc]"); // Noncompliant [[sc=18;ec=23]] {{Replace this use of a reluctant quantifier with "[^abc\\W]*+".}}
+
+    str.matches("\\s+?[^abc]"); // Noncompliant [[sc=18;ec=23]] {{Replace this use of a reluctant quantifier with "[abc\\s]++".}}
+
+    str.matches("\\d*?\\p{L}"); // Noncompliant [[sc=18;ec=23]] {{Replace this use of a reluctant quantifier with "[\\P{L}\\D]*+".}}
+    str.matches("\\D*?\\P{L}"); // Noncompliant [[sc=18;ec=23]] {{Replace this use of a reluctant quantifier with "[\\p{L}\\d]*+".}}
+
+    str.matches("\\p{L}*?\\D"); // Noncompliant [[sc=18;ec=26]] {{Replace this use of a reluctant quantifier with "[\\d\\P{L}]*+".}}
+    str.matches("\\P{L}*?\\d"); // Noncompliant [[sc=18;ec=26]] {{Replace this use of a reluctant quantifier with "[\\D\\p{L}]*+".}}
+
   }
 
   void compliant(String str) {
     str.matches("<[^>]++>");
     str.matches("<[^>]+>");
     str.matches("<[^>]+?>");
-    str.matches("<\\w+?>");
     str.matches("<.{42}?>"); // Adding a ? to a fixed quantifier is pointless, but also doesn't cause any backtracking issues
     str.matches("<.+>");
     str.matches("<.++>");
     str.matches("<--.?-->");
+    str.matches("<--.+?-->");
+    str.matches("<--.*?-->");
     str.matches("/\\*.?\\*/");
     str.matches("<[^>]+>?");
     str.matches("");
