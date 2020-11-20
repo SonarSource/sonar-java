@@ -29,6 +29,7 @@ import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -79,9 +80,24 @@ public class SpringConfigurationWithAutowiredFieldsCheck extends IssuableSubscri
     }
     VariableTree variable = (VariableTree) tree;
     Symbol variableSymbol = variable.symbol();
-    if (AUTOWIRED_ANNOTATIONS.stream().anyMatch(a -> variableSymbol.metadata().isAnnotatedWith(a))) {
-      autowiredFields.put(variableSymbol, variable);
+    SymbolMetadata metadata = variableSymbol.metadata();
+
+    for(String annotation: AUTOWIRED_ANNOTATIONS) {
+      List<SymbolMetadata.AnnotationValue> annotationValues = metadata.valuesForAnnotation(annotation);
+      if (annotationValues != null) {
+        if (annotationValues.stream().anyMatch(SpringConfigurationWithAutowiredFieldsCheck::isRequiredFalse)
+          && variable.initializer() != null) {
+          // Common pattern used to define a default value.
+          continue;
+        }
+        autowiredFields.put(variableSymbol, variable);
+      }
     }
+  }
+
+  private static boolean isRequiredFalse(SymbolMetadata.AnnotationValue annotationValue) {
+    Object value = annotationValue.value();
+    return "required".equals(annotationValue.name()) && Boolean.FALSE.equals(value);
   }
 
   private static void collectMethodsThatUseAutowiredFields(Tree tree, Map<Symbol, List<MethodTree>> methodsThatUseAutowiredFields) {
