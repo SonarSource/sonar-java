@@ -27,9 +27,11 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -39,9 +41,12 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
+import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S1612")
@@ -130,12 +135,32 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
     if (expr.is(Tree.Kind.TYPE_CAST)) {
       TypeCastTree typeCastTree = (TypeCastTree) expr;
       if (isSingleParamCast(typeCastTree.expression(), symbol)) {
-        return Optional.of(typeCastTree.type().symbolType().name());
+        return getTypeName(typeCastTree.type());
       }
     }
     return Optional.empty();
   }
+  
+  private static Optional<String> getTypeName(TypeTree type) {
+    if (type.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+      type = ((ParameterizedTypeTree) type).type();
+    }
+    if (type.is(Tree.Kind.IDENTIFIER) && !isGeneric((IdentifierTree) type)) {
+      return Optional.of(((IdentifierTree) type).name());
+    }
+    if (type.is(Tree.Kind.ARRAY_TYPE)) {
+      return getTypeName(((ArrayTypeTree) type).type()).map(x -> x + "[]");
+    }
+    if (type.is(Tree.Kind.PRIMITIVE_TYPE)) {
+      return Optional.of(((PrimitiveTypeTree) type).keyword().text());
+    }
+    return Optional.empty();
+  }
 
+  private static boolean isGeneric(IdentifierTree identifierTree) {
+    return (identifierTree instanceof IdentifierTreeImpl) && ((IdentifierTreeImpl) identifierTree).binding.toString().matches("<[A-Z]>");
+  }
+  
   private static boolean isSingleParamCast(ExpressionTree expression, Symbol symbol) {
     return expression.is(Tree.Kind.IDENTIFIER) && symbol.equals(((IdentifierTree) expression).symbol());
   }

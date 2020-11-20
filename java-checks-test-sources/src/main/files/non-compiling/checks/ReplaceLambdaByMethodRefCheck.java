@@ -220,6 +220,7 @@ class CastCheck {
   void bar2(java.util.function.BiFunction<Object, Object, String> function) { /* ... */ }
   void bar3(java.util.function.Function<Object, List<String>> function) { /* ... */ }
   void bar4(java.util.function.Function<Object, TestA> function) { /* ... */ }
+  void bar5(java.util.function.Function<Object, TestA[]> function) { /* ... */ }
 
   void test(Object param) {
     bar((o) -> (String)o); // Noncompliant {{Replace this lambda with method reference 'String.class::cast'.}}
@@ -232,6 +233,9 @@ class CastCheck {
     
     bar3(List.class::cast); //Compliant
     bar3((o) -> (List<String>) o); // Noncompliant {{Replace this lambda with method reference 'List.class::cast'.}}
+
+    bar5(TestA[].class::cast); //Compliant
+    bar5((o) -> (TestA[]) o); // Noncompliant {{Replace this lambda with method reference 'TestA[].class::cast'.}}
   }
 
   void test2(Object param) {
