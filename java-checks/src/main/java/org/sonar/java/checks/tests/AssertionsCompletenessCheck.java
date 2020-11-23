@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.tests;
 
-import com.google.common.base.MoreObjects;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -211,7 +210,7 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
       return;
     }
     Boolean previous = chainedToAnyMethodButFestExclusions;
-    chainedToAnyMethodButFestExclusions = MoreObjects.firstNonNull(chainedToAnyMethodButFestExclusions, false) || !FEST_LIKE_EXCLUSIONS.matches(mit);
+    chainedToAnyMethodButFestExclusions = ((chainedToAnyMethodButFestExclusions != null) && chainedToAnyMethodButFestExclusions) || !FEST_LIKE_EXCLUSIONS.matches(mit);
     scan(mit.methodSelect());
     // skip arguments
     chainedToAnyMethodButFestExclusions = previous;

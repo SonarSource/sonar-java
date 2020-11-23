@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Splitter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -98,12 +97,9 @@ public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner
   }
 
   private static boolean isValidIPV4Parts(String ip) {
-    for (String numberAsString : Splitter.on('.').split(ip)) {
-      if (Integer.valueOf(numberAsString) > 255) {
-        return false;
-      }
-    }
-    return true;
+    return Arrays.stream(ip.split("\\."))
+      .mapToInt(Integer::parseInt)
+      .allMatch(i -> i < 255);
   }
 
   private static Optional<String> extractIPV6(String value) {

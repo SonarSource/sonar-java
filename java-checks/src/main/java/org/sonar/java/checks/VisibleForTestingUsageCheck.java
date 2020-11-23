@@ -42,7 +42,8 @@ public class VisibleForTestingUsageCheck extends IssuableSubscriptionVisitor {
     "com.google.common.annotations.VisibleForTesting",
     "org.assertj.core.util.VisibleForTesting",
     "androidx.annotation.VisibleForTesting",
-    "org.apache.flink.annotation.VisibleForTesting"
+    "org.apache.flink.annotation.VisibleForTesting",
+    "org.sonar.java.annotation.VisibleForTesting"
   );
 
   @Override

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.helpers;
 
-import com.google.common.annotations.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,6 +33,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.PublicApiChecker;
 import org.sonar.java.collections.SetUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
