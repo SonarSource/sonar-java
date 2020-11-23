@@ -38,12 +38,6 @@ class RedundantThrowsDeclarationCheckTest {
       .onFile(nonCompilingTestSourcesPath("checks/RedundantThrowsDeclarationCheck.java"))
       .withCheck(new RedundantThrowsDeclarationCheck())
       .verifyNoIssues();
-
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/RedundantThrowsDeclarationCheck.java"))
-      .withCheck(new RedundantThrowsDeclarationCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 
 }

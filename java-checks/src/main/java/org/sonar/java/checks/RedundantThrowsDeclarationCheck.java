@@ -69,7 +69,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
   @Override
   public void visitNode(Tree tree) {
     ListTree<TypeTree> thrownList = ((MethodTree) tree).throwsClauses();
-    if (!hasSemantic() || thrownList.isEmpty()) {
+    if (thrownList.isEmpty()) {
       return;
     }
     checkMethodThrownList((MethodTree) tree, thrownList);
