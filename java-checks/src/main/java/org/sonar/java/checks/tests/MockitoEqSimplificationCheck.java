@@ -89,11 +89,11 @@ public class MockitoEqSimplificationCheck extends IssuableSubscriptionVisitor {
     }
 
     if (!eqs.isEmpty()) {
-      reportIssue(ExpressionUtils.methodName(eqs.get(0)), String.format(
+      reportIssue(eqs.get(0).methodSelect(), String.format(
         "Remove this%s useless \"eq(...)\" invocation; pass the values directly.", eqs.size() == 1 ? "" : " and every subsequent"),
         eqs.stream()
           .skip(1)
-          .map(eq -> new JavaFileScannerContext.Location("", ExpressionUtils.methodName(eq)))
+          .map(eq -> new JavaFileScannerContext.Location("", eq.methodSelect()))
           .collect(Collectors.toList()),
         null);
     }
