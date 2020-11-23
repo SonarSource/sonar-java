@@ -28,6 +28,14 @@ abstract class ThrownCheckedExceptions extends MySuperClass {
 
   abstract void bar();
   abstract void qix() throws UnknownException;
+  abstract AutoCloseable getAutoCloseableWithoutExceptionPlease(java.io.File file);
+
+  void foo15(java.io.File file) throws Exception { // Compliant - AutoCloseable.close() throws Exception
+      // java9+
+    try (ac) {
+      // do something
+    }
+  }
 }
 
 class MyException extends Exception {}

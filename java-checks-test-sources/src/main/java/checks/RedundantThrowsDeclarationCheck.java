@@ -17,13 +17,13 @@ public class RedundantThrowsDeclarationCheck {
   public void foo4() throws MyException {
   }
 
-  public void foo5() throws RuntimeException { // Noncompliant [[sc=29;ec=45]] {{Remove the declaration of thrown exception 'java.lang.RuntimeException' which is a runtime exception.}}
+  public void foo5() throws RuntimeException { // Compliant
   }
 
-  public void foo6() throws IllegalArgumentException { // Noncompliant {{Remove the declaration of thrown exception 'java.lang.IllegalArgumentException' which is a runtime exception.}}
+  public void foo6() throws IllegalArgumentException { // Compliant
   }
 
-  public void foo7() throws MyRuntimeException { // Noncompliant {{Remove the declaration of thrown exception 'checks.RedundantThrowsDeclarationCheck$MyRuntimeException' which is a runtime exception.}}
+  public void foo7() throws MyRuntimeException { // Compliant
   }
 
   public void foo8() throws MyException, Exception { // Noncompliant {{Remove the declaration of thrown exception 'checks.RedundantThrowsDeclarationCheck$MyException' which is a subclass of 'java.lang.Exception'.}}
@@ -38,10 +38,10 @@ public class RedundantThrowsDeclarationCheck {
   public void foo12() throws MyException, MyException, Throwable { // Noncompliant {{Remove the declaration of thrown exception 'checks.RedundantThrowsDeclarationCheck$MyException' which is a subclass of 'java.lang.Throwable'.}}
   }
 
-  public void foo13() throws MyRuntimeException, MyRuntimeException { // Noncompliant {{Remove the declaration of thrown exception 'checks.RedundantThrowsDeclarationCheck$MyRuntimeException' which is a runtime exception.}}
+  public void foo13() throws MyRuntimeException, MyRuntimeException { // Noncompliant {{Remove the redundant 'checks.RedundantThrowsDeclarationCheck$MyRuntimeException' thrown exception declaration(s).}}
   }
 
-  public void foo14() throws MyRuntimeException, Throwable { // Noncompliant [[sc=30;ec=48]] {{Remove the declaration of thrown exception 'checks.RedundantThrowsDeclarationCheck$MyRuntimeException' which is a subclass of 'java.lang.Throwable'.}}
+  public void foo14() throws MyRuntimeException, Throwable { // Compliant - being explicit with the runtime
   }
 
   public void foo15() throws Exception, Error {
@@ -54,7 +54,7 @@ public class RedundantThrowsDeclarationCheck {
   }
 
   interface MyInterface<T> {
-    T plop() throws IllegalStateException; // Noncompliant {{Remove the declaration of thrown exception 'java.lang.IllegalStateException' which is a runtime exception.}}
+    T plop() throws IllegalStateException; // Compliant
   }
 
   static class MyClass implements MyInterface<String> {
@@ -191,7 +191,7 @@ abstract class ThrownCheckedExceptions extends MySuperClass {
   abstract void gul(java.util.function.Function<Object, String> s);
   abstract void mok() throws MyException;
   abstract void puf() throws MyError;
-  abstract void kal() throws MyRuntimeException; // Noncompliant
+  abstract void kal() throws MyRuntimeException; // Compliant
   abstract <X extends Exception> void throwIfException(Throwable t, Class<X> declaredType) throws X;
   static class MyClass { }
   static class MyOtherClass<X> {
@@ -403,11 +403,21 @@ class RedundantThrowsDeclarationB {
   }
 }
 
-/*
+class StrangeException<T extends Exception> {
+  T t;
+
+  private void foo() throws T { // Compliant
+    throw t;
+  }
+
+  void bar() throws IOException {
+    new StrangeException<IOException>().foo();
+  }
+}
+
 enum RedundantThrowsDeclarationMyEnum {
   AAA(7), BBB(2);
 
-  RedundantThrowsDeclarationMyEnum(int i) throws IllegalAccessException {
+  RedundantThrowsDeclarationMyEnum(int i) throws RuntimeException {
   }
 }
-*/

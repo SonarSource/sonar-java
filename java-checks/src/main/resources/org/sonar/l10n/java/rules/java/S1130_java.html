@@ -1,31 +1,26 @@
 <p>An exception in a <code>throws</code> declaration in Java is superfluous if it is:</p>
-<ul>
-  <li> listed multiple times </li>
-  <li> a subclass of another listed exception </li>
-  <li> a <code>RuntimeException</code>, or one of its descendants </li>
-  <li> completely unnecessary because the declared exception type cannot actually be thrown </li>
-</ul>
+<p> * listed multiple times</p>
+<p> * a subclass of another listed exception</p>
+<p> * completely unnecessary because the declared exception type cannot actually be thrown</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 void foo() throws MyException, MyException {}  // Noncompliant; should be listed once
 void bar() throws Throwable, Exception {}  // Noncompliant; Exception is a subclass of Throwable
-void baz() throws RuntimeException {}  // Noncompliant; RuntimeException can always be thrown
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
 void foo() throws MyException {}
 void bar() throws Throwable {}
-void baz() {}
 </pre>
 <h2>Exceptions</h2>
 <p>The rule will not raise any issue for exceptions that cannot be thrown from the method body:</p>
-<ul>
-  <li> in overriding and implementation methods </li>
-  <li> in interface <code>default</code> methods </li>
-  <li> in non-private methods that only <code>throw</code>, have empty bodies, or a single return statement . </li>
-  <li> in overridable methods (non-final, or not member of a final class, non-static, non-private), if the exception is documented with a proper
-  javadoc. </li>
-</ul>
+<p> * in overriding and implementation methods</p>
+<p> * in interface <code>default</code> methods</p>
+<p> * in non-private methods that only <code>throw</code>, have empty bodies, or a single return statement.</p>
+<p> * in overridable methods (non-final, or not member of a final class, non-static, non-private), if the exception is documented with a proper
+JavaDoc</p>
+<p>Also, the rule won't raise issues on <code>RuntimeException</code>, or one of its descendants, because explicating runtime exceptions which
+could be thrown can ultimately help the method's users, and can even be considered as good practice.</p>
 <pre>
 class A extends B {
   @Override
@@ -34,6 +29,8 @@ class A extends B {
   }
 
   public void foo() throws IOException {}
+
+  public void qix() throws MyRuntimeException {}
 
   protected void bar() throws IOException {
     throw new UnsupportedOperationException("This method should be implemented in subclasses");
