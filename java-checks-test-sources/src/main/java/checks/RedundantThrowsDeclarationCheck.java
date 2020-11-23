@@ -1,3 +1,6 @@
+package checks;
+
+import java.io.IOException;
 import java.text.ParseException;
 
 public class RedundantThrowsDeclarationCheck {
@@ -20,25 +23,25 @@ public class RedundantThrowsDeclarationCheck {
   public void foo6() throws IllegalArgumentException { // Noncompliant {{Remove the declaration of thrown exception 'java.lang.IllegalArgumentException' which is a runtime exception.}}
   }
 
-  public void foo7() throws MyRuntimeException { // Noncompliant {{Remove the declaration of thrown exception 'RedundantThrowsDeclarationCheck$MyRuntimeException' which is a runtime exception.}}
+  public void foo7() throws MyRuntimeException { // Noncompliant {{Remove the declaration of thrown exception 'checks.RedundantThrowsDeclarationCheck$MyRuntimeException' which is a runtime exception.}}
   }
 
-  public void foo8() throws MyException, Exception { // Noncompliant {{Remove the declaration of thrown exception 'RedundantThrowsDeclarationCheck$MyException' which is a subclass of 'java.lang.Exception'.}}
+  public void foo8() throws MyException, Exception { // Noncompliant {{Remove the declaration of thrown exception 'checks.RedundantThrowsDeclarationCheck$MyException' which is a subclass of 'java.lang.Exception'.}}
   }
 
   public void foo9() throws Error, Throwable { // Noncompliant {{Remove the declaration of thrown exception 'java.lang.Error' which is a subclass of 'java.lang.Throwable'.}}
   }
 
-  public void foo11() throws MyException, MyException { // Noncompliant {{Remove the redundant 'RedundantThrowsDeclarationCheck$MyException' thrown exception declaration(s).}}
+  public void foo11() throws MyException, MyException { // Noncompliant {{Remove the redundant 'checks.RedundantThrowsDeclarationCheck$MyException' thrown exception declaration(s).}}
   }
 
-  public void foo12() throws MyException, MyException, Throwable { // Noncompliant {{Remove the declaration of thrown exception 'RedundantThrowsDeclarationCheck$MyException' which is a subclass of 'java.lang.Throwable'.}}
+  public void foo12() throws MyException, MyException, Throwable { // Noncompliant {{Remove the declaration of thrown exception 'checks.RedundantThrowsDeclarationCheck$MyException' which is a subclass of 'java.lang.Throwable'.}}
   }
 
-  public void foo13() throws MyRuntimeException, MyRuntimeException { // Noncompliant {{Remove the declaration of thrown exception 'RedundantThrowsDeclarationCheck$MyRuntimeException' which is a runtime exception.}}
+  public void foo13() throws MyRuntimeException, MyRuntimeException { // Noncompliant {{Remove the declaration of thrown exception 'checks.RedundantThrowsDeclarationCheck$MyRuntimeException' which is a runtime exception.}}
   }
 
-  public void foo14() throws MyRuntimeException, Throwable { // Noncompliant [[sc=30;ec=48]] {{Remove the declaration of thrown exception 'RedundantThrowsDeclarationCheck$MyRuntimeException' which is a subclass of 'java.lang.Throwable'.}}
+  public void foo14() throws MyRuntimeException, Throwable { // Noncompliant [[sc=30;ec=48]] {{Remove the declaration of thrown exception 'checks.RedundantThrowsDeclarationCheck$MyRuntimeException' which is a subclass of 'java.lang.Throwable'.}}
   }
 
   public void foo15() throws Exception, Error {
@@ -50,11 +53,12 @@ public class RedundantThrowsDeclarationCheck {
   public class MyRuntimeException extends RuntimeException {
   }
 
-  static interface MyInterface<T> {
-    public T plop() throws IllegalStateException; // Noncompliant {{Remove the declaration of thrown exception 'java.lang.IllegalStateException' which is a runtime exception.}}
+  interface MyInterface<T> {
+    T plop() throws IllegalStateException; // Noncompliant {{Remove the declaration of thrown exception 'java.lang.IllegalStateException' which is a runtime exception.}}
   }
 
   static class MyClass implements MyInterface<String> {
+    @Override
     public String plop() {
       return "";
     }
@@ -66,7 +70,7 @@ abstract class MySuperClass {
 }
 
 abstract class ThrownCheckedExceptions extends MySuperClass {
-  public ThrownCheckedExceptions(String s) throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'MyException', as it cannot be thrown from constructor's body.}}
+  public ThrownCheckedExceptions(String s) throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'checks.MyException', as it cannot be thrown from constructor's body.}}
     bar();
   }
 
@@ -75,22 +79,13 @@ abstract class ThrownCheckedExceptions extends MySuperClass {
     bar();
   }
 
-  void foo0() throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'MyException', as it cannot be thrown from method's body.}}
+  void foo0() throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'checks.MyException', as it cannot be thrown from method's body.}}
     bar();
   }
 
-  void foo1() throws MyException { // Compliant - unknown method is called
-    unknownMethod();
-    bar();
-  }
-
-  void foo2() throws MyException { // Compliant - unknown exception is thrown by qix
-    qix();
-  }
-
-  void foo3() throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'MyException', as it cannot be thrown from method's body.}}
+  void foo3() throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'checks.MyException', as it cannot be thrown from method's body.}}
     new MyClass() {
-      void foo() {
+      void foo() throws MyException {
         throw new MyException();
       }
     };
@@ -127,7 +122,7 @@ abstract class ThrownCheckedExceptions extends MySuperClass {
   }
 
   protected Object readResolve() throws java.io.ObjectStreamException { // Compliant - Serializable contract
-    // do nothing
+    return null;
   }
 
   int foo9() throws MyException { // Compliant - designed for extension
@@ -162,15 +157,7 @@ abstract class ThrownCheckedExceptions extends MySuperClass {
     }
   }
 
-  void foo15_java9(java.io.File file) throws Exception { // Compliant - AutoCloseable.close() throws Exception
-    final AutoCloseable ac = getAutoCloseableWithoutExceptionPlease(file);
-    try (ac) {
-      // do something
-    }
-
-  }
-
-  void foo16(java.io.File file) throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'MyException', as it cannot be thrown from method's body.}}
+  void foo16(java.io.File file) throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'checks.MyException', as it cannot be thrown from method's body.}}
     try (MyAutoCloseable mac = getAutoCloseableWithoutExceptionPlease(file)) {
       // do something
     }
@@ -182,14 +169,8 @@ abstract class ThrownCheckedExceptions extends MySuperClass {
     }
   }
 
-  void foo18(java.io.File file) throws ParseException { // Noncompliant {{Remove the declaration of thrown exception 'java.text.ParseException', as it cannot be thrown from method's body.}}
+  void foo18(java.io.File file) throws ParseException, IOException { // Noncompliant {{Remove the declaration of thrown exception 'java.text.ParseException', as it cannot be thrown from method's body.}}
     try (MyCloseable mac = getMyCloseable(file)) {
-      // do something
-    }
-  }
-
-  void foo19(java.io.File file) throws ParseException { // Compliant if we can't resolve types
-    try (UnknownClass mac = getUnknownClass(file)) {
       // do something
     }
   }
@@ -207,7 +188,6 @@ abstract class ThrownCheckedExceptions extends MySuperClass {
   }
 
   abstract void bar();
-  abstract void qix() throws UnknownException;
   abstract void gul(java.util.function.Function<Object, String> s);
   abstract void mok() throws MyException;
   abstract void puf() throws MyError;
@@ -263,35 +243,41 @@ class MyException2 extends Exception {}
 abstract class NonThrownExceptionClass {
   abstract void bar();
 
+  static void qix() {
+  }
+
   final class FinalClass {
 
     /**
      * @throws MyException proper javadoc description
      */
-    void nonOverrideableMethod() throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'MyException', as it cannot be thrown from method's body.}}
+    void nonOverrideableMethod() throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'checks.MyException', as it cannot be thrown from method's body.}}
       bar();
     }
   }
 
-  class NormalClass {
+  static class NormalClass {
+
+    void bar() {}
+
     /**
      * @exception MyException proper javadoc description
      */
-    private void nonOverrideableMethod1() throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'MyException', as it cannot be thrown from method's body.}}
+    private void nonOverrideableMethod1() throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'checks.MyException', as it cannot be thrown from method's body.}}
       bar();
     }
 
     /**
      * @throws MyException proper javadoc description
      */
-    static void nonOverrideableMethod2() throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'MyException', as it cannot be thrown from method's body.}}
-      bar();
+    static void nonOverrideableMethod2() throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'checks.MyException', as it cannot be thrown from method's body.}}
+      qix();
     }
 
     /**
      * @throws MyException proper javadoc description
      */
-    final void nonOverrideableMethod3() throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'MyException', as it cannot be thrown from method's body.}}
+    final void nonOverrideableMethod3() throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'checks.MyException', as it cannot be thrown from method's body.}}
       bar();
     }
 
@@ -334,20 +320,15 @@ abstract class NonThrownExceptionClass {
   }
 }
 
-abstract class Test {
-  abstract void foo() throws Unknown, Unknown;
-}
-
-class Parent {
-  public Parent() throws IllegalAccessException { // Compliant
+class RedundantThrowsDeclarationParent {
+  public RedundantThrowsDeclarationParent() throws IllegalAccessException { // Compliant
     throw new IllegalAccessException();
   }
 
-  public Parent(String a) {
-
+  public RedundantThrowsDeclarationParent(String a) {
   }
 
-  public Parent(String a, String b) throws IllegalAccessException { // Compliant
+  public RedundantThrowsDeclarationParent(String a, String b) throws IllegalAccessException { // Compliant
     foo();
   }
 
@@ -356,39 +337,39 @@ class Parent {
   }
 }
 
-class Child extends Parent {
+class RedundantThrowsDeclarationChild extends RedundantThrowsDeclarationParent {
 
-  public Child(Integer a) throws IllegalAccessException { // Compliant, implicit call can throw IllegalAccessException
+  public RedundantThrowsDeclarationChild(Integer a) throws IllegalAccessException { // Compliant, implicit call can throw IllegalAccessException
     // implicit call to parent constructor
     System.out.println("a:" + a);
   }
 
-  public Child(Long a) throws IllegalAccessException { // Compliant, equivalent to "Child(Integer a)"
+  public RedundantThrowsDeclarationChild(Long a) throws IllegalAccessException { // Compliant, equivalent to "Child(Integer a)"
     super();
     System.out.println("a:" + a);
   }
 
-  public Child(Float a) throws IllegalAccessException { // Noncompliant
+  public RedundantThrowsDeclarationChild(Float a) throws IllegalAccessException { // Noncompliant
     this(4.2, 4.2);
     System.out.println("a:" + a);
   }
 
-  public Child(Double a) throws IllegalAccessException { // Noncompliant
+  public RedundantThrowsDeclarationChild(Double a) throws IllegalAccessException { // Noncompliant
     super("a:" + a);
     System.out.println("a:" + a);
   }
 
-  public Child(Integer a, Integer b) throws IllegalAccessException { // Compliant, call to Parent that calls foo, that thows IllegalAccessException
+  public RedundantThrowsDeclarationChild(Integer a, Integer b) throws IllegalAccessException { // Compliant, call to Parent that calls foo, that thows IllegalAccessException
     super("a:" + a, " b:" + a);
     System.out.println("a:" + a);
   }
 
-  public Child(Double d1, Double d2) {
+  public RedundantThrowsDeclarationChild(Double d1, Double d2) {
     super("a");
   }
 }
 
-class A {
+class RedundantThrowsDeclarationA {
   class Parent1 {
     public Parent1() throws IllegalAccessException { // Compliant
       throw new IllegalAccessException();
@@ -399,12 +380,13 @@ class A {
 
   class Child1 extends Parent1 {
     public Child1(Long a) throws IllegalAccessException { // Noncompliant
-      A.this.super("a:" + a);
+      RedundantThrowsDeclarationA.this.super("a:"
+        + a);
     }
   }
 }
 
-class B {
+class RedundantThrowsDeclarationB {
   class Parent2{
     public Parent2() throws IllegalAccessException { // Compliant
       throw new IllegalAccessException();
@@ -421,16 +403,11 @@ class B {
   }
 }
 
-class C extends UnknownParent {
-  public C() throws IllegalAccessException {
-
-  }
-}
-
-enum MyEnum {
+/*
+enum RedundantThrowsDeclarationMyEnum {
   AAA(7), BBB(2);
 
-  MyEnum(int i) throws IllegalAccessException {
+  RedundantThrowsDeclarationMyEnum(int i) throws IllegalAccessException {
   }
 }
-
+*/
