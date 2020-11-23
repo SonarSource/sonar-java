@@ -89,10 +89,8 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
       String fullyQualifiedName = exceptionType.fullyQualifiedName();
       if (!reported.contains(fullyQualifiedName)) {
         String superTypeName = isSubclassOfAny(exceptionType, thrownList);
-        if (superTypeName != null) {
+        if (superTypeName != null && !exceptionType.isSubtypeOf("java.lang.RuntimeException")) {
           reportIssue(typeTree, String.format("Remove the declaration of thrown exception '%s' which is a subclass of '%s'.", fullyQualifiedName, superTypeName));
-        } else if (exceptionType.isSubtypeOf("java.lang.RuntimeException")) {
-          reportIssue(typeTree, String.format("Remove the declaration of thrown exception '%s' which is a runtime exception.", fullyQualifiedName));
         } else if (declaredMoreThanOnce(fullyQualifiedName, thrownList)) {
           reportIssue(typeTree, String.format("Remove the redundant '%s' thrown exception declaration(s).", fullyQualifiedName));
         } else if (canNotBeThrown(methodTree, exceptionType, thrownExceptions) && (!isOverridableMethod || undocumentedExceptionNames.contains(exceptionType.name()))) {
@@ -112,12 +110,8 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
     if (isOverridingOrDesignedForExtension(methodTree)
       || !exceptionType.isSubtypeOf("java.lang.Exception")
       || exceptionType.isSubtypeOf("java.lang.RuntimeException")
-      || thrownExceptions == null) {
-      return false;
-    }
-
-    if (thrownExceptions.stream().anyMatch(JUtils::isTypeVar)) {
-      // should be handled by SONARJAVA-1778 - type substitution not applied on thrown type when parameterized on parametric methods
+      || thrownExceptions == null
+      || thrownExceptions.stream().anyMatch(JUtils::isTypeVar)) {
       return false;
     }
 
@@ -261,6 +255,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
       if (resource.is(Tree.Kind.VARIABLE)) {
         return ((VariableTree) resource).type().symbolType();
       }
+      // Java9+
       return ((TypeTree) resource).symbolType();
     }
 
