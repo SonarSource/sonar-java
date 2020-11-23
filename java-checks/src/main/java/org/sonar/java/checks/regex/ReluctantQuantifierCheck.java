@@ -24,9 +24,12 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.SimplifiedRegexCharacterClass;
 import org.sonar.java.regex.RegexParseResult;
+import org.sonar.java.regex.ast.CharacterClassElementTree;
 import org.sonar.java.regex.ast.CharacterClassTree;
 import org.sonar.java.regex.ast.EscapedCharacterClassTree;
+import org.sonar.java.regex.ast.FlagSet;
 import org.sonar.java.regex.ast.Quantifier;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
 import org.sonar.java.regex.ast.RegexTree;
@@ -59,13 +62,12 @@ public class ReluctantQuantifierCheck extends AbstractRegexCheck {
           });
       }
     }
-    
+
     private Optional<RegexTree> getReluctantlyQuantifiedElement(RepetitionTree repetition) {
       return (repetition.getQuantifier().getModifier() == Quantifier.Modifier.RELUCTANT
-        && !repetition.getQuantifier().isFixed() 
-        && (repetition.getElement().is(RegexTree.Kind.DOT) || repetition.getElement().is(RegexTree.Kind.ESCAPED_CHARACTER_CLASS))) ?
-        Optional.of(repetition.getElement()) :
-        Optional.empty();
+        && !repetition.getQuantifier().isFixed()
+        && (repetition.getElement().is(RegexTree.Kind.DOT) || repetition.getElement().is(RegexTree.Kind.ESCAPED_CHARACTER_CLASS))) ? Optional.of(repetition.getElement())
+          : Optional.empty();
     }
 
     private String makePossessive(Quantifier quantifier) {
@@ -78,6 +80,9 @@ public class ReluctantQuantifierCheck extends AbstractRegexCheck {
     }
 
     private Optional<String> findNegatedCharacterClassFor(RegexTree tree, @Nullable EscapedCharacterClassTree base) {
+      if (tree instanceof CharacterClassElementTree && hasNoIntersection(((CharacterClassElementTree) tree), base)) {
+        return Optional.empty();
+      }
       String result;
       switch (tree.kind()) {
         case PLAIN_CHARACTER:
@@ -102,12 +107,14 @@ public class ReluctantQuantifierCheck extends AbstractRegexCheck {
       }
       return Optional.of(result);
     }
-    
+
+    private boolean hasNoIntersection(CharacterClassElementTree tree, @Nullable CharacterClassElementTree base) {
+      return base != null && !new SimplifiedRegexCharacterClass(base, new FlagSet()).intersects(new SimplifiedRegexCharacterClass(tree, new FlagSet()), false);
+    }
+
     private String escapedCharacterFollowedByEscapedCharacter(EscapedCharacterClassTree escapedClass, String ignoredSymbol) {
       String negatedCharacter = "\\\\" + negateEscapedCharacterClassType(escapedClass.getType()) + getProperty(escapedClass);
-      return ignoredSymbol.isEmpty() ?
-        negatedCharacter :
-        String.format("[%s%s]", negatedCharacter, ignoredSymbol);
+      return ignoredSymbol.isEmpty() ? negatedCharacter : String.format("[%s%s]", negatedCharacter, ignoredSymbol);
     }
 
     private String getProperty(EscapedCharacterClassTree escapedClass) {
@@ -117,10 +124,11 @@ public class ReluctantQuantifierCheck extends AbstractRegexCheck {
     private char negateEscapedCharacterClassType(char type) {
       return Character.isLowerCase(type) ? Character.toUpperCase(type) : Character.toLowerCase(type);
     }
+
     private String negateEscapedCharacter(@Nullable EscapedCharacterClassTree escapedClass) {
       return (escapedClass == null) ? "" : escapedCharacterFollowedByEscapedCharacter(escapedClass, "");
     }
-    
+
     private String escapedCharacterToString(@Nullable EscapedCharacterClassTree escapedClass) {
       return (escapedClass == null) ? "" : ("\\\\" + escapedClass.getType() + getProperty(escapedClass));
     }
