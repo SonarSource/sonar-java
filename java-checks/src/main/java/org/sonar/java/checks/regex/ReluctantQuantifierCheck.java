@@ -29,7 +29,6 @@ import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.CharacterClassElementTree;
 import org.sonar.java.regex.ast.CharacterClassTree;
 import org.sonar.java.regex.ast.EscapedCharacterClassTree;
-import org.sonar.java.regex.ast.FlagSet;
 import org.sonar.java.regex.ast.Quantifier;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
 import org.sonar.java.regex.ast.RegexTree;
@@ -54,8 +53,9 @@ public class ReluctantQuantifierCheck extends AbstractRegexCheck {
       List<RegexTree> items = tree.getItems();
       if (items.size() >= 2 && items.get(items.size() - 2).is(RegexTree.Kind.REPETITION)) {
         RepetitionTree repetition = (RepetitionTree) items.get(items.size() - 2);
-        getReluctantlyQuantifiedElement(repetition).flatMap(element -> findNegatedCharacterClassFor(items.get(items.size() - 1),
-          element.is(RegexTree.Kind.DOT) ? null : (EscapedCharacterClassTree) element)).ifPresent(negatedClass -> {
+        getReluctantlyQuantifiedElement(repetition).flatMap(element -> 
+          findNegatedCharacterClassFor(items.get(items.size() - 1), getBaseCharacter(element)))
+          .ifPresent(negatedClass -> {
             String newQuantifier = makePossessive(repetition.getQuantifier());
             String message = String.format("Replace this use of a reluctant quantifier with \"%s%s\".", negatedClass, newQuantifier);
             reportIssue(repetition, String.format(message, negatedClass), null, Collections.emptyList());
@@ -108,8 +108,18 @@ public class ReluctantQuantifierCheck extends AbstractRegexCheck {
       return Optional.of(result);
     }
 
+    @Nullable
+    private EscapedCharacterClassTree getBaseCharacter(RegexTree tree) {
+      return tree.is(RegexTree.Kind.DOT) ? null : (EscapedCharacterClassTree) tree;
+    }
+
     private boolean hasNoIntersection(CharacterClassElementTree tree, @Nullable CharacterClassElementTree base) {
-      return base != null && !new SimplifiedRegexCharacterClass(base, new FlagSet()).intersects(new SimplifiedRegexCharacterClass(tree, new FlagSet()), false);
+      if (base == null) {
+        return false;
+      }
+      SimplifiedRegexCharacterClass baseSimplifiedCharacterClass = new SimplifiedRegexCharacterClass(base, getActiveFlagSet());
+      SimplifiedRegexCharacterClass treeSimplifiedCharacterClass = new SimplifiedRegexCharacterClass(tree, getActiveFlagSet());
+      return !baseSimplifiedCharacterClass.intersects(treeSimplifiedCharacterClass, false);
     }
 
     private String escapedCharacterFollowedByEscapedCharacter(EscapedCharacterClassTree escapedClass, String ignoredSymbol) {
