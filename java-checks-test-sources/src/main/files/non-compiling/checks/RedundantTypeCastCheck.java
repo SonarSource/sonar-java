@@ -161,4 +161,11 @@ class FP_S1905 {
 
   void foo(Function<String, String> function) {
   }
+
+  void main222() {
+    foo((FFunction<String>) NotOverloaded::xxx); // Compliant
+  }
+
+  void foo222(FFunction<String, String> function) {
+  }
 }

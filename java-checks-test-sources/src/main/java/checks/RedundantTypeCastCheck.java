@@ -466,3 +466,30 @@ class FP_S1905 {
   void rawBar(Supplier s) {
   }
 }
+
+class FpWithVarargs {
+
+  static class Vargargs {
+    static String varargs(String... arg) {
+      return null;
+    }
+  }
+  
+  void main() {
+    func((Function<String, String>) Vargargs::varargs); // Compliant, cast is mandatory
+
+    func((Supplier<String>) Vargargs::varargs); // Compliant, cast is mandatory
+    
+    func1((Function<String, String>) Vargargs::varargs); // Noncompliant
+  }
+  
+  void func(Supplier<String> supplier) {
+  }
+
+  void func(Function<String, String> function) {
+  }
+
+  void func1(Function<String, String> function) {
+  }
+  
+}
