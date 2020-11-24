@@ -21,6 +21,8 @@ package org.sonar.java.checks.helpers;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NavigableMap;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 import org.sonar.java.regex.ast.CharacterClassElementTree;
@@ -85,6 +87,33 @@ public class SimplifiedRegexCharacterClass {
   private boolean hasEntryBetween(int from, int to) {
     Map.Entry<Integer, CharacterClassElementTree> before = contents.floorEntry(from);
     return ((before != null && before.getValue() != null) || !contents.subMap(from, false, to, false).isEmpty());
+  }
+
+  public boolean supersetOf(SimplifiedRegexCharacterClass that, boolean defaultAnswer) {
+    if (that.containsUnknownCharacters && !defaultAnswer) {
+      return false;
+    }
+    Iterator<Map.Entry<Integer, CharacterClassElementTree>> thatIter = that.contents.entrySet().iterator();
+    if (!thatIter.hasNext()) {
+      // that.contents is empty, any set is a superset of it
+      return true;
+    }
+    Map.Entry<Integer, CharacterClassElementTree> thatEntry = thatIter.next();
+    while (thatIter.hasNext()) {
+      Map.Entry<Integer, CharacterClassElementTree> thatNextEntry = thatIter.next();
+      if (thatEntry.getValue() != null) {
+        Map.Entry<Integer, CharacterClassElementTree> thisBefore = contents.floorEntry(thatEntry.getKey());
+        if (thisBefore == null || thisBefore.getValue() == null) {
+          return false;
+        }
+        NavigableMap<Integer, CharacterClassElementTree> thisSubMap = contents.subMap(thatEntry.getKey(), false, thatNextEntry.getKey(), false);
+        if (thisSubMap.values().stream().anyMatch(Objects::isNull)) {
+          return false;
+        }
+      }
+      thatEntry = thatNextEntry;
+    }
+    return true;
   }
 
   public void addRange(int from, int to, CharacterClassElementTree tree) {
