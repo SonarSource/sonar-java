@@ -26,7 +26,8 @@ public class ReluctantQuantifierCheck {
     str.matches(".*?\\P{L}"); // Noncompliant [[sc=18;ec=21]] {{Replace this use of a reluctant quantifier with "\\p{L}*+".}}
     str.matches("\\[.*?\\]"); // Noncompliant [[sc=21;ec=24]] {{Replace this use of a reluctant quantifier with "[^\\]]*+".}}
     str.matches(".+?[abc]"); // Noncompliant [[sc=18;ec=21]] {{Replace this use of a reluctant quantifier with "[^abc]++".}}
-    
+    str.matches("(?i:.*?[a-z])"); // Noncompliant [[sc=22;ec=25]] {{Replace this use of a reluctant quantifier with "[^a-z]*+".}}
+
     // This replacement might not be equivalent in case of full match, but is equivalent in case of split
     str.matches(".+?[^abc]"); // Noncompliant [[sc=18;ec=21]] {{Replace this use of a reluctant quantifier with "[abc]++".}}
     
