@@ -22,11 +22,12 @@ package org.sonar.java.regex.ast;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-public class StartState implements AutomatonState {
+public class StartState extends ActiveFlagsState {
 
   private final AutomatonState continuation;
 
-  public StartState(AutomatonState continuation) {
+  public StartState(AutomatonState continuation, FlagSet activeFlags) {
+    super(activeFlags);
     this.continuation = continuation;
   }
 

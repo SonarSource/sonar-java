@@ -21,6 +21,7 @@ package org.sonar.java.checks.helpers;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.regex.ast.FinalState;
+import org.sonar.java.regex.ast.FlagSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,7 +43,7 @@ class OrderedStatePairCacheTest {
   }
 
   private static OrderedStatePair createPair() {
-    return new OrderedStatePair(new FinalState(), new FinalState());
+    return new OrderedStatePair(new FinalState(new FlagSet()), new FinalState(new FlagSet()));
   }
 
 }

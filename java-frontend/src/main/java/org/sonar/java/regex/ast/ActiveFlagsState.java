@@ -21,24 +21,18 @@ package org.sonar.java.regex.ast;
 
 import javax.annotation.Nonnull;
 
-public class NegationState extends ActiveFlagsState {
+public abstract class ActiveFlagsState implements AutomatonState {
 
-  private final AutomatonState continuation;
+  private final FlagSet activeFlags;
 
-  public NegationState(AutomatonState continuation, FlagSet activeFlags) {
-    super(activeFlags);
-    this.continuation = continuation;
+  protected ActiveFlagsState(FlagSet activeFlags) {
+    this.activeFlags = activeFlags;
   }
 
   @Nonnull
   @Override
-  public AutomatonState continuation() {
-    return continuation;
+  public FlagSet activeFlags() {
+    return activeFlags;
   }
 
-  @Nonnull
-  @Override
-  public TransitionType incomingTransitionType() {
-    return TransitionType.NEGATION;
-  }
 }

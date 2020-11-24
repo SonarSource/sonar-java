@@ -47,7 +47,7 @@ class AutomatonStateTest {
           "DotTree<flags: s:15>\n" +
           "NonCapturingGroupTree<flags: u:21>\n" +
           "CapturingGroupTree<flags: u:21>\n" +
-          "SequenceTree\n" +
+          "SequenceTree<flags: u:21>\n" +
           "EscapedCharacterClassTree<flags: u:21>\n" +
           "MiscEscapeSequenceTree<flags: u:21>\n" +
           "EndOfCapturingGroupState\n" +
@@ -56,14 +56,14 @@ class AutomatonStateTest {
           "NonCapturingGroupTree<flags: U:40>\n" +
           "UnicodeCodePointTree<flags: U:40>\n" +
           "NonCapturingGroupTree<flags: x:52>\n" +
-          "DisjunctionTree\n" +
-          "SequenceTree\n" +
+          "DisjunctionTree<flags: x:52>\n" +
+          "SequenceTree<flags: x:52>\n" +
           "CharacterClassTree<flags: x:52>\n" +
           "LookAroundTree<flags: x:52>\n" +
           "EscapedCharacterClassTree<flags: x:52>\n" +
-          "EndOfLookaroundState\n" +
+          "EndOfLookaroundState<flags: x:52>\n" +
           "FinalState\n" +
-          "BackReferenceTree");
+          "BackReferenceTree<flags: x:52>");
   }
 
   @Test
@@ -80,15 +80,15 @@ class AutomatonStateTest {
           "PlainCharacterTree 'a' <flags: i:3>\n" +
           "NonCapturingGroupTree<flags: i:3 u:8>\n" +
           "PlainCharacterTree 'b' <flags: i:3 u:8>\n" +
-          "FinalState\n" +
-          "SequenceTree\n" +
+          "FinalState<flags: i:3 U:39>\n" +
+          "SequenceTree<flags: i:3>\n" +
           "CharacterClassTree<flags: i:3>\n" +
           "NonCapturingGroupTree\n" +
           "PlainCharacterTree 'd' \n" +
           "NonCapturingGroupTree<flags: i:3 u:25>\n" +
           "PlainCharacterTree 'e' <flags: i:3 u:25>\n" +
           "CapturingGroupTree<flags: i:3 u:25>\n" +
-          "SequenceTree\n" +
+          "SequenceTree<flags: i:3 u:25>\n" +
           "NonCapturingGroupTree<flags: i:3>\n" +
           "PlainCharacterTree 'f' <flags: i:3>\n" +
           "EndOfCapturingGroupState\n" +
@@ -112,23 +112,23 @@ class AutomatonStateTest {
           "NonCapturingGroupTree<flags: i:3>\n" +
           "PlainCharacterTree 'a' <flags: i:3>\n" +
           "NonCapturingGroupTree<flags: i:3>\n" +
-          "SequenceTree\n" +
+          "SequenceTree<flags: i:3>\n" +
           "NonCapturingGroupTree<flags: i:3 u:11>\n" +
           "PlainCharacterTree 'b' <flags: i:3 u:11>\n" +
-          "FinalState\n" +
-          "SequenceTree\n" +
+          "FinalState<flags: i:3 U:47>\n" +
+          "SequenceTree<flags: i:3>\n" +
           "CharacterClassTree<flags: i:3>\n" +
           "AtomicGroupTree<flags: i:3>\n" +
-          "SequenceTree\n" +
+          "SequenceTree<flags: i:3>\n" +
           "NonCapturingGroupTree\n" +
           "PlainCharacterTree 'd' \n" +
           "NonCapturingGroupTree<flags: i:3 u:31>\n" +
           "PlainCharacterTree 'e' <flags: i:3 u:31>\n" +
           "LookAroundTree<flags: i:3 u:31>\n" +
-          "SequenceTree\n" +
+          "SequenceTree<flags: i:3 u:31>\n" +
           "NonCapturingGroupTree<flags: i:3>\n" +
           "PlainCharacterTree 'f' <flags: i:3>\n" +
-          "EndOfLookaroundState\n" +
+          "EndOfLookaroundState<flags: i:3 u:31>\n" +
           "PlainCharacterTree 'g' <flags: i:3 u:31>\n" +
           "NonCapturingGroupTree<flags: i:3 u:31 U:47>\n" +
           "PlainCharacterTree 'h' <flags: i:3 u:31 U:47>\n" +

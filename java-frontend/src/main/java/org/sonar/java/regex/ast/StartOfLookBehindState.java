@@ -21,11 +21,12 @@ package org.sonar.java.regex.ast;
 
 import javax.annotation.Nonnull;
 
-public class StartOfLookBehindState implements AutomatonState {
+public class StartOfLookBehindState extends ActiveFlagsState {
 
   private final AutomatonState content;
 
-  public StartOfLookBehindState(AutomatonState content) {
+  public StartOfLookBehindState(AutomatonState content, FlagSet activeFlags) {
+    super(activeFlags);
     this.content = content;
   }
 

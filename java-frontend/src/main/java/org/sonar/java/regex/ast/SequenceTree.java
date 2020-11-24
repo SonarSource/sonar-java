@@ -27,8 +27,8 @@ public class SequenceTree extends RegexTree {
 
   private final List<RegexTree> items;
 
-  public SequenceTree(RegexSource source, IndexRange range, List<RegexTree> items) {
-    super(source, range, FLAGS_HAVE_NO_EFFECT_ON_THIS_STATE);
+  public SequenceTree(RegexSource source, IndexRange range, List<RegexTree> items, FlagSet activeFlags) {
+    super(source, range, activeFlags);
     this.items = items;
     for (int i = 0; i < items.size() - 1; i++) {
       items.get(i).setContinuation(items.get(i + 1));

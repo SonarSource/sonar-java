@@ -32,8 +32,6 @@ public class RegexParseResult {
 
   private final RegexTree result;
 
-  private final FlagSet initialFlags;
-
   private final List<SyntaxError> syntaxErrors;
 
   private final boolean containsComments;
@@ -42,14 +40,12 @@ public class RegexParseResult {
 
   private final FinalState finalState;
 
-  public RegexParseResult(RegexTree result, FlagSet initialFlags, List<SyntaxError> syntaxErrors, boolean containsComments) {
+  public RegexParseResult(RegexTree result, StartState startState, FinalState finalState, List<SyntaxError> syntaxErrors, boolean containsComments) {
     this.result = result;
-    this.initialFlags = initialFlags;
+    this.startState = startState;
+    this.finalState = finalState;
     this.syntaxErrors = Collections.unmodifiableList(syntaxErrors);
     this.containsComments = containsComments;
-    startState = new StartState(result);
-    finalState = new FinalState();
-    result.setContinuation(finalState);
   }
 
   public RegexTree getResult() {
@@ -57,7 +53,7 @@ public class RegexParseResult {
   }
 
   public FlagSet getInitialFlags() {
-    return initialFlags;
+    return startState.activeFlags();
   }
 
   public List<SyntaxError> getSyntaxErrors() {

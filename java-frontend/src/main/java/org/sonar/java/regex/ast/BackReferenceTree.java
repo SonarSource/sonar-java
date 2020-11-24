@@ -28,8 +28,8 @@ public class BackReferenceTree extends RegexTree {
   @Nullable
   private final JavaCharacter key;
 
-  public BackReferenceTree(RegexSource source, JavaCharacter backslash, @Nullable JavaCharacter key, JavaCharacter start, JavaCharacter end) {
-    super(source, backslash.getRange().merge(end.getRange()), FLAGS_HAVE_NO_EFFECT_ON_THIS_STATE);
+  public BackReferenceTree(RegexSource source, JavaCharacter backslash, @Nullable JavaCharacter key, JavaCharacter start, JavaCharacter end, FlagSet activeFlags) {
+    super(source, backslash.getRange().merge(end.getRange()), activeFlags);
     this.key = key;
     if (start.getCharacter() != '<') {
       // numerical case

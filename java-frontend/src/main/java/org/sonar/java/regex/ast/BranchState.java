@@ -22,13 +22,14 @@ package org.sonar.java.regex.ast;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-public class BranchState implements AutomatonState {
+public class BranchState extends ActiveFlagsState {
 
   private final RegexTree parent;
 
   private final List<AutomatonState> successors;
 
-  public BranchState(RegexTree parent, List<AutomatonState> successors) {
+  public BranchState(RegexTree parent, List<AutomatonState> successors, FlagSet activeFlags) {
+    super(activeFlags);
     this.parent = parent;
     this.successors = successors;
   }
