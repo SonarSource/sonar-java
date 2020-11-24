@@ -22,6 +22,7 @@ package org.sonar.java.checks.helpers;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.regex.ast.AutomatonState;
 import org.sonar.java.regex.ast.FinalState;
+import org.sonar.java.regex.ast.FlagSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,8 +30,8 @@ class OrderedStatePairTest {
 
   @Test
   void equals_and_hashCode() {
-    AutomatonState state1 = new FinalState();
-    AutomatonState state2 = new FinalState();
+    AutomatonState state1 = new FinalState(new FlagSet());
+    AutomatonState state2 = new FinalState(new FlagSet());
 
     OrderedStatePair pairS1S2A = new OrderedStatePair(state1, state2);
     assertThat(pairS1S2A.equals(pairS1S2A)).isTrue();

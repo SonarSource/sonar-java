@@ -39,6 +39,7 @@ import org.sonar.java.regex.ast.CurlyBraceQuantifier;
 import org.sonar.java.regex.ast.DisjunctionTree;
 import org.sonar.java.regex.ast.DotTree;
 import org.sonar.java.regex.ast.EscapedCharacterClassTree;
+import org.sonar.java.regex.ast.FinalState;
 import org.sonar.java.regex.ast.FlagSet;
 import org.sonar.java.regex.ast.GroupTree;
 import org.sonar.java.regex.ast.IndexRange;
@@ -55,6 +56,7 @@ import org.sonar.java.regex.ast.RegexTree;
 import org.sonar.java.regex.ast.RepetitionTree;
 import org.sonar.java.regex.ast.SequenceTree;
 import org.sonar.java.regex.ast.SimpleQuantifier;
+import org.sonar.java.regex.ast.StartState;
 import org.sonar.java.regex.ast.UnicodeCodePointTree;
 
 import static org.sonar.java.regex.RegexLexer.EOF;
@@ -67,8 +69,6 @@ public class RegexParser {
 
   private final RegexLexer characters;
 
-  private final FlagSet initialFlags;
-
   private FlagSet activeFlags;
 
   private final List<SyntaxError> errors = new ArrayList<>();
@@ -79,11 +79,11 @@ public class RegexParser {
     this.source = source;
     this.characters = new RegexLexer(source);
     this.characters.setFreeSpacingMode(initialFlags.contains(Pattern.COMMENTS));
-    this.initialFlags = initialFlags;
+    this.activeFlags = initialFlags;
   }
 
   public RegexParseResult parse() {
-    this.activeFlags = initialFlags;
+    FlagSet initialFlags = activeFlags;
     List<RegexTree> results = new ArrayList<>();
     do {
       RegexTree result = parseDisjunction();
@@ -96,11 +96,15 @@ public class RegexParser {
     if (characters.isInQuotingMode()) {
       expected("'\\E'");
     }
-    RegexTree result = combineTrees(results, (range, elements) -> new SequenceTree(source, range, elements));
-    return new RegexParseResult(result, initialFlags, errors, characters.hasComments());
+    RegexTree result = combineTrees(results, (range, elements) -> new SequenceTree(source, range, elements, initialFlags));
+    StartState startState = new StartState(result, initialFlags);
+    FinalState finalState = new FinalState(activeFlags);
+    result.setContinuation(finalState);
+    return new RegexParseResult(result, startState, finalState, errors, characters.hasComments());
   }
 
   private RegexTree parseDisjunction() {
+    FlagSet disjunctionFlags = activeFlags;
     List<RegexTree> alternatives = new ArrayList<>();
     List<JavaCharacter> orOperators = new ArrayList<>();
     RegexTree first = parseSequence();
@@ -111,10 +115,11 @@ public class RegexParser {
       RegexTree next = parseSequence();
       alternatives.add(next);
     }
-    return combineTrees(alternatives, (range, elements) -> new DisjunctionTree(source, range, elements, orOperators));
+    return combineTrees(alternatives, (range, elements) -> new DisjunctionTree(source, range, elements, orOperators, disjunctionFlags));
   }
 
   private RegexTree parseSequence() {
+    FlagSet sequenceFlags = activeFlags;
     List<RegexTree> elements = new ArrayList<>();
     RegexTree element = parseRepetition();
     while (element != null) {
@@ -123,14 +128,15 @@ public class RegexParser {
     }
     if (elements.isEmpty()) {
       int index = characters.getCurrentStartIndex();
-      return new SequenceTree(source, new IndexRange(index, index), elements);
+      return new SequenceTree(source, new IndexRange(index, index), elements, sequenceFlags);
     } else {
-      return combineTrees(elements, (range, items) -> new SequenceTree(source, range, items));
+      return combineTrees(elements, (range, items) -> new SequenceTree(source, range, items, sequenceFlags));
     }
   }
 
   @CheckForNull
   private RegexTree parseRepetition() {
+    FlagSet repetitionFlags = activeFlags;
     RegexTree element = parsePrimaryExpression();
     if (characters.isInQuotingMode()) {
       return element;
@@ -145,7 +151,7 @@ public class RegexParser {
     if (quantifier == null) {
       return element;
     } else {
-      return new RepetitionTree(source, element.getRange().merge(quantifier.getRange()), element, quantifier);
+      return new RepetitionTree(source, element.getRange().merge(quantifier.getRange()), element, quantifier, repetitionFlags);
     }
   }
 
@@ -605,7 +611,8 @@ public class RegexParser {
   }
 
   private RegexTree parseNamedBackReference(JavaCharacter backslash) {
-    return parseEscapedSequence('<', '>', "a group name", dh -> new BackReferenceTree(source, backslash, dh.marker, dh.opener, dh.closer));
+    return parseEscapedSequence('<', '>', "a group name",
+      dh -> new BackReferenceTree(source, backslash, dh.marker, dh.opener, dh.closer, activeFlags));
   }
 
   private RegexTree parseEscapedSequence(char opener, char closer, String expected, Function<EscapedSequenceDataHolder, RegexTree> builder) {
@@ -662,7 +669,7 @@ public class RegexParser {
         }
       }
     } while (!characters.isAtEnd());
-    return new BackReferenceTree(source, backslash, null, firstDigit, lastDigit);
+    return new BackReferenceTree(source, backslash, null, firstDigit, lastDigit, activeFlags);
   }
 
   private RegexTree parseOctalEscape(JavaCharacter backslash) {
@@ -718,6 +725,7 @@ public class RegexParser {
   }
 
   private CharacterClassElementTree parseCharacterClassIntersection() {
+    FlagSet characterClassFlags = activeFlags;
     List<CharacterClassElementTree> elements = new ArrayList<>();
     List<RegexToken> andOperators = new ArrayList<>();
     elements.add(parseCharacterClassUnion(true));
@@ -729,10 +737,11 @@ public class RegexParser {
       andOperators.add(new RegexToken(source, firstAnd.getRange().merge(secondAnd.getRange())));
       elements.add(parseCharacterClassUnion(false));
     }
-    return combineTrees(elements, (range, items) -> new CharacterClassIntersectionTree(source, range, items, andOperators, activeFlags));
+    return combineTrees(elements, (range, items) -> new CharacterClassIntersectionTree(source, range, items, andOperators, characterClassFlags));
   }
 
   private CharacterClassElementTree parseCharacterClassUnion(boolean isAtBeginning) {
+    FlagSet characterClassFlags = activeFlags;
     List<CharacterClassElementTree> elements = new ArrayList<>();
     CharacterClassElementTree element = parseCharacterClassElement(isAtBeginning);
     while (element != null) {
@@ -741,9 +750,9 @@ public class RegexParser {
     }
     if (elements.isEmpty()) {
       IndexRange range = new IndexRange(characters.getCurrentStartIndex(), characters.getCurrentStartIndex());
-      return new CharacterClassUnionTree(source, range, elements, activeFlags);
+      return new CharacterClassUnionTree(source, range, elements, characterClassFlags);
     } else {
-      return combineTrees(elements, (range, items) -> new CharacterClassUnionTree(source, range, items, activeFlags));
+      return combineTrees(elements, (range, items) -> new CharacterClassUnionTree(source, range, items, characterClassFlags));
     }
   }
 

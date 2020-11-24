@@ -26,8 +26,6 @@ import javax.annotation.Nullable;
 
 public interface AutomatonState {
 
-  FlagSet FLAGS_HAVE_NO_EFFECT_ON_THIS_STATE = new FlagSet();
-
   /**
    * This will only return null when called on the end-of-regex state
    */
@@ -43,9 +41,7 @@ public interface AutomatonState {
   TransitionType incomingTransitionType();
 
   @Nonnull
-  default FlagSet activeFlags() {
-    return FLAGS_HAVE_NO_EFFECT_ON_THIS_STATE;
-  }
+  FlagSet activeFlags();
 
   enum TransitionType {
     EPSILON, CHARACTER, BACK_REFERENCE, LOOKAROUND_BACKTRACKING, NEGATION

@@ -24,7 +24,11 @@ import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-public class FinalState implements AutomatonState {
+public class FinalState extends ActiveFlagsState {
+
+  public FinalState(FlagSet activeFlags) {
+    super(activeFlags);
+  }
 
   @CheckForNull
   @Override

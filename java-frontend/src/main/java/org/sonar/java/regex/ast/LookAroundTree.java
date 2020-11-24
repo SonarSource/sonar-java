@@ -43,10 +43,10 @@ public class LookAroundTree extends GroupTree {
     super(source, RegexTree.Kind.LOOK_AROUND, element, range, activeFlags);
     this.polarity = polarity;
     this.direction = direction;
-    element.setContinuation(new EndOfLookaroundState(this));
-    inner = polarity == Polarity.NEGATIVE ? new NegationState(element) : element;
+    element.setContinuation(new EndOfLookaroundState(this, activeFlags));
+    inner = polarity == Polarity.NEGATIVE ? new NegationState(element, activeFlags) : element;
     if (direction == Direction.BEHIND) {
-      inner = new StartOfLookBehindState(inner);
+      inner = new StartOfLookBehindState(inner, activeFlags);
     }
   }
 

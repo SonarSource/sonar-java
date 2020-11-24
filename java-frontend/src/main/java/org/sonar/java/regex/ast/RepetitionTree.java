@@ -30,8 +30,8 @@ public class RepetitionTree extends RegexTree {
 
   private final Quantifier quantifier;
 
-  public RepetitionTree(RegexSource source, IndexRange range, RegexTree element, Quantifier quantifier) {
-    super(source, range, FLAGS_HAVE_NO_EFFECT_ON_THIS_STATE);
+  public RepetitionTree(RegexSource source, IndexRange range, RegexTree element, Quantifier quantifier, FlagSet activeFlags) {
+    super(source, range, activeFlags);
     this.element = element;
     this.quantifier = quantifier;
   }
@@ -83,7 +83,7 @@ public class RepetitionTree extends RegexTree {
     if (max != null && max == 1) {
       element.setContinuation(continuation);
     } else if (min >= 1) {
-      element.setContinuation(new BranchState(this, flipIfReluctant(this, continuation)));
+      element.setContinuation(new BranchState(this, flipIfReluctant(this, continuation), activeFlags()));
     } else {
       element.setContinuation(this);
     }

@@ -21,11 +21,12 @@ package org.sonar.java.regex.ast;
 
 import javax.annotation.Nonnull;
 
-public class EndOfLookaroundState implements AutomatonState {
+public class EndOfLookaroundState extends ActiveFlagsState {
 
   private final LookAroundTree parent;
 
-  public EndOfLookaroundState(LookAroundTree parent) {
+  public EndOfLookaroundState(LookAroundTree parent, FlagSet activeFlags) {
+    super(activeFlags);
     this.parent = parent;
   }
 
