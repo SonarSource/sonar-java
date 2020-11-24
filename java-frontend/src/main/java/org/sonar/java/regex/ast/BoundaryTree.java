@@ -55,8 +55,8 @@ public class BoundaryTree extends RegexTree {
 
   private final Type type;
 
-  public BoundaryTree(RegexSource source, Type type, IndexRange range) {
-    super(source, range);
+  public BoundaryTree(RegexSource source, Type type, IndexRange range, FlagSet activeFlags) {
+    super(source, range, activeFlags);
     this.type = type;
   }
 

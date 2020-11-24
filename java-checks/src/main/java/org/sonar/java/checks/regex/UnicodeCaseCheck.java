@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.CharacterTree;
+import org.sonar.java.regex.ast.FlagSet;
 import org.sonar.java.regex.ast.JavaCharacter;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -55,8 +56,8 @@ public class UnicodeCaseCheck extends AbstractRegexCheck {
 
     @Override
     protected void visitCharacter(CharacterTree tree) {
-      if (isProblematic(tree.codePointOrUnit())) {
-        JavaCharacter character = getJavaCharacterForFlag(Pattern.CASE_INSENSITIVE);
+      if (isProblematic(tree.activeFlags(), tree.codePointOrUnit())) {
+        JavaCharacter character = tree.activeFlags().getJavaCharacterForFlag(Pattern.CASE_INSENSITIVE);
         if (character == null) {
           problematicFlagSetOutsideOfRegex = true;
         } else {
@@ -83,8 +84,8 @@ public class UnicodeCaseCheck extends AbstractRegexCheck {
       return codePointOrUnit > 127 && Character.isLetter(codePointOrUnit);
     }
 
-    boolean isProblematic(int codePointOrUnit) {
-      return flagActive(Pattern.CASE_INSENSITIVE) && !flagActive(Pattern.UNICODE_CASE) && isNonAsciiLetter(codePointOrUnit);
+    boolean isProblematic(FlagSet activeFlags, int codePointOrUnit) {
+      return activeFlags.contains(Pattern.CASE_INSENSITIVE) && !activeFlags.contains(Pattern.UNICODE_CASE) && isNonAsciiLetter(codePointOrUnit);
     }
   }
 

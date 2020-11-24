@@ -40,8 +40,17 @@ public abstract class RegexTree extends AbstractRegexSyntaxElement implements Au
     MISC_ESCAPE_SEQUENCE,
   }
 
-  protected RegexTree(RegexSource source, IndexRange range) {
+  private final FlagSet activeFlags;
+
+  protected RegexTree(RegexSource source, IndexRange range, FlagSet activeFlags) {
     super(source, range);
+    this.activeFlags = activeFlags;
+  }
+
+  @Nonnull
+  @Override
+  public FlagSet activeFlags() {
+    return activeFlags;
   }
 
   /**

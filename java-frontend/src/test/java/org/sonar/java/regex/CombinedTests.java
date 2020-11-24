@@ -20,6 +20,7 @@
 package org.sonar.java.regex;
 
 import java.util.List;
+import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.regex.ast.DisjunctionTree;
 import org.sonar.java.regex.ast.CapturingGroupTree;
@@ -86,7 +87,7 @@ class CombinedTests {
 
   @Test
   void testNonTrivialRegexInFreeSpacingMode() {
-    RegexParseResult parseResult = assertSuccessfulParseResult("(ab | b ) #this is a comment\\n*\\\\#(||)#this is another comment", true);
+    RegexParseResult parseResult = assertSuccessfulParseResult("(ab | b ) #this is a comment\\n*\\\\#(||)#this is another comment", Pattern.COMMENTS);
     assertTrue(parseResult.containsComments());
     RegexTree regex = parseResult.getResult();
     assertLocation(0, 62, regex);

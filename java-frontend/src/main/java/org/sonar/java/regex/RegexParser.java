@@ -69,6 +69,8 @@ public class RegexParser {
 
   private final FlagSet initialFlags;
 
+  private FlagSet activeFlags;
+
   private final List<SyntaxError> errors = new ArrayList<>();
 
   private int groupNumber = 1;
@@ -81,6 +83,7 @@ public class RegexParser {
   }
 
   public RegexParseResult parse() {
+    this.activeFlags = initialFlags;
     List<RegexTree> results = new ArrayList<>();
     do {
       RegexTree result = parseDisjunction();
@@ -242,15 +245,15 @@ public class RegexParser {
       case '[':
         return parseCharacterClass();
       case '.':
-        DotTree tree = new DotTree(source, characters.getCurrentIndexRange());
+        DotTree tree = new DotTree(source, characters.getCurrentIndexRange(), activeFlags);
         characters.moveNext();
         return tree;
       case '^':
-        BoundaryTree lineStart = new BoundaryTree(source, BoundaryTree.Type.LINE_START, characters.getCurrentIndexRange());
+        BoundaryTree lineStart = new BoundaryTree(source, BoundaryTree.Type.LINE_START, characters.getCurrentIndexRange(), activeFlags);
         characters.moveNext();
         return lineStart;
       case '$':
-        BoundaryTree lineEnd = new BoundaryTree(source, BoundaryTree.Type.LINE_END, characters.getCurrentIndexRange());
+        BoundaryTree lineEnd = new BoundaryTree(source, BoundaryTree.Type.LINE_END, characters.getCurrentIndexRange(), activeFlags);
         characters.moveNext();
         return lineEnd;
       default:
@@ -273,19 +276,19 @@ public class RegexParser {
     characters.moveNext();
     if (characters.currentIs("?=")) {
       characters.moveNext(2);
-      return finishGroup(openingParen, (range, inner) -> LookAroundTree.positiveLookAhead(source, range, inner));
+      return finishGroup(openingParen, (range, inner) -> LookAroundTree.positiveLookAhead(source, range, inner, activeFlags));
     } else if (characters.currentIs("?<=")) {
       characters.moveNext(3);
-      return finishGroup(openingParen, (range, inner) -> LookAroundTree.positiveLookBehind(source, range, inner));
+      return finishGroup(openingParen, (range, inner) -> LookAroundTree.positiveLookBehind(source, range, inner, activeFlags));
     } else if (characters.currentIs("?!")) {
       characters.moveNext(2);
-      return finishGroup(openingParen, (range, inner) -> LookAroundTree.negativeLookAhead(source, range, inner));
+      return finishGroup(openingParen, (range, inner) -> LookAroundTree.negativeLookAhead(source, range, inner, activeFlags));
     } else if (characters.currentIs("?<!")) {
       characters.moveNext(3);
-      return finishGroup(openingParen, (range, inner) -> LookAroundTree.negativeLookBehind(source, range, inner));
+      return finishGroup(openingParen, (range, inner) -> LookAroundTree.negativeLookBehind(source, range, inner, activeFlags));
     } else if (characters.currentIs("?>")) {
       characters.moveNext(2);
-      return finishGroup(openingParen, (range, inner) -> new AtomicGroupTree(source, range, inner));
+      return finishGroup(openingParen, (range, inner) -> new AtomicGroupTree(source, range, inner, activeFlags));
     } else if (characters.currentIs("?<")) {
       characters.moveNext(2);
       String name = parseGroupName();
@@ -305,7 +308,7 @@ public class RegexParser {
   private GroupConstructor newCapturingGroup(@Nullable String name) {
     int index = groupNumber;
     groupNumber++;
-    return (range, inner) -> new CapturingGroupTree(source, range, name, index, inner);
+    return (range, inner) -> new CapturingGroupTree(source, range, name, index, inner, activeFlags);
   }
 
   private String parseGroupName() {
@@ -340,20 +343,28 @@ public class RegexParser {
       characters.setFreeSpacingMode(true);
     }
 
+    FlagSet previousFlags = activeFlags;
+    if (!enabledFlags.isEmpty() || !disabledFlags.isEmpty()) {
+      activeFlags = new FlagSet(activeFlags);
+      activeFlags.addAll(enabledFlags);
+      activeFlags.removeAll(disabledFlags);
+    }
     if (characters.currentIs(')')) {
       JavaCharacter closingParen = characters.getCurrent();
       characters.moveNext();
       IndexRange range = openingParen.getRange().merge(closingParen.getRange());
-      return new NonCapturingGroupTree(source, range, enabledFlags, disabledFlags, null);
+      return new NonCapturingGroupTree(source, range, enabledFlags, disabledFlags, null, activeFlags);
     }
     if (characters.currentIs(':')) {
       characters.moveNext();
     } else {
       expected("flag or ':' or ')'");
     }
-    return finishGroup(previousFreeSpacingMode, openingParen, (range, inner) ->
-      new NonCapturingGroupTree(source, range, enabledFlags, disabledFlags, inner)
+    GroupTree group = finishGroup(previousFreeSpacingMode, openingParen, (range, inner) ->
+      new NonCapturingGroupTree(source, range, enabledFlags, disabledFlags, inner, activeFlags)
     );
+    activeFlags = previousFlags;
+    return group;
   }
 
   private FlagSet parseFlags() {
@@ -396,7 +407,9 @@ public class RegexParser {
   }
 
   private GroupTree finishGroup(boolean previousFreeSpacingMode, JavaCharacter openingParen, GroupConstructor groupConstructor) {
+    FlagSet previousFlagSet = activeFlags;
     RegexTree inner = parseDisjunction();
+    activeFlags = previousFlagSet;
     characters.setFreeSpacingMode(previousFreeSpacingMode);
     if (characters.currentIs(')')) {
       characters.moveNext();
@@ -472,13 +485,13 @@ public class RegexParser {
         case 'R':
         case 'X':
           characters.moveNext();
-          return new MiscEscapeSequenceTree(source, backslash.getRange().extendTo(characters.getCurrentStartIndex()));
+          return new MiscEscapeSequenceTree(source, backslash.getRange().extendTo(characters.getCurrentStartIndex()), activeFlags);
         case 'E':
           error("\\E used without \\Q");
           // Fallthrough
         default:
           characters.moveNext();
-          return new PlainCharacterTree(source, backslash.getRange().merge(character.getRange()), character);
+          return new PlainCharacterTree(source, backslash.getRange().merge(character.getRange()), character, activeFlags);
       }
     }
   }
@@ -487,7 +500,7 @@ public class RegexParser {
     return parseEscapedSequence('{', '}', "a Unicode character name", content ->
       // TODO: Once we move to Java 9+, use Character.codePointOf to produce a PlainCharacterTree with the named Unicode
       //       character instead of a MiscEscapeSequenceTree and produce a syntax error for illegal character names
-      new MiscEscapeSequenceTree(source, backslash.getRange().merge(content.closer.getRange()))
+      new MiscEscapeSequenceTree(source, backslash.getRange().merge(content.closer.getRange()), activeFlags)
     );
   }
 
@@ -553,7 +566,7 @@ public class RegexParser {
       codePoint = parseFixedAmountOfHexDigits(2);
     }
     IndexRange range = backslash.getRange().extendTo(characters.getCurrentStartIndex());
-    UnicodeCodePointTree tree = new UnicodeCodePointTree(source, range, codePoint);
+    UnicodeCodePointTree tree = new UnicodeCodePointTree(source, range, codePoint, activeFlags);
     if (!Character.isValidCodePoint(codePoint)) {
       errors.add(new SyntaxError(tree, "Invalid Unicode code point"));
     }
@@ -581,13 +594,14 @@ public class RegexParser {
   }
 
   private RegexTree parseEscapedCharacterClass(JavaCharacter backslash) {
-    RegexTree result = new EscapedCharacterClassTree(source, backslash, characters.getCurrent());
+    RegexTree result = new EscapedCharacterClassTree(source, backslash, characters.getCurrent(), activeFlags);
     characters.moveNext();
     return result;
   }
 
   private RegexTree parseEscapedProperty(JavaCharacter backslash) {
-    return parseEscapedSequence('{', '}', "a property name", dh -> new EscapedCharacterClassTree(source, backslash, dh.marker, dh.opener, dh.closer));
+    return parseEscapedSequence('{', '}', "a property name",
+      dh -> new EscapedCharacterClassTree(source, backslash, dh.marker, dh.opener, dh.closer, activeFlags));
   }
 
   private RegexTree parseNamedBackReference(JavaCharacter backslash) {
@@ -678,11 +692,11 @@ public class RegexParser {
         '{',
         '}',
         "an Unicode extended grapheme cluster",
-        dh -> new BoundaryTree(source, BoundaryTree.Type.UNICODE_EXTENDED_GRAPHEME_CLUSTER, backslash.getRange().merge(dh.closer.getRange())));
+        dh -> new BoundaryTree(source, BoundaryTree.Type.UNICODE_EXTENDED_GRAPHEME_CLUSTER, backslash.getRange().merge(dh.closer.getRange()), activeFlags));
     }
     JavaCharacter boundary = characters.getCurrent();
     characters.moveNext();
-    return new BoundaryTree(source, BoundaryTree.Type.forKey(boundary.getCharacter()), backslash.getRange().merge(boundary.getRange()));
+    return new BoundaryTree(source, BoundaryTree.Type.forKey(boundary.getCharacter()), backslash.getRange().merge(boundary.getRange()), activeFlags);
   }
 
   private CharacterClassTree parseCharacterClass() {
@@ -700,7 +714,7 @@ public class RegexParser {
       expected("']'");
     }
     IndexRange range = openingBracket.getRange().extendTo(characters.getCurrentStartIndex());
-    return new CharacterClassTree(source, range, openingBracket, negated, contents);
+    return new CharacterClassTree(source, range, openingBracket, negated, contents, activeFlags);
   }
 
   private CharacterClassElementTree parseCharacterClassIntersection() {
@@ -715,7 +729,7 @@ public class RegexParser {
       andOperators.add(new RegexToken(source, firstAnd.getRange().merge(secondAnd.getRange())));
       elements.add(parseCharacterClassUnion(false));
     }
-    return combineTrees(elements, (range, items) -> new CharacterClassIntersectionTree(source, range, items, andOperators));
+    return combineTrees(elements, (range, items) -> new CharacterClassIntersectionTree(source, range, items, andOperators, activeFlags));
   }
 
   private CharacterClassElementTree parseCharacterClassUnion(boolean isAtBeginning) {
@@ -727,9 +741,9 @@ public class RegexParser {
     }
     if (elements.isEmpty()) {
       IndexRange range = new IndexRange(characters.getCurrentStartIndex(), characters.getCurrentStartIndex());
-      return new CharacterClassUnionTree(source, range, elements);
+      return new CharacterClassUnionTree(source, range, elements, activeFlags);
     } else {
-      return combineTrees(elements, (range, items) -> new CharacterClassUnionTree(source, range, items));
+      return combineTrees(elements, (range, items) -> new CharacterClassUnionTree(source, range, items, activeFlags));
     }
   }
 
@@ -801,12 +815,12 @@ public class RegexParser {
   }
 
   private PlainCharacterTree plainCharacter(JavaCharacter character, IndexRange range) {
-    return new PlainCharacterTree(source, range, character);
+    return new PlainCharacterTree(source, range, character, activeFlags);
   }
 
   private CharacterRangeTree characterRange(CharacterTree startCharacter, CharacterTree endCharacter) {
     IndexRange range = startCharacter.getRange().merge(endCharacter.getRange());
-    CharacterRangeTree characterRange = new CharacterRangeTree(source, range, startCharacter, endCharacter);
+    CharacterRangeTree characterRange = new CharacterRangeTree(source, range, startCharacter, endCharacter, activeFlags);
     if (startCharacter.codePointOrUnit() > endCharacter.codePointOrUnit()) {
       errors.add(new SyntaxError(characterRange, "Illegal character range"));
     }

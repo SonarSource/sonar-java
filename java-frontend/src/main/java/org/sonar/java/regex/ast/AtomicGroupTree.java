@@ -19,14 +19,22 @@
  */
 package org.sonar.java.regex.ast;
 
+import javax.annotation.Nonnull;
+
 public class AtomicGroupTree extends GroupTree {
 
-  public AtomicGroupTree(RegexSource source, IndexRange range, RegexTree element) {
-    super(source, RegexTree.Kind.ATOMIC_GROUP, element, range);
+  public AtomicGroupTree(RegexSource source, IndexRange range, RegexTree element, FlagSet activeFlags) {
+    super(source, RegexTree.Kind.ATOMIC_GROUP, element, range, activeFlags);
   }
 
   @Override
   public void accept(RegexVisitor visitor) {
     visitor.visitAtomicGroup(this);
+  }
+
+  @Nonnull
+  @Override
+  public RegexTree getElement() {
+    return element;
   }
 }

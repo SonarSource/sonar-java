@@ -26,8 +26,8 @@ import javax.annotation.Nonnull;
  */
 public abstract class CharacterTree extends RegexTree implements CharacterClassElementTree {
 
-  protected CharacterTree(RegexSource source, IndexRange range) {
-    super(source, range);
+  protected CharacterTree(RegexSource source, IndexRange range, FlagSet activeFlags) {
+    super(source, range, activeFlags);
   }
 
   public abstract String characterAsString();

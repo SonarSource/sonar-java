@@ -30,7 +30,7 @@ public class DisjunctionTree extends RegexTree {
   private final List<JavaCharacter> orOperators;
 
   public DisjunctionTree(RegexSource source, IndexRange range, List<RegexTree> alternatives, List<JavaCharacter> orOperators) {
-    super(source, range);
+    super(source, range, FLAGS_HAVE_NO_EFFECT_ON_THIS_STATE);
     this.alternatives = Collections.unmodifiableList(alternatives);
     this.orOperators = Collections.unmodifiableList(orOperators);
   }

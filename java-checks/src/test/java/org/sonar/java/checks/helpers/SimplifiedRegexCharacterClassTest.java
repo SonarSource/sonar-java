@@ -36,12 +36,12 @@ class SimplifiedRegexCharacterClassTest {
   void testIntersectionWithTrueAsDefaultAnswer() {
     RegexSource dummySource = new RegexSource(Collections.emptyList());
     IndexRange dummyRange = new IndexRange(0, 0);
-    CharacterClassElementTree dummyTree = new MiscEscapeSequenceTree(dummySource, dummyRange);
+    CharacterClassElementTree dummyTree = new MiscEscapeSequenceTree(dummySource, dummyRange, new FlagSet());
 
     SimplifiedRegexCharacterClass aToZ = new SimplifiedRegexCharacterClass();
     aToZ.addRange('a', 'z', dummyTree);
     SimplifiedRegexCharacterClass unknown = new SimplifiedRegexCharacterClass();
-    unknown.add(dummyTree, new FlagSet());
+    unknown.add(dummyTree);
     SimplifiedRegexCharacterClass empty = new SimplifiedRegexCharacterClass();
 
     assertTrue(aToZ.intersects(unknown, true));

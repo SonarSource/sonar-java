@@ -189,7 +189,7 @@ public class EmptyLineRegexCheck extends AbstractRegexCheck {
 
     @Override
     public void visitBoundary(BoundaryTree boundaryTree) {
-      if (flagActive(Pattern.MULTILINE)) {
+      if (boundaryTree.activeFlags().contains(Pattern.MULTILINE)) {
         if (boundaryTree.type().equals(BoundaryTree.Type.LINE_START)) {
           visitedStart = true;
         } else if (boundaryTree.type().equals(BoundaryTree.Type.LINE_END)) {

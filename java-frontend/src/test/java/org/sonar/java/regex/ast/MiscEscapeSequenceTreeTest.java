@@ -21,6 +21,7 @@ package org.sonar.java.regex.ast;
 
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.sonar.java.regex.RegexParserTestUtils.assertFailParsing;
 import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
@@ -51,8 +52,13 @@ class MiscEscapeSequenceTreeTest {
   }
 
   private void assertMiscEscapeSequence(String regex) {
-    MiscEscapeSequenceTree escapeSequence = assertType(MiscEscapeSequenceTree.class, assertSuccessfulParse(regex));
+    assertMiscEscapeSequence(regex, 0);
+  }
+
+  private void assertMiscEscapeSequence(String regex, int initialFlags) {
+    MiscEscapeSequenceTree escapeSequence = assertType(MiscEscapeSequenceTree.class, assertSuccessfulParse(regex, initialFlags));
     assertKind(RegexTree.Kind.MISC_ESCAPE_SEQUENCE, escapeSequence);
+    assertThat(escapeSequence.activeFlags().getMask()).isEqualTo(initialFlags);
     assertEquals(regex, escapeSequence.getText());
     assertLocation(0, regex.length(), escapeSequence);
     assertEquals(AutomatonState.TransitionType.CHARACTER, escapeSequence.incomingTransitionType());

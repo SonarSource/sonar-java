@@ -33,9 +33,10 @@ public class NonCapturingGroupTree extends GroupTree {
     IndexRange range,
     FlagSet enabledFlags,
     FlagSet disabledFlags,
-    @Nullable RegexTree element
+    @Nullable RegexTree element,
+    FlagSet activeFlags
   ) {
-    super(source, RegexTree.Kind.NON_CAPTURING_GROUP, element, range);
+    super(source, RegexTree.Kind.NON_CAPTURING_GROUP, element, range, activeFlags);
     this.enabledFlags = enabledFlags;
     this.disabledFlags = disabledFlags;
   }

@@ -30,8 +30,8 @@ public class UnicodeCodePointTree extends CharacterTree {
 
   private final int codePoint;
 
-  public UnicodeCodePointTree(RegexSource source, IndexRange range, int codePoint) {
-    super(source, range);
+  public UnicodeCodePointTree(RegexSource source, IndexRange range, int codePoint, FlagSet activeFlags) {
+    super(source, range, activeFlags);
     this.codePoint = codePoint;
   }
 

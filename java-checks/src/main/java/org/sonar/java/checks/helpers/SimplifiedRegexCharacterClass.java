@@ -29,7 +29,6 @@ import org.sonar.java.regex.ast.CharacterClassTree;
 import org.sonar.java.regex.ast.CharacterRangeTree;
 import org.sonar.java.regex.ast.CharacterTree;
 import org.sonar.java.regex.ast.EscapedCharacterClassTree;
-import org.sonar.java.regex.ast.FlagSet;
 import org.sonar.java.regex.ast.MiscEscapeSequenceTree;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
 
@@ -52,16 +51,16 @@ public class SimplifiedRegexCharacterClass {
   public SimplifiedRegexCharacterClass() {
   }
 
-  public SimplifiedRegexCharacterClass(CharacterClassElementTree tree, FlagSet flags) {
-    add(tree, flags);
+  public SimplifiedRegexCharacterClass(CharacterClassElementTree tree) {
+    add(tree);
   }
 
   public boolean isEmpty() {
     return contents.isEmpty() && !containsUnknownCharacters;
   }
 
-  public void add(CharacterClassElementTree tree, FlagSet flags) {
-    new Builder(this).visitInCharClass(tree, flags);
+  public void add(CharacterClassElementTree tree) {
+    new Builder(this).visitInCharClass(tree);
   }
 
   public boolean intersects(SimplifiedRegexCharacterClass that, boolean defaultAnswer) {
@@ -170,13 +169,13 @@ public class SimplifiedRegexCharacterClass {
       switch (tree.getType()) {
         case 'd':
           characters.addRange('0', '9', tree);
-          if (flagActive(Pattern.UNICODE_CHARACTER_CLASS)) {
+          if (tree.activeFlags().contains(Pattern.UNICODE_CHARACTER_CLASS)) {
             characters.containsUnknownCharacters = true;
           }
           break;
         case 'D':
           characters.addRange(0x00, '0' - 1, tree);
-          if (flagActive(Pattern.UNICODE_CHARACTER_CLASS)) {
+          if (tree.activeFlags().contains(Pattern.UNICODE_CHARACTER_CLASS)) {
             characters.addRange('9' + 1, 0xff, tree);
             characters.containsUnknownCharacters = true;
           } else {
@@ -188,7 +187,7 @@ public class SimplifiedRegexCharacterClass {
           characters.addRange('A', 'Z', tree);
           characters.addRange('_', '_', tree);
           characters.addRange('a', 'z', tree);
-          if (flagActive(Pattern.UNICODE_CHARACTER_CLASS)) {
+          if (tree.activeFlags().contains(Pattern.UNICODE_CHARACTER_CLASS)) {
             characters.containsUnknownCharacters = true;
           }
           break;
@@ -197,7 +196,7 @@ public class SimplifiedRegexCharacterClass {
           characters.addRange('9' + 1, 'A' - 1, tree);
           characters.addRange('Z'+1, '_' - 1, tree);
           characters.addRange('`', '`', tree);
-          if (flagActive(Pattern.UNICODE_CHARACTER_CLASS)) {
+          if (tree.activeFlags().contains(Pattern.UNICODE_CHARACTER_CLASS)) {
             characters.addRange('z' + 1, 'µ' - 1, tree);
             characters.containsUnknownCharacters = true;
           } else {
@@ -207,7 +206,7 @@ public class SimplifiedRegexCharacterClass {
         case 's':
           characters.addRange('\t', '\r', tree);
           characters.addRange(' ', ' ', tree);
-          if (flagActive(Pattern.UNICODE_CHARACTER_CLASS)) {
+          if (tree.activeFlags().contains(Pattern.UNICODE_CHARACTER_CLASS)) {
             characters.addRange(0x85, 0x85, tree);
             characters.addRange(0xA0, 0xA0, tree);
             characters.addRange(0x1680, 0x1680, tree);
@@ -221,7 +220,7 @@ public class SimplifiedRegexCharacterClass {
         case 'S':
           characters.addRange(0x00, '\t' - 1, tree);
           characters.addRange('\r' + 1, ' ' - 1, tree);
-          if (flagActive(Pattern.UNICODE_CHARACTER_CLASS)) {
+          if (tree.activeFlags().contains(Pattern.UNICODE_CHARACTER_CLASS)) {
             characters.addRange(' ' + 1, 0x84, tree);
             characters.addRange(0x86, 0x9F, tree);
             characters.addRange(0xA1, 0x167F, tree);
@@ -246,8 +245,8 @@ public class SimplifiedRegexCharacterClass {
       int upperCaseTo = Character.toUpperCase(to);
       int lowerCaseFrom = Character.toLowerCase(upperCaseFrom);
       int lowerCaseTo = Character.toLowerCase(upperCaseTo);
-      if (flagActive(Pattern.CASE_INSENSITIVE) && lowerCaseFrom != upperCaseFrom && lowerCaseTo != upperCaseTo
-        && ((isAscii(from) && isAscii(to)) || flagActive(Pattern.UNICODE_CASE))) {
+      if (tree.activeFlags().contains(Pattern.CASE_INSENSITIVE) && lowerCaseFrom != upperCaseFrom && lowerCaseTo != upperCaseTo
+        && ((isAscii(from) && isAscii(to)) || tree.activeFlags().contains(Pattern.UNICODE_CASE))) {
         characters.addRange(upperCaseFrom, upperCaseTo, tree);
         characters.addRange(lowerCaseFrom, lowerCaseTo, tree);
       } else {

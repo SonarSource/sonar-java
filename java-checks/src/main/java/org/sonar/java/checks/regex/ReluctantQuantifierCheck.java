@@ -117,8 +117,8 @@ public class ReluctantQuantifierCheck extends AbstractRegexCheck {
       if (base == null) {
         return false;
       }
-      SimplifiedRegexCharacterClass baseSimplifiedCharacterClass = new SimplifiedRegexCharacterClass(base, getActiveFlagSet());
-      SimplifiedRegexCharacterClass treeSimplifiedCharacterClass = new SimplifiedRegexCharacterClass(tree, getActiveFlagSet());
+      SimplifiedRegexCharacterClass baseSimplifiedCharacterClass = new SimplifiedRegexCharacterClass(base);
+      SimplifiedRegexCharacterClass treeSimplifiedCharacterClass = new SimplifiedRegexCharacterClass(tree);
       return !baseSimplifiedCharacterClass.intersects(treeSimplifiedCharacterClass, false);
     }
 

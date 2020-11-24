@@ -27,8 +27,8 @@ import javax.annotation.Nonnull;
  */
 public class MiscEscapeSequenceTree extends RegexTree implements CharacterClassElementTree {
 
-  public MiscEscapeSequenceTree(RegexSource source, IndexRange range) {
-    super(source, range);
+  public MiscEscapeSequenceTree(RegexSource source, IndexRange range, FlagSet activeFlags) {
+    super(source, range, activeFlags);
   }
 
   @Override

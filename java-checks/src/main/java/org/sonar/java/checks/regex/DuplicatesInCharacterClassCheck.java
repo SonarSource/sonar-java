@@ -47,10 +47,10 @@ public class DuplicatesInCharacterClassCheck extends AbstractRegexCheck {
       List<CharacterClassElementTree> duplicates = new ArrayList<>();
       SimplifiedRegexCharacterClass characterClass = new SimplifiedRegexCharacterClass();
       for (CharacterClassElementTree element : tree.getCharacterClasses()) {
-        if (characterClass.intersects(new SimplifiedRegexCharacterClass(element, getActiveFlagSet()), false)) {
+        if (characterClass.intersects(new SimplifiedRegexCharacterClass(element), false)) {
           duplicates.add(element);
         }
-        characterClass.add(element, getActiveFlagSet());
+        characterClass.add(element);
       }
       if (!duplicates.isEmpty()) {
         List<RegexIssueLocation> secondaries = duplicates.stream()

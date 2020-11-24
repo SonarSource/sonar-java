@@ -31,7 +31,7 @@ public class RepetitionTree extends RegexTree {
   private final Quantifier quantifier;
 
   public RepetitionTree(RegexSource source, IndexRange range, RegexTree element, Quantifier quantifier) {
-    super(source, range);
+    super(source, range, FLAGS_HAVE_NO_EFFECT_ON_THIS_STATE);
     this.element = element;
     this.quantifier = quantifier;
   }

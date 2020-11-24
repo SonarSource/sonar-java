@@ -28,14 +28,17 @@ public abstract class GroupTree extends RegexTree {
 
   private final RegexTree.Kind kind;
 
+  /**
+   * Can only be null for non-capturing groups
+   */
   @Nullable
-  private final RegexTree element;
+  protected final RegexTree element;
 
   @Nullable
   private final RegexToken groupHeader;
 
-  protected GroupTree(RegexSource source, RegexTree.Kind kind, @Nullable RegexTree element, IndexRange range) {
-    super(source, range);
+  protected GroupTree(RegexSource source, RegexTree.Kind kind, @Nullable RegexTree element, IndexRange range, FlagSet activeFlags) {
+    super(source, range, activeFlags);
     this.kind = kind;
     this.element = element;
     if (element != null) {

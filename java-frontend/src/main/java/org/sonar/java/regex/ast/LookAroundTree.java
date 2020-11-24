@@ -39,8 +39,8 @@ public class LookAroundTree extends GroupTree {
 
   private AutomatonState inner;
 
-  public LookAroundTree(RegexSource source, IndexRange range, Polarity polarity, Direction direction, RegexTree element) {
-    super(source, RegexTree.Kind.LOOK_AROUND, element, range);
+  public LookAroundTree(RegexSource source, IndexRange range, Polarity polarity, Direction direction, RegexTree element, FlagSet activeFlags) {
+    super(source, RegexTree.Kind.LOOK_AROUND, element, range, activeFlags);
     this.polarity = polarity;
     this.direction = direction;
     element.setContinuation(new EndOfLookaroundState(this));
@@ -69,6 +69,12 @@ public class LookAroundTree extends GroupTree {
     return TransitionType.EPSILON;
   }
 
+  @Nonnull
+  @Override
+  public RegexTree getElement() {
+    return element;
+  }
+
   @Override
   public void setContinuation(AutomatonState continuation) {
     setContinuation(continuation, null);
@@ -80,19 +86,19 @@ public class LookAroundTree extends GroupTree {
     return Arrays.asList(inner, continuation());
   }
 
-  public static LookAroundTree positiveLookAhead(RegexSource source, IndexRange range, RegexTree element) {
-    return new LookAroundTree(source, range, Polarity.POSITIVE, Direction.AHEAD, element);
+  public static LookAroundTree positiveLookAhead(RegexSource source, IndexRange range, RegexTree element, FlagSet activeFlags) {
+    return new LookAroundTree(source, range, Polarity.POSITIVE, Direction.AHEAD, element, activeFlags);
   }
 
-  public static LookAroundTree negativeLookAhead(RegexSource source, IndexRange range, RegexTree element) {
-    return new LookAroundTree(source, range, Polarity.NEGATIVE, Direction.AHEAD, element);
+  public static LookAroundTree negativeLookAhead(RegexSource source, IndexRange range, RegexTree element, FlagSet activeFlags) {
+    return new LookAroundTree(source, range, Polarity.NEGATIVE, Direction.AHEAD, element, activeFlags);
   }
 
-  public static LookAroundTree positiveLookBehind(RegexSource source, IndexRange range, RegexTree element) {
-    return new LookAroundTree(source, range, Polarity.POSITIVE, Direction.BEHIND, element);
+  public static LookAroundTree positiveLookBehind(RegexSource source, IndexRange range, RegexTree element, FlagSet activeFlags) {
+    return new LookAroundTree(source, range, Polarity.POSITIVE, Direction.BEHIND, element, activeFlags);
   }
 
-  public static LookAroundTree negativeLookBehind(RegexSource source, IndexRange range, RegexTree element) {
-    return new LookAroundTree(source, range, Polarity.NEGATIVE, Direction.BEHIND, element);
+  public static LookAroundTree negativeLookBehind(RegexSource source, IndexRange range, RegexTree element, FlagSet activeFlags) {
+    return new LookAroundTree(source, range, Polarity.NEGATIVE, Direction.BEHIND, element, activeFlags);
   }
 }

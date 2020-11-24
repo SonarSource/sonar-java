@@ -25,8 +25,8 @@ public class PlainCharacterTree extends CharacterTree {
 
   private final JavaCharacter contents;
 
-  public PlainCharacterTree(RegexSource source, IndexRange range, JavaCharacter character) {
-    super(source, range);
+  public PlainCharacterTree(RegexSource source, IndexRange range, JavaCharacter character, FlagSet activeFlags) {
+    super(source, range, activeFlags);
     this.contents = character;
   }
 
