@@ -29,8 +29,9 @@ public class CharacterClassTree extends RegexTree implements CharacterClassEleme
 
   private final boolean negated;
 
-  public CharacterClassTree(RegexSource source, IndexRange range, JavaCharacter openingBracket, boolean negated, CharacterClassElementTree contents) {
-    super(source, range);
+  public CharacterClassTree(RegexSource source, IndexRange range, JavaCharacter openingBracket, boolean negated,
+    CharacterClassElementTree contents, FlagSet activeFlags) {
+    super(source, range, activeFlags);
     this.negated = negated;
     this.contents = contents;
     this.openingBracket = openingBracket;

@@ -170,13 +170,16 @@ class RegexBaseVisitorTest {
 
     private void testFlags(String regex) {
       FlagChecker visitor = new FlagChecker();
-      visitor.visit(RegexParserTestUtils.assertSuccessfulParseResult(regex));
+      RegexParseResult parseResult = RegexParserTestUtils.assertSuccessfulParseResult(regex);
+      visitor.visit(parseResult);
       assertThat(visitor.visitedCharacters()).isEqualTo("abcdefghi");
-      JavaCharacter iFlag = visitor.getJavaCharacterForFlag(Pattern.CASE_INSENSITIVE);
+      List<RegexTree> items = ((SequenceTree) ((DisjunctionTree) parseResult.getResult()).getAlternatives().get(1)).getItems();
+      FlagSet activeFlags = items.get(items.size() - 1).activeFlags();
+      JavaCharacter iFlag = activeFlags.getJavaCharacterForFlag(Pattern.CASE_INSENSITIVE);
       assertThat(iFlag).isNotNull();
       assertThat(iFlag.getCharacter()).isEqualTo('i');
-      assertThat(visitor.getActiveFlags()).isEqualTo(Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CHARACTER_CLASS);
-      JavaCharacter uFlag = visitor.getJavaCharacterForFlag(Pattern.UNICODE_CASE);
+      assertThat(activeFlags.getMask()).isEqualTo(Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CHARACTER_CLASS);
+      JavaCharacter uFlag = activeFlags.getJavaCharacterForFlag(Pattern.UNICODE_CASE);
       assertThat(uFlag).isNull();
     }
 
@@ -249,19 +252,19 @@ class RegexBaseVisitorTest {
       public void visitPlainCharacter(PlainCharacterTree tree) {
         switch (tree.getCharacter()) {
           case 'a': case 'c': case 'f':
-            assertActiveFlags(true, false, false);
+            assertActiveFlags(tree, true, false, false);
             break;
           case 'b': case 'e': case 'g':
-            assertActiveFlags(true, true, false);
+            assertActiveFlags(tree, true, true, false);
             break;
           case 'd':
-            assertActiveFlags(false, false, false);
+            assertActiveFlags(tree, false, false, false);
             break;
           case 'h':
-            assertActiveFlags(true, true, true);
+            assertActiveFlags(tree, true, true, true);
             break;
           case 'i':
-            assertActiveFlags(true, false, true);
+            assertActiveFlags(tree, true, false, true);
             break;
           default:
             fail("Uncovered character in regex");
@@ -269,10 +272,10 @@ class RegexBaseVisitorTest {
         super.visitPlainCharacter(tree);
       }
 
-      void assertActiveFlags(boolean i, boolean u, boolean U) {
-        assertThat(flagActive(Pattern.CASE_INSENSITIVE)).isEqualTo(i);
-        assertThat(flagActive(Pattern.UNICODE_CASE)).isEqualTo(u);
-        assertThat(flagActive(Pattern.UNICODE_CHARACTER_CLASS)).isEqualTo(U);
+      void assertActiveFlags(PlainCharacterTree tree, boolean i, boolean u, boolean U) {
+        assertThat(tree.activeFlags().contains(Pattern.CASE_INSENSITIVE)).isEqualTo(i);
+        assertThat(tree.activeFlags().contains(Pattern.UNICODE_CASE)).isEqualTo(u);
+        assertThat(tree.activeFlags().contains(Pattern.UNICODE_CHARACTER_CLASS)).isEqualTo(U);
       }
 
     }

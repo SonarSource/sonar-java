@@ -23,8 +23,8 @@ import javax.annotation.Nonnull;
 
 public class DotTree extends RegexTree {
 
-  public DotTree(RegexSource source, IndexRange range) {
-    super(source, range);
+  public DotTree(RegexSource source, IndexRange range, FlagSet activeFlags) {
+    super(source, range, activeFlags);
   }
 
   @Override

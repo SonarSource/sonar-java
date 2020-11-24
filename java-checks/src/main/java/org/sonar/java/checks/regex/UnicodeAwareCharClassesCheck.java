@@ -123,9 +123,9 @@ public class UnicodeAwareCharClassesCheck extends AbstractRegexCheck {
     }
 
     @Override
-    protected void doVisitNonCapturingGroup(NonCapturingGroupTree tree) {
-      containsUnicodeCharacterFlag |= flagActive(Pattern.UNICODE_CHARACTER_CLASS);
-      super.doVisitNonCapturingGroup(tree);
+    public void visitNonCapturingGroup(NonCapturingGroupTree tree) {
+      containsUnicodeCharacterFlag |= tree.activeFlags().contains(Pattern.UNICODE_CHARACTER_CLASS);
+      super.visitNonCapturingGroup(tree);
     }
   }
 }

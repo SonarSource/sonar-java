@@ -27,9 +27,12 @@ public class CharacterClassUnionTree extends AbstractRegexSyntaxElement implemen
 
   private final List<CharacterClassElementTree> characterClasses;
 
-  public CharacterClassUnionTree(RegexSource source, IndexRange range, List<CharacterClassElementTree> characterClasses) {
+  private final FlagSet activeFlags;
+
+  public CharacterClassUnionTree(RegexSource source, IndexRange range, List<CharacterClassElementTree> characterClasses, FlagSet activeFlags) {
     super(source, range);
     this.characterClasses = Collections.unmodifiableList(characterClasses);
+    this.activeFlags = activeFlags;
   }
 
   public List<CharacterClassElementTree> getCharacterClasses() {
@@ -45,6 +48,12 @@ public class CharacterClassUnionTree extends AbstractRegexSyntaxElement implemen
   @Override
   public Kind characterClassElementKind() {
     return Kind.UNION;
+  }
+
+  @Nonnull
+  @Override
+  public FlagSet activeFlags() {
+    return activeFlags;
   }
 
 }

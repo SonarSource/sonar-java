@@ -27,10 +27,13 @@ public class CharacterRangeTree extends AbstractRegexSyntaxElement implements Ch
 
   private final CharacterTree upperBound;
 
-  public CharacterRangeTree(RegexSource source, IndexRange range, CharacterTree lowerBound, CharacterTree upperBound) {
+  private final FlagSet activeFlags;
+
+  public CharacterRangeTree(RegexSource source, IndexRange range, CharacterTree lowerBound, CharacterTree upperBound, FlagSet activeFlags) {
     super(source, range);
     this.lowerBound = lowerBound;
     this.upperBound = upperBound;
+    this.activeFlags = activeFlags;
   }
 
   public CharacterTree getLowerBound() {
@@ -50,6 +53,12 @@ public class CharacterRangeTree extends AbstractRegexSyntaxElement implements Ch
   @Override
   public Kind characterClassElementKind() {
     return Kind.CHARACTER_RANGE;
+  }
+
+  @Nonnull
+  @Override
+  public FlagSet activeFlags() {
+    return activeFlags;
   }
 
 }

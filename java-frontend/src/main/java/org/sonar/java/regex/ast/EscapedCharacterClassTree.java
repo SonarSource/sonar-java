@@ -29,13 +29,14 @@ public class EscapedCharacterClassTree extends RegexTree implements CharacterCla
   @Nullable
   private final String property;
 
-  private EscapedCharacterClassTree(RegexSource source, IndexRange range, JavaCharacter marker, @Nullable String property) {
-    super(source, range);
+  private EscapedCharacterClassTree(RegexSource source, IndexRange range, JavaCharacter marker, @Nullable String property, FlagSet activeFlags) {
+    super(source, range, activeFlags);
     this.type = marker.getCharacter();
     this.property = property;
   }
 
-  public EscapedCharacterClassTree(RegexSource source, JavaCharacter backslash, JavaCharacter marker, JavaCharacter openingCurlyBrace, JavaCharacter closingCurlyBrace) {
+  public EscapedCharacterClassTree(RegexSource source, JavaCharacter backslash, JavaCharacter marker, JavaCharacter openingCurlyBrace,
+    JavaCharacter closingCurlyBrace, FlagSet activeFlags) {
     this(
       source,
       backslash.getRange().merge(closingCurlyBrace.getRange()),
@@ -43,15 +44,16 @@ public class EscapedCharacterClassTree extends RegexTree implements CharacterCla
       source.substringAt(
         new IndexRange(
           openingCurlyBrace.getRange().getBeginningOffset() + 1,
-          closingCurlyBrace.getRange().getBeginningOffset()))
+          closingCurlyBrace.getRange().getBeginningOffset())),
+      activeFlags
     );
     if (!isProperty()) {
       throw new IllegalArgumentException("Only \\p can have a property string");
     }
   }
 
-  public EscapedCharacterClassTree(RegexSource source, JavaCharacter backslash, JavaCharacter marker) {
-    this(source, backslash.getRange().merge(marker.getRange()), marker, null);
+  public EscapedCharacterClassTree(RegexSource source, JavaCharacter backslash, JavaCharacter marker, FlagSet activeFlags) {
+    this(source, backslash.getRange().merge(marker.getRange()), marker, null, activeFlags);
     if (isProperty()) {
       throw new IllegalArgumentException("\\p needs a property string");
     }

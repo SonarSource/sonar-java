@@ -241,9 +241,9 @@ public class RegexComplexityCheck extends AbstractRegexCheck {
     // do anything by themselves. However lookarounds, atomic groups and non-capturing groups with flags do because
     // they're more complicated features
     @Override
-    protected void doVisitNonCapturingGroup(NonCapturingGroupTree tree) {
+    public void visitNonCapturingGroup(NonCapturingGroupTree tree) {
       if (tree.getEnabledFlags().isEmpty() && tree.getDisabledFlags().isEmpty()) {
-        super.doVisitNonCapturingGroup(tree);
+        super.visitNonCapturingGroup(tree);
       } else {
         if (tree.getGroupHeader() == null) {
           increaseComplexity(tree, nesting);
@@ -251,7 +251,7 @@ public class RegexComplexityCheck extends AbstractRegexCheck {
           increaseComplexity(tree.getGroupHeader(), nesting);
         }
         nesting++;
-        super.doVisitNonCapturingGroup(tree);
+        super.visitNonCapturingGroup(tree);
         nesting--;
       }
     }

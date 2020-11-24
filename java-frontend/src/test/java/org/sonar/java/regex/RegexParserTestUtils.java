@@ -23,7 +23,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.opentest4j.AssertionFailedError;
 import org.sonar.java.model.JParserTestUtils;
@@ -58,19 +57,19 @@ public class RegexParserTestUtils {
   private RegexParserTestUtils() {}
 
   public static RegexTree assertSuccessfulParse(String regex) {
-    return assertSuccessfulParse(regex, false);
+    return assertSuccessfulParse(regex, 0);
   }
 
-  public static RegexTree assertSuccessfulParse(String regex, boolean freeSpacingMode) {
-    return assertSuccessfulParseResult(regex, freeSpacingMode).getResult();
+  public static RegexTree assertSuccessfulParse(String regex, int initialFlags) {
+    return assertSuccessfulParseResult(regex, initialFlags).getResult();
   }
 
   public static RegexParseResult assertSuccessfulParseResult(String regex) {
-    return assertSuccessfulParseResult(regex, false);
+    return assertSuccessfulParseResult(regex, 0);
   }
 
-  public static RegexParseResult assertSuccessfulParseResult(String regex, boolean freeSpacingMode) {
-    RegexParseResult result = parseRegex(regex, freeSpacingMode);
+  public static RegexParseResult assertSuccessfulParseResult(String regex, int initialFlags) {
+    RegexParseResult result = parseRegex(regex, initialFlags);
     if (!result.getSyntaxErrors().isEmpty()) {
       throw new AssertionFailedError("Parsing should complete with no errors.", "no errors", result.getSyntaxErrors());
     }
@@ -84,8 +83,7 @@ public class RegexParserTestUtils {
     return result;
   }
 
-  public static RegexParseResult parseRegex(String regex, boolean freeSpacingMode) {
-    int initialFlags = freeSpacingMode ? Pattern.COMMENTS : 0;
+  public static RegexParseResult parseRegex(String regex, int initialFlags) {
     RegexSource source = makeSource(regex);
     RegexParseResult result = new RegexParser(source, new FlagSet(initialFlags)).parse();
     assertEquals(initialFlags, result.getInitialFlags().getMask(), "The initial flags in result should match those passed in.");
@@ -93,7 +91,7 @@ public class RegexParserTestUtils {
   }
 
   public static RegexParseResult parseRegex(String regex) {
-    return parseRegex(regex, false);
+    return parseRegex(regex, 0);
   }
 
   public static void assertFailParsing(String regex, String expectedError) {
@@ -128,11 +126,11 @@ public class RegexParserTestUtils {
   }
 
   public static void assertPlainString(String expected, String regex) {
-    assertPlainString(expected, regex, false);
+    assertPlainString(expected, regex, 0);
   }
 
-  public static void assertPlainString(String expected, String regex, boolean freeSpacingMode) {
-    assertPlainString(expected, assertSuccessfulParse(regex, freeSpacingMode));
+  public static void assertPlainString(String expected, String regex, int initialFlags) {
+    assertPlainString(expected, assertSuccessfulParse(regex, initialFlags));
   }
 
   public static void assertPlainCharacter(char expected, @Nullable Boolean expectedEscape, RegexSyntaxElement regex) {

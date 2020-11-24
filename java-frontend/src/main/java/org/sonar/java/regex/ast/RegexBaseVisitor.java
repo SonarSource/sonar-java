@@ -19,43 +19,16 @@
  */
 package org.sonar.java.regex.ast;
 
-import com.google.common.annotations.VisibleForTesting;
 import java.util.List;
-import javax.annotation.CheckForNull;
 import org.sonar.java.regex.RegexParseResult;
 
 public class RegexBaseVisitor implements RegexVisitor {
-
-  private FlagSet activeFlags;
-
-  @VisibleForTesting
-  protected int getActiveFlags() {
-    return activeFlags.getMask();
-  }
-
-  protected FlagSet getActiveFlagSet() {
-    return activeFlags;
-  }
-
-  protected boolean flagActive(int flag) {
-    return activeFlags.contains(flag);
-  }
-
-  /**
-   * Returns the character inside the regex that was used to set the given flag. This will return null if the flag
-   * is not set or if the flag has been set from outside of the regex (i.e. as an argument to Pattern.compile).
-   * Therefore this should not be used to check whether a flag is set.
-   */
-  @CheckForNull
-  protected JavaCharacter getJavaCharacterForFlag(int flag) {
-    return activeFlags.getJavaCharacterForFlag(flag);
-  }
 
   protected void visit(RegexTree tree) {
     tree.accept(this);
   }
 
-  protected void visitInCharClass(CharacterClassElementTree tree) {
+  public void visitInCharClass(CharacterClassElementTree tree) {
     tree.accept(this);
   }
 
@@ -70,16 +43,10 @@ public class RegexBaseVisitor implements RegexVisitor {
   @Override
   public void visit(RegexParseResult regexParseResult) {
     if (!regexParseResult.hasSyntaxErrors()) {
-      activeFlags = regexParseResult.getInitialFlags();
       before(regexParseResult);
       visit(regexParseResult.getResult());
       after(regexParseResult);
     }
-  }
-
-  public void visitInCharClass(CharacterClassElementTree tree, FlagSet flags) {
-    activeFlags = flags;
-    visitInCharClass(tree);
   }
 
   /**
@@ -125,22 +92,11 @@ public class RegexBaseVisitor implements RegexVisitor {
 
   @Override
   public void visitCapturingGroup(CapturingGroupTree tree) {
-    visitAndRestoreFlags(tree.getElement());
+    visit(tree.getElement());
   }
 
   @Override
-  public final void visitNonCapturingGroup(NonCapturingGroupTree tree) {
-    FlagSet oldFlags = activeFlags;
-    activeFlags = new FlagSet(activeFlags);
-    activeFlags.addAll(tree.getEnabledFlags());
-    activeFlags.removeAll(tree.getDisabledFlags());
-    doVisitNonCapturingGroup(tree);
-    if (tree.getElement() != null) {
-      activeFlags = oldFlags;
-    }
-  }
-
-  protected void doVisitNonCapturingGroup(NonCapturingGroupTree tree) {
+  public void visitNonCapturingGroup(NonCapturingGroupTree tree) {
     RegexTree element = tree.getElement();
     if (element != null) {
       visit(element);
@@ -149,19 +105,12 @@ public class RegexBaseVisitor implements RegexVisitor {
 
   @Override
   public void visitAtomicGroup(AtomicGroupTree tree) {
-    visitAndRestoreFlags(tree.getElement());
+    visit(tree.getElement());
   }
 
   @Override
   public void visitLookAround(LookAroundTree tree) {
-    visitAndRestoreFlags(tree.getElement());
-  }
-
-  private void visitAndRestoreFlags(RegexTree tree) {
-    FlagSet oldFlags = activeFlags;
-    activeFlags = new FlagSet(activeFlags);
-    visit(tree);
-    activeFlags = oldFlags;
+    visit(tree.getElement());
   }
 
   @Override

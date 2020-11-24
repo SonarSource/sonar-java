@@ -157,15 +157,16 @@ class EscapedCharacterClassTreeTest {
       JavaCharacter backslash = lexer.getCurrent();
       lexer.moveNext();
       JavaCharacter type = lexer.getCurrent();
+      FlagSet activeFlags = new FlagSet();
       Executable createTree;
       if (includesProperty) {
         lexer.moveNext();
         JavaCharacter openingBrace = lexer.getCurrent();
         lexer.moveNext(2);
         JavaCharacter closingBrace = lexer.getCurrent();
-        createTree = () -> new EscapedCharacterClassTree(source, backslash, type, openingBrace, closingBrace);
+        createTree = () -> new EscapedCharacterClassTree(source, backslash, type, openingBrace, closingBrace, activeFlags);
       } else {
-        createTree = () -> new EscapedCharacterClassTree(source, backslash, type);
+        createTree = () -> new EscapedCharacterClassTree(source, backslash, type, activeFlags);
       }
       assertThrows(IllegalArgumentException.class, createTree, message);
     }

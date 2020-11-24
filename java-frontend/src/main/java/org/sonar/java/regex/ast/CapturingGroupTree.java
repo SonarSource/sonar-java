@@ -20,6 +20,7 @@
 package org.sonar.java.regex.ast;
 
 import java.util.Optional;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class CapturingGroupTree extends GroupTree {
@@ -28,8 +29,8 @@ public class CapturingGroupTree extends GroupTree {
   private final String name;
   private final int groupNumber;
 
-  public CapturingGroupTree(RegexSource source, IndexRange range, @Nullable String name, int groupNumber, RegexTree element) {
-    super(source, Kind.CAPTURING_GROUP, element, range);
+  public CapturingGroupTree(RegexSource source, IndexRange range, @Nullable String name, int groupNumber, RegexTree element, FlagSet activeFlags) {
+    super(source, Kind.CAPTURING_GROUP, element, range, activeFlags);
     this.name = name;
     this.groupNumber = groupNumber;
     element.setContinuation(new EndOfCapturingGroupState(this));
@@ -51,5 +52,11 @@ public class CapturingGroupTree extends GroupTree {
 
   public int getGroupNumber() {
     return groupNumber;
+  }
+
+  @Nonnull
+  @Override
+  public RegexTree getElement() {
+    return element;
   }
 }

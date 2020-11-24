@@ -20,8 +20,10 @@
 package org.sonar.java.regex.ast;
 
 import java.util.List;
+import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.sonar.java.regex.RegexParserTestUtils.assertCharacterClass;
 import static org.sonar.java.regex.RegexParserTestUtils.assertCharacterRange;
@@ -39,8 +41,10 @@ class CharacterClassTreeTest {
 
   @Test
   void simpleCharacterClass() {
-    RegexTree regex = assertSuccessfulParse("[a-z]");
-    assertCharacterRange('a', 'z', assertCharacterClass(false, regex));
+    RegexTree regex = assertSuccessfulParse("[a-z]", Pattern.UNIX_LINES);
+    CharacterClassElementTree characterClass = assertCharacterClass(false, regex);
+    assertThat(characterClass.activeFlags().getMask()).isEqualTo(Pattern.UNIX_LINES);
+    assertCharacterRange('a', 'z', characterClass);
     assertJavaCharacter(0, '[', ((CharacterClassTree)regex).getOpeningBracket());
   }
 
@@ -60,9 +64,10 @@ class CharacterClassTreeTest {
 
   @Test
   void leadingDash() {
-    RegexTree regex = assertSuccessfulParse("[-a]");
+    RegexTree regex = assertSuccessfulParse("[-a]", Pattern.CASE_INSENSITIVE);
     CharacterClassUnionTree union = assertType(CharacterClassUnionTree.class, assertCharacterClass(false, regex));
     assertKind(CharacterClassElementTree.Kind.UNION, union);
+    assertThat(union.activeFlags().getMask()).isEqualTo(Pattern.CASE_INSENSITIVE);
     assertListElements(union.getCharacterClasses(),
       firstChar -> assertPlainCharacter('-', firstChar),
       secondChar -> assertPlainCharacter('a', secondChar)
@@ -100,9 +105,11 @@ class CharacterClassTreeTest {
 
   @Test
   void intersection() {
-    RegexTree regex = assertSuccessfulParse("[a-z&&[^g-i]&]");
+    RegexTree regex = assertSuccessfulParse("[a-z&&[^g-i]&]", Pattern.MULTILINE);
     CharacterClassIntersectionTree intersection = assertType(CharacterClassIntersectionTree.class, assertCharacterClass(false, regex));
     assertKind(CharacterClassElementTree.Kind.INTERSECTION, intersection);
+    assertThat(intersection.is(CharacterClassElementTree.Kind.UNION)).isFalse();
+    assertThat(intersection.activeFlags().getMask()).isEqualTo(Pattern.MULTILINE);
     assertListElements(intersection.getAndOperators(),
       first -> assertToken(4, "&&", first)
     );

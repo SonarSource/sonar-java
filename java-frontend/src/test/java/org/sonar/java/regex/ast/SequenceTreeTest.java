@@ -19,6 +19,7 @@
  */
 package org.sonar.java.regex.ast;
 
+import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -90,12 +91,12 @@ class SequenceTreeTest {
 
   @Test
   void quotedStringWithComments() {
-    assertPlainString("a#b", "\\\\Qa#b\\\\E", true);
-    assertPlainString("ab", "ab#\\\\Qc\\\\E", true);
-    assertPlainString("ab", "\\\\Qab\\\\E#\\\\Qb\\\\E", true);
-    assertPlainString("", "\\\\Q\\\\E#lala", true);
-    assertPlainString("a b", "\\\\Qa b\\\\E", true);
-    assertPlainString("ab", "\\\\Qa\\\\E \\\\Qb\\\\E", true);
+    assertPlainString("a#b", "\\\\Qa#b\\\\E", Pattern.COMMENTS);
+    assertPlainString("ab", "ab#\\\\Qc\\\\E", Pattern.COMMENTS);
+    assertPlainString("ab", "\\\\Qab\\\\E#\\\\Qb\\\\E", Pattern.COMMENTS);
+    assertPlainString("", "\\\\Q\\\\E#lala", Pattern.COMMENTS);
+    assertPlainString("a b", "\\\\Qa b\\\\E", Pattern.COMMENTS);
+    assertPlainString("ab", "\\\\Qa\\\\E \\\\Qb\\\\E", Pattern.COMMENTS);
   }
 
   @Test

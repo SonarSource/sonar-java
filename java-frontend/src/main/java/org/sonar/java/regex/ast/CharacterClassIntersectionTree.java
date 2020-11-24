@@ -29,10 +29,14 @@ public class CharacterClassIntersectionTree extends AbstractRegexSyntaxElement i
 
   private final List<RegexToken> andOperators;
 
-  public CharacterClassIntersectionTree(RegexSource source, IndexRange range, List<CharacterClassElementTree> characterClasses, List<RegexToken> andOperators) {
+  private final FlagSet activeFlags;
+
+  public CharacterClassIntersectionTree(RegexSource source, IndexRange range, List<CharacterClassElementTree> characterClasses,
+    List<RegexToken> andOperators, FlagSet activeFlags) {
     super(source, range);
     this.characterClasses = Collections.unmodifiableList(characterClasses);
     this.andOperators = Collections.unmodifiableList(andOperators);
+    this.activeFlags = activeFlags;
   }
 
   public List<CharacterClassElementTree> getCharacterClasses() {
@@ -52,6 +56,12 @@ public class CharacterClassIntersectionTree extends AbstractRegexSyntaxElement i
   @Override
   public Kind characterClassElementKind() {
     return Kind.INTERSECTION;
+  }
+
+  @Nonnull
+  @Override
+  public FlagSet activeFlags() {
+    return activeFlags;
   }
 
 }

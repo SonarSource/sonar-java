@@ -50,4 +50,7 @@ public interface CharacterClassElementTree extends RegexSyntaxElement {
     return false;
   }
 
+  @Nonnull
+  FlagSet activeFlags();
+
 }
