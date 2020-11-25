@@ -33,7 +33,7 @@ public class CapturingGroupTree extends GroupTree {
     super(source, Kind.CAPTURING_GROUP, element, range, activeFlags);
     this.name = name;
     this.groupNumber = groupNumber;
-    element.setContinuation(new EndOfCapturingGroupState(this));
+    element.setContinuation(new EndOfCapturingGroupState(this, activeFlags));
   }
 
   @Override

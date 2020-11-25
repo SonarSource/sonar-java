@@ -50,7 +50,7 @@ class AutomatonStateTest {
           "SequenceTree<flags: u:21>\n" +
           "EscapedCharacterClassTree<flags: u:21>\n" +
           "MiscEscapeSequenceTree<flags: u:21>\n" +
-          "EndOfCapturingGroupState\n" +
+          "EndOfCapturingGroupState<flags: u:21>\n" +
           "NonCapturingGroupTree<flags: d:34>\n" +
           "BoundaryTree<flags: d:34>\n" +
           "NonCapturingGroupTree<flags: U:40>\n" +
@@ -91,7 +91,7 @@ class AutomatonStateTest {
           "SequenceTree<flags: i:3 u:25>\n" +
           "NonCapturingGroupTree<flags: i:3>\n" +
           "PlainCharacterTree 'f' <flags: i:3>\n" +
-          "EndOfCapturingGroupState\n" +
+          "EndOfCapturingGroupState<flags: i:3 u:25>\n" +
           "PlainCharacterTree 'g' <flags: i:3 u:25>\n" +
           "NonCapturingGroupTree<flags: i:3 u:25 U:39>\n" +
           "PlainCharacterTree 'h' <flags: i:3 u:25 U:39>\n" +
