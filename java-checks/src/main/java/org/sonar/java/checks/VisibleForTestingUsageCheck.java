@@ -53,7 +53,7 @@ public class VisibleForTestingUsageCheck extends IssuableSubscriptionVisitor {
     }
     if (isMisusedVisibleForTesting(symbol)) {
       List<JavaFileScannerContext.Location> locations = symbol.usages().stream()
-        .filter(identifierTree -> isMisusedVisibleForTesting(identifierTree.symbol()))
+        .filter(identifierTree -> !tree.equals(identifierTree))
         .map(identifierTree -> new JavaFileScannerContext.Location("usage of @VisibleForTesting in production", identifierTree))
         .collect(Collectors.toList());
 
