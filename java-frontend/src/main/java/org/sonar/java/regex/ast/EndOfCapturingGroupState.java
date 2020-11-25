@@ -22,11 +22,12 @@ package org.sonar.java.regex.ast;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-public class EndOfCapturingGroupState implements AutomatonState {
+public class EndOfCapturingGroupState extends ActiveFlagsState {
 
   private final CapturingGroupTree group;
 
-  public EndOfCapturingGroupState(CapturingGroupTree group) {
+  public EndOfCapturingGroupState(CapturingGroupTree group, FlagSet activeFlags) {
+    super(activeFlags);
     this.group = group;
   }
 

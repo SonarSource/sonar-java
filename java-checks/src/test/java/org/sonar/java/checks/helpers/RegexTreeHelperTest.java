@@ -46,6 +46,32 @@ class RegexTreeHelperTest {
   }
 
   @Test
+  void intersects_dot() {
+    assertIntersects(".", "a", false).isTrue();
+    assertIntersects("a", ".", true).isTrue();
+    assertIntersects(".", "[a-z]", false).isTrue();
+    assertIntersects("[a-z]+", ".+", false).isTrue();
+
+    // by default [\r\n\u0085\u2028\u2029] excluded from DotTree
+    assertIntersects(".", "[\r\n\u0085\u2028\u2029]", false).isFalse();
+    assertIntersects(".+", "\b\f \t", false).isTrue();
+
+    // only \n excluded when UNIX_LINES is set
+    assertIntersects(".", "\n", false, Pattern.UNIX_LINES).isFalse();
+    assertIntersects("(?d).", "\n", false).isFalse();
+    assertIntersects(".+", "\b\f \t\r\u0085\u2028\u2029", false, Pattern.UNIX_LINES).isTrue();
+    assertIntersects("(?d).+", "\b\f \t\r\u0085\u2028\u2029", false).isTrue();
+
+    // no exclusion and UNIX_LINES is ignored when DOTALL is set
+    assertIntersects(".", "\n", false, Pattern.DOTALL).isTrue();
+    assertIntersects(".", "\n", false, Pattern.UNIX_LINES|Pattern.DOTALL).isTrue();
+    assertIntersects("(?d).", "\n", false, Pattern.DOTALL).isTrue();
+    assertIntersects("(?s).", "\n", false).isTrue();
+    assertIntersects("(?ds).", "\n", false).isTrue();
+    assertIntersects(".+", "\b\f \t\r\n\u0085\u2028\u2029", false, Pattern.DOTALL).isTrue();
+  }
+
+  @Test
   void intersects_one_range() {
     assertIntersects("[b-d]", "a", true).isFalse();
     assertIntersects("[b-d]", "b", false).isTrue();
@@ -112,12 +138,6 @@ class RegexTreeHelperTest {
 
   @Test
   void intersects_not_supported() {
-    assertIntersects(".", "a", false).isFalse();
-    assertIntersects(".", "a", true).isTrue();
-
-    assertIntersects("a", ".", false).isFalse();
-    assertIntersects("a", ".", true).isTrue();
-
     assertIntersects("a(?<=a)", "a", true).isTrue();
     assertIntersects("a(?<=a)", "a", false).isFalse();
   }
@@ -146,6 +166,35 @@ class RegexTreeHelperTest {
   }
 
   @Test
+  void superset_of_dot() {
+    assertSupersetOf(".", "a", false).isTrue();
+    assertSupersetOf("a", ".", true).isFalse();
+    assertSupersetOf(".", "[a-z]", false).isTrue();
+    assertSupersetOf("[a-z]+", ".+", false).isFalse();
+
+    // by default [\r\n\u0085\u2028\u2029] excluded from DotTree
+    assertSupersetOf(".", "[^\r\n\u0085\u2028\u2029]", false).isTrue();
+    assertSupersetOf(".+", "\b\f \t", false).isTrue();
+
+    // only \n excluded when UNIX_LINES is set
+    assertSupersetOf(".", "[^\n]", false, Pattern.UNIX_LINES).isTrue();
+    assertSupersetOf(".", "\n", false, Pattern.UNIX_LINES).isFalse();
+    assertSupersetOf("(?d).", "\n", false).isFalse();
+    assertSupersetOf(".+", "\b\f \t\r\u0085\u2028\u2029", false, Pattern.UNIX_LINES).isTrue();
+    assertSupersetOf("(?d).+", "\b\f \t\r\u0085\u2028\u2029", false).isTrue();
+
+    // no exclusion and UNIX_LINES is ignored when DOTALL is set
+    assertSupersetOf(".", "[^a]", false, Pattern.DOTALL).isTrue();
+    assertSupersetOf(".", "a", false, Pattern.DOTALL).isTrue();
+    assertSupersetOf(".", "\n", false, Pattern.DOTALL).isTrue();
+    assertSupersetOf(".", "\n", false, Pattern.UNIX_LINES|Pattern.DOTALL).isTrue();
+    assertSupersetOf("(?d).", "\n", false, Pattern.DOTALL).isTrue();
+    assertSupersetOf("(?s).", "\n", false).isTrue();
+    assertSupersetOf("(?ds).", "\n", false).isTrue();
+    assertSupersetOf(".+", "\b\f \t\r\n\u0085\u2028\u2029", false, Pattern.DOTALL).isTrue();
+  }
+
+  @Test
   void superset_of_not_supported() {
     // positive lookahead
     assertSupersetOf("a(?=X)", "a(?=X)", false).isFalse();
@@ -155,12 +204,6 @@ class RegexTreeHelperTest {
     assertSupersetOf("\\w+(?<=X)", "\\w+(?<=X)", false).isFalse();
     // negative lookbehind
     assertSupersetOf("\\w+(?<!X)", "\\w+(?<!X)", false).isFalse();
-
-    assertSupersetOf(".", "a", true).isTrue();
-    assertSupersetOf(".", "a", false).isFalse();
-
-    assertSupersetOf("a", ".", true).isTrue();
-    assertSupersetOf("a", ".", false).isFalse();
   }
 
   @Test

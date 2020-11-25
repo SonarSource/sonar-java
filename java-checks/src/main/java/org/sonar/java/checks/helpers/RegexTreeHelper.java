@@ -30,7 +30,6 @@ import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.ast.AutomatonState;
 import org.sonar.java.regex.ast.AutomatonState.TransitionType;
 import org.sonar.java.regex.ast.BoundaryTree;
-import org.sonar.java.regex.ast.CharacterClassElementTree;
 import org.sonar.java.regex.ast.CharacterTree;
 import org.sonar.java.regex.ast.EndOfLookaroundState;
 import org.sonar.java.regex.ast.LookAroundTree;
@@ -130,14 +129,14 @@ public class RegexTreeHelper {
       () -> auto1.anySuccessorMatch(successor -> intersects(successor, auto2, defaultAnswer, cache)),
       () -> auto2.anySuccessorMatch(successor -> intersects(auto1, successor, defaultAnswer, cache)),
       () -> {
-        if (auto1.start instanceof CharacterClassElementTree && auto2.start instanceof CharacterClassElementTree) {
-          SimplifiedRegexCharacterClass characterClass1 = new SimplifiedRegexCharacterClass((CharacterClassElementTree) auto1.start);
-          SimplifiedRegexCharacterClass characterClass2 = new SimplifiedRegexCharacterClass((CharacterClassElementTree) auto2.start);
-          return characterClass1.intersects(characterClass2, defaultAnswer) &&
+        SimplifiedRegexCharacterClass characterClass1 = SimplifiedRegexCharacterClass.of(auto1.start);
+        SimplifiedRegexCharacterClass characterClass2 = SimplifiedRegexCharacterClass.of(auto2.start);
+        boolean answer = defaultAnswer;
+        if (characterClass1 != null && characterClass2 != null) {
+          answer = characterClass1.intersects(characterClass2, defaultAnswer) &&
             auto1.anySuccessorMatch(successor1 -> auto2.anySuccessorMatch(successor2 -> intersects(successor1, successor2, defaultAnswer, cache)));
-        } else {
-          return defaultAnswer;
         }
+        return answer;
       });
   }
 
@@ -155,15 +154,14 @@ public class RegexTreeHelper {
       () -> auto1.anySuccessorMatch(successor -> supersetOf(successor, auto2, defaultAnswer, cache)),
       () -> auto2.allSuccessorMatch(successor -> supersetOf(auto1, successor, defaultAnswer, cache)),
       () -> {
-        if (auto1.start instanceof CharacterClassElementTree && auto2.start instanceof CharacterClassElementTree) {
-          SimplifiedRegexCharacterClass characterClass1 = new SimplifiedRegexCharacterClass((CharacterClassElementTree) auto1.start);
-          SimplifiedRegexCharacterClass characterClass2 = new SimplifiedRegexCharacterClass((CharacterClassElementTree) auto2.start);
-          return characterClass1.supersetOf(characterClass2, defaultAnswer) &&
+        SimplifiedRegexCharacterClass characterClass1 = SimplifiedRegexCharacterClass.of(auto1.start);
+        SimplifiedRegexCharacterClass characterClass2 = SimplifiedRegexCharacterClass.of(auto2.start);
+        boolean answer = defaultAnswer;
+        if (characterClass1 != null && characterClass2 != null) {
+          answer = characterClass1.supersetOf(characterClass2, defaultAnswer) &&
             auto1.anySuccessorMatch(successor1 -> auto2.anySuccessorMatch(successor2 -> supersetOf(successor1, successor2, defaultAnswer, cache)));
-        } else {
-          // DotTree is not yet supported
-          return defaultAnswer;
         }
+        return answer;
       });
   }
 
