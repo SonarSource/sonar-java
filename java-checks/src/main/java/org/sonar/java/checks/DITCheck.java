@@ -19,10 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.sonar.api.utils.WildcardPattern;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;

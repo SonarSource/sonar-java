@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Strings;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -60,7 +58,7 @@ public class CommentRegularExpressionCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitTrivia(SyntaxTrivia syntaxTrivia) {
-    if (pattern == null && !Strings.isNullOrEmpty(regularExpression)) {
+    if (pattern == null && !isNullOrEmpty(regularExpression)) {
       try {
         pattern = Pattern.compile(regularExpression, Pattern.DOTALL);
       } catch (RuntimeException e) {
@@ -72,4 +70,7 @@ public class CommentRegularExpressionCheck extends IssuableSubscriptionVisitor {
     }
   }
 
+  private static boolean isNullOrEmpty(@Nullable String string) {
+    return string == null || string.isEmpty();
+  }
 }

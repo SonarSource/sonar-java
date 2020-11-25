@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.xml.maven.helpers;
 
-import com.google.common.base.Preconditions;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
@@ -33,7 +32,9 @@ public class RangedVersionMatcher implements StringMatcher {
     this.lowerBound = isWildCard(lowerBound) ? null : getVersion(lowerBound);
     this.upperBound = isWildCard(upperBound) ? null : getVersion(upperBound);
     // check that we are not bypassing both bounds
-    Preconditions.checkArgument(!(this.lowerBound == null && this.upperBound == null));
+    if ((this.lowerBound == null && this.upperBound == null)) {
+      throw new IllegalArgumentException();
+    }
   }
 
   private static boolean isWildCard(String pattern) {

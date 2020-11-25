@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Preconditions;
+import java.util.Optional;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -143,8 +143,8 @@ public abstract class AbstractForLoopRule extends IssuableSubscriptionVisitor {
     }
 
     public int value() {
-      Preconditions.checkState(value != null, "This ForLoopIncrement has no value");
-      return value;
+      return Optional.ofNullable(value)
+        .orElseThrow(() ->new IllegalStateException("This ForLoopIncrement has no value"));
     }
 
     @CheckForNull

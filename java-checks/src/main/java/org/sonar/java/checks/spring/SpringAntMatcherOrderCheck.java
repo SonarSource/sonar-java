@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.spring;
 
-import com.google.common.annotations.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +28,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;

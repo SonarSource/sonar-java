@@ -19,12 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.annotations.VisibleForTesting;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.EndOfAnalysisCheck;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;

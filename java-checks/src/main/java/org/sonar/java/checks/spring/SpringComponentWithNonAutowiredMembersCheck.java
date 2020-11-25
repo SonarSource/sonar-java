@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.spring;
 
-import com.google.common.base.Splitter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -88,9 +87,8 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
   }
 
   private boolean isCustomInjectionAnnotated(SymbolMetadata metadata) {
-    return Splitter.on(",").trimResults()
-      .splitToList(customInjectionAnnotations)
-      .stream()
+    return Arrays.stream(customInjectionAnnotations.split(","))
+      .map(String::trim)
       .anyMatch(metadata::isAnnotatedWith);
   }
 

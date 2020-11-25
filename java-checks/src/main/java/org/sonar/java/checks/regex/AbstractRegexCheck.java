@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.regex;
 
-import com.google.common.annotations.VisibleForTesting;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -28,6 +27,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
