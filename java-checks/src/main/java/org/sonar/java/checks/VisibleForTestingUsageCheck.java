@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +29,7 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationInstance;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -37,13 +37,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class VisibleForTestingUsageCheck extends IssuableSubscriptionVisitor {
   
   private final Set<Symbol> reportedSymbols = new HashSet<>();
-
-  private static final List<String> ANNOTATIONS = Arrays.asList(
-    "com.google.common.annotations.VisibleForTesting",
-    "org.assertj.core.util.VisibleForTesting",
-    "androidx.annotation.VisibleForTesting",
-    "org.apache.flink.annotation.VisibleForTesting"
-  );
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -60,7 +53,7 @@ public class VisibleForTestingUsageCheck extends IssuableSubscriptionVisitor {
     }
     if (isMisusedVisibleForTesting(symbol)) {
       List<JavaFileScannerContext.Location> locations = symbol.usages().stream()
-        .filter(identifierTree -> isMisusedVisibleForTesting(identifierTree.symbol()))
+        .filter(identifierTree -> !tree.equals(identifierTree))
         .map(identifierTree -> new JavaFileScannerContext.Location("usage of @VisibleForTesting in production", identifierTree))
         .collect(Collectors.toList());
 
@@ -74,7 +67,11 @@ public class VisibleForTestingUsageCheck extends IssuableSubscriptionVisitor {
   private static boolean isMisusedVisibleForTesting(Symbol symbol) {
     Symbol owner = Objects.requireNonNull(symbol.owner(), "Owner is never null if unknown symbols are filtered out");
     return isFieldMethodOrClass(symbol, owner) && !inTheSameFile(symbol)
-      && ANNOTATIONS.stream().anyMatch(symbol.metadata()::isAnnotatedWith);
+      && symbol.metadata().annotations().stream().anyMatch(VisibleForTestingUsageCheck::isVisibleForTestingAnnotation);
+  }
+
+  private static boolean isVisibleForTestingAnnotation(AnnotationInstance annotationInstance) {
+    return annotationInstance.symbol().name().equals("VisibleForTesting");
   }
 
   private static boolean inTheSameFile(Symbol symbol) {

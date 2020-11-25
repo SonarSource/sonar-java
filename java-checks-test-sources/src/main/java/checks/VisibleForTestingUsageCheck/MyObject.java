@@ -1,15 +1,13 @@
 package checks.VisibleForTestingUsageCheck;
 
-import com.google.common.annotations.VisibleForTesting;
-
 public class MyObject {
 
   MyObject() {}
 
-  @VisibleForTesting
+  @com.google.common.annotations.VisibleForTesting
   MyObject(int i) {}
 
-  @VisibleForTesting
+  @checks.VisibleForTestingUsageCheck.VisibleForTesting
   String foo;
 
   @VisibleForTesting
@@ -27,3 +25,6 @@ public class MyObject {
 
 @VisibleForTesting
 class Outer {}
+
+
+

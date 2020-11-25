@@ -41,6 +41,18 @@ class VisibleForTestingUsageCheckTest {
   }
 
   @Test
+  void test_no_semantic() {
+    List<File> classPath = FilesUtils.getClassPath(FilesUtils.DEFAULT_TEST_JARS_DIRECTORY);
+    classPath.add(new File("../java-checks-test-sources/target/classes/"));
+    JavaCheckVerifier.newVerifier()
+      .withClassPath(classPath)
+      .onFile(testSourcesPath("checks/VisibleForTestingUsageCheck/Service.java"))
+      .withCheck(new VisibleForTestingUsageCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
+
+  @Test
   void test_non_compiling() {
     JavaCheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/VisibleForTestingUsageCheck.java"))
