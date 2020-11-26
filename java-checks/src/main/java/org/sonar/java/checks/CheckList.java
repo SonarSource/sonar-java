@@ -53,6 +53,7 @@ import org.sonar.java.checks.regex.ImpossibleBackReferenceCheck;
 import org.sonar.java.checks.regex.ImpossibleBoundariesCheck;
 import org.sonar.java.checks.regex.ImpossibleRegexCheck;
 import org.sonar.java.checks.regex.InvalidRegexCheck;
+import org.sonar.java.checks.regex.PossessiveQuantifierContinuationCheck;
 import org.sonar.java.checks.regex.RedosCheck;
 import org.sonar.java.checks.regex.RegexComplexityCheck;
 import org.sonar.java.checks.regex.ReluctantQuantifierCheck;
@@ -560,6 +561,7 @@ public final class CheckList {
       PasswordEncoderCheck.class,
       PersistentEntityUsedAsRequestParameterCheck.class,
       PopulateBeansCheck.class,
+      PossessiveQuantifierContinuationCheck.class,
       PredictableSeedCheck.class,
       PreferStreamAnyMatchCheck.class,
       PreparedStatementAndResultSetCheck.class,
