@@ -98,7 +98,7 @@ class Expectations {
     END_COLUMN(Integer::valueOf),
     END_LINE(Parser.LineRef::fromString, Parser.LineRef::toLine),
     EFFORT_TO_FIX(Double::valueOf),
-    SECONDARY_LOCATIONS(multiValueAttribute(Integer::valueOf)),
+    SECONDARY_LOCATIONS(multiValueAttribute(Function.identity())),
     FLOWS(multiValueAttribute(Function.identity()));
 
     private Function<String, ?> setter;
@@ -365,6 +365,7 @@ class Expectations {
       issue.put(LINE, parseLineShifting(shift).getLine(line));
       Map<IssueAttribute, Object> attrs = parseAttributes(attributes);
       attrs = adjustEndLine(attrs, line);
+      attrs = convertSecondaryLocations(attrs, line);
       issue.putAll(attrs);
       if (message != null) {
         issue.put(MESSAGE, message);
@@ -406,6 +407,27 @@ class Expectations {
         return copy;
       }
       return attributes;
+    }
+
+    private static Map<IssueAttribute, Object> convertSecondaryLocations(Map<IssueAttribute, Object> attributes, int line) {
+      List<?> secondaryLocation = (List<?>) attributes.get(SECONDARY_LOCATIONS);
+      if (secondaryLocation != null) {
+        EnumMap<IssueAttribute, Object> copy = new EnumMap<>(attributes);
+        copy.put(SECONDARY_LOCATIONS, secondaryLocation.stream()
+          .map(stringValue -> relativeValueToInt(line, (String) stringValue))
+          .collect(toList()));
+        return copy;
+      }
+      return attributes;
+    }
+
+    private static int relativeValueToInt(int reference, String relativeValue) {
+      int value = Integer.parseInt(relativeValue);
+      if (relativeValue.startsWith("+") || relativeValue.startsWith("-")) {
+        return reference + value;
+      } else {
+        return value;
+      }
     }
 
     private static Map.Entry<IssueAttribute, Object> parseAttribute(String attribute) {
