@@ -120,9 +120,9 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
     if (tree.is(Tree.Kind.RETURN_STATEMENT)) {
       collectReturnedVariables(((ReturnStatementTree) tree).expression());
     } else if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
-      for (Map.Entry<RegexParseResult, List<MethodInvocationTree>> entry : methodsCalledOnRegex.entrySet()) {
-        checkRegex(entry.getKey(), entry.getValue(), escapingRegexes.contains(entry.getKey()));
-      }
+      methodsCalledOnRegex.forEach((regex, invocation) ->
+        checkRegex(regex, invocation, escapingRegexes.contains(regex))
+      );
       // clear all the structures used during analysis to start fresh in next file
       variableToRegex.clear();
       methodInvocationToRegex.clear();
@@ -166,13 +166,29 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
   private Optional<RegexParseResult> getRegex(ExpressionTree tree) {
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
-      if ((PATTERN_MATCHER.matches(mit) || trackedMethodMatchers().matches(mit)) && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-        return getRegex(((MemberSelectExpressionTree) mit.methodSelect()).expression());
+      if ((PATTERN_MATCHER.matches(mit) || trackedMethodMatchers().matches(mit))) {
+        return getRegexOperand(mit);
       }
       return Optional.ofNullable(methodInvocationToRegex.get(tree));
     }
     return ExpressionUtils.extractIdentifierSymbol(tree)
       .flatMap(symbol -> Optional.ofNullable(variableToRegex.get(symbol)));
+  }
+
+  private Optional<RegexParseResult> getRegexOperand(MethodInvocationTree mit) {
+    if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      ExpressionTree object = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
+      if (isPatternOrMatcher(object.symbolType())) {
+        return getRegex(object);
+      }
+    }
+    return mit.arguments()
+      .stream()
+      .filter(arg -> isPatternOrMatcher(arg.symbolType()))
+      .map(this::getRegex)
+      .filter(Optional::isPresent)
+      .map(Optional::get)
+      .findFirst();
   }
 
   @Override

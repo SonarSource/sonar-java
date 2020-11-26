@@ -1,0 +1,14 @@
+<p>When a reluctant quantifier (such as <code>*?</code> or <code>+?</code>) is followed by a pattern that can match the empty string or directly by
+the end of the regex, it will always match the empty string when used with methods that find partial matches (such as <code>find</code>,
+<code>replaceAll</code>, <code>split</code> etc.) and behaves indistinguishably from a greedy quantifier when used with methods that find full
+matches.</p>
+<p>This is likely a sign that the regex does not work as intended.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+Pattern.compile(".*?x?"); // Noncompliant, this will behave like "x?" when finding substrings and like ".*" when finding whole matches
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+Pattern.compile(".*?x");
+</pre>
+
