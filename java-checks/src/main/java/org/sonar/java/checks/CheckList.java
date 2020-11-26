@@ -49,6 +49,7 @@ import org.sonar.java.checks.regex.DuplicatesInCharacterClassCheck;
 import org.sonar.java.checks.regex.EmptyLineRegexCheck;
 import org.sonar.java.checks.regex.EmptyStringRepetitionCheck;
 import org.sonar.java.checks.regex.GraphemeClustersInClassesCheck;
+import org.sonar.java.checks.regex.ImpossibleBackReferenceCheck;
 import org.sonar.java.checks.regex.ImpossibleBoundariesCheck;
 import org.sonar.java.checks.regex.ImpossibleRegexCheck;
 import org.sonar.java.checks.regex.InvalidRegexCheck;
@@ -437,6 +438,7 @@ public final class CheckList {
       ImmediatelyReturnedVariableCheck.class,
       ImmediateReverseBoxingCheck.class,
       ImplementsEnumerationCheck.class,
+      ImpossibleBackReferenceCheck.class,
       ImpossibleBoundariesCheck.class,
       ImpossibleRegexCheck.class,
       InappropriateRegexpCheck.class,

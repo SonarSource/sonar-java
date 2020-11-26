@@ -1,0 +1,16 @@
+{
+  "title": "Back references in regular expressions should only refer to capturing groups that are matched before the reference",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "regex"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-6001",
+  "sqKey": "S6001",
+  "scope": "All"
+}

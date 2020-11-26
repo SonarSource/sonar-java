@@ -19,37 +19,30 @@
  */
 package org.sonar.java.regex.ast;
 
-import java.util.Optional;
-import javax.annotation.Nullable;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
-public class CapturingGroupTree extends GroupTree {
+public class EndOfCapturingGroupState implements AutomatonState {
 
-  @Nullable
-  private final String name;
-  private final int groupNumber;
+  private final CapturingGroupTree group;
 
-  public CapturingGroupTree(RegexSource source, IndexRange range, @Nullable String name, int groupNumber, RegexTree element) {
-    super(source, Kind.CAPTURING_GROUP, element, range);
-    this.name = name;
-    this.groupNumber = groupNumber;
-    element.setContinuation(new EndOfCapturingGroupState(this));
+  public EndOfCapturingGroupState(CapturingGroupTree group) {
+    this.group = group;
   }
 
+  public CapturingGroupTree group() {
+    return group;
+  }
+
+  @CheckForNull
   @Override
-  public void setContinuation(AutomatonState continuation) {
-    setContinuation(continuation, null);
+  public AutomatonState continuation() {
+    return group.continuation();
   }
 
+  @Nonnull
   @Override
-  public void accept(RegexVisitor visitor) {
-    visitor.visitCapturingGroup(this);
-  }
-
-  public Optional<String> getName() {
-    return Optional.ofNullable(name);
-  }
-
-  public int getGroupNumber() {
-    return groupNumber;
+  public TransitionType incomingTransitionType() {
+    return TransitionType.EPSILON;
   }
 }
