@@ -42,4 +42,12 @@ class PrintfMisuseCheckTest {
       .withCheck(new PrintfMisuseCheck())
       .verifyNoIssues();
   }
+
+  @Test
+  void test_unknown_union_types() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/PrintfMisuseCheckUnionType.java"))
+      .withCheck(new PrintfMisuseCheck())
+      .verifyIssues();
+  }
 }
