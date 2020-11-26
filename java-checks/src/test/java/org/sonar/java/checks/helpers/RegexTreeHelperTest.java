@@ -89,6 +89,7 @@ class RegexTreeHelperTest {
     // Boundary not supported
     assertIntersects("^ab", "ab", false).isFalse();
     assertIntersects("ab$", "ab", false).isFalse();
+    assertIntersects("()", "()", false).isFalse();
   }
 
   @Test
@@ -224,6 +225,7 @@ class RegexTreeHelperTest {
     assertSupersetOf("ab$", "ab", false).isFalse();
     assertSupersetOf("ab", "^ab", false).isFalse();
     assertSupersetOf("ab", "ab$", false).isFalse();
+    assertSupersetOf("()", "()", false).isFalse();
   }
 
   @Test

@@ -27,11 +27,17 @@ public class SubAutomaton {
   public final AutomatonState start;
   public final AutomatonState end;
   public final boolean allowPrefix;
+  public final boolean followMatchedCharacters;
 
   public SubAutomaton(AutomatonState start, AutomatonState end, boolean allowPrefix) {
+    this(start, end, allowPrefix, false);
+  }
+
+  public SubAutomaton(AutomatonState start, AutomatonState end, boolean allowPrefix, boolean followMatchedCharacters) {
     this.start = start;
     this.end = end;
     this.allowPrefix = allowPrefix;
+    this.followMatchedCharacters = followMatchedCharacters;
   }
 
   public TransitionType incomingTransitionType() {
@@ -42,18 +48,18 @@ public class SubAutomaton {
     return start == end;
   }
 
-  public boolean anySuccessorMatch(Predicate<SubAutomaton> predicate) {
+  public boolean anySuccessorMatch(Predicate<SubAutomaton> predicate, boolean followMatchedCharacter) {
     for (AutomatonState successor : start.successors()) {
-      if (predicate.test(new SubAutomaton(successor, end, allowPrefix))) {
+      if (predicate.test(new SubAutomaton(successor, end, allowPrefix, this.followMatchedCharacters || followMatchedCharacter))) {
         return true;
       }
     }
     return false;
   }
 
-  public boolean allSuccessorMatch(Predicate<SubAutomaton> predicate) {
+  public boolean allSuccessorMatch(Predicate<SubAutomaton> predicate, boolean followMatchedCharacter) {
     for (AutomatonState successor : start.successors()) {
-      if (!predicate.test(new SubAutomaton(successor, end, allowPrefix))) {
+      if (!predicate.test(new SubAutomaton(successor, end, allowPrefix, this.followMatchedCharacters || followMatchedCharacter))) {
         return false;
       }
     }
