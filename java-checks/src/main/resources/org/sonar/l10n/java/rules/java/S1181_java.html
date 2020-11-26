@@ -2,14 +2,16 @@
 meant to be caught by applications.</p>
 <p>Catching either <code>Throwable</code> or <code>Error</code> will also catch <code>OutOfMemoryError</code> and <code>InternalError</code>, from
 which an application should not attempt to recover.</p>
+<p>Programs must not catch the <code>NullPointerException</code>, so it is suggested to not catch any of its ancestor.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 try { /* ... */ } catch (Throwable t) { /* ... */ }
 try { /* ... */ } catch (Error e) { /* ... */ }
+try { /* ... */ } catch (Exception e) { /* ... */ }
+try { /* ... */ } catch (RuntimeException e) { /* ... */ }
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-try { /* ... */ } catch (RuntimeException e) { /* ... */ }
 try { /* ... */ } catch (MyException e) { /* ... */ }
 </pre>
 <h2>See</h2>

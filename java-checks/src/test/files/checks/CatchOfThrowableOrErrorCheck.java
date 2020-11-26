@@ -4,34 +4,45 @@ class A extends Exception {
   private void f() {
     Closer closer = Closer.create();
     try {
-    } catch (RuntimeException e) {    // Compliant
-    } catch (Throwable e) {           // Noncompliant [[sc=14;ec=23]] {{Catch Exception instead of Throwable.}}
-    } catch (Error e) {               // Noncompliant {{Catch Exception instead of Error.}}
+    } catch (RuntimeException e) {    // Noncompliant {{Catch the proper exception instead of RuntimeException.}}
+    } catch (Throwable e) {           // Noncompliant [[sc=14;ec=23]] {{Catch the proper exception instead of Throwable.}}
+    } catch (Error e) {               // Noncompliant {{Catch the proper exception instead of Error.}}
     } catch (StackOverflowError e) {  // Compliant
     } catch (Foo |
-      Error |                       // Noncompliant {{Catch Exception instead of Error.}}
-      RuntimeException e) {
+      Error |                         // Noncompliant {{Catch the proper exception instead of Error.}}
+      RuntimeException |              // Noncompliant {{Catch the proper exception instead of RuntimeException.}}
+      Exception |                     // Noncompliant {{Catch the proper exception instead of Exception.}}
+      Throwable                       // Noncompliant {{Catch the proper exception instead of Throwable.}}
+      e) {
       try {
-      } catch (Error e) {             // Noncompliant {{Catch Exception instead of Error.}}
+      } catch (Error e) {             // Noncompliant {{Catch the proper exception instead of Error.}}
       }
-    } catch (java.lang.Throwable e) { // Noncompliant {{Catch Exception instead of Throwable.}}
-    } catch (java.lang.Error e) {     // Noncompliant {{Catch Exception instead of Error.}}
+    } catch (java.lang.Throwable e) { // Noncompliant {{Catch the proper exception instead of Throwable.}}
+    } catch (java.lang.Error e) {     // Noncompliant {{Catch the proper exception instead of Error.}}
+    } catch (java.lang.Exception e) { // Noncompliant {{Catch the proper exception instead of Exception.}}
+    } catch (java.lang.RuntimeException e) {     // Noncompliant {{Catch the proper exception instead of RuntimeException.}}
+    } catch (Exception e) {           // Noncompliant {{Catch the proper exception instead of Exception.}}
+    } catch (IOException ex) {        //Compliant
     } catch (foo.Throwable e) {       // Compliant
     } catch (java.foo.Throwable e) {  // Compliant
     } catch (foo.lang.Throwable e) {  // Compliant
+    } catch (java.foo.RuntimeException e) {  // Compliant
+    } catch (foo.lang.RuntimeException e) {  // Compliant
+    } catch (java.foo.Exception e) {  // Compliant
+    } catch (foo.lang.Exception e) {  // Compliant
     } catch (java.lang.foo e) {       // Compliant
     } catch (foo.java.lang.Throwable e) { // Compliant
-    } catch (Throwable e) {           // Noncompliant {{Catch Exception instead of Throwable.}}
+    } catch (Throwable e) {           // Noncompliant {{Catch the proper exception instead of Throwable.}}
       throw e;
-    } catch (Throwable e) {           // Noncompliant {{Catch Exception instead of Throwable.}}
+    } catch (Throwable e) {           // Noncompliant {{Catch the proper exception instead of Throwable.}}
       throw new Exception(e).getCause();
     } catch (Throwable e) {           // Compliant
       throw closer.rethrow(e);
     } catch (java.lang.Throwable e) { // Compliant
       throw closer.rethrow(e);
-    } catch (Throwable e) {           // Noncompliant {{Catch Exception instead of Throwable.}}
+    } catch (Throwable e) {           // Noncompliant {{Catch the proper exception instead of Throwable.}}
       throw closer.rethrow(new Exception(e));
-    } catch (Throwable e) {           // Noncompliant {{Catch Exception instead of Throwable.}}
+    } catch (Throwable e) {           // Noncompliant {{Catch the proper exception instead of Throwable.}}
       Throwable myThrowable = new Throwable(e);
       throw closer.rethrow(myThrowable);
     } catch (Throwable e) {           // Compliant

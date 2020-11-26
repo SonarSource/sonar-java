@@ -69,7 +69,7 @@ public class CatchOfThrowableOrErrorCheck extends IssuableSubscriptionVisitor {
 
   private void checkType(TypeTree typeTree, CatchTree catchTree) {
     Type type = typeTree.symbolType();
-    if (type.is("java.lang.Error")) {
+    if (type.is("java.lang.Error") || type.is("java.lang.Exception") || type.is("java.lang.RuntimeException")) {
       insertIssue(typeTree, type);
     } else if (type.is(JAVA_LANG_THROWABLE)) {
       GuavaCloserRethrowVisitor visitor = new GuavaCloserRethrowVisitor(catchTree.parameter().symbol());
@@ -81,7 +81,7 @@ public class CatchOfThrowableOrErrorCheck extends IssuableSubscriptionVisitor {
   }
 
   private void insertIssue(TypeTree typeTree, Type type) {
-    reportIssue(typeTree, "Catch Exception instead of " + type.name() + ".");
+    reportIssue(typeTree, "Catch the proper exception instead of " + type.name() + ".");
   }
 
   private static class GuavaCloserRethrowVisitor extends BaseTreeVisitor {
