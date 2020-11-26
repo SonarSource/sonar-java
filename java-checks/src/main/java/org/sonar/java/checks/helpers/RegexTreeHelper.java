@@ -126,15 +126,15 @@ public class RegexTreeHelper {
 
   private static boolean intersects(SubAutomaton auto1, SubAutomaton auto2, boolean defaultAnswer, OrderedStatePairCache<Boolean> cache) {
     return computeIfAbsentFromCache(auto1, auto2, defaultAnswer, cache,
-      () -> auto1.anySuccessorMatch(successor -> intersects(successor, auto2, defaultAnswer, cache)),
-      () -> auto2.anySuccessorMatch(successor -> intersects(auto1, successor, defaultAnswer, cache)),
+      () -> auto1.anySuccessorMatch(successor -> intersects(successor, auto2, defaultAnswer, cache), false),
+      () -> auto2.anySuccessorMatch(successor -> intersects(auto1, successor, defaultAnswer, cache), false),
       () -> {
         SimplifiedRegexCharacterClass characterClass1 = SimplifiedRegexCharacterClass.of(auto1.start);
         SimplifiedRegexCharacterClass characterClass2 = SimplifiedRegexCharacterClass.of(auto2.start);
         boolean answer = defaultAnswer;
         if (characterClass1 != null && characterClass2 != null) {
           answer = characterClass1.intersects(characterClass2, defaultAnswer) &&
-            auto1.anySuccessorMatch(successor1 -> auto2.anySuccessorMatch(successor2 -> intersects(successor1, successor2, defaultAnswer, cache)));
+            auto1.anySuccessorMatch(successor1 -> auto2.anySuccessorMatch(successor2 -> intersects(successor1, successor2, defaultAnswer, cache), true), true);
         }
         return answer;
       });
@@ -151,15 +151,15 @@ public class RegexTreeHelper {
 
   private static boolean supersetOf(SubAutomaton auto1, SubAutomaton auto2, boolean defaultAnswer, OrderedStatePairCache<Boolean> cache) {
     return computeIfAbsentFromCache(auto1, auto2, defaultAnswer, cache,
-      () -> auto1.anySuccessorMatch(successor -> supersetOf(successor, auto2, defaultAnswer, cache)),
-      () -> auto2.allSuccessorMatch(successor -> supersetOf(auto1, successor, defaultAnswer, cache)),
+      () -> auto1.anySuccessorMatch(successor -> supersetOf(successor, auto2, defaultAnswer, cache), false),
+      () -> auto2.allSuccessorMatch(successor -> supersetOf(auto1, successor, defaultAnswer, cache), false),
       () -> {
         SimplifiedRegexCharacterClass characterClass1 = SimplifiedRegexCharacterClass.of(auto1.start);
         SimplifiedRegexCharacterClass characterClass2 = SimplifiedRegexCharacterClass.of(auto2.start);
         boolean answer = defaultAnswer;
         if (characterClass1 != null && characterClass2 != null) {
           answer = characterClass1.supersetOf(characterClass2, defaultAnswer) &&
-            auto1.anySuccessorMatch(successor1 -> auto2.anySuccessorMatch(successor2 -> supersetOf(successor1, successor2, defaultAnswer, cache)));
+            auto1.anySuccessorMatch(successor1 -> auto2.anySuccessorMatch(successor2 -> supersetOf(successor1, successor2, defaultAnswer, cache), true), true);
         }
         return answer;
       });
@@ -188,7 +188,7 @@ public class RegexTreeHelper {
     return false;
   }
 
-  public static boolean computeIfAbsentFromCache(SubAutomaton auto1, SubAutomaton auto2, boolean defaultAnswer, OrderedStatePairCache<Boolean> cache,
+  private static boolean computeIfAbsentFromCache(SubAutomaton auto1, SubAutomaton auto2, boolean defaultAnswer, OrderedStatePairCache<Boolean> cache,
     BooleanSupplier evaluateAuto1Successors, BooleanSupplier evaluateAuto2Successors, BooleanSupplier compareAuto1AndAuto2) {
     if (hasNotSupportedTransitionType(auto1) || hasNotSupportedTransitionType(auto2)) {
       return defaultAnswer;
@@ -199,11 +199,11 @@ public class RegexTreeHelper {
       return cachedValue;
     }
     if (auto1.isAtEnd() && auto2.isAtEnd()) {
-      return cache.save(entry, true);
+      return cache.save(entry, checkMatchedCharacters(auto1, auto2, true, defaultAnswer));
     } else if (auto1.isAtEnd() && auto2.incomingTransitionType() != EPSILON) {
-      return cache.save(entry, auto2.allowPrefix);
+      return cache.save(entry, checkMatchedCharacters(auto1, auto2, auto2.allowPrefix, defaultAnswer));
     } else if (auto2.isAtEnd() && auto1.incomingTransitionType() != EPSILON) {
-      return cache.save(entry, auto1.allowPrefix);
+      return cache.save(entry, checkMatchedCharacters(auto1, auto2, auto1.allowPrefix, defaultAnswer));
     } else if (auto2.incomingTransitionType() == EPSILON && !auto2.isAtEnd()) {
       return cache.save(entry, evaluateAuto2Successors.getAsBoolean());
     } else if (auto1.incomingTransitionType() == EPSILON && !auto1.isAtEnd()) {
@@ -211,6 +211,10 @@ public class RegexTreeHelper {
     } else {
       return cache.save(entry, compareAuto1AndAuto2.getAsBoolean());
     }
+  }
+
+  private static boolean checkMatchedCharacters(SubAutomaton auto1, SubAutomaton auto2, boolean answer, boolean defaultAnswer) {
+    return (auto1.followMatchedCharacters && auto2.followMatchedCharacters) ? answer : defaultAnswer;
   }
 
 }
