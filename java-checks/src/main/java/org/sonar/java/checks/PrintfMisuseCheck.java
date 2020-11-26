@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -35,6 +36,8 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
@@ -274,11 +277,40 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
   }
 
   private static boolean isLastArgumentThrowable(List<ExpressionTree> arguments) {
-    if (!arguments.isEmpty()) {
-      ExpressionTree lastArgument = arguments.get(arguments.size() - 1);
-      return lastArgument.symbolType().isSubtypeOf(JAVA_LANG_THROWABLE);
+    if (arguments.isEmpty()) {
+      return false;
     }
-    return false;
+    ExpressionTree lastArgument = arguments.get(arguments.size() - 1);
+    if (lastArgument.symbolType().isSubtypeOf(JAVA_LANG_THROWABLE)) {
+      return true;
+    }
+    return hasUnknownExceptionInUnionType(ExpressionUtils.skipParentheses(lastArgument));
+  }
+
+  /**
+   * Limitation of ECJ, which will approximate type of a variable to 'Object' if some types
+   * are unknown in its defining union type, for instance: in the following catch tree:
+   *
+   * catch (UnknownException | IllegalArgumentException e) { ... }
+   *
+   * leads to have 'e' being of type 'Object'
+   */
+  private static boolean hasUnknownExceptionInUnionType(ExpressionTree lastArgument) {
+    if (!lastArgument.is(Tree.Kind.IDENTIFIER)) {
+      return false;
+    }
+    Symbol symbol = ((IdentifierTree) lastArgument).symbol();
+    VariableTree declaration = symbol.isVariableSymbol() ? ((Symbol.VariableSymbol) symbol).declaration() : null;
+    if (declaration == null) {
+      return false;
+    }
+    TypeTree declarationType = declaration.type();
+    return declarationType.is(Tree.Kind.UNION_TYPE)
+      && ((UnionTypeTree) declarationType)
+        .typeAlternatives()
+        .stream()
+        .map(TypeTree::symbolType)
+        .anyMatch(Type::isUnknown);
   }
 
   private void checkToStringInvocation(List<ExpressionTree> args) {
