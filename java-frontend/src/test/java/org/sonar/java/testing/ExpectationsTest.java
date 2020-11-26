@@ -73,6 +73,13 @@ class ExpectationsTest {
   }
 
   @Test
+  void relative_secondary_location_attribute() {
+    Map<Expectations.IssueAttribute, Object> issue = new Expectations().parser().parseIssue("// Noncompliant [[secondary=-2,+5,31]]", TEST_LINE).issue;
+    assertThat(issue)
+      .containsEntry(SECONDARY_LOCATIONS, Arrays.asList(TEST_LINE - 2, TEST_LINE + 5, 31));
+  }
+
+  @Test
   void invalid_attribute_name() {
     Expectations.Parser parser = new Expectations().parser();
     try {
