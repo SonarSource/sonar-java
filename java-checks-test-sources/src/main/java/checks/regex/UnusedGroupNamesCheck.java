@@ -24,11 +24,13 @@ abstract class UnusedGroupNamesCheck {
       m1.group("g3"); // Noncompliant [[secondary=19,21]] {{There is no group named 'g3' in the regular expression.}}
     }
 
-    Pattern p2 = Pattern.compile(
+    Matcher m2 = Pattern.compile(
       "(?<month>[0-9]{2})"
         + "/"
-        + "(?<year>[0-9]{2})");
-    Matcher m2 = p2.matcher(input);
+        + "(?<year>[0-9]{2})")
+      .matcher(input);
+    System.out.println(m2); // Printing the matcher does not count as the matcher escaping the scope because the parameter
+                            // type of println is Object, not Matcher, so we can assume that it won't be used as a matcher
     if (m2.matches()) {
         m2.group(
           1 // Noncompliant [[secondary=28]] {{Directly use 'month' instead of its group number.}}
@@ -39,15 +41,24 @@ abstract class UnusedGroupNamesCheck {
     }
 
     Pattern p3 = Pattern.compile(
-      "(?<g1>[a-z]+)" // Noncompliant [[secondary=42,44,46]] {{Use the named groups of this regex or remove the names.}}
+      "(?<g1>[a-z]+)" // Noncompliant [[secondary=44,46,48]] {{Use the named groups of this regex or remove the names.}}
         + ":"
         + "(?<g2>[0-9]+)"
         + "="
         + "(?<g3>[a-zA-Z0-9]+)");
-    Matcher m3 = p3.matcher(input);
-    if (m3.matches()) {
+
+    if (p3.matcher(input).matches()) {
       System.out.println(input);
     }
+
+    if (input.matches("(?<name>test)")) { // Noncompliant {{Use the named groups of this regex or remove the names.}}
+      System.out.println(input);
+    }
+
+    Pattern.matches("(?<group>[a-z])", input); // Noncompliant {{Use the named groups of this regex or remove the names.}}
+
+    Pattern.compile("(?<group>[a-z])"); // Noncompliant {{Use the named groups of this regex or remove the names.}}
+    Pattern.compile("(?<group>[a-z])").matcher(input).group(1); // Noncompliant {{Directly use 'group' instead of its group number.}}
 
     return;
   }
@@ -58,11 +69,6 @@ abstract class UnusedGroupNamesCheck {
 
   Object compliant(String input, String groupName, int groupNumber) {
     Pattern invalid = Pattern.compile("[");
-
-    Pattern.matches("(?<group>[a-z])", input); // not passing through pattern and matchers
-
-    Pattern.compile("(?<group>[a-z])"); // non-assigned
-    Pattern.compile("(?<group>[a-z])").matcher(input).group(0); // no variable to follow
 
     visibleFromOutsidePattern = Pattern.compile("(?<group>[a-z])");
     patterns[0] = Pattern.compile("(?<group>[a-z])");
@@ -144,6 +150,32 @@ abstract class UnusedGroupNamesCheck {
      Matcher m11 = p11.matcher(input);
      m11.group(0);
 
+    if (input.matches("(?<name>test)\\k<name>")) {
+      System.out.println(input);
+    }
+
+    // When a pattern or matcher is passed to another method, we consider its group as used
+    Pattern p12 = Pattern.compile("(?<name>test)");
+    Matcher m12 = p12.matcher(input);
+    someMethod(m12);
+
+    Pattern p13 = Pattern.compile("(?<name>test)");
+    someMethod(p13);
+
+    someOtherMethod().group(1); // This should be ignored since we don't know which regex we're calling group for
+
+    return null;
+  }
+
+  private void someMethod(Pattern p) {
+    // Anything could be happening here - we don't know because we don't track patterns and matchers across methods
+  }
+
+  private void someMethod(Matcher m) {
+    // Anything could be happening here - we don't know because we don't track patterns and matchers across methods
+  }
+
+  private Matcher someOtherMethod() {
     return null;
   }
 
@@ -180,11 +212,11 @@ abstract class UnusedGroupNamesCheck {
     }
 
     void useMatcher() {
-      matcher.group(1); // Noncompliant [[secondary=175]] {{Directly use 'group' instead of its group number.}}
+      matcher.group(1); // Noncompliant [[secondary=207]] {{Directly use 'group' instead of its group number.}}
     }
   }
 
-  @org.hibernate.validator.constraints.URL(regexp = "(?<group>[a-z])") // ignored
+  @org.hibernate.validator.constraints.URL(regexp = "(?<group>[a-z])") // Noncompliant
   String url;
 
 }
