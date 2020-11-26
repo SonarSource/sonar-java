@@ -166,7 +166,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     Tree parentTree = skipParentheses(typeCastTree.parent());
     boolean isArgument = parentTree.is(Tree.Kind.ARGUMENTS);
 
-    return !childType.isPrimitive()
+    return !childType.isPrimitive() && !childType.isUnknown()
       // Exception: subtype cast are tolerated in method or constructor call arguments
       && (typeCastTree.type().symbolType().equals(childType)
         || (isArgument && childType.equals(parentType)) || (!isArgument && childType.isSubtypeOf(parentType)))
@@ -181,9 +181,9 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     if (castExpression.is(Tree.Kind.METHOD_REFERENCE) && preParent.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodReferenceTree expression = (MethodReferenceTree) castExpression;
       MethodInvocationTree methodInvocationTree = (MethodInvocationTree) preParent;
-      Symbol methodAsArg = expression.method().symbol();
+      Symbol.MethodSymbol methodAsArg = ((Symbol.MethodSymbol) expression.method().symbol());
       Symbol methodCaller = methodInvocationTree.symbol();
-      return hasOverloads(methodAsArg) && hasOverloads(methodCaller);
+      return (hasOverloads(methodAsArg) || JUtils.isVarArgsMethod(methodAsArg)) && hasOverloads(methodCaller);
     }
     return false;
   }
@@ -192,7 +192,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     Symbol owner = symbol.owner();
     return owner.isTypeSymbol() && calcOverloads((Symbol.TypeSymbol) owner, symbol.name()) > 1;
   }
-
+  
   private static long calcOverloads(Symbol.TypeSymbol owner, String methodName) {
     return owner.memberSymbols().stream()
       .filter(member -> member.isMethodSymbol() && member.name().equals(methodName))
