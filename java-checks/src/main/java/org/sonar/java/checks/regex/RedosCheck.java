@@ -21,25 +21,24 @@ package org.sonar.java.checks.regex;
 
 import java.util.Collections;
 import org.sonar.check.Rule;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.AtomicGroupTree;
 import org.sonar.java.regex.ast.Quantifier;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
 import org.sonar.java.regex.ast.RepetitionTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 
 @Rule(key = "S5852")
 public class RedosCheck extends AbstractRegexCheck {
 
-  private static final String MESSAGE = "Make sure the regex used in this method call cannot lead to denial of service.";
+  private static final String MESSAGE = "Make sure the regex used here cannot lead to denial of service.";
 
   @Override
-  public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
+  public void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation) {
     NestedRepetitionsFinder visitor = new NestedRepetitionsFinder();
     visitor.visit(regexForLiterals);
     if (visitor.containsOffendingRepetitions) {
-      reportIssue(ExpressionUtils.methodName(mit), MESSAGE, null, Collections.emptyList());
+      reportIssue(methodOrAnnotationName(methodInvocationOrAnnotation), MESSAGE, null, Collections.emptyList());
     }
   }
 

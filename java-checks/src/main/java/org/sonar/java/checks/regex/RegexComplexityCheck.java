@@ -45,7 +45,6 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -74,11 +73,12 @@ public class RegexComplexityCheck extends AbstractRegexCheck {
   }
 
   @Override
-  public void checkRegex(RegexParseResult parseResult, MethodInvocationTree mit) {
+  public void checkRegex(RegexParseResult parseResult, ExpressionTree methodInvocationOrAnnotation) {
     // The parse result is not used except to get the initial flags. We find and parse the parts of the regex
     // ourselves because we want to count the complexity of each part individually if the regex is made out of
     // parts stored in variables.
-    ExpressionTree regexArgument = mit.arguments().get(0);
+    ExpressionTree regexArgument = getRegexLiteralExpression(methodInvocationOrAnnotation);
+    // regexArgument can not be null when "checkRegex" is called
     regexConstructions.add(new RegexConstructionInfo(regexArgument, parseResult.getInitialFlags(), parseResult.containsComments()));
   }
 

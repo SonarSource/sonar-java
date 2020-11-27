@@ -35,13 +35,13 @@ import org.sonar.java.regex.ast.RegexTree;
 import org.sonar.java.regex.ast.RepetitionTree;
 import org.sonar.java.regex.ast.SequenceTree;
 import org.sonar.java.regex.ast.SimpleQuantifier;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 
 @Rule(key = "S5857")
 public class ReluctantQuantifierCheck extends AbstractRegexCheck {
 
   @Override
-  public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
+  public void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation) {
     new ReluctantQuantifierFinder().visit(regexForLiterals);
   }
 

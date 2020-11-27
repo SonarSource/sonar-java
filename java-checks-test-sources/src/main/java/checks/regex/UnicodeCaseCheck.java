@@ -1,8 +1,22 @@
 package checks.regex;
 
 import java.util.regex.Pattern;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Pattern.Flag;
 
 public class UnicodeCaseCheck {
+
+  @Email(
+    regexp = "söme pättern",
+    flags = Flag.CASE_INSENSITIVE // Noncompliant [[sc=13;ec=34]] {{Also use "Flag.UNICODE_CASE" to correctly handle non-ASCII letters.}}
+  )
+  String email1;
+
+  @Email(
+    regexp = "söme pättern",
+    flags = { Flag.CASE_INSENSITIVE, Flag.UNICODE_CASE } // Compliant
+  )
+  String email2;
 
   void noncompliant(String str) {
     Pattern.compile("söme pättern", Pattern.CASE_INSENSITIVE); // Noncompliant [[sc=37;ec=61]] {{Also use "Pattern.UNICODE_CASE" to correctly handle non-ASCII letters.}}

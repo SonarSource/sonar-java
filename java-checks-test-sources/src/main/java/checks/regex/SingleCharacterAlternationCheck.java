@@ -1,6 +1,11 @@
 package checks.regex;
 
+import javax.validation.constraints.Pattern;
+
 public class SingleCharacterAlternationCheck {
+
+  @Pattern(regexp = "x|y|z") // Noncompliant [[sc=22;ec=27]] {{Replace this alternation with a character class.}}
+  String pattern;
 
   void nonCompliant() {
     String str = "abc123";

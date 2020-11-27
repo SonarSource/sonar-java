@@ -26,7 +26,7 @@ import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.SyntaxError;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 
 @Rule(key = "S5856")
 public class InvalidRegexCheck extends AbstractRegexCheck {
@@ -34,7 +34,7 @@ public class InvalidRegexCheck extends AbstractRegexCheck {
   private static final String ERROR_MESSAGE = "Fix the syntax error%s inside this regex.";
 
   @Override
-  public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
+  public void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation) {
     List<SyntaxError> syntaxErrors = regexForLiterals.getSyntaxErrors();
     if (!syntaxErrors.isEmpty()) {
       reportSyntaxErrors(syntaxErrors);

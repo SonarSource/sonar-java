@@ -36,13 +36,13 @@ import org.sonar.java.regex.ast.EndOfCapturingGroupState;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
 import org.sonar.java.regex.ast.RegexTree;
 import org.sonar.java.regex.ast.RepetitionTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 
 @Rule(key = "S6001")
 public class ImpossibleBackReferenceCheck extends AbstractRegexCheck {
 
   @Override
-  public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
+  public void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation) {
     new ImpossibleBackReferenceFinder().visit(regexForLiterals);
   }
 

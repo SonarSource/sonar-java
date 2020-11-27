@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.collections.SetUtils;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.CharacterRangeTree;
@@ -38,7 +37,8 @@ import org.sonar.java.regex.ast.EscapedCharacterClassTree;
 import org.sonar.java.regex.ast.NonCapturingGroupTree;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
 import org.sonar.java.regex.ast.RegexTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S5867")
 public class UnicodeAwareCharClassesCheck extends AbstractRegexCheck {
@@ -53,19 +53,19 @@ public class UnicodeAwareCharClassesCheck extends AbstractRegexCheck {
     .build();
 
   @Override
-  public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
-    new UnicodeUnawareCharClassFinder(mit).visit(regexForLiterals);
+  public void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation) {
+    new UnicodeUnawareCharClassFinder(methodInvocationOrAnnotation).visit(regexForLiterals);
   }
 
   private class UnicodeUnawareCharClassFinder extends RegexBaseVisitor {
 
-    private final MethodInvocationTree mit;
+    private final ExpressionTree methodInvocationOrAnnotation;
     private final List<CharacterRangeTree> unicodeUnawareRanges = new ArrayList<>();
     private final List<RegexTree> unicodeAwareWithFlag = new ArrayList<>();
     private boolean containsUnicodeCharacterFlag = false;
 
-    public UnicodeUnawareCharClassFinder(MethodInvocationTree mit) {
-      this.mit = mit;
+    public UnicodeUnawareCharClassFinder(ExpressionTree methodInvocationOrAnnotation) {
+      this.methodInvocationOrAnnotation = methodInvocationOrAnnotation;
     }
 
     @Override
@@ -93,8 +93,11 @@ public class UnicodeAwareCharClassesCheck extends AbstractRegexCheck {
         List<RegexCheck.RegexIssueLocation> secondaries = unicodeAwareWithFlag.stream()
           .map(tree -> new RegexIssueLocation(tree, "Predefined/POSIX character class"))
           .collect(Collectors.toList());
-        reportIssue(ExpressionUtils.methodName(mit),
-          "Enable the \"UNICODE_CHARACTER_CLASS\" flag or use a Unicode-aware alternative.", null, secondaries);
+        // Can not propose to use UNICODE_CHARACTER_CLASS for annotation because the matching flag
+        // javax.validation.constraints.Pattern.Flag.UNICODE_CHARACTER_CLASS does not exist in javaee-api <= 8.0
+        String flagName = methodInvocationOrAnnotation.is(Tree.Kind.ANNOTATION) ? "(?U)" : "UNICODE_CHARACTER_CLASS";
+        reportIssue(methodOrAnnotationName(methodInvocationOrAnnotation),
+          "Enable the \"" + flagName + "\" flag or use a Unicode-aware alternative.", null, secondaries);
       }
     }
 

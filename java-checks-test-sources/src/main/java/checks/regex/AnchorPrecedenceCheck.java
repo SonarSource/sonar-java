@@ -1,6 +1,11 @@
 package checks.regex;
 
+import javax.validation.constraints.Email;
+
 public class AnchorPrecedenceCheck {
+
+  @Email(regexp = "^a|b|c$") // Noncompliant [[sc=20;ec=27]]
+  String email;
 
   void noncompliant(String str) {
     str.matches("^a|b|c$"); // Noncompliant [[sc=18;ec=25]] {{Group parts of the regex together to make the intended operator precedence explicit.}}

@@ -28,7 +28,8 @@ import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.CharacterTree;
 import org.sonar.java.regex.ast.JavaCharacter;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S5866")
 public class UnicodeCaseCheck extends AbstractRegexCheck {
@@ -36,8 +37,8 @@ public class UnicodeCaseCheck extends AbstractRegexCheck {
   private static final String MESSAGE = "Also use %s to correctly handle non-ASCII letters.";
 
   @Override
-  public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
-    new Visitor(mit).visit(regexForLiterals);
+  public void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation) {
+    new Visitor(methodInvocationOrAnnotation).visit(regexForLiterals);
   }
 
   private class Visitor extends RegexBaseVisitor {
@@ -46,10 +47,10 @@ public class UnicodeCaseCheck extends AbstractRegexCheck {
 
     boolean problematicFlagSetOutsideOfRegex = false;
 
-    final MethodInvocationTree mit;
+    final ExpressionTree methodInvocationOrAnnotation;
 
-    Visitor(MethodInvocationTree mit) {
-      this.mit = mit;
+    Visitor(ExpressionTree methodInvocationOrAnnotation) {
+      this.methodInvocationOrAnnotation = methodInvocationOrAnnotation;
     }
 
     @Override
@@ -67,8 +68,10 @@ public class UnicodeCaseCheck extends AbstractRegexCheck {
     @Override
     protected void after(RegexParseResult regexParseResult) {
       if (problematicFlagSetOutsideOfRegex) {
-        getFlagsTree(mit).ifPresent( flagsTree ->
-          reportIssue(flagsTree, String.format(MESSAGE, "\"Pattern.UNICODE_CASE\""))
+        boolean isAnnotation = methodInvocationOrAnnotation.is(Tree.Kind.ANNOTATION);
+        String flagName = isAnnotation ? "\"Flag.UNICODE_CASE\"" : "\"Pattern.UNICODE_CASE\"";
+        getFlagsTree(methodInvocationOrAnnotation).ifPresent( flagsTree ->
+          reportIssue(flagsTree, String.format(MESSAGE, flagName))
         );
       }
       for (JavaCharacter flag : problematicFlags) {

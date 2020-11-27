@@ -25,13 +25,13 @@ import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.CharacterClassElementTree;
 import org.sonar.java.regex.ast.DisjunctionTree;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 
 @Rule(key = "S6035")
 public class SingleCharacterAlternationCheck extends AbstractRegexCheck {
 
   @Override
-  public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
+  public void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation) {
     new SingleCharacterAlternationFinder().visit(regexForLiterals);
   }
 

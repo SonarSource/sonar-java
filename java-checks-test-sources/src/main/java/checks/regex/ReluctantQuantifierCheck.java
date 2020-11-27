@@ -1,6 +1,11 @@
 package checks.regex;
 
+import org.hibernate.validator.constraints.URL;
+
 public class ReluctantQuantifierCheck {
+
+  @URL(regexp = "<.+?>") // Noncompliant [[sc=19;ec=22]] {{Replace this use of a reluctant quantifier with "[^>]++".}}
+  String url;
 
   void noncompliant(String str) {
     str.matches("<.+?>"); // Noncompliant [[sc=19;ec=22]] {{Replace this use of a reluctant quantifier with "[^>]++".}}

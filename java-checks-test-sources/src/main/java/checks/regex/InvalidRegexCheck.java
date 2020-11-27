@@ -34,4 +34,8 @@ public class InvalidRegexCheck {
     str.matches("(\\w+)-\\2");
     str.matches("(?<name>\\w+)-\\k<name>");
   }
+
+  @javax.validation.constraints.Pattern(regexp = "(") // Noncompliant [[sc=52;ec=53;secondary=38]] {{Fix the syntax error inside this regex.}}
+  String pattern;
+
 }

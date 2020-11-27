@@ -1,6 +1,11 @@
 package checks.regex;
 
+import javax.validation.constraints.Email;
+
 public class ImpossibleBoundariesCheck {
+
+  @Email(regexp = "$USER") // Noncompliant [[sc=20;ec=21]] {{Remove or replace this boundary that will never match because it appears before mandatory input.}}
+  String email;
 
   void noncompliant(String str) {
     // Noncompliant@+1 [[sc=18;ec=19]] {{Remove or replace this boundary that will never match because it appears before mandatory input.}}

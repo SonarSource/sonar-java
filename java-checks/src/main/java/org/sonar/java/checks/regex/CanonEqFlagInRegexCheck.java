@@ -30,7 +30,9 @@ import org.sonar.java.regex.ast.CharacterTree;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
 import org.sonar.java.regex.ast.SequenceTree;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.checks.helpers.RegexTreeHelper.getGraphemeInList;
 
@@ -62,7 +64,7 @@ public class CanonEqFlagInRegexCheck extends AbstractRegexCheck {
     .build();
 
   @Override
-  public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
+  public void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation) {
     if (regexForLiterals.getInitialFlags().contains(Pattern.CANON_EQ)) {
       return;
     }
@@ -70,17 +72,17 @@ public class CanonEqFlagInRegexCheck extends AbstractRegexCheck {
     visitor.visit(regexForLiterals);
 
     if (!visitor.subjectToNormalization.isEmpty()) {
-      String endOfMessage;
-      if (STRING_MATCHES.matches(mit) || PATTERN_MATCHES.matches(mit)) {
-        endOfMessage = "\"Pattern.compile(regex, CANON_EQ).matcher(input).matches()\"";
-      } else if (STRING_REPLACE_ALL.matches(mit)) {
-        endOfMessage = "\"Pattern.compile(pattern, CANON_EQ).matcher(input).replaceAll(replacement)\"";
-      } else if (STRING_REPLACE_FIRST.matches(mit)) {
-        endOfMessage = "\"Pattern.compile(pattern, CANON_EQ).matcher(input).replaceFirst(replacement)\"";
-      } else {
-        endOfMessage = "this pattern";
+      String endOfMessage = "this pattern";
+      if (methodInvocationOrAnnotation.is(Tree.Kind.METHOD_INVOCATION)) {
+        MethodInvocationTree mit = (MethodInvocationTree) methodInvocationOrAnnotation;
+        if (STRING_MATCHES.matches(mit) || PATTERN_MATCHES.matches(mit)) {
+          endOfMessage = "\"Pattern.compile(regex, CANON_EQ).matcher(input).matches()\"";
+        } else if (STRING_REPLACE_ALL.matches(mit)) {
+          endOfMessage = "\"Pattern.compile(pattern, CANON_EQ).matcher(input).replaceAll(replacement)\"";
+        } else if (STRING_REPLACE_FIRST.matches(mit)) {
+          endOfMessage = "\"Pattern.compile(pattern, CANON_EQ).matcher(input).replaceFirst(replacement)\"";
+        }
       }
-
       reportIssue(regexForLiterals.getResult(), String.format("Use the CANON_EQ flag with %s.", endOfMessage), null, visitor.subjectToNormalization);
     }
   }

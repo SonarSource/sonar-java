@@ -27,7 +27,10 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.JParserTestUtils;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.regex.RegexParseResult;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -43,6 +46,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
 import static org.sonar.java.checks.regex.AbstractRegexCheck.getLiterals;
 
 class AbstractRegexCheckTest {
@@ -206,6 +210,27 @@ class AbstractRegexCheckTest {
       .hasSize(3)
       .allMatch(t -> t.is(Tree.Kind.STRING_LITERAL))
       .containsExactly((LiteralTree) a, (LiteralTree) b, (LiteralTree) c);
+  }
+
+  @Test
+  void match_regex_methods() {
+    @Rule(key = "S000")
+    class IssueOnAllRegexCheck extends AbstractRegexCheck {
+      @Override
+      public void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation) {
+        if (regexForLiterals.getSyntaxErrors().isEmpty()) {
+          int mask = regexForLiterals.getInitialFlags().getMask();
+          String flags = mask == 0 ? "" : ",initialFlags=" + mask;
+          reportIssue(methodInvocationOrAnnotation, regexForLiterals.getResult().getText() + flags);
+        } else {
+          reportIssue(methodInvocationOrAnnotation, regexForLiterals.getSyntaxErrors().get(0).getMessage());
+        }
+      }
+    }
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/regex/AbstractRegexCheck.java"))
+      .withCheck(new IssueOnAllRegexCheck())
+      .verifyIssues();
   }
 
   private static TestCase getArg(String expression, String... preStatements) {

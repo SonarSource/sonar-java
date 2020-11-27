@@ -1,12 +1,15 @@
 package checks.regex;
 
+import javax.validation.constraints.Email;
 import org.junit.jupiter.api.Test;
 
 public class RedosCheck {
 
-  @Test
+  @Email(regexp = "(.*-)*@.*") // Noncompliant [[sc=4;ec=9]] {{Make sure the regex used here cannot lead to denial of service.}}
+  String email;
+
   void noncompliant(String str) {
-    str.matches("(.*,)*"); // Noncompliant [[sc=9;ec=16]] {{Make sure the regex used in this method call cannot lead to denial of service.}}
+    str.matches("(.*,)*"); // Noncompliant [[sc=9;ec=16]] {{Make sure the regex used here cannot lead to denial of service.}}
     str.matches("(.*?,)+"); // Noncompliant
     str.matches("(.*?,){5,}"); // Noncompliant
     str.matches("((.*,)*)*+"); // Noncompliant

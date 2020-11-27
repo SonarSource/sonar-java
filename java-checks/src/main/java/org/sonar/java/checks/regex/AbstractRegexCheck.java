@@ -20,9 +20,10 @@
 package org.sonar.java.checks.regex;
 
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -39,7 +40,10 @@ import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -51,6 +55,21 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public abstract class AbstractRegexCheck extends AbstractMethodDetection implements RegexCheck {
 
   protected static final String JAVA_LANG_STRING = "java.lang.String";
+  protected static final String LANG3_REGEX_UTILS = "org.apache.commons.lang3.RegExUtils";
+
+  protected static final MethodMatchers REGEX_ON_THE_SECOND_ARGUMENT_METHODS = MethodMatchers.create()
+    .ofTypes(LANG3_REGEX_UTILS)
+    .anyName()
+    .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING)
+    .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING)
+    .build();
+
+  protected static final MethodMatchers METHODS_IMPLYING_DOT_ALL_FLAG = MethodMatchers.create()
+    .ofTypes(LANG3_REGEX_UTILS)
+    .names("removePattern", "replacePattern")
+    .withAnyParameters()
+    .build();
+
   protected static final MethodMatchers REGEX_METHODS = MethodMatchers.or(
     MethodMatchers.create()
       .ofTypes(JAVA_LANG_STRING)
@@ -59,13 +78,23 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
       .build(),
     MethodMatchers.create()
       .ofTypes(JAVA_LANG_STRING)
-      .names("replaceAll", "replaceFirst")
+      .names("replaceAll", "replaceFirst", "split")
       .withAnyParameters()
       .build(),
     MethodMatchers.create()
       .ofTypes("java.util.regex.Pattern")
       .names("compile", "matches")
       .withAnyParameters()
+      .build(),
+    MethodMatchers.create()
+      .ofTypes(LANG3_REGEX_UTILS)
+      .names("removeAll", "removeFirst", "removePattern")
+      .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING)
+      .build(),
+    MethodMatchers.create()
+      .ofTypes(LANG3_REGEX_UTILS)
+      .names("replaceAll", "replaceFirst", "replacePattern")
+      .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING)
       .build());
 
   private RegexScannerContext regexContext;
@@ -82,8 +111,8 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    // ignore constructors and method references
-    return Collections.singletonList(Tree.Kind.METHOD_INVOCATION);
+    // ignore constructors and method references, add annotations
+    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.ANNOTATION);
   }
 
   @Override
@@ -91,17 +120,90 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
     return REGEX_METHODS;
   }
 
+  protected boolean filterAnnotation(AnnotationTree annotation) {
+    Type type = annotation.symbolType();
+    return type.is("javax.validation.constraints.Pattern") ||
+      type.is("javax.validation.constraints.Email") ||
+      type.is("org.hibernate.validator.constraints.URL") ||
+      type.is("org.hibernate.validator.constraints.Email");
+  }
+
+  @Override
+  public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.ANNOTATION)) {
+      AnnotationTree annotation = (AnnotationTree) tree;
+      if (filterAnnotation(annotation)) {
+        onAnnotationFound(annotation);
+      }
+    } else {
+      super.visitNode(tree);
+    }
+  }
+
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    Arguments args = mit.arguments();
-    if (args.isEmpty()) {
-      return;
+    ExpressionTree regexExpression = getRegexLiteralExpression(mit);
+    if (regexExpression != null) {
+      FlagSet flags = getFlags(mit);
+      if (!flags.contains(Pattern.LITERAL)) {
+        getLiterals(regexExpression)
+          .map(literals -> regexForLiterals(flags, literals))
+          .ifPresent(result -> checkRegex(result, mit));
+      }
     }
-    FlagSet flags = getFlags(mit);
-    if (!flags.contains(Pattern.LITERAL)) {
-      getLiterals(args.get(0))
-        .map(literals -> regexForLiterals(flags, literals))
-        .ifPresent(result -> checkRegex(result, mit));
+  }
+
+  @Nullable
+  protected ExpressionTree getRegexLiteralExpression(ExpressionTree methodInvocationOrAnnotation) {
+    if (methodInvocationOrAnnotation.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree mit = (MethodInvocationTree) methodInvocationOrAnnotation;
+      int regexIndex = REGEX_ON_THE_SECOND_ARGUMENT_METHODS.matches(mit) ? 1 : 0;
+      return (regexIndex < mit.arguments().size()) ? mit.arguments().get(regexIndex) : null;
+    } else {
+      AnnotationTree annotation = (AnnotationTree) methodInvocationOrAnnotation;
+      for (ExpressionTree argument : annotation.arguments()) {
+        ExpressionTree expression = getAnnotationValue(argument, "regexp");
+        if (expression != null) {
+          return expression;
+        }
+      }
+    }
+    return null;
+  }
+
+  protected void onAnnotationFound(AnnotationTree annotation) {
+    ExpressionTree regexExpression = getRegexLiteralExpression(annotation);
+    if (regexExpression != null) {
+      getLiterals(regexExpression)
+        .map(literals -> regexForLiterals(getFlags(annotation), literals))
+        .ifPresent(result -> checkRegex(result, annotation));
+    }
+  }
+
+  private static class AnnotationFlagsVisitor extends BaseTreeVisitor {
+    private static final Map<String, Integer> FLAG_MASK = new HashMap<>();
+    static {
+      FLAG_MASK.put("UNIX_LINES", 1);
+      FLAG_MASK.put("CASE_INSENSITIVE", 2);
+      FLAG_MASK.put("COMMENTS", 4);
+      FLAG_MASK.put("MULTILINE", 8);
+      FLAG_MASK.put("DOTALL", 32);
+      FLAG_MASK.put("UNICODE_CASE", 64);
+      FLAG_MASK.put("CANON_EQ", 128);
+    }
+    int mask = 0;
+
+    @Override
+    public void visitIdentifier(IdentifierTree tree) {
+      if (tree.symbolType().is("javax.validation.constraints.Pattern$Flag")) {
+        mask |= FLAG_MASK.getOrDefault(tree.name(), 0);
+      }
+    }
+
+    FlagSet extractFlags(ExpressionTree flagsExpression) {
+      mask = 0;
+      flagsExpression.accept(this);
+      return new FlagSet(mask);
     }
   }
 
@@ -163,11 +265,19 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
     return getFinalVariableInitializer(identifier).flatMap(AbstractRegexCheck::getLiterals);
   }
 
-  public abstract void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit);
+  public abstract void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation);
 
   public final void reportIssue(RegexSyntaxElement regexTree, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries) {
     if (reportedRegexTrees.add(regexTree)) {
       regexContext.reportIssue(this, regexTree, message, cost, secondaries);
+    }
+  }
+
+  public Tree methodOrAnnotationName(ExpressionTree methodInvocationOrAnnotation) {
+    if (methodInvocationOrAnnotation.is(Tree.Kind.METHOD_INVOCATION)) {
+      return ExpressionUtils.methodName((MethodInvocationTree) methodInvocationOrAnnotation);
+    } else {
+      return ((AnnotationTree) methodInvocationOrAnnotation).annotationType();
     }
   }
 
@@ -176,13 +286,24 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
   }
 
   /**
-   * @param mit A method call constructing a regex.
+   * @param methodInvocationOrAnnotation A method call or annotation constructing a regex.
    * @return An optional containing the expression used to set the regex's flag if the regex is created using
-   *         Pattern.compile with an argument to set the flags. An empty optional otherwise.
+   *         Pattern.compile or "flags" annotation parameter with an argument to set the flags. An empty optional otherwise.
    */
-  protected static Optional<ExpressionTree> getFlagsTree(MethodInvocationTree mit) {
-    if (mit.symbol().name().equals("compile") && mit.arguments().size() == 2) {
-      return Optional.of(mit.arguments().get(1));
+  protected static Optional<ExpressionTree> getFlagsTree(ExpressionTree methodInvocationOrAnnotation) {
+    if (methodInvocationOrAnnotation.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree mit = (MethodInvocationTree) methodInvocationOrAnnotation;
+      if (mit.symbol().name().equals("compile") && mit.arguments().size() == 2) {
+        return Optional.of(mit.arguments().get(1));
+      }
+    } else {
+      AnnotationTree annotation = (AnnotationTree) methodInvocationOrAnnotation;
+      for (ExpressionTree argument : annotation.arguments()) {
+        ExpressionTree expression = getAnnotationValue(argument, "flags");
+        if (expression != null) {
+          return Optional.of(expression);
+        }
+      }
     }
     return Optional.empty();
   }
@@ -193,8 +314,29 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
    *         statically. An empty FlagSet otherwise.
    */
   private static FlagSet getFlags(MethodInvocationTree mit) {
+    if (METHODS_IMPLYING_DOT_ALL_FLAG.matches(mit)) {
+      return new FlagSet(Pattern.DOTALL);
+    }
     int flags = getFlagsTree(mit).flatMap(tree -> tree.asConstant(Integer.class)).orElse(0);
     return new FlagSet(flags);
+  }
+
+  private static FlagSet getFlags(AnnotationTree annotation) {
+    return getFlagsTree(annotation)
+      .map(expression -> new AnnotationFlagsVisitor().extractFlags(expression))
+      .orElseGet(FlagSet::new);
+  }
+
+  @Nullable
+  private static ExpressionTree getAnnotationValue(ExpressionTree expression, String parameterName) {
+    if(expression.is(Tree.Kind.ASSIGNMENT)) {
+      AssignmentExpressionTree assignment = (AssignmentExpressionTree) expression;
+      ExpressionTree variable = assignment.variable();
+      if (variable.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) variable).name().equals(parameterName)) {
+        return assignment.expression();
+      }
+    }
+    return null;
   }
 
 }
