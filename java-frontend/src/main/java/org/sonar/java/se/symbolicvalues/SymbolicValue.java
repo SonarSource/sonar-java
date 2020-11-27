@@ -370,5 +370,7 @@ public class SymbolicValue {
       return leftOp + " ^ " + rightOp;
     }
   }
+  
+  public static final class BooleanSymbolicValue extends SymbolicValue { }
 
 }

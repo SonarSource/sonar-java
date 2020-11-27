@@ -37,6 +37,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 public class ConstraintManager {
 
@@ -65,6 +66,9 @@ public class ConstraintManager {
         break;
       case IDENTIFIER:
         result = createIdentifierSymbolicValue((IdentifierTree) syntaxNode);
+        break;
+      case VARIABLE:
+        result = createVariableSymbolicValue((VariableTree) syntaxNode);
         break;
       default:
         result = createDefaultSymbolicValue();
@@ -150,6 +154,14 @@ public class ConstraintManager {
       } else if ("FALSE".equals(identifier.name())) {
         return SymbolicValue.FALSE_LITERAL;
       }
+    }
+    return createDefaultSymbolicValue();
+  }
+  
+  private SymbolicValue createVariableSymbolicValue(VariableTree identifier) {
+    final Type type = identifier.symbol().type();
+    if (type != null && type.is("java.lang.Boolean")) {
+      return new SymbolicValue.BooleanSymbolicValue();
     }
     return createDefaultSymbolicValue();
   }
