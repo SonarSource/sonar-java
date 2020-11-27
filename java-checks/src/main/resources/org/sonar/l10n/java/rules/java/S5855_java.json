@@ -1,0 +1,16 @@
+{
+  "title": "Regex alternatives should not be redundant",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "regex"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-5855",
+  "sqKey": "S5855",
+  "scope": "All"
+}
