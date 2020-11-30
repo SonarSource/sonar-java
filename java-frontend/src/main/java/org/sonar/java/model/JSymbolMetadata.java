@@ -22,7 +22,6 @@ package org.sonar.java.model;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
-import org.sonar.java.resolve.AnnotationValueResolve;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 
@@ -109,7 +108,7 @@ final class JSymbolMetadata implements SymbolMetadata {
     public List<AnnotationValue> values() {
       if (values == null) {
         values = Arrays.stream(annotationBinding.getDeclaredMemberValuePairs())
-          .map(p -> new AnnotationValueResolve(p.getName(), convertAnnotationValue(p.getValue())))
+          .map(p -> new AnnotationValueImpl(p.getName(), convertAnnotationValue(p.getValue())))
           .collect(Collectors.toList());
       }
       return values;

@@ -20,7 +20,7 @@
 package org.sonar.java.se.constraint;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.resolve.Symbols;
+import org.sonar.java.model.Symbols;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

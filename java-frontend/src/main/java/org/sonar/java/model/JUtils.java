@@ -24,7 +24,6 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Modifier;
-import org.sonar.java.resolve.SymbolMetadataResolve;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -257,7 +256,7 @@ public final class JUtils {
 
   public static SymbolMetadata parameterAnnotations(Symbol.MethodSymbol method, int param) {
     if (method.isUnknown()) {
-      new SymbolMetadataResolve();
+      return Symbols.EMPTY_METADATA;
     }
     IMethodBinding methodBinding = (IMethodBinding) ((JSymbol) method).binding;
     return new JSymbolMetadata(

@@ -27,7 +27,7 @@ import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
-import org.sonar.java.resolve.Symbols;
+import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;

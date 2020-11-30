@@ -32,7 +32,7 @@ import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JLabelSymbol;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.resolve.Symbols;
+import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;

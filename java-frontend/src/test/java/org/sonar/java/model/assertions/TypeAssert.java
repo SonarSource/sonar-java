@@ -21,7 +21,7 @@ package org.sonar.java.model.assertions;
 
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
-import org.sonar.java.resolve.Symbols;
+import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.Type;
 
 public class TypeAssert extends AbstractAssert<TypeAssert, Type> {

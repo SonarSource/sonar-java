@@ -24,7 +24,6 @@ import com.google.common.collect.ImmutableList;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.java.ast.parser.BoundListTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
-import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ListTree;

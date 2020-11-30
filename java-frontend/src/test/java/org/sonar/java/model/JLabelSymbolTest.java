@@ -20,7 +20,6 @@
 package org.sonar.java.model;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.resolve.Symbols;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
