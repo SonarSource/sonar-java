@@ -88,15 +88,21 @@ public class SimplifiedRegexCharacterClass {
   }
 
   public void addRange(int from, int to, CharacterClassElementTree tree) {
+    Map.Entry<Integer, CharacterClassElementTree> oldEntry = contents.floorEntry(to);
+    Integer oldEnd = oldEntry == null ? null : contents.higherKey(oldEntry.getKey());
     contents.put(from, tree);
-    for (Map.Entry<Integer, CharacterClassElementTree> entry : contents.subMap(from, true, to, true).entrySet()) {
+    for (Map.Entry<Integer, CharacterClassElementTree> entry : contents.subMap(from, false, to, true).entrySet()) {
       if (entry.getValue() == null) {
         entry.setValue(tree);
       }
     }
     int next = to + 1;
-    if (!contents.containsKey(next) && next <= Character.MAX_CODE_POINT) {
-      contents.put(next, null);
+    if (next <= Character.MAX_CODE_POINT) {
+      if (oldEntry != null && oldEntry.getValue() != null && (oldEnd == null || oldEnd > next)) {
+        contents.put(next, oldEntry.getValue());
+      } else if (!contents.containsKey(next)) {
+        contents.put(next, null);
+      }
     }
   }
 

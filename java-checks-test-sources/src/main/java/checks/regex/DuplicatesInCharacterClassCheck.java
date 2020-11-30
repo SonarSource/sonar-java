@@ -6,11 +6,13 @@ public class DuplicatesInCharacterClassCheck {
     String str = "123";
     str.matches("[0-99]"); // Noncompliant [[sc=22;ec=23]] {{Remove duplicates in this character class.}}
     str.matches("[0-73-9]"); // Noncompliant [[sc=22;ec=25]]
+    str.matches("[0-93-57]"); // Noncompliant [[sc=22;ec=25;secondary=9]]
+    str.matches("[4-92-68]"); // Noncompliant [[sc=22;ec=25;secondary=10]]
     str.matches("[0-33-9]"); // Noncompliant [[sc=22;ec=25]]
     str.matches("[0-70-9]"); // Noncompliant [[sc=22;ec=25]]
     str.matches("[3-90-7]"); // Noncompliant [[sc=22;ec=25]]
     str.matches("[3-50-9]"); // Noncompliant [[sc=22;ec=25]]
-    str.matches("[xxx]"); // Noncompliant [[sc=20;ec=21;secondary=13]]
+    str.matches("[xxx]"); // Noncompliant [[sc=20;ec=21;secondary=15]]
     str.matches("[A-z_]"); // Noncompliant [[sc=22;ec=23]]
     str.matches("(?i)[A-Za-z]"); // Noncompliant [[sc=26;ec=29]]
     str.matches("(?i)[A-_d]"); // Noncompliant [[sc=26;ec=27]]
@@ -39,7 +41,7 @@ public class DuplicatesInCharacterClassCheck {
     str.matches("[\\d1]"); // Noncompliant [[sc=22;ec=23]]
     str.matches("[\\d1-3]"); // Noncompliant [[sc=22;ec=25]]
     str.matches("(?U)[\\wa]"); // Noncompliant [[sc=26;ec=27]]
-    str.matches("(?U)[\\s\\u0085" + // Noncompliant [[sc=26;ec=33;secondary=43,44]]
+    str.matches("(?U)[\\s\\u0085" + // Noncompliant [[sc=26;ec=33;secondary=45,46]]
       "\\u2028" +
       "\\u2029]");
   }
