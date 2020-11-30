@@ -61,7 +61,7 @@ public class RegexSource {
     return sourceText.length();
   }
 
-  List<LiteralTree> getStringLiterals() {
+  public List<LiteralTree> getStringLiterals() {
     return Collections.unmodifiableList(stringLiterals);
   }
 

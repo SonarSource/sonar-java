@@ -64,7 +64,7 @@ public class ReluctantQuantifierCheck extends AbstractRegexCheck {
           .ifPresent(negatedClass -> {
             String newQuantifier = makePossessive(repetition.getQuantifier());
             String message = String.format("Replace this use of a reluctant quantifier with \"%s%s\".", negatedClass, newQuantifier);
-            reportIssue(repetition, String.format(message, negatedClass), null, Collections.emptyList());
+            reportIssue(repetition, message, null, Collections.emptyList());
           });
       }
     }

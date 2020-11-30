@@ -202,6 +202,13 @@ public class JavaRulingTest {
     executeDebugBuildWithCommonProperties(build, projectName);
   }
 
+  @Test
+  public void regex_examples() throws IOException {
+    String projectName = "regex-examples";
+    MavenBuild build = test_project("org.regex-examples:regex-examples", projectName);
+    executeBuildWithCommonProperties(build, projectName);
+  }
+
   private static MavenBuild test_project(String projectKey, String projectName) throws IOException {
     return test_project(projectKey, null, projectName);
   }
