@@ -34,6 +34,8 @@ public class DuplicatesInCharacterClassCheck {
     str.matches("[[abc][b]]"); // Noncompliant [[sc=24;ec=27]]
     str.matches("[[^a]b]"); // Noncompliant [[sc=23;ec=24]]
     str.matches("[[^a]z]"); // Noncompliant [[sc=23;ec=24]]
+    str.matches("[a[^z]]"); // Noncompliant [[sc=20;ec=24]]
+    str.matches("[z[^a]]"); // Noncompliant [[sc=20;ec=24]]
     str.matches("[\\s\\Sx]"); // Noncompliant [[sc=25;ec=26]]
     str.matches("(?U)[\\s\\Sx]"); // Noncompliant [[sc=29;ec=30]]
     str.matches("[\\w\\d]"); // Noncompliant [[sc=22;ec=25]]
@@ -41,7 +43,7 @@ public class DuplicatesInCharacterClassCheck {
     str.matches("[\\d1]"); // Noncompliant [[sc=22;ec=23]]
     str.matches("[\\d1-3]"); // Noncompliant [[sc=22;ec=25]]
     str.matches("(?U)[\\wa]"); // Noncompliant [[sc=26;ec=27]]
-    str.matches("(?U)[\\s\\u0085" + // Noncompliant [[sc=26;ec=33;secondary=45,46]]
+    str.matches("(?U)[\\s\\u0085" + // Noncompliant [[sc=26;ec=33;secondary=47,48]]
       "\\u2028" +
       "\\u2029]");
   }
