@@ -1,3 +1,5 @@
+package symbolicexecution.checks;
+
 class A {
 
   void mmf_771(int a, int b, int c) {

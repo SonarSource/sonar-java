@@ -1,3 +1,5 @@
+package symbolicexecution.checks;
+
 class ConditionAlwaysTrueOrFalseCheckMaxReturnedFlows {
 
   void only_20_flows_instead_of_32() {

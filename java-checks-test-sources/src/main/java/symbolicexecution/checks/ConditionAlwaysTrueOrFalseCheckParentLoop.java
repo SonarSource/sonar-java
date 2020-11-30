@@ -1,4 +1,6 @@
-public class Bar {
+package symbolicexecution.checks;
+
+public class ConditionAlwaysTrueOrFalseCheckParentLoop {
   boolean active;
   private Foo foo = null;
 

@@ -1,4 +1,6 @@
-class A {
+package symbolicexecution.checks;
+
+public class BinaryExpressionNotNull {
 
   void test(Object o) {
     Boolean b = o != null;
