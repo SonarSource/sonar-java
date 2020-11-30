@@ -65,6 +65,7 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
+import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -79,6 +80,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.model.assertions.TypeAssert.assertThat;
 
 class JParserSemanticTest {
 
@@ -1198,6 +1200,35 @@ class JParserSemanticTest {
     ParameterizedTypeTree p = (ParameterizedTypeTree) v.type();
     AbstractTypedTree t = ((AbstractTypedTree) p.typeArguments().get(0));
     assertThat(t.typeBinding).isNotNull();
+  }
+
+  /**
+   * Tests a limitation of ECJ engine in marking unknown types as such when using union types
+   * Here, 'e' is recognized as being of type 'Object'
+   */
+  @Test
+  void union_type() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class A { void m() { try { } catch (Unknown1 | Unknown2 e) { e.toString(); } } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    CatchTree catchTree = ((TryStatementTree) m.block().body().get(0)).catches().get(0);
+
+    Symbol exceptionVariable = catchTree.parameter().symbol();
+    // obviously wrong - recovered type
+    assertThat(exceptionVariable.isUnknown()).isFalse();
+    assertThat(exceptionVariable.type()).is("java.lang.Object");
+
+    MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) ((ExpressionStatementTree) catchTree.block().body().get(0)).expression();
+    IdentifierTreeImpl e = (IdentifierTreeImpl) ((MemberSelectExpressionTreeImpl) mit.methodSelect()).expression();
+    // obviously wrong - recovered type
+    assertThat(e.symbol().isUnknown()).isFalse();
+    assertThat(e.symbolType()).is("java.lang.Object");
+
+    // resolution still works
+    assertThat(exceptionVariable.usages())
+      .hasSize(1)
+      .containsOnly(e);
+    assertThat(exceptionVariable).isEqualTo(e.symbol());
   }
 
   @Test
