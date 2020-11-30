@@ -177,32 +177,32 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
   }
 
   private boolean isEqualityCheck() {
-    return Kind.METHOD_EQUALS == kind || Kind.NOT_METHOD_EQUALS == kind || Kind.EQUAL == kind || Kind.NOT_EQUAL == kind;
+    return isEquality() || isNonEquality();
   }
 
   private List<ProgramState> addNullConstraintsForBooleanWrapper(ProgramState initialProgramState, List<ProgramState> copiedConstraints) {
     BooleanConstraint leftConstraint = initialProgramState.getConstraint(leftOp, BooleanConstraint.class);
     BooleanConstraint rightConstraint = initialProgramState.getConstraint(rightOp, BooleanConstraint.class);
     
-    if (isNullableOnLeft(leftConstraint, rightConstraint)) {
+    if (shouldAddNullConstraint(leftConstraint, rightConstraint)) {
       return getProgramStatesWithNullConstraints(copiedConstraints, leftOp);
     }
     
-    if (isNullableOnLeft(rightConstraint, leftConstraint)) {
+    if (shouldAddNullConstraint(rightConstraint, leftConstraint)) {
       return getProgramStatesWithNullConstraints(copiedConstraints, rightOp);
     }
     return copiedConstraints;
   }
 
-  private boolean isNullableOnLeft(BooleanConstraint leftConstraint, BooleanConstraint rightConstraint) {
-    return !isEquality() && leftConstraint == null && rightConstraint != null;
+  private boolean shouldAddNullConstraint(@Nullable BooleanConstraint constraint1, @Nullable BooleanConstraint constraint2) {
+    return !isEquality() && constraint1 == null && constraint2 != null;
   }
 
-  private List<ProgramState> getProgramStatesWithNullConstraints(List<ProgramState> copiedConstraints, SymbolicValue leftOp) {
+  private static List<ProgramState> getProgramStatesWithNullConstraints(List<ProgramState> copiedConstraints, SymbolicValue operand) {
     List<ProgramState> nullConstraints = copiedConstraints.stream()
-      .flatMap(ps -> leftOp.setConstraint(ps, ObjectConstraint.NULL).stream())
-      .map(ps -> ps.removeConstraintsOnDomain(leftOp, BooleanConstraint.class)
-      ).collect(Collectors.toList());
+      .flatMap(ps -> operand.setConstraint(ps, ObjectConstraint.NULL).stream())
+      .map(ps -> ps.removeConstraintsOnDomain(operand, BooleanConstraint.class))
+      .collect(Collectors.toList());
     return ImmutableList.<ProgramState>builder().addAll(copiedConstraints).addAll(nullConstraints).build();
   }
 
@@ -221,12 +221,11 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return states;
   }
 
-  private void applyConstraints(SymbolicValue from, Set<RelationalSymbolicValue> knownRelations, List<ProgramState> states, ConstraintsByDomain rightConstraints) {
-    rightConstraints.forEach((d, c) -> {
-      // here Not Equal TRUE resolves to FALSE
+  private void applyConstraints(SymbolicValue symbolicValue, Set<RelationalSymbolicValue> knownRelations, List<ProgramState> states, ConstraintsByDomain constraints) {
+    constraints.forEach((d, c) -> {
       Constraint constraint = c.copyOver(kind);
       if (constraint != null) {
-        List<ProgramState> newStates = applyConstraint(constraint, from, states, knownRelations);
+        List<ProgramState> newStates = applyConstraint(constraint, symbolicValue, states, knownRelations);
         states.clear();
         states.addAll(newStates);
       }
@@ -455,6 +454,10 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
 
   public boolean isEquality() {
     return kind == Kind.EQUAL || kind == Kind.METHOD_EQUALS;
+  }
+
+  private boolean isNonEquality() {
+    return Kind.NOT_EQUAL == kind || Kind.NOT_METHOD_EQUALS == kind;
   }
 
   @Override

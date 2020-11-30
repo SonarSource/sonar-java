@@ -77,6 +77,13 @@ class BooleanWrapper {
       doSomethingElse();
   }
 
+  void test3(Boolean condition) {
+    if (condition == null) {
+    } else if (Boolean.FALSE.equals(condition)) {
+    } else if (Boolean.TRUE.equals(condition)) { // Noncompliant
+    }
+  }
+
   private void doSomething() {
   }
 

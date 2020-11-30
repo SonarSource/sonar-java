@@ -158,9 +158,9 @@ public class ConstraintManager {
     return createDefaultSymbolicValue();
   }
   
-  private SymbolicValue createVariableSymbolicValue(VariableTree identifier) {
-    final Type type = identifier.symbol().type();
-    if (type != null && type.is("java.lang.Boolean")) {
+  private SymbolicValue createVariableSymbolicValue(VariableTree variable) {
+    final Type type = variable.symbol().type();
+    if (type.is("java.lang.Boolean")) {
       return new SymbolicValue.BooleanSymbolicValue();
     }
     return createDefaultSymbolicValue();
