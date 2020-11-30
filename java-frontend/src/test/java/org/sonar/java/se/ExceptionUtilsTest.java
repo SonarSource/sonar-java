@@ -21,7 +21,7 @@ package org.sonar.java.se;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.Sema;
-import org.sonar.java.resolve.Symbols;
+import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;

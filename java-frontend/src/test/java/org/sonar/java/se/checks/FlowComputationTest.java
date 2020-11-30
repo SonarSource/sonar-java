@@ -19,18 +19,23 @@
  */
 package org.sonar.java.se.checks;
 
+import java.io.File;
 import java.util.List;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
-import org.sonar.java.resolve.Result;
+import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.SETestUtils;
 import org.sonar.java.testing.CheckVerifier;
 import org.sonar.java.testing.InternalCheckVerifier;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -88,7 +93,9 @@ class FlowComputationTest {
 
   @Test
   void test_getArgumentIdentifier() throws Exception {
-    MethodInvocationTree mit = (MethodInvocationTree) Result.createForJavaFile("src/test/files/se/FlowComputationGetArgumentIdentifier").referenceTree(6, 5).parent();
+    CompilationUnitTree cut = JParserTestUtils.parse(new File("src/test/files/se/FlowComputationGetArgumentIdentifier.java"));
+    MethodTree foo = (MethodTree) ((ClassTree) cut.types().get(0)).members().get(1);
+    MethodInvocationTree mit = (MethodInvocationTree) ((ExpressionStatementTree) foo.block().body().get(1)).expression();
 
     assertThatThrownBy(() -> FlowComputation.getArgumentIdentifier(mit, -1)).isInstanceOf(IllegalArgumentException.class).hasMessage("index must be within arguments range.");
     assertThat(FlowComputation.getArgumentIdentifier(mit, 0).name()).isEqualTo("localVariable");

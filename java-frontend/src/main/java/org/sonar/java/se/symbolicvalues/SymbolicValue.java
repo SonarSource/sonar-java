@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import org.sonar.java.resolve.Symbols;
+import org.sonar.java.model.Symbols;
 import org.sonar.java.se.ExplodedGraphWalker;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;

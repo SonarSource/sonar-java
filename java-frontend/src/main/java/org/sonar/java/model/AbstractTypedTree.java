@@ -20,7 +20,6 @@
 package org.sonar.java.model;
 
 import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.Nullable;

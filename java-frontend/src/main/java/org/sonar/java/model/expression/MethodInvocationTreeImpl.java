@@ -23,7 +23,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
-import org.sonar.java.resolve.Symbols;
+import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;

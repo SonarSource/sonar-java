@@ -17,16 +17,16 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.resolve;
+package org.sonar.java.model;
 
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 
-public class AnnotationValueResolve implements SymbolMetadata.AnnotationValue {
+public class AnnotationValueImpl implements SymbolMetadata.AnnotationValue {
 
   private final String name;
   private final Object value;
 
-  public AnnotationValueResolve(String name, Object value) {
+  public AnnotationValueImpl(String name, Object value) {
     this.name = name;
     this.value = value;
   }

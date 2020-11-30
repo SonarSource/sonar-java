@@ -30,6 +30,7 @@ import org.sonar.java.model.expression.TypeCastExpressionTreeImpl;
 import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.StatementTree;
 
@@ -175,6 +176,20 @@ class JUtilsTest {
     assertThat(JUtils.constantValue(booleanConstant).orElseThrow(AssertionError::new))
       .isInstanceOf(Boolean.class)
       .isEqualTo(Boolean.FALSE);
+  }
+
+  @Test
+  void parameterAnnotations() {
+    assertThat(JUtils.parameterAnnotations(Symbols.unknownMethodSymbol, 42)).isEqualTo(Symbols.EMPTY_METADATA);
+
+    JavaTree.CompilationUnitTreeImpl cu = test("package org.foo; class A { void m(@MyAnnotation Object o) { } } @interface MyAnnotation {}");
+    ClassTreeImpl a = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) a.members().get(0);
+
+    SymbolMetadata parameterAnnotations = JUtils.parameterAnnotations(m.symbol(), 0);
+    assertThat(parameterAnnotations.annotations()).hasSize(1);
+    assertThat(parameterAnnotations.isAnnotatedWith("org.foo.MyAnnotation")).isTrue();
+    assertThat(parameterAnnotations.valuesForAnnotation("org.foo.MyAnnotation")).isNotNull();
   }
 
   private static JavaTree.CompilationUnitTreeImpl test(String source) {

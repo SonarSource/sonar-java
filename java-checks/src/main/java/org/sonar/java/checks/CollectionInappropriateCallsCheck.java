@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
-import org.sonar.java.resolve.Symbols;
+import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;

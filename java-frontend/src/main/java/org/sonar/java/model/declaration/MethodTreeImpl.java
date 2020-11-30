@@ -32,7 +32,7 @@ import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
-import org.sonar.java.resolve.Symbols;
+import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;

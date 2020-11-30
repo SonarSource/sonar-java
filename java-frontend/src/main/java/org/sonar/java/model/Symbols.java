@@ -17,11 +17,14 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.resolve;
+package org.sonar.java.model;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import javax.annotation.CheckForNull;
+
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -46,8 +49,26 @@ public class Symbols {
   public static final Symbol.TypeSymbol unknownTypeSymbol = new UnkownTypeSymbol();
   public static final Symbol.MethodSymbol unknownMethodSymbol = new UnknownMethodSymbol();
 
+  public static final SymbolMetadata EMPTY_METADATA = new SymbolMetadata() {
+
+    @Override
+    public boolean isAnnotatedWith(String fullyQualifiedName) {
+      return false;
+    }
+
+    @Override
+    @CheckForNull
+    public List<AnnotationValue> valuesForAnnotation(String fullyQualifiedNameOfAnnotation) {
+      return null;
+    }
+
+    @Override
+    public List<AnnotationInstance> annotations() {
+      return Collections.emptyList();
+    }
+  };
+
   public abstract static class DefaultSymbol implements Symbol {
-    private static final SymbolMetadataResolve METADATA = new SymbolMetadataResolve();
 
     @Override
     public boolean isVariableSymbol() {
@@ -126,7 +147,7 @@ public class Symbols {
 
     @Override
     public final SymbolMetadata metadata() {
-      return METADATA;
+      return EMPTY_METADATA;
     }
   }
 
