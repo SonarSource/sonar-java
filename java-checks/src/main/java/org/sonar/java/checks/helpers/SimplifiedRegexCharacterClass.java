@@ -201,9 +201,11 @@ public class SimplifiedRegexCharacterClass {
           characters.addRange('\t', '\r', tree);
           characters.addRange(' ', ' ', tree);
           if (flagActive(Pattern.UNICODE_CHARACTER_CLASS)) {
+            characters.addRange(0x85, 0x85, tree);
             characters.addRange(0xA0, 0xA0, tree);
             characters.addRange(0x1680, 0x1680, tree);
             characters.addRange(0x2000, 0x200A, tree);
+            characters.addRange(0x2028, 0x2029, tree);
             characters.addRange(0x202F, 0x202F, tree);
             characters.addRange(0x205F, 0x205F, tree);
             characters.addRange(0x3000, 0x3000, tree);
@@ -213,10 +215,12 @@ public class SimplifiedRegexCharacterClass {
           characters.addRange(0x00, '\t' - 1, tree);
           characters.addRange('\r' + 1, ' ' - 1, tree);
           if (flagActive(Pattern.UNICODE_CHARACTER_CLASS)) {
-            characters.addRange(' ' + 1, 0x9F, tree);
+            characters.addRange(' ' + 1, 0x84, tree);
+            characters.addRange(0x86, 0x9F, tree);
             characters.addRange(0xA1, 0x167F, tree);
             characters.addRange(0x1681, 0x1FFF, tree);
-            characters.addRange(0x200B, 0x202E, tree);
+            characters.addRange(0x200B, 0x2027, tree);
+            characters.addRange(0x202A, 0x202E, tree);
             characters.addRange(0x2030, 0x205E, tree);
             characters.addRange(0x2060, 0x2FFF, tree);
             characters.addRange(0x3001, Character.MAX_CODE_POINT, tree);

@@ -39,6 +39,9 @@ public class DuplicatesInCharacterClassCheck {
     str.matches("[\\d1]"); // Noncompliant [[sc=22;ec=23]]
     str.matches("[\\d1-3]"); // Noncompliant [[sc=22;ec=25]]
     str.matches("(?U)[\\wa]"); // Noncompliant [[sc=26;ec=27]]
+    str.matches("(?U)[\\s\\u0085" + // Noncompliant [[sc=26;ec=33;secondary=43,44]]
+      "\\u2028" +
+      "\\u2029]");
   }
 
   void compliant() {
@@ -49,6 +52,7 @@ public class DuplicatesInCharacterClassCheck {
     str.matches("[\\s\\S]");
     str.matches("[[^\\s\\S]x]");
     str.matches("(?U)[\\s\\S]");
+    str.matches("(?U)[\\S\\u0085\\u2028\\u2029]");
     str.matches("[\\d\\D]");
     str.matches("(?U)[\\d\\D]");
     str.matches("[\\w\\W]");
