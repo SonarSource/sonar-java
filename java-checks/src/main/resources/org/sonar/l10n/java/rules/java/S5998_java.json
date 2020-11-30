@@ -1,0 +1,12 @@
+{
+  "title": "Regular expressions should not overflow the stack",
+  "type": "BUG",
+  "status": "ready",
+  "tags": [
+    "regex"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-5998",
+  "sqKey": "S5998",
+  "scope": "Main"
+}
