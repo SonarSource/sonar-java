@@ -63,7 +63,7 @@ class JSemaTest {
 
   @Test
   void resolvePackageAnnotations() {
-    assertThat(sema.resolvePackageAnnotations("org.sonar.java.resolve.targets.annotations"))
+    assertThat(sema.resolvePackageAnnotations("org.sonar.java.resolve.targets"))
       .hasSize(1);
   }
 

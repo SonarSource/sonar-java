@@ -17,15 +17,38 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.resolve.targets;
+package org.sonar.java.resolve.targets.se;
 
-import javax.annotation.Nullable;
+abstract class TestExceptionSupertypeResolution {
 
-public enum AnnotatedEnumConstructor {
-  FOO("foo");
+  class Foo extends Exception { }
 
-  AnnotatedEnumConstructor(@Nullable String foo) {
+  Exception myException = new Exception() { };
 
+  private void throwException() throws Exception {
+    class Bar extends Exception { }
+
+    if (test()) {
+      throw myException;
+    }
+    if (test()) {
+      throw new Exception() {};
+    }
+    if (test()) {
+      throw new Bar();
+    }
+    if (test()) {
+      throw new Bar() {};
+    }
+    if (test()) {
+      throw new Foo();
+    }
   }
 
+
+  void call() throws Exception {
+    throwException();
+  }
+
+  abstract boolean test();
 }
