@@ -75,16 +75,17 @@ public class SimplifiedRegexCharacterClass {
     Map.Entry<Integer, CharacterClassElementTree> entry = iter.next();
     while (iter.hasNext()) {
       Map.Entry<Integer, CharacterClassElementTree> nextEntry = iter.next();
-      if (entry.getValue() != null) {
-        Map.Entry<Integer, CharacterClassElementTree> before = contents.floorEntry(entry.getKey());
-        if ((before != null && before.getValue() != null)
-          || !contents.subMap(entry.getKey(), false, nextEntry.getKey(), false).isEmpty()) {
-          return true;
-        }
+      if (entry.getValue() != null && hasEntryBetween(entry.getKey(), nextEntry.getKey())) {
+        return true;
       }
       entry = nextEntry;
     }
-    return false;
+    return entry.getValue() != null && hasEntryBetween(entry.getKey(), Character.MAX_CODE_POINT);
+  }
+
+  private boolean hasEntryBetween(int from, int to) {
+    Map.Entry<Integer, CharacterClassElementTree> before = contents.floorEntry(from);
+    return ((before != null && before.getValue() != null) || !contents.subMap(from, false, to, false).isEmpty());
   }
 
   public void addRange(int from, int to, CharacterClassElementTree tree) {
