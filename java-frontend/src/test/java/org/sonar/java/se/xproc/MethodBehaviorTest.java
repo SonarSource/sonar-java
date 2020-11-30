@@ -235,7 +235,7 @@ class MethodBehaviorTest {
   @Test
   void anonymous_classes_used_as_exception_should_be_resolved_to_supertype() {
     Pair<SymbolicExecutionVisitor, Sema> visitorAndSemantic = createSymbolicExecutionVisitorAndSemantic(
-      "src/test/java/org/sonar/java/resolve/targets/TestExceptionSupertypeResolution.java");
+      "src/test/java/org/sonar/java/resolve/targets/se/TestExceptionSupertypeResolution.java");
     SymbolicExecutionVisitor sev = visitorAndSemantic.a;
     Sema semanticModel = visitorAndSemantic.b;
     MethodBehavior mb = getMethodBehavior(sev, "throwException");
@@ -245,7 +245,7 @@ class MethodBehaviorTest {
       .map(ey -> ey.exceptionType(semanticModel))
       .map(exceptionType -> (exceptionType == null || exceptionType.isUnknown() ? null : exceptionType.fullyQualifiedName()))
       .collect(Collectors.toSet()))
-        .containsOnly("org.sonar.java.resolve.targets.TestExceptionSupertypeResolution$Foo", "java.lang.Exception", null);
+        .containsOnly("org.sonar.java.resolve.targets.se.TestExceptionSupertypeResolution$Foo", "java.lang.Exception", null);
   }
 
   private void addYield(MethodBehavior mb, @Nullable Constraint result, Constraint... constraints) {
