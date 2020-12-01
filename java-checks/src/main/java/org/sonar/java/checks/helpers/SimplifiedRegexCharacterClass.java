@@ -21,7 +21,6 @@ package org.sonar.java.checks.helpers;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.NavigableMap;
 import java.util.Objects;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
@@ -142,16 +141,8 @@ public class SimplifiedRegexCharacterClass {
     Map.Entry<Integer, RegexSyntaxElement> thatEntry = thatIter.next();
     while (thatIter.hasNext()) {
       Map.Entry<Integer, RegexSyntaxElement> thatNextEntry = thatIter.next();
-      if (thatEntry.getValue() != null) {
-        Map.Entry<Integer, RegexSyntaxElement> thisBefore = contents.floorEntry(thatEntry.getKey());
-        if (thisBefore == null || thisBefore.getValue() == null) {
-          return false;
-        }
-        int to = (thatNextEntry.getValue() == null) ? (thatNextEntry.getKey() - 1) : thatNextEntry.getKey();
-        NavigableMap<Integer, RegexSyntaxElement> thisSubMap = contents.subMap(thatEntry.getKey(), false, to, true);
-        if (thisSubMap.values().stream().anyMatch(Objects::isNull)) {
-          return false;
-        }
+      if (notSupersetOfEntries(thatEntry, thatNextEntry)) {
+        return false;
       }
       thatEntry = thatNextEntry;
     }
@@ -160,6 +151,19 @@ public class SimplifiedRegexCharacterClass {
     }
     Map.Entry<Integer, RegexSyntaxElement> lastEntry = contents.lastEntry();
     return lastEntry.getValue() != null && lastEntry.getKey() <= thatEntry.getKey();
+  }
+
+  private boolean notSupersetOfEntries(Map.Entry<Integer, RegexSyntaxElement> thatEntry, Map.Entry<Integer, RegexSyntaxElement> thatNextEntry) {
+    if (thatEntry.getValue() != null) {
+      Map.Entry<Integer, RegexSyntaxElement> thisBefore = contents.floorEntry(thatEntry.getKey());
+      if (thisBefore == null || thisBefore.getValue() == null) {
+        return true;
+      }
+      int to = (thatNextEntry.getValue() == null) ? (thatNextEntry.getKey() - 1) : thatNextEntry.getKey();
+      return contents.subMap(thatEntry.getKey(), false, to, true).values().stream()
+        .anyMatch(Objects::isNull);
+    }
+    return false;
   }
 
   public void addRange(int from, int to, RegexSyntaxElement tree) {
