@@ -42,6 +42,7 @@ import org.sonar.java.regex.ast.RegexTree;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -247,7 +248,13 @@ public class UnusedGroupNamesCheck extends AbstractRegexCheck {
   }
 
   @Override
-  public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
+  protected boolean filterAnnotation(AnnotationTree annotation) {
+    return false;
+  }
+
+  @Override
+  public void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation) {
+    MethodInvocationTree mit = (MethodInvocationTree) methodInvocationOrAnnotation;
     getAssignedPrivateVariable(mit)
       .ifPresent(variableSymbol -> collectGroups(regexForLiterals)
         .ifPresent(knownGroups -> knownPatternsWithGroups.put(variableSymbol, knownGroups)));

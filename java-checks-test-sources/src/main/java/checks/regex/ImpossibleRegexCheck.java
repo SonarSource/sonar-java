@@ -52,4 +52,7 @@ public class ImpossibleRegexCheck {
     str.matches("$\\1^"); // Noncompliant [[sc=18;ec=19;secondary=52,52,52]] {{Remove these subpatterns that can never match or rewrite the regex.}}
   }
 
+  @org.hibernate.validator.constraints.URL(regexp = "a$|$a")  // Noncompliant [[sc=57;ec=58]] {{Remove this boundary that can never match or rewrite the regex.}}
+  String url;
+
 }

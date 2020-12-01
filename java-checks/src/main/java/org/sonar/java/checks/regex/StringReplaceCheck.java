@@ -25,6 +25,8 @@ import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.RegexTree;
 import org.sonar.java.regex.ast.SequenceTree;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 @Rule(key = "S5361")
@@ -42,10 +44,16 @@ public class StringReplaceCheck extends AbstractRegexCheck {
   }
 
   @Override
-  public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
+  protected boolean filterAnnotation(AnnotationTree annotation) {
+    return false;
+  }
+
+  @Override
+  public void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation) {
     RegexTree regex = regexForLiterals.getResult();
     if (!regexForLiterals.hasSyntaxErrors() && isPlainString(regex)) {
-      reportIssue(ExpressionUtils.methodName(mit), "Replace this call to \"replaceAll()\" by a call to the \"replace()\" method.");
+      reportIssue(ExpressionUtils.methodName((MethodInvocationTree) methodInvocationOrAnnotation),
+        "Replace this call to \"replaceAll()\" by a call to the \"replace()\" method.");
     }
   }
 

@@ -1,8 +1,13 @@
 package checks.regex;
 
+import org.hibernate.validator.constraints.URL;
+
 class EmptyStringRepetitionCheck {
 
   private static final String REPLACEMENT = "empty";
+
+  @URL(regexp = "(?:)*") // Noncompliant [[sc=18;ec=22]] {{Rework this part of the regex to not match the empty string.}}
+  String url;
 
   void noncompliant(String input) {
     input.replaceFirst("(?:)*", REPLACEMENT); // Noncompliant [[sc=25;ec=29]] {{Rework this part of the regex to not match the empty string.}}

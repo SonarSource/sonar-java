@@ -1,13 +1,19 @@
 package checks.regex;
 
 import java.util.regex.Pattern;
-import org.junit.jupiter.api.Test;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Pattern.Flag;
 
 public class CanonEqFlagInRegexCheck {
 
-  @Test
+  @Email(regexp = "éeéc") // Noncompliant [[sc=20;ec=24;secondary=9,9]] {{Use the CANON_EQ flag with this pattern.}}
+  String email1;
+
+  @Email(regexp = "éeéc", flags = Flag.CANON_EQ) // Compliant
+  String email2;
+
   void noncompliant(String str) {
-    Pattern.compile("éeéc"); // Noncompliant [[sc=22;ec=26;secondary=10,10]] {{Use the CANON_EQ flag with this pattern.}}
+    Pattern.compile("éeéc"); // Noncompliant [[sc=22;ec=26;secondary=16,16]] {{Use the CANON_EQ flag with this pattern.}}
     Pattern.compile("é"); // Noncompliant
     Pattern.compile("é|è"); // Noncompliant
     Pattern.compile("à"); // Noncompliant

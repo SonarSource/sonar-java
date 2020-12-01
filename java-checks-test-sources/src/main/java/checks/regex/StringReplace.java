@@ -1,8 +1,13 @@
 package checks.regex;
 
+import javax.validation.constraints.Pattern;
+
 public class StringReplace {
 
   static final String PLANE = "Plane";
+
+  @Pattern(regexp = "foo") // ignored
+  String pattern;
 
   public void foo(String r) {
     String init = "Bob is a Bird... Bob is a Plane... Bob is Superman!";

@@ -27,7 +27,7 @@ import org.sonar.java.regex.ast.AutomatonState;
 import org.sonar.java.regex.ast.BoundaryTree;
 import org.sonar.java.regex.ast.LookAroundTree;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 
 @Rule(key = "S5996")
 public class ImpossibleBoundariesCheck extends AbstractRegexCheck {
@@ -35,7 +35,7 @@ public class ImpossibleBoundariesCheck extends AbstractRegexCheck {
   private static final String MESSAGE = "Remove or replace this boundary that will never match because it appears %s mandatory input.";
 
   @Override
-  public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
+  public void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation) {
     new ImpossibleBoundaryFinder().visit(regexForLiterals);
   }
 

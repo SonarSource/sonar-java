@@ -191,4 +191,7 @@ public class EmptyLineRegexCheck {
     return "";
   }
 
+  @javax.validation.constraints.Pattern(regexp = "^$") // ignored
+  String pattern;
+
 }

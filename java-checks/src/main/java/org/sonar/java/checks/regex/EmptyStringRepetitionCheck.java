@@ -28,7 +28,7 @@ import org.sonar.java.regex.ast.RegexBaseVisitor;
 import org.sonar.java.regex.ast.RegexTree;
 import org.sonar.java.regex.ast.RepetitionTree;
 import org.sonar.java.regex.ast.SequenceTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 
 @Rule(key = "S5842")
 public class EmptyStringRepetitionCheck extends AbstractRegexCheck {
@@ -36,7 +36,7 @@ public class EmptyStringRepetitionCheck extends AbstractRegexCheck {
   private static final String MESSAGE = "Rework this part of the regex to not match the empty string.";
 
   @Override
-  public void checkRegex(RegexParseResult regex, MethodInvocationTree mit) {
+  public void checkRegex(RegexParseResult regex, ExpressionTree methodInvocationOrAnnotation) {
     new Visitor().visit(regex);
   }
 

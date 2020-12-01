@@ -36,6 +36,7 @@ import org.sonar.java.regex.ast.SequenceTree;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -90,7 +91,13 @@ public class EmptyLineRegexCheck extends AbstractRegexCheck {
   }
 
   @Override
-  public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
+  protected boolean filterAnnotation(AnnotationTree annotation) {
+    return false;
+  }
+
+  @Override
+  public void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation) {
+    MethodInvocationTree mit = (MethodInvocationTree) methodInvocationOrAnnotation;
     EmptyLineMultilineVisitor visitor = new EmptyLineMultilineVisitor();
     visitor.visit(regexForLiterals);
     if (visitor.containEmptyLine) {

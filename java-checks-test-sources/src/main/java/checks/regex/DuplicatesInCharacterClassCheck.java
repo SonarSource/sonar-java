@@ -85,4 +85,8 @@ public class DuplicatesInCharacterClassCheck {
     str.matches("(?i)[A-z_]"); // FN because A-z gets misinterpreted as A-Za-z due to the way we handle case insensitivity
     str.matches("[\\p{IsLatin}x]"); // FN because we don't support \p at the moment
   }
+
+  @javax.validation.constraints.Email(regexp = "[0-99]") // Noncompliant [[sc=53;ec=54]] {{Remove duplicates in this character class.}}
+  String email;
+
 }

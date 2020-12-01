@@ -28,7 +28,7 @@ import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.CharacterClassElementTree;
 import org.sonar.java.regex.ast.CharacterClassUnionTree;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 
 @Rule(key = "S5869")
 public class DuplicatesInCharacterClassCheck extends AbstractRegexCheck {
@@ -36,7 +36,7 @@ public class DuplicatesInCharacterClassCheck extends AbstractRegexCheck {
   private static final String MESSAGE = "Remove duplicates in this character class.";
 
   @Override
-  public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
+  public void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation) {
     new DuplicateFinder().visit(regexForLiterals);
   }
 

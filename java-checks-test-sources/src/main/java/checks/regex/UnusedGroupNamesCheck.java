@@ -184,4 +184,7 @@ abstract class UnusedGroupNamesCheck {
     }
   }
 
+  @org.hibernate.validator.constraints.URL(regexp = "(?<group>[a-z])") // ignored
+  String url;
+
 }

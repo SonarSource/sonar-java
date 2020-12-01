@@ -43,4 +43,7 @@ public class ImpossibleBackReferenceCheck {
     str.matches("(.)(?:\\1\\2|x(.))*");
   }
 
+  @org.hibernate.validator.constraints.URL(regexp = "\\1(.)") // Noncompliant [[sc=54;ec=57;secondary=46]] {{Fix this backreference, so that it refers to a group that can be matched before it.}}
+  String url;
+
 }

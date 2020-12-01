@@ -26,7 +26,7 @@ import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.CharacterClassTree;
 import org.sonar.java.regex.ast.CharacterClassUnionTree;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 
 import static org.sonar.java.checks.helpers.RegexTreeHelper.getGraphemeInList;
 
@@ -36,7 +36,7 @@ public class GraphemeClustersInClassesCheck extends AbstractRegexCheck {
   private static final String MESSAGE = "Extract %d Grapheme Cluster(s) from this character class.";
 
   @Override
-  public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
+  public void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation) {
     new GraphemeInClassVisitor().visit(regexForLiterals);
   }
 

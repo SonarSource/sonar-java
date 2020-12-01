@@ -33,4 +33,8 @@ public class GraphemeClustersInClassesCheck {
     Pattern.compile("ä"); // Compliant, not in a class
   }
 
+  @org.hibernate.validator.constraints.URL(regexp = "[èaèaè]") // Noncompliant [[sc=54;ec=64]] {{Extract 3 Grapheme Cluster(s) from this character class.}}
+  String url;
+
+
 }
