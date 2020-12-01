@@ -54,7 +54,10 @@ public class PossessiveQuantifierContinuationCheck extends AbstractRegexCheck {
     @Override
     public void visitRepetition(RepetitionTree repetitionTree) {
       AutomatonState continuation = repetitionTree.continuation();
-      if (doesRepetitionContinuationAlwaysFail(repetitionTree) && continuation instanceof RegexSyntaxElement) {
+      while(continuation != null && !(continuation instanceof RegexSyntaxElement)) {
+        continuation = continuation.continuation();
+      }
+      if (continuation != null && doesRepetitionContinuationAlwaysFail(repetitionTree)) {
         reportIssue((RegexSyntaxElement) continuation, MESSAGE, null,
             Collections.singletonList(new RegexCheck.RegexIssueLocation(repetitionTree, "Previous possessive repetition")));
       }
