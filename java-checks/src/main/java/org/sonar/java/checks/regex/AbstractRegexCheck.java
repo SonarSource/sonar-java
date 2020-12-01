@@ -29,7 +29,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.regex.RegexCheck;
@@ -37,6 +36,7 @@ import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.RegexScannerContext;
 import org.sonar.java.regex.ast.FlagSet;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -52,7 +52,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-public abstract class AbstractRegexCheck extends AbstractMethodDetection implements RegexCheck {
+public abstract class AbstractRegexCheck extends IssuableSubscriptionVisitor implements RegexCheck {
 
   protected static final String JAVA_LANG_STRING = "java.lang.String";
   protected static final String LANG3_REGEX_UTILS = "org.apache.commons.lang3.RegExUtils";
@@ -115,7 +115,6 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
     return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.ANNOTATION);
   }
 
-  @Override
   protected MethodMatchers getMethodInvocationMatchers() {
     return REGEX_METHODS;
   }
@@ -136,11 +135,13 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
         onAnnotationFound(annotation);
       }
     } else {
-      super.visitNode(tree);
+      MethodInvocationTree mit = (MethodInvocationTree) tree;
+      if (getMethodInvocationMatchers().matches(mit)) {
+        onMethodInvocationFound(mit);
+      }
     }
   }
 
-  @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree regexExpression = getRegexLiteralExpression(mit);
     if (regexExpression != null) {
