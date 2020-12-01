@@ -1,7 +1,7 @@
-package javax.annotation;
+package symbolicexecution.checks;
 
 
-public class Class {
+public class UnreachableOrGratuitous {
 
   void f(boolean a) {
     if (!true) { // Noncompliant

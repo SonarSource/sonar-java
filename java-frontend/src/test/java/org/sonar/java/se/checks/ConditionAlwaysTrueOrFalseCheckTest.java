@@ -31,13 +31,24 @@ import org.sonar.java.testing.CheckVerifier;
 import org.sonar.java.testing.InternalCheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.TestUtils.testSourcesPath;
 
 class ConditionAlwaysTrueOrFalseCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/se/ConditionAlwaysTrueOrFalseCheck.java")
+      .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/ConditionAlwaysTrueOrFalseCheck.java"))
+      .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
+  }
+
+  @Test
+  void test_boolean_wrapper() {
+    CheckVerifier.newVerifier()
+      .onFile(testSourcesPath("symbolicexecution/checks/BooleanWrapper.java"))
       .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -50,7 +61,7 @@ class ConditionAlwaysTrueOrFalseCheckTest {
       .collect(Collectors.toList());
     classpath.add(new File("target/test-classes"));
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/se/SpringNullableAndNonNullAnnotationsWithoutJSR305.java")
+      .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/SpringNullableAndNonNullAnnotationsWithoutJSR305.java"))
       .withCheck(new BooleanGratuitousExpressionsCheck())
       .withClassPath(classpath)
       .verifyIssues();
@@ -59,16 +70,16 @@ class ConditionAlwaysTrueOrFalseCheckTest {
   @Test
   void test_unreachable_vs_gratuitous() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/se/UnreachableOrGratuitous.java")
+      .onFile(testSourcesPath("symbolicexecution/checks/UnreachableOrGratuitous.java"))
       .withCheck(new ConditionalUnreachableCodeCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
   }
 
   @Test
-  void whole_stack_required_for_ps_equality() throws Exception {
+  void whole_stack_required_for_ps_equality() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/se/PsEqualityRequiresFullStack.java")
+      .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/PsEqualityRequiresFullStack.java"))
       .withCheck(new AssertNoAlwaysTrueOrFalseExpression())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyNoIssues();
@@ -77,16 +88,16 @@ class ConditionAlwaysTrueOrFalseCheckTest {
   @Test
   void condition_always_true_with_optional() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/se/ConditionAlwaysTrueWithOptional.java")
+      .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/ConditionAlwaysTrueWithOptional.java"))
       .withCheck(new AssertNoAlwaysTrueOrFalseExpression())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyNoIssues();
   }
 
   @Test
-  void resetFields_ThreadSleepCalls() throws Exception {
+  void resetFields_ThreadSleepCalls() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/se/ThreadSleepCall.java")
+      .onFile(testSourcesPath("symbolicexecution/checks/ThreadSleepCall.java"))
       .withCheck(new AssertNoAlwaysTrueOrFalseExpression())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyNoIssues();
@@ -95,7 +106,7 @@ class ConditionAlwaysTrueOrFalseCheckTest {
   @Test
   void reporting() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/se/ConditionAlwaysTrueOrFalseCheckReporting.java")
+      .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/ConditionAlwaysTrueOrFalseCheckReporting.java"))
       .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -108,7 +119,7 @@ class ConditionAlwaysTrueOrFalseCheckTest {
         assertThat(issues).hasSize(2);
         assertThat(issues.iterator().next().flows).hasSize(20);
       })
-      .onFile("src/test/files/se/ConditionAlwaysTrueOrFalseCheckMaxReturnedFlows.java")
+      .onFile(testSourcesPath("symbolicexecution/checks/ConditionAlwaysTrueOrFalseCheckMaxReturnedFlows.java"))
       .withChecks(new BooleanGratuitousExpressionsCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -118,16 +129,16 @@ class ConditionAlwaysTrueOrFalseCheckTest {
   void reporting_getting_wrong_parent() {
     // Checks flow iterating through the correct parent
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/se/ConditionAlwaysTrueOrFalseCheckParentLoop.java")
+      .onFile(testSourcesPath("symbolicexecution/checks/ConditionAlwaysTrueOrFalseCheckParentLoop.java"))
       .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
   }
 
   @Test
-  void test_transitivity() throws Exception {
+  void test_transitivity() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/se/Transitivity.java")
+      .onFile(testSourcesPath("symbolicexecution/checks/Transitivity.java"))
       .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -143,19 +154,19 @@ class ConditionAlwaysTrueOrFalseCheckTest {
   }
 
   @Test
-  void test_constraint_is_not_lost_after_copying() throws Exception {
+  void test_constraint_is_not_lost_after_copying() {
     // see also SONARJAVA-2351
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/se/ConstraintCopy.java")
+      .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/ConstraintCopy.java"))
       .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
   }
 
   @Test
-  void test_binary_expressions_always_not_null() throws Exception {
+  void test_binary_expressions_always_not_null() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/se/BinaryExpressionNotNull.java")
+      .onFile(testSourcesPath("symbolicexecution/checks/BinaryExpressionNotNull.java"))
       .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();

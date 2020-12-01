@@ -1,9 +1,9 @@
-package javax.annotation;
+package symbolicexecution.checks;
 
 @interface CheckForNull {}
 @interface Nullable {}
 
-public class Class {
+public class ConditionAlwaysTrueOrFalseCheckReporting {
 
   void nestedCondition(boolean a) {
     if(a) { // flow@nested {{Implies 'a' is true.}}
