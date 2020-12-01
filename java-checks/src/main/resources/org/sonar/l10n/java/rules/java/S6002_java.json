@@ -1,0 +1,16 @@
+{
+  "title": "Regex lookahead assertions should not be contradictory",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
+  "tags": [
+    "regex"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-6002",
+  "sqKey": "S6002",
+  "scope": "All"
+}
