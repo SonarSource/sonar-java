@@ -78,7 +78,7 @@ public class SimplifiedRegexCharacterClass {
       }
       from = excludedCharacter + 1;
     }
-    addRange(from, Character.MAX_CODE_POINT - 1, tree);
+    addRange(from, Character.MAX_CODE_POINT, tree);
   }
 
   @Nullable
@@ -111,7 +111,8 @@ public class SimplifiedRegexCharacterClass {
     Map.Entry<Integer, RegexSyntaxElement> entry = iter.next();
     while (iter.hasNext()) {
       Map.Entry<Integer, RegexSyntaxElement> nextEntry = iter.next();
-      if (entry.getValue() != null && hasEntryBetween(entry.getKey(), nextEntry.getKey())) {
+      int to = (nextEntry.getValue() == null) ? (nextEntry.getKey() - 1) : nextEntry.getKey();
+      if (entry.getValue() != null && hasEntryBetween(entry.getKey(), to)) {
         return true;
       }
       entry = nextEntry;
@@ -119,13 +120,18 @@ public class SimplifiedRegexCharacterClass {
     return entry.getValue() != null && hasEntryBetween(entry.getKey(), Character.MAX_CODE_POINT);
   }
 
+  /**
+   * @param from inclusive
+   * @param to inclusive
+   */
   private boolean hasEntryBetween(int from, int to) {
     Map.Entry<Integer, RegexSyntaxElement> before = contents.floorEntry(from);
-    return ((before != null && before.getValue() != null) || !contents.subMap(from, false, to, false).isEmpty());
+    return ((before != null && before.getValue() != null) ||
+        !contents.subMap(from, false, to, true).isEmpty());
   }
 
   public boolean supersetOf(SimplifiedRegexCharacterClass that, boolean defaultAnswer) {
-    if (that.containsUnknownCharacters && !defaultAnswer) {
+    if ((isEmpty() && !that.isEmpty()) || (that.containsUnknownCharacters && !defaultAnswer)) {
       return false;
     }
     Iterator<Map.Entry<Integer, RegexSyntaxElement>> thatIter = that.contents.entrySet().iterator();
@@ -141,14 +147,19 @@ public class SimplifiedRegexCharacterClass {
         if (thisBefore == null || thisBefore.getValue() == null) {
           return false;
         }
-        NavigableMap<Integer, RegexSyntaxElement> thisSubMap = contents.subMap(thatEntry.getKey(), false, thatNextEntry.getKey(), false);
+        int to = (thatNextEntry.getValue() == null) ? (thatNextEntry.getKey() - 1) : thatNextEntry.getKey();
+        NavigableMap<Integer, RegexSyntaxElement> thisSubMap = contents.subMap(thatEntry.getKey(), false, to, true);
         if (thisSubMap.values().stream().anyMatch(Objects::isNull)) {
           return false;
         }
       }
       thatEntry = thatNextEntry;
     }
-    return true;
+    if (thatEntry.getValue() == null) {
+      return true;
+    }
+    Map.Entry<Integer, RegexSyntaxElement> lastEntry = contents.lastEntry();
+    return lastEntry.getValue() != null && lastEntry.getKey() <= thatEntry.getKey();
   }
 
   public void addRange(int from, int to, RegexSyntaxElement tree) {
@@ -208,14 +219,18 @@ public class SimplifiedRegexCharacterClass {
           characters.contents = new TreeMap<>();
           return;
         }
+        boolean lastInsertedIsNotNull = false;
         if (inner.contents.get(0) == null) {
           characters.contents.put(0, tree);
+          lastInsertedIsNotNull = true;
         }
         for (Map.Entry<Integer, RegexSyntaxElement> entry : inner.contents.entrySet()) {
           if (entry.getValue() == null) {
             characters.contents.put(entry.getKey(), tree);
-          } else {
+            lastInsertedIsNotNull = true;
+          } else if (lastInsertedIsNotNull) {
             characters.contents.put(entry.getKey(), null);
+            lastInsertedIsNotNull = false;
           }
         }
       } else {

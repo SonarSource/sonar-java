@@ -44,6 +44,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class SimplifiedRegexCharacterClassTest {
 
@@ -122,6 +123,65 @@ class SimplifiedRegexCharacterClassTest {
   }
 
   @Test
+  void intersects_max_code_point() {
+    SimplifiedRegexCharacterClass max = new SimplifiedRegexCharacterClass();
+    max.addRange(Character.MAX_CODE_POINT, Character.MAX_CODE_POINT, mock(CharacterClassElementTree.class));
+
+    SimplifiedRegexCharacterClass beforeMax = new SimplifiedRegexCharacterClass();
+    beforeMax.addRange(Character.MAX_CODE_POINT - 1, Character.MAX_CODE_POINT - 1, mock(CharacterClassElementTree.class));
+
+    SimplifiedRegexCharacterClass aToMax = new SimplifiedRegexCharacterClass();
+    aToMax.addRange('a', Character.MAX_CODE_POINT, mock(CharacterClassElementTree.class));
+
+    SimplifiedRegexCharacterClass dot = new SimplifiedRegexCharacterClass(
+      new DotTree(mock(RegexSource.class), mock(IndexRange.class), new FlagSet(Pattern.DOTALL)));
+
+    assertThat(max.intersects(max, false)).isTrue();
+    assertThat(aToMax.intersects(aToMax, false)).isTrue();
+    assertThat(max.intersects(beforeMax, true)).isFalse();
+    assertThat(beforeMax.intersects(max, true)).isFalse();
+    assertThat(aToMax.intersects(max, false)).isTrue();
+    assertThat(max.intersects(aToMax, false)).isTrue();
+    assertThat(dot.intersects(dot, false)).isTrue();
+    assertThat(max.intersects(dot, false)).isTrue();
+    assertThat(dot.intersects(max, false)).isTrue();
+    assertThat(beforeMax.intersects(dot, false)).isTrue();
+    assertThat(dot.intersects(beforeMax, false)).isTrue();
+  }
+
+  @Test
+  void superset_of_max_code_point() {
+    SimplifiedRegexCharacterClass max = new SimplifiedRegexCharacterClass();
+    max.addRange(Character.MAX_CODE_POINT, Character.MAX_CODE_POINT, mock(CharacterClassElementTree.class));
+
+    SimplifiedRegexCharacterClass beforeMax = new SimplifiedRegexCharacterClass();
+    beforeMax.addRange(Character.MAX_CODE_POINT - 1, Character.MAX_CODE_POINT - 1, mock(CharacterClassElementTree.class));
+
+    SimplifiedRegexCharacterClass twoBeforeMax = new SimplifiedRegexCharacterClass();
+    twoBeforeMax.addRange(Character.MAX_CODE_POINT - 2, Character.MAX_CODE_POINT - 2, mock(CharacterClassElementTree.class));
+
+    SimplifiedRegexCharacterClass aToMax = new SimplifiedRegexCharacterClass();
+    aToMax.addRange('a', Character.MAX_CODE_POINT, mock(CharacterClassElementTree.class));
+
+    SimplifiedRegexCharacterClass dot = new SimplifiedRegexCharacterClass(
+      new DotTree(mock(RegexSource.class), mock(IndexRange.class), new FlagSet(Pattern.DOTALL)));
+
+    assertThat(max.supersetOf(max, false)).isTrue();
+    assertThat(aToMax.supersetOf(aToMax, false)).isTrue();
+    assertThat(max.supersetOf(beforeMax, true)).isFalse();
+    assertThat(beforeMax.supersetOf(max, true)).isFalse();
+    assertThat(max.supersetOf(twoBeforeMax, true)).isFalse();
+    assertThat(twoBeforeMax.supersetOf(max, true)).isFalse();
+    assertThat(aToMax.supersetOf(max, false)).isTrue();
+    assertThat(max.supersetOf(aToMax, true)).isFalse();
+    assertThat(dot.supersetOf(dot, false)).isTrue();
+    assertThat(max.supersetOf(dot, true)).isFalse();
+    assertThat(dot.supersetOf(max, false)).isTrue();
+    assertThat(beforeMax.supersetOf(dot, true)).isFalse();
+    assertThat(dot.supersetOf(beforeMax, false)).isTrue();
+  }
+
+  @Test
   void intersects_with_utf16() {
     String maxCodePoint = new String(Character.toChars(Character.MAX_CODE_POINT));
     // two characters
@@ -136,6 +196,13 @@ class SimplifiedRegexCharacterClassTest {
     // In oder to assert: assertIntersects(".", maxCodePoint, false, NO_FLAGS).isTrue();
     // Instead of:
     assertThat(result).isInstanceOf(SequenceTree.class);
+  }
+
+  @Test
+  void empty_is_not_superset_of_something_with_unknown_characters() {
+    String emptyCharacterClass = "[^\\s\\S]";
+    String unknownCharacter = "\\N{slightly smiling face}";
+    assertSupersetOf(emptyCharacterClass, unknownCharacter, true, NO_FLAGS).isFalse();
   }
 
   @Test
