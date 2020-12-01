@@ -1,11 +1,14 @@
+package symbolicexecution.checks;
+
 import com.google.common.base.Preconditions;
 
 import javax.annotation.CheckForNull;
 
 import java.util.Map;
 import java.util.Objects;
+import org.elasticsearch.common.MacAddressProvider;
 
-abstract class A {
+abstract class MapComputeIfAbsentOrPresentCheck {
 
   void foo(Map<String,Object> map, String key) {
     // Noncompliant@+1 [[flows=computeIfAbsent]] {{Replace this "Map.get()" and condition with a call to "Map.computeIfAbsent()".}}
@@ -149,9 +152,134 @@ abstract class A {
     }
   }
 
+  void nnp(Map<String, Object> map, String key) {
+    if (map.containsKey(key)) { // Noncompliant {{Replace this "Map.containsKey()" with a call to "Map.computeIfPresent()".}}
+      map.put(key, new Object());
+    }
+  }
+  
+  void npo(Map<String, Object> map, String key) { 
+    if (!map.containsKey(key)) { // Noncompliant {{Replace this "Map.containsKey()" with a call to "Map.computeIfAbsent()".}}
+      map.put(key, new Object());
+    }
+  }
+
+  void nnx(Map<String, Object> map, String key) {
+    if (map.containsKey(key)) { // Has else branch
+      map.put(key, new Object());
+    } else {
+    }
+  }
+
+  void nny(Map<String, Object> map, String key) {
+    map.containsKey(key); // Compliant, no if statement 
+    map.put(key, new Object());
+  }
+  
+  void nnz(Map<String, Object> map, String key, boolean b) {
+    map.containsKey(key); // Compliant, no if statement 
+    if (b) {
+      map.put(key, new Object());
+    }
+  }
+  
+  void nnq(Map<String, Object> map, String key, boolean b) {
+    Object o = map.get(key);// Compliant, no if statement 
+    if (b) {
+      map.put(key, new Object());
+    }
+  }
+
+  void nnqx(Map<String, Object> map, String key1, String key2) {
+    if (map.containsKey(key1)) {
+      map.put(key2, new Object());
+    }
+  }
+
+  void nwx(Map<String, Object> map, String key1) {
+    Preconditions.checkState(map.containsKey(key1), "Value should always be null!");  
+    map.put(key1, new Object());
+  }
+
+  void nwq(Map<String, Object> map, String key1) {
+    Preconditions.checkState(!map.containsKey(key1), "Value should always be null!");  
+    map.put(key1, new Object());
+  }
+  
+  void npq(Map<String, Object> map, String key1) {
+    map.containsKey(key1);
+    if (!map.isEmpty()) {
+      map.put(key1, new Object());
+    }
+  }
+
+  void npqb(Map<String, Object> map, String key1) {
+    map.containsKey(key1);
+    if (is(key1)) {
+      map.put(key1, new Object());
+    }
+  }
+  
+  void npqa(Map<String, Object> map, String key1) {
+    boolean containsKey = map.containsKey(key1); // Noncompliant {{Replace this "Map.containsKey()" with a call to "Map.computeIfPresent()".}}
+    if (containsKey) {
+      map.put(key1, new Object());
+    }
+  }
+  
+  void npqc(Map<String, Object> map, String key1) {
+    boolean containsKey = !map.containsKey(key1); // Noncompliant {{Replace this "Map.containsKey()" with a call to "Map.computeIfAbsent()".}}
+    if (containsKey) {
+      map.put(key1, new Object());
+    }
+  }
+  
+  void npqd(Map<String, Object> map, String key1) {
+    boolean containsKey = map.containsKey(key1); // Noncompliant {{Replace this "Map.containsKey()" with a call to "Map.computeIfAbsent()".}}
+    if (!containsKey) {
+      map.put(key1, new Object());
+    }
+  }
+
+  void npqe(Map<String, Object> map, String key1) {
+    boolean containsKey = map.containsKey(key1); // Noncompliant {{Replace this "Map.containsKey()" with a call to "Map.computeIfAbsent()".}}
+    boolean containsKey1 = map.containsKey(key1);
+    if (!containsKey) {
+      map.put(key1, new Object());
+      map.put(key1, new Object());
+    }
+    if (!containsKey1) {
+      map.put(key1, new Object());
+      map.put(key1, new Object());
+    }
+  }
+  
+  void npqf(Map<String, Object> map, String key1) {
+    boolean containsKey = map.containsKey(key1);
+    boolean containsKey1 = map.containsKey(key1);
+    if (!containsKey && containsKey1) {
+      map.put(key1, new Object());
+      map.put(key1, new Object());
+    }
+  }
+  
+  void npqg(Map<String, Object> map, String key1) {
+    boolean containsKey = map.containsKey(key1);
+    if (!containsKey) {
+      map.put(key1, new Object());
+    }
+    if (containsKey) {
+      map.put(key1, new Object());
+    }
+  }
+  
   abstract void doSomething(Object... objects);
   @CheckForNull
   abstract Object getValue();
+  
+  private boolean is(String key) {
+    return true;
+  }
 
 }
 
@@ -166,41 +294,3 @@ abstract class MyMap<K, V> implements Map<K, V> {
   }
 }
 
-abstract class ExceptionThrown {
-  void foo(java.util.Map<String, Object> items, String key) throws MyException {
-    Object value = items.get(key);
-    if (value == null) {
-      items.put(key, bar()); // Compliant, bar() can throw a checked exception, so it can not be extracted to a lambda
-    }
-  }
-  abstract String bar() throws MyException;
-  abstract String bar2() throws MyRuntimeException;
-  abstract String bar4() throws UnknownException;
-  static class MyException extends Exception { }
-  static class MyRuntimeException extends RuntimeException { }
-  void foo2(java.util.Map<String, Object> items, String key) throws MyException {
-    Object value = items.get(key);
-    if (value == null) {
-      items.put(key, unknown_method()); // Compliant, unknown method so put is not resolved
-    }
-  }
-  void foo3(java.util.Map<String, Object> items, String key) {
-    Object value = items.get(key); // Noncompliant (bar2 is throwing a runtime exception)
-    if (value == null) {
-      items.put(key, bar2());
-    }
-  }
-  void foo4(java.util.Map<String, Object> items, String key) {
-    Object value = items.get(key);
-    if (value == null) {
-      items.put(key, bar4()); // compliant : exception thrown is unknown
-    }
-  }
-
-  void foo5(java.util.Map<String, UnknownObject> items, String key) throws MyException {
-    Object value = items.get(key);
-    if (value == null) {
-      items.put(key, unknown_method()); // Compliant, unknown method so put is not resolved
-    }
-  }
-}

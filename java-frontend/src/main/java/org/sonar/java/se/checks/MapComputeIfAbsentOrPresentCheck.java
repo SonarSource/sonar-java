@@ -19,11 +19,13 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
@@ -36,6 +38,8 @@ import org.sonar.java.se.ExplodedGraph.Node;
 import org.sonar.java.se.Flow;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
+import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -57,8 +61,10 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
   private static final MethodMatchers.NameBuilder JAVA_UTIL_MAP = MethodMatchers.create().ofSubTypes("java.util.Map");
   private static final MethodMatchers MAP_GET = JAVA_UTIL_MAP.names("get").addParametersMatcher(ANY).build();
   private static final MethodMatchers MAP_PUT = JAVA_UTIL_MAP.names("put").addParametersMatcher(ANY, ANY).build();
+  private static final MethodMatchers MAP_CONTAINS_KEY = JAVA_UTIL_MAP.names("containsKey").addParametersMatcher(ANY).build();
 
-  private final Multimap<SymbolicValue, MapGetInvocation> mapGetInvocations = LinkedListMultimap.create();
+  private final Map<SymbolicValue, List<MapMethodInvocation>> mapGetInvocations = new HashMap<>();
+  private final Map<SymbolicValue, List<MapMethodInvocation>> mapContainsKeyInvocations = new HashMap<>();
   private final List<CheckIssue> checkIssues = new ArrayList<>();
 
   @Override
@@ -68,6 +74,7 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
 
   @Override
   public void init(MethodTree methodTree, CFG cfg) {
+    mapContainsKeyInvocations.clear();
     mapGetInvocations.clear();
     checkIssues.clear();
   }
@@ -77,17 +84,24 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) syntaxNode;
       if (MAP_GET.matches(mit)) {
-        ProgramState psBeforeInvocation = context.getNode().programState;
-        ProgramState psAfterInvocation = context.getState();
-
-        SymbolicValue keySV = psBeforeInvocation.peekValue(0);
-        SymbolicValue mapSV = psBeforeInvocation.peekValue(1);
-        SymbolicValue valueSV = psAfterInvocation.peekValue();
-
-        mapGetInvocations.put(mapSV, new MapGetInvocation(valueSV, keySV, mit));
+        addMapMethodInvocation(context, mit, mapGetInvocations);
+      } else if (MAP_CONTAINS_KEY.matches(mit)) {
+        addMapMethodInvocation(context, mit, mapContainsKeyInvocations);
       }
     }
     return super.checkPostStatement(context, syntaxNode);
+  }
+
+  private static void addMapMethodInvocation(CheckerContext context, MethodInvocationTree mit, Map<SymbolicValue, List<MapMethodInvocation>> invocations) {
+    ProgramState psBeforeInvocation = context.getNode().programState;
+    ProgramState psAfterInvocation = context.getState();
+
+    SymbolicValue keySV = psBeforeInvocation.peekValue(0);
+    SymbolicValue mapSV = psBeforeInvocation.peekValue(1);
+    SymbolicValue valueSV = psAfterInvocation.peekValue();
+
+    Objects.requireNonNull(valueSV);
+    invocations.computeIfAbsent(mapSV, k -> new ArrayList<>()).add(new MapMethodInvocation(valueSV, keySV, mit));
   }
 
   @Override
@@ -99,13 +113,24 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
 
         SymbolicValue keySV = ps.peekValue(1);
         SymbolicValue mapSV = ps.peekValue(2);
-        mapGetInvocations.get(mapSV).stream()
+
+        mapGetInvocations.getOrDefault(mapSV, Collections.emptyList()).stream()
           .filter(getOnSameMap -> getOnSameMap.withSameKey(keySV))
           .findAny()
           .ifPresent(getOnSameMap -> {
             ObjectConstraint constraint = ps.getConstraint(getOnSameMap.value, ObjectConstraint.class);
             if (constraint != null && isInsideIfStatementWithNullCheckWithoutElse(mit)) {
-              checkIssues.add(new CheckIssue(context.getNode(), getOnSameMap.mit, mit, getOnSameMap.value, constraint));
+              checkIssues.add(new GetMethodCheckIssue(context.getNode(), getOnSameMap.mit, mit, getOnSameMap.value, constraint));
+            }
+          });
+
+        mapContainsKeyInvocations.getOrDefault(mapSV, Collections.emptyList()).stream()
+          .filter(containsKeyOnSameMap -> containsKeyOnSameMap.withSameKey(keySV))
+          .findAny()
+          .ifPresent(containsKeyOnSameMap -> {
+            BooleanConstraint constraint = ps.getConstraint(containsKeyOnSameMap.value, BooleanConstraint.class);
+            if (constraint != null && isInsideIfStatementWithoutElse(mit)) {
+              checkIssues.add(new ContainsKeyMethodCheckIssue(context.getNode(), containsKeyOnSameMap.mit, mit, containsKeyOnSameMap.value, constraint));
             }
           });
       }
@@ -126,15 +151,21 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
   }
 
   private static boolean isInsideIfStatementWithNullCheckWithoutElse(MethodInvocationTree mit) {
+    return getIfStatementParent(mit).map(ifStatementTree -> ifStatementTree.elseStatement() == null
+      && isNullCheck(ExpressionUtils.skipParentheses(ifStatementTree.condition())))
+      .orElse(false);
+  }
+
+  private static boolean isInsideIfStatementWithoutElse(MethodInvocationTree mit) {
+    return getIfStatementParent(mit).map(ifStatementTree -> ifStatementTree.elseStatement() == null).orElse(false);
+  }
+
+  private static Optional<IfStatementTree> getIfStatementParent(MethodInvocationTree mit) {
     Tree parent = mit.parent();
     while (parent != null && !parent.is(Tree.Kind.IF_STATEMENT)) {
       parent = parent.parent();
     }
-    if (parent == null) {
-      return false;
-    }
-    IfStatementTree ifStatementTree = (IfStatementTree) parent;
-    return ifStatementTree.elseStatement() == null && isNullCheck(ExpressionUtils.skipParentheses(ifStatementTree.condition()));
+    return parent == null ? Optional.empty() : Optional.of((IfStatementTree) parent);
   }
 
   private static boolean isNullCheck(ExpressionTree condition) {
@@ -153,23 +184,23 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
     checkIssues.stream().filter(checkIssue -> checkIssue.isOnlyPossibleIssueForReportTree(checkIssues)).forEach(issue -> issue.report(context, check));
   }
 
-  private static class CheckIssue {
+  private abstract static class CheckIssue {
     private final ExplodedGraph.Node node;
 
-    private final MethodInvocationTree getInvocation;
+    private final MethodInvocationTree checkValueInvocation;
     private final MethodInvocationTree putInvocation;
 
     private final SymbolicValue value;
-    private final ObjectConstraint valueConstraint;
+    protected final Constraint valueConstraint;
 
-    private CheckIssue(Node node, MethodInvocationTree getInvocation, MethodInvocationTree putInvocation, SymbolicValue value, ObjectConstraint valueConstraint) {
+    private CheckIssue(Node node, MethodInvocationTree checkValueInvocation, MethodInvocationTree putInvocation, SymbolicValue value, Constraint constraint) {
       this.node = node;
 
-      this.getInvocation = getInvocation;
+      this.checkValueInvocation = checkValueInvocation;
       this.putInvocation = putInvocation;
 
       this.value = value;
-      this.valueConstraint = valueConstraint;
+      this.valueConstraint = constraint;
     }
 
     private boolean isOnlyPossibleIssueForReportTree(List<CheckIssue> otherIssues) {
@@ -177,36 +208,75 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
     }
 
     private boolean differentIssueOnSameTree(CheckIssue otherIssue) {
-      return this != otherIssue && getInvocation.equals(otherIssue.getInvocation) && valueConstraint != otherIssue.valueConstraint;
+      return this != otherIssue 
+        && checkValueInvocation.equals(otherIssue.checkValueInvocation) 
+        && valueConstraint != otherIssue.valueConstraint;
     }
+
+    protected abstract String issueMsg();
+
+    protected abstract Set<Flow> flows();
 
     private void report(CheckerContext context, SECheck check) {
-      context.reportIssue(getInvocation, check, issueMsg(), flows());
+      context.reportIssue(checkValueInvocation, check, issueMsg(), flows());
     }
 
-    private String issueMsg() {
-      return String.format("Replace this \"Map.get()\" and condition with a call to \"Map.%s()\".",
-        valueConstraint == ObjectConstraint.NULL ? "computeIfAbsent" : "computeIfPresent");
-    }
-
-    private Set<Flow> flows() {
+    protected Set<Flow> flows(String methodName) {
       // build nullness flows for value constraint
       Set<Flow> flows = FlowComputation.flow(node, value, Collections.singletonList(ObjectConstraint.class), FlowComputation.MAX_REPORTED_FLOWS);
       // enrich each flow with both map method invocations
       return flows.stream().map(flow -> Flow.builder()
         .add(new JavaFileScannerContext.Location("'Map.put()' is invoked with same key.", putInvocation.methodSelect()))
         .addAll(flow)
-        .add(new JavaFileScannerContext.Location("'Map.get()' is invoked.", getInvocation.methodSelect()))
+        .add(new JavaFileScannerContext.Location(String.format("'%s' is invoked.", methodName), checkValueInvocation.methodSelect()))
         .build()).collect(Collectors.toSet());
     }
   }
 
-  private static class MapGetInvocation {
+  private static final class GetMethodCheckIssue extends CheckIssue {
+
+    private GetMethodCheckIssue(Node node, MethodInvocationTree checkValueInvocation, MethodInvocationTree putInvocation,
+      SymbolicValue value, ObjectConstraint valueConstraint) {
+      super(node, checkValueInvocation, putInvocation, value, valueConstraint);
+    }
+
+    @Override
+    protected String issueMsg() {
+      return String.format("Replace this \"Map.get()\" and condition with a call to \"Map.%s()\".",
+        valueConstraint == ObjectConstraint.NULL ? "computeIfAbsent" : "computeIfPresent");
+    }
+
+    @Override
+    protected Set<Flow> flows() {
+      return flows("Map.get()");
+    }
+  }
+
+  private static final class ContainsKeyMethodCheckIssue extends CheckIssue {
+
+    private ContainsKeyMethodCheckIssue(Node node, MethodInvocationTree checkValueInvocation, MethodInvocationTree putInvocation,
+      SymbolicValue value, BooleanConstraint constraint) {
+      super(node, checkValueInvocation, putInvocation, value, constraint);
+    }
+
+    @Override
+    protected String issueMsg() {
+      return String.format("Replace this \"Map.containsKey()\" with a call to \"Map.%s()\".",
+        valueConstraint == BooleanConstraint.FALSE ? "computeIfAbsent" : "computeIfPresent");
+    }
+
+    @Override
+    protected Set<Flow> flows() {
+      return flows("Map.containsKey()");
+    }
+  }
+
+  private static class MapMethodInvocation {
     private final SymbolicValue value;
     private final SymbolicValue key;
     private final MethodInvocationTree mit;
 
-    private MapGetInvocation(SymbolicValue value, SymbolicValue key, MethodInvocationTree mit) {
+    private MapMethodInvocation(SymbolicValue value, SymbolicValue key, MethodInvocationTree mit) {
       this.value = value;
       this.key = key;
       this.mit = mit;
