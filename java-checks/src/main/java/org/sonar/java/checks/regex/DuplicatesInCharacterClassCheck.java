@@ -28,6 +28,7 @@ import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.CharacterClassElementTree;
 import org.sonar.java.regex.ast.CharacterClassUnionTree;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
+import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 
 @Rule(key = "S5869")
@@ -44,10 +45,18 @@ public class DuplicatesInCharacterClassCheck extends AbstractRegexCheck {
 
     @Override
     public void visitCharacterClassUnion(CharacterClassUnionTree tree) {
-      List<CharacterClassElementTree> duplicates = new ArrayList<>();
+      List<RegexSyntaxElement> duplicates = new ArrayList<>();
       SimplifiedRegexCharacterClass characterClass = new SimplifiedRegexCharacterClass();
       for (CharacterClassElementTree element : tree.getCharacterClasses()) {
-        if (characterClass.intersects(new SimplifiedRegexCharacterClass(element), false)) {
+        List<RegexSyntaxElement> intersections = new SimplifiedRegexCharacterClass(element).findIntersections(characterClass);
+
+        if (!intersections.isEmpty()) {
+          for (RegexSyntaxElement intersection : intersections) {
+            if (!duplicates.contains(intersection)) {
+              // The element the current element is intersecting with should be included as well.
+              duplicates.add(intersection);
+            }
+          }
           duplicates.add(element);
         }
         characterClass.add(element);

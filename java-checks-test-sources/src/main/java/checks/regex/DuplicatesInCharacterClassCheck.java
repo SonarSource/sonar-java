@@ -4,48 +4,80 @@ public class DuplicatesInCharacterClassCheck {
 
   void nonCompliant() {
     String str = "123";
-    str.matches("[0-99]"); // Noncompliant [[sc=22;ec=23]] {{Remove duplicates in this character class.}}
-    str.matches("[0-73-9]"); // Noncompliant [[sc=22;ec=25]]
-    str.matches("[0-93-57]"); // Noncompliant [[sc=22;ec=25;secondary=9]]
-    str.matches("[4-92-68]"); // Noncompliant [[sc=22;ec=25;secondary=10]]
-    str.matches("[0-33-9]"); // Noncompliant [[sc=22;ec=25]]
-    str.matches("[0-70-9]"); // Noncompliant [[sc=22;ec=25]]
-    str.matches("[3-90-7]"); // Noncompliant [[sc=22;ec=25]]
-    str.matches("[3-50-9]"); // Noncompliant [[sc=22;ec=25]]
-    str.matches("[xxx]"); // Noncompliant [[sc=20;ec=21;secondary=15]]
-    str.matches("[A-z_]"); // Noncompliant [[sc=22;ec=23]]
-    str.matches("(?i)[A-Za-z]"); // Noncompliant [[sc=26;ec=29]]
-    str.matches("(?i)[A-_d]"); // Noncompliant [[sc=26;ec=27]]
-    str.matches("(?iu)[Ä-Üä]"); // Noncompliant [[sc=27;ec=28]]
-    str.matches("(?iu)[a-Öö]");// Noncompliant [[sc=27;ec=28]]
-    str.matches("[  ]"); // Noncompliant [[sc=20;ec=21]]
-    str.matches("(?i)[  ]"); // Noncompliant [[sc=24;ec=25]]
-    str.matches("(?iu)[  ]"); // Noncompliant [[sc=25;ec=26]]
-    str.matches("(?i)[A-_D]"); // Noncompliant [[sc=26;ec=27]]
-    str.matches("(?iu)[A-_D]"); // Noncompliant [[sc=27;ec=28]]
-    str.matches("(?i)[xX]"); // Noncompliant [[sc=24;ec=25]]
-    str.matches("(?iu)[äÄ]"); // Noncompliant [[sc=25;ec=26]]
-    str.matches("(?iU)[äÄ]"); // Noncompliant [[sc=25;ec=26]]
-    str.matches("(?iu)[xX]"); // Noncompliant [[sc=25;ec=26]]
-    str.matches("[\\\"\\\".]"); // Noncompliant [[sc=23;ec=27]]
-    str.matches("[\\x{1F600}-\\x{1F637}\\x{1F608}]"); // Noncompliant [[sc=40;ec=50]]
-    str.matches("[\\Qxx\\E]"); // Noncompliant [[sc=23;ec=24]]
-    str.matches("[[a][a]]"); // Noncompliant [[sc=22;ec=25]]
-    str.matches("[[abc][b]]"); // Noncompliant [[sc=24;ec=27]]
-    str.matches("[[^a]b]"); // Noncompliant [[sc=23;ec=24]]
-    str.matches("[[^a]z]"); // Noncompliant [[sc=23;ec=24]]
-    str.matches("[a[^z]]"); // Noncompliant [[sc=20;ec=24]]
-    str.matches("[z[^a]]"); // Noncompliant [[sc=20;ec=24]]
-    str.matches("[\\s\\Sx]"); // Noncompliant [[sc=25;ec=26]]
-    str.matches("(?U)[\\s\\Sx]"); // Noncompliant [[sc=29;ec=30]]
-    str.matches("[\\w\\d]"); // Noncompliant [[sc=22;ec=25]]
-    str.matches("[\\wa]"); // Noncompliant [[sc=22;ec=23]]
-    str.matches("[\\d1]"); // Noncompliant [[sc=22;ec=23]]
-    str.matches("[\\d1-3]"); // Noncompliant [[sc=22;ec=25]]
-    str.matches("(?U)[\\wa]"); // Noncompliant [[sc=26;ec=27]]
-    str.matches("(?U)[\\s\\u0085" + // Noncompliant [[sc=26;ec=33;secondary=47,48]]
+    str.matches("[0-99]"); // Noncompliant [[sc=19;ec=22;secondary=7]] {{Remove duplicates in this character class.}}
+    str.matches("[90-9]"); // Noncompliant [[sc=19;ec=20;secondary=8]]
+    str.matches("[0-73-9]"); // Noncompliant [[sc=19;ec=22]]
+    str.matches("[0-93-57]"); // Noncompliant [[sc=19;ec=22;secondary=10,10]]
+    str.matches("[4-92-68]"); // Noncompliant [[sc=19;ec=22;secondary=11,11]]
+    str.matches("[0-33-9]"); // Noncompliant [[sc=19;ec=22]]
+    str.matches("[0-70-9]"); // Noncompliant [[sc=19;ec=22]]
+    str.matches("[3-90-7]"); // Noncompliant [[sc=19;ec=22]]
+    str.matches("[3-50-9]"); // Noncompliant [[sc=19;ec=22]]
+    str.matches("[xxx]"); // Noncompliant [[sc=19;ec=20;secondary=16,16]]
+    str.matches("[A-z_]"); // Noncompliant [[sc=19;ec=22]]
+    str.matches("(?i)[A-Za-z]"); // Noncompliant [[sc=23;ec=26]]
+    str.matches("(?i)[A-_d]"); // Noncompliant [[sc=23;ec=26]]
+    str.matches("(?iu)[Ä-Üä]"); // Noncompliant [[sc=24;ec=27]]
+    str.matches("(?iu)[a-Öö]");// Noncompliant [[sc=24;ec=27]]
+    str.matches("[  ]"); // Noncompliant [[sc=19;ec=20]]
+    str.matches("(?i)[  ]"); // Noncompliant [[sc=23;ec=24]]
+    str.matches("(?iu)[  ]"); // Noncompliant [[sc=24;ec=25]]
+    str.matches("(?i)[A-_D]"); // Noncompliant [[sc=23;ec=26]]
+    str.matches("(?iu)[A-_D]"); // Noncompliant [[sc=24;ec=27]]
+    str.matches("(?i)[xX]"); // Noncompliant [[sc=23;ec=24]]
+    str.matches("(?iu)[äÄ]"); // Noncompliant [[sc=24;ec=25]]
+    str.matches("(?iU)[äÄ]"); // Noncompliant [[sc=24;ec=25]]
+    str.matches("(?iu)[xX]"); // Noncompliant [[sc=24;ec=25]]
+    str.matches("[\\\"\\\".]"); // Noncompliant [[sc=19;ec=23]]
+    str.matches("[\\x{1F600}-\\x{1F637}\\x{1F608}]"); // Noncompliant [[sc=19;ec=40]]
+    str.matches("[\\Qxx\\E]"); // Noncompliant [[sc=22;ec=23]]
+    str.matches("[[a][a]]"); // Noncompliant [[sc=20;ec=21]]
+    str.matches("[[abc][b]]"); // Noncompliant [[sc=20;ec=21]]
+    str.matches("[[^a]b]"); // Noncompliant [[sc=19;ec=23]]
+    str.matches("[[^a]z]"); // Noncompliant [[sc=19;ec=23]]
+    str.matches("[a[^z]]"); // Noncompliant [[sc=19;ec=20]]
+    str.matches("[z[^a]]"); // Noncompliant [[sc=19;ec=20]]
+    str.matches("[\\s\\Sx]"); // Noncompliant [[sc=22;ec=25]]
+    str.matches("(?U)[\\s\\Sx]"); // Noncompliant [[sc=26;ec=29]]
+    str.matches("[\\w\\d]"); // Noncompliant [[sc=19;ec=22]]
+    str.matches("[\\wa]"); // Noncompliant [[sc=19;ec=22]]
+    str.matches("[\\d1]"); // Noncompliant [[sc=19;ec=22]]
+    str.matches("[\\d1-3]"); // Noncompliant [[sc=19;ec=22]]
+    str.matches("(?U)[\\wa]"); // Noncompliant [[sc=23;ec=26]]
+    str.matches("(?U)[\\s\\u0085" + // Noncompliant
       "\\u2028" +
       "\\u2029]");
+    str.matches("[0-9" + // Noncompliant
+      "9]");
+
+    str.matches("[a-b" +
+      "0-9" + // Noncompliant [[sc=8;ec=11;secondary=56]]
+      "d-e" +
+      "9]");
+    str.matches("[a-z" + // Noncompliant [[sc=19;ec=22;secondary=58,59,60]]
+      "0-9" +
+      "b" +
+      "9]");
+    str.matches("[a-z" +  // Noncompliant [[sc=19;ec=22;secondary=62,63,64,65]]
+      "0-9" +
+      "b" +
+      "c" +
+      "9]");
+    str.matches("[ba-zc]"); // Noncompliant [[sc=19;ec=20;secondary=66,66]]
+    // Miss "b" in secondary locations
+    str.matches("[aba-z]"); // Noncompliant [[sc=19;ec=20;secondary=68,68]]
+    str.matches("[aba-zc]"); // Noncompliant [[sc=19;ec=20;secondary=69,69,69]]
+    str.matches("[a-c" + // Noncompliant [[sc=19;ec=22;secondary=71,72,73]]
+      "b" +
+      "a-z" +
+      "d]");
+    str.matches("[0-54-6]"); // Noncompliant [[sc=19;ec=22;secondary=74]]
+    str.matches("[0-352-6]"); // Noncompliant [[sc=19;ec=22;secondary=75,75]]
+    str.matches("[0-392-43-54-65-76-87-9]"); // Noncompliant [[sc=19;ec=22;secondary=76,76,76,76,76,76,76]]
+    str.matches("[0-397-96-85-72-44-63-5]"); // Noncompliant [[sc=22;ec=23;secondary=77,77,77,77,77,77,77]]
+    str.matches("[0-397-96-8" + // Noncompliant [[sc=22;ec=23;secondary=78,78,78,80,80,80,80]]
+      "a" + // not included
+      "5-72-44-63-5]");
   }
 
   void compliant() {
@@ -86,7 +118,7 @@ public class DuplicatesInCharacterClassCheck {
     str.matches("[\\p{IsLatin}x]"); // FN because we don't support \p at the moment
   }
 
-  @javax.validation.constraints.Email(regexp = "[0-99]") // Noncompliant [[sc=53;ec=54]] {{Remove duplicates in this character class.}}
+  @javax.validation.constraints.Email(regexp = "[0-99]") // Noncompliant [[sc=50;ec=53]] {{Remove duplicates in this character class.}}
   String email;
 
 }
