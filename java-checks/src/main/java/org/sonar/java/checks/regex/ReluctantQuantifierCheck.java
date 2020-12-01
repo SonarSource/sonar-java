@@ -29,6 +29,7 @@ import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.CharacterClassElementTree;
 import org.sonar.java.regex.ast.CharacterClassTree;
 import org.sonar.java.regex.ast.EscapedCharacterClassTree;
+import org.sonar.java.regex.ast.NonCapturingGroupTree;
 import org.sonar.java.regex.ast.Quantifier;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
 import org.sonar.java.regex.ast.RegexTree;
@@ -51,8 +52,13 @@ public class ReluctantQuantifierCheck extends AbstractRegexCheck {
     public void visitSequence(SequenceTree tree) {
       super.visitSequence(tree);
       List<RegexTree> items = tree.getItems();
-      if (items.size() >= 2 && items.get(items.size() - 2).is(RegexTree.Kind.REPETITION)) {
-        RepetitionTree repetition = (RepetitionTree) items.get(items.size() - 2);
+      int repetitionPos = items.size() - 2;
+      while (repetitionPos > 0 && items.get(repetitionPos).is(RegexTree.Kind.NON_CAPTURING_GROUP) &&
+        ((NonCapturingGroupTree) items.get(repetitionPos)).getElement() == null) {
+        repetitionPos--;
+      }
+      if (repetitionPos >= 0 && items.get(repetitionPos).is(RegexTree.Kind.REPETITION)) {
+        RepetitionTree repetition = (RepetitionTree) items.get(repetitionPos);
         getReluctantlyQuantifiedElement(repetition).flatMap(element -> 
           findNegatedCharacterClassFor(items.get(items.size() - 1), getBaseCharacter(element)))
           .ifPresent(negatedClass -> {
@@ -64,9 +70,16 @@ public class ReluctantQuantifierCheck extends AbstractRegexCheck {
     }
 
     private Optional<RegexTree> getReluctantlyQuantifiedElement(RepetitionTree repetition) {
+      RegexTree element = repetition.getElement();
+      while (element.is(RegexTree.Kind.NON_CAPTURING_GROUP)) {
+        element = ((NonCapturingGroupTree) element).getElement();
+        if (element == null) {
+          return Optional.empty();
+        }
+      }
       return (repetition.getQuantifier().getModifier() == Quantifier.Modifier.RELUCTANT
         && !repetition.getQuantifier().isFixed()
-        && (repetition.getElement().is(RegexTree.Kind.DOT) || repetition.getElement().is(RegexTree.Kind.ESCAPED_CHARACTER_CLASS))) ? Optional.of(repetition.getElement())
+        && (element.is(RegexTree.Kind.DOT) || element.is(RegexTree.Kind.ESCAPED_CHARACTER_CLASS))) ? Optional.of(element)
           : Optional.empty();
     }
 
@@ -102,6 +115,9 @@ public class ReluctantQuantifierCheck extends AbstractRegexCheck {
             result = "[^" + body + negateEscapedCharacter(base) + "]";
           }
           break;
+        case NON_CAPTURING_GROUP:
+          RegexTree element = ((NonCapturingGroupTree)tree).getElement();
+          return element == null ? Optional.empty() : findNegatedCharacterClassFor(element, base);
         default:
           return Optional.empty();
       }
