@@ -58,7 +58,14 @@ public class TooManyParametersCheck extends BaseTreeVisitor implements JavaFileS
     "org.springframework.web.bind.annotation.PutMapping",
     "org.springframework.web.bind.annotation.DeleteMapping",
     "org.springframework.web.bind.annotation.PatchMapping",
-    "com.fasterxml.jackson.annotation.JsonCreator");
+    "com.fasterxml.jackson.annotation.JsonCreator",
+    "javax.ws.rs.GET",
+    "javax.ws.rs.POST",
+    "javax.ws.rs.PUT",
+    "javax.ws.rs.PATCH",
+    "org.springframework.beans.factory.annotation.Autowired",
+    "javax.inject.Inject"
+  );
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
