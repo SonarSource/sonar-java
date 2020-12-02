@@ -19,7 +19,10 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.sonar.api.Plugin;
 import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarProduct;
@@ -44,22 +47,23 @@ public class JavaPlugin implements Plugin {
   @SuppressWarnings("unchecked")
   @Override
   public void define(Context context) {
-    ImmutableList.Builder<Object> builder = ImmutableList.builder();
+    List<Object> list = new ArrayList<>();
+    
     if (context.getRuntime().getProduct() == SonarProduct.SONARLINT) {
-      builder.add(JavaSonarLintClasspath.class);
+      list.add(JavaSonarLintClasspath.class);
     } else {
-      builder.addAll(SurefireExtensions.getExtensions());
-      builder.add(DroppedPropertiesSensor.class);
-      builder.add(JavaSonarWayProfile.class);
-      builder.add(JavaClasspath.class);
+      list.addAll(SurefireExtensions.getExtensions());
+      list.add(DroppedPropertiesSensor.class);
+      list.add(JavaSonarWayProfile.class);
+      list.add(JavaClasspath.class);
 
       ExternalReportExtensions.define(context);
     }
     if (supportJspTranspilation(context)) {
-      builder.add(Jasper.class);
+      list.add(Jasper.class);
     }
-    builder.addAll(JavaClasspathProperties.getProperties());
-    builder.add(
+    list.addAll(JavaClasspathProperties.getProperties());
+    list.addAll(Arrays.asList(
       JavaTestClasspath.class,
       Java.class,
       PropertyDefinition.builder(Java.FILE_SUFFIXES_KEY)
@@ -77,11 +81,11 @@ public class JavaPlugin implements Plugin {
       JavaSquidSensor.class,
       PostAnalysisIssueFilter.class,
       XmlFileSensor.class
-      );
+      ));
 
-    builder.add(AnalysisWarningsWrapper.class);
+    list.add(AnalysisWarningsWrapper.class);
 
-    context.addExtensions(builder.build());
+    context.addExtensions(Collections.unmodifiableList(list));
   }
 
   private static boolean supportJspTranspilation(Context context) {

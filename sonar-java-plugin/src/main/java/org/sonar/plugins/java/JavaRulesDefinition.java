@@ -19,17 +19,16 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
-import com.google.common.io.Resources;
 import com.google.gson.Gson;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.rule.RuleStatus;
@@ -38,7 +37,9 @@ import org.sonar.api.server.debt.DebtRemediationFunction;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
 import org.sonar.api.utils.AnnotationUtils;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.CheckList;
+import org.sonar.java.collections.SetUtils;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 /**
@@ -52,7 +53,7 @@ public class JavaRulesDefinition implements RulesDefinition {
   /**
    * Rule templates have to be manually defined
    */
-  private static final Set<String> TEMPLATE_RULE_KEY = ImmutableSet.of(
+  private static final Set<String> TEMPLATE_RULE_KEY = SetUtils.immutableSetOf(
     "S124",
     "S2253",
     "S3417",
@@ -67,7 +68,7 @@ public class JavaRulesDefinition implements RulesDefinition {
       .createRepository(CheckList.REPOSITORY_KEY, Java.KEY)
       .setName("SonarAnalyzer");
     List<Class<?>> checks = CheckList.getChecks();
-    new RulesDefinitionAnnotationLoader().load(repository, Iterables.toArray(checks, Class.class));
+    new RulesDefinitionAnnotationLoader().load(repository, checks.toArray(new Class[]{}));
     JavaSonarWayProfile.Profile profile = JavaSonarWayProfile.readProfile();
     for (Class ruleClass : checks) {
       newRule(ruleClass, repository, profile);
@@ -160,8 +161,8 @@ public class JavaRulesDefinition implements RulesDefinition {
   }
 
   private static String readResource(URL resource) {
-    try {
-      return Resources.toString(resource, StandardCharsets.UTF_8);
+    try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.openStream(), StandardCharsets.UTF_8))) {
+      return reader.lines().collect(Collectors.joining("\n"));
     } catch (IOException e) {
       throw new IllegalStateException("Failed to read: " + resource, e);
     }
