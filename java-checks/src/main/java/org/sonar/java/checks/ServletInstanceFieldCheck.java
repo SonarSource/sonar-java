@@ -42,8 +42,8 @@ import java.util.List;
 @Rule(key = "S2226")
 public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
 
-  private List<VariableTree> issuableVariables = new ArrayList<>();
-  private List<VariableTree> excludedVariables = new ArrayList<>();
+  private final List<VariableTree> issuableVariables = new ArrayList<>();
+  private final List<VariableTree> excludedVariables = new ArrayList<>();
 
   private static final List<String> ANNOTATIONS_EXCLUDING_FIELDS = Arrays.asList(
     "javax.inject.Inject",
@@ -63,9 +63,6 @@ public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if(!hasSemantic()) {
-      return;
-    }
     if (tree.is(Kind.METHOD) && isServletInit((MethodTree) tree)) {
       tree.accept(new AssignmentVisitor());
     } else if (tree.is(Kind.VARIABLE)) {
