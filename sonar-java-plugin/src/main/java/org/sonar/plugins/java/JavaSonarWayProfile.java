@@ -19,10 +19,10 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.io.Resources;
 import com.google.gson.Gson;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -38,6 +38,7 @@ import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.CheckList;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
@@ -86,8 +87,8 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
   }
 
   private static String readResource(URL resource) {
-    try {
-      return Resources.toString(resource, StandardCharsets.UTF_8);
+    try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.openStream(), StandardCharsets.UTF_8))) {
+      return reader.lines().collect(Collectors.joining("\n"));
     } catch (IOException e) {
       throw new IllegalStateException("Failed to read: " + resource, e);
     }
