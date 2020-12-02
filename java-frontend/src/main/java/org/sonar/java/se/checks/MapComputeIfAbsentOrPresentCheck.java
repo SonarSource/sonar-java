@@ -28,6 +28,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.cfg.CFG;
@@ -66,6 +67,7 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
   private final Map<SymbolicValue, List<MapMethodInvocation>> mapGetInvocations = new HashMap<>();
   private final Map<SymbolicValue, List<MapMethodInvocation>> mapContainsKeyInvocations = new HashMap<>();
   private final List<CheckIssue> checkIssues = new ArrayList<>();
+  private final Map<Tree, IfStatementTree> closestIfStatements = new HashMap<>();
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
@@ -77,6 +79,7 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
     mapContainsKeyInvocations.clear();
     mapGetInvocations.clear();
     checkIssues.clear();
+    closestIfStatements.clear();
   }
 
   @Override
@@ -134,7 +137,8 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
     return super.checkPreStatement(context, syntaxNode);
   }
 
-  private Optional<MapMethodInvocation> sameMapAndSameKeyInvocation(SymbolicValue keySV, SymbolicValue mapSV, Map<SymbolicValue, List<MapMethodInvocation>> mapGetInvocations) {
+  private static Optional<MapMethodInvocation> sameMapAndSameKeyInvocation(SymbolicValue keySV, SymbolicValue mapSV,
+                                                                           Map<SymbolicValue, List<MapMethodInvocation>> mapGetInvocations) {
     return mapGetInvocations.getOrDefault(mapSV, Collections.emptyList()).stream()
       .filter(getOnSameMap -> getOnSameMap.withSameKey(keySV))
       .findAny();
@@ -152,22 +156,42 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
     return ((Symbol.MethodSymbol) symbol).thrownTypes().stream().anyMatch(t -> !t.isSubtypeOf("java.lang.RuntimeException"));
   }
 
-  private static boolean isInsideIfStatementWithNullCheckWithoutElse(MethodInvocationTree mit) {
+  private boolean isInsideIfStatementWithNullCheckWithoutElse(MethodInvocationTree mit) {
     return getIfStatementParent(mit).map(ifStatementTree -> ifStatementTree.elseStatement() == null
       && isNullCheck(ExpressionUtils.skipParentheses(ifStatementTree.condition())))
       .orElse(false);
   }
 
-  private static boolean isInsideIfStatementWithoutElse(MethodInvocationTree mit) {
+  private boolean isInsideIfStatementWithoutElse(MethodInvocationTree mit) {
     return getIfStatementParent(mit).map(ifStatementTree -> ifStatementTree.elseStatement() == null).orElse(false);
   }
 
-  private static Optional<IfStatementTree> getIfStatementParent(MethodInvocationTree mit) {
-    Tree parent = mit.parent();
-    while (parent != null && !parent.is(Tree.Kind.IF_STATEMENT)) {
-      parent = parent.parent();
+  private Optional<IfStatementTree> getIfStatementParent(MethodInvocationTree mit) {
+    IfStatementTree closestKnownParent = closestIfStatements.get(mit);
+    if (closestKnownParent == null) { 
+      List<Tree> children = new ArrayList<>();
+      children.add(mit);
+      return doGetIfStatementParent(mit.parent(), children);
     }
-    return parent == null ? Optional.empty() : Optional.of((IfStatementTree) parent);
+    return Optional.of(closestKnownParent);
+  }
+
+  private Optional<IfStatementTree> doGetIfStatementParent(@Nullable Tree currentTree, List<Tree> children) {
+    if (currentTree == null) {
+      return Optional.empty();
+    }
+    if (currentTree.is(Tree.Kind.IF_STATEMENT)) {
+      IfStatementTree ifStatementTree = (IfStatementTree) currentTree;
+      children.forEach(tree -> closestIfStatements.put(tree, ifStatementTree));
+      return Optional.of(ifStatementTree);
+    }
+    IfStatementTree ifStatementTree = closestIfStatements.get(currentTree);
+    if (ifStatementTree != null) {
+      children.forEach(tree -> closestIfStatements.put(tree, ifStatementTree));
+      return Optional.of(ifStatementTree);
+    }
+    children.add(currentTree);
+    return doGetIfStatementParent(currentTree.parent(), children);
   }
 
   private static boolean isNullCheck(ExpressionTree condition) {
@@ -210,8 +234,8 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
     }
 
     private boolean differentIssueOnSameTree(CheckIssue otherIssue) {
-      return this != otherIssue 
-        && checkValueInvocation.equals(otherIssue.checkValueInvocation) 
+      return this != otherIssue
+        && checkValueInvocation.equals(otherIssue.checkValueInvocation)
         && valueConstraint != otherIssue.valueConstraint;
     }
 

@@ -6,7 +6,6 @@ import javax.annotation.CheckForNull;
 
 import java.util.Map;
 import java.util.Objects;
-import org.elasticsearch.common.MacAddressProvider;
 
 abstract class MapComputeIfAbsentOrPresentCheck {
 
@@ -262,7 +261,7 @@ abstract class MapComputeIfAbsentOrPresentCheck {
       map.put(key1, new Object());
     }
   }
-  
+
   void npqg(Map<String, Object> map, String key1) {
     boolean containsKey = map.containsKey(key1);
     if (!containsKey) {
@@ -271,6 +270,33 @@ abstract class MapComputeIfAbsentOrPresentCheck {
     if (containsKey) {
       map.put(key1, new Object());
     }
+  }
+
+  void multipleChecks(Map<String, Object> map, String key1, String key2, String key3, boolean b1, boolean b2) {
+    if (b1) {
+      if (!map.containsKey(key1))  // Noncompliant {{Replace this "Map.containsKey()" with a call to "Map.computeIfAbsent()".}}
+        map.put(key1, new Object());
+      if (b2) {
+        if (!map.containsKey(key2))  // Noncompliant {{Replace this "Map.containsKey()" with a call to "Map.computeIfAbsent()".}}
+          map.put(key2, new Object());
+
+        if (!map.containsKey(key3)) // Noncompliant {{Replace this "Map.containsKey()" with a call to "Map.computeIfAbsent()".}}
+          map.put(key3, new Object());
+      }
+    }
+  }
+
+  void checkEnum(Map<Enum, Object> map) {
+    if (!map.containsKey(Enum.A)) // Compliant FN
+      map.put(Enum.A, new Object());
+
+    if (!map.containsKey(Enum.B)) // Compliant FN
+      map.put(Enum.B, new Object());
+  }
+  
+  enum Enum {
+    A,
+    B
   }
   
   abstract void doSomething(Object... objects);
