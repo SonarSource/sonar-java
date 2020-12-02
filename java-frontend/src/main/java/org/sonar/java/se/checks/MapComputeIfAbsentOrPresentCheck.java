@@ -211,12 +211,12 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
   }
 
   private abstract static class CheckIssue {
-    private final ExplodedGraph.Node node;
+    protected final ExplodedGraph.Node node;
 
     private final MethodInvocationTree checkValueInvocation;
     private final MethodInvocationTree putInvocation;
 
-    private final SymbolicValue value;
+    protected final SymbolicValue value;
     protected final Constraint valueConstraint;
 
     private CheckIssue(Node node, MethodInvocationTree checkValueInvocation, MethodInvocationTree putInvocation, SymbolicValue value, Constraint constraint) {
@@ -247,9 +247,7 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
       context.reportIssue(checkValueInvocation, check, issueMsg(), flows());
     }
 
-    protected Set<Flow> flows(String methodName) {
-      // build nullness flows for value constraint
-      Set<Flow> flows = FlowComputation.flow(node, value, Collections.singletonList(ObjectConstraint.class), FlowComputation.MAX_REPORTED_FLOWS);
+    protected Set<Flow> flows(String methodName, Set<Flow> flows) {
       // enrich each flow with both map method invocations
       return flows.stream().map(flow -> Flow.builder()
         .add(new JavaFileScannerContext.Location("'Map.put()' is invoked with same key.", putInvocation.methodSelect()))
@@ -274,7 +272,9 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
 
     @Override
     protected Set<Flow> flows() {
-      return flows("Map.get()");
+      // build nullness flows for value constraint
+      Set<Flow> flows = FlowComputation.flow(node, value, Collections.singletonList(ObjectConstraint.class), FlowComputation.MAX_REPORTED_FLOWS);
+      return flows("Map.get()", flows);
     }
   }
 
@@ -293,7 +293,9 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
 
     @Override
     protected Set<Flow> flows() {
-      return flows("Map.containsKey()");
+      // build boolean flows for value constraint
+      Set<Flow> flows = FlowComputation.flow(node, value, Collections.singletonList(BooleanConstraint.class), FlowComputation.MAX_REPORTED_FLOWS);
+      return flows("Map.containsKey()", flows);
     }
   }
 
