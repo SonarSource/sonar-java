@@ -114,9 +114,7 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
         SymbolicValue keySV = ps.peekValue(1);
         SymbolicValue mapSV = ps.peekValue(2);
 
-        mapGetInvocations.getOrDefault(mapSV, Collections.emptyList()).stream()
-          .filter(getOnSameMap -> getOnSameMap.withSameKey(keySV))
-          .findAny()
+        sameMapAndSameKeyInvocation(keySV, mapSV, mapGetInvocations)
           .ifPresent(getOnSameMap -> {
             ObjectConstraint constraint = ps.getConstraint(getOnSameMap.value, ObjectConstraint.class);
             if (constraint != null && isInsideIfStatementWithNullCheckWithoutElse(mit)) {
@@ -124,9 +122,7 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
             }
           });
 
-        mapContainsKeyInvocations.getOrDefault(mapSV, Collections.emptyList()).stream()
-          .filter(containsKeyOnSameMap -> containsKeyOnSameMap.withSameKey(keySV))
-          .findAny()
+        sameMapAndSameKeyInvocation(keySV, mapSV, mapContainsKeyInvocations)
           .ifPresent(containsKeyOnSameMap -> {
             BooleanConstraint constraint = ps.getConstraint(containsKeyOnSameMap.value, BooleanConstraint.class);
             if (constraint != null && isInsideIfStatementWithoutElse(mit)) {
@@ -136,6 +132,12 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
       }
     }
     return super.checkPreStatement(context, syntaxNode);
+  }
+
+  private Optional<MapMethodInvocation> sameMapAndSameKeyInvocation(SymbolicValue keySV, SymbolicValue mapSV, Map<SymbolicValue, List<MapMethodInvocation>> mapGetInvocations) {
+    return mapGetInvocations.getOrDefault(mapSV, Collections.emptyList()).stream()
+      .filter(getOnSameMap -> getOnSameMap.withSameKey(keySV))
+      .findAny();
   }
 
   private static boolean isMethodInvocationThrowingCheckedException(ExpressionTree expr) {
