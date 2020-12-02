@@ -175,23 +175,23 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
     }
     return Optional.of(closestKnownParent);
   }
-
+  
   private Optional<IfStatementTree> doGetIfStatementParent(@Nullable Tree currentTree, List<Tree> children) {
-    if (currentTree == null) {
-      return Optional.empty();
+    while (currentTree != null) {
+      if (currentTree.is(Tree.Kind.IF_STATEMENT)) {
+        IfStatementTree ifStatementTree = (IfStatementTree) currentTree;
+        children.forEach(tree -> closestIfStatements.put(tree, ifStatementTree));
+        return Optional.of(ifStatementTree);
+      }
+      IfStatementTree ifStatementTree = closestIfStatements.get(currentTree);
+      if (ifStatementTree != null) {
+        children.forEach(tree -> closestIfStatements.put(tree, ifStatementTree));
+        return Optional.of(ifStatementTree);
+      }
+      children.add(currentTree);
+      currentTree = currentTree.parent();
     }
-    if (currentTree.is(Tree.Kind.IF_STATEMENT)) {
-      IfStatementTree ifStatementTree = (IfStatementTree) currentTree;
-      children.forEach(tree -> closestIfStatements.put(tree, ifStatementTree));
-      return Optional.of(ifStatementTree);
-    }
-    IfStatementTree ifStatementTree = closestIfStatements.get(currentTree);
-    if (ifStatementTree != null) {
-      children.forEach(tree -> closestIfStatements.put(tree, ifStatementTree));
-      return Optional.of(ifStatementTree);
-    }
-    children.add(currentTree);
-    return doGetIfStatementParent(currentTree.parent(), children);
+    return Optional.empty();
   }
 
   private static boolean isNullCheck(ExpressionTree condition) {
