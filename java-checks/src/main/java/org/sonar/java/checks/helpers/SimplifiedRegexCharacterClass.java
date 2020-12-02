@@ -19,7 +19,9 @@
  */
 package org.sonar.java.checks.helpers;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -103,20 +105,38 @@ public class SimplifiedRegexCharacterClass {
     if (defaultAnswer && ((containsUnknownCharacters && !that.isEmpty()) || (!isEmpty() && that.containsUnknownCharacters))) {
       return true;
     }
+    return !findIntersections(that, true).isEmpty();
+  }
+
+  public List<RegexSyntaxElement> findIntersections(SimplifiedRegexCharacterClass that) {
+    return findIntersections(that, false);
+  }
+
+  private List<RegexSyntaxElement> findIntersections(SimplifiedRegexCharacterClass that, boolean stopAtFirst) {
     Iterator<Map.Entry<Integer, RegexSyntaxElement>> iter = that.contents.entrySet().iterator();
+    List<RegexSyntaxElement> intersections = new ArrayList<>();
     if (!iter.hasNext()) {
-      return false;
+      return intersections;
     }
     Map.Entry<Integer, RegexSyntaxElement> entry = iter.next();
     while (iter.hasNext()) {
       Map.Entry<Integer, RegexSyntaxElement> nextEntry = iter.next();
       int to = (nextEntry.getValue() == null) ? (nextEntry.getKey() - 1) : nextEntry.getKey();
-      if (entry.getValue() != null && hasEntryBetween(entry.getKey(), to)) {
-        return true;
+      RegexSyntaxElement value = entry.getValue();
+      if (value != null && hasEntryBetween(entry.getKey(), to)) {
+        intersections.add(value);
+        if (stopAtFirst) {
+          return intersections;
+        }
       }
       entry = nextEntry;
     }
-    return entry.getValue() != null && hasEntryBetween(entry.getKey(), Character.MAX_CODE_POINT);
+
+    RegexSyntaxElement value = entry.getValue();
+    if (value != null && hasEntryBetween(entry.getKey(), Character.MAX_CODE_POINT)) {
+      intersections.add(value);
+    }
+    return intersections;
   }
 
   /**
