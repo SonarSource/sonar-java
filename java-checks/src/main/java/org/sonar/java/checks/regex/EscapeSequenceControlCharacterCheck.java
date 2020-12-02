@@ -32,7 +32,7 @@ public class EscapeSequenceControlCharacterCheck extends AbstractRegexCheck {
 
   private static final String MESSAGE = "Remove or replace this problematic use of \\c.";
 
-  private static final Pattern WRONG_ESCAPED_SEQUENCE = Pattern.compile("\\\\c[^@-_]");
+  private static final Pattern WRONG_ESCAPED_SEQUENCE = Pattern.compile("\\\\\\\\c[^@-_]");
 
   @Override
   public void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation) {
@@ -42,7 +42,7 @@ public class EscapeSequenceControlCharacterCheck extends AbstractRegexCheck {
   private class WrongEscapeSequenceVisitor extends RegexBaseVisitor {
     @Override
     public void visitPlainCharacter(PlainCharacterTree tree) {
-      if (WRONG_ESCAPED_SEQUENCE.matcher(tree.getText()).find()) {
+      if (WRONG_ESCAPED_SEQUENCE.matcher(tree.getText()).matches()) {
         reportIssue(tree, MESSAGE, null, Collections.emptyList());
       }
     }
