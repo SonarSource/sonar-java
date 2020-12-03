@@ -61,6 +61,8 @@ public class AssertJChainSimplificationIndex {
   private static final String JAVA_UTIL_OPTIONAL = "java.util.Optional";
 
   private static final String CONTAINS = "contains";
+  private static final String CONTAINS_KEY = "containsKey";
+  private static final String CONTAINS_VALUE = "containsValue";
   private static final String DOES_NOT_CONTAIN = "doesNotContain";
   private static final String DOES_NOT_START_WITH = "doesNotStartWith";
   private static final String HAS_SIZE = "hasSize";
@@ -242,8 +244,8 @@ public class AssertJChainSimplificationIndex {
       methodCallInSubject(Matchers.PATH_STARTS_WITH, msgWithActualExpected("startsWithRaw")),
       methodCallInSubject(Matchers.PATH_ENDS_WITH, msgWithActualExpected("endsWithRaw")),
       methodCallInSubject(Matchers.IS_EMPTY_GENERIC, msgWithActual(IS_EMPTY)),
-      methodCallInSubject(Matchers.MAP_CONTAINS_KEY, msgWithActualExpected("containsKey")),
-      methodCallInSubject(Matchers.MAP_CONTAINS_VALUE, msgWithActualExpected("containsValue")),
+      methodCallInSubject(Matchers.MAP_CONTAINS_KEY, msgWithActualExpected(CONTAINS_KEY)),
+      methodCallInSubject(Matchers.MAP_CONTAINS_VALUE, msgWithActualExpected(CONTAINS_VALUE)),
       methodCallInSubject(Matchers.IS_PRESENT, OPTIONAL_PRESENT_REPLACEMENT),
       methodCallInSubject(Matchers.IS_EMPTY_OPTIONAL, OPTIONAL_EMPTY_REPLACEMENT)))
     .put(IS_ZERO, Arrays.asList(
@@ -273,6 +275,11 @@ public class AssertJChainSimplificationIndex {
     .put(IS_GREATER_THAN, Arrays.asList(
       methodCallInSubject(Matchers.COLLECTION_SIZE, msgWithActualExpected("hasSizeGreaterThan")),
       arrayLengthSimplifier(msgWithActualExpected("hasSizeGreaterThan"))))
+    .put(CONTAINS, Arrays.asList(
+      methodCallInSubject(Matchers.MAP_KEY_SET, msgWithActualExpected(CONTAINS_KEY)),
+      methodCallInSubject(Matchers.MAP_VALUES, msgWithActualExpected(CONTAINS_VALUE))))
+    .put("containsOnly", Collections.singletonList(
+      methodCallInSubject(Matchers.MAP_KEY_SET, msgWithActualExpected("containsOnlyKeys"))))
     .build();
 
   private static class Matchers {
@@ -348,11 +355,15 @@ public class AssertJChainSimplificationIndex {
     public static final MethodMatchers COLLECTION_CONTAINS_ALL = MethodMatchers.create().ofTypes(JAVA_UTIL_COLLECTION)
       .names("containsAll").addParametersMatcher(MethodMatchers.ANY).build();
     public static final MethodMatchers MAP_CONTAINS_KEY = MethodMatchers.create().ofTypes(JAVA_UTIL_MAP)
-      .names("containsKey").addParametersMatcher(MethodMatchers.ANY).build();
+      .names(CONTAINS_KEY).addParametersMatcher(MethodMatchers.ANY).build();
     public static final MethodMatchers MAP_CONTAINS_VALUE = MethodMatchers.create().ofTypes(JAVA_UTIL_MAP)
-      .names("containsValue").addParametersMatcher(MethodMatchers.ANY).build();
+      .names(CONTAINS_VALUE).addParametersMatcher(MethodMatchers.ANY).build();
     public static final MethodMatchers MAP_GET = MethodMatchers.create().ofTypes(JAVA_UTIL_MAP)
       .names("get").addParametersMatcher(MethodMatchers.ANY).build();
+    public static final MethodMatchers MAP_KEY_SET = MethodMatchers.create().ofTypes(JAVA_UTIL_MAP)
+      .names("keySet").addWithoutParametersMatcher().build();
+    public static final MethodMatchers MAP_VALUES = MethodMatchers.create().ofTypes(JAVA_UTIL_MAP)
+      .names("values").addWithoutParametersMatcher().build();
   }
 
   private static PredicateSimplifierWithContext compareToSimplifier(Predicate<ExpressionTree> predicateArgCondition, String simplification) {

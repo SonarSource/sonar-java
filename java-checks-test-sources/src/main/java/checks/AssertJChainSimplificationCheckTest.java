@@ -269,6 +269,14 @@ public class AssertJChainSimplificationCheckTest {
 
     assertThat(getMap().containsKey(key)).isTrue(); // Noncompliant {{Use assertThat(actual).containsKey(expected) instead.}}
     assertThat(getMap().containsValue(value)).isTrue(); // Noncompliant {{Use assertThat(actual).containsValue(expected) instead.}}
+    assertThat(getMap().keySet()).contains("foo"); // Noncompliant {{Use assertThat(actual).containsKey(expected) instead.}}
+    assertThat(getMap().values()).contains("foo"); // Noncompliant {{Use assertThat(actual).containsValue(expected) instead.}}
+    assertThat(getMap().keySet()).containsOnly("foo"); // Noncompliant {{Use assertThat(actual).containsOnlyKeys(expected) instead.}}
+    assertThat(getMap().values()).containsOnly("foo"); // Compliant, no "containsOnlyValues"
+    assertThat(getMap()).containsKey("foo"); // Compliant
+    assertThat(getMap()).containsValue("foo"); // Compliant
+    assertThat(getMap()).containsOnlyKeys("foo"); // Compliant
+
     assertThat(getMap().get(key)).isEqualTo(value); // Noncompliant {{Use assertThat(actual).containsEntry(key, value) instead.}}
     assertThat(getMap().get(key)).isNotEqualTo(value); // Noncompliant {{Use assertThat(actual).doesNotContainEntry(key, value) instead.}}
   }
