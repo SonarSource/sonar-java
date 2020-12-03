@@ -23,12 +23,24 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.se.SETestUtils;
 import org.sonar.java.testing.CheckVerifier;
 
+import static org.sonar.java.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.TestUtils.testSourcesPath;
+
 class MapComputeIfAbsentOrPresentCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/se/MapComputeIfAbsentOrPresentCheck.java")
+      .onFile(testSourcesPath("symbolicexecution/checks/MapComputeIfAbsentOrPresentCheck.java"))
+      .withCheck(new MapComputeIfAbsentOrPresentCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/MapComputeIfAbsentOrPresentCheck.java"))
       .withCheck(new MapComputeIfAbsentOrPresentCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
