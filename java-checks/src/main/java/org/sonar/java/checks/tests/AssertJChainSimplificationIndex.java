@@ -32,9 +32,11 @@ import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 import static org.sonar.java.checks.tests.AssertJChainSimplificationCheck.SimplifierWithContext;
 import static org.sonar.java.checks.tests.AssertJChainSimplificationCheck.SimplifierWithoutContext;
@@ -61,6 +63,8 @@ public class AssertJChainSimplificationIndex {
   private static final String JAVA_UTIL_OPTIONAL = "java.util.Optional";
 
   private static final String CONTAINS = "contains";
+  private static final String CONTAINS_KEY = "containsKey";
+  private static final String CONTAINS_VALUE = "containsValue";
   private static final String DOES_NOT_CONTAIN = "doesNotContain";
   private static final String DOES_NOT_START_WITH = "doesNotStartWith";
   private static final String HAS_SIZE = "hasSize";
@@ -110,17 +114,17 @@ public class AssertJChainSimplificationIndex {
     .put(IS_EQUAL_TO, Collections.singletonList(
       PredicateSimplifierWithoutContext.withSingleArg(ExpressionUtils::isNullLiteral, "isNull()")))
     .put(IS_GREATER_THAN, Arrays.asList(
-      PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isNegOne, "isNotNegative()"),
-      PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isZero, "isPositive()")))
+      PredicateSimplifierWithoutContext.withSingleArg(AssertJChainSimplificationIndex::isNegOneIntOrLong, "isNotNegative()"),
+      PredicateSimplifierWithoutContext.withSingleArg(AssertJChainSimplificationIndex::isZeroIntOrLong, "isPositive()")))
     .put(IS_GREATER_THAN_OR_EQUAL_TO, Arrays.asList(
-      PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isZero, "isNotNegative()"),
-      PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isOne, "isPositive()")))
+      PredicateSimplifierWithoutContext.withSingleArg(AssertJChainSimplificationIndex::isZeroIntOrLong, "isNotNegative()"),
+      PredicateSimplifierWithoutContext.withSingleArg(AssertJChainSimplificationIndex::isOneIntOrLong, "isPositive()")))
     .put(IS_LESS_THAN, Arrays.asList(
-      PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isZero, "isNegative()"),
-      PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isOne, "isNotPositive()")))
+      PredicateSimplifierWithoutContext.withSingleArg(AssertJChainSimplificationIndex::isZeroIntOrLong, "isNegative()"),
+      PredicateSimplifierWithoutContext.withSingleArg(AssertJChainSimplificationIndex::isOneIntOrLong, "isNotPositive()")))
     .put(IS_LESS_THAN_OR_EQUAL_TO, Arrays.asList(
-      PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isNegOne, "isNegative()"),
-      PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isZero, "isNotPositive()")))
+      PredicateSimplifierWithoutContext.withSingleArg(AssertJChainSimplificationIndex::isNegOneIntOrLong, "isNegative()"),
+      PredicateSimplifierWithoutContext.withSingleArg(AssertJChainSimplificationIndex::isZeroIntOrLong, "isNotPositive()")))
     .put(IS_NOT_EQUAL_TO, Collections.singletonList(
       PredicateSimplifierWithoutContext.withSingleArg(subject -> ExpressionUtils.isNullLiteral(subject) &&
         !UnitTestUtils.isInUnitTestRelatedToObjectMethods(subject), "isNotNull()")
@@ -137,7 +141,7 @@ public class AssertJChainSimplificationIndex {
       withSubjectArgumentCondition(LiteralUtils::isTrue, AssertJChainSimplificationIndex::isNotObject, "isTrue()"),
       withSubjectArgumentCondition(LiteralUtils::isFalse, AssertJChainSimplificationIndex::isNotObject, "isFalse()"),
       withSubjectArgumentCondition(LiteralUtils::isEmptyString, AssertJChainSimplificationIndex::isNotObject, "isEmpty()"),
-      withSubjectArgumentCondition(LiteralUtils::isZero, AssertJChainSimplificationIndex::isNotObject, "isZero()"),
+      withSubjectArgumentCondition(AssertJChainSimplificationIndex::isZeroIntOrLong, AssertJChainSimplificationIndex::isNotObject, "isZero()"),
       methodCallInSubject(Matchers.TO_STRING, msgWithActualCustom("hasToString", "expectedString")),
       methodCallInSubject(predicateArg -> hasMethodCallAsArg(predicateArg, Matchers.HASH_CODE), Matchers.HASH_CODE, msgWithActualExpected("hasSameHashCodeAs")),
       compareToSimplifier(LiteralUtils::isZero, msgWithActualExpected("isEqualByComparingTo")),
@@ -186,7 +190,7 @@ public class AssertJChainSimplificationIndex {
       methodCallInSubject(Matchers.TRIM, msgWithActual(IS_NOT_BLANK)),
       methodCallInSubject(Matchers.FILE_LIST_AND_LIST_FILE, msgWithActual("isNotEmptyDirectory"))))
     .put(IS_NOT_EQUAL_TO, Arrays.asList(
-      withSubjectArgumentCondition(LiteralUtils::isZero, AssertJChainSimplificationIndex::isNotObject, "isNotZero()"),
+      withSubjectArgumentCondition(AssertJChainSimplificationIndex::isZeroIntOrLong, AssertJChainSimplificationIndex::isNotObject, "isNotZero()"),
       compareToSimplifier(LiteralUtils::isZero, msgWithActualExpected("isNotEqualByComparingTo")),
       methodCallInSubject(LiteralUtils::isZero, Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpected(IS_NOT_EQUAL_TO_IGNORING_CASE)),
       indexOfSimplifier(LiteralUtils::isZero, DOES_NOT_START_WITH),
@@ -242,8 +246,8 @@ public class AssertJChainSimplificationIndex {
       methodCallInSubject(Matchers.PATH_STARTS_WITH, msgWithActualExpected("startsWithRaw")),
       methodCallInSubject(Matchers.PATH_ENDS_WITH, msgWithActualExpected("endsWithRaw")),
       methodCallInSubject(Matchers.IS_EMPTY_GENERIC, msgWithActual(IS_EMPTY)),
-      methodCallInSubject(Matchers.MAP_CONTAINS_KEY, msgWithActualExpected("containsKey")),
-      methodCallInSubject(Matchers.MAP_CONTAINS_VALUE, msgWithActualExpected("containsValue")),
+      methodCallInSubject(Matchers.MAP_CONTAINS_KEY, msgWithActualExpected(CONTAINS_KEY)),
+      methodCallInSubject(Matchers.MAP_CONTAINS_VALUE, msgWithActualExpected(CONTAINS_VALUE)),
       methodCallInSubject(Matchers.IS_PRESENT, OPTIONAL_PRESENT_REPLACEMENT),
       methodCallInSubject(Matchers.IS_EMPTY_OPTIONAL, OPTIONAL_EMPTY_REPLACEMENT)))
     .put(IS_ZERO, Arrays.asList(
@@ -273,6 +277,11 @@ public class AssertJChainSimplificationIndex {
     .put(IS_GREATER_THAN, Arrays.asList(
       methodCallInSubject(Matchers.COLLECTION_SIZE, msgWithActualExpected("hasSizeGreaterThan")),
       arrayLengthSimplifier(msgWithActualExpected("hasSizeGreaterThan"))))
+    .put(CONTAINS, Arrays.asList(
+      methodCallInSubject(Matchers.MAP_KEY_SET, msgWithActualExpected(CONTAINS_KEY)),
+      methodCallInSubject(Matchers.MAP_VALUES, msgWithActualExpected(CONTAINS_VALUE))))
+    .put("containsOnly", Collections.singletonList(
+      methodCallInSubject(Matchers.MAP_KEY_SET, msgWithActualExpected("containsOnlyKeys"))))
     .build();
 
   private static class Matchers {
@@ -348,11 +357,15 @@ public class AssertJChainSimplificationIndex {
     public static final MethodMatchers COLLECTION_CONTAINS_ALL = MethodMatchers.create().ofTypes(JAVA_UTIL_COLLECTION)
       .names("containsAll").addParametersMatcher(MethodMatchers.ANY).build();
     public static final MethodMatchers MAP_CONTAINS_KEY = MethodMatchers.create().ofTypes(JAVA_UTIL_MAP)
-      .names("containsKey").addParametersMatcher(MethodMatchers.ANY).build();
+      .names(CONTAINS_KEY).addParametersMatcher(MethodMatchers.ANY).build();
     public static final MethodMatchers MAP_CONTAINS_VALUE = MethodMatchers.create().ofTypes(JAVA_UTIL_MAP)
-      .names("containsValue").addParametersMatcher(MethodMatchers.ANY).build();
+      .names(CONTAINS_VALUE).addParametersMatcher(MethodMatchers.ANY).build();
     public static final MethodMatchers MAP_GET = MethodMatchers.create().ofTypes(JAVA_UTIL_MAP)
       .names("get").addParametersMatcher(MethodMatchers.ANY).build();
+    public static final MethodMatchers MAP_KEY_SET = MethodMatchers.create().ofTypes(JAVA_UTIL_MAP)
+      .names("keySet").addWithoutParametersMatcher().build();
+    public static final MethodMatchers MAP_VALUES = MethodMatchers.create().ofTypes(JAVA_UTIL_MAP)
+      .names("values").addWithoutParametersMatcher().build();
   }
 
   private static PredicateSimplifierWithContext compareToSimplifier(Predicate<ExpressionTree> predicateArgCondition, String simplification) {
@@ -373,6 +386,28 @@ public class AssertJChainSimplificationIndex {
 
   private static PredicateSimplifierWithContext arrayLengthSimplifier(String simplification) {
     return PredicateSimplifierWithContext.withSubjectArgumentCondition(AssertJChainSimplificationIndex::isArrayLength, simplification);
+  }
+
+
+
+  public static boolean isZeroIntOrLong(ExpressionTree tree) {
+    if (tree.is(Tree.Kind.LONG_LITERAL)) {
+      String value = ((LiteralTree) tree).value();
+      return "0L".equals(value) || "0l".equals(value);
+    }
+    return LiteralUtils.isZero(tree);
+  }
+
+  public static boolean isOneIntOrLong(ExpressionTree tree) {
+    if (tree.is(Tree.Kind.LONG_LITERAL)) {
+      String value = ((LiteralTree) tree).value();
+      return "1L".equals(value) || "1l".equals(value);
+    }
+    return LiteralUtils.isOne(tree);
+  }
+
+  public static boolean isNegOneIntOrLong(ExpressionTree tree) {
+    return tree.is(Tree.Kind.UNARY_MINUS) && isOneIntOrLong(((UnaryExpressionTree) tree).expression());
   }
 
   private static boolean isArrayLength(ExpressionTree expression) {

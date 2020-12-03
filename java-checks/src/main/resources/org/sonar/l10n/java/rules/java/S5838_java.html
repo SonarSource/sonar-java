@@ -274,8 +274,20 @@ reported.</p>
       <td><code>assertThat(getMap()).containsKey(key)</code></td>
     </tr>
     <tr>
+      <td><code>assertThat(getMap().keySet()).contains(key)</code></td>
+      <td><code>assertThat(getMap()).containsKey(key)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getMap().keySet()).containsOnlyKey(key)</code></td>
+      <td><code>assertThat(getMap()).containsOnlyKey(key)</code></td>
+    </tr>
+    <tr>
       <td><code>assertThat(getMap().containsValue(value)).isTrue()</code></td>
       <td><code>assertThat(getMap()).containsValue(value)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getMap().values()).contains(value)</code></td>
+      <td><code>assertThat(getMap()).containsValue(</code><code>value</code><code>)</code></td>
     </tr>
     <tr>
       <td><code>assertThat(getMap().get(key)).isEqualTo(value)</code></td>
