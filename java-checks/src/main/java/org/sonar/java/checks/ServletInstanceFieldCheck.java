@@ -24,6 +24,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -42,8 +43,14 @@ import java.util.List;
 @Rule(key = "S2226")
 public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
 
-  private List<VariableTree> issuableVariables = new ArrayList<>();
-  private List<VariableTree> excludedVariables = new ArrayList<>();
+  private final List<VariableTree> issuableVariables = new ArrayList<>();
+  private final List<VariableTree> excludedVariables = new ArrayList<>();
+  
+  private static final MethodMatchers INIT_METHOD_WITH_PARAM_MATCHER =  MethodMatchers.create()
+    .ofSubTypes("javax.servlet.Servlet").names("init").addParametersMatcher("javax.servlet.ServletConfig").build();
+
+  private static final MethodMatchers INIT_METHOD_NO_PARAMS_MATCHER =  MethodMatchers.create()
+    .ofSubTypes("javax.servlet.GenericServlet").names("init").addWithoutParametersMatcher().build();
 
   private static final List<String> ANNOTATIONS_EXCLUDING_FIELDS = Arrays.asList(
     "javax.inject.Inject",
@@ -63,9 +70,6 @@ public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if(!hasSemantic()) {
-      return;
-    }
     if (tree.is(Kind.METHOD) && isServletInit((MethodTree) tree)) {
       tree.accept(new AssignmentVisitor());
     } else if (tree.is(Kind.VARIABLE)) {
@@ -82,7 +86,7 @@ public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isServletInit(MethodTree tree) {
-    return "init".equals(tree.simpleName().name()) && tree.parameters().size() == 1 && tree.parameters().get(0).symbol().type().is("javax.servlet.ServletConfig");
+    return INIT_METHOD_WITH_PARAM_MATCHER.matches(tree) || INIT_METHOD_NO_PARAMS_MATCHER.matches(tree);
   }
 
   private void reportIssuesOnVariable() {
