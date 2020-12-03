@@ -29,7 +29,7 @@ class TooManyParametersCheckTest {
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/TooManyParameters.java")
+      .onFile(testSourcesPath("checks/TooManyParametersCheck.java"))
       .withCheck(new TooManyParametersCheck())
       .verifyIssues();
   }
