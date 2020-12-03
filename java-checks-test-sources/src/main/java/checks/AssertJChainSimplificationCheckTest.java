@@ -44,6 +44,10 @@ public class AssertJChainSimplificationCheckTest {
     return "a string";
   }
 
+  private Long getLong() {
+    return 42L;
+  }
+
   private Map<Object, Object> getMap() {
     return new HashMap<>();
   }
@@ -104,7 +108,7 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(getObject()).isEqualTo(false); // Compliant
     assertThat(getObject()).isEqualTo(""); // Compliant
     assertThat(getObject()).isEqualTo(0); // Compliant
-    assertThat(x.equals(y)).isTrue(); // Noncompliant [[sc=29;ec=35;secondary=107]] {{Use assertThat(actual).isEqualTo(expected) instead.}}
+    assertThat(x.equals(y)).isTrue(); // Noncompliant [[sc=29;ec=35;secondary=+0]] {{Use assertThat(actual).isEqualTo(expected) instead.}}
     assertThat(x.equals(y)).isFalse(); // Noncompliant {{Use assertThat(actual).isNotEqualTo(expected) instead.}}
     assertThat(x == y).isTrue(); // Noncompliant {{Use assertThat(actual).isSameAs(expected) instead.}}
     assertThat(x == y).isFalse(); // Noncompliant {{Use assertThat(actual).isNotSameAs(expected) instead.}}
@@ -339,6 +343,27 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(getOptional()).isNotEqualTo(Optional.empty()); // Noncompliant {{Use assertThat(actual).isPresent() instead.}}
     assertThat(getOptional().get()).isEqualTo(getObject()); // Noncompliant {{Use assertThat(actual).contains(expected) instead.}}
     assertThat(getOptional().get()).isSameAs(getObject()); // Noncompliant {{Use assertThat(actual).containsSame(expected) instead.}}
+  }
+
+  void contextFreeWithLong() {
+    assertThat(getLong()).isEqualTo(0); // Noncompliant {{Use isZero() instead.}}
+    assertThat(getLong()).isEqualTo(0L); // Noncompliant {{Use isZero() instead.}}
+    assertThat(getLong()).isEqualTo(0l); // Noncompliant {{Use isZero() instead.}}
+    assertThat(getLong()).isEqualTo(42l); // Compliant
+    assertThat(getLong()).isEqualTo(42L); // Compliant
+
+    assertThat(getLong()).isGreaterThan(0L); // Noncompliant {{Use isPositive() instead.}}
+    assertThat(getLong()).isGreaterThan(-1L); // Noncompliant {{Use isNotNegative() instead.}}
+    assertThat(getLong()).isGreaterThanOrEqualTo(0L); // Noncompliant {{Use isNotNegative() instead.}}
+    assertThat(getLong()).isGreaterThanOrEqualTo(1L); // Noncompliant {{Use isPositive() instead.}}
+    assertThat(getLong()).isGreaterThanOrEqualTo(1l); // Noncompliant {{Use isPositive() instead.}}
+    assertThat(getLong()).isGreaterThanOrEqualTo(42L); // Compliant
+    assertThat(getLong()).isLessThan(0L); // Noncompliant {{Use isNegative() instead.}}
+    assertThat(getLong()).isLessThan(1L); // Noncompliant {{Use isNotPositive() instead.}}
+    assertThat(getLong()).isLessThanOrEqualTo(0L);// Noncompliant {{Use isNotPositive() instead.}}
+    assertThat(getLong()).isLessThanOrEqualTo(-1L);// Noncompliant {{Use isNegative() instead.}}
+    assertThat(getLong()).isLessThanOrEqualTo(-42L);// Compliant
+    assertThat(getLong()).isNotEqualTo(0L); // Noncompliant {{Use isNotZero() instead.}}
   }
 
   void compliantChains() {
