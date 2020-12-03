@@ -103,6 +103,7 @@
               <goal>shade</goal>
             </goals>
             <configuration>
+              <createSourcesJar>true</createSourcesJar>
               <shadedArtifactAttached>true</shadedArtifactAttached>
               <filters>
                 <filter>
