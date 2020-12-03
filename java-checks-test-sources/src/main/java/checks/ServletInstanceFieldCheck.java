@@ -60,3 +60,24 @@ public class ServletInstanceFieldCheck extends HttpServlet {
   @org.springframework.beans.factory.annotation.Autowired
   private javax.sql.DataSource myDB; // compliant annotated with autowired
 }
+
+class HttpServletE extends HttpServlet {
+  private String userName; // Noncompliant [[sc=18;ec=26]] {{Remove this misleading mutable servlet instance field or make it "static" and/or "final"}}
+  private final String finalVar;
+  private String storageType; // Compliant, initialized in init() method
+
+  public HttpServletE(String x) {
+    String localVar;
+    finalVar = x;
+  }
+
+  public void init() {
+    storageType = StorageType.valueOf(getServletConfig().getInitParameter("storageType"));
+  }
+
+  private static class StorageType {
+    public static String valueOf(String storageType) {
+      return null;
+    }
+  }
+}

@@ -16,6 +16,12 @@ public class MyAction extends Action {
   ...
 }
 </pre>
+<h2>Exceptions</h2>
+<ul>
+  <li> Fields annotated with <code>@javax.inject.Inject</code>, <code>@javax.ejb.EJB</code>,
+  <code>@org.springframework.beans.factory.annotation.Autowired</code>, <code>@javax.annotation.Resource</code> </li>
+  <li> Fields initialized in <code>init()</code> or <code>init(ServletConfig config)</code> methods </li>
+</ul>
 <h2>See</h2>
 <ul>
   <li> <a href="https://www.securecoding.cert.org/confluence/x/EYBUC">CERT, MSC11-J.</a> - Do not let session information leak within a servlet </li>
