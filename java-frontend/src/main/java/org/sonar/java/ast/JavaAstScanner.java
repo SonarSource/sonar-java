@@ -34,10 +34,10 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.model.JParser;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.ProgressReport;
 
 public class JavaAstScanner {
@@ -100,13 +100,15 @@ public class JavaAstScanner {
       } else {
         version = Integer.toString(javaVersion.asInt());
       }
-      Tree ast = JParser.parse(
+      JavaTree.CompilationUnitTreeImpl ast = (JavaTree.CompilationUnitTreeImpl) JParser.parse(
         version,
         inputFile.filename(),
         inputFile.contents(),
         visitor.getClasspath()
       );
       visitor.visitFile(ast);
+      // release environment used for semantic resolution
+      ast.sema.cleanupEnvironment();
     } catch (RecognitionException e) {
       checkInterrupted(e);
       LOG.error(String.format(LOG_ERROR_UNABLE_TO_PARSE_FILE, inputFile));
