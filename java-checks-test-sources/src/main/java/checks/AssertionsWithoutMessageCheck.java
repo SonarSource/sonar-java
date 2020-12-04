@@ -2,6 +2,7 @@ package checks;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.description.TextDescription;
@@ -97,7 +98,7 @@ class AssertionsWithoutMessageCheck {
   void junit5() {
     org.junit.jupiter.api.Assertions.assertAll((Executable) null);
     org.junit.jupiter.api.Assertions.assertAll((Collection<Executable>) null);
-    org.junit.jupiter.api.Assertions.assertLinesMatch(null, null);
+    org.junit.jupiter.api.Assertions.assertLinesMatch((List<String>) null, null);
     org.junit.jupiter.api.Assertions.fail(() -> "message");
     org.junit.jupiter.api.Assertions.fail("message", new java.lang.RuntimeException());
 
