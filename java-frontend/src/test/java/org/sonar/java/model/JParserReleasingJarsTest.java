@@ -31,7 +31,6 @@ import org.junit.rules.TemporaryFolder;
 import org.sonar.api.internal.google.common.io.Files;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -58,7 +57,7 @@ class JParserReleasingJarsTest {
    */
   @Test
   void jParser_should_not_resolve_method_without_jar_in_classPath() {
-    Symbol foo = getFooSymbol(Collections.emptyList());
+    Symbol foo = getFooSymbol(parse(Collections.emptyList()));
     assertThat(foo.isUnknown()).isTrue();
   }
 
@@ -68,7 +67,7 @@ class JParserReleasingJarsTest {
   @Test
   void jParser_should_resolve_method_with_jar_in_classPath() {
     List<File> classPath = Collections.singletonList(new File(PROJECT_JAR));
-    Symbol foo = getFooSymbol(classPath);
+    Symbol foo = getFooSymbol(parse(classPath));
 
     assertThat(foo.isUnknown()).isFalse();
     assertThat(foo.isMethodSymbol()).isTrue();
@@ -101,23 +100,30 @@ class JParserReleasingJarsTest {
     assertThat(newJar).exists();
 
     List<File> classPath = Collections.singletonList(newJar);
-    Symbol foo = getFooSymbol(classPath);
+    JavaTree.CompilationUnitTreeImpl cu = parse(classPath);
+    Symbol foo = getFooSymbol(cu);
 
     assertThat(foo.isUnknown()).isFalse();
     assertThat(foo.isMethodSymbol()).isTrue();
     assertThat(((Symbol.MethodSymbol) foo).signature()).isEqualTo("org.foo.A#foo(Z)I");
+
+    // force clean
+    cu.sema.cleanupEnvironment();
 
     // can be safely deleted
     assertThat(newJar.delete()).isTrue();
     assertThat(newJar).doesNotExist();
   }
 
-  private static Symbol getFooSymbol(List<File> classPath) {
-    CompilationUnitTree cu = JParserTestUtils.parse("B", SOURCE, classPath);
+  private static Symbol getFooSymbol(JavaTree.CompilationUnitTreeImpl cu) {
     ClassTree b = (ClassTree) cu.types().get(0);
     MethodTree m = (MethodTree) b.members().get(0);
     ExpressionStatementTree s = (ExpressionStatementTree) m.block().body().get(1);
     return ((MethodInvocationTree) s.expression()).symbol();
+  }
+
+  private static JavaTree.CompilationUnitTreeImpl parse(List<File> classPath) {
+    return (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("B", SOURCE, classPath);
   }
 
 }

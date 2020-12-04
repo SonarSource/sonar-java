@@ -19,6 +19,7 @@
  */
 package org.eclipse.jdt.core.dom;
 
+import javax.annotation.Nullable;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.env.IBinaryAnnotation;
 import org.eclipse.jdt.internal.compiler.env.IBinaryType;
@@ -30,7 +31,6 @@ import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
-import javax.annotation.Nullable;
 
 public final class ASTUtils {
 
@@ -43,6 +43,10 @@ public final class ASTUtils {
 
   public static void mayTolerateMissingType(AST ast) {
     ast.getBindingResolver().lookupEnvironment().mayTolerateMissingType = true;
+  }
+
+  public static void cleanupEnvironment(AST ast) {
+    ast.getBindingResolver().lookupEnvironment().nameEnvironment.cleanup();
   }
 
   @Nullable
