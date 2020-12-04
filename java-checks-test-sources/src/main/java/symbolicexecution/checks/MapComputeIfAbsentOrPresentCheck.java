@@ -184,7 +184,7 @@ abstract class MapComputeIfAbsentOrPresentCheck {
   
   void nnq(Map<String, Object> map, String key, boolean b) {
     Object o = map.get(key);// Compliant, no if statement 
-    if (b) {
+    if (b) { 
       map.put(key, new Object());
     }
   }
@@ -237,6 +237,20 @@ abstract class MapComputeIfAbsentOrPresentCheck {
     boolean containsKey = map.containsKey(key1); // Noncompliant {{Replace this "Map.containsKey()" with a call to "Map.computeIfAbsent()".}}
     if (!containsKey) {
       map.put(key1, new Object());
+    }
+  }
+
+  void npqz(Map<String, Object> map, String key1) {
+    boolean containsKey = map.containsKey(key1); // Compliant, null won't be put when computeIfAbsent
+    if (!containsKey) {
+      map.put(key1, null);
+    }
+
+  }
+  void npqy(Map<String, Object> map, String key1) {
+    Object value = map.get(key1); // Compliant, null won't be put when computeIfAbsent
+    if (value == null) {
+      map.put(key1, null);
     }
   }
 
