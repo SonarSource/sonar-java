@@ -95,7 +95,7 @@ class SurefireStaxHandlerTest {
 
     // error
     UnitTestResult error = report.getResults().get(1);
-    assertThat(error.getDurationMilliseconds()).isEqualTo(0L);
+    assertThat(error.getDurationMilliseconds()).isZero();
     assertThat(error.getStatus()).isEqualTo(UnitTestResult.STATUS_ERROR);
     assertThat(error.getName()).isEqualTo("testTwo");
   }

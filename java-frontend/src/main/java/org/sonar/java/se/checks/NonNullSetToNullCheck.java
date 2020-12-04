@@ -104,7 +104,7 @@ public class NonNullSetToNullCheck extends SECheck {
       ClassTree classTree = (ClassTree) methodTree.parent();
       classTree.members().stream()
         .filter(m -> m.is(Tree.Kind.VARIABLE))
-        .map(m -> (VariableTree) m)
+        .map(VariableTree.class::cast)
         .filter(v -> v.initializer() == null)
         .forEach(v -> checkVariable(context, methodTree, v.symbol()));
     }

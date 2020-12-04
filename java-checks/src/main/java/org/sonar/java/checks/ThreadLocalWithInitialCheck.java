@@ -56,7 +56,7 @@ public class ThreadLocalWithInitialCheck extends AbstractMethodDetection impleme
     }
     members.stream()
       .filter(tree -> tree.is(Tree.Kind.METHOD))
-      .map(t -> ((MethodTree) t))
+      .map(MethodTree.class::cast)
       .filter(t -> "initialValue".equals(t.simpleName().name()))
       .filter(t -> t.parameters().isEmpty())
       .findFirst().ifPresent(

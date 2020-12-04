@@ -79,7 +79,7 @@ public class OutputStreamOverrideWriteCheck extends IssuableSubscriptionVisitor 
     return classTree.members()
       .stream()
       .filter(m -> m.is(Tree.Kind.METHOD))
-      .map(m -> (MethodTree) m)
+      .map(MethodTree.class::cast)
       .filter(methodMatcher::matches)
       .findFirst();
   }

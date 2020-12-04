@@ -290,7 +290,7 @@ class BehaviorCacheTest {
     assertThat(sev.behaviorCache.peek("org.foo.A#foo()Z").isComplete()).isTrue();
     assertThat(sev.behaviorCache.peek("org.foo.A#bar()Z")).isNull();
     assertThat(sev.behaviorCache.peek("org.foo.A#unknownMethod()Z")).isNull();
-    assertThat(sev.behaviorCache.behaviors.keySet()).containsOnly("org.foo.A#foo()Z");
+    assertThat(sev.behaviorCache.behaviors).containsOnlyKeys("org.foo.A#foo()Z");
 
     assertThat(testedPre).containsOnly("foo", "bar", "isBlank");
     assertThat(testedPost).containsOnly("foo", "bar", "isBlank");
