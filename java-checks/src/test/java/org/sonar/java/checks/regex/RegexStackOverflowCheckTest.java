@@ -72,7 +72,7 @@ class RegexStackOverflowCheckTest {
   @Test
   void testWithHigherMax() {
     RegexStackOverflowCheck check = new RegexStackOverflowCheck();
-    check.setMaxStackConsumptionFactor(8);
+    check.setMaxStackConsumptionFactor(7);
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/regex/RegexStackOverflowCheckWithHighStackConsumption.java"))
       .withCheck(check)

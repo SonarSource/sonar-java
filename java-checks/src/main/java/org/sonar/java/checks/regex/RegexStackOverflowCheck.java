@@ -172,7 +172,8 @@ public class RegexStackOverflowCheck extends AbstractRegexCheck {
     private PathInfo edgeCost(AutomatonState state) {
       switch (state.incomingTransitionType()) {
         case EPSILON:
-          return new PathInfo(0, 1);
+          // Java's regex implementation does not have an equivalent of SequenceTree, so we consider it zero cost
+          return new PathInfo(0, state instanceof SequenceTree ? 0 : 1);
         case CHARACTER:
           return new PathInfo(1, 1);
         case BACK_REFERENCE:
