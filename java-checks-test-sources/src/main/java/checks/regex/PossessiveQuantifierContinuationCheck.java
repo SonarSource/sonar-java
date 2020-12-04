@@ -21,6 +21,7 @@ public class PossessiveQuantifierContinuationCheck {
     f(compile("(bx++)+x")); // false-negative, limitation of the algorithm when there's infinite loop
     f(compile("(?:xx++)+x")); // Noncompliant [[sc=25;ec=26]]
     f(compile("(xx++)x")); // Noncompliant [[sc=22;ec=23]]
+    f(compile("(:[0-9])?+(:[0-9])?+"));
   }
 
 }
