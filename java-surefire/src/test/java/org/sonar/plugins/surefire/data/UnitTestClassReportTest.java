@@ -49,7 +49,7 @@ class UnitTestClassReportTest {
     assertThat(report.getResults().size()).isZero();
     assertThat(report.getSkipped()).isZero();
     assertThat(report.getTests()).isZero();
-    assertThat(report.getDurationMilliseconds()).isEqualTo(0L);
+    assertThat(report.getDurationMilliseconds()).isZero();
     assertThat(report.getErrors()).isZero();
     assertThat(report.getFailures()).isZero();
   }

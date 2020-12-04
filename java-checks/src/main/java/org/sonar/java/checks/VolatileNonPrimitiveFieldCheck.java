@@ -83,7 +83,7 @@ public class VolatileNonPrimitiveFieldCheck extends IssuableSubscriptionVisitor 
     ((ClassTree) tree).members()
       .stream()
       .filter(m -> m.is(Tree.Kind.VARIABLE))
-      .map(m -> ((VariableTree) m))
+      .map(VariableTree.class::cast)
       .filter(v -> ModifiersUtils.hasModifier(v.modifiers(), Modifier.VOLATILE))
       .filter(v -> !v.type().symbolType().isPrimitive())
       .filter(v -> !isImmutableType(v.type().symbolType()))

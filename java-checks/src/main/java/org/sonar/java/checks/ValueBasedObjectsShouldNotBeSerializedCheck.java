@@ -52,13 +52,13 @@ public class ValueBasedObjectsShouldNotBeSerializedCheck extends IssuableSubscri
     if (classTree.is(Tree.Kind.ANNOTATION_TYPE)) {
       classTree.members().stream()
         .filter(member -> member.is(Kind.METHOD))
-        .map(member -> (MethodTree) member)
+        .map(MethodTree.class::cast)
         .filter(ValueBasedObjectsShouldNotBeSerializedCheck::isReturnTypeValueBased)
         .forEach(meth -> reportIssue(meth.simpleName(), MESSAGE));
     } else if (isSerializable(classTree) && !SerializableContract.hasSpecialHandlingSerializationMethods(classTree)) {
       classTree.members().stream()
         .filter(ValueBasedObjectsShouldNotBeSerializedCheck::isVariable)
-        .map(member -> (VariableTree) member)
+        .map(VariableTree.class::cast)
         .filter(var -> !isStatic(var))
         .filter(var -> !isTransient(var))
         .filter(ValueBasedObjectsShouldNotBeSerializedCheck::isVarSerializableAndValueBased)

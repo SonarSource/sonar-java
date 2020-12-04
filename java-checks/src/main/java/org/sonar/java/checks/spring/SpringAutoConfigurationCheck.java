@@ -66,7 +66,7 @@ public class SpringAutoConfigurationCheck extends IssuableSubscriptionVisitor {
   private static boolean hasExclude(Arguments arguments) {
     return arguments.stream()
       .filter(arg -> arg.is(Tree.Kind.ASSIGNMENT))
-      .map(arg -> (AssignmentExpressionTree) arg)
+      .map(AssignmentExpressionTree.class::cast)
       .anyMatch(SpringAutoConfigurationCheck::isExcludeElement);
   }
 
