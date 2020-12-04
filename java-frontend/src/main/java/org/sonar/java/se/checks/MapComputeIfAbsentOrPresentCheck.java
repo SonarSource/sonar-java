@@ -111,34 +111,41 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) syntaxNode;
-      if (MAP_PUT.matches(mit) && !isMethodInvocationThrowingCheckedException(mit.arguments().get(1))) {
-        ProgramState ps = context.getState();
-
-        SymbolicValue keySV = ps.peekValue(1);
-        SymbolicValue mapSV = ps.peekValue(2);
-
-        sameMapAndSameKeyInvocation(keySV, mapSV, mapGetInvocations)
-          .ifPresent(getOnSameMap -> {
-            ObjectConstraint constraint = ps.getConstraint(getOnSameMap.value, ObjectConstraint.class);
-            if (constraint != null && isInsideIfStatementWithNullCheckWithoutElse(mit)) {
-              checkIssues.add(new GetMethodCheckIssue(context.getNode(), getOnSameMap.mit, mit, getOnSameMap.value, constraint));
-            }
-          });
-
-        sameMapAndSameKeyInvocation(keySV, mapSV, mapContainsKeyInvocations)
-          .ifPresent(containsKeyOnSameMap -> {
-            BooleanConstraint constraint = ps.getConstraint(containsKeyOnSameMap.value, BooleanConstraint.class);
-            if (constraint != null && isInsideIfStatementWithoutElse(mit)) {
-              checkIssues.add(new ContainsKeyMethodCheckIssue(context.getNode(), containsKeyOnSameMap.mit, mit, containsKeyOnSameMap.value, constraint));
-            }
-          });
+      if (MAP_PUT.matches(mit)) {
+        ExpressionTree valueArgument = mit.arguments().get(1);
+        if (!isMethodInvocationThrowingCheckedException(valueArgument) && !valueArgument.is(Tree.Kind.NULL_LITERAL)) {
+          checkForGetAndContainsKeyInvocations(context, mit);
+        }
       }
     }
     return super.checkPreStatement(context, syntaxNode);
   }
 
+  private void checkForGetAndContainsKeyInvocations(CheckerContext context, MethodInvocationTree mit) {
+    ProgramState ps = context.getState();
+
+    SymbolicValue keySV = ps.peekValue(1);
+    SymbolicValue mapSV = ps.peekValue(2);
+
+    sameMapAndSameKeyInvocation(keySV, mapSV, mapGetInvocations)
+      .ifPresent(getOnSameMap -> {
+        ObjectConstraint constraint = ps.getConstraint(getOnSameMap.value, ObjectConstraint.class);
+        if (constraint != null && isInsideIfStatementWithNullCheckWithoutElse(mit)) {
+          checkIssues.add(new GetMethodCheckIssue(context.getNode(), getOnSameMap.mit, mit, getOnSameMap.value, constraint));
+        }
+      });
+
+    sameMapAndSameKeyInvocation(keySV, mapSV, mapContainsKeyInvocations)
+      .ifPresent(containsKeyOnSameMap -> {
+        BooleanConstraint constraint = ps.getConstraint(containsKeyOnSameMap.value, BooleanConstraint.class);
+        if (constraint != null && isInsideIfStatementWithoutElse(mit)) {
+          checkIssues.add(new ContainsKeyMethodCheckIssue(context.getNode(), containsKeyOnSameMap.mit, mit, containsKeyOnSameMap.value, constraint));
+        }
+      });
+  }
+
   private static Optional<MapMethodInvocation> sameMapAndSameKeyInvocation(SymbolicValue keySV, SymbolicValue mapSV,
-                                                                           Map<SymbolicValue, List<MapMethodInvocation>> mapGetInvocations) {
+    Map<SymbolicValue, List<MapMethodInvocation>> mapGetInvocations) {
     return mapGetInvocations.getOrDefault(mapSV, Collections.emptyList()).stream()
       .filter(getOnSameMap -> getOnSameMap.withSameKey(keySV))
       .findAny();
@@ -168,14 +175,14 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
 
   private Optional<IfStatementTree> getIfStatementParent(MethodInvocationTree mit) {
     IfStatementTree closestKnownParent = closestIfStatements.get(mit);
-    if (closestKnownParent == null) { 
+    if (closestKnownParent == null) {
       List<Tree> children = new ArrayList<>();
       children.add(mit);
       return doGetIfStatementParent(mit.parent(), children);
     }
     return Optional.of(closestKnownParent);
   }
-  
+
   private Optional<IfStatementTree> doGetIfStatementParent(@Nullable Tree currentTree, List<Tree> children) {
     while (currentTree != null) {
       if (currentTree.is(Tree.Kind.IF_STATEMENT)) {
