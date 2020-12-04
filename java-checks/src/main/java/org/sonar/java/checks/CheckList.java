@@ -58,6 +58,7 @@ import org.sonar.java.checks.regex.PossessiveQuantifierContinuationCheck;
 import org.sonar.java.checks.regex.RedosCheck;
 import org.sonar.java.checks.regex.RedundantRegexAlternativesCheck;
 import org.sonar.java.checks.regex.RegexComplexityCheck;
+import org.sonar.java.checks.regex.RegexLookaheadCheck;
 import org.sonar.java.checks.regex.ReluctantQuantifierCheck;
 import org.sonar.java.checks.regex.ReluctantQuantifierWithEmptyContinuationCheck;
 import org.sonar.java.checks.regex.SingleCharacterAlternationCheck;
@@ -601,6 +602,7 @@ public final class CheckList {
       ReflectionOnNonRuntimeAnnotationCheck.class,
       RegexComplexityCheck.class,
       RegexHotspotCheck.class,
+      RegexLookaheadCheck.class,
       RegexPatternsNeedlesslyCheck.class,
       ReluctantQuantifierCheck.class,
       ReluctantQuantifierWithEmptyContinuationCheck.class,
