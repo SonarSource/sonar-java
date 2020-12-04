@@ -1,13 +1,13 @@
 {
   "title": "Regex patterns and their sub-patterns should not always fail",
   "type": "BUG",
-  "status": "ready",
+  "status": "deprecated",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "10min"
   },
   "tags": [
-    "regex"
+    
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5840",
