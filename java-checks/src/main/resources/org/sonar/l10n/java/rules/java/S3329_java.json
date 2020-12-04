@@ -1,5 +1,5 @@
 {
-  "title": "Cypher Block Chaining IV's should be random and unique",
+  "title": "Cipher Block Chaining IV's should be random and unique",
   "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {

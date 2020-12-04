@@ -14,7 +14,7 @@ Cookie: JSESSIONID=Hacked_Session_Value'''"&gt;
 </pre>
 <p>Due to the ability of the end-user to manually change the value, the session ID in the request should only be used by a servlet container (E.G.
 Tomcat or Jetty) to see if the value matches the ID of an an existing session. If it does not, the user should be considered unauthenticated.
-Moreover, this session ID should never be logged to prevent hijacking of active sessions.</p>
+Moreover, this session ID should never be logged as is but using a one-way hash to prevent hijacking of active sessions.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 if(isActiveSession(request.getRequestedSessionId()) ){

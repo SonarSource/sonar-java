@@ -10,7 +10,7 @@
     "spring",
     "owasp-a6"
   ],
-  "defaultSeverity": "Blocker",
+  "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-3751",
   "sqKey": "S3751",
   "scope": "Main",

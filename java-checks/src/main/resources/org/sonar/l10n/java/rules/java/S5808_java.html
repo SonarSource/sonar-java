@@ -26,7 +26,7 @@ public class WeakNightVoter implements AccessDecisionVoter {
 }
 </pre>
 <ul>
-  <li> the <code>hasPermission</code> method of an <a
+  <li> the <code>hasPermission</code> method of a <a
   href="https://docs.spring.io/spring-security/site/docs/4.2.13.RELEASE/apidocs/org/springframework/security/access/PermissionEvaluator.html">PermissionEvaluator</a> type is not compliant when it doesn't return <code>false</code>: </li>
 </ul>
 <pre>
@@ -47,7 +47,7 @@ public class MyPermissionEvaluator implements PermissionEvaluator {
 <h2>Compliant Solution</h2>
 <p>In a Spring-security web application:</p>
 <ul>
-  <li> the <code>vote</code> method of a <a
+  <li> the <code>vote</code> method of an <a
   href="https://docs.spring.io/spring-security/site/docs/4.0.x/apidocs/org/springframework/security/access/AccessDecisionVoter.html">AccessDecisionVoter</a> type should return a negative decision (<code>ACCESS_DENIED</code>): </li>
 </ul>
 <pre>
@@ -69,7 +69,7 @@ public class StrongNightVoter implements AccessDecisionVoter {
 }
 </pre>
 <ul>
-  <li> the <code>hasPermission</code> method of an <a
+  <li> the <code>hasPermission</code> method of a <a
   href="https://docs.spring.io/spring-security/site/docs/4.2.13.RELEASE/apidocs/org/springframework/security/access/PermissionEvaluator.html">PermissionEvaluator</a> type should return <code>false</code>: </li>
 </ul>
 <pre>

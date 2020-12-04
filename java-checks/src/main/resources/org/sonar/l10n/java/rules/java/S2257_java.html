@@ -3,13 +3,17 @@ been protected. Standard algorithms like <code>SHA-256</code>, <code>SHA-384</co
 <p>This rule tracks creation of <code>java.security.MessageDigest</code> subclasses.</p>
 <h2>Recommended Secure Coding Practices</h2>
 <ul>
-  <li> use a standard algorithm instead of creating a custom one. </li>
+  <li> Use a standard algorithm instead of creating a custom one. </li>
 </ul>
 <h2>Sensitive Code Example</h2>
 <pre>
-MyCryptographicAlgorithm extends MessageDigest {
+public class MyCryptographicAlgorithm extends MessageDigest {
   ...
 }
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+MessageDigest digest = MessageDigest.getInstance("SHA-256");
 </pre>
 <h2>See</h2>
 <ul>

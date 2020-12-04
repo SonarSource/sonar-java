@@ -2,6 +2,10 @@
   "title": "AssertJ \"assertThatThrownBy\" should not be used alone",
   "type": "CODE_SMELL",
   "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
   "tags": [
     "tests",
     "assertj"
