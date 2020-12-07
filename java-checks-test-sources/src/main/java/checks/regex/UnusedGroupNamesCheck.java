@@ -31,6 +31,7 @@ abstract class UnusedGroupNamesCheck {
       .matcher(input);
     System.out.println(m2); // Printing the matcher does not count as the matcher escaping the scope because the parameter
                             // type of println is Object, not Matcher, so we can assume that it won't be used as a matcher
+    new Bar(m2); // Same. Bar takes Object as its argument type
     if (m2.matches()) {
         m2.group(
           1 // Noncompliant [[secondary=28]] {{Directly use 'month' instead of its group number.}}
@@ -41,7 +42,7 @@ abstract class UnusedGroupNamesCheck {
     }
 
     Pattern p3 = Pattern.compile(
-      "(?<g1>[a-z]+)" // Noncompliant [[secondary=44,46,48]] {{Use the named groups of this regex or remove the names.}}
+      "(?<g1>[a-z]+)" // Noncompliant [[secondary=+0,+2,+4]] {{Use the named groups of this regex or remove the names.}}
         + ":"
         + "(?<g2>[0-9]+)"
         + "="
@@ -164,7 +165,30 @@ abstract class UnusedGroupNamesCheck {
 
     someOtherMethod().group(1); // This should be ignored since we don't know which regex we're calling group for
 
+    Pattern p14 = Pattern.compile("(?<name>test)"); // Compliant because passed to constructor
+    new Foo(p14);
+
+    // When patterns or matchers are directly passed to methods or constructors, they're considered as escaping the scope
+    // even if the parameter type isn't Pattern/Matcher
+    new Bar(Pattern.compile("(?<name>test)"));
+    System.out.println(Pattern.compile("(?<name>test)").matcher(input));
+
     return null;
+  }
+
+  class Foo {
+    Foo(Pattern p) {}
+  }
+
+  class Bar {
+    Bar(Object o) {}
+  }
+
+  private enum BlockTag {
+    RETURN(Pattern.compile("^@return(\\s++)?(?<descr>.+)?"), false); // Compliant because passed to constructor
+
+    BlockTag(Pattern pattern, boolean patternWithName) {
+    }
   }
 
   private void someMethod(Pattern p) {
@@ -212,7 +236,7 @@ abstract class UnusedGroupNamesCheck {
     }
 
     void useMatcher() {
-      matcher.group(1); // Noncompliant [[secondary=207]] {{Directly use 'group' instead of its group number.}}
+      matcher.group(1); // Noncompliant [[secondary=-8]] {{Directly use 'group' instead of its group number.}}
     }
   }
 

@@ -40,6 +40,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -110,6 +111,7 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
   public List<Tree.Kind> nodesToVisit() {
     List<Tree.Kind> nodes = new ArrayList<>(super.nodesToVisit());
     // visit more nodes than method invocations
+    nodes.add(Tree.Kind.NEW_CLASS);
     nodes.add(Tree.Kind.RETURN_STATEMENT);
     nodes.add(Tree.Kind.COMPILATION_UNIT);
     return nodes;
@@ -128,8 +130,12 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
       methodInvocationToRegex.clear();
       methodsCalledOnRegex.clear();
       escapingRegexes.clear();
-    } else if (tree instanceof MethodInvocationTree && matchers.matches((MethodInvocationTree) tree)) {
+    } else if (tree.is(Tree.Kind.METHOD_INVOCATION) && matchers.matches((MethodInvocationTree) tree)) {
       onMethodInvocationFound((MethodInvocationTree) tree);
+    } else if (tree.is(Tree.Kind.NEW_CLASS)) {
+      if (PATTERN_OR_MATCHER_ARGUMENT.matches((NewClassTree) tree)) {
+        onConstructorFound((NewClassTree) tree);
+      }
     } else {
       super.visitNode(tree);
     }
@@ -146,6 +152,12 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
   public void visitNode(Tree tree) {
     // Do nothing because we want to visit method invocations inside-out instead of outside-in (so we call
     // onMethodInvocationFound when exiting a method invocation, not when entering it)
+  }
+
+  private void onConstructorFound(NewClassTree tree) {
+    for (ExpressionTree argument : tree.arguments()) {
+      getRegex(argument).ifPresent(escapingRegexes::add);
+    }
   }
 
   @Override
@@ -210,11 +222,17 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
   }
 
   private void handleAssignment(MethodInvocationTree mit, RegexParseResult regex) {
-    if (mit.parent().is(Tree.Kind.VARIABLE, Tree.Kind.ASSIGNMENT)) {
+    Tree parent = mit.parent();
+    if (parent.is(Tree.Kind.VARIABLE, Tree.Kind.ASSIGNMENT)) {
       Optional<Symbol> assignedVariable = getAssignedPrivateEffectivelyFinalVariable(mit);
       if (assignedVariable.isPresent()) {
         variableToRegex.put(assignedVariable.get(), regex);
       } else {
+        escapingRegexes.add(regex);
+      }
+    } else if (parent.is(Tree.Kind.ARGUMENTS)) {
+      Tree grandParent = parent.parent();
+      if (!grandParent.is(Tree.Kind.METHOD_INVOCATION) || !trackedMethodMatchers().matches((MethodInvocationTree) grandParent)) {
         escapingRegexes.add(regex);
       }
     }
