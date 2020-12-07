@@ -263,7 +263,7 @@ public class RegexTreeHelper {
     }
     visited.add(start);
     if (start instanceof LookAroundTree) {
-      return onlyMatchesEmptySuffix(start.continuation());
+      return onlyMatchesEmptySuffix(start.continuation(), visited);
     }
     if (start.incomingTransitionType() != EPSILON) {
       return false;

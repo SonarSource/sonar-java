@@ -16,6 +16,7 @@ public class ReluctantQuantifierWithEmptyContinuationCheck {
     str.matches(".*?"); // Noncompliant {{Remove the '?' from this unnecessarily reluctant quantifier.}}
     str.matches(".*?()"); // Noncompliant {{Remove the '?' from this unnecessarily reluctant quantifier.}}
     str.matches(".*?()*"); // Noncompliant {{Remove the '?' from this unnecessarily reluctant quantifier.}}
+    str.matches(".*?((?=))*"); // Noncompliant {{Remove the '?' from this unnecessarily reluctant quantifier.}}
     str.matches(".*?(?!x)"); // Noncompliant {{Remove the '?' from this unnecessarily reluctant quantifier.}}
 
     Matcher m = Pattern.compile(".*?").matcher(str); // Noncompliant {{Fix this reluctant quantifier that will only ever match the empty string.}}
