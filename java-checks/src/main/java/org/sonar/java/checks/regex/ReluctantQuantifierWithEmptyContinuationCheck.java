@@ -20,7 +20,6 @@
 package org.sonar.java.checks.regex;
 
 import java.util.Collections;
-import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.RegexTreeHelper;
 import org.sonar.java.regex.RegexParseResult;
@@ -38,28 +37,17 @@ public class ReluctantQuantifierWithEmptyContinuationCheck extends AbstractRegex
 
   @Override
   protected void checkRegex(RegexParseResult regex, MatchType matchType) {
-    message(matchType).ifPresent(message ->
-      new ReluctantQuantifierWithEmptyContinuationFinder(message).visit(regex)
-    );
-  }
-
-  private static Optional<String> message(MatchType matchType) {
-    switch (matchType) {
-      case PARTIAL:
-        return Optional.of(PARTIAL_MATCH_MESSAGE);
-      case FULL:
-        return Optional.of(FULL_MATCH_MESSAGE);
-      default:
-        return Optional.empty();
+    if (matchType == MatchType.PARTIAL || matchType == MatchType.FULL) {
+      new ReluctantQuantifierWithEmptyContinuationFinder(matchType).visit(regex);
     }
   }
 
   private class ReluctantQuantifierWithEmptyContinuationFinder extends RegexBaseVisitor {
-    private final String message;
     private AutomatonState endState;
+    private final MatchType matchType;
 
-    public ReluctantQuantifierWithEmptyContinuationFinder(String message) {
-      this.message = message;
+    public ReluctantQuantifierWithEmptyContinuationFinder(MatchType matchType) {
+      this.matchType = matchType;
     }
 
     @Override
@@ -67,15 +55,20 @@ public class ReluctantQuantifierWithEmptyContinuationCheck extends AbstractRegex
       endState = regexParseResult.getFinalState();
     }
 
+    private boolean isAnchoredAtEnd(AutomatonState state) {
+      return matchType == MatchType.FULL || RegexTreeHelper.isAnchoredAtEnd(state);
+    }
+
     @Override
     public void visitRepetition(RepetitionTree tree) {
       super.visitRepetition(tree);
-      if (tree.getQuantifier().getModifier() == Quantifier.Modifier.RELUCTANT
-        && RegexTreeHelper.canReachWithoutConsumingInput(new StartState(tree.continuation(), tree.activeFlags()), endState)) {
-        if (RegexTreeHelper.isAnchoredAtEnd(tree.continuation())) {
-          reportIssue(tree, FULL_MATCH_MESSAGE, null, Collections.emptyList());
-        } else {
-          reportIssue(tree, message, null, Collections.emptyList());
+      if (tree.getQuantifier().getModifier() == Quantifier.Modifier.RELUCTANT) {
+        if (isAnchoredAtEnd(tree.continuation())) {
+          if (RegexTreeHelper.onlyMatchesEmptySuffix(tree.continuation())) {
+            reportIssue(tree, FULL_MATCH_MESSAGE, null, Collections.emptyList());
+          }
+        } else if (RegexTreeHelper.canReachWithoutConsumingInput(new StartState(tree.continuation(), tree.activeFlags()), endState)) {
+          reportIssue(tree, PARTIAL_MATCH_MESSAGE, null, Collections.emptyList());
         }
       }
     }

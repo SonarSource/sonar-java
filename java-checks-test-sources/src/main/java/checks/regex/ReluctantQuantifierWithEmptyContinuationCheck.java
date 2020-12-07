@@ -10,12 +10,13 @@ public class ReluctantQuantifierWithEmptyContinuationCheck {
   @Email(regexp = ".*?") // Noncompliant {{Remove the '?' from this unnecessarily reluctant quantifier.}}
   void noncompliant(String str) {
     Pattern.compile(".*?x?").matcher(str).find(); // Noncompliant [[sc=22;ec=25]] {{Fix this reluctant quantifier that will only ever match the empty string.}}
-    Pattern.compile(".*?x?$").matcher(str).find(); // Noncompliant {{Remove the '?' from this unnecessarily reluctant quantifier.}}
+    Pattern.compile(".*?$").matcher(str).find(); // Noncompliant {{Remove the '?' from this unnecessarily reluctant quantifier.}}
     Pattern.compile(".*?x?^").matcher(str).find(); // Noncompliant {{Fix this reluctant quantifier that will only ever match the empty string.}}
-    Pattern.compile(".*?x?").matcher(str).matches(); // Noncompliant {{Remove the '?' from this unnecessarily reluctant quantifier.}}
-    str.matches(".*?x?"); // Noncompliant {{Remove the '?' from this unnecessarily reluctant quantifier.}}
-    str.matches(".*?"); // Noncompliant
-    str.matches(".*?x*"); // Noncompliant
+    str.split(".*?x?^"); // Noncompliant {{Fix this reluctant quantifier that will only ever match the empty string.}}
+    str.matches(".*?"); // Noncompliant {{Remove the '?' from this unnecessarily reluctant quantifier.}}
+    str.matches(".*?()"); // Noncompliant {{Remove the '?' from this unnecessarily reluctant quantifier.}}
+    str.matches(".*?()*"); // Noncompliant {{Remove the '?' from this unnecessarily reluctant quantifier.}}
+    str.matches(".*?(?!x)"); // Noncompliant {{Remove the '?' from this unnecessarily reluctant quantifier.}}
 
     Matcher m = Pattern.compile(".*?").matcher(str); // Noncompliant {{Fix this reluctant quantifier that will only ever match the empty string.}}
     m.find();
@@ -27,7 +28,11 @@ public class ReluctantQuantifierWithEmptyContinuationCheck {
 
   Matcher compliant(String str) {
     str.matches(".*?x");
-    str.matches(".*x?");
+    str.matches(".*?x?");
+    str.split(".*?x");
+    str.matches("(.*?)x?"); // Compliant because the last x won't be included in the `.*?` if the string ends with x
+    str.matches(".*?x*");
+    Pattern.compile("(.*?)x?").matcher(str).matches();
     Matcher m = Pattern.compile(".*?").matcher(str); // Compliant because it's used both for a full match and a partial match
     m.find();
     m.matches();

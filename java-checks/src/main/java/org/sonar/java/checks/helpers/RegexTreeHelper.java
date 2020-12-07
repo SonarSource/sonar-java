@@ -253,4 +253,28 @@ public class RegexTreeHelper {
     }
   }
 
+  public static boolean onlyMatchesEmptySuffix(AutomatonState start) {
+    return onlyMatchesEmptySuffix(start, new HashSet<>());
+  }
+
+  private static boolean onlyMatchesEmptySuffix(AutomatonState start, Set<AutomatonState> visited) {
+    if (start instanceof FinalState || visited.contains(start)) {
+      return true;
+    }
+    visited.add(start);
+    if (start instanceof LookAroundTree) {
+      return onlyMatchesEmptySuffix(start.continuation());
+    }
+    if (start.incomingTransitionType() != EPSILON) {
+      return false;
+    }
+
+    for (AutomatonState successor : start.successors()) {
+      if (!onlyMatchesEmptySuffix(successor, visited)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
 }
