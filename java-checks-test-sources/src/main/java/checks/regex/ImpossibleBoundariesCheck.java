@@ -21,9 +21,11 @@ public class ImpossibleBoundariesCheck {
     str.matches("^a|a^"); // Noncompliant [[sc=22;ec=23]]
     str.matches("a(b|^)"); // Noncompliant [[sc=22;ec=23]]
     str.matches("(?=abc^)"); // Noncompliant [[sc=24;ec=25]]
+    str.matches("(?!abc^)"); // Noncompliant [[sc=24;ec=25]]
     str.matches("abc(?=^abc)"); // Noncompliant [[sc=24;ec=25]]
     str.matches("abc(?<=$abc)"); // Noncompliant [[sc=25;ec=26]]
     str.matches("abc(?<=abc$)def"); // Noncompliant [[sc=28;ec=29]]
+    str.matches("abc(?<!abc$)def"); // Noncompliant [[sc=28;ec=29]]
     str.matches("(?:abc(X|^))*Y?"); // Noncompliant [[sc=27;ec=28]]
     // FP we raise an issue below because the usage of $ in the middle of a regex is suspicious and redundant
     str.matches("(?m)^1$\n2"); // Noncompliant
@@ -41,6 +43,7 @@ public class ImpossibleBoundariesCheck {
     str.matches("^abc$\\b");
     str.matches("(?=abc)^abc$");
     str.matches("(?=^abc$)abc");
+    str.matches("(?!^abc$)abc");
     str.matches("abc(?<=^abc$)");
     str.matches("^\\d$(?<!3)");
     str.matches("(?=$)");

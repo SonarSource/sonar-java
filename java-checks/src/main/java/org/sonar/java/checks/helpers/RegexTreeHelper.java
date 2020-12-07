@@ -101,11 +101,12 @@ public class RegexTreeHelper {
     }
     visited.add(start);
     for (AutomatonState successor : start.successors()) {
+      TransitionType transition = successor.incomingTransitionType();
       // We don't generally consider elements behind backtracking edges to be 0-input reachable because what comes
       // after the edge won't directly follow what's before the edge. However, we do consider the end-of-lookahead
       // state itself reachable (but not any state behind it), so that we can check whether the end of the lookahead
       // can be reached without input from a given place within the lookahead.
-      if ((successor.incomingTransitionType() == EPSILON && canReachWithoutConsumingInput(successor, goal, visited))
+      if (((transition == EPSILON || transition == NEGATION) && canReachWithoutConsumingInput(successor, goal, visited))
         || (successor instanceof EndOfLookaroundState && successor == goal)) {
         return true;
       }
