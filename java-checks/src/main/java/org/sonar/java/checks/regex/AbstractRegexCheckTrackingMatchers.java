@@ -206,7 +206,7 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
   @Override
   public void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation) {
     if (methodInvocationOrAnnotation.is(Tree.Kind.ANNOTATION)) {
-      methodsCalledOnRegex.put(regexForLiterals, Collections.emptyList());
+      methodsCalledOnRegex.put(regexForLiterals, new ArrayList<>());
       return;
     }
     MethodInvocationTree mit = (MethodInvocationTree) methodInvocationOrAnnotation;
@@ -215,9 +215,9 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
       methodInvocationToRegex.put(mit, regexForLiterals);
       methodsCalledOnRegex.put(regexForLiterals, new ArrayList<>());
     } else if (trackedMethodMatchers().matches(mit)) {
-      methodsCalledOnRegex.put(regexForLiterals, Collections.singletonList(mit));
+      methodsCalledOnRegex.put(regexForLiterals, new ArrayList<>(Collections.singletonList(mit)));
     } else {
-      methodsCalledOnRegex.put(regexForLiterals, Collections.emptyList());
+      methodsCalledOnRegex.put(regexForLiterals, new ArrayList<>());
     }
   }
 

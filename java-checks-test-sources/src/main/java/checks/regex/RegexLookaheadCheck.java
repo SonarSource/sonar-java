@@ -20,6 +20,12 @@ public abstract class RegexLookaheadCheck {
     f(compile("(?=a)ab").matcher("abc").find());
     f(compile("(?=abc)ab").matcher("abc").matches()); // Noncompliant
     f(compile("(?=abc)ab").matcher("abc").find());
+
+    // string regex and pattern regex share the same string literal
+    String pattern_str = "(?=a)b"; // Noncompliant
+    Pattern pattern = Pattern.compile(pattern_str);
+    f("".matches(pattern_str));
+    f(pattern.matcher("").matches());
   }
 
   abstract void f(Pattern pattern);
