@@ -19,10 +19,11 @@
  */
 package org.sonar.java.checks.regex;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -43,6 +44,8 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 public class RegexStackOverflowCheck extends AbstractRegexCheck {
 
   private static final String MESSAGE = "Refactor this repetition that can lead to a stack overflow for large inputs.";
+
+  private static final String SECONDARY_MESSAGE = "Refactor this repetition";
 
   private static final double DEFAULT_MAX_STACK_CONSUMPTION_FACTOR = 5;
 
@@ -91,18 +94,31 @@ public class RegexStackOverflowCheck extends AbstractRegexCheck {
 
   private class StackOverflowFinder extends RegexBaseVisitor {
 
+    private List<RegexTree> offendingTrees = new ArrayList<>();
+
     @Override
     public void visitRepetition(RepetitionTree tree) {
       if (!isPossessive(tree) && tree.getQuantifier().isOpenEnded()) {
         if (containsBacktrackableBranch(tree.getElement())
           && stackConsumption(new StartState(tree.getElement(), tree.activeFlags()), tree.continuation()) > maxStackConsumptionFactor) {
-          reportIssue(tree, MESSAGE, null, Collections.emptyList());
+          offendingTrees.add(tree);
         }
       } else {
         // Only visit the children if this isn't the kind of repetition we check
         // Otherwise, if the parent doesn't overflow the stack, neither will its children, and if it does overflow
         // it, there's no point in reporting additional issues for the children
         super.visitRepetition(tree);
+      }
+    }
+
+    @Override
+    protected void after(RegexParseResult regexParseResult) {
+      if (!offendingTrees.isEmpty()) {
+        List<RegexIssueLocation> secondaries = offendingTrees.stream()
+          .skip(1)
+          .map(tree -> new RegexIssueLocation(tree, SECONDARY_MESSAGE))
+          .collect(Collectors.toList());
+        reportIssue(offendingTrees.get(0), MESSAGE, null, secondaries);
       }
     }
 
