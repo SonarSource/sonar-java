@@ -69,7 +69,7 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
       return;
     }
     List<JavaFileScannerContext.Location> secondaryLocations = reportTreeAndStringInterfaces.stream()
-      .map(interf -> new JavaFileScannerContext.Location("", interf.classInterface))
+      .map(interf -> new JavaFileScannerContext.Location("Replace this interface.", interf.classInterface))
       .collect(Collectors.toList());
     reportIssue(tree.simpleName(), reportMessage(reportTreeAndStringInterfaces), secondaryLocations, null);
   }
