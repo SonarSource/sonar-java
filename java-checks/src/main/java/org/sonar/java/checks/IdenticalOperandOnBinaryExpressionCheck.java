@@ -40,6 +40,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class IdenticalOperandOnBinaryExpressionCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_LANG_OBJECT = "java.lang.Object";
+  private static final String SECONDARY_MESSAGE = "Identical sub-expression.";
 
   private static final MethodMatchers EQUALS_MATCHER = MethodMatchers.create()
     .ofAnyType()
@@ -102,7 +103,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends IssuableSubscriptio
       reportIssue(
         rightOperand,
         "Correct one of the identical sub-expressions on both sides of operator \"" + binaryExpressionTree.operatorToken().text() + "\"",
-        Collections.singletonList(new JavaFileScannerContext.Location("", equivalentOperand)),
+        Collections.singletonList(new JavaFileScannerContext.Location(SECONDARY_MESSAGE, equivalentOperand)),
         null);
     }
   }
@@ -116,7 +117,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends IssuableSubscriptio
           reportIssue(
             rightOp,
             "Correct one of the identical sub-expressions on both sides of equals.",
-            Collections.singletonList(new JavaFileScannerContext.Location("", leftOp)),
+            Collections.singletonList(new JavaFileScannerContext.Location(SECONDARY_MESSAGE, leftOp)),
             null);
         }
       }
@@ -127,7 +128,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends IssuableSubscriptio
         reportIssue(
           rightOp,
           "Correct one of the identical argument sub-expressions.",
-          Collections.singletonList(new JavaFileScannerContext.Location("", leftOp)),
+          Collections.singletonList(new JavaFileScannerContext.Location(SECONDARY_MESSAGE, leftOp)),
           null);
       }
     }
