@@ -98,8 +98,11 @@ public class SyncGetterAndSetterCheck extends IssuableSubscriptionVisitor {
         .filter(Symbol::isMethodSymbol)
         .map(symbol -> (MethodTree) symbol.declaration())
         .filter(pairMethod -> pairPredicate.apply(pairMethod) && !isSynchronized(pairMethod))
-        .forEach(pairMethod -> reportIssue(pairMethod.simpleName(), "Synchronize this method to match the synchronization on \"" + methodTree.simpleName().name() + "\".",
-          Collections.singletonList(new JavaFileScannerContext.Location("", methodTree.simpleName())), null));
+        .forEach(pairMethod -> {
+          String otherMethodName = methodTree.simpleName().name();
+          reportIssue(pairMethod.simpleName(), String.format("Synchronize this method to match the synchronization on \"%s\".", otherMethodName),
+            Collections.singletonList(new JavaFileScannerContext.Location(String.format("%s method.", otherMethodName), methodTree.simpleName())), null);
+        });
     }
   }
 
