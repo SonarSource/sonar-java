@@ -153,7 +153,7 @@ public class InvariantReturnCheck extends SECheck {
 
   private void report(MethodInvariantContext methodInvariantContext) {
     Flow.Builder flowBuilder = Flow.builder();
-    methodInvariantContext.returnStatementTrees.stream().map(r -> new JavaFileScannerContext.Location("", r)).forEach(flowBuilder::add);
+    methodInvariantContext.returnStatementTrees.stream().map(r -> new JavaFileScannerContext.Location("Returned value.", r)).forEach(flowBuilder::add);
     reportIssue(
       methodInvariantContext.methodTree.simpleName(),
       "Refactor this method to not always return the same value.",
