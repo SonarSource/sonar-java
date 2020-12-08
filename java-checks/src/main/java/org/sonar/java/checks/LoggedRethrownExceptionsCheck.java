@@ -71,11 +71,11 @@ public class LoggedRethrownExceptionsCheck extends IssuableSubscriptionVisitor {
       if (isLogging && statementTree.is(Tree.Kind.THROW_STATEMENT) &&
         isExceptionUsed(exceptionIdentifier, ((ThrowStatementTree) statementTree).expression())) {
 
-        secondaryLocations.add(new Location("", ((ThrowStatementTree) statementTree).expression()));
+        secondaryLocations.add(new Location("Thrown exception.", ((ThrowStatementTree) statementTree).expression()));
         reportIssue(catchTree.parameter(), "Either log this exception and handle it, or rethrow it with some contextual information.", secondaryLocations, 0);
         return;
       } else if (isLoggingMethod(statementTree, exceptionIdentifier)) {
-        secondaryLocations.add(new Location("", statementTree));
+        secondaryLocations.add(new Location("Logging statement.", statementTree));
         isLogging = true;
       }
     }
