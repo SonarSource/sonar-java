@@ -60,7 +60,7 @@ public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileSca
   private void reportIssueWithSecondaries(JavaFileScannerContext context) {
     List<JavaFileScannerContext.Location> secondaries = reportedTrees.stream()
       .skip(1)
-      .map(tree -> new JavaFileScannerContext.Location("", tree))
+      .map(tree -> new JavaFileScannerContext.Location("Replace also this \"Sun\" reference.", tree))
       .collect(Collectors.toList());
 
     int effortToFix = reportedTrees.size();
