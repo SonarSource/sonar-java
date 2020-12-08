@@ -128,7 +128,7 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
     if (incompatiblePropagation.contains(calleePropagation)) {
       String message = "\"" + calleeMethodSymbol.name() + "'s\" @Transactional requirement is incompatible with the one for this method.";
       List<JavaFileScannerContext.Location> secondaryLocations = Collections.singletonList(
-        new JavaFileScannerContext.Location("", ((MethodTree) calleeMethodSymbol.declaration()).simpleName()));
+        new JavaFileScannerContext.Location("Incompatible method definition.", ((MethodTree) calleeMethodSymbol.declaration()).simpleName()));
       reportIssue(ExpressionUtils.methodName(methodInvocation), message, secondaryLocations, null);
     }
   }
