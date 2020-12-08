@@ -66,7 +66,7 @@ public class ForLoopIncrementAndUpdateCheck extends IssuableSubscriptionVisitor 
     if (!symbolsFromConditionsNotUpdated.isEmpty()) {
       Map<Symbol, Tree> updatesInBody = singleUpdatesInBody(forStatementTree.statement(), symbolsFromConditionsNotUpdated);
       if (!updatesInBody.isEmpty()) {
-        reportIssue(forStatementTree.forKeyword(), getMessage(updatesInBody.keySet()), getSecondaries(updatesInBody.values()), null);
+        reportIssue(forStatementTree.forKeyword(), getMessage(updatesInBody.keySet()), getSecondaries(updatesInBody), null);
       }
     }
   }
@@ -104,8 +104,10 @@ public class ForLoopIncrementAndUpdateCheck extends IssuableSubscriptionVisitor 
     return symbols.stream().map(s -> "\"" + s.name() + "\"").sorted().collect(Collectors.joining(","));
   }
 
-  private static List<JavaFileScannerContext.Location> getSecondaries(Collection<Tree> updateTrees) {
-    return updateTrees.stream().map(t -> new JavaFileScannerContext.Location("", t)).collect(Collectors.toList());
+  private static List<JavaFileScannerContext.Location> getSecondaries(Map<Symbol, Tree> updatesInBody) {
+    return updatesInBody.entrySet().stream()
+      .map(entry -> new JavaFileScannerContext.Location(String.format("Move this update of \"%s\".", entry.getKey().name()), entry.getValue()))
+      .collect(Collectors.toList());
   }
 
   private static Map<Symbol, Tree> updatedOnlyOnceWithUnaryExpression(Map<Symbol, List<Tree>> updatesInBody, StatementTree forStatementBody) {
