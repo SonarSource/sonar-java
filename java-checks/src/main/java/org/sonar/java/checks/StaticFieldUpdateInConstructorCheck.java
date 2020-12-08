@@ -70,7 +70,7 @@ public class StaticFieldUpdateInConstructorCheck extends IssuableSubscriptionVis
       Symbol staticField = identifierTree.symbol();
       reportIssue(identifierTree,
         "Remove this assignment of \"" + staticField.name() + "\".",
-        Collections.singletonList(new JavaFileScannerContext.Location("", staticField.declaration())),
+        Collections.singletonList(new JavaFileScannerContext.Location("Static field declaration.", staticField.declaration())),
         null);
     });
 
