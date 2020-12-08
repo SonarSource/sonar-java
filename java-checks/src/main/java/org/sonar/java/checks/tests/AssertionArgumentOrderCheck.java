@@ -147,7 +147,8 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
   }
 
   private void reportIssue(ExpressionTree expectedArgument, ExpressionTree actualArgument, String message) {
-    List<JavaFileScannerContext.Location> secondaries = Collections.singletonList(new JavaFileScannerContext.Location("", expectedArgument));
+    List<JavaFileScannerContext.Location> secondaries = Collections.singletonList(
+      new JavaFileScannerContext.Location("Other argument to swap.", expectedArgument));
     context.reportIssue(this, actualArgument, message, secondaries, null);
   }
 
