@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -61,17 +62,19 @@ public class SpringConstructorInjectionCheck extends IssuableSubscriptionVisitor
 
       if (!toReport.isEmpty()) {
         int cost = toReport.size();
+        List<JavaFileScannerContext.Location> secondaries = new ArrayList<>();
+
         // find constructor
         classTree.members().stream()
           .filter(m -> m.is(Kind.CONSTRUCTOR))
           .map(m -> ((MethodTree) m).simpleName())
           .findFirst()
-          .ifPresent(toReport::add);
+          .map(id -> new JavaFileScannerContext.Location("Constructor where you can inject these fields.", id))
+          .ifPresent(secondaries::add);
 
-        reportIssue(toReport.get(0),
-          "Remove this annotation and use constructor injection instead.",
-          toReport.stream().skip(1).map(i -> new JavaFileScannerContext.Location("", i)).collect(Collectors.toList())
-          , cost);
+        toReport.stream().skip(1).map(i -> new JavaFileScannerContext.Location("Also remove this annotation.", i)).forEach(secondaries::add);
+
+        reportIssue(toReport.get(0), "Remove this annotation and use constructor injection instead.", secondaries, cost);
       }
     }
   }
