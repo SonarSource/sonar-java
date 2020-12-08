@@ -60,7 +60,8 @@ public class EmptyDatabasePasswordCheck extends AbstractMethodDetection {
   }
 
   private void checkEmptyValue(MethodInvocationTree mit, ExpressionTree expression) {
-    ExpressionsHelper.ValueResolution<String> valueResolution = ExpressionsHelper.getConstantValueAsString(expression);
+    ExpressionsHelper.ValueResolution<String> valueResolution =
+      ExpressionsHelper.getConstantValueAsString(expression, "Empty password value.");
     String literal = valueResolution.value();
     if (literal != null && literal.trim().isEmpty()) {
       reportIssue(mit, MESSAGE, valueResolution.valuePath(), null);
@@ -69,7 +70,8 @@ public class EmptyDatabasePasswordCheck extends AbstractMethodDetection {
 
   private void checkUrlContainsEmptyPassword(MethodInvocationTree mit) {
     ExpressionTree urlArgument = mit.arguments().get(URL_ARGUMENT);
-    ExpressionsHelper.ValueResolution<String> valueResolution = ExpressionsHelper.getConstantValueAsString(urlArgument);
+    ExpressionsHelper.ValueResolution<String> valueResolution =
+      ExpressionsHelper.getConstantValueAsString(urlArgument, "URL containing the empty password.");
     String url = valueResolution.value();
     if (url != null && urlContainsEmptyPassword(url)) {
       reportIssue(mit, MESSAGE, valueResolution.valuePath(), null);
