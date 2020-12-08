@@ -89,9 +89,12 @@ public class ExpressionsHelper {
     return reportTree;
   }
 
-
   public static ValueResolution<String> getConstantValueAsString(ExpressionTree expression) {
-    return valueResolution(expression, expr -> expr.asConstant(String.class), new ValueResolution<>());
+    return getConstantValueAsString(expression, "");
+  }
+
+  public static ValueResolution<String> getConstantValueAsString(ExpressionTree expression, String locationMessage) {
+    return valueResolution(expression, expr -> expr.asConstant(String.class), new ValueResolution<>(locationMessage));
   }
 
   public static ValueResolution<Boolean> getConstantValueAsBoolean(ExpressionTree expression) {
@@ -140,10 +143,19 @@ public class ExpressionsHelper {
     private T value;
     private List<JavaFileScannerContext.Location> valuePath = new ArrayList<>();
     private Set<Symbol> evaluatedSymbols = new HashSet<>();
+    private final String locationMessage;
+
+    public ValueResolution() {
+      this("");
+    }
+
+    public ValueResolution(String locationMessage) {
+      this.locationMessage = locationMessage;
+    }
 
     private void addLocation(ExpressionTree expressionTree, Symbol evaluatedSymbol) {
       evaluatedSymbols.add(evaluatedSymbol);
-      valuePath.add(new JavaFileScannerContext.Location("", expressionTree));
+      valuePath.add(new JavaFileScannerContext.Location(locationMessage, expressionTree));
     }
 
     @CheckForNull
