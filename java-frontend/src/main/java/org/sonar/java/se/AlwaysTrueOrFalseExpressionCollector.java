@@ -19,12 +19,12 @@
  */
 package org.sonar.java.se;
 
-import org.sonar.java.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
+import java.util.Objects;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
@@ -112,7 +112,7 @@ public class AlwaysTrueOrFalseExpressionCollector {
       child = parent;
       parent = parent.parent();
     }
-    Preconditions.checkState(parent != null, "Error getting parent tree with same evaluation, parent is null");
+    Objects.requireNonNull(parent, "Error getting parent tree with same evaluation, parent is null");
     return parent;
   }
 
