@@ -20,7 +20,7 @@
 package org.sonar.java.classpath;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
@@ -43,13 +43,15 @@ public class ClasspathForTest extends AbstractClasspath {
       validateLibraries = fs.hasFiles(fs.predicates().all());
       Profiler profiler = Profiler.create(LOG).startInfo("JavaTestClasspath initialization");
       initialized = true;
-      binaries = new ArrayList<>(getFilesFromProperty(ClasspathProperties.SONAR_JAVA_TEST_BINARIES));
-      Set<File> libraries = getFilesFromProperty(ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES);
+      binaries.addAll(getFilesFromProperty(ClasspathProperties.SONAR_JAVA_TEST_BINARIES));
+
+      Set<File> libraries = new LinkedHashSet<>(getJdkJars());
+      libraries.addAll(getFilesFromProperty(ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES));
       if (libraries.isEmpty() && hasJavaSources()) {
         LOG.warn("Bytecode of dependencies was not provided for analysis of test files, you might end up with less precise results. " +
           "Bytecode can be provided using sonar.java.test.libraries property.");
       }
-      elements = new ArrayList<>(binaries);
+      elements.addAll(binaries);
       elements.addAll(libraries);
       profiler.stopInfo();
     }

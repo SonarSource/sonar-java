@@ -37,6 +37,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
@@ -62,8 +63,8 @@ public abstract class AbstractClasspath {
   private final InputFile.Type fileType;
   private static final Path[] STANDARD_CLASSES_DIRS = {Paths.get("target", "classes"), Paths.get("target", "test-classes")};
 
-  protected List<File> binaries;
-  protected List<File> elements;
+  protected final List<File> binaries;
+  protected final List<File> elements;
   protected boolean validateLibraries;
   protected boolean initialized;
 
@@ -71,7 +72,27 @@ public abstract class AbstractClasspath {
     this.settings = settings;
     this.fs = fs;
     this.fileType = fileType;
+    this.binaries = new ArrayList<>();
+    this.elements = new ArrayList<>();
     initialized = false;
+  }
+
+  protected List<File> getJdkJars() {
+    return settings.get(ClasspathProperties.SONAR_JAVA_JDK_HOME)
+      .flatMap(AbstractClasspath::existingDirectoryOrLog)
+      .map(File::toPath)
+      .map(JavaSdkUtil::getJdkClassesRoots)
+      .orElse(Collections.emptyList());
+  }
+
+  private static Optional<File> existingDirectoryOrLog(String path) {
+    File file = new File(path);
+    if (!file.exists() || !file.isDirectory()) {
+      String warning = "Invalid value for '%s' property, defaulting to runtime JDK.%nConfigured location does not exists: '%s'";
+      LOG.warn(String.format(warning, ClasspathProperties.SONAR_JAVA_JDK_HOME, file.getAbsolutePath()));
+      return Optional.empty();
+    }
+    return Optional.of(file);
   }
 
   protected abstract void init();
@@ -89,7 +110,7 @@ public abstract class AbstractClasspath {
       for (String pathPattern : fileNames) {
         Set<File> libraryFilesForPattern = getFilesForPattern(baseDir.toPath(), pathPattern, isLibraryProperty);
         if (validateLibraries && libraryFilesForPattern.isEmpty() && hasJavaSources) {
-          LOG.error("Invalid value for " + property);
+          LOG.error("Invalid value for '" + property + "' property.");
           String message = "No files nor directories matching '" + pathPattern + "'";
           throw new IllegalStateException(message);
         }

@@ -20,7 +20,7 @@
 package org.sonar.java.classpath;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.FileSystem;
@@ -53,8 +53,10 @@ public class ClasspathForMain extends AbstractClasspath {
       validateLibraries = fs.hasFiles(fs.predicates().all());
       Profiler profiler = Profiler.create(LOG).startInfo("JavaClasspath initialization");
       initialized = true;
-      binaries = new ArrayList<>(getFilesFromProperty(ClasspathProperties.SONAR_JAVA_BINARIES));
-      Set<File> libraries = getFilesFromProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES);
+      binaries.addAll(getFilesFromProperty(ClasspathProperties.SONAR_JAVA_BINARIES));
+
+      Set<File> libraries = new LinkedHashSet<>(getJdkJars());
+      libraries.addAll(getFilesFromProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES));
       if (binaries.isEmpty() && libraries.isEmpty() && useDeprecatedProperties()) {
         throw new AnalysisException(
           "sonar.binaries and sonar.libraries are not supported since version 4.0 of the SonarSource Java Analyzer,"
@@ -68,7 +70,7 @@ public class ClasspathForMain extends AbstractClasspath {
             + " or exclude them from the analysis with sonar.exclusions property.");
         }
       }
-      elements = new ArrayList<>(binaries);
+      elements.addAll(binaries);
       if (libraries.isEmpty() && hasJavaSources()) {
         String warning = "Bytecode of dependencies was not provided for analysis of source files, " +
           "you might end up with less precise results. Bytecode can be provided using sonar.java.libraries property.";
