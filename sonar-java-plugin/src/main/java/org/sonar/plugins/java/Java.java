@@ -52,11 +52,6 @@ public class Java extends AbstractLanguage {
   public static final String DEFAULT_FILE_SUFFIXES = ".java,.jav";
 
   /**
-   * Turn ON debug rules
-   */
-  public static final String DEBUG_RULE_KEY = "sonar.java.debug";
-
-  /**
    * Settings of the plugin.
    */
   private final Configuration settings;
