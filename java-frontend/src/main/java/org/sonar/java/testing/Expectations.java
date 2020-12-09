@@ -19,7 +19,7 @@
  */
 package org.sonar.java.testing;
 
-import com.google.common.annotations.VisibleForTesting;
+import org.sonar.java.annotations.VisibleForTesting;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import java.io.IOException;

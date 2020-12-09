@@ -19,7 +19,7 @@
  */
 package org.sonar.java.ast;
 
-import com.google.common.annotations.VisibleForTesting;
+import org.sonar.java.annotations.VisibleForTesting;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.InterruptedIOException;
 import java.util.Collections;

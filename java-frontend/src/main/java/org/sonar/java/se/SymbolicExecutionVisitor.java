@@ -19,7 +19,7 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.annotations.VisibleForTesting;
+import org.sonar.java.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import java.util.List;
 import org.sonar.api.utils.log.Logger;

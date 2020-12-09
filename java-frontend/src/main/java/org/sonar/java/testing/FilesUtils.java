@@ -19,7 +19,7 @@
  */
 package org.sonar.java.testing;
 
-import com.google.common.annotations.VisibleForTesting;
+import org.sonar.java.annotations.VisibleForTesting;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
