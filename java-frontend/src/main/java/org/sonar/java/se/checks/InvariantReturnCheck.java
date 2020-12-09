@@ -19,15 +19,15 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -53,7 +53,7 @@ public class InvariantReturnCheck extends SECheck {
   private static class MethodInvariantContext {
     private final MethodTree methodTree;
     private final Set<SymbolicValue> symbolicValues = new HashSet<>();
-    private final Multimap<Class<? extends Constraint>, Constraint> methodConstraints = ArrayListMultimap.create();
+    private final Map<Class<? extends Constraint>, List<Constraint>> methodConstraints = new HashMap<>();
     private final List<ReturnStatementTree> returnStatementTrees;
     private final boolean methodToCheck;
     private final boolean returnImmutableType;
@@ -113,7 +113,8 @@ public class InvariantReturnCheck extends SECheck {
       methodInvariantContext.symbolicValues.add(exitValue);
       ConstraintsByDomain constraints = context.getState().getConstraints(exitValue);
       if (constraints != null) {
-        constraints.forEach(methodInvariantContext.methodConstraints::put);
+        constraints.forEach((clazz, constraint) -> 
+          methodInvariantContext.methodConstraints.computeIfAbsent(clazz, k -> new ArrayList<>()).add(constraint));
       } else {
         // Relational SV or NOT SV : we can't say anything.
         methodInvariantContext.avoidRaisingConstraintIssue = true;
@@ -140,7 +141,7 @@ public class InvariantReturnCheck extends SECheck {
     if (methodInvariantContext.returnImmutableType && methodInvariantContext.symbolicValues.size() == 1 && methodInvariantContext.endPaths > 1) {
       report(methodInvariantContext);
     } else if (!methodInvariantContext.avoidRaisingConstraintIssue) {
-      for (Class<? extends Constraint> constraintClass : methodInvariantContext.methodConstraints.keys()) {
+      for (Class<? extends Constraint> constraintClass : methodInvariantContext.methodConstraints.keySet()) {
         Collection<Constraint> constraints = methodInvariantContext.methodConstraints.get(constraintClass);
         Constraint firstConstraint = constraints.iterator().next();
         if (constraints.size() == methodInvariantContext.endPaths && firstConstraint.hasPreciseValue() && constraints.stream().allMatch(firstConstraint::equals)) {

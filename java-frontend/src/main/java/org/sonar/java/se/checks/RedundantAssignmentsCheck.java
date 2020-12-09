@@ -19,10 +19,11 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Multimap;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.collections.SetUtils;
@@ -57,7 +58,7 @@ public class RedundantAssignmentsCheck extends SECheck {
     "java.util.stream.IntStream",
     "java.util.stream.LongStream",
     "java.util.stream.DoubleStream");
-  private final Deque<Multimap<AssignmentExpressionTree, AssignmentDataHolder>> assignmentsByMethod = new LinkedList<>();
+  private final Deque<Map<AssignmentExpressionTree, List<AssignmentDataHolder>>> assignmentsByMethod = new LinkedList<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -67,7 +68,7 @@ public class RedundantAssignmentsCheck extends SECheck {
 
   @Override
   public void init(MethodTree methodTree, CFG cfg) {
-    assignmentsByMethod.push(ArrayListMultimap.create());
+    assignmentsByMethod.push(new HashMap<>());
   }
 
   @Override
@@ -92,7 +93,8 @@ public class RedundantAssignmentsCheck extends SECheck {
     SymbolicValue oldValue = previousState.getValue(assignedSymbol);
     SymbolicValue newValue = assignedVariable.symbolicValue();
     Symbol fromSymbol = previousState.peekValueSymbol().symbol();
-    assignmentsByMethod.peek().put(assignmentExpressionTree, new AssignmentDataHolder(assignedSymbol, oldValue, newValue, fromSymbol, node));
+    assignmentsByMethod.peek().computeIfAbsent(assignmentExpressionTree, 
+      k -> new ArrayList<>()).add(new AssignmentDataHolder(assignedSymbol, oldValue, newValue, fromSymbol, node));
   }
 
   @Override
@@ -102,7 +104,7 @@ public class RedundantAssignmentsCheck extends SECheck {
 
   @Override
   public void checkEndOfExecution(CheckerContext context) {
-    for (Map.Entry<AssignmentExpressionTree, Collection<AssignmentDataHolder>> assignmentForTree : assignmentsByMethod.pop().asMap().entrySet()) {
+    for (Map.Entry<AssignmentExpressionTree, List<AssignmentDataHolder>> assignmentForTree : assignmentsByMethod.pop().entrySet()) {
       Collection<AssignmentDataHolder> allAssignments = assignmentForTree.getValue();
       if (allAssignments.stream().allMatch(AssignmentDataHolder::isRedundant)) {
         Set<Flow> flows = allAssignments.stream().map(AssignmentDataHolder::flows).flatMap(Set::stream).collect(Collectors.toSet());
