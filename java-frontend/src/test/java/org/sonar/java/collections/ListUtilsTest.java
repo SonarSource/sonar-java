@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -63,6 +64,62 @@ final class ListUtilsTest {
     Exception exception = Assertions.assertThrows(IllegalArgumentException.class, () -> ListUtils.getOnlyElement(list));
     assertThat(exception).hasMessage("Expected list of size 1, but was list of size 2.");
   }
+
+
+  @Test
+  void test_concat_any_list() {
+    List<SomeType> set1 = Arrays.asList(new SomeType("value1"), new SomeType("value2"));
+    List<SomeType> set2 = Arrays.asList(new SomeType("value3"), new SomeType("value4"));
+
+    assertThat(ListUtils.concat(set1, set2))
+      .containsExactly(new SomeType("value1"), new SomeType("value2"), new SomeType("value3"), new SomeType("value4"));
+  }
+
+  @Test
+  void test_concat_many_lists() {
+    List<SomeType> set1 = Arrays.asList(new SomeType("value1"), new SomeType("value2"));
+    List<SomeType> set2 = Arrays.asList(new SomeType("value3"), new SomeType("value4"));
+    List<SomeType> set3 = Arrays.asList(new SomeType("value5"), new SomeType("value6"));
+    List<SomeType> set4 = Arrays.asList(new SomeType("value7"), new SomeType("value8"));
+    List<SomeType> set5 = Arrays.asList(new SomeType("value9"), new SomeType("value10"));
+    List<SomeType> set6 = Arrays.asList(new SomeType("value11"), new SomeType("value12"));
+    List<SomeType> set7 = Arrays.asList(new SomeType("value13"), new SomeType("value14"));
+
+    assertThat(ListUtils.concat(set1, set2, set3, set4, set5, set6, set7))
+      .containsExactly(
+        new SomeType("value1"), new SomeType("value2"),
+        new SomeType("value3"), new SomeType("value4"),
+        new SomeType("value5"), new SomeType("value6"),
+        new SomeType("value7"), new SomeType("value8"),
+        new SomeType("value9"), new SomeType("value10"),
+        new SomeType("value11"), new SomeType("value12"),
+        new SomeType("value13"), new SomeType("value14")
+      );
+  }
+
+
+  @Test
+  void test_concat_many_iterables() {
+    List<SomeType> set1 = Arrays.asList(new SomeType("value1"), new SomeType("value2"));
+    Set<SomeType> set2 = SetUtils.immutableSetOf(new SomeType("value3"), new SomeType("value4"));
+    List<SomeType> set3 = Arrays.asList(new SomeType("value5"), new SomeType("value6"));
+    Set<SomeType> set4 = SetUtils.immutableSetOf(new SomeType("value7"), new SomeType("value8"));
+    List<SomeType> set5 = Arrays.asList(new SomeType("value9"), new SomeType("value10"));
+    Set<SomeType> set6 = SetUtils.immutableSetOf(new SomeType("value11"), new SomeType("value12"));
+    List<SomeType> set7 = Arrays.asList(new SomeType("value13"), new SomeType("value14"));
+
+    assertThat(ListUtils.concat(set1, set2, set3, set4, set5, set6, set7))
+      .containsExactlyInAnyOrder(
+        new SomeType("value1"), new SomeType("value2"),
+        new SomeType("value3"), new SomeType("value4"),
+        new SomeType("value5"), new SomeType("value6"),
+        new SomeType("value7"), new SomeType("value8"),
+        new SomeType("value9"), new SomeType("value10"),
+        new SomeType("value11"), new SomeType("value12"),
+        new SomeType("value13"), new SomeType("value14")
+      );
+  }
+
 
   private static class SomeType {
     final String value;

@@ -19,8 +19,6 @@
  */
 package org.sonar.java.model;
 
-import org.sonar.java.annotations.VisibleForTesting;
-import com.google.common.collect.Iterables;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,10 +27,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.se.SymbolicExecutionMode;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -58,7 +58,8 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
   }
 
   public VisitorsBridgeForTests(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
-    super(visitors, projectClasspath, sonarComponents, SymbolicExecutionMode.getMode(Iterables.toArray(visitors, JavaCheck.class)));
+    super(visitors, projectClasspath, sonarComponents, SymbolicExecutionMode.getMode(
+      StreamSupport.stream(visitors.spliterator(), false).toArray(JavaCheck[]::new)));
   }
 
   @Override

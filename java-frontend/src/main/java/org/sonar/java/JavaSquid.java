@@ -19,7 +19,6 @@
  */
 package org.sonar.java;
 
-import com.google.common.collect.Iterables;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +33,7 @@ import org.sonar.api.utils.log.Profiler;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.se.SymbolicExecutionMode;
@@ -59,11 +59,11 @@ public class JavaSquid {
       commonVisitors.add(postAnalysisIssueFilter);
     }
 
-    Iterable<JavaCheck> codeVisitors = Iterables.concat(commonVisitors, Arrays.asList(visitors));
+    Iterable<JavaCheck> codeVisitors = ListUtils.concat(commonVisitors, Arrays.asList(visitors));
     Collection<JavaCheck> testCodeVisitors = new ArrayList<>(commonVisitors);
     if (measurer != null) {
       Iterable<JavaCheck> measurers = Collections.singletonList(measurer);
-      codeVisitors = Iterables.concat(measurers, codeVisitors);
+      codeVisitors = ListUtils.concat(measurers, codeVisitors);
       testCodeVisitors.add(measurer.new TestFileMeasurer());
     }
     List<File> classpath = new ArrayList<>();
@@ -72,7 +72,7 @@ public class JavaSquid {
     List<File> jspClasspath = new ArrayList<>();
     if (sonarComponents != null) {
       if(!sonarComponents.isSonarLintContext()) {
-        codeVisitors = Iterables.concat(codeVisitors, Arrays.asList(new FileLinesVisitor(sonarComponents), new SyntaxHighlighterVisitor(sonarComponents)));
+        codeVisitors = ListUtils.concat(codeVisitors, Arrays.asList(new FileLinesVisitor(sonarComponents), new SyntaxHighlighterVisitor(sonarComponents)));
         testCodeVisitors.add(new SyntaxHighlighterVisitor(sonarComponents));
       }
       classpath = sonarComponents.getJavaClasspath();

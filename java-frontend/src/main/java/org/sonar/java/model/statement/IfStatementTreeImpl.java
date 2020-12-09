@@ -21,7 +21,7 @@ package org.sonar.java.model.statement;
 
 import java.util.Arrays;
 import org.sonar.java.Preconditions;
-import com.google.common.collect.Iterables;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -124,7 +124,7 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
 
   @Override
   public Iterable<Tree> children() {
-    return Iterables.concat(
+    return ListUtils.concat(
       Arrays.asList(ifKeyword, openParenToken, condition, closeParenToken, thenStatement),
       elseKeyword != null ? Arrays.asList(elseKeyword, elseStatement) : Collections.<Tree>emptyList());
   }

@@ -19,11 +19,11 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.Iterables;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.collections.SetUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
@@ -116,10 +116,10 @@ public class StreamConsumedCheck extends SECheck {
     if (isIntermediateOperation(mit)) {
       // intermediate operations return same stream pipeline, so we reuse SV
       context.getConstraintManager().setValueFactory(() -> invocationTarget);
-      return Iterables.getOnlyElement(invocationTarget.setConstraint(programState, StreamPipelineConstraint.NOT_CONSUMED));
+      return ListUtils.getOnlyElement(invocationTarget.setConstraint(programState, StreamPipelineConstraint.NOT_CONSUMED));
     }
     if (isTerminalOperation(mit)) {
-      return Iterables.getOnlyElement(invocationTarget.setConstraint(programState, StreamPipelineConstraint.CONSUMED));
+      return ListUtils.getOnlyElement(invocationTarget.setConstraint(programState, StreamPipelineConstraint.CONSUMED));
     }
     if (mit.symbol().isUnknown()) {
       // lambdas used in pipelines are sometimes not resolved properly, this is to shutdown the noise
@@ -141,7 +141,7 @@ public class StreamConsumedCheck extends SECheck {
           reportIssue(mrt, "Refactor this code so that this consumed stream pipeline is not reused.", flow(ownerSV, context.getNode()));
           return null;
         } else {
-          return Iterables.getOnlyElement(ownerSV.setConstraint(programState, StreamPipelineConstraint.CONSUMED));
+          return ListUtils.getOnlyElement(ownerSV.setConstraint(programState, StreamPipelineConstraint.CONSUMED));
         }
       }
     }

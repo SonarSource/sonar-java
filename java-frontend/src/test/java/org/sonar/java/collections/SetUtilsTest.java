@@ -107,7 +107,28 @@ final class SetUtilsTest {
     assertThat(SetUtils.difference(set2, set1))
       .containsExactlyInAnyOrder("D", "E");
   }
-  
+
+  @Test
+  void test_get_the_only_element() {
+    Set<String> list = Collections.singleton("A");
+    assertThat(SetUtils.getOnlyElement(list)).isEqualTo("A");
+  }
+
+  @Test
+  void test_get_the_only_element_with_empty_list() {
+    Set<String> list = Collections.emptySet();
+    Exception exception = Assertions.assertThrows(IllegalArgumentException.class, () -> SetUtils.getOnlyElement(list));
+    assertThat(exception).hasMessage("Expected list of size 1, but was list of size 0.");
+  }
+
+  @Test
+  void test_get_the_only_element_with_too_big_list() {
+    Set<String> list = SetUtils.immutableSetOf("A", "B");
+    Exception exception = Assertions.assertThrows(IllegalArgumentException.class, () -> SetUtils.getOnlyElement(list));
+    assertThat(exception).hasMessage("Expected list of size 1, but was list of size 2.");
+  }
+
+
   private static class SomeType {
     final String value;
 

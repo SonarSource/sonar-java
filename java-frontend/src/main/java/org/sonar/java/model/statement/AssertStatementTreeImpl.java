@@ -19,8 +19,8 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.collect.Iterables;
 import java.util.Arrays;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.AssertStatementTree;
@@ -103,7 +103,7 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
 
   @Override
   public Iterable<Tree> children() {
-    return Iterables.concat(
+    return ListUtils.concat(
       Arrays.asList(assertToken, condition),
       colonToken != null ? Arrays.asList(colonToken, detail) : Collections.<Tree>emptyList(),
       Collections.singletonList(semicolonToken));

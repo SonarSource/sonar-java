@@ -20,8 +20,11 @@
 package org.sonar.java.collections;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public final class ListUtils {
 
@@ -44,5 +47,18 @@ public final class ListUtils {
     Collections.reverse(reversed);
     return reversed;
   }
-  
+
+  @SafeVarargs
+  public static <T> List<T> concat(List<? extends T>... lists) {
+    return Arrays.stream(lists)
+      .flatMap(List::stream)
+      .collect(Collectors.toList());
+  }
+
+  @SafeVarargs
+  public static <T> List<T> concat(Iterable<? extends T>... iterables) {
+    return Arrays.stream(iterables)
+      .flatMap(it -> StreamSupport.stream(it.spliterator(), false))
+      .collect(Collectors.toList());
+  }
 }

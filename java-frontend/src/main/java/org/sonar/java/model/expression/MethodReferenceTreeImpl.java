@@ -19,8 +19,8 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.collect.Iterables;
 import java.util.Arrays;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
@@ -61,7 +61,7 @@ public class MethodReferenceTreeImpl extends AssessableExpressionTree implements
 
   @Override
   public Iterable<Tree> children() {
-    return Iterables.concat(
+    return ListUtils.concat(
       typeArgument != null ? Collections.singletonList(typeArgument) : Collections.<Tree>emptyList(),
       Arrays.asList(expression, doubleColon, method));
   }

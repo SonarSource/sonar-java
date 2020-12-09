@@ -19,10 +19,10 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.collect.Iterables;
 import java.util.Arrays;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -101,7 +101,7 @@ public class MethodInvocationTreeImpl extends AssessableExpressionTree implement
 
   @Override
   public Iterable<Tree> children() {
-    return Iterables.concat(
+    return ListUtils.concat(
       typeArguments != null ? Collections.singletonList(typeArguments) : Collections.<Tree>emptyList(),
       Arrays.asList(methodSelect, arguments));
   }

@@ -19,13 +19,20 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.Iterables;
-
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.collections.CollectionUtils;
 import org.sonar.java.collections.SetUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
@@ -39,16 +46,6 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.Nullable;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Rule(key = "S4165")
 public class RedundantAssignmentsCheck extends SECheck {
@@ -110,7 +107,7 @@ public class RedundantAssignmentsCheck extends SECheck {
         Set<Flow> flows = allAssignments.stream().map(AssignmentDataHolder::flows).flatMap(Set::stream).collect(Collectors.toSet());
         reportIssue(assignmentForTree.getKey(),
           String.format("Remove this useless assignment; \"%s\" already holds the assigned value along all execution paths.",
-            Iterables.getFirst(allAssignments, null).assignedSymbol.name()),
+            CollectionUtils.getFirst(allAssignments, null).assignedSymbol.name()),
           flows);
       }
     }

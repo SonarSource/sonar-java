@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.collect.Iterables;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -29,6 +28,7 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JLabelSymbol;
 import org.sonar.java.model.JavaTree;
@@ -105,7 +105,7 @@ public class IdentifierTreeImpl extends AssessableExpressionTree implements Iden
 
   @Override
   public Iterable<Tree> children() {
-    return Iterables.concat(annotations, Collections.singletonList(nameToken));
+    return ListUtils.concat(annotations, Collections.singletonList(nameToken));
   }
 
   @Override

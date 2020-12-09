@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.collect.Iterables;
 import java.util.List;
 import java.util.Set;
 import org.assertj.core.api.Assertions;
@@ -144,7 +143,7 @@ class ProgramStateTest {
     ProgramState child = ProgramState.EMPTY_STATE.addConstraint(relation, BooleanConstraint.TRUE);
     Set<LearnedConstraint> learnedConstraints = child.learnedConstraints(parent);
     assertThat(learnedConstraints).hasSize(1);
-    Constraint relationConstraint = Iterables.getOnlyElement(learnedConstraints).constraint();
+    Constraint relationConstraint = SetUtils.getOnlyElement(learnedConstraints).constraint();
     assertThat(relationConstraint).isEqualTo(BooleanConstraint.TRUE);
   }
 
