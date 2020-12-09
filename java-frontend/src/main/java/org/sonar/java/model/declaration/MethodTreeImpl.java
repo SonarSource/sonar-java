@@ -20,7 +20,8 @@
 package org.sonar.java.model.declaration;
 
 import org.sonar.java.Preconditions;
-import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
@@ -241,30 +242,32 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   @Override
   public Iterable<Tree> children() {
-    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
-    iteratorBuilder.add(modifiers, typeParameters);
+    List<Tree> list = new ArrayList<>();
+    list.add(modifiers);
+    list.add(typeParameters);
     if (returnType != null) {
-      iteratorBuilder.add(returnType);
+      list.add(returnType);
     }
-    iteratorBuilder.add(simpleName);
+    list.add(simpleName);
     if (openParenToken != null) {
-      iteratorBuilder.add(openParenToken);
-      iteratorBuilder.addAll(parameters.iterator());
-      iteratorBuilder.add(closeParenToken);
+      list.add(openParenToken);
+      list.addAll(parameters);
+      list.add(closeParenToken);
     }
     if (throwsToken != null) {
-      iteratorBuilder.add(throwsToken);
-      iteratorBuilder.add(throwsClauses);
+      list.add(throwsToken);
+      list.add(throwsClauses);
     }
     if (defaultToken != null) {
-      iteratorBuilder.add(defaultToken, defaultValue);
+      list.add(defaultToken);
+      list.add(defaultValue);
     }
     if (block != null) {
-      iteratorBuilder.add(block);
+      list.add(block);
     } else {
-      iteratorBuilder.add(semicolonToken);
+      list.add(semicolonToken);
     }
-    return iteratorBuilder.build();
+    return Collections.unmodifiableList(list);
   }
 
   @Override

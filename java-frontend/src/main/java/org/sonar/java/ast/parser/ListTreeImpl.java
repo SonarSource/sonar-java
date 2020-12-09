@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser;
 
 import com.google.common.collect.AbstractIterator;
-import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -73,10 +73,10 @@ public abstract class ListTreeImpl<T extends Tree> extends JavaTree implements L
 
   private class InterleaveIterable implements Iterable<Tree> {
 
-    private final ImmutableList<Iterator<? extends Tree>> iterators;
+    private final List<Iterator<? extends Tree>> iterators;
 
     public InterleaveIterable(List<T> list, List<SyntaxToken> separators) {
-      iterators = ImmutableList.of(list.iterator(), separators.iterator());
+      iterators = Arrays.asList(list.iterator(), separators.iterator());
     }
 
     @Override

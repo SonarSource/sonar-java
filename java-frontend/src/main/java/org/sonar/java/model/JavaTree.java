@@ -20,7 +20,6 @@
 package org.sonar.java.model;
 
 import org.sonar.java.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
@@ -447,14 +446,13 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public Iterable<Tree> children() {
-      ImmutableList.Builder<Tree> builder = ImmutableList.builder();
-      builder.addAll(annotations);
+      List<Tree> builder = new ArrayList<>(annotations);
       builder.add(queryToken);
       if (bound != null) {
         builder.add(extendsOrSuperToken);
         builder.add(bound);
       }
-      return builder.build();
+      return Collections.unmodifiableList(builder);
     }
   }
 
@@ -482,7 +480,7 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public Iterable<Tree> children() {
-      return ImmutableList.<Tree>builder().add(typeAlternatives).build();
+      return Collections.singletonList(typeAlternatives);
     }
 
     @Override
@@ -615,7 +613,7 @@ public abstract class JavaTree implements Tree {
 
     public ArrayTypeTreeImpl(@Nullable TypeTree type, List<AnnotationTreeImpl> annotations, InternalSyntaxToken openBracketToken, InternalSyntaxToken closeBracketToken) {
       this.type = type;
-      this.annotations = getAnnotations(annotations);
+      this.annotations = Collections.unmodifiableList(annotations);
       this.openBracketToken = openBracketToken;
       this.closeBracketToken = closeBracketToken;
       this.ellipsisToken = null;
@@ -623,7 +621,7 @@ public abstract class JavaTree implements Tree {
 
     public ArrayTypeTreeImpl(@Nullable TypeTree type, List<AnnotationTreeImpl> annotations, InternalSyntaxToken ellispsisToken) {
       this.type = type;
-      this.annotations = getAnnotations(annotations);
+      this.annotations = Collections.unmodifiableList(annotations);
       this.openBracketToken = null;
       this.closeBracketToken = null;
       this.ellipsisToken = ellispsisToken;
@@ -683,14 +681,6 @@ public abstract class JavaTree implements Tree {
     @Override
     public SyntaxToken ellipsisToken() {
       return ellipsisToken;
-    }
-
-    private static ImmutableList<AnnotationTree> getAnnotations(List<AnnotationTreeImpl> annotations) {
-      ImmutableList.Builder<AnnotationTree> annotationBuilder = ImmutableList.builder();
-      for (AnnotationTreeImpl annotation : annotations) {
-        annotationBuilder.add(annotation);
-      }
-      return annotationBuilder.build();
     }
 
     @Override

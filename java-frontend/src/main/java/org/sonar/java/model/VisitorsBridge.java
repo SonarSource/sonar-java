@@ -20,7 +20,6 @@
 package org.sonar.java.model;
 
 import org.sonar.java.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.io.InterruptedIOException;
@@ -194,13 +193,13 @@ public class VisitorsBridge {
   }
 
   private static List<JavaFileScanner> executableScanners(List<JavaFileScanner> scanners, JavaVersion javaVersion) {
-    ImmutableList.Builder<JavaFileScanner> results = ImmutableList.builder();
+    List<JavaFileScanner> results = new ArrayList<>();
     for (JavaFileScanner scanner : scanners) {
       if (!(scanner instanceof JavaVersionAwareVisitor) || ((JavaVersionAwareVisitor) scanner).isCompatibleWithJavaVersion(javaVersion)) {
         results.add(scanner);
       }
     }
-    return results.build();
+    return Collections.unmodifiableList(results);
   }
 
   protected JavaFileScannerContext createScannerContext(

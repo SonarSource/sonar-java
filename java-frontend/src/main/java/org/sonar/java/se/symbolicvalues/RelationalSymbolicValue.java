@@ -19,9 +19,10 @@
  */
 package org.sonar.java.se.symbolicvalues;
 
+import java.util.ArrayDeque;
+import java.util.stream.Stream;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.Preconditions;
-import com.google.common.collect.ImmutableList;
 
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
@@ -33,7 +34,6 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
@@ -203,7 +203,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
       .flatMap(ps -> operand.setConstraint(ps, ObjectConstraint.NULL).stream())
       .map(ps -> ps.removeConstraintsOnDomain(operand, BooleanConstraint.class))
       .collect(Collectors.toList());
-    return ImmutableList.<ProgramState>builder().addAll(copiedConstraints).addAll(nullConstraints).build();
+    return Stream.of(copiedConstraints, nullConstraints).flatMap(List::stream).collect(Collectors.toList());
   }
 
   private List<ProgramState> copyConstraintFromTo(SymbolicValue from, SymbolicValue to, ProgramState programState, Set<RelationalSymbolicValue> knownRelations) {

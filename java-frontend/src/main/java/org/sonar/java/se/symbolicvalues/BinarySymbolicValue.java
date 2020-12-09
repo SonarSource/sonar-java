@@ -20,16 +20,13 @@
 package org.sonar.java.se.symbolicvalues;
 
 import org.sonar.java.Preconditions;
-import com.google.common.collect.ImmutableList;
-
-import org.sonar.java.se.ProgramState;
-import org.sonar.plugins.java.api.semantic.Symbol;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.sonar.java.se.ProgramState;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
 public abstract class BinarySymbolicValue extends SymbolicValue {
 
@@ -83,7 +80,7 @@ public abstract class BinarySymbolicValue extends SymbolicValue {
 
   @Override
   public List<SymbolicValue> computedFrom() {
-    return ImmutableList.of(leftOp, rightOp);
+    return Arrays.asList(leftOp, rightOp);
   }
 
   public SymbolicValue getLeftOp() {

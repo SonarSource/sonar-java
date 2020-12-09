@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import java.util.Collections;
@@ -51,7 +50,7 @@ public class SwitchExpressionTreeImpl extends AssessableExpressionTree implement
     this.expression = Objects.requireNonNull(expression);
     this.closeParenToken = closeParenToken;
     this.openBraceToken = openBraceToken;
-    this.cases = ImmutableList.<CaseGroupTree>builder().addAll(Objects.requireNonNull(groups)).build();
+    this.cases = Collections.unmodifiableList(Objects.requireNonNull(groups));
     this.closeBraceToken = closeBraceToken;
   }
 

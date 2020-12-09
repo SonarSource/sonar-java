@@ -19,8 +19,8 @@
  */
 package org.sonar.java.model.declaration;
 
-import com.google.common.collect.ImmutableList;
-
+import java.util.ArrayList;
+import java.util.Collections;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -104,15 +104,16 @@ public class ModuleDeclarationTreeImpl extends JavaTree implements ModuleDeclara
 
   @Override
   protected Iterable<Tree> children() {
-    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.<Tree>builder();
-    iteratorBuilder.addAll(annotations);
+    List<Tree> list = new ArrayList<>(annotations);
     if (openKeyword != null) {
-      iteratorBuilder.add(openKeyword);
+      list.add(openKeyword);
     }
-    iteratorBuilder.add(moduleKeyword, moduleName, openBraceToken);
-    iteratorBuilder.addAll(moduleDirectives);
-    iteratorBuilder.add(closeBraceToken);
-    return iteratorBuilder.build();
+    list.add(moduleKeyword);
+    list.add(moduleName);
+    list.add(openBraceToken);
+    list.addAll(moduleDirectives);
+    list.add(closeBraceToken);
+    return Collections.unmodifiableList(list);
   }
 
 }

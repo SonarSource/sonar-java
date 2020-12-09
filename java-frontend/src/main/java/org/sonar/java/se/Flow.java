@@ -19,9 +19,9 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 
 import java.util.Collections;
@@ -94,7 +94,7 @@ public class Flow {
   }
 
   public static Flow of(Flow currentFlow) {
-    return new Flow(ImmutableList.copyOf(currentFlow.elements), currentFlow.exceptional);
+    return new Flow(Collections.unmodifiableList(currentFlow.elements), currentFlow.exceptional);
   }
 
   public static Builder builder() {
@@ -103,11 +103,11 @@ public class Flow {
 
   public static class Builder {
 
-    private final ImmutableList.Builder<JavaFileScannerContext.Location> elementsBuilder;
+    private final List<JavaFileScannerContext.Location> elements;
     private boolean exceptional;
 
     private Builder() {
-      this.elementsBuilder = ImmutableList.builder();
+      this.elements = new ArrayList<>();
       this.exceptional = false;
     }
 
@@ -117,18 +117,18 @@ public class Flow {
     }
 
     public Builder add(JavaFileScannerContext.Location element) {
-      elementsBuilder.add(element);
+      elements.add(element);
       return this;
     }
 
     public Builder addAll(Flow flow) {
-      elementsBuilder.addAll(flow.elements);
+      elements.addAll(flow.elements);
       this.exceptional |= flow.exceptional;
       return this;
     }
 
     public Flow build() {
-      return new Flow(elementsBuilder.build(), exceptional);
+      return new Flow(Collections.unmodifiableList(elements), exceptional);
     }
   }
 }

@@ -19,7 +19,9 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -117,18 +119,20 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
 
   @Override
   public Iterable<Tree> children() {
-    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
-    iteratorBuilder.add(forKeyword, openParenToken);
-    iteratorBuilder.add(initializer);
-    iteratorBuilder.add(firstSemicolonToken);
+    List<Tree> list = new ArrayList<>();
+    list.add(forKeyword);
+    list.add(openParenToken);
+    list.add(initializer);
+    list.add(firstSemicolonToken);
     if (condition != null) {
-      iteratorBuilder.add(condition);
+      list.add(condition);
     }
-    iteratorBuilder.add(secondSemicolonToken);
-    iteratorBuilder.add(update);
-    iteratorBuilder.add(closeParenToken, statement);
+    list.add(secondSemicolonToken);
+    list.add(update);
+    list.add(closeParenToken);
+    list.add(statement);
 
-    return iteratorBuilder.build();
+    return Collections.unmodifiableList(list);
   }
 
 }

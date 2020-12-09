@@ -19,7 +19,7 @@
  */
 package org.sonar.java.collections;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -72,7 +72,7 @@ class SinglyLinkedListTest {
     Object b = new Object();
     PStack<Object> s = PCollections.emptyStack().push(b).push(a);
     s.forEach(consumer::add);
-    assertThat(consumer).isEqualTo(ImmutableList.of(a, b));
+    assertThat(consumer).isEqualTo(Arrays.asList(a, b));
   }
 
   @Test

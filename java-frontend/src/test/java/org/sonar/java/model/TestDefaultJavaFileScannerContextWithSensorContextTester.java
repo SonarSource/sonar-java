@@ -19,10 +19,10 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -93,7 +93,7 @@ class TestDefaultJavaFileScannerContextWithSensorContextTester {
 
   @Test
   void test_report_issue_with_secondary_locations() throws Exception {
-    ImmutableList<JavaFileScannerContext.Location> secondary = ImmutableList.of(
+    List<JavaFileScannerContext.Location> secondary = Arrays.asList(
       new JavaFileScannerContext.Location("+1", tree),
       new JavaFileScannerContext.Location("+1", tree)
     );

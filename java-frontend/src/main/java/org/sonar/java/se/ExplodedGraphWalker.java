@@ -21,10 +21,10 @@ package org.sonar.java.se;
 
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
@@ -973,7 +973,7 @@ public class ExplodedGraphWalker {
       ProgramState.SymbolicValueSymbol assignedTo = unstack.valuesAndSymbols.get(1);
       ProgramState.SymbolicValueSymbol value = unstack.valuesAndSymbols.get(0);
       programState = unstack.state;
-      SymbolicValue symbolicValue = constraintManager.createBinarySymbolicValue(tree, ImmutableList.of(assignedTo, value));
+      SymbolicValue symbolicValue = constraintManager.createBinarySymbolicValue(tree, Arrays.asList(assignedTo, value));
       Symbol symbol = ((IdentifierTree) variable).symbol();
       programState = programState.stackValue(symbolicValue, symbol);
       programState = programState.put(symbol, symbolicValue);

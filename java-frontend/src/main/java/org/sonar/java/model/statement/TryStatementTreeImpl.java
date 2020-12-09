@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.java.ast.parser.ResourceListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -209,6 +208,6 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
   }
 
   private static <T> List<T> getList(List<? extends T> list) {
-    return ImmutableList.<T>builder().addAll(list).build();
+    return Collections.unmodifiableList(list);
   }
 }
