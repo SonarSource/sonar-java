@@ -38,6 +38,8 @@ import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.scan.issue.filter.IssueFilterChain;
 import org.sonar.api.utils.Version;
+import org.sonar.java.classpath.JavaClasspath;
+import org.sonar.java.classpath.JavaTestClasspath;
 import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.JavaFileScanner;

@@ -20,6 +20,8 @@
 package org.sonar.java;
 
 import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.java.classpath.JavaClasspath;
+import org.sonar.java.classpath.JavaTestClasspath;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;

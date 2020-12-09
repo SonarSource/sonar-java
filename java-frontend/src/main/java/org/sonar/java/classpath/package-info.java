@@ -17,21 +17,5 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java;
-
-import org.sonar.api.batch.fs.FileSystem;
-import org.sonar.api.config.Configuration;
-
-public class JavaSonarLintClasspath extends JavaClasspath {
-
-  public JavaSonarLintClasspath(Configuration settings, FileSystem fs) {
-    super(settings, fs);
-  }
-
-  @Override
-  protected boolean isSonarLint() {
-    return true;
-  }
-
-
-}
+@javax.annotation.ParametersAreNonnullByDefault
+package org.sonar.java.classpath;

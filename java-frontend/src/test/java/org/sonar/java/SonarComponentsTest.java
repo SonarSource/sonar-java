@@ -57,6 +57,8 @@ import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.Version;
 import org.sonar.check.Rule;
+import org.sonar.java.classpath.JavaClasspath;
+import org.sonar.java.classpath.JavaTestClasspath;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
