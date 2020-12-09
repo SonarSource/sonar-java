@@ -19,7 +19,7 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.collect.Lists;
+import java.util.Arrays;
 import java.util.Objects;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -70,7 +70,7 @@ public class BinaryExpressionTreeImpl extends AssessableExpressionTree implement
 
   @Override
   public Iterable<Tree> children() {
-    return Lists.newArrayList(
+    return Arrays.asList(
       leftOperand,
       operator,
       rightOperand);

@@ -20,8 +20,8 @@
 package org.sonar.java.cfg;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -129,7 +129,7 @@ public class LiveVariables {
   private void processBlockElements(CFG.Block block, Set<Symbol> blockKill, Set<Symbol> blockGen) {
     // process elements from bottom to top
     Set<Tree> assignmentLHS = new HashSet<>();
-    for (Tree element : Lists.reverse(block.elements())) {
+    for (Tree element : ListUtils.reverse(block.elements())) {
       switch (element.kind()) {
         case ASSIGNMENT:
           processAssignment((AssignmentExpressionTree) element, blockKill, blockGen, assignmentLHS);

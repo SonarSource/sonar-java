@@ -19,11 +19,11 @@
  */
 package org.sonar.java.se.constraint;
 
-import org.sonar.java.Preconditions;
-import com.google.common.collect.Lists;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
+import org.sonar.java.Preconditions;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.se.ExplodedGraphWalker;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramState;
@@ -88,10 +88,10 @@ public class ConstraintManager {
         result = createRelationalSymbolicValue(Kind.LESS_THAN, computedFrom);
         break;
       case LESS_THAN_OR_EQUAL_TO:
-        result = createRelationalSymbolicValue(Kind.GREATER_THAN_OR_EQUAL, Lists.reverse(computedFrom));
+        result = createRelationalSymbolicValue(Kind.GREATER_THAN_OR_EQUAL, ListUtils.reverse(computedFrom));
         break;
       case GREATER_THAN:
-        result = createRelationalSymbolicValue(Kind.LESS_THAN, Lists.reverse(computedFrom));
+        result = createRelationalSymbolicValue(Kind.LESS_THAN, ListUtils.reverse(computedFrom));
         break;
       case GREATER_THAN_OR_EQUAL_TO:
         result = createRelationalSymbolicValue(Kind.GREATER_THAN_OR_EQUAL, computedFrom);

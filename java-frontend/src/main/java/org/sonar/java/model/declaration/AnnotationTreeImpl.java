@@ -19,7 +19,7 @@
  */
 package org.sonar.java.model.declaration;
 
-import com.google.common.collect.Lists;
+import java.util.Arrays;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.AssessableExpressionTree;
@@ -64,7 +64,7 @@ public class AnnotationTreeImpl extends AssessableExpressionTree implements Anno
 
   @Override
   public Iterable<Tree> children() {
-    return Lists.newArrayList(atToken, annotationType, arguments);
+    return Arrays.asList(atToken, annotationType, arguments);
   }
 
   @Override

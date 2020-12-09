@@ -19,8 +19,8 @@
  */
 package org.sonar.java.se;
 
+import java.util.Arrays;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
@@ -81,7 +81,7 @@ public class AlwaysTrueOrFalseExpressionCollector {
   }
 
   private static Set<Flow> flowFromNode(ExplodedGraph.Node node, int maxReturnedFlows) {
-    List<Class<? extends Constraint>> domains = Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class);
+    List<Class<? extends Constraint>> domains = Arrays.asList(ObjectConstraint.class, BooleanConstraint.class);
     return FlowComputation.flow(node.parent(), node.programState.peekValue(), domains, node.programState.peekValueSymbol().symbol, maxReturnedFlows);
   }
 

@@ -19,9 +19,8 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.collect.Lists;
-
 import java.util.ArrayList;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 
 import java.util.Collections;
@@ -65,7 +64,7 @@ public class Flow {
   }
 
   public Flow reverse() {
-    return new Flow(Lists.reverse(elements), exceptional);
+    return new Flow(ListUtils.reverse(elements), exceptional);
   }
 
   public Stream<JavaFileScannerContext.Location> stream() {

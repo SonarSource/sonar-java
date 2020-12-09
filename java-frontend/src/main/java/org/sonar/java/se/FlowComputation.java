@@ -21,7 +21,6 @@ package org.sonar.java.se;
 
 import org.sonar.java.Preconditions;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,6 +41,7 @@ import javax.annotation.Nullable;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PSet;
 import org.sonar.java.model.ExpressionUtils;
@@ -763,8 +763,7 @@ public class FlowComputation {
     }
 
     private List<SymbolicValue> argumentsUsedForMethodInvocation(ExplodedGraph.Node invocationNode, MethodInvocationTree mit) {
-      List<SymbolicValue> values = invocationNode.programState.peekValues(mit.arguments().size());
-      return Lists.reverse(values);
+      return ListUtils.reverse(invocationNode.programState.peekValues(mit.arguments().size()));
     }
 
     private JavaFileScannerContext.Location location(ExplodedGraph.Node node, String message) {

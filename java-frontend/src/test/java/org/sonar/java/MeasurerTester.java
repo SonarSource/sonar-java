@@ -19,11 +19,13 @@
  */
 package org.sonar.java;
 
-import com.google.common.collect.Lists;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.sonar.api.batch.fs.InputFile;
@@ -51,7 +53,8 @@ public abstract class MeasurerTester {
 
     Measurer measurer = new Measurer(context, mock(NoSonarFilter.class));
     JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, measurer, mock(JavaResourceLocator.class), null, new JavaCheck[0]);
-    squid.scan(Lists.newArrayList(fs.inputFiles()), Collections.emptyList(), Collections.emptyList());
+    List<InputFile> files = StreamSupport.stream(fs.inputFiles().spliterator(), false).collect(Collectors.toList());
+    squid.scan(files, Collections.emptyList(), Collections.emptyList());
   }
 
   public abstract File projectDir();

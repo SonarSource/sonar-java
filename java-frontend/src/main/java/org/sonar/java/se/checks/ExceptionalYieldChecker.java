@@ -20,8 +20,8 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.Flow;
 import org.sonar.java.se.FlowComputation;
@@ -102,7 +102,7 @@ public class ExceptionalYieldChecker {
 
   private static Set<Flow> flowsForMethodArguments(ExplodedGraph.Node node, MethodInvocationTree mit, int parameterCausingExceptionIndex, int maxReturnedFlows) {
     ProgramState programState = node.programState;
-    List<ProgramState.SymbolicValueSymbol> arguments = Lists.reverse(programState.peekValuesAndSymbols(mit.arguments().size()));
+    List<ProgramState.SymbolicValueSymbol> arguments = ListUtils.reverse(programState.peekValuesAndSymbols(mit.arguments().size()));
     SymbolicValue parameterCausingExceptionSV = arguments.get(parameterCausingExceptionIndex).symbolicValue();
 
     Set<SymbolicValue> argSymbolicValues = new LinkedHashSet<>();

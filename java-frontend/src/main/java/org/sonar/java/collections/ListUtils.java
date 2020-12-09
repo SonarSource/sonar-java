@@ -19,6 +19,8 @@
  */
 package org.sonar.java.collections;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public final class ListUtils {
@@ -36,4 +38,11 @@ public final class ListUtils {
     }
     throw new IllegalArgumentException(String.format("Expected list of size 1, but was list of size %d.", list.size()));
   }
+
+  public static <T> List<T> reverse(List<T> list) {
+    List<T> reversed = new ArrayList<>(list);
+    Collections.reverse(reversed);
+    return reversed;
+  }
+  
 }

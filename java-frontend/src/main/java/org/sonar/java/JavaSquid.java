@@ -20,7 +20,6 @@
 package org.sonar.java;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,13 +53,14 @@ public class JavaSquid {
     @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
     JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
 
-    List<JavaCheck> commonVisitors = Lists.newArrayList(javaResourceLocator);
+    List<JavaCheck> commonVisitors = new ArrayList<>();
+    commonVisitors.add(javaResourceLocator);
     if (postAnalysisIssueFilter != null) {
       commonVisitors.add(postAnalysisIssueFilter);
     }
 
     Iterable<JavaCheck> codeVisitors = Iterables.concat(commonVisitors, Arrays.asList(visitors));
-    Collection<JavaCheck> testCodeVisitors = Lists.newArrayList(commonVisitors);
+    Collection<JavaCheck> testCodeVisitors = new ArrayList<>(commonVisitors);
     if (measurer != null) {
       Iterable<JavaCheck> measurers = Collections.singletonList(measurer);
       codeVisitors = Iterables.concat(measurers, codeVisitors);

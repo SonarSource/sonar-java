@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.Lists;
 import java.text.MessageFormat;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -28,6 +27,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.se.CheckerContext;
@@ -199,7 +199,7 @@ public class NonNullSetToNullCheck extends SECheck {
       Symbol symbol = syntaxTree.constructorSymbol();
       if (symbol.isMethodSymbol()) {
         int peekSize = syntaxTree.arguments().size();
-        List<SymbolicValue> argumentValues = Lists.reverse(programState.peekValues(peekSize));
+        List<SymbolicValue> argumentValues = ListUtils.reverse(programState.peekValues(peekSize));
         checkNullArguments(syntaxTree, (Symbol.MethodSymbol) symbol, argumentValues);
       }
     }
@@ -210,7 +210,7 @@ public class NonNullSetToNullCheck extends SECheck {
       if (symbol.isMethodSymbol()) {
         Arguments arguments = syntaxTree.arguments();
         int peekSize = arguments.size() + 1;
-        List<SymbolicValue> argumentValues = Lists.reverse(programState.peekValues(peekSize).subList(0, peekSize - 1));
+        List<SymbolicValue> argumentValues = ListUtils.reverse(programState.peekValues(peekSize).subList(0, peekSize - 1));
         ExpressionTree reportTree = syntaxTree.methodSelect();
         if (reportTree.is(Tree.Kind.MEMBER_SELECT)) {
           reportTree = ((MemberSelectExpressionTree) reportTree).identifier();

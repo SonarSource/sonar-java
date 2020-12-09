@@ -19,11 +19,13 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
@@ -60,7 +62,7 @@ class TreeTokenCompletenessTest {
     // printDifferences(differences);
 
     // the difference is on parsing on generic: "line 117 : 'Lists.<File>newArrayList(), null));'"
-    assertThat(differences).hasSize(1);
+    assertThat(differences).isEmpty();
   }
 
   private static Map<Integer, String> getDifferences(List<String> basedOnSyntaxTree, List<String> basedOnFileLine) {
@@ -79,10 +81,10 @@ class TreeTokenCompletenessTest {
   }
 
   private static void printDifferences(Map<Integer, String> differences) {
-    List<Integer> keys = Lists.newArrayList(differences.keySet());
+    List<Integer> keys = new ArrayList<>(differences.keySet());
     Collections.sort(keys);
 
-    List<String> diffsWithLines = Lists.newLinkedList();
+    List<String> diffsWithLines = new LinkedList<>();
     for (Integer key : keys) {
       diffsWithLines.add("line " + String.format("%03d", key) + " : '" + differences.get(key) + "'");
     }
@@ -117,7 +119,7 @@ class TreeTokenCompletenessTest {
 
   private static List<String> readFileFromSyntaxTree(InputFile inputFile) {
     TokenPrinter tokenPrinter = new TokenPrinter();
-    JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(Collections.singletonList(tokenPrinter), Lists.<File>newArrayList(), null));
+    JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(Collections.singletonList(tokenPrinter), Collections.emptyList(), null));
     return tokenPrinter.getPrintedFile();
   }
 
@@ -192,7 +194,7 @@ class TreeTokenCompletenessTest {
     }
 
     public List<String> getPrintedFile() {
-      return Lists.newArrayList(resultBuilder.toString().split(EOL));
+      return Arrays.asList(resultBuilder.toString().split(EOL));
     }
   }
 }
