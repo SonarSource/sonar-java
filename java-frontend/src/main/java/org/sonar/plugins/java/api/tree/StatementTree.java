@@ -19,7 +19,7 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
+import org.sonar.java.annotations.Beta;
 
 /**
  * Common interface for all types of statements.

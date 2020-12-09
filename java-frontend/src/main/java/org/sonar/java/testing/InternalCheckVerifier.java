@@ -19,7 +19,7 @@
  */
 package org.sonar.java.testing;
 
-import com.google.common.annotations.Beta;
+import org.sonar.java.annotations.Beta;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.nio.file.Files;

@@ -19,7 +19,7 @@
  */
 package org.sonar.plugins.java.api;
 
-import com.google.common.annotations.Beta;
+import org.sonar.java.annotations.Beta;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
 import org.sonar.api.batch.ScannerSide;

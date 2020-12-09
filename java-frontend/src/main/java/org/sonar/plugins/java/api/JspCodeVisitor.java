@@ -19,7 +19,7 @@
  */
 package org.sonar.plugins.java.api;
 
-import com.google.common.annotations.Beta;
+import org.sonar.java.annotations.Beta;
 
 /**
  * Marker interface for code visitors that are invoked on generated Java code from JSP pages.

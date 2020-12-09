@@ -19,7 +19,7 @@
  */
 package org.sonar.plugins.java.api.semantic;
 
-import com.google.common.annotations.Beta;
+import org.sonar.java.annotations.Beta;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
