@@ -31,11 +31,11 @@ import org.sonar.java.TestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class JavaTestClasspathTest {
+class ClasspathForTestTest {
 
   private DefaultFileSystem fs;
   private MapSettings settings;
-  private JavaTestClasspath javaTestClasspath;
+  private ClasspathForTest javaTestClasspath;
 
   @BeforeEach
   public void setUp() throws Exception {
@@ -52,13 +52,13 @@ class JavaTestClasspathTest {
   @Test
   void no_interaction_with_FileSystem_at_initialization() {
     fs = Mockito.spy(new DefaultFileSystem(new File("src/test/files/classpath/")));
-    javaTestClasspath = new JavaTestClasspath(settings.asConfig(), fs);
+    javaTestClasspath = new ClasspathForTest(settings.asConfig(), fs);
     Mockito.verifyZeroInteractions(fs);
   }
 
   @Test
   void libraries_should_accept_path_ending_with_wildcard() {
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_TEST_LIBRARIES, "lib/*");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES, "lib/*");
     javaTestClasspath = createJavaClasspath();
     assertThat(javaTestClasspath.getElements()).hasSize(3);
     assertThat(javaTestClasspath.getElements().get(0)).exists();
@@ -69,7 +69,7 @@ class JavaTestClasspathTest {
 
   @Test
   void empty_libraries() throws Exception {
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_TEST_LIBRARIES, "");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES, "");
     javaTestClasspath = createJavaClasspath();
     assertThat(javaTestClasspath.getElements()).isEmpty();
   }
@@ -84,8 +84,8 @@ class JavaTestClasspathTest {
 
   @Test
   void libraries_without_dir() throws Exception {
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_TEST_BINARIES, "bin");
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_TEST_LIBRARIES, "hello.jar");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_TEST_BINARIES, "bin");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES, "hello.jar");
     checkIllegalStateException("No files nor directories matching 'hello.jar'");
   }
 
@@ -100,8 +100,8 @@ class JavaTestClasspathTest {
   }
 
 
-  private JavaTestClasspath createJavaClasspath() {
-    return new JavaTestClasspath(settings.asConfig(), fs);
+  private ClasspathForTest createJavaClasspath() {
+    return new ClasspathForTest(settings.asConfig(), fs);
   }
 
 

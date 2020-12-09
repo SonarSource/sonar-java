@@ -32,18 +32,18 @@ import org.sonar.api.utils.log.Profiler;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.AnalysisWarningsWrapper;
 
-public class JavaClasspath extends AbstractJavaClasspath {
+public class ClasspathForMain extends AbstractClasspath {
 
-  private static final Logger LOG = Loggers.get(JavaClasspath.class);
+  private static final Logger LOG = Loggers.get(ClasspathForMain.class);
 
   private final AnalysisWarningsWrapper analysisWarnings;
 
-  public JavaClasspath(Configuration settings, FileSystem fs, AnalysisWarningsWrapper analysisWarnings) {
+  public ClasspathForMain(Configuration settings, FileSystem fs, AnalysisWarningsWrapper analysisWarnings) {
     super(settings, fs, InputFile.Type.MAIN);
     this.analysisWarnings = analysisWarnings;
   }
 
-  public JavaClasspath(Configuration settings, FileSystem fs) {
+  public ClasspathForMain(Configuration settings, FileSystem fs) {
     this(settings, fs, AnalysisWarningsWrapper.NOOP_ANALYSIS_WARNINGS);
   }
 
@@ -53,8 +53,8 @@ public class JavaClasspath extends AbstractJavaClasspath {
       validateLibraries = fs.hasFiles(fs.predicates().all());
       Profiler profiler = Profiler.create(LOG).startInfo("JavaClasspath initialization");
       initialized = true;
-      binaries = new ArrayList<>(getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES));
-      Set<File> libraries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES);
+      binaries = new ArrayList<>(getFilesFromProperty(ClasspathProperties.SONAR_JAVA_BINARIES));
+      Set<File> libraries = getFilesFromProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES);
       if (binaries.isEmpty() && libraries.isEmpty() && useDeprecatedProperties()) {
         throw new AnalysisException(
           "sonar.binaries and sonar.libraries are not supported since version 4.0 of the SonarSource Java Analyzer,"

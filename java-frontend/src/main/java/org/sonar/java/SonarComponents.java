@@ -20,8 +20,6 @@
 package org.sonar.java;
 
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.classpath.JavaClasspath;
-import org.sonar.java.classpath.JavaTestClasspath;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
@@ -48,6 +46,8 @@ import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.java.classpath.ClasspathForMain;
+import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
@@ -60,19 +60,19 @@ public class SonarComponents {
   public static final String FAIL_ON_EXCEPTION_KEY = "sonar.internal.analysis.failFast";
 
   private final FileLinesContextFactory fileLinesContextFactory;
-  private final JavaTestClasspath javaTestClasspath;
+  private final ClasspathForTest javaTestClasspath;
   private final CheckFactory checkFactory;
   @Nullable
   private final ProjectDefinition projectDefinition;
   private final FileSystem fs;
-  private final JavaClasspath javaClasspath;
+  private final ClasspathForMain javaClasspath;
   private final List<Checks<JavaCheck>> checks;
   private final List<Checks<JavaCheck>> testChecks;
   private final List<Checks<JavaCheck>> allChecks;
   private SensorContext context;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
+                         ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath,
                          CheckFactory checkFactory) {
     this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null, null);
   }
@@ -81,7 +81,7 @@ public class SonarComponents {
    * Will be called in SonarLint context when custom rules are present
    */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
+                         ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
                          @Nullable CheckRegistrar[] checkRegistrars) {
     this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, checkRegistrars, null);
   }
@@ -90,7 +90,7 @@ public class SonarComponents {
    * Will be called in SonarScanner context when no custom rules is present
    */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
+                         ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
                          @Nullable ProjectDefinition projectDefinition) {
     this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null, projectDefinition);
   }
@@ -99,7 +99,7 @@ public class SonarComponents {
    * ProjectDefinition class is not available in SonarLint context, so this constructor will never be called when using SonarLint
    */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
+                         ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
                          @Nullable CheckRegistrar[] checkRegistrars, @Nullable ProjectDefinition projectDefinition) {
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.fs = fs;

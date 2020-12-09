@@ -22,9 +22,9 @@ package org.sonar.java.classpath;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.config.Configuration;
 
-public class JavaSonarLintClasspath extends JavaClasspath {
+public class ClasspathForMainForSonarLint extends ClasspathForMain {
 
-  public JavaSonarLintClasspath(Configuration settings, FileSystem fs) {
+  public ClasspathForMainForSonarLint(Configuration settings, FileSystem fs) {
     super(settings, fs);
   }
 

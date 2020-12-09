@@ -42,13 +42,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 @EnableRuleMigrationSupport
-class JavaClasspathTest {
+class ClasspathForMainTest {
 
   private MapSettings settings;
   private DefaultFileSystem fs;
   private AnalysisWarningsWrapper analysisWarnings;
 
-  private JavaClasspath javaClasspath;
+  private ClasspathForMain javaClasspath;
 
   @Rule
   public LogTester logTester = new LogTester();
@@ -76,7 +76,7 @@ class JavaClasspathTest {
 
   @Test
   void properties() throws Exception {
-    assertThat(JavaClasspathProperties.getProperties()).hasSize(4);
+    assertThat(ClasspathProperties.getProperties()).hasSize(4);
   }
 
   @Test
@@ -89,7 +89,7 @@ class JavaClasspathTest {
   void register_warning_for_missing_bytecode_when_libraries_empty_and_have_java_sources() {
     javaClasspath = createJavaClasspath();
     javaClasspath.init();
-    assertThat(javaClasspath.getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES)).isEmpty();
+    assertThat(javaClasspath.getFilesFromProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES)).isEmpty();
     assertThat(javaClasspath.hasJavaSources()).isTrue();
     String warning = "Bytecode of dependencies was not provided for analysis of source files, " +
       "you might end up with less precise results. Bytecode can be provided using sonar.java.libraries property.";
@@ -98,16 +98,16 @@ class JavaClasspathTest {
 
   @Test
   void do_not_register_warning_for_missing_bytecode_when_wrapper_not_injected() {
-    javaClasspath = new JavaClasspath(settings.asConfig(), fs);
+    javaClasspath = new ClasspathForMain(settings.asConfig(), fs);
     javaClasspath.init();
-    assertThat(javaClasspath.getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES)).isEmpty();
+    assertThat(javaClasspath.getFilesFromProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES)).isEmpty();
     assertThat(javaClasspath.hasJavaSources()).isTrue();
     verifyZeroInteractions(analysisWarnings);
   }
 
   @Test
   void setting_binary_prop_should_fill_elements() {
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES, "bin");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_BINARIES, "bin");
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getBinaryDirs()).hasSize(1);
     assertThat(javaClasspath.getElements()).hasSize(1);
@@ -116,7 +116,7 @@ class JavaClasspathTest {
 
   @Test
   void setting_binary_dir_prop_should_fill_elements() {
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES, "bin/");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_BINARIES, "bin/");
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getBinaryDirs()).hasSize(1);
     assertThat(javaClasspath.getElements()).hasSize(1);
@@ -125,7 +125,7 @@ class JavaClasspathTest {
 
   @Test
   void setting_library_prop_should_fill_elements() {
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/hello.jar");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/hello.jar");
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getBinaryDirs()).isEmpty();
     assertThat(javaClasspath.getElements()).hasSize(1);
@@ -134,7 +134,7 @@ class JavaClasspathTest {
 
   @Test
   void absolute_file_name_should_be_resolved() {
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, new File("src/test/files/classpath/lib/hello.jar").getAbsolutePath());
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, new File("src/test/files/classpath/lib/hello.jar").getAbsolutePath());
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(1);
     assertThat(javaClasspath.getElements().get(0)).exists();
@@ -142,7 +142,7 @@ class JavaClasspathTest {
 
   @Test
   void absolute_aar_file_name_should_be_resolved() {
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, new File("src/test/files/classpath/lib/oklog-1.0.1.aar").getAbsolutePath());
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, new File("src/test/files/classpath/lib/oklog-1.0.1.aar").getAbsolutePath());
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(1);
     assertThat(javaClasspath.getElements().get(0)).exists();
@@ -150,7 +150,7 @@ class JavaClasspathTest {
 
   @Test
   void directory_specified_for_library_should_find_jars() {
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "lib");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "lib");
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(4);
     assertThat(javaClasspath.getElements().get(0)).exists();
@@ -162,7 +162,7 @@ class JavaClasspathTest {
 
   @Test
   void libraries_should_accept_path_ending_with_wildcard() {
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/*");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/*");
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(3);
     assertThat(javaClasspath.getElements().get(0)).exists();
@@ -173,7 +173,7 @@ class JavaClasspathTest {
 
   @Test
   void libraries_should_keep_order() {
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/world.jar,lib/hello.jar,lib/target/classes/*");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/world.jar,lib/hello.jar,lib/target/classes/*");
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(3);
     assertThat(javaClasspath.getElements().get(0)).exists();
@@ -184,7 +184,7 @@ class JavaClasspathTest {
 
   @Test
   void libraries_should_accept_relative_paths() throws Exception {
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "../../files/classpath/lib/*.jar");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "../../files/classpath/lib/*.jar");
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(2);
     assertThat(javaClasspath.getElements().get(0)).exists();
@@ -194,7 +194,7 @@ class JavaClasspathTest {
 
   @Test
   void libraries_should_accept_relative_paths_with_wildcard() throws Exception {
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "../../files/**/lib");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "../../files/**/lib");
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(9);
     File jar = javaClasspath.getElements().get(0);
@@ -213,7 +213,7 @@ class JavaClasspathTest {
 
   @Test
   void should_not_scan_target_classes() {
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "../../files/classpath/lib/target/classes");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "../../files/classpath/lib/target/classes");
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(1);
     File classes = javaClasspath.getElements().get(0);
@@ -223,7 +223,7 @@ class JavaClasspathTest {
 
   @Test
   void libraries_should_accept_path_ending_with_wildcard_jar() {
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/h*.jar");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/h*.jar");
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(1);
     File jar = javaClasspath.getElements().get(0);
@@ -231,7 +231,7 @@ class JavaClasspathTest {
       .exists()
       .hasName("hello.jar");
 
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/*.jar");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/*.jar");
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(2);
     jar = javaClasspath.getElements().get(0);
@@ -242,7 +242,7 @@ class JavaClasspathTest {
 
   @Test
   void directory_wildcard_should_be_resolved() {
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "**/*.jar");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "**/*.jar");
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(3);
     File jar = javaClasspath.getElements().get(0);
@@ -252,7 +252,7 @@ class JavaClasspathTest {
 
   @Test
   void wildcard_directory_should_resolve_libs_in_that_dir() {
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/**/*.jar");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/**/*.jar");
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(3);
     File jar = javaClasspath.getElements().get(0);
@@ -262,13 +262,13 @@ class JavaClasspathTest {
 
   @Test
   void both_path_separator_should_be_supported_on_one_JVM() {
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "**/*.jar");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "**/*.jar");
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(3);
     File jar = javaClasspath.getElements().get(0);
     assertThat(jar).exists();
     assertThat(javaClasspath.getElements()).extracting("name").contains("hello.jar", "world.jar", "foo.jar");
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "**\\*.jar");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "**\\*.jar");
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(3);
     jar = javaClasspath.getElements().get(0);
@@ -278,7 +278,7 @@ class JavaClasspathTest {
 
   @Test
   void non_existing_resources_should_fail() throws Exception {
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "toto/**/hello.jar");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "toto/**/hello.jar");
     checkIllegalStateException("No files nor directories matching 'toto/**/hello.jar'");
   }
 
@@ -300,24 +300,24 @@ class JavaClasspathTest {
   void libraries_should_read_dir_of_class_files() {
     fs = new DefaultFileSystem(new File("src/test/files/"));
     fs.add(TestUtils.emptyInputFile("foo.java"));
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "classpath");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "classpath");
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(4);
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "classpath/");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "classpath/");
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(4);
   }
 
   @Test
   void parent_module_should_not_validate_sonar_libraries() {
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "non-existing.jar");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "non-existing.jar");
     javaClasspath = createJavaClasspath();
     checkIllegalStateException("No files nor directories matching 'non-existing.jar'");
   }
 
   @Test
   void sonar_binaries_should_not_check_for_existence_of_files_when_no_sources() throws Exception {
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES, "toto/**/hello.jar");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_BINARIES, "toto/**/hello.jar");
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
     fs.add(TestUtils.emptyInputFile("plop.java", InputFile.Type.TEST));
     javaClasspath = createJavaClasspath();
@@ -356,7 +356,7 @@ class JavaClasspathTest {
   void empty_binaries_on_project_with_more_than_one_source_should_not_fail_on_sonarlint() throws Exception {
     createTwoFilesInFileSystem();
     try {
-      javaClasspath = new JavaSonarLintClasspath(settings.asConfig(), fs);
+      javaClasspath = new ClasspathForMainForSonarLint(settings.asConfig(), fs);
       javaClasspath.getElements();
 
       logTester.logs(LoggerLevel.WARN).contains("sonar.java.binaries is empty, please double check your configuration");
@@ -381,7 +381,7 @@ class JavaClasspathTest {
 
   @Test
   void validate_libraries_only_if_not_filtered_out() throws Exception {
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, new File("src/test/files/classpath/lib/lib.so").getAbsolutePath());
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, new File("src/test/files/classpath/lib/lib.so").getAbsolutePath());
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
     fs.add(TestUtils.emptyInputFile("plop.java"));
     javaClasspath = createJavaClasspath();
@@ -390,7 +390,7 @@ class JavaClasspathTest {
 
   @Test
   void invalid_sonar_java_binaries_should_fail_analysis() {
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES, "dummyDir");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_BINARIES, "dummyDir");
     checkIllegalStateException("No files nor directories matching 'dummyDir'");
   }
 
@@ -404,7 +404,7 @@ class JavaClasspathTest {
     }
   }
 
-  private JavaClasspath createJavaClasspath() {
-    return new JavaClasspath(settings.asConfig(), fs, analysisWarnings);
+  private ClasspathForMain createJavaClasspath() {
+    return new ClasspathForMain(settings.asConfig(), fs, analysisWarnings);
   }
 }

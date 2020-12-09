@@ -51,12 +51,12 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
 
 @ScannerSide
 @SonarLintSide
-public abstract class AbstractJavaClasspath {
+public abstract class AbstractClasspath {
 
   private static final String SEPARATOR = ",";
   private static final char UNIX_SEPARATOR = '/';
   private static final char WINDOWS_SEPARATOR = '\\';
-  private static final Logger LOG = Loggers.get(AbstractJavaClasspath.class);
+  private static final Logger LOG = Loggers.get(AbstractClasspath.class);
   protected final Configuration settings;
   protected final FileSystem fs;
   private final InputFile.Type fileType;
@@ -67,7 +67,7 @@ public abstract class AbstractJavaClasspath {
   protected boolean validateLibraries;
   protected boolean initialized;
 
-  protected AbstractJavaClasspath(Configuration settings, FileSystem fs, InputFile.Type fileType) {
+  protected AbstractClasspath(Configuration settings, FileSystem fs, InputFile.Type fileType) {
     this.settings = settings;
     this.fs = fs;
     this.fileType = fileType;

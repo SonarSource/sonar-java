@@ -38,8 +38,8 @@ import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.scan.issue.filter.IssueFilterChain;
 import org.sonar.api.utils.Version;
-import org.sonar.java.classpath.JavaClasspath;
-import org.sonar.java.classpath.JavaTestClasspath;
+import org.sonar.java.classpath.ClasspathForMain;
+import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -62,8 +62,8 @@ class JavaSquidTest {
   public TemporaryFolder temp = new TemporaryFolder();
 
   private FileLinesContext fileLinesContext;
-  private JavaClasspath javaClasspath;
-  private JavaTestClasspath javaTestClasspath;
+  private ClasspathForMain javaClasspath;
+  private ClasspathForTest javaTestClasspath;
   private TestIssueFilter testIssueFilter;
 
   private SonarComponents sonarComponents;
@@ -129,8 +129,8 @@ class JavaSquidTest {
     FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
     when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
 
-    javaClasspath = mock(JavaClasspath.class);
-    javaTestClasspath = mock(JavaTestClasspath.class);
+    javaClasspath = mock(ClasspathForMain.class);
+    javaTestClasspath = mock(ClasspathForTest.class);
     sonarComponents = new SonarComponents(fileLinesContextFactory, context.fileSystem(), javaClasspath, javaTestClasspath, mock(CheckFactory.class));
     sonarComponents.setSensorContext(context);
     JavaSquid javaSquid = new JavaSquid(new JavaVersionImpl(), sonarComponents, new Measurer(context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), testIssueFilter);

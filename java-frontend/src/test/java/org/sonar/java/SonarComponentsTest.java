@@ -57,8 +57,8 @@ import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.Version;
 import org.sonar.check.Rule;
-import org.sonar.java.classpath.JavaClasspath;
-import org.sonar.java.classpath.JavaTestClasspath;
+import org.sonar.java.classpath.ClasspathForMain;
+import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
@@ -119,7 +119,7 @@ class SonarComponentsTest {
     DefaultFileSystem fs = context.fileSystem();
     fs.setWorkDir(workDir.toPath());
 
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, null, mock(JavaTestClasspath.class), checkFactory);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, null, mock(ClasspathForTest.class), checkFactory);
 
     assertThat(sonarComponents.workDir()).isEqualTo(workDir);
   }
@@ -135,7 +135,7 @@ class SonarComponentsTest {
     parentProjectDefinition.setWorkDir(workDir);
     ProjectDefinition childProjectDefinition = ProjectDefinition.create();
     parentProjectDefinition.addSubProject(childProjectDefinition);
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, null, mock(JavaTestClasspath.class), checkFactory, childProjectDefinition);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, null, mock(ClasspathForTest.class), checkFactory, childProjectDefinition);
     assertThat(sonarComponents.workDir()).isEqualTo(workDir);
   }
 
@@ -143,7 +143,7 @@ class SonarComponentsTest {
   void test_sonar_components() {
     SensorContextTester sensorContextTester = spy(SensorContextTester.create(new File("")));
     DefaultFileSystem fs = sensorContextTester.fileSystem();
-    JavaTestClasspath javaTestClasspath = mock(JavaTestClasspath.class);
+    ClasspathForTest javaTestClasspath = mock(ClasspathForTest.class);
     List<File> javaTestClasspathList = Collections.emptyList();
     when(javaTestClasspath.getElements()).thenReturn(javaTestClasspathList);
     InputFile inputFile = TestUtils.emptyInputFile("foo.java");
@@ -168,7 +168,7 @@ class SonarComponentsTest {
     verify(sensorContextTester, times(1)).newSymbolTable();
     assertThat(sonarComponents.fileLinesContextFor(inputFile)).isEqualTo(fileLinesContext);
 
-    JavaClasspath javaClasspath = mock(JavaClasspath.class);
+    ClasspathForMain javaClasspath = mock(ClasspathForMain.class);
     List<File> list = mock(List.class);
     when(javaClasspath.getElements()).thenReturn(list);
     sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory);
@@ -400,12 +400,12 @@ class SonarComponentsTest {
     SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
     DefaultFileSystem fs = sensorContextTester.fileSystem();
 
-    JavaClasspath javaClasspath = mock(JavaClasspath.class);
+    ClasspathForMain javaClasspath = mock(ClasspathForMain.class);
     File someJar = new File("some.jar");
     when(javaClasspath.getElements()).thenReturn(Collections.singletonList(someJar));
 
     File plugin = new File("target/classes");
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, mock(JavaTestClasspath.class), checkFactory);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, mock(ClasspathForTest.class), checkFactory);
     List<String> jspClassPath = sonarComponents.getJspClasspath().stream().map(File::getAbsolutePath).collect(Collectors.toList());
     assertThat(jspClassPath).containsExactly(plugin.getAbsolutePath(), someJar.getAbsolutePath());
   }

@@ -33,10 +33,10 @@ import org.sonar.java.AnalysisWarningsWrapper;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaConstants;
 import org.sonar.java.SonarComponents;
-import org.sonar.java.classpath.JavaClasspath;
-import org.sonar.java.classpath.JavaClasspathProperties;
-import org.sonar.java.classpath.JavaSonarLintClasspath;
-import org.sonar.java.classpath.JavaTestClasspath;
+import org.sonar.java.classpath.ClasspathForMain;
+import org.sonar.java.classpath.ClasspathProperties;
+import org.sonar.java.classpath.ClasspathForMainForSonarLint;
+import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.plugins.surefire.SurefireExtensions;
@@ -50,21 +50,21 @@ public class JavaPlugin implements Plugin {
     List<Object> list = new ArrayList<>();
     
     if (context.getRuntime().getProduct() == SonarProduct.SONARLINT) {
-      list.add(JavaSonarLintClasspath.class);
+      list.add(ClasspathForMainForSonarLint.class);
     } else {
       list.addAll(SurefireExtensions.getExtensions());
       list.add(DroppedPropertiesSensor.class);
       list.add(JavaSonarWayProfile.class);
-      list.add(JavaClasspath.class);
+      list.add(ClasspathForMain.class);
 
       ExternalReportExtensions.define(context);
     }
     if (supportJspTranspilation(context)) {
       list.add(Jasper.class);
     }
-    list.addAll(JavaClasspathProperties.getProperties());
+    list.addAll(ClasspathProperties.getProperties());
     list.addAll(Arrays.asList(
-      JavaTestClasspath.class,
+      ClasspathForTest.class,
       Java.class,
       PropertyDefinition.builder(Java.FILE_SUFFIXES_KEY)
         .defaultValue(Java.DEFAULT_FILE_SUFFIXES)

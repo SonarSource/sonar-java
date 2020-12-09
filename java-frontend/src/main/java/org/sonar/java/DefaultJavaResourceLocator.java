@@ -31,7 +31,7 @@ import java.util.Map;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
-import org.sonar.java.classpath.JavaClasspath;
+import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
@@ -39,11 +39,11 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
 
   private static final Logger LOG = Loggers.get(DefaultJavaResourceLocator.class);
 
-  private final JavaClasspath javaClasspath;
+  private final ClasspathForMain javaClasspath;
   @VisibleForTesting
   Map<String, InputFile> resourcesByClass;
 
-  public DefaultJavaResourceLocator(JavaClasspath javaClasspath) {
+  public DefaultJavaResourceLocator(ClasspathForMain javaClasspath) {
     this.javaClasspath = javaClasspath;
     resourcesByClass = new HashMap<>();
   }
