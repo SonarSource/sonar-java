@@ -45,7 +45,7 @@ public class NestedEnumStaticCheck extends IssuableSubscriptionVisitor {
     ModifierKeywordTree staticKeyword = ModifiersUtils.getModifier(classTree.modifiers(), Modifier.STATIC);
     if (staticKeyword != null) {
       List<JavaFileScannerContext.Location> secondary = Collections.singletonList(new JavaFileScannerContext.Location("", classTree.declarationKeyword()));
-      reportIssue(staticKeyword, "Remove this redundant \"static\" qualifier.", secondary, null);
+      reportIssue(staticKeyword, "Remove this redundant \"static\" qualifier; nested enum types are implicitly static.", secondary, null);
     }
   }
 }
