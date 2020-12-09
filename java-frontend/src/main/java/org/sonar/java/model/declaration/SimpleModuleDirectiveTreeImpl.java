@@ -19,46 +19,42 @@
  */
 package org.sonar.java.model.declaration;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.plugins.java.api.tree.ExportsDirectiveTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.ModuleNameTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-public class ExportsDirectiveTreeImpl extends SimpleModuleDirectiveTreeImpl implements ExportsDirectiveTree {
+public abstract class SimpleModuleDirectiveTreeImpl extends ModuleDirectiveTreeImpl {
 
-  public ExportsDirectiveTreeImpl(InternalSyntaxToken exportsKeyword, ExpressionTree packageName, @Nullable InternalSyntaxToken toKeyword, ListTree<ModuleNameTree> moduleNames,
-    InternalSyntaxToken semicolonToken) {
-    super(exportsKeyword, packageName, toKeyword, moduleNames, semicolonToken);
-  }
-  
-  @Override
-  public ExpressionTree packageName() {
-    return packageName;
-  }
-
+  protected final ExpressionTree packageName;
   @Nullable
-  @Override
-  public SyntaxToken toKeyword() {
-    return toKeyword;
+  protected final InternalSyntaxToken toKeyword;
+  protected final ListTree<ModuleNameTree> moduleNames;
+
+  protected SimpleModuleDirectiveTreeImpl(InternalSyntaxToken keyword, ExpressionTree packageName, @Nullable InternalSyntaxToken toKeyword, ListTree<ModuleNameTree> moduleNames,
+                                       InternalSyntaxToken semicolonToken) {
+    super(keyword, semicolonToken);
+    this.packageName = packageName;
+    this.toKeyword = toKeyword;
+    this.moduleNames = moduleNames;
   }
 
   @Override
-  public ListTree<ModuleNameTree> moduleNames() {
-    return moduleNames;
+  protected Iterable<Tree> children() {
+    List<Tree> list = new ArrayList<>();
+    list.add(directiveKeyword());
+    list.add(packageName);
+    if (toKeyword != null) {
+      list.add(toKeyword);
+      list.add(moduleNames);
+    }
+    list.add(semicolonToken());
+    return Collections.unmodifiableList(list);
   }
 
-  @Override
-  public void accept(TreeVisitor visitor) {
-    visitor.visitExportsDirectiveTree(this);
-  }
-
-  @Override
-  public Kind kind() {
-    return Tree.Kind.EXPORTS_DIRECTIVE;
-  }
 }

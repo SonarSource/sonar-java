@@ -19,7 +19,7 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -47,7 +47,7 @@ public class ArrayDimensionTreeImpl extends JavaTree implements ArrayDimensionTr
   }
 
   public ArrayDimensionTreeImpl completeAnnotations(List<AnnotationTree> annotations) {
-    this.annotations = ImmutableList.<AnnotationTree>builder().addAll(annotations).build();
+    this.annotations = Collections.unmodifiableList(annotations);
     return this;
   }
 
@@ -84,13 +84,12 @@ public class ArrayDimensionTreeImpl extends JavaTree implements ArrayDimensionTr
 
   @Override
   public Iterable<Tree> children() {
-    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
-    iteratorBuilder.addAll(annotations);
-    iteratorBuilder.add(openBracketToken);
+    List<Tree> list = new ArrayList<>(annotations);
+    list.add(openBracketToken);
     if (expression != null) {
-      iteratorBuilder.add(expression);
+      list.add(expression);
     }
-    iteratorBuilder.add(closeBracketToken);
-    return iteratorBuilder.build();
+    list.add(closeBracketToken);
+    return Collections.unmodifiableList(list);
   }
 }

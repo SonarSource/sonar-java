@@ -19,7 +19,9 @@
  */
 package org.sonar.java.model.declaration;
 
-import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
@@ -62,14 +64,15 @@ public class EnumConstantTreeImpl extends VariableTreeImpl implements EnumConsta
 
   @Override
   public Iterable<Tree> children() {
-    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
+    List<Tree> list = new ArrayList<>();
     // the identifierTree simpleName is also present in initializer
-    iteratorBuilder.add(modifiers(), initializer());
+    list.add(modifiers());
+    list.add(initializer());
     SyntaxToken endToken = endToken();
     if (endToken != null) {
-      iteratorBuilder.add(endToken);
+      list.add(endToken);
     }
-    return iteratorBuilder.build();
+    return Collections.unmodifiableList(list);
   }
 
   @Nullable

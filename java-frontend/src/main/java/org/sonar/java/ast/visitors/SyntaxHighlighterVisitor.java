@@ -19,9 +19,10 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,12 +68,11 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.<Tree.Kind>builder()
-      .addAll(typesByKind.keySet().iterator())
-      .add(Tree.Kind.MODULE)
-      .add(Tree.Kind.TOKEN)
-      .add(Tree.Kind.TRIVIA)
-      .build();
+    List<Tree.Kind> list = new ArrayList<>(typesByKind.keySet());
+    list.add(Tree.Kind.MODULE);
+    list.add(Tree.Kind.TOKEN);
+    list.add(Tree.Kind.TRIVIA);
+    return Collections.unmodifiableList(list);
   }
 
   @Override

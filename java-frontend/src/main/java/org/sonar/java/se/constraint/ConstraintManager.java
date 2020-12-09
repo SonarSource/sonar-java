@@ -20,7 +20,6 @@
 package org.sonar.java.se.constraint;
 
 import org.sonar.java.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import java.util.Arrays;
 import java.util.List;
@@ -139,7 +138,7 @@ public class ConstraintManager {
       result = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.METHOD_EQUALS);
       ProgramState.SymbolicValueSymbol leftOp = values.get(1);
       ProgramState.SymbolicValueSymbol rightOp = values.get(0);
-      result.computedFrom(ImmutableList.of(rightOp, leftOp));
+      result.computedFrom(Arrays.asList(rightOp, leftOp));
     } else {
       result = createDefaultSymbolicValue();
     }

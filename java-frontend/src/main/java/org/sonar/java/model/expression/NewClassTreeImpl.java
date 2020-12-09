@@ -19,7 +19,9 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -119,12 +121,12 @@ public class NewClassTreeImpl extends AssessableExpressionTree implements NewCla
 
   @Override
   public Iterable<Tree> children() {
-    ImmutableList.Builder<Tree> builder = ImmutableList.builder();
+    List<Tree> builder = new ArrayList<>();
     addIfNotNull(builder, enclosingExpression, dotToken, newKeyword, typeArguments);
     builder.add(identifier);
     builder.add(arguments);
     addIfNotNull(builder, classBody);
-    return builder.build();
+    return Collections.unmodifiableList(builder);
   }
 
   public IdentifierTree getConstructorIdentifier() {
@@ -166,10 +168,10 @@ public class NewClassTreeImpl extends AssessableExpressionTree implements NewCla
     return this.getConstructorIdentifier().symbol();
   }
 
-  private static void addIfNotNull(ImmutableList.Builder<Tree> builder, Tree... trees) {
+  private static void addIfNotNull(List<Tree> list, Tree... trees) {
     for (Tree tree : trees) {
       if (tree != null) {
-        builder.add(tree);
+        list.add(tree);
       }
     }
   }

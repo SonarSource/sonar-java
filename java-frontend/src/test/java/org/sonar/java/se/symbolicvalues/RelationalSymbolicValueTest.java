@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.symbolicvalues;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import java.util.ArrayList;
@@ -463,7 +462,7 @@ class RelationalSymbolicValueTest {
       }
     };
 
-    rsv.computedFrom(ImmutableList.of(new ProgramState.SymbolicValueSymbol(right, null), new ProgramState.SymbolicValueSymbol(left, var)));
+    rsv.computedFrom(Arrays.asList(new ProgramState.SymbolicValueSymbol(right, null), new ProgramState.SymbolicValueSymbol(left, var)));
     assertThat(rsv).hasToString("left(A#x)==right");
   }
 

@@ -21,7 +21,6 @@ package org.sonar.java.se;
 
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -233,13 +232,13 @@ public class ProgramState {
   }
 
   public List<SymbolicValueSymbol> peekValuesAndSymbols(int n) {
-    ImmutableList.Builder<SymbolicValueSymbol> result = ImmutableList.builder();
+    List<SymbolicValueSymbol> result = new ArrayList<>();
     PStack<SymbolicValueSymbol> tmpStack = this.stack;
     for (int i = 0; i < n; i++) {
       result.add(tmpStack.peek());
       tmpStack = tmpStack.pop();
     }
-    return result.build();
+    return Collections.unmodifiableList(result);
   }
 
   public int numberOfTimeVisited(ProgramPoint programPoint) {

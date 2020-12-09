@@ -20,8 +20,8 @@
 package org.sonar.java.se.symbolicvalues;
 
 import org.sonar.java.Preconditions;
-import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -75,7 +75,7 @@ public class SymbolicValue {
     }
   };
 
-  public static final List<SymbolicValue> PROTECTED_SYMBOLIC_VALUES = ImmutableList.of(
+  private static final List<SymbolicValue> PROTECTED_SYMBOLIC_VALUES = Arrays.asList(
     NULL_LITERAL,
     TRUE_LITERAL,
     FALSE_LITERAL

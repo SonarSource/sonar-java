@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.xproc;
 
-import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -165,7 +164,7 @@ public class MethodBehavior {
   }
 
   public List<MethodYield> yields() {
-    return ImmutableList.<MethodYield>builder().addAll(yields).build();
+    return Collections.unmodifiableList(new ArrayList<>(yields));
   }
 
   public Stream<ExceptionalYield> exceptionalPathYields() {

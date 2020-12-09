@@ -19,8 +19,7 @@
  */
 package org.sonar.java.model.declaration;
 
-import com.google.common.collect.ImmutableList;
-
+import javax.annotation.Nullable;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ListTree;
@@ -30,21 +29,11 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-import javax.annotation.Nullable;
-
-public class OpensDirectiveTreeImpl extends ModuleDirectiveTreeImpl implements OpensDirectiveTree {
-
-  private final ExpressionTree packageName;
-  @Nullable
-  private final InternalSyntaxToken toKeyword;
-  private final ListTree<ModuleNameTree> moduleNames;
+public class OpensDirectiveTreeImpl extends SimpleModuleDirectiveTreeImpl implements OpensDirectiveTree {
 
   public OpensDirectiveTreeImpl(InternalSyntaxToken opensKeyword, ExpressionTree packageName, @Nullable InternalSyntaxToken toKeyword, ListTree<ModuleNameTree> moduleNames,
     InternalSyntaxToken semicolonToken) {
-    super(opensKeyword, semicolonToken);
-    this.packageName = packageName;
-    this.toKeyword = toKeyword;
-    this.moduleNames = moduleNames;
+    super(opensKeyword, packageName, toKeyword, moduleNames, semicolonToken);
   }
 
   @Override
@@ -56,7 +45,7 @@ public class OpensDirectiveTreeImpl extends ModuleDirectiveTreeImpl implements O
   public Kind kind() {
     return Tree.Kind.OPENS_DIRECTIVE;
   }
-
+  
   @Override
   public ExpressionTree packageName() {
     return packageName;
@@ -72,16 +61,4 @@ public class OpensDirectiveTreeImpl extends ModuleDirectiveTreeImpl implements O
   public ListTree<ModuleNameTree> moduleNames() {
     return moduleNames;
   }
-
-  @Override
-  protected Iterable<Tree> children() {
-    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
-    iteratorBuilder.add(directiveKeyword(), packageName);
-    if (toKeyword != null) {
-      iteratorBuilder.add(toKeyword, moduleNames);
-    }
-    iteratorBuilder.add(semicolonToken());
-    return iteratorBuilder.build();
-  }
-
 }

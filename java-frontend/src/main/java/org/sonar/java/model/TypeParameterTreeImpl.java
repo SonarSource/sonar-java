@@ -20,7 +20,9 @@
 package org.sonar.java.model;
 
 import org.sonar.java.Preconditions;
-import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.java.ast.parser.BoundListTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
@@ -89,13 +91,13 @@ public class TypeParameterTreeImpl extends JavaTree implements TypeParameterTree
 
   @Override
   public Iterable<Tree> children() {
-    ImmutableList.Builder<Tree> builder = ImmutableList.<Tree>builder()
-      .add(identifier);
+    List<Tree> list = new ArrayList<>();
+    list.add(identifier);
     if (extendsToken != null) {
-      builder.add(extendsToken);
-      builder.add(bounds);
+      list.add(extendsToken);
+      list.add(bounds);
     }
-    return builder.build();
+    return Collections.unmodifiableList(list);
   }
 
   public Symbol symbol() {

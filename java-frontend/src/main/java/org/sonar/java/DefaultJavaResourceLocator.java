@@ -19,8 +19,10 @@
  */
 package org.sonar.java;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.sonar.java.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedSet;
 import java.io.File;
 import java.util.Collection;
@@ -61,7 +63,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
 
   @Override
   public Collection<File> classFilesToAnalyze() {
-    ImmutableList.Builder<File> result = ImmutableList.builder();
+    List<File> result = new ArrayList<>();
     for (String key : classKeys()) {
       String filePath = key + ".class";
       for (File binaryDir : javaClasspath.getBinaryDirs()) {
@@ -72,7 +74,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
         }
       }
     }
-    return result.build();
+    return Collections.unmodifiableList(result);
   }
 
   @Override

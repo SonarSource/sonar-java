@@ -20,9 +20,12 @@
 package org.sonar.java.model.expression;
 
 import org.sonar.java.Preconditions;
-import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -72,7 +75,7 @@ public class NewArrayTreeImpl extends AssessableExpressionTree implements NewArr
   }
 
   public NewArrayTreeImpl completeDimensions(List<ArrayDimensionTree> arrayDimensions) {
-    this.dimensions = ImmutableList.<ArrayDimensionTree>builder().addAll(arrayDimensions).addAll(dimensions).build();
+    this.dimensions = Stream.of(arrayDimensions, dimensions).flatMap(List::stream).collect(Collectors.toList());
     return this;
   }
 
@@ -115,14 +118,14 @@ public class NewArrayTreeImpl extends AssessableExpressionTree implements NewArr
 
   @Override
   public Iterable<Tree> children() {
-    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
-    addIfNotNull(iteratorBuilder, newKeyword);
-    addIfNotNull(iteratorBuilder, type);
-    iteratorBuilder.addAll(dimensions);
-    addIfNotNull(iteratorBuilder, openCurlyBraceToken);
-    iteratorBuilder.add(initializers);
-    addIfNotNull(iteratorBuilder, closeCurlyBraceToken);
-    return iteratorBuilder.build();
+    List<Tree> list = new ArrayList<>();
+    addIfNotNull(list, newKeyword);
+    addIfNotNull(list, type);
+    list.addAll(dimensions);
+    addIfNotNull(list, openCurlyBraceToken);
+    list.add(initializers);
+    addIfNotNull(list, closeCurlyBraceToken);
+    return Collections.unmodifiableList(list);
   }
 
   @Override
@@ -130,10 +133,10 @@ public class NewArrayTreeImpl extends AssessableExpressionTree implements NewArr
     return newKeyword;
   }
 
-  private static ImmutableList.Builder<Tree> addIfNotNull(ImmutableList.Builder<Tree> builder, @Nullable Tree tree) {
+  private static List<Tree> addIfNotNull(List<Tree> list, @Nullable Tree tree) {
     if (tree != null) {
-      builder.add(tree);
+      list.add(tree);
     }
-    return builder;
+    return list;
   }
 }
