@@ -19,7 +19,7 @@
  */
 package org.sonar.plugins.java.api;
 
-import com.google.common.annotations.Beta;
+import org.sonar.java.annotations.Beta;
 import java.nio.file.Path;
 import java.util.Optional;
 import org.sonar.api.batch.fs.InputFile;

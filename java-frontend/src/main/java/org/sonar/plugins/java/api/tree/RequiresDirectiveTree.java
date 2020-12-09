@@ -19,7 +19,7 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
+import org.sonar.java.annotations.Beta;
 
 /**
  * The 'requires' directive from java 9 module directives

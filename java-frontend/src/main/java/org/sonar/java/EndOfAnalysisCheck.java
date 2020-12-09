@@ -19,7 +19,7 @@
  */
 package org.sonar.java;
 
-import com.google.common.annotations.Beta;
+import org.sonar.java.annotations.Beta;
 import org.sonar.plugins.java.api.JavaCheck;
 
 /**

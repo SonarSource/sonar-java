@@ -19,7 +19,7 @@
  */
 package org.sonar.plugins.java.api.cfg;
 
-import com.google.common.annotations.Beta;
+import org.sonar.java.annotations.Beta;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.CheckForNull;

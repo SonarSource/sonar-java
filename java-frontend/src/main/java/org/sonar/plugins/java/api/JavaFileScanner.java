@@ -19,7 +19,7 @@
  */
 package org.sonar.plugins.java.api;
 
-import com.google.common.annotations.Beta;
+import org.sonar.java.annotations.Beta;
 
 /**
  * Common interface for all checks analyzing a java file.

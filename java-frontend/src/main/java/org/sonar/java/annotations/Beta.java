@@ -17,26 +17,19 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.java.api.tree;
+package org.sonar.java.annotations;
 
-import org.sonar.java.annotations.Beta;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-@Beta
-public enum Modifier {
-
-  PUBLIC,
-  PROTECTED,
-  PRIVATE,
-  ABSTRACT,
-  STATIC,
-  FINAL,
-  TRANSIENT,
-  VOLATILE,
-  SYNCHRONIZED,
-  NATIVE,
-  DEFAULT,
-  STRICTFP,
-  // since java 9, only used by Requires Module Directive (JLS9 - §7.7)
-  TRANSITIVE;
-
+/**
+ * This annotation should be placed on api elements that can be changed in the future versions and do not guarantee backward compatibility
+ */
+@Retention(RetentionPolicy.CLASS)
+@Target({ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD, ElementType.TYPE})
+@Documented
+public @interface Beta {
 }
