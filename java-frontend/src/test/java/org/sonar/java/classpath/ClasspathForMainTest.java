@@ -20,6 +20,7 @@
 package org.sonar.java.classpath;
 
 import java.io.File;
+import java.util.List;
 import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,6 +60,7 @@ class ClasspathForMainTest {
     fs.add(TestUtils.emptyInputFile("foo.java"));
     settings = new MapSettings();
     analysisWarnings = mock(AnalysisWarningsWrapper.class);
+    logTester.clear();
   }
 
   /**
@@ -392,6 +394,67 @@ class ClasspathForMainTest {
   void invalid_sonar_java_binaries_should_fail_analysis() {
     settings.setProperty(ClasspathProperties.SONAR_JAVA_BINARIES, "dummyDir");
     checkIllegalStateException("No files nor directories matching 'dummyDir'");
+  }
+
+  @Test
+  void by_default_no_jdk_is_set() {
+    List<File> elements = createJavaClasspath().getElements();
+
+    assertThat(elements).isEmpty();
+    assertThat(logTester.logs())
+      .noneMatch(log -> log.contains("'sonar.java.jdkHome'"));
+  }
+
+  @Test
+  void wrong_inexisting_sdk_path_does_not_make_classpath_init_fail() {
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_JDK_HOME, "src/test/jdk/do-not-exists");
+    String expectedWarning = "Invalid value for 'sonar.java.jdkHome' property, defaulting to runtime JDK."
+      + System.lineSeparator()
+      + "Configured location does not exists:";
+
+    List<File> elements = createJavaClasspath().getElements();
+
+    assertThat(elements).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.WARN).stream())
+      .filteredOn(warn -> warn.startsWith(expectedWarning))
+      .hasSize(1);
+  }
+
+  @Test
+  void wrong_file_as_sdk_path_does_not_make_classpath_init_fail() {
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_JDK_HOME, "src/test/jdk/README.txt");
+    String expectedWarning = "Invalid value for 'sonar.java.jdkHome' property, defaulting to runtime JDK."
+      + System.lineSeparator()
+      + "Configured location does not exists:";
+
+    List<File> elements = createJavaClasspath().getElements();
+
+    assertThat(elements).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.WARN).stream())
+      .filteredOn(warn -> warn.startsWith(expectedWarning))
+      .hasSize(1);
+  }
+
+  @Test
+  void should_include_jdk_in_libraries_when_specified_classic() {
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_JDK_HOME, "src/test/jdk/jdk_classic");
+
+    List<File> elements = createJavaClasspath().getElements();
+
+    assertThat(elements)
+      .hasSize(1)
+      .allMatch(file -> file.getName().equals("rt.jar"));
+  }
+
+  @Test
+  void should_include_jdk_in_libraries_when_specified_modular() {
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_JDK_HOME, "src/test/jdk/jdk_modular");
+
+    List<File> elements = createJavaClasspath().getElements();
+
+    assertThat(elements)
+      .hasSize(1)
+      .allMatch(file -> file.getName().equals("jrt-fs.jar"));
   }
 
   private void checkIllegalStateException(String message) {
