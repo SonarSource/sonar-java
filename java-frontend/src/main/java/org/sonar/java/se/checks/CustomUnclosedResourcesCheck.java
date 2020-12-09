@@ -19,7 +19,7 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.Lists;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -117,7 +117,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
   }
 
   private void processUnclosedSymbolicValue(ExplodedGraph.Node node, SymbolicValue sv) {
-    List<Class<? extends Constraint>> domains = Lists.newArrayList(CustomResourceConstraint.class);
+    List<Class<? extends Constraint>> domains = Collections.singletonList(CustomResourceConstraint.class);
     FlowComputation.flowWithoutExceptions(node, sv, OPENED::equals, domains, FlowComputation.MAX_LOOKUP_FLOWS).stream()
       .flatMap(Flow::firstFlowLocation)
       .filter(location -> location.syntaxNode.is(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION))

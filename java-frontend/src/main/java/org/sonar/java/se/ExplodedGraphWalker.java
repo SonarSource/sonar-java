@@ -22,7 +22,6 @@ package org.sonar.java.se;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.Preconditions;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,6 +41,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.Sema;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
@@ -183,7 +183,7 @@ public class ExplodedGraphWalker {
 
   @VisibleForTesting
   public ExplodedGraphWalker(BehaviorCache behaviorCache, Sema semanticModel) {
-    List<SECheck> checks = Lists.newArrayList(new NullDereferenceCheck(), new DivisionByZeroCheck(),
+    List<SECheck> checks = Arrays.asList(new NullDereferenceCheck(), new DivisionByZeroCheck(),
       new UnclosedResourcesCheck(), new LocksNotUnlockedCheck(), new NonNullSetToNullCheck(), new NoWayOutLoopCheck());
     this.alwaysTrueOrFalseExpressionCollector = new AlwaysTrueOrFalseExpressionCollector();
     this.checkerDispatcher = new CheckerDispatcher(this, checks);
@@ -506,7 +506,7 @@ public class ExplodedGraphWalker {
     ProgramState state = programState;
 
     Map<CaseGroupTree, List<ProgramState.SymbolicValueSymbol>> caseValues = new HashMap<>();
-    for (CaseGroupTree caseGroup : Lists.reverse(caseGroups)) {
+    for (CaseGroupTree caseGroup : ListUtils.reverse(caseGroups)) {
       int numberOfCaseValues = caseGroup.labels()
         .stream()
         .map(CaseLabelTree::expressions)
@@ -879,7 +879,7 @@ public class ExplodedGraphWalker {
   }
 
   private static List<SymbolicValue> invocationArguments(List<SymbolicValue> values) {
-    return Lists.reverse(values.subList(0, values.size() - 1));
+    return ListUtils.reverse(values.subList(0, values.size() - 1));
   }
 
   /**

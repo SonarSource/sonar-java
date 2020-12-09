@@ -19,7 +19,8 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.collect.Lists;
+import java.util.Arrays;
+import java.util.Collections;
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -43,9 +44,9 @@ class SyntacticEquivalenceTest {
 
   @Test
   void statement_list_equivalence() {
-    assertAreEquivalent(Lists.newArrayList("foo()", "bar()"), Lists.newArrayList("foo()", "bar()"));
-    assertAreNotEquivalent(Lists.newArrayList("foo()", "bar()"), Lists.newArrayList("foo()", "foo()"));
-    assertAreNotEquivalent(Lists.newArrayList("foo()"), Lists.newArrayList("foo()", "foo()"));
+    assertAreEquivalent(Arrays.asList("foo()", "bar()"), Arrays.asList("foo()", "bar()"));
+    assertAreNotEquivalent(Arrays.asList("foo()", "bar()"), Arrays.asList("foo()", "foo()"));
+    assertAreNotEquivalent(Arrays.asList("foo()"), Arrays.asList("foo()", "foo()"));
   }
 
   @Test
@@ -80,7 +81,7 @@ class SyntacticEquivalenceTest {
   }
 
   private void assertAreEquivalent(String statement1, String statement2) {
-    assertAreEquivalent(Lists.newArrayList(statement1), Lists.newArrayList(statement2));
+    assertAreEquivalent(Collections.singletonList(statement1), Collections.singletonList(statement2));
   }
 
   private void assertAreEquivalent(List<String> statement1, List<String> statement2) {
@@ -92,7 +93,7 @@ class SyntacticEquivalenceTest {
   }
 
   private void assertAreNotEquivalent(String statement1, String statement2) {
-    assertAreNotEquivalent(Lists.newArrayList(statement1), Lists.newArrayList(statement2));
+    assertAreNotEquivalent(Collections.singletonList(statement1), Collections.singletonList(statement2));
   }
 
   private AbstractBooleanAssert<?> getAssertion(List<String> statement1, List<String> statement2) {

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -34,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
@@ -347,7 +347,7 @@ public class UnclosedResourcesCheck extends SECheck {
     @Override
     public void visitNewClass(NewClassTree syntaxNode) {
       if (isOpeningResource(syntaxNode)) {
-        List<ProgramState.SymbolicValueSymbol> arguments = Lists.reverse(programState.peekValuesAndSymbols(syntaxNode.arguments().size()));
+        List<ProgramState.SymbolicValueSymbol> arguments = ListUtils.reverse(programState.peekValuesAndSymbols(syntaxNode.arguments().size()));
         Iterator<ProgramState.SymbolicValueSymbol> iterator = arguments.iterator();
         for (ExpressionTree argumentTree : syntaxNode.arguments()) {
           if (!iterator.hasNext()) {

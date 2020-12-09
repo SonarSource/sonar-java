@@ -20,7 +20,7 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import java.util.Arrays;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -95,7 +95,7 @@ public class LambdaExpressionTreeImpl extends AssessableExpressionTree implement
       hasParentheses ? Collections.singletonList(openParenToken) : Collections.<Tree>emptyList(),
       parameters,
       hasParentheses ? Collections.singletonList(closeParenToken) : Collections.<Tree>emptyList(),
-      Lists.newArrayList(arrowToken, body)
+      Arrays.asList(arrowToken, body)
     );
   }
 

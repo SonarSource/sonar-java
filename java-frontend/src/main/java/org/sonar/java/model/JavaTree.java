@@ -19,9 +19,9 @@
  */
 package org.sonar.java.model;
 
+import java.util.Arrays;
 import org.sonar.java.Preconditions;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
@@ -267,7 +267,7 @@ public abstract class JavaTree implements Tree {
     public Iterable<Tree> children() {
       return Iterables.concat(
         annotations,
-        Lists.newArrayList(packageKeyword, packageName, semicolonToken)
+        Arrays.asList(packageKeyword, packageName, semicolonToken)
         );
     }
 
@@ -371,7 +371,7 @@ public abstract class JavaTree implements Tree {
       return Iterables.concat(
         Collections.singletonList(importToken),
         isStatic ? Collections.singletonList(staticToken) : Collections.<Tree>emptyList(),
-        Lists.newArrayList(qualifiedIdentifier, semicolonToken));
+        Arrays.asList(qualifiedIdentifier, semicolonToken));
     }
   }
 
@@ -600,7 +600,7 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public Iterable<Tree> children() {
-      return Iterables.concat(annotations, Lists.newArrayList(type, typeArguments));
+      return Iterables.concat(annotations, Arrays.asList(type, typeArguments));
     }
   }
 
@@ -660,7 +660,7 @@ public abstract class JavaTree implements Tree {
       return Iterables.concat(
         Collections.singletonList(type),
         annotations,
-        hasBrackets ? Lists.newArrayList(openBracketToken, closeBracketToken) : Collections.singletonList(ellipsisToken));
+        hasBrackets ? Arrays.asList(openBracketToken, closeBracketToken) : Collections.singletonList(ellipsisToken));
     }
 
     @Override

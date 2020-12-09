@@ -19,8 +19,8 @@
  */
 package org.sonar.java;
 
-import com.google.common.collect.Lists;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ class JavaVersionAwareVisitorTest {
 
   @BeforeEach
   void setUp() throws Exception {
-    messages = Lists.newLinkedList();
+    messages = new LinkedList<>();
     javaChecks = new JavaCheck[] {
       new JavaVersionCheck(7, messages),
       new JavaVersionCheck(8, messages),

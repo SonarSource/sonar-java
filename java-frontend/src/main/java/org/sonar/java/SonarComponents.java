@@ -19,18 +19,18 @@
  */
 package org.sonar.java;
 
-import org.sonar.java.annotations.VisibleForTesting;
-import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.ScannerSide;
@@ -48,6 +48,7 @@ import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
@@ -114,12 +115,18 @@ public class SonarComponents {
       CheckRegistrar.RegistrarContext registrarContext = new CheckRegistrar.RegistrarContext();
       for (CheckRegistrar checkClassesRegister : checkRegistrars) {
         checkClassesRegister.register(registrarContext);
-        Iterable<Class<? extends JavaCheck>> checkClasses = registrarContext.checkClasses();
-        Iterable<Class<? extends JavaCheck>> testCheckClasses = registrarContext.testCheckClasses();
-        registerCheckClasses(registrarContext.repositoryKey(), Lists.newArrayList(checkClasses != null ? checkClasses : new ArrayList<>()));
-        registerTestCheckClasses(registrarContext.repositoryKey(), Lists.newArrayList(testCheckClasses != null ? testCheckClasses : new ArrayList<>()));
+        List<Class<? extends JavaCheck>> checkClasses = getChecks(registrarContext.checkClasses());
+        List<Class<? extends JavaCheck>> testCheckClasses = getChecks(registrarContext.testCheckClasses());
+        registerCheckClasses(registrarContext.repositoryKey(), checkClasses);
+        registerTestCheckClasses(registrarContext.repositoryKey(), testCheckClasses);
       }
     }
+  }
+  
+  private static List<Class<? extends JavaCheck>> getChecks(@Nullable Iterable<Class<? extends JavaCheck>> iterable) {
+    return iterable != null ?
+      StreamSupport.stream(iterable.spliterator(), false).collect(Collectors.toList()) :
+      Collections.emptyList();
   }
 
   public void setSensorContext(SensorContext context) {

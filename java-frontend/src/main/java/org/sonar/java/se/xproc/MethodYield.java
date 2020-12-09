@@ -21,7 +21,6 @@ package org.sonar.java.se.xproc;
 
 import org.sonar.java.Preconditions;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -80,7 +79,7 @@ public abstract class MethodYield {
       }
 
       SymbolicValue invokedArg = invocationArguments.get(index);
-      Set<ProgramState> programStates = programStatesForConstraint(results.isEmpty() ? Lists.newArrayList(programState) : results, invokedArg, constraints);
+      Set<ProgramState> programStates = programStatesForConstraint(results.isEmpty() ? Collections.singleton(programState) : results, invokedArg, constraints);
       if (programStates.isEmpty()) {
         // constraints can't be satisfied, no need to process things further, this yield is not applicable.
         // TODO there might be some issue to report in this case.

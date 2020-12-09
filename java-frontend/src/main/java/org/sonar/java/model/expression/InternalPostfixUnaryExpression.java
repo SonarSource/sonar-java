@@ -19,7 +19,7 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.collect.Lists;
+import java.util.Arrays;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -63,7 +63,7 @@ public class InternalPostfixUnaryExpression extends AssessableExpressionTree imp
 
   @Override
   public Iterable<Tree> children() {
-    return Lists.newArrayList(
+    return Arrays.asList(
       expression,
       operatorToken
     );

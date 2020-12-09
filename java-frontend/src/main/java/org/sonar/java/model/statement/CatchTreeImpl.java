@@ -19,7 +19,7 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.collect.Lists;
+import java.util.Arrays;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -85,7 +85,7 @@ public class CatchTreeImpl extends JavaTree implements CatchTree {
 
   @Override
   public Iterable<Tree> children() {
-    return Lists.newArrayList(
+    return Arrays.asList(
       catchToken,
       openParenToken,
       parameter,

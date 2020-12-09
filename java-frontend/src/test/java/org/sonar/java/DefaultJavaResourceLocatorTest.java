@@ -19,8 +19,8 @@
  */
 package org.sonar.java;
 
-import com.google.common.collect.Lists;
 import java.io.File;
+import java.util.Collections;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -40,8 +40,8 @@ class DefaultJavaResourceLocatorTest {
   @BeforeAll
   public static void setup() {
     ClasspathForMain javaClasspath = mock(ClasspathForMain.class);
-    when(javaClasspath.getBinaryDirs()).thenReturn(Lists.newArrayList(new File("target/test-classes")));
-    when(javaClasspath.getElements()).thenReturn(Lists.newArrayList(new File("target/test-classes")));
+    when(javaClasspath.getBinaryDirs()).thenReturn(Collections.singletonList(new File("target/test-classes")));
+    when(javaClasspath.getElements()).thenReturn(Collections.singletonList(new File("target/test-classes")));
     InputFile inputFile = TestUtils.inputFile("src/test/java/org/sonar/java/DefaultJavaResourceLocatorTest.java");
     DefaultJavaResourceLocator jrl = new DefaultJavaResourceLocator(javaClasspath);
     JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(jrl));

@@ -20,7 +20,6 @@
 package org.sonar.java.cfg;
 
 import org.sonar.java.Preconditions;
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
@@ -35,6 +34,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
@@ -151,7 +151,7 @@ public class CFG implements ControlFlowGraph {
 
   @Override
   public List<Block> blocks() {
-    return Lists.reverse(blocks);
+    return ListUtils.reverse(blocks);
   }
 
   public List<Block> reversedBlocks() {
@@ -197,7 +197,7 @@ public class CFG implements ControlFlowGraph {
 
     @Override
     public List<Tree> elements() {
-      return Lists.reverse(elements);
+      return ListUtils.reverse(elements);
     }
 
     public Block trueBlock() {
@@ -438,7 +438,7 @@ public class CFG implements ControlFlowGraph {
     build((List<? extends Tree>) trees);
   }
   private void build(List<? extends Tree> trees) {
-    Lists.reverse(trees).forEach(this::build);
+    ListUtils.reverse(trees).forEach(this::build);
   }
 
   private void build(Tree tree) {
@@ -751,7 +751,7 @@ public class CFG implements ControlFlowGraph {
       .flatMap(List::stream)
       .map(CaseLabelTree::expressions)
       .flatMap(List::stream).collect(Collectors.toList());
-    Lists.reverse(switchCasesExpressions).forEach(this::build);
+    ListUtils.reverse(switchCasesExpressions).forEach(this::build);
 
     build(switchExpressionTree.expression());
     Block conditionBlock = currentBlock;
@@ -762,7 +762,7 @@ public class CFG implements ControlFlowGraph {
     if (!switchExpressionTree.cases().isEmpty()) {
       boolean withoutFallTrough = switchWithoutFallThrough(switchExpressionTree);
       CaseGroupTree firstCase = switchExpressionTree.cases().get(0);
-      for (CaseGroupTree caseGroupTree : Lists.reverse(switchExpressionTree.cases())) {
+      for (CaseGroupTree caseGroupTree : ListUtils.reverse(switchExpressionTree.cases())) {
         if (withoutFallTrough) {
           currentBlock.successors().clear();
           currentBlock.addSuccessor(switchSuccessor);
@@ -968,7 +968,7 @@ public class CFG implements ControlFlowGraph {
     TryStatement tryStatement = new TryStatement();
     enclosingTry.push(tryStatement);
     enclosedByCatch.push(false);
-    for (CatchTree catchTree : Lists.reverse(tryStatementTree.catches())) {
+    for (CatchTree catchTree : ListUtils.reverse(tryStatementTree.catches())) {
       currentBlock = createBlock(finallyOrEndBlock);
       enclosedByCatch.push(true);
       build(catchTree.block());

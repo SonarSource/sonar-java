@@ -20,7 +20,7 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import java.util.Arrays;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
@@ -63,7 +63,7 @@ public class MethodReferenceTreeImpl extends AssessableExpressionTree implements
   public Iterable<Tree> children() {
     return Iterables.concat(
       typeArgument != null ? Collections.singletonList(typeArgument) : Collections.<Tree>emptyList(),
-      Lists.newArrayList(expression, doubleColon, method));
+      Arrays.asList(expression, doubleColon, method));
   }
 
   @Override

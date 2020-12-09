@@ -19,7 +19,7 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.collect.Lists;
+import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.checks.NullDereferenceCheck;
@@ -35,7 +35,7 @@ class CheckerDispatcherTest {
 
   @Test
   void test_only_one_execution_of_post_statement_by_check() {
-    List<SECheck> checks = Lists.newArrayList(new NullDereferenceCheck(), new CheckTest(), new CheckTest(), new CheckTest());
+    List<SECheck> checks = Arrays.asList(new NullDereferenceCheck(), new CheckTest(), new CheckTest(), new CheckTest());
     CheckerDispatcher checkerDispatcher = new CheckerDispatcher(mockExplodedGraphWalker(), checks);
     checkerDispatcher.executeCheckPostStatement(mock(Tree.class));
     for (SECheck check : checks) {

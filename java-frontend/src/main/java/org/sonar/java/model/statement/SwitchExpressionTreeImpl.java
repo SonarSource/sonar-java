@@ -20,7 +20,7 @@
 package org.sonar.java.model.statement;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -102,7 +102,7 @@ public class SwitchExpressionTreeImpl extends AssessableExpressionTree implement
   @Override
   public Iterable<Tree> children() {
     return Iterables.concat(
-      Lists.newArrayList(switchKeyword, openParenToken, expression, closeParenToken, openBraceToken),
+      Arrays.asList(switchKeyword, openParenToken, expression, closeParenToken, openBraceToken),
       cases,
       Collections.singletonList(closeBraceToken));
   }

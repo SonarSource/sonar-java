@@ -19,7 +19,8 @@
  */
 package org.sonar.java.model.declaration;
 
-import com.google.common.collect.Lists;
+import java.util.Arrays;
+import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.ast.parser.ListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -40,23 +41,23 @@ class ListTreeImplTest {
     Tree tree1 = new EmptyStatementTreeImpl(null);
     Tree tree2 = new EmptyStatementTreeImpl(null);
     Tree tree3 = new EmptyStatementTreeImpl(null);
-    List<Tree> trees = Lists.newArrayList(tree1, tree2, tree3);
+    List<Tree> trees = Arrays.asList(tree1, tree2, tree3);
     SyntaxToken token1 = createToken("token1");
     SyntaxToken token2 = createToken("token2");
-    List<SyntaxToken> separators = Lists.newArrayList(token1, token2);
+    List<SyntaxToken> separators = Arrays.asList(token1, token2);
     ListTreeImpl<Tree> listTree = new MyList(trees, separators);
     Iterable<Tree> result = listTree.children();
-    assertThat(Lists.newArrayList(result)).containsExactly(tree1, token1, tree2, token2, tree3);
+    assertThat(result).containsExactly(tree1, token1, tree2, token2, tree3);
   }
 
   @Test
   void emptySeparators() throws Exception {
     Tree tree1 = new EmptyStatementTreeImpl(null);
-    List<Tree> trees = Lists.newArrayList(tree1);
+    List<Tree> trees = Collections.singletonList(tree1);
     List<SyntaxToken> separators = new ArrayList<>();
     ListTreeImpl<Tree> listTree = new MyList(trees, separators);
     Iterable<Tree> result = listTree.children();
-    assertThat(Lists.newArrayList(result)).containsExactly(tree1);
+    assertThat(result).containsExactly(tree1);
   }
 
   private static class MyList extends ListTreeImpl<Tree> {

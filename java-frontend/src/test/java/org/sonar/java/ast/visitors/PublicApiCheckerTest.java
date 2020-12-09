@@ -19,7 +19,7 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.collect.Lists;
+import java.util.LinkedList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
@@ -55,8 +55,8 @@ class PublicApiCheckerTest {
   private SubscriptionVisitor getPublicApiVisitor() {
     return new SubscriptionVisitor() {
 
-      private final Deque<ClassTree> classTrees = Lists.newLinkedList();
-      private final Deque<MethodTree> methodTrees = Lists.newLinkedList();
+      private final Deque<ClassTree> classTrees = new LinkedList<>();
+      private final Deque<MethodTree> methodTrees = new LinkedList<>();
 
       @Override
       public List<Tree.Kind> nodesToVisit() {

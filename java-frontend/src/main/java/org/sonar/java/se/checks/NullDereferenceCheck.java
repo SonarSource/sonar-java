@@ -19,9 +19,9 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.Lists;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
@@ -166,7 +166,7 @@ public class NullDereferenceCheck extends SECheck {
       val = currentVal;
     }
     Symbol dereferencedSymbol = dereferencedSymbol(syntaxNode);
-    Set<Flow> flows = FlowComputation.flow(node, val, Lists.newArrayList(ObjectConstraint.class), dereferencedSymbol, FlowComputation.MAX_REPORTED_FLOWS).stream()
+    Set<Flow> flows = FlowComputation.flow(node, val, Collections.singletonList(ObjectConstraint.class), dereferencedSymbol, FlowComputation.MAX_REPORTED_FLOWS).stream()
       .filter(f -> !f.isEmpty())
       .map(f -> addDereferenceMessage(f, syntaxNode))
       .collect(Collectors.toSet());
@@ -246,7 +246,7 @@ public class NullDereferenceCheck extends SECheck {
       states.addAll(val.setConstraint(context.getState(), ObjectConstraint.NOT_NULL));
       return states;
     }
-    return Lists.newArrayList(context.getState());
+    return Collections.singletonList(context.getState());
   }
 
   @Override

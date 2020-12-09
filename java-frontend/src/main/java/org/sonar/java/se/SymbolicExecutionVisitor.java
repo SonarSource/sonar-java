@@ -19,8 +19,8 @@
  */
 package org.sonar.java.se;
 
+import java.util.Arrays;
 import org.sonar.java.annotations.VisibleForTesting;
-import com.google.common.collect.Lists;
 import java.util.List;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -55,7 +55,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Lists.newArrayList(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
+    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
   }
 
   @Override

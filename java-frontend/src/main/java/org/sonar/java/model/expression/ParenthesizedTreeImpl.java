@@ -19,7 +19,7 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.collect.Lists;
+import java.util.Arrays;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
@@ -67,7 +67,7 @@ public class ParenthesizedTreeImpl extends AssessableExpressionTree implements P
 
   @Override
   public Iterable<Tree> children() {
-    return Lists.newArrayList(
+    return Arrays.asList(
       openParenToken,
       expression,
       closeParenToken);

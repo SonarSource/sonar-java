@@ -19,7 +19,7 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.collect.Lists;
+import java.util.Arrays;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JLabelSymbol;
 import org.sonar.java.model.JavaTree;
@@ -78,9 +78,6 @@ public class LabeledStatementTreeImpl extends JavaTree implements LabeledStateme
 
   @Override
   public Iterable<Tree> children() {
-    return Lists.newArrayList(
-      label,
-      colonToken,
-      statement);
+    return Arrays.asList(label, colonToken, statement);
   }
 }

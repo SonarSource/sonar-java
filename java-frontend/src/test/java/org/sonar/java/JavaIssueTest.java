@@ -19,8 +19,8 @@
  */
 package org.sonar.java;
 
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -112,10 +112,10 @@ class JavaIssueTest {
     javaIssue.setPrimaryLocation(inputFile, "main message", 1, 2, 1, 6);
     List<List<AnalyzerMessage>> flows = new ArrayList<>();
     flows.add(
-      Lists.newArrayList(
+      Arrays.asList(
         new AnalyzerMessage(null, inputFile, new AnalyzerMessage.TextSpan(2, 2, 2, 4), "flow message 1", 0)));
     flows.add(
-      Lists.newArrayList(
+      Arrays.asList(
         new AnalyzerMessage(null, inputFile, new AnalyzerMessage.TextSpan(3, 1, 3, 5), "flow message 2", 0)));
     javaIssue.addFlow(inputFile, flows);
     javaIssue.save();

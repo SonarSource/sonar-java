@@ -19,9 +19,9 @@
  */
 package org.sonar.java.model.expression;
 
+import java.util.Arrays;
 import org.sonar.java.Preconditions;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import org.sonar.java.ast.parser.BoundListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -113,9 +113,9 @@ public class TypeCastExpressionTreeImpl extends AssessableExpressionTree impleme
   @Override
   public Iterable<Tree> children() {
     return Iterables.concat(
-      Lists.newArrayList(openParenToken, type),
+      Arrays.asList(openParenToken, type),
       andToken == null ? Collections.<Tree>emptyList() : Collections.singletonList(andToken()),
-      Lists.newArrayList(bounds, closeParenToken, expression)
+      Arrays.asList(bounds, closeParenToken, expression)
     );
   }
 
