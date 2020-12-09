@@ -19,9 +19,10 @@
  */
 package org.sonar.java.se;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import org.sonar.java.Preconditions;
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
 
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -38,7 +39,7 @@ import java.util.Set;
 public class ExplodedGraph {
 
   private final Map<Node, Node> nodes = new HashMap<>();
-  private final Multimap<ProgramPoint, Node> nodesByProgramPoint = LinkedListMultimap.create();
+  private final Map<ProgramPoint, List<Node>> nodesByProgramPoint = new HashMap<>();
 
   /**
    * Returns node associated with given (programPoint,programState) pair. If no node for this pair exists, it is created.
@@ -52,7 +53,7 @@ public class ExplodedGraph {
     }
     result.isNew = true;
     nodes.put(result, result);
-    nodesByProgramPoint.put(programPoint, result);
+    nodesByProgramPoint.computeIfAbsent(programPoint, k -> new LinkedList<>()).add(result);
     return result;
   }
 
@@ -93,7 +94,7 @@ public class ExplodedGraph {
     }
 
     public Collection<Node> siblings() {
-      Collection<Node> collection = explodedGraph.nodesByProgramPoint.get(programPoint);
+      Collection<Node> collection = explodedGraph.nodesByProgramPoint.getOrDefault(programPoint, Collections.emptyList());
       collection.remove(this);
       return collection;
     }

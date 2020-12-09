@@ -19,8 +19,8 @@
  */
 package org.sonar.java.cfg;
 
-import com.google.common.collect.Sets;
 import org.sonar.java.collections.ListUtils;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -115,7 +115,7 @@ public class LiveVariables {
       block.exceptions().stream().map(in::get).filter(Objects::nonNull).forEach(blockOut::addAll);
       // in = gen and (out - kill)
       Set<Symbol> newIn = new HashSet<>(gen.get(block));
-      newIn.addAll(Sets.difference(blockOut, kill.get(block)));
+      newIn.addAll(SetUtils.difference(blockOut, kill.get(block)));
 
       if (newIn.equals(in.get(block))) {
         continue;

@@ -47,4 +47,10 @@ public final class SetUtils {
       .flatMap(Set::stream)
       .collect(Collectors.toSet());
   }
+
+  public static <T> Set<T> difference(Set<T> set1, Set<T> set2) {
+    return set1.stream()
+      .filter(elem -> !set2.contains(elem))
+      .collect(Collectors.toSet());
+  }
 }

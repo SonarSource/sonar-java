@@ -20,11 +20,13 @@
 package org.sonar.java.se;
 
 import java.util.Arrays;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
@@ -42,23 +44,23 @@ import java.util.stream.Collectors;
 
 public class AlwaysTrueOrFalseExpressionCollector {
 
-  private final Multimap<Tree, ExplodedGraph.Node> falseEvaluations = HashMultimap.create();
-  private final Multimap<Tree, ExplodedGraph.Node> trueEvaluations = HashMultimap.create();
+  private final Map<Tree, Set<ExplodedGraph.Node>> falseEvaluations = new HashMap<>();
+  private final Map<Tree, Set<ExplodedGraph.Node>> trueEvaluations = new HashMap<>();
 
   void evaluatedToFalse(Tree condition, ExplodedGraph.Node node) {
-    falseEvaluations.put(condition, node);
+    falseEvaluations.computeIfAbsent(condition, k -> new HashSet<>()).add(node);
   }
 
   void evaluatedToTrue(Tree condition, ExplodedGraph.Node node) {
-    trueEvaluations.put(condition, node);
+    trueEvaluations.computeIfAbsent(condition, k -> new HashSet<>()).add(node);
   }
 
   public Set<Tree> alwaysTrue() {
-    return Sets.difference(trueEvaluations.keySet(), falseEvaluations.keySet());
+    return SetUtils.difference(trueEvaluations.keySet(), falseEvaluations.keySet());
   }
 
   public Set<Tree> alwaysFalse() {
-    return Sets.difference(falseEvaluations.keySet(), trueEvaluations.keySet());
+    return SetUtils.difference(falseEvaluations.keySet(), trueEvaluations.keySet());
   }
 
   public Set<Flow> flowForExpression(Tree expression, int maxReturnedFlows) {
@@ -67,8 +69,8 @@ public class AlwaysTrueOrFalseExpressionCollector {
   }
 
   private Collection<ExplodedGraph.Node> getNodes(Tree expression) {
-    Collection<ExplodedGraph.Node> falseNodes = falseEvaluations.get(expression);
-    return falseNodes.isEmpty() ? trueEvaluations.get(expression) : falseNodes;
+    Collection<ExplodedGraph.Node> falseNodes = falseEvaluations.getOrDefault(expression, Collections.emptySet());
+    return falseNodes.isEmpty() ? trueEvaluations.getOrDefault(expression, Collections.emptySet()) : falseNodes;
   }
 
   private static Set<Flow> collectFlow(Collection<ExplodedGraph.Node> nodes, int maxReturnedFlows) {
