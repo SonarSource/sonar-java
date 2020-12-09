@@ -76,7 +76,7 @@ class ClasspathForMainTest {
 
   @Test
   void properties() throws Exception {
-    assertThat(ClasspathProperties.getProperties()).hasSize(4);
+    assertThat(ClasspathProperties.getProperties()).hasSize(5);
   }
 
   @Test

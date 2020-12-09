@@ -27,6 +27,7 @@ import java.util.List;
 
 public class ClasspathProperties {
 
+  public static final String SONAR_JAVA_JDK_HOME = "sonar.java.jdkHome";
   public static final String SONAR_JAVA_BINARIES = "sonar.java.binaries";
   public static final String SONAR_JAVA_LIBRARIES = "sonar.java.libraries";
   public static final String SONAR_JAVA_TEST_BINARIES = "sonar.java.test.binaries";
@@ -37,25 +38,30 @@ public class ClasspathProperties {
 
   public static List<PropertyDefinition> getProperties() {
     List<PropertyDefinition> extensions = new ArrayList<>();
+    extensions.add(PropertyDefinition.builder(SONAR_JAVA_JDK_HOME)
+      .description("Path to jdk directory used by the project under analysis.")
+      .hidden()
+      .build()
+    );
     extensions.add(PropertyDefinition.builder(SONAR_JAVA_BINARIES)
-            .description("Comma-separated paths to directories containing the binary files (directories with class files).")
-            .hidden()
-            .build()
+      .description("Comma-separated paths to directories containing the binary files (directories with class files).")
+      .hidden()
+      .build()
     );
     extensions.add(PropertyDefinition.builder(SONAR_JAVA_LIBRARIES)
-            .description("Comma-separated paths to libraries required by the project.")
-            .hidden()
-            .build()
+      .description("Comma-separated paths to libraries required by the project.")
+      .hidden()
+      .build()
     );
     extensions.add(PropertyDefinition.builder(SONAR_JAVA_TEST_BINARIES)
-            .description("Comma-separated paths to directories containing the binary files (directories with class files).")
-            .hidden()
-            .build()
+      .description("Comma-separated paths to directories containing the binary files (directories with class files).")
+      .hidden()
+      .build()
     );
     extensions.add(PropertyDefinition.builder(SONAR_JAVA_TEST_LIBRARIES)
-            .description("Comma-separated paths to libraries required by the project.")
-            .hidden()
-            .build()
+      .description("Comma-separated paths to libraries required by the project.")
+      .hidden()
+      .build()
     );
     return Collections.unmodifiableList(extensions);
   }
