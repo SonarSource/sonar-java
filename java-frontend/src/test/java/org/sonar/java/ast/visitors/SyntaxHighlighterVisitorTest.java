@@ -39,8 +39,8 @@ import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
-import org.sonar.java.classpath.JavaClasspath;
-import org.sonar.java.classpath.JavaTestClasspath;
+import org.sonar.java.classpath.ClasspathForMain;
+import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.JavaCheck;
 
@@ -67,7 +67,7 @@ class SyntaxHighlighterVisitorTest {
   public void setUp() throws Exception {
     context = SensorContextTester.create(temp.getRoot());
     sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), context.fileSystem(),
-      mock(JavaClasspath.class), mock(JavaTestClasspath.class), mock(CheckFactory.class));
+      mock(ClasspathForMain.class), mock(ClasspathForTest.class), mock(CheckFactory.class));
     sonarComponents.setSensorContext(context);
     syntaxHighlighterVisitor = new SyntaxHighlighterVisitor(sonarComponents);
   }

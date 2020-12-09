@@ -50,8 +50,8 @@ import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.checks.naming.BadMethodNameCheck;
-import org.sonar.java.classpath.JavaClasspath;
-import org.sonar.java.classpath.JavaTestClasspath;
+import org.sonar.java.classpath.ClasspathForMain;
+import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.GeneratedFile;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -108,7 +108,7 @@ class JavaSquidSensorTest {
     SensorContextTester context = createContext(onType).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
     DefaultFileSystem fs = context.fileSystem();
     SonarComponents sonarComponents = createSonarComponentsMock(context);
-    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(new JavaClasspath(settings.asConfig(), fs));
+    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(new ClasspathForMain(settings.asConfig(), fs));
     JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, null);
 
     jss.execute(context);
@@ -141,8 +141,8 @@ class JavaSquidSensorTest {
   private static SonarComponents createSonarComponentsMock(SensorContextTester contextTester) {
     Configuration settings = new MapSettings().asConfig();
     DefaultFileSystem fs = contextTester.fileSystem();
-    JavaTestClasspath javaTestClasspath = new JavaTestClasspath(settings, fs);
-    JavaClasspath javaClasspath = new JavaClasspath(settings, fs);
+    ClasspathForTest javaTestClasspath = new ClasspathForTest(settings, fs);
+    ClasspathForMain javaClasspath = new ClasspathForMain(settings, fs);
 
     FileLinesContext fileLinesContext = mock(FileLinesContext.class);
     FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);

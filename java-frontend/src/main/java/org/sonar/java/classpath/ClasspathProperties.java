@@ -25,14 +25,14 @@ import org.sonar.api.config.PropertyDefinition;
 
 import java.util.List;
 
-public class JavaClasspathProperties {
+public class ClasspathProperties {
 
   public static final String SONAR_JAVA_BINARIES = "sonar.java.binaries";
   public static final String SONAR_JAVA_LIBRARIES = "sonar.java.libraries";
   public static final String SONAR_JAVA_TEST_BINARIES = "sonar.java.test.binaries";
   public static final String SONAR_JAVA_TEST_LIBRARIES = "sonar.java.test.libraries";
 
-  private JavaClasspathProperties() {
+  private ClasspathProperties() {
   }
 
   public static List<PropertyDefinition> getProperties() {

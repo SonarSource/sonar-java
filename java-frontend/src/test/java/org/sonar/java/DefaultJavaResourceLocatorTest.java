@@ -26,7 +26,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.classpath.JavaClasspath;
+import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.model.VisitorsBridge;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,7 +39,7 @@ class DefaultJavaResourceLocatorTest {
 
   @BeforeAll
   public static void setup() {
-    JavaClasspath javaClasspath = mock(JavaClasspath.class);
+    ClasspathForMain javaClasspath = mock(ClasspathForMain.class);
     when(javaClasspath.getBinaryDirs()).thenReturn(Lists.newArrayList(new File("target/test-classes")));
     when(javaClasspath.getElements()).thenReturn(Lists.newArrayList(new File("target/test-classes")));
     InputFile inputFile = TestUtils.inputFile("src/test/java/org/sonar/java/DefaultJavaResourceLocatorTest.java");

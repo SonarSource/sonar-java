@@ -40,8 +40,8 @@ import org.sonar.api.platform.Server;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
-import org.sonar.java.classpath.JavaClasspath;
-import org.sonar.java.classpath.JavaTestClasspath;
+import org.sonar.java.classpath.ClasspathForMain;
+import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -58,11 +58,11 @@ import static org.mockito.Mockito.when;
  *
  */
 @ExtendWith(MockitoExtension.class)
-class TestDefaultJavaFileScannerContextWithSensorContextTester {
+class DefaultJavaFileScannerContextWithSensorContextTest {
 
   @Mock private FileLinesContextFactory fileLinesContextFactory;
-  @Mock private JavaClasspath javaClasspath;
-  @Mock private JavaTestClasspath javaTestClasspath;
+  @Mock private ClasspathForMain javaClasspath;
+  @Mock private ClasspathForTest javaTestClasspath;
   @Mock private CheckFactory checkFactory;
   @Mock private Server server;
 
