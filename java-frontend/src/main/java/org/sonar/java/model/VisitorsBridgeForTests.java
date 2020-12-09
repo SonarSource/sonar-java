@@ -19,7 +19,7 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.annotations.VisibleForTesting;
+import org.sonar.java.annotations.VisibleForTesting;
 import com.google.common.collect.Iterables;
 import java.io.File;
 import java.util.ArrayList;

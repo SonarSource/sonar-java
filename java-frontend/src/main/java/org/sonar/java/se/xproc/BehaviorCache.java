@@ -19,7 +19,7 @@
  */
 package org.sonar.java.se.xproc;
 
-import com.google.common.annotations.VisibleForTesting;
+import org.sonar.java.annotations.VisibleForTesting;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.InputStream;

@@ -19,7 +19,7 @@
  */
 package org.sonar.java.collections;
 
-import com.google.common.annotations.VisibleForTesting;
+import org.sonar.java.annotations.VisibleForTesting;
 
 import javax.annotation.Nullable;
 import java.util.Objects;

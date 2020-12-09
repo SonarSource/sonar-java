@@ -19,7 +19,7 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.annotations.VisibleForTesting;
+import org.sonar.java.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.RecognitionException;

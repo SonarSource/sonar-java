@@ -19,7 +19,7 @@
  */
 package org.sonar.java.cfg;
 
-import com.google.common.annotations.VisibleForTesting;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.cfg.CFG.Block;
 import org.sonar.plugins.java.api.tree.Tree;
 
