@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java;
+package org.sonar.java.classpath;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,6 +29,8 @@ import org.sonar.api.config.Configuration;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.api.utils.log.Profiler;
+import org.sonar.java.AnalysisException;
+import org.sonar.java.AnalysisWarningsWrapper;
 
 public class JavaClasspath extends AbstractJavaClasspath {
 
@@ -55,7 +57,8 @@ public class JavaClasspath extends AbstractJavaClasspath {
       Set<File> libraries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES);
       if (binaries.isEmpty() && libraries.isEmpty() && useDeprecatedProperties()) {
         throw new AnalysisException(
-          "sonar.binaries and sonar.libraries are not supported since version 4.0 of the SonarSource Java Analyzer, please use sonar.java.binaries and sonar.java.libraries instead");
+          "sonar.binaries and sonar.libraries are not supported since version 4.0 of the SonarSource Java Analyzer,"
+            + " please use sonar.java.binaries and sonar.java.libraries instead");
       }
       if (binaries.isEmpty() && hasMoreThanOneJavaFile()) {
         if(isSonarLint()) {
