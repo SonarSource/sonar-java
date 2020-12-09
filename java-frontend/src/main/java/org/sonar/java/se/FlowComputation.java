@@ -20,7 +20,6 @@
 package org.sonar.java.se;
 
 import org.sonar.java.Preconditions;
-import com.google.common.collect.ImmutableSet;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Collections;
@@ -566,15 +565,15 @@ public class FlowComputation {
 
     Set<LearnedConstraint> learnedConstraints(ExplodedGraph.Edge edge) {
       Set<LearnedConstraint> learnedConstraints = edge.learnedConstraints();
-      ImmutableSet.Builder<LearnedConstraint> lcByDomainBuilder = ImmutableSet.builder();
+      Set<LearnedConstraint> lcByDomain = new HashSet<>();
       // guarantee that we will keep the same domain order when reporting
       for (Class<? extends Constraint> domain : domains) {
         learnedConstraints.stream()
           .filter(lc -> symbolicValues.contains(lc.symbolicValue()) && hasConstraintForDomain(lc, domain))
-          .forEach(lcByDomainBuilder::add);
+          .forEach(lcByDomain::add);
       }
 
-      return lcByDomainBuilder.build();
+      return Collections.unmodifiableSet(lcByDomain);
     }
 
     private boolean hasConstraintForDomain(LearnedConstraint lc, Class<? extends Constraint> domain) {

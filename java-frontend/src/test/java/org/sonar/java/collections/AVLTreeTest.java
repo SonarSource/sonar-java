@@ -19,7 +19,6 @@
  */
 package org.sonar.java.collections;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -127,7 +126,10 @@ class AVLTreeTest {
     HashMap<Object, Object> biConsumer = new HashMap<>();
     t.forEach((k, v) -> assertThat(biConsumer.put(k, v)).as("unique key-value").isNull());
     assertThat(biConsumer)
-      .isEqualTo(ImmutableMap.of(k1, "v1", k2, "v2"));
+      .isEqualTo(MapBuilder.newMap()
+        .put(k1, "v1")
+        .put(k2, "v2")
+        .build());
 
     HashSet<Object> consumer = new HashSet<>();
     t.forEach(k -> assertThat(consumer.add(k)).as("unique key").isTrue());

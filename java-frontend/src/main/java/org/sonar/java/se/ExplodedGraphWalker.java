@@ -21,7 +21,6 @@ package org.sonar.java.se;
 
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.Preconditions;
-import com.google.common.collect.ImmutableSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,6 +41,7 @@ import javax.annotation.Nullable;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.collections.ListUtils;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.Sema;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
@@ -108,7 +108,7 @@ public class ExplodedGraphWalker {
   public static final int MAX_NESTED_BOOLEAN_STATES = 10_000;
   // would correspond to 10 parameters annotated with @Nullable
   private static final int MAX_STARTING_STATES = 1_024;
-  private static final Set<String> THIS_SUPER = ImmutableSet.of("this", "super");
+  private static final Set<String> THIS_SUPER = SetUtils.immutableSetOf("this", "super");
 
   @VisibleForTesting
   static final int MAX_EXEC_PROGRAM_POINT = 2;
