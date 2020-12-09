@@ -20,12 +20,12 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.Flow;
@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 @Rule(key = "S4165")
 public class RedundantAssignmentsCheck extends SECheck {
 
-  private static final Set<String> STREAM_TYPES = ImmutableSet.of(
+  private static final Set<String> STREAM_TYPES = SetUtils.immutableSetOf(
     "java.util.stream.Stream",
     "java.util.stream.IntStream",
     "java.util.stream.LongStream",

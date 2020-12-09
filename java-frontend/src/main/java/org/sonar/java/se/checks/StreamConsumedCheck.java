@@ -19,12 +19,12 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.Flow;
@@ -55,7 +55,7 @@ public class StreamConsumedCheck extends SECheck {
     CONSUMED, NOT_CONSUMED
   }
 
-  private static final Set<String> STREAM_TYPES = ImmutableSet.of("java.util.stream.Stream", "java.util.stream.IntStream", "java.util.stream.LongStream",
+  private static final Set<String> STREAM_TYPES = SetUtils.immutableSetOf("java.util.stream.Stream", "java.util.stream.IntStream", "java.util.stream.LongStream",
     "java.util.stream.DoubleStream");
   private static final MethodMatchers TERMINAL_OPERATIONS = MethodMatchers.or(
     MethodMatchers.create()

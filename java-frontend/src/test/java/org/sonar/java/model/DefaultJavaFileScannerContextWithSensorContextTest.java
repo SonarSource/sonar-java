@@ -19,12 +19,12 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.collect.ImmutableSet;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,6 +40,7 @@ import org.sonar.api.platform.Server;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.se.checks.SECheck;
@@ -106,7 +107,7 @@ class DefaultJavaFileScannerContextWithSensorContextTest {
   void test_report_issue_with_flow() throws Exception {
     List<JavaFileScannerContext.Location> flow1 = Collections.singletonList(new JavaFileScannerContext.Location("flow1", tree));
     List<JavaFileScannerContext.Location> flow2 = Collections.singletonList(new JavaFileScannerContext.Location("flow2", tree));
-    ImmutableSet<List<JavaFileScannerContext.Location>> flows = ImmutableSet.of(flow1, flow2);
+    Set<List<JavaFileScannerContext.Location>> flows = SetUtils.immutableSetOf(flow1, flow2);
     scannerContext.reportIssueWithFlow(check, tree, "msg", flows, null);
     Issue issue = sensorContext.allIssues().iterator().next();
     assertThat(issue.flows()).hasSize(2);
@@ -116,7 +117,7 @@ class DefaultJavaFileScannerContextWithSensorContextTest {
   void test_report_se_issue_with_flow() throws Exception {
     List<JavaFileScannerContext.Location> flow1 = Collections.singletonList(new JavaFileScannerContext.Location("SE flow1", tree));
     List<JavaFileScannerContext.Location> flow2 = Collections.singletonList(new JavaFileScannerContext.Location("SE flow2", tree));
-    ImmutableSet<List<JavaFileScannerContext.Location>> flows = ImmutableSet.of(flow1, flow2);
+    Set<List<JavaFileScannerContext.Location>> flows = SetUtils.immutableSetOf(flow1, flow2);
 
     scannerContext.reportIssueWithFlow(seCheck, tree, "msg", flows, null);
     Issue issue = sensorContext.allIssues().iterator().next();

@@ -19,7 +19,7 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.HashSet;
 
 import org.sonar.java.collections.ListUtils;
 import org.sonar.java.se.ExplodedGraph;
@@ -85,7 +85,7 @@ public class ExceptionalYieldChecker {
     Set<Flow> argumentsFlows = flowsForMethodArguments(node, mit, parameterCausingExceptionIndex, FlowComputation.MAX_REPORTED_FLOWS);
     Set<Flow> exceptionFlows = yield.exceptionFlows(FlowComputation.MAX_REPORTED_FLOWS);
 
-    ImmutableSet.Builder<Flow> flows = ImmutableSet.builder();
+    Set<Flow> flows = new HashSet<>();
     for (Flow argumentFlow : argumentsFlows) {
       for (Flow exceptionFlow : exceptionFlows) {
         flows.add(Flow.builder()
@@ -97,7 +97,7 @@ public class ExceptionalYieldChecker {
       }
     }
 
-    check.reportIssue(reportTree, String.format(message, methodName), flows.build());
+    check.reportIssue(reportTree, String.format(message, methodName), Collections.unmodifiableSet(flows));
   }
 
   private static Set<Flow> flowsForMethodArguments(ExplodedGraph.Node node, MethodInvocationTree mit, int parameterCausingExceptionIndex, int maxReturnedFlows) {

@@ -19,17 +19,19 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.collect.ImmutableSet;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -56,7 +58,7 @@ public final class NullableAnnotationUtils {
    * Nullable annotations can be "strong", when one must check for nullness, or "weak", when it
    * can be null, but it may be fine to not check it.
    */
-  private static final Set<String> STRONG_NULLABLE_ANNOTATIONS = ImmutableSet.of(
+  private static final Set<String> STRONG_NULLABLE_ANNOTATIONS = SetUtils.immutableSetOf(
     "javax.annotation.CheckForNull",
     "edu.umd.cs.findbugs.annotations.CheckForNull",
     "org.netbeans.api.annotations.common.CheckForNull",
@@ -65,28 +67,31 @@ public final class NullableAnnotationUtils {
     "org.springframework.lang.Nullable",
     "reactor.util.annotation.Nullable");
 
-  private static final Set<String> NULLABLE_ANNOTATIONS = new ImmutableSet.Builder<String>()
-    .add("android.annotation.Nullable")
-    .add("android.support.annotation.Nullable")
-    .add("androidx.annotation.Nullable")
-    .add("com.sun.istack.internal.Nullable")
-    .add("edu.umd.cs.findbugs.annotations.Nullable")
-    .add("io.reactivex.annotations.Nullable")
-    .add("io.reactivex.rxjava3.annotations.Nullable")
-    .add("javax.annotation.Nullable")
-    .add("org.checkerframework.checker.nullness.compatqual.NullableDecl")
-    .add("org.checkerframework.checker.nullness.compatqual.NullableType")
-    .add("org.checkerframework.checker.nullness.qual.Nullable")
-    .add("org.eclipse.jdt.annotation.Nullable")
-    .add("org.eclipse.jgit.annotations.Nullable")
-    .add("org.jetbrains.annotations.Nullable")
-    .add("org.jmlspecs.annotation.Nullable")
-    .add("org.netbeans.api.annotations.common.NullAllowed")
-    .add("org.netbeans.api.annotations.common.NullUnknown")
-    .addAll(STRONG_NULLABLE_ANNOTATIONS)
-    .build();
 
-  private static final Set<String> NONNULL_ANNOTATIONS = ImmutableSet.of(
+  private static final Set<String> WEAK_NULLABLE_ANNOTATIONS = SetUtils.immutableSetOf(
+    "android.annotation.Nullable",
+    "android.support.annotation.Nullable",
+    "androidx.annotation.Nullable",
+    "com.sun.istack.internal.Nullable",
+    "edu.umd.cs.findbugs.annotations.Nullable",
+    "io.reactivex.annotations.Nullable",
+    "io.reactivex.rxjava3.annotations.Nullable",
+    "javax.annotation.Nullable",
+    "org.checkerframework.checker.nullness.compatqual.NullableDecl",
+    "org.checkerframework.checker.nullness.compatqual.NullableType",
+    "org.checkerframework.checker.nullness.qual.Nullable",
+    "org.eclipse.jdt.annotation.Nullable",
+    "org.eclipse.jgit.annotations.Nullable",
+    "org.jetbrains.annotations.Nullable",
+    "org.jmlspecs.annotation.Nullable",
+    "org.netbeans.api.annotations.common.NullAllowed",
+    "org.netbeans.api.annotations.common.NullUnknown");
+
+  private static final Set<String> NULLABLE_ANNOTATIONS = Collections.unmodifiableSet(
+    Stream.of(STRONG_NULLABLE_ANNOTATIONS, WEAK_NULLABLE_ANNOTATIONS)
+    .flatMap(Set::stream).collect(Collectors.toSet()));
+
+  private static final Set<String> NONNULL_ANNOTATIONS = SetUtils.immutableSetOf(
     "android.annotation.NonNull",
     "android.support.annotation.NonNull",
     "android.support.annotation.NonNull",

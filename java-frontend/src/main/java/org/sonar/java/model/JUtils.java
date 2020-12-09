@@ -19,11 +19,12 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.collect.ImmutableBiMap;
+import java.util.Map;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Modifier;
+import org.sonar.java.collections.MapBuilder;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -43,28 +44,35 @@ public final class JUtils {
   private JUtils() {
   }
 
-  private static final ImmutableBiMap<String, String> WRAPPER_TO_PRIMITIVE;
-
-  static {
-    WRAPPER_TO_PRIMITIVE = ImmutableBiMap.<String, String>builder()
-      .put("java.lang.Byte", "byte")
-      .put("java.lang.Character", "char")
-      .put("java.lang.Short", "short")
-      .put("java.lang.Integer", "int")
-      .put("java.lang.Long", "long")
-      .put("java.lang.Float", "float")
-      .put("java.lang.Double", "double")
-      .put("java.lang.Boolean", "boolean")
-      .build();
-  }
-
+  private static final Map<String, String> WRAPPER_TO_PRIMITIVE = MapBuilder.<String, String>newMap()
+    .put("java.lang.Byte", "byte")
+    .put("java.lang.Character", "char")
+    .put("java.lang.Short", "short")
+    .put("java.lang.Integer", "int")
+    .put("java.lang.Long", "long")
+    .put("java.lang.Float", "float")
+    .put("java.lang.Double", "double")
+    .put("java.lang.Boolean", "boolean")
+    .build();
+  
+  private static final Map<String, String> PRIMITIVE_TO_WRAPPER = MapBuilder.<String, String>newMap()
+    .put("byte", "java.lang.Byte")
+    .put("char", "java.lang.Character")
+    .put("short", "java.lang.Short")
+    .put("int", "java.lang.Integer")
+    .put("long","java.lang.Long")
+    .put("float", "java.lang.Float")
+    .put("double", "java.lang.Double")
+    .put("boolean", "java.lang.Boolean")
+    .build();
+    
   public static boolean isPrimitiveWrapper(Type type) {
     return type.isClass() && WRAPPER_TO_PRIMITIVE.containsKey(type.fullyQualifiedName());
   }
 
   @Nullable
   public static Type primitiveWrapperType(Type type) {
-    String name = WRAPPER_TO_PRIMITIVE.inverse().get(type.fullyQualifiedName());
+    String name = PRIMITIVE_TO_WRAPPER.get(type.fullyQualifiedName());
     if (name == null) {
       return null;
     }

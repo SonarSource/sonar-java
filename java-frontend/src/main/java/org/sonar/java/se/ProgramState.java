@@ -19,9 +19,9 @@
  */
 package org.sonar.java.se;
 
+import java.util.HashSet;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.Preconditions;
-import com.google.common.collect.ImmutableSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,6 +35,7 @@ import javax.annotation.Nullable;
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PMap;
 import org.sonar.java.collections.PStack;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.StreamConsumedCheck;
@@ -52,7 +53,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 
 public class ProgramState {
 
-  private static final Set<Class<? extends Constraint>> NON_DISPOSABLE_CONSTRAINTS = ImmutableSet.of(UnclosedResourcesCheck.ResourceConstraint.class,
+  private static final Set<Class<? extends Constraint>> NON_DISPOSABLE_CONSTRAINTS = SetUtils.immutableSetOf(UnclosedResourcesCheck.ResourceConstraint.class,
     CustomUnclosedResourcesCheck.CustomResourceConstraint.class, LocksNotUnlockedCheck.LockConstraint.class, StreamConsumedCheck.StreamPipelineConstraint.class);
   private Set<RelationalSymbolicValue> knownRelations;
 
@@ -533,22 +534,22 @@ public class ProgramState {
   }
 
   Set<LearnedConstraint> learnedConstraints(ProgramState parent) {
-    ImmutableSet.Builder<LearnedConstraint> result = ImmutableSet.builder();
+    Set<LearnedConstraint> result = new HashSet<>();
     constraints.forEach((sv, pmap) -> pmap.forEach((domain, c) -> {
       if (!c.equals(parent.getConstraint(sv, domain))) {
         result.add(new LearnedConstraint(sv, c));
       }
     }));
-    return result.build();
+    return Collections.unmodifiableSet(result);
   }
 
   Set<LearnedAssociation> learnedAssociations(ProgramState parent) {
-    ImmutableSet.Builder<LearnedAssociation> result = ImmutableSet.builder();
+    Set<LearnedAssociation> result = new HashSet<>();
     values.forEach((s, sv) -> {
       if (parent.getValue(s) != sv) {
         result.add(new LearnedAssociation(sv, s));
       }
     });
-    return result.build();
+    return Collections.unmodifiableSet(result);
   }
 }
