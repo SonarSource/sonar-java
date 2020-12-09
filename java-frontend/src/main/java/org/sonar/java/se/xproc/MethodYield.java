@@ -19,7 +19,7 @@
  */
 package org.sonar.java.se.xproc;
 
-import com.google.common.base.Preconditions;
+import org.sonar.java.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;

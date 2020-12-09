@@ -19,7 +19,7 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.base.Preconditions;
+import org.sonar.java.Preconditions;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 

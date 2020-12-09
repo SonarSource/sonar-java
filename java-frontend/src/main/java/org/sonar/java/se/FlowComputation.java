@@ -19,7 +19,7 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.base.Preconditions;
+import org.sonar.java.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import java.util.ArrayDeque;
@@ -365,7 +365,7 @@ public class FlowComputation {
       if (((CFG.Block) programPoint.block).isCatchBlock() && programPoint.i == 0) {
         VariableTree catchVariable = ((VariableTree) programPoint.syntaxTree());
         SymbolicValue.CaughtExceptionSymbolicValue caughtSv = ((SymbolicValue.CaughtExceptionSymbolicValue) edge.child.programState.getValue(catchVariable.symbol()));
-        Preconditions.checkNotNull(caughtSv, "Caught exception not found in program state");
+        Objects.requireNonNull(caughtSv, "Caught exception not found in program state");
         Type exceptionType = caughtSv.exception().exceptionType();
         return Optional.of(location(edge.parent, String.format("%s is caught.", exceptionName(exceptionType))));
       }

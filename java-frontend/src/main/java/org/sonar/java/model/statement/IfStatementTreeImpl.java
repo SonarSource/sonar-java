@@ -19,7 +19,7 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.base.Preconditions;
+import org.sonar.java.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.sonar.java.model.InternalSyntaxToken;

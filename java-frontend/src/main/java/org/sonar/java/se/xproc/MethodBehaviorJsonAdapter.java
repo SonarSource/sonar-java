@@ -19,7 +19,7 @@
  */
 package org.sonar.java.se.xproc;
 
-import com.google.common.base.Preconditions;
+import org.sonar.java.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;

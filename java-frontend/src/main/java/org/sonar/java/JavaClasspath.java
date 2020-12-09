@@ -19,10 +19,10 @@
  */
 package org.sonar.java;
 
-import com.google.common.base.Strings;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Set;
+import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Configuration;
@@ -82,7 +82,10 @@ public class JavaClasspath extends AbstractJavaClasspath {
   }
 
   private boolean useDeprecatedProperties() {
-    return !Strings.isNullOrEmpty(settings.get("sonar.binaries").orElse(null)) && !Strings.isNullOrEmpty(settings.get("sonar.libraries").orElse(null));
+    return isNotNullOrEmpty(settings.get("sonar.binaries").orElse(null)) && isNotNullOrEmpty(settings.get("sonar.libraries").orElse(null));
   }
 
+  private static boolean isNotNullOrEmpty(@Nullable String string) {
+    return string != null && !string.isEmpty();
+  }
 }

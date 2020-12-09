@@ -19,8 +19,8 @@
  */
 package org.sonar.plugins.java.api;
 
+import org.sonar.java.Preconditions;
 import org.sonar.java.annotations.Beta;
-import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
 import org.sonar.api.batch.ScannerSide;
 import org.sonarsource.api.sonarlint.SonarLintSide;

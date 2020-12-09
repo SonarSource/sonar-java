@@ -19,7 +19,7 @@
  */
 package org.sonar.java.se.xproc;
 
-import com.google.common.base.Preconditions;
+import org.sonar.java.Preconditions;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;

@@ -19,7 +19,7 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.base.Preconditions;
+import org.sonar.java.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.java.ast.parser.BoundListTreeImpl;
