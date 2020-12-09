@@ -19,7 +19,7 @@
  */
 package org.sonar.java.model.declaration;
 
-import com.google.common.base.Preconditions;
+import org.sonar.java.Preconditions;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Objects;

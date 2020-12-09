@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.jupiter.api.Test;
@@ -97,8 +96,9 @@ class SyntacticEquivalenceTest {
   }
 
   private AbstractBooleanAssert<?> getAssertion(List<String> statement1, List<String> statement2) {
-    CompilationUnitTree compilationUnitTree = compilationUnitTree("class A { void method1() { " + Joiner.on(";").join(statement1) + ";} " +
-      "void method2(){ " + Joiner.on(";").join(statement2) + ";} }");
+    ;
+    CompilationUnitTree compilationUnitTree = compilationUnitTree("class A { void method1() { " + String.join(";", statement1) + ";} " +
+      "void method2(){ " + String.join(";", statement2) + ";} }");
     ClassTree classTree = ((ClassTree) compilationUnitTree.types().get(0));
     assertThat(classTree.members()).hasSize(2);
     return assertThat(SyntacticEquivalence.areEquivalent(((MethodTree) classTree.members().get(0)).block().body(), ((MethodTree) classTree.members().get(1)).block().body()));

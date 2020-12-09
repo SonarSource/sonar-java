@@ -19,7 +19,7 @@
  */
 package org.sonar.java.se.symbolicvalues;
 
-import com.google.common.base.Preconditions;
+import org.sonar.java.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import org.sonar.java.se.ProgramState;

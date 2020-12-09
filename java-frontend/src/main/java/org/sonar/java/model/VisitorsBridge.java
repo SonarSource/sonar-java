@@ -20,7 +20,6 @@
 package org.sonar.java.model;
 
 import org.sonar.java.annotations.VisibleForTesting;
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
@@ -48,6 +47,7 @@ import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.exceptions.ThrowableUtils;
 import org.sonar.java.se.SymbolicExecutionMode;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.xproc.BehaviorCache;
@@ -170,7 +170,7 @@ public class VisitorsBridge {
       // bad configuration of a rule parameter, we want to fail analysis fast.
       throw new AnalysisException("Bad configuration of rule parameter", e);
     } catch (Exception e) {
-      Throwable rootCause = Throwables.getRootCause(e);
+      Throwable rootCause = ThrowableUtils.getRootCause(e);
       if (rootCause instanceof InterruptedIOException || rootCause instanceof InterruptedException) {
         throw e;
       }

@@ -20,7 +20,6 @@
 package org.sonar.java;
 
 import org.sonar.java.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;

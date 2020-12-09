@@ -19,7 +19,6 @@
  */
 package org.sonar.java;
 
-import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import java.io.File;
 import java.io.IOException;
@@ -35,10 +34,12 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.batch.fs.FileSystem;
@@ -52,7 +53,7 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
 @SonarLintSide
 public abstract class AbstractJavaClasspath {
 
-  private static final char SEPARATOR = ',';
+  private static final String SEPARATOR = ",";
   private static final char UNIX_SEPARATOR = '/';
   private static final char WINDOWS_SEPARATOR = '\\';
   private static final Logger LOG = Loggers.get(AbstractJavaClasspath.class);
@@ -79,7 +80,8 @@ public abstract class AbstractJavaClasspath {
     Set<File> result = new LinkedHashSet<>();
     String fileList = settings.get(property).orElse("");
     if (StringUtils.isNotEmpty(fileList)) {
-      Iterable<String> fileNames = Splitter.on(SEPARATOR).omitEmptyStrings().split(fileList);
+      Iterable<String> fileNames  = Arrays.stream(fileList.split(SEPARATOR))
+        .filter(s -> !s.isEmpty()).collect(Collectors.toList());
       File baseDir = fs.baseDir();
       boolean hasJavaSources = hasJavaSources();
       boolean validateLibs = validateLibraries;
