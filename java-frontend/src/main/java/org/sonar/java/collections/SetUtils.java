@@ -53,4 +53,12 @@ public final class SetUtils {
       .filter(elem -> !set2.contains(elem))
       .collect(Collectors.toSet());
   }
+
+  public static <T> T getOnlyElement(Set<T> set) {
+    if (set.size() == 1) {
+      return set.iterator().next();
+    }
+    throw new IllegalArgumentException(String.format("Expected list of size 1, but was list of size %d.", set.size()));
+  }
+
 }

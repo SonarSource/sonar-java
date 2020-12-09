@@ -19,9 +19,9 @@
  */
 package org.sonar.java.model.declaration;
 
-import com.google.common.collect.Iterables;
 import java.util.Arrays;
 import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.Symbols;
@@ -150,7 +150,7 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
 
   @Override
   public Iterable<Tree> children() {
-    return Iterables.concat(
+    return ListUtils.concat(
       Arrays.asList(modifiers, type, simpleName),
       initializer != null ? Arrays.asList(equalToken, initializer) : Collections.<Tree>emptyList(),
       endToken != null ? Collections.singletonList(endToken) : Collections.<Tree>emptyList()

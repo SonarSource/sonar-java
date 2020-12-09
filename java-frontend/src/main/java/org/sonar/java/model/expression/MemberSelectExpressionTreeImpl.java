@@ -19,12 +19,11 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.collect.Iterables;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -87,7 +86,7 @@ public class MemberSelectExpressionTreeImpl extends AssessableExpressionTree imp
 
   @Override
   public Iterable<Tree> children() {
-    return Iterables.concat(
+    return ListUtils.concat(
       annotations,
       Arrays.asList(
         expression,

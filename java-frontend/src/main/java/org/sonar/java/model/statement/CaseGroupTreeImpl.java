@@ -19,9 +19,9 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.collect.Iterables;
 import java.util.Collections;
 import org.sonar.java.ast.parser.BlockStatementListTreeImpl;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
@@ -63,7 +63,7 @@ public class CaseGroupTreeImpl extends JavaTree implements CaseGroupTree {
 
   @Override
   public Iterable<Tree> children() {
-    return Iterables.concat(
+    return ListUtils.concat(
       labels,
       body);
   }

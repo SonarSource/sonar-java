@@ -20,10 +20,10 @@
 package org.sonar.java.model.declaration;
 
 import org.sonar.java.Preconditions;
-import com.google.common.collect.Iterables;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.Symbols;
@@ -224,7 +224,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   @Override
   public Iterable<Tree> children() {
-    return Iterables.concat(
+    return ListUtils.concat(
       Collections.singletonList(modifiers),
       addIfNotNull(atToken),
       addIfNotNull(declarationKeyword),

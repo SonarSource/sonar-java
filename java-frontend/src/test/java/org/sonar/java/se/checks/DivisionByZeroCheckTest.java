@@ -19,9 +19,9 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.Iterables;
 import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SETestUtils;
 import org.sonar.java.se.constraint.BooleanConstraint;
@@ -76,10 +76,10 @@ class DivisionByZeroCheckTest {
 
   private DivisionByZeroCheck.ZeroConstraint copyConstraint(SymbolicValue a, SymbolicValue b, RelationalSymbolicValue.Kind relation,
     @Nullable DivisionByZeroCheck.ZeroConstraint expected) {
-    ProgramState ps = Iterables.getOnlyElement(a.setConstraint(ProgramState.EMPTY_STATE, ZERO));
+    ProgramState ps = ListUtils.getOnlyElement(a.setConstraint(ProgramState.EMPTY_STATE, ZERO));
     RelationalSymbolicValue rel = new RelationalSymbolicValue(relation);
     SymbolicValueTestUtil.computedFrom(rel, b, a);
-    ps = Iterables.getOnlyElement(rel.setConstraint(ps, BooleanConstraint.TRUE));
+    ps = ListUtils.getOnlyElement(rel.setConstraint(ps, BooleanConstraint.TRUE));
     return ps.getConstraint(b, DivisionByZeroCheck.ZeroConstraint.class);
   }
 }

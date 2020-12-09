@@ -19,7 +19,7 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.google.common.collect.Iterables;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -79,7 +79,7 @@ public class ArgumentListTreeImpl extends ListTreeImpl<ExpressionTree> implement
 
   @Override
   public Iterable<Tree> children() {
-    return Iterables.concat(
+    return ListUtils.concat(
       openParenToken != null ? Collections.singletonList(openParenToken) : Collections.<Tree>emptyList(),
       super.children(),
       closeParenToken != null ? Collections.singletonList(closeParenToken) : Collections.<Tree>emptyList());

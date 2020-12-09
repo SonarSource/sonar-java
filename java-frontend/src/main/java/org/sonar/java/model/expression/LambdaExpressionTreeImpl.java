@@ -19,8 +19,8 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.collect.Iterables;
 import java.util.Arrays;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -91,7 +91,7 @@ public class LambdaExpressionTreeImpl extends AssessableExpressionTree implement
   @Override
   public Iterable<Tree> children() {
     boolean hasParentheses = openParenToken != null;
-    return Iterables.concat(
+    return ListUtils.concat(
       hasParentheses ? Collections.singletonList(openParenToken) : Collections.<Tree>emptyList(),
       parameters,
       hasParentheses ? Collections.singletonList(closeParenToken) : Collections.<Tree>emptyList(),

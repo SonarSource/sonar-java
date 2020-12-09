@@ -19,15 +19,13 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.collect.Iterables;
+import java.util.ArrayList;
+import java.util.List;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.StaticInitializerTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Collections;
-import java.util.List;
 
 public class StaticInitializerTreeImpl extends BlockTreeImpl implements StaticInitializerTree {
 
@@ -45,9 +43,10 @@ public class StaticInitializerTreeImpl extends BlockTreeImpl implements StaticIn
 
   @Override
   public Iterable<Tree> children() {
-    return Iterables.concat(
-      Collections.singletonList(staticKeyword),
-      super.children());
+    List<Tree> list = new ArrayList<>();
+    list.add(staticKeyword);
+    super.children().forEach(list::add);
+    return list;
   }
 
 }

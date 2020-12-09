@@ -19,7 +19,6 @@
  */
 package org.sonar.java.classpath;
 
-import com.google.common.collect.Iterables;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -47,6 +46,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonar.java.collections.CollectionUtils;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
 @ScannerSide
@@ -105,7 +105,7 @@ public abstract class AbstractClasspath {
   }
 
   protected boolean hasMoreThanOneJavaFile() {
-    return Iterables.size(fs.inputFiles(fs.predicates().and(fs.predicates().hasLanguage("java"), fs.predicates().hasType(fileType)))) > 1;
+    return CollectionUtils.size(fs.inputFiles(fs.predicates().and(fs.predicates().hasLanguage("java"), fs.predicates().hasType(fileType)))) > 1;
   }
 
   private Set<File> getFilesForPattern(Path baseDir, String pathPattern, boolean libraryProperty) {

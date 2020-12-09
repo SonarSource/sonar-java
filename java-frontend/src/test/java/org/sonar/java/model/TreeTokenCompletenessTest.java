@@ -19,12 +19,12 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.collect.Maps;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +66,7 @@ class TreeTokenCompletenessTest {
   }
 
   private static Map<Integer, String> getDifferences(List<String> basedOnSyntaxTree, List<String> basedOnFileLine) {
-    Map<Integer, String> differences = Maps.newHashMap();
+    Map<Integer, String> differences = new HashMap<>();
     for (int i = 0; i < basedOnSyntaxTree.size(); i++) {
       String lineFromSyntaxTree = basedOnSyntaxTree.get(i);
       String lineFromFile = basedOnFileLine.get(i);
