@@ -19,12 +19,12 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import java.util.List;
 import java.util.Set;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.se.ProgramState.Pop;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
@@ -226,7 +226,7 @@ class ProgramStateTest {
     ps1 = ps1.stackValue(sv);
     ps2 = ps2.stackValue(sv, symbol);
     assertThat(ps1).isEqualTo(ps2);
-    assertThat(ImmutableSet.of(ps1, ps2)).hasSize(1);
+    assertThat(SetUtils.immutableSetOf(ps1, ps2)).hasSize(1);
   }
 
   @Test

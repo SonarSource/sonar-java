@@ -19,19 +19,19 @@
  */
 package org.sonar.java;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import org.sonar.java.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableSortedSet;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.classpath.ClasspathForMain;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
@@ -59,7 +59,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
   }
 
   private Collection<String> classKeys() {
-    return ImmutableSortedSet.<String>naturalOrder().addAll(resourcesByClass.keySet()).build();
+    return new TreeSet<>(resourcesByClass.keySet());
   }
 
   @Override

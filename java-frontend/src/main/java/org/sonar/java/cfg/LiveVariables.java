@@ -19,7 +19,6 @@
  */
 package org.sonar.java.cfg;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import org.sonar.java.collections.ListUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -99,7 +98,7 @@ public class LiveVariables {
 
     // Make things immutable.
     for (Map.Entry<CFG.Block, Set<Symbol>> blockSetEntry : liveVariables.out.entrySet()) {
-      blockSetEntry.setValue(ImmutableSet.copyOf(blockSetEntry.getValue()));
+      blockSetEntry.setValue(Collections.unmodifiableSet(blockSetEntry.getValue()));
     }
 
     return liveVariables;

@@ -19,8 +19,8 @@
  */
 package org.sonar.java.se.xproc;
 
+import java.util.HashSet;
 import org.sonar.java.Preconditions;
-import com.google.common.collect.ImmutableSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -205,7 +205,7 @@ public abstract class MethodYield {
   }
 
   private Set<SymbolicValue> getSymbolicValues(List<Integer> parameterIndices) {
-    ImmutableSet.Builder<SymbolicValue> parameterSVs = ImmutableSet.builder();
+    Set<SymbolicValue> parameterSVs = new HashSet<>();
     parameterIndices.stream()
       // Ignore last parameter(s) of a variadic method
       .filter(i -> !behavior.isMethodVarArgs() || i < behavior.methodArity() -1)
@@ -216,6 +216,6 @@ public abstract class MethodYield {
         parameterSVs.add(behavior.parameters().get(parameterIndex));
       }
     });
-    return parameterSVs.build();
+    return Collections.unmodifiableSet(parameterSVs);
   }
 }

@@ -19,13 +19,14 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import org.sonar.java.SonarComponents;
@@ -50,20 +51,20 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
 
   public SyntaxHighlighterVisitor(SonarComponents sonarComponents) {
     this.sonarComponents = sonarComponents;
+    
+    keywords = Collections.unmodifiableSet(Arrays.stream(JavaKeyword.keywordValues()).collect(Collectors.toSet()));
+    restrictedKeywords = Collections.unmodifiableSet(Arrays.stream(JavaRestrictedKeyword.restrictedKeywordValues()).collect(Collectors.toSet()));
 
-    keywords = ImmutableSet.copyOf(JavaKeyword.keywordValues());
-    restrictedKeywords = ImmutableSet.copyOf(JavaRestrictedKeyword.restrictedKeywordValues());
-
-    ImmutableMap.Builder<Tree.Kind, TypeOfText> typesByKindBuilder = ImmutableMap.builder();
-    typesByKindBuilder.put(Tree.Kind.STRING_LITERAL, TypeOfText.STRING);
-    typesByKindBuilder.put(Tree.Kind.CHAR_LITERAL, TypeOfText.STRING);
-    typesByKindBuilder.put(Tree.Kind.FLOAT_LITERAL, TypeOfText.CONSTANT);
-    typesByKindBuilder.put(Tree.Kind.DOUBLE_LITERAL, TypeOfText.CONSTANT);
-    typesByKindBuilder.put(Tree.Kind.LONG_LITERAL, TypeOfText.CONSTANT);
-    typesByKindBuilder.put(Tree.Kind.INT_LITERAL, TypeOfText.CONSTANT);
-    typesByKindBuilder.put(Tree.Kind.ANNOTATION, TypeOfText.ANNOTATION);
-    typesByKindBuilder.put(Tree.Kind.VAR_TYPE, TypeOfText.KEYWORD);
-    typesByKind = typesByKindBuilder.build();
+    Map<Tree.Kind, TypeOfText> typesByKindMap = new EnumMap<>(Tree.Kind.class);
+    typesByKindMap.put(Tree.Kind.STRING_LITERAL, TypeOfText.STRING);
+    typesByKindMap.put(Tree.Kind.CHAR_LITERAL, TypeOfText.STRING);
+    typesByKindMap.put(Tree.Kind.FLOAT_LITERAL, TypeOfText.CONSTANT);
+    typesByKindMap.put(Tree.Kind.DOUBLE_LITERAL, TypeOfText.CONSTANT);
+    typesByKindMap.put(Tree.Kind.LONG_LITERAL, TypeOfText.CONSTANT);
+    typesByKindMap.put(Tree.Kind.INT_LITERAL, TypeOfText.CONSTANT);
+    typesByKindMap.put(Tree.Kind.ANNOTATION, TypeOfText.ANNOTATION);
+    typesByKindMap.put(Tree.Kind.VAR_TYPE, TypeOfText.KEYWORD);
+    this.typesByKind = Collections.unmodifiableMap(typesByKindMap);
   }
 
   @Override

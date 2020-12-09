@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.symbolicvalues;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +36,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
 import org.sonar.java.se.ProgramState;
@@ -355,7 +355,7 @@ class RelationalSymbolicValueTest {
     RelationalSymbolicValue ab = relationalSV(Tree.Kind.EQUAL_TO, a, b);
     RelationalSymbolicValue bc = relationalSV(Tree.Kind.EQUAL_TO, b, c);
     RelationalSymbolicValue cd = relationalSV(Tree.Kind.EQUAL_TO, c, d);
-    Set<RelationalSymbolicValue> transitive = ab.transitiveRelations(ImmutableSet.of(ab, bc, cd));
+    Set<RelationalSymbolicValue> transitive = ab.transitiveRelations(SetUtils.immutableSetOf(ab, bc, cd));
     assertThat(transitive).containsOnly(relationalSV(Tree.Kind.EQUAL_TO, a, c), relationalSV(Tree.Kind.EQUAL_TO, b, d), relationalSV(Tree.Kind.EQUAL_TO, a, d));
   }
 
