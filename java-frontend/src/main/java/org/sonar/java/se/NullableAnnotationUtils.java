@@ -89,7 +89,8 @@ public final class NullableAnnotationUtils {
 
   private static final Set<String> NULLABLE_ANNOTATIONS = Collections.unmodifiableSet(
     Stream.of(STRONG_NULLABLE_ANNOTATIONS, WEAK_NULLABLE_ANNOTATIONS)
-    .flatMap(Set::stream).collect(Collectors.toSet()));
+      .flatMap(Set::stream)
+      .collect(Collectors.toSet()));
 
   private static final Set<String> NONNULL_ANNOTATIONS = SetUtils.immutableSetOf(
     "android.annotation.NonNull",

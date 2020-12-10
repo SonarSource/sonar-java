@@ -27,7 +27,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalyzerMessage;
@@ -58,8 +57,7 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
   }
 
   public VisitorsBridgeForTests(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
-    super(visitors, projectClasspath, sonarComponents, SymbolicExecutionMode.getMode(
-      StreamSupport.stream(visitors.spliterator(), false).toArray(JavaCheck[]::new)));
+    super(visitors, projectClasspath, sonarComponents, SymbolicExecutionMode.getMode(visitors));
   }
 
   @Override

@@ -85,7 +85,7 @@ public class JavaSquid {
     //AstScanner for main files
     astScanner = new JavaAstScanner(sonarComponents);
     astScanner.setVisitorBridge(createVisitorBridge(codeVisitors, classpath, javaVersion, sonarComponents,
-      SymbolicExecutionMode.getMode(visitors)));
+      SymbolicExecutionMode.getMode(Arrays.asList(visitors))));
 
     //AstScanner for test files
     astScannerForTests = new JavaAstScanner(sonarComponents);
