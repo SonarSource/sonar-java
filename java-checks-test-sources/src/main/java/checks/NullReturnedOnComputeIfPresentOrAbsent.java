@@ -16,7 +16,8 @@ public class NullReturnedOnComputeIfPresentOrAbsent {
 
   public void badComputeIfPresent() {
     Map<String, String> map = new HashMap<>();
-    map.computeIfPresent("myKey", (key, value) -> null); // Noncompliant {{Use "Map.containsKey(key)" followed by "Map.put(key, null)" to add null values.}}
+    map.computeIfPresent("myKey", (key, value) -> // Noncompliant [[sc=9;ec=25;secondary=+1]] {{Use "Map.containsKey(key)" followed by "Map.put(key, null)" to add null values.}}
+      null);
 
     map.computeIfPresent("myKey", NullReturnedOnComputeIfPresentOrAbsent::presentLambda); // Compliant uninteresting corner case
 
@@ -29,13 +30,13 @@ public class NullReturnedOnComputeIfPresentOrAbsent {
     second.computeIfPresent("myKey", (key, value) -> null); // Compliant corner case where subtype of java.util.Map may break specification
 
     Map<String, String> third = new TreeMap<>();
-    third.computeIfPresent("myKey", (key, value) -> null); // Noncompliant {{Use "Map.containsKey(key)" followed by "Map.put(key, null)" to add null values.}}
+    third.computeIfPresent("myKey", (key, value) -> null); // Noncompliant
   }
 
   public void badComputeIfAbsent() {
     Map<String, String> map = new HashMap<>();
-    map.computeIfAbsent("myKey", key -> null); // Noncompliant {{Use "Map.containsKey(key)" followed by "Map.put(key, null)" to add null values.}}
-
+    map.computeIfAbsent("myKey", key -> // Noncompliant [[sc=9;ec=24;secondary=+1]] {{Use "Map.containsKey(key)" followed by "Map.put(key, null)" to add null values.}}
+      null);
     map.computeIfAbsent("myKey", NullReturnedOnComputeIfPresentOrAbsent::absentLambda); // Compliant uninteresting corner case
 
     String nullValue = null;
@@ -47,6 +48,6 @@ public class NullReturnedOnComputeIfPresentOrAbsent {
     second.computeIfAbsent("myKey", key -> null); // Compliant corner case where subtype of java.util.Map may break specification
 
     Map<String, String> third = new TreeMap<>();
-    third.computeIfAbsent("myKey", key -> null); // Noncompliant {{Use "Map.containsKey(key)" followed by "Map.put(key, null)" to add null values.}}
+    third.computeIfAbsent("myKey", key -> null); // Noncompliant
   }
 }

@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -14,7 +15,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6104")
 public class NullReturnedOnComputeIfPresentOrAbsentCheck extends IssuableSubscriptionVisitor {
-  public static final String MESSAGE = "Use \"Map.containsKey(key)\" followed by \"Map.put(key, null)\" to add null values.";
+  public static final String PRIMARY_MESSAGE = "Use \"Map.containsKey(key)\" followed by \"Map.put(key, null)\" to add null values.";
+  public static final String SECONDARY_MESSAGE = "null literal in the arguments";
   private static final MethodMatchers COMPUTE_IF = MethodMatchers
     .create()
     .ofTypes("java.util.Map")
@@ -35,10 +37,11 @@ public class NullReturnedOnComputeIfPresentOrAbsentCheck extends IssuableSubscri
       if (arguments.size() < 2) {
         return;
       }
+
       getNullReturn(arguments.get(1))
-        .ifPresent(body -> reportIssue(invocation,
-          MESSAGE,
-          Collections.singletonList(new JavaFileScannerContext.Location("", body)),
+        .ifPresent(body -> reportIssue(ExpressionUtils.methodName(invocation),
+          PRIMARY_MESSAGE,
+          Collections.singletonList(new JavaFileScannerContext.Location(SECONDARY_MESSAGE, body)),
           null));
     }
   }
