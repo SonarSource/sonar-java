@@ -19,23 +19,42 @@
  */
 package org.sonar.java.model.expression;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Objects;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
-public class InternalPostfixUnaryExpression extends InternalUnaryExpression {
+public abstract class InternalUnaryExpression extends AssessableExpressionTree implements UnaryExpressionTree {
 
-  public InternalPostfixUnaryExpression(Kind kind, ExpressionTree expression, InternalSyntaxToken operatorToken) {
-    super(kind, operatorToken, expression);
+  protected final Kind kind;
+  protected final InternalSyntaxToken operatorToken;
+  protected final ExpressionTree expression;
+
+  InternalUnaryExpression(Kind kind, InternalSyntaxToken operatorToken, ExpressionTree expression) {
+    this.kind = Objects.requireNonNull(kind);
+    this.operatorToken = operatorToken;
+    this.expression = Objects.requireNonNull(expression);
   }
 
   @Override
-  public List<Tree> children() {
-    return Arrays.asList(
-      expression,
-      operatorToken
-    );
+  public Kind kind() {
+    return kind;
+  }
+
+  @Override
+  public SyntaxToken operatorToken() {
+    return operatorToken;
+  }
+
+  @Override
+  public ExpressionTree expression() {
+    return expression;
+  }
+
+  @Override
+  public void accept(TreeVisitor visitor) {
+    visitor.visitUnaryExpression(this);
   }
 }

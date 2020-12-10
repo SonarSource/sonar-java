@@ -67,14 +67,14 @@ public final class ListUtils {
     int listSize = list1.size();
     int separatorsSize = list2.size();
     List<T> result = new ArrayList<>(listSize + separatorsSize);
-    Iterator<? extends T> listIterator = list1.iterator();
-    Iterator<? extends T> separatorsIterator = list2.iterator();
-    while (listIterator.hasNext() || separatorsIterator.hasNext()) {
-      if (listIterator.hasNext()){
-        result.add(listIterator.next());
+    Iterator<? extends T> list1Iterator = list1.iterator();
+    Iterator<? extends T> list2Iterator = list2.iterator();
+    while (list1Iterator.hasNext() || list2Iterator.hasNext()) {
+      if (list1Iterator.hasNext()){
+        result.add(list1Iterator.next());
       }
-      if (separatorsIterator.hasNext()){
-        result.add(separatorsIterator.next());
+      if (list2Iterator.hasNext()){
+        result.add(list2Iterator.next());
       }
     }
     return result;

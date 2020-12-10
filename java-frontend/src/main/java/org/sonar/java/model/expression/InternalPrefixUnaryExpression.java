@@ -23,43 +23,12 @@ import java.util.Arrays;
 import java.util.List;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TreeVisitor;
-import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
-import java.util.Objects;
-
-public class InternalPrefixUnaryExpression extends AssessableExpressionTree implements UnaryExpressionTree {
-
-  private final Kind kind;
-  private final InternalSyntaxToken operatorToken;
-  private final ExpressionTree expression;
+public class InternalPrefixUnaryExpression extends InternalUnaryExpression {
 
   public InternalPrefixUnaryExpression(Kind kind, InternalSyntaxToken operatorToken, ExpressionTree expression) {
-    this.kind = Objects.requireNonNull(kind);
-    this.operatorToken = operatorToken;
-    this.expression = Objects.requireNonNull(expression);
-  }
-
-  @Override
-  public Kind kind() {
-    return kind;
-  }
-
-  @Override
-  public SyntaxToken operatorToken() {
-    return operatorToken;
-  }
-
-  @Override
-  public ExpressionTree expression() {
-    return expression;
-  }
-
-  @Override
-  public void accept(TreeVisitor visitor) {
-    visitor.visitUnaryExpression(this);
+    super(kind, operatorToken, expression);
   }
 
   @Override
@@ -69,5 +38,4 @@ public class InternalPrefixUnaryExpression extends AssessableExpressionTree impl
       expression
     );
   }
-
 }
