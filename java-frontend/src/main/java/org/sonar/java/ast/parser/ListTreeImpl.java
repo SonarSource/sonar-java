@@ -19,8 +19,8 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.google.common.collect.AbstractIterator;
 import java.util.Arrays;
+import org.sonar.java.collections.AbstractIterator;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
