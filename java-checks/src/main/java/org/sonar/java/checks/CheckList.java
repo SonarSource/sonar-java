@@ -541,6 +541,7 @@ public final class CheckList {
       NullCipherCheck.class,
       NullDereferenceCheck.class,
       NullDereferenceInConditionalCheck.class,
+      NullReturnedOnComputeIfPresentOrAbsentCheck.class,
       NullShouldNotBeUsedWithOptionalCheck.class,
       ObjectCreatedOnlyToCallGetClassCheck.class,
       ObjectDeserializationCheck.class,
