@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model.statement;
 
+import java.util.List;
 import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -72,7 +73,7 @@ public class ContinueStatementTreeImpl extends JavaTree implements ContinueState
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     return ListUtils.concat(
       Collections.singletonList(continueKeyword),
       label != null ? Collections.singletonList(label) : Collections.<Tree>emptyList(),

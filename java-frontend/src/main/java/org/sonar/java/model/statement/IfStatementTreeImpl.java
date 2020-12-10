@@ -20,6 +20,7 @@
 package org.sonar.java.model.statement;
 
 import java.util.Arrays;
+import java.util.List;
 import org.sonar.java.Preconditions;
 import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -123,7 +124,7 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     return ListUtils.concat(
       Arrays.asList(ifKeyword, openParenToken, condition, closeParenToken, thenStatement),
       elseKeyword != null ? Arrays.asList(elseKeyword, elseStatement) : Collections.<Tree>emptyList());

@@ -46,8 +46,8 @@ class ListTreeImplTest {
     SyntaxToken token2 = createToken("token2");
     List<SyntaxToken> separators = Arrays.asList(token1, token2);
     ListTreeImpl<Tree> listTree = new MyList(trees, separators);
-    Iterable<Tree> result = listTree.children();
-    assertThat(result).containsExactly(tree1, token1, tree2, token2, tree3);
+
+    assertThat(listTree.children()).containsExactly(tree1, token1, tree2, token2, tree3);
   }
 
   @Test
@@ -56,8 +56,8 @@ class ListTreeImplTest {
     List<Tree> trees = Collections.singletonList(tree1);
     List<SyntaxToken> separators = new ArrayList<>();
     ListTreeImpl<Tree> listTree = new MyList(trees, separators);
-    Iterable<Tree> result = listTree.children();
-    assertThat(result).containsExactly(tree1);
+
+    assertThat(listTree.children()).containsExactly(tree1);
   }
 
   private static class MyList extends ListTreeImpl<Tree> {

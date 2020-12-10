@@ -186,7 +186,7 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     List<Tree> list = new LinkedList<>();
     list.add(tryToken);
     if (openParenToken != null) {

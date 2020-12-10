@@ -120,6 +120,14 @@ final class ListUtilsTest {
       );
   }
 
+  @Test
+  void test_alternate() {
+    List<SomeType> set1 = Arrays.asList(new SomeType("value1"), new SomeType("value2"));
+    List<SomeType> set2 = Arrays.asList(new SomeType("value3"), new SomeType("value4"));
+
+    assertThat(ListUtils.alternate(set1, set2))
+      .containsExactly(new SomeType("value1"), new SomeType("value3"), new SomeType("value2"), new SomeType("value4"));
+  }
 
   private static class SomeType {
     final String value;

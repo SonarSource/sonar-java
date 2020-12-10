@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model.declaration;
 
+import java.util.List;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
@@ -53,7 +54,7 @@ public class UsesDirectiveTreeImpl extends ModuleDirectiveTreeImpl implements Us
   }
 
   @Override
-  protected Iterable<Tree> children() {
+  protected List<Tree> children() {
     return Collections.unmodifiableList(Arrays.asList(
       directiveKeyword(),
       typeName,

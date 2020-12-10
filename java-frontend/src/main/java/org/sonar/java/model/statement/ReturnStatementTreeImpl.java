@@ -71,7 +71,7 @@ public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatement
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     List<Tree> list = new ArrayList<>();
     list.add(returnKeyword);
     if (expression != null) {

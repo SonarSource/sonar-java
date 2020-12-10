@@ -20,6 +20,7 @@
 package org.sonar.java.model.expression;
 
 import java.util.Arrays;
+import java.util.List;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.collections.ListUtils;
@@ -100,7 +101,7 @@ public class MethodInvocationTreeImpl extends AssessableExpressionTree implement
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     return ListUtils.concat(
       typeArguments != null ? Collections.singletonList(typeArguments) : Collections.<Tree>emptyList(),
       Arrays.asList(methodSelect, arguments));

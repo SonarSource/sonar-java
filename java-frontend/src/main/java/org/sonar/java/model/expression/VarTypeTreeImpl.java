@@ -58,7 +58,7 @@ public class VarTypeTreeImpl extends AbstractTypedTree implements VarTypeTree, J
   }
 
   @Override
-  protected Iterable<Tree> children() {
+  protected List<Tree> children() {
     return Collections.singletonList(varToken);
   }
 

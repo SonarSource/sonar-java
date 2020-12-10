@@ -62,7 +62,7 @@ public class CaseGroupTreeImpl extends JavaTree implements CaseGroupTree {
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     return ListUtils.concat(
       labels,
       body);

@@ -78,7 +78,7 @@ public class ArgumentListTreeImpl extends ListTreeImpl<ExpressionTree> implement
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     return ListUtils.concat(
       openParenToken != null ? Collections.singletonList(openParenToken) : Collections.<Tree>emptyList(),
       super.children(),

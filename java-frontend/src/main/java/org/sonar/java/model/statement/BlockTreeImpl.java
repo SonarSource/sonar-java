@@ -76,7 +76,7 @@ public class BlockTreeImpl extends JavaTree implements BlockTree {
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     return ListUtils.concat(
       Collections.singletonList(openBraceToken),
       body,

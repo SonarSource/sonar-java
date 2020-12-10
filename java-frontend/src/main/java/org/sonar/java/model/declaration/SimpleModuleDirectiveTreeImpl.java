@@ -45,7 +45,7 @@ public abstract class SimpleModuleDirectiveTreeImpl extends ModuleDirectiveTreeI
   }
 
   @Override
-  protected Iterable<Tree> children() {
+  protected List<Tree> children() {
     List<Tree> list = new ArrayList<>();
     list.add(directiveKeyword());
     list.add(packageName);

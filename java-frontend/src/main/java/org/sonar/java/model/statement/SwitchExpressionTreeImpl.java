@@ -100,7 +100,7 @@ public class SwitchExpressionTreeImpl extends AssessableExpressionTree implement
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     return ListUtils.concat(
       Arrays.asList(switchKeyword, openParenToken, expression, closeParenToken, openBraceToken),
       cases,

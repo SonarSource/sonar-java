@@ -58,7 +58,7 @@ public class TypeArgumentListTreeImpl extends ListTreeImpl<Tree> implements Type
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     return ListUtils.concat(
       Collections.singletonList(openBracketToken),
       super.children(),

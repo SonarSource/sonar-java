@@ -89,7 +89,7 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     return Collections.singletonList(switchExpression);
   }
 

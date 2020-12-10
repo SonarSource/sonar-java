@@ -241,7 +241,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     List<Tree> list = new ArrayList<>();
     list.add(modifiers);
     list.add(typeParameters);

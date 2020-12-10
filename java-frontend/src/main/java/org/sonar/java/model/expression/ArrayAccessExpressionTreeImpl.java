@@ -20,6 +20,7 @@
 package org.sonar.java.model.expression;
 
 import java.util.Arrays;
+import java.util.List;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -61,7 +62,7 @@ public class ArrayAccessExpressionTreeImpl extends AssessableExpressionTree impl
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     return Arrays.asList(expression, dimension);
   }
 }

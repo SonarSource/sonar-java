@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model.statement;
 
+import java.util.List;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -74,7 +75,7 @@ public class YieldStatementTreeImpl extends JavaTree implements YieldStatementTr
   }
 
   @Override
-  protected Iterable<Tree> children() {
+  protected List<Tree> children() {
     if (yieldKeyword != null) {
       return Arrays.asList(yieldKeyword, expression, semicolonToken);
     } else {

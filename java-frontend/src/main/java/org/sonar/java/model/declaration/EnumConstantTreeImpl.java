@@ -63,7 +63,7 @@ public class EnumConstantTreeImpl extends VariableTreeImpl implements EnumConsta
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     List<Tree> list = new ArrayList<>();
     // the identifierTree simpleName is also present in initializer
     list.add(modifiers());

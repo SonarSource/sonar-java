@@ -103,7 +103,7 @@ public class ModuleDeclarationTreeImpl extends JavaTree implements ModuleDeclara
   }
 
   @Override
-  protected Iterable<Tree> children() {
+  protected List<Tree> children() {
     List<Tree> list = new ArrayList<>(annotations);
     if (openKeyword != null) {
       list.add(openKeyword);

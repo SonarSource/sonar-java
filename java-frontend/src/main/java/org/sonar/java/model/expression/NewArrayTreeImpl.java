@@ -117,7 +117,7 @@ public class NewArrayTreeImpl extends AssessableExpressionTree implements NewArr
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     List<Tree> list = new ArrayList<>();
     addIfNotNull(list, newKeyword);
     addIfNotNull(list, type);
