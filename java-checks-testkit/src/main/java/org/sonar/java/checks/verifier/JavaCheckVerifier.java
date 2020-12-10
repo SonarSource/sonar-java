@@ -19,9 +19,9 @@
  */
 package org.sonar.java.checks.verifier;
 
-import com.google.common.annotations.Beta;
 import java.io.File;
 import java.util.Collection;
+import org.sonar.java.annotations.Beta;
 import org.sonar.java.testing.CheckVerifier;
 import org.sonar.java.testing.FilesUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;

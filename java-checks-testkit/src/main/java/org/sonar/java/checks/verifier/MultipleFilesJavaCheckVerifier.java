@@ -19,8 +19,8 @@
  */
 package org.sonar.java.checks.verifier;
 
-import com.google.common.annotations.Beta;
 import java.util.List;
+import org.sonar.java.annotations.Beta;
 import org.sonar.plugins.java.api.JavaFileScanner;
 
 /**

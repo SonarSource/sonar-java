@@ -19,9 +19,8 @@
  */
 package org.sonar.plugins.surefire.data;
 
-import com.google.common.collect.Sets;
-
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -45,7 +44,7 @@ public class UnitTestIndex {
   }
 
   public Set<String> getClassnames() {
-    return Sets.newHashSet(indexByClassname.keySet());
+    return new HashSet<>(indexByClassname.keySet());
   }
 
   public Map<String, UnitTestClassReport> getIndexByClassname() {

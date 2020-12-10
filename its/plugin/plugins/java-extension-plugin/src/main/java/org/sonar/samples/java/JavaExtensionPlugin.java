@@ -19,7 +19,7 @@
  */
 package org.sonar.samples.java;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
 import java.util.List;
 import org.sonar.api.SonarPlugin;
 
@@ -27,7 +27,7 @@ public class JavaExtensionPlugin extends SonarPlugin {
 
   @Override
   public List getExtensions() {
-    return ImmutableList.of(
+    return Arrays.asList(
       JavaExtensionRulesDefinition.class,
       JavaExtensionsCheckRegistrar.class,
       StartableExtension.class);
