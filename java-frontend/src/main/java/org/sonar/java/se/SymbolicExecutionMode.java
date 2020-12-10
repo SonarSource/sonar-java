@@ -19,7 +19,7 @@
  */
 package org.sonar.java.se;
 
-import java.util.Arrays;
+import java.util.stream.StreamSupport;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaCheck;
 
@@ -27,15 +27,16 @@ public enum SymbolicExecutionMode {
   DISABLED,
   ENABLED;
 
-  public static SymbolicExecutionMode getMode(JavaCheck[] visitors) {
+  public static SymbolicExecutionMode getMode(Iterable<? extends JavaCheck> visitors) {
     if (hasASymbolicExecutionCheck(visitors)) {
       return SymbolicExecutionMode.ENABLED;
     }
     return SymbolicExecutionMode.DISABLED;
   }
 
-  private static boolean hasASymbolicExecutionCheck(JavaCheck[] visitors) {
-    return Arrays.stream(visitors).anyMatch(v -> v instanceof SECheck);
+  private static boolean hasASymbolicExecutionCheck(Iterable<? extends JavaCheck> visitors) {
+    return StreamSupport.stream(visitors.spliterator() ,false)
+      .anyMatch(v -> v instanceof SECheck);
   }
 
   public boolean isEnabled() {

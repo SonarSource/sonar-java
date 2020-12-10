@@ -115,17 +115,17 @@ final class SetUtilsTest {
   }
 
   @Test
-  void test_get_the_only_element_with_empty_list() {
+  void test_get_the_only_element_with_empty_set() {
     Set<String> list = Collections.emptySet();
     Exception exception = Assertions.assertThrows(IllegalArgumentException.class, () -> SetUtils.getOnlyElement(list));
-    assertThat(exception).hasMessage("Expected list of size 1, but was list of size 0.");
+    assertThat(exception).hasMessage("Expected set of size 1, but was set of size 0.");
   }
 
   @Test
-  void test_get_the_only_element_with_too_big_list() {
+  void test_get_the_only_element_with_too_big_set() {
     Set<String> list = SetUtils.immutableSetOf("A", "B");
     Exception exception = Assertions.assertThrows(IllegalArgumentException.class, () -> SetUtils.getOnlyElement(list));
-    assertThat(exception).hasMessage("Expected list of size 1, but was list of size 2.");
+    assertThat(exception).hasMessage("Expected set of size 1, but was set of size 2.");
   }
 
 

@@ -49,16 +49,16 @@ public final class SetUtils {
   }
 
   public static <T> Set<T> difference(Set<T> set1, Set<T> set2) {
-    return set1.stream()
-      .filter(elem -> !set2.contains(elem))
-      .collect(Collectors.toSet());
+    Set<T> newSet1 = new HashSet<>(set1);
+    newSet1.removeAll(set2);
+    return newSet1;
   }
 
   public static <T> T getOnlyElement(Set<T> set) {
     if (set.size() == 1) {
       return set.iterator().next();
     }
-    throw new IllegalArgumentException(String.format("Expected list of size 1, but was list of size %d.", set.size()));
+    throw new IllegalArgumentException(String.format("Expected set of size 1, but was set of size %d.", set.size()));
   }
 
 }
