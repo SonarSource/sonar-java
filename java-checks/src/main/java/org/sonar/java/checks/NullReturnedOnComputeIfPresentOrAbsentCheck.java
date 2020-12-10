@@ -14,12 +14,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6104")
 public class NullReturnedOnComputeIfPresentOrAbsentCheck extends IssuableSubscriptionVisitor {
-  public static final int REMEDIATION_COST_IN_MINUTES = 10;
   public static final String MESSAGE = "Use \"Map.containsKey(key)\" followed by \"Map.put(key, null)\" to add null values.";
-  private static final MethodMatchers COMPUTE_IF_PRESENT = MethodMatchers
+  private static final MethodMatchers COMPUTE_IF = MethodMatchers
     .create()
     .ofTypes("java.util.Map")
-    .names("computeIfPresent")
+    .names("computeIfPresent", "computeIfAbsent")
     .addParametersMatcher(MethodMatchers.ANY, MethodMatchers.ANY)
     .build();
 
@@ -30,26 +29,21 @@ public class NullReturnedOnComputeIfPresentOrAbsentCheck extends IssuableSubscri
 
   @Override
   public void visitNode(Tree tree) {
-    MethodInvocationTree methodInvocation = (MethodInvocationTree) tree;
-    if (COMPUTE_IF_PRESENT.matches(methodInvocation)) {
-      inspectComputeIfPresent(methodInvocation);
+    MethodInvocationTree invocation = (MethodInvocationTree) tree;
+    if (COMPUTE_IF.matches(invocation)) {
+      Arguments arguments = invocation.arguments();
+      if (arguments.size() < 2) {
+        return;
+      }
+      getNullReturn(arguments.get(1))
+        .ifPresent(body -> reportIssue(invocation,
+          MESSAGE,
+          Collections.singletonList(new JavaFileScannerContext.Location("", body)),
+          null));
     }
-    //TODO Add a branch for isComputeIfAbsent
   }
 
-  public void inspectComputeIfPresent(MethodInvocationTree invocation) {
-    Arguments arguments = invocation.arguments();
-    if (arguments.size() < 2) {
-      return;
-    }
-    returnsNullExplicitly(arguments.get(1))
-      .ifPresent((tree) -> reportIssue(invocation,
-        MESSAGE,
-        Collections.singletonList(new JavaFileScannerContext.Location("", tree)),
-        null));
-  }
-
-  public static Optional<Tree> returnsNullExplicitly(Tree tree) {
+  public static Optional<Tree> getNullReturn(Tree tree) {
     if (tree.is(Tree.Kind.LAMBDA_EXPRESSION)) {
       Tree body = ((LambdaExpressionTree) tree).body();
       if (body.is(Tree.Kind.NULL_LITERAL)) {
