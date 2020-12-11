@@ -50,7 +50,7 @@ public class InferedTypeTree extends AbstractTypedTree implements TypeTree{
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     throw new UnsupportedOperationException();
   }
 

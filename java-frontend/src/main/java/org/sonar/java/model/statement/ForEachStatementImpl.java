@@ -20,6 +20,7 @@
 package org.sonar.java.model.statement;
 
 import java.util.Arrays;
+import java.util.List;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -99,7 +100,7 @@ public class ForEachStatementImpl extends JavaTree implements ForEachStatement {
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     return Arrays.asList(
       forKeyword,
       openParenToken,

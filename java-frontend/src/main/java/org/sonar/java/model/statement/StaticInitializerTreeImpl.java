@@ -42,7 +42,7 @@ public class StaticInitializerTreeImpl extends BlockTreeImpl implements StaticIn
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     List<Tree> list = new ArrayList<>();
     list.add(staticKeyword);
     super.children().forEach(list::add);

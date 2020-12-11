@@ -17,43 +17,44 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.model.statement;
+package org.sonar.java.model.expression;
 
-import java.util.List;
+import java.util.Objects;
 import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.java.model.JavaTree;
-import org.sonar.plugins.java.api.tree.EmptyStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
-import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
-import java.util.Collections;
+public abstract class InternalUnaryExpression extends AssessableExpressionTree implements UnaryExpressionTree {
 
-public class EmptyStatementTreeImpl extends JavaTree implements EmptyStatementTree {
-  private final InternalSyntaxToken semicolonToken;
+  protected final Kind kind;
+  protected final InternalSyntaxToken operatorToken;
+  protected final ExpressionTree expression;
 
-  public EmptyStatementTreeImpl(InternalSyntaxToken semicolonToken) {
-    this.semicolonToken = semicolonToken;
+  InternalUnaryExpression(Kind kind, InternalSyntaxToken operatorToken, ExpressionTree expression) {
+    this.kind = Objects.requireNonNull(kind);
+    this.operatorToken = operatorToken;
+    this.expression = Objects.requireNonNull(expression);
   }
 
   @Override
   public Kind kind() {
-    return Kind.EMPTY_STATEMENT;
+    return kind;
+  }
+
+  @Override
+  public SyntaxToken operatorToken() {
+    return operatorToken;
+  }
+
+  @Override
+  public ExpressionTree expression() {
+    return expression;
   }
 
   @Override
   public void accept(TreeVisitor visitor) {
-    visitor.visitEmptyStatement(this);
+    visitor.visitUnaryExpression(this);
   }
-
-  @Override
-  public SyntaxToken semicolonToken() {
-    return semicolonToken;
-  }
-
-  @Override
-  public List<Tree> children() {
-    return Collections.<Tree>singletonList(semicolonToken);
-  }
-
 }

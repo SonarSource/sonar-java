@@ -118,7 +118,7 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     List<Tree> list = new ArrayList<>();
     list.add(forKeyword);
     list.add(openParenToken);

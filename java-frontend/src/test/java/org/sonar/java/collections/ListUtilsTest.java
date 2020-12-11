@@ -68,24 +68,24 @@ final class ListUtilsTest {
 
   @Test
   void test_concat_any_list() {
-    List<SomeType> set1 = Arrays.asList(new SomeType("value1"), new SomeType("value2"));
-    List<SomeType> set2 = Arrays.asList(new SomeType("value3"), new SomeType("value4"));
+    List<SomeType> list1 = Arrays.asList(new SomeType("value1"), new SomeType("value2"));
+    List<SomeType> list2 = Arrays.asList(new SomeType("value3"), new SomeType("value4"));
 
-    assertThat(ListUtils.concat(set1, set2))
+    assertThat(ListUtils.concat(list1, list2))
       .containsExactly(new SomeType("value1"), new SomeType("value2"), new SomeType("value3"), new SomeType("value4"));
   }
 
   @Test
   void test_concat_many_lists() {
-    List<SomeType> set1 = Arrays.asList(new SomeType("value1"), new SomeType("value2"));
-    List<SomeType> set2 = Arrays.asList(new SomeType("value3"), new SomeType("value4"));
-    List<SomeType> set3 = Arrays.asList(new SomeType("value5"), new SomeType("value6"));
-    List<SomeType> set4 = Arrays.asList(new SomeType("value7"), new SomeType("value8"));
-    List<SomeType> set5 = Arrays.asList(new SomeType("value9"), new SomeType("value10"));
-    List<SomeType> set6 = Arrays.asList(new SomeType("value11"), new SomeType("value12"));
-    List<SomeType> set7 = Arrays.asList(new SomeType("value13"), new SomeType("value14"));
+    List<SomeType> list1 = Arrays.asList(new SomeType("value1"), new SomeType("value2"));
+    List<SomeType> list2 = Arrays.asList(new SomeType("value3"), new SomeType("value4"));
+    List<SomeType> list3 = Arrays.asList(new SomeType("value5"), new SomeType("value6"));
+    List<SomeType> list4 = Arrays.asList(new SomeType("value7"), new SomeType("value8"));
+    List<SomeType> list5 = Arrays.asList(new SomeType("value9"), new SomeType("value10"));
+    List<SomeType> list6 = Arrays.asList(new SomeType("value11"), new SomeType("value12"));
+    List<SomeType> list7 = Arrays.asList(new SomeType("value13"), new SomeType("value14"));
 
-    assertThat(ListUtils.concat(set1, set2, set3, set4, set5, set6, set7))
+    assertThat(ListUtils.concat(list1, list2, list3, list4, list5, list6, list7))
       .containsExactly(
         new SomeType("value1"), new SomeType("value2"),
         new SomeType("value3"), new SomeType("value4"),
@@ -100,15 +100,15 @@ final class ListUtilsTest {
 
   @Test
   void test_concat_many_iterables() {
-    List<SomeType> set1 = Arrays.asList(new SomeType("value1"), new SomeType("value2"));
+    List<SomeType> list1 = Arrays.asList(new SomeType("value1"), new SomeType("value2"));
     Set<SomeType> set2 = SetUtils.immutableSetOf(new SomeType("value3"), new SomeType("value4"));
-    List<SomeType> set3 = Arrays.asList(new SomeType("value5"), new SomeType("value6"));
+    List<SomeType> list3 = Arrays.asList(new SomeType("value5"), new SomeType("value6"));
     Set<SomeType> set4 = SetUtils.immutableSetOf(new SomeType("value7"), new SomeType("value8"));
-    List<SomeType> set5 = Arrays.asList(new SomeType("value9"), new SomeType("value10"));
+    List<SomeType> list5 = Arrays.asList(new SomeType("value9"), new SomeType("value10"));
     Set<SomeType> set6 = SetUtils.immutableSetOf(new SomeType("value11"), new SomeType("value12"));
-    List<SomeType> set7 = Arrays.asList(new SomeType("value13"), new SomeType("value14"));
+    List<SomeType> list7 = Arrays.asList(new SomeType("value13"), new SomeType("value14"));
 
-    assertThat(ListUtils.concat(set1, set2, set3, set4, set5, set6, set7))
+    assertThat(ListUtils.concat(list1, set2, list3, set4, list5, set6, list7))
       .containsExactlyInAnyOrder(
         new SomeType("value1"), new SomeType("value2"),
         new SomeType("value3"), new SomeType("value4"),
@@ -120,6 +120,32 @@ final class ListUtilsTest {
       );
   }
 
+  @Test
+  void test_alternate() {
+    List<SomeType> list1 = Arrays.asList(new SomeType("value1"), new SomeType("value2"));
+    List<SomeType> list2 = Arrays.asList(new SomeType("value3"), new SomeType("value4"));
+
+    assertThat(ListUtils.alternate(list1, list2))
+      .containsExactly(new SomeType("value1"), new SomeType("value3"), new SomeType("value2"), new SomeType("value4"));
+  }
+
+  @Test
+  void test_alternate_left_bigger() {
+    List<SomeType> list1 = Arrays.asList(new SomeType("value1"), new SomeType("value2"), new SomeType("value3"));
+    List<SomeType> list2 = Arrays.asList(new SomeType("value4"), new SomeType("value5"));
+
+    assertThat(ListUtils.alternate(list1, list2))
+      .containsExactly(new SomeType("value1"), new SomeType("value4"), new SomeType("value2"), new SomeType("value5"), new SomeType("value3"));
+  }
+
+  @Test
+  void test_alternate_right_bigger() {
+    List<SomeType> list1 = Arrays.asList(new SomeType("value1"), new SomeType("value2"));
+    List<SomeType> list2 = Arrays.asList(new SomeType("value3"), new SomeType("value4"), new SomeType("value5"));
+
+    assertThat(ListUtils.alternate(list1, list2))
+      .containsExactly(new SomeType("value1"), new SomeType("value3"), new SomeType("value2"), new SomeType("value4"), new SomeType("value5"));
+  }
 
   private static class SomeType {
     final String value;

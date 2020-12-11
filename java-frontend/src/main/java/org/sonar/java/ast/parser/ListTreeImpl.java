@@ -19,20 +19,17 @@
  */
 package org.sonar.java.ast.parser;
 
-import java.util.Arrays;
-import org.sonar.java.collections.AbstractIterator;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
 
 public abstract class ListTreeImpl<T extends Tree> extends JavaTree implements ListTree<T> {
 
@@ -67,45 +64,8 @@ public abstract class ListTreeImpl<T extends Tree> extends JavaTree implements L
   }
 
   @Override
-  public Iterable<Tree> children() {
-    return new InterleaveIterable(list, separators);
-  }
-
-  private class InterleaveIterable implements Iterable<Tree> {
-
-    private final List<Iterator<? extends Tree>> iterators;
-
-    public InterleaveIterable(List<T> list, List<SyntaxToken> separators) {
-      iterators = Arrays.asList(list.iterator(), separators.iterator());
-    }
-
-    @Override
-    public Iterator<Tree> iterator() {
-      return new InterleaveIterator<>(iterators);
-    }
-  }
-
-  private static class InterleaveIterator<E> extends AbstractIterator<E> {
-
-    private final LinkedList<Iterator<? extends E>> iterables;
-
-    public InterleaveIterator(List<Iterator<? extends E>> iterables) {
-      super();
-      this.iterables = new LinkedList<>(iterables);
-    }
-
-    @Override
-    protected E computeNext() {
-      while (!iterables.isEmpty()) {
-        Iterator<? extends E> topIter = iterables.poll();
-        if (topIter.hasNext()) {
-          E result = topIter.next();
-          iterables.offer(topIter);
-          return result;
-        }
-      }
-      return endOfData();
-    }
+  public List<Tree> children() {
+    return ListUtils.alternate(list, separators);
   }
 
   @Override

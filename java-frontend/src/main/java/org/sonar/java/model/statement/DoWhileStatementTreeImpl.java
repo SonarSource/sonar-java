@@ -20,6 +20,7 @@
 package org.sonar.java.model.statement;
 
 import java.util.Arrays;
+import java.util.List;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
@@ -98,7 +99,7 @@ public class DoWhileStatementTreeImpl extends JavaTree implements DoWhileStateme
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     return Arrays.asList(
       doKeyword,
       statement,

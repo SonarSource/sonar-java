@@ -20,6 +20,7 @@
 package org.sonar.java.model.statement;
 
 import java.util.Arrays;
+import java.util.List;
 import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -102,7 +103,7 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     return ListUtils.concat(
       Arrays.asList(assertToken, condition),
       colonToken != null ? Arrays.asList(colonToken, detail) : Collections.<Tree>emptyList(),

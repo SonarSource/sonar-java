@@ -20,6 +20,7 @@
 package org.sonar.java.model.expression;
 
 import java.util.Arrays;
+import java.util.List;
 import org.sonar.java.Preconditions;
 import org.sonar.java.ast.parser.BoundListTreeImpl;
 import org.sonar.java.collections.ListUtils;
@@ -111,7 +112,7 @@ public class TypeCastExpressionTreeImpl extends AssessableExpressionTree impleme
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     return ListUtils.concat(
       Arrays.asList(openParenToken, type),
       andToken == null ? Collections.<Tree>emptyList() : Collections.singletonList(andToken()),

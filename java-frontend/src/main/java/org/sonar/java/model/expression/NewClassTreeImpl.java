@@ -120,7 +120,7 @@ public class NewClassTreeImpl extends AssessableExpressionTree implements NewCla
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     List<Tree> builder = new ArrayList<>();
     addIfNotNull(builder, enclosingExpression, dotToken, newKeyword, typeArguments);
     builder.add(identifier);

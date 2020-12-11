@@ -20,6 +20,7 @@
 package org.sonar.java.model.expression;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -70,7 +71,7 @@ public class AssignmentExpressionTreeImpl extends AssessableExpressionTree imple
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     return Arrays.asList(
       variable,
       operatorToken,

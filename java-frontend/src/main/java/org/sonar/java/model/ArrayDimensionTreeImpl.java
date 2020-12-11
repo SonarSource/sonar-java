@@ -83,7 +83,7 @@ public class ArrayDimensionTreeImpl extends JavaTree implements ArrayDimensionTr
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     List<Tree> list = new ArrayList<>(annotations);
     list.add(openBracketToken);
     if (expression != null) {

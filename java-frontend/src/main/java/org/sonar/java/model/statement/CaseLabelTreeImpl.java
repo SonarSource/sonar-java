@@ -87,7 +87,7 @@ public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     return ListUtils.concat(
       Collections.singletonList(caseOrDefaultKeyword),
       expressions,

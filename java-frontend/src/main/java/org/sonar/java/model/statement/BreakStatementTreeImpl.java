@@ -20,6 +20,7 @@
 package org.sonar.java.model.statement;
 
 import java.util.Collections;
+import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -76,7 +77,7 @@ public class BreakStatementTreeImpl extends JavaTree implements BreakStatementTr
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     return ListUtils.concat(
       Collections.singletonList(breakToken),
       labelOrValue != null ? Collections.singletonList(labelOrValue) : Collections.<Tree>emptyList(),

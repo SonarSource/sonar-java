@@ -22,6 +22,7 @@ package org.sonar.java.collections;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -60,5 +61,22 @@ public final class ListUtils {
     return Arrays.stream(iterables)
       .flatMap(it -> StreamSupport.stream(it.spliterator(), false))
       .collect(Collectors.toList());
+  }
+
+  public static <T> List<T> alternate(List<? extends T> list1, List<? extends T> list2) {
+    int listSize = list1.size();
+    int separatorsSize = list2.size();
+    List<T> result = new ArrayList<>(listSize + separatorsSize);
+    Iterator<? extends T> list1Iterator = list1.iterator();
+    Iterator<? extends T> list2Iterator = list2.iterator();
+    while (list1Iterator.hasNext() || list2Iterator.hasNext()) {
+      if (list1Iterator.hasNext()){
+        result.add(list1Iterator.next());
+      }
+      if (list2Iterator.hasNext()){
+        result.add(list2Iterator.next());
+      }
+    }
+    return result;
   }
 }

@@ -85,7 +85,7 @@ public class MemberSelectExpressionTreeImpl extends AssessableExpressionTree imp
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     return ListUtils.concat(
       annotations,
       Arrays.asList(

@@ -90,7 +90,7 @@ public class TypeParameterTreeImpl extends JavaTree implements TypeParameterTree
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     List<Tree> list = new ArrayList<>();
     list.add(identifier);
     if (extendsToken != null) {

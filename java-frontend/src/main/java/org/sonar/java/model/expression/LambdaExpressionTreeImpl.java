@@ -89,7 +89,7 @@ public class LambdaExpressionTreeImpl extends AssessableExpressionTree implement
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     boolean hasParentheses = openParenToken != null;
     return ListUtils.concat(
       hasParentheses ? Collections.singletonList(openParenToken) : Collections.<Tree>emptyList(),

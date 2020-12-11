@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model.expression;
 
+import java.util.List;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -59,7 +60,7 @@ public class LiteralTreeImpl extends AssessableExpressionTree implements Literal
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     return Collections.<Tree>singletonList(token);
   }
 

@@ -223,7 +223,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     return ListUtils.concat(
       Collections.singletonList(modifiers),
       addIfNotNull(atToken),

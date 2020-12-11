@@ -104,7 +104,7 @@ public class IdentifierTreeImpl extends AssessableExpressionTree implements Iden
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     return ListUtils.concat(annotations, Collections.singletonList(nameToken));
   }
 

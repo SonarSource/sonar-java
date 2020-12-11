@@ -105,7 +105,7 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
   }
 
   @Override
-  public Iterable<Tree> children() {
+  public List<Tree> children() {
     throw new UnsupportedOperationException();
   }
 
