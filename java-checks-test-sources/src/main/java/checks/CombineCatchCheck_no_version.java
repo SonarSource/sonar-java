@@ -36,6 +36,28 @@ class CombineCatchCheck {
       doCleanup();
       throw e;
     }
+
+    try {
+      canThrow();
+    } catch (IOException e) {
+      handleException(e);
+    } catch (IllegalArgumentException e) { // Compliant, specific type is need in the body
+      handleException(e);
+    } catch (SQLException e) { // Compliant, not the same body
+      handleException(e, "a");
+    } catch (Exception e) { // Compliant
+      int i;
+    } catch (Throwable e) { // Compliant
+      doCleanup();
+    }
+
+    try {
+      canThrow();
+    } catch (IOException e) {
+      for (int i = 0; i < 1; i++) {};
+    } catch (Exception e) { // Update part is not the same.
+      for (int i = 0; i < 1; foo()) {};
+    }
   }
 
   void canThrow() throws IOException, SQLException, IllegalArgumentException {
@@ -43,6 +65,12 @@ class CombineCatchCheck {
 
   private void doCleanup() {
   }
+
+  void handleException(IOException io) { }
+
+  void handleException(IllegalArgumentException io) { }
+
+  void handleException(SQLException io, String s) { }
 }
 
 class CombineCatchCheckLogger {

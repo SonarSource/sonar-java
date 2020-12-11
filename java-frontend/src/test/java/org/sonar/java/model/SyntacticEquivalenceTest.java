@@ -76,8 +76,15 @@ class SyntacticEquivalenceTest {
   @Test
   void extra_permissive_equivalence() {
     assertThat(SyntacticEquivalence.areEquivalent(compilationUnitTree("class A{}"), compilationUnitTree("class B{}"))).isFalse();
-    assertThat(SyntacticEquivalence.areEquivalent(compilationUnitTree("class A{}"), compilationUnitTree("class B{}"), (l,r) -> false)).isFalse();
-    assertThat(SyntacticEquivalence.areEquivalent(compilationUnitTree("class A{}"), compilationUnitTree("class B{}"), (l,r) -> true)).isTrue();
+    assertThat(SyntacticEquivalence.areEquivalent(compilationUnitTree("class A{}"), compilationUnitTree("class B{}"), (l,r) -> false, true)).isFalse();
+    assertThat(SyntacticEquivalence.areEquivalent(compilationUnitTree("class A{}"), compilationUnitTree("class B{}"), (l,r) -> true, true)).isTrue();
+  }
+
+  @Test
+  void extra_dismissive_equivalence() {
+    assertThat(SyntacticEquivalence.areEquivalent(compilationUnitTree("class A{}"), compilationUnitTree("class A{}"))).isTrue();
+    assertThat(SyntacticEquivalence.areEquivalent(compilationUnitTree("class A{}"), compilationUnitTree("class A{}"), (l,r) -> false, false)).isTrue();
+    assertThat(SyntacticEquivalence.areEquivalent(compilationUnitTree("class A{}"), compilationUnitTree("class A{}"), (l,r) -> true, false)).isFalse();
   }
 
   private void assertAreEquivalent(String statement1, String statement2) {

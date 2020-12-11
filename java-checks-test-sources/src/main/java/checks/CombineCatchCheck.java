@@ -40,6 +40,22 @@ class CombineCatchCheckWithVersion {
       doCleanup();
       throw e;
     }
+
+    try {
+      canThrow();
+    } catch (IOException e) {
+      handleException(e);
+    } catch (IllegalArgumentException e) { // Compliant, specific type is need in the body
+      handleException(e);
+    } catch (SQLException e) { // Compliant, not the same body
+      handleException(e, "a");
+    } catch (Exception e) { // Compliant
+      int i;
+    } catch (Throwable e) { // Compliant
+      doCleanup();
+    }
+  }
+
   void canThrow() throws IOException, SQLException, IllegalArgumentException {
   }
 
