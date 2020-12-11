@@ -20,7 +20,9 @@
 package org.sonar.java.se.constraint;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 import org.sonar.java.Preconditions;
 import org.sonar.java.collections.ListUtils;
@@ -31,6 +33,7 @@ import org.sonar.java.se.SymbolicValueFactory;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -39,6 +42,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 public class ConstraintManager {
+  
+  private Map<Symbol, SymbolicValue> constants = new HashMap<>();
 
   private SymbolicValueFactory symbolicValueFactory;
 
@@ -146,13 +151,17 @@ public class ConstraintManager {
   }
 
   private SymbolicValue createIdentifierSymbolicValue(IdentifierTree identifier) {
-    final Type type = identifier.symbol().type();
+    Symbol symbol = identifier.symbol();
+    final Type type = symbol.type();
     if (type != null && type.is("java.lang.Boolean")) {
       if ("TRUE".equals(identifier.name())) {
         return SymbolicValue.TRUE_LITERAL;
       } else if ("FALSE".equals(identifier.name())) {
         return SymbolicValue.FALSE_LITERAL;
       }
+    }
+    if (symbol.isFinal() && symbol.isStatic()) {
+      return constants.computeIfAbsent(symbol, k -> createDefaultSymbolicValue());
     }
     return createDefaultSymbolicValue();
   }

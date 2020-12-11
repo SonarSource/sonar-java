@@ -301,10 +301,10 @@ abstract class MapComputeIfAbsentOrPresentCheck {
   }
 
   void checkEnum(Map<Enum, Object> map) {
-    if (!map.containsKey(Enum.A)) // Compliant FN
+    if (!map.containsKey(Enum.A)) // Noncompliant
       map.put(Enum.A, new Object());
 
-    if (!map.containsKey(Enum.B)) // Compliant FN
+    if (!map.containsKey(Enum.B)) // Noncompliant
       map.put(Enum.B, new Object());
   }
   
