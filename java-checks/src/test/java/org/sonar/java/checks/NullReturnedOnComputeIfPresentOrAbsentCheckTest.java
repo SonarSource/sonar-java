@@ -27,8 +27,7 @@ import static org.sonar.java.CheckTestUtils.testSourcesPath;
 class NullReturnedOnComputeIfPresentOrAbsentCheckTest {
   @Test
   void test() {
-    JavaCheckVerifier
-      .newVerifier()
+    JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/NullReturnedOnComputeIfPresentOrAbsent.java"))
       .withCheck(new NullReturnedOnComputeIfPresentOrAbsentCheck())
       .verifyIssues();

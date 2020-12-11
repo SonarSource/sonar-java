@@ -34,8 +34,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6104")
 public class NullReturnedOnComputeIfPresentOrAbsentCheck extends AbstractMethodDetection {
-  public static final String PRIMARY_MESSAGE = "Use \"Map.containsKey(key)\" followed by \"Map.put(key, null)\" to add null values.";
-  public static final String SECONDARY_MESSAGE = "null literal in the arguments";
+  private static final String PRIMARY_MESSAGE = "Use \"Map.containsKey(key)\" followed by \"Map.put(key, null)\" to add null values.";
+  private static final String SECONDARY_MESSAGE = "null literal in the arguments";
   private static final MethodMatchers COMPUTE_IF = MethodMatchers
     .create()
     .ofTypes("java.util.Map")
@@ -44,18 +44,11 @@ public class NullReturnedOnComputeIfPresentOrAbsentCheck extends AbstractMethodD
     .build();
 
   @Override
+  /**
+   * The method is overridden for optimisation by restricting node visits to method invocations.
+   */
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.METHOD_INVOCATION);
-  }
-
-  @Override
-  public void onMethodInvocationFound(MethodInvocationTree invocation) {
-    Arguments arguments = invocation.arguments();
-    getNullReturn(arguments.get(1))
-      .ifPresent(body -> reportIssue(ExpressionUtils.methodName(invocation),
-        PRIMARY_MESSAGE,
-        Collections.singletonList(new JavaFileScannerContext.Location(SECONDARY_MESSAGE, body)),
-        null));
   }
 
   @Override
@@ -63,7 +56,17 @@ public class NullReturnedOnComputeIfPresentOrAbsentCheck extends AbstractMethodD
     return COMPUTE_IF;
   }
 
-  public static Optional<Tree> getNullReturn(Tree tree) {
+  @Override
+  public void onMethodInvocationFound(MethodInvocationTree invocation) {
+    Arguments arguments = invocation.arguments();
+    getNullReturnInLambda(arguments.get(1)).ifPresent(nullReturn ->
+      reportIssue(ExpressionUtils.methodName(invocation),
+        PRIMARY_MESSAGE,
+        Collections.singletonList(new JavaFileScannerContext.Location(SECONDARY_MESSAGE, nullReturn)),
+        null));
+  }
+
+  public static Optional<Tree> getNullReturnInLambda(Tree tree) {
     if (tree.is(Tree.Kind.LAMBDA_EXPRESSION)) {
       Tree body = ((LambdaExpressionTree) tree).body();
       if (body.is(Tree.Kind.NULL_LITERAL)) {

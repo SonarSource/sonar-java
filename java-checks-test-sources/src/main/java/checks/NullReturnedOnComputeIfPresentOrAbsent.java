@@ -6,14 +6,6 @@ import java.util.TreeMap;
 
 public class NullReturnedOnComputeIfPresentOrAbsent {
 
-  public static String presentLambda(String k, String v) {
-    return null;
-  }
-
-  public static String absentLambda(String k) {
-    return null;
-  }
-
   public void badComputeIfPresent() {
     Map<String, String> map = new HashMap<>();
     map.computeIfPresent("myKey", (key, value) -> // Noncompliant [[sc=9;ec=25;secondary=+1]] {{Use "Map.containsKey(key)" followed by "Map.put(key, null)" to add null values.}}
@@ -49,5 +41,13 @@ public class NullReturnedOnComputeIfPresentOrAbsent {
 
     Map<String, String> third = new TreeMap<>();
     third.computeIfAbsent("myKey", key -> null); // Noncompliant
+  }
+
+  public static String presentLambda(String k, String v) {
+    return null;
+  }
+
+  public static String absentLambda(String k) {
+    return null;
   }
 }
