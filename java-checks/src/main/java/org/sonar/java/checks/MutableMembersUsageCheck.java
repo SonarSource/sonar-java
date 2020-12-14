@@ -139,7 +139,7 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     }
     if (expression.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifierTree = (IdentifierTree) expression;
-      if (identifierTree.symbol().isPrivate() && !isImmutableFinalVariable((Symbol.VariableSymbol) identifierTree.symbol())) {
+      if (identifierTree.symbol().isPrivate() && !isOnlyAssignedImmutableVariable((Symbol.VariableSymbol) identifierTree.symbol())) {
         context.reportIssue(this, identifierTree, "Return a copy of \"" + identifierTree.name() + "\".");
       }
     }
@@ -149,18 +149,21 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     return expression.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) expression).name().equals("this");
   }
 
-  private static boolean isImmutableFinalVariable(Symbol.VariableSymbol symbol) {
-    if (symbol.isFinal()) {
-      VariableTree declaration = symbol.declaration();
-      // symbol is private, so declaration can only be null if assignment is done in static block
+  private static boolean isOnlyAssignedImmutableVariable(Symbol.VariableSymbol symbol) {
+    VariableTree declaration = symbol.declaration();
+    if (declaration != null) {
       ExpressionTree initializer = declaration.initializer();
       if (initializer != null) {
-        return !isMutableType(initializer) || isEmptyArray(initializer);
+        boolean isInitializerImmutable = !isMutableType(initializer) || isEmptyArray(initializer);
+        if (symbol.isFinal() || !isInitializerImmutable) {
+          // If the symbol is final or it is assigned something mutable, no need to look at re-assignment:
+          // we already know if it is immutable or not.
+          return isInitializerImmutable;
+        }
       }
-      return !assignementsOfMutableType(symbol.usages());
     }
 
-    return false;
+    return !assignementsOfMutableType(symbol.usages());
   }
 
   private static boolean isEmptyArray(ExpressionTree initializer) {
