@@ -42,10 +42,10 @@ public class NullReturnedOnComputeIfPresentOrAbsentCheck extends AbstractMethodD
     .addParametersMatcher(MethodMatchers.ANY, MethodMatchers.ANY)
     .build();
 
-  @Override
   /**
    * The method is overridden for optimisation by restricting node visits to method invocations.
    */
+  @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.METHOD_INVOCATION);
   }
