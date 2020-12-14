@@ -125,6 +125,13 @@ public class AssertJConsecutiveAssertionCheck {
   }
 
   @Test
+  void flat_extracting() {
+    assertThat(myList).flatExtracting("field1").isEqualTo("f1"); // Compliant
+    assertThat(myList).flatExtracting("field2").isEqualTo("f2");
+    assertThat((Object) myString).isEqualTo("42");
+  }
+
+  @Test
   void filtered() {
     assertThat(myList).filteredOn("", "").isEqualTo("");  // Compliant
     assertThat(myList).isEmpty();
@@ -270,16 +277,16 @@ class CustomAssertions {
 
   @Test
   void nonCompliantTypeTest1() {
-    assertThat(myType).isNotNull(); // Noncompliant [[secondary=274]]
+    assertThat(myType).isNotNull(); // Noncompliant [[secondary=+1]]
     assertThat(myType).isEqualTo(new MyType());
 
-    CustomAssert.assertThat(myType).isFoo(); // Noncompliant [[secondary=277]]
+    CustomAssert.assertThat(myType).isFoo(); // Noncompliant [[secondary=+1]]
     CustomAssert.assertThat(myType).isBar();
   }
 
   @Test
   void nonCompliantTypeTest2() {
-    CustomAssert.assertThat(myType).isFoo(); // Noncompliant [[secondary=283,285,286]]
+    CustomAssert.assertThat(myType).isFoo(); // Noncompliant [[secondary=+1,+3,+4]]
     CustomAssert.assertThat(myType).isBar();
 
     assertThat(myType).isNotNull(); // will be included
@@ -288,7 +295,7 @@ class CustomAssertions {
 
   @Test
   void nonCompliantTypeTest3() {
-    CustomAssert.assertThat(myType) // Noncompliant [[secondary=295]]
+    CustomAssert.assertThat(myType) // Noncompliant [[secondary=+4]]
       .isFoo()
       .isBar();
 
@@ -300,7 +307,7 @@ class CustomAssertions {
   @Test
   void nonCompliantTypeTest4() {
     assertThat(myType).isNotNull(); // Compliant - mixed, can not be chained
-    CustomAssert.assertThat(myType).isBar(); // Noncompliant [[secondary=304,305]]
+    CustomAssert.assertThat(myType).isBar(); // Noncompliant [[secondary=+1,+2]]
     assertThat(myType).isEqualTo(new MyType());
     CustomAssert.assertThat(myType).isBar();
   }
