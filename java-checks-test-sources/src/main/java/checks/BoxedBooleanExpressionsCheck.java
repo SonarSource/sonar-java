@@ -341,4 +341,72 @@ class BoxedBooleanExpressionsCheck {
 
   Object foo() { return new Object(); }
   Object bar() { return new Object(); }
+
+  void forStatementCheckedBeforeUseIsCompliant() {
+    Boolean checkedBeforeUse = getCustomNonNull();
+    if (checkedBeforeUse != null) {
+      for (; checkedBeforeUse; )  {} // Compliant because the variable is checked before use
+    }
+
+    Boolean checkedBeforeUse2 = getCustomNonNull();
+    if (checkedBeforeUse2 == null) {
+      for (; checkedBeforeUse2; )  {} // Compliant because the variable is checked before use
+    }
+  }
+
+  void whileStatementCheckedBeforeUseIsCompliant() {
+    Boolean checkedBeforeUse = getCustomNonNull();
+    if (checkedBeforeUse != null) {
+      while (checkedBeforeUse)  {} // Compliant because the variable is checked before use
+    }
+    Boolean checkedBeforeUse2 = getCustomNonNull();
+    if (checkedBeforeUse2 == null) {
+      while (checkedBeforeUse2)  {} // Compliant because the variable is checked before use
+    }
+  }
+
+  void doWhileStatementCheckedBeforeUseIsCompliant() {
+    Boolean checkedBeforeUse = getCustomNonNull();
+    if (checkedBeforeUse != null) {
+      do {}
+      while (checkedBeforeUse); // Compliant because the variable is checked before use
+    }
+    Boolean checkedBeforeUse2 = getCustomNonNull();
+    if (checkedBeforeUse2 == null) {
+      do {}
+      while (checkedBeforeUse2); // Compliant because the variable is checked before use
+    }
+  }
+
+  void ifStatementCheckedBeforeUseIsCompliant() {
+    Boolean checkedBeforeUse = getCustomNonNull();
+    if (checkedBeforeUse != null) {
+      if (checkedBeforeUse) { // Compliant because the variable is checked before use
+      } else {}
+    }
+    Boolean checkedBeforeUse2 = getCustomNonNull();
+    if (checkedBeforeUse2 == null) {
+      if (checkedBeforeUse2) { // Compliant because the variable is checked before use
+      } else {}
+    }
+  }
+
+  void conditionalCheckedBeforeUseIsCompliant() {
+    Boolean checkedBeforeUse = getCustomNonNull();
+    if (checkedBeforeUse != null) {
+      String ignored = (checkedBeforeUse ? "a" : "b" ); // Compliant because the variable is checked before use
+    }
+    Boolean checkedBeforeUse2 = getCustomNonNull();
+    if (checkedBeforeUse2 == null) {
+      String ignored = (checkedBeforeUse2 ? "a" : "b" ); // Compliant because the variable is checked before use
+    }
+  }
+
+  void conditionalCheckAgainstSelf() {
+    Boolean checkedAgainstSelf = getCustomNonNull();
+    Boolean alwaysTrue = true;
+    if (checkedAgainstSelf == alwaysTrue) {
+      String ignored = (checkedAgainstSelf ? "a" : "b" ); // Noncompliant because comparing to something else than null
+    }
+  }
 }

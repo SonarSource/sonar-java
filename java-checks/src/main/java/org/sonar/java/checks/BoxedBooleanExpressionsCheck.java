@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -33,8 +34,10 @@ import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
@@ -110,10 +113,29 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
   private boolean isSafeBooleanExpression(ExpressionTree tree) {
     ExpressionTree boxedBoolean = findBoxedBoolean(tree);
     if (boxedBoolean != null) {
+      // The rule is relaxed if the first usage of the variable is a test against nullness.
+      // A more thorough approach would require tracing all possible paths to lookup the test using symbolic execution.
+      if (isFirstUsageANullCheck(boxedBoolean)) {
+        return true;
+      }
       context.reportIssue(this, boxedBoolean, "Use the primitive boolean expression here.");
       return false;
     }
     return true;
+  }
+
+  private static boolean isFirstUsageANullCheck(ExpressionTree boxedBoolean) {
+    if (boxedBoolean.is(Kind.IDENTIFIER)) {
+      IdentifierTree identifier = (IdentifierTree) boxedBoolean;
+      List<IdentifierTree> usages = identifier.symbol().usages();
+      if (usages.size() > 1) {
+        Tree parent = usages.get(0).parent();
+        if (parent.is(Kind.NOT_EQUAL_TO, Kind.EQUAL_TO) && isNullCheck((ExpressionTree) parent)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   @CheckForNull
