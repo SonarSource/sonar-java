@@ -129,7 +129,7 @@ class ReturnRef {
   }
 }
 
-class Fields {
+class MutableMembersUsageCheckFields {
   private static final List<String> UNMODIFIABLE = Collections.unmodifiableList(Arrays.asList("A", "B", "C"));
   private static final List<String> UNMODIFIABLE2;
   private static final Object UNMODIFIABLE_OBJECT;
@@ -146,7 +146,7 @@ class Fields {
     MODIFIABLE2 = new ArrayList<>();
   }
 
-  private static List<String> unmodifiable_not_final = Collections.unmodifiableList(Arrays.asList("A", "B", "C"));
+  private static List<String> unmodifiable_static_not_final = Collections.unmodifiableList(Arrays.asList("A", "B", "C"));
 
   public List<String> foo1() {
     return UNMODIFIABLE; // Compliant
@@ -161,7 +161,7 @@ class Fields {
   }
 
   public List<String> bar1() {
-    return unmodifiable_not_final; // Noncompliant
+    return unmodifiable_static_not_final; // Compliant, private variable only assigned to immutable collections
   }
 
   public List<String> bar2() {
@@ -174,6 +174,18 @@ class Fields {
 
   private static ImmutableCollection getImmutableCollection() {
     return null;
+  }
+
+  class ImmutableInConstructor {
+    private final List<String> list;
+
+    ImmutableInConstructor(List<String> list) {
+      this.list = Collections.unmodifiableList(list);
+    }
+
+    public List<String> getList() {
+      return list; // Compliant, final and only assigned in constructor
+    }
   }
 
   class ImmutableOnlyInOneConstructor {
@@ -189,6 +201,33 @@ class Fields {
 
     public List<String> getList() {
       return list; // Noncompliant
+    }
+  }
+
+  class FieldsNotStaticFinal {
+    private List<String> UNMODIFIABLE = Collections.unmodifiableList(Arrays.asList("A", "B", "C"));
+    private List<String> UNMODIFIABLE2;
+    private List<String> UNMODIFIABLE3 = null;
+
+    FieldsNotStaticFinal() {
+      UNMODIFIABLE2 = Collections.unmodifiableList(Arrays.asList("A", "B", "C"));
+    }
+
+    void set(List<String> list) {
+      UNMODIFIABLE2 = Collections.unmodifiableList(list);
+      UNMODIFIABLE3 = Collections.unmodifiableList(list);
+    }
+
+    public List<String> foo1() {
+      return UNMODIFIABLE; // Compliant, only assigned unmodifiable collections
+    }
+
+    public List<String> foo2() {
+      return UNMODIFIABLE2; // Compliant, only assigned unmodifiable collections
+    }
+
+    public List<String> foo3() {
+      return UNMODIFIABLE3; // Compliant, only assigned unmodifiable collections
     }
   }
 }

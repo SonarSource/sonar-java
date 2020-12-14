@@ -400,9 +400,6 @@
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/QProfilesWs.java':[
 34,
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/SearchData.java':[
-51,
-],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/root/ws/RootsWs.java':[
 28,
 ],
