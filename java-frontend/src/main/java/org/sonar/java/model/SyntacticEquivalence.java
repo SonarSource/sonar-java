@@ -59,7 +59,7 @@ public final class SyntacticEquivalence {
   }
 
   /**
-   * Syntactic equivalence improved with additional semantic equivalence for methods calls.
+   * Syntactic equivalence with additional semantic equivalence for methods calls.
    * Two methods calls are equivalent only if they have the same signature; if the types of the arguments are the same.
    *
    * @return true, if nodes are syntactically and semantically equivalent.
@@ -85,10 +85,6 @@ public final class SyntacticEquivalence {
     return true;
   }
 
-  /**
-   * @return true, if nodes are syntactically equivalent
-   * Use "overwriteEquivalence" to force the equivalence or not of two nodes. When it returns true, the method will return "equivalenceValue".
-   */
   @VisibleForTesting
   static boolean areEquivalent(@Nullable Tree leftNode, @Nullable Tree rightNode, BiPredicate<JavaTree, JavaTree> overwriteEquivalence, boolean equivalenceValue) {
     return areEquivalent((JavaTree) leftNode, (JavaTree) rightNode, overwriteEquivalence, equivalenceValue);
