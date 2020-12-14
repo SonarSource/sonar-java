@@ -36,8 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class NullReturnedOnComputeIfPresentOrAbsentCheck extends AbstractMethodDetection {
   private static final String PRIMARY_MESSAGE = "Use \"Map.containsKey(key)\" followed by \"Map.put(key, null)\" to add null values.";
   private static final String SECONDARY_MESSAGE = "null literal in the arguments";
-  private static final MethodMatchers COMPUTE_IF = MethodMatchers
-    .create()
+  private static final MethodMatchers COMPUTE_IF = MethodMatchers.create()
     .ofTypes("java.util.Map")
     .names("computeIfPresent", "computeIfAbsent")
     .addParametersMatcher(MethodMatchers.ANY, MethodMatchers.ANY)
@@ -66,7 +65,7 @@ public class NullReturnedOnComputeIfPresentOrAbsentCheck extends AbstractMethodD
         null));
   }
 
-  public static Optional<Tree> getNullReturnInLambda(Tree tree) {
+  private static Optional<Tree> getNullReturnInLambda(Tree tree) {
     if (tree.is(Tree.Kind.LAMBDA_EXPRESSION)) {
       Tree body = ((LambdaExpressionTree) tree).body();
       if (body.is(Tree.Kind.NULL_LITERAL)) {
