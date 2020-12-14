@@ -39,6 +39,13 @@ public final class SyntacticEquivalence {
   /**
    * @return true, if nodes are syntactically equivalent
    */
+  public static boolean areEquivalent(@Nullable Tree leftNode, @Nullable Tree rightNode) {
+    return areEquivalent(leftNode, rightNode, (t1, t2) -> false, true);
+  }
+
+  /**
+   * @return true, if nodes are syntactically equivalent
+   */
   public static boolean areEquivalent(List<? extends Tree> leftList, List<? extends Tree> rightList) {
     return areEquivalent(leftList, rightList, (t1, t2) -> false);
   }
@@ -49,6 +56,16 @@ public final class SyntacticEquivalence {
    */
   public static boolean areEquivalent(List<? extends Tree> leftList, List<? extends Tree> rightList, BiPredicate<JavaTree, JavaTree> permissiveEquivalence) {
     return areEquivalent(leftList, rightList, permissiveEquivalence, true);
+  }
+
+  /**
+   * Syntactic equivalence improved with additional semantic equivalence for methods calls.
+   * Two methods calls are equivalent only if they have the same signature; if the types of the arguments are the same.
+   *
+   * @return true, if nodes are syntactically and semantically equivalent.
+   */
+  public static boolean areSemanticallyEquivalent(List<? extends Tree> leftList, List<? extends Tree> rightList) {
+    return areEquivalent(leftList, rightList, SyntacticEquivalence::areNotSameMethodCalls, false);
   }
 
   private static boolean areEquivalent(List<? extends Tree> leftList,
@@ -66,23 +83,6 @@ public final class SyntacticEquivalence {
       }
     }
     return true;
-  }
-
-  /**
-   * @return true, if nodes are syntactically equivalent
-   */
-  public static boolean areEquivalent(@Nullable Tree leftNode, @Nullable Tree rightNode) {
-    return areEquivalent(leftNode, rightNode, (t1, t2) -> false, true);
-  }
-
-  /**
-   * Syntactic equivalence improved with additional semantic equivalence for methods calls.
-   * Two methods calls are equivalent only if they have the same signature; if the types of the arguments are the same.
-   *
-   * @return true, if nodes are syntactically and semantically equivalent.
-   */
-  public static boolean areSemanticallyEquivalent(List<? extends Tree> leftList, List<? extends Tree> rightList) {
-    return areEquivalent(leftList, rightList, SyntacticEquivalence::areNotSameMethodCalls, false);
   }
 
   /**
