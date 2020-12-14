@@ -89,7 +89,7 @@ public class ParameterizedTestCheck extends IssuableSubscriptionVisitor {
       for (int j = i + 1; j < methods.size(); j++) {
         MethodTree otherMethod = methods.get(j);
         if (!handled.contains(otherMethod)) {
-          boolean areEquivalent = SyntacticEquivalence.areEquivalent(methodBody, otherMethod.block().body(), collectAndIgnoreLiterals, true);
+          boolean areEquivalent = SyntacticEquivalence.areEquivalent(methodBody, otherMethod.block().body(), collectAndIgnoreLiterals);
           if (areEquivalent) {
             // If methods where not equivalent, we don't want to pollute the set of node to parameterize.
             equivalentMethods.add(otherMethod);

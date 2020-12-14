@@ -19,12 +19,15 @@
  */
 package org.sonar.java.model;
 
-import org.sonar.java.annotations.VisibleForTesting;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 import javax.annotation.Nullable;
+import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.java.model.expression.MethodInvocationTreeImpl;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -37,14 +40,18 @@ public final class SyntacticEquivalence {
    * @return true, if nodes are syntactically equivalent
    */
   public static boolean areEquivalent(List<? extends Tree> leftList, List<? extends Tree> rightList) {
-    return areEquivalent(leftList, rightList, (t1, t2) -> false, true);
+    return areEquivalent(leftList, rightList, (t1, t2) -> false);
   }
 
   /**
    * @return true, if nodes are syntactically equivalent
-   * Use "overwriteEquivalence" to force the equivalence or not of two nodes. When it returns true, the method will return "equivalenceValue".
+   * Use permissiveEquivalence to force the equivalence of two nodes
    */
-  public static boolean areEquivalent(List<? extends Tree> leftList,
+  public static boolean areEquivalent(List<? extends Tree> leftList, List<? extends Tree> rightList, BiPredicate<JavaTree, JavaTree> permissiveEquivalence) {
+    return areEquivalent(leftList, rightList, permissiveEquivalence, true);
+  }
+
+  private static boolean areEquivalent(List<? extends Tree> leftList,
                                       List<? extends Tree> rightList,
                                       BiPredicate<JavaTree, JavaTree> overwriteEquivalence,
                                       boolean equivalenceValue) {
@@ -66,6 +73,16 @@ public final class SyntacticEquivalence {
    */
   public static boolean areEquivalent(@Nullable Tree leftNode, @Nullable Tree rightNode) {
     return areEquivalent(leftNode, rightNode, (t1, t2) -> false, true);
+  }
+
+  /**
+   * Syntactic equivalence improved with additional semantic equivalence for methods calls.
+   * Two methods calls are equivalent only if they have the same signature; if the types of the arguments are the same.
+   *
+   * @return true, if nodes are syntactically and semantically equivalent.
+   */
+  public static boolean areSemanticallyEquivalent(List<? extends Tree> leftList, List<? extends Tree> rightList) {
+    return areEquivalent(leftList, rightList, SyntacticEquivalence::areNotSameMethodCalls, false);
   }
 
   /**
@@ -115,6 +132,33 @@ public final class SyntacticEquivalence {
     } else {
       throw new IllegalArgumentException();
     }
+  }
+
+  private static boolean areNotSameMethodCalls(JavaTree leftNode, JavaTree rightNode) {
+    if (!leftNode.is(Tree.Kind.METHOD_INVOCATION) || !rightNode.is(Tree.Kind.METHOD_INVOCATION)) {
+      return false;
+    }
+
+    Symbol leftSymbol = ((MethodInvocationTreeImpl) leftNode).symbol();
+    Symbol rightSymbol = ((MethodInvocationTreeImpl) rightNode).symbol();
+
+    if (!leftSymbol.isMethodSymbol() || !rightSymbol.isMethodSymbol()) {
+      // This can happen when the symbol is unknown. If it is the case, we consider them as not the same to avoid FP.
+      return true;
+    }
+
+    List<Type> leftArguments = ((Symbol.MethodSymbol) leftSymbol).parameterTypes();
+    List<Type> rightArguments = ((Symbol.MethodSymbol) rightSymbol).parameterTypes();
+
+    int leftArgumentsSize = leftArguments.size();
+    if (leftArgumentsSize == rightArguments.size()) {
+      for (int i = 0; i < leftArgumentsSize; i++) {
+        if (!leftArguments.get(i).equals(rightArguments.get(i))) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
 }

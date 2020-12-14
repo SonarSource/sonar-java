@@ -24,14 +24,10 @@ import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.SyntacticEquivalence;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
@@ -49,40 +45,13 @@ public class CombineCatchCheck extends IssuableSubscriptionVisitor implements Ja
     List<CatchTree> catches = new ArrayList<>();
     for (CatchTree catchTree : ((TryStatementTree) tree).catches()) {
       for (CatchTree catchTreeToBeCompared : catches) {
-        if (SyntacticEquivalence.areEquivalent(catchTree.block().body(), catchTreeToBeCompared.block().body(), CombineCatchCheck::areNotSameMethodCalls, false)) {
+        if (SyntacticEquivalence.areSemanticallyEquivalent(catchTree.block().body(), catchTreeToBeCompared.block().body())) {
           reportIssue(catchTree, catchTreeToBeCompared);
           break;
         }
       }
       catches.add(catchTree);
     }
-  }
-
-  private static boolean areNotSameMethodCalls(JavaTree leftNode, JavaTree rightNode) {
-    if (!leftNode.is(Tree.Kind.METHOD_INVOCATION) || !rightNode.is(Tree.Kind.METHOD_INVOCATION)) {
-      return false;
-    }
-
-    Symbol leftSymbol = ((MethodInvocationTreeImpl) leftNode).symbol();
-    Symbol rightSymbol = ((MethodInvocationTreeImpl) rightNode).symbol();
-
-    if (!leftSymbol.isMethodSymbol() || !rightSymbol.isMethodSymbol()) {
-      // This can happen when the symbol is unknown. If it is the case, we consider them as not the same to avoid FP.
-      return true;
-    }
-
-    List<Type> leftArguments = ((Symbol.MethodSymbol) leftSymbol).parameterTypes();
-    List<Type> rightArguments = ((Symbol.MethodSymbol) rightSymbol).parameterTypes();
-
-    int leftArgumentsSize = leftArguments.size();
-    if (leftArgumentsSize == rightArguments.size()) {
-      for (int i = 0; i < leftArgumentsSize; i++) {
-        if (!leftArguments.get(i).equals(rightArguments.get(i))) {
-          return true;
-        }
-      }
-    }
-    return false;
   }
 
   private void reportIssue(CatchTree catchTree, CatchTree catchTreeToBeCompared) {
