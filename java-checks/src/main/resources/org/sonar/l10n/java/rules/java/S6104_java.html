@@ -1,0 +1,27 @@
+<p>Map <a
+href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html#computeIfAbsent-K-java.util.function.Function-">computeIfAbsent</a>&nbsp;and <a
+href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html#computeIfPresent-K-java.util.function.BiFunction-">computeIfPresent</a> methods are
+convenient to avoid the cumbersome process to check if a key exists or not, followed by the addition of the entry. However, when the function used to
+compute the value returns <code>null</code>, the entry <code>key-&gt;null</code> will not be added to the Map. Furthermore, in the case of
+<code>computeIfPresent</code>, if the key is present the entry will be removed. These methods should therefore not be used to conditionally add an
+entry with a null value. The traditional way should be used instead.</p>
+<p>This rule raises an issue when <code>computeIfAbsent</code> or <code>computeIfPresent</code> is used with a lambda always returning null.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+map.computeIfAbsent(key, k -&gt; null); // Noncompliant,  te map will not contain an entry key-&gt;null.
+map.computeIfPresent(key, (k, oldValue) -&gt; null); // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+if (!map.containsKey(key)) {
+    map.put(key, null);
+}
+if (map.containsKey(key)) {
+    map.put(key, null);
+}
+</pre>
+<h2>See also</h2>
+<ul>
+  <li> {rule:squid:S3824} - "Map.get" and value test should be replaced with single method call </li>
+</ul>
+
