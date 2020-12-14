@@ -19,6 +19,9 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.model.SyntacticEquivalence;
@@ -28,10 +31,6 @@ import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Rule(key = "S2147")
 public class CombineCatchCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
@@ -46,7 +45,7 @@ public class CombineCatchCheck extends IssuableSubscriptionVisitor implements Ja
     List<CatchTree> catches = new ArrayList<>();
     for (CatchTree catchTree : ((TryStatementTree) tree).catches()) {
       for (CatchTree catchTreeToBeCompared : catches) {
-        if (SyntacticEquivalence.areEquivalent(catchTree.block(), catchTreeToBeCompared.block())) {
+        if (SyntacticEquivalence.areSemanticallyEquivalent(catchTree.block().body(), catchTreeToBeCompared.block().body())) {
           reportIssue(catchTree, catchTreeToBeCompared);
           break;
         }

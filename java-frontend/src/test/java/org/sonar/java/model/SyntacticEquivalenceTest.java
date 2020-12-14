@@ -21,14 +21,14 @@ package org.sonar.java.model;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -76,8 +76,96 @@ class SyntacticEquivalenceTest {
   @Test
   void extra_permissive_equivalence() {
     assertThat(SyntacticEquivalence.areEquivalent(compilationUnitTree("class A{}"), compilationUnitTree("class B{}"))).isFalse();
-    assertThat(SyntacticEquivalence.areEquivalent(compilationUnitTree("class A{}"), compilationUnitTree("class B{}"), (l,r) -> false)).isFalse();
-    assertThat(SyntacticEquivalence.areEquivalent(compilationUnitTree("class A{}"), compilationUnitTree("class B{}"), (l,r) -> true)).isTrue();
+    assertThat(SyntacticEquivalence.areEquivalent(compilationUnitTree("class A{}"), compilationUnitTree("class B{}"), (l, r) -> false, true)).isFalse();
+    assertThat(SyntacticEquivalence.areEquivalent(compilationUnitTree("class A{}"), compilationUnitTree("class B{}"), (l, r) -> true, true)).isTrue();
+  }
+
+  @Test
+  void extra_dismissive_equivalence() {
+    assertThat(SyntacticEquivalence.areEquivalent(compilationUnitTree("class A{}"), compilationUnitTree("class A{}"))).isTrue();
+    assertThat(SyntacticEquivalence.areEquivalent(compilationUnitTree("class A{}"), compilationUnitTree("class A{}"), (l, r) -> false, false)).isTrue();
+    assertThat(SyntacticEquivalence.areEquivalent(compilationUnitTree("class A{}"), compilationUnitTree("class A{}"), (l, r) -> true, false)).isFalse();
+  }
+
+  @Test
+  void test_semantic_equivalence() {
+    CompilationUnitTree compilationUnitTree = compilationUnitTree(
+      "class A{" +
+      "  void m(String o) {}" +
+      "  void m(Object o) {}" +
+      "  void m(Object o1, Object o2) {}" +
+      "  void f1(String o) {" +
+      "    m(o);" +
+      "  }" +
+      "  void f2(Object o) {" +
+      "    m(o);" +
+      "  }" +
+      "  void f3(Integer o) {" +
+      "    m(o);" +
+      "  }" +
+      "  void f4(Object o) {" +
+      "    m(o, o);" +
+      "  }" +
+      "}");
+    List<Tree> members = ((ClassTree) compilationUnitTree.types().get(0)).members();
+    List<StatementTree> f1Body = ((MethodTree) members.get(3)).block().body();
+    List<StatementTree> f2Body = ((MethodTree) members.get(4)).block().body();
+    List<StatementTree> f3Body = ((MethodTree) members.get(5)).block().body();
+    List<StatementTree> f4Body = ((MethodTree) members.get(6)).block().body();
+
+    assertThat(SyntacticEquivalence.areEquivalent(f1Body, f2Body)).isTrue();
+    assertThat(SyntacticEquivalence.areSemanticallyEquivalent(f1Body, f2Body)).isFalse();
+    assertThat(SyntacticEquivalence.areSemanticallyEquivalent(f2Body, f1Body)).isFalse();
+
+    assertThat(SyntacticEquivalence.areEquivalent(f1Body, f3Body)).isTrue();
+    assertThat(SyntacticEquivalence.areSemanticallyEquivalent(f1Body, f3Body)).isFalse();
+
+    assertThat(SyntacticEquivalence.areEquivalent(f2Body, f3Body)).isTrue();
+    assertThat(SyntacticEquivalence.areSemanticallyEquivalent(f2Body, f3Body)).isTrue();
+
+    assertThat(SyntacticEquivalence.areSemanticallyEquivalent(f1Body, f4Body)).isFalse();
+  }
+
+  @Test
+  void test_semantic_equivalence_unknown_symbol() {
+    CompilationUnitTree compilationUnitTree = compilationUnitTree(
+      "class A{" +
+        "  void m(Object o) {}" +
+        "  void f1(Unknown o) {" +
+        "    m(o);" +
+        "  }" +
+        "  void f2(Unknown o) {" +
+        "    unknown(o);" +
+        "  }" +
+        "}");
+    List<Tree> members = ((ClassTree) compilationUnitTree.types().get(0)).members();
+    List<StatementTree> f1Body = ((MethodTree) members.get(1)).block().body();
+    List<StatementTree> f2Body = ((MethodTree) members.get(2)).block().body();
+
+    assertThat(SyntacticEquivalence.areEquivalent(f1Body, f2Body)).isFalse();
+    assertThat(SyntacticEquivalence.areSemanticallyEquivalent(f1Body, f2Body)).isFalse();
+    assertThat(SyntacticEquivalence.areSemanticallyEquivalent(f2Body, f1Body)).isFalse();
+  }
+
+  @Test
+  void test_semantic_equivalence_in_for_header() {
+    CompilationUnitTree compilationUnitTree = compilationUnitTree(
+      "class A{" +
+        "  void foo() {}" +
+        "  void f1(Object o) {" +
+        "    for (int i = 0; i < 1; i++) {};" +
+        "  }" +
+        "  void f2(Object o) {" +
+        "    for (int i = 0; i < 1; foo()) {};" +
+        "  }" +
+        "}");
+    List<Tree> members = ((ClassTree) compilationUnitTree.types().get(0)).members();
+    List<StatementTree> f1Body = ((MethodTree) members.get(1)).block().body();
+    List<StatementTree> f2Body = ((MethodTree) members.get(2)).block().body();
+
+    assertThat(SyntacticEquivalence.areEquivalent(f1Body, f2Body)).isFalse();
+    assertThat(SyntacticEquivalence.areSemanticallyEquivalent(f1Body, f2Body)).isFalse();
+    assertThat(SyntacticEquivalence.areSemanticallyEquivalent(f2Body, f1Body)).isFalse();
   }
 
   private void assertAreEquivalent(String statement1, String statement2) {
