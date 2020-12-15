@@ -128,7 +128,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
     if (boxedBoolean.is(Kind.IDENTIFIER)) {
       IdentifierTree identifier = (IdentifierTree) boxedBoolean;
       List<IdentifierTree> usages = identifier.symbol().usages();
-      if (usages.size() > 1) {
+      if (!usages.isEmpty()) {
         Tree parent = usages.get(0).parent();
         if (parent.is(Kind.NOT_EQUAL_TO, Kind.EQUAL_TO) && isNullCheck((ExpressionTree) parent)) {
           return true;

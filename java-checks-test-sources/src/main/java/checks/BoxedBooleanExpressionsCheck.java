@@ -342,71 +342,95 @@ class BoxedBooleanExpressionsCheck {
   Object foo() { return new Object(); }
   Object bar() { return new Object(); }
 
+  Boolean getSurprizeBoxedBoolean() {
+    double random = Math.random();
+    if (random < 0.34) {
+      return Boolean.FALSE;
+    }
+    if (random < 0.67) {
+      return Boolean.TRUE;
+    }
+    return null;
+  }
+
   void forStatementCheckedBeforeUseIsCompliant() {
-    Boolean checkedBeforeUse = getCustomNonNull();
+    Boolean checkedBeforeUse = getSurprizeBoxedBoolean();
     if (checkedBeforeUse != null) {
       for (; checkedBeforeUse; )  {} // Compliant because the variable is checked before use
     }
 
-    Boolean checkedBeforeUse2 = getCustomNonNull();
+    Boolean checkedBeforeUse2 = getSurprizeBoxedBoolean();
     if (checkedBeforeUse2 == null) {
-      for (; checkedBeforeUse2; )  {} // Compliant because the variable is checked before use
+      return;
     }
-  }
+    for (; checkedBeforeUse2; ) {} // Compliant because the variable is checked before use
+}
 
   void whileStatementCheckedBeforeUseIsCompliant() {
-    Boolean checkedBeforeUse = getCustomNonNull();
+    Boolean checkedBeforeUse = getSurprizeBoxedBoolean();
     if (checkedBeforeUse != null) {
       while (checkedBeforeUse)  {} // Compliant because the variable is checked before use
     }
-    Boolean checkedBeforeUse2 = getCustomNonNull();
+    Boolean checkedBeforeUse2 = getSurprizeBoxedBoolean();
     if (checkedBeforeUse2 == null) {
-      while (checkedBeforeUse2)  {} // Compliant because the variable is checked before use
+      return;
     }
+    while (checkedBeforeUse2)  {} // Compliant because the variable is checked before use
   }
 
   void doWhileStatementCheckedBeforeUseIsCompliant() {
-    Boolean checkedBeforeUse = getCustomNonNull();
+    Boolean checkedBeforeUse = getSurprizeBoxedBoolean();
     if (checkedBeforeUse != null) {
       do {}
       while (checkedBeforeUse); // Compliant because the variable is checked before use
     }
-    Boolean checkedBeforeUse2 = getCustomNonNull();
+    Boolean checkedBeforeUse2 = getSurprizeBoxedBoolean();
     if (checkedBeforeUse2 == null) {
-      do {}
-      while (checkedBeforeUse2); // Compliant because the variable is checked before use
+      return;
     }
+    do {} while (checkedBeforeUse2); // Compliant because the variable is checked before use
   }
 
   void ifStatementCheckedBeforeUseIsCompliant() {
-    Boolean checkedBeforeUse = getCustomNonNull();
+    Boolean checkedBeforeUse = getSurprizeBoxedBoolean();
     if (checkedBeforeUse != null) {
       if (checkedBeforeUse) { // Compliant because the variable is checked before use
       } else {}
     }
-    Boolean checkedBeforeUse2 = getCustomNonNull();
+    Boolean checkedBeforeUse2 = getSurprizeBoxedBoolean();
     if (checkedBeforeUse2 == null) {
-      if (checkedBeforeUse2) { // Compliant because the variable is checked before use
-      } else {}
+      return;
     }
+    if (checkedBeforeUse2) { // Compliant because the variable is checked before use
+    } else {}
+
+    Boolean checkedBeforeUse3 = getSurprizeBoxedBoolean();
+    if (checkedBeforeUse3 == null) {
+      return;
+    }
+    if (false) {
+    } else if (checkedBeforeUse3) {} // Compliant because the variable is checked before use
   }
 
-  void conditionalCheckedBeforeUseIsCompliant() {
-    Boolean checkedBeforeUse = getCustomNonNull();
-    if (checkedBeforeUse != null) {
-      String ignored = (checkedBeforeUse ? "a" : "b" ); // Compliant because the variable is checked before use
-    }
-    Boolean checkedBeforeUse2 = getCustomNonNull();
-    if (checkedBeforeUse2 == null) {
-      String ignored = (checkedBeforeUse2 ? "a" : "b" ); // Compliant because the variable is checked before use
-    }
-  }
-
-  void conditionalCheckAgainstSelf() {
-    Boolean checkedAgainstSelf = getCustomNonNull();
+  void conditionalCheckedBeforeUse() {
+    Boolean checkedBeforeUse = getSurprizeBoxedBoolean();
+    Boolean checkedBeforeUse2 = getSurprizeBoxedBoolean();
+    Boolean checkedAgainstOther = getSurprizeBoxedBoolean();
     Boolean alwaysTrue = true;
-    if (checkedAgainstSelf == alwaysTrue) {
-      String ignored = (checkedAgainstSelf ? "a" : "b" ); // Noncompliant because comparing to something else than null
+
+    if (checkedBeforeUse != null) {
+      String ignored = (checkedBeforeUse ? "a" : "b"); // Compliant because the variable is checked before use
+    } else if (checkedBeforeUse2 == null) {
+      return;
+    } else {
+      if (checkedAgainstOther == alwaysTrue) {
+        String ignored = (checkedAgainstOther ? "a" : "b"); // Noncompliant because comparing to something else than null
+      }
+    }
+    String ignored = (checkedBeforeUse2 ? "a" : "b"); // Compliant because the variable is checked before use
+
+    if (checkedAgainstOther == alwaysTrue) {
+      ignored = (checkedAgainstOther ? "a" : "b"); // Noncompliant because comparing to something else than null
     }
   }
 }
