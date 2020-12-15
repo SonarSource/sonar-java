@@ -1,4 +1,0 @@
-package packageInfo;
-
-class HelloWorld {
-}
