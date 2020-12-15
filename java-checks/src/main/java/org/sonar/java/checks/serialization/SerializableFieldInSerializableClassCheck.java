@@ -21,6 +21,9 @@ package org.sonar.java.checks.serialization;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JUtils;
@@ -33,6 +36,7 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -42,6 +46,8 @@ import org.sonar.plugins.java.api.tree.WildcardTree;
 
 @Rule(key = "S1948")
 public class SerializableFieldInSerializableClassCheck extends IssuableSubscriptionVisitor {
+
+  private static final String JAVAX_INJECT = "javax.inject.Inject";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -54,12 +60,44 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
     if (isSerializable(classTree)
       && !SerializableContract.hasSpecialHandlingSerializationMethods(classTree)
       && !classTree.symbol().type().isSubtypeOf("javax.servlet.http.HttpServlet")) {
-      for (Tree member : classTree.members()) {
-        if (member.is(Tree.Kind.VARIABLE)) {
-          checkVariableMember((VariableTree) member);
-        }
-      }
+      
+      Set<String> constructorInjectedParams = getConstructorInjectedFields(classTree);
+      Set<String> setterInjectedParams = getSetterInjectedFields(classTree);
+      
+      classTree.members().stream()
+        .filter(member -> member.is(Tree.Kind.VARIABLE))
+        .map(VariableTree.class::cast)
+        .filter(variableTree -> 
+          !(constructorInjectedParams.contains(variableTree.simpleName().name()) ||
+            setterInjectedParams.contains(variableTree.simpleName().name())))
+        .forEach(this::checkVariableMember);
     }
+  }
+
+  private static Set<String> getSetterInjectedFields(ClassTree classTree) {
+    return classTree.members().stream()
+      .filter(member -> member.is(Tree.Kind.METHOD))
+      .map(MethodTree.class::cast)
+      .filter(SerializableFieldInSerializableClassCheck::isAnnotatedWithInject)
+      .map(methodTree -> methodTree.simpleName().name())
+      .filter(name -> name.startsWith("set"))
+      .map(name -> name.substring(3).toLowerCase(Locale.ROOT))
+      .collect(Collectors.toSet());
+  }
+
+  private static Set<String> getConstructorInjectedFields(ClassTree classTree) {
+    return classTree.members().stream()
+      .filter(member -> member.is(Tree.Kind.CONSTRUCTOR))
+      .map(MethodTree.class::cast)
+      .filter(SerializableFieldInSerializableClassCheck::isAnnotatedWithInject)
+      .flatMap(methodTree -> methodTree.parameters().stream())
+      .map(variableTree -> variableTree.simpleName().name())
+      .collect(Collectors.toSet());
+  }
+
+  private static boolean isAnnotatedWithInject(MethodTree methodTree) {
+    return methodTree.symbol().metadata().isAnnotatedWith(JAVAX_INJECT)
+      || hasAnnotationsWithIncompleteSemantic(methodTree.symbol().metadata());
   }
 
   private void checkVariableMember(VariableTree variableTree) {
@@ -135,10 +173,14 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
       return true;
     }
     SymbolMetadata metadata = member.symbol().metadata();
-    return metadata.isAnnotatedWith("javax.inject.Inject")
+    return metadata.isAnnotatedWith(JAVAX_INJECT)
       || metadata.isAnnotatedWith("javax.ejb.EJB")
       || metadata.isAnnotatedWith("org.apache.wicket.spring.injection.annot.SpringBean")
-      || metadata.annotations().stream().anyMatch(annotation -> annotation.symbol().isUnknown());
+      || hasAnnotationsWithIncompleteSemantic(metadata);
+  }
+
+  private static boolean hasAnnotationsWithIncompleteSemantic(SymbolMetadata metadata) {
+    return metadata.annotations().stream().anyMatch(annotation -> annotation.symbol().isUnknown());
   }
 
   private static boolean isSerializable(Tree tree) {

@@ -119,6 +119,26 @@ class Person8 implements Serializable {
   @Deprecated Address address5; // Noncompliant
 }
 
+class Person9999 implements Serializable {
+  Address address; // Compliant field is injected
+  @EJB Address address2; // Compliant
+
+  Address address3; // Compliant
+  @EJB Address address4; // Compliant
+
+  @Deprecated Address address5; // Noncompliant
+
+  @Inject
+  public Person9999(Address address) {
+    this.address = address;
+  }
+
+  @Inject
+  public void setAddress3(Address address3) {
+    this.address3 = address3;
+  }
+}
+
 class IncompleteSerializableMethods1 implements Serializable {
   Address address; // Noncompliant - read/write methods are not exactly matching signatures (throwing wrong types)
   private void writeObject(java.io.ObjectOutputStream out) {}
