@@ -39,8 +39,10 @@ class InternalCheckVerifierTest {
   private static final JavaFileScanner FAILING_CHECK = new FailingCheck();
   private static final JavaFileScanner NO_EFFECT_CHECK = new NoEffectCheck();
   private static final JavaFileScanner FILE_LINE_ISSUE_CHECK = new FileLineIssueCheck();
+  private static final JavaFileScanner FILE_LINE_ISSUE_IF_NAMED_NON_COMPLIANT_CHECK = new FileLineIssueIfNamedNonCompliantCheck();
   private static final JavaFileScanner PROJECT_ISSUE_CHECK = new ProjectIssueCheck();
   private static final JavaFileScanner FILE_ISSUE_CHECK = new FileIssueCheck();
+  private static final JavaFileScanner FILE_ISSUE_IF_NAMED_NON_COMPLIANT_CHECK = new FileIssueIfNamedNonCompliantCheck();
 
   @Nested
   class TestingCheckVerifierInitialConfiguration {
@@ -426,6 +428,68 @@ class InternalCheckVerifierTest {
     }
 
     @Test
+    void verify_should_work_with_multiples_files_without_issues() {
+      InternalCheckVerifier.newInstance()
+        .onFiles(TEST_FILE, TEST_FILE_NONCOMPLIANT)
+        .withCheck(NO_EFFECT_CHECK)
+        .verifyNoIssues();
+    }
+
+    @Test
+    void verify_should_work_with_multiples_files_with_issues() {
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFiles(TEST_FILE, TEST_FILE_NONCOMPLIANT)
+        .withCheck(FILE_LINE_ISSUE_CHECK)
+        .verifyNoIssues());
+
+      assertThat(e)
+        .isInstanceOf(AssertionError.class)
+        .hasMessageStartingWith("No issues expected but got 2 issue(s):")
+        .hasMessageContaining("--> 'issueOnLine' in src/test/files/testing/Compliant.java:1")
+        .hasMessageContaining("--> 'issueOnLine' in src/test/files/testing/Noncompliant.java:1");
+    }
+
+    @Test
+    void verify_should_work_with_multiples_file_order_should_not_matter() {
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFiles(TEST_FILE_NONCOMPLIANT, TEST_FILE)
+        .withCheck(FILE_LINE_ISSUE_CHECK)
+        .verifyNoIssues());
+
+      assertThat(e)
+        .isInstanceOf(AssertionError.class)
+        .hasMessageStartingWith("No issues expected but got 2 issue(s):")
+        .hasMessageContaining("--> 'issueOnLine' in src/test/files/testing/Compliant.java:1")
+        .hasMessageContaining("--> 'issueOnLine' in src/test/files/testing/Noncompliant.java:1");
+    }
+
+    @Test
+    void only_one_file_raise_issue() {
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFiles(TEST_FILE, TEST_FILE_NONCOMPLIANT)
+        .withCheck(FILE_LINE_ISSUE_IF_NAMED_NON_COMPLIANT_CHECK)
+        .verifyNoIssues());
+
+      assertThat(e)
+        .isInstanceOf(AssertionError.class)
+        .hasMessageStartingWith("No issues expected but got 1 issue(s):")
+        .hasMessageContaining("--> 'issueOnLine' in src/test/files/testing/Noncompliant.java:1");
+    }
+
+    @Test
+    void only_one_file_raise_issue_order_should_not_matter() {
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFiles(TEST_FILE_NONCOMPLIANT, TEST_FILE)
+        .withCheck(FILE_LINE_ISSUE_IF_NAMED_NON_COMPLIANT_CHECK)
+        .verifyNoIssues());
+
+      assertThat(e)
+        .isInstanceOf(AssertionError.class)
+        .hasMessageStartingWith("No issues expected but got 1 issue(s):")
+        .hasMessageContaining("--> 'issueOnLine' in src/test/files/testing/Noncompliant.java:1");
+    }
+
+    @Test
     void raising_issues_while_expecting_none_should_fail() {
       Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
         .onFile(TEST_FILE)
@@ -442,6 +506,87 @@ class InternalCheckVerifierTest {
         .hasMessageContaining("--> 'issueOnLine'")
         .hasMessageContaining("--> 'issueOnProject'")
         .hasMessageContaining("--> 'issueOnFile'");
+    }
+  }
+
+  @Nested
+  class TestingIssues {
+
+    @Test
+    void verify_should_work() {
+      InternalCheckVerifier.newInstance()
+        .onFiles(TEST_FILE_NONCOMPLIANT)
+        .withCheck(FILE_LINE_ISSUE_CHECK)
+        .verifyIssues();
+    }
+
+    @Test
+    void verify_should_fail_if_no_issue_expected() {
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFiles(TEST_FILE)
+        .withCheck(FILE_LINE_ISSUE_CHECK)
+        .verifyIssues());
+
+      assertThat(e)
+        .isInstanceOf(AssertionError.class)
+        .hasMessageStartingWith("Unexpected at [1]");
+    }
+
+    @Test
+    void verify_should_work_with_multiples_files() {
+      InternalCheckVerifier.newInstance()
+        .onFiles(TEST_FILE_NONCOMPLIANT, TEST_FILE_NONCOMPLIANT)
+        .withCheck(FILE_LINE_ISSUE_CHECK)
+        .verifyIssues();
+    }
+
+    @Test
+    void verify_should_work_with_multiples_files_but_only_one_issue() {
+      InternalCheckVerifier.newInstance()
+        .onFiles(TEST_FILE_NONCOMPLIANT, TEST_FILE)
+        .withCheck(FILE_LINE_ISSUE_IF_NAMED_NON_COMPLIANT_CHECK)
+        .verifyIssues();
+
+      InternalCheckVerifier.newInstance()
+        .onFiles(TEST_FILE, TEST_FILE_NONCOMPLIANT)
+        .withCheck(FILE_LINE_ISSUE_IF_NAMED_NON_COMPLIANT_CHECK)
+        .verifyIssues();
+    }
+
+    @Test
+    void verify_should_fail_with_multiples_files() {
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFiles(TEST_FILE_NONCOMPLIANT, TEST_FILE_NONCOMPLIANT)
+        .withCheck(NO_EFFECT_CHECK)
+        .verifyIssues());
+
+      assertThat(e)
+        .isInstanceOf(AssertionError.class)
+        .hasMessageStartingWith("No issue raised. At least one issue expected");
+    }
+
+    @Test
+    void verify_should_fail_with_multiples_files_only_one_issue() {
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFiles(TEST_FILE_NONCOMPLIANT, TEST_FILE)
+        .withCheck(FILE_LINE_ISSUE_CHECK)
+        .verifyIssues());
+
+      assertThat(e)
+        .isInstanceOf(AssertionError.class)
+        .hasMessageStartingWith("Unexpected at [1]");
+    }
+
+    @Test
+    void verify_should_fail_with_multiples_files_only_one_issue_reversed() {
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFiles(TEST_FILE, TEST_FILE_NONCOMPLIANT)
+        .withCheck(FILE_LINE_ISSUE_CHECK)
+        .verifyIssues());
+
+      assertThat(e)
+        .isInstanceOf(AssertionError.class)
+        .hasMessageStartingWith("Unexpected at [1]");
     }
   }
 
@@ -519,6 +664,49 @@ class InternalCheckVerifierTest {
         .isInstanceOf(AssertionError.class)
         .hasMessage("Expected the issue to be raised at file level, not at project level");
     }
+
+    @Test
+    void file_issue_with_multiple_input_files() {
+      InternalCheckVerifier.newInstance()
+        .onFiles(TEST_FILE, TEST_FILE_NONCOMPLIANT)
+        .withCheck(FILE_ISSUE_IF_NAMED_NON_COMPLIANT_CHECK)
+        .verifyIssueOnFile("issueOnFile");
+    }
+
+    @Test
+    void file_issue_with_multiple_input_files_order_should_not_matter() {
+      InternalCheckVerifier.newInstance()
+        .onFiles(TEST_FILE_NONCOMPLIANT, TEST_FILE)
+        .withCheck(FILE_ISSUE_IF_NAMED_NON_COMPLIANT_CHECK)
+        .verifyIssueOnFile("issueOnFile");
+    }
+
+    @Test
+    void verify_no_issue_file_issue_with_multiple_input_files_should_fail() {
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFiles(TEST_FILE, TEST_FILE_NONCOMPLIANT)
+        .withCheck(FILE_ISSUE_IF_NAMED_NON_COMPLIANT_CHECK)
+        .verifyNoIssues());
+
+      assertThat(e)
+        .isInstanceOf(AssertionError.class)
+        .hasMessageStartingWith("No issues expected but got 1 issue(s):")
+        .hasMessageContaining("--> 'issueOnFile' in src/test/files/testing/Noncompliant.java");
+    }
+
+    @Test
+    void verify_no_issue_file_issue_order_should_not_matter() {
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFiles(TEST_FILE_NONCOMPLIANT, TEST_FILE)
+        .withCheck(FILE_ISSUE_IF_NAMED_NON_COMPLIANT_CHECK)
+        .verifyNoIssues());
+
+      assertThat(e)
+        .isInstanceOf(AssertionError.class)
+        .hasMessageStartingWith("No issues expected but got 1 issue(s):")
+        .hasMessageContaining("--> 'issueOnFile' in src/test/files/testing/Noncompliant.java");
+    }
+
   }
 
   @Nested
@@ -606,12 +794,34 @@ class InternalCheckVerifierTest {
     }
   }
 
+  @Rule(key = "FileIssueIfNamedNonCompliantCheck")
+  private static final class FileIssueIfNamedNonCompliantCheck implements JavaFileScanner {
+
+    @Override
+    public void scanFile(JavaFileScannerContext context) {
+      if ("Noncompliant.java".equals(context.getInputFile().filename())) {
+        context.addIssueOnFile(this, "issueOnFile");
+      }
+    }
+  }
+
   @Rule(key = "FileLineIssueCheck")
   private static final class FileLineIssueCheck implements JavaFileScanner {
 
     @Override
     public void scanFile(JavaFileScannerContext context) {
       context.addIssue(1, this, "issueOnLine");
+    }
+  }
+
+  @Rule(key = "FileLineIssueCheck")
+  private static final class FileLineIssueIfNamedNonCompliantCheck implements JavaFileScanner {
+
+    @Override
+    public void scanFile(JavaFileScannerContext context) {
+      if ("Noncompliant.java".equals(context.getInputFile().filename())) {
+        context.addIssue(1, this, "issueOnLine");
+      }
     }
   }
 

@@ -215,8 +215,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     astScanner.setVisitorBridge(visitorsBridge);
     astScanner.scan(files);
 
-    VisitorsBridgeForTests.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
-    checkIssues(testJavaFileScannerContext.getIssues());
+    checkIssues(visitorsBridge.getIssues());
   }
 
   private void checkIssues(Set<AnalyzerMessage> issues) {

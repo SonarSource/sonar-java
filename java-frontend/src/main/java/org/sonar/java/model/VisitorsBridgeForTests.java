@@ -45,6 +45,8 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
   private TestJavaFileScannerContext testContext;
   private boolean enableSemantic = true;
 
+  // Stores all issues raised by the different JavaFileScannerContext
+  private final Set<AnalyzerMessage> issues = new LinkedHashSet<>();
 
   @VisibleForTesting
   public VisitorsBridgeForTests(JavaFileScanner visitor, SonarComponents sonarComponents) {
@@ -64,7 +66,7 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
   protected JavaFileScannerContext createScannerContext(CompilationUnitTree tree, Sema semanticModel,
                                                         SonarComponents sonarComponents, boolean failedParsing) {
     Sema model = enableSemantic ? semanticModel : null;
-    testContext = new TestJavaFileScannerContext(tree, currentFile, model, sonarComponents, javaVersion, failedParsing);
+    testContext = new TestJavaFileScannerContext(tree, currentFile, model, sonarComponents, javaVersion, issues, failedParsing);
     return testContext;
   }
 
@@ -72,15 +74,20 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
     return testContext;
   }
 
+  public Set<AnalyzerMessage> getIssues() {
+    return issues;
+  }
+
   public static class TestJavaFileScannerContext extends DefaultJavaFileScannerContext {
 
-    private final Set<AnalyzerMessage> issues = new LinkedHashSet<>();
     private final SonarComponents sonarComponents;
+    private final Set<AnalyzerMessage> issues;
 
     public TestJavaFileScannerContext(CompilationUnitTree tree, InputFile inputFile, Sema semanticModel,
-                                      @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean failedParsing) {
+                                      @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, Set<AnalyzerMessage> issues, boolean failedParsing) {
       super(tree, inputFile, semanticModel, sonarComponents, javaVersion, failedParsing);
       this.sonarComponents = sonarComponents;
+      this.issues = issues;
     }
 
     public Set<AnalyzerMessage> getIssues() {

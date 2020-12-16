@@ -50,7 +50,9 @@ class MultipleFilesJavaCheckVerifierTest {
       MultipleFilesJavaCheckVerifier.verify(files, visitor);
       Fail.fail("Should have failed");
     } catch (AssertionError e) {
-      assertThat(e).hasMessage("Unexpected at [4]");
+      // Line 4 of file FILENAME_ISSUES_FIRST, because we added an extra unexpected issue.
+      // All others line of file FILENAME_NO_ISSUE, because no issues were expected.
+      assertThat(e).hasMessage("Unexpected at [1, 3, 4, 4, 7, 8, 8, 10, 11, 12, 14, 17]");
     }
   }
 
@@ -62,14 +64,24 @@ class MultipleFilesJavaCheckVerifierTest {
       MultipleFilesJavaCheckVerifier.verify(files, visitor);
       Fail.fail("Should have failed");
     } catch (AssertionError e) {
-      assertThat(e).hasMessage("Expected at [1], Unexpected at [4]");
+      // We removed issue on line 1, but still have a Noncompliant comment in FILENAME_ISSUES_FIRST.
+      // In Unexpected:
+      // - Line 4 of file FILENAME_ISSUES_FIRST, because we added an extra unexpected issue.
+      // - All others lines of file FILENAME_NO_ISSUE, because no issues were expected.
+      assertThat(e).hasMessage("Expected at [1], Unexpected at [3, 4, 4, 7, 8, 8, 10, 11, 12, 14, 17]");
     }
   }
 
   @Test
   void verify_issues_in_multiple_files() {
-    MultipleFilesJavaCheckVerifier.verify(Arrays.asList(FILENAME_ISSUES_FIRST, FILENAME_ISSUES_SECOND),
-        new JavaCheckVerifierTest.FakeVisitor().withDefaultIssues().withIssue(2, "message B"));
+    IssuableSubscriptionVisitor visitor = new JavaCheckVerifierTest.FakeVisitor().withDefaultIssues().withIssue(2, "message B");
+    List<String> files = Arrays.asList(FILENAME_ISSUES_FIRST, FILENAME_ISSUES_SECOND);
+    try {
+      MultipleFilesJavaCheckVerifier.verify(files, visitor);
+      Fail.fail("Should have failed");
+    } catch (AssertionError e) {
+      assertThat(e).hasMessage("Unexpected at [1, 2, 3, 7, 8, 8, 10, 11, 12, 14, 17]");
+    }
   }
 
   @Test
@@ -80,7 +92,7 @@ class MultipleFilesJavaCheckVerifierTest {
       MultipleFilesJavaCheckVerifier.verifyNoIssueWithoutSemantic(files, visitor);
       Fail.fail("Should have failed");
     } catch (AssertionError e) {
-      assertThat(e.getMessage()).contains("No issues expected but got 10 issue(s):");
+      assertThat(e.getMessage()).contains("No issues expected but got 20 issue(s):"); // 10 per files
     }
   }
 
