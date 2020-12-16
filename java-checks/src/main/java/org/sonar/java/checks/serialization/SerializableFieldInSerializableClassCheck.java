@@ -19,13 +19,14 @@
  */
 package org.sonar.java.checks.serialization;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -33,9 +34,11 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
@@ -60,64 +63,45 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
     if (isSerializable(classTree)
       && !SerializableContract.hasSpecialHandlingSerializationMethods(classTree)
       && !classTree.symbol().type().isSubtypeOf("javax.servlet.http.HttpServlet")) {
-      
-      Set<String> constructorInjectedParams = getConstructorInjectedFields(classTree);
-      Set<String> setterInjectedParams = getSetterInjectedFields(classTree);
-      
+
+      Set<String> constructorInjectedParams = getConstructorOrMethodInjectedFields(classTree);
+
       classTree.members().stream()
         .filter(member -> member.is(Tree.Kind.VARIABLE))
         .map(VariableTree.class::cast)
-        .filter(variableTree -> 
-          !(constructorInjectedParams.contains(variableTree.simpleName().name()) ||
-            setterInjectedParams.contains(variableTree.simpleName().name())))
+        .filter(variableTree -> !(isExcluded(variableTree) ||
+          constructorInjectedParams.contains(variableTree.simpleName().name())))
         .forEach(this::checkVariableMember);
     }
   }
-
-  private static Set<String> getSetterInjectedFields(ClassTree classTree) {
-    return classTree.members().stream()
-      .filter(member -> member.is(Tree.Kind.METHOD))
+  
+  private static Set<String> getConstructorOrMethodInjectedFields(ClassTree classTree) {
+    AssignmentsVisitor assignmentsVisitor = new AssignmentsVisitor();
+    classTree.members().stream()
+      .filter(member -> member.is(Tree.Kind.CONSTRUCTOR, Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
-      .filter(SerializableFieldInSerializableClassCheck::isAnnotatedWithInject)
-      .map(methodTree -> methodTree.simpleName().name())
-      .filter(name -> name.startsWith("set"))
-      .map(name -> name.substring(3).toLowerCase(Locale.ROOT))
-      .collect(Collectors.toSet());
-  }
-
-  private static Set<String> getConstructorInjectedFields(ClassTree classTree) {
-    return classTree.members().stream()
-      .filter(member -> member.is(Tree.Kind.CONSTRUCTOR))
-      .map(MethodTree.class::cast)
-      .filter(SerializableFieldInSerializableClassCheck::isAnnotatedWithInject)
-      .flatMap(methodTree -> methodTree.parameters().stream())
-      .map(variableTree -> variableTree.simpleName().name())
-      .collect(Collectors.toSet());
-  }
-
-  private static boolean isAnnotatedWithInject(MethodTree methodTree) {
-    return methodTree.symbol().metadata().isAnnotatedWith(JAVAX_INJECT)
-      || hasAnnotationsWithIncompleteSemantic(methodTree.symbol().metadata());
+      .filter(methodTree -> isAnnotatedWith(methodTree.symbol().metadata(), JAVAX_INJECT))
+      .forEach(methodTree -> methodTree.accept(assignmentsVisitor));
+    
+    return assignmentsVisitor.getAssignedVariables();
   }
 
   private void checkVariableMember(VariableTree variableTree) {
-    if (!isExcluded(variableTree)) {
-      IdentifierTree simpleName = variableTree.simpleName();
-      if (isCollectionOfSerializable(variableTree.type())) {
-        if (!ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.PRIVATE)
-          && !implementsSerializable(variableTree.type().symbolType())) {
-          reportIssue(simpleName, "Make \"" + simpleName.name() + "\" private or transient.");
-        } else if (isUnserializableCollection(variableTree.type().symbolType())
-          || isUnserializableCollection(variableTree.initializer())) {
-          reportIssue(simpleName);
-        }
-        checkCollectionAssignments(variableTree.symbol().usages());
-      } else {
-        ExpressionTree initializer = variableTree.initializer();
-        Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) variableTree.symbol();
-        if (initializer == null || !(variableSymbol.isFinal() && implementsSerializable(initializer.symbolType()))) {
-          reportIssue(simpleName);
-        }
+    IdentifierTree simpleName = variableTree.simpleName();
+    if (isCollectionOfSerializable(variableTree.type())) {
+      if (!ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.PRIVATE)
+        && !implementsSerializable(variableTree.type().symbolType())) {
+        reportIssue(simpleName, "Make \"" + simpleName.name() + "\" private or transient.");
+      } else if (isUnserializableCollection(variableTree.type().symbolType())
+        || isUnserializableCollection(variableTree.initializer())) {
+        reportIssue(simpleName);
+      }
+      checkCollectionAssignments(variableTree.symbol().usages());
+    } else {
+      ExpressionTree initializer = variableTree.initializer();
+      Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) variableTree.symbol();
+      if (initializer == null || !(variableSymbol.isFinal() && implementsSerializable(initializer.symbolType()))) {
+        reportIssue(simpleName);
       }
     }
   }
@@ -173,14 +157,14 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
       return true;
     }
     SymbolMetadata metadata = member.symbol().metadata();
-    return metadata.isAnnotatedWith(JAVAX_INJECT)
-      || metadata.isAnnotatedWith("javax.ejb.EJB")
-      || metadata.isAnnotatedWith("org.apache.wicket.spring.injection.annot.SpringBean")
-      || hasAnnotationsWithIncompleteSemantic(metadata);
+    return isAnnotatedWith(metadata, JAVAX_INJECT, "javax.ejb.EJB", "org.apache.wicket.spring.injection.annot.SpringBean");
   }
 
-  private static boolean hasAnnotationsWithIncompleteSemantic(SymbolMetadata metadata) {
-    return metadata.annotations().stream().anyMatch(annotation -> annotation.symbol().isUnknown());
+  private static boolean isAnnotatedWith(SymbolMetadata metadata, String... fullyQualifiedNames) {
+    Set<String> fullyQualifiedNamesSet = new HashSet<>(Arrays.asList(fullyQualifiedNames));
+    return metadata.annotations().stream()
+      .map(a -> a.symbol().type())
+      .anyMatch(t -> t.isUnknown() || fullyQualifiedNamesSet.contains(t.fullyQualifiedName()));
   }
 
   private static boolean isSerializable(Tree tree) {
@@ -210,4 +194,22 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
     return false;
   }
 
+  private static final class AssignmentsVisitor extends BaseTreeVisitor {
+    private final Set<String> assignedVariables = new HashSet<>();
+
+    @Override
+    public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+      if (ExpressionUtils.isSelectOnThisOrSuper(tree)) {
+        MemberSelectExpressionTree select = ((MemberSelectExpressionTree) tree.variable());
+        assignedVariables.add(select.identifier().name());
+      } else if (tree.variable().is(Tree.Kind.IDENTIFIER)) {
+        IdentifierTree identifier = ((IdentifierTree) tree.variable());
+        assignedVariables.add(identifier.name());
+      }
+    }
+
+    public Set<String> getAssignedVariables() {
+      return Collections.unmodifiableSet(assignedVariables);
+    }
+  }
 }

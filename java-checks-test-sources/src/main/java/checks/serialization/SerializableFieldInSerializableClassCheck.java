@@ -139,6 +139,44 @@ class Person9999 implements Serializable {
   }
 }
 
+class Person999 implements Serializable {
+  Address address; // Noncompliant
+
+  @Inject
+  public Person999(Address address) {
+  }
+}
+
+class Person99 implements Serializable {
+  Address address; // Compliant
+
+  @Inject
+  public Person99(Address _address) {
+    int i = 0;
+    address = _address;
+    i = 5;
+  }
+}
+
+class Person777 implements Serializable {
+  Address address; // Compliant
+  Address address1; // Noncompliant
+
+  public Person777(Address _address, Address _address1) {
+    int i = 0;
+    address = _address;
+    address1 = _address1;
+    i = 5;
+  }
+
+  @Inject
+  public Person777(Address _address) {
+    int i = 0;
+    address = _address;
+    i = 5;
+  }
+}
+
 class IncompleteSerializableMethods1 implements Serializable {
   Address address; // Noncompliant - read/write methods are not exactly matching signatures (throwing wrong types)
   private void writeObject(java.io.ObjectOutputStream out) {}

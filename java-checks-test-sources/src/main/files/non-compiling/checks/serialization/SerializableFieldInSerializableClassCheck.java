@@ -17,3 +17,23 @@ class Person7 implements Serializable {
     ok = unknown(); // Compliant
   }
 }
+
+class Person777 implements Serializable {
+  Address address; // Compliant
+  Address address1; // Compliant
+
+  @Inject
+  public Person777(Address _address, Address _address1) {
+    int i = 0;
+    address = _address;
+    address1 = _address1;
+    i = 5;
+  }
+
+  @Inject
+  public Person777(Address _address) {
+    int i = 0;
+    address = _address;
+    i = 5;
+  }
+}
