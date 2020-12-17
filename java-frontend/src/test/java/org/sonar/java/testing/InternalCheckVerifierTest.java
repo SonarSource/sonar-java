@@ -40,6 +40,7 @@ class InternalCheckVerifierTest {
   private static final JavaFileScanner NO_EFFECT_CHECK = new NoEffectCheck();
   private static final JavaFileScanner FILE_LINE_ISSUE_CHECK = new FileLineIssueCheck();
   private static final JavaFileScanner FILE_LINE_ISSUE_IF_NAMED_NON_COMPLIANT_CHECK = new FileLineIssueIfNamedNonCompliantCheck();
+  private static final JavaFileScanner FILE_LINE_ISSUE_IF_NAMED_COMPLIANT_CHECK = new FileLineIssueIfNamedCompliantCheck();
   private static final JavaFileScanner PROJECT_ISSUE_CHECK = new ProjectIssueCheck();
   private static final JavaFileScanner FILE_ISSUE_CHECK = new FileIssueCheck();
   private static final JavaFileScanner FILE_ISSUE_IF_NAMED_NON_COMPLIANT_CHECK = new FileIssueIfNamedNonCompliantCheck();
@@ -566,7 +567,7 @@ class InternalCheckVerifierTest {
     }
 
     @Test
-    void verify_should_fail_with_multiples_files_only_one_issue() {
+    void verify_should_fail_with_multiples_files_one_issue() {
       Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
         .onFiles(TEST_FILE_NONCOMPLIANT, TEST_FILE)
         .withCheck(FILE_LINE_ISSUE_CHECK)
@@ -578,10 +579,22 @@ class InternalCheckVerifierTest {
     }
 
     @Test
-    void verify_should_fail_with_multiples_files_only_one_issue_reversed() {
+    void verify_should_fail_with_multiples_files_one_issue_order_should_not_matter() {
       Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
         .onFiles(TEST_FILE, TEST_FILE_NONCOMPLIANT)
         .withCheck(FILE_LINE_ISSUE_CHECK)
+        .verifyIssues());
+
+      assertThat(e)
+        .isInstanceOf(AssertionError.class)
+        .hasMessageStartingWith("Unexpected at [1]");
+    }
+
+    @Test
+    void one_issue_raised_in_one_file_but_expected_in_the_other() {
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFiles(TEST_FILE, TEST_FILE_NONCOMPLIANT)
+        .withCheck(FILE_LINE_ISSUE_IF_NAMED_COMPLIANT_CHECK)
         .verifyIssues());
 
       assertThat(e)
@@ -820,6 +833,17 @@ class InternalCheckVerifierTest {
     @Override
     public void scanFile(JavaFileScannerContext context) {
       if ("Noncompliant.java".equals(context.getInputFile().filename())) {
+        context.addIssue(1, this, "issueOnLine");
+      }
+    }
+  }
+
+  @Rule(key = "FileLineIssueCheck")
+  private static final class FileLineIssueIfNamedCompliantCheck implements JavaFileScanner {
+
+    @Override
+    public void scanFile(JavaFileScannerContext context) {
+      if ("Compliant.java".equals(context.getInputFile().filename())) {
         context.addIssue(1, this, "issueOnLine");
       }
     }
