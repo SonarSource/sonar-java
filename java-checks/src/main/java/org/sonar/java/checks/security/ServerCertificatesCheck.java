@@ -40,9 +40,21 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 public class ServerCertificatesCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodMatchers CHECK_MATCHER = MethodMatchers.create()
-    .ofSubTypes("javax.net.ssl.X509TrustManager")
+    .ofSubTypes("javax.net.ssl.X509TrustManager", "javax.net.ssl.X509ExtendedTrustManager")
     .names("checkClientTrusted", "checkServerTrusted")
     .addParametersMatcher("java.security.cert.X509Certificate[]", "java.lang.String")
+    .build();
+
+  private static final MethodMatchers SOCKET_BASED_MATCHER = MethodMatchers.create()
+    .ofSubTypes("javax.net.ssl.X509ExtendedTrustManager")
+    .names("checkClientTrusted", "checkServerTrusted")
+    .addParametersMatcher("java.security.cert.X509Certificate[]", "java.lang.String", "java.net.Socket")
+    .build();
+
+  private static final MethodMatchers SSLENGINE_BASED_MATCHER = MethodMatchers.create()
+    .ofSubTypes("javax.net.ssl.X509ExtendedTrustManager")
+    .names("checkClientTrusted", "checkServerTrusted")
+    .addParametersMatcher("java.security.cert.X509Certificate[]", "java.lang.String", "javax.net.ssl.SSLEngine")
     .build();
 
   @Override
@@ -60,8 +72,8 @@ public class ServerCertificatesCheck extends IssuableSubscriptionVisitor {
     if (blockTree == null) {
       return;
     }
-    if (CHECK_MATCHER.matches(methodTree) &&
-      !ThrowExceptionVisitor.throwsException(blockTree)) {
+    if ((CHECK_MATCHER.matches(methodTree) || SOCKET_BASED_MATCHER.matches(methodTree) || SSLENGINE_BASED_MATCHER.matches(methodTree)) &&
+      (blockTree.body().isEmpty() || !ThrowExceptionVisitor.throwsException(blockTree))) {
       reportIssue(methodTree.simpleName(), "Enable server certificate validation on this SSL/TLS connection.");
     }
   }
