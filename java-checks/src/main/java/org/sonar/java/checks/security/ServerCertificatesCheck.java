@@ -38,24 +38,22 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 @DeprecatedRuleKey(ruleKey = "S4424", repositoryKey = "java")
 @Rule(key = "S4830")
 public class ServerCertificatesCheck extends IssuableSubscriptionVisitor {
+  private static final String JAVA_LANG_STRING = "java.lang.String";
+  private static final String X509_CERTIFICATE_ARRAY = "java.security.cert.X509Certificate[]";
 
-  private static final MethodMatchers CHECK_MATCHER = MethodMatchers.create()
-    .ofSubTypes("javax.net.ssl.X509TrustManager", "javax.net.ssl.X509ExtendedTrustManager")
-    .names("checkClientTrusted", "checkServerTrusted")
-    .addParametersMatcher("java.security.cert.X509Certificate[]", "java.lang.String")
-    .build();
-
-  private static final MethodMatchers SOCKET_BASED_MATCHER = MethodMatchers.create()
-    .ofSubTypes("javax.net.ssl.X509ExtendedTrustManager")
-    .names("checkClientTrusted", "checkServerTrusted")
-    .addParametersMatcher("java.security.cert.X509Certificate[]", "java.lang.String", "java.net.Socket")
-    .build();
-
-  private static final MethodMatchers SSLENGINE_BASED_MATCHER = MethodMatchers.create()
-    .ofSubTypes("javax.net.ssl.X509ExtendedTrustManager")
-    .names("checkClientTrusted", "checkServerTrusted")
-    .addParametersMatcher("java.security.cert.X509Certificate[]", "java.lang.String", "javax.net.ssl.SSLEngine")
-    .build();
+  private static final MethodMatchers TRUST_MANAGER_MATCHER = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofSubTypes("javax.net.ssl.X509TrustManager")
+      .names("checkClientTrusted", "checkServerTrusted")
+      .addParametersMatcher(X509_CERTIFICATE_ARRAY, JAVA_LANG_STRING)
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes("javax.net.ssl.X509ExtendedTrustManager")
+      .names("checkClientTrusted", "checkServerTrusted")
+      .addParametersMatcher(X509_CERTIFICATE_ARRAY, JAVA_LANG_STRING, "java.net.Socket")
+      .addParametersMatcher(X509_CERTIFICATE_ARRAY, JAVA_LANG_STRING, "javax.net.ssl.SSLEngine")
+      .build()
+  );
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -72,7 +70,7 @@ public class ServerCertificatesCheck extends IssuableSubscriptionVisitor {
     if (blockTree == null) {
       return;
     }
-    if ((CHECK_MATCHER.matches(methodTree) || SOCKET_BASED_MATCHER.matches(methodTree) || SSLENGINE_BASED_MATCHER.matches(methodTree)) &&
+    if (TRUST_MANAGER_MATCHER.matches(methodTree) &&
       (blockTree.body().isEmpty() || !ThrowExceptionVisitor.throwsException(blockTree))) {
       reportIssue(methodTree.simpleName(), "Enable server certificate validation on this SSL/TLS connection.");
     }
