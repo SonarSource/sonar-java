@@ -44,9 +44,11 @@ import org.sonar.java.checks.naming.BadFieldNameCheck;
 import org.sonar.java.checks.spring.SpringComponentWithNonAutowiredMembersCheck;
 import org.sonar.java.checks.unused.UnusedPrivateFieldCheck;
 import org.sonar.java.collections.SetUtils;
+import org.sonar.java.se.checks.XxeProcessingCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -57,22 +59,24 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public class LombokFilter extends BaseTreeVisitorIssueFilter {
 
   private static final Set<Class<? extends JavaCheck>> FILTERED_RULES = SetUtils.immutableSetOf(
-    UnusedPrivateFieldCheck.class,
-    PrivateFieldUsedLocallyCheck.class,
-    EqualsNotOverriddenInSubclassCheck.class,
-    EqualsNotOverridenWithCompareToCheck.class,
-    UtilityClassWithPublicConstructorCheck.class,
-    AtLeastOneConstructorCheck.class,
-    BadFieldNameCheck.class,
-    ConstantsShouldBeStaticFinalCheck.class,
-    SillyEqualsCheck.class,
-    CollectionInappropriateCallsCheck.class,
-    UselessImportCheck.class,
-    FieldModifierCheck.class,
-    ExceptionsShouldBeImmutableCheck.class,
-    SpringComponentWithNonAutowiredMembersCheck.class,
-    RegexPatternsNeedlesslyCheck.class,
-    StaticMethodCheck.class);
+    // alphabetically sorted
+    /* S1258 */ AtLeastOneConstructorCheck.class,
+    /* .S116 */ BadFieldNameCheck.class,
+    /* S2175 */ CollectionInappropriateCallsCheck.class,
+    /* S1170 */ ConstantsShouldBeStaticFinalCheck.class,
+    /* S1210 */ EqualsNotOverriddenInSubclassCheck.class,
+    /* S1210 */ EqualsNotOverridenWithCompareToCheck.class,
+    /* S1165 */ ExceptionsShouldBeImmutableCheck.class,
+    /* S2039 */ FieldModifierCheck.class,
+    /* S1450 */ PrivateFieldUsedLocallyCheck.class,
+    /* S4248 */ RegexPatternsNeedlesslyCheck.class,
+    /* S2159 */ SillyEqualsCheck.class,
+    /* S3749 */ SpringComponentWithNonAutowiredMembersCheck.class,
+    /* S2325 */ StaticMethodCheck.class,
+    /* S1068 */ UnusedPrivateFieldCheck.class,
+    /* S1128 */ UselessImportCheck.class,
+    /* S1118 */ UtilityClassWithPublicConstructorCheck.class,
+    /* S2755 */ XxeProcessingCheck.class);
 
   private static final String LOMBOK_BUILDER = "lombok.Builder";
   private static final String LOMBOK_BUILDER_DEFAULT = "lombok.Builder$Default";
@@ -160,6 +164,18 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     }
 
     super.visitClass(tree);
+  }
+
+  @Override
+  public void visitVariable(VariableTree tree) {
+    excludeLinesIfTrue(tree.symbol().type().is(LOMBOK_VAL) && tree.initializer() != null, tree.initializer(), XxeProcessingCheck.class);
+    super.visitVariable(tree);
+  }
+
+  @Override
+  public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+    excludeLinesIfTrue(tree.variable().symbolType().is(LOMBOK_VAL), tree.expression(), XxeProcessingCheck.class);
+    super.visitAssignmentExpression(tree);
   }
 
   @SafeVarargs
