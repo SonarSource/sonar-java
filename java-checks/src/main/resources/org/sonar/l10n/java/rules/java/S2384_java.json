@@ -1,6 +1,6 @@
 {
   "title": "Mutable members should not be stored or returned directly",
-  "type": "VULNERABILITY",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
