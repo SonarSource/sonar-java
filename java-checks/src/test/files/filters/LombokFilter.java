@@ -9,6 +9,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.stereotype.Repository;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.XMLConstants;
+
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 import static lombok.AccessLevel.PUBLIC;
@@ -512,5 +515,21 @@ class SpringComponentsInjected {
   public class SampleService3 { // NoIssue
     private final String someField; // NoIssue
   }
+}
 
+class XxeProcessing {
+  public DocumentBuilderFactory test1() {
+    val factory = DocumentBuilderFactory.newInstance(); // NoIssue
+    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+    return factory;
+  }
+
+  public DocumentBuilderFactory test2() {
+    val factory;
+    factory = DocumentBuilderFactory.newInstance(); // NoIssue
+    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+    return factory;
+  }
 }
