@@ -22,12 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 class UselessPackageInfoCheckTest {
 
   @Test
   void withNoOtherFile() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/UselessPackageInfoCheck/packageWithNoOtherFiles/package-info.java")
+      .onFile(testSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFiles/package-info.java"))
       .withCheck(new UselessPackageInfoCheck())
       .verifyIssueOnFile("Remove this package.");
   }
@@ -35,7 +37,7 @@ class UselessPackageInfoCheckTest {
   @Test
   void withOtherFile() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/UselessPackageInfoCheck/package-info.java")
+      .onFile(testSourcesPath("checks/UselessPackageInfoCheck/package-info.java"))
       .withCheck(new UselessPackageInfoCheck())
       .verifyNoIssues();
   }
@@ -43,7 +45,7 @@ class UselessPackageInfoCheckTest {
   @Test
   void notAPackageInfo() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld.java")
+      .onFile(testSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld.java"))
       .withCheck(new UselessPackageInfoCheck())
       .verifyNoIssues();
   }
