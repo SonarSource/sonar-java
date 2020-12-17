@@ -1,5 +1,5 @@
 {
-  "title": "Synchronization should not be based on Strings or boxed primitives",
+  "title": "Synchronization should not be done on instances of value-based classes",
   "type": "BUG",
   "status": "ready",
   "remediation": {

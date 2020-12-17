@@ -22,12 +22,23 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 class SynchronizationOnStringOrBoxedCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/SynchronizationOnStringOrBoxedCheck.java")
+      .onFile(testSourcesPath("checks/SynchronizationOnStringOrBoxedCheck.java"))
+      .withCheck(new SynchronizationOnStringOrBoxedCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/SynchronizationOnStringOrBoxedCheck.java"))
       .withCheck(new SynchronizationOnStringOrBoxedCheck())
       .verifyIssues();
   }

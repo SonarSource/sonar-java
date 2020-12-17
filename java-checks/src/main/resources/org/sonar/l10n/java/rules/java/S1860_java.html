@@ -1,13 +1,23 @@
 <p>Objects which are pooled and potentially reused should not be used for synchronization. If they are, it can cause unrelated threads to deadlock
 with unhelpful stacktraces. Specifically, <code>String</code> literals, and boxed primitives such as Integers should not be used as lock objects
-because they are pooled and reused. The story is even worse for <code>Boolean</code> objects, because there are only two instances of
-<code>Boolean</code>, <code>Boolean.TRUE</code> and <code>Boolean.FALSE</code> and every class that uses a Boolean will be referring to one of the
-two.</p>
+because they are pooled and reused.</p>
+<p>Here is the list of types which shouldn't be used for synchronization:</p>
+<ul>
+  <li> The primitive wrapper classes in java.lang; </li>
+  <li> The class java.lang.Runtime.Version; </li>
+  <li> The "optional" classes in java.util: Optional, OptionalInt, OptionalLong, and OptionalDouble; </li>
+  <li> Many classes in the java.time API: Instant, LocalDate, LocalTime, LocalDateTime, ZonedDateTime, ZoneId, OffsetTime, OffsetDateTime, ZoneOffset,
+  Duration, Period, Year, YearMonth, and MonthDay, and, in java.time.chrono: MinguoDate, HijrahDate, JapaneseDate, and ThaiBuddhistDate; </li>
+  <li> The interface java.lang.ProcessHandle and its implementation classes; </li>
+  <li> The implementation classes of the collection factories in java.util: List.of, List.copyOf, Set.of, Set.copyOf, Map.of, Map.copyOf,
+  Map.ofEntries, and Map.entry. </li>
+</ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
 private static final Boolean bLock = Boolean.FALSE;
 private static final Integer iLock = Integer.valueOf(0);
 private static final String sLock = "LOCK";
+private static final List&lt;String&gt; listLock = List.of("a", "b", "c", "d");
 
 public void doSomething() {
 
@@ -20,12 +30,17 @@ public void doSomething() {
   synchronized(sLock) {  // Noncompliant
     // ...
   }
+  synchronized(listLock) {  // Noncompliant
+    // ...
+  }
+
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
 private static final Object lock1 = new Object();
 private static final Object lock2 = new Object();
 private static final Object lock3 = new Object();
+private static final Object lock4 = new Object();
 
 public void doSomething() {
 
@@ -36,6 +51,9 @@ public void doSomething() {
     // ...
   }
   synchronized(lock3) {
+    // ...
+  }
+  synchronized(lock4) {
     // ...
   }
 </pre>
