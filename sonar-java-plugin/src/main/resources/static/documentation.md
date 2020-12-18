@@ -22,8 +22,8 @@ If only some `.class` files are missing, you'll see warnings like this:
 
     Class 'XXXXXX' is not accessible through the ClassLoader.
 
-If you are not using Maven or Gradle for analysis, you must manually provide bytecode to the analysis.
-You can also analyze test code, and for that you need to provide tests binaires and test libraries properties.
+If you are **not** using Maven or Gradle for analysis, you must manually provide bytecode to the analysis.
+You can also analyze test code, and for that you need to provide tests binaries and test libraries properties.
 
 Key | Value
 ---|---|
@@ -35,6 +35,13 @@ Key | Value
 [[warning]]
 | Android users, Jack doesn't provide the required `.class` files.
 
+## Project's specific JDK
+
+In some situations, you might have to analyze a project built with a different version of Java than the one executing the analysis. The most common case is to run the analysis with **Java 11**, while the project itself uses **Java 8** or before for its build. This case is normally automatically handled when using Maven or Gradle, as well as with any flavor of SonarLint.
+
+If it is your case, and you are **NOT** using Maven or Gradle, you will need to set the property `sonar.java.jdkHome` manually (see below). By doing this you'll specify which JDK classes the analyzer must refer to during the analysis. Not setting this property, while it would have been required, usually leads to inconsistent or even impossible to fix issues being reported, especially in relation with native JDK classes.
+
+When setting `sonar.java.jdkHome`, you need to provide the path to the JDK directory used by the project being analyzed, if different from the Java runtime executing the analysis. For example, for a Java 8 project, by setting it as follow: `sonar.java.jdkHome=/usr/lib/jvm/jdk1.8.0_211`
 
 ## Turning issues off
 
