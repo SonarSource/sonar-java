@@ -34,6 +34,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -78,14 +79,25 @@ public abstract class AbstractClasspath {
   }
 
   protected List<File> getJdkJars() {
-    return settings.get(ClasspathProperties.SONAR_JAVA_JDK_HOME)
+    List<File> jdkClassesRoots = settings.get(ClasspathProperties.SONAR_JAVA_JDK_HOME)
       .flatMap(AbstractClasspath::existingDirectoryOrLog)
       .map(File::toPath)
       .map(JavaSdkUtil::getJdkClassesRoots)
       .orElse(Collections.emptyList());
+    logResolvedFiles(ClasspathProperties.SONAR_JAVA_JDK_HOME, jdkClassesRoots);
+    return jdkClassesRoots;
+  }
+
+  static void logResolvedFiles(String property, Collection<File> files) {
+    if (LOG.isDebugEnabled()) {
+      LOG.debug(String.format("Property '%s' resolved with:%n%s", property, files.stream()
+        .map(File::getAbsolutePath)
+        .collect(Collectors.joining("," + System.lineSeparator(), "[", "]"))));
+    }
   }
 
   private static Optional<File> existingDirectoryOrLog(String path) {
+    LOG.debug("Property '{}' set with: {}", ClasspathProperties.SONAR_JAVA_JDK_HOME, path);
     File file = new File(path);
     if (!file.exists() || !file.isDirectory()) {
       String warning = "Invalid value for '%s' property, defaulting to runtime JDK.%nConfigured location does not exists: '%s'";

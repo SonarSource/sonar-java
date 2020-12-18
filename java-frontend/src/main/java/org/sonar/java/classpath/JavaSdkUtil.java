@@ -33,6 +33,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.SystemUtils;
+import org.sonar.java.annotations.VisibleForTesting;
 
 /**
  * Adapted from https://github.com/JetBrains/intellij-community/blob/203.5981/jps/model-impl/src/org/jetbrains/jps/model/java/impl/JavaSdkUtil.java
@@ -49,6 +50,7 @@ public class JavaSdkUtil {
     return getJdkClassesRoots(home, SystemUtils.IS_OS_MAC);
   }
 
+  @VisibleForTesting
   static List<File> getJdkClassesRoots(Path home, boolean isMac) {
     if (isModularRuntime(home)) {
       return Collections.singletonList(home.resolve(LIB_JRT_FS_JAR).toFile());
