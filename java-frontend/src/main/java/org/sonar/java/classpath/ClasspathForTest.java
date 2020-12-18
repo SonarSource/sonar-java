@@ -46,7 +46,9 @@ public class ClasspathForTest extends AbstractClasspath {
       binaries.addAll(getFilesFromProperty(ClasspathProperties.SONAR_JAVA_TEST_BINARIES));
 
       Set<File> libraries = new LinkedHashSet<>(getJdkJars());
-      libraries.addAll(getFilesFromProperty(ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES));
+      Set<File> extraLibraries = getFilesFromProperty(ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES);
+      logResolvedFiles(ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES, extraLibraries);
+      libraries.addAll(extraLibraries);
       if (libraries.isEmpty() && hasJavaSources()) {
         LOG.warn("Bytecode of dependencies was not provided for analysis of test files, you might end up with less precise results. " +
           "Bytecode can be provided using sonar.java.test.libraries property.");

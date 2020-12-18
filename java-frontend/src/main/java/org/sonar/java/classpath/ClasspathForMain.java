@@ -56,7 +56,9 @@ public class ClasspathForMain extends AbstractClasspath {
       binaries.addAll(getFilesFromProperty(ClasspathProperties.SONAR_JAVA_BINARIES));
 
       Set<File> libraries = new LinkedHashSet<>(getJdkJars());
-      libraries.addAll(getFilesFromProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES));
+      Set<File> extraLibraries = getFilesFromProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES);
+      logResolvedFiles(ClasspathProperties.SONAR_JAVA_LIBRARIES, extraLibraries);
+      libraries.addAll(extraLibraries);
       if (binaries.isEmpty() && libraries.isEmpty() && useDeprecatedProperties()) {
         throw new AnalysisException(
           "sonar.binaries and sonar.libraries are not supported since version 4.0 of the SonarSource Java Analyzer,"

@@ -25,6 +25,9 @@ import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
@@ -61,6 +64,7 @@ class ClasspathForMainTest {
     settings = new MapSettings();
     analysisWarnings = mock(AnalysisWarningsWrapper.class);
     logTester.clear();
+    logTester.setLevel(LoggerLevel.DEBUG);
   }
 
   /**
@@ -260,6 +264,11 @@ class ClasspathForMainTest {
     File jar = javaClasspath.getElements().get(0);
     assertThat(jar).exists();
     assertThat(javaClasspath.getElements()).extracting("name").contains("hello.jar", "world.jar", "foo.jar");
+
+    assertThat(logTester.logs(LoggerLevel.DEBUG))
+      .hasSize(2)
+      .allMatch(debug -> (debug.startsWith("Property 'sonar.java.libraries' resolved with:") && debug.contains("world.jar") && debug.contains("hello.jar"))
+        || debug.equals("Property 'sonar.java.jdkHome' resolved with:" + System.lineSeparator() + "[]"));
   }
 
   @Test
@@ -396,36 +405,32 @@ class ClasspathForMainTest {
     checkIllegalStateException("No files nor directories matching 'dummyDir'");
   }
 
-  @Test
-  void by_default_no_jdk_is_set() {
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void by_default_no_jdk_is_set(boolean debugEnabled) {
+    if (!debugEnabled) {
+      logTester.setLevel(LoggerLevel.INFO);
+    }
     List<File> elements = createJavaClasspath().getElements();
 
     assertThat(elements).isEmpty();
-    assertThat(logTester.logs())
-      .noneMatch(log -> log.contains("'sonar.java.jdkHome'"));
+    List<String> logs = logTester.logs(LoggerLevel.DEBUG);
+    if (debugEnabled) {
+      assertThat(logs).containsExactlyInAnyOrder(
+        "Property 'sonar.java.jdkHome' resolved with:" + System.lineSeparator() + "[]",
+        "Property 'sonar.java.libraries' resolved with:" + System.lineSeparator() + "[]");
+    } else {
+      assertThat(logs).isEmpty();
+    }
   }
 
-  @Test
-  void wrong_inexisting_sdk_path_does_not_make_classpath_init_fail() {
-    settings.setProperty(ClasspathProperties.SONAR_JAVA_JDK_HOME, "src/test/jdk/do-not-exists");
-    String expectedWarning = "Invalid value for 'sonar.java.jdkHome' property, defaulting to runtime JDK."
-      + System.lineSeparator()
-      + "Configured location does not exists:";
-
-    List<File> elements = createJavaClasspath().getElements();
-
-    assertThat(elements).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.WARN).stream())
-      .filteredOn(warn -> warn.startsWith(expectedWarning))
-      .hasSize(1);
-  }
-
-  @Test
-  void wrong_file_as_sdk_path_does_not_make_classpath_init_fail() {
-    settings.setProperty(ClasspathProperties.SONAR_JAVA_JDK_HOME, "src/test/jdk/README.txt");
-    String expectedWarning = "Invalid value for 'sonar.java.jdkHome' property, defaulting to runtime JDK."
-      + System.lineSeparator()
-      + "Configured location does not exists:";
+  @ParameterizedTest
+  @ValueSource(strings = {"src/test/jdk/do-not-exists", "src/test/jdk/README.txt"})
+  void wrong_sdk_path_does_not_make_classpath_init_fail(String path) {
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_JDK_HOME, path);
+    String expectedWarning = String.format(
+      "Invalid value for 'sonar.java.jdkHome' property, defaulting to runtime JDK.%sConfigured location does not exists:",
+      System.lineSeparator());
 
     List<File> elements = createJavaClasspath().getElements();
 
@@ -435,26 +440,22 @@ class ClasspathForMainTest {
       .hasSize(1);
   }
 
-  @Test
-  void should_include_jdk_in_libraries_when_specified_classic() {
-    settings.setProperty(ClasspathProperties.SONAR_JAVA_JDK_HOME, "src/test/jdk/jdk_classic");
+  @ParameterizedTest
+  @CsvSource(value = {"jdk_classic,rt.jar", "jdk_modular,jrt-fs.jar"})
+  void should_include_jdk_in_libraries_when_specified(String jdkFolder, String expectedJar) {
+    String pathToJdk = "src/test/jdk/" + jdkFolder;
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_JDK_HOME, pathToJdk);
 
     List<File> elements = createJavaClasspath().getElements();
 
     assertThat(elements)
       .hasSize(1)
-      .allMatch(file -> file.getName().equals("rt.jar"));
-  }
-
-  @Test
-  void should_include_jdk_in_libraries_when_specified_modular() {
-    settings.setProperty(ClasspathProperties.SONAR_JAVA_JDK_HOME, "src/test/jdk/jdk_modular");
-
-    List<File> elements = createJavaClasspath().getElements();
-
-    assertThat(elements)
-      .hasSize(1)
-      .allMatch(file -> file.getName().equals("jrt-fs.jar"));
+      .allMatch(file -> file.getName().equals(expectedJar));
+    assertThat(logTester.logs(LoggerLevel.DEBUG))
+      .hasSize(3)
+      .allMatch(debug -> (debug.startsWith("Property 'sonar.java.jdkHome' set with:") && debug.contains(jdkFolder))
+        || (debug.startsWith("Property 'sonar.java.jdkHome' resolved with:") && debug.contains(expectedJar))
+        || (debug.equals("Property 'sonar.java.libraries' resolved with:" + System.lineSeparator() + "[]")));
   }
 
   private void checkIllegalStateException(String message) {
