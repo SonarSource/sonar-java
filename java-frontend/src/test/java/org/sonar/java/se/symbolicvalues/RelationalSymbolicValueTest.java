@@ -69,7 +69,7 @@ import static org.sonar.java.se.symbolicvalues.SymbolicValue.NULL_LITERAL;
 class RelationalSymbolicValueTest {
 
   @Rule
-  public LogTester logTester = new LogTester();
+  public LogTester logTester = new LogTester().setLevel(LoggerLevel.DEBUG);
 
   ConstraintManager constraintManager = new ConstraintManager();
   SymbolicValue a = new SymbolicValue() {
@@ -518,8 +518,14 @@ class RelationalSymbolicValueTest {
 
   @Test
   void too_many_relationship_should_stop_se_engine() throws Exception {
+    logTester.setLevel(LoggerLevel.TRACE);
     SETestUtils.createSymbolicExecutionVisitor("src/test/files/se/ExceedTransitiveLimit.java", new NullDereferenceCheck());
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("Could not complete symbolic execution: ");
+    String exceptionMessage = "reached maximum number of transitive relations generated for method hashCode in class ExceedTransitiveLimit";
+    assertThat(logTester.logs(LoggerLevel.DEBUG))
+      .contains("Could not complete symbolic execution: " + exceptionMessage);
+    assertThat(logTester.logs(LoggerLevel.TRACE))
+      .hasSize(1)
+      .allMatch(trace -> trace.startsWith("org.sonar.java.se.ExplodedGraphWalker$MaximumStepsReachedException: " + exceptionMessage));
   }
 
   @Test

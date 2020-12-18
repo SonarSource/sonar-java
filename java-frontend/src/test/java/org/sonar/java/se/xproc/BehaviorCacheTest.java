@@ -99,8 +99,9 @@ class BehaviorCacheTest {
   void compute_behavior_only_once() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/ComputeBehaviorOnce.java");
     assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(5);
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).containsOnlyOnce("Could not complete symbolic execution: ");
     assertThat(sev.behaviorCache.behaviors.values()).allMatch(MethodBehavior::isVisited);
+    List<String> debugLogs = logTester.logs(LoggerLevel.DEBUG);
+    assertThat(debugLogs).containsOnlyOnce("Could not complete symbolic execution: reached limit of 16000 steps for method plop#24 in class ComputeBehaviorOnce");
   }
 
   @Test
