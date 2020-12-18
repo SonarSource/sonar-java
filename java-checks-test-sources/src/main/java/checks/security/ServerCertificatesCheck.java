@@ -1,8 +1,13 @@
-import javax.net.ssl.X509TrustManager;
-import java.security.cert.X509Certificate;
+package checks.security;
+
+import java.net.Socket;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.X509ExtendedTrustManager;
+import javax.net.ssl.X509TrustManager;
 
 class TrustAllManager implements X509TrustManager {
 
@@ -85,22 +90,31 @@ class Main {
       }
     };
 
-    trustManager = new X509TrustManager() {
-      @Override
-      public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException { // Compliant, to avoid FP, assumes it throws exceptions
-        unResolvedMethod();
-      }
+    X509ExtendedTrustManager extendedManager = new EmptyX509ExtendedTrustManager();
+  }
+}
+class EmptyX509ExtendedTrustManager extends X509ExtendedTrustManager {
+  @Override
+  public void checkClientTrusted(X509Certificate[] chain, String authType, Socket socket) throws CertificateException {} // Noncompliant An empty implementation is not considered valid
 
-      @Override
-      public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException { // Noncompliant
-      }
+  @Override
+  public void checkClientTrusted(X509Certificate[] chain, String authType, SSLEngine engine) throws CertificateException {} // Noncompliant An empty implementation is not considered valid
 
-      @Override
-      public X509Certificate[] getAcceptedIssuers() {
-        return null;
-      }
-    };
+  @Override
+  public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {} // Noncompliant An empty implementation is not considered valid
 
+  @Override
+  public void checkServerTrusted(X509Certificate[] chain, String authType, Socket socket) throws CertificateException {} // Noncompliant An empty implementation is not considered valid
+
+  @Override
+  public void checkServerTrusted(X509Certificate[] x509Certificates, String s, SSLEngine sslEngine) throws CertificateException {} // Noncompliant An empty implementation is not considered valid
+
+  @Override
+  public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {} // Noncompliant An empty implementation is not considered valid
+
+  @Override
+  public X509Certificate[] getAcceptedIssuers() {
+    return new X509Certificate[0];
   }
 }
 
