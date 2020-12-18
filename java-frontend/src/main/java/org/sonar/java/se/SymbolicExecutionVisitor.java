@@ -19,11 +19,13 @@
  */
 package org.sonar.java.se;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Arrays;
-import org.sonar.java.annotations.VisibleForTesting;
 import java.util.List;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.Sema;
@@ -79,7 +81,12 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
     } catch (ExplodedGraphWalker.MaximumStepsReachedException
       | ExplodedGraphWalker.ExplodedGraphTooBigException
       | ExplodedGraphWalker.MaximumStartingStatesException exception) {
-      LOG.debug("Could not complete symbolic execution: ", exception);
+      LOG.debug("Could not complete symbolic execution: {}", exception.getMessage());
+      if (LOG.isTraceEnabled()) {
+        StringWriter sw = new StringWriter();
+        exception.printStackTrace(new PrintWriter(sw));
+        LOG.trace(sw.toString());
+      }
       if (walker.methodBehavior != null) {
         walker.methodBehavior.visited();
       }
