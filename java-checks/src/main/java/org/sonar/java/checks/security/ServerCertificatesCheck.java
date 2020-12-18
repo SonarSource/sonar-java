@@ -62,9 +62,6 @@ public class ServerCertificatesCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     MethodTree methodTree = (MethodTree) tree;
     BlockTree blockTree = methodTree.block();
     if (blockTree == null) {

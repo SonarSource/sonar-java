@@ -47,12 +47,12 @@ class ServerCertificatesCheckTest {
       .onFile(testSourcesPath(TEST_FILE))
       .withCheck(new ServerCertificatesCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyIssues();
     JavaCheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath(TEST_FILE))
       .withCheck(new ServerCertificatesCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyIssues();
   }
 
 }
