@@ -131,6 +131,14 @@ public abstract class SubscriptionVisitor implements JavaFileScanner {
     }
   }
 
+  /**
+   * Checks if semantic model is present.
+   * 
+   * @deprecated Since moving to Eclipse frontend doesn't really emulates incomplete semantic.
+   * Usages of this method should be removed and tests with .noSemantic() should be added to clarify
+   * that rules are not behaving unexpectedly in case of incomplete semantic.
+   */
+  @Deprecated
   public boolean hasSemantic(){
     return semanticModel != null;
   }
