@@ -39,7 +39,7 @@ Key | Value
 
 In some situations, you might have to analyze a project built with a different version of Java than the one executing the analysis. The most common case is to run the analysis with **Java 11**, while the project itself uses **Java 8** or before for its build. This case is normally automatically handled when using Maven or Gradle, as well as with any flavor of SonarLint.
 
-If it is your case, and you are **NOT** using Maven or Gradle, you will need to set the property `sonar.java.jdkHome` manually (see below) to specify which JDK classes the analyzer must refer to during the analysis. Not setting this property, while it would have been required, usually leads to inconsistent or even impossible to fix issues being reported, especially in relation with native JDK classes.
+If it is your case, and you are **NOT** using Maven or Gradle, you will need to set the property `sonar.java.jdkHome` manually (see below). By doing this you'll specify which JDK classes the analyzer must refer to during the analysis. Not setting this property, while it would have been required, usually leads to inconsistent or even impossible to fix issues being reported, especially in relation with native JDK classes.
 
 When setting `sonar.java.jdkHome`, you need to provide the path to the JDK directory used by the project being analyzed, if different from the Java runtime executing the analysis. For example, for a Java 8 project, by setting it as follow: `sonar.java.jdkHome=/usr/lib/jvm/jdk1.8.0_211`
 
