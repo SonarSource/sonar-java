@@ -23,11 +23,13 @@ import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.MavenBuild;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.sonarqube.ws.Issues.Issue;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PackageInfoTest {
@@ -46,14 +48,23 @@ public class PackageInfoTest {
   }
 
   @Test
-  public void should_detect_missing_package_info() throws Exception {
+  public void should_detect_package_info_issues() {
     List<Issue> issues = TestUtils.issuesForComponent(orchestrator, "org.sonarsource.it.projects:package-info");
+    List<String> packageInfoRuleKeys = asList("java:S1228", "java:S4032");
 
-    assertThat(issues).hasSize(2);
-    assertThat(issues.stream().map(Issue::getRule)).allMatch("java:S1228"::equals);
+    assertThat(issues).hasSize(3);
+    assertThat(issues.stream().map(Issue::getRule)).allMatch(packageInfoRuleKeys::contains);
     assertThat(issues.stream().map(Issue::getLine)).allMatch(line -> line == 0);
+
     Pattern packagePattern = Pattern.compile("'org\\.package[12]'");
-    assertThat(issues.stream().map(Issue::getMessage)).allMatch(msg -> packagePattern.matcher(msg).find());
+    List<Issue> s1228Issues = issues.stream().filter(issue -> issue.getRule().equals("java:S1228")).collect(Collectors.toList());
+    assertThat(s1228Issues).hasSize(2);
+    assertThat(s1228Issues).extracting(Issue::getMessage).allMatch(msg -> packagePattern.matcher(msg).find());
+
+    List<Issue> s4032Issues = issues.stream().filter(issue -> issue.getRule().equals("java:S4032")).collect(Collectors.toList());
+    assertThat(s4032Issues).hasSize(1);
+    assertThat(s4032Issues.get(0).getMessage()).isEqualTo("Remove this package.");
+    assertThat(s4032Issues.get(0).getComponent()).isEqualTo("org.sonarsource.it.projects:package-info:src/main/other-src/org/package4/package-info.java");
 
     List<Issue> issuesOnTestPackage = TestUtils.issuesForComponent(orchestrator, "org.sonarsource.it.projects:package-info:src/test/java/package1");
     assertThat(issuesOnTestPackage).isEmpty();

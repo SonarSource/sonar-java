@@ -8,5 +8,10 @@
       <key>S1228</key>
       <priority>MAJOR</priority>
     </rule>
+    <rule>
+      <repositoryKey>java</repositoryKey>
+      <key>S4032</key>
+      <priority>MAJOR</priority>
+    </rule>
   </rules>
 </profile>
