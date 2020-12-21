@@ -1,0 +1,46 @@
+<p>When creating a <code>DateTimeFormatter</code> using the "ww" pattern or the <code>WeekFields.weekOfWeekBasedYear()</code> temporal field, the
+resulting week number may be 1 at the end of a year (when the week in question is both the last week of the current year and the first week of the
+next one). When using this week number in combination with the current year, it would falsely refer to the first week of the current year instead of
+the first week of the next year.</p>
+<p>Instead the week number should be used with the week-based year, which is accessible through the "YY" or "YYYY" patterns or the
+<code>WeekFields.weekBasedYear()</code> temporal field.</p>
+<p>Alternatively the temporal field <code>ChronoField.ALIGNED_WEEK_OF_YEAR</code> can be used together with the regular year (but not the week based
+year).</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+DateTimeFormatter.ofPattern("yyyy-ww") // Noncompliant: using week of week-based year with regular year
+
+new DateTimeFormatterBuilder()
+      .appendValue(ChronoField.YEAR, 4) // Noncompliant: using week of week-based year with regular year
+      .appendLiteral('-')
+      .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2)
+      .toFormatter()
+
+DateTimeFormatterBuilder()
+      .appendValue(WeekFields.ISO.weekBasedYear(), 4) // Noncompliant: using aligned week of year with week-based year
+      .appendLiteral('-')
+      .appendValue(ChronoField.ALIGNED_WEEK_OF_YEAR, 2)
+      .toFormatter()
+</pre>
+<p>Here the first two formatters would wrongly format the 31st of December 2019 as "2019-01" and the third would wrongly format it as "2020-32".</p>
+<h2>Compliant Solution</h2>
+<pre>
+DateTimeFormatter.ofPattern("YYYY-ww")
+
+new DateTimeFormatterBuilder()
+      .appendValue(WeekFields.ISO.weekBasedYear(), 4)
+      .appendLiteral('-')
+      .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2)
+      .toFormatter()
+
+DateTimeFormatterBuilder()
+      .appendValue(ChronoField.YEAR, 4)
+      .appendLiteral('-')
+      .appendValue(ChronoField.ALIGNED_WEEK_OF_YEAR, 2)
+      .toFormatter()
+</pre>
+<p>Here the first two formatters would format the 31st of December 2019 as "2020-01" and the third would format it as "2019-32", both of which are
+correct depending on how you count the weeks.</p>
+<h2>Exceptions</h2>
+<p>No issue is raised when both types of year are used in the same format to allow formats such as "2019-12-31 (week 2020-01)".</p>
+
