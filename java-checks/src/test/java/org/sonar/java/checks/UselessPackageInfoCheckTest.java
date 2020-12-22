@@ -45,7 +45,17 @@ class UselessPackageInfoCheckTest {
   @Test
   void notAPackageInfo() {
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld.java"))
+      .onFiles(
+        testSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java"),
+        testSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld2.java"))
+      .withCheck(new UselessPackageInfoCheck())
+      .verifyNoIssues();
+  }
+
+  @Test
+  void defaultPackage() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("DefaultPackage.java"))
       .withCheck(new UselessPackageInfoCheck())
       .verifyNoIssues();
   }

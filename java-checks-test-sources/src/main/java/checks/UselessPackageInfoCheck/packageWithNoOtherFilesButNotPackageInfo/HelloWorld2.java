@@ -1,4 +1,4 @@
 package checks.UselessPackageInfoCheck.packageWithNoOtherFilesButNotPackageInfo;
 
-class HelloWorld {
+class HelloWorld2 {
 }
