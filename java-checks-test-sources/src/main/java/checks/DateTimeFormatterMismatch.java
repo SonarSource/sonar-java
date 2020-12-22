@@ -20,7 +20,7 @@ public class DateTimeFormatterMismatch {
     DateTimeFormatter.ofPattern("YYYY-ww", Locale.ENGLISH); // Compliant
 
 
-    //The terrible stuff
+    //The bad stuff
     DateTimeFormatter.ofPattern("y-ww"); // Noncompliant
     DateTimeFormatter.ofPattern("yy-ww"); // Noncompliant
     DateTimeFormatter.ofPattern("yyy-ww"); // Noncompliant
@@ -43,6 +43,31 @@ public class DateTimeFormatterMismatch {
     DateTimeFormatter.ofPattern("u-ww", Locale.ENGLISH); // Noncompliant
     DateTimeFormatter.ofPattern("uu-ww", Locale.ENGLISH); // Noncompliant
     DateTimeFormatter.ofPattern("uuuu-ww", Locale.ENGLISH); // Noncompliant
+  }
 
+  public void createUsingBuilder() {
+    new DateTimeFormatterBuilder() // Noncompliant
+      .appendValue(ChronoField.YEAR, 4)
+      .appendLiteral('-')
+      .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2)
+      .toFormatter();
+
+    new DateTimeFormatterBuilder() // Noncompliant
+      .appendValue(WeekFields.ISO.weekBasedYear(), 4)
+      .appendLiteral('-')
+      .appendValue(ChronoField.ALIGNED_WEEK_OF_YEAR, 2)
+      .toFormatter();
+
+    new DateTimeFormatterBuilder() // Compliant
+      .appendValue(WeekFields.ISO.weekBasedYear(), 4)
+      .appendLiteral('-')
+      .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2)
+      .toFormatter();
+
+    new DateTimeFormatterBuilder() // Compliant
+      .appendValue(ChronoField.YEAR, 4)
+      .appendLiteral('-')
+      .appendValue(ChronoField.ALIGNED_WEEK_OF_YEAR, 2)
+      .toFormatter();
   }
 }
