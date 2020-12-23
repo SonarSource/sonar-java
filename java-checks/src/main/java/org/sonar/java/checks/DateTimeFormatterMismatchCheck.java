@@ -33,7 +33,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-@Rule(key = "S5711")
+@Rule(key = "S5917")
 public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor {
   private static final MethodMatchers OF_PATTERN_MATCHER = MethodMatchers.create()
     .ofTypes("java.time.format.DateTimeFormatter")
