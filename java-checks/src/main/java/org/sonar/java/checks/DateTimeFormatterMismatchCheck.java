@@ -34,7 +34,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S5711")
-public class DateTimeFormatterMismatch extends IssuableSubscriptionVisitor {
+public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor {
   private static final MethodMatchers OF_PATTERN_MATCHER = MethodMatchers.create()
     .ofTypes("java.time.format.DateTimeFormatter")
     .names("ofPattern")
