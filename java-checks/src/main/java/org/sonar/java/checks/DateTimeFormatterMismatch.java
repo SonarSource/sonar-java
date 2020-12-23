@@ -57,6 +57,9 @@ public class DateTimeFormatterMismatch extends IssuableSubscriptionVisitor {
   private static final Pattern WEEK_PATTERN = Pattern.compile(".*ww{1,2}.*");
   private static final Pattern YEAR_OF_ERA_PATTERN = Pattern.compile(".*[uy]+.*");
 
+  private static final String CHANGE_WEEK_FORMAT_MESSAGE = "Change this week format to use the week of week-based year instead.";
+  private static final String CHANGE_YEAR_FORMAT_MESSAGE = "Change this year format to use the week-based year instead.";
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.METHOD_INVOCATION);
@@ -96,9 +99,12 @@ public class DateTimeFormatterMismatch extends IssuableSubscriptionVisitor {
         wanderer = mit.methodSelect();
       }
       ExpressionTree lastExpression = ((MemberSelectExpressionTree) wanderer).expression();
-      boolean conflictingWeekAndYear = usesWeekOfWeekBasedYear ^ usesWeekBasedYear;
-      if (lastExpression.is(Tree.Kind.NEW_CLASS) && conflictingWeekAndYear) {
-        reportIssue(invocation, "Change this year format to use the week-based year instead.");
+      if (lastExpression.is(Tree.Kind.NEW_CLASS)) {
+        if (usesWeekBasedYear && !usesWeekOfWeekBasedYear) {
+          reportIssue(invocation, CHANGE_WEEK_FORMAT_MESSAGE);
+        } else if (!usesWeekBasedYear && usesWeekOfWeekBasedYear) {
+          reportIssue(invocation, CHANGE_YEAR_FORMAT_MESSAGE);
+        }
       }
     }
   }

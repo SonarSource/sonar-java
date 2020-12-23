@@ -46,13 +46,13 @@ public class DateTimeFormatterMismatch {
   }
 
   public void createUsingBuilder() {
-    new DateTimeFormatterBuilder() // Noncompliant
+    new DateTimeFormatterBuilder() // Noncompliant {{Change this year format to use the week-based year instead.}}
       .appendValue(ChronoField.YEAR, 4)
       .appendLiteral('-')
       .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2)
       .toFormatter();
 
-    new DateTimeFormatterBuilder() // Noncompliant
+    new DateTimeFormatterBuilder() // Noncompliant {{Change this week format to use the week of week-based year instead.}}
       .appendValue(WeekFields.ISO.weekBasedYear(), 4)
       .appendLiteral('-')
       .appendValue(ChronoField.ALIGNED_WEEK_OF_YEAR, 2)
