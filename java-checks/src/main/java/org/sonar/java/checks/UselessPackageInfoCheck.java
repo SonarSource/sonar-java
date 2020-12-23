@@ -20,23 +20,57 @@
 package org.sonar.java.checks;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.EndOfAnalysisCheck;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 
 @Rule(key = "S4032")
-public class UselessPackageInfoCheck implements JavaFileScanner {
+public class UselessPackageInfoCheck implements JavaFileScanner, EndOfAnalysisCheck {
+
+  private final Map<String, JavaFileScannerContext> unneededPackageInfoFiles = new HashMap<>();
+  private final Set<String> knownPackagesWithOtherFiles = new HashSet<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    File file = context.getInputFile().file();
-    if ("package-info.java".equals(file.getName()) && isOnlyFileFromPackage(file)) {
-      context.addIssueOnFile(this, "Remove this package.");
+    PackageDeclarationTree packageDeclaration = context.getTree().packageDeclaration();
+    String packageName = packageDeclaration == null ? null : ExpressionsHelper.concatenate(packageDeclaration.packageName());
+
+    // default package or already processed package
+    if (packageName == null || knownPackagesWithOtherFiles.contains(packageName)) {
+      return;
+    }
+
+    File packageDirectory = context.getInputFile().file().getParentFile();
+    File packageInfoFile = new File(packageDirectory, "package-info.java");
+    boolean hasOtherFiles = !isOnlyFileFromPackage(packageDirectory, packageInfoFile);
+
+    if (hasOtherFiles) {
+      knownPackagesWithOtherFiles.add(packageName);
+    } else if (packageInfoFile.isFile()) {
+      unneededPackageInfoFiles.put(packageName, context);
     }
   }
 
-  private static boolean isOnlyFileFromPackage(File file) {
-    return file.getParentFile().listFiles(f -> !f.equals(file)).length == 0;
+  @Override
+  public void endOfAnalysis() {
+    unneededPackageInfoFiles.keySet().removeAll(knownPackagesWithOtherFiles);
+    for (JavaFileScannerContext uselessPackageInfoFileContext : unneededPackageInfoFiles.values()) {
+      uselessPackageInfoFileContext.addIssueOnFile(this, "Remove this package.");
+    }
+    unneededPackageInfoFiles.clear();
+    knownPackagesWithOtherFiles.clear();
+  }
+
+  private static boolean isOnlyFileFromPackage(File packageDirectory, File file) {
+    File[] filesInPackage = packageDirectory.listFiles(f -> !f.equals(file));
+    return filesInPackage != null && filesInPackage.length == 0;
   }
 
 }
