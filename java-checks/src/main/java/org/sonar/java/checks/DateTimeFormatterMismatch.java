@@ -69,43 +69,55 @@ public class DateTimeFormatterMismatch extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     MethodInvocationTree invocation = (MethodInvocationTree) tree;
     if (OF_PATTERN_MATCHER.matches(invocation)) {
-      Arguments arguments = invocation.arguments();
-      ExpressionTree argument = arguments.get(0);
-      if (argument.is(Tree.Kind.STRING_LITERAL)) {
-        String pattern = ((LiteralTree) argument).value();
-        if (WEEK_PATTERN.matcher(pattern).matches() && YEAR_OF_ERA_PATTERN.matcher(pattern).matches()) {
-          reportIssue(invocation, "Change this year format to use the week-based year instead.");
-        }
-      }
+      visitPattern(invocation);
     } else if (DATE_TIME_FORMATTER_BUILDER.matches(invocation)) {
-      boolean usesWeekBasedYear = false;
-      boolean usesWeekOfWeekBasedYear = false;
-      Tree wanderer = invocation.methodSelect();
-      while (wanderer != null && wanderer.is(Tree.Kind.MEMBER_SELECT)) {
-        MemberSelectExpressionTree mset = (MemberSelectExpressionTree) wanderer;
-        ExpressionTree expression = mset.expression();
-        if (!expression.is(Tree.Kind.METHOD_INVOCATION)) {
-          break;
-        }
-        MethodInvocationTree mit = (MethodInvocationTree) expression;
-        if (APPEND_VALUE_MATCHER.matches(mit)) {
-          if (!usesWeekBasedYear) {
-            usesWeekBasedYear = isWeekBasedYearUsed(mit);
-          }
-          if (!usesWeekOfWeekBasedYear) {
-            usesWeekOfWeekBasedYear = isWeekOfWeekBasedYearUsed(mit);
-          }
-        }
-        wanderer = mit.methodSelect();
+      visitBuildChain(invocation);
+    }
+  }
+
+  private void visitPattern(MethodInvocationTree invocation) {
+    Arguments arguments = invocation.arguments();
+    ExpressionTree argument = arguments.get(0);
+    if (argument.is(Tree.Kind.STRING_LITERAL)) {
+      String pattern = ((LiteralTree) argument).value();
+      if (WEEK_PATTERN.matcher(pattern).matches() && YEAR_OF_ERA_PATTERN.matcher(pattern).matches()) {
+        reportIssue(invocation, CHANGE_YEAR_FORMAT_MESSAGE);
       }
-      ExpressionTree lastExpression = ((MemberSelectExpressionTree) wanderer).expression();
-      if (lastExpression.is(Tree.Kind.NEW_CLASS)) {
-        if (usesWeekBasedYear && !usesWeekOfWeekBasedYear) {
-          reportIssue(invocation, CHANGE_WEEK_FORMAT_MESSAGE);
-        } else if (!usesWeekBasedYear && usesWeekOfWeekBasedYear) {
-          reportIssue(invocation, CHANGE_YEAR_FORMAT_MESSAGE);
-        }
+    }
+  }
+
+  /**
+   * Walking back through an invocation chain from a call to DateTimeFormatterBuilder.toFormatter looking for calls to appendValue.
+   * If conflicting week and year settings are detected, an issue is reported
+   * @param invocation A call to DateTimeFormatterBuilder.toFormatter
+   */
+  private void visitBuildChain(MethodInvocationTree invocation) {
+    boolean usesWeekBasedYear = false;
+    boolean usesWeekOfWeekBasedYear = false;
+    Tree wanderer = invocation.methodSelect();
+    while (wanderer != null && wanderer.is(Tree.Kind.MEMBER_SELECT)) {
+      ExpressionTree expression = ((MemberSelectExpressionTree) wanderer).expression();
+      if (!expression.is(Tree.Kind.METHOD_INVOCATION)) {
+        break;
       }
+      MethodInvocationTree mit = (MethodInvocationTree) expression;
+      if (APPEND_VALUE_MATCHER.matches(mit)) {
+        usesWeekBasedYear |= isWeekBasedYearUsed(mit);
+        usesWeekOfWeekBasedYear |= isWeekOfWeekBasedYearUsed(mit);
+      }
+      wanderer = mit.methodSelect();
+    }
+    if (wanderer == null) {
+      return;
+    }
+    ExpressionTree lastExpression = ((MemberSelectExpressionTree) wanderer).expression();
+    if (!lastExpression.is(Tree.Kind.NEW_CLASS)) {
+      return;
+    }
+    if (usesWeekBasedYear && !usesWeekOfWeekBasedYear) {
+      reportIssue(invocation, CHANGE_WEEK_FORMAT_MESSAGE);
+    } else if (!usesWeekBasedYear && usesWeekOfWeekBasedYear) {
+      reportIssue(invocation, CHANGE_YEAR_FORMAT_MESSAGE);
     }
   }
 
