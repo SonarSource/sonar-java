@@ -69,5 +69,12 @@ public class DateTimeFormatterMismatch {
       .appendLiteral('-')
       .appendValue(ChronoField.ALIGNED_WEEK_OF_YEAR, 2)
       .toFormatter();
+
+    DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder() // Compliant FN
+      .appendValue(ChronoField.YEAR, 4)
+      .appendLiteral('-')
+      .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2);
+
+    builder.toFormatter();
   }
 }
