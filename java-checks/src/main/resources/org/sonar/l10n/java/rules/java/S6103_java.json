@@ -1,0 +1,12 @@
+{
+  "title": "AssertJ assertions with \"Consumer\" arguments should contain assertion inside consumers",
+  "type": "BUG",
+  "status": "ready",
+  "tags": [
+    "tests"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6103",
+  "sqKey": "S6103",
+  "scope": "Tests"
+}

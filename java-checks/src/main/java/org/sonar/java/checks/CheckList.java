@@ -150,6 +150,7 @@ import org.sonar.java.checks.tests.AssertionInThreadRunCheck;
 import org.sonar.java.checks.tests.AssertionInTryCatchCheck;
 import org.sonar.java.checks.tests.AssertionTypesCheck;
 import org.sonar.java.checks.tests.AssertionsCompletenessCheck;
+import org.sonar.java.checks.tests.AssertJAssertionsInConsumerCheck;
 import org.sonar.java.checks.tests.AssertionsInTestsCheck;
 import org.sonar.java.checks.tests.AssertionsWithoutMessageCheck;
 import org.sonar.java.checks.tests.BooleanOrNullLiteralInAssertionsCheck;
@@ -805,6 +806,7 @@ public final class CheckList {
       AssertionTypesCheck.class,
       AssertionsWithoutMessageCheck.class,
       AssertJApplyConfigurationCheck.class,
+      AssertJAssertionsInConsumerCheck.class,
       AssertJChainSimplificationCheck.class,
       AssertJConsecutiveAssertionCheck.class,
       AssertJContextBeforeAssertionCheck.class,

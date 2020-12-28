@@ -72,7 +72,7 @@ public abstract class AbstractAssertionVisitor extends BaseTreeVisitor {
       || isAssertion(methodSymbol);
   }
 
-  private boolean matchesMethodPattern(@Nullable IdentifierTree method, Symbol methodSymbol) {
+  private static boolean matchesMethodPattern(@Nullable IdentifierTree method, Symbol methodSymbol) {
     if (method == null) {
       return false;
     }

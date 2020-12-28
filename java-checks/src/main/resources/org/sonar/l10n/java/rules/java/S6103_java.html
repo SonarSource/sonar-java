@@ -1,0 +1,28 @@
+<p>AssertJ assertions taking <code>Consumer</code> objects as arguments are expected to contain "requirements", which should themselves be expressed
+as assertions. This concerns the following methods: <a
+href="http://joel-costigliola.github.io/assertj/core-8/api/org/assertj/core/api/AbstractIterableAssert.html#allSatisfy-java.util.function.Consumer-">allSatisfy</a>,
+<a
+href="http://joel-costigliola.github.io/assertj/core-8/api/org/assertj/core/api/AbstractIterableAssert.html#anySatisfy-java.util.function.Consumer-">anySatisfy</a>,
+<a
+href="http://joel-costigliola.github.io/assertj/core-8/api/org/assertj/core/api/AbstractIterableAssert.html#hasOnlyOneElementSatisfying-java.util.function.Consumer-">hasOnlyOneElementSatisfying</a>,&nbsp;<a
+href="https://tinyurl.com/yxnzt6pj">isInstanceOfSatisfying</a>,&nbsp;<a
+href="http://joel-costigliola.github.io/assertj/core-8/api/org/assertj/core/api/AbstractIterableAssert.html#noneSatisfy-java.util.function.Consumer-">noneSatisfy</a>,
+<a
+href="http://joel-costigliola.github.io/assertj/core-8/api/org/assertj/core/api/AbstractAssert.html#satisfies-java.util.function.Consumer-">satisfies</a>,
+<a
+href="http://joel-costigliola.github.io/assertj/core-8/api/org/assertj/core/api/AbstractAssert.html#satisfiesAnyOf-java.util.function.Consumer-java.util.function.Consumer-">satisfiesAnyOf</a>,&nbsp;<a
+href="http://joel-costigliola.github.io/assertj/core-8/api/org/assertj/core/api/AbstractIterableAssert.html#zipSatisfy-java.lang.Iterable-java.util.function.BiConsumer-">zipSatisfy</a>.</p>
+<p>These methods are assuming the&nbsp;<code>Consumer</code>&nbsp;will do the assertions itself. If you do not do any assertion in the
+<code>Consumer</code>, it probably means that you are inadvertently only partially testing your object.</p>
+<p>This rule raises an issue when a <code>Consumer</code> argument of any of the above methods does not contain any assertion.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+assertThat(myObject).isInstanceOfSatisfying(String.class, s -&gt; "Hello".equals(s)); // Noncompliant - not testing the string value
+assertThat(myObject).satisfies("Hello"::equals); // Noncompliant - not testing the string value
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+assertThat(myObject).isInstanceOfSatisfying(String.class, s -&gt; assertThat(s).isEqualTo("Hello"));
+assertThat(myObject).satisfies(obj -&gt; assertThat(obj).isEqualTo("Hello"));
+</pre>
+
