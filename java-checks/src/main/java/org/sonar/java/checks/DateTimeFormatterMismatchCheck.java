@@ -56,6 +56,18 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
     .addParametersMatcher()
     .build();
 
+  private static final MethodMatchers WEEK_BASED_YEAR_MATCHER = MethodMatchers.create()
+    .ofTypes("java.time.temporal.WeekFields")
+    .names("weekBasedYear")
+    .addParametersMatcher()
+    .build();
+
+  private static final MethodMatchers WEEK_OF_WEEK_BASED_YEAR_MATCHER = MethodMatchers.create()
+    .ofTypes("java.time.temporal.WeekFields")
+    .names("weekOfWeekBasedYear")
+    .addParametersMatcher()
+    .build();
+
   private static final Pattern WEEK_PATTERN = Pattern.compile(".*ww{1,2}.*");
   private static final Pattern YEAR_OF_ERA_PATTERN = Pattern.compile(".*[uy]+.*");
 
@@ -154,8 +166,7 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
     ExpressionTree argument = arguments.get(0);
     if (argument.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree call = (MethodInvocationTree) argument;
-      Symbol symbol = call.symbol();
-      return symbol.name().equals("weekBasedYear");
+      return WEEK_BASED_YEAR_MATCHER.matches(call);
     }
     return false;
   }
@@ -165,8 +176,7 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
     ExpressionTree argument = arguments.get(0);
     if (argument.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree call = (MethodInvocationTree) argument;
-      Symbol symbol = call.symbol();
-      return symbol.name().equals("weekOfWeekBasedYear");
+      return WEEK_OF_WEEK_BASED_YEAR_MATCHER.matches(call);
     }
     return false;
   }
