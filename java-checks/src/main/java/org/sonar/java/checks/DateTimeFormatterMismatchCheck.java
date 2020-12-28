@@ -28,10 +28,12 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S5917")
 public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor {
@@ -75,15 +77,41 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
     }
   }
 
+  /**
+   * We currently only check formatters initialized with a String literal or the value of a final variable.
+   */
   private void visitPattern(MethodInvocationTree invocation) {
     Arguments arguments = invocation.arguments();
     ExpressionTree argument = arguments.get(0);
     if (argument.is(Tree.Kind.STRING_LITERAL)) {
       String pattern = ((LiteralTree) argument).value();
-      if (WEEK_PATTERN.matcher(pattern).matches() && YEAR_OF_ERA_PATTERN.matcher(pattern).matches()) {
+      if (isInfringingPattern(pattern)) {
+        reportIssue(invocation, CHANGE_YEAR_FORMAT_MESSAGE);
+      }
+    } else if (argument.is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree identifier = (IdentifierTree) argument;
+      Symbol symbol = identifier.symbol();
+      if (!symbol.isFinal()) {
+        return;
+      }
+      Tree declaration = symbol.declaration();
+      if (!declaration.is(Tree.Kind.VARIABLE)) {
+        return;
+      }
+      VariableTree variable = (VariableTree) declaration;
+      ExpressionTree initializer = variable.initializer();
+      if (!initializer.is(Tree.Kind.STRING_LITERAL)) {
+        return;
+      }
+      String pattern = ((LiteralTree) initializer).value();
+      if (isInfringingPattern(pattern)) {
         reportIssue(invocation, CHANGE_YEAR_FORMAT_MESSAGE);
       }
     }
+  }
+
+  private static boolean isInfringingPattern(String pattern) {
+    return WEEK_PATTERN.matcher(pattern).matches() && YEAR_OF_ERA_PATTERN.matcher(pattern).matches();
   }
 
   /**

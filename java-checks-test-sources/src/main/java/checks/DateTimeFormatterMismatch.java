@@ -8,17 +8,25 @@ import java.util.Locale;
 
 public class DateTimeFormatterMismatch {
   private static final String COMPLIANT_PATTERN = "Y-ww";
+  private static final String NON_COMPLIANT_PATTERN = "y-ww";
   private static final String IRRELEVANT_PATTERN = "m";
+  private static final String NON_INITIALIZED_PATTERN = null;
+  private String compliantAndNonFinalPattern = "Y-ww";
+  private String nonCompliantAndNonFinalPattern = "y-ww";
 
   public void createUsingPatterns() {
     DateTimeFormatter.ofPattern(COMPLIANT_PATTERN); // Compliant
     DateTimeFormatter.ofPattern(IRRELEVANT_PATTERN); // Compliant
+    DateTimeFormatter.ofPattern(NON_INITIALIZED_PATTERN); // Compliant
+    DateTimeFormatter.ofPattern(compliantAndNonFinalPattern); // Compliant
+    DateTimeFormatter.ofPattern(nonCompliantAndNonFinalPattern); // Compliant FN
     DateTimeFormatter.ofPattern("Y-ww"); // Compliant
     DateTimeFormatter.ofPattern("YY-ww"); // Compliant
     DateTimeFormatter.ofPattern("YYY-ww"); // Compliant
     DateTimeFormatter.ofPattern("YYYY-ww"); // Compliant
     DateTimeFormatter.ofPattern(COMPLIANT_PATTERN, Locale.ENGLISH); // Compliant
     DateTimeFormatter.ofPattern(IRRELEVANT_PATTERN, Locale.ENGLISH); // Compliant
+    DateTimeFormatter.ofPattern(NON_INITIALIZED_PATTERN, Locale.ENGLISH); // Compliant
     DateTimeFormatter.ofPattern("Y-ww", Locale.ENGLISH); // Compliant
     DateTimeFormatter.ofPattern("YY-ww", Locale.ENGLISH); // Compliant
     DateTimeFormatter.ofPattern("YYY-ww", Locale.ENGLISH); // Compliant
@@ -26,10 +34,12 @@ public class DateTimeFormatterMismatch {
 
 
     //The bad stuff
+    DateTimeFormatter.ofPattern(NON_COMPLIANT_PATTERN); // Noncompliant
     DateTimeFormatter.ofPattern("y-ww"); // Noncompliant
     DateTimeFormatter.ofPattern("yy-ww"); // Noncompliant
     DateTimeFormatter.ofPattern("yyy-ww"); // Noncompliant
     DateTimeFormatter.ofPattern("yyyy-ww"); // Noncompliant
+    DateTimeFormatter.ofPattern(NON_COMPLIANT_PATTERN, Locale.ENGLISH); // Noncompliant
     DateTimeFormatter.ofPattern("y-ww", Locale.ENGLISH); // Noncompliant
     DateTimeFormatter.ofPattern("yy-ww", Locale.ENGLISH); // Noncompliant
     DateTimeFormatter.ofPattern("yyy-ww", Locale.ENGLISH); // Noncompliant
