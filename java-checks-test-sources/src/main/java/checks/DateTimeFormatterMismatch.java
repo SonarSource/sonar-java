@@ -7,15 +7,20 @@ import java.time.temporal.WeekFields;
 import java.util.Locale;
 
 public class DateTimeFormatterMismatch {
+  private static final String COMPLIANT_PATTERN = "Y-ww";
+  private static final String IRRELEVANT_PATTERN = "m";
+
   public void createUsingPatterns() {
+    DateTimeFormatter.ofPattern(COMPLIANT_PATTERN); // Compliant
+    DateTimeFormatter.ofPattern(IRRELEVANT_PATTERN); // Compliant
     DateTimeFormatter.ofPattern("Y-ww"); // Compliant
     DateTimeFormatter.ofPattern("YY-ww"); // Compliant
     DateTimeFormatter.ofPattern("YYY-ww"); // Compliant
-    DateTimeFormatter.ofPattern("YYY-ww"); // Compliant
     DateTimeFormatter.ofPattern("YYYY-ww"); // Compliant
+    DateTimeFormatter.ofPattern(COMPLIANT_PATTERN, Locale.ENGLISH); // Compliant
+    DateTimeFormatter.ofPattern(IRRELEVANT_PATTERN, Locale.ENGLISH); // Compliant
     DateTimeFormatter.ofPattern("Y-ww", Locale.ENGLISH); // Compliant
     DateTimeFormatter.ofPattern("YY-ww", Locale.ENGLISH); // Compliant
-    DateTimeFormatter.ofPattern("YYY-ww", Locale.ENGLISH); // Compliant
     DateTimeFormatter.ofPattern("YYY-ww", Locale.ENGLISH); // Compliant
     DateTimeFormatter.ofPattern("YYYY-ww", Locale.ENGLISH); // Compliant
 
