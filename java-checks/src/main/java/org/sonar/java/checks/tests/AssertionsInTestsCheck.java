@@ -24,11 +24,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
-import javax.annotation.Nullable;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.checks.helpers.AbstractAssertionVisitor;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -36,21 +36,12 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
-import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-import static org.sonar.java.checks.helpers.UnitTestUtils.ASSERTION_INVOCATION_MATCHERS;
-import static org.sonar.java.checks.helpers.UnitTestUtils.ASSERTION_METHODS_PATTERN;
-import static org.sonar.java.checks.helpers.UnitTestUtils.REACTIVE_X_TEST_METHODS;
-import static org.sonar.java.checks.helpers.UnitTestUtils.TEST_METHODS_PATTERN;
 import static org.sonar.java.checks.helpers.UnitTestUtils.isUnitTest;
-import static org.sonar.java.model.ExpressionUtils.methodName;
 
 @Rule(key = "S2699")
 public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -98,7 +89,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
       if (declaration != null) {
         AssertionVisitor assertionVisitor = new AssertionVisitor(getCustomAssertionMethodsMatcher());
         declaration.accept(assertionVisitor);
-        assertionInMethod.put(symbol, assertionVisitor.hasAssertion);
+        assertionInMethod.put(symbol, assertionVisitor.hasAssertion());
       }
     }
 
@@ -143,8 +134,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     return false;
   }
 
-  private class AssertionVisitor extends BaseTreeVisitor {
-    boolean hasAssertion = false;
+  private class AssertionVisitor extends AbstractAssertionVisitor {
     private MethodMatchers customMethodsMatcher;
 
     private AssertionVisitor(MethodMatchers customMethodsMatcher) {
@@ -152,46 +142,8 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     }
 
     @Override
-    public void visitMethodInvocation(MethodInvocationTree mit) {
-      super.visitMethodInvocation(mit);
-      if (!hasAssertion && isAssertion(methodName(mit), mit.symbol())) {
-        hasAssertion = true;
-      }
-    }
-
-    @Override
-    public void visitMethodReference(MethodReferenceTree methodReferenceTree) {
-      super.visitMethodReference(methodReferenceTree);
-      if (!hasAssertion && isAssertion(methodReferenceTree.method(), methodReferenceTree.method().symbol())) {
-        hasAssertion = true;
-      }
-    }
-
-    @Override
-    public void visitNewClass(NewClassTree tree) {
-      super.visitNewClass(tree);
-      if (!hasAssertion && isAssertion(null, tree.constructorSymbol())) {
-        hasAssertion = true;
-      }
-    }
-
-    private boolean isAssertion(@Nullable IdentifierTree method, Symbol methodSymbol) {
-      return matchesMethodPattern(method, methodSymbol)
-        || ASSERTION_INVOCATION_MATCHERS.matches(methodSymbol)
-        || customMethodsMatcher.matches(methodSymbol)
-        || isLocalMethodWithAssertion(methodSymbol);
-    }
-
-    private boolean matchesMethodPattern(@Nullable IdentifierTree method, Symbol methodSymbol) {
-      if (method == null) {
-        return false;
-      }
-
-      String methodName = method.name();
-      if (TEST_METHODS_PATTERN.matcher(methodName).matches()) {
-        return !REACTIVE_X_TEST_METHODS.matches(methodSymbol);
-      }
-      return ASSERTION_METHODS_PATTERN.matcher(methodName).matches();
+    protected boolean isAssertion(Symbol methodSymbol) {
+      return customMethodsMatcher.matches(methodSymbol) || isLocalMethodWithAssertion(methodSymbol);
     }
   }
 
