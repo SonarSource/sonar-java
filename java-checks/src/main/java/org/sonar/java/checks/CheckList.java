@@ -165,6 +165,7 @@ import org.sonar.java.checks.tests.JUnitCompatibleAnnotationsCheck;
 import org.sonar.java.checks.tests.JunitMethodDeclarationCheck;
 import org.sonar.java.checks.tests.JunitNestedAnnotationCheck;
 import org.sonar.java.checks.tests.MockingAllMethodsCheck;
+import org.sonar.java.checks.tests.MockitoArgumentMatchersUsedOnAllParametersCheck;
 import org.sonar.java.checks.tests.MockitoEqSimplificationCheck;
 import org.sonar.java.checks.tests.NoTestInTestClassCheck;
 import org.sonar.java.checks.tests.OneExpectedCheckedExceptionCheck;
@@ -230,7 +231,7 @@ public final class CheckList {
   private CheckList() {
   }
 
-  public static List<Class<?>> getChecks() { 
+  public static List<Class<?>> getChecks() {
     return Stream.of(getJavaChecks(), getJavaTestChecks(), getXmlChecks())
       .flatMap(List::stream).collect(Collectors.toList());
   }
@@ -828,6 +829,7 @@ public final class CheckList {
       JunitMethodDeclarationCheck.class,
       JunitNestedAnnotationCheck.class,
       MockingAllMethodsCheck.class,
+      MockitoArgumentMatchersUsedOnAllParametersCheck.class,
       MockitoEqSimplificationCheck.class,
       NoTestInTestClassCheck.class,
       OneExpectedCheckedExceptionCheck.class,

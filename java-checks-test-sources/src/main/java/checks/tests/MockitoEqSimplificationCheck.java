@@ -5,12 +5,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
-import org.mockito.Matchers;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.endsWith;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.endsWith;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -32,9 +31,12 @@ public class MockitoEqSimplificationCheck {
     Object v4 = new Object();
     Object v5 = new Object();
 
-    given(foo.bar(eq(v1), eq(v2), eq(v3))).willReturn(null); // Noncompliant [[sc=19;ec=21;secondary=35,35]] {{Remove this and every subsequent useless "eq(...)" invocation; pass the values directly.}}
-    when(foo.baz(eq(v4), eq(v5))).thenReturn("foo"); // Noncompliant [[sc=18;ec=20;secondary=36]] {{Remove this and every subsequent useless "eq(...)" invocation; pass the values directly.}}
-    when(foo.baz(Matchers.eq(v4),  // Noncompliant [[sc=18;ec=29;secondary=38]] 
+    given(foo.bar(eq(v1), // Noncompliant [[sc=19;ec=21;secondary=+1,+2]] {{Remove this and every subsequent useless "eq(...)" invocation; pass the values directly.}}
+      eq(v2),
+      eq(v3))).willReturn(null);
+    when(foo.baz(eq(v4), // Noncompliant [[sc=18;ec=20;secondary=+1]] {{Remove this and every subsequent useless "eq(...)" invocation; pass the values directly.}}
+      eq(v5))).thenReturn("foo");
+    when(foo.baz(eq(v4),  // Noncompliant [[sc=18;ec=20;secondary=+1]]
       eq(v5))).thenReturn("foo");
     doThrow(new RuntimeException()).when(foo).quux(eq(42)); // Noncompliant [[sc=52;ec=54]] {{Remove this useless "eq(...)" invocation; pass the values directly.}}
     doCallRealMethod().when(foo).baz(eq(v4), eq(v5)); // Noncompliant

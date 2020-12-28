@@ -34,26 +34,42 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-@Rule(key = "S6068")
-public class MockitoEqSimplificationCheck extends IssuableSubscriptionVisitor {
-  private static final String MOCKITO = "org.mockito.Mockito";
+@Rule(key = "S6073")
+public class MockitoArgumentMatchersUsedOnAllParametersCheck extends IssuableSubscriptionVisitor {
+  private static final String ARGUMENT_MATCHER_TYPE = "org.mockito.ArgumentMatchers";
+  private static final String OLD_MATCHER_TYPE = "org.mockito.Matchers";
+  private static final String MOCKITO_TYPE = "org.mockito.Mockito";
+
+  private static final MethodMatchers ARGUMENT_MATCHER = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes(ARGUMENT_MATCHER_TYPE, OLD_MATCHER_TYPE)
+      .name(name -> name.startsWith("any"))
+      .addWithoutParametersMatcher()
+      .build(),
+    MethodMatchers.create()
+      .ofTypes(ARGUMENT_MATCHER_TYPE, OLD_MATCHER_TYPE)
+      .name(name -> name.endsWith("That"))
+      .withAnyParameters()
+      .build(),
+    MethodMatchers.create()
+      .ofTypes(ARGUMENT_MATCHER_TYPE, OLD_MATCHER_TYPE)
+      .names("eq", "isA", "isNull", "isNotNull", "matches", "notNull", "nullable", "refEq", "same", "startsWith")
+      .withAnyParameters()
+      .build()
+  );
 
   private static final MethodMatchers METHODS_USING_EQ_IN_ARGUMENTS = MethodMatchers.or(
-    MethodMatchers.create().ofTypes(MOCKITO).names("when")
+    MethodMatchers.create().ofTypes(MOCKITO_TYPE).names("when")
       .addParametersMatcher(MethodMatchers.ANY).build(),
     MethodMatchers.create().ofTypes("org.mockito.BDDMockito").names("given")
       .addParametersMatcher(MethodMatchers.ANY).build()
   );
 
   private static final MethodMatchers METHODS_USING_EQ_IN_CONSECUTIVE_CALL = MethodMatchers.or(
-    MethodMatchers.create().ofTypes(MOCKITO).names("verify").withAnyParameters().build(),
+    MethodMatchers.create().ofTypes(MOCKITO_TYPE).names("verify").withAnyParameters().build(),
     MethodMatchers.create().ofTypes("org.mockito.InOrder").names("verify").withAnyParameters().build(),
     MethodMatchers.create().ofTypes("org.mockito.stubbing.Stubber").names("when").withAnyParameters().build()
   );
-
-  private static final MethodMatchers MOCKITO_EQ = MethodMatchers.create()
-    .ofTypes("org.mockito.Matchers", "org.mockito.ArgumentMatchers")
-    .names("eq").withAnyParameters().build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -63,7 +79,6 @@ public class MockitoEqSimplificationCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodInvocationTree mit = (MethodInvocationTree) tree;
-
     if (METHODS_USING_EQ_IN_ARGUMENTS.matches(mit)) {
       ExpressionTree argument = mit.arguments().get(0);
       argument = ExpressionUtils.skipParentheses(argument);
@@ -76,24 +91,27 @@ public class MockitoEqSimplificationCheck extends IssuableSubscriptionVisitor {
   }
 
   private void reportUselessEqUsage(Arguments arguments) {
-    List<MethodInvocationTree> eqs = new ArrayList<>();
+    List<Tree> argumentMatchers = new ArrayList<>();
+    List<Tree> secondaries = new ArrayList<>();
 
     for (ExpressionTree arg : arguments) {
       arg = ExpressionUtils.skipParentheses(arg);
-      if (arg.is(Tree.Kind.METHOD_INVOCATION) && MOCKITO_EQ.matches((MethodInvocationTree) arg)) {
-        eqs.add((MethodInvocationTree) arg);
+      if (arg.is(Tree.Kind.METHOD_INVOCATION) && ARGUMENT_MATCHER.matches((MethodInvocationTree) arg)) {
+        argumentMatchers.add(arg);
       } else {
-        // If arguments contain anything else than a call to eq(...), we do not report an issue
-        return;
+        secondaries.add(arg);
       }
     }
 
-    if (!eqs.isEmpty()) {
-      reportIssue(eqs.get(0).methodSelect(), String.format(
-        "Remove this%s useless \"eq(...)\" invocation; pass the values directly.", eqs.size() == 1 ? "" : " and every subsequent"),
-        eqs.stream()
+    if (argumentMatchers.isEmpty()) {
+      return;
+    }
+    if (argumentMatchers.size() < arguments.size()) {
+      reportIssue(secondaries.get(0),
+        "Add an \"eq()\" argument matcher on this/these parameters",
+        secondaries.stream()
           .skip(1)
-          .map(eq -> new JavaFileScannerContext.Location("", eq.methodSelect()))
+          .map(secondary -> new JavaFileScannerContext.Location("", secondary))
           .collect(Collectors.toList()),
         null);
     }
