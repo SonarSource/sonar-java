@@ -132,8 +132,10 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
    * @param invocation A call to DateTimeFormatterBuilder.toFormatter
    */
   private void visitBuildChain(MethodInvocationTree invocation) {
-    boolean usesWeekBasedYear = false;
+    boolean usesWeek = false;
     boolean usesWeekOfWeekBasedYear = false;
+    boolean usesYear = false;
+    boolean usesWeekBasedYear = false;
     Tree wanderer = invocation.methodSelect();
     while (wanderer != null && wanderer.is(Tree.Kind.MEMBER_SELECT)) {
       ExpressionTree expression = ((MemberSelectExpressionTree) wanderer).expression();
@@ -142,8 +144,11 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
       }
       MethodInvocationTree mit = (MethodInvocationTree) expression;
       if (APPEND_VALUE_MATCHER.matches(mit)) {
-        usesWeekBasedYear |= isWeekBasedYearUsed(mit);
-        usesWeekOfWeekBasedYear |= isWeekOfWeekBasedYearUsed(mit);
+        ExpressionTree argument = mit.arguments().get(0);
+        usesWeekBasedYear |= isWeekBasedYearUsed(argument);
+        usesYear |= isYearArgument(argument);
+        usesWeekOfWeekBasedYear |= isWeekOfWeekBasedYearUsed(argument);
+        usesWeek |= isWeekArgument(argument);
       }
       wanderer = mit.methodSelect();
     }
@@ -154,16 +159,41 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
     if (!lastExpression.is(Tree.Kind.NEW_CLASS)) {
       return;
     }
-    if (usesWeekBasedYear && !usesWeekOfWeekBasedYear) {
-      reportIssue(invocation, CHANGE_WEEK_FORMAT_MESSAGE);
-    } else if (!usesWeekBasedYear && usesWeekOfWeekBasedYear) {
-      reportIssue(invocation, CHANGE_YEAR_FORMAT_MESSAGE);
+    if (usesWeek && usesYear) {
+      if (usesWeekBasedYear && !usesWeekOfWeekBasedYear) {
+        reportIssue(invocation, CHANGE_WEEK_FORMAT_MESSAGE);
+      } else if (!usesWeekBasedYear && usesWeekOfWeekBasedYear) {
+        reportIssue(invocation, CHANGE_YEAR_FORMAT_MESSAGE);
+      }
     }
   }
 
-  private static boolean isWeekBasedYearUsed(MethodInvocationTree invocation) {
-    Arguments arguments = invocation.arguments();
-    ExpressionTree argument = arguments.get(0);
+  public static boolean isWeekArgument(ExpressionTree argument) {
+    return isWeekOfWeekBasedYearUsed(argument) || isChronoFieldWeek(argument);
+  }
+
+  private static boolean isWeekOfWeekBasedYearUsed(ExpressionTree argument) {
+    if (argument.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree call = (MethodInvocationTree) argument;
+      return WEEK_OF_WEEK_BASED_YEAR_MATCHER.matches(call);
+    }
+    return false;
+  }
+
+  public static boolean isChronoFieldWeek(ExpressionTree argument) {
+    if (argument.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree select = (MemberSelectExpressionTree) argument;
+      IdentifierTree identifier = select.identifier();
+      return identifier.name().equals("ALIGNED_WEEK_OF_YEAR");
+    }
+    return false;
+  }
+
+  public static boolean isYearArgument(ExpressionTree argument) {
+    return isWeekBasedYearUsed(argument) || isChronoFieldYear(argument);
+  }
+
+  private static boolean isWeekBasedYearUsed(ExpressionTree argument) {
     if (argument.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree call = (MethodInvocationTree) argument;
       return WEEK_BASED_YEAR_MATCHER.matches(call);
@@ -171,12 +201,11 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
     return false;
   }
 
-  private static boolean isWeekOfWeekBasedYearUsed(MethodInvocationTree invocation) {
-    Arguments arguments = invocation.arguments();
-    ExpressionTree argument = arguments.get(0);
-    if (argument.is(Tree.Kind.METHOD_INVOCATION)) {
-      MethodInvocationTree call = (MethodInvocationTree) argument;
-      return WEEK_OF_WEEK_BASED_YEAR_MATCHER.matches(call);
+  public static boolean isChronoFieldYear(ExpressionTree argument) {
+    if (argument.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree select = (MemberSelectExpressionTree) argument;
+      IdentifierTree identifier = select.identifier();
+      return identifier.name().equals("YEAR");
     }
     return false;
   }

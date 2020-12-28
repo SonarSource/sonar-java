@@ -91,5 +91,13 @@ public class DateTimeFormatterMismatch {
       .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2);
 
     builder.toFormatter();
+
+    new DateTimeFormatterBuilder() // Compliant
+      .appendValue(WeekFields.ISO.weekBasedYear(), 4)
+      .toFormatter();
+
+    new DateTimeFormatterBuilder() // Compliant
+      .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2)
+      .toFormatter();
   }
 }
