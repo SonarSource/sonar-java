@@ -75,6 +75,7 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
 
   private static final String CHANGE_YEAR_FORMAT_WEEK_BASED_MESSAGE = "Change this year format to use the week-based year instead.";
   private static final String CHANGE_YEAR_FORMAT_TO_CHRONOFIELD_MESSAGE = "Change this year format to use ChronoField.YEAR instead.";
+  private static final String SECONDARY_LOCATION_MESSAGE = "";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -152,40 +153,31 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
       MethodInvocationTree mit = (MethodInvocationTree) expression;
       if (APPEND_VALUE_MATCHER.matches(mit)) {
         ExpressionTree argument = mit.arguments().get(0);
-        if (isWeekBasedYearUsed(argument)) {
-          usesYear = true;
-          usesWeekBasedYear = true;
-          primary = argument;
-        } else if (isYearArgument(argument)) {
+        if (refersToYear(argument)) {
           usesYear = true;
           primary = argument;
-        }
-        if (isWeekOfWeekBasedYearUsed(argument)) {
+          usesWeekBasedYear |= isWeekBasedYearUsed(argument);
+        } else if (refersToWeek(argument)) {
           usesWeek = true;
-          usesWeekOfWeekBasedYear = true;
-          locations.add(new JavaFileScannerContext.Location("POP", argument));
-        } else if (isWeekArgument(argument)) {
-          usesWeek = true;
-          locations.add(new JavaFileScannerContext.Location("POP", argument));
+          locations.add(new JavaFileScannerContext.Location(SECONDARY_LOCATION_MESSAGE, argument));
+          usesWeekOfWeekBasedYear |= isWeekOfWeekBasedYearUsed(argument);
         }
       }
       wanderer = mit.methodSelect();
     }
     ExpressionTree lastExpression = ((MemberSelectExpressionTree) wanderer).expression();
-    if (!lastExpression.is(Tree.Kind.NEW_CLASS)) {
+    if (!lastExpression.is(Tree.Kind.NEW_CLASS) || !usesWeek || !usesYear) {
       return;
     }
-    if (usesWeek && usesYear) {
-      if (usesWeekBasedYear && !usesWeekOfWeekBasedYear) {
-        reportIssue(primary, CHANGE_YEAR_FORMAT_TO_CHRONOFIELD_MESSAGE, locations, null);
-      } else if (!usesWeekBasedYear && usesWeekOfWeekBasedYear) {
-        reportIssue(primary, CHANGE_YEAR_FORMAT_WEEK_BASED_MESSAGE, locations, null);
-      }
+    if (usesWeekBasedYear && !usesWeekOfWeekBasedYear) {
+      reportIssue(primary, CHANGE_YEAR_FORMAT_TO_CHRONOFIELD_MESSAGE, locations, null);
+    } else if (!usesWeekBasedYear && usesWeekOfWeekBasedYear) {
+      reportIssue(primary, CHANGE_YEAR_FORMAT_WEEK_BASED_MESSAGE, locations, null);
     }
   }
 
-  public static boolean isWeekArgument(ExpressionTree argument) {
-    return isWeekOfWeekBasedYearUsed(argument) || isChronoFieldWeek(argument);
+  public static boolean refersToWeek(ExpressionTree argument) {
+    return isChronoFieldWeek(argument) || isWeekOfWeekBasedYearUsed(argument);
   }
 
   private static boolean isWeekOfWeekBasedYearUsed(ExpressionTree argument) {
@@ -205,8 +197,8 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
     return false;
   }
 
-  public static boolean isYearArgument(ExpressionTree argument) {
-    return isWeekBasedYearUsed(argument) || isChronoFieldYear(argument);
+  public static boolean refersToYear(ExpressionTree argument) {
+    return isChronoFieldYear(argument) || isWeekBasedYearUsed(argument);
   }
 
   private static boolean isWeekBasedYearUsed(ExpressionTree argument) {
