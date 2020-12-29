@@ -61,14 +61,14 @@ public class DateTimeFormatterMismatch {
   }
 
   public void createUsingBuilder() {
-    new DateTimeFormatterBuilder() // Noncompliant {{Change this year format to use the week-based year instead.}}
-      .appendValue(ChronoField.YEAR, 4)
+    new DateTimeFormatterBuilder()
+      .appendValue(ChronoField.YEAR, 4) // Noncompliant [[sc=20;ec=36;secondary=+2]] {{Change this year format to use the week-based year instead.}}
       .appendLiteral('-')
       .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2)
       .toFormatter();
 
-    new DateTimeFormatterBuilder() // Noncompliant {{Change this week format to use the week of week-based year instead.}}
-      .appendValue(WeekFields.ISO.weekBasedYear(), 4)
+    new DateTimeFormatterBuilder()
+      .appendValue(WeekFields.ISO.weekBasedYear(), 4) // Noncompliant [[sc=20;ec=50;secondary=+2]] {{Change this year format to use ChronoField.YEAR instead.}}
       .appendLiteral('-')
       .appendValue(ChronoField.ALIGNED_WEEK_OF_YEAR, 2)
       .toFormatter();

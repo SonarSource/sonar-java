@@ -19,11 +19,13 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -71,8 +73,8 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
   private static final Pattern WEEK_PATTERN = Pattern.compile(".*ww{1,2}.*");
   private static final Pattern YEAR_OF_ERA_PATTERN = Pattern.compile(".*[uy]+.*");
 
-  private static final String CHANGE_WEEK_FORMAT_MESSAGE = "Change this week format to use the week of week-based year instead.";
-  private static final String CHANGE_YEAR_FORMAT_MESSAGE = "Change this year format to use the week-based year instead.";
+  private static final String CHANGE_YEAR_FORMAT_WEEK_BASED_MESSAGE = "Change this year format to use the week-based year instead.";
+  private static final String CHANGE_YEAR_FORMAT_TO_CHRONOFIELD_MESSAGE = "Change this year format to use ChronoField.YEAR instead.";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -101,7 +103,7 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
     if (argument.is(Tree.Kind.STRING_LITERAL)) {
       String pattern = ((LiteralTree) argument).value();
       if (isInfringingPattern(pattern)) {
-        reportIssue(invocation, CHANGE_YEAR_FORMAT_MESSAGE);
+        reportIssue(invocation, CHANGE_YEAR_FORMAT_WEEK_BASED_MESSAGE);
       }
     } else if (argument.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifier = (IdentifierTree) argument;
@@ -120,7 +122,7 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
       }
       String pattern = ((LiteralTree) initializer).value();
       if (isInfringingPattern(pattern)) {
-        reportIssue(invocation, CHANGE_YEAR_FORMAT_MESSAGE);
+        reportIssue(invocation, CHANGE_YEAR_FORMAT_WEEK_BASED_MESSAGE);
       }
     }
   }
@@ -139,7 +141,9 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
     boolean usesWeekOfWeekBasedYear = false;
     boolean usesYear = false;
     boolean usesWeekBasedYear = false;
-    Tree wanderer = invocation.methodSelect();
+    List<JavaFileScannerContext.Location> locations = new ArrayList<>();
+    ExpressionTree wanderer = invocation.methodSelect();
+    ExpressionTree primary = null;
     while (wanderer.is(Tree.Kind.MEMBER_SELECT)) {
       ExpressionTree expression = ((MemberSelectExpressionTree) wanderer).expression();
       if (!expression.is(Tree.Kind.METHOD_INVOCATION)) {
@@ -148,10 +152,22 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
       MethodInvocationTree mit = (MethodInvocationTree) expression;
       if (APPEND_VALUE_MATCHER.matches(mit)) {
         ExpressionTree argument = mit.arguments().get(0);
-        usesWeekBasedYear |= isWeekBasedYearUsed(argument);
-        usesYear |= isYearArgument(argument);
-        usesWeekOfWeekBasedYear |= isWeekOfWeekBasedYearUsed(argument);
-        usesWeek |= isWeekArgument(argument);
+        if (isWeekBasedYearUsed(argument)) {
+          usesYear = true;
+          usesWeekBasedYear = true;
+          primary = argument;
+        } else if (isYearArgument(argument)) {
+          usesYear = true;
+          primary = argument;
+        }
+        if (isWeekOfWeekBasedYearUsed(argument)) {
+          usesWeek = true;
+          usesWeekOfWeekBasedYear = true;
+          locations.add(new JavaFileScannerContext.Location("POP", argument));
+        } else if (isWeekArgument(argument)) {
+          usesWeek = true;
+          locations.add(new JavaFileScannerContext.Location("POP", argument));
+        }
       }
       wanderer = mit.methodSelect();
     }
@@ -161,9 +177,9 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
     }
     if (usesWeek && usesYear) {
       if (usesWeekBasedYear && !usesWeekOfWeekBasedYear) {
-        reportIssue(invocation, CHANGE_WEEK_FORMAT_MESSAGE);
+        reportIssue(primary, CHANGE_YEAR_FORMAT_TO_CHRONOFIELD_MESSAGE, locations, null);
       } else if (!usesWeekBasedYear && usesWeekOfWeekBasedYear) {
-        reportIssue(invocation, CHANGE_YEAR_FORMAT_MESSAGE);
+        reportIssue(primary, CHANGE_YEAR_FORMAT_WEEK_BASED_MESSAGE, locations, null);
       }
     }
   }
