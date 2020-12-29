@@ -102,9 +102,6 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
   private void visitPattern(MethodInvocationTree invocation) {
     Arguments arguments = invocation.arguments();
     ExpressionTree argument = arguments.get(0);
-    if (argument == null) {
-      return;
-    }
     if (argument.is(Tree.Kind.STRING_LITERAL)) {
       String pattern = ((LiteralTree) argument).value();
       if (isInfringingPattern(pattern)) {
