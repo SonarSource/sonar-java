@@ -95,6 +95,9 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
   private void visitPattern(MethodInvocationTree invocation) {
     Arguments arguments = invocation.arguments();
     ExpressionTree argument = arguments.get(0);
+    if (argument == null) {
+      return;
+    }
     if (argument.is(Tree.Kind.STRING_LITERAL)) {
       String pattern = ((LiteralTree) argument).value();
       if (isInfringingPattern(pattern)) {
@@ -107,12 +110,12 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
         return;
       }
       Tree declaration = symbol.declaration();
-      if (!declaration.is(Tree.Kind.VARIABLE)) {
+      if (declaration == null || !declaration.is(Tree.Kind.VARIABLE)) {
         return;
       }
       VariableTree variable = (VariableTree) declaration;
       ExpressionTree initializer = variable.initializer();
-      if (!initializer.is(Tree.Kind.STRING_LITERAL)) {
+      if (initializer == null || !initializer.is(Tree.Kind.STRING_LITERAL)) {
         return;
       }
       String pattern = ((LiteralTree) initializer).value();
@@ -137,7 +140,7 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
     boolean usesYear = false;
     boolean usesWeekBasedYear = false;
     Tree wanderer = invocation.methodSelect();
-    while (wanderer != null && wanderer.is(Tree.Kind.MEMBER_SELECT)) {
+    while (wanderer.is(Tree.Kind.MEMBER_SELECT)) {
       ExpressionTree expression = ((MemberSelectExpressionTree) wanderer).expression();
       if (!expression.is(Tree.Kind.METHOD_INVOCATION)) {
         break;
@@ -151,9 +154,6 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
         usesWeek |= isWeekArgument(argument);
       }
       wanderer = mit.methodSelect();
-    }
-    if (wanderer == null) {
-      return;
     }
     ExpressionTree lastExpression = ((MemberSelectExpressionTree) wanderer).expression();
     if (!lastExpression.is(Tree.Kind.NEW_CLASS)) {
