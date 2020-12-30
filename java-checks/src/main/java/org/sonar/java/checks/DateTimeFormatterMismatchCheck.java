@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -122,7 +123,7 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
     }
   }
 
-  private static Optional<String> getStringLiteralValue(Tree declaration) {
+  private static Optional<String> getStringLiteralValue(@Nullable Tree declaration) {
     if (declaration == null || !declaration.is(Tree.Kind.VARIABLE)) {
       return Optional.empty();
     }
@@ -136,48 +137,6 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
 
   private static boolean isInfringingPattern(String pattern) {
     return WEEK_PATTERN.matcher(pattern).matches() && YEAR_OF_ERA_PATTERN.matcher(pattern).matches();
-  }
-
-  private static boolean refersToWeek(ExpressionTree argument) {
-    return isChronoFieldWeek(argument) || isWeekOfWeekBasedYearUsed(argument);
-  }
-
-  private static boolean isWeekOfWeekBasedYearUsed(ExpressionTree argument) {
-    if (argument.is(Tree.Kind.METHOD_INVOCATION)) {
-      MethodInvocationTree call = (MethodInvocationTree) argument;
-      return WEEK_OF_WEEK_BASED_YEAR_MATCHER.matches(call);
-    }
-    return false;
-  }
-
-  private static boolean isChronoFieldWeek(ExpressionTree argument) {
-    if (argument.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree select = (MemberSelectExpressionTree) argument;
-      IdentifierTree identifier = select.identifier();
-      return identifier.name().equals("ALIGNED_WEEK_OF_YEAR");
-    }
-    return false;
-  }
-
-  private static boolean refersToYear(ExpressionTree argument) {
-    return isChronoFieldYear(argument) || isWeekBasedYearUsed(argument);
-  }
-
-  private static boolean isWeekBasedYearUsed(ExpressionTree argument) {
-    if (argument.is(Tree.Kind.METHOD_INVOCATION)) {
-      MethodInvocationTree call = (MethodInvocationTree) argument;
-      return WEEK_BASED_YEAR_MATCHER.matches(call);
-    }
-    return false;
-  }
-
-  private static boolean isChronoFieldYear(ExpressionTree argument) {
-    if (argument.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree select = (MemberSelectExpressionTree) argument;
-      IdentifierTree identifier = select.identifier();
-      return identifier.name().equals("YEAR");
-    }
-    return false;
   }
 
   private static class ChainedInvocationVisitor extends BaseTreeVisitor {
@@ -216,6 +175,48 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
           usesWeekOfWeekBasedYear |= isWeekOfWeekBasedYearUsed(argument);
         }
       }
+    }
+
+    private static boolean refersToWeek(ExpressionTree argument) {
+      return isChronoFieldWeek(argument) || isWeekOfWeekBasedYearUsed(argument);
+    }
+
+    private static boolean isWeekOfWeekBasedYearUsed(ExpressionTree argument) {
+      if (argument.is(Tree.Kind.METHOD_INVOCATION)) {
+        MethodInvocationTree call = (MethodInvocationTree) argument;
+        return WEEK_OF_WEEK_BASED_YEAR_MATCHER.matches(call);
+      }
+      return false;
+    }
+
+    private static boolean isChronoFieldWeek(ExpressionTree argument) {
+      if (argument.is(Tree.Kind.MEMBER_SELECT)) {
+        MemberSelectExpressionTree select = (MemberSelectExpressionTree) argument;
+        IdentifierTree identifier = select.identifier();
+        return select.symbolType().is("java.time.temporal.ChronoField") && identifier.name().equals("ALIGNED_WEEK_OF_YEAR");
+      }
+      return false;
+    }
+
+    private static boolean refersToYear(ExpressionTree argument) {
+      return isChronoFieldYear(argument) || isWeekBasedYearUsed(argument);
+    }
+
+    private static boolean isWeekBasedYearUsed(ExpressionTree argument) {
+      if (argument.is(Tree.Kind.METHOD_INVOCATION)) {
+        MethodInvocationTree call = (MethodInvocationTree) argument;
+        return WEEK_BASED_YEAR_MATCHER.matches(call);
+      }
+      return false;
+    }
+
+    private static boolean isChronoFieldYear(ExpressionTree argument) {
+      if (argument.is(Tree.Kind.MEMBER_SELECT)) {
+        MemberSelectExpressionTree select = (MemberSelectExpressionTree) argument;
+        IdentifierTree identifier = select.identifier();
+        return select.symbolType().is("java.time.temporal.ChronoField") && identifier.name().equals("YEAR");
+      }
+      return false;
     }
   }
 }
