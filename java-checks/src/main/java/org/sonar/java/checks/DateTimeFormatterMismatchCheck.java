@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -56,13 +57,13 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
   private static final MethodMatchers WEEK_BASED_YEAR_MATCHER = MethodMatchers.create()
     .ofTypes("java.time.temporal.WeekFields")
     .names("weekBasedYear")
-    .addParametersMatcher()
+    .addWithoutParametersMatcher()
     .build();
 
   private static final MethodMatchers WEEK_OF_WEEK_BASED_YEAR_MATCHER = MethodMatchers.create()
     .ofTypes("java.time.temporal.WeekFields")
     .names("weekOfWeekBasedYear")
-    .addParametersMatcher()
+    .addWithoutParametersMatcher()
     .build();
 
   private static final Pattern WEEK_PATTERN = Pattern.compile(".*ww{1,2}.*");
@@ -83,7 +84,7 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
     if (OF_PATTERN_MATCHER.matches(invocation)) {
       visitPattern(invocation);
     } else if (APPEND_VALUE_MATCHER.matches(invocation)) {
-      ChainVisitor visitor = new ChainVisitor();
+      ChainedInvocationVisitor visitor = new ChainedInvocationVisitor();
       invocation.accept(visitor);
       if (!visitor.usesWeek || !visitor.usesYear) {
         return;
@@ -114,26 +115,30 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
         return;
       }
       Tree declaration = symbol.declaration();
-      if (declaration == null || !declaration.is(Tree.Kind.VARIABLE)) {
-        return;
-      }
-      VariableTree variable = (VariableTree) declaration;
-      ExpressionTree initializer = variable.initializer();
-      if (initializer == null || !initializer.is(Tree.Kind.STRING_LITERAL)) {
-        return;
-      }
-      String pattern = ((LiteralTree) initializer).value();
-      if (isInfringingPattern(pattern)) {
+      Optional<String> pattern = getStringLiteralValue(declaration);
+      if (pattern.isPresent() && isInfringingPattern(pattern.get())) {
         reportIssue(invocation, CHANGE_YEAR_FORMAT_WEEK_BASED_MESSAGE);
       }
     }
+  }
+
+  private static Optional<String> getStringLiteralValue(Tree declaration) {
+    if (declaration == null || !declaration.is(Tree.Kind.VARIABLE)) {
+      return Optional.empty();
+    }
+    VariableTree variable = (VariableTree) declaration;
+    ExpressionTree initializer = variable.initializer();
+    if (initializer == null || !initializer.is(Tree.Kind.STRING_LITERAL)) {
+      return Optional.empty();
+    }
+    return Optional.of(((LiteralTree) initializer).value());
   }
 
   private static boolean isInfringingPattern(String pattern) {
     return WEEK_PATTERN.matcher(pattern).matches() && YEAR_OF_ERA_PATTERN.matcher(pattern).matches();
   }
 
-  public static boolean refersToWeek(ExpressionTree argument) {
+  private static boolean refersToWeek(ExpressionTree argument) {
     return isChronoFieldWeek(argument) || isWeekOfWeekBasedYearUsed(argument);
   }
 
@@ -145,7 +150,7 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
     return false;
   }
 
-  public static boolean isChronoFieldWeek(ExpressionTree argument) {
+  private static boolean isChronoFieldWeek(ExpressionTree argument) {
     if (argument.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree select = (MemberSelectExpressionTree) argument;
       IdentifierTree identifier = select.identifier();
@@ -154,7 +159,7 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
     return false;
   }
 
-  public static boolean refersToYear(ExpressionTree argument) {
+  private static boolean refersToYear(ExpressionTree argument) {
     return isChronoFieldYear(argument) || isWeekBasedYearUsed(argument);
   }
 
@@ -166,7 +171,7 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
     return false;
   }
 
-  public static boolean isChronoFieldYear(ExpressionTree argument) {
+  private static boolean isChronoFieldYear(ExpressionTree argument) {
     if (argument.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree select = (MemberSelectExpressionTree) argument;
       IdentifierTree identifier = select.identifier();
@@ -175,7 +180,7 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
     return false;
   }
 
-  static class ChainVisitor extends BaseTreeVisitor {
+  private static class ChainedInvocationVisitor extends BaseTreeVisitor {
     private boolean usesWeek = false;
     private boolean usesWeekOfWeekBasedYear = false;
     private boolean usesYear = false;

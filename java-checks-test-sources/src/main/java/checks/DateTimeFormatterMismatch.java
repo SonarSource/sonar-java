@@ -86,9 +86,9 @@ public class DateTimeFormatterMismatch {
       .toFormatter();
 
     DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder()
-      .appendValue(ChronoField.YEAR, 4) // Noncompliant [[sc=20;ec=36]]
-      .appendLiteral('-')
-      .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2);
+      .appendValue(ChronoField.YEAR, 4) // Noncompliant [[sc=20;ec=36;secondary=+1]] {{Change this year format to use the week-based year instead.}}
+      .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2)
+      .appendLiteral('-');
 
     builder.toFormatter();
 
@@ -99,5 +99,11 @@ public class DateTimeFormatterMismatch {
     new DateTimeFormatterBuilder() // Compliant
       .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2)
       .toFormatter();
+
+    DateTimeFormatterBuilder builder2 = new DateTimeFormatterBuilder();
+    builder2.appendValue(ChronoField.YEAR, 4); // Compliant FN - consecutive calls on builders are not considered
+    builder2.appendLiteral('-');
+    builder2.appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2);
+    builder2.toFormatter();
   }
 }
