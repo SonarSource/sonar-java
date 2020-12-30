@@ -91,9 +91,9 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
         return;
       }
       if (visitor.usesWeekBasedYear && !visitor.usesWeekOfWeekBasedYear) {
-        reportIssue(visitor.primary, CHANGE_YEAR_FORMAT_TO_CHRONOFIELD_MESSAGE, visitor.locations, null);
+        reportIssue(visitor.primary, CHANGE_YEAR_FORMAT_TO_CHRONOFIELD_MESSAGE, visitor.secondaries, null);
       } else if (!visitor.usesWeekBasedYear && visitor.usesWeekOfWeekBasedYear) {
-        reportIssue(visitor.primary, CHANGE_YEAR_FORMAT_WEEK_BASED_MESSAGE, visitor.locations, null);
+        reportIssue(visitor.primary, CHANGE_YEAR_FORMAT_WEEK_BASED_MESSAGE, visitor.secondaries, null);
       }
     }
   }
@@ -144,7 +144,7 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
     private boolean usesWeekOfWeekBasedYear = false;
     private boolean usesYear = false;
     private boolean usesWeekBasedYear = false;
-    private final List<JavaFileScannerContext.Location> locations = new ArrayList<>();
+    private final List<JavaFileScannerContext.Location> secondaries = new ArrayList<>();
     private ExpressionTree primary = null;
 
     @Override
@@ -171,7 +171,7 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
           usesWeekBasedYear |= isWeekBasedYearUsed(argument);
         } else if (refersToWeek(argument)) {
           usesWeek = true;
-          locations.add(new JavaFileScannerContext.Location(SECONDARY_LOCATION_MESSAGE, argument));
+          secondaries.add(new JavaFileScannerContext.Location(SECONDARY_LOCATION_MESSAGE, argument));
           usesWeekOfWeekBasedYear |= isWeekOfWeekBasedYearUsed(argument);
         }
       }

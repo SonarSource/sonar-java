@@ -3,6 +3,7 @@ package checks;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
 import java.util.Locale;
 
@@ -105,5 +106,17 @@ public class DateTimeFormatterMismatch {
     builder2.appendLiteral('-');
     builder2.appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2);
     builder2.toFormatter();
+
+    new DateTimeFormatterBuilder()
+      .appendValue(FakeChronoField.YEAR, 4) // Compliant FN - Ignore cases where a weird custom temporal field is used
+      .appendLiteral('-')
+      .appendValue(FakeChronoField.ALIGNED_WEEK_OF_YEAR, 2)
+      .toFormatter();
+
+  }
+
+  static private class FakeChronoField {
+    private static final TemporalField YEAR = ChronoField.YEAR_OF_ERA;
+    private static final TemporalField ALIGNED_WEEK_OF_YEAR = ChronoField.DAY_OF_YEAR;
   }
 }
