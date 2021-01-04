@@ -92,7 +92,7 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
         addVariables(forStatementTree.initializer());
       } else if (tree.is(Tree.Kind.FOR_EACH_STATEMENT)) {
         ForEachStatement forEachStatement = (ForEachStatement) tree;
-        addVariable(forEachStatement.variable());
+        addVariables(Collections.singletonList(forEachStatement.variable()));
       } else if (tree.is(Tree.Kind.EXPRESSION_STATEMENT)) {
         leaveExpressionStatement((ExpressionStatementTree) tree);
       } else {
@@ -127,14 +127,10 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
       if (statementTree.is(Tree.Kind.VARIABLE)) {
         VariableTree variableTree = (VariableTree) statementTree;
         if (!UNRESOLVED_IDENTIFIERS_VISITOR.isUnresolved(variableTree.simpleName().name())) {
-          addVariable(variableTree);
+          variables.add(variableTree);
         }
       }
     }
-  }
-
-  private void addVariable(VariableTree variableTree) {
-    variables.add(variableTree);
   }
 
   private void addAssignment(ExpressionTree variable) {
