@@ -175,19 +175,19 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
     if (hasTestAnnotation(methodTree)) {
       SoftAssertionsVisitor softAssertionsVisitor = new SoftAssertionsVisitor();
       methodTree.accept(softAssertionsVisitor);
-      if (softAssertionsVisitor.assertThatCalled && !isSoftAssertionsExtension(methodTree)) {
+      if (softAssertionsVisitor.assertThatCalled && !isInClassUsingSoftAssertionsExtension(methodTree.symbol())) {
         context.reportIssue(this, methodTree.block().closeBraceToken(), "Add a call to 'assertAll' after all 'assertThat'.");
       }
     }
   }
 
-  private static boolean isSoftAssertionsExtension(MethodTree methodTree) {
-    Symbol owner = methodTree.symbol().owner();
+  private static boolean isInClassUsingSoftAssertionsExtension(Symbol symbol) {
+    Symbol owner = symbol.owner();
     if (owner != null && owner.isTypeSymbol()) {
       List<SymbolMetadata.AnnotationValue> annotationValues = owner.metadata().valuesForAnnotation("org.junit.jupiter.api.extension.ExtendWith");
-      if (annotationValues != null) {
-        return annotationValues.stream().anyMatch(av -> isSoftAssertionsExtensionClass(av.value()));
-      }
+      return (annotationValues != null && annotationValues.stream().anyMatch(av -> isSoftAssertionsExtensionClass(av.value())))
+        // Check if nesting class uses SoftAssertionsExtension since it is a valid use case.
+        || isInClassUsingSoftAssertionsExtension(owner);
     }
     return false;
   }

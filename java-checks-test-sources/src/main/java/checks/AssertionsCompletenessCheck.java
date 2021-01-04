@@ -15,10 +15,10 @@ import org.junit.Test;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.Nested;
 import org.mockito.Mockito;
 
 public class AssertionsCompletenessCheck {
-
   @Rule
   public final org.assertj.core.api.JUnitSoftAssertions junit_soft_assertions = new org.assertj.core.api.JUnitSoftAssertions();
 
@@ -353,5 +353,17 @@ class JUnit5SoftAssertionsExample3 {
 class MyExtension implements AfterTestExecutionCallback {
   @Override
   public void afterTestExecution(ExtensionContext context) throws Exception {
+  }
+}
+
+@ExtendWith(SoftAssertionsExtension.class)
+class NestedJUnit5SoftAssertionsExample {
+  @Nested
+  class NestedClass {
+    @Test
+    void junit5_soft_assertions_example(org.assertj.core.api.SoftAssertions softly) {
+      softly.assertThat(5).isLessThan(3);
+      // No need to call softly.assertAll(), this is automatically done by the SoftAssertionsExtension
+    }
   }
 }
