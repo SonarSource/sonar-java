@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.function.BinaryOperator;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
@@ -63,6 +64,13 @@ class Foo {
     lambdas_not_resolved(y -> {
       int x = 1; // Compliant
       return y + x;
+    });
+    lambdas_not_resolved(y -> {
+      int sum = 0;
+      for (Integer in: new ArrayList<Integer>()) {
+        sum += in;
+      }
+      return sum;
     });
     int b = 42; // Noncompliant
     lambdas_not_resolved(y -> b() + y);
