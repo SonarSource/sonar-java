@@ -9,6 +9,7 @@ class JdbcDriverExplicitLoadingCheck {
     Class.forName("oracle.jdbc.driver.OracleDriver"); // Noncompliant
     Class.forName("com.ibm.db2.jdbc.app.DB2Driver"); // Noncompliant
     Class.forName("com.ibm.db2.jdbc.net.DB2Driver"); // Noncompliant
+    Class.forName("com.ibm.db2.jcc.DB2Driver"); // Noncompliant
     Class.forName("com.sybase.jdbc.SybDriver"); // Noncompliant
     Class.forName("com.sybase.jdbc2.jdbc.SybDriver"); // Noncompliant
     Class.forName("com.teradata.jdbc.TeraDriver"); // Noncompliant

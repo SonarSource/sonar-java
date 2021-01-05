@@ -47,7 +47,8 @@ public class JdbcDriverExplicitLoadingCheck extends AbstractMethodDetection impl
     "org.hsqldb.jdbc.JDBCDriver",
     "org.h2.Driver",
     "org.firebirdsql.jdbc.FBDriver",
-    "net.sourceforge.jtds.jdbc.Driver"
+    "net.sourceforge.jtds.jdbc.Driver",
+    "com.ibm.db2.jcc.DB2Driver"
   ));
 
   @Override
