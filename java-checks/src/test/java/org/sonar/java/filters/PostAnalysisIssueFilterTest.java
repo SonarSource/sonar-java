@@ -19,18 +19,17 @@
  */
 package org.sonar.java.filters;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.scan.issue.filter.IssueFilterChain;
 import org.sonar.java.CheckTestUtils;
-import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,10 +39,9 @@ import static org.mockito.Mockito.when;
 class PostAnalysisIssueFilterTest {
 
   private static final InputFile INPUT_FILE = CheckTestUtils.inputFile("src/test/files/filters/PostAnalysisIssueFilter.java");
-  private static JavaFileScannerContext context;
+  private JavaFileScannerContext context;
   private PostAnalysisIssueFilter postAnalysisIssueFilter;
-  private static final FakeJavaIssueFilter acceptingIssueFilter = new FakeJavaIssueFilter(true);
-  private static final List<FakeJavaIssueFilter> ISSUE_FILTERS = Arrays.asList(acceptingIssueFilter, new FakeJavaIssueFilter(false));
+  private FilterableIssue fakeIssue;
 
   @BeforeEach
   public void setUp() {
@@ -51,75 +49,80 @@ class PostAnalysisIssueFilterTest {
 
     context = mock(JavaFileScannerContext.class);
     when(context.getInputFile()).thenReturn(INPUT_FILE);
+    when(context.getSemanticModel()).thenReturn(new Object());
+
+    fakeIssue = mock(FilterableIssue.class);
+    when(fakeIssue.componentKey()).thenReturn("component");
+    when(fakeIssue.ruleKey()).thenReturn(RuleKey.of("repo", "SXXXX"));
   }
 
   @Test
   void number_of_issue_filters() {
-    assertThat(postAnalysisIssueFilter.getIssueFilters()).hasSize(5);
+    assertThat(PostAnalysisIssueFilter.ISSUE_FILTERS).hasSize(5);
   }
 
   @Test
-  void issue_filter_should_accept_issue() {
-    postAnalysisIssueFilter.setIssueFilters(Collections.singletonList(acceptingIssueFilter));
+  void issue_filter_should_reject_issue_if_chain_reject_the_issue() {
     IssueFilterChain chain = mock(IssueFilterChain.class);
-    when(chain.accept(null)).thenReturn(true);
-    assertThat(postAnalysisIssueFilter.accept(null, chain)).isTrue();
+    when(chain.accept(ArgumentMatchers.any())).thenReturn(false);
+
+    assertThat(postAnalysisIssueFilter.accept(fakeIssue, chain)).isFalse();
   }
 
   @Test
-  void issue_filter_should_reject_issue_if_any_issue_filter_reject_the_issue() {
-    postAnalysisIssueFilter.setIssueFilters(ISSUE_FILTERS);
-
-    assertThat(postAnalysisIssueFilter.accept(mock(FilterableIssue.class), mock(IssueFilterChain.class))).isFalse();
-  }
-
-  @Test
-  void issue_filter_should_depends_on_chain_if_filters_accetps() {
-    postAnalysisIssueFilter.setIssueFilters(new ArrayList<>());
-
-    FilterableIssue issue = mock(FilterableIssue.class);
+  void issue_filter_should_accept_issue_if_chain_accept_the_issue() {
     IssueFilterChain chain = mock(IssueFilterChain.class);
+    when(chain.accept(ArgumentMatchers.any())).thenReturn(true);
 
-    when(chain.accept(issue)).thenReturn(true);
-    assertThat(postAnalysisIssueFilter.accept(issue, chain)).isTrue();
-
-    when(chain.accept(issue)).thenReturn(false);
-    assertThat(postAnalysisIssueFilter.accept(issue, chain)).isFalse();
+    assertThat(postAnalysisIssueFilter.accept(fakeIssue, chain)).isTrue();
   }
 
   @Test
-  void issue_filter_should_set_componentKey_and_scan_every_filter() {
-    postAnalysisIssueFilter.setIssueFilters(ISSUE_FILTERS);
+  void issue_filter_should_reject_issue_if_a_filter_rejects_the_issue() {
+    IssueFilterChain chain = mock(IssueFilterChain.class);
+    when(chain.accept(ArgumentMatchers.any())).thenReturn(true);
+
+    when(fakeIssue.componentKey()).thenReturn(INPUT_FILE.key());
+    when(fakeIssue.line()).thenReturn(42);
+
     postAnalysisIssueFilter.scanFile(context);
 
-    for (FakeJavaIssueFilter filter : ISSUE_FILTERS) {
-      assertThat(filter.scanned).isTrue();
-    }
+    InternalSyntaxToken fakeToken = new InternalSyntaxToken(42, 0, "fake_token", Collections.emptyList(), false);
+    GeneratedCodeFilter filter = (GeneratedCodeFilter) PostAnalysisIssueFilter.ISSUE_FILTERS.get(4);
+    filter.excludeLines(fakeToken);
+
+    assertThat(postAnalysisIssueFilter.accept(fakeIssue, chain)).isFalse();
   }
 
-  private static class FakeJavaIssueFilter implements JavaIssueFilter {
+  @Test
+  void two_instances_of_PostAnalysisIssueFilter_share_filters() {
+    IssueFilterChain chain = mock(IssueFilterChain.class);
+    when(chain.accept(ArgumentMatchers.any())).thenReturn(true);
 
-    private final boolean accepted;
-    private boolean scanned = false;
+    when(fakeIssue.componentKey()).thenReturn(INPUT_FILE.key());
+    when(fakeIssue.line()).thenReturn(666);
 
-    FakeJavaIssueFilter(boolean accept) {
-      this.accepted = accept;
-    }
+    PostAnalysisIssueFilter p1 = new PostAnalysisIssueFilter();
+    PostAnalysisIssueFilter p2 = new PostAnalysisIssueFilter();
 
-    @Override
-    public void scanFile(JavaFileScannerContext context) {
-      scanned = true;
-    }
+    p1.scanFile(context);
+    p2.scanFile(context);
 
-    @Override
-    public boolean accept(FilterableIssue issue) {
-      return accepted;
-    }
+    assertThat(p1.accept(fakeIssue, chain)).isTrue();
+    assertThat(p2.accept(fakeIssue, chain)).isTrue();
 
-    @Override
-    public Set<Class<? extends JavaCheck>> filteredRules() {
-      return null;
-    }
+    InternalSyntaxToken fakeToken = new InternalSyntaxToken(666, 0, "fake_token", Collections.emptyList(), false);
+    GeneratedCodeFilter filter = (GeneratedCodeFilter) PostAnalysisIssueFilter.ISSUE_FILTERS.get(4);
+    filter.excludeLines(fakeToken);
+
+    assertThat(p1.accept(fakeIssue, chain)).isFalse();
+    assertThat(p2.accept(fakeIssue, chain)).isFalse();
+  }
+
+  @Test
+  void issue_filter_should_scan_file_with_all_filters() {
+    postAnalysisIssueFilter.scanFile(context);
+    Mockito.verify(context, Mockito.times(5)).getInputFile();
   }
 
 }
