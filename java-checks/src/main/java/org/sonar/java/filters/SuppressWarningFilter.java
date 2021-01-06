@@ -82,7 +82,7 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
   @Override
   public void scanFile(JavaFileScannerContext context) {
     super.scanFile(context);
-    excludedLinesByComponent.put(getComponentKey(), excludedLinesByRule());
+    excludedLinesByComponent.put(getComponentKey(), new HashMap<>(excludedLinesByRule()));
   }
 
   private static Map<String, RuleKey> getDeprecatedRuleKeys() {
@@ -99,11 +99,7 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
 
   @Override
   public boolean accept(FilterableIssue issue) {
-    Map<String, Set<Integer>> excludedLinesByRule = new HashMap<>();
-    if (excludedLinesByComponent.containsKey(issue.componentKey())) {
-      excludedLinesByRule = excludedLinesByComponent.get(issue.componentKey());
-    }
-    return !issueShouldNotBeReported(issue, excludedLinesByRule);
+    return !issueShouldNotBeReported(issue, excludedLinesByComponent.getOrDefault(issue.componentKey(), Collections.emptyMap()));
   }
 
   private static boolean issueShouldNotBeReported(FilterableIssue issue, Map<String, Set<Integer>> excludedLineByRule) {
