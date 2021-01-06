@@ -53,6 +53,7 @@ public final class NullableAnnotationUtils {
   private static final String ORG_ECLIPSE_JDT_ANNOTATION_NON_NULL_BY_DEFAULT = "org.eclipse.jdt.annotation.NonNullByDefault";
   private static final String ORG_SPRINGFRAMEWORK_LANG_NON_NULL_API = "org.springframework.lang.NonNullApi";
   private static final String ORG_SPRINGFRAMEWORK_LANG_NON_NULL_FIELDS = "org.springframework.lang.NonNullFields";
+  private static final String COM_MONGO_DB_LANG_NON_NULL_API = "com.mongodb.lang.NonNullApi";
 
   /**
    * Nullable annotations can be "strong", when one must check for nullness, or "weak", when it
@@ -73,6 +74,7 @@ public final class NullableAnnotationUtils {
     "android.support.annotation.Nullable",
     "androidx.annotation.Nullable",
     "com.sun.istack.internal.Nullable",
+    "com.mongodb.lang.Nullable",
     "edu.umd.cs.findbugs.annotations.Nullable",
     "io.reactivex.annotations.Nullable",
     "io.reactivex.rxjava3.annotations.Nullable",
@@ -95,9 +97,9 @@ public final class NullableAnnotationUtils {
   private static final Set<String> NONNULL_ANNOTATIONS = SetUtils.immutableSetOf(
     "android.annotation.NonNull",
     "android.support.annotation.NonNull",
-    "android.support.annotation.NonNull",
     "androidx.annotation.NonNull",
     "com.sun.istack.internal.NotNull",
+    "com.mongodb.lang.NonNull",
     "edu.umd.cs.findbugs.annotations.NonNull",
     "io.reactivex.annotations.NonNull",
     "io.reactivex.rxjava3.annotations.NonNull",
@@ -245,9 +247,8 @@ public final class NullableAnnotationUtils {
       Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
       if (isGloballyAnnotatedWithEclipseNonNullByDefault(methodSymbol, "RETURN_TYPE")) {
         return ORG_ECLIPSE_JDT_ANNOTATION_NON_NULL_BY_DEFAULT;
-      } else if (valuesForGlobalAnnotation(methodSymbol, ORG_SPRINGFRAMEWORK_LANG_NON_NULL_API) != null) {
-        return ORG_SPRINGFRAMEWORK_LANG_NON_NULL_API;
       }
+      return useAnyGlobalAnnotation(methodSymbol, ORG_SPRINGFRAMEWORK_LANG_NON_NULL_API, COM_MONGO_DB_LANG_NON_NULL_API);
     }
     return null;
   }
@@ -292,14 +293,21 @@ public final class NullableAnnotationUtils {
 
   @CheckForNull
   public static String nonNullAnnotationOnParameters(Symbol.MethodSymbol method) {
-    if (valuesForGlobalAnnotation(method, JAVAX_ANNOTATION_PARAMETERS_ARE_NONNULL_BY_DEFAULT) != null) {
-      return JAVAX_ANNOTATION_PARAMETERS_ARE_NONNULL_BY_DEFAULT;
-    } else if (valuesForGlobalAnnotation(method, ORG_SPRINGFRAMEWORK_LANG_NON_NULL_API) != null) {
-      return ORG_SPRINGFRAMEWORK_LANG_NON_NULL_API;
-    } else if (isGloballyAnnotatedWithEclipseNonNullByDefault(method, "PARAMETER")) {
+    if (isGloballyAnnotatedWithEclipseNonNullByDefault(method, "PARAMETER")) {
       return ORG_ECLIPSE_JDT_ANNOTATION_NON_NULL_BY_DEFAULT;
     }
-    return null;
+    return useAnyGlobalAnnotation(method,
+      JAVAX_ANNOTATION_PARAMETERS_ARE_NONNULL_BY_DEFAULT,
+      ORG_SPRINGFRAMEWORK_LANG_NON_NULL_API,
+      COM_MONGO_DB_LANG_NON_NULL_API);
+  }
+
+  @CheckForNull
+  private static String useAnyGlobalAnnotation(Symbol symbol, String ... annotations) {
+    return Stream.of(annotations)
+      .filter(annotation -> valuesForGlobalAnnotation(symbol, annotation) != null)
+      .findFirst()
+      .orElse(null);
   }
 
   @CheckForNull
