@@ -20,6 +20,7 @@ interface A {
   @MayBeNullAnnotation Object nullable10();
   @Nullable Object nullable11(); // android annotation
   @android.support.annotation.Nullable Object nullable12(); // android annotation
+  @com.mongodb.lang.Nullable Object nullable13();
 
   @javax.annotation.Nonnull Object nonnull1();
   @javax.validation.constraints.NotNull Object nonnull2();
@@ -30,6 +31,7 @@ interface A {
   @org.eclipse.jdt.annotation.NonNull Object nonnull7();
   @javax.annotation.Nonnull(when = javax.annotation.meta.When.ALWAYS) Object nonnull8();
   @MyNonNullAnnotation Object nonnull9();
+  @com.mongodb.lang.NonNull Object nonnull10();
 }
 
 // fake 'android.support.annotation.NonNull' annotation
