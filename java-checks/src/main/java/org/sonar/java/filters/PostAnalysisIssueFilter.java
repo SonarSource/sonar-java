@@ -20,9 +20,8 @@
 package org.sonar.java.filters;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.function.Supplier;
+import java.util.List;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.scan.issue.filter.IssueFilterChain;
 import org.sonar.java.annotations.VisibleForTesting;
@@ -31,42 +30,22 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 
 public class PostAnalysisIssueFilter implements JavaFileScanner, SonarJavaIssueFilter {
 
-  private static final Supplier<Iterable<JavaIssueFilter>> DEFAULT_ISSUE_FILTERS = () -> Arrays.asList(
+  @VisibleForTesting
+  static final List<JavaIssueFilter> ISSUE_FILTERS = Collections.unmodifiableList(Arrays.asList(
     new EclipseI18NFilter(),
     new LombokFilter(),
     new GoogleAutoFilter(),
     new SuppressWarningFilter(),
-    new GeneratedCodeFilter());
-
-  private Iterable<JavaIssueFilter> issueFilers;
-
-  @VisibleForTesting
-  void setIssueFilters(Collection<? extends JavaIssueFilter> issueFilters) {
-    this.issueFilers = Collections.unmodifiableCollection(issueFilters);
-  }
-
-  @VisibleForTesting
-  Iterable<JavaIssueFilter> getIssueFilters() {
-    if (issueFilers == null) {
-      issueFilers = DEFAULT_ISSUE_FILTERS.get();
-    }
-    return issueFilers;
-  }
+    new GeneratedCodeFilter()));
 
   @Override
   public boolean accept(FilterableIssue issue, IssueFilterChain chain) {
-    for (JavaIssueFilter javaIssueFilter : getIssueFilters()) {
-      if (!javaIssueFilter.accept(issue)) {
-        return false;
-      }
-    }
-    return chain.accept(issue);
+    return ISSUE_FILTERS.stream().allMatch(filter -> filter.accept(issue))
+      && chain.accept(issue);
   }
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    for (JavaIssueFilter javaIssueFilter : getIssueFilters()) {
-      javaIssueFilter.scanFile(context);
-    }
+    ISSUE_FILTERS.forEach(filter -> filter.scanFile(context));
   }
 }
