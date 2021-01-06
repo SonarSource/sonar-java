@@ -58,7 +58,7 @@ public abstract class AbstractCallToDeprecatedCodeChecker extends IssuableSubscr
           return;
         }
         tryGetDeprecatedSymbol(identifierTree).ifPresent(deprecatedSymbol -> checkDeprecatedIdentifier(identifierTree, deprecatedSymbol));
-      } else if (tree.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR)) {
+      } else if (tree.is(Tree.Kind.METHOD)) {
         MethodTree methodTree = (MethodTree) tree;
         tryGetDeprecatedSymbol(methodTree).ifPresent(deprecatedSymbol -> checkOverridingMethod(methodTree, deprecatedSymbol));
       }

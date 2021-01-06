@@ -81,6 +81,18 @@ class S1874_CallToDeprecatedMethod {
       "".getBytes(1, 1, new byte[3], 7);
     }
   }
+
+  class Foo {
+    @Deprecated
+    public Foo() { }
+    public Foo(String s) { }
+  }
+
+  class Bar extends Foo {
+    public Bar() { // Compliant
+      super("");
+    }
+  }
 }
 
 @Deprecated
