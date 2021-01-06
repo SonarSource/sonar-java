@@ -23,13 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
+import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
 
 class CallToDeprecatedMethodCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/CallToDeprecatedMethod.java"))
+      .onFile(testSourcesPath("checks/S1874_CallToDeprecatedMethod.java"))
       .withCheck(new CallToDeprecatedMethodCheck())
       .verifyIssues();
   }
@@ -40,7 +41,7 @@ class CallToDeprecatedMethodCheckTest {
   @Test
   void flagged_for_removal_should_not_raise_issue() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/CallToDeprecatedMethod_java9.java")
+      .onFile(nonCompilingTestSourcesPath("checks/S1874_CallToDeprecatedMethod_java9.java"))
       .withJavaVersion(9)
       .withCheck(new CallToDeprecatedMethodCheck())
       .verifyIssues();
@@ -49,7 +50,7 @@ class CallToDeprecatedMethodCheckTest {
   @Test
   void without_semantic() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/CallToDeprecatedMethod_noSemantic.java")
+      .onFile(nonCompilingTestSourcesPath("checks/S1874_CallToDeprecatedMethod_noSemantic.java"))
       .withCheck(new CallToDeprecatedMethodCheck())
       .withoutSemantic()
       .verifyNoIssues();

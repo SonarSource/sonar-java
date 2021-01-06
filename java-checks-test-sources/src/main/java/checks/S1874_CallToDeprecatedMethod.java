@@ -2,9 +2,9 @@ package checks;
 
 import java.util.*;
 
-class CallToDeprecatedMethod {
+class S1874_CallToDeprecatedMethod {
 
-  public CallToDeprecatedMethod() {
+  public S1874_CallToDeprecatedMethod() {
     String string = new String("my string");
     string.getBytes(1, 1, new byte[3], 7); // Noncompliant [[sc=12;ec=20]] {{Remove this use of "getBytes"; it is deprecated.}}
     new DeprecatedConstructor(); // Noncompliant [[sc=9;ec=30]] {{Remove this use of "DeprecatedConstructor"; it is deprecated.}}
