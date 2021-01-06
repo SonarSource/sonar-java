@@ -20,13 +20,10 @@
 package org.sonar.java.checks.tests;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -35,47 +32,14 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6068")
-public class MockitoEqSimplificationCheck extends IssuableSubscriptionVisitor {
-  private static final String MOCKITO = "org.mockito.Mockito";
-
-  private static final MethodMatchers METHODS_USING_EQ_IN_ARGUMENTS = MethodMatchers.or(
-    MethodMatchers.create().ofTypes(MOCKITO).names("when")
-      .addParametersMatcher(MethodMatchers.ANY).build(),
-    MethodMatchers.create().ofTypes("org.mockito.BDDMockito").names("given")
-      .addParametersMatcher(MethodMatchers.ANY).build()
-  );
-
-  private static final MethodMatchers METHODS_USING_EQ_IN_CONSECUTIVE_CALL = MethodMatchers.or(
-    MethodMatchers.create().ofTypes(MOCKITO).names("verify").withAnyParameters().build(),
-    MethodMatchers.create().ofTypes("org.mockito.InOrder").names("verify").withAnyParameters().build(),
-    MethodMatchers.create().ofTypes("org.mockito.stubbing.Stubber").names("when").withAnyParameters().build()
-  );
-
+public class MockitoEqSimplificationCheck extends AbstractMockitoArgumentChecker {
   private static final MethodMatchers MOCKITO_EQ = MethodMatchers.create()
     .ofTypes("org.mockito.Matchers", "org.mockito.ArgumentMatchers")
     .names("eq").withAnyParameters().build();
 
-  @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.METHOD_INVOCATION);
-  }
 
   @Override
-  public void visitNode(Tree tree) {
-    MethodInvocationTree mit = (MethodInvocationTree) tree;
-
-    if (METHODS_USING_EQ_IN_ARGUMENTS.matches(mit)) {
-      ExpressionTree argument = mit.arguments().get(0);
-      argument = ExpressionUtils.skipParentheses(argument);
-      if (argument.is(Tree.Kind.METHOD_INVOCATION)) {
-        reportUselessEqUsage(((MethodInvocationTree) argument).arguments());
-      }
-    } else if (METHODS_USING_EQ_IN_CONSECUTIVE_CALL.matches(mit)) {
-      MethodTreeUtils.consecutiveMethodInvocation(mit).ifPresent(m -> reportUselessEqUsage(m.arguments()));
-    }
-  }
-
-  private void reportUselessEqUsage(Arguments arguments) {
+  protected void visitArguments(Arguments arguments) {
     List<MethodInvocationTree> eqs = new ArrayList<>();
 
     for (ExpressionTree arg : arguments) {
