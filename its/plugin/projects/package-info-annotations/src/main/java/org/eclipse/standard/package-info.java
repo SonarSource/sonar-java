@@ -1,4 +1,4 @@
 @NonNullByDefault
-package org.foo.foo;
+package org.eclipse.standard;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;

@@ -1,5 +1,5 @@
 @NonNullByDefault({DefaultLocation.PARAMETER, DefaultLocation.RETURN_TYPE})
-package org.foo.bar;
+package org.eclipse.selected;
 
 import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNullByDefault;

@@ -24,7 +24,6 @@ import com.sonar.orchestrator.build.MavenBuild;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.sonarqube.ws.Issues.Issue;
@@ -37,19 +36,18 @@ public class PackageInfoTest {
   @ClassRule
   public static Orchestrator orchestrator = JavaTestSuite.ORCHESTRATOR;
 
-  @BeforeClass
-  public static void init() {
+  @Test
+  public void should_detect_package_info_issues() {
+    String projectKey = "org.sonarsource.it.projects:package-info";
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("package-info"))
       .setCleanPackageSonarGoals()
       .setProperty("sonar.sources", "src/main/java,src/main/other-src")
       .setProperty("sonar.scm.disabled", "true");
-    TestUtils.provisionProject(orchestrator, "org.sonarsource.it.projects:package-info", "package-info", "java", "package-info");
-    orchestrator.executeBuild(build);
-  }
+    TestUtils.provisionProject(orchestrator, projectKey, "package-info", "java", "package-info");
 
-  @Test
-  public void should_detect_package_info_issues() {
-    List<Issue> issues = TestUtils.issuesForComponent(orchestrator, "org.sonarsource.it.projects:package-info");
+    orchestrator.executeBuild(build);
+
+    List<Issue> issues = TestUtils.issuesForComponent(orchestrator, projectKey);
     List<String> packageInfoRuleKeys = asList("java:S1228", "java:S4032");
 
     assertThat(issues).hasSize(3);
@@ -64,10 +62,23 @@ public class PackageInfoTest {
     List<Issue> s4032Issues = issues.stream().filter(issue -> issue.getRule().equals("java:S4032")).collect(Collectors.toList());
     assertThat(s4032Issues).hasSize(1);
     assertThat(s4032Issues.get(0).getMessage()).isEqualTo("Remove this package.");
-    assertThat(s4032Issues.get(0).getComponent()).isEqualTo("org.sonarsource.it.projects:package-info:src/main/other-src/org/package4/package-info.java");
+    assertThat(s4032Issues.get(0).getComponent()).isEqualTo(projectKey + ":src/main/other-src/org/package4/package-info.java");
 
-    List<Issue> issuesOnTestPackage = TestUtils.issuesForComponent(orchestrator, "org.sonarsource.it.projects:package-info:src/test/java/package1");
+    List<Issue> issuesOnTestPackage = TestUtils.issuesForComponent(orchestrator, projectKey + ":src/test/java/package1");
     assertThat(issuesOnTestPackage).isEmpty();
+  }
+
+  @Test
+  public void should_take_into_account_package_annotations() {
+    String projectKey = "org.sonarsource.it.projects:package-info-annotations";
+    MavenBuild build = MavenBuild.create(TestUtils.projectPom("package-info-annotations"))
+      .setCleanPackageSonarGoals()
+      .setProperty("sonar.scm.disabled", "true");
+    TestUtils.provisionProject(orchestrator, projectKey, "package-info-annotations", "java", "package-info-annotations");
+    orchestrator.executeBuild(build);
+
+    List<Issue> issues = TestUtils.issuesForComponent(orchestrator, projectKey);
+    assertThat(issues).hasSize(11);
   }
 
 }
