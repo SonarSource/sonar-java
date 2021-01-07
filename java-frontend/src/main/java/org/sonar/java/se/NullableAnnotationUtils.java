@@ -38,11 +38,7 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationInstance;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
-import org.sonar.plugins.java.api.tree.NewArrayTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 public final class NullableAnnotationUtils {
 
@@ -183,32 +179,10 @@ public final class NullableAnnotationUtils {
   }
 
   private static boolean isExpectedValue(Object annotationValue, String expectedValue) {
-    if (annotationValue instanceof Tree) {
-      // from sources
-      return containsValue((Tree) annotationValue, expectedValue);
-    }
-    // from binaries
     if (annotationValue instanceof Object[]) {
       return containsValue((Object[]) annotationValue, expectedValue);
     }
-    return expectedValue.equals(((Symbol) annotationValue).name());
-  }
-
-  private static boolean containsValue(Tree annotationValue, String expectedValue) {
-    Symbol symbol;
-    switch (annotationValue.kind()) {
-      case IDENTIFIER:
-        symbol = ((IdentifierTree) annotationValue).symbol();
-        break;
-      case MEMBER_SELECT:
-        symbol = ((MemberSelectExpressionTree) annotationValue).identifier().symbol();
-        break;
-      case NEW_ARRAY:
-        return ((NewArrayTree) annotationValue).initializers().stream().anyMatch(expr -> containsValue(expr, expectedValue));
-      default:
-        throw new IllegalArgumentException("Unexpected tree used to parameterize annotation");
-    }
-    return expectedValue.equals(symbol.name());
+    return annotationValue instanceof Symbol && expectedValue.equals(((Symbol) annotationValue).name());
   }
 
   private static boolean containsValue(Object[] annotationValue, String expectedValue) {

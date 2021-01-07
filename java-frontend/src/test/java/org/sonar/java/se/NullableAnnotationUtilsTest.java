@@ -23,35 +23,37 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
-import org.sonar.java.model.JavaTree;
-import org.sonar.java.model.Sema;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNonNull;
 import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNullable;
 import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedWithStrongNullness;
-import static org.sonar.java.se.NullableAnnotationUtils.isGloballyAnnotatedParameterNonNull;
 import static org.sonar.java.se.NullableAnnotationUtils.nonNullAnnotation;
 import static org.sonar.java.se.NullableAnnotationUtils.nullableAnnotation;
 
 class NullableAnnotationUtilsTest {
 
-  private static Sema semanticModel;
+  private static Collection<Symbol> memberSymbols;
 
   @BeforeAll
   static void beforeAll() {
-    semanticModel = SETestUtils.getSemanticModel("src/test/files/se/annotations/NullableAnnotationUtils.java");
+    memberSymbols = SETestUtils.getSemanticModel("src/test/files/se/annotations/NullableAnnotationUtils.java")
+      .getClassType("android.support.annotation.A")
+      .symbol()
+      .memberSymbols();
   }
 
   @Test
@@ -65,76 +67,77 @@ class NullableAnnotationUtilsTest {
   }
 
   @Test
-  @Disabled("flickering NPE")
-  void testEclipseIsGloballyAnnotatedNonNull() {
-    List<File> classPath = new ArrayList<>(FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar", "zip"}, true));
-    classPath.add(new File("target/test-classes"));
-    // adding the class corresponding to package-info having @NonNullByDefault annotation
-    classPath.add(new File("src/test/files/se/annotations/eclipse"));
+  void global_annotation() throws Exception {
+    CompilationUnitTree cut = JParserTestUtils.parse(new File("src/test/files/se/annotations/NullableAnnotationUtils_global.java"));
 
-    Sema semanticModel = getSemanticModel("src/test/files/se/annotations/eclipse/org/foo/bar/Eclipse.java", classPath);
-    getMethods(semanticModel, "org.foo.bar.A").forEach(NullableAnnotationUtilsTest::testMethods);
-    getMethods(semanticModel, "org.foo.bar.B").forEach(NullableAnnotationUtilsTest::testMethods);
+    List<Symbol.MethodSymbol> nonNullParameterMethods = Collector.methodsWithName("nonNull", cut);
+    assertThat(nonNullParameterMethods)
+      .hasSize(6)
+      .allMatch(NullableAnnotationUtils::isGloballyAnnotatedParameterNonNull)
+      .noneMatch(NullableAnnotationUtils::isGloballyAnnotatedParameterNullable);
 
-    // fields not handled
-    assertThat(isAnnotatedNonNull(getSymbol(semanticModel, "org.foo.bar.B", "field"))).isFalse();
+    List<Symbol.MethodSymbol> nullableParameterMethods = Collector.methodsWithName("nullable", cut);
+    assertThat(nullableParameterMethods)
+      .hasSize(1)
+      .allMatch(NullableAnnotationUtils::isGloballyAnnotatedParameterNullable)
+      .noneMatch(NullableAnnotationUtils::isGloballyAnnotatedParameterNonNull);
 
-    assertThat(isAnnotatedNonNull(getSymbol(semanticModel, "org.foo.bar.C", "getStringNullable"))).isFalse();
-    assertThat(nonNullAnnotation(getSymbol(semanticModel, "org.foo.bar.C", "getStringNullable"))).isNull();
-    assertThat(nonNullAnnotation(getSymbol(semanticModel, "org.foo.bar.C", "getStringNullable").metadata())).isNull();
+    List<Symbol> nonNullFields = Collector.variablesWithName("nonNull", cut);
+    assertThat(nonNullFields)
+      .hasSize(1)
+      .allMatch(NullableAnnotationUtils::isAnnotatedNonNull);
+    assertThat(nonNullFields.stream().map(Symbol::metadata))
+      .noneMatch(NullableAnnotationUtils::isAnnotatedNullable);
 
-    semanticModel = getSemanticModel("src/test/files/se/annotations/eclipse/org/foo/foo/Eclipse.java", classPath);
-    getMethods(semanticModel, "org.foo.foo.A").forEach(NullableAnnotationUtilsTest::testMethods);
-
-    semanticModel = getSemanticModel("src/test/files/se/annotations/eclipse/org/foo/qix/Eclipse.java", classPath);
-    getMethods(semanticModel, "org.foo.qix.A").forEach(NullableAnnotationUtilsTest::testMethods);
+    List<Symbol.MethodSymbol> nonNullReturnTypeMethods = Collector.methodsWithName("returnType", cut);
+    assertThat(nonNullReturnTypeMethods)
+      .hasSize(5)
+      .allMatch(NullableAnnotationUtils::isAnnotatedNonNull);
+    assertThat(nonNullReturnTypeMethods.stream().map(Symbol::metadata))
+      .noneMatch(NullableAnnotationUtils::isAnnotatedNullable);
   }
 
-  @Test
-  @Disabled("flickering NPE")
-  void testSpringIsPackageAnnotatedNonNull() {
-    List<File> classPath = new ArrayList<>(FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar", "zip"}, true));
-    classPath.add(new File("target/test-classes"));
-    // adding the class corresponding to package-info having @NonNullApi and @NonNullFields annotations
-    classPath.add(new File("src/test/files/se/annotations/springframework"));
+  private static class Collector extends BaseTreeVisitor {
 
-    Sema semanticModel = getSemanticModel("src/test/files/se/annotations/springframework/org/foo/bar/Spring.java", classPath);
-    getMethods(semanticModel, "org.foo.bar.A").forEach(NullableAnnotationUtilsTest::testMethods);
-    assertThat(isAnnotatedNonNull(getSymbol(semanticModel, "org.foo.bar.B", "field"))).isFalse();
-    assertThat(nonNullAnnotation(getSymbol(semanticModel, "org.foo.bar.B", "field"))).isNull();
-    assertThat(nonNullAnnotation(getSymbol(semanticModel, "org.foo.bar.B", "field").metadata())).isNull();
-    assertThat(isAnnotatedNonNull(getSymbol(semanticModel, "org.foo.bar.C", "getStringNullable"))).isFalse();
-    assertThat(nonNullAnnotation(getSymbol(semanticModel, "org.foo.bar.C", "getStringNullable"))).isNull();
-    assertThat(nonNullAnnotation(getSymbol(semanticModel, "org.foo.bar.C", "getStringNullable").metadata())).isNull();
+    private final String target;
+    private final List<Symbol.MethodSymbol> methods = new ArrayList<>();
+    private final List<Symbol> variables = new ArrayList<>();
 
-    semanticModel = getSemanticModel("src/test/files/se/annotations/springframework/org/foo/foo/Spring.java", classPath);
-    getMethods(semanticModel, "org.foo.foo.A").forEach(NullableAnnotationUtilsTest::testMethods);
-    assertThat(isAnnotatedNonNull(getSymbol(semanticModel, "org.foo.foo.B", "field1"))).isTrue();
-    assertThat(nonNullAnnotation(getSymbol(semanticModel, "org.foo.foo.B", "field1"))).isEqualTo("org.springframework.lang.NonNullFields");
-    assertThat(nonNullAnnotation(getSymbol(semanticModel, "org.foo.foo.B", "field1").metadata())).isNull(); // @NonNullFields declared at package level
-    assertThat(isAnnotatedNonNull(getSymbol(semanticModel, "org.foo.foo.B", "field2"))).isFalse();
-    assertThat(nonNullAnnotation(getSymbol(semanticModel, "org.foo.foo.B", "field2"))).isNull();
-  }
-
-  private static Sema getSemanticModel(String fileName, List<File> classPath) {
-    File file = new File(fileName);
-    JavaTree.CompilationUnitTreeImpl cut = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(file, classPath);
-    return cut.sema;
-  }
-
-  private static void testMethods(Symbol.MethodSymbol s) {
-    String name = s.name();
-    boolean annotatedNonNull = isAnnotatedNonNull(s);
-    if (StringUtils.containsIgnoreCase(name, "ReturnNonNull")) {
-      assertThat(annotatedNonNull).as(s.name() + " should be recognized as returning NonNull.").isTrue();
-    } else {
-      assertThat(annotatedNonNull).as(s.name() + " should NOT be recognized as returning NonNull.").isFalse();
+    private Collector(String target) {
+      this.target = target;
     }
-    boolean globallyAnnotatedParameterNonNull = isGloballyAnnotatedParameterNonNull(s);
-    if (StringUtils.containsIgnoreCase(name, "nonNullParameters")) {
-      assertThat(globallyAnnotatedParameterNonNull).as(s.name() + " should be recognized as NonNull for parameters.").isTrue();
-    } else {
-      assertThat(globallyAnnotatedParameterNonNull).as(s.name() + " should NOT be recognized as NonNull for parameters.").isFalse();
+
+    @Override
+    public void visitAnnotation(AnnotationTree annotationTree) {
+      // skip annotations
+    }
+
+    @Override
+    public void visitMethod(MethodTree tree) {
+      if (tree.simpleName().name().toLowerCase().contains(target.toLowerCase())) {
+        methods.add(tree.symbol());
+      }
+      super.visitMethod(tree);
+    }
+
+    @Override
+    public void visitVariable(VariableTree tree) {
+      if (tree.simpleName().name().toLowerCase().contains(target.toLowerCase())) {
+        variables.add(tree.symbol());
+      }
+      super.visitVariable(tree);
+    }
+
+    static List<Symbol.MethodSymbol> methodsWithName(String target, Tree tree) {
+      Collector visitor = new Collector(target);
+      tree.accept(visitor);
+      return visitor.methods;
+    }
+
+    static List<Symbol> variablesWithName(String target, Tree tree) {
+      Collector visitor = new Collector(target);
+      tree.accept(visitor);
+      return visitor.variables;
     }
   }
 
@@ -211,25 +214,10 @@ class NullableAnnotationUtilsTest {
   }
 
   private static Symbol getSymbol(String name) {
-    return getMainType().symbol().memberSymbols().stream().filter(s -> name.equals(s.name())).findAny().get();
+    return memberSymbols.stream().filter(s -> name.equals(s.name())).findAny().get();
   }
 
   private static Stream<Symbol> getSymbols(String nameStartsWith) {
-    return getMainType().symbol().memberSymbols().stream().filter(s -> s.name().startsWith(nameStartsWith));
-  }
-
-  private static Type getMainType() {
-    return semanticModel.getClassType("android.support.annotation.A");
-  }
-
-  private static Symbol getSymbol(Sema semanticModel, String owner, String name) {
-    return semanticModel.getClassType(owner).symbol().memberSymbols().stream().filter(s -> name.equals(s.name())).findAny().get();
-  }
-
-  private static Stream<Symbol.MethodSymbol> getMethods(Sema semanticModel, String owner) {
-    return semanticModel.getClassType(owner).symbol().memberSymbols().stream()
-      .filter(Symbol::isMethodSymbol)
-      .map(Symbol.MethodSymbol.class::cast)
-      .filter(s -> !"<init>".equals(s.name()));
+    return memberSymbols.stream().filter(s -> s.name().startsWith(nameStartsWith));
   }
 }
