@@ -658,6 +658,49 @@ public class App
 
 }
 
+class ApacheIOUtilsDoesNotAlwaysClose {
+
+  void copyNotClosing() {
+    FileInputStream input = new FileInputStream("myFile"); // Noncompliant
+    ByteArrayOutputStream buf = new ByteArrayOutputStream();
+
+    IOUtils.copyLarge(input, buf);
+    IOUtils.copy(input, buf);
+  }
+
+  void skipNotClosing() {
+    FileInputStream input = new FileInputStream("myFile"); // Noncompliant
+    IOUtils.skip(input, 1);
+    IOUtils.skipFully(input, 1);
+  }
+
+  void consumeNotClosing() {
+    FileInputStream input = new FileInputStream("myFile"); // Noncompliant
+    IOUtils.consume(input);
+  }
+
+  void contentEqualsNotClosing() {
+    FileInputStream input = new FileInputStream("myFile"); // Noncompliant
+    FileInputStream input2 = new FileInputStream("myFile"); // Noncompliant
+    IOUtils.contentEquals(input, input2);
+  }
+
+  void readNotClosing() {
+    FileInputStream input = new FileInputStream("myFile"); // Noncompliant
+
+    IOUtils.read(input, new byte[4]);
+    IOUtils.readFully(input, new byte[4]);
+    IOUtils.readLines(input);
+    IOUtils.readLines(input, "UTF-8");
+  }
+
+  void closeMethodClosing() {
+    FileInputStream input = new FileInputStream("C:\\JAVA_TEST_PROJECTS\\test_j11\\src\\main\\resources\\myFile"); // Compliant
+    IOUtils.close(input);
+    IOUtils.closeQuietly(input);
+  }
+}
+
 // There is no need to close the sessions, producers, and consumers of a closed javax.jms.Connection.
 // Similarly, there is no need to close the producers and consumers of a closed javax.jms.Session.
 class JavaxJms {

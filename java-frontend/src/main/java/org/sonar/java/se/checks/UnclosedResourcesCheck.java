@@ -115,12 +115,21 @@ public class UnclosedResourcesCheck extends SECheck {
       .build()
   );
 
-  private static final MethodMatchers KNOWN_METHODS_KEEPING_ARGUMENTS_OPEN = MethodMatchers.create()
-    .ofTypes("java.util.Properties")
-    // Note: "loadFromXML" is the only "Properties"'s method that close its argument.
-    .names("load", "store", "storeToXML", "save", "list")
-    .withAnyParameters()
-    .build();
+  private static final MethodMatchers KNOWN_METHODS_KEEPING_ARGUMENTS_OPEN =
+    MethodMatchers.or(
+      MethodMatchers.create()
+        .ofTypes("java.util.Properties")
+        // Note: "loadFromXML" is the only "Properties"'s method that close its argument.
+        .names("load", "store", "storeToXML", "save", "list")
+        .withAnyParameters()
+        .build(),
+      MethodMatchers.create()
+        .ofTypes("org.apache.commons.io.IOUtils")
+        .name(name -> name.startsWith("read") || name.startsWith("copy") || name.startsWith("contentEquals")
+          || name.startsWith("skip") || name.equals("consume"))
+        .withAnyParameters()
+        .build()
+    );
 
   private static final String STREAM_TOP_HIERARCHY = "java.util.stream.BaseStream";
   private static final String[] IGNORED_CLOSEABLE_SUBTYPES = {
