@@ -1,4 +1,4 @@
 @NonNullApi
-package org.foo.bar;
+package org.spring;
 
 import org.springframework.lang.NonNullApi;
