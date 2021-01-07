@@ -30,56 +30,76 @@ import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
 
 @Rule(key = "S6073")
 public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMockitoArgumentChecker {
-  private static final String ARGUMENT_MATCHER_TYPE = "org.mockito.ArgumentMatchers";
-  private static final String OLD_MATCHER_TYPE = "org.mockito.Matchers";
+  private static final String ARGUMENT_CAPTOR_CLASS = "org.mockito.ArgumentCaptor";
+  private static final String ARGUMENT_MATCHER_CLASS = "org.mockito.ArgumentMatchers";
+  private static final String OLD_MATCHER_CLASS = "org.mockito.Matchers";
 
-  private static final MethodMatchers ARGUMENT_MATCHER = MethodMatchers.or(
-    MethodMatchers.create()
-      .ofTypes(ARGUMENT_MATCHER_TYPE, OLD_MATCHER_TYPE)
-      .name(name -> name.startsWith("any"))
-      .addWithoutParametersMatcher()
-      .build(),
-    MethodMatchers.create()
-      .ofTypes(ARGUMENT_MATCHER_TYPE, OLD_MATCHER_TYPE)
-      .name(name -> name.endsWith("That"))
-      .withAnyParameters()
-      .build(),
-    MethodMatchers.create()
-      .ofTypes(ARGUMENT_MATCHER_TYPE, OLD_MATCHER_TYPE)
-      .names("eq", "isA", "isNull", "isNotNull", "matches", "notNull", "nullable", "refEq", "same", "startsWith")
-      .withAnyParameters()
-      .build()
-  );
+  // Argument matchers are not filtered on names but the class they originate from to support the addition of new matchers.
+  private static final MethodMatchers ARGUMENT_MARCHER = MethodMatchers.create()
+    .ofTypes(ARGUMENT_MATCHER_CLASS, OLD_MATCHER_CLASS)
+    .anyName()
+    .withAnyParameters()
+    .build();
 
+  private static final MethodMatchers ARGUMENT_CAPTOR = MethodMatchers.create()
+    .ofTypes(ARGUMENT_CAPTOR_CLASS)
+    .names("capture")
+    .addWithoutParametersMatcher()
+    .build();
 
   @Override
   protected void visitArguments(Arguments arguments) {
-    List<Tree> argumentMatchers = new ArrayList<>();
-    List<Tree> secondaries = new ArrayList<>();
-
-    for (ExpressionTree arg : arguments) {
-      arg = ExpressionUtils.skipParentheses(arg);
-      if (arg.is(Tree.Kind.METHOD_INVOCATION) && ARGUMENT_MATCHER.matches((MethodInvocationTree) arg)) {
-        argumentMatchers.add(arg);
-      } else {
-        secondaries.add(arg);
-      }
-    }
-
-    if (argumentMatchers.isEmpty()) {
+    if (arguments.isEmpty()) {
       return;
     }
-    if (argumentMatchers.size() < arguments.size()) {
-      reportIssue(secondaries.get(0),
-        "Add an \"eq()\" argument matcher on this/these parameters",
-        secondaries.stream()
+    List<Tree> nonMatchers = new ArrayList<>();
+    for (ExpressionTree arg : arguments) {
+      arg = ExpressionUtils.skipParentheses(arg);
+      if (!isArgumentMatcherLike(arg)) {
+        nonMatchers.add(arg);
+      }
+    }
+    int nonMatchersFound = nonMatchers.size();
+
+    if (!nonMatchers.isEmpty() && nonMatchersFound < arguments.size()) {
+      String primaryMessage = String.format(
+        "Add an \"eq()\" argument matcher on %s",
+        nonMatchersFound == 1 ? "this parameter." : "these parameters."
+      );
+      reportIssue(nonMatchers.get(0),
+        primaryMessage,
+        nonMatchers.stream()
           .skip(1)
           .map(secondary -> new JavaFileScannerContext.Location("", secondary))
           .collect(Collectors.toList()),
         null);
     }
+  }
+
+  private static boolean isArgumentMatcherLike(ExpressionTree tree) {
+    ExpressionTree unpacked = skipCasts(tree);
+    if (!unpacked.is(Tree.Kind.METHOD_INVOCATION)) {
+      return false;
+    }
+    MethodInvocationTree invocation = (MethodInvocationTree) unpacked;
+    return ARGUMENT_CAPTOR.matches(invocation) || ARGUMENT_MARCHER.matches(invocation);
+  }
+
+  /**
+   * Pop the chained casts to return an expression.
+   * @param tree Chained casts
+   * @return The expression behind the last cast in the chain
+   */
+  private static ExpressionTree skipCasts(ExpressionTree tree) {
+    ExpressionTree current = ExpressionUtils.skipParentheses(tree);
+    while (current.is(Tree.Kind.TYPE_CAST)) {
+      TypeCastTree cast = (TypeCastTree) current;
+      current = ExpressionUtils.skipParentheses(cast.expression());
+    }
+    return current;
   }
 }
