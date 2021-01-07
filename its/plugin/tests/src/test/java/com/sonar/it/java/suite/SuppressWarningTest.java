@@ -36,21 +36,31 @@ public class SuppressWarningTest {
 
   @ClassRule
   public static final Orchestrator ORCHESTRATOR = JavaTestSuite.ORCHESTRATOR;
-  public static final String PROJECT_KEY = "org.sonarsource.it.projects:example";
 
-  /**
-   * SONARJAVA-19
-   */
   @Test
   public void suppressWarnings_nosonar() throws Exception {
+    String projectKey = "org.sonarsource.it.projects:suppress-warnings";
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("suppress-warnings"))
-      .setCleanSonarGoals()
-      .setProperty("sonar.java.binaries", "target");
-    TestUtils.provisionProject(ORCHESTRATOR, SuppressWarningTest.PROJECT_KEY,"suppress-warnings","java","suppress-warnings");
+      .setProperty("sonar.scm.disabled", "true")
+      .setCleanPackageSonarGoals();
+    TestUtils.provisionProject(ORCHESTRATOR, projectKey, "suppress-warnings", "java", "suppress-warnings");
 
     ORCHESTRATOR.executeBuild(build);
 
-    assertThat(parseInt(getMeasure(PROJECT_KEY, "violations").getValue())).isEqualTo(5);
+    assertThat(parseInt(getMeasure(projectKey, "violations").getValue())).isEqualTo(5);
+  }
+
+  @Test
+  public void suppressWarnings_also_supress_issues_of_other_analyzers() throws Exception {
+    String projectKey = "org.sonarsource.it.projects:suppress-warnings-pmd";
+    MavenBuild build = MavenBuild.create(TestUtils.projectPom("suppress-warnings-pmd"))
+      .setProperty("sonar.scm.disabled", "true")
+      .setCleanPackageSonarGoals();
+    TestUtils.provisionProject(ORCHESTRATOR, projectKey, "suppress-warnings-pmd", "java", "suppress-warnings-pmd");
+
+    ORCHESTRATOR.executeBuild(build);
+
+    assertThat(parseInt(getMeasure(projectKey, "violations").getValue())).isEqualTo(3);
   }
 
   @CheckForNull

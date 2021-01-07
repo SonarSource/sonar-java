@@ -6,6 +6,6 @@
     <artifactId>sample-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>suppress-warnings</artifactId>
+  <artifactId>suppress-warnings-pmd</artifactId>
   <version>1.0-SNAPSHOT</version>
 </project>
