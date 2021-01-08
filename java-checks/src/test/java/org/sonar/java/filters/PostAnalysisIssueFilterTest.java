@@ -20,6 +20,7 @@
 package org.sonar.java.filters;
 
 import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -33,6 +34,7 @@ import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -58,7 +60,15 @@ class PostAnalysisIssueFilterTest {
 
   @Test
   void number_of_issue_filters() {
-    assertThat(PostAnalysisIssueFilter.ISSUE_FILTERS).hasSize(5);
+    assertThat(postAnalysisIssueFilter.issueFilters()).hasSize(5);
+  }
+
+  @Test
+  void issue_filters_can_not_be_modified() {
+    List<JavaIssueFilter> issueFilters = postAnalysisIssueFilter.issueFilters();
+    assertThrows(UnsupportedOperationException.class, () -> issueFilters.remove(3));
+    assertThrows(UnsupportedOperationException.class, () -> issueFilters.add(null));
+    assertThrows(UnsupportedOperationException.class, () -> issueFilters.clear());
   }
 
   @Test
@@ -88,35 +98,10 @@ class PostAnalysisIssueFilterTest {
     postAnalysisIssueFilter.scanFile(context);
 
     InternalSyntaxToken fakeToken = new InternalSyntaxToken(42, 0, "fake_token", Collections.emptyList(), false);
-    GeneratedCodeFilter filter = (GeneratedCodeFilter) PostAnalysisIssueFilter.ISSUE_FILTERS.get(4);
+    GeneratedCodeFilter filter = (GeneratedCodeFilter) postAnalysisIssueFilter.issueFilters().get(4);
     filter.excludeLines(fakeToken);
 
     assertThat(postAnalysisIssueFilter.accept(fakeIssue, chain)).isFalse();
-  }
-
-  @Test
-  void two_instances_of_PostAnalysisIssueFilter_share_filters() {
-    IssueFilterChain chain = mock(IssueFilterChain.class);
-    when(chain.accept(ArgumentMatchers.any())).thenReturn(true);
-
-    when(fakeIssue.componentKey()).thenReturn(INPUT_FILE.key());
-    when(fakeIssue.line()).thenReturn(666);
-
-    PostAnalysisIssueFilter p1 = new PostAnalysisIssueFilter();
-    PostAnalysisIssueFilter p2 = new PostAnalysisIssueFilter();
-
-    p1.scanFile(context);
-    p2.scanFile(context);
-
-    assertThat(p1.accept(fakeIssue, chain)).isTrue();
-    assertThat(p2.accept(fakeIssue, chain)).isTrue();
-
-    InternalSyntaxToken fakeToken = new InternalSyntaxToken(666, 0, "fake_token", Collections.emptyList(), false);
-    GeneratedCodeFilter filter = (GeneratedCodeFilter) PostAnalysisIssueFilter.ISSUE_FILTERS.get(4);
-    filter.excludeLines(fakeToken);
-
-    assertThat(p1.accept(fakeIssue, chain)).isFalse();
-    assertThat(p2.accept(fakeIssue, chain)).isFalse();
   }
 
   @Test
