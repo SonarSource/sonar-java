@@ -30,22 +30,29 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 
 public class PostAnalysisIssueFilter implements JavaFileScanner, SonarJavaIssueFilter {
 
+  private List<JavaIssueFilter> issueFilters;
+
   @VisibleForTesting
-  static final List<JavaIssueFilter> ISSUE_FILTERS = Collections.unmodifiableList(Arrays.asList(
-    new EclipseI18NFilter(),
-    new LombokFilter(),
-    new GoogleAutoFilter(),
-    new SuppressWarningFilter(),
-    new GeneratedCodeFilter()));
+  List<JavaIssueFilter> issueFilters() {
+    if (issueFilters == null) {
+      issueFilters = Collections.unmodifiableList(Arrays.asList(
+        new EclipseI18NFilter(),
+        new LombokFilter(),
+        new GoogleAutoFilter(),
+        new SuppressWarningFilter(),
+        new GeneratedCodeFilter()));
+    }
+    return issueFilters;
+  }
 
   @Override
   public boolean accept(FilterableIssue issue, IssueFilterChain chain) {
-    return ISSUE_FILTERS.stream().allMatch(filter -> filter.accept(issue))
+    return issueFilters().stream().allMatch(filter -> filter.accept(issue))
       && chain.accept(issue);
   }
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    ISSUE_FILTERS.forEach(filter -> filter.scanFile(context));
+    issueFilters().forEach(filter -> filter.scanFile(context));
   }
 }
