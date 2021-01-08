@@ -22,21 +22,15 @@ package org.sonar.java.checks.tests;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-class MockitoEqSimplificationCheckTest {
+class MockitoArgumentMatchersUsedOnAllParametersCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/tests/MockitoEqSimplificationCheck.java"))
-      .withCheck(new MockitoEqSimplificationCheck())
-      .verifyIssues();
-
-    JavaCheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/tests/MockitoEqSimplificationCheck.java"))
-      .withCheck(new MockitoEqSimplificationCheck())
+      .onFile(testSourcesPath("checks/tests/MockitoArgumentMatchersUsedOnAllParameters.java"))
+      .withCheck(new MockitoArgumentMatchersUsedOnAllParametersCheck())
       .verifyIssues();
   }
 

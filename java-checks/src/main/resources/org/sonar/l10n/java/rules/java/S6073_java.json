@@ -1,0 +1,17 @@
+{
+  "title": "Mockito argument matchers should be used on all parameters",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "tests",
+    "mockito"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6073",
+  "sqKey": "S6073",
+  "scope": "Tests"
+}
