@@ -196,7 +196,7 @@ class CheckListTest {
 
         if (!"deprecated".equals(metadata.status)) {
           // deprecated rules usually have no tags
-          if (testChecks.contains(cls)) {
+          if (testChecks.contains(cls) || "S3414".equals(key)) {
             assertThat(metadata.tags)
               .as("Rule " + key + " is targeting tests sources and should contain the 'tests' tag.")
               .contains("tests");

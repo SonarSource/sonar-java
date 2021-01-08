@@ -13,20 +13,16 @@ certificate.</p>
 </ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
-SSLContext sslcontext = SSLContext.getInstance( "TLS" );
-sslcontext.init(null, new TrustManager[]{new X509TrustManager() {
-  public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
-  public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
-  public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
-
-}}, new java.security.SecureRandom());
-
-Client client = ClientBuilder.newBuilder().sslContext(sslcontext).hostnameVerifier(new HostnameVerifier() {
+URL url = new URL("https://example.org/");
+HttpsURLConnection urlConnection = (HttpsURLConnection)url.openConnection();
+urlConnection.setHostnameVerifier(new HostnameVerifier() {
   @Override
   public boolean verify(String requestedHost, SSLSession remoteServerSession) {
     return true;  // Noncompliant
   }
-}).build();
+});
+InputStream in = urlConnection.getInputStream();
+
 </pre>
 <p>SimpleEmail example:</p>
 <pre>
@@ -52,23 +48,10 @@ Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-SSLContext sslcontext = SSLContext.getInstance( "TLSv1.2" );
-sslcontext.init(null, new TrustManager[]{new X509TrustManager() {
-  @Override
-  public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
-  @Override
-  public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
-  @Override
-  public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
-
-}}, new java.security.SecureRandom());
-
-Client client = ClientBuilder.newBuilder().sslContext(sslcontext).hostnameVerifier(new HostnameVerifier() {
-  @Override
-  public boolean verify(String requestedHost, SSLSession remoteServerSession) {
-    return requestedHost.equalsIgnoreCase(remoteServerSession.getPeerHost()); // Compliant
-  }
-}).build();
+URL url = new URL("https://example.org/");
+HttpsURLConnection urlConnection = (HttpsURLConnection)url.openConnection();
+// Compliant; Use the default HostnameVerifier
+InputStream in = urlConnection.getInputStream();
 </pre>
 <p>SimpleEmail example:</p>
 <pre>
