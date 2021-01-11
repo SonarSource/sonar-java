@@ -6,10 +6,10 @@ match.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 // This can never match because $ and ^ have been switched around
-Pattern.compile("$[a-z]*^"); // Noncompliant
+Pattern.compile("$[a-z]+^"); // Noncompliant
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-Pattern.compile("^[a-z]*$");
+Pattern.compile("^[a-z]+$");
 </pre>
 
