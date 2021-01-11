@@ -34,7 +34,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S6068")
 public class MockitoEqSimplificationCheck extends AbstractMockitoArgumentChecker {
   private static final MethodMatchers MOCKITO_EQ = MethodMatchers.create()
-    .ofTypes("org.mockito.Matchers", "org.mockito.ArgumentMatchers")
+    .ofTypes("org.mockito.ArgumentMatchers", "org.mockito.Matchers", "org.mockito.Mockito")
     .names("eq").withAnyParameters().build();
 
 

@@ -3,13 +3,19 @@ package checks.tests;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 
+import static org.mockito.AdditionalMatchers.gt;
+import static org.mockito.AdditionalMatchers.not;
+import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.intThat;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -42,6 +48,11 @@ public class MockitoArgumentMatchersUsedOnAllParameters {
     verify(foo).bar(anyInt(),
       i1.toString(), // Noncompliant [[sc=7;ec=20]] {{Add an "eq()" argument matcher on this parameter.}}
       any());
+
+    // FP Wrapped argument matcher is masked by behind a method call
+    verify(foo).bar(
+      wrapArgumentMatcher(42), // Noncompliant [[sc=7;ec=30]] {{Add an "eq()" argument matcher on this parameter.}}
+      any(), any());
   }
 
   @Test
@@ -63,11 +74,24 @@ public class MockitoArgumentMatchersUsedOnAllParameters {
     verify(foo).bar((Integer) (Number) (Integer) captor.capture(), any(), any());
     verify(foo).bar(((Integer) ((Number) ((Integer) captor.capture()))), any(), any());
 
+    // Mix argument checkers from top Mockito and ArgumentMatchers classes
+    verify(foo).bar(Mockito.anyInt(), any(), any());
+    verify(foo).bar(Mockito.intThat(x -> x >= 42), Mockito.any(), any());
+    verify(foo).bar(eq(42), any(), Mockito.notNull());
+
+    // Additional argument checkers
+    verify(foo).bar(gt(42), any(), any());
+    verify(foo).bar(intThat(x -> x >= 42), or(ArgumentMatchers.any(), notNull()), any());
+    verify(foo).bar(eq(42), any(), not(null));
 
     anyInt();
     eq(42);
     anySet();
     anyList();
+  }
+
+  private int wrapArgumentMatcher(int value) {
+    return eq(value);
   }
 
   static class Foo {

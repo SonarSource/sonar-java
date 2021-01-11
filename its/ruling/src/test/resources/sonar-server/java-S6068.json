@@ -3,4 +3,7 @@
 122,
 123,
 ],
+'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/IndexerStartupTaskTest.java':[
+56,
+],
 }
