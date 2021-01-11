@@ -36,11 +36,13 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMockitoArgumentChecker {
   private static final String ARGUMENT_CAPTOR_CLASS = "org.mockito.ArgumentCaptor";
   private static final String ARGUMENT_MATCHER_CLASS = "org.mockito.ArgumentMatchers";
+  private static final String ADDITIONAL_MATCHER_CLASS = "org.mockito.AdditionalMatchers";
   private static final String OLD_MATCHER_CLASS = "org.mockito.Matchers";
+  private static final String TOP_MOCKITO_CLASS = "org.mockito.Mockito";
 
   // Argument matchers are not filtered on names but the class they originate from to support the addition of new matchers.
   private static final MethodMatchers ARGUMENT_MARCHER = MethodMatchers.create()
-    .ofTypes(ARGUMENT_MATCHER_CLASS, OLD_MATCHER_CLASS)
+    .ofTypes(ARGUMENT_MATCHER_CLASS, ADDITIONAL_MATCHER_CLASS, OLD_MATCHER_CLASS, TOP_MOCKITO_CLASS)
     .anyName()
     .withAnyParameters()
     .build();

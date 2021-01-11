@@ -79,6 +79,11 @@ public class MockitoEqSimplificationCheck {
     given(foo.bar((eq(v1)), ((eq(v2))), eq(v3))).willReturn(null); // Noncompliant
     given(foo.bar(eq(v1), (any()), eq(v3))).willReturn(null); // Compliant
     given(foo.bar((v1), ((v2)), (v3))).willReturn(null); // Compliant
+
+    // Direct import of eq from top level Mockito class should be compliant
+    given(foo.bar(Mockito.eq(v1), endsWith(""), v3)).willReturn(null);
+    given(foo.bar(eq(v1), any(), eq(v3))).willReturn(null);
+    given(foo.baz(Mockito.eq(v1), captor.capture())).willReturn(null);
   }
 
   class Foo {
