@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -37,12 +38,12 @@ public class InstanceOfTreeImpl extends AssessableExpressionTree implements Inst
   private ExpressionTree expression;
   private final InternalSyntaxToken instanceofToken;
   private final TypeTree type;
-  private final VariableTree patternVariable;
+  private final IdentifierTree patternVariable;
 
   public InstanceOfTreeImpl(
     InternalSyntaxToken instanceofToken,
     TypeTree type,
-    @Nullable VariableTree patternVariable
+    @Nullable IdentifierTree patternVariable
   ) {
     this.instanceofToken = instanceofToken;
     this.type = type;
@@ -76,7 +77,7 @@ public class InstanceOfTreeImpl extends AssessableExpressionTree implements Inst
 
   @Nullable
   @Override
-  public VariableTree patternVariable() {
+  public IdentifierTree patternVariable() {
     return patternVariable;
   }
 

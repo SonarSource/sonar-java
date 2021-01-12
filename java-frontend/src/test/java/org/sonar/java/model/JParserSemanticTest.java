@@ -73,6 +73,8 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
@@ -503,7 +505,9 @@ class JParserSemanticTest {
   }
 
   /**
-   * Pattern Matching for instanceof (Preview in Java 14) https://openjdk.java.net/jeps/305
+   * Pattern Matching for instanceof
+   * (Preview in Java 14) https://openjdk.java.net/jeps/305
+   * (Second Preview in Java 15) https://openjdk.java.net/jeps/375
    *
    * @see org.eclipse.jdt.core.dom.InstanceofExpression
    */
@@ -924,7 +928,9 @@ class JParserSemanticTest {
   }
 
   /**
-   * Records (Preview in Java 14) https://openjdk.java.net/jeps/359
+   * Records
+   * (Preview in Java 14) https://openjdk.java.net/jeps/359
+   * (Second Preview in Java 15) https://openjdk.java.net/jeps/384
    *
    * @see org.eclipse.jdt.core.dom.RecordDeclaration
    */
@@ -943,6 +949,30 @@ class JParserSemanticTest {
     assertThat(m.openParenToken()).isNull();
     assertThat(m.parameters()).isEmpty();
     assertThat(m.closeParenToken()).isNull();
+  }
+
+  /**
+   * Sealed Classes
+   * (Preview in Java 15) https://openjdk.java.net/jeps/360
+   *
+   * @see org.eclipse.jdt.core.dom.TypeDeclaration
+   */
+  @Test
+  void declaration_sealed_class() {
+    JavaTree.CompilationUnitTreeImpl cu = test("sealed class Shape permits Circle, Rectangle { }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    assertThat(c.modifiers()).hasSize(1);
+    ModifierKeywordTree m = (ModifierKeywordTree) c.modifiers().get(0);
+    assertThat(m.modifier()).isEqualTo(Modifier.SEALED);
+    assertThat(m.firstToken().text()).isEqualTo("sealed");
+    assertThat(c.permittedTypes()).hasSize(2);
+
+    cu = test("non-sealed class Square extends Shape { }");
+    c = (ClassTreeImpl) cu.types().get(0);
+    assertThat(c.modifiers()).hasSize(1);
+    m = (ModifierKeywordTree) c.modifiers().get(0);
+    assertThat(m.modifier()).isEqualTo(Modifier.NON_SEALED);
+    assertThat(c.modifiers().get(0).firstToken().text()).isEqualTo("non-sealed");
   }
 
   /**

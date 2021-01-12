@@ -240,7 +240,10 @@ class JavaTreeModelTest {
   }
 
   /**
-   * Text Blocks (Preview) http://openjdk.java.net/jeps/355
+   * Text Blocks
+   * (Preview in Java 13) http://openjdk.java.net/jeps/355
+   * (Second Preview in Java 14) https://openjdk.java.net/jeps/368
+   * https://openjdk.java.net/jeps/378
    *
    * @see org.eclipse.jdt.core.dom.TextBlock
    */
@@ -963,7 +966,7 @@ class JavaTreeModelTest {
     @Test
     void within_extended_interface_fully_qualified_name() {
       ClassTree classTree = firstType("class T extends a.b.@Foo C {}");
-      assertThat(classTree).hasChildrenSize(9);
+      assertThat(classTree).hasChildrenSize(10);
       assertThat(classTree.modifiers()).isEmpty();
 
       TypeTree type = classTree.superClass();
@@ -980,7 +983,7 @@ class JavaTreeModelTest {
     @Test
     void within_extended_parametrized_interface_fully_qualified_name() {
       ClassTree classTree = firstType("class T extends a.b. @Foo C<Integer> {}");
-      assertThat(classTree).hasChildrenSize(9);
+      assertThat(classTree).hasChildrenSize(10);
       assertThat(classTree.modifiers()).isEmpty();
 
       TypeTree superClass = classTree.superClass();
@@ -1003,7 +1006,7 @@ class JavaTreeModelTest {
     @Test
     void on_extended_interface() {
       ClassTree classTree = (ClassTree) firstMethodFirstStatement("class MyClass<A, B, C> { void foo() { class MyOtherClass extends @Foo MyClass<A, B, C>.MyInnerClass {} } class MyInnerClass {}}");
-      assertThat(classTree).hasChildrenSize(9);
+      assertThat(classTree).hasChildrenSize(10);
       assertThat(classTree.modifiers()).isEmpty();
 
       TypeTree type = classTree.superClass();
@@ -1052,7 +1055,7 @@ class JavaTreeModelTest {
       ClassTree tree = firstType("public enum T implements I1, I2 { }");
       assertThat(tree)
         .is(Tree.Kind.ENUM)
-        .hasChildrenSize(8);
+        .hasChildrenSize(9);
       assertThat(tree.modifiers()).hasModifiers(Modifier.PUBLIC);
       assertThat(tree.simpleName()).hasName("T");
       assertThat(tree.superClass()).isNull();
@@ -1065,7 +1068,7 @@ class JavaTreeModelTest {
       ClassTree tree = firstType("public enum T { }");
       assertThat(tree)
         .is(Tree.Kind.ENUM)
-        .hasChildrenSize(7);
+        .hasChildrenSize(8);
       assertThat(tree.modifiers()).hasModifiers(Modifier.PUBLIC);
       assertThat(tree.simpleName()).hasName("T");
       assertThat(tree.superClass()).isNull();
@@ -1197,7 +1200,7 @@ class JavaTreeModelTest {
       ClassTree tree = firstType("public interface T<U> extends I1, I2 { }");
       assertThat(tree)
         .is(Tree.Kind.INTERFACE)
-        .hasChildrenSize(8);
+        .hasChildrenSize(9);
       assertThat(tree.modifiers()).hasModifiers(Modifier.PUBLIC);
       assertThat(tree.simpleName()).hasName("T");
       assertThat(tree.superClass()).isNull();
@@ -1216,7 +1219,7 @@ class JavaTreeModelTest {
       ClassTree tree = firstType("public interface T { }");
       assertThat(tree)
         .is(Tree.Kind.INTERFACE)
-        .hasChildrenSize(7);
+        .hasChildrenSize(8);
       assertThat(tree.modifiers()).hasModifiers(Modifier.PUBLIC);
       assertThat(tree.simpleName()).hasName("T");
       assertThat(tree.typeParameters()).isEmpty();
@@ -1299,7 +1302,7 @@ class JavaTreeModelTest {
       ClassTree tree = firstType("public @interface T { }");
       assertThat(tree)
         .is(Tree.Kind.ANNOTATION_TYPE)
-        .hasChildrenSize(8);
+        .hasChildrenSize(9);
       assertThat(tree.modifiers()).hasModifiers(Modifier.PUBLIC);
       assertThat(tree.simpleName()).hasName("T");
       assertThat(tree.superClass()).isNull();
@@ -1380,7 +1383,7 @@ class JavaTreeModelTest {
     ClassTree tree = (ClassTree) block.body().get(0);
     assertThat(tree)
       .is(Tree.Kind.CLASS)
-      .hasChildrenSize(7);
+      .hasChildrenSize(8);
     assertThat(tree.simpleName().identifierToken()).is("Local");
     assertThat(tree.modifiers()).hasModifiers(Modifier.ABSTRACT);
   }
