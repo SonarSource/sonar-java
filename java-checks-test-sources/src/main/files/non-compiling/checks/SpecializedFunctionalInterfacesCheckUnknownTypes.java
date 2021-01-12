@@ -30,3 +30,7 @@ class A implements Supplier<Integer> { // Noncompliant
     return null;
   }
 }
+
+// Test that the rule doesn't crash when encountering records
+record Range(int lo, int hi) {
+}
