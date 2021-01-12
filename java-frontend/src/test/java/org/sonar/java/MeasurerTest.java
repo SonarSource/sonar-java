@@ -46,7 +46,7 @@ class MeasurerTest {
 
   @Test
   void verify_methods_metric() {
-    checkMetric("Methods.java", "functions", 7);
+    checkMetric("Methods.java", "functions", 8);
   }
 
   @Test

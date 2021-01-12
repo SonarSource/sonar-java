@@ -37,3 +37,7 @@ enum MyEnum {
   };
   abstract int method();  // counted
 }
+
+record R(int x) {
+  int neg() { return -x; }
+}
