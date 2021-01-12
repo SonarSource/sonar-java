@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
 class SpecializedFunctionalInterfacesCheckTest {
@@ -42,7 +43,7 @@ class SpecializedFunctionalInterfacesCheckTest {
   @Test
   void test_unknown_types() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/SpecializedFunctionalInterfacesCheckUnknownTypes.java")
+      .onFile(nonCompilingTestSourcesPath("checks/SpecializedFunctionalInterfacesCheckUnknownTypes.java"))
       .withCheck(new SpecializedFunctionalInterfacesCheck())
       .verifyIssues();
   }
