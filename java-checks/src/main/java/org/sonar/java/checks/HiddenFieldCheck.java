@@ -58,6 +58,7 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
         Tree.Kind.ENUM,
         Tree.Kind.INTERFACE,
         Tree.Kind.ANNOTATION_TYPE,
+        Tree.Kind.RECORD,
         Tree.Kind.VARIABLE,
         Tree.Kind.METHOD,
         Tree.Kind.CONSTRUCTOR,
@@ -132,7 +133,7 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isClassTree(Tree tree) {
-    return tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.ENUM) || tree.is(Tree.Kind.INTERFACE) || tree.is(Tree.Kind.ANNOTATION_TYPE);
+    return tree.is(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.RECORD);
   }
 
   @Override
