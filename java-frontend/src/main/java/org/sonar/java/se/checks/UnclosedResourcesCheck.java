@@ -379,7 +379,7 @@ public class UnclosedResourcesCheck extends SECheck {
     private boolean shouldWrapArgument(ProgramState.SymbolicValueSymbol argument, ExpressionTree argumentTree) {
       ResourceConstraint argConstraint = programState.getConstraint(argument.symbolicValue(), ResourceConstraint.class);
       return (argConstraint == OPEN && argument.symbol() != null)
-        || (argConstraint == null && needsClosing(argumentTree.symbolType()));
+        || (argConstraint == null && isCloseable(argumentTree));
     }
 
     private boolean shouldCloseArgument(ProgramState.SymbolicValueSymbol argument) {
