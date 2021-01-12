@@ -1,10 +1,12 @@
+package checks;
+
 public class HiddenFieldCheck extends MyBaseClass {
 
   private int foo;
   public int bar;
 
   {
-    int foo = this.foo; // Noncompliant [[sc=9;ec=12]] {{Rename "foo" which hides the field declared at line 3.}}
+    int foo = this.foo; // Noncompliant [[sc=9;ec=12]] {{Rename "foo" which hides the field declared at line 5.}}
     int ok = 0; // Compliant
     System.out.println(foo + ok);
   }
@@ -39,7 +41,7 @@ public class HiddenFieldCheck extends MyBaseClass {
 
       @Override
       public void foo() {
-        int bar = 0; // Noncompliant {{Rename "bar" which hides the field declared at line 4.}}
+        int bar = 0; // Noncompliant {{Rename "bar" which hides the field declared at line 6.}}
         int otherBase1 = 0; // Compliant - limitation
         System.out.println(bar + otherBase1);
       }
@@ -56,7 +58,7 @@ public class HiddenFieldCheck extends MyBaseClass {
     int myInnerClass1;
 
     public void foo() {
-      int bar = 0; // Noncompliant {{Rename "bar" which hides the field declared at line 55.}}
+      int bar = 0; // Noncompliant {{Rename "bar" which hides the field declared at line 57.}}
       System.out.println(bar);
     }
 
@@ -72,6 +74,9 @@ public class HiddenFieldCheck extends MyBaseClass {
 
   }
 
+  public @interface AnnotationType {
+    String[] value();
+  }
 }
 
 class MyBaseClass {
@@ -99,7 +104,7 @@ abstract class MyOtherBaseClass {
 
 }
 
-enum MyEnum {
+enum MyEnumHiddenField {
   A, B;
 
   public void foo() {
@@ -124,7 +129,7 @@ final class DataUtils {
 
 }
 
-class Foo {
+class FooHiddenField {
 
   int i;
 
@@ -143,11 +148,7 @@ class Foo {
   }
 }
 
-public @interface AnnotationType {
- String[] value();
-}
-
 class FieldWithLambda {
   Object p;
-  java.util.function.Consumer<String> f = p -> { }; // Noncompliant {{Rename "p" which hides the field declared at line 151.}}
+  java.util.function.Consumer<String> f = p -> { }; // Noncompliant {{Rename "p" which hides the field declared at line 152.}}
 }

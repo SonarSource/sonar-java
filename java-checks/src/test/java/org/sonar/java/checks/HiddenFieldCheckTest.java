@@ -22,19 +22,30 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 class HiddenFieldCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/HiddenFieldCheck.java")
+      .onFile(testSourcesPath("checks/HiddenFieldCheck.java"))
       .withCheck(new HiddenFieldCheck())
       .verifyIssues();
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/HiddenFieldCheck.java")
+      .onFile(testSourcesPath("checks/HiddenFieldCheck.java"))
       .withCheck(new HiddenFieldCheck())
       .withoutSemantic()
       .verifyNoIssues();
+  }
+
+  @Test
+  void test_records() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/HiddenFieldCheckWithRecords.java"))
+      .withCheck(new HiddenFieldCheck())
+      .verifyIssues();
   }
 
 }
