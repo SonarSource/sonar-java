@@ -1,4 +1,9 @@
-class Foo {
+package checks;
+
+import java.lang.reflect.Method;
+import org.junit.Ignore;
+
+class MissingDeprecatedCheck {
 
   @Deprecated
   public int foo; // Noncompliant [[sc=14;ec=17]] {{Add the missing @deprecated Javadoc tag.}}
@@ -37,6 +42,7 @@ class Foo {
    */
   @Deprecated
   public int foo7() { // Noncompliant
+    return 42;
   }
 
   /**
@@ -76,7 +82,7 @@ class Qix  { // Noncompliant
   public void foo1() {}
 
   @Deprecated
-  public void foo1() {}
+  public void foo2() {}
 }
 
 @Deprecated

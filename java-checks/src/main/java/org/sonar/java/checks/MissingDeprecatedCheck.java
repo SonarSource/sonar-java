@@ -27,6 +27,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "MissingDeprecatedCheck", repositoryKey = "squid")
@@ -34,9 +35,7 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 public class MissingDeprecatedCheck extends AbstractDeprecatedChecker {
 
   private static final Kind[] CLASS_KINDS = PublicApiChecker.classKinds();
-  private static final Kind[] METHOD_KINDS = PublicApiChecker.methodKinds();
 
-  private final Deque<Tree> currentParent = new LinkedList<>();
   private final Deque<Boolean> classOrInterfaceIsDeprecated = new LinkedList<>();
   private boolean isJava9 = false;
 
@@ -48,12 +47,7 @@ public class MissingDeprecatedCheck extends AbstractDeprecatedChecker {
 
   @Override
   public void visitNode(Tree tree) {
-    boolean isLocalVar = false;
-    if (tree.is(Tree.Kind.VARIABLE)) {
-      isLocalVar = currentParent.peek().is(METHOD_KINDS);
-    } else {
-      currentParent.push(tree);
-    }
+    boolean isLocalVar = tree.is(Tree.Kind.VARIABLE) && ((VariableTree) tree).symbol().owner().isMethodSymbol();
 
     AnnotationTree deprecatedAnnotation = deprecatedAnnotation(tree);
     boolean hasDeprecatedAnnotation = deprecatedAnnotation != null;
@@ -80,9 +74,6 @@ public class MissingDeprecatedCheck extends AbstractDeprecatedChecker {
 
   @Override
   public void leaveNode(Tree tree) {
-    if (!tree.is(Tree.Kind.VARIABLE)) {
-      currentParent.pop();
-    }
     if (tree.is(CLASS_KINDS)) {
       classOrInterfaceIsDeprecated.pop();
     }
