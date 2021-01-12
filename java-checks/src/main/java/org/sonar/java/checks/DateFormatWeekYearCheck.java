@@ -19,22 +19,37 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Locale;
+import java.util.Optional;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S3986")
 public class DateFormatWeekYearCheck extends AbstractMethodDetection {
+  private static final MethodMatchers SIMPLE_DATE_FORMAT_MATCHER = MethodMatchers.create()
+    .ofTypes("java.text.SimpleDateFormat")
+    .constructor()
+    .withAnyParameters()
+    .build();
+
+  private static final MethodMatchers OF_PATTERN_MATCHER = MethodMatchers.create()
+    .ofTypes("java.time.format.DateTimeFormatter")
+    .names("ofPattern")
+    .addParametersMatcher("java.lang.String")
+    .addParametersMatcher("java.lang.String", "java.util.Locale")
+    .build();
+
+  private static final String RECOMMENDATION_YEAR_MESSAGE = "Make sure that week Year \"%s\" is expected here instead of Year \"%s\".";
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
-    return MethodMatchers.create().ofTypes("java.text.SimpleDateFormat").constructor().withAnyParameters().build();
+    return MethodMatchers.or(SIMPLE_DATE_FORMAT_MATCHER, OF_PATTERN_MATCHER);
   }
 
   @Override
@@ -43,20 +58,34 @@ public class DateFormatWeekYearCheck extends AbstractMethodDetection {
       return;
     }
     ExpressionTree expressionTree = newClassTree.arguments().get(0);
-    if (!expressionTree.is(Tree.Kind.STRING_LITERAL)) {
+    inspectPattern(expressionTree);
+  }
+
+  @Override
+  protected void onMethodInvocationFound(MethodInvocationTree invocation) {
+    Arguments arguments = invocation.arguments();
+    ExpressionTree argument = arguments.get(0);
+    inspectPattern(argument);
+  }
+
+  private void inspectPattern(ExpressionTree argument) {
+    Optional<String> literal = argument.asConstant(String.class);
+    if (!literal.isPresent()) {
       return;
     }
-    String datePattern = LiteralUtils.trimQuotes(((LiteralTree) expressionTree).value());
-    if (!StringUtils.contains(datePattern, 'w')) {
-      int start = datePattern.indexOf('Y');
-      if (start > -1) {
-        int end = start;
-        while (end < datePattern.length() && datePattern.charAt(end) == 'Y') {
-          end++;
-        }
-        String firstYseq = datePattern.substring(start, end);
-        reportIssue(expressionTree, "Make sure that Week Year \"" + firstYseq + "\" is expected here instead of Year \"" + firstYseq.toLowerCase() + "\".");
+    String datePattern = literal.get();
+    if (StringUtils.contains(datePattern, 'w')) {
+      return;
+    }
+    int start = datePattern.indexOf('Y');
+    if (start > -1) {
+      int end = start;
+      while (end < datePattern.length() && datePattern.charAt(end) == 'Y') {
+        end++;
       }
+      String firstYseq = datePattern.substring(start, end);
+      String message = String.format(RECOMMENDATION_YEAR_MESSAGE, firstYseq, firstYseq.toLowerCase(Locale.ENGLISH));
+      reportIssue(argument, message);
     }
   }
 }

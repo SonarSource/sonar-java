@@ -1,7 +1,7 @@
 <p>Few developers are aware of the difference between <code>Y</code> for "Week year" and <code>y</code> for Year when formatting and parsing a date
-with <code>SimpleDateFormat</code>. That's likely because for most dates, Week year and Year are the same, so testing at any time other than the first
-or last week of the year will yield the same value for both <code>y</code> and <code>Y</code>. But in the last week of December and the first week of
-January, you may get unexpected results.</p>
+with <code>SimpleDateFormat</code> or <code>DateTimeFormatter</code>. That's likely because for most dates, Week year and Year are the same, so
+testing at any time other than the first or last week of the year will yield the same value for both <code>y</code> and <code>Y</code>. But in the
+last week of December and the first week of January, you may get unexpected results.</p>
 <p>According to the <a href="http://docs.oracle.com/javase/8/docs/api/java/util/GregorianCalendar.html#week_year">Javadoc</a>:</p>
 <blockquote>
   <p>A week year is in sync with a WEEK_OF_YEAR cycle. All weeks between the first and last weeks (inclusive) have the same week year value.
@@ -15,15 +15,18 @@ January, you may get unexpected results.</p>
 <pre>
 Date date = new SimpleDateFormat("yyyy/MM/dd").parse("2015/12/31");
 String result = new SimpleDateFormat("YYYY/MM/dd").format(date);   //Noncompliant; yields '2016/12/31'
+result = DateTimeFormatter.ofPattern("YYYY/MM/dd").format(date); //Noncompliant; yields '2016/12/31'
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
 Date date = new SimpleDateFormat("yyyy/MM/dd").parse("2015/12/31");
 String result = new SimpleDateFormat("yyyy/MM/dd").format(date);   //Yields '2015/12/31' as expected
+result = DateTimeFormatter.ofPattern("yyyy/MM/dd").format(date); //Yields '2015/12/31' as expected
 </pre>
 <h2>Exceptions</h2>
 <pre>
 Date date = new SimpleDateFormat("yyyy/MM/dd").parse("2015/12/31");
 String result = new SimpleDateFormat("YYYY-ww").format(date);  //compliant, 'Week year' is used along with 'Week of year'. result = '2016-01'
+DateTimeFormatter.ofPattern("YYYY-ww").format(date); //compliant; yields '2016-01' as expected
 </pre>
 
