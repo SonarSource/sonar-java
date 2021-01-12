@@ -297,6 +297,10 @@ public class UnclosedResourcesCheck extends SECheck {
     return excludedTypesList;
   }
 
+  private static boolean isCloseable(ExpressionTree expr) {
+    return isCloseable(expr.symbolType());
+  }
+
   private static boolean isCloseable(Type type) {
     return type.isSubtypeOf(JAVA_IO_AUTO_CLOSEABLE) || type.isSubtypeOf(JAVA_IO_CLOSEABLE);
   }
