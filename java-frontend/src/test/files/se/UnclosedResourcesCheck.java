@@ -39,17 +39,6 @@ public class A {
     stream.write('c');
   }
 
-  public void toleratedHandling2() {
-    ByteArrayOutputStream stream = new ByteArrayOutputStream(); // Compliant, ignored
-    CharArrayReader bis = new CharArrayReader(stream); // Compliant, ignored aswell
-  }
-
-  public void notToleratedHandling() {
-    ByteArrayOutputStream stream = new ByteArrayOutputStream(); // Compliant, ignored
-    // Stream created from ignored stream should be closed anyway.
-    BufferedInputStream bis = new BufferedInputStream(stream); // Noncompliant
-  }
-
   public void extendedIgnoredType() {
     FastByteArrayOutputStream stream = new FastByteArrayOutputStream(); // Compliant
     stream.write('c');
