@@ -64,6 +64,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   @Nullable
   private SyntaxToken implementsKeyword;
   private ListTree<TypeTree> superInterfaces;
+  private final ListTree<TypeTree> permittedTypes = QualifiedIdentifierListTreeImpl.emptyList();
   @Nullable
   public ITypeBinding typeBinding;
 
@@ -174,6 +175,11 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   }
 
   @Override
+  public ListTree<TypeTree> permittedTypes() {
+    return permittedTypes;
+  }
+
+  @Override
   public SyntaxToken openBraceToken() {
     return openBraceToken;
   }
@@ -235,6 +241,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
       addIfNotNull(superClass),
       addIfNotNull(implementsKeyword),
       Collections.singletonList(superInterfaces),
+      Collections.singletonList(permittedTypes),
       Collections.singletonList(openBraceToken),
       members,
       Collections.singletonList(closeBraceToken)

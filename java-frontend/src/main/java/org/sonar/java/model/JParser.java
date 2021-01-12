@@ -140,7 +140,7 @@ public class JParser {
 
   private static final Logger LOG = Loggers.get(JParser.class);
 
-  public static final String MAXIMUM_SUPPORTED_JAVA_VERSION = "14";
+  public static final String MAXIMUM_SUPPORTED_JAVA_VERSION = "15";
 
   /**
    * @param unitName see {@link ASTParser#setUnitName(String)}
@@ -152,7 +152,7 @@ public class JParser {
     String source,
     List<File> classpath
   ) {
-    ASTParser astParser = ASTParser.newParser(AST.JLS14);
+    ASTParser astParser = ASTParser.newParser(AST.JLS15);
     Map<String, String> options = new HashMap<>();
     options.put(JavaCore.COMPILER_COMPLIANCE, version);
     options.put(JavaCore.COMPILER_SOURCE, version);
@@ -691,6 +691,17 @@ public class JParser {
       t.completeTypeParameters(
         convertTypeParameters(ee.typeParameters())
       );
+
+      if (e.getAST().isPreviewEnabled()) {
+        List<?> permittedTypesToConvert = ((TypeDeclaration) e).permittedTypes();
+        for (int i = 0; i < permittedTypesToConvert.size(); i++) {
+          Type o = (Type) permittedTypesToConvert.get(i);
+          if (i > 0) {
+            t.permittedTypes().separators().add(firstTokenBefore(o, TerminalTokens.TokenNameCOMMA));
+          }
+          t.permittedTypes().add(convertType(o));
+        }
+      }
     } else if (kind == Tree.Kind.RECORD) {
       RecordDeclaration ee = (RecordDeclaration) e;
       t.completeTypeParameters(
@@ -2087,7 +2098,7 @@ public class JParser {
         return new InstanceOfTreeImpl(
           firstTokenAfter(e.getLeftOperand(), TerminalTokens.TokenNameinstanceof),
           convertType(e.getRightOperand()),
-          e.getAST().isPreviewEnabled() && e.getPatternVariable() != null ? createVariable(e.getPatternVariable()) : null
+          e.getAST().isPreviewEnabled() && e.getPatternVariable() != null ? convertSimpleName(e.getPatternVariable()) : null
         ).complete(
           convertExpression(e.getLeftOperand())
         );
@@ -2578,6 +2589,20 @@ public class JParser {
         return new ModifierKeywordTreeImpl(Modifier.STRICTFP, firstTokenIn(node, TerminalTokens.TokenNamestrictfp));
       case "default":
         return new ModifierKeywordTreeImpl(Modifier.DEFAULT, firstTokenIn(node, TerminalTokens.TokenNamedefault));
+      case "sealed":
+        return new ModifierKeywordTreeImpl(Modifier.SEALED, firstTokenIn(node, ANY_TOKEN));
+      case "non-sealed": {
+        // in ECJ 3.24.0 "non-sealed" are three separate tokens
+        int tokenIndex = tokenManager.firstIndexIn(node, ANY_TOKEN);
+        Token t = tokenManager.get(tokenIndex);
+        return new ModifierKeywordTreeImpl(Modifier.NON_SEALED, new InternalSyntaxToken(
+          compilationUnit.getLineNumber(t.originalStart),
+          compilationUnit.getColumnNumber(t.originalStart),
+          "non-sealed",
+          collectComments(tokenIndex),
+          false
+        ));
+      }
       default:
         throw new IllegalStateException(node.getKeyword().toString());
     }

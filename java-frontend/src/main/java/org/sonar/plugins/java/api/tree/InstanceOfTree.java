@@ -49,6 +49,6 @@ public interface InstanceOfTree extends ExpressionTree {
    */
   @Deprecated
   @Nullable
-  VariableTree patternVariable();
+  IdentifierTree patternVariable();
 
 }
