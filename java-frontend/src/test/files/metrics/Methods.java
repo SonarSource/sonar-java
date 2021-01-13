@@ -1,8 +1,8 @@
 class MyClass {
-  public MyClass() {
+  public MyClass() {  // counted
   }
 
-  public void method() {
+  public void method() {  // counted
   }
 
   public <T> List<T> genericMethod(T param) {  // counted
@@ -36,4 +36,10 @@ enum MyEnum {
     }
   };
   abstract int method();  // counted
+}
+
+record R(int x) {
+  int neg() {  // counted
+    return -x;
+  }
 }

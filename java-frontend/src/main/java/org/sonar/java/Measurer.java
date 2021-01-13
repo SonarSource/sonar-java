@@ -65,7 +65,7 @@ public class Measurer extends SubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE,
+    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.RECORD,
         Tree.Kind.NEW_CLASS, Tree.Kind.ENUM_CONSTANT,
         Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
   }
@@ -131,7 +131,7 @@ public class Measurer extends SubscriptionVisitor {
   }
 
   private static boolean isClassTree(Tree tree) {
-    return tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.INTERFACE) || tree.is(Tree.Kind.ENUM) || tree.is(Tree.Kind.ANNOTATION_TYPE);
+    return tree.is(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.RECORD);
   }
 
   private <T extends Serializable> void saveMetricOnFile(Metric<T> metric, T value) {
