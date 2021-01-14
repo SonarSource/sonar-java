@@ -193,12 +193,7 @@ public class JavaTest {
 
     TestUtils.provisionProject(orchestrator, projectKey, "java-version-aware-visitor", "java", "java-version-aware-visitor");
 
-    // no java version specified. maven scanner gets maven default version : java 11.
-    orchestrator.executeBuild(build);
-    assertThat(getMeasureAsInteger(projectKey, "violations")).isEqualTo(1);
-
-   // java version is 1.5. Getting no issues..
-    build.setProperty(sonarJavaSource, "1.5");
+    // no java version specified. maven scanner gets maven default version : java 5.
     orchestrator.executeBuild(build);
     assertThat(getMeasureAsInteger(projectKey, "violations")).isZero();
 
