@@ -44,11 +44,8 @@ public class ExecutionTimeReport {
   }
 
   private static final Comparator<ExecutionTime> ORDER_BY_ANALYSIS_TIME_DESCENDING_AND_FILE_ASCENDING = (a, b) -> {
-    int compare = -Long.compare(a.analysisTime, b.analysisTime);
-    if (compare == 0) {
-      compare = a.file.compareTo(b.file);
-    }
-    return compare;
+    int compare = Long.compare(b.analysisTime, a.analysisTime);
+    return compare != 0 ? compare : a.file.compareTo(b.file);
   };
 
   private final LinkedList<ExecutionTime> recordedOrderedExecutionTime = new LinkedList<>();
@@ -71,6 +68,11 @@ public class ExecutionTimeReport {
 
   public void end() {
     long currentAnalysisTime = clock.millis() - currentFileStartTimeMS;
+    if (LOG.isTraceEnabled()) {
+      LOG.trace("Analysis time of " + currentFile + " (" + currentAnalysisTime + "ms)");
+    } else if (currentAnalysisTime >= MIN_REPORTED_ANALYSIS_TIME_MS && LOG.isDebugEnabled()) {
+      LOG.debug("Analysis time of " + currentFile + " (" + currentAnalysisTime + "ms)");
+    }
     if (currentAnalysisTime >= minRecordedOrderedExecutionTime) {
       recordedOrderedExecutionTime.add(new ExecutionTime(currentFile, currentAnalysisTime));
       recordedOrderedExecutionTime.sort(ORDER_BY_ANALYSIS_TIME_DESCENDING_AND_FILE_ASCENDING);
@@ -82,9 +84,13 @@ public class ExecutionTimeReport {
           .orElse(MIN_REPORTED_ANALYSIS_TIME_MS);
       }
     }
+    this.currentFile = null;
   }
 
   public void report() {
+    if (currentFile != null) {
+      end();
+    }
     long analysisEndTimeMS = clock.millis() - analysisStartTimeMS;
     if (analysisEndTimeMS >= MIN_TOTAL_ANALYSIS_TIME_TO_REPORT_MS && !recordedOrderedExecutionTime.isEmpty()) {
       LOG.info("Slowest analyzed files: " + toString());

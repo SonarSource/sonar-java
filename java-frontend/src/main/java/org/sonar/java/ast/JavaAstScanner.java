@@ -65,19 +65,18 @@ public class JavaAstScanner {
 
     boolean successfullyCompleted = false;
     boolean cancelled = false;
+    ExecutionTimeReport executionTimeReport = new ExecutionTimeReport(Clock.systemUTC());
     try {
-      ExecutionTimeReport executionTimeReport = new ExecutionTimeReport(Clock.systemUTC());
       for (InputFile inputFile : inputFiles) {
         if (analysisCancelled()) {
           cancelled = true;
           break;
         }
-        executionTimeReport.start(inputFile.uri().getPath());
+        executionTimeReport.start(inputFile.toString());
         simpleScan(inputFile);
         executionTimeReport.end();
         progressReport.nextFile();
       }
-      executionTimeReport.report();
       successfullyCompleted = !cancelled;
     } finally {
       if (successfullyCompleted) {
@@ -85,6 +84,7 @@ public class JavaAstScanner {
       } else {
         progressReport.cancel();
       }
+      executionTimeReport.report();
       visitor.endOfAnalysis();
     }
   }

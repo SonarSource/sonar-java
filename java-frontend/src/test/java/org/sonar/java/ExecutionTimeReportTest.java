@@ -50,6 +50,8 @@ class ExecutionTimeReportTest {
     simulateAnalysis("f1", 2000);
     simulateAnalysis("f2", 2000);
     report.report();
+    assertThat(logTester.logs(LoggerLevel.TRACE)).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.INFO)).isEmpty();
     assertThat(report).hasToString("f1 (2000ms), f2 (2000ms)");
   }
@@ -60,6 +62,8 @@ class ExecutionTimeReportTest {
       simulateAnalysis("f" + i, 500);
     }
     report.report();
+    assertThat(logTester.logs(LoggerLevel.TRACE)).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.INFO)).isEmpty();
     assertThat(report).hasToString("");
   }
@@ -97,9 +101,49 @@ class ExecutionTimeReportTest {
     simulateAnalysis("f2400", 2400);
     simulateAnalysis("f2600", 2600);
     report.report();
+    assertThat(logTester.logs(LoggerLevel.TRACE)).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly("Slowest analyzed files: f2900 (2900ms), " +
       "f2800 (2800ms), f2700 (2700ms), f2600 (2600ms), f2500 (2500ms), f2400 (2400ms), f2300 (2300ms), f2200 (2200ms), " +
       "f2100 (2100ms), f2000 (2000ms)");
+  }
+
+  @Test
+  void interrupt_the_report() {
+    report.start("f1");
+    clock.addMilliseconds(50_000);
+    // do not call end()
+    report.report();
+    assertThat(logTester.logs(LoggerLevel.TRACE)).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly("Slowest analyzed files: f1 (50000ms)");
+  }
+
+  @Test
+  void log_debug_level() {
+    logTester.setLevel(LoggerLevel.DEBUG);
+    simulateAnalysis("f1", 50);
+    simulateAnalysis("f2", 2000);
+    report.report();
+    assertThat(logTester.logs(LoggerLevel.TRACE)).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).containsExactly("Analysis time of f2 (2000ms)");
+    assertThat(logTester.logs(LoggerLevel.INFO)).isEmpty();
+    assertThat(report).hasToString("f2 (2000ms)");
+  }
+
+  @Test
+  void log_trace_level() {
+    logTester.setLevel(LoggerLevel.TRACE);
+    simulateAnalysis("f1", 50);
+    simulateAnalysis("f2", 2000);
+    report.report();
+    assertThat(logTester.logs(LoggerLevel.TRACE)).containsExactly(
+      "Analysis time of f1 (50ms)",
+      "Analysis time of f2 (2000ms)"
+    );
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.INFO)).isEmpty();
+    assertThat(report).hasToString("f2 (2000ms)");
   }
 
   private static class UnitTestClock extends Clock {
