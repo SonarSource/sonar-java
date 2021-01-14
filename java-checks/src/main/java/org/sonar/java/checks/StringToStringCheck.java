@@ -52,6 +52,8 @@ public class StringToStringCheck extends AbstractMethodDetection {
         ((IdentifierTree) expressionTree).identifierToken().text()));
     } else if (expressionTree.is(Tree.Kind.STRING_LITERAL)) {
       reportIssue(expressionTree, "there's no need to call \"toString()\" on a string literal.");
+    } else if (expressionTree.is(Tree.Kind.TEXT_BLOCK)) {
+      reportIssue(expressionTree, "there's no need to call \"toString()\" on a text block.");
     } else if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
       IdentifierTree methodName = ExpressionUtils.methodName((MethodInvocationTree) expressionTree);
       reportIssue(methodName, "\"" + methodName + "\" returns a string, there's no need to call \"toString()\".");

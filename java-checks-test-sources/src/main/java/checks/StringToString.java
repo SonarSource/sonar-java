@@ -1,9 +1,12 @@
-public class TestClass {
+package checks;
+
+public class StringToString {
 
   public static class InnerClass {
     String field;
 
     InnerClass inner() {
+      return null;
     }
   }
 
@@ -30,7 +33,7 @@ public class TestClass {
     bar()[0][0].toString(); // Noncompliant {{There's no need to call "toString()" on an array of String.}}
   }
 
-  String[] foo() {}
-  String[][] bar() {}
+  String[] foo() {return null;}
+  String[][] bar() {return null;}
 
 }
