@@ -19,9 +19,9 @@
  */
 package org.sonar.java.ast;
 
-import org.sonar.java.annotations.VisibleForTesting;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.InterruptedIOException;
+import java.time.Clock;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -32,7 +32,9 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.AnalysisException;
+import org.sonar.java.ExecutionTimeReport;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.JParser;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
@@ -64,14 +66,18 @@ public class JavaAstScanner {
     boolean successfullyCompleted = false;
     boolean cancelled = false;
     try {
+      ExecutionTimeReport executionTimeReport = new ExecutionTimeReport(Clock.systemUTC());
       for (InputFile inputFile : inputFiles) {
         if (analysisCancelled()) {
           cancelled = true;
           break;
         }
+        executionTimeReport.start(inputFile.uri().getPath());
         simpleScan(inputFile);
+        executionTimeReport.end();
         progressReport.nextFile();
       }
+      executionTimeReport.report();
       successfullyCompleted = !cancelled;
     } finally {
       if (successfullyCompleted) {
