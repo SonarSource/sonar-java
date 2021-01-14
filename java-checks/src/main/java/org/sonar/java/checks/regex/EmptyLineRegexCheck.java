@@ -147,7 +147,7 @@ public class EmptyLineRegexCheck extends AbstractRegexCheck {
       Symbol identifierSymbol = ((IdentifierTree) expressionTree).symbol();
       Symbol owner = identifierSymbol.owner();
       return owner != null && owner.isMethodSymbol() && identifierSymbol.usages().stream().noneMatch(EmptyLineRegexCheck::isIsEmpty);
-    } else if (expressionTree.is(Tree.Kind.STRING_LITERAL)) {
+    } else if (expressionTree.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK)) {
       return LiteralUtils.trimQuotes(((LiteralTree) expressionTree).value()).isEmpty();
     } else if (expressionTree.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
       return canBeEmpty(((ParenthesizedTree) expressionTree).expression());
