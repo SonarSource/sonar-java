@@ -22,6 +22,7 @@ package org.sonar.java.checks.regex;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
 class EmptyLineRegexCheckTest {
@@ -30,6 +31,14 @@ class EmptyLineRegexCheckTest {
   void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/regex/EmptyLineRegexCheck.java"))
+      .withCheck(new EmptyLineRegexCheck())
+      .verifyIssues();
+  }
+  
+  @Test
+  void testTextBlocks() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/regex/EmptyLineRegexCheck.java"))
       .withCheck(new EmptyLineRegexCheck())
       .verifyIssues();
   }
