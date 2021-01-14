@@ -1,4 +1,6 @@
-class A {
+package checks;
+
+public class SwitchInsteadOfIfSequenceCheck {
   String choice;
   String choice2;
   Object choice3;
@@ -16,6 +18,19 @@ class A {
       promptUser();
     }
   }
+
+  private void promptUser() {
+  }
+
+  private void dispenseYellow() {
+  }
+
+  private void dispenseBlue() {
+  }
+
+  private void dispenseRed() {
+  }
+
   void foobis() {
     if ("red" == choice) {  // Noncompliant [[sc=9;ec=24]] {{Convert this "if/else if" structure into a "switch". (sonar.java.source not set. Assuming 7 or greater.)}}
       dispenseRed();
@@ -53,6 +68,9 @@ class A {
     }
   }
 
+  private void dispenseBrown() {
+  }
+
   void foo4() {
     if ("red".equals(this.choice)) {  // compliant : operand is not and identifier
       dispenseRed();
@@ -65,7 +83,7 @@ class A {
     }
   }
 
-  void foo5() {
+  void foo55() {
     if ("red".equals(choice)) {  // compliant, last case is not changeable to switch
       dispenseRed();
     } else if ("blue".equals(choice)) {
@@ -131,6 +149,7 @@ class A {
     } else if ("yellow".equals(choice2)) {
       dispenseYellow();
     }
+    return true;
   }
 
   boolean not_equal_method(String b) {
@@ -141,10 +160,11 @@ class A {
     } else if ("yellow".equals(choice2)) {
       dispenseYellow();
     }
+    return false;
   }
 
   void not_string_arg() {
-    if ("red".equal(choice3)) {  // compliant, not comparing string
+    if ("red".startsWith(choice3.toString())) {  // compliant, not comparing string
       dispenseRed();
     } else if ("blue".equals(choice3)) {
       dispenseBlue();

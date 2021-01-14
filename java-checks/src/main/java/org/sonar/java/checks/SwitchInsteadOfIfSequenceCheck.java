@@ -97,9 +97,9 @@ public class SwitchInsteadOfIfSequenceCheck extends IssuableSubscriptionVisitor 
       expression = equalTo.rightOperand();
     }
     if (arg != null && expression != null) {
-      if (arg.is(Tree.Kind.STRING_LITERAL) && expression.is(Tree.Kind.IDENTIFIER)) {
+      if (arg.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK) && expression.is(Tree.Kind.IDENTIFIER)) {
         return Optional.of(new EqualsOperands((LiteralTree) arg, (IdentifierTree) expression));
-      } else if (arg.is(Tree.Kind.IDENTIFIER) && expression.is(Tree.Kind.STRING_LITERAL)) {
+      } else if (arg.is(Tree.Kind.IDENTIFIER) && expression.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK)) {
         return Optional.of(new EqualsOperands((LiteralTree) expression, (IdentifierTree) arg));
       }
     }

@@ -22,12 +22,15 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 class SwitchInsteadOfIfSequenceCheckTest {
 
   @Test
   void detected() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/SwitchInsteadOfIfSequenceCheck.java")
+      .onFile(testSourcesPath("checks/SwitchInsteadOfIfSequenceCheck.java"))
       .withCheck(new SwitchInsteadOfIfSequenceCheck())
       .verifyIssues();
   }
@@ -35,9 +38,17 @@ class SwitchInsteadOfIfSequenceCheckTest {
   @Test
   void prior_java_7() throws Exception {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/SwitchInsteadOfIfSequenceCheck.java")
+      .onFile(testSourcesPath("checks/SwitchInsteadOfIfSequenceCheck.java"))
       .withCheck(new SwitchInsteadOfIfSequenceCheck())
       .withJavaVersion(6)
       .verifyNoIssues();
+  }
+
+  @Test
+  void after_java_15() throws Exception {
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/SwitchInsteadOfIfSequenceCheck.java"))
+      .withCheck(new SwitchInsteadOfIfSequenceCheck())
+      .verifyIssues();
   }
 }
