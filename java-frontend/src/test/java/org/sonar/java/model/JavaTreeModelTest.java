@@ -251,7 +251,7 @@ class JavaTreeModelTest {
   void expression_text_block() {
     LiteralTree tree = (LiteralTree) expressionOfReturnStatement("class T { Object m() { return \"\"\"\ntext block\"\"\"; } }");
     assertThat(tree)
-      .is(Tree.Kind.STRING_LITERAL)
+      .is(Tree.Kind.TEXT_BLOCK)
       .hasValue("\"\"\"\ntext block\"\"\"");
     assertThat(tree.token())
       .isAtLine(1)

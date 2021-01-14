@@ -2268,7 +2268,7 @@ public class JParser {
       case ASTNode.TEXT_BLOCK: {
         TextBlock e = (TextBlock) node;
         return new LiteralTreeImpl(
-          Tree.Kind.STRING_LITERAL,
+          Tree.Kind.TEXT_BLOCK,
           firstTokenIn(e, TerminalTokens.TokenNameTextBlock)
         );
       }

@@ -33,6 +33,7 @@ import org.sonar.java.annotations.Beta;
  * {@link Tree.Kind#BOOLEAN_LITERAL},
  * {@link Tree.Kind#CHAR_LITERAL},
  * {@link Tree.Kind#STRING_LITERAL},
+ * {@link Tree.Kind#TEXT_BLOCK},
  * {@link Tree.Kind#NULL_LITERAL}
  *
  * <pre>
