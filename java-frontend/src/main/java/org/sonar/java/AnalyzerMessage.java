@@ -24,6 +24,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -117,6 +118,9 @@ public class AnalyzerMessage {
   }
 
   public static AnalyzerMessage.TextSpan textSpanFor(Tree syntaxNode) {
+    if (syntaxNode.is(Tree.Kind.TEXT_BLOCK)) {
+      return textSpanForTextBlock(((LiteralTree) syntaxNode).token());
+    }
     SyntaxToken firstSyntaxToken = getNonEmptyTree(syntaxNode).firstToken();
     SyntaxToken lastSyntaxToken = getNonEmptyTree(syntaxNode).lastToken();
     return textSpanBetween(firstSyntaxToken, lastSyntaxToken);
@@ -138,6 +142,23 @@ public class AnalyzerMessage {
     Preconditions.checkState(!location.isEmpty(),
       "Invalid issue location: Text span is empty when trying reporting on (l:%s, c:%s).",
       firstSyntaxToken.line(), firstSyntaxToken.column());
+    return location;
+  }
+
+  private static AnalyzerMessage.TextSpan textSpanForTextBlock(SyntaxToken syntaxToken) {
+    String text = syntaxToken.text();
+    String[] lines = text.split("(\\r)?\\n|\\r");
+    int endLine = syntaxToken.line() + lines.length - 1;
+    int endColumn = lines[lines.length - 1].length() - 1;
+    AnalyzerMessage.TextSpan location = new AnalyzerMessage.TextSpan(
+      syntaxToken.line(),
+      syntaxToken.column(),
+      endLine,
+      endColumn
+    );
+    Preconditions.checkState(!location.isEmpty(),
+      "Invalid issue location: Text span is empty when trying reporting on (l:%s, c:%s).",
+      syntaxToken.line(), syntaxToken.column());
     return location;
   }
 

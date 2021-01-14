@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.InferedTypeTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -115,6 +116,27 @@ class AnalyzerMessageTest {
     assertThat(textSpan.startCharacter).isZero();
     assertThat(textSpan.endLine).isEqualTo(1);
     assertThat(textSpan.endCharacter).isEqualTo(9);
+  }
+
+  @Test
+  void textSpanForTextBlocks() {
+    CompilationUnitTree cut = JParserTestUtils.parse(
+      "class A {\n String s = \"\"\"\n" +
+      "              \n" +
+      "  hello\n" +
+      "  \n" +
+      "  \"\"\";}\n");
+    ClassTree classTree = (ClassTree) cut.types().get(0);
+    VariableTree variableTree = (VariableTree) classTree.members().get(0);
+    ExpressionTree textBlock = variableTree.initializer();
+
+    TextSpan textSpan;
+
+    textSpan = AnalyzerMessage.textSpanFor(textBlock);
+    assertThat(textSpan.startLine).isEqualTo(2);
+    assertThat(textSpan.startCharacter).isEqualTo(12);
+    assertThat(textSpan.endLine).isEqualTo(6);
+    assertThat(textSpan.endCharacter).isEqualTo(4);
   }
 
   @Test
