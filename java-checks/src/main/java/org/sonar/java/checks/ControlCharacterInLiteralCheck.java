@@ -54,7 +54,7 @@ public class ControlCharacterInLiteralCheck extends IssuableSubscriptionVisitor 
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.STRING_LITERAL, Tree.Kind.CHAR_LITERAL);
+    return Arrays.asList(Tree.Kind.STRING_LITERAL, Tree.Kind.CHAR_LITERAL, Tree.Kind.TEXT_BLOCK);
   }
 
   @Override
