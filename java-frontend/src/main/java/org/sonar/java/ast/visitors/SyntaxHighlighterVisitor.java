@@ -57,6 +57,7 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
 
     Map<Tree.Kind, TypeOfText> typesByKindMap = new EnumMap<>(Tree.Kind.class);
     typesByKindMap.put(Tree.Kind.STRING_LITERAL, TypeOfText.STRING);
+    typesByKindMap.put(Tree.Kind.TEXT_BLOCK, TypeOfText.STRING);
     typesByKindMap.put(Tree.Kind.CHAR_LITERAL, TypeOfText.STRING);
     typesByKindMap.put(Tree.Kind.FLOAT_LITERAL, TypeOfText.CONSTANT);
     typesByKindMap.put(Tree.Kind.DOUBLE_LITERAL, TypeOfText.CONSTANT);

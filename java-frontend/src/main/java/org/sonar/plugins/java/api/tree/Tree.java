@@ -549,6 +549,11 @@ public interface Tree {
 
     /**
      * {@link LiteralTree}
+     */
+    TEXT_BLOCK(LiteralTree.class),
+
+    /**
+     * {@link LiteralTree}
      * {@code null}
      */
     NULL_LITERAL(LiteralTree.class),
