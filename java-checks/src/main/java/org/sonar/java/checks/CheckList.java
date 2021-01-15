@@ -744,6 +744,7 @@ public final class CheckList {
       TransientFieldInNonSerializableCheck.class,
       TryWithResourcesCheck.class,
       TwoLocksWaitCheck.class,
+      TypeParametersShadowingCheck.class,
       UnclosedResourcesCheck.class,
       UnderscoreMisplacedOnNumberCheck.class,
       UnderscoreOnNumberCheck.class,

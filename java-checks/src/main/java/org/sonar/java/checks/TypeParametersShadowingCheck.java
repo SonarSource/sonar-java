@@ -1,0 +1,96 @@
+/*
+ * SonarQube Java
+ * Copyright (C) 2012-2021 SonarSource SA
+ * mailto:info AT sonarsource DOT com
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
+package org.sonar.java.checks;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.TypeParameters;
+
+@Rule(key = "S4977")
+public class TypeParametersShadowingCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  private static final String ISSUE_MESSAGE = "Rename \"%s\" which hides a type parameter from the outer scope.";
+
+  private JavaFileScannerContext context;
+  private final Map<String, IdentifierTree> currentTypeParametersInScope = new HashMap<>();
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    currentTypeParametersInScope.clear();
+    scan(context.getTree());
+  }
+
+  @Override
+  public void visitClass(ClassTree tree) {
+    TypeParameters typeParameters = tree.typeParameters();
+    if (typeParameters.isEmpty()) {
+      super.visitClass(tree);
+      return;
+    }
+    List<String> declaredTypeParameters = processAndGetTypeParameters(typeParameters);
+    super.visitClass(tree);
+    declaredTypeParameters.forEach(currentTypeParametersInScope::remove);
+  }
+
+  @Override
+  public void visitMethod(MethodTree tree) {
+    TypeParameters typeParameters = tree.typeParameters();
+    if (typeParameters.isEmpty()) {
+      super.visitMethod(tree);
+      return;
+    }
+    List<String> declaredTypeParameters = processAndGetTypeParameters(typeParameters);
+    super.visitMethod(tree);
+    declaredTypeParameters.forEach(currentTypeParametersInScope::remove);
+  }
+
+  private List<String> processAndGetTypeParameters(TypeParameters typeParameters) {
+    List<String> declaredTypeParameters = new ArrayList<>();
+    typeParameters.forEach(typeParameter -> {
+      IdentifierTree id = typeParameter.identifier();
+      String name = id.toString();
+
+      IdentifierTree shadowedId = currentTypeParametersInScope.get(name);
+      if (shadowedId != null) {
+        context.reportIssue(this, id,
+          String.format(ISSUE_MESSAGE, name),
+          Collections.singletonList(new JavaFileScannerContext.Location("Shadowed type parameter", shadowedId)
+        ), null);
+      } else {
+        // Both collections updated only in the else part, because we want to store only the first and outer most apparition of a type.
+        // If a type is shadowed multiple times, we use only the outer most as secondary location.
+        currentTypeParametersInScope.put(name, id);
+        declaredTypeParameters.add(name);
+      }
+    });
+    return declaredTypeParameters;
+  }
+}
