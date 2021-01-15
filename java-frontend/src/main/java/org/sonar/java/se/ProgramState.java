@@ -51,6 +51,8 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
+import static org.sonar.java.model.JUtils.isLocalVariable;
+
 public class ProgramState {
 
   private static final Set<Class<? extends Constraint>> NON_DISPOSABLE_CONSTRAINTS = SetUtils.immutableSetOf(UnclosedResourcesCheck.ResourceConstraint.class,
@@ -382,10 +384,6 @@ public class ProgramState {
 
   private static boolean inStack(PStack<SymbolicValueSymbol> stack, SymbolicValue symbolicValue) {
     return stack.anyMatch(valueSymbol -> valueSymbol.sv.equals(symbolicValue) || valueSymbol.sv.references(symbolicValue));
-  }
-
-  private static boolean isLocalVariable(Symbol symbol) {
-    return symbol.isVariableSymbol() && symbol.owner().isMethodSymbol();
   }
 
   public ProgramState cleanupDeadSymbols(Set<Symbol> liveVariables, Collection<SymbolicValue> protectedSymbolicValues) {
