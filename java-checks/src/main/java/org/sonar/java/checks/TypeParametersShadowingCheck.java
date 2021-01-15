@@ -19,11 +19,14 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -39,37 +42,47 @@ public class TypeParametersShadowingCheck extends BaseTreeVisitor implements Jav
   private static final String ISSUE_MESSAGE = "Rename \"%s\" which hides a type parameter from the outer scope.";
 
   private JavaFileScannerContext context;
-  private final Map<String, IdentifierTree> currentTypeParametersInScope = new HashMap<>();
+
+  private Map<String, IdentifierTree> currentTypeParametersInScope;
+  private Deque<Map<String, IdentifierTree>> scopes;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
-    currentTypeParametersInScope.clear();
+    scopes = new ArrayDeque<>();
+    currentTypeParametersInScope = new HashMap<>();
     scan(context.getTree());
   }
 
   @Override
   public void visitClass(ClassTree tree) {
-    TypeParameters typeParameters = tree.typeParameters();
-    if (typeParameters.isEmpty()) {
-      super.visitClass(tree);
-      return;
-    }
-    List<String> declaredTypeParameters = processAndGetTypeParameters(typeParameters);
-    super.visitClass(tree);
-    declaredTypeParameters.forEach(currentTypeParametersInScope::remove);
+    processTree(tree, tree.typeParameters(), tree.symbol().isStatic(), super::visitClass);
   }
 
   @Override
   public void visitMethod(MethodTree tree) {
-    TypeParameters typeParameters = tree.typeParameters();
-    if (typeParameters.isEmpty()) {
-      super.visitMethod(tree);
-      return;
+    processTree(tree, tree.typeParameters(), tree.symbol().isStatic(), super::visitMethod);
+  }
+
+  private <T> void processTree(T tree, TypeParameters typeParameters, boolean isStatic, Consumer<T> visitTree) {
+    if (isStatic) {
+      pushNewScope();
     }
     List<String> declaredTypeParameters = processAndGetTypeParameters(typeParameters);
-    super.visitMethod(tree);
+    visitTree.accept(tree);
     declaredTypeParameters.forEach(currentTypeParametersInScope::remove);
+    if (isStatic) {
+      popScope();
+    }
+  }
+
+  private void pushNewScope() {
+    scopes.push(currentTypeParametersInScope);
+    currentTypeParametersInScope = new HashMap<>();
+  }
+
+  private void popScope() {
+    currentTypeParametersInScope = scopes.pop();
   }
 
   private List<String> processAndGetTypeParameters(TypeParameters typeParameters) {

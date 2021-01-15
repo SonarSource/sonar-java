@@ -3,7 +3,7 @@ package checks;
 import java.util.List;
 import java.util.function.Function;
 
-public class TypeParametersShadowingCheck {
+public class TypeParametersShadowingCheck<T0> {
   class TypeParameterHidesAnotherType<T> {
     public class Inner<T> { // Noncompliant [[sc=24;ec=25;secondary=-1]] {{Rename "T" which hides a type parameter from the outer scope.}}
       //...
@@ -68,4 +68,41 @@ public class TypeParametersShadowingCheck {
       }
     }
   }
+
+  // Static members are not subject to scoping problem, since they anyway don't have access to the outer scope
+  private static <T0> T0 methodBefore() { // Compliant, static member, T0 is not hiding anything
+    return null;
+  }
+  public static class Inner<T0, P, Q> { // Compliant, static member, T0 is not hiding anything
+    private <Q> Q method2() { // Noncompliant [[secondary=-1]]
+      return null;
+    }
+    // Actually hiding the one from the static class
+    private <T0> Q method3() { // Noncompliant [[secondary=-5]]
+      return null;
+    }
+    private static <P> P method1() { // Compliant, static member, not hiding anything
+      new Function<Integer, Integer>() {
+        class InnerAnonymousHidingT<P> { // Noncompliant [[secondary=-2]]
+          //...
+        }
+        @Override
+        public Integer apply(Integer o) {
+          return null;
+        }
+      };
+      return null;
+    }
+  }
+  private static <T0> T0 methodAfter() { // Compliant, static member
+    return null;
+  }
+
+  public static class Inner2 {
+    // Compliant, not hiding anything
+    private <T0> T0 method() {
+      return null;
+    }
+  }
+
 }
