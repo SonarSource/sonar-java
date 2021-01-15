@@ -22,7 +22,6 @@ package org.sonar.java.checks.tests;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
 class MockitoAnnotatedObjectsShouldBeInitializedCheckTest {
@@ -33,10 +32,5 @@ class MockitoAnnotatedObjectsShouldBeInitializedCheckTest {
       .onFile(testSourcesPath("checks/tests/MockitoAnnotatedObjectsShouldBeInitialized.java"))
       .withCheck(new MockitoAnnotatedObjectsShouldBeInitializedCheck())
       .verifyIssues();
-
-    JavaCheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/tests/MockitoAnnotatedObjectsShouldBeInitialized.java"))
-      .withCheck(new MockitoAnnotatedObjectsShouldBeInitializedCheck())
-      .verifyNoIssues();
   }
 }

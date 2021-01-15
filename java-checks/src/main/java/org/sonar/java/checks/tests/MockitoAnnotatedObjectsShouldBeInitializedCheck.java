@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks.tests;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -27,33 +28,38 @@ import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S5979")
 public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSubscriptionVisitor {
   private static final List<String> TARGET_ANNOTATIONS = Arrays.asList(
-    "Captor",
-    "InjectMocks",
-    "Mock",
-    "Spy"
+    "org.mockito.Captor",
+    "org.mockito.InjectMocks",
+    "org.mockito.Mock",
+    "org.mockito.Spy"
   );
 
   private static final List<String> EXPECTED_CLASS_ANNOTATIONS = Arrays.asList(
-    "ExtendWith",
-    "RunWith"
+    "org.junit.jupiter.api.extension.ExtendWith",
+    "org.junit.runner.RunWith"
   );
 
   private static final List<String> BEFORE_ANNOTATIONS = Arrays.asList(
-    "Before",
-    "BeforeEach"
+    "org.junit.Before",
+    "org.junit.jupiter.api.BeforeEach"
   );
+
+  private static final String RULE_ANNOTATION = "org.junit.Rule";
 
   private static final MethodMatchers MOCKITO_JUNIT_RULE = MethodMatchers.create()
     .ofAnyType()
@@ -86,8 +92,8 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
       return false;
     }
     VariableTree field = (VariableTree) tree;
-    List<AnnotationTree> annotations = field.modifiers().annotations();
-    return !getAnnotations(annotations, TARGET_ANNOTATIONS).isEmpty();
+    SymbolMetadata metadata = field.symbol().metadata();
+    return TARGET_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
   }
 
   private static boolean mocksAreProperlyInitialized(ClassTree testClass) {
@@ -97,8 +103,8 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
   }
 
   public static boolean isClassProperlyAnnotated(ClassTree clazz) {
-    List<AnnotationTree> annotations = clazz.modifiers().annotations();
-    return !getAnnotations(annotations, EXPECTED_CLASS_ANNOTATIONS).isEmpty();
+    SymbolMetadata metadata = clazz.symbol().metadata();
+    return EXPECTED_CLASS_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
   }
 
   private static boolean isMockitoJUnitRuleInvoked(ClassTree clazz) {
@@ -107,12 +113,11 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
       .map(VariableTree.class::cast)
       .collect(Collectors.toList());
     for (VariableTree field : collected) {
-      String type = field.type().symbolType().fullyQualifiedName();
-      if (type.equals("org.mockito.junit.MockitoRule")) {
+      if (field.type().symbolType().is("org.mockito.junit.MockitoRule")) {
         ExpressionTree initializer = field.initializer();
         if (initializer != null && initializer.is(Tree.Kind.METHOD_INVOCATION) &&
           MOCKITO_JUNIT_RULE.matches((MethodInvocationTree) initializer) &&
-          getAnnotation(field.modifiers().annotations(), "Rule").isPresent()) {
+          field.symbol().metadata().isAnnotatedWith(RULE_ANNOTATION)) {
           return true;
         }
       }
@@ -121,38 +126,47 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
   }
 
   private static boolean areMocksInitializedInSetup(ClassTree clazz) {
-    List<MethodTree> methods = clazz.members().stream()
-      .filter(member -> member.is(Tree.Kind.METHOD))
-      .map(MethodTree.class::cast)
-      .collect(Collectors.toList());
+    List<MethodTree> methods = new ArrayList<>();
+    Optional<ClassTree> parent = Optional.of(clazz);
+    while (parent.isPresent()) {
+      ClassTree tree = parent.get();
+      methods.addAll(getSetupMethods(tree));
+      parent = getParentClass(tree);
+    }
     for (MethodTree method : methods) {
-      List<AnnotationTree> setupAnnotations = getAnnotations(method.modifiers().annotations(), BEFORE_ANNOTATIONS);
-      if (!setupAnnotations.isEmpty()) {
-        SetupMethodVisitor visitor = new SetupMethodVisitor();
-        method.accept(visitor);
-        if (visitor.initMocksIsInvoked) {
-          return true;
-        }
+      SetupMethodVisitor visitor = new SetupMethodVisitor();
+      method.accept(visitor);
+      if (visitor.initMocksIsInvoked) {
+        return true;
       }
     }
     return false;
   }
 
-  private static List<AnnotationTree> getAnnotations(List<AnnotationTree> annotations, List<String> names) {
-    return names.stream()
-      .map(name -> getAnnotation(annotations, name))
-      .filter(Optional::isPresent)
-      .map(Optional::get)
+  private static Optional<ClassTree> getParentClass(ClassTree tree) {
+    TypeTree parentTree = tree.superClass();
+    if (parentTree == null) {
+      return Optional.empty();
+    }
+    IdentifierTree identifier = (IdentifierTree) parentTree;
+    Tree declaration = identifier.symbol().declaration();
+    if (declaration == null) {
+      return Optional.empty();
+    }
+    return Optional.of((ClassTree) declaration);
+  }
+
+  private static List<MethodTree> getSetupMethods(ClassTree tree) {
+    return tree.members().stream()
+      .filter(member -> member.is(Tree.Kind.METHOD))
+      .map(MethodTree.class::cast)
+      .filter(MockitoAnnotatedObjectsShouldBeInitializedCheck::isTaggedWithBefore)
       .collect(Collectors.toList());
   }
 
-  private static Optional<AnnotationTree> getAnnotation(List<AnnotationTree> annotations, String annotationName) {
-    for (AnnotationTree annotation : annotations) {
-      if (annotation.annotationType().toString().equals(annotationName)) {
-        return Optional.of(annotation);
-      }
-    }
-    return Optional.empty();
+  private static boolean isTaggedWithBefore(MethodTree method) {
+    SymbolMetadata metadata = method.symbol().metadata();
+    return BEFORE_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
   }
 
   /**

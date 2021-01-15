@@ -1,11 +1,16 @@
 package checks.tests;
 
-
+import javax.annotation.Nullable;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.Extension;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.junit.runner.Runner;
+import org.junit.runner.notification.RunNotifier;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -13,6 +18,7 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 public class MockitoAnnotatedObjectsShouldBeInitialized {
   class MixedNonCompliant {
@@ -31,11 +37,48 @@ public class MockitoAnnotatedObjectsShouldBeInitialized {
     }
   }
 
+  @RunWith(EmptyRunner.class)
+  public class RunWithBadParameter {
+    @Mock // Compliant FN is a runner that does not initialize anything
+    private Bar bar;
+  }
+
+  @RunWith(Runner.class)
+  public class RunWithAbstractRunner {
+    @Mock // Compliant FN is a runner that but not a concrete one
+    private Bar bar;
+  }
+
+  @Nullable
+  public class IrrelevantAnnotationOnClass {
+    @Mock // Noncompliant
+    private Bar bar;
+  }
+
   @RunWith(MockitoJUnitRunner.class)
-  public class FooTest {
+  public class JUnit4AnnotatedTest {
     @Mock // Compliant
     private Bar bar;
   }
+
+  @ExtendWith(EmptyExtension.class)
+  public class ExtendWithEmptyParameter {
+    @Mock // Compliant FN is an extension that does not initialize anything
+    private Bar bar;
+  }
+
+  @ExtendWith(Extension.class)
+  public class ExtendWithAbstractExtension {
+    @Mock // Compliant FN use the base interface
+    private Bar bar;
+  }
+
+  @ExtendWith(MockitoExtension.class)
+  public class JUnit5AnnotatedTest {
+    @Mock // Compliant
+    private Bar bar;
+  }
+
 
   public class UntaggedRule {
     public MockitoRule rule = MockitoJUnit.rule();
@@ -60,7 +103,7 @@ public class MockitoAnnotatedObjectsShouldBeInitialized {
     private Bar bar;
   }
 
-  public class PoorlyIntializedRule {
+  public class PoorlyInitializedRule {
     @Rule
     public MockitoRule rule = FakeRule.returnNull();
 
@@ -112,6 +155,16 @@ public class MockitoAnnotatedObjectsShouldBeInitialized {
     }
   }
 
+  public class SetupJunit4 {
+    @Mock // compliant
+    private Bar bar;
+
+    @Before
+    void setUp() {
+      MockitoAnnotations.initMocks(this);
+    }
+  }
+
   public class SetupJUnit5 {
     @Mock // Compliant
     private Bar bar;
@@ -122,7 +175,7 @@ public class MockitoAnnotatedObjectsShouldBeInitialized {
     }
   }
 
-  public class FooTest3 {
+  public class SetupMix {
     @Mock // Compliant
     private Bar bar;
 
@@ -132,16 +185,30 @@ public class MockitoAnnotatedObjectsShouldBeInitialized {
     }
   }
 
-  public class SetupWithLegacyAnnotation {
-    @Mock // compliant
-    private Bar bar;
-
-    @Before
-    void setUp() {
+  class SetupInBaseClass {
+    @BeforeEach
+    void baseSetUp() {
       MockitoAnnotations.initMocks(this);
     }
   }
 
+  class MockInChild extends SetupInBaseClass {
+    @Mock // Compliant
+    private Bar bar;
+  }
+
+  class Intermediary extends SetupInBaseClass {
+  }
+
+  class MockInGrandChild extends Intermediary {
+    @Mock // Compliant
+    private Bar bar;
+  }
+
+  class DifferentFiles extends MockitoAnnotatedObjectsShouldBeInitializedSuperClass {
+    @Mock // Noncompliant FP The setup method is defined in a parent class declared in another file
+    private Bar bar;
+  }
 
   private class Bar {
   }
@@ -150,6 +217,22 @@ public class MockitoAnnotatedObjectsShouldBeInitialized {
   }
 
   private class Foo {
+  }
+
+  private static class EmptyRunner extends org.junit.runner.Runner {
+
+    @Override
+    public Description getDescription() {
+      return null;
+    }
+
+    @Override
+    public void run(RunNotifier runNotifier) {
+    }
+  }
+
+  private static class EmptyExtension implements Extension {
+
   }
 
   private static class FakeRule {
