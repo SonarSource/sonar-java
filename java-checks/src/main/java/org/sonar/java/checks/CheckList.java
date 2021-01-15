@@ -645,6 +645,7 @@ public final class CheckList {
       SillyEqualsCheck.class,
       SillyStringOperationsCheck.class,
       SimpleClassNameCheck.class,
+      SimpleStringLiteralForSingleLineStringsCheck.class,
       SingleCharacterAlternationCheck.class,
       SMTPSSLServerIdentityCheck.class,
       SocketUsageCheck.class,
