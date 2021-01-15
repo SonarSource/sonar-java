@@ -93,15 +93,15 @@ public class ExecutionTimeReport {
     }
     long analysisEndTimeMS = clock.millis() - analysisStartTimeMS;
     if (analysisEndTimeMS >= MIN_TOTAL_ANALYSIS_TIME_TO_REPORT_MS && !recordedOrderedExecutionTime.isEmpty()) {
-      LOG.info("Slowest analyzed files: " + toString());
+      LOG.info("Slowest analyzed files:" + System.lineSeparator() + toString());
     }
   }
 
   @Override
   public String toString() {
     return recordedOrderedExecutionTime.stream()
-      .map(e -> e.file + " (" + e.analysisTime + "ms)")
-      .collect(Collectors.joining(", "));
+      .map(e -> "    " + e.file + " (" + e.analysisTime + "ms)")
+      .collect(Collectors.joining(System.lineSeparator()));
   }
 
 }

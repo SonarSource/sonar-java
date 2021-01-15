@@ -34,6 +34,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @EnableRuleMigrationSupport
 class ExecutionTimeReportTest {
 
+  private static final String NL = System.lineSeparator();
+
   @Rule
   public LogTester logTester = new LogTester();
   public UnitTestClock clock = new UnitTestClock();
@@ -53,7 +55,9 @@ class ExecutionTimeReportTest {
     assertThat(logTester.logs(LoggerLevel.TRACE)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.DEBUG)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.INFO)).isEmpty();
-    assertThat(report).hasToString("f1 (2000ms), f2 (2000ms)");
+    assertThat(report).hasToString("" +
+      "    f1 (2000ms)" + NL +
+      "    f2 (2000ms)");
   }
 
   @Test
@@ -73,14 +77,21 @@ class ExecutionTimeReportTest {
     simulateAnalysis("f1200", 1200);
     simulateAnalysis("f1400", 1400);
     simulateAnalysis("f100", 100);
-    assertThat(report).hasToString("f1400 (1400ms), f1200 (1200ms)");
+    assertThat(report).hasToString("" +
+      "    f1400 (1400ms)" + NL +
+      "    f1200 (1200ms)");
     simulateAnalysis("f2800", 2800);
     simulateAnalysis("f1300", 1300);
     simulateAnalysis("f1700", 1700);
     simulateAnalysis("f200", 200);
     simulateAnalysis("f2900", 2900);
-    assertThat(report).hasToString("f2900 (2900ms), f2800 (2800ms), f1700 (1700ms), f1400 (1400ms), f1300 (1300ms), " +
-      "f1200 (1200ms)");
+    assertThat(report).hasToString("" +
+      "    f2900 (2900ms)" + NL +
+      "    f2800 (2800ms)" + NL +
+      "    f1700 (1700ms)" + NL +
+      "    f1400 (1400ms)" + NL +
+      "    f1300 (1300ms)" + NL +
+      "    f1200 (1200ms)");
     simulateAnalysis("f1000", 1000);
     simulateAnalysis("f2000", 2000);
     simulateAnalysis("f1500", 1500);
@@ -89,13 +100,31 @@ class ExecutionTimeReportTest {
     simulateAnalysis("f900", 900);
     simulateAnalysis("f1100", 1100);
     simulateAnalysis("f2700", 2700);
-    assertThat(report).hasToString("f2900 (2900ms), f2800 (2800ms), f2700 (2700ms), f2000 (2000ms), f1800 (1800ms), " +
-      "f1700 (1700ms), f1600 (1600ms), f1500 (1500ms), f1400 (1400ms), f1300 (1300ms)");
+    assertThat(report).hasToString("" +
+      "    f2900 (2900ms)" + NL +
+      "    f2800 (2800ms)" + NL +
+      "    f2700 (2700ms)" + NL +
+      "    f2000 (2000ms)" + NL +
+      "    f1800 (1800ms)" + NL +
+      "    f1700 (1700ms)" + NL +
+      "    f1600 (1600ms)" + NL +
+      "    f1500 (1500ms)" + NL +
+      "    f1400 (1400ms)" + NL +
+      "    f1300 (1300ms)");
     simulateAnalysis("f2100", 2100);
     simulateAnalysis("f1900", 1900);
     simulateAnalysis("f2500", 2500);
-    assertThat(report).hasToString("f2900 (2900ms), f2800 (2800ms), f2700 (2700ms), f2500 (2500ms), f2100 (2100ms), " +
-      "f2000 (2000ms), f1900 (1900ms), f1800 (1800ms), f1700 (1700ms), f1600 (1600ms)");
+    assertThat(report).hasToString("" +
+      "    f2900 (2900ms)" + NL +
+      "    f2800 (2800ms)" + NL +
+      "    f2700 (2700ms)" + NL +
+      "    f2500 (2500ms)" + NL +
+      "    f2100 (2100ms)" + NL +
+      "    f2000 (2000ms)" + NL +
+      "    f1900 (1900ms)" + NL +
+      "    f1800 (1800ms)" + NL +
+      "    f1700 (1700ms)" + NL +
+      "    f1600 (1600ms)");
     simulateAnalysis("f2300", 2300);
     simulateAnalysis("f2200", 2200);
     simulateAnalysis("f2400", 2400);
@@ -103,9 +132,17 @@ class ExecutionTimeReportTest {
     report.report();
     assertThat(logTester.logs(LoggerLevel.TRACE)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.DEBUG)).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly("Slowest analyzed files: f2900 (2900ms), " +
-      "f2800 (2800ms), f2700 (2700ms), f2600 (2600ms), f2500 (2500ms), f2400 (2400ms), f2300 (2300ms), f2200 (2200ms), " +
-      "f2100 (2100ms), f2000 (2000ms)");
+    assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly("Slowest analyzed files:" + NL +
+      "    f2900 (2900ms)" + NL +
+      "    f2800 (2800ms)" + NL +
+      "    f2700 (2700ms)" + NL +
+      "    f2600 (2600ms)" + NL +
+      "    f2500 (2500ms)" + NL +
+      "    f2400 (2400ms)" + NL +
+      "    f2300 (2300ms)" + NL +
+      "    f2200 (2200ms)" + NL +
+      "    f2100 (2100ms)" + NL +
+      "    f2000 (2000ms)");
   }
 
   @Test
@@ -116,7 +153,8 @@ class ExecutionTimeReportTest {
     report.report();
     assertThat(logTester.logs(LoggerLevel.TRACE)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.DEBUG)).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly("Slowest analyzed files: f1 (50000ms)");
+    assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly("Slowest analyzed files:" + NL +
+      "    f1 (50000ms)");
   }
 
   @Test
@@ -128,7 +166,7 @@ class ExecutionTimeReportTest {
     assertThat(logTester.logs(LoggerLevel.TRACE)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.DEBUG)).containsExactly("Analysis time of f2 (2000ms)");
     assertThat(logTester.logs(LoggerLevel.INFO)).isEmpty();
-    assertThat(report).hasToString("f2 (2000ms)");
+    assertThat(report).hasToString("    f2 (2000ms)");
   }
 
   @Test
@@ -143,7 +181,7 @@ class ExecutionTimeReportTest {
     );
     assertThat(logTester.logs(LoggerLevel.DEBUG)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.INFO)).isEmpty();
-    assertThat(report).hasToString("f2 (2000ms)");
+    assertThat(report).hasToString("    f2 (2000ms)");
   }
 
   private static class UnitTestClock extends Clock {
