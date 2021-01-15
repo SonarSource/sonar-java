@@ -1,0 +1,16 @@
+{
+  "title": "Simple string literal should be used for single line strings",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java14"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-5663",
+  "sqKey": "S5663",
+  "scope": "All"
+}
