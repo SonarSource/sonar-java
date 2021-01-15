@@ -44,6 +44,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import static org.sonar.java.model.JUtils.isLocalVariable;
+
 public class LiveVariables {
 
   private final CFG cfg;
@@ -194,10 +196,6 @@ public class LiveVariables {
 
   private boolean includeSymbol(Symbol symbol) {
     return isLocalVariable(symbol) || (includeFields && isField(symbol));
-  }
-
-  private static boolean isLocalVariable(Symbol symbol) {
-    return symbol.owner().isMethodSymbol();
   }
 
   private static boolean isField(Symbol symbol) {

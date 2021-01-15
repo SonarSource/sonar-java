@@ -52,6 +52,7 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.sonar.java.model.JUtils.isLocalVariable;
 import static org.sonar.java.se.NullableAnnotationUtils.nonNullAnnotation;
 
 @Rule(key = "S2637")
@@ -272,8 +273,7 @@ public class NonNullSetToNullCheck extends SECheck {
         return false;
       }
       if (expression.is(Tree.Kind.IDENTIFIER)) {
-        final Symbol symbol = ((IdentifierTree) expression).symbol().owner();
-        return symbol.isMethodSymbol();
+        return isLocalVariable(((IdentifierTree) expression).symbol());
       }
       return true;
     }

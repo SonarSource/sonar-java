@@ -110,6 +110,10 @@ public final class JUtils {
     return ((IVariableBinding) ((JVariableSymbol) variableSymbol).binding).isEffectivelyFinal();
   }
 
+  public static boolean isLocalVariable(Symbol symbol) {
+    return symbol.isVariableSymbol() && symbol.owner().isMethodSymbol();
+  }
+
   public static boolean isParameter(Symbol symbol) {
     if (symbol instanceof JTypeSymbol.SpecialField) {
       return false;

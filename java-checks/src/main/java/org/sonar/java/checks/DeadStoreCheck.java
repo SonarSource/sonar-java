@@ -51,6 +51,8 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.sonar.java.model.JUtils.isLocalVariable;
+
 @Rule(key = "S1854")
 public class DeadStoreCheck extends IssuableSubscriptionVisitor {
 
@@ -310,9 +312,5 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
         super.visitAssignmentExpression(tree);
       }
     }
-  }
-
-  private static boolean isLocalVariable(Symbol symbol) {
-    return symbol.owner().isMethodSymbol();
   }
 }

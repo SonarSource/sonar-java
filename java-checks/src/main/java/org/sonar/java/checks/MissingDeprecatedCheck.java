@@ -30,6 +30,8 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
+import static org.sonar.java.model.JUtils.isLocalVariable;
+
 @DeprecatedRuleKey(ruleKey = "MissingDeprecatedCheck", repositoryKey = "squid")
 @Rule(key = "S1123")
 public class MissingDeprecatedCheck extends AbstractDeprecatedChecker {
@@ -47,8 +49,7 @@ public class MissingDeprecatedCheck extends AbstractDeprecatedChecker {
 
   @Override
   public void visitNode(Tree tree) {
-    boolean isLocalVar = tree.is(Tree.Kind.VARIABLE) && ((VariableTree) tree).symbol().owner().isMethodSymbol();
-
+    boolean isLocalVar = tree.is(Tree.Kind.VARIABLE) && isLocalVariable(((VariableTree) tree).symbol());
     AnnotationTree deprecatedAnnotation = deprecatedAnnotation(tree);
     boolean hasDeprecatedAnnotation = deprecatedAnnotation != null;
     boolean hasJavadocDeprecatedTag = hasJavadocDeprecatedTag(tree);
