@@ -1,0 +1,32 @@
+<p>Shadowing makes it impossible to use the type parameter from the outer scope. Also, it can be confusing to distinguish which type parameter is
+being used.</p>
+<p>This rule raises an issue when a type parameter from an inner scope uses the same name as one in an outer scope.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+ public class TypeParameterHidesAnotherType&lt;T&gt; {
+
+    public class Inner&lt;T&gt; { // Noncompliant
+      //...
+    }
+
+    private &lt;T&gt; T method() { // Noncompliant
+      return null;
+    }
+
+  }
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+public class NoTypeParameterHiding&lt;T&gt; {
+
+    public class Inner&lt;S&gt; { // Compliant
+      List&lt;S&gt; listOfS;
+    }
+
+    private &lt;V&gt; V method() { // Compliant
+      return null;
+    }
+
+  }
+</pre>
+

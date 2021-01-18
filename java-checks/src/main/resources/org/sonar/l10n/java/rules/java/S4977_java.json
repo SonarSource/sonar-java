@@ -1,0 +1,16 @@
+{
+  "title": "Type parameters should not shadow other type parameters",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-4977",
+  "sqKey": "S4977",
+  "scope": "All"
+}
