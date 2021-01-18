@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
@@ -45,6 +46,8 @@ import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.classpath.ClasspathForMain;
+import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.se.SymbolicExecutionMode;
@@ -135,7 +138,10 @@ class JavaAstScannerTest {
         JavaAstScannerTest.this.context.setCancelled(true);
       }
     });
-    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null);
+    DefaultFileSystem fileSystem = context.fileSystem();
+    ClasspathForMain classpathForMain = new ClasspathForMain(context.config(), fileSystem);
+    ClasspathForTest classpathForTest = new ClasspathForTest(context.config(), fileSystem);
+    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, classpathForMain, classpathForTest, null);
     sonarComponents.setSensorContext(context);
     JavaAstScanner scanner = new JavaAstScanner(sonarComponents);
     scanner.setVisitorBridge(new VisitorsBridge(Collections.singletonList(visitor), new ArrayList<>(), sonarComponents));

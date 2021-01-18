@@ -42,6 +42,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
@@ -50,6 +51,8 @@ import org.sonar.api.utils.Version;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.classpath.ClasspathForMain;
+import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -548,8 +551,15 @@ public class InternalCheckVerifier implements CheckVerifier {
   private static SonarComponents sonarComponents() {
     SensorContextTester context = SensorContextTester.create(new File(""))
       .setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
-    context.setSettings(new MapSettings().setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, true));
-    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null) {
+    MapSettings settings = new MapSettings();
+    DefaultFileSystem fileSystem = context.fileSystem();
+
+    context.setSettings(settings.setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, true));
+
+    ClasspathForMain classpathForMain = new ClasspathForMain(context.config(), fileSystem);
+    ClasspathForTest classpathForTest = new ClasspathForTest(context.config(), fileSystem);
+
+    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, classpathForMain, classpathForTest, null) {
       @Override
       public boolean reportAnalysisError(RecognitionException re, InputFile inputFile) {
         throw new AssertionError(String.format("Should not fail analysis (%s)", re.getMessage()));

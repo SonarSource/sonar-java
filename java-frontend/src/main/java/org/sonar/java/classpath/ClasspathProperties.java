@@ -27,9 +27,14 @@ import java.util.List;
 
 public class ClasspathProperties {
 
+  public static final String EMPTY_LIBRARIES_WARNING_TEMPLATE = "Dependencies/libraries were not provided for analysis of %s files. The '%s' property is empty." +
+    " Verify your configuration, as you might end up with less precise results.";
+
   public static final String SONAR_JAVA_JDK_HOME = "sonar.java.jdkHome";
+
   public static final String SONAR_JAVA_BINARIES = "sonar.java.binaries";
   public static final String SONAR_JAVA_LIBRARIES = "sonar.java.libraries";
+
   public static final String SONAR_JAVA_TEST_BINARIES = "sonar.java.test.binaries";
   public static final String SONAR_JAVA_TEST_LIBRARIES = "sonar.java.test.libraries";
 

@@ -31,6 +31,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.eclipse.jdt.core.JavaCore;
@@ -142,6 +147,9 @@ public class JParser {
 
   public static final String MAXIMUM_SUPPORTED_JAVA_VERSION = "15";
 
+  private static final Predicate<IProblem> IS_SYNTAX_ERROR = error -> (error.getID() & IProblem.Syntax) != 0;
+  private static final Predicate<IProblem> IS_UNDEFINED_TYPE_ERROR = error -> (error.getID() & IProblem.UndefinedType) != 0;
+
   /**
    * @param unitName see {@link ASTParser#setUnitName(String)}
    * @throws RecognitionException in case of syntax errors
@@ -185,21 +193,26 @@ public class JParser {
       LOG.error("ECJ: Unable to parse file", e);
       throw new RecognitionException(-1, "ECJ: Unable to parse file.", e);
     }
-    for (IProblem problem : astNode.getProblems()) {
-      if (!problem.isError()) {
-        continue;
-      }
-      if ((problem.getID() & IProblem.Syntax) == 0) {
-        // TODO logging semantic error?
-        continue;
-      }
-      final int line = problem.getSourceLineNumber();
-      final int column = astNode.getColumnNumber(problem.getSourceStart());
-      throw new RecognitionException(line, "Parse error at line " + line + " column " + column + ": " + problem.getMessage());
+
+    List<IProblem> errors = Stream.of(astNode.getProblems()).filter(IProblem::isError).collect(Collectors.toList());
+    Optional<IProblem> possibleSyntaxError = errors.stream().filter(IS_SYNTAX_ERROR).findFirst();
+    if (possibleSyntaxError.isPresent()) {
+      IProblem syntaxError = possibleSyntaxError.get();
+      int line = syntaxError.getSourceLineNumber();
+      int column = astNode.getColumnNumber(syntaxError.getSourceStart());
+      String message = String.format("Parse error at line %d column %d: %s", line, column, syntaxError.getMessage());
+      // interrupt parsing
+      throw new RecognitionException(line, message);
     }
+
+    Set<String> undefinedTypes = errors.stream()
+      .filter(IS_UNDEFINED_TYPE_ERROR)
+      .map(IProblem::getMessage)
+      .collect(Collectors.toSet());
 
     JParser converter = new JParser();
     converter.sema = new JSema(astNode.getAST());
+    converter.sema.undefinedTypes.addAll(undefinedTypes);
     converter.compilationUnit = astNode;
     converter.tokenManager = new TokenManager(lex(version, unitName, sourceChars), source, new DefaultCodeFormatterOptions(new HashMap<>()));
 

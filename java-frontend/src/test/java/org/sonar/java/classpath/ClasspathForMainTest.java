@@ -40,7 +40,6 @@ import org.sonar.java.TestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -92,14 +91,32 @@ class ClasspathForMainTest {
   }
 
   @Test
-  void register_warning_for_missing_bytecode_when_libraries_empty_and_have_java_sources() {
+  void display_warning_for_missing_bytecode_when_libraries_empty_and_have_java_sources() {
     javaClasspath = createJavaClasspath();
     javaClasspath.init();
     assertThat(javaClasspath.getFilesFromProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES)).isEmpty();
     assertThat(javaClasspath.hasJavaSources()).isTrue();
-    String warning = "Bytecode of dependencies was not provided for analysis of source files, " +
-      "you might end up with less precise results. Bytecode can be provided using sonar.java.libraries property.";
-    verify(analysisWarnings).addUnique(eq(warning));
+
+    javaClasspath.logSuspiciousEmptyLibraries();
+
+    String warning = "Dependencies/libraries were not provided for analysis of source files. The 'sonar.java.libraries' property is empty. "
+      + "Verify your configuration, as you might end up with less precise results.";
+    verify(analysisWarnings).addUnique(warning);
+    assertThat(logTester.logs(LoggerLevel.WARN))
+      .hasSize(1)
+      .contains(warning);
+  }
+
+  @Test
+  void no_warning_for_missing_bytecode_when_libraries_empty_and_have_no_ava_sources() {
+    javaClasspath = new ClasspathForMain(settings.asConfig(), new DefaultFileSystem(new File("src/test/files/classpath/")));
+    javaClasspath.init();
+    assertThat(javaClasspath.getFilesFromProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES)).isEmpty();
+    assertThat(javaClasspath.hasJavaSources()).isFalse();
+
+    javaClasspath.logSuspiciousEmptyLibraries();
+
+    assertThat(logTester.logs(LoggerLevel.WARN)).isEmpty();
   }
 
   @Test

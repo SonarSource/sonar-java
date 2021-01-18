@@ -26,9 +26,11 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
@@ -46,6 +48,8 @@ import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.annotations.VisibleForTesting;
@@ -58,15 +62,22 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
 @SonarLintSide
 public class SonarComponents {
 
+
+  private static final Logger LOG = Loggers.get(SonarComponents.class);
+  private static final int LOGGED_MAX_NUMBER_UNDEFINED_TYPES = 50;
+
   public static final String FAIL_ON_EXCEPTION_KEY = "sonar.internal.analysis.failFast";
 
   private final FileLinesContextFactory fileLinesContextFactory;
+
+  private final ClasspathForMain javaClasspath;
   private final ClasspathForTest javaTestClasspath;
+  private final Set<String> undefinedTypes = new LinkedHashSet<>();
+
   private final CheckFactory checkFactory;
   @Nullable
   private final ProjectDefinition projectDefinition;
   private final FileSystem fs;
-  private final ClasspathForMain javaClasspath;
   private final List<Checks<JavaCheck>> checks;
   private final List<Checks<JavaCheck>> testChecks;
   private final List<Checks<JavaCheck>> allChecks;
@@ -122,7 +133,7 @@ public class SonarComponents {
       }
     }
   }
-  
+
   private static List<Class<? extends JavaCheck>> getChecks(@Nullable Iterable<Class<? extends JavaCheck>> iterable) {
     return iterable != null ?
       StreamSupport.stream(iterable.spliterator(), false).collect(Collectors.toList()) :
@@ -324,5 +335,32 @@ public class SonarComponents {
   public InputComponent project() {
     // TODO to be changed to context.project() once LTS 7.x has been released
     return context.module();
+  }
+
+  public void collectUndefinedTypes(Set<String> undefinedTypes) {
+    this.undefinedTypes.addAll(undefinedTypes);
+  }
+
+  public void logUndefinedTypes() {
+    if (!undefinedTypes.isEmpty()) {
+      javaClasspath.logSuspiciousEmptyLibraries();
+      javaTestClasspath.logSuspiciousEmptyLibraries();
+
+      boolean moreThanMax = undefinedTypes.size() > LOGGED_MAX_NUMBER_UNDEFINED_TYPES;
+
+      String debugMessage = "Unresolved imports/types have been detected during analysis";
+      debugMessage += moreThanMax ? String.format(". Logging the %d first:", LOGGED_MAX_NUMBER_UNDEFINED_TYPES) : ", with following errors:";
+
+      String prefix = "- ";
+      String delimiter = System.lineSeparator() + prefix;
+      String suffix = moreThanMax ? (delimiter + "...") : "";
+
+      LOG.debug(debugMessage);
+      LOG.debug(undefinedTypes
+        .stream()
+        .sorted()
+        .limit(LOGGED_MAX_NUMBER_UNDEFINED_TYPES)
+        .collect(Collectors.joining(delimiter, prefix, suffix)));
+    }
   }
 }

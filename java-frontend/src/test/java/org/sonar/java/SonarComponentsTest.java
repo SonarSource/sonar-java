@@ -23,14 +23,17 @@ import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.NoSuchFileException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -50,14 +53,19 @@ import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.Issue;
 import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
+import org.sonar.api.config.Configuration;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.Version;
+import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.check.Rule;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
+import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
@@ -76,6 +84,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.sonar.java.TestUtils.computeLineEndOffsets;
 
+@EnableRuleMigrationSupport
 @ExtendWith(MockitoExtension.class)
 class SonarComponentsTest {
 
@@ -409,6 +418,93 @@ class SonarComponentsTest {
     assertThat(jspClassPath).containsExactly(plugin.getAbsolutePath(), someJar.getAbsolutePath());
   }
 
+  @Nested
+  class Logging {
+    private final DecimalFormat formatter = new DecimalFormat("00");
+
+    private final SensorContextTester context = SensorContextTester.create(new File(""));
+    private final DefaultFileSystem fs = context.fileSystem();
+    private final Configuration settings = context.config();
+
+    private final ClasspathForMain javaClasspath = new ClasspathForMain(settings, fs);
+    private final ClasspathForTest javaTestClasspath = new ClasspathForTest(settings, fs);
+
+    private SonarComponents sonarComponents;
+
+    @org.junit.Rule
+    public LogTester logTester = new LogTester();
+
+    @BeforeEach
+    void beforeEach() {
+      sonarComponents = new SonarComponents(null, fs, javaClasspath, javaTestClasspath, null);
+      logTester.clear();
+    }
+
+    @Test
+    void log_only_50_undefined_types() {
+      String source = generateSource(26);
+
+      // artificially populated the semantic errors with 26 unknown types and 52 errors
+      sonarComponents.collectUndefinedTypes(((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+
+      // triggers log
+      sonarComponents.logUndefinedTypes();
+
+      List<String> debugLogs = logTester.logs(LoggerLevel.DEBUG);
+      assertThat(debugLogs)
+        .hasSize(2)
+        .startsWith("Unresolved imports/types have been detected during analysis. Logging the 50 first:");
+      String list = debugLogs.get(1);
+
+      assertThat(list)
+        .endsWith("- ...")
+        .doesNotContain("- Y cannot be resolved to a type")
+        .doesNotContain("- Z cannot be resolved to a type");
+      for (int i = 0; i < 26; i++) {
+        char typeName = (char) ('A' + i);
+        assertThat(list).contains(String.format("- The import org.package%s cannot be resolved", formatter.format(i + 1)));
+        if (typeName < 'Y') {
+          assertThat(list).contains(String.format("- %c cannot be resolved to a type", typeName));
+        }
+      }
+    }
+
+    @Test
+    void log_all_undefined_types_if_less_than_thresold() {
+      String source = generateSource(1);
+
+      // artificially populated the semantic errors with 1 unknown types and 2 errors
+      sonarComponents.collectUndefinedTypes(((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+
+      // triggers log
+      sonarComponents.logUndefinedTypes();
+
+      List<String> debugLogs = logTester.logs(LoggerLevel.DEBUG);
+      assertThat(debugLogs)
+        .hasSize(2)
+        .startsWith("Unresolved imports/types have been detected during analysis, with following errors:");
+
+      assertThat(debugLogs.get(1))
+        .doesNotContain("- ...")
+        .contains("- A cannot be resolved to a type")
+        .contains("- The import org.package01 cannot be resolved");
+    }
+
+    private String generateSource(int numberUnknownTypes) {
+      StringBuilder sourceBuilder = new StringBuilder("package org.foo;\n");
+      for (int i = 0; i < numberUnknownTypes; i++) {
+        char typeName = (char) ('A' + i);
+        sourceBuilder.append(String.format("import org.package%s.%c;\n", formatter.format(i + 1), typeName));
+      }
+      sourceBuilder.append("class Test {\n");
+      for (int i = 0; i < numberUnknownTypes; i++) {
+        char typeName = (char) ('A' + i);
+        sourceBuilder.append(String.format("  %c variable%d;\n", typeName, i + 1));
+      }
+      sourceBuilder.append("}");
+      return sourceBuilder.toString();
+    }
+  }
 
   private static CheckRegistrar getRegistrar(final JavaCheck expectedCheck) {
     return registrarContext -> registrarContext.registerClassesForRepository(REPOSITORY_NAME,

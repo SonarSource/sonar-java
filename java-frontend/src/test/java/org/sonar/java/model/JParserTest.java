@@ -37,6 +37,7 @@ import java.util.jar.Manifest;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -96,11 +97,20 @@ class JParserTest {
   @Test
   void err() {
     try {
-      // ASTNode.METHOD_DECLARATION with flag ASTNode.MALFORMED
+      // ASTNode.METHOD_DECLARATION with flag ASTNode.MALFORMED: missing return type
       test("interface Foo { public foo(); // comment\n }");
       fail("exception expected");
     } catch (IndexOutOfBoundsException ignore) {
     }
+  }
+
+  @Test
+  void unknown_types_are_collected() {
+    // import org.foo missing, type Bar unknown
+    CompilationUnitTree cut = test("import org.foo.Bar;\n class Foo {\n void foo(Bar b) {}\n }\n");
+    assertThat(((CompilationUnitTreeImpl) cut).sema.undefinedTypes)
+      .hasSize(2)
+      .contains("The import org.foo cannot be resolved", "Bar cannot be resolved to a type");
   }
 
   @Test
