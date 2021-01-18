@@ -85,7 +85,7 @@ public class TypeParametersShadowingCheck extends BaseTreeVisitor implements Jav
           Collections.singletonList(new JavaFileScannerContext.Location("Shadowed type parameter", shadowedId)
         ), null);
       } else {
-        // Both collections updated only in the else part, because we want to store only the first and outer most appearance of a type.
+        // Entry added only in the else part, because we want to store only the first and outer most appearance of a type.
         // If a type is shadowed multiple times, we use only the outer most as secondary location.
         declaredTypeParameters.put(name, id);
       }
