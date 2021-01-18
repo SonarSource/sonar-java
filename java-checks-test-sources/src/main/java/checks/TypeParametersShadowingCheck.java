@@ -8,7 +8,10 @@ public class TypeParametersShadowingCheck<T0> {
     public class Inner<T> { // Noncompliant [[sc=24;ec=25;secondary=-1]] {{Rename "T" which hides a type parameter from the outer scope.}}
       //...
     }
-    private <T> T method() { // Noncompliant [[sc=14;ec=15;secondary=-4]] {{Rename "T" which hides a type parameter from the outer scope.}}
+    public class Inner2<T0> { // Noncompliant [[secondary=-5]] {{Rename "T0" which hides a type parameter from the outer scope.}}
+      //...
+    }
+    private <T> T method() { // Noncompliant [[sc=14;ec=15;secondary=-7]] {{Rename "T" which hides a type parameter from the outer scope.}}
       return null;
     }
   }

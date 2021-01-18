@@ -19,12 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Deque;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import org.sonar.check.Rule;
@@ -44,12 +40,10 @@ public class TypeParametersShadowingCheck extends BaseTreeVisitor implements Jav
   private JavaFileScannerContext context;
 
   private Map<String, IdentifierTree> currentTypeParametersInScope;
-  private Deque<Map<String, IdentifierTree>> scopes;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
-    scopes = new ArrayDeque<>();
     currentTypeParametersInScope = new HashMap<>();
     scan(context.getTree());
   }
@@ -65,28 +59,21 @@ public class TypeParametersShadowingCheck extends BaseTreeVisitor implements Jav
   }
 
   private <T> void processTree(T tree, TypeParameters typeParameters, boolean isStatic, Consumer<T> visitTree) {
+    Map<String, IdentifierTree> oldScope = currentTypeParametersInScope;
     if (isStatic) {
-      pushNewScope();
+      currentTypeParametersInScope = new HashMap<>();
     }
-    List<String> declaredTypeParameters = processAndGetTypeParameters(typeParameters);
+    Map<String, IdentifierTree> declaredTypeParameters = processAndGetTypeParameters(typeParameters);
+    currentTypeParametersInScope.putAll(declaredTypeParameters);
     visitTree.accept(tree);
     declaredTypeParameters.forEach(currentTypeParametersInScope::remove);
     if (isStatic) {
-      popScope();
+      currentTypeParametersInScope = oldScope;
     }
   }
 
-  private void pushNewScope() {
-    scopes.push(currentTypeParametersInScope);
-    currentTypeParametersInScope = new HashMap<>();
-  }
-
-  private void popScope() {
-    currentTypeParametersInScope = scopes.pop();
-  }
-
-  private List<String> processAndGetTypeParameters(TypeParameters typeParameters) {
-    List<String> declaredTypeParameters = new ArrayList<>();
+  private Map<String, IdentifierTree> processAndGetTypeParameters(TypeParameters typeParameters) {
+    Map<String, IdentifierTree> declaredTypeParameters = new HashMap<>();
     typeParameters.forEach(typeParameter -> {
       IdentifierTree id = typeParameter.identifier();
       String name = id.toString();
@@ -98,10 +85,9 @@ public class TypeParametersShadowingCheck extends BaseTreeVisitor implements Jav
           Collections.singletonList(new JavaFileScannerContext.Location("Shadowed type parameter", shadowedId)
         ), null);
       } else {
-        // Both collections updated only in the else part, because we want to store only the first and outer most apparition of a type.
+        // Both collections updated only in the else part, because we want to store only the first and outer most appearance of a type.
         // If a type is shadowed multiple times, we use only the outer most as secondary location.
-        currentTypeParametersInScope.put(name, id);
-        declaredTypeParameters.add(name);
+        declaredTypeParameters.put(name, id);
       }
     });
     return declaredTypeParameters;
