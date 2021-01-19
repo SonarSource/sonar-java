@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
 class EscapedUnicodeCharactersCheckTest {
@@ -30,6 +31,14 @@ class EscapedUnicodeCharactersCheckTest {
   void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/EscapedUnicodeCharactersCheck.java"))
+      .withCheck(new EscapedUnicodeCharactersCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void testTextBlocks() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/EscapedUnicodeCharactersTextBlocksCheck.java"))
       .withCheck(new EscapedUnicodeCharactersCheck())
       .verifyIssues();
   }
