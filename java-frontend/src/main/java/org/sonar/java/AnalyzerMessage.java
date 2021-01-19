@@ -129,7 +129,10 @@ public class AnalyzerMessage {
   public static AnalyzerMessage.TextSpan textSpanBetween(Tree startTree, Tree endTree) {
     SyntaxToken firstSyntaxToken = getNonEmptyTree(startTree).firstToken();
     SyntaxToken lastSyntaxToken = getNonEmptyTree(endTree).lastToken();
-    return textSpanBetween(firstSyntaxToken, lastSyntaxToken);
+    Tree lastTree = lastSyntaxToken.parent();
+    return lastTree != null && lastTree.is(Tree.Kind.TEXT_BLOCK) ? 
+      textSpanEndsWithTextBlock(firstSyntaxToken, lastSyntaxToken) : 
+      textSpanBetween(firstSyntaxToken, lastSyntaxToken);
   }
 
   private static AnalyzerMessage.TextSpan textSpanBetween(SyntaxToken firstSyntaxToken, SyntaxToken lastSyntaxToken) {
@@ -139,27 +142,46 @@ public class AnalyzerMessage {
       lastSyntaxToken.line(),
       lastSyntaxToken.column() + lastSyntaxToken.text().length()
     );
-    Preconditions.checkState(!location.isEmpty(),
-      "Invalid issue location: Text span is empty when trying reporting on (l:%s, c:%s).",
-      firstSyntaxToken.line(), firstSyntaxToken.column());
+    checkLocation(firstSyntaxToken, location);
     return location;
   }
 
+  private static AnalyzerMessage.TextSpan textSpanEndsWithTextBlock(SyntaxToken firstSyntaxToken, SyntaxToken lastSyntaxToken) {
+    int[] endOfTextBlock = endOfTextBlock(lastSyntaxToken);
+    AnalyzerMessage.TextSpan location = new AnalyzerMessage.TextSpan(
+      firstSyntaxToken.line(),
+      firstSyntaxToken.column(),
+      endOfTextBlock[0],
+      endOfTextBlock[1]
+    );
+    checkLocation(firstSyntaxToken, location);
+    return location;
+  }
+
+  private static void checkLocation(SyntaxToken firstSyntaxToken, TextSpan location) {
+    Preconditions.checkState(!location.isEmpty(),
+      "Invalid issue location: Text span is empty when trying reporting on (l:%s, c:%s).",
+      firstSyntaxToken.line(), firstSyntaxToken.column());
+  }
+
   private static AnalyzerMessage.TextSpan textSpanForTextBlock(SyntaxToken syntaxToken) {
+    int[] end = endOfTextBlock(syntaxToken);
+    AnalyzerMessage.TextSpan location = new AnalyzerMessage.TextSpan(
+      syntaxToken.line(),
+      syntaxToken.column(),
+      end[0],
+      end[1]
+    );
+    checkLocation(syntaxToken, location);
+    return location;
+  }
+
+  private static int[] endOfTextBlock(SyntaxToken syntaxToken) {
     String text = syntaxToken.text();
     String[] lines = text.split("(\\r)?\\n|\\r");
     int endLine = syntaxToken.line() + lines.length - 1;
     int endColumn = lines[lines.length - 1].length() - 1;
-    AnalyzerMessage.TextSpan location = new AnalyzerMessage.TextSpan(
-      syntaxToken.line(),
-      syntaxToken.column(),
-      endLine,
-      endColumn
-    );
-    Preconditions.checkState(!location.isEmpty(),
-      "Invalid issue location: Text span is empty when trying reporting on (l:%s, c:%s).",
-      syntaxToken.line(), syntaxToken.column());
-    return location;
+    return new int[] {endLine, endColumn};
   }
 
   /**

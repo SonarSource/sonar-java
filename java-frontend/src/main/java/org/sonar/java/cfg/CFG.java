@@ -596,6 +596,7 @@ public class CFG implements ControlFlowGraph {
       case CHAR_LITERAL:
       case FLOAT_LITERAL:
       case STRING_LITERAL:
+      case TEXT_BLOCK:
       case BOOLEAN_LITERAL:
       case NULL_LITERAL:
         currentBlock.elements.add(tree);

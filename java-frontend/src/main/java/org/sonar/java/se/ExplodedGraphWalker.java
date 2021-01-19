@@ -695,6 +695,7 @@ public class ExplodedGraphWalker {
       case FLOAT_LITERAL:
       case DOUBLE_LITERAL:
       case CHAR_LITERAL:
+      case TEXT_BLOCK:
       case STRING_LITERAL:
         SymbolicValue val = constraintManager.createSymbolicValue(tree);
         programState = programState.stackValue(val);
