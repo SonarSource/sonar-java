@@ -2,10 +2,7 @@ package checks;
 
 public class UnnecessaryEscapeSequencesInTextBlock {
 
-  public void str() { // Noncompliant@+2 {{Remove this unnecessary escape sequence.}}
-    String question = """
-              What's\tthe\tpoint,\treally?""";
-
+  public void str() {
     String question1 = "What's the point, really?"; // Compliant
 
     String question2 = """

@@ -32,7 +32,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class UnnecessaryEscapeSequencesInTextBlockCheck extends IssuableSubscriptionVisitor {
   private static final String MESSAGE = "Remove this unnecessary escape sequence.";
   private static final String TRIPLE_QUOTE_MESSAGE = "Use '\\\"\"\"' to escape \"\"\".";
-  private static final Set<String> ESCAPED = SetUtils.immutableSetOf("\\n", "\\t", "\\'", "\\\"");
+  private static final Set<String> ESCAPED = SetUtils.immutableSetOf("\\n", "\\'", "\\\"");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -44,7 +44,7 @@ public class UnnecessaryEscapeSequencesInTextBlockCheck extends IssuableSubscrip
     LiteralTree textBlock = (LiteralTree) tree;
     int startLine = textBlock.token().line();
     String value = textBlock.value();
-    String[] lines = value.split("(\r?\n)|\r");
+    String[] lines = value.split("\r?\n|\r");
     
     for (int i = 0; i < lines.length; ++i) {
       if (lines[i].contains("\\\"\\\"\\\"")) {
