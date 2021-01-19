@@ -752,6 +752,7 @@ public final class CheckList {
       UndocumentedApiCheck.class,
       UnicodeCaseCheck.class,
       UnicodeAwareCharClassesCheck.class,
+      UnnecessaryEscapeSequencesInTextBlockCheck.class,
       UnnecessarySemicolonCheck.class,
       UnreachableCatchCheck.class,
       UnusedGroupNamesCheck.class,
