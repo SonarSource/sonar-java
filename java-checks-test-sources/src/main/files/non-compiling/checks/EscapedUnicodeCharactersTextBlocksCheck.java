@@ -12,11 +12,11 @@ class EscapedUnicodeCharactersCheck {
       
       
       
-      """; // Noncompliant@-10 [[sc=22;ec=9]] {{Remove this Unicode escape sequence and use the character instead.}}
+      """; // Noncompliant@-10 [[sc=22;ec=10]] {{Remove this Unicode escape sequence and use the character instead.}}
     String prefix = """
-      n\uuuu00E9e"""; // Noncompliant@-1 [[sc=21;ec=20]] {{Remove this Unicode escape sequence and use the character instead.}}
+      n\uuuu00E9e"""; // Noncompliant@-1 [[sc=21;ec=21]] {{Remove this Unicode escape sequence and use the character instead.}}
     String prefix2= """
-      n\\\uuuu00E9e"""; // Noncompliant@-1 [[sc=21;ec=22]] {{Remove this Unicode escape sequence and use the character instead.}}
+      n\\\uuuu00E9e"""; // Noncompliant@-1 [[sc=21;ec=23]] {{Remove this Unicode escape sequence and use the character instead.}}
     prefix = """
       n\u00E9e\u0001v"""; // Noncompliant@-1
     // compliant, only escaped
@@ -28,7 +28,7 @@ class EscapedUnicodeCharactersCheck {
     prefix = """
       \u007f""";
     prefix = """
-      a\u0080b\u0002c\u00A0\u0083\u0164"""; // Noncompliant@-1 [[sc=14;ec=42]]
+      a\u0080b\u0002c\u00A0\u0083\u0164"""; // Noncompliant@-1 [[sc=14;ec=43]]
     prefix = """
       n\\u00E9e""";
     prefix = """
