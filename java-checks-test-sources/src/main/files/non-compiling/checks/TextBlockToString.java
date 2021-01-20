@@ -6,6 +6,6 @@ public class TextBlockToString {
               
   hello
   
-  """.toString(); // Noncompliant@-4 [[sc=19;ec=5]] {{there's no need to call "toString()" on a text block.}}
+  """.toString(); // Noncompliant@-4 [[sc=19;ec=6]] {{there's no need to call "toString()" on a text block.}}
 
 }

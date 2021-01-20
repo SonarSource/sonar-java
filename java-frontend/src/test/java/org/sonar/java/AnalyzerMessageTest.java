@@ -136,7 +136,7 @@ class AnalyzerMessageTest {
     assertThat(textSpan.startLine).isEqualTo(2);
     assertThat(textSpan.startCharacter).isEqualTo(12);
     assertThat(textSpan.endLine).isEqualTo(6);
-    assertThat(textSpan.endCharacter).isEqualTo(4);
+    assertThat(textSpan.endCharacter).isEqualTo(5);
   }
 
   @Test
@@ -160,7 +160,7 @@ class AnalyzerMessageTest {
     assertThat(textSpan.startLine).isEqualTo(2);
     assertThat(textSpan.startCharacter).isEqualTo(4);
     assertThat(textSpan.endLine).isEqualTo(5);
-    assertThat(textSpan.endCharacter).isEqualTo(17);
+    assertThat(textSpan.endCharacter).isEqualTo(18);
   }
 
   @Test

@@ -180,7 +180,7 @@ public class AnalyzerMessage {
     String text = syntaxToken.text();
     String[] lines = text.split("(\\r)?\\n|\\r");
     int endLine = syntaxToken.line() + lines.length - 1;
-    int endColumn = lines[lines.length - 1].length() - 1;
+    int endColumn = lines[lines.length - 1].length();
     return new int[] {endLine, endColumn};
   }
 
