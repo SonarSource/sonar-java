@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -45,7 +45,7 @@ public class EscapedUnicodeCharactersCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Collections.singletonList(Kind.STRING_LITERAL);
+    return Arrays.asList(Kind.STRING_LITERAL, Kind.TEXT_BLOCK);
   }
 
   @Override
@@ -54,6 +54,9 @@ public class EscapedUnicodeCharactersCheck extends IssuableSubscriptionVisitor {
       return;
     }
     String value = LiteralUtils.trimQuotes(((LiteralTree) node).value());
+    if (node.is(Kind.TEXT_BLOCK)) {
+      value = value.replaceAll("(\r?\n|\r)\\s*", "");
+    }
     // replace \\ with nothing just to differentiate \u0000 and \\u0000
     Matcher matcher = UNICODE_ESCAPED_CHAR.matcher(value.replace("\\\\", ""));
     List<String> matches = getAllMatches(matcher);
