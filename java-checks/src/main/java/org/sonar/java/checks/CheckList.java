@@ -683,6 +683,7 @@ public final class CheckList {
       StringBufferAndBuilderWithCharCheck.class,
       StringCallsBeyondBoundsCheck.class,
       StringConcatenationInLoopCheck.class,
+      StringConcatToTextBlockCheck.class,
       StringLiteralDuplicatedCheck.class,
       StringLiteralInsideEqualsCheck.class,
       StringMethodsOnSingleCharCheck.class,

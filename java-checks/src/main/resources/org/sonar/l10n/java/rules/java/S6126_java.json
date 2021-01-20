@@ -1,0 +1,16 @@
+{
+  "title": "String multiline concatenation can be replaced with Text Blocks",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "java15"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6126",
+  "sqKey": "S6126",
+  "scope": "All"
+}
