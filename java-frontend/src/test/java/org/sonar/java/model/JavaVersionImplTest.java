@@ -132,5 +132,12 @@ class JavaVersionImplTest {
     assertThat(version.isNotSet()).isFalse();
     assertThat(version.asInt()).isEqualTo(12);
     assertThat(version.isJava12Compatible()).isTrue();
+
+    version = JavaVersionImpl.fromString("15");
+    assertThat(version.isNotSet()).isFalse();
+    assertThat(version.asInt()).isEqualTo(15);
+    assertThat(version.isJava15Compatible()).isTrue();
+    assertThat(version.isJava12Compatible()).isTrue();
+    assertThat(version.isJava8Compatible()).isTrue();
   }
 }
