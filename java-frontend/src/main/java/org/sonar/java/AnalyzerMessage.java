@@ -21,6 +21,7 @@ package org.sonar.java;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -130,8 +131,9 @@ public class AnalyzerMessage {
     SyntaxToken firstSyntaxToken = getNonEmptyTree(startTree).firstToken();
     SyntaxToken lastSyntaxToken = getNonEmptyTree(endTree).lastToken();
     Tree lastTree = lastSyntaxToken.parent();
-    return lastTree != null && lastTree.is(Tree.Kind.TEXT_BLOCK) ? 
-      textSpanEndsWithTextBlock(firstSyntaxToken, lastSyntaxToken) : 
+    Objects.requireNonNull(lastTree);
+    return lastTree.is(Tree.Kind.TEXT_BLOCK) ? 
+      textSpanBetween(firstSyntaxToken, ((LiteralTree) lastTree)) : 
       textSpanBetween(firstSyntaxToken, lastSyntaxToken);
   }
 
@@ -146,8 +148,8 @@ public class AnalyzerMessage {
     return location;
   }
 
-  private static AnalyzerMessage.TextSpan textSpanEndsWithTextBlock(SyntaxToken firstSyntaxToken, SyntaxToken lastSyntaxToken) {
-    int[] endOfTextBlock = endOfTextBlock(lastSyntaxToken);
+  private static AnalyzerMessage.TextSpan textSpanBetween(SyntaxToken firstSyntaxToken, LiteralTree textBlockTree) {
+    int[] endOfTextBlock = endOfTextBlock(textBlockTree.token());
     AnalyzerMessage.TextSpan location = new AnalyzerMessage.TextSpan(
       firstSyntaxToken.line(),
       firstSyntaxToken.column(),
