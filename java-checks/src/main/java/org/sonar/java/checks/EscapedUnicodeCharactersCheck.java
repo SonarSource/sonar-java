@@ -55,7 +55,7 @@ public class EscapedUnicodeCharactersCheck extends IssuableSubscriptionVisitor {
     }
     String value = LiteralUtils.trimQuotes(((LiteralTree) node).value());
     if (node.is(Kind.TEXT_BLOCK)) {
-      value = value.replaceAll("(\r?\n|\r)\\s*+", "");
+      value = value.replaceAll("(\r?\n|\r)\\s*", "");
     }
     // replace \\ with nothing just to differentiate \u0000 and \\u0000
     Matcher matcher = UNICODE_ESCAPED_CHAR.matcher(value.replace("\\\\", ""));

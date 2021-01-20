@@ -36,7 +36,7 @@ class EscapedUnicodeCharactersCheckTest {
   }
 
   @Test
-  void testTextBlocks() {
+  void test_text_blocks() {
     JavaCheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/EscapedUnicodeCharactersTextBlocksCheck.java"))
       .withCheck(new EscapedUnicodeCharactersCheck())

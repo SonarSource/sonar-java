@@ -2,6 +2,17 @@ package checks;
 
 class EscapedUnicodeCharactersCheck {
   void method() {
+    String prefix0 = """
+      
+      
+      
+      
+      n\uuuu00E9e
+      
+      
+      
+      
+      """; // Noncompliant@-10 [[sc=22;ec=9]] {{Remove this Unicode escape sequence and use the character instead.}}
     String prefix = """
       n\uuuu00E9e"""; // Noncompliant@-1 [[sc=21;ec=20]] {{Remove this Unicode escape sequence and use the character instead.}}
     String prefix2= """
