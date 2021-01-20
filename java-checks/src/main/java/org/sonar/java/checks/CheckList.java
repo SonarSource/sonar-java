@@ -359,6 +359,7 @@ public final class CheckList {
       DataHashingCheck.class,
       DateAndTimesCheck.class,
       DateFormatWeekYearCheck.class,
+      DateTimeFormatterMismatchCheck.class,
       DateUtilsTruncateCheck.class,
       DeadStoreCheck.class,
       DebugFeatureEnabledCheck.class,
