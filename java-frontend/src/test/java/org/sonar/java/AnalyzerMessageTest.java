@@ -136,7 +136,31 @@ class AnalyzerMessageTest {
     assertThat(textSpan.startLine).isEqualTo(2);
     assertThat(textSpan.startCharacter).isEqualTo(12);
     assertThat(textSpan.endLine).isEqualTo(6);
-    assertThat(textSpan.endCharacter).isEqualTo(4);
+    assertThat(textSpan.endCharacter).isEqualTo(5);
+  }
+
+  @Test
+  void textSpanBetweenTextBlocks() {
+    CompilationUnitTree cut;
+    cut = JParserTestUtils.parse(
+      "class A {  " +
+        "public void str() {\n" +
+        "    String question2 = \"\"\"\n" +
+        "              \\\"What's the point, really\n" +
+        "              \\\"What's the point, really\n" +
+        "              ?\"\"\"; " +
+        "}" +
+        "}");
+    ClassTree classTree = (ClassTree) cut.types().get(0);
+    VariableTree variableTree = (VariableTree) ((MethodTree)(classTree.members()).get(0)).block().body().get(0);
+
+    TextSpan textSpan;
+
+    textSpan = AnalyzerMessage.textSpanBetween(variableTree, variableTree.initializer());
+    assertThat(textSpan.startLine).isEqualTo(2);
+    assertThat(textSpan.startCharacter).isEqualTo(4);
+    assertThat(textSpan.endLine).isEqualTo(5);
+    assertThat(textSpan.endCharacter).isEqualTo(18);
   }
 
   @Test
