@@ -132,7 +132,7 @@ class ExecutionTimeReportTest {
     report.report();
     assertThat(logTester.logs(LoggerLevel.TRACE)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.DEBUG)).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly("Slowest analyzed files:" + NL +
+    assertThat(logTester.logs(LoggerLevel.INFO)).contains("Slowest analyzed files:" + NL +
       "    f2900 (2900ms)" + NL +
       "    f2800 (2800ms)" + NL +
       "    f2700 (2700ms)" + NL +
@@ -153,7 +153,7 @@ class ExecutionTimeReportTest {
     report.report();
     assertThat(logTester.logs(LoggerLevel.TRACE)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.DEBUG)).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly("Slowest analyzed files:" + NL +
+    assertThat(logTester.logs(LoggerLevel.INFO)).contains("Slowest analyzed files:" + NL +
       "    f1 (50000ms)");
   }
 
@@ -164,7 +164,7 @@ class ExecutionTimeReportTest {
     simulateAnalysis("f2", 2000);
     report.report();
     assertThat(logTester.logs(LoggerLevel.TRACE)).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).containsExactly("Analysis time of f2 (2000ms)");
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("Analysis time of f2 (2000ms)");
     assertThat(logTester.logs(LoggerLevel.INFO)).isEmpty();
     assertThat(report).hasToString("    f2 (2000ms)");
   }
@@ -175,7 +175,7 @@ class ExecutionTimeReportTest {
     simulateAnalysis("f1", 50);
     simulateAnalysis("f2", 2000);
     report.report();
-    assertThat(logTester.logs(LoggerLevel.TRACE)).containsExactly(
+    assertThat(logTester.logs(LoggerLevel.TRACE)).contains(
       "Analysis time of f1 (50ms)",
       "Analysis time of f2 (2000ms)"
     );
