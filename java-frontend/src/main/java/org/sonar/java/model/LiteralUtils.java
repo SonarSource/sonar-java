@@ -20,6 +20,7 @@
 package org.sonar.java.model;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
@@ -148,6 +149,29 @@ public class LiteralUtils {
 
   public static boolean isNegOne(ExpressionTree tree) {
     return tree.is(Kind.UNARY_MINUS) && isOne(((UnaryExpressionTree) tree).expression());
+  }
+  
+  public static String getAsStringValue(LiteralTree tree) {
+    if (!tree.is(Kind.TEXT_BLOCK)) {
+      return trimQuotes(tree.value()).replace("\\n", "\n");
+    }
+    String[] lines = trimQuotes(tree.value()).split("\r?\n");
+    int indent = Arrays.stream(lines).skip(1).mapToInt(LiteralUtils::getTrailingSpaces)
+      .min().orElse(0);
+
+    return Arrays.stream(lines)
+      .skip(1)
+      .map(s -> s.substring(indent))
+      .collect(Collectors.joining("\n"));
+  }
+  
+  private static int getTrailingSpaces(String str) {
+    for (int i = 0; i < str.length(); ++i) {
+      if (str.charAt(i) != ' ' && str.charAt(i) != '\t' ) {
+        return i;
+      }
+    }
+    return str.length();
   }
 
   public static int indentationOfTextBlock(String[] lines) {

@@ -1,8 +1,7 @@
-class A {
-  @SupressWarnings("allall")
-  @SupressWarnings("allall")
-  @SupressWarnings("allall")
-  @SupressWarnings("aaaaa")
+package checks;
+
+public class StringLiteralDuplicatedCheck {
+
   public void f() {
     System.out.println("aaaaa");
     System.out.println("bbbbb");
@@ -36,21 +35,35 @@ class ConstantAlreadyDefined {
   private static final String REPORT_WITHOUT_THRESHOLD = "blabla";
 
   void test() {
-    System.out.println("constant"); // Noncompliant [[secondary=40]] {{Use already-defined constant 'A' instead of duplicating its value here.}}
+    System.out.println("constant"); // Noncompliant [[secondary=39]] {{Use already-defined constant 'A' instead of duplicating its value here.}}
     System.out.println("constant");
     System.out.println("blabla"); // Noncompliant {{Use already-defined constant 'REPORT_WITHOUT_THRESHOLD' instead of duplicating its value here.}}
   }
 
-  public IssueChangeNotification setProject(Component project) {
+  public ConstantAlreadyDefined setProject(Proj project) {
     setFieldValue("projectName", project.longName());
     setFieldValue("projectKey", project.key());
     return this;
   }
 
-  public IssueChangeNotification setProject(String projectKey, String projectName) {
+  private void setFieldValue(String projectName, Object longName) {
+    
+  }
+
+  public ConstantAlreadyDefined setProject(String projectKey, String projectName) {
     setFieldValue("projectName", projectName);
     setFieldValue("projectKey", projectKey);
     return this;
+  }
+
+  private class Proj {
+    public Object longName() {
+      return null;
+    }
+
+    public Object key() {
+      return null;
+    }
   }
 }
 

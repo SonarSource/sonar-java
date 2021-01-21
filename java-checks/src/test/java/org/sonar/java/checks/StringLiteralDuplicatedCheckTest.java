@@ -22,12 +22,23 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 class StringLiteralDuplicatedCheckTest {
 
   @Test
   void detected() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/StringLiteralDuplicatedCheck.java")
+      .onFile(testSourcesPath("checks/StringLiteralDuplicatedCheck.java"))
+      .withCheck(new StringLiteralDuplicatedCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void detected_text_blocks() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/TextBlocksDuplicatedCheck.java"))
       .withCheck(new StringLiteralDuplicatedCheck())
       .verifyIssues();
   }
@@ -37,7 +48,7 @@ class StringLiteralDuplicatedCheckTest {
     StringLiteralDuplicatedCheck visitor = new StringLiteralDuplicatedCheck();
     visitor.threshold = 2;
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/StringLiteralDuplicatedCheckCustom.java")
+      .onFile(testSourcesPath("checks/StringLiteralDuplicatedCheckCustom.java"))
       .withCheck(visitor)
       .verifyIssues();
   }

@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -70,10 +71,13 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
           "Use already-defined constant '" + constant.simpleName() + "' instead of duplicating its value here.",
           secondaryLocations(duplications.subList(1, duplications.size())), literalOccurrence);
       } else if (literalOccurrence >= threshold) {
+        LiteralTree literalTree = literalTrees.iterator().next();
+        String message = literalTree.is(Tree.Kind.TEXT_BLOCK) ? ("Define a constant instead of duplicating this text block " + literalOccurrence + " times.")
+          : ("Define a constant instead of duplicating this literal \"" + key + "\" " + literalOccurrence + " times.");
         context.reportIssue(
           this,
-          literalTrees.iterator().next(),
-          "Define a constant instead of duplicating this literal " + key + " " + literalOccurrence + " times.",
+          literalTree,
+          message,
           secondaryLocations(literalTrees), literalOccurrence);
       }
     });
@@ -85,10 +89,10 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
 
   @Override
   public void visitLiteral(LiteralTree tree) {
-    if (tree.is(Tree.Kind.STRING_LITERAL)) {
+    if (tree.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK)) {
       String literal = tree.value();
       if (literal.length() >= MINIMAL_LITERAL_LENGTH) {
-        occurrences.computeIfAbsent(literal, k -> new ArrayList<>()).add(tree);
+        occurrences.computeIfAbsent(LiteralUtils.getAsStringValue(tree), k -> new ArrayList<>()).add(tree);
       }
     }
   }
@@ -96,10 +100,10 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
   @Override
   public void visitVariable(VariableTree tree) {
     ExpressionTree initializer = tree.initializer();
-    if (initializer != null && initializer.is(Tree.Kind.STRING_LITERAL)
+    if (initializer != null && initializer.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK)
       && ModifiersUtils.hasModifier(tree.modifiers(), Modifier.STATIC)
       && ModifiersUtils.hasModifier(tree.modifiers(), Modifier.FINAL)) {
-      constants.putIfAbsent(((LiteralTree) initializer).value(), tree);
+      constants.putIfAbsent(LiteralUtils.getAsStringValue((LiteralTree) initializer), tree);
       return;
     }
     super.visitVariable(tree);
