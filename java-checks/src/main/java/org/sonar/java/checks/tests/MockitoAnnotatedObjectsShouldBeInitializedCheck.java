@@ -19,11 +19,9 @@
  */
 package org.sonar.java.checks.tests;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -33,11 +31,9 @@ import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S5979")
@@ -126,13 +122,7 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
   }
 
   private static boolean areMocksInitializedInSetup(ClassTree clazz) {
-    List<MethodTree> methods = new ArrayList<>();
-    Optional<ClassTree> parent = Optional.of(clazz);
-    while (parent.isPresent()) {
-      ClassTree tree = parent.get();
-      methods.addAll(getSetupMethods(tree));
-      parent = getParentClass(tree);
-    }
+    List<MethodTree> methods = getSetupMethods(clazz);
     for (MethodTree method : methods) {
       SetupMethodVisitor visitor = new SetupMethodVisitor();
       method.accept(visitor);
@@ -140,20 +130,11 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
         return true;
       }
     }
-    return false;
+    return hasParentClass(clazz);
   }
 
-  private static Optional<ClassTree> getParentClass(ClassTree tree) {
-    TypeTree parentTree = tree.superClass();
-    if (parentTree == null) {
-      return Optional.empty();
-    }
-    IdentifierTree identifier = (IdentifierTree) parentTree;
-    Tree declaration = identifier.symbol().declaration();
-    if (declaration == null) {
-      return Optional.empty();
-    }
-    return Optional.of((ClassTree) declaration);
+  private static boolean hasParentClass(ClassTree tree) {
+    return tree.superClass() != null;
   }
 
   private static List<MethodTree> getSetupMethods(ClassTree tree) {

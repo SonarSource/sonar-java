@@ -197,16 +197,11 @@ public class MockitoAnnotatedObjectsShouldBeInitialized {
     private Bar bar;
   }
 
-  class Intermediary extends SetupInBaseClass {
+  class NoSetup {
   }
 
-  class MockInGrandChild extends Intermediary {
-    @Mock // Compliant
-    private Bar bar;
-  }
-
-  class DifferentFiles extends MockitoAnnotatedObjectsShouldBeInitializedSuperClass {
-    @Mock // Noncompliant FP The setup method is defined in a parent class declared in another file
+  class MockInGrandChild extends NoSetup {
+    @Mock // Compliant FN Super classes are not explored
     private Bar bar;
   }
 
