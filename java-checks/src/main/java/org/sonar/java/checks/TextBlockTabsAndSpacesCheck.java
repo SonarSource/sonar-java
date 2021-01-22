@@ -19,9 +19,11 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -35,7 +37,7 @@ public class TextBlockTabsAndSpacesCheck extends IssuableSubscriptionVisitor {
 
   private static char indentationCharacter(String[] lines) {
     for (String line : lines) {
-      if (!line.isEmpty() && isIndentation(line.charAt(0))) {
+      if (!line.isEmpty() && line.charAt(0) != '"') {
         return line.charAt(0);
       }
     }
@@ -43,27 +45,27 @@ public class TextBlockTabsAndSpacesCheck extends IssuableSubscriptionVisitor {
     return '\0';
   }
 
-  private static boolean isIndentation(char c) {
-    return c == ' ' || c == '\t';
-  }
-
-  private static boolean containsWrongIndentation(String[] lines) {
-    char indentationCharacter = indentationCharacter(lines);
-    for (String line : lines) {
-      for (int i = 0; i < line.length() && isIndentation(line.charAt(i)); i++) {
-        if (line.charAt(i) != indentationCharacter) {
-          return true;
-        }
+  private static boolean containsWrongIndentation(String line, int indent, char indentationCharacter) {
+    for (int i = 0; i < line.length() && i < indent; i++) {
+      if (line.charAt(i) != indentationCharacter) {
+        return true;
       }
     }
     return false;
   }
 
+  private static boolean containsWrongIndentation(LiteralTree textBlock) {
+    String[] lines = textBlock.value().split("\r?\n|\r");
+    int indent = LiteralUtils.indentationOfTextBlock(lines);
+    char indentationCharacter = indentationCharacter(lines);
+    return indent> 0 && Arrays.stream(lines).skip(1)
+      .anyMatch(line -> containsWrongIndentation(line, indent, indentationCharacter));
+  }
+
   @Override
   public void visitNode(Tree tree) {
     LiteralTree textBlock = (LiteralTree) tree;
-    String[] lines = textBlock.value().split("\r?\n");
-    if (containsWrongIndentation(lines)) {
+    if (containsWrongIndentation(textBlock)) {
       reportIssue(tree, "Use only spaces or only tabs for indentation");
     }
   }

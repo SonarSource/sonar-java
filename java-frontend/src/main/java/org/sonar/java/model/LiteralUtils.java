@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model;
 
+import java.util.Arrays;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
@@ -147,5 +148,33 @@ public class LiteralUtils {
 
   public static boolean isNegOne(ExpressionTree tree) {
     return tree.is(Kind.UNARY_MINUS) && isOne(((UnaryExpressionTree) tree).expression());
+  }
+
+  public static int indentationOfTextBlock(String[] lines) {
+    return Arrays.stream(lines).skip(1)
+      .filter(LiteralUtils::isNonEmptyLine)
+      .mapToInt(LiteralUtils::getIndentation)
+      .min().orElse(0);
+  }
+
+  private static boolean isNonEmptyLine(String line) {
+    return line.chars().anyMatch(LiteralUtils::isNotWhiteSpace);
+  }
+
+  /**
+   * @return Whether c is not a white space character according to the space-stripping rules of text blocks, i.e. whether
+   *         it's a space, tab or form feed
+   */
+  private static boolean isNotWhiteSpace(int c) {
+    return c != ' ' && c != '\t' && c != '\f';
+  }
+
+  private static int getIndentation(String line) {
+    for (int i = 0; i < line.length(); ++i) {
+      if (isNotWhiteSpace(line.charAt(i))) {
+        return i;
+      }
+    }
+    return line.length();
   }
 }

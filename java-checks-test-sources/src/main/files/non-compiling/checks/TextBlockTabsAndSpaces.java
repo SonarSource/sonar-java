@@ -28,12 +28,10 @@ public class TextBlockTabsAndSpaces {
   	This line is indented with two spaces and a tab
   	""";
 
-  // This could be argued to be an FP because the tab isn't part of the indentation by Java's logic, but
-	// it's probably intended to be
-  // Noncompliant@+1
+  // The tab is outside of the indentation, so it doesn't trigger this rule.
   public final static String compliant3 = """
-    	This line indented with four spaces and then has a tab that isn't technically part of the indentation
-  """;
+    	This line indented with four spaces and then has a tab that isn't part of the indentation
+    """;
 
   public final static String empty = """
 """;
