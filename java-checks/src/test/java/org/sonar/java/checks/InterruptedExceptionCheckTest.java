@@ -38,7 +38,7 @@ class InterruptedExceptionCheckTest {
       .onFile(testSourcesPath("checks/InterruptedExceptionCheck.java"))
       .withCheck(new InterruptedExceptionCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyIssues();
   }
   
   @Test
@@ -52,6 +52,6 @@ class InterruptedExceptionCheckTest {
       .onFile(nonCompilingTestSourcesPath("checks/InterruptedExceptionCheck.java"))
       .withCheck(new InterruptedExceptionCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyIssues();
   }
 }
