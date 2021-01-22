@@ -65,17 +65,27 @@ class ConstantAlreadyDefined {
 
   void test() {
     System.out.println("""
-      constant"""); // Noncompliant@-1 [[secondary=69]] {{Use already-defined constant 'A' instead of duplicating its value here.}}
+      constant"""); // Noncompliant@-1 [[secondary=+1]] {{Use already-defined constant 'A' instead of duplicating its value here.}}
     System.out.println("""
       constant""");
     System.out.println("""
-      blabla"""); // Noncompliant@-1 [[secondary=78]] {{Use already-defined constant 'REPORT_WITHOUT_THRESHOLD' instead of duplicating its value here.}}
+      blabla"""); // Noncompliant@-1 [[secondary=+6,+7]] {{Use already-defined constant 'REPORT_WITHOUT_THRESHOLD' instead of duplicating its value here.}}
 
     System.out.println("""
       constant
       constant"""); // Noncompliant@-2 {{Use already-defined constant 'C' instead of duplicating its value here.}}
     
     System.out.println("blabla"); 
+    System.out.println("""
+      blabla"""); 
+    System.out.println("""
+      blabla           """); 
+    System.out.println("""
+      blabla           
+      """); 
+    System.out.println("""
+      blabla           
+"""); 
   }
 
   public ConstantAlreadyDefined setProject(Proj project) {

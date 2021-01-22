@@ -153,25 +153,25 @@ public class LiteralUtils {
   
   public static String getAsStringValue(LiteralTree tree) {
     if (!tree.is(Kind.TEXT_BLOCK)) {
-      return trimQuotes(tree.value()).replace("\\n", "\n");
+      return trimQuotes(tree.value());
     }
-    String[] lines = trimQuotes(tree.value()).split("\r?\n");
-    int indent = Arrays.stream(lines).skip(1).mapToInt(LiteralUtils::getTrailingSpaces)
-      .min().orElse(0);
+    String[] lines = tree.value().split("\r?\n");
+    int indent = indentationOfTextBlock(lines);
 
     return Arrays.stream(lines)
       .skip(1)
-      .map(s -> s.substring(indent))
-      .collect(Collectors.joining("\n"));
+      .map(LiteralUtils::removeTrailingSpaces)
+      .map(s -> stripIndent(indent, s))
+      .collect(Collectors.joining("\n"))
+      .replaceAll("\"\"\"$", "");
   }
-  
-  private static int getTrailingSpaces(String str) {
-    for (int i = 0; i < str.length(); ++i) {
-      if (str.charAt(i) != ' ' && str.charAt(i) != '\t' ) {
-        return i;
-      }
-    }
-    return str.length();
+
+  private static String stripIndent(int indent, String s) {
+    return s.isEmpty() ? s : s.substring(indent);
+  }
+
+  private static String removeTrailingSpaces(String s) {
+    return s.replaceAll("[\t \f]*$", "");
   }
 
   public static int indentationOfTextBlock(String[] lines) {

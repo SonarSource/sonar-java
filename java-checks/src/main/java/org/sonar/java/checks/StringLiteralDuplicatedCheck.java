@@ -92,7 +92,8 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
     if (tree.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK)) {
       String literal = tree.value();
       if (literal.length() >= MINIMAL_LITERAL_LENGTH) {
-        occurrences.computeIfAbsent(LiteralUtils.getAsStringValue(tree), k -> new ArrayList<>()).add(tree);
+        String stringValue = LiteralUtils.getAsStringValue(tree).replace("\\n", "\n");
+        occurrences.computeIfAbsent(stringValue, key -> new ArrayList<>()).add(tree);
       }
     }
   }
@@ -103,7 +104,8 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
     if (initializer != null && initializer.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK)
       && ModifiersUtils.hasModifier(tree.modifiers(), Modifier.STATIC)
       && ModifiersUtils.hasModifier(tree.modifiers(), Modifier.FINAL)) {
-      constants.putIfAbsent(LiteralUtils.getAsStringValue((LiteralTree) initializer), tree);
+      String stringValue = LiteralUtils.getAsStringValue((LiteralTree) initializer).replace("\\n", "\n");
+      constants.putIfAbsent(stringValue, tree);
       return;
     }
     super.visitVariable(tree);
