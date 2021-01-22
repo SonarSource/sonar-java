@@ -1,3 +1,8 @@
+package checks;
+
+import java.io.IOException;
+import java.util.concurrent.BlockingQueue;
+
 enum Level {
   WARN;
 }
@@ -5,13 +10,15 @@ interface Log {
   void log(Level level, String s, Exception e);
 }
 
-class A {
-  static final Log LOGGER;
+public class InterruptedExceptionCheck {
+  static final Log LOGGER = null;
 
-  public void run () {
+  public void run1 () {
     try {
       while (true) {
-        // do stuff
+        if (LOGGER != null) throw new IOException("");
+        throw new InterruptedException("");
+        
       }
     }catch (java.io.IOException e) {
       LOGGER.log(Level.WARN, "Interrupted!", e);
@@ -23,56 +30,30 @@ class A {
   public void runUnknownSymbol () {
     try {
       while (true) {
-        // do stuff
+        if (LOGGER != null) throw new IOException("");
+        throw new InterruptedException("");
       }
     }catch (java.io.IOException e) {
       LOGGER.log(Level.WARN, "Interrupted!", e);
     }catch (InterruptedException e) { // Noncompliant
-      unknownField.log(Level.WARN, "Interrupted!", e);
+      LOGGER.log(Level.WARN, "Interrupted!", e);
     }
   }
 
   public void catchUnionType () {
     try {
       while (true) {
-        // do stuff
+        if (LOGGER != null) throw new IOException("");
+        throw new InterruptedException("");
       }
     } catch (InterruptedException | java.io.IOException e) { // Noncompliant [[sc=14;ec=58]] {{Either re-interrupt this method or rethrow the "InterruptedException".}}
-      unknownField.log(Level.WARN, "Interrupted!", e);
+      LOGGER.log(Level.WARN, "Interrupted!", e);
     }
   }
 
-  public void run () throws InterruptedException{
+  public void runInterrupted() {
     try {
-      while (true) {
-        // do stuff
-      }
-    } catch (InterruptedException e) {
-        LOGGER.log(Level.WARN, "Interrupted!", e);
-        // clean up state...
-        throw e;
-    } catch (InterruptedException e) { // Noncompliant {{Either re-interrupt this method or rethrow the "InterruptedException".}}
-      LOGGER.log(Level.WARN, "Interrupted!", e);
-      throw new java.io.IOException();
-    } catch (InterruptedException e) { // Noncompliant {{Either re-interrupt this method or rethrow the "InterruptedException".}}
-      LOGGER.log(Level.WARN, "Interrupted!", e);
-      Exception e1 = new Exception();
-      throw e1;
-    } catch (InterruptedException e) { // Noncompliant {{Either re-interrupt this method or rethrow the "InterruptedException".}}
-      LOGGER.log(Level.WARN, "Interrupted!", e);
-      throw new IllegalStateException("foo", e);
-    } catch (ThreadDeath threadDeath) {
-      throw threadDeath;
-    } catch (ThreadDeath threadDeath) { // Noncompliant {{Either re-interrupt this method or rethrow the "ThreadDeath".}}
-      throw new java.io.IOException();
-  }
-}
-
-  public void run () {
-    try {
-      while (true) {
-        // do stuff
-      }
+      throw  new InterruptedException();
     } catch (InterruptedException e) {
         LOGGER.log(Level.WARN, "Interrupted!", e);
         // clean up state...
@@ -80,16 +61,17 @@ class A {
       }
     try {
       while (true) {
+        throw  new InterruptedException();
         // do stuff
       }
     } catch (InterruptedException e) { // Noncompliant {{Either re-interrupt this method or rethrow the "InterruptedException".}}
       LOGGER.log(Level.WARN, "Interrupted!", e);
       // clean up state...
-      new Foo().interrupt();
+      new Interruptable().interrupt();
     }
     }
 
-  public Task getNextTask(BlockingQueue<Task> queue) {
+  public Object getNextTask(BlockingQueue<Object> queue) {
     boolean interrupted = false;
     try {
       while (true) {
@@ -108,6 +90,8 @@ class A {
 
 }
 
-class Foo {
-  void interrupt();
+class Interruptable {
+  void interrupt() {
+    
+  }
 }
