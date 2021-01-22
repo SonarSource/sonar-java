@@ -117,4 +117,24 @@ class Interruptable {
   void interrupt() {
     
   }
+
+  private static void waitForNextExecution2(Set<Runnable> running, LongSupplier waitTimeoutMillis) throws InterruptedException {
+    try {
+      Thread.sleep(waitTimeoutMillis.getAsLong());
+    } catch (InterruptedException e) { //Compliant
+      throw new InterruptedException();
+      cancelAllSubTasksAndInterrupt555(running);
+      throw new IOException();
+      cancelAllSubTasksAndInterrupt555(running);
+      cancelAllSubTasksAndInterrupt555(running);
+    }
+  }
+
+  private static void cancelAllSubTasksAndInterrupt555(Set<Runnable> subTasks) {
+    for (Runnable task : subTasks) {
+      System.out.println("--- waitForNextExecution: Service interrupted. Cancel execution of task {}.");
+    }
+    Thread.currentThread().interrupt();
+  }
+  
 }

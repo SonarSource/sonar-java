@@ -1,7 +1,10 @@
 package checks;
 
 import java.io.IOException;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
+import java.util.function.LongSupplier;
+import java.util.logging.Logger;
 
 enum Level {
   WARN;
@@ -91,7 +94,53 @@ public class InterruptedExceptionCheck {
 }
 
 class Interruptable {
+  static final Log LOGGER = null;
+
   void interrupt() {
     
   }
+
+  private static void waitForNextExecution(Set<Runnable> running, LongSupplier waitTimeoutMillis) {
+    try {
+      Thread.sleep(waitTimeoutMillis.getAsLong());
+    } catch (InterruptedException e) { //Compliant
+      cancelAllSubTasksAndInterrupt(running); 
+    }
+  }
+
+  private static void cancelAllSubTasksAndInterrupt(Set<Runnable> subTasks) {
+    for (Runnable task : subTasks) {
+      System.out.println("--- waitForNextExecution: Service interrupted. Cancel execution of task {}.");
+    }
+    Thread.currentThread().interrupt();
+  }
+  
+  private static void waitForNextExecution1(Set<Runnable> running, LongSupplier waitTimeoutMillis) {
+    try {
+      Thread.sleep(waitTimeoutMillis.getAsLong());
+    } catch (InterruptedException e) { // Noncompliant, too many levels
+      cancelAllSubTasksAndInterrupt1(running); 
+    }
+  }
+
+  private static void cancelAllSubTasksAndInterrupt1(Set<Runnable> subTasks) {
+    cancelAllSubTasksAndInterrupt2(subTasks);
+  }
+
+  private static void cancelAllSubTasksAndInterrupt2(Set<Runnable> subTasks) { 
+    cancelAllSubTasksAndInterrupt3(subTasks);
+  }
+
+  private static void cancelAllSubTasksAndInterrupt3(Set<Runnable> subTasks) {
+    cancelAllSubTasksAndInterrupt4(subTasks);
+    if (LOGGER != null )throw new RuntimeException();
+  }
+  
+  private static void cancelAllSubTasksAndInterrupt4(Set<Runnable> subTasks) {
+    for (Runnable task : subTasks) {
+      System.out.println("--- waitForNextExecution: Service interrupted. Cancel execution of task {}.");
+    }
+    Thread.currentThread().interrupt();
+  }
+
 }
