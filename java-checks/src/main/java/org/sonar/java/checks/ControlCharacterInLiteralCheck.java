@@ -24,21 +24,19 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import static org.sonar.java.model.LiteralUtils.isTextBlock;
-import static org.sonar.java.model.LiteralUtils.trimQuotes;
 
 @Rule(key = "S2479")
 public class ControlCharacterInLiteralCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE_FORMAT = "Remove the non-escaped \\u%04X character from this literal.";
 
-  private static final String CONTROL_CHARACTERS_WITHOUT_TAB =
+  private static final String CONTROL_CHARACTERS =
     // ASCII control character, C0 control characters
-    "\u0000-\u0008" +
+    "\u0000-\u0009" +
     // skip U+000A line feed
     "\u000B-\u000C" +
     // skip U+000D carriage return
@@ -48,9 +46,7 @@ public class ControlCharacterInLiteralCheck extends IssuableSubscriptionVisitor 
     // Unicode Whitespace > U+007F
     "\u1680\u180E\u2000-\u200D\u2028\u2029\u202F\u205F\u2060\u3000\uFEFF";
 
-  private static final Pattern NON_TEXT_BLOC_CONTROL_CHARACTERS = Pattern.compile("[\u0009" + CONTROL_CHARACTERS_WITHOUT_TAB + "]");
-
-  private static final Pattern TEXT_BLOC_CONTROL_CHARACTERS = Pattern.compile("[" + CONTROL_CHARACTERS_WITHOUT_TAB + "]");
+  private static final Pattern CONTROL_CHARACTERS_PATTERN = Pattern.compile("[" + CONTROL_CHARACTERS + "]");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -60,9 +56,8 @@ public class ControlCharacterInLiteralCheck extends IssuableSubscriptionVisitor 
   @Override
   public void visitNode(Tree tree) {
     LiteralTree literal = (LiteralTree) tree;
-    String literalValue = trimQuotes(literal.value());
-    Pattern controlCharacterPattern = isTextBlock(literal.value()) ? TEXT_BLOC_CONTROL_CHARACTERS : NON_TEXT_BLOC_CONTROL_CHARACTERS;
-    Matcher matcher = controlCharacterPattern.matcher(literalValue);
+    String literalValue = LiteralUtils.getAsStringValue(literal);
+    Matcher matcher = CONTROL_CHARACTERS_PATTERN.matcher(literalValue);
     if (matcher.find()) {
       reportIssue(literal,  String.format(MESSAGE_FORMAT, literalValue.codePointAt(matcher.start())));
     }
