@@ -35,7 +35,7 @@ public class StringConcatToTextBlockCheck {
                "    </body>\n" +
                "</html>";
 
-    String s4 = "<html>" + // Compliant, only 2 lines
+    String s4 = "<html>" + // Compliant, only 2 lines in output
                "    <body>\n" +  
                "        <tag>" +
                "        </tag>" +
@@ -53,8 +53,8 @@ public class StringConcatToTextBlockCheck {
                 "    </body>\n" +
                 "</html>";
 
-    String s6 = "<html>\n" + // Noncompliant, constant inside
-                "    <body>\n" +
+    String s6 = "<html>\n" + // Compliant, constant inside
+                "    <body>" +
                 "        <tag>\n" +
                 SOME_INT +
                 "        </tag>\n" +
@@ -62,5 +62,21 @@ public class StringConcatToTextBlockCheck {
                 "</html>";
     
     System.out.println(SOME_INT);
+
+    System.out.println("\\n-" + // Compliant, no EOL here
+      "\\n-\\n");
+
+    System.out.println("-\n-\n-\n-\n-" + // Compliant, too small lines
+      "\n-\n");
+
+    System.out.println("<html>\n" + // Noncompliant
+      "    <body>\n" +
+      (
+        "        <tag>\n" + // Compliant, already reported
+          "          xxx\n" +
+          "        </tag>\n"
+      ) +
+      "    </body>\n" +
+      "</html>");
   }
 }

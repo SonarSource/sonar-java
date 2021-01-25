@@ -25,6 +25,7 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
 class StringConcatToTextBlockCheckTest {
+
   @Test
   void java15() {
     JavaCheckVerifier.newVerifier()
@@ -50,5 +51,4 @@ class StringConcatToTextBlockCheckTest {
       .withCheck(new StringConcatToTextBlockCheck())
       .verifyNoIssues();
   }
-
 }

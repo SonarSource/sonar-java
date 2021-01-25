@@ -19,23 +19,30 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6126")
 public class StringConcatToTextBlockCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
   private static final String MESSAGE = "Replace this String concatenation with Text block.";
-  private static final Set<Tree> VISITED_NODES = new HashSet<>();
+  public static final int MINIMAL_LINE_LENGTH = 7;
+  public static final int MINIMAL_NUMBER_OF_LINES = 2;
+  private final Set<Tree> visitedNodes = new HashSet<>();
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
@@ -49,21 +56,54 @@ public class StringConcatToTextBlockCheck extends IssuableSubscriptionVisitor im
 
   @Override
   public void visitNode(Tree tree) {
-    VISITED_NODES.add(tree);
-    if (VISITED_NODES.contains(tree.parent())) {
+    if (visitedNodes.contains(tree)) {
       return;
     }
-    Object constant = ExpressionUtils.resolveAsConstant(((ExpressionTree) tree));
-    if (constant instanceof String) {
-      String value = (String) constant;
-      if (value.split("\\\\n").length > 2) {
-        reportIssue(tree, MESSAGE);
-      }
+    List<Tree> concatOperands = getConcatOperands(((BinaryExpressionTree) tree));
+    
+    // We cannot report issues if there are non literal operands in concatenation
+    if (concatOperands.stream().anyMatch(operand -> !(operand instanceof LiteralTree))) {
+      return;
+    }
+    
+    long outputLines = concatOperands.stream()
+      .filter(op -> op.is(Tree.Kind.STRING_LITERAL))
+      .map(LiteralTree.class::cast)
+      .map(LiteralTree::value)
+      .filter(value -> value.contains("\\n"))
+      .flatMap(value -> Stream.of(value.split("\\\\n")))
+      .filter(str -> str.length() >= MINIMAL_LINE_LENGTH)
+      .count();
+
+    if (outputLines >= MINIMAL_NUMBER_OF_LINES) {
+      reportIssue(tree, MESSAGE);
+    }
+  }
+  
+  private List<Tree> getConcatOperands(BinaryExpressionTree binaryExpressionTree) {
+    List<Tree> operands = new ArrayList<>();
+    ExpressionTree rightOperand = ExpressionUtils.skipParentheses(binaryExpressionTree.rightOperand());
+    ExpressionTree leftOperand = ExpressionUtils.skipParentheses(binaryExpressionTree.leftOperand());
+
+    operands.addAll(childrenOperands(leftOperand));
+    operands.addAll(childrenOperands(rightOperand));
+    
+    visitedNodes.add(binaryExpressionTree);
+    return operands;
+  }
+
+  private List<Tree> childrenOperands(ExpressionTree leftOperand) {
+    if (leftOperand.is(Tree.Kind.PLUS)) {
+      return getConcatOperands(((BinaryExpressionTree) leftOperand));
+    } else {
+      return Collections.singletonList(leftOperand);
     }
   }
 
   @Override
-  public void leaveNode(Tree tree) {
-    VISITED_NODES.remove(tree);
+  public void setContext(JavaFileScannerContext context) {
+    visitedNodes.clear();
+    super.setContext(context);
   }
+
 }
