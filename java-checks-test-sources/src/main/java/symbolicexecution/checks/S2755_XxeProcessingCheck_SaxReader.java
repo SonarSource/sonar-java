@@ -1,12 +1,14 @@
 package symbolicexecution.checks;
 
 import java.io.IOException;
+import java.io.StringReader;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 import org.jdom2.JDOMException;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 class SAXReaderTest {
@@ -40,6 +42,14 @@ class SAXReaderTest {
   SAXReader not_securing_with_feature() throws SAXException {
     SAXReader xmlReader = new SAXReader(); // Noncompliant
     xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+    return xmlReader;
+  }
+
+  // Test securing methods with customized EntityResolver
+
+  SAXReader secure_with_no_op_entity_resolver() throws SAXException {
+    SAXReader xmlReader = new SAXReader(); // Compliant
+    xmlReader.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
     return xmlReader;
   }
 
