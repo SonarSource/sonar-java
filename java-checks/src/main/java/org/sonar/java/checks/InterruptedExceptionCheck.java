@@ -137,16 +137,13 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (threadInterrupted || depth >= MAX_DEPTH) {
-        return;
-      }
-      depth++;
-      if (INTERRUPT_MATCHERS.matches(tree)) {
+      if (threadInterrupted || INTERRUPT_MATCHERS.matches(tree)) {
         threadInterrupted = true;
         return;
       }
+      depth++;
       Tree declaration = tree.symbol().declaration();
-      if (declaration != null) {
+      if (declaration != null && depth <= MAX_DEPTH) {
         //Declaration of MethodInvocationTree is MethodTree
         BlockTree block = ((MethodTree) declaration).block();
         if (block != null) {
@@ -159,10 +156,9 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitThrowStatement(ThrowStatementTree tree) {
-      if (threadInterrupted || depth >= 3) {
-        return;
-      }
-      if(tree.expression().is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) tree.expression()).symbol().equals(catchedException)) {
+      if(threadInterrupted ||
+        (tree.expression().is(Tree.Kind.IDENTIFIER) &&
+          ((IdentifierTree) tree.expression()).symbol().equals(catchedException))) {
         threadInterrupted = true;
         return;
       }
