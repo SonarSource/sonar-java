@@ -1,3 +1,7 @@
+package checks;
+
+import java.io.IOException;
+
 enum Level {
   WARN;
 }
@@ -5,13 +9,15 @@ interface Log {
   void log(Level level, String s, Exception e);
 }
 
-class A {
-  static final Log LOGGER;
+public class InterruptedExceptionCheck {
+  static final Log LOGGER = null;
 
-  public void run () {
+  public void run1 () {
     try {
       while (true) {
-        // do stuff
+        if (LOGGER != null) throw new IOException("");
+        throw new InterruptedException("");
+        
       }
     }catch (java.io.IOException e) {
       LOGGER.log(Level.WARN, "Interrupted!", e);
@@ -68,11 +74,9 @@ class A {
   }
 }
 
-  public void run () {
+  public void runInterrupted() {
     try {
-      while (true) {
-        // do stuff
-      }
+      throw  new InterruptedException();
     } catch (InterruptedException e) {
         LOGGER.log(Level.WARN, "Interrupted!", e);
         // clean up state...
@@ -80,12 +84,13 @@ class A {
       }
     try {
       while (true) {
+        throw  new InterruptedException();
         // do stuff
       }
     } catch (InterruptedException e) { // Noncompliant {{Either re-interrupt this method or rethrow the "InterruptedException".}}
       LOGGER.log(Level.WARN, "Interrupted!", e);
       // clean up state...
-      new Foo().interrupt();
+      new Interruptable().interrupt();
     }
     }
 
@@ -108,6 +113,28 @@ class A {
 
 }
 
-class Foo {
-  void interrupt();
+class Interruptable {
+  void interrupt() {
+    
+  }
+
+  private static void waitForNextExecution2(Set<Runnable> running, LongSupplier waitTimeoutMillis) throws InterruptedException {
+    try {
+      Thread.sleep(waitTimeoutMillis.getAsLong());
+    } catch (InterruptedException e) { //Compliant
+      throw new InterruptedException();
+      cancelAllSubTasksAndInterrupt555(running);
+      throw new IOException();
+      cancelAllSubTasksAndInterrupt555(running);
+      cancelAllSubTasksAndInterrupt555(running);
+    }
+  }
+
+  private static void cancelAllSubTasksAndInterrupt555(Set<Runnable> subTasks) {
+    for (Runnable task : subTasks) {
+      System.out.println("--- waitForNextExecution: Service interrupted. Cancel execution of task {}.");
+    }
+    Thread.currentThread().interrupt();
+  }
+  
 }
