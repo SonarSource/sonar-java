@@ -1,0 +1,24 @@
+<p>Either use only spaces or only tabs for the indentation of a text block. Mixing white space will lead to a result with irregular indentation.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+String textBlock = """
+        this is
+&lt;tab&gt;text block!
+        !!!!
+      """;
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+String textBlock = """
+        this is
+        text block!
+        !!!!
+      """;
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="http://openjdk.java.net/jeps/368">JEP 368: Text Blocks</a> (Second Preview) </li>
+  <li> <a href="https://cr.openjdk.java.net/~jlaskey/Strings/TextBlocksGuide_v9.html">Programmer's Guide To Text Blocks</a>, by Jim Laskey and Stuart
+  Marks </li>
+</ul>
+

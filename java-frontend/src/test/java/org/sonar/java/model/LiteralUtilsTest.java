@@ -290,6 +290,21 @@ class LiteralUtilsTest {
     assertThat(LiteralUtils.isNegOne(boolTree)).isFalse();
   }
 
+  @Test
+  void indentationOfTextBlock() {
+    String[] noIndentation = {"\"\"\"", "abc", "\"\"\""};
+    assertThat(LiteralUtils.indentationOfTextBlock(noIndentation)).isZero();
+    String[] lastLineNotIndented = {"\"\"\"", "    abc", "\"\"\""};
+    assertThat(LiteralUtils.indentationOfTextBlock(lastLineNotIndented)).isZero();
+    String[] indented = {"\"\"\"", "    abc", "    \"\"\""};
+    assertThat(LiteralUtils.indentationOfTextBlock(indented)).isEqualTo(4);
+    String[] tabsAndFormFeeds = {"\"\"\"", "\t\tabc", "\f\f\"\"\""};
+    assertThat(LiteralUtils.indentationOfTextBlock(tabsAndFormFeeds)).isEqualTo(2);
+    String[] withEmptyLine = {"\"\"\"", "    abc", "", "    \"\"\""};
+    assertThat(LiteralUtils.indentationOfTextBlock(withEmptyLine)).isEqualTo(4);
+    String[] withIndentedEmptyLine = {"\"\"\"", "    abc", " \t\f", "    \"\"\""};
+    assertThat(LiteralUtils.indentationOfTextBlock(withIndentedEmptyLine)).isEqualTo(4);
+  }
 
   private ExpressionTree getFirstExpression(String code) {
     ClassTree firstType = getClassTree(code);
