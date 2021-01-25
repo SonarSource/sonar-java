@@ -1,8 +1,6 @@
-class A {
-  @SupressWarnings("allall")
-  @SupressWarnings("allall")
-  @SupressWarnings("allall")
-  @SupressWarnings("aaaaa")
+package checks;
+
+public class StringLiteralDuplicatedCheckCustom {
   public void f() {
     System.out.println("aaaaa");
     System.out.println("bbbbb"); // Noncompliant {{Define a constant instead of duplicating this literal "bbbbb" 2 times.}}

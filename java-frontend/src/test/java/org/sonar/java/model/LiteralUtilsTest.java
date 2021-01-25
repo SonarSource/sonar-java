@@ -291,6 +291,42 @@ class LiteralUtilsTest {
   }
 
   @Test
+  void getAsStringValue_for_string() {
+    LiteralTree stringLiteral = getLiteral("\"ABC\"");
+    assertThat(LiteralUtils.getAsStringValue(stringLiteral)).isEqualTo("ABC");
+    
+    LiteralTree textBlock = getLiteral("\"\"\"\nABC\"\"\"");
+    assertThat(LiteralUtils.getAsStringValue(textBlock)).isEqualTo("ABC");
+    
+    LiteralTree multilineString = getLiteral("\"ABC\\nABC\"");
+    assertThat(LiteralUtils.getAsStringValue(multilineString)).isEqualTo("ABC\\nABC");
+    
+    LiteralTree multilineTB = getLiteral("\"\"\"\n      ABC\n      ABC\"\"\"");
+    assertThat(LiteralUtils.getAsStringValue(multilineTB)).isEqualTo("ABC\nABC");
+    
+    LiteralTree multilineIndentInTB = getLiteral("\"\"\"\n      ABC\n    ABC\"\"\"");
+    assertThat(LiteralUtils.getAsStringValue(multilineIndentInTB)).isEqualTo("  ABC\nABC");
+    
+    LiteralTree textBlockWithTab = getLiteral("\"\"\"\n      \tABC\"\"\"");
+    assertThat(LiteralUtils.getAsStringValue(textBlockWithTab)).isEqualTo("ABC");
+    
+    LiteralTree textBlockWithEmptyLines = getLiteral("\"\"\"\n\n\n      \tABC\"\"\"");
+    assertThat(LiteralUtils.getAsStringValue(textBlockWithEmptyLines)).isEqualTo("\n\nABC");
+    
+    LiteralTree textBlockWithNewLines = getLiteral("\"\"\"\n\n\n      \tABC\\n\"\"\"");
+    assertThat(LiteralUtils.getAsStringValue(textBlockWithNewLines)).isEqualTo("\n\nABC\\n");
+    
+    LiteralTree textBlockWithTrailingSpaces = getLiteral("\"\"\"\n\n\n      \tABC                  \"\"\"");
+    assertThat(LiteralUtils.getAsStringValue(textBlockWithTrailingSpaces)).isEqualTo("\n\nABC                  ");
+    
+    LiteralTree textBlockWithTrailingAndLeadingSpaces = getLiteral("\"\"\"\n\n\n      \tABC   \n       ABC     ABC                  \"\"\"");
+    assertThat(LiteralUtils.getAsStringValue(textBlockWithTrailingAndLeadingSpaces)).isEqualTo("\n\nABC\nABC     ABC                  ");
+
+    LiteralTree textBlockWithQuotesOnNewLine = getLiteral("\"\"\"\n     ABC\n     ABC\n  \"\"\"");
+    assertThat(LiteralUtils.getAsStringValue(textBlockWithQuotesOnNewLine)).isEqualTo("   ABC\n   ABC\n");
+  }
+
+  @Test
   void indentationOfTextBlock() {
     String[] noIndentation = {"\"\"\"", "abc", "\"\"\""};
     assertThat(LiteralUtils.indentationOfTextBlock(noIndentation)).isZero();
@@ -321,5 +357,10 @@ class LiteralUtilsTest {
   private ClassTree getClassTree(String code) {
     CompilationUnitTree compilationUnitTree = JParserTestUtils.parse("class A { " + code + "}");
     return (ClassTree) compilationUnitTree.types().get(0);
+  }
+
+  private LiteralTree getLiteral(String code) {
+    ClassTree classTree = getClassTree("Object o = " + code + ";");
+    return (LiteralTree) ((VariableTree) classTree.members().get(0)).initializer();
   }
 }
