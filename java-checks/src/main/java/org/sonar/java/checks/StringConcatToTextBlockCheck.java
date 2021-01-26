@@ -19,20 +19,20 @@
  */
 package org.sonar.java.checks;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -40,8 +40,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class StringConcatToTextBlockCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
   private static final String MESSAGE = "Replace this String concatenation with Text block.";
-  public static final int MINIMAL_LINE_LENGTH = 7;
+  public static final int MINIMAL_CONTENT_LENGTH = 19;
   public static final int MINIMAL_NUMBER_OF_LINES = 2;
+  // matches '\n' characters, but skips '\\n'
+  public static final Pattern EOL = Pattern.compile("(?<!\\\\)\\\\n");
   private final Set<Tree> visitedNodes = new HashSet<>();
 
   @Override
@@ -59,44 +61,37 @@ public class StringConcatToTextBlockCheck extends IssuableSubscriptionVisitor im
     if (visitedNodes.contains(tree)) {
       return;
     }
-    List<Tree> concatOperands = getConcatOperands(((BinaryExpressionTree) tree));
-    
-    // We cannot report issues if there are non literal operands in concatenation
-    if (concatOperands.stream().anyMatch(operand -> !(operand instanceof LiteralTree))) {
-      return;
-    }
-    
-    long outputLines = concatOperands.stream()
-      .filter(op -> op.is(Tree.Kind.STRING_LITERAL))
-      .map(LiteralTree.class::cast)
-      .map(LiteralTree::value)
-      .filter(value -> value.contains("\\n"))
-      .flatMap(value -> Stream.of(value.split("\\\\n")))
-      .filter(str -> str.length() >= MINIMAL_LINE_LENGTH)
-      .count();
-
-    if (outputLines >= MINIMAL_NUMBER_OF_LINES) {
-      reportIssue(tree, MESSAGE);
+    StringBuilder builder = new StringBuilder();
+    if (concatStringLiterals(builder, tree)) {
+      String content = builder.toString();
+      if (content.length() >= MINIMAL_CONTENT_LENGTH 
+        && isMultiline(content)) {
+        reportIssue(tree, MESSAGE);
+      }
     }
   }
   
-  private List<Tree> getConcatOperands(BinaryExpressionTree binaryExpressionTree) {
-    List<Tree> operands = new ArrayList<>();
-    ExpressionTree rightOperand = ExpressionUtils.skipParentheses(binaryExpressionTree.rightOperand());
-    ExpressionTree leftOperand = ExpressionUtils.skipParentheses(binaryExpressionTree.leftOperand());
-
-    operands.addAll(childrenOperands(leftOperand));
-    operands.addAll(childrenOperands(rightOperand));
-    
-    visitedNodes.add(binaryExpressionTree);
-    return operands;
+  private static boolean isMultiline(String line) {
+    Matcher matcher = EOL.matcher(line);
+    int matches = 0;
+    while (matcher.find() && matches < MINIMAL_NUMBER_OF_LINES) {
+      matches++;
+    }
+    return matches == MINIMAL_NUMBER_OF_LINES;
   }
 
-  private List<Tree> childrenOperands(ExpressionTree leftOperand) {
-    if (leftOperand.is(Tree.Kind.PLUS)) {
-      return getConcatOperands(((BinaryExpressionTree) leftOperand));
+  private boolean concatStringLiterals(StringBuilder concatenatedContent, Tree tree) {
+    if (tree.is(Tree.Kind.PLUS)) {
+      BinaryExpressionTree binaryExpression = (BinaryExpressionTree) tree;
+      visitedNodes.add(binaryExpression);
+      return concatStringLiterals(concatenatedContent, ExpressionUtils.skipParentheses(binaryExpression.leftOperand())) &&
+        concatStringLiterals(concatenatedContent, ExpressionUtils.skipParentheses(binaryExpression.rightOperand()));
+    } else if (tree instanceof LiteralTree) {
+      String treeValue = LiteralUtils.getAsStringValue(((LiteralTree) tree));
+      concatenatedContent.append(treeValue);
+      return true;
     } else {
-      return Collections.singletonList(leftOperand);
+      return false;
     }
   }
 

@@ -13,6 +13,13 @@ public class StringConcatToTextBlockCheck {
                "    </body>\n" +
                "</html>";
 
+    String s333 = "<html>\\n" + // Compliant
+               "    <body>\\n" +
+               "        <tag>\\n" +
+               "        </tag>\\n" +
+               "    </body>\\n" +
+               "</html>";
+
     String s1 = "<html>\n" + // Noncompliant [[sc=17;ec=25]] {{Replace this String concatenation with Text block.}}
                "    <body>" +
                "        <tag>" +
@@ -78,5 +85,11 @@ public class StringConcatToTextBlockCheck {
       ) +
       "    </body>\n" +
       "</html>");
+
+    String e = "aaaaaabcdeeeeeeeeeef\n" + "abcdef\n"; // Noncompliant
+    String f = "aaaaaaaaaaaaaaabcdef\nabc" + "def\n"; // Noncompliant
+    String h = "123456\n1234567777777777777777777777\n" + "\n"; // Noncompliant
+    String g = "1234567\n123456777777777777777777777\n" + "\n"; // Noncompliant
+
   }
 }
