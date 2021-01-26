@@ -1,7 +1,9 @@
 package symbolicexecution.checks;
 
 import java.io.IOException;
+import java.io.StringReader;
 import javax.xml.XMLConstants;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -66,6 +68,14 @@ class XmlReaderTest {
     XMLReader xmlReader = factory.createXMLReader(); // Noncompliant
     xmlReader.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "all");
     xmlReader.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+    return xmlReader;
+  }
+
+  // Test securing methods with customized EntityResolver
+
+  XMLReader secure_with_no_op_entity_resolver(XMLReaderFactory factory) throws SAXException {
+    XMLReader xmlReader = factory.createXMLReader(); // Compliant
+    xmlReader.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
     return xmlReader;
   }
 

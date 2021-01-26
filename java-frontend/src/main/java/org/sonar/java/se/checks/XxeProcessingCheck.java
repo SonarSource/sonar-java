@@ -154,17 +154,20 @@ public class XxeProcessingCheck extends SECheck {
       .put(CREATE_XML_READER,
         c -> (c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeSchema.SECURED))
           || c.hasConstraint(FeatureDisallowDoctypeDecl.SECURED)
-          || c.hasConstraint(FeatureExternalGeneralEntities.SECURED))
+          || c.hasConstraint(FeatureExternalGeneralEntities.SECURED)
+          || c.hasConstraint(XxeEntityResolver.CUSTOM_ENTITY_RESOLVER))
       .build();
 
   private static final Map<MethodMatchers, Predicate<ConstraintsByDomain>> CONDITIONS_FOR_SECURED_BY_TYPE_NEW_CLASS =
     MapBuilder.<MethodMatchers, Predicate<ConstraintsByDomain>>newMap()
       .put(SAX_BUILDER_CONSTRUCTOR,
         c -> (c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeSchema.SECURED))
-          || c.hasConstraint(FeatureDisallowDoctypeDecl.SECURED))
+          || c.hasConstraint(FeatureDisallowDoctypeDecl.SECURED)
+          || c.hasConstraint(XxeEntityResolver.CUSTOM_ENTITY_RESOLVER))
       .put(SAX_READER_CONSTRUCTOR,
         c -> c.hasConstraint(FeatureDisallowDoctypeDecl.SECURED)
-          || c.hasConstraint(FeatureExternalGeneralEntities.SECURED))
+          || c.hasConstraint(FeatureExternalGeneralEntities.SECURED)
+          || c.hasConstraint(XxeEntityResolver.CUSTOM_ENTITY_RESOLVER))
       .build();
 
   private static final MethodMatchers FEATURES_AND_PROPERTIES_SETTERS = MethodMatchers.or(
@@ -174,6 +177,10 @@ public class XxeProcessingCheck extends SECheck {
       .names("setProperty").addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_OBJECT).build(),
     MethodMatchers.create().ofSubTypes(DOCUMENT_BUILDER_FACTORY, SAX_PARSER_FACTORY, XML_READER, SAX_BUILDER, SAX_READER)
       .names("setFeature").addParametersMatcher(JAVA_LANG_STRING, BOOLEAN).build());
+
+  private static final MethodMatchers ENTITY_RESOLVER_SETTERS =
+    MethodMatchers.create().ofSubTypes(XML_READER, SAX_BUILDER, SAX_READER)
+      .names("setEntityResolver").addParametersMatcher(MethodMatchers.ANY).build();
 
   private static final MethodMatchers TRANSFERRING_METHOD_CALLS = MethodMatchers.or(
     MethodMatchers.create().ofTypes(SAX_PARSER_FACTORY).names("newSAXParser").withAnyParameters().build(),
@@ -266,6 +273,9 @@ public class XxeProcessingCheck extends SECheck {
         for (XxeProperty property : PROPERTIES_TO_CHECK) {
           programState = checkArguments(programState, arguments, property);
         }
+      } else if (ENTITY_RESOLVER_SETTERS.matches(mit)) {
+        SymbolicValue mitResultSV = programState.peekValue(mit.arguments().size());
+        programState = programState.addConstraint(mitResultSV, XxeEntityResolver.CUSTOM_ENTITY_RESOLVER);
       }
 
       // Test if API is used without any protection against XXE.
@@ -396,6 +406,10 @@ public class XxeProcessingCheck extends SECheck {
 
   private enum XxeSensitive implements Constraint {
     SENSITIVE
+  }
+
+  private enum XxeEntityResolver implements Constraint {
+    CUSTOM_ENTITY_RESOLVER
   }
 
   private static class XxeSymbolicValue extends SymbolicValue {
