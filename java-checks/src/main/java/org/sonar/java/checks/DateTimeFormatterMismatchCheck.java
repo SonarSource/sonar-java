@@ -20,13 +20,10 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodTreeUtils;
-import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -37,7 +34,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S5917")
-public class DateTimeFormatterMismatchCheck extends AbstractMethodDetection {
+public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor {
   private static final String TEMPORAL_FIELD_TYPE = "java.time.temporal.TemporalField";
   private static final String INT_TYPE = "int";
 
@@ -55,38 +52,42 @@ public class DateTimeFormatterMismatchCheck extends AbstractMethodDetection {
     " (or the week format to WeekFields.ISO.weekOfWeekBasedYear()).";
   private static final String SECONDARY_LOCATION_MESSAGE = "Week format is inconsistent with year.";
 
-  private Map<MethodInvocationTree, ChainedInvocationVisitor> chains = new HashMap<>();
+  private int depth = 0;
 
   @Override
-  protected MethodMatchers getMethodInvocationMatchers() {
-    return APPEND_VALUE_MATCHER;
+  public List<Tree.Kind> nodesToVisit() {
+    return Collections.singletonList(Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
-  protected void onMethodInvocationFound(MethodInvocationTree invocation) {
-    ChainedInvocationVisitor visitor = new ChainedInvocationVisitor();
-    invocation.accept(visitor);
-    if (visitor.chain.size() <= 1) {
-      return;
+  public void visitNode(Tree tree) {
+    MethodInvocationTree invocation = (MethodInvocationTree) tree;
+    if (APPEND_VALUE_MATCHER.matches(invocation)) {
+      if (depth == 0) {
+        ChainedInvocationVisitor visitor = new ChainedInvocationVisitor();
+        invocation.accept(visitor);
+        if (visitor.usesWeek && visitor.usesYear) {
+          if (visitor.usesWeekBasedYear && !visitor.usesWeekOfWeekBasedYear) {
+            reportIssue(visitor.primary, CHANGE_YEAR_FORMAT_TO_CHRONOFIELD_MESSAGE, visitor.secondaries, null);
+          } else if (!visitor.usesWeekBasedYear && visitor.usesWeekOfWeekBasedYear) {
+            reportIssue(visitor.primary, CHANGE_YEAR_FORMAT_WEEK_BASED_MESSAGE, visitor.secondaries, null);
+          }
+        }
+      }
+      depth++;
     }
-    MethodInvocationTree lastLink = visitor.chain.get(visitor.chain.size() - 1);
-    ChainedInvocationVisitor candidateVisitor = chains.computeIfAbsent(lastLink, ignored -> new ChainedInvocationVisitor());
-    if (candidateVisitor.chain.size() < visitor.chain.size()) {
-      chains.put(lastLink, visitor);
+  }
+
+  @Override
+  public void leaveNode(Tree tree) {
+    if (APPEND_VALUE_MATCHER.matches((MethodInvocationTree) tree)) {
+      depth--;
     }
   }
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {
-    super.leaveFile(context);
-    for (ChainedInvocationVisitor visitor : chains.values()) {
-      visitor.inspectChain();
-      if (visitor.usesWeekBasedYear && !visitor.usesWeekOfWeekBasedYear) {
-        reportIssue(visitor.primary, CHANGE_YEAR_FORMAT_TO_CHRONOFIELD_MESSAGE, visitor.secondaries, null);
-      } else if (!visitor.usesWeekBasedYear && visitor.usesWeekOfWeekBasedYear) {
-        reportIssue(visitor.primary, CHANGE_YEAR_FORMAT_WEEK_BASED_MESSAGE, visitor.secondaries, null);
-      }
-    }
+    depth = 0;
   }
 
 
@@ -103,33 +104,25 @@ public class DateTimeFormatterMismatchCheck extends AbstractMethodDetection {
       .addWithoutParametersMatcher()
       .build();
 
+    private boolean usesWeek = false;
     private boolean usesWeekOfWeekBasedYear = false;
+    private boolean usesYear = false;
     private boolean usesWeekBasedYear = false;
     private final List<JavaFileScannerContext.Location> secondaries = new ArrayList<>();
     private ExpressionTree primary = null;
-    List<MethodInvocationTree> chain = new ArrayList<>();
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree callToAppendValue) {
       MethodInvocationTree tree = callToAppendValue;
-      chain.add(callToAppendValue);
-      Optional<MethodInvocationTree> current = MethodTreeUtils.subsequentMethodInvocation(tree, APPEND_VALUE_MATCHER);
-      while (current.isPresent()) {
-        tree = current.get();
-        chain.add(tree);
-        current = MethodTreeUtils.subsequentMethodInvocation(tree, APPEND_VALUE_MATCHER);
-      }
-    }
-
-    private void inspectChain() {
-      for (MethodInvocationTree invocation : chain) {
-        inspectCall(invocation);
-      }
+      inspectCall(tree);
+      ExpressionTree expressionTree = tree.methodSelect();
+      expressionTree.accept(this);
     }
 
     private void inspectCall(MethodInvocationTree invocation) {
       ExpressionTree argument = invocation.arguments().get(0);
       if (refersToYear(argument)) {
+        usesYear = true;
         if (primary == null) {
           primary = argument;
         }
@@ -139,6 +132,7 @@ public class DateTimeFormatterMismatchCheck extends AbstractMethodDetection {
           primary = argument;
         }
       } else if (refersToWeek(argument)) {
+        usesWeek = true;
         secondaries.add(new JavaFileScannerContext.Location(SECONDARY_LOCATION_MESSAGE, argument));
         usesWeekOfWeekBasedYear |= isWeekOfWeekBasedYearUsed(argument);
       }
