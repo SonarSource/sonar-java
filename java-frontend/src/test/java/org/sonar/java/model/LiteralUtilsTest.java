@@ -292,6 +292,10 @@ class LiteralUtilsTest {
 
   @Test
   void getAsStringValue_for_string() {
+
+    LiteralTree intLiteral = getLiteral("123");
+    assertThat(LiteralUtils.getAsStringValue(intLiteral)).isEqualTo("123");
+
     LiteralTree stringLiteral = getLiteral("\"ABC\"");
     assertThat(LiteralUtils.getAsStringValue(stringLiteral)).isEqualTo("ABC");
     

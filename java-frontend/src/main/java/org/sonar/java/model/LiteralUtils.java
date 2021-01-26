@@ -153,7 +153,7 @@ public class LiteralUtils {
   
   public static String getAsStringValue(LiteralTree tree) {
     if (!tree.is(Kind.TEXT_BLOCK)) {
-      return trimQuotes(tree.value());
+      return tree.is(Kind.STRING_LITERAL) ? trimQuotes(tree.value()) : tree.value();
     }
     String[] lines = tree.value().split("\r?\n");
     int indent = indentationOfTextBlock(lines);
