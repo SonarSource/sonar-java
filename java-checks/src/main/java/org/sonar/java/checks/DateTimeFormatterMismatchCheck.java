@@ -112,14 +112,16 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
     private ExpressionTree primary = null;
 
     @Override
-    public void visitMethodInvocation(MethodInvocationTree callToAppendValue) {
-      MethodInvocationTree tree = callToAppendValue;
+    public void visitMethodInvocation(MethodInvocationTree tree) {
       inspectCall(tree);
       ExpressionTree expressionTree = tree.methodSelect();
       expressionTree.accept(this);
     }
 
     private void inspectCall(MethodInvocationTree invocation) {
+      if (!APPEND_VALUE_MATCHER.matches(invocation)) {
+        return;
+      }
       ExpressionTree argument = invocation.arguments().get(0);
       if (refersToYear(argument)) {
         usesYear = true;

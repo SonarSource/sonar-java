@@ -137,6 +137,12 @@ public class DateTimeFormatterMismatch {
       .appendLiteral('-')
       .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 1, 2, SignStyle.NORMAL)
       .toFormatter();
+
+    new DateTimeFormatterBuilder()
+      .appendValue(WeekFields.ISO.weekBasedYear(), 4)
+      .appendInstant()
+      .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 1, 2, SignStyle.NORMAL)
+      .toFormatter();
   }
 
   private static class FakeChronoField {
