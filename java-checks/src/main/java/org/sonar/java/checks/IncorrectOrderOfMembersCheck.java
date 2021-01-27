@@ -32,7 +32,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S1213")
 public class IncorrectOrderOfMembersCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final String[] NAMES = {"variable", "constructor", "method"};
+  private static final String[] NAMES = {"static variable", "variable", "constructor", "method"};
 
   private JavaFileScannerContext context;
 
@@ -50,13 +50,18 @@ public class IncorrectOrderOfMembersCheck extends BaseTreeVisitor implements Jav
       final int priority;
       IdentifierTree identifier;
       if (member.is(Tree.Kind.VARIABLE)) {
-        priority = 0;
-        identifier = ((VariableTree) member).simpleName();
+        VariableTree variable = ((VariableTree) member);
+        if (variable.symbol().isStatic()) {
+          priority = 0;
+        } else {
+          priority = 1;
+        }
+        identifier = variable.simpleName();
       } else if (member.is(Tree.Kind.CONSTRUCTOR)) {
-        priority = 1;
+        priority = 2;
         identifier = ((MethodTree) member).simpleName();
       } else if (member.is(Tree.Kind.METHOD)) {
-        priority = 2;
+        priority = 3;
         identifier = ((MethodTree) member).simpleName();
       } else {
         continue;

@@ -874,6 +874,9 @@
 'com.google.guava:guava:src/com/google/common/hash/AbstractCompositeHashFunction.java':[
 166,
 ],
+'com.google.guava:guava:src/com/google/common/hash/AbstractNonStreamingHashFunction.java':[
+84,
+],
 'com.google.guava:guava:src/com/google/common/hash/BloomFilter.java':[
 477,
 ],
@@ -1279,6 +1282,9 @@
 127,
 140,
 143,
+],
+'com.google.guava:guava:src/com/google/common/util/concurrent/AtomicDouble.java':[
+60,
 ],
 'com.google.guava:guava:src/com/google/common/util/concurrent/AtomicLongMap.java':[
 282,
