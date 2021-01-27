@@ -1,0 +1,55 @@
+<p>When creating a <code>DateTimeFormatter</code> using the <code>WeekFields.weekBasedYear()</code> temporal field, the resulting year number may be
+off by 1 at the beginning of a new year (when the date to format is in a week that is shared by two consecutive years). </p>
+<p>Using this year number in combination with an incompatible week temporal field yields a result that may be confused with the first week of the
+previous year.</p>
+<p>Instead, when paired with a week temporal field, the week-based year should only be used with the week of week-based year temporal field
+<code>WeekFields.weekOfWeekBasedYear()</code>.</p>
+<p>Alternatively the temporal field <code>ChronoField.ALIGNED_WEEK_OF_YEAR</code> can be used together with a regular year (but not the week based
+year).</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+new DateTimeFormatterBuilder()
+      .appendValue(ChronoField.YEAR, 4) // Noncompliant: using week of week-based year with regular year
+      .appendLiteral('-')
+      .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2)
+      .toFormatter();
+
+new DateTimeFormatterBuilder()
+      .appendValue(ChronoField.YEAR_OF_ERA, 4) // Noncompliant: using week of week-based year with regular year
+      .appendLiteral('-')
+      .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2)
+      .toFormatter();
+
+new DateTimeFormatterBuilder()
+      .appendValue(WeekFields.ISO.weekBasedYear(), 4) // Noncompliant: using aligned week of year with week-based year
+      .appendLiteral('-')
+      .appendValue(ChronoField.ALIGNED_WEEK_OF_YEAR, 2)
+      .toFormatter();
+</pre>
+<p>Here the first two formatters would wrongly format the 1st of January 2016 as "2016-53" while the last one would format it as "2015-01"</p>
+<h2>Compliant Solution</h2>
+<pre>
+new DateTimeFormatterBuilder()
+      .appendValue(WeekFields.ISO.weekBasedYear(), 4)
+      .appendLiteral('-')
+      .appendValue(WeekFields.ISO.weekOfWeekBasedYear(), 2)
+      .toFormatter();
+
+new DateTimeFormatterBuilder()
+      .appendValue(ChronoField.YEAR, 4)
+      .appendLiteral('-')
+      .appendValue(ChronoField.ALIGNED_WEEK_OF_YEAR, 2)
+      .toFormatter();
+
+new DateTimeFormatterBuilder()
+      .appendValue(ChronoField.YEAR_OF_ERA, 4)
+      .appendLiteral('-')
+      .appendValue(ChronoField.ALIGNED_WEEK_OF_YEAR, 2)
+      .toFormatter();
+</pre>
+<p>Here the first formatter would format the 1st of January 2016 as "2015-53" while the last two would produce "2016-01", both of which are correct
+depending on how you count the weeks.</p>
+<h2>Exceptions</h2>
+<p>No issue is raised when week-based year is not used in combination with a week temporal field.</p>
+<p>Similarly, no issue is raised if week of week-based year is not used in combination with a year temporal field.</p>
+
