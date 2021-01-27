@@ -108,7 +108,7 @@ class ClasspathForMainTest {
   }
 
   @Test
-  void no_warning_for_missing_bytecode_when_libraries_empty_and_have_no_ava_sources() {
+  void no_warning_for_missing_bytecode_when_libraries_empty_and_have_no_java_sources() {
     javaClasspath = new ClasspathForMain(settings.asConfig(), new DefaultFileSystem(new File("src/test/files/classpath/")));
     javaClasspath.init();
     assertThat(javaClasspath.getFilesFromProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES)).isEmpty();

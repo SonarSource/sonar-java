@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,7 +42,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 public final class JSema implements Sema {
 
   private final AST ast;
-  final Set<String> undefinedTypes = new LinkedHashSet<>();
+  final Set<String> undefinedTypes = new HashSet<>();
   final Map<IBinding, Tree> declarations = new HashMap<>();
   final Map<IBinding, List<IdentifierTree>> usages = new HashMap<>();
   private final Map<ITypeBinding, JType> types = new HashMap<>();
@@ -140,6 +139,6 @@ public final class JSema implements Sema {
   }
 
   public Set<String> undefinedTypes() {
-    return new HashSet<>(undefinedTypes);
+    return Collections.unmodifiableSet(undefinedTypes);
   }
 }
