@@ -76,9 +76,7 @@ class ClasspathForTestTest {
 
     String warning = "Dependencies/libraries were not provided for analysis of test files. The 'sonar.java.test.libraries' property is empty. "
       + "Verify your configuration, as you might end up with less precise results.";
-    assertThat(logTester.logs(LoggerLevel.WARN))
-      .hasSize(1)
-      .contains(warning);
+    assertThat(logTester.logs(LoggerLevel.WARN)).containsExactly(warning);
   }
 
   @Test

@@ -345,22 +345,25 @@ public class SonarComponents {
     if (!undefinedTypes.isEmpty()) {
       javaClasspath.logSuspiciousEmptyLibraries();
       javaTestClasspath.logSuspiciousEmptyLibraries();
-
-      boolean moreThanMax = undefinedTypes.size() > LOGGED_MAX_NUMBER_UNDEFINED_TYPES;
-
-      String debugMessage = "Unresolved imports/types have been detected during analysis";
-      debugMessage += moreThanMax ? String.format(". Logging the %d first:", LOGGED_MAX_NUMBER_UNDEFINED_TYPES) : ", with following errors:";
-
-      String prefix = "- ";
-      String delimiter = System.lineSeparator() + prefix;
-      String suffix = moreThanMax ? (delimiter + "...") : "";
-
-      LOG.debug(debugMessage);
-      LOG.debug(undefinedTypes
-        .stream()
-        .sorted()
-        .limit(LOGGED_MAX_NUMBER_UNDEFINED_TYPES)
-        .collect(Collectors.joining(delimiter, prefix, suffix)));
+      logUndefinedTypes(LOGGED_MAX_NUMBER_UNDEFINED_TYPES);
     }
+  }
+
+  private void logUndefinedTypes(int maxLines) {
+    boolean moreThanMax = undefinedTypes.size() > maxLines;
+
+    String debugMessage = "Unresolved imports/types have been detected during analysis";
+    debugMessage += moreThanMax ? String.format(". Logging the %d first:", maxLines) : ", with following errors:";
+
+    String prefix = "- ";
+    String delimiter = System.lineSeparator() + prefix;
+    String suffix = moreThanMax ? (delimiter + "...") : "";
+
+    LOG.debug(debugMessage);
+    LOG.debug(undefinedTypes
+      .stream()
+      .sorted()
+      .limit(maxLines)
+      .collect(Collectors.joining(delimiter, prefix, suffix)));
   }
 }
