@@ -1,39 +1,17 @@
-<div class="paragraph">
 <p>If a string fits on a single line, without concatenation and escaped newlines, you should probably continue to use a string literal.</p>
-</div>
-<div class="sect1">
-<h2 id="_noncompliant_code_example">Noncompliant Code Example</h2>
-<div class="sectionbody">
-<div class="listingblock">
-<div class="content">
-<pre>String question = """
-              What's the point, really?""";</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_compliant_solution">Compliant Solution</h2>
-<div class="sectionbody">
-<div class="listingblock">
-<div class="content">
-<pre>String question = "What's the point, really?";</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_see">See</h2>
-<div class="sectionbody">
-<div class="ulist">
+<h2>Noncompliant Code Example</h2>
+<pre>
+String question = """
+              What's the point, really?""";
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+String question = "What's the point, really?";
+</pre>
+<h2>See</h2>
 <ul>
-<li>
-<p><a href="http://openjdk.java.net/jeps/368">JEP 368: Text Blocks</a> (Second Preview)</p>
-</li>
-<li>
-<p><a href="https://cr.openjdk.java.net/~jlaskey/Strings/TextBlocksGuide_v9.html">Programmer&#8217;s Guide To Text Blocks</a>, by Jim Laskey and Stuart Marks</p>
-</li>
+  <li> <a href="https://openjdk.java.net/jeps/368">JEP 368: Text Blocks</a> (Second Preview) </li>
+  <li> <a href="https://cr.openjdk.java.net/~jlaskey/Strings/TextBlocksGuide_v9.html">Programmer's Guide To Text Blocks</a>, by Jim Laskey and Stuart
+  Marks </li>
 </ul>
-</div>
-</div>
-</div>
+
