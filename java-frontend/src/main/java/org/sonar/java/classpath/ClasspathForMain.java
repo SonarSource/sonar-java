@@ -37,6 +37,7 @@ public class ClasspathForMain extends AbstractClasspath {
   private static final Logger LOG = Loggers.get(ClasspathForMain.class);
 
   private final AnalysisWarningsWrapper analysisWarnings;
+  private boolean hasSuspiciousEmptyLibraries = false;
 
   public ClasspathForMain(Configuration settings, FileSystem fs, AnalysisWarningsWrapper analysisWarnings) {
     super(settings, fs, InputFile.Type.MAIN);
@@ -64,6 +65,8 @@ public class ClasspathForMain extends AbstractClasspath {
           "sonar.binaries and sonar.libraries are not supported since version 4.0 of the SonarSource Java Analyzer,"
             + " please use sonar.java.binaries and sonar.java.libraries instead");
       }
+      hasSuspiciousEmptyLibraries = libraries.isEmpty() && hasJavaSources();
+
       if (binaries.isEmpty() && hasMoreThanOneJavaFile()) {
         if(isSonarLint()) {
           LOG.warn("sonar.java.binaries is empty, please double check your configuration");
@@ -72,13 +75,8 @@ public class ClasspathForMain extends AbstractClasspath {
             + " or exclude them from the analysis with sonar.exclusions property.");
         }
       }
+
       elements.addAll(binaries);
-      if (libraries.isEmpty() && hasJavaSources()) {
-        String warning = "Bytecode of dependencies was not provided for analysis of source files, " +
-          "you might end up with less precise results. Bytecode can be provided using sonar.java.libraries property.";
-        LOG.warn(warning);
-        analysisWarnings.addUnique(warning);
-      }
       elements.addAll(libraries);
       profiler.stopInfo();
     }
@@ -94,5 +92,14 @@ public class ClasspathForMain extends AbstractClasspath {
 
   private static boolean isNotNullOrEmpty(@Nullable String string) {
     return string != null && !string.isEmpty();
+  }
+
+  @Override
+  public void logSuspiciousEmptyLibraries() {
+    if (hasSuspiciousEmptyLibraries) {
+      String warning = String.format(ClasspathProperties.EMPTY_LIBRARIES_WARNING_TEMPLATE, "source", ClasspathProperties.SONAR_JAVA_LIBRARIES);
+      LOG.warn(warning);
+      analysisWarnings.addUnique(warning);
+    }
   }
 }

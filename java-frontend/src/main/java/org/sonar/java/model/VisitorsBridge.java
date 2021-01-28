@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model;
 
-import org.sonar.java.annotations.VisibleForTesting;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.io.InterruptedIOException;
@@ -44,6 +43,7 @@ import org.sonar.java.ExceptionHandler;
 import org.sonar.java.IllegalRuleParameterException;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.exceptions.ThrowableUtils;
@@ -73,6 +73,7 @@ public class VisitorsBridge {
   protected JavaVersion javaVersion;
   private final List<File> classpath;
   private IssuableSubsciptionVisitorsRunner issuableSubscriptionVisitorsRunner;
+
   private static final Predicate<JavaFileScanner> IS_ISSUABLE_SUBSCRIPTION_VISITOR = IssuableSubscriptionVisitor.class::isInstance;
 
   @VisibleForTesting

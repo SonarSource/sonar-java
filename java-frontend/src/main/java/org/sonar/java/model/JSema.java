@@ -19,28 +19,30 @@
  */
 package org.sonar.java.model;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTUtils;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
-import org.eclipse.jdt.core.dom.ASTUtils;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public final class JSema implements Sema {
 
   private final AST ast;
+  final Set<String> undefinedTypes = new HashSet<>();
   final Map<IBinding, Tree> declarations = new HashMap<>();
   final Map<IBinding, List<IdentifierTree>> usages = new HashMap<>();
   private final Map<ITypeBinding, JType> types = new HashMap<>();
@@ -134,5 +136,9 @@ public final class JSema implements Sema {
 
   public void cleanupEnvironment() {
     ASTUtils.cleanupEnvironment(ast);
+  }
+
+  public Set<String> undefinedTypes() {
+    return Collections.unmodifiableSet(undefinedTypes);
   }
 }

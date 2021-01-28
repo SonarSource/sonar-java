@@ -109,6 +109,8 @@ public abstract class AbstractClasspath {
 
   protected abstract void init();
 
+  public abstract void logSuspiciousEmptyLibraries();
+
   protected Set<File> getFilesFromProperty(String property) {
     Set<File> result = new LinkedHashSet<>();
     String fileList = settings.get(property).orElse("");

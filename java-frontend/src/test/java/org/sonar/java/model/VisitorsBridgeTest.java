@@ -20,15 +20,11 @@
 package org.sonar.java.model;
 
 import java.io.File;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.IntFunction;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import org.assertj.core.api.Fail;
 import org.junit.Rule;
 import org.junit.jupiter.api.Disabled;
@@ -106,26 +102,9 @@ class VisitorsBridgeTest {
 
   private static void checkFile(String filename, String code, VisitorsBridge visitorsBridge) {
     visitorsBridge.setCurrentFile(TestUtils.emptyInputFile(filename));
-    visitorsBridge.visitFile(parse(code));
+    visitorsBridge.visitFile(JParserTestUtils.parse(code));
   }
 
-  @Test
-  @Disabled("Missing classes are not logged anymore since ECJ migration")
-  void log_only_50_elements() {
-    DecimalFormat formatter = new DecimalFormat("00");
-    IntFunction<String> classNotFoundName = i -> "NotFound" + formatter.format(i);
-    VisitorsBridge visitorsBridge = new VisitorsBridge(Collections.singletonList((JavaFileScanner) context -> {
-      assertThat(context.getSemanticModel()).isNotNull();
-      // FIXME log missing classes?
-      // ((SemanticModel) context.getSemanticModel()).classesNotFound().addAll(IntStream.range(0,
-      // 60).mapToObj(classNotFoundName).collect(Collectors.toList()));
-    }), new ArrayList<>(), null);
-    checkFile("Foo.java", "class Foo {}", visitorsBridge);
-    visitorsBridge.endOfAnalysis();
-    assertThat(logTester.logs(LoggerLevel.WARN)).containsOnly(
-      "Classes not found during the analysis : [" +
-        IntStream.range(0, 50 /* only first 50 missing classes are displayed in the log */).mapToObj(classNotFoundName).sorted().collect(Collectors.joining(", ")) + ", ...]");
-  }
 
   private static String contstructFileName(String... path) {
     String result = "";
@@ -133,10 +112,6 @@ class VisitorsBridgeTest {
       result += s + File.separator;
     }
     return result.substring(0, result.length() - 1);
-  }
-
-  private static CompilationUnitTree parse(String code) {
-    return JParserTestUtils.parse(code);
   }
 
   @Test

@@ -32,6 +32,7 @@ import org.sonar.api.utils.log.Profiler;
 public class ClasspathForTest extends AbstractClasspath {
 
   private static final Logger LOG = Loggers.get(ClasspathForTest.class);
+  private boolean hasSuspiciousEmptyLibraries = false;
 
   public ClasspathForTest(Configuration settings, FileSystem fs) {
     super(settings, fs, InputFile.Type.TEST);
@@ -49,13 +50,19 @@ public class ClasspathForTest extends AbstractClasspath {
       Set<File> extraLibraries = getFilesFromProperty(ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES);
       logResolvedFiles(ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES, extraLibraries);
       libraries.addAll(extraLibraries);
-      if (libraries.isEmpty() && hasJavaSources()) {
-        LOG.warn("Bytecode of dependencies was not provided for analysis of test files, you might end up with less precise results. " +
-          "Bytecode can be provided using sonar.java.test.libraries property.");
-      }
+      hasSuspiciousEmptyLibraries = libraries.isEmpty() && hasJavaSources();
+
       elements.addAll(binaries);
       elements.addAll(libraries);
       profiler.stopInfo();
+    }
+  }
+
+  @Override
+  public void logSuspiciousEmptyLibraries() {
+    if (hasSuspiciousEmptyLibraries) {
+      String warning = String.format(ClasspathProperties.EMPTY_LIBRARIES_WARNING_TEMPLATE, "test", ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES);
+      LOG.warn(warning);
     }
   }
 

@@ -23,6 +23,7 @@ import com.sonar.sslr.api.RecognitionException;
 import java.io.InterruptedIOException;
 import java.time.Clock;
 import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -86,6 +87,13 @@ public class JavaAstScanner {
       }
       executionTimeReport.report();
       visitor.endOfAnalysis();
+      logUndefinedTypes();
+    }
+  }
+
+  private void logUndefinedTypes() {
+    if (sonarComponents != null) {
+      sonarComponents.logUndefinedTypes();
     }
   }
 
@@ -113,6 +121,7 @@ public class JavaAstScanner {
         visitor.getClasspath()
       );
       visitor.visitFile(ast);
+      collectUndefinedTypes(ast.sema.undefinedTypes());
       // release environment used for semantic resolution
       ast.sema.cleanupEnvironment();
     } catch (RecognitionException e) {
@@ -129,6 +138,12 @@ public class JavaAstScanner {
     } catch (StackOverflowError error) {
       LOG.error(String.format(LOG_ERROR_STACKOVERFLOW, inputFile), error);
       throw error;
+    }
+  }
+
+  private void collectUndefinedTypes(Set<String> undefinedTypes) {
+    if (sonarComponents != null) {
+      sonarComponents.collectUndefinedTypes(undefinedTypes);
     }
   }
 

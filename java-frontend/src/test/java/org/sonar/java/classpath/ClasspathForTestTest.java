@@ -20,28 +20,37 @@
 package org.sonar.java.classpath;
 
 import java.io.File;
+import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.config.internal.MapSettings;
+import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.TestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
+@EnableRuleMigrationSupport
 class ClasspathForTestTest {
 
   private DefaultFileSystem fs;
   private MapSettings settings;
   private ClasspathForTest javaTestClasspath;
 
+  @Rule
+  public LogTester logTester = new LogTester();
+
   @BeforeEach
   public void setUp() throws Exception {
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
     fs.add(TestUtils.emptyInputFile("foo.java", InputFile.Type.TEST));
     settings = new MapSettings();
+    logTester.clear();
   }
 
   /**
@@ -54,6 +63,32 @@ class ClasspathForTestTest {
     fs = Mockito.spy(new DefaultFileSystem(new File("src/test/files/classpath/")));
     javaTestClasspath = new ClasspathForTest(settings.asConfig(), fs);
     Mockito.verifyZeroInteractions(fs);
+  }
+
+  @Test
+  void display_warning_for_missing_bytecode_when_libraries_empty_and_have_java_sources() {
+    javaTestClasspath = createJavaClasspath();
+    javaTestClasspath.init();
+    assertThat(javaTestClasspath.getFilesFromProperty(ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES)).isEmpty();
+    assertThat(javaTestClasspath.hasJavaSources()).isTrue();
+
+    javaTestClasspath.logSuspiciousEmptyLibraries();
+
+    String warning = "Dependencies/libraries were not provided for analysis of test files. The 'sonar.java.test.libraries' property is empty. "
+      + "Verify your configuration, as you might end up with less precise results.";
+    assertThat(logTester.logs(LoggerLevel.WARN)).containsExactly(warning);
+  }
+
+  @Test
+  void no_warning_for_missing_bytecode_when_libraries_empty_and_have_no_java_sources() {
+    javaTestClasspath = new ClasspathForTest(settings.asConfig(), new DefaultFileSystem(new File("src/test/files/classpath/")));
+    javaTestClasspath.init();
+    assertThat(javaTestClasspath.getFilesFromProperty(ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES)).isEmpty();
+    assertThat(javaTestClasspath.hasJavaSources()).isFalse();
+
+    javaTestClasspath.logSuspiciousEmptyLibraries();
+
+    assertThat(logTester.logs(LoggerLevel.WARN)).isEmpty();
   }
 
   @Test

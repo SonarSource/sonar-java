@@ -37,6 +37,7 @@ import java.util.jar.Manifest;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -49,26 +50,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 
 class JParserTest {
 
   @Test
   void should_throw_RecognitionException_in_case_of_syntax_error() {
-    try { // Note that without check for syntax errors will cause IndexOutOfBoundsException
-      test("class C");
-      fail("exception expected");
-    } catch (RecognitionException e) {
-      assertEquals(1, e.getLine());
-      assertEquals("Parse error at line 1 column 6: Syntax error, insert \"ClassBody\" to complete CompilationUnit", e.getMessage());
-    }
-    try { // Note that syntax tree will be correct even in presence of this syntax error
-      // javac doesn't produce error in this case, however this is not allowed according to JLS 12
-      test("import a; ; import b;");
-      fail("exception expected");
-    } catch (RecognitionException e) {
-      assertEquals("Parse error at line 1 column 10: Syntax error on token \";\", delete this token", e.getMessage());
-    }
+    // Note that without check for syntax errors will cause IndexOutOfBoundsException
+    RecognitionException e1 = assertThrows(RecognitionException.class,
+      () -> test("class C"),
+      "Parse error at line 1 column 6: Syntax error, insert \"ClassBody\" to complete CompilationUnit");
+    assertThat(e1.getLine()).isEqualTo(1);
+
+    // Note that syntax tree will be correct even in presence of this syntax error
+    // javac doesn't produce error in this case, however this is not allowed according to JLS 12
+    assertThrows(RecognitionException.class,
+      () -> test("import a; ; import b;"),
+      "Parse error at line 1 column 10: Syntax error on token \";\", delete this token");
   }
 
   @Test
@@ -85,22 +82,21 @@ class JParserTest {
 
   @Test
   void should_throw_RecognitionException_in_case_of_lexical_error() {
-    try { // Note that without check for errors will cause InvalidInputException
-      testExpression("''");
-      fail("exception expected");
-    } catch (RuntimeException e) {
-      assertEquals("Parse error at line 1 column 30: Invalid character constant", e.getMessage());
-    }
+    // Note that without check for errors will cause InvalidInputException
+    assertThrows(RuntimeException.class, () -> testExpression("''"), "Parse error at line 1 column 30: Invalid character constant");
   }
 
   @Test
   void err() {
-    try {
-      // ASTNode.METHOD_DECLARATION with flag ASTNode.MALFORMED
-      test("interface Foo { public foo(); // comment\n }");
-      fail("exception expected");
-    } catch (IndexOutOfBoundsException ignore) {
-    }
+    // ASTNode.METHOD_DECLARATION with flag ASTNode.MALFORMED: missing return type
+    assertThrows(IndexOutOfBoundsException.class, () -> test("interface Foo { public foo(); // comment\n }"));
+  }
+
+  @Test
+  void unknown_types_are_collected() {
+    // import org.foo missing, type Bar unknown
+    CompilationUnitTree cut = test("import org.foo.Bar;\n class Foo {\n void foo(Bar b) {}\n }\n");
+    assertThat(((CompilationUnitTreeImpl) cut).sema.undefinedTypes).containsExactlyInAnyOrder("The import org.foo cannot be resolved", "Bar cannot be resolved to a type");
   }
 
   @Test
