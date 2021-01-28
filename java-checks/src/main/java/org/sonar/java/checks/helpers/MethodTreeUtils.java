@@ -21,7 +21,7 @@ package org.sonar.java.checks.helpers;
 
 import java.util.Optional;
 import javax.annotation.Nullable;
-import org.sonar.api.internal.google.common.annotations.VisibleForTesting;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;

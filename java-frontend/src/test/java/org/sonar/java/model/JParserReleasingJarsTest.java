@@ -19,21 +19,20 @@
  */
 package org.sonar.java.model;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import com.google.common.io.Files;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.junit.rules.TemporaryFolder;
-import org.sonar.api.internal.google.common.io.Files;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @EnableRuleMigrationSupport
 class JParserReleasingJarsTest {
