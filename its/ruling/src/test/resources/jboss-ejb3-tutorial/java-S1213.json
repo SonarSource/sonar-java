@@ -1,4 +1,7 @@
 {
+'jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/bean/EntityTestBean.java':[
+43,
+],
 'jboss-ejb3-tutorial:consumer/src/org/jboss/tutorial/consumer/bean/TesterBean.java':[
 59,
 61,
@@ -6,6 +9,9 @@
 'jboss-ejb3-tutorial:consumer_deployment_descriptor/src/org/jboss/tutorial/consumer_deployment_descriptor/bean/TesterBean.java':[
 58,
 60,
+],
+'jboss-ejb3-tutorial:jndibinding/src/org/jboss/tutorial/jndibinding/bean/CustomerBean.java':[
+49,
 ],
 'jboss-ejb3-tutorial:singleinheritance/src/org/jboss/tutorial/singleinheritance/bean/Cat.java':[
 47,

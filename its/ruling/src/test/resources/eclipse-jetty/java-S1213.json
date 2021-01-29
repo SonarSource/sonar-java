@@ -18,6 +18,9 @@
 182,
 ],
 'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java':[
+91,
+92,
+93,
 109,
 111,
 116,
@@ -133,6 +136,10 @@
 239,
 296,
 ],
+'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/Response.java':[
+109,
+110,
+],
 'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java':[
 89,
 90,
@@ -196,6 +203,9 @@
 ],
 'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCache.java':[
 178,
+],
+'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java':[
+61,
 ],
 'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionData.java':[
 165,
@@ -271,6 +281,10 @@
 'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/Uptime.java':[
 98,
 100,
+],
+'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/Utf8Appendable.java':[
+63,
+77,
 ],
 'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/PathResource.java':[
 215,
