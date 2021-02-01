@@ -32,7 +32,9 @@ import org.sonar.api.utils.log.Profiler;
 public class ClasspathForTest extends AbstractClasspath {
 
   private static final Logger LOG = Loggers.get(ClasspathForTest.class);
+
   private boolean hasSuspiciousEmptyLibraries = false;
+  private boolean alreadyReported = false;
 
   public ClasspathForTest(Configuration settings, FileSystem fs) {
     super(settings, fs, InputFile.Type.TEST);
@@ -60,9 +62,10 @@ public class ClasspathForTest extends AbstractClasspath {
 
   @Override
   public void logSuspiciousEmptyLibraries() {
-    if (hasSuspiciousEmptyLibraries) {
-      String warning = String.format(ClasspathProperties.EMPTY_LIBRARIES_WARNING_TEMPLATE, "test", ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES);
+    if (hasSuspiciousEmptyLibraries && !alreadyReported) {
+      String warning = String.format(ClasspathProperties.EMPTY_LIBRARIES_WARNING_TEMPLATE, "TEST", ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES);
       LOG.warn(warning);
+      alreadyReported = true;
     }
   }
 

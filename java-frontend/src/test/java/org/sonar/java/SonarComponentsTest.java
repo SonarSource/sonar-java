@@ -450,13 +450,14 @@ class SonarComponentsTest {
       // triggers log
       sonarComponents.logUndefinedTypes();
 
-      List<String> debugLogs = logTester.logs(LoggerLevel.DEBUG);
-      assertThat(debugLogs)
-        .hasSize(2)
-        .startsWith("Unresolved imports/types have been detected during analysis. Logging the 50 first:");
-      String list = debugLogs.get(1);
+      assertThat(logTester.logs(LoggerLevel.WARN)).containsExactly("Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.");
 
+      List<String> debugLogs = logTester.logs(LoggerLevel.DEBUG);
+      assertThat(debugLogs).hasSize(1);
+
+      String list = debugLogs.get(0);
       assertThat(list)
+        .startsWith("First 50 unresolved imports/types:")
         .endsWith("- ...")
         .doesNotContain("- Y cannot be resolved to a type")
         .doesNotContain("- Z cannot be resolved to a type");
@@ -479,12 +480,13 @@ class SonarComponentsTest {
       // triggers log
       sonarComponents.logUndefinedTypes();
 
-      List<String> debugLogs = logTester.logs(LoggerLevel.DEBUG);
-      assertThat(debugLogs)
-        .hasSize(2)
-        .startsWith("Unresolved imports/types have been detected during analysis, with following errors:");
+      assertThat(logTester.logs(LoggerLevel.WARN)).containsExactly("Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.");
 
-      assertThat(debugLogs.get(1))
+      List<String> debugLogs = logTester.logs(LoggerLevel.DEBUG);
+      assertThat(debugLogs).hasSize(1);
+
+      assertThat(debugLogs.get(0))
+        .startsWith("Unresolved imports/types:")
         .doesNotContain("- ...")
         .contains("- A cannot be resolved to a type")
         .contains("- The import org.package01 cannot be resolved");

@@ -38,6 +38,7 @@ public class ClasspathForMain extends AbstractClasspath {
 
   private final AnalysisWarningsWrapper analysisWarnings;
   private boolean hasSuspiciousEmptyLibraries = false;
+  private boolean alreadyReported = false;
 
   public ClasspathForMain(Configuration settings, FileSystem fs, AnalysisWarningsWrapper analysisWarnings) {
     super(settings, fs, InputFile.Type.MAIN);
@@ -96,10 +97,11 @@ public class ClasspathForMain extends AbstractClasspath {
 
   @Override
   public void logSuspiciousEmptyLibraries() {
-    if (hasSuspiciousEmptyLibraries) {
-      String warning = String.format(ClasspathProperties.EMPTY_LIBRARIES_WARNING_TEMPLATE, "source", ClasspathProperties.SONAR_JAVA_LIBRARIES);
+    if (hasSuspiciousEmptyLibraries && !alreadyReported) {
+      String warning = String.format(ClasspathProperties.EMPTY_LIBRARIES_WARNING_TEMPLATE, "SOURCE", ClasspathProperties.SONAR_JAVA_LIBRARIES);
       LOG.warn(warning);
       analysisWarnings.addUnique(warning);
+      alreadyReported = true;
     }
   }
 }
