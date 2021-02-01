@@ -1,0 +1,26 @@
+<p>When executing an OS command and unless you specify the full path to the executable, then the locations in your application's <code>PATH</code>
+environment variable will be searched for the executable. That search could leave an opening for an attacker if one of the elements in
+<code>PATH</code> is a directory under his control. </p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> The directories in the PATH environment variable may be defined by not trusted entities. </li>
+</ul>
+<p>There is a risk if you answered yes to this question.</p>
+<p> </p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>Fully qualified/absolute path should be used to specify the OS command to execute.</p>
+<h2>Sensitive Code Example</h2>
+<pre>
+System.Runtime.getRuntime().exec("make");  // Sensitive
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+System.Runtime.getRuntime().exec("/usr/bin/make");  // Compliant
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A1-Injection">OWASP Top 10 2017 Category A1</a> - Injection </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/426.html">MITRE, CWE-426</a> - Untrusted Search Path </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/427.html">MITRE, CWE-427</a> - Uncontrolled Search Path Element </li>
+</ul>
+

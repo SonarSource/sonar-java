@@ -570,6 +570,7 @@ public final class CheckList {
       OutputStreamOverrideWriteCheck.class,
       OverrideAnnotationCheck.class,
       OverwrittenKeyCheck.class,
+      OSCommandsPathCheck.class,
       PackageInfoCheck.class,
       ParameterNullnessCheck.class,
       ParameterReassignedToCheck.class,
