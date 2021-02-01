@@ -101,6 +101,7 @@ import org.sonar.java.checks.security.SecureXmlTransformerCheck;
 import org.sonar.java.checks.security.ServerCertificatesCheck;
 import org.sonar.java.checks.security.SocketUsageCheck;
 import org.sonar.java.checks.security.StandardInputReadCheck;
+import org.sonar.java.checks.security.UnpredictableSaltCheck;
 import org.sonar.java.checks.security.UserEnumerationCheck;
 import org.sonar.java.checks.security.VerifiedServerHostnamesCheck;
 import org.sonar.java.checks.security.XxeActiveMQCheck;
@@ -758,6 +759,7 @@ public final class CheckList {
       UnicodeAwareCharClassesCheck.class,
       UnnecessaryEscapeSequencesInTextBlockCheck.class,
       UnnecessarySemicolonCheck.class,
+      UnpredictableSaltCheck.class,
       UnreachableCatchCheck.class,
       UnusedGroupNamesCheck.class,
       UnusedLabelCheck.class,

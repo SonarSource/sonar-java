@@ -1,0 +1,27 @@
+{
+  "title": "Hashes should include an unpredictable salt",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "tags": [
+    "cwe",
+    "sans-top25-porous",
+    "owasp-a3"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-2053",
+  "sqKey": "S2053",
+  "scope": "All",
+  "securityStandards": {
+    "CWE": [
+      759,
+      760
+    ],
+    "OWASP": [
+      "A3"
+    ]
+  }
+}
