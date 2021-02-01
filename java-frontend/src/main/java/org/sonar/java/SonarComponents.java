@@ -346,20 +346,23 @@ public class SonarComponents {
       javaClasspath.logSuspiciousEmptyLibraries();
       javaTestClasspath.logSuspiciousEmptyLibraries();
       logUndefinedTypes(LOGGED_MAX_NUMBER_UNDEFINED_TYPES);
+
+      // clear the set so only new undefined types will be logged
+      undefinedTypes.clear();
     }
   }
 
   private void logUndefinedTypes(int maxLines) {
     boolean moreThanMax = undefinedTypes.size() > maxLines;
 
-    String debugMessage = "Unresolved imports/types have been detected during analysis";
-    debugMessage += moreThanMax ? String.format(". Logging the %d first:", maxLines) : ", with following errors:";
+    String warningMessage = "Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.";
+    String debugMessage = moreThanMax ? String.format("First %d unresolved imports/types:", maxLines) : "Unresolved imports/types:";
 
-    String prefix = "- ";
-    String delimiter = System.lineSeparator() + prefix;
+    String delimiter = System.lineSeparator() + "- ";
+    String prefix = debugMessage + delimiter;
     String suffix = moreThanMax ? (delimiter + "...") : "";
 
-    LOG.debug(debugMessage);
+    LOG.warn(warningMessage);
     LOG.debug(undefinedTypes
       .stream()
       .sorted()

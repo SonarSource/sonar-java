@@ -41,6 +41,7 @@ import org.sonar.java.TestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -99,9 +100,27 @@ class ClasspathForMainTest {
 
     javaClasspath.logSuspiciousEmptyLibraries();
 
-    String warning = "Dependencies/libraries were not provided for analysis of source files. The 'sonar.java.libraries' property is empty. "
+    String warning = "Dependencies/libraries were not provided for analysis of SOURCE files. The 'sonar.java.libraries' property is empty. "
       + "Verify your configuration, as you might end up with less precise results.";
     verify(analysisWarnings).addUnique(warning);
+    assertThat(logTester.logs(LoggerLevel.WARN)).containsExactly(warning);
+  }
+
+  @Test
+  void only_display_once_warning_for_missing_bytecode_when_libraries_empty_and_have_java_sources() {
+    javaClasspath = createJavaClasspath();
+    javaClasspath.init();
+    assertThat(javaClasspath.getFilesFromProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES)).isEmpty();
+    assertThat(javaClasspath.hasJavaSources()).isTrue();
+
+    javaClasspath.logSuspiciousEmptyLibraries();
+
+    // re-trigger logs
+    javaClasspath.logSuspiciousEmptyLibraries();
+
+    String warning = "Dependencies/libraries were not provided for analysis of SOURCE files. The 'sonar.java.libraries' property is empty. "
+      + "Verify your configuration, as you might end up with less precise results.";
+    verify(analysisWarnings, times(1)).addUnique(warning);
     assertThat(logTester.logs(LoggerLevel.WARN)).containsExactly(warning);
   }
 

@@ -74,7 +74,24 @@ class ClasspathForTestTest {
 
     javaTestClasspath.logSuspiciousEmptyLibraries();
 
-    String warning = "Dependencies/libraries were not provided for analysis of test files. The 'sonar.java.test.libraries' property is empty. "
+    String warning = "Dependencies/libraries were not provided for analysis of TEST files. The 'sonar.java.test.libraries' property is empty. "
+      + "Verify your configuration, as you might end up with less precise results.";
+    assertThat(logTester.logs(LoggerLevel.WARN)).containsExactly(warning);
+  }
+
+  @Test
+  void only_display_once_warning_for_missing_bytecode_when_libraries_empty_and_have_java_sources() {
+    javaTestClasspath = createJavaClasspath();
+    javaTestClasspath.init();
+    assertThat(javaTestClasspath.getFilesFromProperty(ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES)).isEmpty();
+    assertThat(javaTestClasspath.hasJavaSources()).isTrue();
+
+    javaTestClasspath.logSuspiciousEmptyLibraries();
+
+    //re-trigger logs
+    javaTestClasspath.logSuspiciousEmptyLibraries();
+
+    String warning = "Dependencies/libraries were not provided for analysis of TEST files. The 'sonar.java.test.libraries' property is empty. "
       + "Verify your configuration, as you might end up with less precise results.";
     assertThat(logTester.logs(LoggerLevel.WARN)).containsExactly(warning);
   }
