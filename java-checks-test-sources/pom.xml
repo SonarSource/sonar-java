@@ -724,6 +724,12 @@
       <artifactId>mockito-junit-jupiter</artifactId>
       <version>3.7.7</version>
     </dependency>
+    <dependency>
+      <groupId>com.auth0</groupId>
+      <artifactId>java-jwt</artifactId>
+      <version>3.12.0</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <profiles>
