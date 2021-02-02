@@ -81,6 +81,7 @@ import org.sonar.java.checks.security.CryptographicKeySizeCheck;
 import org.sonar.java.checks.security.DataEncryptionCheck;
 import org.sonar.java.checks.security.DataHashingCheck;
 import org.sonar.java.checks.security.DebugFeatureEnabledCheck;
+import org.sonar.java.checks.security.DisableAutoEscapingCheck;
 import org.sonar.java.checks.security.EmailHotspotCheck;
 import org.sonar.java.checks.security.EmptyDatabasePasswordCheck;
 import org.sonar.java.checks.security.EncryptionAlgorithmCheck;
@@ -370,6 +371,7 @@ public final class CheckList {
       DeprecatedHashAlgorithmCheck.class,
       DeprecatedTagPresenceCheck.class,
       DiamondOperatorCheck.class,
+      DisableAutoEscapingCheck.class,
       DisallowedClassCheck.class,
       DisallowedConstructorCheck.class,
       DisallowedMethodCheck.class,
