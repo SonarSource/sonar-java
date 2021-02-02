@@ -34,6 +34,8 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.sonar.java.model.JUtils.isLocalVariable;
+
 @Rule(key = "S5659")
 public class JWTWithStrongCipherCheck extends IssuableSubscriptionVisitor {
 
@@ -157,10 +159,5 @@ public class JWTWithStrongCipherCheck extends IssuableSubscriptionVisitor {
     }
     // Can be signed anywhere (field, other file), we consider it as signed
     return true;
-  }
-
-  private static boolean isLocalVariable(Symbol symbol) {
-    Symbol owner = symbol.owner();
-    return owner != null && owner.isMethodSymbol();
   }
 }
