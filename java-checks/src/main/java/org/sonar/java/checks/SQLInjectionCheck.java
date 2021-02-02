@@ -89,6 +89,8 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
       .names("setFilter", "setGrouping")
       .withAnyParameters()
       .build());
+  
+  private static final String MAIN_MESSAGE = "Make sure using a dynamically formatted SQL query is safe here.";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -105,31 +107,40 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
       if (sqlStringArg.isPresent()) {
         ExpressionTree sqlArg = sqlStringArg.get();
         if (isDynamicConcatenation(sqlArg)) {
-          reportIssue(sqlArg, "Ensure that string concatenation is required and safe for this SQL query.");
+          reportIssue(sqlArg, MAIN_MESSAGE);
         } else if (sqlArg.is(Tree.Kind.IDENTIFIER)) {
-          Symbol symbol = ((IdentifierTree) sqlArg).symbol();
+          IdentifierTree identifierTree = (IdentifierTree) sqlArg;
+          Symbol symbol = identifierTree.symbol();
           ExpressionTree initializerOrExpression = getInitializerOrExpression(symbol.declaration());
           List<AssignmentExpressionTree> reassignments = getReassignments(symbol.owner().declaration(), symbol.usages());
 
           if ((initializerOrExpression != null && isDynamicConcatenation(initializerOrExpression)) ||
             reassignments.stream().anyMatch(SQLInjectionCheck::isDynamicPlusAssignment)) {
-            reportIssue(sqlArg, "Ensure that string concatenation is required and safe for this SQL query.", secondaryLocations(initializerOrExpression, reassignments), null);
+            reportIssue(sqlArg, MAIN_MESSAGE, secondaryLocations(initializerOrExpression, reassignments, identifierTree.name()), null);
           }
         }
       }
     }
   }
 
-  private static List<JavaFileScannerContext.Location> secondaryLocations(@Nullable ExpressionTree initializerOrExpression, List<AssignmentExpressionTree> reassignments) {
+  private static List<JavaFileScannerContext.Location> secondaryLocations(@Nullable ExpressionTree initializerOrExpression,
+    List<AssignmentExpressionTree> reassignments,
+    String identifierName) {
     List<JavaFileScannerContext.Location> secondaryLocations = reassignments.stream()
-      .map(AssignmentExpressionTree::expression)
-      .map(expr -> new JavaFileScannerContext.Location("Sensitive update", expr))
+      .map(assignment -> new JavaFileScannerContext.Location(String.format("SQL Query is assigned to '%s'", getVariableName(assignment)), assignment.expression()))
       .collect(Collectors.toList());
 
     if (initializerOrExpression != null) {
-      secondaryLocations.add(new JavaFileScannerContext.Location("Sensitive variable manipulation", initializerOrExpression));
+      secondaryLocations.add(new JavaFileScannerContext.Location(String.format("SQL Query is dynamically formatted and assigned to '%s'",
+        identifierName),
+        initializerOrExpression));
     }
     return secondaryLocations;
+  }
+  
+  private static String getVariableName(AssignmentExpressionTree assignment) {
+    ExpressionTree variable = assignment.variable();
+    return ((IdentifierTree) variable).name();
   }
 
   private static Stream<ExpressionTree> arguments(Tree methodTree) {
