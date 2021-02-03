@@ -88,6 +88,7 @@ import org.sonar.java.checks.security.EnvVariablesHotspotCheck;
 import org.sonar.java.checks.security.FilePermissionsCheck;
 import org.sonar.java.checks.security.HostnameVerifierImplementationCheck;
 import org.sonar.java.checks.security.IntegerToHexStringCheck;
+import org.sonar.java.checks.security.JWTWithStrongCipherCheck;
 import org.sonar.java.checks.security.LDAPAuthenticatedConnectionCheck;
 import org.sonar.java.checks.security.LDAPDeserializationCheck;
 import org.sonar.java.checks.security.LogConfigurationCheck;
@@ -478,6 +479,7 @@ public final class CheckList {
       IteratorNextExceptionCheck.class,
       JacksonDeserializationCheck.class,
       JdbcDriverExplicitLoadingCheck.class,
+      JWTWithStrongCipherCheck.class,
       KeySetInsteadOfEntrySetCheck.class,
       KeywordAsIdentifierCheck.class,
       LabelsShouldNotBeUsedCheck.class,

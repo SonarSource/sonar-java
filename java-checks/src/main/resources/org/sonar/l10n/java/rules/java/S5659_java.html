@@ -1,0 +1,98 @@
+<div class="paragraph">
+<p>If a JSON Web Token (JWT) is not signed with a strong cipher algorithm (or not signed at all) an attacker can forge it and impersonate user identities.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Don&#8217;t use <code>none</code> algorithm to sign or verify the validity of a token.</p>
+</li>
+<li>
+<p>Don&#8217;t use a token without verifying its signature before.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In addition, be extra careful when using <a href="https://github.com/jwtk/jjwt">jwtk/Java JWT</a> library "<code>parse</code>" method, parsing a signed token (JWT + JWS (signature)) or an unsigned one. To guess how to parse the token the parse method will look at the token headers (which are not signed and thus could be forged by an attacker). This attack is sometimes referred as the "None algorithm attack". Instead, you should consider using "<code>parseClaimsJws</code>" parsing signed token. If the signature is not provided together with the JWT, the method will fail as expected.</p>
+</div>
+<div class="sect1">
+<h2 id="_noncompliant_code_examples">Noncompliant Code Examples</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Using <a href="https://github.com/jwtk/jjwt">jwtk/Java JWT</a> library:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>// Signinig:
+io.jsonwebtoken.Jwts.builder() // Noncompliant, token is not signed.
+  .setSubject(USER_LOGIN)
+  .compact();
+// Verifying:
+io.jsonwebtoken.Jwts.parser().setSigningKey(SECRET_KEY).parse(token).getBody(); // Noncompliant, if the token has no signature, this method will still parse it correctly.</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Using <a href="https://github.com/auth0/java-jwt">auth0/Java JWT</a> library:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>// Signinig:
+com.auth0.jwt.JWT.create()
+  .withSubject(SUBJECT)
+  .sign(Algorithm.none()); // Noncompliant, use only strong cipher algorithms when signing this JWT.
+// Verifying:
+JWTVerifier nonCompliantVerifier = com.auth0.jwt.JWT.require(Algorithm.none()) // Noncompliant
+  .withSubject(LOGIN)
+  .build();</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_compliant_solution">Compliant Solution</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Using <a href="https://github.com/jwtk/jjwt">Java JWT</a> library:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>// Signinig:
+Jwts.builder() // Compliant
+  .setSubject(USER_LOGIN)
+  .signWith(SignatureAlgorithm.H{rule:java:S256}, SECRET_KEY)
+  .compact();
+// Verifying:
+Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody(); // Compliant</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Using <a href="https://github.com/auth0/java-jwt">auth0/Java JWT</a> library:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>// Signinig:
+JWT.create()
+  .withSubject(SUBJECT)
+  .sign(Algorithm.HMAC256(SECRET_KEY)); // Noncompliant, use only strong cipher algorithms when signing this JWT.
+// Verifying:
+JWTVerifier nonCompliantVerifier = JWT.require(Algorithm.HMAC256(SECRET_KEY)) // Noncompliant
+  .withSubject(LOGIN)
+  .build();</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_see">See</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://www.owasp.org/index.php/Top_10-2017_A3-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data Exposure</p>
+</li>
+<li>
+<p><a href="https://cwe.mitre.org/data/definitions/347.html">MITRE, CWE-347</a> - Improper Verification of Cryptographic Signature</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
