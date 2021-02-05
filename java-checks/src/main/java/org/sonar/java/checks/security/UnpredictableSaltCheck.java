@@ -19,18 +19,16 @@
  */
 package org.sonar.java.checks.security;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.Preconditions;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -73,14 +71,7 @@ public class UnpredictableSaltCheck extends IssuableSubscriptionVisitor {
     .withAnyParameters()
     .build();
 
-  private static final MethodMatchers RANDOM_BYTES = MethodMatchers.create()
-    .ofTypes("java.util.Random")
-    .names("nextBytes")
-    .withAnyParameters()
-    .build();
-
   private final Map<Symbol, Integer> updateCalls = new HashMap<>();
-  private final Map<Symbol, Map<Tree, String>> predictableUpdateCalls = new HashMap<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -97,26 +88,21 @@ public class UnpredictableSaltCheck extends IssuableSubscriptionVisitor {
     checkDigestMethod((MethodInvocationTree) tree);
   }
 
-  private void checkDigestMethod(MethodInvocationTree tree) {
-    final MethodInvocationTree methodInvocationTree = tree;
+  @Override
+  public void setContext(JavaFileScannerContext context) {
+    updateCalls.clear();
+    super.setContext(context);
+  }
+
+  private void checkDigestMethod(MethodInvocationTree methodInvocationTree) {
     if (UPDATE_MESSAGE_DIGEST.matches(methodInvocationTree)) {
-      getInvokedSymbol(methodInvocationTree).ifPresent(symbol -> {
-        updateCalls.compute(symbol, (k, v) -> (v == null) ? 1 : (v + 1));
-        ExpressionTree saltExpression = ExpressionUtils.skipParentheses(methodInvocationTree.arguments().get(0));
-        Map<Tree, String> path = new LinkedHashMap<>();
-        path.put(methodInvocationTree, "Digest update call");
-        if (isPredictable(saltExpression, path)) {
-          predictableUpdateCalls.put(symbol, path);
-        }
-      });
+      getInvokedSymbol(methodInvocationTree).ifPresent(symbol -> 
+        updateCalls.compute(symbol, (k, v) -> (v == null) ? 1 : (v + 1)));
     } else if (DIGEST_METHOD.matches(methodInvocationTree)) {
       getInvokedSymbol(methodInvocationTree).ifPresent(symbol -> {
         Integer count = updateCalls.get(symbol);
-        if ((count == null) || ((count == 1) && methodInvocationTree.arguments().isEmpty())) {
+        if (count == null || (count == 1 && methodInvocationTree.arguments().isEmpty())) {
           reportIssue(methodInvocationTree, ADD_SALT);
-        } else if (predictableUpdateCalls.containsKey(symbol)) {
-          List<JavaFileScannerContext.Location> locations = convertToLocations(predictableUpdateCalls.get(symbol));
-          reportIssue(methodInvocationTree, UNPREDICTABLE_SALT, locations, null);
         }
       });
     }
@@ -128,72 +114,19 @@ public class UnpredictableSaltCheck extends IssuableSubscriptionVisitor {
         reportIssue(newClassTree, ADD_SALT);
       } else {
         ExpressionTree saltExpression = ExpressionUtils.skipParentheses(newClassTree.arguments().get(1));
-        Map<Tree, String> path = new LinkedHashMap<>();
-        if (isPredictable(saltExpression, path)) {
-          List<JavaFileScannerContext.Location> locations = convertToLocations(path);
+        List<JavaFileScannerContext.Location> locations = new ArrayList<>();
+        if (isPredictable(saltExpression, locations)) {
           reportIssue(newClassTree, UNPREDICTABLE_SALT, locations, null);
         }
       }
     }
   }
 
-  private static List<JavaFileScannerContext.Location> convertToLocations(Map<Tree, String> path) {
-    return path.entrySet().stream()
-      .map(entry -> new JavaFileScannerContext.Location(entry.getValue(), entry.getKey()))
-      .collect(Collectors.toList());
+  private static boolean isPredictable(ExpressionTree saltExpression, List<JavaFileScannerContext.Location> locations) {
+    return (saltExpression.is(Tree.Kind.METHOD_INVOCATION) && isInitializedWithGetBytes((MethodInvocationTree) saltExpression)) ||
+      (saltExpression.is(Tree.Kind.IDENTIFIER) && isInitializedWithLiteral((IdentifierTree) saltExpression, locations));
   }
   
-  private static boolean isPredictable(ExpressionTree saltExpression, Map<Tree, String> path) {
-    return (saltExpression.is(Tree.Kind.METHOD_INVOCATION) && isInitializedWithGetBytes((MethodInvocationTree) saltExpression, path)) ||
-      (saltExpression.is(Tree.Kind.IDENTIFIER) && (isInitializedWithLiteral((IdentifierTree) saltExpression, path) 
-        || isInitializedWithUnsecureRandom((IdentifierTree) saltExpression, path)));
-  }
-
-  private static boolean isInitializedWithUnsecureRandom(IdentifierTree saltExpression, Map<Tree, String> path) {
-    Symbol symbol = saltExpression.symbol();
-    if (!symbol.isUnknown()) {
-      Optional<MethodInvocationTree> randomInvocation = symbol.usages().stream()
-        .map(UnpredictableSaltCheck::getParentMethod)
-        .filter(Objects::nonNull)
-        .filter(RANDOM_BYTES::matches)
-        .findFirst();
-      randomInvocation.ifPresent(mit -> {
-        path.put(mit, "Salt update");
-        getDeclarationOfReceiver(mit)
-          .ifPresent(declaration -> path.put(declaration, "Declaration of unsecure random"));
-      });
-      return randomInvocation.isPresent();
-    }
-    return false;
-  }
-  
-  private static Optional<Tree> getDeclarationOfReceiver(MethodInvocationTree mit) {
-    ExpressionTree methodSelect = ExpressionUtils.skipParentheses(mit.methodSelect());
-    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-      ExpressionTree expressionTree = ExpressionUtils.skipParentheses(((MemberSelectExpressionTree) methodSelect).expression());
-      if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
-        return Optional.ofNullable(((IdentifierTree) expressionTree).symbol().declaration());
-      }
-    }
-    return Optional.empty();
-  }
-  
-  @Nullable
-  private static MethodInvocationTree getParentMethod(IdentifierTree tree) {
-    Tree parent = tree.parent();
-    while (parent != null && parent.is(Tree.Kind.PARENTHESIZED_EXPRESSION, Tree.Kind.ARGUMENTS)) {
-      parent = parent.parent();
-    }
-    return parent instanceof MethodInvocationTree ? ((MethodInvocationTree) parent) : null;
-  }
-
-  @Override
-  public void setContext(JavaFileScannerContext context) {
-    updateCalls.clear();
-    predictableUpdateCalls.clear();
-    super.setContext(context);
-  }
-
   private static Optional<Symbol> getInvokedSymbol(MethodInvocationTree mit) {
     ExpressionTree methodSelect = mit.methodSelect();
     if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
@@ -205,23 +138,31 @@ public class UnpredictableSaltCheck extends IssuableSubscriptionVisitor {
     return Optional.empty();
   }
 
-  private static boolean isInitializedWithLiteral(IdentifierTree identifier, Map<Tree, String> path) {
-    Tree declaration = (identifier).symbol().declaration();
-    if (declaration != null && declaration.is(Tree.Kind.VARIABLE)) {
-      ExpressionTree initializer = ((VariableTree) declaration).initializer();
-      if (initializer == null) {
-        return false;
-      }
-      ExpressionTree bareInitializer = ExpressionUtils.skipParentheses(initializer);
-      if (bareInitializer.is(Tree.Kind.METHOD_INVOCATION)) {
-        MethodInvocationTree methodInvocationTree = (MethodInvocationTree) bareInitializer;
-        return isInitializedWithGetBytes(methodInvocationTree, path);
+  private static boolean isInitializedWithLiteral(IdentifierTree identifier, List<JavaFileScannerContext.Location> locations) {
+    Symbol symbol = identifier.symbol();
+    if (isNotReassigned(symbol)) {
+      Tree declaration = symbol.declaration();
+      if (declaration != null && declaration.is(Tree.Kind.VARIABLE)) {
+        ExpressionTree initializer = ((VariableTree) declaration).initializer();
+        if (initializer == null) {
+          return false;
+        }
+        ExpressionTree bareInitializer = ExpressionUtils.skipParentheses(initializer);
+        if (bareInitializer.is(Tree.Kind.METHOD_INVOCATION)) {
+          MethodInvocationTree methodInvocationTree = (MethodInvocationTree) bareInitializer;
+          locations.add(new JavaFileScannerContext.Location("Salt initialized with a constant.", methodInvocationTree));
+          return isInitializedWithGetBytes(methodInvocationTree);
+        }
       }
     }
     return false;
   }
-  
-  private static boolean isInitializedWithGetBytes(MethodInvocationTree mit, Map<Tree, String> path) {
+
+  private static boolean isNotReassigned(Symbol symbol) {
+    return symbol.isFinal() || (symbol.isVariableSymbol() && JUtils.isEffectivelyFinal(((Symbol.VariableSymbol) symbol)));
+  }
+
+  private static boolean isInitializedWithGetBytes(MethodInvocationTree mit) {
     if (!GET_BYTES.matches(mit)) {
       return false;
     }
@@ -229,10 +170,6 @@ public class UnpredictableSaltCheck extends IssuableSubscriptionVisitor {
     Preconditions.checkState(methodSelect.is(Tree.Kind.MEMBER_SELECT),
       "'getBytes' method invocation should have a MEMBER_SELECT kind as expression.");
     ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
-    if (ExpressionUtils.resolveAsConstant(expression) != null) {
-      path.put(mit, "Constant salt");
-      return true;
-    }
-    return false;
+    return expression.asConstant().isPresent();
   }
 }
