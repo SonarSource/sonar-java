@@ -42,6 +42,7 @@ import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.ExceptionHandler;
 import org.sonar.java.IllegalRuleParameterException;
 import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.java.PerformanceMeasure;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
@@ -105,28 +106,39 @@ public class VisitorsBridge {
   }
 
   public void visitFile(@Nullable Tree parsedTree) {
+    PerformanceMeasure.Duration compilationUnitDuration = PerformanceMeasure.start("CompilationUnit");
     JavaTree.CompilationUnitTreeImpl tree = new JavaTree.CompilationUnitTreeImpl(null, new ArrayList<>(), new ArrayList<>(), null, null);
+    compilationUnitDuration.stop();
+
+    PerformanceMeasure.Duration symbolTableDuration = PerformanceMeasure.start("SymbolTable");
     boolean fileParsed = parsedTree != null;
     if (fileParsed && parsedTree.is(Tree.Kind.COMPILATION_UNIT)) {
       tree = (JavaTree.CompilationUnitTreeImpl) parsedTree;
       createSonarSymbolTable(tree);
     }
+    symbolTableDuration.stop();
 
     JavaFileScannerContext javaFileScannerContext = createScannerContext(tree, tree.sema, sonarComponents, fileParsed);
 
+    PerformanceMeasure.Duration scannersDuration = PerformanceMeasure.start("Scanners");
     for (JavaFileScanner scanner : executableScanners) {
       try {
+        PerformanceMeasure.Duration scannerDuration = PerformanceMeasure.start(scanner);
         runScanner(javaFileScannerContext, scanner);
+        scannerDuration.stop();
       } catch (CheckFailureException e) {
         interruptIfFailFast(e);
       }
     }
+    scannersDuration.stop();
 
+    PerformanceMeasure.Duration issuableSubscriptionVisitorsDuration = PerformanceMeasure.start("IssuableSubscriptionVisitors");
     try {
       issuableSubscriptionVisitorsRunner.run(javaFileScannerContext);
     } catch (CheckFailureException e) {
       interruptIfFailFast(e);
     }
+    issuableSubscriptionVisitorsDuration.stop();
   }
 
   private void interruptIfFailFast(CheckFailureException e) {
@@ -277,7 +289,9 @@ public class VisitorsBridge {
 
     private final void forEach(Collection<SubscriptionVisitor> visitors, Consumer<SubscriptionVisitor> callback) throws CheckFailureException {
       for (SubscriptionVisitor visitor : visitors) {
+        PerformanceMeasure.Duration visitorDuration = PerformanceMeasure.start(visitor);
         runScanner(() -> callback.accept(visitor), visitor);
+        visitorDuration.stop();
       }
     }
   }

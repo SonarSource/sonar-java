@@ -107,6 +107,7 @@ class JavaSquidSensorTest {
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
     SensorContextTester context = createContext(onType).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
     DefaultFileSystem fs = context.fileSystem();
+    fs.setWorkDir(tmp.newFolder().toPath());
     SonarComponents sonarComponents = createSonarComponentsMock(context);
     DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(new ClasspathForMain(settings.asConfig(), fs));
     JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, null);
@@ -163,6 +164,7 @@ class JavaSquidSensorTest {
     GeneratedFile generatedFile = new GeneratedFile(generatedFilePath);
 
     SensorContextTester context = SensorContextTester.create(base);
+    context.fileSystem().setWorkDir(tmp.newFolder().toPath());
     SonarComponents sonarComponents = createSonarComponentsMock(context);
     JavaFileScanner javaFileScanner = mock(JavaFileScanner.class);
     JspCodeScanner testCodeVisitor = mock(JspCodeScanner.class);
