@@ -30,6 +30,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.api.utils.log.Profiler;
+import org.sonar.java.PerformanceMeasure.Duration;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
@@ -111,9 +112,17 @@ public class JavaSquid {
   }
 
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
+    Duration mainDuration = PerformanceMeasure.start("Main");
     scanSources(sourceFiles);
+    mainDuration.stop();
+
+    Duration testDuration = PerformanceMeasure.start("Test");
     scanTests(testFiles);
+    testDuration.stop();
+
+    Duration generatedDuration = PerformanceMeasure.start("Generated");
     scanGeneratedFiles(generatedFiles);
+    generatedDuration.stop();
   }
 
   private void scanSources(Iterable<InputFile> sourceFiles) {
