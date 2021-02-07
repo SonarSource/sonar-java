@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -134,7 +135,8 @@ public class OSCommandsPathCheck extends AbstractMethodDetection {
     processArgument(argument);
   }
 
-  private void processArgument(ExpressionTree argument) {
+  private void processArgument(ExpressionTree tree) {
+    ExpressionTree argument = ExpressionUtils.skipParentheses(tree);
     if (argument.is(Tree.Kind.STRING_LITERAL)) {
       if (isStringLiteralCommandValid(argument)) {
         return;
@@ -171,7 +173,6 @@ public class OSCommandsPathCheck extends AbstractMethodDetection {
       return isStringLiteralCommandValid(identifier);
     }
     //The identifier must be an array or a list
-
     Tree declaration = symbol.declaration();
     if (declaration == null || !declaration.is(Tree.Kind.VARIABLE)) {
       return true;
@@ -188,7 +189,7 @@ public class OSCommandsPathCheck extends AbstractMethodDetection {
     if (initializerKind.equals(Tree.Kind.METHOD_INVOCATION)) {
       return isListCommandValid(initializer);
     }
-    return false;
+    return true;
   }
 
   private static boolean isListCommandValid(ExpressionTree listInitializer) {
@@ -200,7 +201,7 @@ public class OSCommandsPathCheck extends AbstractMethodDetection {
     if (listArguments.isEmpty()) {
       return true;
     }
-    ExpressionTree firstArgument = listArguments.get(0);
+    ExpressionTree firstArgument = ExpressionUtils.skipParentheses(listArguments.get(0));
     if (firstArgument.is(Tree.Kind.STRING_LITERAL)) {
       return isStringLiteralCommandValid(firstArgument);
     }
@@ -217,7 +218,7 @@ public class OSCommandsPathCheck extends AbstractMethodDetection {
     if (initializers.isEmpty()) {
       return true;
     }
-    ExpressionTree firstArgument = initializers.get(0);
+    ExpressionTree firstArgument = ExpressionUtils.skipParentheses(initializers.get(0));
     if (firstArgument.is(Tree.Kind.STRING_LITERAL)) {
       return isStringLiteralCommandValid(firstArgument);
     }

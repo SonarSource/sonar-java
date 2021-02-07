@@ -90,6 +90,7 @@ public class OSCommandsPath {
   }
 
   public void execString() throws IOException {
+    Runtime.getRuntime().exec(("make"));  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     Runtime.getRuntime().exec("make");  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     Runtime.getRuntime().exec("usr/bin/make");  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     Runtime.getRuntime().exec("m./ake");  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
@@ -138,6 +139,8 @@ public class OSCommandsPath {
   }
 
   private void execArray() throws IOException {
+    Runtime.getRuntime().exec((new String[]{"make"}));  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    Runtime.getRuntime().exec(new String[]{("make")});  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     Runtime.getRuntime().exec(new String[]{"make"});  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     Runtime.getRuntime().exec(new String[]{"usr/bin/make"});  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     Runtime.getRuntime().exec(new String[]{"m./ake"});  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
@@ -204,6 +207,7 @@ public class OSCommandsPath {
     ProcessBuilder builder = new ProcessBuilder();
     builder.command();
 
+    builder.command(("make"));  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     builder.command("make");  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     builder.command("usr/bin/make");  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     builder.command("m./ake");  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
@@ -243,6 +247,8 @@ public class OSCommandsPath {
 
   private void commandList() {
     ProcessBuilder builder = new ProcessBuilder();
+    builder.command((Arrays.asList("make")));  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    builder.command(Arrays.asList(("make")));  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     builder.command(Arrays.asList("make"));  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     builder.command(Arrays.asList("m../ake"));   // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     builder.command(Arrays.asList("mak./e"));   // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
@@ -300,6 +306,7 @@ public class OSCommandsPath {
   }
 
   private void processBuilder() {
+    new ProcessBuilder(("make"));  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     new ProcessBuilder("make");  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     new ProcessBuilder("m../ake");   // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     new ProcessBuilder("mak./e");   // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
@@ -338,6 +345,8 @@ public class OSCommandsPath {
   }
 
   private void processBuilderList() {
+    new ProcessBuilder((Arrays.asList("make")));  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    new ProcessBuilder(Arrays.asList(("make")));  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     new ProcessBuilder(Arrays.asList("make"));  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     new ProcessBuilder(Arrays.asList("m../ake"));   // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     new ProcessBuilder(Arrays.asList("mak./e"));   // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
