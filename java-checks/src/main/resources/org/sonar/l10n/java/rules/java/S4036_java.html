@@ -10,12 +10,25 @@ environment variable will be searched for the executable. That search could leav
 <h2>Recommended Secure Coding Practices</h2>
 <p>Fully qualified/absolute path should be used to specify the OS command to execute.</p>
 <h2>Sensitive Code Example</h2>
+<p>The full path of the command is not specified and thus the executable will be searched in all directories listed in the <code>PATH</code>
+environment variable:</p>
 <pre>
-System.Runtime.getRuntime().exec("make");  // Sensitive
+Runtime.getRuntime().exec("make");  // Sensitive
+Runtime.getRuntime().exec(new String[]{"make"});  // Sensitive
+ProcessBuilder builder = new ProcessBuilder("make");  // Sensitive
+builder.command("make");  // Sensitive
 </pre>
 <h2>Compliant Solution</h2>
+<p>The command is defined by its full path:</p>
 <pre>
-System.Runtime.getRuntime().exec("/usr/bin/make");  // Compliant
+Runtime.getRuntime().exec("/usr/bin/make");  // Compliant
+Runtime.getRuntime().exec(new String[]{"~/bin/make"});  // Compliant
+ProcessBuilder builder = new ProcessBuilder("./bin/make");  // Compliant
+builder.command("../bin/make");  // Compliant
+builder.command(Arrays.asList("..\bin\make", "-j8")); // Compliant
+builder = new ProcessBuilder(Arrays.asList(".\make"));  // Compliant
+builder.command(Arrays.asList("C:\bin\make", "-j8"));  // Compliant
+builder.command(Arrays.asList("\\SERVER\bin\make"));  // Compliant
 </pre>
 <h2>See</h2>
 <ul>
