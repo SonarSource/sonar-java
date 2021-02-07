@@ -34,6 +34,7 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.ExecutionTimeReport;
+import org.sonar.java.PerformanceMeasure;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.JParser;
@@ -114,12 +115,14 @@ public class JavaAstScanner {
       } else {
         version = Integer.toString(javaVersion.asInt());
       }
+      PerformanceMeasure.Duration parseDuration = PerformanceMeasure.start("JParser");
       JavaTree.CompilationUnitTreeImpl ast = (JavaTree.CompilationUnitTreeImpl) JParser.parse(
         version,
         inputFile.filename(),
         inputFile.contents(),
         visitor.getClasspath()
       );
+      parseDuration.stop();
       visitor.visitFile(ast);
       collectUndefinedTypes(ast.sema.undefinedTypes());
       // release environment used for semantic resolution

@@ -237,6 +237,7 @@ public class JavaRulingTest {
 
   private static void executeBuildWithCommonProperties(Build<?> build, String projectName, boolean buildQuietly) throws IOException {
     build.setProperty("sonar.cpd.exclusions", "**/*")
+      .setProperty("sonar.java.performance.measure", System.getProperty("sonar.java.performance.measure", "false"))
       .setProperty("sonar.import_unknown_files", "true")
       .setProperty("sonar.skipPackageDesign", "true")
       .setProperty("dump.old", effectiveDumpOldFolder.resolve(projectName).toString())

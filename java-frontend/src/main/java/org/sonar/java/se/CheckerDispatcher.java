@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import org.sonar.java.PerformanceMeasure;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.ConstraintManager;
@@ -54,7 +55,9 @@ public class CheckerDispatcher implements CheckerContext {
     this.syntaxNode = syntaxNode;
     ProgramState ps;
     for (SECheck checker : checks) {
+      PerformanceMeasure.Duration checkerDuration = PerformanceMeasure.start(checker.getClass().getSimpleName());
       ps = checker.checkPreStatement(this, syntaxNode);
+      checkerDuration.stop();
       if (ps == null) {
         return false;
       }
@@ -132,19 +135,25 @@ public class CheckerDispatcher implements CheckerContext {
 
   public void executeCheckEndOfExecution() {
     for (SECheck checker : checks) {
+      PerformanceMeasure.Duration checkerDuration = PerformanceMeasure.start(checker.getClass().getSimpleName());
       checker.checkEndOfExecution(this);
+      checkerDuration.stop();
     }
   }
 
   public void executeCheckEndOfExecutionPath(ConstraintManager constraintManager) {
     for (SECheck checker : checks) {
+      PerformanceMeasure.Duration checkerDuration = PerformanceMeasure.start(checker.getClass().getSimpleName());
       checker.checkEndOfExecutionPath(this, constraintManager);
+      checkerDuration.stop();
     }
   }
 
   public void init(MethodTree methodTree, CFG cfg) {
     for (SECheck checker : checks) {
+      PerformanceMeasure.Duration checkerDuration = PerformanceMeasure.start(checker.getClass().getSimpleName());
       checker.init(methodTree, cfg);
+      checkerDuration.stop();
     }
   }
 

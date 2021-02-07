@@ -36,6 +36,8 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.Measurer;
+import org.sonar.java.PerformanceMeasure;
+import org.sonar.java.PerformanceMeasure.DurationReport;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.checks.CheckList;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
@@ -85,6 +87,8 @@ public class JavaSquidSensor implements Sensor {
 
   @Override
   public void execute(SensorContext context) {
+    DurationReport sensorDuration = PerformanceMeasure.start(context.config(), "JavaSquidSensor", System::nanoTime);
+
     sonarComponents.setSensorContext(context);
 
     sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaChecks());
@@ -93,7 +97,10 @@ public class JavaSquidSensor implements Sensor {
     Measurer measurer = new Measurer(context, noSonarFilter);
 
     JavaSquid squid = new JavaSquid(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, sonarComponents.checkClasses());
+
     squid.scan(getSourceFiles(), getTestFiles(), runJasper(context));
+
+    sensorDuration.stopAndLog();
   }
 
   private Collection<GeneratedFile> runJasper(SensorContext context) {
