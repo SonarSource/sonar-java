@@ -10,10 +10,6 @@
     "cwe",
     "owasp-a7"
   ],
-  "replacementRules": [],
-  "coveredLanguages": [
-    "Python"
-  ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-5247",
   "sqKey": "S5247",
