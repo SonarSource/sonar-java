@@ -88,8 +88,8 @@ public class DisableAutoEscapingCheck {
 
     String[][] escapes = {{"[", "[["}, {"]", "]]"}};
     Mustache.compiler()
-      .withEscaper(Escapers.simple(escapes)) // Compliant, as soon as "Escapers.simple" has an argument, as it means that the dev
-      // is explicitly listing what he wants to escape or not.
+      .withEscaper(Escapers.simple(escapes))  // Compliant, as soon as "Escapers.simple" has an argument, as it means that the dev
+                                              // is explicitly listing what he wants to escape or not.
       .compile(template)
       .execute(context);
 
