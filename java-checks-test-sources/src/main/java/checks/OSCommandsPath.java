@@ -19,6 +19,7 @@ public class OSCommandsPath {
   private static final String NON_COMPLIANT_COMMAND_WINDOWS_CURRENT = "ma.\\ke";
   private static final String NON_COMPLIANT_COMMAND_WINDOWS_NETWORK = "SERVER\\make";
 
+
   private static final String COMPLIANT_COMMAND_UNIX_ABSOLUTE = "/usr/bin/make";
   private static final String COMPLIANT_COMMAND_UNIX_PARENT = "../make";
   private static final String COMPLIANT_COMMAND_UNIX_CURRENT = "./make";
@@ -70,16 +71,28 @@ public class OSCommandsPath {
   private static final List<String> COMPLIANT_COMMAND_LIST_WINDOWS_NETWORK = Arrays.asList("\\\\SERVER\\make");
   private static final List<String> COMPLIANT_COMMAND_LIST_VARIABLE = Arrays.asList(File.pathSeparator);
 
+  private static final String UNINITIALIZED_COMMAND = null;
+  private static final String[] UNINITIALIZED_COMMAND_ARRAY = null;
+  private static final List<String> UNINITIALIZED_COMMAND_LIST = null;
+
   public void falseNegatives() throws IOException {
     String nonCompliantCommand = "make";
     Runtime.getRuntime().exec(nonCompliantCommand); // Compliant FN Cannot read from non-final strings
     String compliantCommand = "/usr/bin/make";
     Runtime.getRuntime().exec(compliantCommand);
     Runtime.getRuntime().exec(nonCompliantCommand, ENVIRONMENT); // Compliant FN Cannot read from non-final strings
-    Runtime.getRuntime().exec(compliantCommand, ENVIRONMENT);
+    Runtime.getRuntime().exec(compliantCommand, ENVIRONMENT); // Compliant FN Cannot read from non-final strings
     Runtime.getRuntime().exec(nonCompliantCommand, ENVIRONMENT, FILE); // Compliant FN Cannot read from non-final strings
-    Runtime.getRuntime().exec(compliantCommand, ENVIRONMENT, FILE);
+    Runtime.getRuntime().exec(compliantCommand, ENVIRONMENT, FILE); // Compliant FN Cannot read from non-final strings
     Runtime.getRuntime().exec(new String[]{System.lineSeparator()});  // Compliant FN Not resolving method calls
+
+    String[] nonCompliantCommandArray = new String[]{"make"};
+    Runtime.getRuntime().exec(nonCompliantCommandArray); // Compliant FN Cannot read from non-final variables
+    String[] compliantCommandArray = new String[]{"/usr/bin/make"};
+    Runtime.getRuntime().exec(compliantCommandArray); // Compliant FN Cannot read from non-final variablesRuntime.getRuntime().exec(nonCompliantCommandArray, ENVIRONMENT); // Compliant FN Cannot read from non-final variables
+    Runtime.getRuntime().exec(compliantCommandArray, ENVIRONMENT); // Compliant FN Cannot read from non-final variables
+    Runtime.getRuntime().exec(nonCompliantCommandArray, ENVIRONMENT, FILE); // Compliant FN Cannot read from non-final variables
+    Runtime.getRuntime().exec(compliantCommandArray, ENVIRONMENT, FILE); // Compliant FN Cannot read from non-final variables
 
     ProcessBuilder builder = new ProcessBuilder();
     builder.command(nonCompliantCommand); // Compliant FN Cannot read from non-final strings
@@ -87,6 +100,14 @@ public class OSCommandsPath {
     builder.command(COMPLIANT_COMMAND_LIST_VARIABLE);  // Compliant but we don't look into member select
     new ProcessBuilder(COMPLIANT_COMMAND_LIST_VARIABLE);  // Compliant but we don't look into member select
     new ProcessBuilder(Stream.of("make").collect(Collectors.toList()));
+
+    Runtime.getRuntime().exec(UNINITIALIZED_COMMAND);
+    Runtime.getRuntime().exec(UNINITIALIZED_COMMAND_ARRAY);
+    new ProcessBuilder(UNINITIALIZED_COMMAND);
+    new ProcessBuilder(UNINITIALIZED_COMMAND_LIST);
+    new ProcessBuilder().command(UNINITIALIZED_COMMAND);
+    new ProcessBuilder().command(UNINITIALIZED_COMMAND_ARRAY);
+    new ProcessBuilder().command(UNINITIALIZED_COMMAND_LIST);
   }
 
   public void execString() throws IOException {
@@ -178,29 +199,20 @@ public class OSCommandsPath {
     Runtime.getRuntime().exec(COMPLIANT_COMMAND_ARRAY_WINDOWS_PARENT);
     Runtime.getRuntime().exec(COMPLIANT_COMMAND_ARRAY_WINDOWS_CURRENT);
     Runtime.getRuntime().exec(COMPLIANT_COMMAND_ARRAY_WINDOWS_NETWORK);
-
-    String[] nonCompliantCommandArray = new String[]{"make"};
-    Runtime.getRuntime().exec(nonCompliantCommandArray);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
-    String[] compliantCommandArray = new String[]{"/usr/bin/make"};
-    Runtime.getRuntime().exec(compliantCommandArray);
-
     Runtime.getRuntime().exec(new String[]{"make"}, ENVIRONMENT);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     Runtime.getRuntime().exec(new String[]{"/usr/bin/make"}, ENVIRONMENT);
 
     Runtime.getRuntime().exec(NON_COMPLIANT_COMMAND_ARRAY, ENVIRONMENT);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
-    Runtime.getRuntime().exec(COMPLIANT_COMMAND_ARRAY, ENVIRONMENT);
+    Runtime.getRuntime().exec(COMPLIANT_COMMAND_ARRAY, ENVIRONMENT); // Compliant FN Cannot read from non-final variables
 
-    Runtime.getRuntime().exec(nonCompliantCommandArray, ENVIRONMENT);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
-    Runtime.getRuntime().exec(compliantCommandArray, ENVIRONMENT);
+
 
     Runtime.getRuntime().exec(new String[]{"make"}, ENVIRONMENT, FILE);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     Runtime.getRuntime().exec(new String[]{"/usr/bin/make"}, ENVIRONMENT, FILE);
 
     Runtime.getRuntime().exec(NON_COMPLIANT_COMMAND_ARRAY, ENVIRONMENT, FILE);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
-    Runtime.getRuntime().exec(COMPLIANT_COMMAND_ARRAY, ENVIRONMENT, FILE);
+    Runtime.getRuntime().exec(COMPLIANT_COMMAND_ARRAY, ENVIRONMENT, FILE); // Compliant FN Cannot read from non-final variables
 
-    Runtime.getRuntime().exec(nonCompliantCommandArray, ENVIRONMENT, FILE);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
-    Runtime.getRuntime().exec(compliantCommandArray, ENVIRONMENT, FILE);
   }
 
   private void command() {

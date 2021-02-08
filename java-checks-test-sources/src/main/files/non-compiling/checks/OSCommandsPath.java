@@ -3,6 +3,13 @@ package checks;
 import java.util.List;
 
 class OSCommandsPath {
+  private static final String UNRESOLVABLE_WITH_INDIRECTION = NonExisting.UNRESOLVABLE;
+
+  private void processUnresolvable() {
+    new ProcessBuilder(UNRESOLVABLE_WITH_INDIRECTION);
+    new ProcessBuilder(NonExisting.UNRESOLVABLE);
+  }
+
   private void processBuilderListJava9() {
     new ProcessBuilder(List.of("make"));  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     new ProcessBuilder(List.of("m../ake"));   // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}

@@ -109,96 +109,99 @@ public class OSCommandsPathCheck extends AbstractMethodDetection {
     );
   }
 
+  @Override
+  protected void onConstructorFound(NewClassTree tree) {
+    process(tree.arguments());
+  }
+
+  @Override
+  protected void onMethodInvocationFound(MethodInvocationTree tree) {
+    process(tree.arguments());
+  }
+
+  private void process(Arguments arguments) {
+    if (arguments.isEmpty()) {
+      return;
+    }
+    ExpressionTree firstArgument = ExpressionUtils.skipParentheses(arguments.get(0));
+    processArgument(firstArgument);
+  }
+
+  private void processArgument(ExpressionTree argument) {
+    switch (argument.kind()) {
+      case STRING_LITERAL:
+        if (!isStringLiteralCommandValid(argument)) {
+          reportIssue(argument, MESSAGE);
+        }
+        break;
+      case NEW_ARRAY:
+        if (!isNewArrayCommandValid((NewArrayTree) argument)) {
+          reportIssue(argument, MESSAGE);
+        }
+        break;
+      case IDENTIFIER:
+        if (!isIdentifierCommandValid((IdentifierTree) argument)) {
+          reportIssue(argument, MESSAGE);
+        }
+        break;
+      case METHOD_INVOCATION:
+        if (!isListCommandValid((MethodInvocationTree) argument)) {
+          reportIssue(argument, MESSAGE);
+        }
+        break;
+      default:
+        break;
+    }
+  }
 
   private static boolean isCompliant(String command) {
     return STARTS.stream().anyMatch(command::startsWith) ||
       WINDOWS_DISK_PATTERN.matcher(command).matches();
   }
 
-  @Override
-  protected void onConstructorFound(NewClassTree tree) {
-    Arguments arguments = tree.arguments();
-    if (arguments.isEmpty()) {
-      return;
-    }
-    ExpressionTree argument = arguments.get(0);
-    processArgument(argument);
-  }
-
-  @Override
-  protected void onMethodInvocationFound(MethodInvocationTree tree) {
-    Arguments arguments = tree.arguments();
-    if (arguments.isEmpty()) {
-      return;
-    }
-    ExpressionTree argument = arguments.get(0);
-    processArgument(argument);
-  }
-
-  private void processArgument(ExpressionTree tree) {
-    ExpressionTree argument = ExpressionUtils.skipParentheses(tree);
-    if (argument.is(Tree.Kind.STRING_LITERAL)) {
-      if (isStringLiteralCommandValid(argument)) {
-        return;
-      }
-      reportIssue(argument, MESSAGE);
-    } else if (argument.is(Tree.Kind.NEW_ARRAY)) {
-      if (isNewArrayCommandValid(argument)) {
-        return;
-      }
-      reportIssue(argument, MESSAGE);
-    } else if (argument.is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree identifier = (IdentifierTree) argument;
-      if (isIdentifierCommandValid(identifier)) {
-        return;
-      }
-      reportIssue(argument, MESSAGE);
-    } else if (argument.is(Tree.Kind.METHOD_INVOCATION)) {
-      if (isListCommandValid(argument)) {
-        return;
-      }
-      reportIssue(argument, MESSAGE);
-    }
-  }
-
-  private static boolean isStringLiteralCommandValid(ExpressionTree stringLitteral) {
-    Optional<String> command = stringLitteral.asConstant(String.class);
+  private static boolean isStringLiteralCommandValid(ExpressionTree stringLiteral) {
+    Optional<String> command = stringLiteral.asConstant(String.class);
     return !command.isPresent() || isCompliant(command.get());
   }
 
   private static boolean isIdentifierCommandValid(IdentifierTree identifier) {
     Symbol symbol = identifier.symbol();
+    if (!symbol.isFinal()) {
+      return true;
+    }
     Type type = symbol.type();
     if (type.is(STRING_TYPE)) {
       return isStringLiteralCommandValid(identifier);
     }
-    //The identifier must be an array or a list
-    Tree declaration = symbol.declaration();
-    if (declaration == null || !declaration.is(Tree.Kind.VARIABLE)) {
-      return true;
-    }
-    VariableTree variable = (VariableTree) declaration;
-    ExpressionTree initializer = variable.initializer();
-    if (initializer == null) {
-      return true;
-    }
-    Tree.Kind initializerKind = initializer.kind();
-    if (initializerKind.equals(Tree.Kind.NEW_ARRAY)) {
-      return isNewArrayCommandValid(initializer);
-    }
-    if (initializerKind.equals(Tree.Kind.METHOD_INVOCATION)) {
-      return isListCommandValid(initializer);
+    Optional<ExpressionTree> extraction = extractInitializer(symbol);
+    if (extraction.isPresent()) {
+      ExpressionTree initializer = extraction.get();
+      if (initializer.is(Tree.Kind.NEW_ARRAY)) {
+        return isNewArrayCommandValid((NewArrayTree) initializer);
+      }
+      if (initializer.is(Tree.Kind.METHOD_INVOCATION)) {
+        return isListCommandValid((MethodInvocationTree) initializer);
+      }
     }
     return true;
   }
 
-  private static boolean isListCommandValid(ExpressionTree listInitializer) {
-    MethodInvocationTree invocation = (MethodInvocationTree) listInitializer;
-    if (!LIST_CREATION_MATCHER.matches(invocation)) {
-      return true;
+  private static Optional<ExpressionTree> extractInitializer(Symbol symbol) {
+    Tree declaration = symbol.declaration();
+    if (declaration == null || !declaration.is(Tree.Kind.VARIABLE)) {
+      return Optional.empty();
     }
+    VariableTree variable = (VariableTree) declaration;
+    ExpressionTree initializer = variable.initializer();
+    if (initializer == null) {
+      return Optional.empty();
+    }
+    return Optional.of(initializer);
+  }
+
+  private static boolean isListCommandValid(MethodInvocationTree invocation) {
     Arguments listArguments = invocation.arguments();
-    if (listArguments.isEmpty()) {
+    if (!LIST_CREATION_MATCHER.matches(invocation) || listArguments.isEmpty()) {
       return true;
     }
     ExpressionTree firstArgument = ExpressionUtils.skipParentheses(listArguments.get(0));
@@ -212,8 +215,7 @@ public class OSCommandsPathCheck extends AbstractMethodDetection {
     return true;
   }
 
-  private static boolean isNewArrayCommandValid(ExpressionTree arrayInitializer) {
-    NewArrayTree newArray = (NewArrayTree) arrayInitializer;
+  private static boolean isNewArrayCommandValid(NewArrayTree newArray) {
     ListTree<ExpressionTree> initializers = newArray.initializers();
     if (initializers.isEmpty()) {
       return true;
