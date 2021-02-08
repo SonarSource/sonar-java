@@ -1,10 +1,6 @@
 {
 'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/JarFileResource.java':[
-193,
-207,
-332,
-],
-'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/JarResource.java':[
-165,
+327,
+373,
 ],
 }

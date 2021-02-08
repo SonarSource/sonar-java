@@ -19,67 +19,89 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.function.Predicate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S5042")
-public class ZipEntryCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class ZipEntryCheck extends IssuableSubscriptionVisitor {
 
-  private static final Predicate<Type> IS_ZIP_ENTRY = type -> type.isSubtypeOf("java.util.zip.ZipEntry")
-    || type.isSubtypeOf("org.apache.commons.compress.archivers.ArchiveEntry");
   private static final String ISSUE_MESSAGE = "Make sure that expanding this archive file is safe here.";
 
-  private JavaFileScannerContext context;
+  private static final MethodMatchers SENSITIVE_METHODS = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofSubTypes("java.util.zip.ZipFile")
+      .names("entries")
+      .addWithoutParametersMatcher()
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes("java.util.zip.ZipEntry")
+      .names("getSize")
+      .addWithoutParametersMatcher()
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes("java.util.zip.ZipInputStream")
+      .names("getNextEntry")
+      .addWithoutParametersMatcher()
+      .build()
+  );
+
+  private static final MethodMatchers INPUT_STREAM_READ = MethodMatchers.create()
+    .ofSubTypes("java.io.InputStream")
+    .names("read")
+    .withAnyParameters()
+    .build();
+
+  private boolean isSafe = false;
+
+  private boolean insideMethod = false;
+
+  private final List<MethodInvocationTree> calls = new ArrayList<>();
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    if (context.getSemanticModel() == null) {
-      return;
-    }
-    this.context = context;
-    scan(context.getTree());
+  public List<Tree.Kind> nodesToVisit() {
+    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.METHOD);
   }
 
   @Override
-  public void visitVariable(VariableTree tree) {
-    if (isField(tree)) {
-      // skip fields
-      return;
+  public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.METHOD)) {
+      isSafe = false;
+      calls.clear();
+      insideMethod = true;
+    } else {
+      MethodInvocationTree mit = (MethodInvocationTree) tree;
+      if (insideMethod && INPUT_STREAM_READ.matches(mit)) {
+        isSafe = true;
+      } else if (SENSITIVE_METHODS.matches(mit)) {
+        if (insideMethod) {
+          calls.add(mit);
+        } else {
+          report(mit);
+        }
+      }
     }
-    super.visitVariable(tree);
-  }
-
-  private static boolean isField(VariableTree tree) {
-    return tree.symbol().owner().isTypeSymbol();
-  }
-
-  @Override
-  public void visitMethod(MethodTree tree) {
-    if (tree.block() == null || tree.is(Tree.Kind.CONSTRUCTOR)) {
-      // skip everything for abstract methods (from interfaces or abstract class) and constructors
-      return;
-    }
-
-    tree.parameters().stream()
-      .filter(p -> IS_ZIP_ENTRY.test(p.symbol().type()))
-      .forEach(p -> context.reportIssue(this, p, ISSUE_MESSAGE));
-
-    super.visitMethod(tree);
   }
 
   @Override
-  public void visitMethodInvocation(MethodInvocationTree tree) {
-    if (IS_ZIP_ENTRY.test(tree.symbolType())) {
-      context.reportIssue(this, tree, ISSUE_MESSAGE);
+  public void leaveNode(Tree tree) {
+    if (tree.is(Tree.Kind.METHOD)) {
+      if (!isSafe) {
+        for (MethodInvocationTree mit : calls) {
+          report(mit);
+        }
+      }
+      insideMethod = false;
     }
-    super.visitMethodInvocation(tree);
+  }
+
+  private void report(MethodInvocationTree mit) {
+    reportIssue(ExpressionUtils.methodName(mit), ISSUE_MESSAGE);
   }
 }
