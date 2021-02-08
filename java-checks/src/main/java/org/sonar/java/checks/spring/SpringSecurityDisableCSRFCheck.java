@@ -31,14 +31,24 @@ public class SpringSecurityDisableCSRFCheck extends AbstractMethodDetection {
 
   private static final String CSRF_CONFIGURER_CLASS = "org.springframework.security.config.annotation.web.configurers.CsrfConfigurer";
   private static final String MESSAGE = "Make sure disabling Spring Security's CSRF protection is safe here.";
+  private static final MethodMatchers DISABLE_MATCHER = MethodMatchers.create()
+    .ofSubTypes("org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer")
+    .names("disable")
+    .addWithoutParametersMatcher()
+    .build();
+  private static final MethodMatchers IGNORE_ANT_MATCHER = MethodMatchers.create()
+    .ofSubTypes("org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer")
+    .names("ignoringAntMatchers")
+    .addParametersMatcher("java.lang.String[]")
+    .build();
+
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
-    return MethodMatchers.create()
-      .ofSubTypes("org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer")
-      .names("disable")
-      .addWithoutParametersMatcher()
-      .build();
+    return MethodMatchers.or(
+      DISABLE_MATCHER,
+      IGNORE_ANT_MATCHER
+    );
   }
 
   @Override

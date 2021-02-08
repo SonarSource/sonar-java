@@ -1,4 +1,4 @@
-package files.checks.spring;
+package checks.spring;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -7,7 +7,7 @@ import org.springframework.security.config.annotation.web.configurers.CsrfConfig
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 
 @EnableWebSecurity
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class SpringSecurityDisableCSRFCheck extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
@@ -24,5 +24,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     LogoutConfigurer<HttpSecurity> logout = http.logout();
     logout.disable();
+
+    http.csrf().ignoringAntMatchers("/ignored/path"); // Noncompliant [[sc=17;ec=36]] {{Make sure disabling Spring Security's CSRF protection is safe here.}}
+    CsrfConfigurer<HttpSecurity> csrf2 = http.csrf();
+    csrf2.ignoringAntMatchers("/ignored/path"); // Noncompliant [[sc=11;ec=30]] {{Make sure disabling Spring Security's CSRF protection is safe here.}}
   }
 }
