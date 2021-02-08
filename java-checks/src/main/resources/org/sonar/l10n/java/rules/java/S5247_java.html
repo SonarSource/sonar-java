@@ -1,0 +1,63 @@
+<p>To reduce the risk of cross-site scripting attacks, templating systems, such as <code>Twig</code>, <code>Django</code>, <code>Smarty</code>,
+<code>Groovy's template engine</code>, allow configuration of automatic variable escaping before rendering templates. When escape occurs, characters
+that make sense to the browser (eg: &lt;a&gt;) will be transformed/replaced with escaped/sanitized values (eg: &amp; lt;a&amp; gt; ).</p>
+<p>Auto-escaping is not a magic feature to annihilate all cross-site scripting attacks, it depends on <a
+href="https://twig.symfony.com/doc/3.x/filters/escape.html">the strategy applied</a> and the context, for example a "html auto-escaping" strategy
+(which only transforms html characters into <a href="https://developer.mozilla.org/en-US/docs/Glossary/Entity">html entities</a>) will not be relevant
+when variables are used in a <a href="https://en.wikipedia.org/wiki/HTML_attribute">html attribute</a> because '<code>:</code>' character is not
+escaped and thus an attack as below is possible:</p>
+<pre>
+&lt;a href="{{ myLink }}"&gt;link&lt;/a&gt; // myLink = javascript:alert(document.cookie)
+&lt;a href="javascript:alert(document.cookie)"&gt;link&lt;/a&gt; // JS injection (XSS attack)
+</pre>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> Templates are used to render web content and
+    <ul>
+      <li> dynamic variables in templates come from untrusted locations or are user-controlled inputs </li>
+      <li> there is no local mechanism in place to sanitize or validate the inputs. </li>
+    </ul> </li>
+</ul>
+<p>There is a risk if you answered yes to any of those questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>Enable auto-escaping by default and continue to review the use of inputs in order to be sure that the chosen auto-escaping strategy is the right
+one.</p>
+<h2>Sensitive Code Example</h2>
+<p>With <a href="https://github.com/samskivert/jmustache">JMustache by samskivert</a>:</p>
+<pre>
+Mustache.compiler().escapeHTML(false).compile(template).execute(context); // Sensitive
+Mustache.compiler().withEscaper(Escapers.NONE).compile(template).execute(context); // Sensitive
+</pre>
+<p>With <a href="https://freemarker.apache.org/">Freemarker</a>:</p>
+<pre>
+freemarker.template.Configuration configuration = new freemarker.template.Configuration();
+configuration.setAutoEscapingPolicy(DISABLE_AUTO_ESCAPING_POLICY); // Sensitive
+</pre>
+<h2>Compliant Solution</h2>
+<p>With <a href="https://github.com/samskivert/jmustache">JMustache by samskivert</a>:</p>
+<pre>
+Mustache.compiler().compile(template).execute(context); // Compliant, auto-escaping is enabled by default
+Mustache.compiler().escapeHTML(true).compile(template).execute(context); // Compliant
+</pre>
+<p>With <a href="https://freemarker.apache.org/">Freemarker</a>. See <a
+href="https://freemarker.apache.org/docs/api/freemarker/template/Configuration.html#setAutoEscapingPolicy-int-">"setAutoEscapingPolicy"
+documentation</a> for more details. </p>
+<pre>
+freemarker.template.Configuration configuration = new freemarker.template.Configuration();
+configuration.setAutoEscapingPolicy(ENABLE_IF_DEFAULT_AUTO_ESCAPING_POLICY); // Compliant
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.md">OWASP Cheat
+  Sheet</a> - XSS Prevention Cheat Sheet </li>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A7-Cross-Site_Scripting_(XSS)">OWASP Top 10 2017 Category A7</a> - Cross-Site Scripting
+  (XSS) </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/79.html">MITRE, CWE-79</a> - Improper Neutralization of Input During Web Page Generation
+  ('Cross-site Scripting') </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/80.html">MITRE, CWE-80</a> - Improper Neutralization of Script-Related HTML Tags in a Web Page
+  (Basic XSS) </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/83.html">MITRE, CWE-83</a> - Improper Neutralization of Script in Attributes in a Web Page
+  </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/84.html">MITRE, CWE-84</a> - Improper Neutralization of Encoded URI Schemes in a Web Page </li>
+</ul>
+
