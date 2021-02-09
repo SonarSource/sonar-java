@@ -23,7 +23,7 @@ class SQLInjection {
       Connection conn = DriverManager.getConnection("url", "user1", "password");
       Statement stmt = conn.createStatement();
       ResultSet rs = stmt.executeQuery("SELECT Lname FROM Customers WHERE Snum = 2001");
-      rs = stmt.executeQuery("SELECT Lname FROM Customers WHERE Snum = "+param); // Noncompliant [[sc=30;ec=79]] {{Ensure that string concatenation is required and safe for this SQL query.}}
+      rs = stmt.executeQuery("SELECT Lname FROM Customers WHERE Snum = "+param); // Noncompliant [[sc=30;ec=79]] {{Make sure using a dynamically formatted SQL query is safe here.}}
       String query = "SELECT Lname FROM Customers WHERE Snum = "+param;
       rs = stmt.executeQuery(query); // Noncompliant
 
