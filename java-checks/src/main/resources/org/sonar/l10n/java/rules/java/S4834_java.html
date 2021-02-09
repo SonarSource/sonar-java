@@ -9,33 +9,33 @@ done properly.</p>
 <p>This rule flags code that controls the access to resources and actions. The goal is to guide security code reviews.</p>
 <p>More specifically it will raise issues on the following Spring code:</p>
 <ul>
-  <li> The definition of any class implementing interfaces </li>
-</ul>
-<p> <strong></strong> <code>org.springframework.security.access.AccessDecisionVoter</code></p>
-<p> <strong></strong> <code>org.springframework.security.access.AccessDecisionManager</code></p>
-<p> <strong></strong> <code>org.springframework.security.access.AfterInvocationProvider</code></p>
-<p> <strong></strong> <code>org.springframework.security.access.PermissionEvaluator</code></p>
-<p> <strong></strong> <code>org.springframework.security.access.expression.SecurityExpressionOperations</code></p>
-<p> <strong></strong> <code>org.springframework.security.access.expression.method.MethodSecurityExpressionHandler</code></p>
-<p> <strong></strong> <code>org.springframework.security.core.GrantedAuthority</code></p>
-<p> <strong></strong> <code>org.springframework.security.acls.model.PermissionGrantingStrategy</code></p>
-<ul>
-  <li> The definition of any class extending class </li>
-</ul>
-<p> <strong></strong> <code>org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration</code></p>
-<ul>
-  <li> Any method annotated with </li>
-</ul>
-<p> <strong></strong> Pre-post annotations: <code>@PreAuthorize</code>, <code>@PreFilter</code>, <code>@PostAuthorize</code> or
-<code>@PostFilter</code> from <code>org.springframework.security.access.prepost</code> package.</p>
-<p> <strong></strong> <code>@org.springframework.security.access.annotation.Secured</code></p>
-<ul>
-  <li> Calls to any of the following methods </li>
-</ul>
-<p> <strong></strong> <code>org.springframework.security.acls.model.MutableAclService</code>: <code>createAcl</code>, <code>deleteAcl</code>,
-<code>updateAcl</code></p>
-<p> <strong></strong> <code>org.springframework.security.config.annotation.web.builders.HttpSecurity</code>: <code>authorizeRequests</code></p>
-<ul>
+  <li> The definition of any class implementing interfaces
+    <ul>
+      <li> <code>org.springframework.security.access.AccessDecisionVoter</code> </li>
+      <li> <code>org.springframework.security.access.AccessDecisionManager</code> </li>
+      <li> <code>org.springframework.security.access.AfterInvocationProvider</code> </li>
+      <li> <code>org.springframework.security.access.PermissionEvaluator</code> </li>
+      <li> <code>org.springframework.security.access.expression.SecurityExpressionOperations</code> </li>
+      <li> <code>org.springframework.security.access.expression.method.MethodSecurityExpressionHandler</code> </li>
+      <li> <code>org.springframework.security.core.GrantedAuthority</code> </li>
+      <li> <code>org.springframework.security.acls.model.PermissionGrantingStrategy</code> </li>
+    </ul> </li>
+  <li> The definition of any class extending class
+    <ul>
+      <li> <code>org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration</code> </li>
+    </ul> </li>
+  <li> Any method annotated with
+    <ul>
+      <li> Pre-post annotations: <code>@PreAuthorize</code>, <code>@PreFilter</code>, <code>@PostAuthorize</code> or <code>@PostFilter</code> from
+      <code>org.springframework.security.access.prepost</code> package. </li>
+      <li> <code>@org.springframework.security.access.annotation.Secured</code> </li>
+    </ul> </li>
+  <li> Calls to any of the following methods
+    <ul>
+      <li> <code>org.springframework.security.acls.model.MutableAclService</code>: <code>createAcl</code>, <code>deleteAcl</code>,
+      <code>updateAcl</code> </li>
+      <li> <code>org.springframework.security.config.annotation.web.builders.HttpSecurity</code>: <code>authorizeRequests</code> </li>
+    </ul> </li>
   <li> The instantiation of an anonymous class implementing <code>org.springframework.security.core.GrantedAuthority</code> or of any class
   implementing this interface directly. </li>
 </ul>
@@ -67,4 +67,6 @@ done properly.</p>
   <li> <a href="https://cwe.mitre.org/data/definitions/668.html">MITRE, CWE-668</a> - Exposure of Resource to Wrong Sphere </li>
   <li> <a href="https://cwe.mitre.org/data/definitions/277.html">MITRE, CWE-277</a> - Insecure Inherited Permissions </li>
 </ul>
+<h2>Deprecated</h2>
+<p>This rule is deprecated, and will eventually be removed.</p>
 

@@ -1,26 +1,12 @@
 {
   "title": "Controlling permissions is security-sensitive",
   "type": "SECURITY_HOTSPOT",
-  "status": "ready",
+  "status": "deprecated",
   "tags": [
-    "cwe",
-    "spring",
-    "sans-top25-porous",
-    "owasp-a5"
+    "spring"
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-4834",
   "sqKey": "S4834",
-  "scope": "Main",
-  "securityStandards": {
-    "CWE": [
-      276,
-      732,
-      668,
-      277
-    ],
-    "OWASP": [
-      "A5"
-    ]
-  }
+  "scope": "Main"
 }
