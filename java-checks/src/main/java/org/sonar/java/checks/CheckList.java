@@ -73,6 +73,7 @@ import org.sonar.java.checks.security.AndroidExternalStorageCheck;
 import org.sonar.java.checks.security.AndroidSSLConnectionCheck;
 import org.sonar.java.checks.security.AuthorizationsStrongDecisionsCheck;
 import org.sonar.java.checks.security.CipherBlockChainingCheck;
+import org.sonar.java.checks.security.ClearTextProtocolCheck;
 import org.sonar.java.checks.security.CommandLineArgumentsCheck;
 import org.sonar.java.checks.security.ControllingPermissionsCheck;
 import org.sonar.java.checks.security.CookieHttpOnlyCheck;
@@ -314,6 +315,7 @@ public final class CheckList {
       ClassVariableVisibilityCheck.class,
       ClassWithOnlyStaticMethodsInstantiationCheck.class,
       ClassWithoutHashCodeInHashStructureCheck.class,
+      ClearTextProtocolCheck.class,
       CloneableImplementingCloneCheck.class,
       CloneMethodCallsSuperCloneCheck.class,
       CloneOverrideCheck.class,
