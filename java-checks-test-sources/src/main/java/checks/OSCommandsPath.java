@@ -2,7 +2,6 @@ package checks;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -71,9 +70,9 @@ public class OSCommandsPath {
   private static final List<String> COMPLIANT_COMMAND_LIST_WINDOWS_NETWORK = Arrays.asList("\\\\SERVER\\make");
   private static final List<String> COMPLIANT_COMMAND_LIST_VARIABLE = Arrays.asList(File.pathSeparator);
 
-  private static final String UNINITIALIZED_COMMAND = null;
-  private static final String[] UNINITIALIZED_COMMAND_ARRAY = null;
-  private static final List<String> UNINITIALIZED_COMMAND_LIST = null;
+  private static final String NULL_INITIALIZED_COMMAND = null;
+  private static final String[] NULL_INITIALIZED_COMMAND_ARRAY = null;
+  private static final List<String> NULL_INITIALIZED_COMMAND_LIST = null;
 
   public void execString() throws IOException {
     Runtime.getRuntime().exec(("make"));  // Noncompliant [[sc=32;ec=38]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
@@ -420,12 +419,12 @@ public class OSCommandsPath {
     new ProcessBuilder(COMPLIANT_COMMAND_LIST_VARIABLE);  // Compliant but we don't look into member select
     new ProcessBuilder(Stream.of("make").collect(Collectors.toList()));
 
-    Runtime.getRuntime().exec(UNINITIALIZED_COMMAND);
-    Runtime.getRuntime().exec(UNINITIALIZED_COMMAND_ARRAY);
-    new ProcessBuilder(UNINITIALIZED_COMMAND);
-    new ProcessBuilder(UNINITIALIZED_COMMAND_LIST);
-    new ProcessBuilder().command(UNINITIALIZED_COMMAND);
-    new ProcessBuilder().command(UNINITIALIZED_COMMAND_ARRAY);
-    new ProcessBuilder().command(UNINITIALIZED_COMMAND_LIST);
+    Runtime.getRuntime().exec(NULL_INITIALIZED_COMMAND);
+    Runtime.getRuntime().exec(NULL_INITIALIZED_COMMAND_ARRAY);
+    new ProcessBuilder(NULL_INITIALIZED_COMMAND);
+    new ProcessBuilder(NULL_INITIALIZED_COMMAND_LIST);
+    new ProcessBuilder().command(NULL_INITIALIZED_COMMAND);
+    new ProcessBuilder().command(NULL_INITIALIZED_COMMAND_ARRAY);
+    new ProcessBuilder().command(NULL_INITIALIZED_COMMAND_LIST);
   }
 }

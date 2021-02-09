@@ -35,7 +35,7 @@ class OSCommandsPathCheckTest {
   }
 
   @Test
-  void test_java_9() {
+  void test_non_compiling() {
     JavaCheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/OSCommandsPath.java"))
       .withCheck(new OSCommandsPathCheck())

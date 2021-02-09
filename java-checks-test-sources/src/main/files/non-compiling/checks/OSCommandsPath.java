@@ -5,9 +5,24 @@ import java.util.List;
 class OSCommandsPath {
   private static final String UNRESOLVABLE_WITH_INDIRECTION = NonExisting.UNRESOLVABLE;
 
+  private static final String UNINITIALIZED_COMMAND;
+  private static final String[] UNINITIALIZED_COMMAND_ARRAY;
+  private static final List<String> UNINITIALIZED_COMMAND_LIST;
+
   private void processUnresolvable() {
+    new ProcessBuilder(UNRESOLVABLE);
     new ProcessBuilder(UNRESOLVABLE_WITH_INDIRECTION);
     new ProcessBuilder(NonExisting.UNRESOLVABLE);
+  }
+
+  private void noInitializer() {
+    Runtime.getRuntime().exec(UNINITIALIZED_COMMAND);
+    Runtime.getRuntime().exec(UNINITIALIZED_COMMAND_ARRAY);
+    new ProcessBuilder(UNINITIALIZED_COMMAND);
+    new ProcessBuilder(UNINITIALIZED_COMMAND_LIST);
+    new ProcessBuilder().command(UNINITIALIZED_COMMAND);
+    new ProcessBuilder().command(UNINITIALIZED_COMMAND_ARRAY);
+    new ProcessBuilder().command(UNINITIALIZED_COMMAND_LIST);
   }
 
   private void processBuilderListJava9() {
