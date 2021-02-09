@@ -29,23 +29,35 @@ class ReplaceGuavaWithJava8CheckTest {
   private static final String FILENAME = testSourcesPath("checks/ReplaceGuavaWithJava8Check.java");
 
   @Test
-  void java8() {
+  void test_with_java_7() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/ReplaceGuavaWithJava8Check_java7.java"))
       .withCheck(new ReplaceGuavaWithJava8Check())
       .withJavaVersion(7)
       .verifyNoIssues();
+  }
+  
+  @Test
+  void test_java_8_without_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile(FILENAME)
       .withCheck(new ReplaceGuavaWithJava8Check())
       .withJavaVersion(8)
       .withoutSemantic()
       .verifyNoIssues();
+  }
+  
+  @Test
+  void test_java_8() {
     JavaCheckVerifier.newVerifier()
       .onFile(FILENAME)
       .withCheck(new ReplaceGuavaWithJava8Check())
       .withJavaVersion(8)
       .verifyIssues();
+  }
+  
+  @Test
+  void test_no_version() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/ReplaceGuavaWithJava8Check_no_version.java"))
       .withCheck(new ReplaceGuavaWithJava8Check())

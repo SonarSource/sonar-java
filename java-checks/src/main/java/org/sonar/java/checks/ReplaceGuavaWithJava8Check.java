@@ -39,6 +39,7 @@ public class ReplaceGuavaWithJava8Check extends AbstractMethodDetection implemen
 
   private static final String GUAVA_BASE_ENCODING = "com.google.common.io.BaseEncoding";
   private static final String GUAVA_OPTIONAL = "com.google.common.base.Optional";
+  private static final String GUAVA_FILES = "com.google.common.io.Files";
 
   private static final Map<String, String> GUAVA_TO_JAVA_UTIL_TYPES = MapBuilder.<String, String>newMap()
     .put("com.google.common.base.Predicate", "java.util.function.Predicate")
@@ -63,7 +64,8 @@ public class ReplaceGuavaWithJava8Check extends AbstractMethodDetection implemen
     return MethodMatchers.or(
       MethodMatchers.create().ofTypes(GUAVA_BASE_ENCODING).names("base64", "base64Url").addWithoutParametersMatcher().build(),
       MethodMatchers.create().ofTypes(GUAVA_OPTIONAL).names("absent").addWithoutParametersMatcher().build(),
-      MethodMatchers.create().ofTypes(GUAVA_OPTIONAL).names("fromNullable", "of").withAnyParameters().build());
+      MethodMatchers.create().ofTypes(GUAVA_OPTIONAL).names("fromNullable", "of").withAnyParameters().build(),
+      MethodMatchers.create().ofTypes(GUAVA_FILES).names("createTempDir").addWithoutParametersMatcher().build());
   }
 
   @Override
@@ -75,10 +77,6 @@ public class ReplaceGuavaWithJava8Check extends AbstractMethodDetection implemen
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
-
     if (tree.is(Tree.Kind.VARIABLE)) {
       checkTypeToReplace((VariableTree) tree);
     } else {
@@ -101,6 +99,9 @@ public class ReplaceGuavaWithJava8Check extends AbstractMethodDetection implemen
         break;
       case GUAVA_OPTIONAL:
         reportIssue(mit, replacementMessage("java.util.Optional." + GUAVA_OPTIONAL_TO_JAVA_UTIL_METHODS.get(mit.symbol().name())));
+        break;
+      case GUAVA_FILES:
+        reportIssue(mit, replacementMessage("java.nio.file.Files.createTempDirectory"));
         break;
       default:
         break;
