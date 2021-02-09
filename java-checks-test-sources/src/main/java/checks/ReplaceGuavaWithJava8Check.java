@@ -1,5 +1,8 @@
 package checks;
 
+import com.google.common.io.Files;
+import java.io.IOException;
+
 class ReplaceGuavaWithJava8Check {
   ReplaceGuavaWithJava8Check(com.google.common.base.Predicate p) {} // Noncompliant [[sc=30;ec=62]] {{Use "java.util.function.Predicate" instead.}}
   ReplaceGuavaWithJava8Check(com.google.common.base.Function f) {} // Noncompliant {{Use "java.util.function.Function" instead.}}
@@ -39,5 +42,12 @@ class ReplaceGuavaWithJava8Check {
 
   static class B<T> {
     void foo(java.util.function.Predicate<T> predicate) {}
+  }
+  
+  void tempDir() throws IOException {
+    com.google.common.io.Files.createTempDir(); // Noncompliant [[sc=5;ec=47]] {{Use "java.nio.file.Files.createTempDirectory" instead.}}
+    Files.createTempDir(); // Noncompliant [[sc=5;ec=26]] {{Use "java.nio.file.Files.createTempDirectory" instead.}}
+
+    java.nio.file.Files.createTempDirectory(""); // Compliant
   }
 }
