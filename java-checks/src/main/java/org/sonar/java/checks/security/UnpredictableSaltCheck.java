@@ -24,11 +24,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.Preconditions;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -40,6 +38,9 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import static org.sonar.java.checks.helpers.ExpressionsHelper.getInvokedSymbol;
+import static org.sonar.java.checks.helpers.ExpressionsHelper.isNotReassigned;
 
 @Rule(key = "S2053")
 public class UnpredictableSaltCheck extends IssuableSubscriptionVisitor {
@@ -126,17 +127,6 @@ public class UnpredictableSaltCheck extends IssuableSubscriptionVisitor {
     return (saltExpression.is(Tree.Kind.METHOD_INVOCATION) && isInitializedWithGetBytes((MethodInvocationTree) saltExpression)) ||
       (saltExpression.is(Tree.Kind.IDENTIFIER) && isInitializedWithLiteral((IdentifierTree) saltExpression, locations));
   }
-  
-  private static Optional<Symbol> getInvokedSymbol(MethodInvocationTree mit) {
-    ExpressionTree methodSelect = mit.methodSelect();
-    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-      ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
-      if (expression.is(Tree.Kind.IDENTIFIER)) {
-        return Optional.of(((IdentifierTree) expression).symbol());
-      }
-    }
-    return Optional.empty();
-  }
 
   private static boolean isInitializedWithLiteral(IdentifierTree identifier, List<JavaFileScannerContext.Location> locations) {
     Symbol symbol = identifier.symbol();
@@ -156,10 +146,6 @@ public class UnpredictableSaltCheck extends IssuableSubscriptionVisitor {
       }
     }
     return false;
-  }
-
-  private static boolean isNotReassigned(Symbol symbol) {
-    return symbol.isFinal() || (symbol.isVariableSymbol() && JUtils.isEffectivelyFinal(((Symbol.VariableSymbol) symbol)));
   }
 
   private static boolean isInitializedWithGetBytes(MethodInvocationTree mit) {
