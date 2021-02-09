@@ -753,6 +753,12 @@
       <artifactId>rapidoid-http-fast</artifactId>
       <version>5.4.4</version>
     </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>5.2.7.RELEASE</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <profiles>
