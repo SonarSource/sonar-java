@@ -8,6 +8,7 @@
   },
   "tags": [
     "cwe",
+    "owasp-a2",
     "owasp-a3"
   ],
   "defaultSeverity": "Blocker",
@@ -19,6 +20,7 @@
       521
     ],
     "OWASP": [
+      "A2",
       "A3"
     ]
   }
