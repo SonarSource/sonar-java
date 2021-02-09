@@ -75,44 +75,9 @@ public class OSCommandsPath {
   private static final String[] UNINITIALIZED_COMMAND_ARRAY = null;
   private static final List<String> UNINITIALIZED_COMMAND_LIST = null;
 
-  public void falseNegatives() throws IOException {
-    String nonCompliantCommand = "make";
-    Runtime.getRuntime().exec(nonCompliantCommand); // Compliant FN Cannot read from non-final strings
-    String compliantCommand = "/usr/bin/make";
-    Runtime.getRuntime().exec(compliantCommand);
-    Runtime.getRuntime().exec(nonCompliantCommand, ENVIRONMENT); // Compliant FN Cannot read from non-final strings
-    Runtime.getRuntime().exec(compliantCommand, ENVIRONMENT); // Compliant FN Cannot read from non-final strings
-    Runtime.getRuntime().exec(nonCompliantCommand, ENVIRONMENT, FILE); // Compliant FN Cannot read from non-final strings
-    Runtime.getRuntime().exec(compliantCommand, ENVIRONMENT, FILE); // Compliant FN Cannot read from non-final strings
-    Runtime.getRuntime().exec(new String[]{System.lineSeparator()});  // Compliant FN Not resolving method calls
-
-    String[] nonCompliantCommandArray = new String[]{"make"};
-    Runtime.getRuntime().exec(nonCompliantCommandArray); // Compliant FN Cannot read from non-final variables
-    String[] compliantCommandArray = new String[]{"/usr/bin/make"};
-    Runtime.getRuntime().exec(compliantCommandArray); // Compliant FN Cannot read from non-final variablesRuntime.getRuntime().exec(nonCompliantCommandArray, ENVIRONMENT); // Compliant FN Cannot read from non-final variables
-    Runtime.getRuntime().exec(compliantCommandArray, ENVIRONMENT); // Compliant FN Cannot read from non-final variables
-    Runtime.getRuntime().exec(nonCompliantCommandArray, ENVIRONMENT, FILE); // Compliant FN Cannot read from non-final variables
-    Runtime.getRuntime().exec(compliantCommandArray, ENVIRONMENT, FILE); // Compliant FN Cannot read from non-final variables
-
-    ProcessBuilder builder = new ProcessBuilder();
-    builder.command(nonCompliantCommand); // Compliant FN Cannot read from non-final strings
-    builder.command(compliantCommand);
-    builder.command(COMPLIANT_COMMAND_LIST_VARIABLE);  // Compliant but we don't look into member select
-    new ProcessBuilder(COMPLIANT_COMMAND_LIST_VARIABLE);  // Compliant but we don't look into member select
-    new ProcessBuilder(Stream.of("make").collect(Collectors.toList()));
-
-    Runtime.getRuntime().exec(UNINITIALIZED_COMMAND);
-    Runtime.getRuntime().exec(UNINITIALIZED_COMMAND_ARRAY);
-    new ProcessBuilder(UNINITIALIZED_COMMAND);
-    new ProcessBuilder(UNINITIALIZED_COMMAND_LIST);
-    new ProcessBuilder().command(UNINITIALIZED_COMMAND);
-    new ProcessBuilder().command(UNINITIALIZED_COMMAND_ARRAY);
-    new ProcessBuilder().command(UNINITIALIZED_COMMAND_LIST);
-  }
-
   public void execString() throws IOException {
-    Runtime.getRuntime().exec(("make"));  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
-    Runtime.getRuntime().exec("make");  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    Runtime.getRuntime().exec(("make"));  // Noncompliant [[sc=32;ec=38]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    Runtime.getRuntime().exec("make");  // Noncompliant [[sc=31;ec=37]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
     Runtime.getRuntime().exec("usr/bin/make");  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     Runtime.getRuntime().exec("m./ake");  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     Runtime.getRuntime().exec("m../ake");  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
@@ -129,7 +94,7 @@ public class OSCommandsPath {
     Runtime.getRuntime().exec(".\\make");
     Runtime.getRuntime().exec("\\\\SERVER\\make");
 
-    Runtime.getRuntime().exec(NON_COMPLIANT_COMMAND);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    Runtime.getRuntime().exec(NON_COMPLIANT_COMMAND);  // Noncompliant  [[sc=31;ec=52]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
     Runtime.getRuntime().exec(NON_COMPLIANT_COMMAND_UNIX_PARENT);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     Runtime.getRuntime().exec(NON_COMPLIANT_COMMAND_UNIX_CURRENT);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     Runtime.getRuntime().exec(NON_COMPLIANT_COMMAND_UNIX_HOME);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
@@ -146,7 +111,8 @@ public class OSCommandsPath {
     Runtime.getRuntime().exec(COMPLIANT_COMMAND_WINDOWS_CURRENT);
     Runtime.getRuntime().exec(COMPLIANT_COMMAND_WINDOWS_NETWORK);
 
-    Runtime.getRuntime().exec("make", ENVIRONMENT);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
+
+    Runtime.getRuntime().exec("make", ENVIRONMENT);  // Noncompliant [[sc=31;ec=37]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
     Runtime.getRuntime().exec("/usr/bin/make", ENVIRONMENT);
 
     Runtime.getRuntime().exec(NON_COMPLIANT_COMMAND, ENVIRONMENT);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
@@ -155,14 +121,14 @@ public class OSCommandsPath {
     Runtime.getRuntime().exec("make", ENVIRONMENT, FILE);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     Runtime.getRuntime().exec("/usr/bin/make", ENVIRONMENT, FILE);
 
-    Runtime.getRuntime().exec(NON_COMPLIANT_COMMAND);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
-    Runtime.getRuntime().exec(COMPLIANT_COMMAND_UNIX_ABSOLUTE);
+    Runtime.getRuntime().exec(NON_COMPLIANT_COMMAND, ENVIRONMENT, FILE);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    Runtime.getRuntime().exec(COMPLIANT_COMMAND_UNIX_ABSOLUTE, ENVIRONMENT, FILE);
   }
 
   private void execArray() throws IOException {
-    Runtime.getRuntime().exec((new String[]{"make"}));  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
-    Runtime.getRuntime().exec(new String[]{("make")});  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
-    Runtime.getRuntime().exec(new String[]{"make"});  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    Runtime.getRuntime().exec((new String[]{"make"}));  // Noncompliant [[sc=32;ec=52]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    Runtime.getRuntime().exec(new String[]{("make")});  // Noncompliant [[sc=31;ec=53]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    Runtime.getRuntime().exec(new String[]{"make"});  // Noncompliant [[sc=31;ec=51]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
     Runtime.getRuntime().exec(new String[]{"usr/bin/make"});  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     Runtime.getRuntime().exec(new String[]{"m./ake"});  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     Runtime.getRuntime().exec(new String[]{"m../ake"});  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
@@ -199,13 +165,21 @@ public class OSCommandsPath {
     Runtime.getRuntime().exec(COMPLIANT_COMMAND_ARRAY_WINDOWS_PARENT);
     Runtime.getRuntime().exec(COMPLIANT_COMMAND_ARRAY_WINDOWS_CURRENT);
     Runtime.getRuntime().exec(COMPLIANT_COMMAND_ARRAY_WINDOWS_NETWORK);
-    Runtime.getRuntime().exec(new String[]{"make"}, ENVIRONMENT);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
+
+    String[] nonCompliantCommandArray = new String[]{"make"};
+    Runtime.getRuntime().exec(nonCompliantCommandArray); // Noncompliant [[sc=31;ec=55]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    String[] compliantCommandArray = new String[]{"/usr/bin/make"};
+    Runtime.getRuntime().exec(compliantCommandArray);
+
+
+    Runtime.getRuntime().exec(new String[]{"make"}, ENVIRONMENT);  // Noncompliant [[sc=31;ec=51]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
     Runtime.getRuntime().exec(new String[]{"/usr/bin/make"}, ENVIRONMENT);
 
     Runtime.getRuntime().exec(NON_COMPLIANT_COMMAND_ARRAY, ENVIRONMENT);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     Runtime.getRuntime().exec(COMPLIANT_COMMAND_ARRAY, ENVIRONMENT); // Compliant FN Cannot read from non-final variables
 
-
+    Runtime.getRuntime().exec(nonCompliantCommandArray, ENVIRONMENT); // Noncompliant [[sc=31;ec=55]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    Runtime.getRuntime().exec(compliantCommandArray, ENVIRONMENT);
 
     Runtime.getRuntime().exec(new String[]{"make"}, ENVIRONMENT, FILE);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     Runtime.getRuntime().exec(new String[]{"/usr/bin/make"}, ENVIRONMENT, FILE);
@@ -213,14 +187,16 @@ public class OSCommandsPath {
     Runtime.getRuntime().exec(NON_COMPLIANT_COMMAND_ARRAY, ENVIRONMENT, FILE);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     Runtime.getRuntime().exec(COMPLIANT_COMMAND_ARRAY, ENVIRONMENT, FILE); // Compliant FN Cannot read from non-final variables
 
+    Runtime.getRuntime().exec(nonCompliantCommandArray, ENVIRONMENT, FILE); // Noncompliant [[sc=31;ec=55]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    Runtime.getRuntime().exec(compliantCommandArray, ENVIRONMENT, FILE);
   }
 
   private void command() {
     ProcessBuilder builder = new ProcessBuilder();
     builder.command();
 
-    builder.command(("make"));  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
-    builder.command("make");  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    builder.command(("make"));  // Noncompliant [[sc=22;ec=28]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    builder.command("make");  // Noncompliant [[sc=21;ec=27]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
     builder.command("usr/bin/make");  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     builder.command("m./ake");  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     builder.command("m../ake");  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
@@ -238,7 +214,7 @@ public class OSCommandsPath {
     builder.command(".\\make");
     builder.command("\\\\SERVER\\make");
 
-    builder.command(NON_COMPLIANT_COMMAND_ARRAY);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    builder.command(NON_COMPLIANT_COMMAND_ARRAY);  // Noncompliant [[sc=21;ec=48]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
     builder.command(NON_COMPLIANT_COMMAND_ARRAY_UNIX_PARENT);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     builder.command(NON_COMPLIANT_COMMAND_ARRAY_UNIX_CURRENT);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     builder.command(NON_COMPLIANT_COMMAND_ARRAY_UNIX_HOME);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
@@ -259,9 +235,9 @@ public class OSCommandsPath {
 
   private void commandList() {
     ProcessBuilder builder = new ProcessBuilder();
-    builder.command((Arrays.asList("make")));  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
-    builder.command(Arrays.asList(("make")));  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
-    builder.command(Arrays.asList("make"));  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    builder.command((Arrays.asList("make")));  // Noncompliant [[sc=22;ec=43]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    builder.command(Arrays.asList(("make")));  // Noncompliant [[sc=21;ec=44]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    builder.command(Arrays.asList("make"));  // Noncompliant [[sc=21;ec=42]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
     builder.command(Arrays.asList("m../ake"));   // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     builder.command(Arrays.asList("mak./e"));   // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     builder.command(Arrays.asList("bin~/make"));   // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
@@ -298,7 +274,7 @@ public class OSCommandsPath {
     builder.command(COMPLIANT_COMMAND_LIST_WINDOWS_CURRENT);
     builder.command(COMPLIANT_COMMAND_LIST_WINDOWS_NETWORK);
 
-    builder.command(Collections.singletonList("make"));  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    builder.command(Collections.singletonList("make"));  // Noncompliant [[sc=21;ec=54]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
     builder.command(Collections.singletonList("m../ake"));   // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     builder.command(Collections.singletonList("mak./e"));   // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     builder.command(Collections.singletonList("bin~/make"));   // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
@@ -318,8 +294,8 @@ public class OSCommandsPath {
   }
 
   private void processBuilder() {
-    new ProcessBuilder(("make"));  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
-    new ProcessBuilder("make");  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    new ProcessBuilder(("make"));  // Noncompliant [[sc=25;ec=31]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    new ProcessBuilder("make");  // Noncompliant [[sc=24;ec=30]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
     new ProcessBuilder("m../ake");   // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     new ProcessBuilder("mak./e");   // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     new ProcessBuilder("bin~/make");   // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
@@ -338,7 +314,7 @@ public class OSCommandsPath {
     new ProcessBuilder(".\\make");
     new ProcessBuilder("\\\\SERVER\\make");
 
-    new ProcessBuilder(NON_COMPLIANT_COMMAND);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    new ProcessBuilder(NON_COMPLIANT_COMMAND);  // Noncompliant [[sc=24;ec=45]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
     new ProcessBuilder(NON_COMPLIANT_COMMAND_UNIX_PARENT);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     new ProcessBuilder(NON_COMPLIANT_COMMAND_UNIX_CURRENT);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     new ProcessBuilder(NON_COMPLIANT_COMMAND_UNIX_HOME);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
@@ -357,9 +333,9 @@ public class OSCommandsPath {
   }
 
   private void processBuilderList() {
-    new ProcessBuilder((Arrays.asList("make")));  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
-    new ProcessBuilder(Arrays.asList(("make")));  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
-    new ProcessBuilder(Arrays.asList("make"));  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    new ProcessBuilder((Arrays.asList("make")));  // Noncompliant [[sc=25;ec=46]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    new ProcessBuilder(Arrays.asList(("make")));  // Noncompliant [[sc=24;ec=47]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    new ProcessBuilder(Arrays.asList("make"));  // Noncompliant [[sc=24;ec=45]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
     new ProcessBuilder(Arrays.asList("m../ake"));   // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     new ProcessBuilder(Arrays.asList("mak./e"));   // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     new ProcessBuilder(Arrays.asList("bin~/make"));   // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
@@ -379,7 +355,7 @@ public class OSCommandsPath {
     new ProcessBuilder(Arrays.asList(".\\make"));
     new ProcessBuilder(Arrays.asList("\\\\SERVER\\make"));
 
-    new ProcessBuilder(NON_COMPLIANT_COMMAND_LIST);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    new ProcessBuilder(NON_COMPLIANT_COMMAND_LIST);  // Noncompliant [[sc=24;ec=50]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
     new ProcessBuilder(NON_COMPLIANT_COMMAND_LIST_UNIX_PARENT);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     new ProcessBuilder(NON_COMPLIANT_COMMAND_LIST_UNIX_CURRENT);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     new ProcessBuilder(NON_COMPLIANT_COMMAND_LIST_UNIX_HOME);  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
@@ -397,7 +373,7 @@ public class OSCommandsPath {
     new ProcessBuilder(COMPLIANT_COMMAND_LIST_WINDOWS_CURRENT);
     new ProcessBuilder(COMPLIANT_COMMAND_LIST_WINDOWS_NETWORK);
 
-    new ProcessBuilder(Collections.singletonList("make"));  // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
+    new ProcessBuilder(Collections.singletonList("make"));  // Noncompliant [[sc=24;ec=57]] {{Make sure the "PATH" used to find this command includes only what you intend.}}
     new ProcessBuilder(Collections.singletonList("m../ake"));   // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     new ProcessBuilder(Collections.singletonList("mak./e"));   // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
     new ProcessBuilder(Collections.singletonList("bin~/make"));   // Noncompliant {{Make sure the "PATH" used to find this command includes only what you intend.}}
@@ -414,5 +390,42 @@ public class OSCommandsPath {
     new ProcessBuilder(Collections.singletonList("..\\make"));
     new ProcessBuilder(Collections.singletonList(".\\make"));
     new ProcessBuilder(Collections.singletonList("\\\\SERVER\\make"));
+  }
+
+  public void falseNegatives() throws IOException {
+    String nonCompliantCommand = "make";
+    Runtime.getRuntime().exec(nonCompliantCommand); // Compliant FN Cannot read from non-final strings
+    String compliantCommand = "/usr/bin/make";
+    Runtime.getRuntime().exec(compliantCommand);
+    Runtime.getRuntime().exec(nonCompliantCommand, ENVIRONMENT); // Compliant FN Cannot read from non-final strings
+    Runtime.getRuntime().exec(compliantCommand, ENVIRONMENT); // Compliant FN Cannot read from non-final strings
+    Runtime.getRuntime().exec(nonCompliantCommand, ENVIRONMENT, FILE); // Compliant FN Cannot read from non-final strings
+    Runtime.getRuntime().exec(compliantCommand, ENVIRONMENT, FILE); // Compliant FN Cannot read from non-final strings
+    Runtime.getRuntime().exec(new String[]{System.lineSeparator()});  // Compliant FN Not resolving method calls
+
+    String[] nonCompliantCommandArray = new String[]{"make"};
+    nonCompliantCommandArray = new String[]{"make"};
+    Runtime.getRuntime().exec(nonCompliantCommandArray); // Compliant FN Cannot read from non-final variables
+    String[] compliantCommandArray = new String[]{"/usr/bin/make"};
+    compliantCommandArray = new String[]{"/usr/bin/make"};
+    Runtime.getRuntime().exec(compliantCommandArray); // Compliant FN Cannot read from non-final variablesRuntime.getRuntime().exec(nonCompliantCommandArray, ENVIRONMENT); // Compliant FN Cannot read from non-final variables
+    Runtime.getRuntime().exec(compliantCommandArray, ENVIRONMENT); // Compliant FN Cannot read from non-final variables
+    Runtime.getRuntime().exec(nonCompliantCommandArray, ENVIRONMENT, FILE); // Compliant FN Cannot read from non-final variables
+    Runtime.getRuntime().exec(compliantCommandArray, ENVIRONMENT, FILE); // Compliant FN Cannot read from non-final variables
+
+    ProcessBuilder builder = new ProcessBuilder();
+    builder.command(nonCompliantCommand); // Compliant FN Cannot read from non-final strings
+    builder.command(compliantCommand);
+    builder.command(COMPLIANT_COMMAND_LIST_VARIABLE);  // Compliant but we don't look into member select
+    new ProcessBuilder(COMPLIANT_COMMAND_LIST_VARIABLE);  // Compliant but we don't look into member select
+    new ProcessBuilder(Stream.of("make").collect(Collectors.toList()));
+
+    Runtime.getRuntime().exec(UNINITIALIZED_COMMAND);
+    Runtime.getRuntime().exec(UNINITIALIZED_COMMAND_ARRAY);
+    new ProcessBuilder(UNINITIALIZED_COMMAND);
+    new ProcessBuilder(UNINITIALIZED_COMMAND_LIST);
+    new ProcessBuilder().command(UNINITIALIZED_COMMAND);
+    new ProcessBuilder().command(UNINITIALIZED_COMMAND_ARRAY);
+    new ProcessBuilder().command(UNINITIALIZED_COMMAND_LIST);
   }
 }
