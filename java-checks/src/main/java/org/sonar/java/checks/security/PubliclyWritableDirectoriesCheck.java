@@ -41,7 +41,13 @@ import static org.sonar.java.checks.helpers.ExpressionsHelper.getInvokedSymbol;
 public class PubliclyWritableDirectoriesCheck extends IssuableSubscriptionVisitor {
 
   private static final String STRING_TYPE = "java.lang.String";
+  private static final String JAVA_NIO_FILE_FILES = "java.nio.file.Files";
+  private static final String JAVA_NIO_FILE_PATHS = "java.nio.file.Paths";
+  private static final String JAVA_NIO_FILE_PATH = "java.nio.file.Path";
+  private static final String JAVA_IO_FILE = "java.io.File";
+
   private static final String MESSAGE = "Make sure publicly writable directories are used safely here.";
+  
   private static final List<String> PUBLIC_WRITABLE_DIRS = Arrays.asList(
     "/tmp",
     "/var/tmp",
@@ -54,40 +60,46 @@ public class PubliclyWritableDirectoriesCheck extends IssuableSubscriptionVisito
     "/Users/Shared",
     "/private/tmp",
     "/private/var/tmp",
-    "\\Windows\\Temp",
-    "\\Temp",
-    "\\TMP");
+    "\\\\Windows\\\\Temp",
+    "\\\\Temp",
+    "\\\\TMP");
 
   private static final Set<String> TMP_DIR_ENV = SetUtils.immutableSetOf("TMP", "TMPDIR");
 
   private static final MethodMatchers CREATE_FILE_MATCHERS = MethodMatchers.or(
     MethodMatchers.create()
-      .ofTypes("java.io.File", "java.io.FileReader")
-      .constructor()
-      .addParametersMatcher(STRING_TYPE)
-      .addParametersMatcher(STRING_TYPE, STRING_TYPE)
-      .addParametersMatcher(STRING_TYPE, "java.nio.charset.Charset")
+      .ofTypes(JAVA_NIO_FILE_PATHS, JAVA_NIO_FILE_PATH)
+      .names("get")
+      .withAnyParameters()
       .build(),
     MethodMatchers.create()
-      .ofTypes("java.nio.file.Paths", "java.nio.file.Path")
-      .names("get", "of")
+      .ofTypes(JAVA_NIO_FILE_PATH)
+      .names("of")
       .withAnyParameters()
       .build());
 
+  private static final MethodMatchers CREATE_FILE_CONSTRUCTOR_MATCHERS = MethodMatchers.create()
+    .ofTypes(JAVA_IO_FILE, "java.io.FileReader")
+    .constructor()
+    .addParametersMatcher(STRING_TYPE)
+    .addParametersMatcher(STRING_TYPE, STRING_TYPE)
+    .addParametersMatcher(STRING_TYPE, "java.nio.charset.Charset")
+    .build();
+
   private static final MethodMatchers TEMP_DIR_MATCHER = MethodMatchers.create()
-    .ofTypes("java.io.File")
+    .ofTypes(JAVA_IO_FILE)
     .names("createTempFile")
     .addParametersMatcher(STRING_TYPE, STRING_TYPE)
     .build();
 
   private static final MethodMatchers NIO_TEMP_DIR_MATCHER = MethodMatchers.create()
-    .ofTypes("java.nio.file.Files")
+    .ofTypes(JAVA_NIO_FILE_FILES)
     .names("createTempDirectory")
     .withAnyParameters()
     .build();
 
   private static final MethodMatchers NIO_TEMP_FILE_MATCHER = MethodMatchers.create()
-    .ofTypes("java.nio.file.Files")
+    .ofTypes(JAVA_NIO_FILE_FILES)
     .names("createTempFile")
     .withAnyParameters()
     .build();
@@ -118,7 +130,7 @@ public class PubliclyWritableDirectoriesCheck extends IssuableSubscriptionVisito
       }
     } else {
       NewClassTree newClassTree = (NewClassTree) tree;
-      if (CREATE_FILE_MATCHERS.matches(newClassTree) &&
+      if (CREATE_FILE_CONSTRUCTOR_MATCHERS.matches(newClassTree) &&
         isSensitiveFileName(newClassTree.arguments().get(0))) {
         reportIssue(tree, MESSAGE);
       }

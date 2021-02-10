@@ -67,6 +67,22 @@ public class PubliclyWritableDirectories {
     File f6 = new File(env1);
     File f7 = new File(env2);
 
+    File f8 = new File("/tmp/my.txt"); // Noncompliant 
+    File f88 = new File("/var/tmp/my.txt"); // Noncompliant
+    File f888 = new File("/usr/tmp/my.txt"); // Noncompliant
+    File f8888 = new File("/dev/shm/my.txt"); // Noncompliant
+    File f88888 = new File("/dev/mqueue/my.txt"); // Noncompliant
+    File f888888 = new File("/run/lock/my.txt"); // Noncompliant
+    File f8888888 = new File("/var/run/lock/my.txt"); // Noncompliant
+    File f9 = new File("/Users/Shared/my.txt"); // Noncompliant
+    File f99 = new File("/Library/Caches/my.txt"); // Noncompliant
+    File f999 = new File("/var/run/lock/my.txt"); // Noncompliant
+    File f9999 = new File("/private/tmp/my.txt"); // Noncompliant
+    File f99999 = new File("/private/var/tmp/my.txt"); // Noncompliant
+    File f999999 = new File("\\Windows\\Temp\\my.txt"); // Noncompliant
+    File f9999999 = new File("\\Temp\\my.txt"); // Noncompliant
+    File f99999999 = new File("\\TMP\\my.txt"); // Noncompliant
+
     return "thymeleaf/welcome";
   }
 

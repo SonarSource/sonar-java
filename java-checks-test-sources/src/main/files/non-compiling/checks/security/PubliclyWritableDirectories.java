@@ -1,18 +1,8 @@
 package checks.security;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.FileAttribute;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.HashMap;
+import java.nio.file.Path;
 
 public class PubliclyWritableDirectories {
   private static final String PATH_NAME = "/run/lock";
@@ -35,6 +25,10 @@ public class PubliclyWritableDirectories {
     map4.get("TMP");
     map5.get("TMP");
     
+    // Since Java 11
+    Path.of("\\Windows\\Temp\\my.txt"); // Noncompliant 
+    Path.of("\\Windows\\Temp\\", "my.txt"); // Noncompliant 
+    Path.of("\\Windows\\Temp\\", "my", "my.txt"); // Noncompliant 
     
   }
 }

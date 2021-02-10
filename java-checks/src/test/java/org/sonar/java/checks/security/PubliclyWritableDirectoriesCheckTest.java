@@ -52,6 +52,6 @@ class PubliclyWritableDirectoriesCheckTest {
       .onFile(nonCompilingTestSourcesPath(FILENAME))
       .withCheck(new PubliclyWritableDirectoriesCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyIssues();
   }
 }
