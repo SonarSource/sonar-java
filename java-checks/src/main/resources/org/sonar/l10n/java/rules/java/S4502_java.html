@@ -26,20 +26,22 @@ authentication) </p>
 </ul>
 <h2>Sensitive Code Example</h2>
 <p><a href="https://docs.spring.io/spring-security/site/docs/3.2.0.CI-SNAPSHOT/reference/html/csrf.html">Spring Security</a> provides by default a
-protection against CSRF attacks.</p>
+protection against CSRF attacks which can be disabled:</p>
 <pre>
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http.csrf().disable(); // Sensitive
+    http.csrf().disable(); // Sensitive: csrf protection is entirely disabled
+   // or
+    http.csrf().ignoringAntMatchers("/route/"); // Sensitive: csrf protection is disabled for specific routes
   }
 }
 </pre>
 <h2>Compliant Solution</h2>
-<p>With <a href="https://docs.spring.io/spring-security/site/docs/3.2.0.CI-SNAPSHOT/reference/html/csrf.html">Spring Security CSRF protection</a> is
-enabled by default, do not disable it.</p>
+<p><a href="https://docs.spring.io/spring-security/site/docs/3.2.0.CI-SNAPSHOT/reference/html/csrf.html">Spring Security</a> CSRF protection is
+enabled by default, do not disable it:</p>
 <pre>
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
