@@ -19,28 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.check.Rule;
 
-import static org.sonar.java.CheckTestUtils.testSourcesPath;
+@Rule(key = "S5445")
+public class InsecureCreateTempFileCheck extends AbstractCreateTempFileChecker {
 
-class FileCreateTempFileCheckTest {
-
-  @Test
-  void no_version() {
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/FileCreateTempFileCheck_no_version.java"))
-      .withCheck(new FileCreateTempFileCheck())
-      .verifyIssues();
+  @Override
+  public String getMessage() {
+    return "Use \"Files.createTempDirectory\" to create this directory instead." +
+      context.getJavaVersion().java7CompatibilityMessage();
   }
-
-  @Test
-  void java_7() {
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/FileCreateTempFileCheck.java"))
-      .withCheck(new FileCreateTempFileCheck())
-      .withJavaVersion(7)
-      .verifyIssues();
-  }
-
 }
