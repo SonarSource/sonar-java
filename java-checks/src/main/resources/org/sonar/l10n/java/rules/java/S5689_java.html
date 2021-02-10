@@ -1,0 +1,31 @@
+<p>Disclosing technology fingerprints allows an attacker to gather information about the technologies used to develop the web application and to
+perform relevant security assessments more quickly (like the identification of known vulnerable components).</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> The <code>x-powered-by</code> HTTP header or similar is used by the application. </li>
+  <li> Technologies used by the application are confidential and should not be easily guessed. </li>
+</ul>
+<p>There is a risk if you answered yes to any of these questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>It's recommended to not disclose technologies used on a website, with <code>x-powered-by</code> HTTP header for example. </p>
+<p>In addition, it's better to completely disable this HTTP header rather than setting it a random value.</p>
+<h2>Sensitive Code Example</h2>
+<pre>
+public ResponseEntity&lt;String&gt; testResponseEntity() {
+  HttpHeaders responseHeaders = new HttpHeaders();
+  responseHeaders.set("x-powered-by", "myproduct"); // Sensitive
+
+  return new ResponseEntity&lt;String&gt;("foo", responseHeaders, HttpStatus.CREATED);
+}
+</pre>
+<h2>Compliant Solution</h2>
+<p>Don't use <code>x-powered-by</code> or <code>Server</code> HTTP header or any other means disclosing fingerprints of the application. </p>
+<h2>See</h2>
+<ul>
+  <li> <a
+  href="https://owasp.org/www-project-web-security-testing-guide/stable/4-Web_Application_Security_Testing/01-Information_Gathering/08-Fingerprint_Web_Application_Framework.html">OWASP Testing Guide - OTG-INFO-008</a> - Fingerprint Web Application Framework </li>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A6-Security_Misconfiguration">OWASP Top 10 2017 Category A6</a> - Security
+  Misconfiguration </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/200.html">MITRE, CWE-200</a> - Information Exposure </li>
+</ul>
+
