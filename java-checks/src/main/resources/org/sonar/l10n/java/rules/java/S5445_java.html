@@ -1,6 +1,5 @@
 <p>Using <code>File.createTempFile</code> as the first step in creating a temporary directory causes a race condition and is inherently unreliable and
-insecure. Instead, <code>Files.createTempDirectory</code> (Java 7+) or a library function such as Guava's similarly-named
-<code>Files.createTempDir</code> should be used.</p>
+insecure. Instead, <code>Files.createTempDirectory</code> (Java 7+) should be used.</p>
 <p>This rule raises an issue when the following steps are taken in immediate sequence:</p>
 <ul>
   <li> call to <code>File.createTempFile</code> </li>
@@ -24,7 +23,9 @@ File tempDir = tempPath.toFile();
 <ul>
   <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A9-Using_Components_with_Known_Vulnerabilities">OWASP Top 10 2017 Category A9</a> - Using
   Components with Known Vulnerabilities </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/377">MITRE, CWE-377</a> - Insecure Temporary File </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/379">MITRE, CWE-379</a> - Creation of Temporary File in Directory with Incorrect Permissions
+  </li>
+  <li> <a href="https://www.owasp.org/index.php/Insecure_Temporary_File">OWASP, Insecure Temporary File</a> </li>
 </ul>
-<h2>Deprecated</h2>
-<p>This rule is deprecated; use {rule:java:S5445} instead.</p>
 

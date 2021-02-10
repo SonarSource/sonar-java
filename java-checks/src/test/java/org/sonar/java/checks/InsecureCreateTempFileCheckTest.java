@@ -24,21 +24,21 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-class FileCreateTempFileCheckTest {
+class InsecureCreateTempFileCheckTest {
 
   @Test
   void no_version() {
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/FileCreateTempFileCheck_no_version.java"))
-      .withCheck(new FileCreateTempFileCheck())
+      .onFile(testSourcesPath("checks/InsecureCreateTempFileCheck_no_version.java"))
+      .withCheck(new InsecureCreateTempFileCheck())
       .verifyIssues();
   }
 
   @Test
   void java_7() {
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/FileCreateTempFileCheck.java"))
-      .withCheck(new FileCreateTempFileCheck())
+      .onFile(testSourcesPath("checks/InsecureCreateTempFileCheck.java"))
+      .withCheck(new InsecureCreateTempFileCheck())
       .withJavaVersion(7)
       .verifyIssues();
   }

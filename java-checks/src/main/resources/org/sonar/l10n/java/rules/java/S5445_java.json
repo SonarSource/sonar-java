@@ -1,0 +1,22 @@
+{
+  "title": "Insecure temporary file creation methods should not be used",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "tags": [
+    "cwe",
+    "owasp-a9"
+  ],
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-5445",
+  "sqKey": "S5445",
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      377,
+      379
+    ],
+    "OWASP": [
+      "A9"
+    ]
+  }
+}

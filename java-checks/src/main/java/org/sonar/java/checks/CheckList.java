@@ -474,6 +474,7 @@ public final class CheckList {
       InnerStaticClassesCheck.class,
       InputStreamOverrideReadCheck.class,
       InputStreamReadCheck.class,
+      InsecureCreateTempFileCheck.class,
       InstanceOfAlwaysTrueCheck.class,
       InstanceofUsedOnExceptionCheck.class,
       IntegerToHexStringCheck.class,

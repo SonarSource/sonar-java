@@ -1,16 +1,29 @@
-package foo;
+package checks;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-class A {
-  static File b = File.createTempFile("", "");
+class InsecureCreateTempFileCheck_no_version {
+  static File b;
+
+  static {
+    try {
+      b = File.createTempFile("", "");
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
   boolean mkdir = b.mkdir();
 
   static {
-    b = File.createTempFile("", "");
+    try {
+      b = File.createTempFile("", "");
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   private static File b() {
@@ -21,7 +34,7 @@ class A {
     File tempDir;
     tempDir = (File.createTempFile("", "."));
     tempDir.delete();
-    tempDir.mkdir();  // Noncompliant {{Use "Files.createTempDirectory" or a library function to create this directory instead.}}
+    tempDir.mkdir();  // Noncompliant [[sc=13;ec=18]] {{Use "Files.createTempDirectory" to create this directory instead. (sonar.java.source not set. Assuming 7 or greater.)}}
     File tempDir2 = File.createTempFile("", ".");
     tempDir2.delete();
     tempDir2.mkdir(); // Noncompliant
@@ -49,7 +62,7 @@ class A {
     file.mkdir();
     int a = 5;
     a = 6;
-    A.b = File.createTempFile("", ".");
+    InsecureCreateTempFileCheck_no_version.b = File.createTempFile("", ".");
     b().mkdir();
   }
 }

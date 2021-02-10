@@ -1,21 +1,16 @@
 {
   "title": "\"File.createTempFile\" should not be used to create a directory",
   "type": "VULNERABILITY",
-  "status": "ready",
+  "status": "deprecated",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
   "tags": [
-    "owasp-a9"
+    
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2976",
   "sqKey": "S2976",
-  "scope": "Main",
-  "securityStandards": {
-    "OWASP": [
-      "A9"
-    ]
-  }
+  "scope": "Main"
 }
