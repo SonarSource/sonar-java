@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -39,6 +38,8 @@ import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import static org.sonar.java.checks.helpers.ExpressionsHelper.isNotReassigned;
 
 @Rule(key = "S4036")
 public class OSCommandsPathCheck extends AbstractMethodDetection {
@@ -164,11 +165,7 @@ public class OSCommandsPathCheck extends AbstractMethodDetection {
     Optional<String> command = expression.asConstant(String.class);
     return !command.isPresent() || isCompliant(command.get());
   }
-
-  private static boolean isNotReassigned(Symbol symbol) {
-    return symbol.isFinal() || (symbol.isVariableSymbol() && JUtils.isEffectivelyFinal(((Symbol.VariableSymbol) symbol)));
-  }
-
+  
   private static boolean isIdentifierCommandValid(IdentifierTree identifier) {
     Symbol symbol = identifier.symbol();
     if (!isNotReassigned(symbol)) {

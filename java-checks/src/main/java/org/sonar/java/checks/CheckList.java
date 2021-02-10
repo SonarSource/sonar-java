@@ -96,6 +96,7 @@ import org.sonar.java.checks.security.LDAPDeserializationCheck;
 import org.sonar.java.checks.security.LogConfigurationCheck;
 import org.sonar.java.checks.security.OpenSAML2AuthenticationBypassCheck;
 import org.sonar.java.checks.security.PasswordEncoderCheck;
+import org.sonar.java.checks.security.PubliclyWritableDirectoriesCheck;
 import org.sonar.java.checks.security.ReceivingIntentsCheck;
 import org.sonar.java.checks.security.RegexHotspotCheck;
 import org.sonar.java.checks.security.SMTPSSLServerIdentityCheck;
@@ -595,6 +596,7 @@ public final class CheckList {
       ProtectedMemberInFinalClassCheck.class,
       PseudoRandomCheck.class,
       PublicConstructorInAbstractClassCheck.class,
+      PubliclyWritableDirectoriesCheck.class,
       PublicStaticFieldShouldBeFinalCheck.class,
       PublicStaticMutableMembersCheck.class,
       RandomFloatToIntCheck.class,

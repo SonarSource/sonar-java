@@ -1,0 +1,76 @@
+<p>Operating systems have global directories where any user has write access. Those folders are mostly used as temporary storage areas like
+<code>/tmp</code> in Linux based systems. An application manipulating files from these folders is exposed to race conditions on filenames: a malicious
+user can try to create a file with a predictable name before the application does. A successful attack can result in other files being accessed,
+modified, corrupted or deleted. This risk is even higher if the application runs with elevated permissions.</p>
+<p>In the past, it has led to the following vulnerabilities:</p>
+<ul>
+  <li> <a href="https://nvd.nist.gov/vuln/detail/CVE-2012-2451">CVE-2012-2451</a> </li>
+  <li> <a href="https://nvd.nist.gov/vuln/detail/CVE-2015-1838">CVE-2015-1838</a> </li>
+</ul>
+<p>This rule raises an issue whenever it detects a hard-coded path to a publicly writable directory like <code>/tmp</code> (see examples bellow). It
+also detects access to environment variables that point to publicly writable directories, e.g., <code>TMP</code> and <code>TMPDIR</code>.</p>
+<ul>
+  <li> <code>/tmp</code> </li>
+  <li> <code>/var/tmp</code> </li>
+  <li> <code>/usr/tmp</code> </li>
+  <li> <code>/dev/shm</code> </li>
+  <li> <code>/dev/mqueue</code> </li>
+  <li> <code>/run/lock</code> </li>
+  <li> <code>/var/run/lock</code> </li>
+  <li> <code>/Library/Caches</code> </li>
+  <li> <code>/Users/Shared</code> </li>
+  <li> <code>/private/tmp</code> </li>
+  <li> <code>/private/var/tmp</code> </li>
+  <li> <code>\Windows\Temp</code> </li>
+  <li> <code>\Temp</code> </li>
+  <li> <code>\TMP</code> </li>
+</ul>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> Files are read from or written into a publicly writable folder </li>
+  <li> The application creates files with predictable names into a publicly writable folder </li>
+</ul>
+<p>There is a risk if you answered yes to any of those questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<ul>
+  <li> Use a dedicated sub-folder with tightly controlled permissions </li>
+  <li> Use secure-by-design APIs to create temporary files. Such API will make sure:
+    <ul>
+      <li> The generated filename is unpredictable </li>
+      <li> The file is readable and writable only by the creating user ID </li>
+      <li> The file descriptor is not inherited by child processes </li>
+      <li> The file will be destroyed as soon as it is closed </li>
+    </ul> </li>
+</ul>
+<h2>Sensitive Code Example</h2>
+<pre>
+new File("/tmp/myfile.txt"); // Sensitive
+Paths.get("/tmp/myfile.txt"); // Sensitive
+
+java.io.File.createTempFile("prefix", "suffix"); // Sensitive, will be in the default temporary-file directory.
+java.nio.file.Files.createTempDirectory("prefix"); // Sensitive, will be in the default temporary-file directory.
+</pre>
+<pre>
+Map&lt;String, String&gt; env = System.getenv();
+env.get("TMP"); // Sensitive
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+new File("/myDirectory/myfile.txt");
+
+File.createTempFile("prefix", "suffix", new File("/mySecureDirectory"));
+
+FileAttribute&lt;Set&lt;PosixFilePermission&gt;&gt; attr = PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("w+"));
+Files.createTempFile("prefix", "suffix", attr); // Compliant, created with explicit attributes.
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A5-Broken_Access_Control">OWASP Top 10 2017 Category A5</a> - Broken Access Control </li>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A3-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data Exposure
+  </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/377">MITRE, CWE-377</a> - Insecure Temporary File </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/379">MITRE, CWE-379</a> - Creation of Temporary File in Directory with Incorrect Permissions
+  </li>
+  <li> <a href="https://www.owasp.org/index.php/Insecure_Temporary_File">OWASP, Insecure Temporary File</a> </li>
+</ul>
+

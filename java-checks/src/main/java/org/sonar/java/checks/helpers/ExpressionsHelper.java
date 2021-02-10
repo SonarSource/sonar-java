@@ -31,6 +31,7 @@ import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -39,6 +40,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
@@ -233,6 +235,21 @@ public class ExpressionsHelper {
       return ((NewArrayTree) expression).initializers().stream().allMatch(ExpressionsHelper::alwaysReturnSameValue);
     }
     return true;
+  }
+
+  public static Optional<Symbol> getInvokedSymbol(MethodInvocationTree mit) {
+    ExpressionTree methodSelect = mit.methodSelect();
+    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
+      if (expression.is(Tree.Kind.IDENTIFIER)) {
+        return Optional.of(((IdentifierTree) expression).symbol());
+      }
+    }
+    return Optional.empty();
+  }
+
+  public static boolean isNotReassigned(Symbol symbol) {
+    return symbol.isFinal() || (symbol.isVariableSymbol() && JUtils.isEffectivelyFinal(((Symbol.VariableSymbol) symbol)));
   }
 
 }
