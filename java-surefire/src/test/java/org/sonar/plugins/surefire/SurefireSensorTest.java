@@ -38,6 +38,7 @@ import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.surefire.api.SurefireUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -79,7 +80,8 @@ class SurefireSensorTest {
     settings.setProperty(SurefireUtils.SUREFIRE_REPORT_PATHS_PROPERTY, "unknown");
 
     SurefireSensor surefireSensor = new SurefireSensor(mock(SurefireJavaParser.class), settings.asConfig(), fs, pathResolver);
-    surefireSensor.execute(mock(SensorContext.class));
+
+    assertDoesNotThrow(() -> surefireSensor.execute(mock(SensorContext.class)));
   }
 
   @Test
