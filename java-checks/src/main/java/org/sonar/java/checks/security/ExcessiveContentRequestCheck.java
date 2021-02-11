@@ -19,7 +19,8 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -27,6 +28,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.AnalyzerMessage;
+import org.sonar.java.EndOfAnalysisCheck;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -34,12 +38,13 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
 @Rule(key = "S5693")
-public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor {
+public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor implements EndOfAnalysisCheck {
 
   @RuleProperty(
     key = "fileUploadSizeLimit",
@@ -54,23 +59,32 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor {
 
   private static final long DEFAULT_MAX = 8 * BYTES_PER_MB;
 
-  private static final String MESSAGE = "The content length limit of %d bytes is greater than the defined limit of %d; make sure it is safe here.";
+  private static final String MESSAGE_EXCEED_SIZE = "The content length limit of %d bytes is greater than the defined limit of %d; make sure it is safe here.";
+  private static final String MESSAGE_SIZE_NOT_SET = "Make sure not setting any maximum content length limit is safe here.";
 
   private static final Pattern DATA_SIZE_PATTERN = Pattern.compile("^([+\\-]?\\d+)([a-zA-Z]{0,2})$");
 
+  private static final String MULTIPART_RESOLVER = "org.springframework.web.multipart.commons.CommonsMultipartResolver";
+  private static final String MULTIPART_CONFIG = "org.springframework.boot.web.servlet.MultipartConfigFactory";
   private static final MethodMatchers METHODS_SETTING_MAX_SIZE = MethodMatchers.or(
     MethodMatchers.create()
-      .ofSubTypes("org.springframework.web.multipart.commons.CommonsMultipartResolver")
+      .ofSubTypes(MULTIPART_RESOLVER)
       .names("setMaxUploadSize")
       .addParametersMatcher("long")
       .build(),
     MethodMatchers.create()
-      .ofSubTypes("org.springframework.boot.web.servlet.MultipartConfigFactory")
+      .ofSubTypes(MULTIPART_CONFIG)
       .names("setMaxFileSize", "setMaxRequestSize")
       .addParametersMatcher("long")
       .addParametersMatcher("java.lang.String")
       .build()
   );
+
+  private static final MethodMatchers MULTIPART_CONSTRUCTOR = MethodMatchers.create()
+    .ofSubTypes(MULTIPART_RESOLVER, MULTIPART_CONFIG)
+    .constructor()
+    .withAnyParameters()
+    .build();
 
   private static final String DATA_SIZE = "org.springframework.util.unit.DataSize";
 
@@ -92,19 +106,40 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor {
     .addParametersMatcher("java.lang.CharSequence")
     .build();
 
+  private final List<AnalyzerMessage> multipartConstructorsIssue = new ArrayList<>();
+  private boolean sizeSetSomewhere = false;
+
+  @Override
+  public void endOfAnalysis() {
+    if (!sizeSetSomewhere) {
+      DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) context;
+      multipartConstructorsIssue.forEach(defaultContext::reportIssue);
+    }
+  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.METHOD_INVOCATION);
+    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    MethodInvocationTree mit = (MethodInvocationTree) tree;
-    if (METHODS_SETTING_MAX_SIZE.matches(mit)) {
-      getIfExceedSize(mit.arguments().get(0)).ifPresent(bytesExceeding ->
-        reportIssue(mit, String.format(MESSAGE, bytesExceeding, fileUploadSizeLimit))
-      );
+    if (tree.is(Tree.Kind.NEW_CLASS)) {
+      NewClassTree newClassTree = (NewClassTree) tree;
+      if (MULTIPART_CONSTRUCTOR.matches(newClassTree)) {
+        // Create an issue that we will report only at the end of the analysis if the maximum size what never set.
+        DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) context;
+        AnalyzerMessage analyzerMessage = defaultContext.createAnalyzerMessage(this, newClassTree, MESSAGE_SIZE_NOT_SET);
+        multipartConstructorsIssue.add(analyzerMessage);
+      }
+    } else {
+      MethodInvocationTree mit = (MethodInvocationTree) tree;
+      if (METHODS_SETTING_MAX_SIZE.matches(mit)) {
+        sizeSetSomewhere = true;
+        getIfExceedSize(mit.arguments().get(0)).ifPresent(bytesExceeding ->
+          reportIssue(mit, String.format(MESSAGE_EXCEED_SIZE, bytesExceeding, fileUploadSizeLimit))
+        );
+      }
     }
   }
 

@@ -53,4 +53,24 @@ class ExcessiveContentRequestCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_max_not_set() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/security/ExcessiveContentRequestCheck/ExcessiveContentRequestCheck_sizeNotSet.java"))
+      .withCheck(new ExcessiveContentRequestCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_max_set_in_another_file() {
+    // As soon as the size is set somewhere in the project, do not report an issue.
+    JavaCheckVerifier.newVerifier()
+      .onFiles(
+        testSourcesPath("checks/security/ExcessiveContentRequestCheck/ExcessiveContentRequestCheck_setSize.java"),
+        testSourcesPath("checks/security/ExcessiveContentRequestCheck/ExcessiveContentRequestCheck_sizeNotSet.java"))
+      .withCheck(new ExcessiveContentRequestCheck())
+      // Note that this will check that no issue îs reported on the second file (order is therefore important).
+      .verifyNoIssues();
+  }
+
 }
