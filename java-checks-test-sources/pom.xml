@@ -752,6 +752,7 @@
       <groupId>org.rapidoid</groupId>
       <artifactId>rapidoid-http-fast</artifactId>
       <version>5.4.4</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
