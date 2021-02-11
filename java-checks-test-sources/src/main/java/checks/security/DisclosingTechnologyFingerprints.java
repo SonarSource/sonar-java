@@ -80,8 +80,8 @@ class Servlet implements javax.servlet.Servlet {
     ((org.apache.wicket.protocol.http.servlet.ServletWebResponse) servletResponse).addHeader("Server",""); // Noncompliant
     ((org.apache.wicket.protocol.http.servlet.ServletWebResponse) servletResponse).setHeader("x-powered-by",""); // Noncompliant
 
-    ((org.rapidoid.http.Resp) servletResponse).header("SeRver", "XXX"); // Noncopliant
-    ((org.rapidoid.http.Resp) servletResponse).header("x-powered-by", "XXX"); // Noncopliant
+    ((org.rapidoid.http.Resp) servletResponse).header("SeRver", "XXX"); // Noncompliant
+    ((org.rapidoid.http.Resp) servletResponse).header("x-powered-by", "XXX"); // Noncompliant
     ((org.rapidoid.http.Resp) servletResponse).header("header", "XXX"); // Compliant
 
   }
