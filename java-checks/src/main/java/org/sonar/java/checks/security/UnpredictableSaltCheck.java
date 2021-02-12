@@ -23,9 +23,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.Preconditions;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -37,29 +41,37 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.sonar.java.checks.helpers.ExpressionsHelper.getInvokedSymbol;
-import static org.sonar.java.checks.helpers.ExpressionsHelper.isNotReassigned;
+import static org.sonar.java.checks.helpers.ExpressionsHelper.getSingleWriteUsage;
 
 @Rule(key = "S2053")
 public class UnpredictableSaltCheck extends IssuableSubscriptionVisitor {
 
   private static final String ADD_SALT = "Add an unpredictable salt value to this hash.";
   private static final String UNPREDICTABLE_SALT = "Make this salt unpredictable.";
-
+  private static final String MESSAGE_DIGEST = "java.security.MessageDigest";
+  private static final Set<String> WEAK_HASH_ALGORITHMS = SetUtils.immutableSetOf(
+    "MD2", "MD4", "MD5", "SHA-1", "RIPEMD160", "HMACRIPEMD160");
+  
   private static final MethodMatchers UPDATE_MESSAGE_DIGEST = MethodMatchers.create()
-    .ofSubTypes("java.security.MessageDigest")
+    .ofSubTypes(MESSAGE_DIGEST)
     .names("update")
     .withAnyParameters()
     .build();
 
   private static final MethodMatchers DIGEST_METHOD = MethodMatchers.create()
-    .ofSubTypes("java.security.MessageDigest")
+    .ofSubTypes(MESSAGE_DIGEST)
     .names("digest")
     .withAnyParameters()
     .build();
-  
+
+  private static final MethodMatchers CREATE_DIGEST_METHOD = MethodMatchers.create()
+    .ofSubTypes(MESSAGE_DIGEST)
+    .names("getInstance")
+    .addParametersMatcher("java.lang.String")
+    .build();
+
   private static final MethodMatchers NEW_PBE_KEY_SPEC = MethodMatchers.create()
     .ofSubTypes("javax.crypto.spec.PBEKeySpec")
     .constructor()
@@ -95,17 +107,21 @@ public class UnpredictableSaltCheck extends IssuableSubscriptionVisitor {
     super.setContext(context);
   }
 
-  private void checkDigestMethod(MethodInvocationTree methodInvocationTree) {
+  private void checkDigestMethod(MethodInvocationTree methodInvocationTree) { 
     if (UPDATE_MESSAGE_DIGEST.matches(methodInvocationTree)) {
-      getInvokedSymbol(methodInvocationTree).ifPresent(symbol -> 
-        updateCalls.compute(symbol, (k, v) -> (v == null) ? 1 : (v + 1)));
+      getInvokedSymbol(methodInvocationTree)
+        .ifPresent(symbol ->  
+          updateCalls.compute(symbol, (k, v) -> (v == null) ? 1 : (v + 1)));
+
     } else if (DIGEST_METHOD.matches(methodInvocationTree)) {
-      getInvokedSymbol(methodInvocationTree).ifPresent(symbol -> {
-        Integer count = updateCalls.get(symbol);
-        if (count == null || (count == 1 && methodInvocationTree.arguments().isEmpty())) {
-          reportIssue(methodInvocationTree, ADD_SALT);
-        }
-      });
+      getInvokedSymbol(methodInvocationTree)
+        .filter(UnpredictableSaltCheck::isStrongDigestAlgorithm)
+        .ifPresent(symbol -> {
+          Integer count = updateCalls.get(symbol);
+          if (count == null || (count == 1 && methodInvocationTree.arguments().isEmpty())) {
+            reportIssue(methodInvocationTree, ADD_SALT);
+          }
+        });
     }
   }
 
@@ -123,6 +139,16 @@ public class UnpredictableSaltCheck extends IssuableSubscriptionVisitor {
     }
   }
 
+  private static boolean isStrongDigestAlgorithm(Symbol symbol) {
+    return Optional.ofNullable(getSingleWriteUsage(symbol))
+      .filter(expressionTree -> expressionTree.is(Tree.Kind.METHOD_INVOCATION))
+      .map(MethodInvocationTree.class::cast)
+      .filter(CREATE_DIGEST_METHOD::matches)
+      .flatMap(mit -> mit.arguments().get(0).asConstant(String.class))
+      .filter(arg -> !WEAK_HASH_ALGORITHMS.contains(arg.toUpperCase(Locale.ROOT)))
+      .isPresent();
+  }
+
   private static boolean isPredictable(ExpressionTree saltExpression, List<JavaFileScannerContext.Location> locations) {
     return (saltExpression.is(Tree.Kind.METHOD_INVOCATION) && isInitializedWithGetBytes((MethodInvocationTree) saltExpression)) ||
       (saltExpression.is(Tree.Kind.IDENTIFIER) && isInitializedWithLiteral((IdentifierTree) saltExpression, locations));
@@ -130,22 +156,14 @@ public class UnpredictableSaltCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isInitializedWithLiteral(IdentifierTree identifier, List<JavaFileScannerContext.Location> locations) {
     Symbol symbol = identifier.symbol();
-    if (isNotReassigned(symbol)) {
-      Tree declaration = symbol.declaration();
-      if (declaration != null && declaration.is(Tree.Kind.VARIABLE)) {
-        ExpressionTree initializer = ((VariableTree) declaration).initializer();
-        if (initializer == null) {
-          return false;
-        }
-        ExpressionTree bareInitializer = ExpressionUtils.skipParentheses(initializer);
-        if (bareInitializer.is(Tree.Kind.METHOD_INVOCATION)) {
-          MethodInvocationTree methodInvocationTree = (MethodInvocationTree) bareInitializer;
-          locations.add(new JavaFileScannerContext.Location("Salt initialized with a constant.", methodInvocationTree));
-          return isInitializedWithGetBytes(methodInvocationTree);
-        }
-      }
-    }
-    return false;
+    return Optional.ofNullable(getSingleWriteUsage(symbol))
+      .filter(expressionTree -> expressionTree.is(Tree.Kind.METHOD_INVOCATION))
+      .map(MethodInvocationTree.class::cast)
+      .map(mit -> {
+        locations.add(new JavaFileScannerContext.Location("Salt initialized with a constant.", mit));
+        return isInitializedWithGetBytes(mit);
+      })
+      .orElse(false);
   }
 
   private static boolean isInitializedWithGetBytes(MethodInvocationTree mit) {
