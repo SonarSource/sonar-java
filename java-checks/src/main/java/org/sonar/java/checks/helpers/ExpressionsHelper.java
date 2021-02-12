@@ -118,7 +118,7 @@ public class ExpressionsHelper {
   }
 
   @CheckForNull
-  private static ExpressionTree getSingleWriteUsage(Symbol symbol) {
+  public static ExpressionTree getSingleWriteUsage(Symbol symbol) {
     ExpressionTree initializerOrExpression = getInitializerOrExpression(symbol.declaration());
     List<AssignmentExpressionTree> reassignments = getReassignments(symbol.owner().declaration(), symbol.usages());
     ExpressionTree singleWriteUsage = null;
@@ -221,7 +221,7 @@ public class ExpressionsHelper {
     } else {
       return Stream.concat(Stream.of(initializer), assignedExpressionStream);
     }
-  }
+  }  
 
   public static boolean alwaysReturnSameValue(ExpressionTree expression) {
     if (expression.is(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS)) {
