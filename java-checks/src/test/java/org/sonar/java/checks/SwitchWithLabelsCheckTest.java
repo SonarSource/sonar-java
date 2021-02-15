@@ -22,12 +22,23 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 class SwitchWithLabelsCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/SwitchWithLabelsCheck.java")
+      .onFile(testSourcesPath("checks/SwitchWithLabelsCheck.java"))
+      .withCheck(new SwitchWithLabelsCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/SwitchWithLabelsCheck.java"))
       .withCheck(new SwitchWithLabelsCheck())
       .verifyIssues();
   }
