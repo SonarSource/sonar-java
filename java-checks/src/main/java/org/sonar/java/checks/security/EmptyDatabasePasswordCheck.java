@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
@@ -36,7 +35,6 @@ public class EmptyDatabasePasswordCheck extends AbstractMethodDetection {
   private static final int PASSWORD_ARGUMENT = 2;
   private static final int URL_ARGUMENT = 0;
   private static final Pattern EMPTY_PASSWORD_PATTERN = Pattern.compile(".*password\\s*=\\s*([&;\\)].*|$)");
-  private static final Pattern URL_PATTERN = Pattern.compile("(jdbc:mysql://[^:]*:?(?<password>.*)@.*)|(jdbc:oracle:[^:]*:?.*/(?<password2>.*)@.*)");
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
@@ -79,13 +77,7 @@ public class EmptyDatabasePasswordCheck extends AbstractMethodDetection {
   }
 
   private static boolean urlContainsEmptyPassword(String url) {
-    Matcher matcher = URL_PATTERN.matcher(url);
-    if (matcher.matches()) {
-      String password = matcher.group("password");
-      String password2 = matcher.group("password2");
-      return (password != null && password.trim().isEmpty()) || (password2 != null && password2.trim().isEmpty());
-    }
-    return EMPTY_PASSWORD_PATTERN.matcher(url).matches() || !url.contains("password=");
+    return EMPTY_PASSWORD_PATTERN.matcher(url).matches();
   }
 
 }

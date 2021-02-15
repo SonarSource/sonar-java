@@ -19,23 +19,23 @@
  */
 package org.sonar.java.checks.security;
 
+import java.io.File;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.java.testing.FilesUtils;
+
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
 class EmptyDatabasePasswordCheckTest {
-  /**
-   * Constants used inside "src/test/files/checks/security/EmptyDatabasePasswordCheck.java" file
-   * in order to test {@link EmptyDatabasePasswordCheck#getStringValue(ExpressionTree)} resolution
-   * of an identifier outside of the compilation unit (static import in this case).
-   */
-  public final static String EMPTY_PASSWORD = "";
-  public final static String NON_EMPTY_PASSWORD = "foo";
 
   @Test
   void test() throws Exception {
+    List<File> classPath = FilesUtils.getClassPath(FilesUtils.DEFAULT_TEST_JARS_DIRECTORY);
+    classPath.add(new File("../java-checks-test-sources/target/classes"));
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/security/EmptyDatabasePasswordCheck.java")
+      .onFile(testSourcesPath("checks/security/EmptyDatabasePasswordCheck.java"))
+      .withClassPath(classPath)
       .withCheck(new EmptyDatabasePasswordCheck())
       .verifyIssues();
   }
