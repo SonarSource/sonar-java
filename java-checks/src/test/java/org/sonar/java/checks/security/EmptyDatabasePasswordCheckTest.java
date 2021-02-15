@@ -20,14 +20,11 @@
 package org.sonar.java.checks.security;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import org.sonar.java.testing.FilesUtils;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 
-import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
 class EmptyDatabasePasswordCheckTest {
