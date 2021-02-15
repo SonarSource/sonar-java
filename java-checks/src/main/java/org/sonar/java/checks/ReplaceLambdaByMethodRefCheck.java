@@ -37,6 +37,7 @@ import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -66,9 +67,9 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
     if (isMethodInvocation(tree.body(), tree) || isBodyBlockInvokingMethod(tree)) {
       reportIssue(tree.arrowToken(), "Replace this lambda with a method reference." + context.getJavaVersion().java8CompatibilityMessage());
     } else {
-      getTypeCast(tree)
-        .ifPresent(type -> reportIssue(tree.arrowToken(),
-          "Replace this lambda with method reference '" + type + ".class::cast'." + context.getJavaVersion().java8CompatibilityMessage()));
+      getTypeCastOrInstanceOf(tree)
+        .ifPresent(methodReference -> reportIssue(tree.arrowToken(),
+          "Replace this lambda with method reference '" + methodReference + "'." + context.getJavaVersion().java8CompatibilityMessage()));
       getNullCheck(tree)
         .ifPresent(nullMethod -> reportIssue(tree.arrowToken(),
           "Replace this lambda with method reference 'Objects::" + nullMethod + "'." + context.getJavaVersion().java8CompatibilityMessage()));
@@ -110,34 +111,41 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
       paramSymbol.equals(((IdentifierTree) o2).symbol());
   }
 
-  private static Optional<String> getTypeCast(LambdaExpressionTree lambda) {
+  private static Optional<String> getTypeCastOrInstanceOf(LambdaExpressionTree lambda) {
     return getLambdaSingleParamSymbol(lambda).flatMap(symbol -> {
       Tree lambdaBody = lambda.body();
       return isBlockWithOneStatement(lambdaBody) ? 
-        getTypeCastFromReturn(((BlockTree) lambdaBody).body().get(0), symbol) : 
-        getTypeCast(lambdaBody, symbol);
+        getTypeCastOrInstanceOfFromReturn(((BlockTree) lambdaBody).body().get(0), symbol) : 
+        getTypeCastOrInstanceOf(lambdaBody, symbol);
     });
   }
 
-  private static Optional<String> getTypeCastFromReturn(Tree statement, Symbol symbol) {
+  private static Optional<String> getTypeCastOrInstanceOfFromReturn(Tree statement, Symbol symbol) {
     return statement.is(Tree.Kind.RETURN_STATEMENT) ?
-      getTypeCast(((ReturnStatementTree) statement).expression(), symbol) :
+      getTypeCastOrInstanceOf(((ReturnStatementTree) statement).expression(), symbol) :
       Optional.empty();
   }
 
-  private static Optional<String> getTypeCast(@Nullable Tree statement, Symbol symbol) {
+  private static Optional<String> getTypeCastOrInstanceOf(@Nullable Tree statement, Symbol symbol) {
     return statement == null ?
       Optional.empty() :
-      expressionWithoutParentheses(statement).flatMap(expr -> getTypeCastName(symbol, expr));
+      expressionWithoutParentheses(statement).flatMap(expr -> getTypeCastOrInstanceOfName(symbol, expr));
   }
 
-  private static Optional<String> getTypeCastName(Symbol symbol, ExpressionTree expr) {
+  private static Optional<String> getTypeCastOrInstanceOfName(Symbol symbol, ExpressionTree expr) {
     if (expr.is(Tree.Kind.TYPE_CAST)) {
       TypeCastTree typeCastTree = (TypeCastTree) expr;
-      if (isSingleParamCast(typeCastTree.expression(), symbol)) {
-        return getTypeName(typeCastTree.type());
+      if (isSingleParamExpression(typeCastTree.expression(), symbol)) {
+        return getTypeName(typeCastTree.type())
+          .map(s -> s + ".class::cast");
       }
-    }
+    } else if (expr.is(Tree.Kind.INSTANCE_OF)) {
+      InstanceOfTree instanceOfTree = (InstanceOfTree) expr;
+      if (isSingleParamExpression(instanceOfTree.expression(), symbol)) {
+        return getTypeName(instanceOfTree.type())
+          .map(s -> s + ".class::isInstance");
+      }
+    } 
     return Optional.empty();
   }
   
@@ -161,7 +169,7 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
     return JUtils.isTypeVar(identifierTree.symbolType());
   }
   
-  private static boolean isSingleParamCast(ExpressionTree expression, Symbol symbol) {
+  private static boolean isSingleParamExpression(ExpressionTree expression, Symbol symbol) {
     return expression.is(Tree.Kind.IDENTIFIER) && symbol.equals(((IdentifierTree) expression).symbol());
   }
 
