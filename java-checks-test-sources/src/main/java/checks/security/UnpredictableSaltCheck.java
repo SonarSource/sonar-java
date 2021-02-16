@@ -6,87 +6,9 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.spec.PBEKeySpec;
 
 public class UnpredictableSaltCheck {
-
-  public void testDigestWithParamAndOneUpdate(byte[] salt, String passwordToHash) throws NoSuchAlgorithmException {
-    MessageDigest md = MessageDigest.getInstance("SHA-512");
-    md.update(passwordToHash.getBytes(StandardCharsets.UTF_8));
-    byte[] hashedPassword = md.digest(salt); // Compliant
-
-  }
-
-  public void testDigestWithOneUpdateAndWithoutParams(String passwordToHash) throws NoSuchAlgorithmException {
-    MessageDigest md = MessageDigest.getInstance("SHA-512");
-    md.update(passwordToHash.getBytes(StandardCharsets.UTF_8));
-    byte[] hashedPassword = md.digest(); // Noncompliant [[sc=29;ec=40]] {{Add an unpredictable salt value to this hash.}}
-  }
-
-  public void testDigestMD5WithParamAndOneUpdate(byte[] salt, String passwordToHash) throws NoSuchAlgorithmException {
-    MessageDigest md = MessageDigest.getInstance("MD5");
-    md.update(passwordToHash.getBytes(StandardCharsets.UTF_8));
-    byte[] hashedPassword = md.digest(salt); // Compliant
-
-  }
-
-  public void testDigestMD2WithOneUpdateAndWithoutParams(String passwordToHash) throws NoSuchAlgorithmException {
-    MessageDigest md = MessageDigest.getInstance("MD2");
-    md.update(passwordToHash.getBytes(StandardCharsets.UTF_8));
-    byte[] hashedPassword = md.digest(); // Compliant
-  }
-
-  public void testDigestMD4WithOneUpdateAndWithoutParams(String passwordToHash) throws NoSuchAlgorithmException {
-    MessageDigest md = MessageDigest.getInstance("MD4");
-    md.update(passwordToHash.getBytes(StandardCharsets.UTF_8));
-    byte[] hashedPassword = md.digest(); // Compliant
-  }
-
-  public void testDigestMD5WithOneUpdateAndWithoutParams(String passwordToHash) throws NoSuchAlgorithmException {
-    MessageDigest md = MessageDigest.getInstance("MD5");
-    md.update(passwordToHash.getBytes(StandardCharsets.UTF_8));
-    byte[] hashedPassword = md.digest(); // Compliant
-  }
-
-  public void testDigestSHA1WithOneUpdateAndWithoutParams(String passwordToHash) throws NoSuchAlgorithmException {
-    MessageDigest md = MessageDigest.getInstance("sha-1");
-    md.update(passwordToHash.getBytes(StandardCharsets.UTF_8));
-    byte[] hashedPassword = md.digest(); // Compliant
-  }
-
-  public void testDigestRIPEMD160WithOneUpdateAndWithoutParams(String passwordToHash) throws NoSuchAlgorithmException {
-    MessageDigest md = MessageDigest.getInstance("RIPEMD160");
-    md.update(passwordToHash.getBytes(StandardCharsets.UTF_8));
-    byte[] hashedPassword = md.digest(); // Compliant
-  }
-
-  public void testDigestHMACRIPEMD160WithOneUpdateAndWithoutParams(String passwordToHash) throws NoSuchAlgorithmException {
-    MessageDigest md = MessageDigest.getInstance("HMACRIPEMD160");
-    md.update(passwordToHash.getBytes(StandardCharsets.UTF_8));
-    byte[] hashedPassword = md.digest(); // Compliant
-  }
-
-  public void testDigestWithMultipleUpdates(String passwordToHash) throws NoSuchAlgorithmException {
-    MessageDigest md = MessageDigest.getInstance("SHA-512");
-    md.update(passwordToHash.getBytes(StandardCharsets.UTF_8));
-    md.update(passwordToHash.getBytes(StandardCharsets.UTF_8));
-    md.update(passwordToHash.getBytes(StandardCharsets.UTF_8));
-    byte[] hashedPassword = md.digest(); // Compliant
-    
-    md.getAlgorithm();
-    
-    new MyMessageDigest("").update(passwordToHash.getBytes());
-  }
-
-  public void testDigestWithoutUpdate(String passwordToHash) throws NoSuchAlgorithmException {
-    MessageDigest md = MessageDigest.getInstance("SHA-512");
-    byte[] hashedPassword = md.digest(passwordToHash.getBytes(StandardCharsets.UTF_8)); // Noncompliant
-  }
-
-  public void testDigestMD5WithoutUpdate(String passwordToHash) throws NoSuchAlgorithmException {
-    MessageDigest md = MessageDigest.getInstance("MD5");
-    byte[] hashedPassword = md.digest(passwordToHash.getBytes(StandardCharsets.UTF_8)); // Compliant
-  }
-
+  
   public void testPBESpec(char[] chars, byte[] salt) throws NoSuchAlgorithmException {
-    PBEKeySpec spec = new PBEKeySpec(chars); // Noncompliant [[sc=23;ec=44]]
+    PBEKeySpec spec = new PBEKeySpec(chars); // Noncompliant [[sc=23;ec=44]] {{Add an unpredictable salt value to this hash.}}
     PBEKeySpec spec1 = new PBEKeySpec(chars, salt, 1); // Compliant 
   }
 
