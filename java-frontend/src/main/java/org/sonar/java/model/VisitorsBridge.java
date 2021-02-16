@@ -47,9 +47,6 @@ import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.exceptions.ThrowableUtils;
-import org.sonar.java.se.SymbolicExecutionMode;
-import org.sonar.java.se.SymbolicExecutionVisitor;
-import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -64,11 +61,9 @@ public class VisitorsBridge {
 
   private static final Logger LOG = Loggers.get(VisitorsBridge.class);
 
-  private final BehaviorCache behaviorCache;
   private final List<JavaFileScanner> allScanners;
   private List<JavaFileScanner> executableScanners;
   private final SonarComponents sonarComponents;
-  private final boolean symbolicExecutionEnabled;
   protected InputFile currentFile;
   protected JavaVersion javaVersion;
   private final List<File> classpath;
@@ -84,11 +79,6 @@ public class VisitorsBridge {
   @VisibleForTesting
   public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath,
                         @Nullable SonarComponents sonarComponents) {
-    this(visitors, projectClasspath, sonarComponents, SymbolicExecutionMode.DISABLED);
-  }
-
-  public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath,
-                        @Nullable SonarComponents sonarComponents, SymbolicExecutionMode symbolicExecutionMode) {
     this.allScanners = new ArrayList<>();
     for (Object visitor : visitors) {
       if (visitor instanceof JavaFileScanner) {
@@ -99,8 +89,6 @@ public class VisitorsBridge {
     this.executableScanners = allScanners.stream().filter(IS_ISSUABLE_SUBSCRIPTION_VISITOR.negate()).collect(Collectors.toList());
     this.issuableSubscriptionVisitorsRunner = new IssuableSubsciptionVisitorsRunner(allScanners);
     this.sonarComponents = sonarComponents;
-    this.symbolicExecutionEnabled = symbolicExecutionMode.isEnabled();
-    this.behaviorCache = new BehaviorCache();
   }
 
   public JavaVersion getJavaVersion() {
@@ -127,16 +115,6 @@ public class VisitorsBridge {
     }
 
     JavaFileScannerContext javaFileScannerContext = createScannerContext(tree, tree.sema, sonarComponents, fileParsed);
-
-    // Symbolic execution checks
-    if (symbolicExecutionEnabled) {
-      try {
-        runScanner(javaFileScannerContext, new SymbolicExecutionVisitor(executableScanners, behaviorCache));
-        behaviorCache.cleanup();
-      } catch (CheckFailureException e) {
-        interruptIfFailFast(e);
-      }
-    }
 
     for (JavaFileScanner scanner : executableScanners) {
       try {

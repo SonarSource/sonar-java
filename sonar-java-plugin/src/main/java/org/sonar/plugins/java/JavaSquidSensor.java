@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.java;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import javax.annotation.Nullable;
@@ -42,6 +43,7 @@ import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
 
@@ -92,7 +94,8 @@ public class JavaSquidSensor implements Sensor {
 
     Measurer measurer = new Measurer(context, noSonarFilter);
 
-    JavaSquid squid = new JavaSquid(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, sonarComponents.checkClasses());
+    JavaSquid squid = new JavaSquid(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter,
+      new SymbolicExecutionVisitor(Arrays.asList(sonarComponents.checkClasses())), sonarComponents.checkClasses());
     squid.scan(getSourceFiles(), getTestFiles(), runJasper(context));
   }
 
