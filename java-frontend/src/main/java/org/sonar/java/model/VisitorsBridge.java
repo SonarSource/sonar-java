@@ -228,7 +228,7 @@ public class VisitorsBridge {
     if(sonarComponents == null || !sonarComponents.reportAnalysisError(e, inputFile)) {
       this.visitFile(null);
       executableScanners.stream()
-        .filter(scanner -> scanner instanceof ExceptionHandler)
+        .filter(ExceptionHandler.class::isInstance)
         .forEach(scanner -> ((ExceptionHandler) scanner).processRecognitionException(e));
     }
 
@@ -240,7 +240,7 @@ public class VisitorsBridge {
 
   public void endOfAnalysis() {
     allScanners.stream()
-      .filter(s -> s instanceof EndOfAnalysisCheck)
+      .filter(EndOfAnalysisCheck.class::isInstance)
       .map(EndOfAnalysisCheck.class::cast)
       .forEach(EndOfAnalysisCheck::endOfAnalysis);
   }

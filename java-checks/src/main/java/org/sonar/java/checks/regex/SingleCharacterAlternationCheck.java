@@ -39,7 +39,7 @@ public class SingleCharacterAlternationCheck extends AbstractRegexCheck {
 
     @Override
     public void visitDisjunction(DisjunctionTree tree) {
-      if (tree.getAlternatives().stream().allMatch(alt -> alt instanceof CharacterClassElementTree)) {
+      if (tree.getAlternatives().stream().allMatch(CharacterClassElementTree.class::isInstance)) {
         reportIssue(tree, "Replace this alternation with a character class.", null, Collections.emptyList());
       }
       super.visitDisjunction(tree);

@@ -223,7 +223,7 @@ public class SonarComponents {
   public List<JavaCheck> jspCodeVisitors() {
     return allChecks.stream()
       .flatMap(javaChecks -> javaChecks.all().stream())
-      .filter(check -> check instanceof JspCodeVisitor)
+      .filter(JspCodeVisitor.class::isInstance)
       .collect(Collectors.toList());
   }
 
