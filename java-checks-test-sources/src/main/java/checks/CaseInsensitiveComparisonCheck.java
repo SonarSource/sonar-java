@@ -1,6 +1,9 @@
-import java.util.Locale;
+package checks;
 
-abstract class A {
+import java.util.Locale;
+import org.apache.commons.lang.StringUtils;
+
+abstract class CaseInsensitiveComparisonCheck {
   String foo;
   String bar;
 
@@ -35,5 +38,5 @@ abstract class A {
 
   abstract String toLowerCase();
   abstract String somethingElse();
-  abstract A something();
+  abstract CaseInsensitiveComparisonCheck something();
 }
