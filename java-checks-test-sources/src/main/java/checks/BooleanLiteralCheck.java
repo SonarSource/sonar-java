@@ -4,18 +4,19 @@ class BooleanLiteralCheck {
 
   public void f(boolean var, boolean foo) {
     boolean[] tests = {
-    var == false,       // Noncompliant [[sc=12;ec=17]] {{Remove the literal "false" boolean value.}}
-    var == true,        // Noncompliant {{Remove the literal "true" boolean value.}}
-    var != false,       // Noncompliant {{Remove the literal "false" boolean value.}}
-    var != true,        // Noncompliant {{Remove the literal "true" boolean value.}}
-    false == var,       // Noncompliant {{Remove the literal "false" boolean value.}}
-    true == var,        // Noncompliant {{Remove the literal "true" boolean value.}}
-    false != var,       // Noncompliant {{Remove the literal "false" boolean value.}}
-    true != var,        // Noncompliant {{Remove the literal "true" boolean value.}}
-    !true,              // Noncompliant {{Remove the literal "true" boolean value.}}
-    !false,             // Noncompliant {{Remove the literal "false" boolean value.}}
-    false && foo(),     // Noncompliant {{Remove the literal "false" boolean value.}}
-    foo() || true,      // Noncompliant {{Remove the literal "true" boolean value.}}
+    var == false,       // Noncompliant [[sc=12;ec=17]] {{Remove the unnecessary boolean literal.}}
+    var == true,        // Noncompliant {{Remove the unnecessary boolean literal.}}
+    var != false,       // Noncompliant
+    var != true,        // Noncompliant
+    false == var,       // Noncompliant
+    true == var,        // Noncompliant
+    false != var,       // Noncompliant
+    true != var,        // Noncompliant
+    !true,              // Noncompliant
+    !false,             // Noncompliant
+    false && foo(),     // Noncompliant
+    foo() || true,      // Noncompliant
+    true || false,      // Noncompliant [[sc=5;ec=9;secondary=+0]] {{Remove the unnecessary boolean literals.}}
 
     var == foo(true),   // Compliant
     !foo,               // Compliant
@@ -23,7 +24,8 @@ class BooleanLiteralCheck {
     };
 
     boolean exp = foo();
-    var = foo() ? true : false; // Noncompliant
+    var = foo() ? true : // Noncompliant [[sc=19;ec=23;secondary=+1]] {{Remove the unnecessary boolean literals.}}
+      false;
     var = foo() ? true : exp;   // Noncompliant
     var = foo() ? false : exp;  // Noncompliant
     var = foo() ? exp : true;   // Noncompliant
