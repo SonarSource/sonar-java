@@ -19,11 +19,14 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -42,27 +45,36 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    LiteralTree literal;
-    if(tree.is(Kind.LOGICAL_COMPLEMENT)) {
-      literal = getBooleanLiteral(((UnaryExpressionTree) tree).expression());
+    List<LiteralTree> literalList;
+    if (tree.is(Kind.LOGICAL_COMPLEMENT)) {
+      literalList = getBooleanLiterals(((UnaryExpressionTree) tree).expression());
     } else if (tree.is(Kind.CONDITIONAL_EXPRESSION)) {
       ConditionalExpressionTree expression = (ConditionalExpressionTree) tree;
-      literal = getBooleanLiteral(expression.trueExpression(), expression.falseExpression());
+      literalList = getBooleanLiterals(expression.trueExpression(), expression.falseExpression());
     } else {
       BinaryExpressionTree expression = (BinaryExpressionTree) tree;
-      literal = getBooleanLiteral(expression.leftOperand(), expression.rightOperand());
+      literalList = getBooleanLiterals(expression.leftOperand(), expression.rightOperand());
     }
-    if(literal != null) {
-      reportIssue(literal, "Remove the literal \"" + literal.value() + "\" boolean value.");
+
+    int nLiterals = literalList.size();
+    if (nLiterals > 0) {
+      reportIssue(literalList.get(0),
+        String.format("Remove the unnecessary boolean literal%s.", nLiterals > 1 ? "s" : ""),
+        literalList.stream().skip(1).map(lit -> new JavaFileScannerContext.Location("", lit)).collect(Collectors.toList()),
+        null);
     }
   }
 
-  @Nullable
-  private static LiteralTree getBooleanLiteral(Tree... trees) {
-    return Arrays.stream(trees)
-      .filter(tree -> tree.is(Kind.BOOLEAN_LITERAL))
-      .map(LiteralTree.class::cast)
-      .findFirst().orElse(null);
+  private static List<LiteralTree> getBooleanLiterals(Tree... trees) {
+    List<LiteralTree> booleanLiterals = new ArrayList<>();
+    for (Tree t : trees) {
+      if (t.is(Kind.NULL_LITERAL)) {
+        return Collections.emptyList();
+      } else if (t.is(Kind.BOOLEAN_LITERAL)) {
+        booleanLiterals.add((LiteralTree) t);
+      }
+    }
+    return booleanLiterals;
   }
 
 }
