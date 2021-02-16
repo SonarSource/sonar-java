@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Test;
 
@@ -13,10 +14,11 @@ public class AssertJConsecutiveAssertionCheck {
   String myString = "42";
   String myOtherString = "24";
   List<String> myList = new ArrayList<>();
+  Optional<String> myOptional = Optional.of("abc");
 
   @Test
   void simple_example() {
-    assertThat(myString).hasSize(2); // Noncompliant [[sc=5;ec=15;secondary=20,21]] {{Join these multiple assertions subject to one assertion chain.}}
+    assertThat(myString).hasSize(2); // Noncompliant [[sc=5;ec=15;secondary=+1,+2]] {{Join these multiple assertions subject to one assertion chain.}}
     assertThat(myString).startsWith("4");
     assertThat(myString).isEqualTo("42");
   }
@@ -44,9 +46,9 @@ public class AssertJConsecutiveAssertionCheck {
 
   @Test
   void two_assert_subject_argument_2() {
-    assertThat(myOtherString).hasSize(2); // Noncompliant [[sc=5;ec=15;secondary=48]]
+    assertThat(myOtherString).hasSize(2); // Noncompliant [[sc=5;ec=15;secondary=+1]]
     assertThat(myOtherString).startsWith("2");
-    assertThat(myString).startsWith("4"); // Noncompliant [[sc=5;ec=15;secondary=50]]
+    assertThat(myString).startsWith("4"); // Noncompliant [[sc=5;ec=15;secondary=+1]]
     assertThat(myString).isEqualTo("42");
   }
 
@@ -135,6 +137,20 @@ public class AssertJConsecutiveAssertionCheck {
   void filtered() {
     assertThat(myList).filteredOn("", "").isEqualTo("");  // Compliant
     assertThat(myList).isEmpty();
+  }
+
+  @Test
+  void map() {
+    // Assertions chained afterward are performed on the Optional resulting from the call
+    assertThat(myOptional).map(String::toString).isEmpty(); // Compliant
+    assertThat(myOptional).isEmpty();
+  }
+
+  @Test
+  void flatMap() {
+    // Assertions chained afterward are performed on the Optional resulting from the call
+    assertThat(myOptional).flatMap(s -> Optional.of(s + "")).isEmpty(); // Compliant
+    assertThat(myOptional).isEmpty();
   }
 
 
