@@ -132,17 +132,20 @@ public class XxeProcessingCheck extends SECheck {
     .withAnyParameters()
     .build();
 
+  private static final MethodMatchers NEW_DOCUMENT_BUILDER = MethodMatchers.create()
+    .ofSubTypes(DOCUMENT_BUILDER_FACTORY)
+    .names("newDocumentBuilder")
+    .addWithoutParametersMatcher()
+    .build();
+
   private static final Map<MethodMatchers, Predicate<ConstraintsByDomain>> CONDITIONS_FOR_SECURED_BY_TYPE =
     MapBuilder.<MethodMatchers, Predicate<ConstraintsByDomain>>newMap()
       .put(XML_INPUT_FACTORY_NEW_INSTANCE,
         c -> (c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeSchema.SECURED))
           || c.hasConstraint(FeatureSupportDtd.SECURED)
           || c.hasConstraint(FeatureIsSupportingExternalEntities.SECURED))
-      .put(DOCUMENT_BUILDER_FACTORY_NEW_INSTANCE,
-        c -> (c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeSchema.SECURED))
-          || c.hasConstraint(FeatureDisallowDoctypeDecl.SECURED)
-          || c.hasConstraint(FeatureLoadExternalDtd.SECURED)
-          || c.hasConstraint(FeatureExternalGeneralEntities.SECURED))
+      .put(DOCUMENT_BUILDER_FACTORY_NEW_INSTANCE, XxeProcessingCheck::documentBuilderFactoryIsSecured)
+      .put(NEW_DOCUMENT_BUILDER, c -> c.hasConstraint(XxeEntityResolver.CUSTOM_ENTITY_RESOLVER))
       .put(SAX_PARSER_FACTORY_NEW_INSTANCE,
         c -> (c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeSchema.SECURED))
           || c.hasConstraint(FeatureDisallowDoctypeDecl.SECURED)
@@ -157,6 +160,14 @@ public class XxeProcessingCheck extends SECheck {
           || c.hasConstraint(FeatureExternalGeneralEntities.SECURED)
           || c.hasConstraint(XxeEntityResolver.CUSTOM_ENTITY_RESOLVER))
       .build();
+
+  private static boolean documentBuilderFactoryIsSecured(@Nullable ConstraintsByDomain c) {
+    return c == null
+      || (c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeSchema.SECURED))
+      || c.hasConstraint(FeatureDisallowDoctypeDecl.SECURED)
+      || c.hasConstraint(FeatureLoadExternalDtd.SECURED)
+      || c.hasConstraint(FeatureExternalGeneralEntities.SECURED);
+  }
 
   private static final Map<MethodMatchers, Predicate<ConstraintsByDomain>> CONDITIONS_FOR_SECURED_BY_TYPE_NEW_CLASS =
     MapBuilder.<MethodMatchers, Predicate<ConstraintsByDomain>>newMap()
@@ -178,8 +189,10 @@ public class XxeProcessingCheck extends SECheck {
     MethodMatchers.create().ofSubTypes(DOCUMENT_BUILDER_FACTORY, SAX_PARSER_FACTORY, XML_READER, SAX_BUILDER, SAX_READER)
       .names("setFeature").addParametersMatcher(JAVA_LANG_STRING, BOOLEAN).build());
 
+  private static final String DOCUMENT_BUILDER = "javax.xml.parsers.DocumentBuilder";
+
   private static final MethodMatchers ENTITY_RESOLVER_SETTERS =
-    MethodMatchers.create().ofSubTypes(XML_READER, SAX_BUILDER, SAX_READER)
+    MethodMatchers.create().ofSubTypes(XML_READER, SAX_BUILDER, SAX_READER, DOCUMENT_BUILDER)
       .names("setEntityResolver").addParametersMatcher(MethodMatchers.ANY).build();
 
   private static final MethodMatchers TRANSFERRING_METHOD_CALLS = MethodMatchers.or(
@@ -190,12 +203,11 @@ public class XxeProcessingCheck extends SECheck {
   );
 
   private static final MethodMatchers PARSING_METHODS = MethodMatchers.or(
-    MethodMatchers.create().ofSubTypes(DOCUMENT_BUILDER_FACTORY).names("newDocumentBuilder").addWithoutParametersMatcher().build(),
+    MethodMatchers.create().ofSubTypes(SAX_PARSER, XML_READER, DOCUMENT_BUILDER).names("parse").withAnyParameters().build(),
+    MethodMatchers.create().ofSubTypes(DOCUMENT_BUILDER).names("newDocument").withAnyParameters().build(),
     MethodMatchers.create().ofSubTypes(TRANSFORMER_FACTORY).names("newTransformer").withAnyParameters().build(),
     MethodMatchers.create().ofSubTypes(XML_INPUT_FACTORY).name(n -> n.startsWith("create")).withAnyParameters().build(),
     MethodMatchers.create().ofSubTypes(VALIDATOR).names("validate").withAnyParameters().build(),
-    MethodMatchers.create().ofSubTypes(SAX_PARSER).names("parse").withAnyParameters().build(),
-    MethodMatchers.create().ofSubTypes(XML_READER).names("parse").withAnyParameters().build(),
     MethodMatchers.create().ofSubTypes(SAX_BUILDER).names("build").withAnyParameters().build(),
     MethodMatchers.create().ofSubTypes(SAX_READER).names("read").withAnyParameters().build()
   );
@@ -252,14 +264,20 @@ public class XxeProcessingCheck extends SECheck {
       programState = addNamedConstraint(tree.initializer(), programState);
     }
 
+    private boolean isSecuredDocumentBuilderCreation(MethodInvocationTree mit) {
+      ConstraintsByDomain c = programState.getConstraints(programState.peekValue(mit.arguments().size()));
+      return documentBuilderFactoryIsSecured(c);
+    }
+
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
-
       // Test initialisation of XML processing API
       for (Map.Entry<MethodMatchers, Predicate<ConstraintsByDomain>> entry : CONDITIONS_FOR_SECURED_BY_TYPE.entrySet()) {
         if (entry.getKey().matches(mit)) {
-          constraintManager
-            .setValueFactory(() -> new XxeSymbolicValue(ExpressionUtils.methodName(mit), entry.getValue()));
+          if (!(entry.getKey() == NEW_DOCUMENT_BUILDER && isSecuredDocumentBuilderCreation(mit))) {
+            constraintManager
+              .setValueFactory(() -> new XxeSymbolicValue(ExpressionUtils.methodName(mit), entry.getValue()));
+          }
           break;
         }
       }
