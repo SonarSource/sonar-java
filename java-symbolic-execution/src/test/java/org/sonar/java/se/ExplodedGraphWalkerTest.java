@@ -29,7 +29,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.TestUtils;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.Sema;
@@ -53,7 +52,8 @@ import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.java.se.checks.XxeProcessingCheck;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
-import org.sonar.java.se.xproc.BehaviorCache;
+import org.sonar.java.se.utils.SETestUtils;
+import org.sonar.java.se.utils.TestUtils;
 import org.sonar.java.se.xproc.HappyPathYield;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
@@ -69,7 +69,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
-import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
+import static org.sonar.java.se.utils.SETestUtils.createSymbolicExecutionVisitor;
 
 class ExplodedGraphWalkerTest {
 
@@ -87,7 +87,7 @@ class ExplodedGraphWalkerTest {
     final int[] steps = new int[2];
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/SeEngineTestCleanupState.java")
-      .withCheck(new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache()) {
+      .withCheck(new SymbolicExecutionVisitor(Collections.emptyList()) {
         @Override
         public void visitNode(Tree tree) {
           ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, (Sema) context.getSemanticModel(), false);
@@ -99,7 +99,7 @@ class ExplodedGraphWalkerTest {
       .verifyNoIssues();
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/SeEngineTestCleanupState.java")
-      .withCheck(new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache()) {
+      .withCheck(new SymbolicExecutionVisitor(Collections.emptyList()) {
         @Override
         public void visitNode(Tree tree) {
           ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, (Sema) context.getSemanticModel());
@@ -156,7 +156,7 @@ class ExplodedGraphWalkerTest {
   void different_exceptions_lead_to_different_program_states_with_catch_exception_block() {
     Set<Type> encounteredExceptions = new HashSet<>();
     int[] tested = {0};
-    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache()) {
+    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Collections.emptyList()) {
 
       private ExplodedGraphWalker explodedGraphWalker;
 
@@ -218,7 +218,7 @@ class ExplodedGraphWalkerTest {
   @Test
   void use_false_branch_on_loop_when_reaching_max_exec_program_point() {
     ProgramPoint[] programPoints = new ProgramPoint[2];
-    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache()) {
+    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Collections.emptyList()) {
 
       private ExplodedGraphWalker explodedGraphWalker = null;
 
@@ -277,7 +277,7 @@ class ExplodedGraphWalkerTest {
   void test_limited_loop_execution() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/SeEngineTestCase.java")
-      .withCheck(new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache()) {
+      .withCheck(new SymbolicExecutionVisitor(Collections.emptyList()) {
         @Override
         public void visitNode(Tree tree) {
           try {
@@ -296,7 +296,7 @@ class ExplodedGraphWalkerTest {
   void test_max_number_starting_states() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/MaxStartingStates.java")
-      .withCheck(new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache()) {
+      .withCheck(new SymbolicExecutionVisitor(Collections.emptyList()) {
         @Override
         public void visitNode(Tree tree) {
           MethodTree methodTree = (MethodTree) tree;
@@ -318,7 +318,7 @@ class ExplodedGraphWalkerTest {
   void test_max_number_starting_states_boundaries() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/StartingStates1024.java")
-      .withCheck(new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache()) {
+      .withCheck(new SymbolicExecutionVisitor(Collections.emptyList()) {
         @Override
         public void visitNode(Tree tree) {
           MethodTree methodTree = (MethodTree) tree;
@@ -339,7 +339,7 @@ class ExplodedGraphWalkerTest {
   void test_maximum_steps_reached() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/MaxSteps.java")
-      .withCheck(new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache()) {
+      .withCheck(new SymbolicExecutionVisitor(Collections.emptyList()) {
         @Override
         public void visitNode(Tree tree) {
           MethodTree methodTree = (MethodTree) tree;
@@ -371,7 +371,7 @@ class ExplodedGraphWalkerTest {
   void test_maximum_number_nested_states() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/MaxNestedStates.java")
-      .withCheck(new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache()) {
+      .withCheck(new SymbolicExecutionVisitor(Collections.emptyList()) {
         @Override
         public void visitNode(Tree tree) {
           MethodTree methodTree = (MethodTree) tree;
@@ -520,7 +520,7 @@ class ExplodedGraphWalkerTest {
   void xproc_keep_yield_for_reporting() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/YieldReporting.java")
-      .withCheck(new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache()) {
+      .withCheck(new SymbolicExecutionVisitor(Collections.emptyList()) {
         @Override
         public void visitNode(Tree tree) {
           MethodTree methodTree = (MethodTree) tree;

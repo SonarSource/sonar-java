@@ -24,19 +24,19 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.Sema;
+import org.sonar.java.se.utils.JParserTestUtils;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
-import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitorAndSemantic;
-import static org.sonar.java.se.SETestUtils.getMethodBehavior;
-import static org.sonar.java.se.SETestUtils.mockMethodBehavior;
+import static org.sonar.java.se.utils.SETestUtils.createSymbolicExecutionVisitor;
+import static org.sonar.java.se.utils.SETestUtils.createSymbolicExecutionVisitorAndSemantic;
+import static org.sonar.java.se.utils.SETestUtils.getMethodBehavior;
+import static org.sonar.java.se.utils.SETestUtils.mockMethodBehavior;
 
 class ExceptionalYieldTest {
 

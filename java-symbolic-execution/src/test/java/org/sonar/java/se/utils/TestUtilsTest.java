@@ -17,32 +17,16 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se.checks;
+package org.sonar.java.se.utils;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.se.utils.SETestUtils;
-import org.sonar.java.testing.CheckVerifier;
 
-import static org.sonar.java.se.utils.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.se.utils.TestUtils.testSourcesPath;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.se.utils.TestUtils.computeLineEndOffsets;
 
-class MapComputeIfAbsentOrPresentCheckTest {
-
+class TestUtilsTest {
   @Test
-  void test() {
-    CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("symbolicexecution/checks/MapComputeIfAbsentOrPresentCheck.java"))
-      .withCheck(new MapComputeIfAbsentOrPresentCheck())
-      .withClassPath(SETestUtils.CLASS_PATH)
-      .verifyIssues();
-  }
-
-  @Test
-  void test_non_compiling() {
-    CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/MapComputeIfAbsentOrPresentCheck.java"))
-      .withCheck(new MapComputeIfAbsentOrPresentCheck())
-      .withClassPath(SETestUtils.CLASS_PATH)
-      .verifyIssues();
+  void verify_computeLineEndOffsets() {
+    assertThat(computeLineEndOffsets(new int[]{0, 10, 15}, 100)).containsExactly(9, 14, 99);
   }
 }

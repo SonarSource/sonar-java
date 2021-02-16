@@ -20,8 +20,8 @@
 package org.sonar.java.se.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.TestUtils;
-import org.sonar.java.se.SETestUtils;
+import org.sonar.java.se.utils.TestUtils;
+import org.sonar.java.se.utils.SETestUtils;
 import org.sonar.java.testing.CheckVerifier;
 
 class ParameterNullnessCheckTest {

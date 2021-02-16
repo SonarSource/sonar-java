@@ -17,20 +17,27 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se.checks;
+package org.sonar.java.se.utils;
 
-import org.junit.jupiter.api.Test;
-import org.sonar.java.se.utils.SETestUtils;
-import org.sonar.java.testing.CheckVerifier;
+import java.io.File;
+import org.sonar.java.cfg.CFG;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 
-class MinMaxRangeCheckTest {
+public class CFGTestUtils {
 
-  @Test
-  void test() {
-    CheckVerifier.newVerifier()
-      .onFile("src/test/java/org/sonar/java/resolve/targets/se/MinMaxRangeCheck.java")
-      .withCheck(new MinMaxRangeCheck())
-      .withClassPath(SETestUtils.CLASS_PATH)
-      .verifyIssues();
+  public static CFG buildCFG(String methodCode) {
+    return buildCFGFromCUT(JParserTestUtils.parse("class A { " + methodCode + " }"));
   }
+
+  public static CFG buildCFG(File file) {
+    return buildCFGFromCUT(JParserTestUtils.parse(file));
+  }
+
+  private static CFG buildCFGFromCUT(CompilationUnitTree cut) {
+    MethodTree tree = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(0));
+    return CFG.build(tree);
+  }
+
 }

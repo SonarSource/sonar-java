@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se;
+package org.sonar.java.se.utils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -26,12 +26,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.java.TestUtils;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
-import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.Sema;
+import org.sonar.java.se.Pair;
+import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
@@ -58,7 +58,7 @@ public class SETestUtils {
     InputFile inputFile = TestUtils.inputFile(fileName);
     JavaTree.CompilationUnitTreeImpl cut = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(inputFile.file(), CLASS_PATH);
     Sema semanticModel = cut.sema;
-    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Arrays.asList(checks), new BehaviorCache());
+    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Arrays.asList(checks));
     sev.scanFile(new DefaultJavaFileScannerContext(cut, inputFile, semanticModel, null, new JavaVersionImpl(8), true));
     return new Pair<>(sev, semanticModel);
   }

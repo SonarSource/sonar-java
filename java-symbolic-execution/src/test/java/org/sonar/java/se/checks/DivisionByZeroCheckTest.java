@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.collections.ListUtils;
 import org.sonar.java.se.ProgramState;
-import org.sonar.java.se.SETestUtils;
+import org.sonar.java.se.utils.SETestUtils;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;

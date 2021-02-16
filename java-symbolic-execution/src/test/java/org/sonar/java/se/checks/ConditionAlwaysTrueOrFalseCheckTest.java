@@ -26,13 +26,13 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.se.AlwaysTrueOrFalseExpressionCollector;
 import org.sonar.java.se.CheckerContext;
-import org.sonar.java.se.SETestUtils;
+import org.sonar.java.se.utils.SETestUtils;
 import org.sonar.java.testing.CheckVerifier;
 import org.sonar.java.testing.InternalCheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.TestUtils.testSourcesPath;
+import static org.sonar.java.se.utils.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.se.utils.TestUtils.testSourcesPath;
 
 class ConditionAlwaysTrueOrFalseCheckTest {
 

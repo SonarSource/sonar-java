@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PMap;
-import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.se.utils.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.Sema;
 import org.sonar.java.se.ExplodedGraph;
@@ -64,10 +64,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
-import static org.sonar.java.se.SETestUtils.getMethodBehavior;
-import static org.sonar.java.se.SETestUtils.mockMethodBehavior;
-import static org.sonar.java.se.SETestUtils.variable;
+import static org.sonar.java.se.utils.SETestUtils.createSymbolicExecutionVisitor;
+import static org.sonar.java.se.utils.SETestUtils.getMethodBehavior;
+import static org.sonar.java.se.utils.SETestUtils.mockMethodBehavior;
+import static org.sonar.java.se.utils.SETestUtils.variable;
 
 class MethodYieldTest {
   @Test
@@ -218,7 +218,7 @@ class MethodYieldTest {
   void constraints_on_varargs() throws Exception {
     JavaTree.CompilationUnitTreeImpl cut = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(new File("src/test/files/se/VarArgsYields.java"));
     Sema semanticModel = cut.sema;
-    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache());
+    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Collections.emptyList());
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     when(context.getTree()).thenReturn(cut);
     when(context.getSemanticModel()).thenReturn(semanticModel);

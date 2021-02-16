@@ -40,7 +40,7 @@ import org.sonar.java.collections.SetUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
 import org.sonar.java.se.ProgramState;
-import org.sonar.java.se.SETestUtils;
+import org.sonar.java.se.utils.SETestUtils;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;

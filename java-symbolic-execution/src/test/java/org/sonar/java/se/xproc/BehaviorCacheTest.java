@@ -34,18 +34,18 @@ import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
-import org.sonar.java.TestUtils;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
-import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.Sema;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.CheckerDispatcher;
+import org.sonar.java.se.utils.JParserTestUtils;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramState;
-import org.sonar.java.se.SETestUtils;
+import org.sonar.java.se.utils.SETestUtils;
 import org.sonar.java.se.SymbolicExecutionVisitor;
+import org.sonar.java.se.utils.TestUtils;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -62,9 +62,9 @@ import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
-import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitorAndSemantic;
-import static org.sonar.java.se.SETestUtils.getMethodBehavior;
+import static org.sonar.java.se.utils.SETestUtils.createSymbolicExecutionVisitor;
+import static org.sonar.java.se.utils.SETestUtils.createSymbolicExecutionVisitorAndSemantic;
+import static org.sonar.java.se.utils.SETestUtils.getMethodBehavior;
 
 @EnableRuleMigrationSupport
 class BehaviorCacheTest {
@@ -144,7 +144,7 @@ class BehaviorCacheTest {
   @Test
   void hardcoded_behaviors() throws Exception {
     BehaviorCache behaviorCache = new BehaviorCache();
-    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Collections.singletonList(new NullDereferenceCheck()), behaviorCache);
+    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Collections.singletonList(new NullDereferenceCheck()));
 
     List<InputFile> inputFiles = Arrays.asList(
       "src/test/files/se/Log4jAssert.java",

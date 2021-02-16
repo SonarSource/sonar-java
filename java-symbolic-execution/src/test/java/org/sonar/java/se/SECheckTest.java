@@ -24,9 +24,9 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.sonar.java.cfg.CFG;
-import org.sonar.java.cfg.CFGTestUtils;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.java.se.utils.CFGTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

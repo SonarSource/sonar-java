@@ -21,7 +21,7 @@ package org.sonar.java.se;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.cfg.CFG;
-import org.sonar.java.cfg.CFGTestUtils;
+import org.sonar.java.se.utils.CFGTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

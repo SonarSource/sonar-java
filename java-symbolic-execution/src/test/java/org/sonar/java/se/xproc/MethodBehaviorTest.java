@@ -32,9 +32,9 @@ import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
-import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitorAndSemantic;
-import static org.sonar.java.se.SETestUtils.getMethodBehavior;
+import static org.sonar.java.se.utils.SETestUtils.createSymbolicExecutionVisitor;
+import static org.sonar.java.se.utils.SETestUtils.createSymbolicExecutionVisitorAndSemantic;
+import static org.sonar.java.se.utils.SETestUtils.getMethodBehavior;
 
 class MethodBehaviorTest {
 

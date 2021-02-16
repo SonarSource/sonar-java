@@ -33,12 +33,13 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.sonar.java.model.assertions.TypeAssert.assertThat;
-import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
-import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitorAndSemantic;
-import static org.sonar.java.se.SETestUtils.getMethodBehavior;
-import static org.sonar.java.se.SETestUtils.mockMethodBehavior;
+import static org.sonar.java.se.assertions.TypeAssert.assertThat;
+import static org.sonar.java.se.utils.SETestUtils.createSymbolicExecutionVisitor;
+import static org.sonar.java.se.utils.SETestUtils.createSymbolicExecutionVisitorAndSemantic;
+import static org.sonar.java.se.utils.SETestUtils.getMethodBehavior;
+import static org.sonar.java.se.utils.SETestUtils.mockMethodBehavior;
 
 class ExceptionalCheckBasedYieldTest {
 

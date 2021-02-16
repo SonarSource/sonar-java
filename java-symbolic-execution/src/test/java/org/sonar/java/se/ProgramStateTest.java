@@ -36,7 +36,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.sonar.java.se.SETestUtils.variable;
+import static org.sonar.java.se.utils.SETestUtils.variable;
 
 class ProgramStateTest {
 
