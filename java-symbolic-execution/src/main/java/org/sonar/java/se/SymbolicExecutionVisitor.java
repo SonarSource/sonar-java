@@ -55,9 +55,9 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   public void scanFile(JavaFileScannerContext context) {
     behaviorCache.cleanup();
     behaviorCache.setFileContext(this);
-    if (mode.isEnabled()) {
+    //if (mode.isEnabled()) {
       super.scanFile(context);
-    }
+    //}
   }
 
   @Override

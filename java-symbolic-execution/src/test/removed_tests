@@ -1,0 +1,65 @@
+
+  @Test
+  void should_swallow_log_and_report_checks_exceptions_for_symbolic_execution() {
+    JavaAstScanner scanner = new JavaAstScanner(null);
+    logTester.clear();
+    SonarComponents sonarComponent = new SonarComponents(null, context.fileSystem(), null, null, null);
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
+    sonarComponent.setSensorContext(context);
+    scanner.setVisitorBridge(new VisitorsBridge(Collections.singletonList(new SECheck() {
+      @Override
+      public void init(MethodTree methodTree, CFG cfg) {
+        throw new NullPointerException("nobody expect the spanish inquisition !");
+      }
+    }), new ArrayList<>(), sonarComponent, SymbolicExecutionMode.ENABLED));
+    scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/se/MethodBehavior.java")));
+    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
+    assertThat(logTester.logs(LoggerLevel.ERROR).get(0)).startsWith("Unable to run check class org.sonar.java.se.SymbolicExecutionVisitor");
+  }
+  
+    @Test
+    void test_report_se_issue_with_flow() throws Exception {
+      List<JavaFileScannerContext.Location> flow1 = Collections.singletonList(new JavaFileScannerContext.Location("SE flow1", tree));
+      List<JavaFileScannerContext.Location> flow2 = Collections.singletonList(new JavaFileScannerContext.Location("SE flow2", tree));
+      Set<List<JavaFileScannerContext.Location>> flows = SetUtils.immutableSetOf(flow1, flow2);
+  
+      scannerContext.reportIssueWithFlow(seCheck, tree, "msg", flows, null);
+      Issue issue = sensorContext.allIssues().iterator().next();
+      assertThat(issue.flows()).hasSize(2);
+    }
+    
+    @Test
+      void rethrow_exception_when_hidden_property_set_to_true_with_SECheck() {
+        VisitorsBridge visitorsBridge = visitorsBridge(Arrays.asList(
+          new SE1_ThrowingNPEPreStatement(),
+          new SE2_ThrowingNPEPostStatement()), true);
+        try {
+          visitorsBridge.visitFile(COMPILATION_UNIT_TREE);
+          Fail.fail("scanning of file should have raise an exception");
+        } catch (AnalysisException e) {
+          assertThat(e.getMessage()).contains("Failing check");
+          assertThat(e.getCause()).isInstanceOf(CheckFailureException.class);
+          assertThat(e.getCause().getCause()).isSameAs(NPE);
+        } catch (Exception e) {
+          Fail.fail("Should have been an AnalysisException");
+        }
+        assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
+        assertThat(logTester.logs(LoggerLevel.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
+          .containsExactlyInAnyOrder("SE");
+      }
+    
+      @Test
+      void swallow_exception_when_hidden_property_set_to_false_with_SECheck() {
+        try {
+          visitorsBridge(Arrays.asList(
+            new SE1_ThrowingNPEPreStatement(),
+            new SE2_ThrowingNPEPostStatement()), false)
+            .visitFile(COMPILATION_UNIT_TREE);
+        } catch (Exception e) {
+          e.printStackTrace();
+          Fail.fail("Exception should be swallowed when property is not set");
+        }
+        assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
+        assertThat(logTester.logs(LoggerLevel.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
+          .containsExactlyInAnyOrder("SE");
+      }

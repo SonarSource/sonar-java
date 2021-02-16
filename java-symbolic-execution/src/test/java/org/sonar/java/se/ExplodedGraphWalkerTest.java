@@ -22,6 +22,7 @@ package org.sonar.java.se;
 import com.google.common.reflect.ClassPath;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.Sema;
 import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
@@ -58,6 +60,8 @@ import org.sonar.java.se.xproc.HappyPathYield;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.java.testing.CheckVerifier;
+import org.sonar.java.testing.InternalCheckVerifier;
+import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -359,10 +363,12 @@ class ExplodedGraphWalkerTest {
 
   @Test
   void test_maximum_steps_reached_with_issue() throws Exception {
+    UnclosedResourcesCheck unclosedResourcesCheck = new UnclosedResourcesCheck();
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/MaxStepsWithIssue.java")
-      .withCheck(
-        new UnclosedResourcesCheck())
+      .withChecks(
+        new SymbolicExecutionVisitor(Collections.singletonList(unclosedResourcesCheck)),
+        unclosedResourcesCheck)
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
   }
@@ -563,7 +569,7 @@ class ExplodedGraphWalkerTest {
     MethodAsInstruction check = new MethodAsInstruction();
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/EvaluateMethodOnce.java")
-      .withCheck(check)
+      .withChecks(new SymbolicExecutionVisitor(Collections.singletonList(check)), check)
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyNoIssues();
     assertThat(check.toStringCall).isEqualTo(1);
@@ -619,7 +625,7 @@ class ExplodedGraphWalkerTest {
     };
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/BinaryTreeExecution.java")
-      .withCheck(check)
+      .withChecks(new SymbolicExecutionVisitor(Collections.singletonList(check)), check)
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyNoIssues();
     assertThat(counter[0]).isEqualTo(17);
@@ -690,14 +696,15 @@ class ExplodedGraphWalkerTest {
   @Test
   void private_method_should_be_visited() {
     List<String> visitedMethods = new ArrayList<>();
+    SECheck check = new SECheck() {
+      @Override
+      public void init(MethodTree methodTree, CFG cfg) {
+        visitedMethods.add(methodTree.symbol().name());
+      }
+    };
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/XprocIfaceWithPrivateMethod.java")
-      .withCheck(new SECheck() {
-        @Override
-        public void init(MethodTree methodTree, CFG cfg) {
-          visitedMethods.add(methodTree.symbol().name());
-        }
-      })
+      .withChecks(new SymbolicExecutionVisitor(Collections.singletonList(check)), check)
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyNoIssues();
     assertThat(visitedMethods).containsExactly("test", "privateMethod");
@@ -735,8 +742,8 @@ class ExplodedGraphWalkerTest {
     assertThat(happyPathYields.get(0).resultConstraint()).isNull();
   }
 
-  private static SECheck[] seChecks() {
-    return new SECheck[] {
+  private static JavaFileScanner[] seChecks() {
+    SECheck[] seChecks = {
       new NullDereferenceCheck(),
       new DivisionByZeroCheck(),
       new ConditionalUnreachableCodeCheck(),
@@ -748,6 +755,9 @@ class ExplodedGraphWalkerTest {
       new OptionalGetBeforeIsPresentCheck(),
       new RedundantAssignmentsCheck()
     };
+    return Stream.of(Collections.singletonList(new SymbolicExecutionVisitor(Arrays.asList(seChecks))), Arrays.asList(seChecks))
+      .flatMap(List::stream)
+      .toArray(JavaFileScanner[]::new);
   }
 
   private static MethodBehavior methodBehaviorForSymbol(Symbol.MethodSymbol symbol) {
