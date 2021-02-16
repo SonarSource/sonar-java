@@ -214,6 +214,26 @@ public class MockitoAnnotatedObjectsShouldBeInitialized {
     }
 
     public class NestedAsWell {
+      @Mock // Noncompliant
+      private Bar bar;
+
+      @org.junit.jupiter.api.Nested
+      public class NestedFurther {
+        @Mock
+        private Bar bar;
+      }
+    }
+  }
+
+  public class NestingButNotAnnotated {
+    public class NestedButNotAnnotated {
+      @Mock // Noncompliant
+      private Bar bar;
+    }
+
+    @ExtendWith(MockitoExtension.class)
+    public class NestedAsWellButAnnotated {
+      @org.junit.jupiter.api.Nested
       public class NestedFurther {
         @Mock
         private Bar bar;
