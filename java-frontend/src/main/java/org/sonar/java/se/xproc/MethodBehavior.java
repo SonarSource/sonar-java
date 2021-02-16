@@ -169,13 +169,13 @@ public class MethodBehavior {
 
   public Stream<ExceptionalYield> exceptionalPathYields() {
     return yields.stream()
-      .filter(y -> y instanceof ExceptionalYield)
+      .filter(ExceptionalYield.class::isInstance)
       .map(ExceptionalYield.class::cast);
   }
 
   public Stream<HappyPathYield> happyPathYields() {
     return yields.stream()
-      .filter(y -> y instanceof HappyPathYield)
+      .filter(HappyPathYield.class::isInstance)
       .map(HappyPathYield.class::cast);
   }
 

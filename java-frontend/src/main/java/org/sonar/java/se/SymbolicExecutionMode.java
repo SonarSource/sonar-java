@@ -36,7 +36,7 @@ public enum SymbolicExecutionMode {
 
   private static boolean hasASymbolicExecutionCheck(Iterable<? extends JavaCheck> visitors) {
     return StreamSupport.stream(visitors.spliterator() ,false)
-      .anyMatch(v -> v instanceof SECheck);
+      .anyMatch(SECheck.class::isInstance);
   }
 
   public boolean isEnabled() {
