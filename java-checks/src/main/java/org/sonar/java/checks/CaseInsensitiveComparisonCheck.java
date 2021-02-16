@@ -20,47 +20,55 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S1157")
-public class CaseInsensitiveComparisonCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class CaseInsensitiveComparisonCheck extends AbstractMethodDetection {
 
-  private JavaFileScannerContext context;
+  private static final MethodMatchers TO_LOWER_UPPER_CASE = MethodMatchers.create()
+    .ofSubTypes("java.lang.String")
+    .names("toLowerCase", "toUpperCase")
+    .addWithoutParametersMatcher()
+    .build();
 
   @Override
-  public void scanFile(final JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.create()
+      .ofAnyType()
+      .names("equals")
+      .addParametersMatcher("java.lang.Object")
+      .build();
   }
 
   @Override
-  public void visitMethodInvocation(MethodInvocationTree tree) {
+  public void onMethodInvocationFound(MethodInvocationTree tree) {
     if (tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) tree.methodSelect();
-      boolean issue = ("equals".equals(memberSelect.identifier().name()))
-        && (isToUpperCaseOrToLowerCase(memberSelect.expression()) || (tree.arguments().size() == 1 && isToUpperCaseOrToLowerCase(tree.arguments().get(0))));
-      if (issue) {
-        context.reportIssue(this, tree, "Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.");
+      if (ignoresCase(memberSelect.expression(), tree.arguments().get(0))) {
+        reportIssue(tree, "Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.");
       }
     }
+  }
 
-    super.visitMethodInvocation(tree);
+  private static boolean ignoresCase(ExpressionTree lhs, ExpressionTree rhs) {
+    boolean lhsConverted = isToUpperCaseOrToLowerCase(lhs);
+    boolean rhsConverted = isToUpperCaseOrToLowerCase(rhs);
+    return (lhsConverted && (rhsConverted || isStringConstant(rhs))) || (rhsConverted && isStringConstant(lhs));
+  }
+
+  private static boolean isStringConstant(ExpressionTree expression) {
+    return expression.asConstant(String.class).isPresent();
   }
 
   private static boolean isToUpperCaseOrToLowerCase(ExpressionTree expression) {
     if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree methodInvocation = (MethodInvocationTree) expression;
-      if (methodInvocation.methodSelect().is(Tree.Kind.MEMBER_SELECT) && methodInvocation.arguments().isEmpty()) {
-        MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) methodInvocation.methodSelect();
-        String name = memberSelect.identifier().name();
-        return "toUpperCase".equals(name) || "toLowerCase".equals(name);
-      }
+      return TO_LOWER_UPPER_CASE.matches(methodInvocation);
     }
     return false;
   }
