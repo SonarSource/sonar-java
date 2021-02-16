@@ -29,6 +29,11 @@ class BooleanLiteralCheck {
     var = foo() ? exp : true;   // Noncompliant
     var = foo() ? exp : false;  // Noncompliant
 
+    Boolean b1 = foo() ? true : null;  // Compliant
+    Boolean b2 = foo() ? exp : null;   // Compliant
+    Boolean b3 = foo() ? null : false; // Compliant
+    Boolean b4 = foo() ? null : exp;   // Compliant
+
     var = foo();
     var = foo() || exp;
     var = !foo() && exp;

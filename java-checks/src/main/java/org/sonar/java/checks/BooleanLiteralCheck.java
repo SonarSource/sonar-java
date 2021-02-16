@@ -59,10 +59,15 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
 
   @Nullable
   private static LiteralTree getBooleanLiteral(Tree... trees) {
-    return Arrays.stream(trees)
-      .filter(tree -> tree.is(Kind.BOOLEAN_LITERAL))
-      .map(LiteralTree.class::cast)
-      .findFirst().orElse(null);
+    LiteralTree booleanLiteral = null;
+    for (Tree t : trees) {
+      if (t.is(Kind.NULL_LITERAL)) {
+        return null;
+      } else if (t.is(Kind.BOOLEAN_LITERAL)) {
+        booleanLiteral = (LiteralTree) t;
+      }
+    }
+    return booleanLiteral;
   }
 
 }
