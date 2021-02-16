@@ -2,18 +2,23 @@
 preferred. </p>
 <p>In some rare cases, when it is not clear from the context what kind of function is being described and reference would not increase the clarity, it
 might be fine to keep the lambda. </p>
-<p>Similarly, <code>null</code> checks can be replaced with references to the <code>Objects::isNull</code> and <code>Objects::nonNull</code>
-methods.</p>
+<p>Similarly, <code>null</code> checks can be replaced with references to the <code>Objects::isNull</code> and <code>Objects::nonNull</code> methods,
+<code>casts</code> can be replaced with <code>SomeClass.class::cast</code> and <code>instanceof</code> can be replaced with
+<code>SomeClass.class::isInstance</code>.</p>
 <p><strong>Note</strong> that this rule is automatically disabled when the project's <code>sonar.java.source</code> is lower than <code>8</code>.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 class A {
   void process(List&lt;A&gt; list) {
     list.stream()
-      .map(a -&gt; a.&lt;String&gt;getObject())
-      .forEach(a -&gt; { System.out.println(a); });
+      .filter(a -&gt; a instanceof B)
+      .map(a -&gt; (B) a)
+      .map(b -&gt; b.&lt;String&gt;getObject())
+      .forEach(b -&gt; { System.out.println(b); });
   }
+}
 
+class B extends A {
   &lt;T&gt; T getObject() {
     return null;
   }
@@ -24,10 +29,14 @@ class A {
 class A {
   void process(List&lt;A&gt; list) {
     list.stream()
-      .map(A::&lt;String&gt;getObject)
+      .filter(B.class::isInstance)
+      .map(B.class::cast)
+      .map(B::&lt;String&gt;getObject)
       .forEach(System.out::println);
   }
+}
 
+class B extends A {
   &lt;T&gt; T getObject() {
     return null;
   }

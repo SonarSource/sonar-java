@@ -3,6 +3,7 @@ package checks;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -130,8 +131,70 @@ class CastCheck {
   void bar7(java.util.function.Function<Object, List<TestA[][]>> function) { /* ... */ }
   void bar8(java.util.function.Function<Object, List<TestA[][]>[]> function) { /* ... */ }
   void bar9(java.util.function.Function<Object, Character> f) { /* ... */ }
+  
+  void  barbar(java.util.function.Predicate<Object> function) { /* ... */ }
+  void barbar2(java.util.function.BiPredicate<Object, String> function) { /* ... */ }
+  void barbar3(java.util.function.Predicate<List<String>> function) { /* ... */ }
+  void barbar4(java.util.function.Predicate<Object> function) { /* ... */ }
+  void barbar5(java.util.function.Predicate<Object[]> function) { /* ... */ }
+  void barbar6(java.util.function.Predicate<Object[][]> function) { /* ... */ }
+  void barbar7(java.util.function.Predicate<List<TestA[][]>> function) { /* ... */ }
+  void barbar8(java.util.function.Predicate<List<TestA[][]>[]> function) { /* ... */ }
+  void barbar9(java.util.function.Predicate<Object> f) { /* ... */ }
 
-  void test(Object param) {
+  void testInstanceOf(Object param) {
+    barbar((o) -> o instanceof String); // Noncompliant {{Replace this lambda with method reference 'String.class::isInstance'.}}
+    barbar(String.class::isInstance); // Compliant
+  
+    barbar4((o) -> o instanceof TestA); // Noncompliant {{Replace this lambda with method reference 'TestA.class::isInstance'.}}
+    barbar4(TestA.class::isInstance); //Compliant
+  
+    barbar3(List.class::isInstance); //Compliant
+    barbar3((o) -> o instanceof List); // Noncompliant {{Replace this lambda with method reference 'List.class::isInstance'.}}
+
+    barbar5(TestA[].class::isInstance); //Compliant
+    barbar5((o) -> o instanceof TestA[]); // Noncompliant {{Replace this lambda with method reference 'TestA[].class::isInstance'.}}
+
+    barbar6(TestA[][].class::isInstance); //Compliant
+    barbar6((o) -> o instanceof TestA[][]); // Noncompliant {{Replace this lambda with method reference 'TestA[][].class::isInstance'.}}
+
+    barbar7(List.class::isInstance); //Compliant
+    barbar7((o) -> o instanceof List ); // Noncompliant {{Replace this lambda with method reference 'List.class::isInstance'.}}
+
+    barbar8(List[].class::isInstance); //Compliant
+    barbar8((o) -> o instanceof List[] ); // Noncompliant {{Replace this lambda with method reference 'List[].class::isInstance'.}}
+
+    barbar9(char.class::isInstance); //Compliant
+    barbar9(Character.class::isInstance); //Compliant
+    barbar9((o) -> o instanceof Character); // Noncompliant {{Replace this lambda with method reference 'Character.class::isInstance'.}}
+  }
+
+  void testInstanceOf2(Object param) {
+    barbar((o) -> { // Noncompliant {{Replace this lambda with method reference 'String.class::isInstance'.}}
+      return o instanceof String;
+    });
+  }
+
+  void testInstanceOf3(Object param) {
+    barbar2((a, b) -> { // Compliant
+      return a instanceof String;
+    });
+  }
+
+  void testInstanceOf4(Object param) {
+    barbar(o -> { // Compliant
+      return o instanceof String && true;
+    });
+  }
+
+  void testInstanceOf5(Object param) {
+    Object o2 =  new Object();
+    barbar(o -> { // Compliant
+      return o2 instanceof String;
+    });
+  }
+  
+  void testCasts(Object param) {
     bar((o) -> (String)o); // Noncompliant {{Replace this lambda with method reference 'String.class::cast'.}}
     bar(String.class::cast); // Compliant
   
@@ -159,29 +222,25 @@ class CastCheck {
     bar9((o) -> (Character) o); // Noncompliant {{Replace this lambda with method reference 'Character.class::cast'.}}
   }
 
-  void test2(Object param) {
+  void testCasts2(Object param) {
     bar((o) -> { // Noncompliant {{Replace this lambda with method reference 'String.class::cast'.}}
       return (String)o;
     });
   }
 
-  private static <I, R> Function<I, R> castingIdentity() {
-    return i -> (R) i; // Compliant, 'R.class::cast' won't compile.
-  }
-
-  void test3(Object param) {
+  void testCasts3(Object param) {
     bar2((a, b) -> { // Compliant
       return (String)a;
     });
   }
 
-  void test4(Object param) {
+  void testCasts4(Object param) {
     bar(o -> { // Compliant
       return (String)o.getClass().getCanonicalName();
     });
   }
 
-  void test5(Object param) {
+  void testCasts5(Object param) {
     Object o2 =  new Object();
     bar(o -> { // Compliant
       return (String)o2;
