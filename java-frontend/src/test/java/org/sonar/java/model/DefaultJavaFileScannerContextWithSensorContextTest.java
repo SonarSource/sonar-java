@@ -43,7 +43,6 @@ import org.sonar.java.TestUtils;
 import org.sonar.java.collections.SetUtils;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
-import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -72,10 +71,7 @@ class DefaultJavaFileScannerContextWithSensorContextTest {
   private Tree tree;
   private JavaCheck check = new JavaCheck() {
   };
-
-  private SECheck seCheck = new SECheck() {
-  };
-
+  
   @BeforeEach
   void setup() throws IOException {
     sensorContext = SensorContextTester.create(Paths.get(""));
@@ -113,14 +109,4 @@ class DefaultJavaFileScannerContextWithSensorContextTest {
     assertThat(issue.flows()).hasSize(2);
   }
 
-  @Test
-  void test_report_se_issue_with_flow() throws Exception {
-    List<JavaFileScannerContext.Location> flow1 = Collections.singletonList(new JavaFileScannerContext.Location("SE flow1", tree));
-    List<JavaFileScannerContext.Location> flow2 = Collections.singletonList(new JavaFileScannerContext.Location("SE flow2", tree));
-    Set<List<JavaFileScannerContext.Location>> flows = SetUtils.immutableSetOf(flow1, flow2);
-
-    scannerContext.reportIssueWithFlow(seCheck, tree, "msg", flows, null);
-    Issue issue = sensorContext.allIssues().iterator().next();
-    assertThat(issue.flows()).hasSize(2);
-  }
 }

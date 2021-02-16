@@ -35,9 +35,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
-import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.issue.NoSonarFilter;
-import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.AnalysisException;
@@ -45,16 +43,12 @@ import org.sonar.java.ExceptionHandler;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
-import org.sonar.java.cfg.CFG;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
-import org.sonar.java.se.SymbolicExecutionMode;
-import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.MethodTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -195,25 +189,7 @@ class JavaAstScannerTest {
       + scannedFile.toString()
       + "', To help improve the SonarSource Java Analyzer, please report this problem to SonarSource: see https://community.sonarsource.com/");
   }
-
-  @Test
-  void should_swallow_log_and_report_checks_exceptions_for_symbolic_execution() {
-    JavaAstScanner scanner = new JavaAstScanner(null);
-    logTester.clear();
-    SonarComponents sonarComponent = new SonarComponents(null, context.fileSystem(), null, null, null);
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
-    sonarComponent.setSensorContext(context);
-    scanner.setVisitorBridge(new VisitorsBridge(Collections.singletonList(new SECheck() {
-      @Override
-      public void init(MethodTree methodTree, CFG cfg) {
-        throw new NullPointerException("nobody expect the spanish inquisition !");
-      }
-    }), new ArrayList<>(), sonarComponent, SymbolicExecutionMode.ENABLED));
-    scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/se/MethodBehavior.java")));
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
-    assertThat(logTester.logs(LoggerLevel.ERROR).get(0)).startsWith("Unable to run check class org.sonar.java.se.SymbolicExecutionVisitor");
-  }
-
+  
   @Test
   void should_propagate_SOError() {
     JavaAstScanner scanner = new JavaAstScanner(null);

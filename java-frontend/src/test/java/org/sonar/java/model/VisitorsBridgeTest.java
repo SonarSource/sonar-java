@@ -40,10 +40,6 @@ import org.sonar.java.CheckFailureException;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
-import org.sonar.java.se.CheckerContext;
-import org.sonar.java.se.ProgramState;
-import org.sonar.java.se.SymbolicExecutionMode;
-import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -208,7 +204,6 @@ class VisitorsBridgeTest {
   void swallow_exception_when_hidden_property_set_to_false_with_all_kinds_of_visisitors() {
     try {
       visitorsBridge(Arrays.asList(
-        new SE1_ThrowingNPEPreStatement(),
         new SV1_ThrowingNPEVisitingClass(),
         new IV1_ThrowingNPEVisitingClass()),
         false)
@@ -217,50 +212,13 @@ class VisitorsBridgeTest {
       e.printStackTrace();
       Fail.fail("Exceptions should be swallowed when property is not set");
     }
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(3);
+    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(2);
     assertThat(logTester.logs(LoggerLevel.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
       .containsExactlyInAnyOrder(
-        "SE",
         "SV1_ThrowingNPEVisitingClass - SV1",
         "IV1_ThrowingNPEVisitingClass - IV1");
   }
-
-  @Test
-  void rethrow_exception_when_hidden_property_set_to_true_with_SECheck() {
-    VisitorsBridge visitorsBridge = visitorsBridge(Arrays.asList(
-      new SE1_ThrowingNPEPreStatement(),
-      new SE2_ThrowingNPEPostStatement()), true);
-    try {
-      visitorsBridge.visitFile(COMPILATION_UNIT_TREE);
-      Fail.fail("scanning of file should have raise an exception");
-    } catch (AnalysisException e) {
-      assertThat(e.getMessage()).contains("Failing check");
-      assertThat(e.getCause()).isInstanceOf(CheckFailureException.class);
-      assertThat(e.getCause().getCause()).isSameAs(NPE);
-    } catch (Exception e) {
-      Fail.fail("Should have been an AnalysisException");
-    }
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
-    assertThat(logTester.logs(LoggerLevel.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
-      .containsExactlyInAnyOrder("SE");
-  }
-
-  @Test
-  void swallow_exception_when_hidden_property_set_to_false_with_SECheck() {
-    try {
-      visitorsBridge(Arrays.asList(
-        new SE1_ThrowingNPEPreStatement(),
-        new SE2_ThrowingNPEPostStatement()), false)
-        .visitFile(COMPILATION_UNIT_TREE);
-    } catch (Exception e) {
-      e.printStackTrace();
-      Fail.fail("Exception should be swallowed when property is not set");
-    }
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
-    assertThat(logTester.logs(LoggerLevel.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
-      .containsExactlyInAnyOrder("SE");
-  }
-
+  
   @Test
   void no_log_when_filter_execute_fine() {
     VisitorsBridge visitorsBridge = visitorsBridge(Arrays.asList(), true);
@@ -302,7 +260,7 @@ class VisitorsBridgeTest {
     sonarComponents = new SonarComponents(null, null, null, null, null);
     sonarComponents.setSensorContext(sensorContextTester);
 
-    VisitorsBridge visitorsBridge = new VisitorsBridge(visitors, new ArrayList<>(), sonarComponents, SymbolicExecutionMode.ENABLED);
+    VisitorsBridge visitorsBridge = new VisitorsBridge(visitors, new ArrayList<>(), sonarComponents);
     visitorsBridge.setCurrentFile(INPUT_FILE);
 
     return visitorsBridge;
@@ -393,22 +351,6 @@ class VisitorsBridgeTest {
 
     @Override
     public void leaveNode(Tree tree) {
-      throw NPE;
-    }
-  }
-
-  @org.sonar.check.Rule(key = "SE1")
-  private static class SE1_ThrowingNPEPreStatement extends SECheck {
-    @Override
-    public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
-      throw NPE;
-    }
-  }
-
-  @org.sonar.check.Rule(key = "SE2")
-  private static class SE2_ThrowingNPEPostStatement extends SECheck {
-    @Override
-    public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
       throw NPE;
     }
   }
