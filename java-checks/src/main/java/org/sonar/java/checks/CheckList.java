@@ -88,6 +88,7 @@ import org.sonar.java.checks.security.EmailHotspotCheck;
 import org.sonar.java.checks.security.EmptyDatabasePasswordCheck;
 import org.sonar.java.checks.security.EncryptionAlgorithmCheck;
 import org.sonar.java.checks.security.EnvVariablesHotspotCheck;
+import org.sonar.java.checks.security.ExcessiveContentRequestCheck;
 import org.sonar.java.checks.security.FilePermissionsCheck;
 import org.sonar.java.checks.security.HostnameVerifierImplementationCheck;
 import org.sonar.java.checks.security.IntegerToHexStringCheck;
@@ -417,6 +418,7 @@ public final class CheckList {
       EscapedUnicodeCharactersCheck.class,
       EscapeSequenceControlCharacterCheck.class,
       ExceptionsShouldBeImmutableCheck.class,
+      ExcessiveContentRequestCheck.class,
       ExpressionComplexityCheck.class,
       ExternalizableClassConstructorCheck.class,
       FieldModifierCheck.class,
