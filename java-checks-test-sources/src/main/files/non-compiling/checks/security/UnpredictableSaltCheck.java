@@ -16,12 +16,6 @@ public class UnpredictableSaltCheck {
   
   private static byte[] sSalt = new byte[]; 
 
-  public void checkoCompliantExample(byte[] salt, String passwordToHash) throws NoSuchAlgorithmException {
-    md.update(passwordToHash.getBytes(StandardCharsets.UTF_8));
-    byte[] hashedPassword = md.digest(salt); // Compliant
-
-  }
-  
   public void checkPBEKeySpecWithUnknownSalt(char[] chars) throws NoSuchAlgorithmException {
     PBEKeySpec spec = new PBEKeySpec(chars); // Noncompliant
     PBEKeySpec spec1 = new PBEKeySpec(chars, salt, 1); // Compliant 
