@@ -106,16 +106,16 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     .addParametersMatcher("java.lang.CharSequence")
     .build();
 
-  private final List<AnalyzerMessage> multipartConstructorsIssue = new ArrayList<>();
+  private final List<AnalyzerMessage> multipartConstructorIssues = new ArrayList<>();
   private boolean sizeSetSomewhere = false;
 
   @Override
   public void endOfAnalysis() {
     if (!sizeSetSomewhere && context != null) {
       DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) context;
-      multipartConstructorsIssue.forEach(defaultContext::reportIssue);
+      multipartConstructorIssues.forEach(defaultContext::reportIssue);
     }
-    multipartConstructorsIssue.clear();
+    multipartConstructorIssues.clear();
     sizeSetSomewhere = false;
   }
 
@@ -129,10 +129,10 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     if (tree.is(Tree.Kind.NEW_CLASS)) {
       NewClassTree newClassTree = (NewClassTree) tree;
       if (MULTIPART_CONSTRUCTOR.matches(newClassTree)) {
-        // Create an issue that we will report only at the end of the analysis if the maximum size what never set.
+        // Create an issue that we will report only at the end of the analysis if the maximum size was never set.
         DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) context;
         AnalyzerMessage analyzerMessage = defaultContext.createAnalyzerMessage(this, newClassTree, MESSAGE_SIZE_NOT_SET);
-        multipartConstructorsIssue.add(analyzerMessage);
+        multipartConstructorIssues.add(analyzerMessage);
       }
     } else {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
