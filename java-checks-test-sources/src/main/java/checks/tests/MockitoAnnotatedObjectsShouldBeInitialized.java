@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.Extension;
@@ -220,6 +221,23 @@ public class MockitoAnnotatedObjectsShouldBeInitialized {
       @org.junit.jupiter.api.Nested
       public class NestedFurther {
         @Mock
+        private Bar bar;
+      }
+    }
+  }
+
+  @RunWith(MockitoJUnitRunner.class)
+  public class NestingWithWrongAnnotation {
+    @Nested
+    public class NestedButNotAnnotated {
+      @Mock // Noncompliant
+      private Bar bar;
+    }
+
+    public class NestedAsWellButAnnotated {
+      @Nested
+      public class NestedFurther {
+        @Mock // Noncompliant
         private Bar bar;
       }
     }

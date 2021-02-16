@@ -49,10 +49,8 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
     "org.mockito.Spy"
   );
 
-  private static final List<String> EXPECTED_CLASS_ANNOTATIONS = Arrays.asList(
-    "org.junit.jupiter.api.extension.ExtendWith",
-    "org.junit.runner.RunWith"
-  );
+  private static final String EXTEND_WITH_ANNOTATION = "org.junit.jupiter.api.extension.ExtendWith";
+  private static final String RUN_WITH_ANNOTATION = "org.junit.runner.RunWith";
 
   private static final List<String> BEFORE_ANNOTATIONS = Arrays.asList(
     "org.junit.Before",
@@ -69,7 +67,7 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
 
   private static final String MESSAGE = "Initialize mocks before using them.";
 
-  private Set<ClassTree> visited = new HashSet<>();
+  private final Set<ClassTree> coveredByExtendWithAnnotation = new HashSet<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -79,13 +77,14 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
   @Override
   public void visitNode(Tree tree) {
     ClassTree testClass = (ClassTree) tree;
-    if (visited.contains(testClass)) {
+    if (coveredByExtendWithAnnotation.contains(testClass)) {
       return;
     }
 
-    if (isClassProperlyAnnotated(testClass)) {
-      List<ClassTree> children = getChildrenCoveredByAnnotations(testClass);
-      visited.addAll(children);
+    if (hasAnnotation(testClass, EXTEND_WITH_ANNOTATION)) {
+      List<ClassTree> classes = getInnerClassesCoveredByAnnotation(testClass);
+      coveredByExtendWithAnnotation.addAll(classes);
+      return;
     }
 
     List<VariableTree> mocksToInitialize = testClass.members().stream()
@@ -102,7 +101,11 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
   @Override
   public void leaveFile(JavaFileScannerContext context) {
     super.leaveFile(context);
-    visited.clear();
+    coveredByExtendWithAnnotation.clear();
+  }
+
+  private static boolean hasAnnotation(ClassTree tree, String annotation) {
+    return tree.symbol().metadata().isAnnotatedWith(annotation);
   }
 
   private static boolean isFieldWithTargetAnnotation(Tree tree) {
@@ -115,20 +118,16 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
   }
 
   private static boolean mocksAreProperlyInitialized(ClassTree testClass) {
-    return isClassProperlyAnnotated(testClass) ||
+    return hasAnnotation(testClass, RUN_WITH_ANNOTATION) ||
       isMockitoJUnitRuleInvoked(testClass) ||
       areMocksInitializedInSetup(testClass);
   }
 
-  private static boolean isClassProperlyAnnotated(ClassTree clazz) {
-    SymbolMetadata metadata = clazz.symbol().metadata();
-    return EXPECTED_CLASS_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
-  }
 
-  private static List<ClassTree> getChildrenCoveredByAnnotations(ClassTree parent) {
-    NestedChildrenCollector collector = new NestedChildrenCollector();
-    parent.accept(collector);
-    return collector.children;
+  private static List<ClassTree> getInnerClassesCoveredByAnnotation(ClassTree tree) {
+    NestedClassesCollector collector = new NestedClassesCollector();
+    tree.accept(collector);
+    return collector.classes;
   }
 
   private static boolean isMockitoJUnitRuleInvoked(ClassTree clazz) {
@@ -182,14 +181,14 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
   /**
    * Traverses a tree looking for classes annotated with JUnit5's Nested
    */
-  static class NestedChildrenCollector extends BaseTreeVisitor {
+  static class NestedClassesCollector extends BaseTreeVisitor {
     private static final String NESTED_ANNOTATION = "org.junit.jupiter.api.Nested";
-    private List<ClassTree> children = new ArrayList<>();
+    private final List<ClassTree> classes = new ArrayList<>();
 
     @Override
     public void visitClass(ClassTree tree) {
       if (tree.symbol().metadata().isAnnotatedWith(NESTED_ANNOTATION)) {
-        children.add(tree);
+        classes.add(tree);
       }
       tree.members().stream()
         .filter(member -> member.is(Tree.Kind.CLASS))
