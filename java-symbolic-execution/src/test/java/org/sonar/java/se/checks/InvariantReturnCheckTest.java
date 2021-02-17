@@ -20,14 +20,14 @@
 package org.sonar.java.se.checks;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.SETestUtils;
-import org.sonar.java.testing.CheckVerifier;
 
 class InvariantReturnCheckTest {
 
   @Test
   void test() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/InvariantReturnCheck.java")
       .withCheck(new InvariantReturnCheck())
       .withClassPath(SETestUtils.CLASS_PATH)

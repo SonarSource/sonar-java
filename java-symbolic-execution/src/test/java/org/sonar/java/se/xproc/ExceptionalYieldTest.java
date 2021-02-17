@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.Sema;
+import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.utils.JParserTestUtils;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.SymbolicExecutionVisitor;
@@ -85,7 +86,8 @@ class ExceptionalYieldTest {
 
   @Test
   void exceptional_yields() {
-    Pair<SymbolicExecutionVisitor, Sema> sevAndSemantic = createSymbolicExecutionVisitorAndSemantic("src/test/files/se/ExceptionalYields.java");
+    Pair<SymbolicExecutionVisitor, Sema> sevAndSemantic = 
+      createSymbolicExecutionVisitorAndSemantic("src/test/files/se/ExceptionalYields.java", new NullDereferenceCheck());
     SymbolicExecutionVisitor sev = sevAndSemantic.a;
     Sema semanticModel = sevAndSemantic.b;
 
@@ -116,7 +118,7 @@ class ExceptionalYieldTest {
 
   @Test
   void test_toString() throws Exception {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/ExceptionalYields.java");
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/ExceptionalYields.java", new NullDereferenceCheck());
     Set<String> yieldsToString = getMethodBehavior(sev, "myMethod").exceptionalPathYields().map(MethodYield::toString).collect(Collectors.toSet());
     assertThat(yieldsToString).contains(
       "{params: [[FALSE]], exceptional}",
@@ -126,7 +128,8 @@ class ExceptionalYieldTest {
 
   @Test
   void exceptional_yields_void_method() {
-    Pair<SymbolicExecutionVisitor, Sema> sevAndSemantic = createSymbolicExecutionVisitorAndSemantic("src/test/files/se/ExceptionalYieldsVoidMethod.java");
+    Pair<SymbolicExecutionVisitor, Sema> sevAndSemantic = 
+      createSymbolicExecutionVisitorAndSemantic("src/test/files/se/ExceptionalYieldsVoidMethod.java", new NullDereferenceCheck());
     SymbolicExecutionVisitor sev = sevAndSemantic.a;
     Sema semanticModel = sevAndSemantic.b;
     MethodBehavior mb = getMethodBehavior(sev, "myVoidMethod");

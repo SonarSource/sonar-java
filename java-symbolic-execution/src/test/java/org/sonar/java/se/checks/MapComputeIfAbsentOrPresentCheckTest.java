@@ -20,8 +20,8 @@
 package org.sonar.java.se.checks;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.SETestUtils;
-import org.sonar.java.testing.CheckVerifier;
 
 import static org.sonar.java.se.utils.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.se.utils.TestUtils.testSourcesPath;
@@ -30,7 +30,7 @@ class MapComputeIfAbsentOrPresentCheckTest {
 
   @Test
   void test() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile(testSourcesPath("symbolicexecution/checks/MapComputeIfAbsentOrPresentCheck.java"))
       .withCheck(new MapComputeIfAbsentOrPresentCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -39,7 +39,7 @@ class MapComputeIfAbsentOrPresentCheckTest {
 
   @Test
   void test_non_compiling() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/MapComputeIfAbsentOrPresentCheck.java"))
       .withCheck(new MapComputeIfAbsentOrPresentCheck())
       .withClassPath(SETestUtils.CLASS_PATH)

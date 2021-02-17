@@ -25,6 +25,7 @@ import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicExecutionVisitor;
+import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
@@ -52,7 +53,7 @@ class ExceptionalCheckBasedYieldTest {
     SymbolicExecutionVisitor sev;
     MethodBehavior mb;
 
-    Pair<SymbolicExecutionVisitor, Sema> visitorAndSemantic = createSymbolicExecutionVisitorAndSemantic(FILENAME);
+    Pair<SymbolicExecutionVisitor, Sema> visitorAndSemantic = createSymbolicExecutionVisitorAndSemantic(FILENAME, new NullDereferenceCheck());
     sev = visitorAndSemantic.a;
     Sema semanticModel = visitorAndSemantic.b;
     mb = getMethodBehavior(sev, methodName);

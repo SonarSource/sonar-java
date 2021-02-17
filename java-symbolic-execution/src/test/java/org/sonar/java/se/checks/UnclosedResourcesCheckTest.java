@@ -20,8 +20,8 @@
 package org.sonar.java.se.checks;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.SETestUtils;
-import org.sonar.java.testing.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,7 +29,7 @@ class UnclosedResourcesCheckTest {
 
   @Test
   void test() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/UnclosedResourcesCheck.java")
       .withCheck(new UnclosedResourcesCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -38,7 +38,7 @@ class UnclosedResourcesCheckTest {
 
   @Test
   void jdbcTests() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/JdbcResourcesTestFile.java")
       .withCheck(new UnclosedResourcesCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -47,7 +47,7 @@ class UnclosedResourcesCheckTest {
 
   @Test
   void spring() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/SpringResource.java")
       .withCheck(new UnclosedResourcesCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -56,7 +56,7 @@ class UnclosedResourcesCheckTest {
 
   @Test
   void streams() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/StreamResource.java")
       .withCheck(new UnclosedResourcesCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -67,7 +67,7 @@ class UnclosedResourcesCheckTest {
   void testWithExcludedTypes() {
     UnclosedResourcesCheck unclosedResourcesCheck = new UnclosedResourcesCheck();
     unclosedResourcesCheck.excludedTypes = "java.io.FileInputStream, java.sql.Statement";
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/ExcludedResourcesTestFile.java")
       .withCheck(unclosedResourcesCheck)
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -76,7 +76,7 @@ class UnclosedResourcesCheckTest {
 
   @Test
   void try_with_resources() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/UnclosedResourcesCheckARM.java")
       .withCheck(new UnclosedResourcesCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -91,7 +91,7 @@ class UnclosedResourcesCheckTest {
 
   @Test
   void test_streams() throws Exception {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/UnclosedResourcesCheckStreams.java")
       .withCheck(new UnclosedResourcesCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -100,7 +100,7 @@ class UnclosedResourcesCheckTest {
 
   @Test
   void skip_exception_messages() throws Exception {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/UnclosedResourcesCheckWithoutExceptionMessages.java")
       .withCheck(new UnclosedResourcesCheck())
       .withClassPath(SETestUtils.CLASS_PATH)

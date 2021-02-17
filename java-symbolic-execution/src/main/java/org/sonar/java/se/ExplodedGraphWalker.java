@@ -1218,10 +1218,6 @@ public class ExplodedGraphWalker {
         .filter(SECheck.class::isInstance)
         .map(SECheck.class::cast)
         .collect(Collectors.toList());
-      
-      if (checks.isEmpty()) {
-        return;
-      }
 
       // This order of the mandatory SE checks is required by the ExplodedGraphWalker
       seChecks.add(removeOrDefault(checks, new NullDereferenceCheck()));

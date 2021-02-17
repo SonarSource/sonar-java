@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.model.Sema;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.SymbolicExecutionVisitor;
+import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
@@ -40,7 +41,8 @@ class MethodBehaviorTest {
 
   @Test
   void method_behavior_signature() {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodYields.java");
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodYields.java",
+      new NullDereferenceCheck());
 
     MethodBehavior mb = getMethodBehavior(sev, "method");
 
@@ -50,7 +52,8 @@ class MethodBehaviorTest {
 
   @Test
   void method_behavior_yields() {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodYields.java");
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodYields.java",
+      new NullDereferenceCheck());
 
     MethodBehavior mb = getMethodBehavior(sev, "method");
     List<MethodYield> yields = mb.yields();
@@ -81,7 +84,8 @@ class MethodBehaviorTest {
 
   @Test
   void method_behavior_handling_finally() {
-    Pair<SymbolicExecutionVisitor, Sema> visitorAndSemantic = createSymbolicExecutionVisitorAndSemantic("src/test/resources/se/ReturnAndFinally.java");
+    Pair<SymbolicExecutionVisitor, Sema> visitorAndSemantic =
+      createSymbolicExecutionVisitorAndSemantic("src/test/resources/se/ReturnAndFinally.java", new NullDereferenceCheck());
     SymbolicExecutionVisitor sev = visitorAndSemantic.a;
     Sema semanticModel = visitorAndSemantic.b;
     assertThat(sev.behaviorCache.behaviors).hasSize(5);
@@ -235,7 +239,8 @@ class MethodBehaviorTest {
   @Test
   void anonymous_classes_used_as_exception_should_be_resolved_to_supertype() {
     Pair<SymbolicExecutionVisitor, Sema> visitorAndSemantic = createSymbolicExecutionVisitorAndSemantic(
-      "src/test/java/org/sonar/java/resolve/targets/se/TestExceptionSupertypeResolution.java");
+      "src/test/java/org/sonar/java/resolve/targets/se/TestExceptionSupertypeResolution.java",
+      new NullDereferenceCheck());
     SymbolicExecutionVisitor sev = visitorAndSemantic.a;
     Sema semanticModel = visitorAndSemantic.b;
     MethodBehavior mb = getMethodBehavior(sev, "throwException");

@@ -34,6 +34,7 @@ import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PMap;
+import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.utils.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.Sema;
@@ -72,7 +73,7 @@ import static org.sonar.java.se.utils.SETestUtils.variable;
 class MethodYieldTest {
   @Test
   void test_creation_of_states() throws Exception {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYields.java");
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYields.java", new NullDereferenceCheck());
     MethodBehavior mb = getMethodBehavior(sev, "foo");
 
     ProgramState ps = ProgramState.EMPTY_STATE;
@@ -89,7 +90,8 @@ class MethodYieldTest {
 
   @Test
   void test_creation_of_flows() throws Exception {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYieldsFlows.java");
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYieldsFlows.java",
+      new NullDereferenceCheck());
     MethodBehavior mb = getMethodBehavior(sev, "foo");
 
     MethodYield methodYield = mb.happyPathYields()
@@ -104,7 +106,8 @@ class MethodYieldTest {
 
   @Test
   void test_yield_on_reassignments() throws Exception {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYieldsReassignments.java");
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYieldsReassignments.java",
+      new NullDereferenceCheck());
     MethodBehavior mb = getMethodBehavior(sev, "foo");
     assertThat(mb.happyPathYields())
       .isNotEmpty()
@@ -207,7 +210,8 @@ class MethodYieldTest {
 
   @Test
   void calling_varargs_method_with_no_arg() throws Exception {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/VarArgsWithNoArgYield.java");
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/VarArgsWithNoArgYield.java",
+      new NullDereferenceCheck());
     MethodBehavior mb = getMethodBehavior(sev, "toArr");
     List<MethodYield> yields = mb.yields();
     assertThat(yields).hasSize(1);
@@ -218,7 +222,7 @@ class MethodYieldTest {
   void constraints_on_varargs() throws Exception {
     JavaTree.CompilationUnitTreeImpl cut = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(new File("src/test/files/se/VarArgsYields.java"));
     Sema semanticModel = cut.sema;
-    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Collections.emptyList());
+    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Collections.singletonList(new NullDereferenceCheck()));
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     when(context.getTree()).thenReturn(cut);
     when(context.getSemanticModel()).thenReturn(semanticModel);
@@ -306,7 +310,9 @@ class MethodYieldTest {
 
   @Test
   void catch_class_cast_exception() throws Exception {
-    Map<String, MethodBehavior> behaviorCache = createSymbolicExecutionVisitor("src/test/files/se/XProcCatchClassCastException.java").behaviorCache.behaviors;
+    Map<String, MethodBehavior> behaviorCache = 
+      createSymbolicExecutionVisitor("src/test/files/se/XProcCatchClassCastException.java", new NullDereferenceCheck())
+        .behaviorCache.behaviors;
     assertThat(behaviorCache.values()).hasSize(1);
     MethodBehavior methodBehavior = behaviorCache.values().iterator().next();
     assertThat(methodBehavior.yields()).hasSize(2);

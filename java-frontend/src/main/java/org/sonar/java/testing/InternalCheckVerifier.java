@@ -19,9 +19,6 @@
  */
 package org.sonar.java.testing;
 
-import java.util.stream.Stream;
-import org.apache.commons.lang3.StringUtils;
-import org.sonar.java.annotations.Beta;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.nio.file.Files;
@@ -52,10 +49,10 @@ import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.utils.Version;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.annotations.Beta;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
-import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -112,11 +109,6 @@ public class InternalCheckVerifier implements CheckVerifier {
     return this;
   }
   
-  public InternalCheckVerifier withSE(JavaFileScanner seVisitor) {
-    this.checks = ListUtils.concat(Collections.singletonList(seVisitor), checks);
-    return this;
-  }
-
   @Override
   public InternalCheckVerifier withClassPath(Collection<File> classpath) {
     requiresNull(this.classpath, "classpath");

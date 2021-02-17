@@ -20,14 +20,14 @@
 package org.sonar.java.se.checks;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.SETestUtils;
-import org.sonar.java.testing.CheckVerifier;
 
 class NullDereferenceCheckTest {
 
   @Test
   void test() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/NullDereferenceCheck.java")
       .withCheck(new NullDereferenceCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -36,7 +36,7 @@ class NullDereferenceCheckTest {
 
   @Test
   void objectsMethodsTest() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/ObjectsMethodsTest.java")
       .withCheck(new NullDereferenceCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -45,7 +45,7 @@ class NullDereferenceCheckTest {
 
   @Test
   void null_array_access() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/NullArrayAccess.java")
       .withCheck(new NullDereferenceCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -54,7 +54,7 @@ class NullDereferenceCheckTest {
 
   @Test
   void chained_method_invocation_issue_order() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/MethodParamInvocationOrder.java")
       .withCheck(new NullDereferenceCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -63,7 +63,7 @@ class NullDereferenceCheckTest {
 
   @Test
   void invocation_leading_to_NPE() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/MethodInvocationLeadingToNPE.java")
       .withCheck(new NullDereferenceCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -72,7 +72,7 @@ class NullDereferenceCheckTest {
 
   @Test
   void reporting_test() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/NPE_reporting.java")
       .withCheck(new NullDereferenceCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -81,7 +81,7 @@ class NullDereferenceCheckTest {
 
   @Test
   void ruling() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/NPEwithZeroTests.java")
       .withCheck(new NullDereferenceCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -90,7 +90,7 @@ class NullDereferenceCheckTest {
 
   @Test
   void test_deferred_reporting() throws Exception {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/NPE_deferred.java")
       .withCheck(new NullDereferenceCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -99,7 +99,7 @@ class NullDereferenceCheckTest {
 
   @Test
   void test_npe_transitive() throws Exception {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/NPE_transitive.java")
       .withCheck(new NullDereferenceCheck())
       .withClassPath(SETestUtils.CLASS_PATH)

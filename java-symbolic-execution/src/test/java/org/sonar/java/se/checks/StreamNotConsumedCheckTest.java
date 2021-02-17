@@ -20,15 +20,15 @@
 package org.sonar.java.se.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.se.utils.TestUtils;
+import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.SETestUtils;
-import org.sonar.java.testing.CheckVerifier;
+import org.sonar.java.se.utils.TestUtils;
 
 class StreamNotConsumedCheckTest {
 
   @Test
   void test() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S3958_StreamNotConsumedCheck.java"))
       .withCheck(new StreamNotConsumedCheck())
       .withClassPath(SETestUtils.CLASS_PATH)

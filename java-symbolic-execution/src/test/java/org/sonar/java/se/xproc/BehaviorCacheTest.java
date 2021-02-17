@@ -74,7 +74,7 @@ class BehaviorCacheTest {
 
   @Test
   void method_behavior_cache_should_be_filled_and_cleanup() {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodBehavior.java");
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodBehavior.java", new NullDereferenceCheck());
     assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(4);
     assertThat(sev.behaviorCache.behaviors.values().stream().filter(mb -> mb != null).count()).isEqualTo(4);
     // check order of method exploration : last is the topMethod as it requires the other to get its behavior.
@@ -97,7 +97,7 @@ class BehaviorCacheTest {
 
   @Test
   void compute_behavior_only_once() throws Exception {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/ComputeBehaviorOnce.java");
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/ComputeBehaviorOnce.java", new NullDereferenceCheck());
     assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(5);
     assertThat(sev.behaviorCache.behaviors.values()).allMatch(MethodBehavior::isVisited);
     List<String> debugLogs = logTester.logs(LoggerLevel.DEBUG);
@@ -106,14 +106,16 @@ class BehaviorCacheTest {
 
   @Test
   void explore_method_with_recursive_call() throws Exception {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/RecursiveCall.java");
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/RecursiveCall.java", 
+      new NullDereferenceCheck());
     assertThat(sev.behaviorCache.behaviors).hasSize(1);
     assertThat(sev.behaviorCache.behaviors.keySet().iterator().next()).contains("#foo");
   }
 
   @Test
   void interrupted_exploration_does_not_create_method_yields() throws Exception {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/PartialMethodYieldMaxStep.java");
+    SymbolicExecutionVisitor sev = 
+      createSymbolicExecutionVisitor("src/test/files/se/PartialMethodYieldMaxStep.java", new NullDereferenceCheck());
     assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(2);
 
     MethodBehavior plopMethod = getMethodBehavior(sev, "foo");
@@ -127,7 +129,8 @@ class BehaviorCacheTest {
 
   @Test
   void clear_stack_when_taking_exceptional_path_from_method_invocation() throws Exception {
-    Pair<SymbolicExecutionVisitor, Sema> sevAndSemantic = createSymbolicExecutionVisitorAndSemantic("src/test/files/se/CleanStackWhenRaisingException.java");
+    Pair<SymbolicExecutionVisitor, Sema> sevAndSemantic = 
+      createSymbolicExecutionVisitorAndSemantic("src/test/files/se/CleanStackWhenRaisingException.java", new NullDereferenceCheck());
     SymbolicExecutionVisitor sev = sevAndSemantic.a;
     Sema semanticModel = sevAndSemantic.b;
     MethodBehavior behavior = getMethodBehavior(sev, "foo");

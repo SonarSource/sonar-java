@@ -20,15 +20,15 @@
 package org.sonar.java.se.checks;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.SETestUtils;
 import org.sonar.java.se.utils.TestUtils;
-import org.sonar.java.testing.CheckVerifier;
 
 class XxeProcessingCheckTest {
 
   @Test
   void Xml_input_factory() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_XmlInputFactory.java"))
       .withCheck(new XxeProcessingCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -37,7 +37,7 @@ class XxeProcessingCheckTest {
 
   @Test
   void document_builder_factory() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_DocumentBuilderFactory.java"))
       .withCheck(new XxeProcessingCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -46,7 +46,7 @@ class XxeProcessingCheckTest {
 
   @Test
   void sax_parser() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_SaxParser.java"))
       .withCheck(new XxeProcessingCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -55,7 +55,7 @@ class XxeProcessingCheckTest {
 
   @Test
   void schema_factory() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_SchemaFactory_Validator.java"))
       .withCheck(new XxeProcessingCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -64,7 +64,7 @@ class XxeProcessingCheckTest {
 
   @Test
   void transformer_factory() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_TransformerFactory.java"))
       .withCheck(new XxeProcessingCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -73,7 +73,7 @@ class XxeProcessingCheckTest {
 
   @Test
   void xml_reader() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_XmlReader.java"))
       .withCheck(new XxeProcessingCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -82,7 +82,7 @@ class XxeProcessingCheckTest {
 
   @Test
   void sax_builder() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_SaxBuilder.java"))
       .withCheck(new XxeProcessingCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -91,7 +91,7 @@ class XxeProcessingCheckTest {
 
   @Test
   void sax_reader() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_SaxReader.java"))
       .withCheck(new XxeProcessingCheck())
       .withClassPath(SETestUtils.CLASS_PATH)

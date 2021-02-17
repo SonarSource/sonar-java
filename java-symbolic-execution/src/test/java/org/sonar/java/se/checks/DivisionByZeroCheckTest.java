@@ -23,12 +23,12 @@ import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.collections.ListUtils;
 import org.sonar.java.se.ProgramState;
-import org.sonar.java.se.utils.SETestUtils;
+import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValueTestUtil;
-import org.sonar.java.testing.CheckVerifier;
+import org.sonar.java.se.utils.SETestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.se.checks.DivisionByZeroCheck.ZeroConstraint.NON_ZERO;
@@ -42,7 +42,7 @@ class DivisionByZeroCheckTest {
 
   @Test
   void test() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/DivisionByZeroCheck.java")
       .withCheck(new DivisionByZeroCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -51,7 +51,7 @@ class DivisionByZeroCheckTest {
 
   @Test
   void invocation_leading_to_ArithmeticException() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/MethodInvocationLeadingToDivisionByZero.java")
       .withCheck(new DivisionByZeroCheck())
       .withClassPath(SETestUtils.CLASS_PATH)

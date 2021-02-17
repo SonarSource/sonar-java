@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.se.SymbolicExecutionVisitor;
+import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
 
@@ -86,7 +87,7 @@ class HappyPathYieldTest {
 
   @Test
   void test_toString() throws Exception {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/HappyPathYields.java");
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/HappyPathYields.java", new NullDereferenceCheck());
     Set<String> yieldsToString = getMethodBehavior(sev, "bar").yields().stream().map(MethodYield::toString).collect(Collectors.toSet());
     assertThat(yieldsToString).contains(
       "{params: [[TRUE], [NOT_NULL]], result: null (-1)}",

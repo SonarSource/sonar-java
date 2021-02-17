@@ -20,8 +20,8 @@
 package org.sonar.java.se.checks;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.SETestUtils;
-import org.sonar.java.testing.CheckVerifier;
 
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -29,7 +29,7 @@ class OptionalGetBeforeIsPresentCheckTest {
 
   @Test
   void test() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/OptionalGetBeforeIsPresentCheck.java")
       .withCheck(new OptionalGetBeforeIsPresentCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -39,7 +39,7 @@ class OptionalGetBeforeIsPresentCheckTest {
   @Test
   void test_with_jdk_more_recent_than_8() {
     assumeTrue(!System.getProperty("java.version").startsWith("1.8"));
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/OptionalGetBeforeIsPresentCheck_jdk11.java")
       .withCheck(new OptionalGetBeforeIsPresentCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
@@ -48,7 +48,7 @@ class OptionalGetBeforeIsPresentCheckTest {
 
   @Test
   void invocation_leading_to_NoSuchElementException() {
-    CheckVerifier.newVerifier()
+    SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/MethodInvocationLeadingToNSEE.java")
       .withCheck(new OptionalGetBeforeIsPresentCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
