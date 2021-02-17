@@ -99,22 +99,26 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
 
     @Override
     public void reportIssue(JavaCheck javaCheck, Tree syntaxNode, String message, List<Location> secondary, @Nullable Integer cost) {
+      throwIfEndOfAnalysisCheck(javaCheck);
       List<List<Location>> flows = secondary.stream().map(Collections::singletonList).collect(Collectors.toList());
       issues.add(createAnalyzerMessage(getInputFile(), javaCheck, syntaxNode, null, message, flows, cost));
     }
 
     @Override
     public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message) {
+      throwIfEndOfAnalysisCheck(javaCheck);
       issues.add(createAnalyzerMessage(javaCheck, startTree, endTree, message, Collections.emptyList(), null));
     }
 
     @Override
     public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message, List<Location> secondary, @Nullable Integer cost) {
+      throwIfEndOfAnalysisCheck(javaCheck);
       issues.add(createAnalyzerMessage(javaCheck, startTree, endTree, message, secondary, cost));
     }
 
     @Override
     public void reportIssueWithFlow(JavaCheck javaCheck, Tree syntaxNode, String message, Iterable<List<Location>> flows, @Nullable Integer cost) {
+      throwIfEndOfAnalysisCheck(javaCheck);
       issues.add(createAnalyzerMessage(getInputFile(), javaCheck, syntaxNode, null, message, flows, cost));
     }
 
