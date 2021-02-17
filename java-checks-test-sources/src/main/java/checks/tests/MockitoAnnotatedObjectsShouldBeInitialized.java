@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.Extension;
@@ -203,6 +204,59 @@ public class MockitoAnnotatedObjectsShouldBeInitialized {
   class MockInGrandChild extends NoSetup {
     @Mock // Compliant FN Super classes are not explored
     private Bar bar;
+  }
+
+  @ExtendWith(MockitoExtension.class)
+  public class Nesting {
+    @org.junit.jupiter.api.Nested
+    public class Nested {
+      @Mock
+      private Bar bar;
+    }
+
+    public class NestedAsWell {
+      @Mock // Noncompliant
+      private Bar bar;
+
+      @org.junit.jupiter.api.Nested
+      public class NestedFurther {
+        @Mock
+        private Bar bar;
+      }
+    }
+  }
+
+  @RunWith(MockitoJUnitRunner.class)
+  public class NestingWithWrongAnnotation {
+    @Nested
+    public class NestedButNotAnnotated {
+      @Mock // Noncompliant
+      private Bar bar;
+    }
+
+    public class NestedAsWellButAnnotated {
+      @Nested
+      public class NestedFurther {
+        @Mock // Noncompliant
+        private Bar bar;
+      }
+    }
+  }
+
+  public class NestingButNotAnnotated {
+    public class NestedButNotAnnotated {
+      @Mock // Noncompliant
+      private Bar bar;
+    }
+
+    @ExtendWith(MockitoExtension.class)
+    public class NestedAsWellButAnnotated {
+      @org.junit.jupiter.api.Nested
+      public class NestedFurther {
+        @Mock
+        private Bar bar;
+      }
+    }
   }
 
   private class Bar {

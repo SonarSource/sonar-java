@@ -19,12 +19,16 @@
  */
 package org.sonar.java.checks.tests;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -45,10 +49,8 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
     "org.mockito.Spy"
   );
 
-  private static final List<String> EXPECTED_CLASS_ANNOTATIONS = Arrays.asList(
-    "org.junit.jupiter.api.extension.ExtendWith",
-    "org.junit.runner.RunWith"
-  );
+  private static final String EXTEND_WITH_ANNOTATION = "org.junit.jupiter.api.extension.ExtendWith";
+  private static final String RUN_WITH_ANNOTATION = "org.junit.runner.RunWith";
 
   private static final List<String> BEFORE_ANNOTATIONS = Arrays.asList(
     "org.junit.Before",
@@ -65,6 +67,8 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
 
   private static final String MESSAGE = "Initialize mocks before using them.";
 
+  private final Set<ClassTree> coveredByExtendWithAnnotation = new HashSet<>();
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.CLASS);
@@ -73,14 +77,35 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
   @Override
   public void visitNode(Tree tree) {
     ClassTree testClass = (ClassTree) tree;
+    if (coveredByExtendWithAnnotation.contains(testClass)) {
+      return;
+    }
+
+    if (hasAnnotation(testClass, EXTEND_WITH_ANNOTATION)) {
+      List<ClassTree> classes = getInnerClassesCoveredByAnnotation(testClass);
+      coveredByExtendWithAnnotation.addAll(classes);
+      return;
+    }
+
     List<VariableTree> mocksToInitialize = testClass.members().stream()
       .filter(MockitoAnnotatedObjectsShouldBeInitializedCheck::isFieldWithTargetAnnotation)
       .map(VariableTree.class::cast)
       .collect(Collectors.toList());
+
     if (!mocksToInitialize.isEmpty() && !mocksAreProperlyInitialized(testClass)) {
       AnnotationTree firstAnnotation = mocksToInitialize.get(0).modifiers().annotations().get(0);
       reportIssue(firstAnnotation, MESSAGE);
     }
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    super.leaveFile(context);
+    coveredByExtendWithAnnotation.clear();
+  }
+
+  private static boolean hasAnnotation(ClassTree tree, String annotation) {
+    return tree.symbol().metadata().isAnnotatedWith(annotation);
   }
 
   private static boolean isFieldWithTargetAnnotation(Tree tree) {
@@ -93,14 +118,16 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
   }
 
   private static boolean mocksAreProperlyInitialized(ClassTree testClass) {
-    return isClassProperlyAnnotated(testClass) ||
+    return hasAnnotation(testClass, RUN_WITH_ANNOTATION) ||
       isMockitoJUnitRuleInvoked(testClass) ||
       areMocksInitializedInSetup(testClass);
   }
 
-  public static boolean isClassProperlyAnnotated(ClassTree clazz) {
-    SymbolMetadata metadata = clazz.symbol().metadata();
-    return EXPECTED_CLASS_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
+
+  private static List<ClassTree> getInnerClassesCoveredByAnnotation(ClassTree tree) {
+    NestedClassesCollector collector = new NestedClassesCollector();
+    tree.accept(collector);
+    return collector.classes;
   }
 
   private static boolean isMockitoJUnitRuleInvoked(ClassTree clazz) {
@@ -148,6 +175,26 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
   private static boolean isTaggedWithBefore(MethodTree method) {
     SymbolMetadata metadata = method.symbol().metadata();
     return BEFORE_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
+  }
+
+
+  /**
+   * Traverses a tree looking for classes annotated with JUnit5's Nested
+   */
+  static class NestedClassesCollector extends BaseTreeVisitor {
+    private static final String NESTED_ANNOTATION = "org.junit.jupiter.api.Nested";
+    private final List<ClassTree> classes = new ArrayList<>();
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      if (tree.symbol().metadata().isAnnotatedWith(NESTED_ANNOTATION)) {
+        classes.add(tree);
+      }
+      tree.members().stream()
+        .filter(member -> member.is(Tree.Kind.CLASS))
+        .map(ClassTree.class::cast)
+        .forEach(child -> child.accept(this));
+    }
   }
 
   /**
