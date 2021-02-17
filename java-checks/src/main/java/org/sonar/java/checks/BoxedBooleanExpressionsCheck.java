@@ -20,6 +20,8 @@
 package org.sonar.java.checks;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -127,15 +129,51 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
   private static boolean isFirstUsageANullCheck(ExpressionTree boxedBoolean) {
     if (boxedBoolean.is(Kind.IDENTIFIER)) {
       IdentifierTree identifier = (IdentifierTree) boxedBoolean;
+      // Usages are not guaranteed to be ordered
       List<IdentifierTree> usages = identifier.symbol().usages();
-      if (!usages.isEmpty()) {
-        Tree parent = usages.get(0).parent();
-        if (parent.is(Kind.NOT_EQUAL_TO, Kind.EQUAL_TO) && isNullCheck((ExpressionTree) parent)) {
-          return true;
-        }
+      Tree firstUsage = usages.get(0).parent();
+      // Test if the first usage in our list is a null check
+      if (firstUsage.is(Kind.EQUAL_TO, Kind.NOT_EQUAL_TO) && isNullCheck((ExpressionTree) firstUsage)) {
+        return true;
       }
+      // Return false if the only usage is not a null check
+      if (usages.size() == 1) {
+        return false;
+      }
+      // Fetch the first null check in the usages list
+      Optional<ExpressionTree> firstNullCheck = getFirstNullCheck(usages);
+      if (!firstNullCheck.isPresent()) {
+        return false;
+      }
+      // Test if the first null check and the first usage are part of the same higher if structure
+      Optional<IfStatementTree> test = getParentConditionalBranch(firstNullCheck.get());
+      Optional<IfStatementTree> parentConditionalBranch = getParentConditionalBranch((ExpressionTree) firstUsage);
+      return test.equals(parentConditionalBranch);
     }
     return false;
+  }
+
+  private static Optional<ExpressionTree> getFirstNullCheck(List<IdentifierTree> usages) {
+    List<ExpressionTree> nullChecks = usages.stream()
+      .map(IdentifierTree::parent)
+      .filter(tree -> tree.is(Kind.EQUAL_TO, Kind.NOT_EQUAL_TO) && isNullCheck((ExpressionTree) tree))
+      .map(ExpressionTree.class::cast)
+      .collect(Collectors.toList());
+    if (nullChecks.isEmpty()) {
+      return Optional.empty();
+    }
+    return Optional.of(nullChecks.get(0));
+  }
+
+  private static Optional<IfStatementTree> getParentConditionalBranch(ExpressionTree tree) {
+    Tree parent = tree;
+    while (parent != null && !parent.is(Kind.IF_STATEMENT)) {
+      parent = parent.parent();
+    }
+    if (parent == null) {
+      return Optional.empty();
+    }
+    return Optional.of((IfStatementTree) parent);
   }
 
   @CheckForNull
