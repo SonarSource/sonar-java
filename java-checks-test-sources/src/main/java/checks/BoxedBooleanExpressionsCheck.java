@@ -577,7 +577,7 @@ class BoxedBooleanExpressionsCheck {
     final Boolean alwaysTrue = Boolean.TRUE;
     Boolean checkedBeforeUse = getSurprizeBoxedBoolean();
     if (checkedBeforeUse != null) {
-       ignored = (checkedBeforeUse ? "a" : "b"); // Compliant because the variable is checked before use
+      ignored = (checkedBeforeUse ? "a" : "b"); // Compliant because the variable is checked before use
     }
     Boolean checkedBeforeUse2 = getSurprizeBoxedBoolean();
     if (checkedBeforeUse2 == null) {
@@ -626,4 +626,81 @@ class BoxedBooleanExpressionsCheck {
       ignored = (checkedBeforeUse13 ? "a" : "b"); // Noncompliant because the value is not checked against null
     }
   }
+
+  void maskedInConditional() {
+    Boolean effectivelyChecked = getSurprizeBoxedBoolean();
+    String ignored = null;
+    if (effectivelyChecked == null) {
+      // ... Do something
+    } else {
+      ignored = (effectivelyChecked ? "a" : "b");
+    }
+    Boolean actuallyChecked = getSurprizeBoxedBoolean();
+    if (false) {
+      // ... Do something
+    } else if (actuallyChecked == null) {
+      ignored = (actuallyChecked ? "a" : "b");
+    } else {
+      ignored = (actuallyChecked ? "a" : "b");
+    }
+
+    Boolean irrelevant = getSurprizeBoxedBoolean();
+    Boolean ifDoesNotCoverUse = getSurprizeBoxedBoolean();
+    if (irrelevant == null) {
+      if (ifDoesNotCoverUse == null) {
+        // ... Do something
+      }
+    } else if (irrelevant != null) {
+      // ... Do something
+    } else {
+      ignored = (ifDoesNotCoverUse ? "a" : "b"); // Noncompliant
+    }
+
+    Boolean conditionalDoesNotCoverUse = getSurprizeBoxedBoolean();
+    if (irrelevant == null) {
+      ignored = (conditionalDoesNotCoverUse == null) ? "null" : "not null";
+    } else if (irrelevant != null) {
+      // ... Do something
+    } else {
+      ignored = (conditionalDoesNotCoverUse ? "a" : "b"); // Noncompliant
+    }
+
+    Boolean whileDoesNotCoverUse = getSurprizeBoxedBoolean();
+    if (irrelevant == null) {
+      while (whileDoesNotCoverUse == null) {
+        // ... Do something
+      }
+    } else if (irrelevant != null) {
+      // ... Do something
+    } else {
+      ignored = (whileDoesNotCoverUse ? "a" : "b"); // Noncompliant
+    }
+
+    Boolean forDoesNotCoverUse = getSurprizeBoxedBoolean();
+    if (irrelevant == null) {
+      for (; forDoesNotCoverUse == null; ) {
+        // ... Do something
+      }
+    } else if (irrelevant != null) {
+      // ... Do something
+    } else {
+      ignored = (forDoesNotCoverUse ? "a" : "b"); // Noncompliant
+    }
+    Boolean conditonalUsedBeforeCheck = getSurprizeBoxedBoolean();
+    ignored = conditonalUsedBeforeCheck ? "a" : " b"; // Noncompliant
+    if (conditonalUsedBeforeCheck == null) {
+      // ... Do something
+    }
+  }
+
+  void multipleUsageButNoCheck() {
+    Boolean flag = getSurprizeBoxedBoolean();
+    String ignored = null;
+    if (flag) { // Noncompliant
+      ignored = "a";
+    } else if (flag) { // Noncompliant
+      ignored = "b";
+    }
+  }
+
 }
