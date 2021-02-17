@@ -27,29 +27,31 @@ import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
 class StaticMemberAccessCheckTest {
 
+  private static final String FILE_NAME = "checks/StaticMemberAccess.java";;
+
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/StaticMemberAccess.java"))
+      .onFile(testSourcesPath(FILE_NAME))
       .withCheck(new StaticMemberAccessCheck())
-      .verifyNoIssues();
+      .verifyIssues();
+  }
+
+  @Test
+  void test_without_semantic() {
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/StaticMemberAccess.java"))
+      .onFile(testSourcesPath(FILE_NAME))
       .withCheck(new StaticMemberAccessCheck())
       .withoutSemantic()
       .verifyNoIssues();
   }
 
-  void testNonCompiling() {
+  @Test
+  void test_non_compiling() {
     JavaCheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/StaticMemberAccess.java"))
+      .onFile(nonCompilingTestSourcesPath(FILE_NAME))
       .withCheck(new StaticMemberAccessCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/StaticMemberAccess.java"))
-      .withCheck(new StaticMemberAccessCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 
 }

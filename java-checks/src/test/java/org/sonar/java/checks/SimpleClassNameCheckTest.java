@@ -32,8 +32,11 @@ class SimpleClassNameCheckTest {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/SimpleClassNameCheck.java"))
       .withCheck(new SimpleClassNameCheck())
-      .verifyNoIssues();
+      .verifyIssues();
+  }
 
+  @Test
+  void test_non_compiling() {
     JavaCheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/SimpleClassNameCheck.java"))
       .withCheck(new SimpleClassNameCheck())

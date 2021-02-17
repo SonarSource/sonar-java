@@ -3,18 +3,22 @@ package checks;
 import com.google.common.collect.ImmutableSet;
 import java.util.Set;
 
-class CoolParent {
+class StaticMemberAccessParent {
   public static int counter;
 
   static void foo() {
-    CoolParent.counter++;
+    StaticMemberAccessParent.counter++;
     counter++;
   }
 }
 
-class Child extends CoolParent {
-  public Child() {
-    CoolParent.counter++;  // Noncompliant {{Use static access with "test.Parent" for "counter".}}
+class StaticMemberAccessChild extends StaticMemberAccessParent {
+  public StaticMemberAccessChild() {
+    StaticMemberAccessChild.counter++;  // Noncompliant {{Use static access with "checks.StaticMemberAccessParent" for "counter".}}
+    StaticMemberAccessParent.counter++; // Compliant
+
+    StaticMemberAccessChild.foo(); // Noncompliant
+    StaticMemberAccessParent.foo(); // Compliant
   }
 }
 
