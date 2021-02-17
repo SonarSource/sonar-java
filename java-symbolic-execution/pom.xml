@@ -61,45 +61,6 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
-            <id>unpack-test-projects</id>
-            <phase>generate-test-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <!-- commons-collections -->
-                <artifactItem>
-                  <groupId>commons-collections</groupId>
-                  <artifactId>commons-collections</artifactId>
-                  <version>3.2.1</version>
-                  <classifier>sources</classifier>
-                  <outputDirectory>${project.build.directory}/test-projects/commons-collections-3.2.1/src</outputDirectory>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>commons-collections</groupId>
-                  <artifactId>commons-collections</artifactId>
-                  <version>3.2.1</version>
-                  <outputDirectory>${project.build.directory}/test-projects/commons-collections-3.2.1/bin</outputDirectory>
-                </artifactItem>
-                <!-- struts-core -->
-                <artifactItem>
-                  <groupId>org.apache.struts</groupId>
-                  <artifactId>struts-core</artifactId>
-                  <version>1.3.9</version>
-                  <classifier>sources</classifier>
-                  <outputDirectory>${project.build.directory}/test-projects/struts-core-1.3.9/src</outputDirectory>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.apache.struts</groupId>
-                  <artifactId>struts-core</artifactId>
-                  <version>1.3.9</version>
-                  <outputDirectory>${project.build.directory}/test-projects/struts-core-1.3.9/bin</outputDirectory>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-          <execution>
             <id>copy</id>
             <phase>test-compile</phase>
             <goals>
