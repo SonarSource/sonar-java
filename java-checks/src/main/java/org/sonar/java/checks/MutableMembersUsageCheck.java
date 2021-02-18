@@ -72,6 +72,12 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
 
   @Override
   public void visitMethod(MethodTree tree) {
+    if (tree.is(Tree.Kind.CONSTRUCTOR)) {
+      Symbol.TypeSymbol enclosingClass = tree.symbol().enclosingClass();
+      if (enclosingClass.isEnum()) {
+        return;
+      }
+    }
     ArrayList<Symbol> parameters = new ArrayList<>();
     for (VariableTree variableTree : tree.parameters()) {
       parameters.add(variableTree.symbol());
