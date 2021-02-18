@@ -24,17 +24,18 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.BackReferenceTree;
 import org.sonar.java.regex.ast.CapturingGroupTree;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
@@ -47,13 +48,27 @@ public class UnusedGroupNamesCheck extends AbstractRegexCheckTrackingMatchers {
 
   private static final String JAVA_UTIL_REGEX_MATCHER = "java.util.regex.Matcher";
 
-  private static final MethodMatchers MATCHER_GROUP = MethodMatchers.create()
-    .ofTypes(JAVA_UTIL_REGEX_MATCHER)
-    .names("group")
-    // covers both 'group(String)' and 'group(int)'
-    .addParametersMatcher(JAVA_LANG_STRING)
-    .addParametersMatcher("int")
-    .build();
+  private static final Pattern GROUP_NUMBER_REPLACEMENT_REGEX = Pattern.compile("(?<!\\\\)\\$(?<number>\\d++)");
+  private static final Pattern GROUP_NAME_REPLACEMENT_REGEX = Pattern.compile("(?<!\\\\)\\$\\{(?<name>[A-Za-z][0-9A-Za-z]*+)\\}");
+
+  private static final MethodMatchers MATCHER_GROUP = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes(JAVA_UTIL_REGEX_MATCHER)
+      .names("group")
+      // covers both 'group(String)' and 'group(int)'
+      .addParametersMatcher(JAVA_LANG_STRING)
+      .addParametersMatcher("int")
+      .build(),
+    MethodMatchers.create()
+      .ofTypes(JAVA_UTIL_REGEX_MATCHER)
+      .names("appendReplacement")
+      .addParametersMatcher(MethodMatchers.ANY, MethodMatchers.ANY)
+      .build(),
+    MethodMatchers.create()
+      .ofTypes(JAVA_UTIL_REGEX_MATCHER)
+      .names("replaceAll", "replaceFirst")
+      .addParametersMatcher(MethodMatchers.ANY)
+      .build());
 
   @Override
   protected MethodMatchers trackedMethodMatchers() {
@@ -76,38 +91,47 @@ public class UnusedGroupNamesCheck extends AbstractRegexCheckTrackingMatchers {
   }
 
   private void checkGroupUsage(MethodInvocationTree mit, KnownGroupsCollector knownGroups) {
-    ExpressionTree arg0 = mit.arguments().get(0);
-    Type arg0Type = arg0.symbolType();
-    if (arg0Type.is("int")) {
-      checkUsingNumberInsteadOfName(knownGroups, arg0);
+    String methodName = ExpressionUtils.methodName(mit).name();
+    if ("group".equals(methodName)) {
+      ExpressionTree arg0 = mit.arguments().get(0);
+      if (arg0.symbolType().is("int")) {
+        arg0.asConstant(Integer.class).ifPresent(index -> checkUsingNumberInsteadOfName(knownGroups, arg0, index, false));
+      } else {
+        arg0.asConstant(String.class).ifPresent(name -> checkNoSuchName(knownGroups, arg0, name));
+      }
     } else {
-      checkNoSuchName(knownGroups, arg0);
+      int argIndex = "appendReplacement".equals(methodName) ? 1 : 0;
+      ExpressionTree arg = mit.arguments().get(argIndex);
+      arg.asConstant(String.class).ifPresent(replacement -> checkUsingReplacementString(knownGroups, arg, replacement));
     }
   }
 
-  private void checkUsingNumberInsteadOfName(KnownGroupsCollector knownGroups, ExpressionTree arg0) {
-    Optional<Integer> groupNumber = arg0.asConstant(Integer.class);
-    if (!groupNumber.isPresent()) {
-      return;
+  private void checkUsingReplacementString(KnownGroupsCollector knownGroups, ExpressionTree arg, String replacement) {
+    Matcher indexMatcher = GROUP_NUMBER_REPLACEMENT_REGEX.matcher(replacement);
+    while (indexMatcher.find()) {
+      int groupNumber = Integer.parseInt(indexMatcher.group("number"));
+      checkUsingNumberInsteadOfName(knownGroups, arg, groupNumber, true);
     }
-    Integer groupNumberValue = groupNumber.get();
-    CapturingGroupTree capturingGroupTree = knownGroups.groupsByNumber.get(groupNumberValue);
+    Matcher nameMatcher = GROUP_NAME_REPLACEMENT_REGEX.matcher(replacement);
+    while (nameMatcher.find()) {
+      checkNoSuchName(knownGroups, arg, nameMatcher.group("name"));
+    }
+  }
+
+  private void checkUsingNumberInsteadOfName(KnownGroupsCollector knownGroups, ExpressionTree arg0, int groupNumber, boolean dollarReference) {
+    CapturingGroupTree capturingGroupTree = knownGroups.groupsByNumber.get(groupNumber);
     if (capturingGroupTree == null) {
       return;
     }
-    String message = String.format(ISSUE_USE_NAME_INSTEAD_OF_NUMBER, capturingGroupTree.getName().orElse("?"));
-    RegexIssueLocation secondary = toLocation(capturingGroupTree, "Group %d", g -> groupNumberValue);
+    String groupName = capturingGroupTree.getName().map(name -> dollarReference ? ("${" + name + "}") : name).orElse("?");
+    String message = String.format(ISSUE_USE_NAME_INSTEAD_OF_NUMBER, groupName);
+    RegexIssueLocation secondary = toLocation(capturingGroupTree, "Group %d", g -> groupNumber);
     reportIssue(arg0, message, null, Collections.singletonList(secondary));
   }
 
-  private void checkNoSuchName(KnownGroupsCollector knownGroups, ExpressionTree arg0) {
-    Optional<String> groupName = arg0.asConstant(String.class);
-    if (!groupName.isPresent()) {
-      return;
-    }
-    String groupNameValue = groupName.get();
-    if (!knownGroups.groupsByName.keySet().contains(groupNameValue)) {
-      String message = String.format(ISSUE_NO_GROUP_WITH_SUCH_NAME, groupNameValue);
+  private void checkNoSuchName(KnownGroupsCollector knownGroups, ExpressionTree arg0, String groupName) {
+    if (!knownGroups.groupsByName.keySet().contains(groupName)) {
+      String message = String.format(ISSUE_NO_GROUP_WITH_SUCH_NAME, groupName);
       List<RegexIssueLocation> secondaries = knownGroups.groupsByName.values()
         .stream()
         .map(group -> toLocation(group, "Named group '%s'", g -> g.getName().get()))
