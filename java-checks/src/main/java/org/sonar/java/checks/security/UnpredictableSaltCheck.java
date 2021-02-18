@@ -42,13 +42,21 @@ import static org.sonar.java.checks.helpers.ExpressionsHelper.getSingleWriteUsag
 @Rule(key = "S2053")
 public class UnpredictableSaltCheck extends IssuableSubscriptionVisitor {
 
-  private static final String ADD_SALT = "Add an unpredictable salt value to this hash.";
   private static final String UNPREDICTABLE_SALT = "Make this salt unpredictable.";
 
+  private static final String BYTE_ARRAY = "byte[]";
   private static final MethodMatchers NEW_PBE_KEY_SPEC = MethodMatchers.create()
     .ofSubTypes("javax.crypto.spec.PBEKeySpec")
     .constructor()
-    .withAnyParameters()
+    .addParametersMatcher("char[]", BYTE_ARRAY, "int", "int")
+    .addParametersMatcher("char[]", BYTE_ARRAY, "int")
+    .build();
+
+  private static final MethodMatchers NEW_PBE_PARAM_SPEC = MethodMatchers.create()
+    .ofSubTypes("javax.crypto.spec.PBEParameterSpec")
+    .constructor()
+    .addParametersMatcher(BYTE_ARRAY, "int")
+    .addParametersMatcher(BYTE_ARRAY, "int", "java.security.spec.AlgorithmParameterSpec")
     .build();
 
   private static final MethodMatchers GET_BYTES = MethodMatchers.create()
@@ -65,17 +73,23 @@ public class UnpredictableSaltCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     NewClassTree newClassTree = (NewClassTree) tree;
-    if (NEW_PBE_KEY_SPEC.matches(newClassTree)) {
-      if (newClassTree.arguments().size() <= 1) {
-        reportIssue(newClassTree, ADD_SALT);
-      } else {
-        ExpressionTree saltExpression = ExpressionUtils.skipParentheses(newClassTree.arguments().get(1));
-        List<JavaFileScannerContext.Location> locations = new ArrayList<>();
-        if (isPredictable(saltExpression, locations)) {
-          reportIssue(newClassTree, UNPREDICTABLE_SALT, locations, null);
-        }
+    saltExpression(((NewClassTree) tree))
+    .map(ExpressionUtils::skipParentheses)
+    .ifPresent(salt -> {
+      List<JavaFileScannerContext.Location> locations = new ArrayList<>();
+      if (isPredictable(salt, locations)) {
+        reportIssue(newClassTree, UNPREDICTABLE_SALT, locations, null);
       }
+    });
+  }
+  
+  private static Optional<ExpressionTree> saltExpression(NewClassTree tree) {
+    if (NEW_PBE_KEY_SPEC.matches(tree)) {
+      return Optional.of(tree.arguments().get(1));
+    } else if (NEW_PBE_PARAM_SPEC.matches(tree)) {
+      return Optional.of(tree.arguments().get(0));
     }
+    return Optional.empty();
   }
 
   private static boolean isPredictable(ExpressionTree saltExpression, List<JavaFileScannerContext.Location> locations) {
