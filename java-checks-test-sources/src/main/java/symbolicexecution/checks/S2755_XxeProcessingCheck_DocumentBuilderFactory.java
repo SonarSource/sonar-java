@@ -79,6 +79,14 @@ class DocumentBuilderFactoryTest {
     Document doc2 = builder2.parse(is);
   }
 
+  void insecure_with_null_entity_resolver(InputStream is) throws Exception {
+    DocumentBuilderFactory df = DocumentBuilderFactory.newInstance();
+    DocumentBuilder builder = df.newDocumentBuilder(); // Noncompliant
+    builder.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
+    builder.setEntityResolver(null);
+    Document doc = builder.parse(is);
+  }
+
   // "universal fix": ACCESS_EXTERNAL_DTD and ACCESS_EXTERNAL_SCHEMA should be set to ""
   DocumentBuilderFactory univeral_fix() {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

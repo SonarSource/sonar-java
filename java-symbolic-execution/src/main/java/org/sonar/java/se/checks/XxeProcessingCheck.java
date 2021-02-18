@@ -46,6 +46,7 @@ import org.sonar.java.se.checks.XxeProperty.FeatureSupportDtd;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -292,8 +293,7 @@ public class XxeProcessingCheck extends SECheck {
           programState = checkArguments(programState, arguments, property);
         }
       } else if (ENTITY_RESOLVER_SETTERS.matches(mit)) {
-        SymbolicValue mitResultSV = programState.peekValue(mit.arguments().size());
-        programState = programState.addConstraint(mitResultSV, XxeEntityResolver.CUSTOM_ENTITY_RESOLVER);
+        handleEntityResolver(mit);
       }
 
       // Test if API is used without any protection against XXE.
@@ -304,6 +304,16 @@ public class XxeProcessingCheck extends SECheck {
           XxeSymbolicValue xxeSymbolicValue = (XxeSymbolicValue) peek;
           reportIfNotSecured(context, xxeSymbolicValue, programState.getConstraints(xxeSymbolicValue));
         }
+      }
+    }
+
+    private void handleEntityResolver(MethodInvocationTree mit) {
+      SymbolicValue mitResultSV = programState.peekValue(mit.arguments().size());
+      SymbolicValue entityResolverSV = programState.peekValue(0);
+      if (programState.getConstraint(entityResolverSV, ObjectConstraint.class) == ObjectConstraint.NULL) {
+        programState = programState.removeConstraintsOnDomain(mitResultSV, XxeEntityResolver.class);
+      } else {
+        programState = programState.addConstraint(mitResultSV, XxeEntityResolver.CUSTOM_ENTITY_RESOLVER);
       }
     }
 
