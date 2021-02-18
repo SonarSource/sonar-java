@@ -32,11 +32,11 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.api.utils.log.Profiler;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
+import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.collections.ListUtils;
 import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.java.model.VisitorsBridge;
-import org.sonar.java.se.SymbolicExecutionMode;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -50,8 +50,15 @@ public class JavaSquid {
   private final JavaAstScanner astScannerForGeneratedFiles;
 
   public JavaSquid(JavaVersion javaVersion,
-    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
-    JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
+                   @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
+                   JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
+    this(javaVersion, sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, null, visitors);
+    
+  }
+  public JavaSquid(JavaVersion javaVersion,
+                   @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
+                   JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter,
+                   @Nullable SubscriptionVisitor symbolicExecutionEngine, JavaCheck... visitors) {
 
     List<JavaCheck> commonVisitors = new ArrayList<>();
     commonVisitors.add(javaResourceLocator);
@@ -59,7 +66,8 @@ public class JavaSquid {
       commonVisitors.add(postAnalysisIssueFilter);
     }
 
-    Iterable<JavaCheck> codeVisitors = ListUtils.concat(commonVisitors, Arrays.asList(visitors));
+    List<SubscriptionVisitor> seVisitor = symbolicExecutionEngine == null ? Collections.emptyList() : Collections.singletonList(symbolicExecutionEngine);
+    Iterable<JavaCheck> codeVisitors = ListUtils.concat(seVisitor, commonVisitors, Arrays.asList(visitors));
     Collection<JavaCheck> testCodeVisitors = new ArrayList<>(commonVisitors);
     if (measurer != null) {
       Iterable<JavaCheck> measurers = Collections.singletonList(measurer);
@@ -84,22 +92,20 @@ public class JavaSquid {
 
     //AstScanner for main files
     astScanner = new JavaAstScanner(sonarComponents);
-    astScanner.setVisitorBridge(createVisitorBridge(codeVisitors, classpath, javaVersion, sonarComponents,
-      SymbolicExecutionMode.getMode(Arrays.asList(visitors))));
+    astScanner.setVisitorBridge(createVisitorBridge(codeVisitors, classpath, javaVersion, sonarComponents));
 
     //AstScanner for test files
     astScannerForTests = new JavaAstScanner(sonarComponents);
-    astScannerForTests.setVisitorBridge(createVisitorBridge(testCodeVisitors, testClasspath, javaVersion, sonarComponents, SymbolicExecutionMode.DISABLED));
+    astScannerForTests.setVisitorBridge(createVisitorBridge(testCodeVisitors, testClasspath, javaVersion, sonarComponents));
 
     //AstScanner for generated files
     astScannerForGeneratedFiles = new JavaAstScanner(sonarComponents);
-    astScannerForGeneratedFiles.setVisitorBridge(createVisitorBridge(jspCodeVisitors, jspClasspath, javaVersion, sonarComponents,
-      SymbolicExecutionMode.DISABLED));
+    astScannerForGeneratedFiles.setVisitorBridge(createVisitorBridge(jspCodeVisitors, jspClasspath, javaVersion, sonarComponents));
   }
 
   private static VisitorsBridge createVisitorBridge(
-    Iterable<JavaCheck> codeVisitors, List<File> classpath, JavaVersion javaVersion, @Nullable SonarComponents sonarComponents, SymbolicExecutionMode symbolicExecutionMode) {
-    VisitorsBridge visitorsBridge = new VisitorsBridge(codeVisitors, classpath, sonarComponents, symbolicExecutionMode);
+    Iterable<JavaCheck> codeVisitors, List<File> classpath, JavaVersion javaVersion, @Nullable SonarComponents sonarComponents) {
+    VisitorsBridge visitorsBridge = new VisitorsBridge(codeVisitors, classpath, sonarComponents);
     visitorsBridge.setJavaVersion(javaVersion);
     return visitorsBridge;
   }

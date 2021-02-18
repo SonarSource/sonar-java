@@ -35,6 +35,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>java-symbolic-execution</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>java-checks</artifactId>
       <version>${project.version}</version>
     </dependency>

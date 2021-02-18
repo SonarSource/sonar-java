@@ -20,7 +20,6 @@
 package org.sonar.java.model;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -32,7 +31,6 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.se.SymbolicExecutionMode;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -48,21 +46,20 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
 
   @VisibleForTesting
   public VisitorsBridgeForTests(JavaFileScanner visitor, SonarComponents sonarComponents) {
-    this(Collections.singletonList(visitor), new ArrayList<>(), sonarComponents);
+    this(Collections.singletonList(visitor), Collections.emptyList(), sonarComponents);
   }
 
   public VisitorsBridgeForTests(Iterable<? extends JavaCheck> visitors, @Nullable SonarComponents sonarComponents) {
-    super(visitors, new ArrayList<>(), sonarComponents, SymbolicExecutionMode.DISABLED);
+    super(visitors, Collections.emptyList(), sonarComponents);
     enableSemantic = false;
   }
 
   public VisitorsBridgeForTests(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
-    super(visitors, projectClasspath, sonarComponents, SymbolicExecutionMode.getMode(visitors));
+    super(visitors, projectClasspath, sonarComponents);
   }
 
   @Override
-  protected JavaFileScannerContext createScannerContext(CompilationUnitTree tree, Sema semanticModel,
-                                                        SonarComponents sonarComponents, boolean failedParsing) {
+  protected JavaFileScannerContext createScannerContext(CompilationUnitTree tree, Sema semanticModel, SonarComponents sonarComponents, boolean failedParsing) {
     Sema model = enableSemantic ? semanticModel : null;
     testContext = new TestJavaFileScannerContext(tree, currentFile, model, sonarComponents, javaVersion, failedParsing);
     return testContext;
