@@ -17,9 +17,8 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.testing;
+package org.sonar.java.checks.verifier;
 
-import org.sonar.java.annotations.VisibleForTesting;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -32,6 +31,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import org.sonar.java.annotations.VisibleForTesting;
 
 public final class FilesUtils {
 

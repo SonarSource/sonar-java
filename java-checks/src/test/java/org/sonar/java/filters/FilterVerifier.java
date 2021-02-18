@@ -47,7 +47,7 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.VisitorsBridgeForTests;
-import org.sonar.java.testing.FilesUtils;
+import org.sonar.java.checks.verifier.FilesUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;

@@ -53,7 +53,7 @@ import org.sonar.java.CheckTestUtils;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridgeForTests;
-import org.sonar.java.testing.FilesUtils;
+import org.sonar.java.checks.verifier.FilesUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 
 import static java.nio.charset.StandardCharsets.UTF_8;

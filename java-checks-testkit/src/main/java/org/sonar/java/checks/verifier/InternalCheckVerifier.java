@@ -17,9 +17,8 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.testing;
+package org.sonar.java.checks.verifier;
 
-import org.sonar.java.annotations.Beta;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.nio.file.Files;
@@ -50,6 +49,7 @@ import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.utils.Version;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.annotations.Beta;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
@@ -59,13 +59,13 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaVersion;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.sonar.java.testing.Expectations.IssueAttribute.EFFORT_TO_FIX;
-import static org.sonar.java.testing.Expectations.IssueAttribute.END_COLUMN;
-import static org.sonar.java.testing.Expectations.IssueAttribute.END_LINE;
-import static org.sonar.java.testing.Expectations.IssueAttribute.FLOWS;
-import static org.sonar.java.testing.Expectations.IssueAttribute.MESSAGE;
-import static org.sonar.java.testing.Expectations.IssueAttribute.SECONDARY_LOCATIONS;
-import static org.sonar.java.testing.Expectations.IssueAttribute.START_COLUMN;
+import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.EFFORT_TO_FIX;
+import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.END_COLUMN;
+import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.END_LINE;
+import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.FLOWS;
+import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.MESSAGE;
+import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.SECONDARY_LOCATIONS;
+import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.START_COLUMN;
 
 public class InternalCheckVerifier implements CheckVerifier {
 

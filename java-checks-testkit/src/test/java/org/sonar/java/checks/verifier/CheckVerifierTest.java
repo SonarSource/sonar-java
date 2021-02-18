@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.testing;
+package org.sonar.java.checks.verifier;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,7 +34,6 @@ import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;
-import org.sonar.java.TestUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
