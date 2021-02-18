@@ -258,7 +258,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
     return complexityVisitor.getNodes(tree);
   }
 
-  private static void throwIfEndOfAnalysisCheck(JavaCheck javaCheck) {
+  protected static void throwIfEndOfAnalysisCheck(JavaCheck javaCheck) {
     if (javaCheck instanceof EndOfAnalysisCheck) {
       throw new UnsupportedOperationException("EndOfAnalysisCheck must only call reportIssue with AnalyzerMessage and must never pass a Tree reference.");
     }
