@@ -95,7 +95,9 @@ public class JavaSquidSensor implements Sensor {
     Measurer measurer = new Measurer(context, noSonarFilter);
 
     JavaSquid squid = new JavaSquid(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter,
-      new SymbolicExecutionVisitor(Arrays.asList(sonarComponents.checkClasses())), sonarComponents.checkClasses());
+      // FIXME Find a better way to inject the Symbolic Execution engine
+      new SymbolicExecutionVisitor(Arrays.asList(sonarComponents.checkClasses())),
+      sonarComponents.checkClasses());
     squid.scan(getSourceFiles(), getTestFiles(), runJasper(context));
   }
 
