@@ -22,7 +22,6 @@ package org.sonar.java.se;
 import com.google.common.reflect.ClassPath;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -31,7 +30,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.cfg.CFG;
-import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.Sema;
 import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
@@ -59,8 +57,6 @@ import org.sonar.java.se.utils.TestUtils;
 import org.sonar.java.se.xproc.HappyPathYield;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
-import org.sonar.java.testing.CheckVerifier;
-import org.sonar.java.testing.InternalCheckVerifier;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -361,12 +357,9 @@ class ExplodedGraphWalkerTest {
 
   @Test
   void test_maximum_steps_reached_with_issue() throws Exception {
-    UnclosedResourcesCheck unclosedResourcesCheck = new UnclosedResourcesCheck();
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/MaxStepsWithIssue.java")
-      .withChecks(
-        new SymbolicExecutionVisitor(Collections.singletonList(unclosedResourcesCheck)),
-        unclosedResourcesCheck)
+      .withChecks(new UnclosedResourcesCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
   }

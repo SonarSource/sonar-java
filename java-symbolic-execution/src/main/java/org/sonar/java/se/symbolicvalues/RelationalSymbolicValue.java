@@ -288,7 +288,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
       int relationSize = newRelations.size() * knownRelations.size();
       if (relationSize > MAX_DEDUCED_RELATIONS || iterations > MAX_ITERATIONS) {
         // safety mechanism in case of an error in the algorithm
-        throw new TransitiveRelationExceededException("Used relations: " + relationSize + ". Iterations " + iterations);
+        throw new RelationalSymbolicValue.TransitiveRelationExceededException("Used relations: " + relationSize + ". Iterations " + iterations);
       }
       iterations++;
       RelationalSymbolicValue relation = workList.pop();

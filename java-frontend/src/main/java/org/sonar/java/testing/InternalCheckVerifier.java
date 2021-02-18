@@ -19,6 +19,7 @@
  */
 package org.sonar.java.testing;
 
+import org.sonar.java.annotations.Beta;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.nio.file.Files;
@@ -49,7 +50,6 @@ import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.utils.Version;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
-import org.sonar.java.annotations.Beta;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
@@ -108,7 +108,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     this.checks = Arrays.asList(checks);
     return this;
   }
-  
+
   @Override
   public InternalCheckVerifier withClassPath(Collection<File> classpath) {
     requiresNull(this.classpath, "classpath");

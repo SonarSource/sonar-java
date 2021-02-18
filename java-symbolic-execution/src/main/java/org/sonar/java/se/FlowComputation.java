@@ -110,33 +110,33 @@ public class FlowComputation {
 
   // FIXME It is assumed that this will always return set with at least one element, which could be empty, because result is consumed in other places and messages are
   // added to returned flows. This design should be improved.
-  public static Set<Flow> flow(Node currentNode, Set<SymbolicValue> symbolicValues, Predicate<Constraint> addToFlow, Predicate<Constraint> terminateTraversal,
-                               List<Class<? extends Constraint>> domains, Set<Symbol> symbols, int maxReturnedFlows) {
+  public static Set<Flow> flow(ExplodedGraph.Node currentNode, Set<SymbolicValue> symbolicValues, Predicate<Constraint> addToFlow, Predicate<Constraint> terminateTraversal,
+    List<Class<? extends Constraint>> domains, Set<Symbol> symbols, int maxReturnedFlows) {
     return flow(currentNode, symbolicValues, addToFlow, terminateTraversal, domains, symbols, false, maxReturnedFlows);
   }
 
-  public static Set<Flow> flow(Node currentNode, @Nullable SymbolicValue currentVal, List<Class<? extends Constraint>> domains, int maxReturnedFlows) {
+  public static Set<Flow> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, List<Class<? extends Constraint>> domains, int maxReturnedFlows) {
     return flow(currentNode, setFromNullable(currentVal), constraint -> true, c -> false, domains, Collections.emptySet(), false, maxReturnedFlows);
   }
 
-  public static Set<Flow> flow(Node currentNode, @Nullable SymbolicValue currentVal, List<Class<? extends Constraint>> domains, @Nullable Symbol trackSymbol,
-                               int maxReturnedFlows) {
+  public static Set<Flow> flow(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, List<Class<? extends Constraint>> domains, @Nullable Symbol trackSymbol,
+    int maxReturnedFlows) {
     return flow(currentNode, setFromNullable(currentVal), c -> true, c -> false, domains, setFromNullable(trackSymbol), false, maxReturnedFlows);
   }
 
-  public static Set<Flow> flowWithoutExceptions(Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
-                                                List<Class<? extends Constraint>> domains, int maxReturnedFlows) {
+  public static Set<Flow> flowWithoutExceptions(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
+    List<Class<? extends Constraint>> domains, int maxReturnedFlows) {
     return flow(currentNode, setFromNullable(currentVal), addToFlow, c -> false, domains, Collections.emptySet(), true, maxReturnedFlows);
   }
 
-  public static Set<Flow> flowWithoutExceptions(Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
-                                                Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains, int maxReturnedFlows) {
+  public static Set<Flow> flowWithoutExceptions(ExplodedGraph.Node currentNode, @Nullable SymbolicValue currentVal, Predicate<Constraint> addToFlow,
+    Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains, int maxReturnedFlows) {
     return flow(currentNode, setFromNullable(currentVal), addToFlow, terminateTraversal, domains, Collections.emptySet(), true, maxReturnedFlows);
   }
 
-  private static Set<Flow> flow(Node currentNode, Set<SymbolicValue> symbolicValues, Predicate<Constraint> addToFlow,
-                                Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains, Set<Symbol> symbols,
-                                boolean skipExceptionMessages, int maxReturnedFlows) {
+  private static Set<Flow> flow(ExplodedGraph.Node currentNode, Set<SymbolicValue> symbolicValues, Predicate<Constraint> addToFlow,
+    Predicate<Constraint> terminateTraversal, List<Class<? extends Constraint>> domains, Set<Symbol> symbols,
+    boolean skipExceptionMessages, int maxReturnedFlows) {
     Set<SymbolicValue> allSymbolicValues = symbolicValues.stream()
       .map(FlowComputation::computedFrom)
       .flatMap(Set::stream)
@@ -162,7 +162,7 @@ public class FlowComputation {
     return val == null ? Collections.emptySet() : Collections.singleton(val);
   }
 
-  private Set<Flow> run(final Node node, PSet<Symbol> trackedSymbols) {
+  private Set<Flow> run(final ExplodedGraph.Node node, PSet<Symbol> trackedSymbols) {
     Set<Flow> flows = new HashSet<>();
     Deque<ExecutionPath> workList = new ArrayDeque<>();
     SameConstraints sameConstraints = new SameConstraints(node, trackedSymbols, domains);
@@ -204,7 +204,7 @@ public class FlowComputation {
     private final Node node;
     private PSet<Symbol> symbolsHavingAlwaysSameConstraints;
 
-    SameConstraints(Node startNode, PSet<Symbol> trackedSymbols, List<Class<? extends Constraint>> domains) {
+    SameConstraints(ExplodedGraph.Node startNode, PSet<Symbol> trackedSymbols, List<Class<? extends Constraint>> domains) {
       this.domains = domains;
       this.node = startNode;
       this.symbolsHavingAlwaysSameConstraints = PCollections.emptySet();
@@ -232,7 +232,7 @@ public class FlowComputation {
       return domains.stream().allMatch(domain -> sameConstraintWhenSameProgramPoint(node, symbol, domain));
     }
 
-    private static boolean sameConstraintWhenSameProgramPoint(Node currentNode, Symbol symbol, Class<? extends Constraint> domain) {
+    private static boolean sameConstraintWhenSameProgramPoint(ExplodedGraph.Node currentNode, Symbol symbol, Class<? extends Constraint> domain) {
       ProgramState programState = currentNode.programState;
       SymbolicValue sv = programState.getValue(symbol);
       if (sv == null) {
@@ -390,7 +390,7 @@ public class FlowComputation {
       return constraint instanceof ObjectConstraint;
     }
 
-    private Flow flowForNullableMethodParameters(Node node) {
+    private Flow flowForNullableMethodParameters(ExplodedGraph.Node node) {
       if (!node.edges().isEmpty() || !domains.contains(ObjectConstraint.class)) {
         return Flow.empty();
       }
@@ -438,7 +438,7 @@ public class FlowComputation {
         .findAny();
     }
 
-    private Flow flowFromLearnedAssociation(LearnedAssociation learnedAssociation, Node node) {
+    private Flow flowFromLearnedAssociation(LearnedAssociation learnedAssociation, ExplodedGraph.Node node) {
       ProgramState programState = node.programState;
       Preconditions.checkState(programState != null, "Learned association with null state in parent node of the edge.");
       Symbol rhsSymbol = symbolFromStack(learnedAssociation.symbolicValue(), programState);
@@ -589,7 +589,7 @@ public class FlowComputation {
         // don't report on binary expression to be not null, it's obvious
         return Flow.empty();
       }
-      Node parent = edge.parent;
+      ExplodedGraph.Node parent = edge.parent;
       Tree nodeTree = parent.programPoint.syntaxTree();
       if (isMethodInvocationNode(parent)) {
         return methodInvocationFlow(constraint, edge);
@@ -661,7 +661,7 @@ public class FlowComputation {
     }
 
     private Flow methodInvocationFlow(Constraint learnedConstraint, ExplodedGraph.Edge edge) {
-      Node parent = edge.parent;
+      ExplodedGraph.Node parent = edge.parent;
       MethodInvocationTree mit = (MethodInvocationTree) parent.programPoint.syntaxTree();
       Flow.Builder flowBuilder = Flow.builder();
       SymbolicValue returnSV = edge.child.programState.peekValue();
@@ -743,7 +743,7 @@ public class FlowComputation {
         .collect(Collectors.toSet());
     }
 
-    private boolean isMethodInvocationNode(Node node) {
+    private boolean isMethodInvocationNode(ExplodedGraph.Node node) {
       // ProgramPoint#syntaxTree will not always return the correct tree, so we need to go to ProgramPoint#block directly
       ProgramPoint pp = node.programPoint;
       if (pp.i < pp.block.elements().size()) {
@@ -753,7 +753,7 @@ public class FlowComputation {
       return false;
     }
 
-    private List<Integer> correspondingArgumentIndices(Set<SymbolicValue> candidates, Node invocationNode) {
+    private List<Integer> correspondingArgumentIndices(Set<SymbolicValue> candidates, ExplodedGraph.Node invocationNode) {
       MethodInvocationTree mit = (MethodInvocationTree) invocationNode.programPoint.syntaxTree();
       List<SymbolicValue> arguments = argumentsUsedForMethodInvocation(invocationNode, mit);
       return IntStream.range(0, arguments.size())
@@ -761,11 +761,11 @@ public class FlowComputation {
         .boxed().collect(Collectors.toList());
     }
 
-    private List<SymbolicValue> argumentsUsedForMethodInvocation(Node invocationNode, MethodInvocationTree mit) {
+    private List<SymbolicValue> argumentsUsedForMethodInvocation(ExplodedGraph.Node invocationNode, MethodInvocationTree mit) {
       return ListUtils.reverse(invocationNode.programState.peekValues(mit.arguments().size()));
     }
 
-    private JavaFileScannerContext.Location location(Node node, String message) {
+    private JavaFileScannerContext.Location location(ExplodedGraph.Node node, String message) {
       return new JavaFileScannerContext.Location(message, node.programPoint.syntaxTree());
     }
   }

@@ -21,3 +21,4 @@
 package org.sonar.java.se;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+

@@ -75,9 +75,8 @@ public class VisitorsBridge {
   public VisitorsBridge(JavaFileScanner visitor) {
     this(Collections.singletonList(visitor), new ArrayList<>(), null);
   }
-  
-  public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath,
-                        @Nullable SonarComponents sonarComponents) {
+
+  public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
     this.allScanners = new ArrayList<>();
     for (Object visitor : visitors) {
       if (visitor instanceof JavaFileScanner) {

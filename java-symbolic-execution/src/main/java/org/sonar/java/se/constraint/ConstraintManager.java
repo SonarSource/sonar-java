@@ -140,7 +140,7 @@ public class ConstraintManager {
   public SymbolicValue createMethodSymbolicValue(MethodInvocationTree syntaxNode, List<ProgramState.SymbolicValueSymbol> values) {
     SymbolicValue result;
     if (ExplodedGraphWalker.EQUALS_METHODS.matches(syntaxNode)) {
-      result = new RelationalSymbolicValue(Kind.METHOD_EQUALS);
+      result = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.METHOD_EQUALS);
       ProgramState.SymbolicValueSymbol leftOp = values.get(1);
       ProgramState.SymbolicValueSymbol rightOp = values.get(0);
       result.computedFrom(Arrays.asList(rightOp, leftOp));

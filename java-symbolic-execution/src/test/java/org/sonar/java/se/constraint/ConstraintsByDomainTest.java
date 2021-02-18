@@ -19,8 +19,9 @@
  */
 package org.sonar.java.se.constraint;
 
-import java.util.function.BiConsumer;
 import org.junit.jupiter.api.Test;
+
+import java.util.function.BiConsumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

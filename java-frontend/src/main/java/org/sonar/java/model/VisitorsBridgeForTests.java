@@ -20,7 +20,6 @@
 package org.sonar.java.model;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -47,11 +46,11 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
 
   @VisibleForTesting
   public VisitorsBridgeForTests(JavaFileScanner visitor, SonarComponents sonarComponents) {
-    this(Collections.singletonList(visitor), new ArrayList<>(), sonarComponents);
+    this(Collections.singletonList(visitor), Collections.emptyList(), sonarComponents);
   }
 
   public VisitorsBridgeForTests(Iterable<? extends JavaCheck> visitors, @Nullable SonarComponents sonarComponents) {
-    super(visitors, new ArrayList<>(), sonarComponents);
+    super(visitors, Collections.emptyList(), sonarComponents);
     enableSemantic = false;
   }
 
@@ -60,8 +59,7 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
   }
 
   @Override
-  protected JavaFileScannerContext createScannerContext(CompilationUnitTree tree, Sema semanticModel,
-                                                        SonarComponents sonarComponents, boolean failedParsing) {
+  protected JavaFileScannerContext createScannerContext(CompilationUnitTree tree, Sema semanticModel, SonarComponents sonarComponents, boolean failedParsing) {
     Sema model = enableSemantic ? semanticModel : null;
     testContext = new TestJavaFileScannerContext(tree, currentFile, model, sonarComponents, javaVersion, failedParsing);
     return testContext;

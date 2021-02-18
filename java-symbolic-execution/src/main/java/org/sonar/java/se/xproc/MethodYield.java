@@ -19,11 +19,12 @@
  */
 package org.sonar.java.se.xproc;
 
+import java.util.HashSet;
+import org.sonar.java.Preconditions;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,6 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.sonar.java.Preconditions;
 import org.sonar.java.collections.PMap;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.Flow;

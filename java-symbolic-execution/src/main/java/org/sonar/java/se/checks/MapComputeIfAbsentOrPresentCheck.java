@@ -34,6 +34,7 @@ import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ExplodedGraph.Node;
 import org.sonar.java.se.Flow;
 import org.sonar.java.se.FlowComputation;
@@ -217,7 +218,7 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
   }
 
   private abstract static class CheckIssue {
-    protected final Node node;
+    protected final ExplodedGraph.Node node;
 
     private final MethodInvocationTree checkValueInvocation;
     private final MethodInvocationTree putInvocation;

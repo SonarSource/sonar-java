@@ -19,9 +19,10 @@
  */
 package org.sonar.java.se.symbolicvalues;
 
+import org.sonar.java.se.ProgramState;
+
 import java.util.Arrays;
 import java.util.stream.Collectors;
-import org.sonar.java.se.ProgramState;
 
 public class SymbolicValueTestUtil {
 
