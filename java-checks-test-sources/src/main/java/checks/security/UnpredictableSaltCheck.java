@@ -4,11 +4,12 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.PBEParameterSpec;
 
 public class UnpredictableSaltCheck {
   
   public void testPBESpec(char[] chars, byte[] salt) throws NoSuchAlgorithmException {
-    PBEKeySpec spec = new PBEKeySpec(chars); // Noncompliant [[sc=23;ec=44]] {{Add an unpredictable salt value to this hash.}}
+    PBEKeySpec spec = new PBEKeySpec(chars); // Compliant
     PBEKeySpec spec1 = new PBEKeySpec(chars, salt, 1); // Compliant 
   }
 
@@ -36,6 +37,10 @@ public class UnpredictableSaltCheck {
     
     PBEKeySpec spec6 = new PBEKeySpec(chars, new MyMessageDigest("").engineDigest(), 2); // Compliant
     PBEKeySpec spec666 = new PBEKeySpec(chars, str.getBytes(), 2); // Compliant
+    
+    new PBEParameterSpec("notrandom".getBytes(), 10000);  // Noncompliant {{Make this salt unpredictable.}}
+    new PBEParameterSpec(salt, 10000);  // Noncompliant [[sc=5;ec=38;secondary=17]]
+    new PBEParameterSpec(finalSalt, 10000);  // Noncompliant [[sc=5;ec=43;secondary=20]]
   }
 
   private byte[] secureSalt() {
