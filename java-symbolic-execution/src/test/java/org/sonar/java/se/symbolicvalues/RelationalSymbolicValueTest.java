@@ -30,10 +30,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.apache.commons.io.IOUtils;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
-import org.sonar.api.utils.log.LogTester;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.collections.ListUtils;
 import org.sonar.java.collections.SetUtils;
@@ -65,11 +64,10 @@ import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.METH
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.NOT_EQUAL;
 import static org.sonar.java.se.symbolicvalues.SymbolicValue.NULL_LITERAL;
 
-@EnableRuleMigrationSupport
 class RelationalSymbolicValueTest {
 
-  @Rule
-  public LogTester logTester = new LogTester().setLevel(LoggerLevel.DEBUG);
+  @RegisterExtension
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(LoggerLevel.DEBUG);
 
   ConstraintManager constraintManager = new ConstraintManager();
   SymbolicValue a = new SymbolicValue() {

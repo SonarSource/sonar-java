@@ -28,11 +28,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
@@ -66,11 +65,10 @@ import static org.sonar.java.se.utils.SETestUtils.createSymbolicExecutionVisitor
 import static org.sonar.java.se.utils.SETestUtils.createSymbolicExecutionVisitorAndSemantic;
 import static org.sonar.java.se.utils.SETestUtils.getMethodBehavior;
 
-@EnableRuleMigrationSupport
 class BehaviorCacheTest {
 
-  @Rule
-  public LogTester logTester  = new LogTester();
+  @RegisterExtension
+  public LogTesterJUnit5 logTester  = new LogTesterJUnit5();
 
   @Test
   void method_behavior_cache_should_be_filled_and_cleanup() {

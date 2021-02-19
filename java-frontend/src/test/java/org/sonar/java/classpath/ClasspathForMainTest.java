@@ -21,10 +21,9 @@ package org.sonar.java.classpath;
 
 import java.io.File;
 import java.util.List;
-import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -32,7 +31,7 @@ import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.config.internal.MapSettings;
-import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.AnalysisWarningsWrapper;
@@ -45,7 +44,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
-@EnableRuleMigrationSupport
 class ClasspathForMainTest {
 
   private MapSettings settings;
@@ -54,8 +52,8 @@ class ClasspathForMainTest {
 
   private ClasspathForMain javaClasspath;
 
-  @Rule
-  public LogTester logTester = new LogTester();
+  @RegisterExtension
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
 
   @BeforeEach
   void setup() throws Exception {
@@ -63,8 +61,6 @@ class ClasspathForMainTest {
     fs.add(TestUtils.emptyInputFile("foo.java"));
     settings = new MapSettings();
     analysisWarnings = mock(AnalysisWarningsWrapper.class);
-    logTester.clear();
-    logTester.setLevel(LoggerLevel.DEBUG);
   }
 
   /**
@@ -292,6 +288,7 @@ class ClasspathForMainTest {
 
   @Test
   void wildcard_directory_should_resolve_libs_in_that_dir() {
+    logTester.setLevel(LoggerLevel.DEBUG);
     settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/**/*.jar");
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(3);
@@ -442,8 +439,8 @@ class ClasspathForMainTest {
   @ParameterizedTest
   @ValueSource(booleans = {true, false})
   void by_default_no_jdk_is_set(boolean debugEnabled) {
-    if (!debugEnabled) {
-      logTester.setLevel(LoggerLevel.INFO);
+    if (debugEnabled) {
+      logTester.setLevel(LoggerLevel.DEBUG);
     }
     List<File> elements = createJavaClasspath().getElements();
 
@@ -477,6 +474,7 @@ class ClasspathForMainTest {
   @ParameterizedTest
   @CsvSource(value = {"jdk_classic,rt.jar", "jdk_modular,jrt-fs.jar"})
   void should_include_jdk_in_libraries_when_specified(String jdkFolder, String expectedJar) {
+    logTester.setLevel(LoggerLevel.DEBUG);
     String pathToJdk = "src/test/jdk/" + jdkFolder;
     settings.setProperty(ClasspathProperties.SONAR_JAVA_JDK_HOME, pathToJdk);
 
