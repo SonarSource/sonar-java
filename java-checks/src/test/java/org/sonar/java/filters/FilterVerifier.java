@@ -42,10 +42,10 @@ import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.Version;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;
-import org.sonar.java.CheckTestUtils;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.java.checks.verifier.FilesUtils;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -73,7 +73,7 @@ public class FilterVerifier {
     List<File> projectClasspath = new ArrayList<>(classpath);
     projectClasspath.add(new File("target/test-classes"));
 
-    InputFile inputFile = CheckTestUtils.inputFile(filename);
+    InputFile inputFile = TestUtils.inputFile(filename);
     VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(visitors, projectClasspath, sonarComponents(inputFile));
     JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge);
     VisitorsBridgeForTests.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();

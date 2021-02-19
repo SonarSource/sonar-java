@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.checks.verifier.FilesUtils;
+import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;

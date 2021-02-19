@@ -45,7 +45,7 @@ import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.utils.SETestUtils;
 import org.sonar.java.se.SymbolicExecutionVisitor;
-import org.sonar.java.se.utils.TestUtils;
+import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;

@@ -49,7 +49,6 @@ import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.api.utils.log.Loggers;
-import org.sonar.java.CheckTestUtils;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridgeForTests;
@@ -59,6 +58,7 @@ import org.sonar.plugins.java.api.JavaCheck;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 @EnableRuleMigrationSupport
 class RulesSanityTest {
@@ -171,7 +171,7 @@ class RulesSanityTest {
 
   private static List<InputFile> getJavaInputFiles(File moduleBaseDir) {
     return Stream.concat(
-      FilesUtils.getFilesRecursively(new File(CheckTestUtils.testSourcesPath("")).toPath(), "java").stream(),
+      FilesUtils.getFilesRecursively(new File(testSourcesPath("")).toPath(), "java").stream(),
       FilesUtils.getFilesRecursively(new File(TEST_FILES_DIRECTORY).toPath(), "java").stream())
       .map(File::getAbsolutePath)
       .filter(RulesSanityTest::isNotParsingErrorFile)

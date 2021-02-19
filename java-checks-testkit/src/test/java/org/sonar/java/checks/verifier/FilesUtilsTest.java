@@ -17,16 +17,37 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se.utils;
+package org.sonar.java.checks.verifier;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
+import org.junit.rules.TemporaryFolder;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.se.utils.TestUtils.computeLineEndOffsets;
 
-class TestUtilsTest {
+@EnableRuleMigrationSupport
+class FilesUtilsTest {
+  @org.junit.Rule
+  public TemporaryFolder temp = new TemporaryFolder();
+
   @Test
-  void verify_computeLineEndOffsets() {
-    assertThat(computeLineEndOffsets(new int[]{0, 10, 15}, 100)).containsExactly(9, 14, 99);
+  void verify_get_classpath_files() throws IOException {
+    Path tmp = temp.newFolder().toPath();
+    Path jar = tmp.resolve("test.jar");
+    Path zip = tmp.resolve("test.zip");
+    Path invalid = tmp.resolve("test.txt");
+
+    Files.createFile(jar);
+    Files.createFile(zip);
+    Files.createFile(invalid);
+
+    List<File> list = FilesUtils.getFilesRecursively(temp.getRoot().toPath(), new String[] {"zip", "jar"});
+    assertThat(list).containsOnly(jar.toFile(), zip.toFile());
   }
+
 }

@@ -29,7 +29,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.scan.issue.filter.IssueFilterChain;
-import org.sonar.java.CheckTestUtils;
+import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 
 class PostAnalysisIssueFilterTest {
 
-  private static final InputFile INPUT_FILE = CheckTestUtils.inputFile("src/test/files/filters/PostAnalysisIssueFilter.java");
+  private static final InputFile INPUT_FILE = TestUtils.inputFile("src/test/files/filters/PostAnalysisIssueFilter.java");
   private JavaFileScannerContext context;
   private PostAnalysisIssueFilter postAnalysisIssueFilter;
   private FilterableIssue fakeIssue;
