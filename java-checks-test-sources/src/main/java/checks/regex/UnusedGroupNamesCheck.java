@@ -203,6 +203,33 @@ abstract class UnusedGroupNamesCheck {
     return null;
   }
 
+  void replacement(String input) {
+    Matcher m1 = Pattern.compile("a(?<foo>.)").matcher(input);
+    m1.replaceAll("x${foo}"); // Compliant, foo is used
+
+    Matcher m2 = Pattern.compile("a(?<foo>.)").matcher(input);
+    m2.replaceAll("${foo}x${bar}"); // Noncompliant {{There is no group named 'bar' in the regular expression.}}
+
+    Matcher m3 = Pattern.compile("a(?<bar>.)").matcher(input);
+    m3.replaceFirst("x$1"); // Noncompliant {{Directly use '${bar}' instead of its group number.}}
+
+    Matcher m4 = Pattern.compile("a(?<foo>.)").matcher(input);
+    m4.replaceFirst("x${bar}x"); // Noncompliant {{There is no group named 'bar' in the regular expression.}}
+
+    Matcher m5 = Pattern.compile("a(?<foo>.)").matcher(input);
+    StringBuffer buffer = new StringBuffer();
+    m5.appendReplacement(buffer, "${bar}x"); // Noncompliant {{There is no group named 'bar' in the regular expression.}}
+    m5.appendReplacement(buffer, "x$1x"); // Noncompliant {{Directly use '${foo}' instead of its group number.}}
+
+    Matcher m6 = Pattern.compile("a(.)(?<foo>.)").matcher(input);
+    m6.appendReplacement(buffer, "$1x${foo}x$1"); // Compliant, the group 1 has no name
+    m6.appendReplacement(buffer, "xx${bar}xx"); // Noncompliant {{There is no group named 'bar' in the regular expression.}}
+    m6.appendReplacement(buffer, "\\${bar}xx"); // Compliant, dollar is escaped
+    m6.appendReplacement(buffer, "$1x$2x${foo}"); // Noncompliant {{Directly use '${foo}' instead of its group number.}}
+    m6.appendReplacement(buffer, "\\$2x${foo}"); // Compliant, dollar is escaped
+    m6.appendReplacement(buffer, "${2}"); // Compliant, 2 is not a valid group name
+  }
+
   static class UsingConstant {
     private static final Pattern CONSTANT_PATTERN = Pattern.compile("(?<group>[a-z])");
 

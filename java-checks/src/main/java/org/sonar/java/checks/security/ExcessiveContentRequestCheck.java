@@ -126,11 +126,11 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
 
   @Override
   public void visitNode(Tree tree) {
+    DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) context;
     if (tree.is(Tree.Kind.NEW_CLASS)) {
       NewClassTree newClassTree = (NewClassTree) tree;
       if (MULTIPART_CONSTRUCTOR.matches(newClassTree)) {
         // Create an issue that we will report only at the end of the analysis if the maximum size was never set.
-        DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) context;
         AnalyzerMessage analyzerMessage = defaultContext.createAnalyzerMessage(this, newClassTree, MESSAGE_SIZE_NOT_SET);
         multipartConstructorIssues.add(analyzerMessage);
       }
@@ -138,9 +138,10 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
       MethodInvocationTree mit = (MethodInvocationTree) tree;
       if (METHODS_SETTING_MAX_SIZE.matches(mit)) {
         sizeSetSomewhere = true;
-        getIfExceedSize(mit.arguments().get(0)).ifPresent(bytesExceeding ->
-          reportIssue(mit, String.format(MESSAGE_EXCEED_SIZE, bytesExceeding, fileUploadSizeLimit))
-        );
+        getIfExceedSize(mit.arguments().get(0))
+          .map(bytesExceeding ->
+            defaultContext.createAnalyzerMessage(this, mit, String.format(MESSAGE_EXCEED_SIZE, bytesExceeding, fileUploadSizeLimit)))
+          .ifPresent(defaultContext::reportIssue);
       }
     }
   }
