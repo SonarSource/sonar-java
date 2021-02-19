@@ -298,3 +298,21 @@ class MutableMembersUsageCheckImmutableInsideConstructors {
     return null;
   }
 }
+
+enum MyEnumWithAMutableMember {
+  ELEMENT(new int[]{0, 1, 2});
+
+  private final int[] arg;
+
+  MyEnumWithAMutableMember(int[] arg) {
+    this.arg = arg; // Compliant
+  }
+}
+
+class MyClassWithAMutableMember {
+  private final int[] arg;
+
+  MyClassWithAMutableMember(int[] arg) {
+    this.arg = arg; // Noncompliant
+  }
+}
