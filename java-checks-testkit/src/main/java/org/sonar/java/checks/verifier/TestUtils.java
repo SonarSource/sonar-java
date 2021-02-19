@@ -17,25 +17,23 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java;
+package org.sonar.java.checks.verifier;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class CheckTestUtils {
-  
+public class TestUtils {
+  private TestUtils() {
+    // utility class, forbidden constructor
+  }
+
   private static final String TEST_SOURCES_DIR = "../java-checks-test-sources/src/main/java/";
   private static final String NON_COMPILING_TEST_SOURCES_DIR = "../java-checks-test-sources/src/main/files/non-compiling/";
-
-  private CheckTestUtils() {
-    // Utility class
-  }
 
   public static String testSourcesPath(String path) {
     return getFileFrom(path, TEST_SOURCES_DIR);
@@ -47,7 +45,9 @@ public final class CheckTestUtils {
 
   private static String getFileFrom(String path, String relocated) {
     File file = new File((relocated + path).replace('/', File.separatorChar));
-    assertTrue(file.exists(), "Path '" + path + "' should exist.");
+    if (!file.exists()) {
+      throw new IllegalStateException("Path '" + path + "' should exist.");
+    }
     try {
       return file.getCanonicalPath();
     } catch (IOException e) {
@@ -55,16 +55,35 @@ public final class CheckTestUtils {
     }
   }
 
-  public static DefaultInputFile inputFile(String filename) {
-    File file = new File(filename);
+  public static InputFile emptyInputFile(String filename) {
+    return emptyInputFile(filename, InputFile.Type.MAIN);
+  }
+
+  public static InputFile emptyInputFile(String filename, InputFile.Type type) {
+    return new TestInputFileBuilder("", filename)
+      .setCharset(UTF_8)
+      .setLanguage("java")
+      .setType(type)
+      .build();
+  }
+
+  public static InputFile inputFile(String filepath) {
+    return inputFile("", new File(filepath));
+  }
+
+  public static InputFile inputFile(File file) {
+    return inputFile("", file);
+  }
+
+  public static InputFile inputFile(String moduleKey, File file) {
     try {
-      return new TestInputFileBuilder("", file.getPath())
+      return new TestInputFileBuilder(moduleKey, file.getPath())
         .setContents(new String(Files.readAllBytes(file.toPath()), UTF_8))
         .setCharset(UTF_8)
         .setLanguage("java")
         .build();
     } catch (Exception e) {
-      throw new IllegalStateException(String.format("Unable to lead file '%s", file.getAbsolutePath()));
+      throw new IllegalStateException(String.format("Unable to read file '%s", file.getAbsolutePath()));
     }
   }
 }

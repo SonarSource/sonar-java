@@ -22,7 +22,7 @@ package org.sonar.java.se.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.SETestUtils;
-import org.sonar.java.se.utils.TestUtils;
+import org.sonar.java.checks.verifier.TestUtils;
 
 class StreamConsumedCheckTest {
 

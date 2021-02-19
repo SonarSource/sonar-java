@@ -22,9 +22,9 @@ package org.sonar.java.checks;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.AnalyzerMessage;
-import org.sonar.java.CheckTestUtils;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.model.VisitorsBridgeForTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,7 +40,7 @@ class ParsingErrorCheckTest {
     when(sonarComponents.inputFileContents(any())).thenCallRealMethod();
 
     VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(new ParsingErrorCheck(), sonarComponents);
-    JavaAstScanner.scanSingleFileForTests(CheckTestUtils.inputFile("src/test/files/checks/parsing/ParsingError.java"), visitorsBridge);
+    JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/files/checks/parsing/ParsingError.java"), visitorsBridge);
     Set<AnalyzerMessage> issues = visitorsBridge.lastCreatedTestContext().getIssues();
     assertThat(issues).hasSize(1);
     AnalyzerMessage issue = issues.iterator().next();
@@ -58,7 +58,7 @@ class ParsingErrorCheckTest {
     when(sonarComponents.inputFileContents(any())).thenCallRealMethod();
 
     VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(new ParsingErrorCheck(), sonarComponents);
-    JavaAstScanner.scanSingleFileForTests(CheckTestUtils.inputFile("src/test/files/checks/parsing/EmptyStatementsInImportsBug.java"), visitorsBridge);
+    JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/files/checks/parsing/EmptyStatementsInImportsBug.java"), visitorsBridge);
     Set<AnalyzerMessage> issues = visitorsBridge.lastCreatedTestContext().getIssues();
     assertThat(issues).hasSize(1);
     AnalyzerMessage issue = issues.iterator().next();

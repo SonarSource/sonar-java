@@ -23,8 +23,8 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.SETestUtils;
 
-import static org.sonar.java.se.utils.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.se.utils.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class MapComputeIfAbsentOrPresentCheckTest {
 

@@ -24,12 +24,11 @@ import javax.annotation.Nullable;
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
-import org.sonar.java.CheckTestUtils;
 import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -39,11 +38,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import static org.sonar.java.CheckTestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class AnyRuleIssueFilterTest {
 
-  private static final InputFile INPUT_FILE = CheckTestUtils.inputFile(testSourcesPath("filters/AnyRuleIssueFilter.java"));
+  private static final InputFile INPUT_FILE = TestUtils.inputFile(testSourcesPath("filters/AnyRuleIssueFilter.java"));
   private static final String REPOSITORY_KEY = "walrus";
   private static final String RULE_KEY = "S42";
   private AnyRuleIssueFilter filter;

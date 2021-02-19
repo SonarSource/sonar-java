@@ -30,8 +30,8 @@ import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.CheckTestUtils.testSourcesPath;
-import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 @EnableRuleMigrationSupport
 class AssertionsInTestsCheckTest {

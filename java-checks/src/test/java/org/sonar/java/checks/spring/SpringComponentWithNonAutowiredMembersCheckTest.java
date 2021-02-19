@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import org.sonar.plugins.java.api.JavaFileScanner;
 
-import static org.sonar.java.CheckTestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class SpringComponentWithNonAutowiredMembersCheckTest {
 

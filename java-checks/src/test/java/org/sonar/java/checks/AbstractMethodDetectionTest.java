@@ -22,9 +22,9 @@ package org.sonar.java.checks;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.CheckTestUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -42,7 +42,7 @@ class AbstractMethodDetectionTest {
         .addParametersMatcher("int")
         .addParametersMatcher("java.lang.String[]")
         .build());
-    JavaAstScanner.scanSingleFileForTests(CheckTestUtils.inputFile("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
+    JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
 
     assertThat(visitor.lines)
       .hasSize(3)
@@ -53,7 +53,7 @@ class AbstractMethodDetectionTest {
   void withAnyParameters() throws Exception {
     Visitor visitor = new Visitor(
       MethodMatchers.create().ofTypes("A").names("method").withAnyParameters().build());
-    JavaAstScanner.scanSingleFileForTests(CheckTestUtils.inputFile("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
+    JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
 
     assertThat(visitor.lines).containsExactly(14, 15, 16, 17, 19);
   }
@@ -62,7 +62,7 @@ class AbstractMethodDetectionTest {
   void withoutParameter() throws Exception {
     Visitor visitor = new Visitor(
       MethodMatchers.create().ofTypes("A").names("method").addWithoutParametersMatcher().build());
-    JavaAstScanner.scanSingleFileForTests(CheckTestUtils.inputFile("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
+    JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
 
     assertThat(visitor.lines).containsExactly(14);
   }

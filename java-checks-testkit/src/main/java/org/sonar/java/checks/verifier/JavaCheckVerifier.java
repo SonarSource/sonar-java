@@ -22,8 +22,6 @@ package org.sonar.java.checks.verifier;
 import java.io.File;
 import java.util.Collection;
 import org.sonar.java.annotations.Beta;
-import org.sonar.java.testing.CheckVerifier;
-import org.sonar.java.testing.FilesUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 
 /**

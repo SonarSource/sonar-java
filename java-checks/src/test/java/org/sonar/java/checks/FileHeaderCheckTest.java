@@ -26,7 +26,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
-import static org.sonar.java.CheckTestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class FileHeaderCheckTest {
 

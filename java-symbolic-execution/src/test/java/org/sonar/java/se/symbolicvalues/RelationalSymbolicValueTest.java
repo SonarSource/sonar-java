@@ -47,7 +47,7 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
-import org.sonar.java.testing.CheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;

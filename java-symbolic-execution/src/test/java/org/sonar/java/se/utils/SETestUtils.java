@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.java.checks.verifier.FilesUtils;
+import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
@@ -33,9 +35,7 @@ import org.sonar.java.model.Sema;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.checks.SECheck;
-import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
-import org.sonar.java.testing.FilesUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.VariableSymbol;
 

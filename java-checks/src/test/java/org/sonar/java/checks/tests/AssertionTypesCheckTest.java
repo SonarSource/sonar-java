@@ -31,8 +31,8 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.CheckTestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class AssertionTypesCheckTest {
 
