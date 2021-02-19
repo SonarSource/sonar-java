@@ -47,8 +47,8 @@ properties</a> have been defined since JAXP 1.5:</p>
 <p><a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilderFactory</a> library:</p>
 <pre>
 String xml = "xxe.xml";
-DocumentBuilderFactory df = DocumentBuilderFactory.newInstance();  // Noncompliant
-DocumentBuilder builder = df.newDocumentBuilder();
+DocumentBuilderFactory df = DocumentBuilderFactory.newInstance();
+DocumentBuilder builder = df.newDocumentBuilder();  // Noncompliant
 Document document = builder.parse(new InputSource(xml));
 DOMSource domSource = new DOMSource(document);
 </pre>

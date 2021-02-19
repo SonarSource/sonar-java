@@ -1,19 +1,28 @@
 package symbolicexecution.checks;
 
+import java.io.InputStream;
+import java.io.StringReader;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.Document;
 import javax.xml.XMLConstants;
 import java.io.IOException;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import java.io.File;
 
 class DocumentBuilderFactoryTest {
   // Vulnerable when nothing is made to protect against xxe
   DocumentBuilderFactory no_property() {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Noncompliant {{Disable access to external entities in XML parsing.}}
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Noncompliant [[sc=61;ec=72]] {{Disable access to external entities in XML parsing.}}
     return factory;
+  }
+
+  DocumentBuilder no_property_builder() throws Exception {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    DocumentBuilder builder = factory.newDocumentBuilder(); // Noncompliant
+    return builder;
   }
 
   DocumentBuilderFactory set_feature_secure() throws ParserConfigurationException {
@@ -61,6 +70,23 @@ class DocumentBuilderFactoryTest {
     return factory;
   }
 
+  void secure_with_no_op_entity_resolver(InputStream is) throws Exception {
+    DocumentBuilderFactory df = DocumentBuilderFactory.newInstance();
+    DocumentBuilder builder1 = df.newDocumentBuilder(); // Compliant thanks to "builder.setEntityResolver"
+    builder1.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
+    Document doc1 = builder1.parse(is);
+    DocumentBuilder builder2 = df.newDocumentBuilder(); // Noncompliant [[sc=35;ec=53]]
+    Document doc2 = builder2.parse(is);
+  }
+
+  void insecure_with_null_entity_resolver(InputStream is) throws Exception {
+    DocumentBuilderFactory df = DocumentBuilderFactory.newInstance();
+    DocumentBuilder builder = df.newDocumentBuilder(); // Noncompliant [[sc=34;ec=52]]
+    builder.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
+    builder.setEntityResolver(null);
+    Document doc = builder.parse(is);
+  }
+
   // "universal fix": ACCESS_EXTERNAL_DTD and ACCESS_EXTERNAL_SCHEMA should be set to ""
   DocumentBuilderFactory univeral_fix() {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -91,8 +117,8 @@ class DocumentBuilderFactoryTest {
   // Directly used without return
 
   void used_in_method() throws ParserConfigurationException, IOException, SAXException {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Noncompliant
-    DocumentBuilder builder = factory.newDocumentBuilder();
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    DocumentBuilder builder = factory.newDocumentBuilder(); // Noncompliant
     Document document = builder.parse(new File("xxe.xml"));
   }
 
