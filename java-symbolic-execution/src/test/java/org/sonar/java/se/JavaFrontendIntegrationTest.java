@@ -30,7 +30,7 @@ import java.util.Set;
 import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.rule.CheckFactory;
@@ -41,7 +41,7 @@ import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.Version;
-import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalysisException;
@@ -65,11 +65,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@EnableRuleMigrationSupport
 class JavaFrontendIntegrationTest {
 
-  @org.junit.Rule
-  public LogTester logTester = new LogTester();
+  @RegisterExtension
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
 
   private SensorContextTester context;
   private SonarComponents sonarComponents;
@@ -80,8 +79,6 @@ class JavaFrontendIntegrationTest {
 
   @BeforeEach
   void setup() throws IOException {
-    logTester.clear();
-
     context = SensorContextTester.create(Paths.get(""));
     context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(7, 9)));
 

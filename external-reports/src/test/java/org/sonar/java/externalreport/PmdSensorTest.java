@@ -26,8 +26,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextRange;
@@ -41,14 +41,13 @@ import org.sonar.api.batch.sensor.issue.ExternalIssue;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.externalreport.ExternalReportTestUtils.onlyOneLogElement;
 
-@EnableRuleMigrationSupport
 class PmdSensorTest {
 
   private static final Path PROJECT_DIR = Paths.get("src", "test", "resources", "pmd");
@@ -56,8 +55,8 @@ class PmdSensorTest {
 
   private static final PmdSensor sensor = new PmdSensor();
 
-  @Rule
-  public LogTester logTester = new LogTester();
+  @RegisterExtension
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
 
   @Test
   void test_descriptor() {

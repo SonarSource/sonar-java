@@ -29,7 +29,7 @@ import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -42,7 +42,7 @@ public final class ExternalReportTestUtils {
   }
 
 
-  public static void assertNoErrorWarnDebugLogs(LogTester logTester) {
+  public static void assertNoErrorWarnDebugLogs(LogTesterJUnit5 logTester) {
     assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.WARN)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.DEBUG)).isEmpty();

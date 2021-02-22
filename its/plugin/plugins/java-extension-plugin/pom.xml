@@ -25,6 +25,11 @@
       <version>${sonar.version}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.sonarsource.sonarqube</groupId>
+      <artifactId>sonar-plugin-api-impl</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.sonarsource.java</groupId>

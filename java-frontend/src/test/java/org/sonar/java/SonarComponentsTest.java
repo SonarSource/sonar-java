@@ -33,7 +33,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -59,7 +59,7 @@ import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.Version;
-import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.check.Rule;
 import org.sonar.java.classpath.ClasspathForMain;
@@ -84,7 +84,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.sonar.java.TestUtils.computeLineEndOffsets;
 
-@EnableRuleMigrationSupport
 @ExtendWith(MockitoExtension.class)
 class SonarComponentsTest {
 
@@ -431,13 +430,12 @@ class SonarComponentsTest {
 
     private SonarComponents sonarComponents;
 
-    @org.junit.Rule
-    public LogTester logTester = new LogTester();
+    @RegisterExtension
+    public LogTesterJUnit5 logTester = new LogTesterJUnit5();
 
     @BeforeEach
     void beforeEach() {
       sonarComponents = new SonarComponents(null, fs, javaClasspath, javaTestClasspath, null);
-      logTester.clear();
     }
 
     @Test
