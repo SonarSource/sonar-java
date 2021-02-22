@@ -1,27 +1,16 @@
 {
   "title": "Web applications should not have a \"main\" method",
   "type": "VULNERABILITY",
-  "status": "ready",
+  "status": "deprecated",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
   "tags": [
-    "cwe",
-    "cert",
-    "jee",
-    "owasp-a3"
+    
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2653",
   "sqKey": "S2653",
-  "scope": "Main",
-  "securityStandards": {
-    "CWE": [
-      489
-    ],
-    "OWASP": [
-      "A3"
-    ]
-  }
+  "scope": "Main"
 }
