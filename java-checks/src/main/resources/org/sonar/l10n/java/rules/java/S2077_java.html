@@ -1,62 +1,18 @@
-<p>Formatting strings used as SQL queries is security-sensitive. It has led in the past to the following vulnerabilities:</p>
-<ul>
-  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-9019">CVE-2018-9019</a> </li>
-  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-7318">CVE-2018-7318</a> </li>
-  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-5611">CVE-2017-5611</a> </li>
-</ul>
-<p>SQL queries often need to use a hardcoded SQL string with a dynamic parameter coming from a user request. Formatting a string to add those
-parameters to the request is a bad practice as it can result in an <a href="https://www.owasp.org/index.php/SQL_Injection">SQL injection</a>. The safe
-way to add parameters to a SQL query is to use SQL binding mechanisms.</p>
-<p>This rule raises an issue when an SQL query is built by formatting Strings, even if there is no injection. This rule does not detect SQL
-injections. The goal is to guide security code reviews and to prevent a common bad practice.</p>
-<p>The following method signatures from Java JDBC, JPA, JDO, Hibernate and Spring are tested: </p>
-<ul>
-  <li> <code>org.hibernate.Session.createQuery</code> </li>
-  <li> <code>org.hibernate.Session.createSQLQuery</code> </li>
-  <li> <code>java.sql.Statement.executeQuery</code> </li>
-  <li> <code>java.sql.Statement.execute</code> </li>
-  <li> <code>java.sql.Statement.executeUpdate</code> </li>
-  <li> <code>java.sql.Statement.executeLargeUpdate</code> </li>
-  <li> <code>java.sql.Statement.addBatch</code> </li>
-  <li> <code>java.sql.Connection.prepareStatement</code> </li>
-  <li> <code>java.sql.Connection.prepareCall</code> </li>
-  <li> <code>java.sql.Connection.nativeSQL</code> </li>
-  <li> <code>javax.persistence.EntityManager.createNativeQuery</code> </li>
-  <li> <code>javax.persistence.EntityManager.createQuery</code> </li>
-  <li> <code>org.springframework.jdbc.core.JdbcOperations.batchUpdate</code> </li>
-  <li> <code>org.springframework.jdbc.core.JdbcOperations.execute</code> </li>
-  <li> <code>org.springframework.jdbc.core.JdbcOperations.query</code> </li>
-  <li> <code>org.springframework.jdbc.core.JdbcOperations.queryForList</code> </li>
-  <li> <code>org.springframework.jdbc.core.JdbcOperations.queryForMap</code> </li>
-  <li> <code>org.springframework.jdbc.core.JdbcOperations.queryForObject</code> </li>
-  <li> <code>org.springframework.jdbc.core.JdbcOperations.queryForRowSet</code> </li>
-  <li> <code>org.springframework.jdbc.core.JdbcOperations.queryForInt</code> </li>
-  <li> <code>org.springframework.jdbc.core.JdbcOperations.queryForLong</code> </li>
-  <li> <code>org.springframework.jdbc.core.JdbcOperations.update</code> </li>
-  <li> <code>org.springframework.jdbc.core.PreparedStatementCreatorFactory.&lt;init&gt;</code> </li>
-  <li> <code>org.springframework.jdbc.core.PreparedStatementCreatorFactory.newPreparedStatementCreator</code> </li>
-  <li> <code>javax.jdo.PersistenceManager.newQuery</code> </li>
-  <li> <code>javax.jdo.Query.setFilter</code> </li>
-  <li> <code>javax.jdo.Query.setGrouping</code> </li>
-</ul>
-<p>If a method is defined in an interface, implementations are also tested. For example this is the case for
-<code>org.springframework.jdbc.core.JdbcOperations</code> , which is usually used as <code>org.springframework.jdbc.core.JdbcTemplate</code>). </p>
+<p>Formatted SQL queries can be difficult to maintain, debug and can increase the risk of SQL injection when concatenating untrusted values into the
+query. However, this rule doesn't detect SQL injections (unlike rule s3649), the goal is only to highlight complex/formatted queries.</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
-  <li> the SQL query is built using string formatting technics, such as concatenating variables. </li>
-  <li> some of the values are coming from an untrusted source and are not sanitized. </li>
+  <li> Some parts of the query come from untrusted values (like user inputs). </li>
+  <li> The query is repeated/duplicated in other parts of the code. </li>
+  <li> The application must support different types of relational databases. </li>
 </ul>
 <p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
 <ul>
-  <li> Avoid building queries manually using formatting technics. If you do it anyway, do not include user input in this building process. </li>
   <li> Use <a href="https://www.owasp.org/index.php/Query_Parameterization_Cheat_Sheet">parameterized queries, prepared statements, or stored
-  procedures</a> whenever possible. </li>
-  <li> You may also use ORM frameworks such as Hibernate which, if used correctly, reduce injection risks. </li>
-  <li> Avoid executing SQL queries containing unsafe input in stored procedures or functions. </li>
-  <li> <a href="https://www.owasp.org/index.php/Input_Validation_Cheat_Sheet">Sanitize</a> every unsafe input. </li>
+  procedures</a> and bind variables to SQL query parameters. </li>
+  <li> Consider using ORM frameworks if there is a need to have an abstract layer to access data. </li>
 </ul>
-<p>You can also reduce the impact of an attack by using a database account with low privileges.</p>
 <h2>Sensitive Code Example</h2>
 <pre>
 public User getUser(Connection con, String user) throws SQLException {

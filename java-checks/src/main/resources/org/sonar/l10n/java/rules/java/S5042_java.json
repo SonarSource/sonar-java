@@ -1,5 +1,5 @@
 {
-  "title": "Expanding archive files is security-sensitive",
+  "title": "Expanding archive files without controlling resource consumption is security-sensitive",
   "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {
@@ -9,6 +9,7 @@
   "tags": [
     "cwe",
     "cert",
+    "owasp-a6",
     "owasp-a5"
   ],
   "defaultSeverity": "Critical",
@@ -20,7 +21,8 @@
       409
     ],
     "OWASP": [
-      "A5"
+      "A5",
+      "A6"
     ]
   }
 }

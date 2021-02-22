@@ -8,12 +8,6 @@
     "cert",
     "owasp-a3"
   ],
-  "replacementRules": [],
-  "coveredLanguages": [
-    "C#",
-    "VB.Net",
-    "JavaScript"
-  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5659",
   "sqKey": "S5659",

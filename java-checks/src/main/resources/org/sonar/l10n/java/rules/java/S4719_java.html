@@ -9,9 +9,11 @@ available on every implementation of the Java platform.</p>
   <li> UTF_8 </li>
 </ul>
 <p>These constants should be preferred to:</p>
-<p>- the use of a String such as "UTF-8" which has the drawback of requiring the <code>catch</code>/<code>throw</code> of an
-<code>UnsupportedEncodingException</code> that will never actually happen</p>
-<p>- the use of Guava’s <code>Charsets</code> class, which has been obsolete since JDK7</p>
+<ul>
+  <li> the use of a String such as "UTF-8" which has the drawback of requiring the <code>catch</code>/<code>throw</code> of an
+  <code>UnsupportedEncodingException</code> that will never actually happen </li>
+  <li> the use of Guava’s <code>Charsets</code> class, which has been obsolete since JDK7 </li>
+</ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
 try {

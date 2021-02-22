@@ -2,9 +2,12 @@
 mistake and to declare a less restrictive configuration before a more restrictive one. Therefore, it's required to review the order of the
 "antMatchers" declarations. The <code>/**</code> one should be the last one if it is declared.</p>
 <p>This rule raises an issue when:</p>
-<p>- A pattern is preceded by another that ends with <code>**</code> and has the same beginning. E.g.: <code>/page*-admin/db/**</code> is after
-<code>/page*-admin/**</code></p>
-<p>- A pattern without wildcard characters is preceded by another that matches. E.g.: <code>/page-index/db</code> is after <code>/page*/**</code></p>
+<ul>
+  <li> A pattern is preceded by another that ends with <code>**</code> and has the same beginning. E.g.: <code>/page*-admin/db/**</code> is after
+  <code>/page*-admin/**</code> </li>
+  <li> A pattern without wildcard characters is preceded by another that matches. E.g.: <code>/page-index/db</code> is after <code>/page*/**</code>
+  </li>
+</ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
   protected void configure(HttpSecurity http) throws Exception {
