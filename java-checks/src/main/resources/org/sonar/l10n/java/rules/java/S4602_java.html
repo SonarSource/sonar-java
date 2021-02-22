@@ -5,9 +5,11 @@ is used on a class belonging to the default package, the entire classpath will b
 <p>This will slow-down the start-up of the application and it is likely the application will fail to start with an
 <code>BeanDefinitionStoreException</code> because you ended up scanning the Spring Framework package itself.</p>
 <p>This rule raises an issue when:</p>
-<p>- <code>@ComponentScan</code>, <code>@SpringBootApplication</code> and <code>@ServletComponentScan</code> are used on a class belonging to the
-default package</p>
-<p>- <code>@ComponentScan</code> is explicitly configured with the default package</p>
+<ul>
+  <li> <code>@ComponentScan</code>, <code>@SpringBootApplication</code> and <code>@ServletComponentScan</code> are used on a class belonging to the
+  default package </li>
+  <li> <code>@ComponentScan</code> is explicitly configured with the default package </li>
+</ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
 import org.springframework.boot.SpringApplication;

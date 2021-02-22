@@ -16,7 +16,7 @@
     "hibernate",
     "sql"
   ],
-  "defaultSeverity": "Critical",
+  "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2077",
   "sqKey": "S2077",
   "scope": "Main",
