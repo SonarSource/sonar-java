@@ -1,0 +1,14 @@
+{
+  "title": "Avoid using Object annotated with @Entity as param of @RequestMapping used in @Controller context",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "spring",
+    "security"
+  ],
+  "defaultSeverity": "Minor"
+}

@@ -63,6 +63,7 @@
     <module>java-surefire</module>
     <module>java-jsp</module>
     <module>its</module>
+    <module>docs</module>
   </modules>
 
   <scm>
@@ -159,7 +160,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>30.0-jre</version>
+        <version>30.1-jre</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
@@ -214,7 +215,7 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.6.2</version>
+        <version>1.7.30</version>
         <scope>test</scope>
       </dependency>
       <dependency>

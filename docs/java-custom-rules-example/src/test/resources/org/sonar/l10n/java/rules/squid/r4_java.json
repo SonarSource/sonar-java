@@ -1,0 +1,14 @@
+{
+  "title": "Rule title",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "linearOffset",
+    "linearFactor": "5min",
+    "linearOffset": "15min"
+  },
+  "tags": [
+    "test"
+  ],
+  "defaultSeverity": "Minor"
+}
