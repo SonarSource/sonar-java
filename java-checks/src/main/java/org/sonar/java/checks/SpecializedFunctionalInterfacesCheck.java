@@ -34,6 +34,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -41,6 +42,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S4276")
 public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVisitor {
+
+  private static final String AND_THEN = "andThen";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -58,7 +61,7 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
 
   private void checkClassInterfaces(ClassTree tree) {
     List<InterfaceTreeAndStringPairReport> reportTreeAndStringInterfaces = tree.superInterfaces().stream()
-      .map(typeTree -> matchFunctionalInterface(typeTree.symbolType(), false)
+      .map(typeTree -> matchFunctionalInterface(typeTree.symbolType(), Collections.emptyList())
       .map(rs -> new InterfaceTreeAndStringPairReport(rs, typeTree)).orElse(null))
       .filter(Objects::nonNull)
       .collect(Collectors.toList());
@@ -75,8 +78,7 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     ExpressionTree initializer = variableTree.initializer();
     if ((variableTree.symbol().owner().isMethodSymbol() && !variableTree.parent().is(Tree.Kind.LAMBDA_EXPRESSION))
       || (initializer != null && (initializer.is(Tree.Kind.LAMBDA_EXPRESSION) || isAnonymousClass(initializer)))) {
-      boolean usedAsMethodReference = isReferenced(variableTree.symbol().usages());
-      matchFunctionalInterface(variableTree.symbol().type(), usedAsMethodReference).ifPresent(reportString -> {
+      matchFunctionalInterface(variableTree.symbol().type(), variableTree.symbol().usages()).ifPresent(reportString -> {
         TypeTree variableType = variableTree.type();
         reportIssue(variableType, reportMessage(new InterfaceTreeAndStringPairReport(reportString, variableType)));
       });
@@ -97,45 +99,50 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     return initializeTree.is(Tree.Kind.NEW_CLASS) && ((NewClassTree) initializeTree).classBody() != null;
   }
 
-  private static Optional<String> matchFunctionalInterface(Type type, boolean usedAsMethodReference) {
+  private static Optional<String> matchFunctionalInterface(Type type, List<IdentifierTree> usages) {
     if (type.isUnknown() || !type.isParameterized()) {
       return Optional.empty();
     }
     switch (type.fullyQualifiedName()) {
       case "java.util.function.Function":
-        return handleFunctionInterface(type, usedAsMethodReference);
+        return handleFunctionInterface(type, usages);
       case "java.util.function.BiFunction":
-        return handleBiFunctionInterface(type);
+        return handleBiFunctionInterface(type, usages);
       case "java.util.function.BiConsumer":
-        return handleBiConsumerInterface(type, usedAsMethodReference);
+        return handleBiConsumerInterface(type, usages);
       case "java.util.function.Supplier":
-        return handleSupplier(type, usedAsMethodReference);
+        return handleSupplier(type, usages);
       case "java.util.function.Consumer":
       case "java.util.function.Predicate":
       case "java.util.function.UnaryOperator":
       case "java.util.function.BinaryOperator":
-        return handleSingleParameterFunctions(type, usedAsMethodReference);
+        return handleSingleParameterFunctions(type, usages);
       default:
         return Optional.empty();
     }
   }
 
-  private static Optional<String> handleSingleParameterFunctions(Type parametrizedType, boolean usedAsMethodReference) {
-    if (usedAsMethodReference) {
+  private static Optional<String> handleSingleParameterFunctions(Type parametrizedType, List<IdentifierTree> usages) {
+    if (isReferenced(usages)) {
       return Optional.empty();
     }
     return Optional.ofNullable(new ParameterTypeNameAndTreeType(parametrizedType, 0).paramTypeName)
       .map(s -> s + parametrizedType.name());
   }
 
-  private static Optional<String> handleFunctionInterface(Type parametrizedType, boolean usedAsMethodReference) {
+  private static Optional<String> handleFunctionInterface(Type parametrizedType,
+                                                          List<IdentifierTree> usages) {
     ParameterTypeNameAndTreeType firstArgument = new ParameterTypeNameAndTreeType(parametrizedType, 0);
     ParameterTypeNameAndTreeType secondArgument = new ParameterTypeNameAndTreeType(parametrizedType, 1);
+    boolean usedAsMethodReference = isReferenced(usages);
     if (typeEquals(firstArgument.paramType, secondArgument.paramType)) {
       if (firstArgument.paramTypeName != null && !usedAsMethodReference) {
         return functionalInterfaceName("%sUnaryOperator", firstArgument.paramTypeName);
       }
       return functionalInterfaceName("UnaryOperator<%s>", firstArgument.paramType);
+    }
+    if (usesMethods(usages, Arrays.asList("compose", AND_THEN))) {
+      return Optional.empty();
     }
     if (isBoolean(secondArgument) && !usedAsMethodReference) {
       return functionalInterfaceName("Predicate<%s>", firstArgument.paramType);
@@ -155,12 +162,25 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     return Optional.empty();
   }
 
-  private static Optional<String> handleBiFunctionInterface(Type parametrizedType) {
+  private static boolean usesMethods(List<IdentifierTree> usages, List<String> methods) {
+    return usages.stream()
+      .map(IdentifierTree::parent)
+      .filter(MemberSelectExpressionTree.class::isInstance)
+      .map(MemberSelectExpressionTree.class::cast)
+      .map(MemberSelectExpressionTree::identifier)
+      .map(IdentifierTree::name)
+      .anyMatch(methods::contains);
+  }
+
+  private static Optional<String> handleBiFunctionInterface(Type parametrizedType, List<IdentifierTree> usages) {
     ParameterTypeNameAndTreeType firstArgument = new ParameterTypeNameAndTreeType(parametrizedType, 0);
     ParameterTypeNameAndTreeType secondArgument = new ParameterTypeNameAndTreeType(parametrizedType, 1);
     ParameterTypeNameAndTreeType thirdArgument = new ParameterTypeNameAndTreeType(parametrizedType, 2);
     if (typeEquals(firstArgument.paramType, secondArgument.paramType) && typeEquals(firstArgument.paramType, thirdArgument.paramType)) {
       return functionalInterfaceName("BinaryOperator<%s>", firstArgument.paramType);
+    }
+    if (usesMethods(usages, Collections.singletonList(AND_THEN))) {
+      return Optional.empty();
     }
     if (isBoolean(thirdArgument)) {
       return functionalInterfaceName("BiPredicate<%s, %s>", firstArgument.paramType, secondArgument.paramType);
@@ -172,8 +192,8 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     return Optional.of(String.format(pattern, args));
   }
 
-  private static Optional<String> handleBiConsumerInterface(Type parametrizedType, boolean usedAsMethodReference) {
-    if (usedAsMethodReference) {
+  private static Optional<String> handleBiConsumerInterface(Type parametrizedType, List<IdentifierTree> usages) {
+    if (isReferenced(usages) || usesMethods(usages, Collections.singletonList(AND_THEN))) {
       return Optional.empty();
     }
     ParameterTypeNameAndTreeType firstArgument = new ParameterTypeNameAndTreeType(parametrizedType, 0);
@@ -184,8 +204,8 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     return Optional.empty();
   }
 
-  private static Optional<String> handleSupplier(Type parametrizedType, boolean usedAsMethodReference) {
-    if (usedAsMethodReference) {
+  private static Optional<String> handleSupplier(Type parametrizedType, List<IdentifierTree> usages) {
+    if (isReferenced(usages)) {
       return Optional.empty();
     }
     ParameterTypeNameAndTreeType supplierParamType = new ParameterTypeNameAndTreeType(parametrizedType, 0);

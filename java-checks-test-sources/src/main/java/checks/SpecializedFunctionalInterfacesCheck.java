@@ -367,4 +367,52 @@ public class SpecializedFunctionalInterfacesCheck {
   static void foo(Object object) {
 
   }
+
+  void functionsWithDefaultMethods() {
+    Function<Long, Boolean> myFunctionLB = l -> l > 42L; // Compliant, uses compose/andThen
+    myFunctionLB.andThen(s -> s && true);
+    myFunctionLB.compose((Object o) -> o.hashCode() + 42L);
+    
+    Function<Integer, Boolean> myFunctionIB = i -> i > 42; // Compliant, uses compose/andThen
+    myFunctionIB.andThen(s -> s && true);
+    myFunctionIB.compose((Object o) -> o.hashCode() + 42);
+    
+    Function<Double, Boolean> myFunctionDB = i -> i > 42.5; // Compliant, uses compose/andThen
+    myFunctionDB.andThen(s -> s && true);
+    myFunctionDB.compose((Object o) -> (double)o.hashCode() + 42.8);
+    
+    Function<Long, String> myFunctionLS = l -> l > 42L ? "big" : "small"; // Compliant, uses compose/andThen
+    myFunctionLS.andThen(s -> s.length() + 42);
+    myFunctionLS.compose((Object o) -> o.hashCode() + 42L);
+    
+    Function<Long, Integer> myFunctionLI = l -> l > 42L ? l.compareTo(100L) : l.compareTo(1000L); // Compliant, uses compose/andThen
+    myFunctionLI.andThen(s -> s + 42);
+    myFunctionLI.compose((Object o) -> o.hashCode() + 42L);
+
+    Function<String, Double> myFunctionSD = s -> s.length() > 42 ? 100.01 : 10.002; // Compliant, uses compose/andThen
+    myFunctionSD.andThen(s -> s + 42);
+    myFunctionSD.compose((Object o) -> o.hashCode() + "42L");
+  }
+  
+  void biFunctionsWithDefaultMethods() {
+    BiFunction<String, Long, Boolean> myFunctionLB = (s, l) -> l > 42L; // Compliant, uses andThen
+    myFunctionLB.andThen(s -> s && true);
+
+    BiFunction<String, Integer, Boolean> myFunctionIB = (s, i) -> i > 42; // Compliant, uses andThen
+    myFunctionIB.andThen(s -> s && true);
+
+    BiFunction<String, Double, Boolean> myFunctionDB = (s, d) -> d > 42.5; // Compliant, uses andThen
+    myFunctionDB.andThen(s -> s && true);
+  }
+  
+  void biConsumersWithDefaultMethods() {
+    BiConsumer<String, Long> myConsumerLB = (s, l) -> System.out.println(s + l); // Compliant, uses andThen
+    myConsumerLB.andThen((s, l) -> System.out.println("After" + s + l));
+
+    BiConsumer<String, Integer> myConsumerIB = (s, i) -> System.out.println(s + i); // Compliant, uses andThen
+    myConsumerIB.andThen((s, l) -> System.out.println("After" + s + l));
+
+    BiConsumer<String, Double> myConsumerDB = (s, d) -> System.out.println(s + d); // Compliant, uses andThen
+    myConsumerDB.andThen((s, l) -> System.out.println("After" + s + l));
+  }
 }
