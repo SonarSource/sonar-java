@@ -85,7 +85,7 @@ class NullableAnnotationUtilsTest {
 
     List<Symbol> nonNullFields = Collector.variablesWithName("nonNull", cut);
     assertThat(nonNullFields)
-      .hasSize(1)
+      .hasSize(4)
       .allMatch(NullableAnnotationUtils::isAnnotatedNonNull);
     assertThat(nonNullFields.stream().map(Symbol::metadata))
       .noneMatch(NullableAnnotationUtils::isAnnotatedNullable);
