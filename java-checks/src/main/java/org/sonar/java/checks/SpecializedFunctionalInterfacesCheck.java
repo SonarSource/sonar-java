@@ -49,9 +49,6 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     if (tree.is(Tree.Kind.CLASS)) {
       checkClassInterfaces(((ClassTree) tree));
     } else {
