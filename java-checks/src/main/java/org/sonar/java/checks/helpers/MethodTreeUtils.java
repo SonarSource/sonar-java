@@ -19,16 +19,25 @@
  */
 package org.sonar.java.checks.helpers;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -127,6 +136,45 @@ public final class MethodTreeUtils {
   @VisibleForTesting
   static boolean hasKind(@Nullable Tree tree, Tree.Kind kind) {
     return tree != null &&  tree.kind() == kind;
+  }
+
+  public static class MethodInvocationCollector extends BaseTreeVisitor {
+    private final List<Tree> invocationTree = new ArrayList<>();
+    private final Predicate<Symbol> collectPredicate;
+
+    public MethodInvocationCollector(Predicate<Symbol> collectPredicate) {
+      this.collectPredicate = collectPredicate;
+    }
+
+    public List<Tree> getInvocationTree() {
+      return invocationTree;
+    }
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree mit) {
+      if (collectPredicate.test(mit.symbol())) {
+        invocationTree.add(ExpressionUtils.methodName(mit));
+      }
+      super.visitMethodInvocation(mit);
+    }
+
+    @Override
+    public void visitNewClass(NewClassTree tree) {
+      if (collectPredicate.test(tree.constructorSymbol())) {
+        invocationTree.add(tree.identifier());
+      }
+      super.visitNewClass(tree);
+    }
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      // Skip class
+    }
+
+    @Override
+    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+      // Skip lambdas
+    }
   }
 
 }

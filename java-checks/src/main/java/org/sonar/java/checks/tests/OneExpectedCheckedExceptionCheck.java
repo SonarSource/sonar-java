@@ -22,6 +22,7 @@ package org.sonar.java.checks.tests;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -39,9 +40,9 @@ public class OneExpectedCheckedExceptionCheck extends AbstractOneExpectedExcepti
       return;
     }
 
-    MethodInvocationCollector visitor = new MethodInvocationCollector(symbol -> throwExpectedException(symbol, checkedTypes));
+    MethodTreeUtils.MethodInvocationCollector visitor = new MethodTreeUtils.MethodInvocationCollector(symbol -> throwExpectedException(symbol, checkedTypes));
     treeToVisit.accept(visitor);
-    List<Tree> invocationTree = visitor.invocationTree;
+    List<Tree> invocationTree = visitor.getInvocationTree();
     if (invocationTree.size() > 1) {
       reportIssue(reportLocation,
         String.format("Refactor the %s to not have multiple invocations throwing the same checked exception.", placeToRefactor),

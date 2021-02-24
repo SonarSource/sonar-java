@@ -29,8 +29,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.matcher.MethodMatchersBuilder;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -39,12 +39,9 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
-import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
@@ -101,7 +98,7 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
     if (catchGenericException.isEmpty() || interruptCaught) {
       return;
     }
-    MethodInvocationCollector collector = new MethodInvocationCollector(InterruptedExceptionCheck::throwInterruptedException);
+    MethodTreeUtils.MethodInvocationCollector collector = new MethodTreeUtils.MethodInvocationCollector(InterruptedExceptionCheck::throwInterruptedException);
     tryStatementTree.block().accept(collector);
     List<Tree> invocationInterrupting = collector.getInvocationTree();
     if (invocationInterrupting.isEmpty()) {
@@ -162,45 +159,6 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
     return symbol.isMethodSymbol()
       && ((Symbol.MethodSymbol) symbol).thrownTypes().stream()
       .anyMatch(t -> t.is("java.lang.InterruptedException"));
-  }
-
-  private static class MethodInvocationCollector extends BaseTreeVisitor {
-    private final List<Tree> invocationTree = new ArrayList<>();
-    private final Predicate<Symbol> collectPredicate;
-
-    MethodInvocationCollector(Predicate<Symbol> collectPredicate) {
-      this.collectPredicate = collectPredicate;
-    }
-
-    public List<Tree> getInvocationTree() {
-      return invocationTree;
-    }
-
-    @Override
-    public void visitMethodInvocation(MethodInvocationTree mit) {
-      if (collectPredicate.test(mit.symbol())) {
-        invocationTree.add(ExpressionUtils.methodName(mit));
-      }
-      super.visitMethodInvocation(mit);
-    }
-
-    @Override
-    public void visitNewClass(NewClassTree tree) {
-      if (collectPredicate.test(tree.constructorSymbol())) {
-        invocationTree.add(tree.identifier());
-      }
-      super.visitNewClass(tree);
-    }
-
-    @Override
-    public void visitClass(ClassTree tree) {
-      // Skip class
-    }
-
-    @Override
-    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
-      // Skip lambdas
-    }
   }
 
   private static class BlockVisitor extends BaseTreeVisitor {
