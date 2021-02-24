@@ -58,7 +58,7 @@
         <configuration>
           <pluginClass>${sonar.pluginClass}</pluginClass>
           <sonarLintSupported>false</sonarLintSupported>
-          <sonarQubeMinVersion>5.6</sonarQubeMinVersion>
+          <sonarQubeMinVersion>7.9</sonarQubeMinVersion>
         </configuration>
       </plugin>
     </plugins>

@@ -1,0 +1,13 @@
+{
+  "title": "Avoid Brand in Method Names",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "1min"
+  },
+  "tags": [
+    "company"
+  ],
+  "defaultSeverity": "Minor"
+}

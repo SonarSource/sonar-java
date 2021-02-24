@@ -1,0 +1,13 @@
+{
+  "title": "Rule title",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Linear",
+    "linearFactor": "5min"
+  },
+  "tags": [
+    "test"
+  ],
+  "defaultSeverity": "Minor"
+}

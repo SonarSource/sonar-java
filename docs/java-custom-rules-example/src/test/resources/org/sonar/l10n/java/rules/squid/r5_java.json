@@ -1,0 +1,9 @@
+{
+  "title": "Rule title",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "tags": [
+    "test"
+  ],
+  "defaultSeverity": "Minor"
+}
