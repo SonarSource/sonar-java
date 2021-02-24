@@ -17,7 +17,7 @@ interface Javax2 {
 abstract class Spring {
   Object nonNullField;
   abstract void nonNull(Object p1);
-  Object returnType();
+  abstract Object returnType();
 }
 
 @com.mongodb.lang.NonNullApi
@@ -36,14 +36,21 @@ interface Eclipse2 {
   Object returnType();
 }
 
-@org.eclipse.jdt.annotation.NonNullByDefault({DefaultLocation.RETURN_TYPE, DefaultLocation.PARAMETER})
-interface Eclipse3 {
-  void nonNull(Object p1);
-  Object returnType();
+@org.eclipse.jdt.annotation.NonNullByDefault(DefaultLocation.FIELD)
+abstract class Eclipse3 {
+  Object nonNullField;
+}
+
+@org.eclipse.jdt.annotation.NonNullByDefault({DefaultLocation.RETURN_TYPE, DefaultLocation.PARAMETER, DefaultLocation.FIELD})
+abstract class Eclipse4 {
+  Object nonNullField;
+  abstract void nonNull(Object p1);
+  abstract Object returnType();
 }
 
 @org.eclipse.jdt.annotation.NonNullByDefault
-interface Eclipse4 {
-  void nonNull(Object p1);
-  Object returnType();
+abstract class Eclipse5 {
+  Object nonNullField;
+  abstract void nonNull(Object p1);
+  abstract Object returnType();
 }
