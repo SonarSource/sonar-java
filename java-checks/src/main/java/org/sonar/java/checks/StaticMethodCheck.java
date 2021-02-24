@@ -88,7 +88,11 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
   }
 
   private static boolean isExcluded(MethodTree tree) {
-    return tree.is(Tree.Kind.CONSTRUCTOR) || EXCLUDED_SERIALIZABLE_METHODS.matches(tree);
+    return tree.is(Tree.Kind.CONSTRUCTOR) || EXCLUDED_SERIALIZABLE_METHODS.matches(tree) || hasEmptyBody(tree);
+  }
+
+  private static boolean hasEmptyBody(MethodTree tree) {
+    return tree.block() != null && tree.block().body().isEmpty();
   }
 
   @Override

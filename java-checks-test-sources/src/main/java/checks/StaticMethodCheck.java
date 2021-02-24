@@ -1,4 +1,4 @@
-package foo;
+package checks;
 
 import java.io.IOException;
 import java.io.ObjectStreamException;
@@ -13,11 +13,7 @@ class Utilities {
 
   public Utilities() {
   }
-
-  private void registerPrimitives(final boolean type) {
-    register(Boolean.TYPE, new Toto());
-  }
-
+  
   private void register(final Class<?> clazz, final Object converter) {
     otherWord = "";
   }
@@ -123,10 +119,6 @@ class Utilities {
     return new Utilities.Nested();
   }
 
-  private Unknown unknown() { // Compliant because we should not make any decision on an unknown class
-    return new Unknown("", "");
-  }
-
   private Map newMap() { // Noncompliant
     return new HashMap();
   }
@@ -145,9 +137,8 @@ class Utilities {
   }
 
   private void callMethodOfStaticClass() { // Noncompliant
-    new foo.Inner.FooBar().myHash();
+    new checks.Inner.FooBar().myHash();
   }
-
 }
 
 class UtilitiesExtension extends Utilities {
@@ -165,7 +156,7 @@ class SerializableExclusions implements Serializable {
 
   private void readObjectNoData() throws ObjectStreamException {}
 
-  private void other() {} // Noncompliant
+  private void other() {} // Compliant, empty method
 
   private void recursive() { // Noncompliant
     recursive();
@@ -179,7 +170,6 @@ class SerializableExclusions implements Serializable {
   private void readResolve() throws ObjectStreamException {
     System.out.println("foo");
   }
-  private Object writeReplace() throws ObjectStreamException { }
 }
 class Inner {
   static class FooBar {
@@ -200,7 +190,7 @@ class Inner {
     public void instanceMethod() {}
 
     private void foo() { // Compliant: foo cannot be static because it references a non-static method
-      new Plop(){
+      new Plopp(){
         void plop1(){
           instanceMethod();
         }
@@ -208,7 +198,7 @@ class Inner {
     }
 
     private void init() { // Compliant: foo cannot be static because it references a non-static field
-      new Plop(){
+      new Plopp(){
         void plop1(){
           instanceVariable = 0;
         }
@@ -217,8 +207,8 @@ class Inner {
   }
 }
 
-class Plop {
-  Plop(){}
+class Plopp {
+  Plopp(){}
   void plop1(){}
 }
 
