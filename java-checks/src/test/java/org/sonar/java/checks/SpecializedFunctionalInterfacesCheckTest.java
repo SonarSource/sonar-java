@@ -37,7 +37,7 @@ class SpecializedFunctionalInterfacesCheckTest {
       .onFile(testSourcesPath("checks/SpecializedFunctionalInterfacesCheck.java"))
       .withCheck(new SpecializedFunctionalInterfacesCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyIssues();
   }
 
   @Test
