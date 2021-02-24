@@ -208,9 +208,14 @@ public final class NullableAnnotationUtils {
 
   @CheckForNull
   private static String nonNullFieldAnnotation(Symbol symbol) {
-    if (symbol.isVariableSymbol() && symbol.owner().isTypeSymbol() && !isUsingNullable(symbol.metadata())
-      && valuesForGlobalAnnotation(symbol, ORG_SPRINGFRAMEWORK_LANG_NON_NULL_FIELDS) != null) {
-      return ORG_SPRINGFRAMEWORK_LANG_NON_NULL_FIELDS;
+    if (symbol.isVariableSymbol() && symbol.owner().isTypeSymbol() && !isUsingNullable(symbol.metadata())) {
+      if (valuesForGlobalAnnotation(symbol, ORG_SPRINGFRAMEWORK_LANG_NON_NULL_FIELDS) != null) {
+        return ORG_SPRINGFRAMEWORK_LANG_NON_NULL_FIELDS;
+      }
+
+      if (isGloballyAnnotatedWithEclipseNonNullByDefault((Symbol.MethodSymbol) symbol, "FIELD")) {
+        return ORG_ECLIPSE_JDT_ANNOTATION_NON_NULL_BY_DEFAULT;
+      }
     }
     return null;
   }
