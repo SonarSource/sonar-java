@@ -21,9 +21,35 @@ class MutableMembersUsageCheck {
     return strings; // Noncompliant [[sc=12;ec=19]] {{Return a copy of "strings".}}
   }
 
+  public void setStringsFromGiven(String [] given) {
+    strings = given; // Noncompliant [[sc=15;ec=20]] {{Store a copy of "given".}}
+  }
+
   public void other(String[] given) {
-    String[] doSomething = given; // Noncompliant [[sc=28;ec=33]] {{Store a copy of "given".}}
+    String[] doSomething = given; // Compliant, not stored in a member
     return;
+  }
+
+  public int[] passThrough(int[] arr) {
+    return arr;
+  }
+
+  public int[] useButDoNotStoreInMember(int[] arr1, int[] arr2) {
+    int[] tmp;
+    if (arr1.length >= arr2.length) {
+      tmp = arr1; // Compliant
+    } else {
+      tmp = arr2; // Compliant
+    }
+    return tmp;
+  }
+
+  public int[] useButDoNotStoreInMember2(int[] arr1, int[] arr2) {
+    int[] tmp = arr1; // Compliant
+    if (arr1.length < arr2.length) {
+      tmp = arr2; // Compliant
+    }
+    return tmp;
   }
 
   public void setStrings(String [] strings) {
