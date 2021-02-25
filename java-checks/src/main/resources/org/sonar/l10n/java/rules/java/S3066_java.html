@@ -1,6 +1,6 @@
 <p><code>enum</code>s are generally thought of as constant, but an <code>enum</code> with a <code>public</code> field or <code>public</code> setter is
-not only non-constant, but also vulnerable to malicious code. Ideally fields in an <code>enum</code> are <code>private</code> and set in the
-constructor, but if that's not possible, their visibility should be reduced as much as possible.</p>
+non-constant. Ideally fields in an <code>enum</code> are <code>private</code> and set in the constructor, but if that's not possible, their visibility
+should be reduced as much as possible.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public enum Continent {
