@@ -654,16 +654,25 @@ public class RegexParser {
     }
   }
 
+  /**
+   * Parses a numerical back reference greedily, taking as many numbers as it can. The first digit is always treated
+   * as a back reference, but multi digit numbers are only treated as a back reference if at least that many back
+   * references exist at this point in the regex. See {@link java.util.regex.Pattern#ref(int refNum)}
+   */
   private RegexTree parseNumericalBackReference(JavaCharacter backslash) {
     JavaCharacter firstDigit = characters.getCurrent();
     JavaCharacter lastDigit = firstDigit;
+    int referenceNumber = firstDigit.getCharacter() - '0';
     do {
       characters.moveNext();
       if (!characters.isAtEnd()) {
         JavaCharacter currentChar = characters.getCurrent();
         char asChar = currentChar.getCharacter();
-        if (isAsciiDigit(asChar)) {
+        int newReferenceNumber = (referenceNumber * 10) + (asChar - '0');
+        boolean matchingGroupExistsAtThisPoint = newReferenceNumber < groupNumber;
+        if (isAsciiDigit(asChar) && matchingGroupExistsAtThisPoint) {
           lastDigit = currentChar;
+          referenceNumber = newReferenceNumber;
         } else {
           break;
         }
