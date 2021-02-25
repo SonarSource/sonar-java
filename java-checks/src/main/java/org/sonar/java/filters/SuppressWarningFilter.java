@@ -50,6 +50,7 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
 
   private static final Map<String, Set<String>> JAVAC_WARNING_SUPPRESSING_RULES = MapBuilder.<String, Set<String>>newMap()
+      // JDK warnings
       .put("cast", Collections.singleton("java:S1905"))
       .put("deprecation", Collections.singleton("java:S1874"))
       .put("dep-ann", Collections.singleton("java:S1123"))
@@ -60,8 +61,20 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
       .put("overrides", Collections.singleton("java:S1206"))
       .put("removal", Collections.singleton("java:S5738"))
       .put("serial", Collections.singleton("java:S2057"))
-      .put("static", Collections.singleton("java:S2209"))
+      .put("static", SetUtils.immutableSetOf("java:S2696", "java:S2209"))
       .put("rawtypes", Collections.singleton("java:S3740"))
+      // Eclipse (IDE) warnings
+      .put("boxing", SetUtils.immutableSetOf("java:S2153", "java:S5411"))
+      .put("hiding", Collections.singleton("java:S4977"))
+      .put("javadoc", Collections.singleton("java:S1176"))
+      .put("null", Collections.singleton("java:S2259"))
+      .put("resource", SetUtils.immutableSetOf("java:S2093", "java:S2095"))
+      .put("serial", Collections.singleton("java:S2057"))
+      .put("static-access", SetUtils.immutableSetOf("java:S2696", "java:S2209"))
+      .put("static-method", Collections.singleton("java:S2325"))
+      .put("sync-override", Collections.singleton("java:S3551"))
+      .put("unused", SetUtils.immutableSetOf("java:S1481", "java:S1065", "java:S1854", "java:S1068",
+        "java:S3985", "java:S2326", "java:S1144", "java:S1128", "java:S2583"))
       .build();
 
   private final Map<String, Map<String, Set<Integer>>> excludedLinesByComponent = new HashMap<>();

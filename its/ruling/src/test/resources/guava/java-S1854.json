@@ -9,7 +9,6 @@
 3306,
 3336,
 3402,
-4135,
 ],
 'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMap.java':[
 818,
@@ -26,7 +25,6 @@
 2896,
 2927,
 2992,
-3478,
 ],
 'com.google.guava:guava:src/com/google/common/math/BigIntegerMath.java':[
 358,
