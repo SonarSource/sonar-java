@@ -30,54 +30,81 @@ This document is an introduction to custom rule writing for the SonarQube Java A
 
 ## Getting started
 
-The rules you are going to develop will be delivered using a dedicated, custom plugin, relying on the **SonarSource Analyzer for Java API**. In order to start working efficiently, we provide a empty template maven project, that you will fill in while following this tutorial.
+The rules you are going to develop will be delivered using a dedicated, custom plugin, relying on the **SonarSource Analyzer for Java API**. In order to start working efficiently, we provide a template maven project, that you will fill in while following this tutorial.
 
-Grab the template project from there and import it to your IDE: https://github.com/SonarSource/sonar-custom-rules-examples/tree/master/java-custom-rules
-
-This project already contains custom rules. Our goal will be to add an extra rule!
+Grab the template project by cloning this repository (https://github.com/SonarSource/sonar-java) and then importing in your IDE the sub-module [java-custom-rules-examples](https://github.com/SonarSource/sonar-java/tree/master/docs/java-custom-rules-example).
+This project already contains examples of custom rules. Our goal will be to add an extra rule!
 
 ### Looking at the POM
 
-A custom plugin is a Maven project, and before diving into code, it is important to notice a few relevant lines related to the configuration of your soon-to-be-released custom plugin.
+A custom plugin is a Maven project, and before diving into code, it is important to notice a few relevant lines related to the configuration of your soon-to-be-released custom plugin. The root of a Maven project is a file named `pom.xml`.
 
-In the code snippet below, note the plugin API version (`<sonar.version>`) provided through the properties. It relates to the minimum version of SonarQube your plugin will support, and is generally aligned to your company's SonarQube instance. In this template, we rely on the version **8.2.0.32929** (LTS version is **7.9**, but compatibility to latest release is guaranteed when packaging the plugin).
-Note that latest released versions of the Java Analyzer are always compatible with the current LTS version of SonarQube.
+In our case, we have 3 of them:
+* `pom.xml`: use a snapshot version of the Java Analyzer
+* `pom_SQ_7_9_LTS.xml`: self-contained `pom` file, configured with dependencies matching SonarQube 7.9 LTS requirements
+* `pom_SQ_8_7.xml`: self-contained `pom` file, configured with dependencies matching SonarQube 8.7
 
-The property `<java.plugin.version>` is the minimum version of the Java Analyzer that will be required to run your custom plugin in your SonarQube instance. Consequently, as we will rely on version **6.2.0.21135** of the Java plugin, the SonarQube instance which will use the custom plugin will also need version **6.2.0.21135** of the Java Plugin as well.
+These 3 `pom`s correspond different use-cases, depending of which instance of SonarQube you will target with your custom-rules plugin. In this tutorial, **we will only use the file named `pom_SQ_8_7.xml`**, as it is completely independent from the build of the Java Analyzer, is self contained, and will target the latest release of SonarQube.
 
-For the moment, don't touch these two properties.
+Let's start by building the custom-plugin template by using the following command:
 
-Other properties such as `<groupId>`, `<artifactId>`, `<version>`, `<name>` and `<description>` can be freely modified.
+```
+mvn clean install -f pom_SQ_8.7.xml
+```
+
+Note that you can also decide to **delete** the original pom.xml file (**NOT RECOMMANDED**), and then rename `pom_SQ_8.7.xml` into `pom.xml`. You would then be able to use the very simple command:
+
+```
+mvn clean install
+```
+
+Looking inside the `pom`, you will see that both versions of SonarQube and the Java Analyzer are hardcoded. This is because SonarSource's analyzers are directly embedded in the various SonarQube versions and are shipped together. For instance, SonarQube `7.9` (LTS) is shipped with the version `6.3.2.22818` of the Java Analyzer, while SonarQube `8.7` is shipped with a much more recent version `6.12.0.24852` of the Java Analyzer. **These versions can not be changed**.
+
+>
+> :exclamation: **SonarQube 8.7 compatibility issue**
+> 
+> SonarQube `8.7` embed version `6.12.0.24852` of the Java Analyzer, which unfortunately suffer from a dependency-related-bug. This bug impacts custom-rules plugins compatibility with latest SonarQube APIs. It might also prevent you to build or run tests of custom-rules plugins.
+>
+> The issue has been fixed in ticket [SONARJAVA-3690](https://jira.sonarsource.com/browse/SONARJAVA-3690), but the fix has been shipped with version `6.13.0.2513` of the Java Analyzer, itself only available for SonarCloud users.
+>
+> SonarQube `8.8` will embed a newer version of the Java Analyzer (probably version `6.14`), and the issue will be solved for custom-rules plugins. However, in the meantime, we recommend you to use version `6.13` instead of `6.12` of the Java Analyzer to build your custom plugin. No new APIs has been introduced between these 2 versions, and deploying a custom-rules plugin relying on `6.13` Java Analyzer API on a SonarQube `8.7` having version 6.12 will work just fine.
+>
 
 ```xml
-<groupId>org.sonar.samples</groupId>
-<artifactId>java-custom-rules</artifactId>
-<version>1.0-SNAPSHOT</version>
-<packaging>sonar-plugin</packaging>
- 
 <properties>
-  <sonar.version>8.2.0.32929</sonar.version>
-  <java.plugin.version>6.2.0.21135</java.plugin.version>
+  <sonarqube.version>8.7.0.41497</sonarqube.version>
+  <sonarjava.version>6.13.0.25138</sonarjava.version>
+  <!-- [...] -->
 </properties>
-<name>Java Custom Rules - Template</name>
+```
+
+Other tags such as `<groupId>`, `<artifactId>`, `<version>`, `<name>` and `<description>` can be freely modified.
+
+```xml
+  <groupId>org.sonar.samples</groupId>
+  <artifactId>java-custom-rules-example</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <name>SonarQube Java :: Documentation :: Custom Rules Example</name>
+  <description>Java Custom Rules Example for SonarQube</description>
 ```
 
 In the code snippet below, it is important to note that the **entry point of the plugin** is provided as the `<pluginClass>` in the configuration of the sonar-packaging-maven plugin, using the fully qualified name of the java class `MyJavaRulesPlugin`.
 If you refactor your code, rename, or move the class extending `org.sonar.api.SonarPlugin`, you will have to change this configuration.
-It's also the property `<sonarQubeMinVersion>` which guarantees the compatibility with LTS 7.9.
+It's also the property `<sonarQubeMinVersion>` which guarantees the compatibility with the SonarQube instance you target.
 
 ```xml
 <plugin>
   <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
   <artifactId>sonar-packaging-maven-plugin</artifactId>
-  <version>1.17</version>
+  <version>1.18.0.372</version>
   <extensions>true</extensions>
   <configuration>
     <pluginKey>java-custom</pluginKey>
     <pluginName>Java Custom Rules</pluginName>
     <pluginClass>org.sonar.samples.java.MyJavaRulesPlugin</pluginClass>
     <sonarLintSupported>true</sonarLintSupported>
-    <sonarQubeMinVersion>7.9</sonarQubeMinVersion> <!-- allows to depend on API 8.x but still run on LTS 7.9 -->
+    <sonarQubeMinVersion>${sonarqube.version}</sonarQubeMinVersion>
+    <requirePlugins>java:${sonarjava.version}</requirePlugins>
   </configuration>
 </plugin>
 ```
@@ -105,35 +132,34 @@ class MyClass {
 ```java
 package org.sonar.samples.java.checks;
  
-import org.junit.Test;
- 
-public class MyFirstCustomCheckTest {
- 
+import org.junit.jupiter.api.Test;
+
+class MyFirstCustomCheckTest {
+
   @Test
-  public void test() {
+  void test() {
   }
- 
+
 }
 ```
 
   3. In package `org.sonar.samples.java.checks` of `/src/main/java`, create a new class called `MyFirstCustomCheck` extending class `org.sonar.plugins.java.api.IssuableSubscriptionVisitor` provided by the Java Plugin API. Then, replace the content of the `nodesToVisit()` method with the content from the following code snippet. This file will be described when dealing with implementation of the rule!
 ```java
 package org.sonar.samples.java.checks;
- 
+
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import java.util.Collections;
 import java.util.List;
- 
+
 @Rule(key = "MyFirstCustomRule")
 public class MyFirstCustomCheck extends IssuableSubscriptionVisitor {
- 
+
   @Override
   public List<Kind> nodesToVisit() {
     return Collections.emptyList();
   }
- 
 }
 
 ```
@@ -141,7 +167,7 @@ public class MyFirstCustomCheck extends IssuableSubscriptionVisitor {
 >
 > :question: **More files...**
 > 
-> If the 3 files described above are always the base of rule writing, there are situations where extra files may be needed. For instance, when a rule uses parameters, or if its behavior relies on the detected version of java, multiple test files could be required. It is also possible to use external files to describe rule metadata, such as a description in html format. Such situations will be described in other topics of this documentation.
+> If the 3 files described above are always the base of rule writing, there are situations where extra files may be needed. For instance, when a rule uses parameters, or if its behavior relies on the detected version of java, multiple test files could be required. It is also possible to use external files to describe rule metadata, such as a description in HTML format. Such situations will be described in other topics of this documentation.
 >
 
 ### A specification to make it right
@@ -164,27 +190,27 @@ In the test file `MyFirstCustomCheck.java` created earlier, copy-paste the follo
 ```java
 class MyClass {
   MyClass(MyClass mc) { }
-  
+
   int     foo1() { return 0; }
   void    foo2(int value) { }
   int     foo3(int value) { return 0; } // Noncompliant
   Object  foo4(int value) { return null; }
   MyClass foo5(MyClass value) {return null; } // Noncompliant
-  
+
   int     foo6(int value, String name) { return 0; }
   int     foo7(int ... values) { return 0;}
 }
 ```
 
 The test file now contains the following test cases:
-* line 2: A constructor, to differentiate the case from a method;
-* line 4: A method without parameter (`foo1`);
-* line 5: A method returning void (`foo2`);
-* line 6: A method returning the same type as its parameter (`foo3`), which will be noncompliant;
-* line 7: A method with a single parameter, but a different return type (`foo4`);
-* line 8: Another method with a single parameter and same return type, but with non-primitive types (`foo5`), therefore non compliant too;
-* line 10: A method with more than 1 parameter (`foo6`);
-* line 11: A method with a variable arity argument (`foo7`);
+* **line 2:** A constructor, to differentiate the case from a method;
+* **line 4:** A method without parameter (`foo1`);
+* **line 5:** A method returning void (`foo2`);
+* **line 6:** A method returning the same type as its parameter (`foo3`), which will be noncompliant;
+* **line 7:** A method with a single parameter, but a different return type (`foo4`);
+* **line 8:** Another method with a single parameter and same return type, but with non-primitive types (`foo5`), therefore non compliant too;
+* **line 10:** A method with more than 1 parameter (`foo6`);
+* **line 11:** A method with a variable arity argument (`foo7`);
 
 ### A test class to make it pass
 
@@ -192,27 +218,27 @@ Once the test file is updated, let's update our test class to use it, and link t
 
 ```java
   @Test
-  public void test() {
-    JavaCheckVerifier.verify("src/test/files/MyFirstCustomCheck.java", new MyFirstCustomCheck());
+  void test() {
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/MyFirstCustomCheck.java")
+      .withCheck(new MyFirstCustomCheck())
+      .verifyIssues();
   }
 ```
 
-As you probably noticed, this test class contains a single test, the purpose of which is to verify the behavior of the rule we are going to implement. To do so, it relies on usage of the `JavaCheckVerifier` class, provided by the Java Plugin rule testing API. This `JavaCheckVerifier` class provides useful methods to validate rule implementations, allowing us to totally abstract all the mechanisms related to analyzer initialization. Note that while verifying a rule, the *verifier* will collect lines marked as being *Noncompliant*, and verify that the rule raises the expected issues and *only* those issues.
+As you probably noticed, this test class contains a single test, the purpose of which is to verify the behavior of the rule we are going to implement. To do so, it relies on usage of the `JavaCheckVerifier` class, provided by the Java Analyzer rule-testing API. This `JavaCheckVerifier` class provides useful methods to validate rule implementations, allowing us to totally abstract all the mechanisms related to analyzer initialization. Note that while verifying a rule, the *verifier* will collect lines marked as being *Noncompliant*, and verify that the rule raises the expected issues and *only* those issues.
 
 Now, let's proceed to the next step of TDD: make the test fail!
 
 To do so, simply execute the test from the test file using JUnit. The test should **fail** with error message "**At least one issue expected**", as shown in the code snippet below. Since our check is not yet implemented, no issue can be raised yet, so that's the expected behavior.
 
 ```
-java.lang.IllegalStateException: At least one issue expected
-    at com.google.common.base.Preconditions.checkState(Preconditions.java:145)
-    at org.sonar.java.checks.verifier.CheckVerifier.assertMultipleIssue(CheckVerifier.java:166)
-    at org.sonar.java.checks.verifier.CheckVerifier.checkIssues(CheckVerifier.java:161)
-    at org.sonar.java.checks.verifier.JavaCheckVerifier.scanFile(JavaCheckVerifier.java:237)
-    at org.sonar.java.checks.verifier.JavaCheckVerifier.scanFile(JavaCheckVerifier.java:220)
-    at org.sonar.java.checks.verifier.JavaCheckVerifier.scanFile(JavaCheckVerifier.java:216)
-    at org.sonar.java.checks.verifier.JavaCheckVerifier.verify(JavaCheckVerifier.java:99)
-    at org.sonar.template.java.checks.MyFirstCustomCheckTest.test(MyFirstCustomCheckTest.java:10)
+java.lang.AssertionError: No issue raised. At least one issue expected
+    at org.sonar.java.checks.verifier.InternalCheckVerifier.assertMultipleIssues(InternalCheckVerifier.java:291)
+    at org.sonar.java.checks.verifier.InternalCheckVerifier.checkIssues(InternalCheckVerifier.java:231)
+    at org.sonar.java.checks.verifier.InternalCheckVerifier.verifyAll(InternalCheckVerifier.java:222)
+    at org.sonar.java.checks.verifier.InternalCheckVerifier.verifyIssues(InternalCheckVerifier.java:167)
+    at org.sonar.samples.java.checks.MyFirstCustomCheckTest.test(MyFirstCustomCheckTest.java:13)
     ...
 ```
 
@@ -220,7 +246,7 @@ java.lang.IllegalStateException: At least one issue expected
 
 Before we start with the implementation of the rule itself, you need a little background.
 
-Prior to running any rule, the SonarQube Java Analyzer parses a given Java code file and produces an equivalent data structure: the **Syntax Tree**. Each construction of the Java language can be represented with a specific kind of Syntax Tree, detailing each of its particularities. Each of these constructions is associated with a specific Kind as well as an interface explicitly describing all its particularities. For instance, the kind associated to the declaration of a method will be `org.sonar.plugins.java.api.tree.Tree.Kind.METHOD`, and its interface defined by  `org.sonar.plugins.java.api.tree.MethodTree`. All the kinds are listed in the the [`Kind` enum of the Java Plugin](https://github.com/SonarSource/sonar-java/blob/5.12.1.17771/java-frontend/src/main/java/org/sonar/plugins/java/api/tree/Tree.java#L47).
+Prior to running any rule, the SonarQube Java Analyzer parses a given Java code file and produces an equivalent data structure: the **Syntax Tree**. Each construction of the Java language can be represented with a specific kind of Syntax Tree, detailing each of its particularities. Each of these constructions is associated with a specific Kind as well as an interface explicitly describing all its particularities. For instance, the kind associated to the declaration of a method will be `org.sonar.plugins.java.api.tree.Tree.Kind.METHOD`, and its interface defined by  `org.sonar.plugins.java.api.tree.MethodTree`. All the kinds are listed in the the [`Kind` enum of the Java Analyzer API](https://github.com/SonarSource/sonar-java/blob/6.13.0.25138/java-frontend/src/main/java/org/sonar/plugins/java/api/tree/Tree.java#L47).
 
 When creating the rule class, we chose to implement the `IssuableSubscriptionVisitor` class from the API. This class, on top of providing a bunch of useful methods to raise issues, also **defines the strategy which will be used when analyzing a file**. As its name is telling us, it is based on a subscription mechanism, allowing to specify on what kind of tree the rule should react. The list of node types to cover is specified through the `nodesToVisit()` method. In the previous steps, we modified the implementation of the method to return an empty list, therefore not subscribing to any node of the syntax tree.
 
@@ -268,19 +294,15 @@ Now, let's test our implementation by executing `MyFirstCustomCheckTest.test()` 
 
 ```
 java.lang.AssertionError: Unexpected at [5, 7, 11]
-    at org.fest.assertions.Fail.failure(Fail.java:228)
-    at org.fest.assertions.Fail.fail(Fail.java:218)
-    at org.sonar.java.checks.verifier.CheckVerifier.assertMultipleIssue(CheckVerifier.java:175)
-    at org.sonar.java.checks.verifier.CheckVerifier.checkIssues(CheckVerifier.java:161)
-    at org.sonar.java.checks.verifier.JavaCheckVerifier.scanFile(JavaCheckVerifier.java:237)
-    at org.sonar.java.checks.verifier.JavaCheckVerifier.scanFile(JavaCheckVerifier.java:220)
-    at org.sonar.java.checks.verifier.JavaCheckVerifier.scanFile(JavaCheckVerifier.java:216)
-    at org.sonar.java.checks.verifier.JavaCheckVerifier.verify(JavaCheckVerifier.java:99)
-    at org.sonar.template.java.checks.MyFirstCustomCheckTest.test(MyFirstCustomCheckTest.java:10)
+    at org.sonar.java.checks.verifier.InternalCheckVerifier.assertMultipleIssues(InternalCheckVerifier.java:303)
+    at org.sonar.java.checks.verifier.InternalCheckVerifier.checkIssues(InternalCheckVerifier.java:231)
+    at org.sonar.java.checks.verifier.InternalCheckVerifier.verifyAll(InternalCheckVerifier.java:222)
+    at org.sonar.java.checks.verifier.InternalCheckVerifier.verifyIssues(InternalCheckVerifier.java:167)
+    at org.sonar.samples.java.checks.MyFirstCustomCheckTest.test(MyFirstCustomCheckTest.java:13)
     ...
 ```
 
-Of course, our test failed again... The `JavaCheckVerifier` reported that lines 5, 7 and 11 are raising unexpected issues, as visible in the stack-trace above. By looking back at our test file, it's easy to figure out that raising an issue line 5 is wrong because the return type of the method is void, line 7 is wrong because `Object` is not the same as int, and line 11 is also wrong because of the variable arity of the method. Raising these issues is however correct accordingly to our implementation, as we didn't check for the types of the parameter and return type. To handle type, however, we will need to rely on more that what we can achieve using only knowledge of the syntax tree. This time, we will need to use the semantic API!
+Of course, our test failed again... The `JavaCheckVerifier` reported that lines 5, 7 and 11 are raising unexpected issues, as visible in the stack-trace above. By looking back at our test file, it's easy to figure out that raising an issue line 5 is wrong because the return type of the method is `void`, line 7 is wrong because `Object` is not the same as `int`, and line 11 is also wrong because of the variable *arity* of the method. Raising these issues is however correct accordingly to our implementation, as we didn't check for the types of the parameter and return type. To handle type, however, we will need to rely on more that what we can achieve using only knowledge of the syntax tree. This time, we will need to use the semantic API!
 
 >
 > :question: **IssuableSubscriptionVisitor and BaseTreeVisitor**
@@ -292,7 +314,7 @@ Of course, our test failed again... The `JavaCheckVerifier` reported that lines 
 
 ### Second version: Using semantic API
 
-Up to now, our rule implementation only relied on the data provided directly by syntax tree that resulted from the parsing of the code. However, the SonarAnalyzer for Java provides a lot more regarding the code being analyzed, because it also construct a ***semantic model*** of the code. This semantic model provides information related to each ***symbol*** being manipulated. For a method, for instance, the semantic API will provide useful data such as a method's owner, its usages, the types of its parameters and its return type, the exception it may throw, etc. Don't hesitate to explore the [semantic package of the API](https://github.com/SonarSource/sonar-java/tree/5.12.1.17771/java-frontend/src/main/java/org/sonar/plugins/java/api/semantic) in order to have an idea of what kind of information you will have access to during analysis!
+Up to now, our rule implementation only relied on the data provided directly by syntax tree that resulted from the parsing of the code. However, the SonarAnalyzer for Java provides a lot more regarding the code being analyzed, because it also construct a ***semantic model*** of the code. This semantic model provides information related to each ***symbol*** being manipulated. For a method, for instance, the semantic API will provide useful data such as a method's owner, its usages, the types of its parameters and its return type, the exception it may throw, etc. Don't hesitate to explore the [semantic package of the API](https://github.com/SonarSource/sonar-java/tree/6.13.0.25138/java-frontend/src/main/java/org/sonar/plugins/java/api/semantic) in order to have an idea of what kind of information you will have access to during analysis!
 
 But now, let's go back to our implementation and take advantage of the semantic.
 
@@ -356,9 +378,9 @@ If it passed...
 
 ### What you can use, and what you can't
 
-When writing custom Java rules, you can only use classes from package [`org.sonar.plugins.java.api`](https://github.com/SonarSource/sonar-java/tree/5.12.1.17771/java-frontend/src/main/java/org/sonar/plugins/java/api).
+When writing custom Java rules, you can only use classes from package [`org.sonar.plugins.java.api`](https://github.com/SonarSource/sonar-java/tree/6.13.0.25138/java-frontend/src/main/java/org/sonar/plugins/java/api).
 
-When browsing the existing 500+ rules from the SonarSource Analyzer for Java, you will sometime notice use of some other utility classes, not part of the API. While these classes could be sometime extremely useful in your context, **these classes are not available at runtime** for custom rule plugins. It means that, while your unit tests are still going to pass when building the plugin, your rules will most likely make analysis **crash at analysis time**.
+When browsing the existing 600+ rules from the SonarSource Analyzer for Java, you will sometime notice use of some other utility classes, not part of the API. While these classes could be sometime extremely useful in your context, **these classes are not available at runtime** for custom rule plugins. It means that, while your unit tests are still going to pass when building your plugin, your rules will most likely make analysis **crash at analysis time**.
 
 Note that we are always open to discussion, so don't hesitate to reach us and participate to threads, through our [community forum](https://community.sonarsource.com/), to suggest features and API improvement!
 
@@ -367,14 +389,14 @@ Note that we are always open to discussion, so don't hesitate to reach us and pa
 OK, you are probably quite happy at this point, as our first rule is running as expected... However, we are not really done yet. Before playing our rule against any real projects, we have to finalize its creation within the custom plugin, by registering it.
 
 ### Rule Metadata
-The first thing to do is to provide to our rule all the metadata which will allow us to register it properly in the SonarQube platform. To do so, add the `org.sonar.check.Rule` annotation to `MyFirstCustomCheck` class rule, and provide a **key**, a **name**, a **description** and optional **tags**, as in the following code snippet.
+The first thing to do is to provide to our rule all the metadata which will allow us to register it properly in the SonarQube platform. To do so, add the `org.sonar.check.Rule` annotation to `MyFirstCustomCheck` class rule, and provide a **key**, a **name**, a **description**, a **priority**, and optional **tags**, as in the following code snippet.
 
 ```java
 @Rule(
   key = "MyFirstCustomCheck",
   name = "Return type and parameter of a method should not be the same",
   description = "For a method having a single parameter, the types of its return value and its parameter should never be the same.",
-  priority = Priority.CRITICAL,
+  priority = org.sonar.check.Priority.CRITICAL,
   tags = {"bug"})
 public class MyFirstCustomCheck extends IssuableSubscriptionVisitor {
   // ...
@@ -435,6 +457,25 @@ public class MyJavaFileCheckRegistrar implements CheckRegistrar {
 }
 ```
 
+Now, because we added a new rule, we also need to update our tests to make sure it is taken into account. To do so, navigate to its corresponding test class, named `MyJavaFileCheckRegistrarTest`, and update the expected number of rules from 8 to 9.
+
+```java
+
+class MyJavaFileCheckRegistrarTest {
+
+  @Test
+  void checkNumberRules() {
+    CheckRegistrar.RegistrarContext context = new CheckRegistrar.RegistrarContext();
+
+    MyJavaFileCheckRegistrar registrar = new MyJavaFileCheckRegistrar();
+    registrar.register(context);
+
+    assertThat(context.checkClasses()).hasSize(8); // change it to 9, we added a new one!
+    assertThat(context.testCheckClasses()).isEmpty();
+  }
+}
+```
+
 ## Testing a custom plugin
 
 >
@@ -443,19 +484,20 @@ public class MyJavaFileCheckRegistrar implements CheckRegistrar {
 > For this chapter, you will need a local instance of SonarQube. If you don't have a SonarQube platform installed on your machine, now is time to download its latest version from [HERE](https://www.sonarqube.org/downloads/)!
 >
 
-At this point, we've completed the implementation of a first custom rule and registered it into the custom plugin. The last remaining step is to test it directly with the SonarQube platform and try to analyse a project! 
+At this point, we've completed the implementation of a first custom rule and registered it into the custom plugin. The last remaining step is to test it directly with the SonarQube platform and try to analyze a project! 
 
-Start by building the project using maven:
+Start by building the project using maven. Note that here we are using the self-contained `pom` file targeting SonarQube `8.7`. If you renamed it into `pom.xml`, remove the `-f pom_SQ_8_7.xml` part of the following command):
+
 
 ```
 $ pwd
-/home/gandalf/workspace/java-custom-rules-template
+/home/gandalf/workspace/sonar-java/docs/java-custom-rules-example
   
-$ mvn clean install
+$ mvn clean install -f pom_SQ_8.7.xml
 [INFO] Scanning for projects...
 [INFO]                                                                        
 [INFO] ------------------------------------------------------------------------
-[INFO] Building Java Custom Rules - Template 1.0-SNAPSHOT
+[INFO] Building SonarQube Java :: Documentation :: Custom Rules Example 1.0.0-SNAPSHOT
 [INFO] ------------------------------------------------------------------------
   
 ...
@@ -463,20 +505,20 @@ $ mvn clean install
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time: 4.102 s
-[INFO] Finished at: 2016-05-23T16:21:55+02:00
-[INFO] Final Memory: 25M/436M
+[INFO] Total time: 8.762 s
+[INFO] Finished at: 2021-03-02T12:17:28+01:00
 [INFO] ------------------------------------------------------------------------
 ```
 
-Then, grab the jar file `java-custom-rules-1.0-SNAPSHOT.jar` from the `target` folder of the project, and move it to the extensions folder of your SonarQube instance, which will be located at `$SONAR_HOME/extensions/plugins`.
+Then, grab the jar file `java-custom-rules-example-1.0.0-SNAPSHOT.jar` from the `target` folder of the project, and move it to the extensions folder of your SonarQube instance, which will be located at `$SONAR_HOME/extensions/plugins`.
 
 >
 > :exclamation: **SonarQube Java Plugin compatible version**
 >
-> Before going further, be sure to have the adequate version of the SonarQube Java Plugin with your SonarQube instance. The dependency over the Java Plugin of our custom plugin is defined in its `pom`, as seen in the first chapter of this tutorial.
+> Before going further, be sure to have the adequate version of the SonarQube Java Analyzer with your SonarQube instance. The dependency over the Java Analyzer of our custom plugin is defined in its `pom`, as seen in the first chapter of this tutorial. We consequently provide two distinct `pom` files mapping both the `7.9` LTS version of SonarQube, as well as its latest release, version `8.7`.
 >
-> If you have a fresh install or do not possess the same version, install the adequate version of the Java Plugin. The latest version of the plugin can be downloaded from [HERE](https://docs.sonarqube.org/latest/analysis/languages/java/).
+> * If your instance is SonarQube `7.9` LTS version, make sure to update the Java Analyzer to its latest compatible version through the SonarQube marketplace (it should be version version `6.3.2.22818`), and then use this the file `pom_SQ_7_9_LTS.xml` file to build the project. 
+> * If you are using a SonarQube `8.7`, then you won't have the possibility to update the Java Analyzer independently anymore. Consequently, use the file `pom_SQ_8.7.xml` to build the project.
 >
 
 Now, (re-)start your SonarQube instance, log as admin and navigate to the ***Rules*** tab.
@@ -485,7 +527,7 @@ From there, under the language section, select "**Java**", and then "**MyCompany
 
 ![Selected rules](resources/rules_selected.png)
 
-Once activated (not sure how? see [quality-profiles](https://docs.sonarqube.org/latest/instance-administration/quality-profiles/)), the only step remaining is to analyse one of your project!
+Once activated (not sure how? see [quality-profiles](https://docs.sonarqube.org/latest/instance-administration/quality-profiles/)), the only step remaining is to analyze one of your project!
 
 When encountering a method returning the same type as its parameter, the issue will now raise issue, as visible in the following picture:
 
@@ -495,13 +537,13 @@ When encountering a method returning the same type as its parameter, the issue w
 
 You have to add a `@RuleProperty` to your Rule.
 
-Check this example: [SecurityAnnotationMandatoryRule.java](https://github.com/SonarSource/sonar-custom-rules-examples/blob/master/java-custom-rules/src/main/java/org/sonar/samples/java/checks/SecurityAnnotationMandatoryRule.java)
+Check this example: [SecurityAnnotationMandatoryRule.java](https://github.com/SonarSource/sonar-java/blob/master/docs/java-custom-rules-example/src/main/java/org/sonar/samples/java/checks/SecurityAnnotationMandatoryRule.java)
 
 ### How to test sources requiring external binaries
 
 In the `pom.xml`, define in the `Maven Dependency Plugin` part all the JARs you need to run your Unit Tests. For example, if you sample code used in your Unit Tests is having a dependency on Spring, add it there.
 
-See: [pom.xml#L152](https://github.com/SonarSource/sonar-custom-rules-examples/blob/e4ec8a9c69249e53f7e0781c81b4d7700f735cd8/java-custom-rules/pom.xml#L152)
+See: [pom.xml#L129-L184](https://github.com/SonarSource/sonar-java/blob/custom_rules_example/docs/java-custom-rules-example/pom_SQ_8_7.xml#L129-L184)
 
 ### How to test precise issue location
 
@@ -515,7 +557,7 @@ public String updateOrder(Order order) { // Noncompliant [[sc=27;ec=32]] {{Don't
 
 ### How to test the Source Version in a rule
 
-Starting from **Java Plugin API 3.7** (Oct 2015), the java source version can be accessed directly when writing custom rules. This can be achieved by simply calling the method `getJavaVersion()` from the context. Note that the method will return null only when the property is not set. Similarily, it is possible to specify to the verifier a version of Java to be considered as runtime execution, calling method `verify(String filename, JavaFileScanner check, int javaVersion)`.
+Starting from **Java Plugin API 3.7** (October 2015), the java source version can be accessed directly when writing custom rules. This can be achieved by simply calling the method `getJavaVersion()` from the context. Note that the method will return null only when the property is not set. Similarly, it is possible to specify to the verifier a version of Java to be considered as runtime execution, calling method `verify(String filename, JavaFileScanner check, int javaVersion)`.
 
 ```java
 @Beta
@@ -533,6 +575,5 @@ public interface JavaFileScannerContext {
 
 * [Analysis of Java code documentation](https://docs.sonarqube.org/latest/analysis/languages/java/)
 * [SonarQube Platform](http://www.sonarqube.org/)
-* [SonarSource Code Quality and Security for Java Github repository](https://github.com/SonarSource/sonar-java)
-* [SonarSource Java Custom Rules Example](https://github.com/SonarSource/sonar-custom-rules-examples)
-You can explore a sample plugin containing some custom rules. This project can be [browsed](https://github.com/SonarSource/sonar-custom-rules-examples/tree/master/java-custom-rules) or [downloaded](https://github.com/SonarSource/sonar-custom-rules-examples/archive/master.zip).
+* [SonarSource Code Quality and Security for Java Github Repository](https://github.com/SonarSource/sonar-java)
+* [SonarQube Java Custom-Rules Example](https://github.com/SonarSource/sonar-java/tree/master/docs/java-custom-rules-example)
