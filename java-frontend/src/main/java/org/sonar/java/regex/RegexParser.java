@@ -25,6 +25,9 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
+import org.sonar.java.ExecutionTimeReport;
 import org.sonar.java.regex.ast.AtomicGroupTree;
 import org.sonar.java.regex.ast.BackReferenceTree;
 import org.sonar.java.regex.ast.BoundaryTree;
@@ -62,6 +65,8 @@ import org.sonar.java.regex.ast.UnicodeCodePointTree;
 import static org.sonar.java.regex.RegexLexer.EOF;
 
 public class RegexParser {
+
+  private static final Logger LOG = Loggers.get(RegexParser.class);
 
   private static final String HEX_DIGIT = "hexadecimal digit";
 
@@ -271,7 +276,7 @@ public class RegexParser {
     }
   }
 
-  private PlainCharacterTree readPlainCharacter() {
+  private CharacterTree readPlainCharacter() {
     JavaCharacter character = characters.getCurrent();
     characters.moveNext();
     return plainCharacter(character);
@@ -828,7 +833,21 @@ public class RegexParser {
     }
   }
 
-  private PlainCharacterTree plainCharacter(JavaCharacter character) {
+  private CharacterTree plainCharacter(JavaCharacter character) {
+    char c1 = character.getCharacter();
+    if (Character.isHighSurrogate(c1)) {
+      // c1 is in the range from '\uD800' to '\uDBFF', it should be the first char of a series of two,
+      // and it is one 'Supplementary Multilingual Plane' character encoded using UTF-16
+      char c2 = (char) characters.lookAhead(0);
+      if (Character.isLowSurrogate(c2)) {
+        // c2 is in the range from '\uDC00' to '\uDFFF' it's the second part of the UTF-16 code point 
+        characters.moveNext();
+        IndexRange newRange = new IndexRange(character.getRange().getBeginningOffset(), character.getRange().getEndingOffset() + 1);
+        return new UnicodeCodePointTree(character.getSource(), newRange, Character.toCodePoint(c1, c2), activeFlags);
+      } else {
+        LOG.warn("Couldn't parse '{}{}', two high surrogate characters in a row. Please check your encoding.", c1, c2);
+      }
+    }
     return plainCharacter(character, character.getRange());
   }
 

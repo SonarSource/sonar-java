@@ -38,4 +38,9 @@ public class InvalidRegexCheck {
   @javax.validation.constraints.Pattern(regexp = "(") // Noncompliant [[sc=52;ec=53;secondary=38]] {{Fix the syntax error inside this regex.}}
   String pattern;
 
+  void unicode16(String str) {
+    str.matches("[😂😊]"); // Compliant
+    str.matches("[^\ud800\udc00-\udbff\udfff]"); // Compliant
+  }
+
 }

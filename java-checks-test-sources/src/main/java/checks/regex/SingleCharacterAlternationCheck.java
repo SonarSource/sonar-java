@@ -16,6 +16,10 @@ public class SingleCharacterAlternationCheck {
     str.matches("\\d|x"); // Noncompliant [sc=18;ec=23]]
     str.matches("\\P{L}|\\d"); // Noncompliant [sc=18;ec=28]]
     str.matches("\\u1234|\\x{12345}"); // Noncompliant [sc=18;ec=36]]
+    str.matches("😂|😊"); // Noncompliant
+    str.matches("\ud800\udc00|\udbff\udfff"); // Noncompliant
+    str.matches("[😂😊]"); // Compliant
+    str.matches("[\ud800\udc00\udbff\udfff]"); // Compliant
   }
 
   void compliant() {

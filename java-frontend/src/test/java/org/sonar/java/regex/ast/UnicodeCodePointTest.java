@@ -43,6 +43,14 @@ class UnicodeCodePointTest {
   }
 
   @Test
+  void parseSupplementaryMultilingualPlane() {
+    UnicodeCodePointTree unicodeCodePointTree = assertType(UnicodeCodePointTree.class, assertSuccessfulParse("\uD83D\uDE02"));
+    assertEquals("\uD83D\uDE02", unicodeCodePointTree.characterAsString());
+
+    SequenceTree wrongUnicodeCodePointTree = assertType(SequenceTree.class, assertSuccessfulParse("\uD83D\uD83D"));
+  }
+
+  @Test
   void withBraces() {
     String pileOfPoo = "\ud83d\udca9";
     SequenceTree sequence = assertType(SequenceTree.class, assertSuccessfulParse("\\\\x{F6}\\\\x{1f4a9}\\\\x{A}"));
