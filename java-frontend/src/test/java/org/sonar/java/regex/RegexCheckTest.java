@@ -105,6 +105,44 @@ class RegexCheckTest implements RegexCheck {
     assertThat(correspondingTextSpans(regex)).hasSize(1);
   }
 
+  @Test
+  void one_location_to_single_location_items() {
+    // issue with 1 location
+    RegexTree regexTree = assertSuccessfulParse("A");
+    RegexCheck.RegexIssueLocation issue = new RegexCheck.RegexIssueLocation(regexTree, "My issue message.");
+
+    assertThat(issue.message()).isEqualTo("My issue message.");
+    List<RegexIssueLocation> locations = issue.toSingleLocationItems();
+    assertThat(locations).hasSize(1);
+
+    assertThat(locations.get(0).message()).isEqualTo("My issue message.");
+    assertThat(locations.get(0).locations()).hasSize(1);
+    assertThat(locations.get(0).locations().get(0)).isSameAs(issue.locations().get(0));
+  }
+
+  @Test
+  void three_locations_to_single_location_items() {
+    // issue with 3 locations
+    RegexTree regexTree = assertSuccessfulParse("A\" + \n  \"B\" + \n  \"C");
+    RegexCheck.RegexIssueLocation issue = new RegexCheck.RegexIssueLocation(regexTree, "My issue message.");
+
+    assertThat(issue.message()).isEqualTo("My issue message.");
+    List<RegexIssueLocation> locations = issue.toSingleLocationItems();
+    assertThat(locations).hasSize(3);
+
+    assertThat(locations.get(0).message()).isEqualTo("My issue message.");
+    assertThat(locations.get(0).locations()).hasSize(1);
+    assertThat(locations.get(0).locations().get(0)).isSameAs(issue.locations().get(0));
+
+    assertThat(locations.get(1).message()).isEqualTo("Continuing here");
+    assertThat(locations.get(1).locations()).hasSize(1);
+    assertThat(locations.get(1).locations().get(0)).isSameAs(issue.locations().get(1));
+
+    assertThat(locations.get(2).message()).isEqualTo("Continuing here");
+    assertThat(locations.get(2).locations()).hasSize(1);
+    assertThat(locations.get(2).locations().get(0)).isSameAs(issue.locations().get(2));
+  }
+
   private static List<TextSpan> correspondingTextSpans(RegexTree tree) {
     return new RegexCheck.RegexIssueLocation(tree, "message").locations();
   }

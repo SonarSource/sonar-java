@@ -22,6 +22,7 @@ package org.sonar.java.regex;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.regex.ast.Location;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
@@ -37,6 +38,7 @@ public interface RegexCheck extends JavaCheck {
    */
   class RegexIssueLocation {
 
+    private static final String CONTINUATION_MESSAGE = "Continuing here";
     private final List<AnalyzerMessage.TextSpan> locations;
     private final String message;
 
@@ -67,8 +69,9 @@ public interface RegexCheck extends JavaCheck {
       if (locations.size() == 1) {
         return Collections.singletonList(this);
       }
-      return locations.stream()
-        .map(loc -> new RegexIssueLocation(loc, message))
+      return Stream.concat(
+        Stream.of(new RegexIssueLocation(locations.get(0), message)),
+        locations.stream().skip(1).map(loc -> new RegexIssueLocation(loc, CONTINUATION_MESSAGE)))
         .collect(Collectors.toList());
     }
 
