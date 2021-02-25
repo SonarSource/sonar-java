@@ -41,9 +41,12 @@ public class ImpossibleBackReferenceCheck {
     str.matches("(?:\\1|x(.)){1,2}");
     str.matches("(?:\\1\\2|(x)(.))*");
     str.matches("(.)(?:\\1\\2|x(.))*");
+    str.matches("(1)\\11"); // Compliant, backreference is \1 because group 11 does not exist
+    str.matches("(1)(2)(3)(4)(5)(6)(7)(8)(9)(a)\\11(b)"); // Compliant, backreference is \1 because 11 does not exist at this point in the regex
+    str.matches("(1)(2)(3)(4)(5)(6)(7)(8)(9)(a)(b)\\11"); // Compliant, backreference is \11 because group 11 exists at this point in the regex
   }
 
-  @org.hibernate.validator.constraints.URL(regexp = "\\1(.)") // Noncompliant [[sc=54;ec=57;secondary=46]] {{Fix this backreference, so that it refers to a group that can be matched before it.}}
+  @org.hibernate.validator.constraints.URL(regexp = "\\1(.)") // Noncompliant [[sc=54;ec=57;secondary=+0]] {{Fix this backreference, so that it refers to a group that can be matched before it.}}
   String url;
 
 }
