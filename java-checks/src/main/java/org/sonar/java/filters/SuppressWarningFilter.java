@@ -73,8 +73,8 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
       .put("static-access", SetUtils.immutableSetOf("java:S2696", "java:S2209"))
       .put("static-method", Collections.singleton("java:S2325"))
       .put("sync-override", Collections.singleton("java:S3551"))
-      .put("unused", SetUtils.immutableSetOf("java:S1481","java:S1065","java:S1854","java:S1068"
-        ,"java:S3985","java:S2326","java:S1144","java:S1128","java:S2583"))
+      .put("unused", SetUtils.immutableSetOf("java:S1481", "java:S1065", "java:S1854", "java:S1068",
+        "java:S3985", "java:S2326", "java:S1144", "java:S1128", "java:S2583"))
       .build();
 
   private final Map<String, Map<String, Set<Integer>>> excludedLinesByComponent = new HashMap<>();
