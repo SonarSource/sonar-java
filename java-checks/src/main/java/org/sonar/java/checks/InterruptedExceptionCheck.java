@@ -80,13 +80,14 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
     withinInterruptingFinally.addFirst(isFinallyInterrupting(tryStatementTree.finallyBlock()));
     for (CatchTree catchTree : tryStatementTree.catches()) {
       VariableTree catchParameter = catchTree.parameter();
-      Optional<Type> interruptType = getIfCatchMatch(catchParameter, INTERRUPTING_TYPE_PREDICATE);
+      List<Type> caughtTypes = getCaughtTypes(catchParameter);
+      Optional<Type> interruptType = caughtTypes.stream().filter(INTERRUPTING_TYPE_PREDICATE).findFirst();
       if (interruptType.isPresent()) {
         if (handleInCorrectlyInterruption(catchTree)) {
           reportIssue(catchParameter, String.format(MESSAGE, interruptType.get().name()));
         }
         return;
-      } else if (getIfCatchMatch(catchParameter, GENERIC_EXCEPTION_PREDICATE).isPresent()) {
+      } else if (caughtTypes.stream().anyMatch(GENERIC_EXCEPTION_PREDICATE)) {
         reportIfThrowInterruptInBlock(tryStatementTree.block(), catchTree);
         return;
       }
@@ -113,17 +114,13 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
     return !blockVisitor.threadInterrupted && !isWithinInterruptingFinally();
   }
 
-  private static Optional<Type> getIfCatchMatch(VariableTree parameter, Predicate<Type> predicate) {
+  private static List<Type> getCaughtTypes(VariableTree parameter) {
     if (parameter.type().is(Tree.Kind.UNION_TYPE)) {
       return ((UnionTypeTree) parameter.type()).typeAlternatives().stream()
         .map(TypeTree::symbolType)
-        .filter(predicate)
-        .findFirst();
+        .collect(Collectors.toList());
     }
-    return Optional.of(parameter)
-      .map(VariableTree::symbol)
-      .map(Symbol::type)
-      .filter(predicate);
+    return Collections.singletonList(parameter.symbol().type());
   }
 
   private boolean isWithinInterruptingFinally() {
