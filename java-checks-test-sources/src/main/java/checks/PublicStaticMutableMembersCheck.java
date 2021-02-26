@@ -116,6 +116,22 @@ public class PublicStaticMutableMembersCheck {
     E.A,
     E.C
   ));
+
+  public static final List<String> CUSTOM_MUTABLE_LIST = customMutableList(); // Noncompliant
+  public static final List<String> CUSTOM_IMMUTABLE_LIST = customImmutableList();
+  public static final List<String> CUSTOM_UNMODIFIABLE_LIST = customUnmodifiableList();
+
+  private static List<String> customMutableList() {
+    return Collections.emptyList();
+  }
+
+  private static List<String> customImmutableList() {
+    return Collections.emptyList();
+  }
+
+  private static List<String> customUnmodifiableList() {
+    return Collections.emptyList();
+  }
 }
 
 interface I {

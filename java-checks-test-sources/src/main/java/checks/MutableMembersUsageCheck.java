@@ -12,6 +12,11 @@ class MutableMembersUsageCheck {
   private List<String> otherList = staticList;
   private ImmutableCollection ic;
 
+  private List<String> mutableList = new ArrayList<>();
+  private List<String> immutableList = Collections.unmodifiableList(mutableList);
+  private List<String> customImmutableList = customImmutableList(mutableList);
+  private List<String> customUnmodifiableList = customUnmodifiableList(mutableList);
+
   public MutableMembersUsageCheck () {
     strings = new String[]{"first", "second"};
     properties = new String[]{"a"};
@@ -23,6 +28,30 @@ class MutableMembersUsageCheck {
 
   public void setStringsFromGiven(String [] given) {
     strings = given; // Noncompliant [[sc=15;ec=20]] {{Store a copy of "given".}}
+  }
+
+  public List<String> getMutableList() {
+    return mutableList; // Noncompliant {{Return a copy of "mutableList".}}
+  }
+
+  public List<String> getImmutableList() {
+    return immutableList;
+  }
+
+  public List<String> getCustomImmutableList() {
+    return customImmutableList;
+  }
+
+  public List<String> getCustomUnmodifiableList() {
+    return customUnmodifiableList;
+  }
+
+  private static List<String> customImmutableList(List<String> given) {
+    return Collections.unmodifiableList(given);
+  }
+
+  private static List<String> customUnmodifiableList(List<String> given) {
+    return Collections.unmodifiableList(given);
   }
 
   public void other(String[] given) {
