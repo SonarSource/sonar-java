@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -77,45 +76,35 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     TryStatementTree tryStatementTree = (TryStatementTree) tree;
-    List<CatchTree> catchGenericException = new ArrayList<>();
-    boolean interruptCaught = false;
 
     withinInterruptingFinally.addFirst(isFinallyInterrupting(tryStatementTree.finallyBlock()));
     for (CatchTree catchTree : tryStatementTree.catches()) {
       VariableTree catchParameter = catchTree.parameter();
       Optional<Type> interruptType = getIfCatchMatch(catchParameter, INTERRUPTING_TYPE_PREDICATE);
       if (interruptType.isPresent()) {
-        interruptCaught = true;
         if (handleInCorrectlyInterruption(catchTree)) {
           reportIssue(catchParameter, String.format(MESSAGE, interruptType.get().name()));
         }
+        return;
       } else if (getIfCatchMatch(catchParameter, GENERIC_EXCEPTION_PREDICATE).isPresent()) {
-        catchGenericException.add(catchTree);
+        reportIfThrowInterruptInBlock(tryStatementTree.block(), catchTree);
+        return;
       }
     }
-    // We only verified when the InterruptedException is explicitly caught. If a generic exception is caught, we check if
-    // any invocation in the body is throwing an InterruptedException.
-    if (catchGenericException.isEmpty() || interruptCaught) {
-      return;
-    }
-    MethodTreeUtils.MethodInvocationCollector collector = new MethodTreeUtils.MethodInvocationCollector(InterruptedExceptionCheck::throwInterruptedException);
-    tryStatementTree.block().accept(collector);
-    List<Tree> invocationInterrupting = collector.getInvocationTree();
-    if (invocationInterrupting.isEmpty()) {
-      return;
-    }
+  }
 
-    catchGenericException.stream()
-      // If both Exception and Throwable are caught, the first one will be Exception.
-      .findFirst()
-      .filter(this::handleInCorrectlyInterruption)
-      .ifPresent(c ->
-        reportIssue(c.parameter(), String.format(MESSAGE, "InterruptedException"),
-          invocationInterrupting.stream()
-            .map(t -> new JavaFileScannerContext.Location("Method invocation throwing InterruptedException.", t))
-            .collect(Collectors.toList()),
-          null)
-      );
+  private void reportIfThrowInterruptInBlock(BlockTree blockTree, CatchTree catchTree) {
+    MethodTreeUtils.MethodInvocationCollector collector = new MethodTreeUtils.MethodInvocationCollector(InterruptedExceptionCheck::throwInterruptedException);
+    blockTree.accept(collector);
+    List<Tree> invocationInterrupting = collector.getInvocationTree();
+
+    if (!invocationInterrupting.isEmpty() && handleInCorrectlyInterruption(catchTree)) {
+      reportIssue(catchTree.parameter(), String.format(MESSAGE, "InterruptedException"),
+        invocationInterrupting.stream()
+          .map(t -> new JavaFileScannerContext.Location("Method invocation throwing InterruptedException.", t))
+          .collect(Collectors.toList()),
+        null);
+    }
   }
 
   private boolean handleInCorrectlyInterruption(CatchTree catchTree) {
