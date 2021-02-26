@@ -20,7 +20,7 @@ public class InterruptedExceptionCheck {
       while (true) {
         if (LOGGER != null) throw new IOException("");
         throw new InterruptedException("");
-        
+
       }
     }catch (java.io.IOException e) {
       LOGGER.log(Level.WARN, "Interrupted!", e);
@@ -170,7 +170,7 @@ class Interruptable {
 
     try {
       throwsInterruptedException();
-    } catch (IllegalArgumentException e) { // Compliant, InterruptedException not catch
+    } catch (IllegalArgumentException e) { // Compliant, InterruptedException not caught
       LOGGER.log(Level.WARN, "Interrupted!", e);
     }
 
