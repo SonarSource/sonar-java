@@ -107,16 +107,6 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     }
   }
 
-  @Override
-  public void visitVariable(VariableTree tree) {
-    super.visitVariable(tree);
-    ExpressionTree initializer = tree.initializer();
-    if (initializer == null || !isMutableType(initializer)) {
-      return;
-    }
-    checkStore(initializer);
-  }
-
   private void checkStore(ExpressionTree expression) {
     if (expression.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifierTree = (IdentifierTree) expression;
