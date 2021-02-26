@@ -3,6 +3,7 @@ package checks;
 import com.github.jknack.handlebars.internal.Files;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.function.Predicate;
 import org.apache.xerces.xni.XNIException;
 import org.slf4j.Logger;
 
@@ -12,6 +13,8 @@ class CatchUsesExceptionWithContextCheck {
   private static final Logger LOGGER = null;
   private static final org.slf4j.Marker MARKER = null;
   private static final java.util.logging.Logger JAVA_LOGGER = null;
+  private static final Provider PROVIDER = new Provider();
+  private static final MyCustomLogger CUSTOM_LOGGER = new MyCustomLogger();
 
   private void f(Exception x) {
     try {
@@ -349,8 +352,109 @@ class CatchUsesExceptionWithContextCheck {
     }
   }
 
+
+  void customLogs() {
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      CUSTOM_LOGGER.log(e);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Noncompliant
+      CUSTOM_LOGGER.log(e.getMessage());
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant, heuristic detects "log", assume it will be correctly handled
+      String message = "Some context for exception" + e.getMessage();
+      CUSTOM_LOGGER.log(message);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      CUSTOM_LOGGER.log("something", e);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      String message = "Some context for exception" + e.getMessage();
+      CUSTOM_LOGGER.log("something", message);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      CUSTOM_LOGGER.doSomethingWithException(e);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant, heuristic detects "log", assume it will be correctly handled
+      String message = "Some context for exception" + e.getMessage();
+      CUSTOM_LOGGER.doSomethingWithMessage(message);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      PROVIDER.getLogger().doSomethingWithException(e);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant, heuristic detects "log", assume it will be correctly handled
+      String message = "Some context for exception" + e.getMessage();
+      PROVIDER.getLogger().doSomethingWithMessage(message);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      PROVIDER.doSomethingWithException(e);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Noncompliant
+      String message = "Some context for exception" + e.getMessage();
+      PROVIDER.doSomethingWithMessage(message); // No clear sign that this call will do something useful
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant, heuristic detects "log", assume it will be correctly handled
+      String message = "Some context for exception" + e.getMessage();
+      logSomething(message);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Noncompliant
+      String message = "Some context for exception" + e.getMessage();
+      doSomething(message); // No clear sign that this call will do something useful
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Noncompliant
+      String message = "Some context for exception" + e.getMessage();
+      PROVIDER.getLogger();
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant, heuristic detects "log", assume it will be correctly handled
+      String message = "Some context for exception" + e.getMessage();
+      CUSTOM_LOGGER.log("a", message);
+      PROVIDER.getLogger();
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Noncompliant
+      String message = "Some context for exception" + e.getMessage();
+      CUSTOM_LOGGER.getSomethingElse().test(message); // No clear sign that this call will do something useful
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Noncompliant
+      CUSTOM_LOGGER.log(e.getMessage());
+    }
+  }
+
   private void doSomething(Object e) {}
   private void doSomethingElse(String a, String b, String c, String d) {}
+  private void logSomething(Object e) {}
 
   interface MyClassForCatchUses {
     String doSomething(Exception innerException);
@@ -389,4 +493,33 @@ class CatchUsesExceptionWithContextCheck {
   private enum MyEnum {
     A, B;
   }
+
+  static class MyCustomLogger {
+    void log(Throwable t) {
+    }
+    void log(String t) {
+    }
+    void log(String s, Throwable t) {
+    }
+    void log(String s1, String s2) {
+    }
+    void doSomethingWithException(Throwable t) {
+    }
+    void doSomethingWithMessage(String t) {
+    }
+    Predicate<String> getSomethingElse() {
+      return s -> true;
+    }
+  }
+
+  static class Provider {
+    MyCustomLogger getLogger() {
+      return new MyCustomLogger();
+    }
+    void doSomethingWithException(Throwable t) {
+    }
+    void doSomethingWithMessage(String t) {
+    }
+  }
+
 }

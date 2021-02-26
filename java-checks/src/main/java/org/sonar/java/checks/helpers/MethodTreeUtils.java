@@ -33,6 +33,8 @@ import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -175,6 +177,23 @@ public final class MethodTreeUtils {
     public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
       // Skip lambdas
     }
+
+
+  public static boolean methodSelectMatch(MethodInvocationTree mit, Predicate<String> namePredicate, int maxDeepness) {
+    return expressionMatch(mit.methodSelect(), namePredicate, maxDeepness);
+  }
+
+  private static boolean expressionMatch(ExpressionTree expression, Predicate<String> namePredicate, int maxDeepness) {
+    if (expression.is(Tree.Kind.IDENTIFIER)) {
+      return namePredicate.test(((IdentifierTree) expression).name());
+    } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) expression;
+      return expressionMatch(memberSelect.identifier(), namePredicate, maxDeepness) ||
+        (maxDeepness > 0 && expressionMatch(memberSelect.expression(), namePredicate, maxDeepness - 1));
+    } else if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
+      return expressionMatch(((MethodInvocationTree) expression).methodSelect(), namePredicate, maxDeepness);
+    }
+    return false;
   }
 
 }

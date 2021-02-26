@@ -46,7 +46,7 @@ class CatchUsesExceptionWithContextCheckTest {
   @Test
   void no_semantic() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/CatchUsesExceptionWithContextCheck.java")
+      .onFile(testSourcesPath("checks/CatchUsesExceptionWithContextCheck.java"))
       .withCheck(new CatchUsesExceptionWithContextCheck())
       .withoutSemantic()
       .verifyNoIssues();
