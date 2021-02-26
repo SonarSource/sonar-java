@@ -213,7 +213,7 @@ public final class NullableAnnotationUtils {
         return ORG_SPRINGFRAMEWORK_LANG_NON_NULL_FIELDS;
       }
 
-      if (isGloballyAnnotatedWithEclipseNonNullByDefault((Symbol.MethodSymbol) symbol, "FIELD")) {
+      if (isGloballyAnnotatedWithEclipseNonNullByDefault(symbol, "FIELD")) {
         return ORG_ECLIPSE_JDT_ANNOTATION_NON_NULL_BY_DEFAULT;
       }
     }
@@ -298,7 +298,7 @@ public final class NullableAnnotationUtils {
       .orElse(null);
   }
 
-  private static boolean isGloballyAnnotatedWithEclipseNonNullByDefault(Symbol.MethodSymbol symbol, String parameter) {
+  private static boolean isGloballyAnnotatedWithEclipseNonNullByDefault(Symbol symbol, String parameter) {
     List<SymbolMetadata.AnnotationValue> valuesForGlobalAnnotation = valuesForGlobalAnnotation(symbol, ORG_ECLIPSE_JDT_ANNOTATION_NON_NULL_BY_DEFAULT);
     if (valuesForGlobalAnnotation == null) {
       return false;
