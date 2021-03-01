@@ -198,7 +198,12 @@ public final class MethodTreeUtils {
     }
 
     public boolean matches(MethodInvocationTree mit) {
-      return visitedToMatch.getOrDefault(mit, expressionMatch(mit.methodSelect()));
+      Boolean match = visitedToMatch.get(mit);
+      if (match == null) {
+        match = expressionMatch(mit.methodSelect());
+        visitedToMatch.put(mit, match);
+      }
+      return match;
     }
 
     private boolean expressionMatch(ExpressionTree expression) {
@@ -208,10 +213,7 @@ public final class MethodTreeUtils {
         MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) expression;
         return expressionMatch(memberSelect.identifier()) || expressionMatch(memberSelect.expression());
       } else if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
-        MethodInvocationTree mit = (MethodInvocationTree) expression;
-        boolean matches = matches(mit);
-        visitedToMatch.put(mit, matches);
-        return matches;
+        return matches((MethodInvocationTree) expression);
       }
       return false;
     }

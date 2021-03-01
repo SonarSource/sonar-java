@@ -442,7 +442,13 @@ class CatchUsesExceptionWithContextCheck {
       /* ... */
     } catch (Exception e) { // Compliant
       String message = "Some context for exception" + e.getMessage();
-      CUSTOM_LOGGER.setSomething().log(message);
+      CUSTOM_LOGGER.setSomething("something").log(message);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      String message = "Some context for exception" + e.getMessage();
+      CUSTOM_LOGGER.setSomething(message).doSomethingWithMessage("Other message");
     }
     try {
       /* ... */
@@ -506,7 +512,7 @@ class CatchUsesExceptionWithContextCheck {
     }
     void doSomethingWithMessage(String t) {
     }
-    MyCustomLogger setSomething() {
+    MyCustomLogger setSomething(String s) {
       return this;
     }
   }
