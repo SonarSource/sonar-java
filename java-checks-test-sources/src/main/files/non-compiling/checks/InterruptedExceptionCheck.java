@@ -21,7 +21,7 @@ public class InterruptedExceptionCheck {
       }
     }catch (java.io.IOException e) {
       LOGGER.log(Level.WARN, "Interrupted!", e);
-    }catch (InterruptedException e) { // Noncompliant [[sc=13;ec=35]] {{Either re-interrupt this method or rethrow the "InterruptedException".}}
+    }catch (InterruptedException e) { // Noncompliant [[sc=13;ec=35]] {{Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.}}
         LOGGER.log(Level.WARN, "Interrupted!", e);
     }
   }
@@ -43,7 +43,7 @@ public class InterruptedExceptionCheck {
       while (true) {
         // do stuff
       }
-    } catch (InterruptedException | java.io.IOException e) { // Noncompliant [[sc=14;ec=58]] {{Either re-interrupt this method or rethrow the "InterruptedException".}}
+    } catch (InterruptedException | java.io.IOException e) { // Noncompliant [[sc=14;ec=58]] {{Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.}}
       unknownField.log(Level.WARN, "Interrupted!", e);
     }
   }
@@ -57,22 +57,59 @@ public class InterruptedExceptionCheck {
         LOGGER.log(Level.WARN, "Interrupted!", e);
         // clean up state...
         throw e;
-    } catch (InterruptedException e) { // Noncompliant {{Either re-interrupt this method or rethrow the "InterruptedException".}}
+    }
+    try {
+    } catch (InterruptedException e) { // Noncompliant {{Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.}}
       LOGGER.log(Level.WARN, "Interrupted!", e);
       throw new java.io.IOException();
-    } catch (InterruptedException e) { // Noncompliant {{Either re-interrupt this method or rethrow the "InterruptedException".}}
+    }
+    try {
+    } catch (InterruptedException e) { // Noncompliant {{Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.}}
       LOGGER.log(Level.WARN, "Interrupted!", e);
       Exception e1 = new Exception();
       throw e1;
-    } catch (InterruptedException e) { // Noncompliant {{Either re-interrupt this method or rethrow the "InterruptedException".}}
+    }
+    try {
+    } catch (InterruptedException e) { // Noncompliant {{Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.}}
       LOGGER.log(Level.WARN, "Interrupted!", e);
       throw new IllegalStateException("foo", e);
+    }
+    try {
     } catch (ThreadDeath threadDeath) {
       throw threadDeath;
-    } catch (ThreadDeath threadDeath) { // Noncompliant {{Either re-interrupt this method or rethrow the "ThreadDeath".}}
+    }
+    try {
+    } catch (ThreadDeath threadDeath) { // Noncompliant {{Either re-interrupt this method or rethrow the "ThreadDeath" that can be caught here.}}
       throw new java.io.IOException();
+   }
   }
-}
+
+  void wrongExceptionOrder() {
+    // Does not compile ("Exception is already caught")
+    try {
+      throwsInterruptedException();
+    } catch (Exception e) { // Noncompliant
+      LOGGER.log(Level.WARN, "Interrupted!", e);
+    } catch (InterruptedException e) {
+      LOGGER.log(Level.WARN, "Interrupted!", e);
+    }
+
+    try {
+      throwsInterruptedException();
+    } catch (Exception e) { // Noncompliant
+      LOGGER.log(Level.WARN, "Interrupted!", e);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+    }
+
+    try {
+      throwsInterruptedException();
+    } catch (Exception e) { // Compliant
+      Thread.currentThread().interrupt();
+    } catch (InterruptedException e) {
+      LOGGER.log(Level.WARN, "Interrupted!", e);
+    }
+  }
 
   public void runInterrupted() {
     try {
@@ -87,12 +124,12 @@ public class InterruptedExceptionCheck {
         throw  new InterruptedException();
         // do stuff
       }
-    } catch (InterruptedException e) { // Noncompliant {{Either re-interrupt this method or rethrow the "InterruptedException".}}
+    } catch (InterruptedException e) { // Noncompliant {{Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.}}
       LOGGER.log(Level.WARN, "Interrupted!", e);
       // clean up state...
       new Interruptable().interrupt();
     }
-    }
+  }
 
   public Task getNextTask(BlockingQueue<Task> queue) {
     boolean interrupted = false;
@@ -109,6 +146,10 @@ public class InterruptedExceptionCheck {
       if (interrupted)
         Thread.currentThread().interrupt();
     }
+  }
+
+  public void throwsInterruptedException() throws InterruptedException {
+    throw new InterruptedException();
   }
 
 }

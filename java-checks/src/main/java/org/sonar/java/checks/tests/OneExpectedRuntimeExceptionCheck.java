@@ -22,6 +22,7 @@ package org.sonar.java.checks.tests;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -48,9 +49,9 @@ public class OneExpectedRuntimeExceptionCheck extends AbstractOneExpectedExcepti
       return;
     }
 
-    MethodInvocationCollector visitor = new MethodInvocationCollector(symbol -> !AUTHORIZED_METHODS.matches(symbol));
+    MethodTreeUtils.MethodInvocationCollector visitor = new MethodTreeUtils.MethodInvocationCollector(symbol -> !AUTHORIZED_METHODS.matches(symbol));
     treeToVisit.accept(visitor);
-    List<Tree> invocationTree = visitor.invocationTree;
+    List<Tree> invocationTree = visitor.getInvocationTree();
     if (invocationTree.size() > 1) {
       reportIssue(reportLocation,
         String.format("Refactor the %s to have only one invocation possibly throwing a runtime exception.", placeToRefactor),
