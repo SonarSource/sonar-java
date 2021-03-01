@@ -11,6 +11,7 @@ class Fields {
   private static final List<Integer> IMMUTABLE_COPY_LIST = List.copyOf(new ArrayList<>());
   private static final Set<String> IMMUTABLE_SET = Set.of("a");
   private static final Set<String> IMMUTABLE_COPY_SET = Set.copyOf(new HashSet<>());
+  private static final Set<String> UNKNOWN_SET = unknownMethod(new HashSet<>());
 
   public List<Integer> immutableList() {
     return IMMUTABLE_LIST; // Compliant
@@ -32,5 +33,8 @@ class Fields {
     return MODIFIABLE; // Noncompliant
   }
 
-}
+  public Set<String> unknownSet() {
+    return UNKNOWN_SET; // Compliant
+  }
 
+}

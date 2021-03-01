@@ -11,6 +11,7 @@ import java.util.Set;
 
 public class PublicStaticMutableMembersCheck {
   public static final List LIST = Arrays.asList("a"); // Noncompliant
+  public static final List UNKNOWN_LIST = unknownMethod("a"); // Compliant
   public static final List noInitializer;
   // we don't know the type of foo
   public static final List unknown = foo();

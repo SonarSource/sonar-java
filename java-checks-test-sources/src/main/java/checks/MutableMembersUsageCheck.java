@@ -3,6 +3,8 @@ package checks;
 import java.util.*;
 import com.google.common.collect.ImmutableCollection;
 
+import static checks.MutableMembersUsageCheck.CustomImmutableList.staticallyImportedMethod;
+
 class MutableMembersUsageCheck {
   private String[] strings;
   public String[] properties;
@@ -14,8 +16,11 @@ class MutableMembersUsageCheck {
 
   private List<String> mutableList = new ArrayList<>();
   private List<String> immutableList = Collections.unmodifiableList(mutableList);
-  private List<String> customImmutableList = customImmutableList(mutableList);
-  private List<String> customUnmodifiableList = customUnmodifiableList(mutableList);
+  private List<String> customImmutableList1 = customImmutableList(mutableList);
+  private List<String> customImmutableList2 = CustomImmutableList.create(mutableList);
+  private List<String> customImmutableList3 = staticallyImportedMethod(mutableList);
+  private List<String> customUnmodifiableList1 = customUnmodifiableList(mutableList);
+  private List<String> customUnmodifiableList2 = CustomUnmodifiableList.create(mutableList);
 
   public MutableMembersUsageCheck () {
     strings = new String[]{"first", "second"};
@@ -38,12 +43,24 @@ class MutableMembersUsageCheck {
     return immutableList;
   }
 
-  public List<String> getCustomImmutableList() {
-    return customImmutableList;
+  public List<String> getCustomImmutableList1() {
+    return customImmutableList1;
   }
 
-  public List<String> getCustomUnmodifiableList() {
-    return customUnmodifiableList;
+  public List<String> getCustomImmutableList2() {
+    return customImmutableList2;
+  }
+
+  public List<String> getCustomImmutableList3() {
+    return customImmutableList3;
+  }
+
+  public List<String> getCustomUnmodifiableList1() {
+    return customUnmodifiableList1;
+  }
+
+  public List<String> getCustomUnmodifiableList2() {
+    return customUnmodifiableList2;
   }
 
   private static List<String> customImmutableList(List<String> given) {
@@ -52,6 +69,21 @@ class MutableMembersUsageCheck {
 
   private static List<String> customUnmodifiableList(List<String> given) {
     return Collections.unmodifiableList(given);
+  }
+
+  public static class CustomImmutableList {
+    public static List<String> create(List<String> given) {
+      return Collections.unmodifiableList(given);
+    }
+    public static List<String> staticallyImportedMethod(List<String> given) {
+      return Collections.unmodifiableList(given);
+    }
+  }
+
+  public static class CustomUnmodifiableList {
+    public static List<String> create(List<String> given) {
+      return Collections.unmodifiableList(given);
+    }
   }
 
   public void other(String[] given) {
