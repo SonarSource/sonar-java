@@ -83,7 +83,7 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
       List<Type> caughtTypes = getCaughtTypes(catchParameter);
       Optional<Type> interruptType = caughtTypes.stream().filter(INTERRUPTING_TYPE_PREDICATE).findFirst();
       if (interruptType.isPresent()) {
-        if (handleInCorrectlyInterruption(catchTree)) {
+        if (wasNotInterrupted(catchTree)) {
           reportIssue(catchParameter, String.format(MESSAGE, interruptType.get().name()));
         }
         return;
@@ -99,7 +99,7 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
     blockTree.accept(collector);
     List<Tree> invocationInterrupting = collector.getInvocationTree();
 
-    if (!invocationInterrupting.isEmpty() && handleInCorrectlyInterruption(catchTree)) {
+    if (!invocationInterrupting.isEmpty() && wasNotInterrupted(catchTree)) {
       reportIssue(catchTree.parameter(), String.format(MESSAGE, "InterruptedException"),
         invocationInterrupting.stream()
           .map(t -> new JavaFileScannerContext.Location("Method invocation throwing InterruptedException.", t))
@@ -108,7 +108,7 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private boolean handleInCorrectlyInterruption(CatchTree catchTree) {
+  private boolean wasNotInterrupted(CatchTree catchTree) {
     BlockVisitor blockVisitor = new BlockVisitor(catchTree.parameter().symbol());
     catchTree.block().accept(blockVisitor);
     return !blockVisitor.threadInterrupted && !isWithinInterruptingFinally();
