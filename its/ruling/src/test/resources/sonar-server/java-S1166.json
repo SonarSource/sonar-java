@@ -19,9 +19,6 @@
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/ws/LoginAction.java':[
 110,
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/ws/LogoutAction.java':[
-94,
-],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/ws/ValidateAction.java':[
 101,
 ],
@@ -47,7 +44,6 @@
 114,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/web/PlatformServletContextListener.java':[
-46,
 59,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/ProjectsWsSupport.java':[

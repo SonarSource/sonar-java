@@ -32,9 +32,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import org.apache.commons.lang3.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -88,6 +90,9 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
     MethodMatchers.create()
       .ofTypes(SLF4J_LOGGER).names("debug", "error", "info", "trace", "warn").withAnyParameters().build());
 
+  private final MethodTreeUtils.MethodSelectMatcher methodSelectMatcher =
+    new MethodTreeUtils.MethodSelectMatcher(CatchUsesExceptionWithContextCheck::containsLogIgnoreCase);
+
   private static final String EXCLUDED_EXCEPTION_TYPE = "java.lang.InterruptedException, " +
       "java.lang.NumberFormatException, " +
       "java.lang.NoSuchMethodException, " +
@@ -115,6 +120,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
       scan(context.getTree());
     }
     excludedCatchTrees.clear();
+    methodSelectMatcher.reset();
   }
 
   @Override
@@ -178,9 +184,17 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
   @Override
   public void visitMethodInvocation(MethodInvocationTree mit) {
     super.visitMethodInvocation(mit);
-    if (LOGGING_METHODS.matches(mit)) {
+    if (isLoggingMethod(mit)) {
       usageStatusStack.forEach(usageStatus -> usageStatus.addLoggingMethodInvocation(mit));
     }
+  }
+
+  private boolean isLoggingMethod(MethodInvocationTree mit) {
+    return LOGGING_METHODS.matches(mit) || (!mit.arguments().isEmpty() && methodSelectMatcher.matches(mit));
+  }
+
+  private static boolean containsLogIgnoreCase(String name) {
+    return StringUtils.containsIgnoreCase(name, "log");
   }
 
   @Override
