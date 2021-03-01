@@ -90,6 +90,9 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
     MethodMatchers.create()
       .ofTypes(SLF4J_LOGGER).names("debug", "error", "info", "trace", "warn").withAnyParameters().build());
 
+  private final MethodTreeUtils.MethodSelectMatcher methodSelectMatcher =
+    new MethodTreeUtils.MethodSelectMatcher(CatchUsesExceptionWithContextCheck::containsLogIgnoreCase);
+
   private static final String EXCLUDED_EXCEPTION_TYPE = "java.lang.InterruptedException, " +
       "java.lang.NumberFormatException, " +
       "java.lang.NoSuchMethodException, " +
@@ -117,6 +120,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
       scan(context.getTree());
     }
     excludedCatchTrees.clear();
+    methodSelectMatcher.reset();
   }
 
   @Override
@@ -185,9 +189,8 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
     }
   }
 
-  private static boolean isLoggingMethod(MethodInvocationTree mit) {
-    return LOGGING_METHODS.matches(mit) ||
-      (!mit.arguments().isEmpty() && MethodTreeUtils.methodSelectMatch(mit, CatchUsesExceptionWithContextCheck::containsLogIgnoreCase, 1));
+  private boolean isLoggingMethod(MethodInvocationTree mit) {
+    return LOGGING_METHODS.matches(mit) || (!mit.arguments().isEmpty() && methodSelectMatcher.matches(mit));
   }
 
   private static boolean containsLogIgnoreCase(String name) {

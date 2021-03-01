@@ -3,7 +3,6 @@ package checks;
 import com.github.jknack.handlebars.internal.Files;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.function.Predicate;
 import org.apache.xerces.xni.XNIException;
 import org.slf4j.Logger;
 
@@ -441,9 +440,9 @@ class CatchUsesExceptionWithContextCheck {
     }
     try {
       /* ... */
-    } catch (Exception e) { // Noncompliant
+    } catch (Exception e) { // Compliant
       String message = "Some context for exception" + e.getMessage();
-      CUSTOM_LOGGER.getSomethingElse().test(message); // No clear sign that this call will do something useful
+      CUSTOM_LOGGER.setSomething().log(message);
     }
     try {
       /* ... */
@@ -507,8 +506,8 @@ class CatchUsesExceptionWithContextCheck {
     }
     void doSomethingWithMessage(String t) {
     }
-    Predicate<String> getSomethingElse() {
-      return s -> true;
+    MyCustomLogger setSomething() {
+      return this;
     }
   }
 
