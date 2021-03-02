@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<profile>
+  <name>java-tutorial</name>
+  <language>java</language>
+  <rules>
+    <rule>
+      <repositoryKey>mycompany-java</repositoryKey>
+      <key>AvoidAnnotation</key>
+      <priority>MAJOR</priority>
+    </rule>
+    <rule>
+      <repositoryKey>mycompany-java</repositoryKey>
+      <key>AvoidBrandInMethodNames</key>
+      <priority>MAJOR</priority>
+    </rule>
+    <rule>
+      <repositoryKey>mycompany-java</repositoryKey>
+      <key>AvoidMethodDeclaration</key>
+      <priority>MAJOR</priority>
+    </rule>
+    <rule>
+      <repositoryKey>mycompany-java</repositoryKey>
+      <key>AvoidSuperClass</key>
+      <priority>MAJOR</priority>
+    </rule>
+    <rule>
+      <repositoryKey>mycompany-java</repositoryKey>
+      <key>AvoidTreeList</key>
+      <priority>MAJOR</priority>
+    </rule>
+    <rule>
+      <repositoryKey>mycompany-java</repositoryKey>
+      <key>MyCustomSubscriptionRule</key>
+      <priority>MAJOR</priority>
+    </rule>
+    <rule>
+      <repositoryKey>mycompany-java</repositoryKey>
+      <key>SecurityAnnotationMandatory</key>
+      <priority>MAJOR</priority>
+    </rule>
+    <rule>
+      <repositoryKey>mycompany-java</repositoryKey>
+      <key>SpringControllerRequestMappingEntity</key>
+      <priority>MAJOR</priority>
+    </rule>
+  </rules>
+</profile>
