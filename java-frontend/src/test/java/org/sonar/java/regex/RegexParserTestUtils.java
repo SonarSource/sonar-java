@@ -32,7 +32,7 @@ import org.sonar.java.regex.ast.CharacterClassTree;
 import org.sonar.java.regex.ast.CharacterRangeTree;
 import org.sonar.java.regex.ast.FlagSet;
 import org.sonar.java.regex.ast.JavaCharacter;
-import org.sonar.java.regex.ast.PlainCharacterTree;
+import org.sonar.java.regex.ast.CharacterTree;
 import org.sonar.java.regex.ast.RegexSource;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.java.regex.ast.RegexToken;
@@ -121,7 +121,7 @@ public class RegexParserTestUtils {
       throw new AssertionFailedError("Expected a string of " + expectedSize + " characters, but got " + sequence.getItems());
     }
     for (int i = 0; i < expectedSize; i++) {
-      assertPlainCharacter(expected.charAt(i), sequence.getItems().get(i));
+      assertCharacter(expected.charAt(i), sequence.getItems().get(i));
     }
   }
 
@@ -133,9 +133,9 @@ public class RegexParserTestUtils {
     assertPlainString(expected, assertSuccessfulParse(regex, initialFlags));
   }
 
-  public static void assertPlainCharacter(char expected, @Nullable Boolean expectedEscape, RegexSyntaxElement regex) {
-    PlainCharacterTree characterTree = assertType(PlainCharacterTree.class, regex);
-    assertKind(RegexTree.Kind.PLAIN_CHARACTER, characterTree);
+  public static void assertCharacter(char expected, @Nullable Boolean expectedEscape, RegexSyntaxElement regex) {
+    CharacterTree characterTree = assertType(CharacterTree.class, regex);
+    assertKind(RegexTree.Kind.CHARACTER, characterTree);
     assertKind(CharacterClassElementTree.Kind.PLAIN_CHARACTER, characterTree);
     assertEquals(expected, characterTree.codePointOrUnit(), "Code unit should equal character.");
     assertEquals("" + expected, characterTree.characterAsString());
@@ -145,8 +145,8 @@ public class RegexParserTestUtils {
     }
   }
 
-  public static void assertPlainCharacter(char expected, RegexSyntaxElement regex) {
-    assertPlainCharacter(expected, null, regex);
+  public static void assertCharacter(char expected, RegexSyntaxElement regex) {
+    assertCharacter(expected, null, regex);
   }
 
   public static void assertJavaCharacter(int index, char ch, JavaCharacter javaCharacter) {
@@ -160,14 +160,14 @@ public class RegexParserTestUtils {
     assertLocation(index, index + str.length(), token);
   }
 
-  public static void assertPlainCharacter(char expected, @Nullable Boolean expectedEscape, String regexSource) {
+  public static void assertCharacter(char expected, @Nullable Boolean expectedEscape, String regexSource) {
     RegexTree regex = assertSuccessfulParse(regexSource);
     assertLocation(0, regexSource.length(), regex);
-    assertPlainCharacter(expected, expectedEscape, regex);
+    assertCharacter(expected, expectedEscape, regex);
   }
 
-  public static void assertPlainCharacter(char expected, String regexSource) {
-    assertPlainCharacter(expected, null, regexSource);
+  public static void assertCharacter(char expected, String regexSource) {
+    assertCharacter(expected, null, regexSource);
   }
 
   public static CharacterClassElementTree assertCharacterClass(boolean expectNegated, RegexSyntaxElement actual) {
@@ -216,7 +216,7 @@ public class RegexParserTestUtils {
   public static void assertKind(RegexTree.Kind expected, RegexTree actual) {
     assertEquals(expected, actual.kind(), "Regex should have kind " + expected);
     assertTrue(actual.is(expected), "`is` should return true when the kinds match.");
-    assertTrue(actual.is(RegexTree.Kind.PLAIN_CHARACTER, RegexTree.Kind.DISJUNCTION, expected), "`is` should return true when one of the kinds match.");
+    assertTrue(actual.is(RegexTree.Kind.CHARACTER, RegexTree.Kind.DISJUNCTION, expected), "`is` should return true when one of the kinds match.");
   }
 
   public static void assertKind(CharacterClassElementTree.Kind expected, CharacterClassElementTree actual) {

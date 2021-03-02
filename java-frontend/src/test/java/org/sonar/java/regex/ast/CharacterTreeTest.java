@@ -20,67 +20,68 @@
 package org.sonar.java.regex.ast;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.java.regex.RegexParserTestUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.sonar.java.regex.RegexParserTestUtils.*;
 
-class PlainCharacterTreeTest {
+class CharacterTreeTest {
 
   @Test
   void testSimpleCharacter() {
-    assertPlainCharacter('x', false, "x");
-    assertPlainCharacter(' ', false, " ");
+    RegexParserTestUtils.assertCharacter('x', false, "x");
+    RegexParserTestUtils.assertCharacter(' ', false, " ");
   }
 
   @Test
   void testSimpleEscapeSequences() {
-    assertPlainCharacter('\b', true, "\\b");
-    assertPlainCharacter('\t', true, "\\t");
-    assertPlainCharacter('\n', true, "\\n");
-    assertPlainCharacter('\f', true, "\\f");
-    assertPlainCharacter('\r', true, "\\r");
-    assertPlainCharacter('"', true, "\\\"");
+    RegexParserTestUtils.assertCharacter('\b', true, "\\b");
+    RegexParserTestUtils.assertCharacter('\t', true, "\\t");
+    RegexParserTestUtils.assertCharacter('\n', true, "\\n");
+    RegexParserTestUtils.assertCharacter('\f', true, "\\f");
+    RegexParserTestUtils.assertCharacter('\r', true, "\\r");
+    RegexParserTestUtils.assertCharacter('"', true, "\\\"");
   }
 
   @Test
   void testDoubleEscapedSimpleEscapeSequences() {
-    assertPlainCharacter('\t', true, "\\\\t");
-    assertPlainCharacter('\n', true, "\\\\n");
-    assertPlainCharacter('\f', true, "\\\\f");
-    assertPlainCharacter('\r', true, "\\\\r");
-    assertPlainCharacter('\u0007', true, "\\\\a");
-    assertPlainCharacter('\u001B', true, "\\\\e");
+    RegexParserTestUtils.assertCharacter('\t', true, "\\\\t");
+    RegexParserTestUtils.assertCharacter('\n', true, "\\\\n");
+    RegexParserTestUtils.assertCharacter('\f', true, "\\\\f");
+    RegexParserTestUtils.assertCharacter('\r', true, "\\\\r");
+    RegexParserTestUtils.assertCharacter('\u0007', true, "\\\\a");
+    RegexParserTestUtils.assertCharacter('\u001B', true, "\\\\e");
   }
 
   @Test
   void testControlCharacters() {
-    assertPlainCharacter('\u0000', true, "\\\\c@");
-    assertPlainCharacter('\u0001', true, "\\\\cA");
-    assertPlainCharacter('\u001A', true, "\\\\cZ");
-    assertPlainCharacter('\u001B', true, "\\\\c[");
-    assertPlainCharacter('\u001C', true, "\\\\c\\\\");
-    assertPlainCharacter('\u001D', true, "\\\\c]");
-    assertPlainCharacter('\u001E', true, "\\\\c^");
-    assertPlainCharacter('\u001F', true, "\\\\c_");
-    assertPlainCharacter('\u007F', true, "\\\\c?");
+    RegexParserTestUtils.assertCharacter('\u0000', true, "\\\\c@");
+    RegexParserTestUtils.assertCharacter('\u0001', true, "\\\\cA");
+    RegexParserTestUtils.assertCharacter('\u001A', true, "\\\\cZ");
+    RegexParserTestUtils.assertCharacter('\u001B', true, "\\\\c[");
+    RegexParserTestUtils.assertCharacter('\u001C', true, "\\\\c\\\\");
+    RegexParserTestUtils.assertCharacter('\u001D', true, "\\\\c]");
+    RegexParserTestUtils.assertCharacter('\u001E', true, "\\\\c^");
+    RegexParserTestUtils.assertCharacter('\u001F', true, "\\\\c_");
+    RegexParserTestUtils.assertCharacter('\u007F', true, "\\\\c?");
     assertFailParsing("\\\\c", "Expected any character, but found the end of the regex");
   }
 
   @Test
   void octalEscapeSequences() {
-    assertPlainCharacter('\n', true, "\\012");
-    assertPlainCharacter('\n', true, "\\12");
-    assertPlainCharacter('D', true, "\\104");
+    RegexParserTestUtils.assertCharacter('\n', true, "\\012");
+    RegexParserTestUtils.assertCharacter('\n', true, "\\12");
+    RegexParserTestUtils.assertCharacter('D', true, "\\104");
     assertPlainString("D\n", "\\104\\012");
     assertPlainString("\nD", "\\12D");
   }
 
   @Test
   void octalEscapesWithDoubleBackslash() {
-    assertPlainCharacter('\n', true, "\\\\0012");
-    assertPlainCharacter('\n', true, "\\\\012");
-    assertPlainCharacter('D', true, "\\\\0104");
+    RegexParserTestUtils.assertCharacter('\n', true, "\\\\0012");
+    RegexParserTestUtils.assertCharacter('\n', true, "\\\\012");
+    RegexParserTestUtils.assertCharacter('D', true, "\\\\0104");
     assertPlainString("D\n", "\\\\0104\\\\012");
     assertPlainString("\nD", "\\\\012D");
     assertPlainString("%6", "\\\\0456");
@@ -94,15 +95,15 @@ class PlainCharacterTreeTest {
 
   @Test
   void unicodeEscapeSequences() {
-    assertPlainCharacter('\t', true, "\\u0009");
-    assertPlainCharacter('D', true, "\\u0044");
-    assertPlainCharacter('ö', true, "\\u00F6");
+    RegexParserTestUtils.assertCharacter('\t', true, "\\u0009");
+    RegexParserTestUtils.assertCharacter('D', true, "\\u0044");
+    RegexParserTestUtils.assertCharacter('ö', true, "\\u00F6");
   }
 
   @Test
   void unicodeEscapesWithDoubleBackslash() {
-    assertPlainCharacter('\u1234', true, "\\\\u1234");
-    assertPlainCharacter('\n', true, "\\\\u000A");
+    RegexParserTestUtils.assertCharacter('\u1234', true, "\\\\u1234");
+    RegexParserTestUtils.assertCharacter('\n', true, "\\\\u000A");
   }
 
   @Test
@@ -111,25 +112,25 @@ class PlainCharacterTreeTest {
     assertFailParsing("\\\\u123X", "Expected hexadecimal digit, but found 'X'");
     // Note that using multiple 'u's is legal in Java Unicode escapes, but not in regex ones
     assertFailParsing("\\\\uu1234", "Expected hexadecimal digit, but found 'u'");
-    assertPlainCharacter('\n', "\\\\u000A");
+    RegexParserTestUtils.assertCharacter('\n', "\\\\u000A");
   }
 
   @Test
   void escapedMetaCharacters() {
-    assertPlainCharacter('\\', "\\\\\\\\");
-    assertPlainCharacter('.', "\\\\.");
-    assertPlainCharacter('(', "\\\\(");
-    assertPlainCharacter(')', "\\\\)");
-    assertPlainCharacter('[', "\\\\[");
-    assertPlainCharacter(']', "\\\\]");
-    assertPlainCharacter('{', "\\\\{");
-    assertPlainCharacter('}', "\\\\}");
+    RegexParserTestUtils.assertCharacter('\\', "\\\\\\\\");
+    RegexParserTestUtils.assertCharacter('.', "\\\\.");
+    RegexParserTestUtils.assertCharacter('(', "\\\\(");
+    RegexParserTestUtils.assertCharacter(')', "\\\\)");
+    RegexParserTestUtils.assertCharacter('[', "\\\\[");
+    RegexParserTestUtils.assertCharacter(']', "\\\\]");
+    RegexParserTestUtils.assertCharacter('{', "\\\\{");
+    RegexParserTestUtils.assertCharacter('}', "\\\\}");
   }
 
   @Test
   void unicodeRidiculousness() {
-    assertPlainCharacter('\t', "\\u005ct");
-    assertPlainCharacter('\\', "\\u005c\\uu005c\\uuu005c\\u005c");
+    RegexParserTestUtils.assertCharacter('\t', "\\u005ct");
+    RegexParserTestUtils.assertCharacter('\\', "\\u005c\\uu005c\\uuu005c\\u005c");
   }
 
   @Test
@@ -149,14 +150,14 @@ class PlainCharacterTreeTest {
 
   @Test
   void parseSupplementaryMultilingualPlane() {
-    PlainCharacterTree escapedUnicodeCodePointTree = assertType(PlainCharacterTree.class, assertSuccessfulParse("\\\\uD83D\\\\uDE02"));
+    CharacterTree escapedUnicodeCodePointTree = assertType(CharacterTree.class, assertSuccessfulParse("\\\\uD83D\\\\uDE02"));
     assertEquals("\uD83D\uDE02", escapedUnicodeCodePointTree.characterAsString());
 
-    PlainCharacterTree escapedUnicodeCodePointTree2 = assertType(PlainCharacterTree.class, assertSuccessfulParse("\\uD83D\\uDE02"));
+    CharacterTree escapedUnicodeCodePointTree2 = assertType(CharacterTree.class, assertSuccessfulParse("\\uD83D\\uDE02"));
     assertEquals("\uD83D\uDE02", escapedUnicodeCodePointTree2.characterAsString());
 
 
-    PlainCharacterTree unicodeCodePointTree = assertType(PlainCharacterTree.class, assertSuccessfulParse("\uD83D\uDE02"));
+    CharacterTree unicodeCodePointTree = assertType(CharacterTree.class, assertSuccessfulParse("\uD83D\uDE02"));
     assertEquals("\uD83D\uDE02", unicodeCodePointTree.characterAsString());
 
     assertType(SequenceTree.class, assertSuccessfulParse("\uD83D\uD83D"));
@@ -184,8 +185,8 @@ class PlainCharacterTreeTest {
   }
 
   void assertCodePoint(String expectedString, int expectedCodePoint, int start, int end, RegexTree regex) {
-    PlainCharacterTree unicodeCodePoint = assertType(PlainCharacterTree.class, regex);
-    assertKind(RegexTree.Kind.PLAIN_CHARACTER, unicodeCodePoint);
+    CharacterTree unicodeCodePoint = assertType(CharacterTree.class, regex);
+    assertKind(RegexTree.Kind.CHARACTER, unicodeCodePoint);
     assertKind(CharacterClassElementTree.Kind.PLAIN_CHARACTER, unicodeCodePoint);
     assertEquals(expectedString, unicodeCodePoint.characterAsString());
     assertEquals(expectedCodePoint, unicodeCodePoint.codePointOrUnit());

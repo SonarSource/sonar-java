@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.CharacterClassTree;
-import org.sonar.java.regex.ast.PlainCharacterTree;
+import org.sonar.java.regex.ast.CharacterTree;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
 import org.sonar.java.regex.ast.SequenceTree;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -68,7 +68,7 @@ public class CanonEqFlagInRegexCheck extends AbstractRegexCheck {
     if (regexForLiterals.getInitialFlags().contains(Pattern.CANON_EQ)) {
       return;
     }
-    PlainCharacterVisitor visitor = new PlainCharacterVisitor();
+    CharacterVisitor visitor = new CharacterVisitor();
     visitor.visit(regexForLiterals);
 
     if (!visitor.subjectToNormalization.isEmpty()) {
@@ -87,7 +87,7 @@ public class CanonEqFlagInRegexCheck extends AbstractRegexCheck {
     }
   }
 
-  private static class PlainCharacterVisitor extends RegexBaseVisitor {
+  private static class CharacterVisitor extends RegexBaseVisitor {
 
     private final List<RegexIssueLocation> subjectToNormalization = new ArrayList<>();
 
@@ -103,7 +103,7 @@ public class CanonEqFlagInRegexCheck extends AbstractRegexCheck {
     }
 
     @Override
-    protected void visitCharacter(PlainCharacterTree tree) {
+    public void visitCharacter(CharacterTree tree) {
       String str = tree.characterAsString();
       if (isSubjectToNormalization(str)) {
         subjectToNormalization.add(new RegexIssueLocation(tree, ""));

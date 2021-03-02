@@ -51,7 +51,7 @@ class BackReferenceTreeTest {
     SequenceTree seq = (SequenceTree) regex;
     assertThat(seq.getItems()).hasSize(3);
     assertThat(seq.getItems().get(0)).isInstanceOf(BackReferenceTree.class);
-    assertThat(seq.getItems().get(1)).isInstanceOf(PlainCharacterTree.class);
+    assertThat(seq.getItems().get(1)).isInstanceOf(CharacterTree.class);
     assertThat(seq.getItems().get(2)).isInstanceOf(DotTree.class);
 
     RegexTree regex2 = assertSuccessfulParse(escapeJava("\\42a"));
@@ -59,8 +59,8 @@ class BackReferenceTreeTest {
     SequenceTree seq2 = (SequenceTree) regex2;
     assertThat(seq2.getItems()).hasSize(3);
     assertThat(seq2.getItems().get(0)).isInstanceOf(BackReferenceTree.class);
-    assertThat(seq2.getItems().get(1)).isInstanceOf(PlainCharacterTree.class);
-    assertThat(seq2.getItems().get(2)).isInstanceOf(PlainCharacterTree.class);
+    assertThat(seq2.getItems().get(1)).isInstanceOf(CharacterTree.class);
+    assertThat(seq2.getItems().get(2)).isInstanceOf(CharacterTree.class);
   }
 
   @Test

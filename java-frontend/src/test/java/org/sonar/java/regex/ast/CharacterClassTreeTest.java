@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.sonar.java.regex.RegexParserTestUtils.assertCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertCharacterClass;
 import static org.sonar.java.regex.RegexParserTestUtils.assertCharacterRange;
 import static org.sonar.java.regex.RegexParserTestUtils.assertFailParsing;
@@ -32,7 +33,6 @@ import static org.sonar.java.regex.RegexParserTestUtils.assertJavaCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
 import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
 import static org.sonar.java.regex.RegexParserTestUtils.assertListSize;
-import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 import static org.sonar.java.regex.RegexParserTestUtils.assertToken;
 import static org.sonar.java.regex.RegexParserTestUtils.assertType;
@@ -51,7 +51,7 @@ class CharacterClassTreeTest {
   @Test
   void closingBracket() {
     RegexTree regex = assertSuccessfulParse("[]]");
-    PlainCharacterTree character = assertType(PlainCharacterTree.class, assertCharacterClass(false, regex));
+    CharacterTree character = assertType(CharacterTree.class, assertCharacterClass(false, regex));
     assertEquals("]", character.characterAsString(), "Matched character should be ']'.");
   }
 
@@ -69,8 +69,8 @@ class CharacterClassTreeTest {
     assertKind(CharacterClassElementTree.Kind.UNION, union);
     assertThat(union.activeFlags().getMask()).isEqualTo(Pattern.CASE_INSENSITIVE);
     assertListElements(union.getCharacterClasses(),
-      firstChar -> assertPlainCharacter('-', firstChar),
-      secondChar -> assertPlainCharacter('a', secondChar)
+      firstChar -> assertCharacter('-', firstChar),
+      secondChar -> assertCharacter('a', secondChar)
     );
   }
 
@@ -79,8 +79,8 @@ class CharacterClassTreeTest {
     RegexTree regex = assertSuccessfulParse("[a-]");
     CharacterClassUnionTree union = assertType(CharacterClassUnionTree.class, assertCharacterClass(false, regex));
     assertListElements(union.getCharacterClasses(),
-      firstChar -> assertPlainCharacter('a', firstChar),
-      secondChar -> assertPlainCharacter('-', secondChar)
+      firstChar -> assertCharacter('a', firstChar),
+      secondChar -> assertCharacter('-', secondChar)
     );
   }
 
@@ -91,9 +91,9 @@ class CharacterClassTreeTest {
     assertListElements(union.getCharacterClasses(),
       first -> assertCharacterRange('a', 'z', first),
       second -> assertCharacterRange('0', '9', second),
-      third -> assertPlainCharacter('_', third),
-      fourth -> assertPlainCharacter('.', fourth),
-      fifth -> assertPlainCharacter('^', fifth)
+      third -> assertCharacter('_', third),
+      fourth -> assertCharacter('.', fourth),
+      fifth -> assertCharacter('^', fifth)
     );
   }
 
@@ -119,7 +119,7 @@ class CharacterClassTreeTest {
         CharacterClassUnionTree union = assertType(CharacterClassUnionTree.class, second);
         assertListElements(union.getCharacterClasses(),
           first -> assertCharacterRange('g', 'i', assertCharacterClass(true, first)),
-          last -> assertPlainCharacter('&', last)
+          last -> assertCharacter('&', last)
         );
       }
     );
@@ -136,9 +136,9 @@ class CharacterClassTreeTest {
     RegexTree regex = assertSuccessfulParse("[\\\\[\\\\-\\\\]]");
     CharacterClassUnionTree union = assertType(CharacterClassUnionTree.class, assertCharacterClass(false, regex));
     assertListElements(union.getCharacterClasses(),
-      first -> assertPlainCharacter('[', first),
-      second -> assertPlainCharacter('-', second),
-      third -> assertPlainCharacter(']', third)
+      first -> assertCharacter('[', first),
+      second -> assertCharacter('-', second),
+      third -> assertCharacter(']', third)
     );
   }
 
@@ -159,14 +159,14 @@ class CharacterClassTreeTest {
     CharacterClassIntersectionTree intersection = assertType(CharacterClassIntersectionTree.class, characterClass.getContents());
     assertListElements(intersection.getCharacterClasses(),
       first -> assertListSize(0, assertType(CharacterClassUnionTree.class, first).getCharacterClasses()),
-      second -> assertPlainCharacter('x', second)
+      second -> assertCharacter('x', second)
     );
   }
 
   @Test
   void quotedStringInCharacterClass() {
-    assertPlainCharacterUnionCharacterClass("\\a-z]\\w", "[\\\\Q\\\\a-z]\\\\w\\\\E]");
-    assertPlainCharacterUnionCharacterClass("a-z", "[a\\\\Q-z\\\\E]");
+    assertCharacterUnionCharacterClass("\\a-z]\\w", "[\\\\Q\\\\a-z]\\\\w\\\\E]");
+    assertCharacterUnionCharacterClass("a-z", "[a\\\\Q-z\\\\E]");
   }
 
   @Test
@@ -175,10 +175,10 @@ class CharacterClassTreeTest {
     CharacterClassUnionTree union = assertType(CharacterClassUnionTree.class, contents);
     assertListElements(union.getCharacterClasses(),
       first -> assertCharacterRange('a', 'z', first),
-      second -> assertPlainCharacter('A', second),
-      third -> assertPlainCharacter('-', third),
-      fourth -> assertPlainCharacter('Z', fourth),
-      fifth -> assertPlainCharacter('#', fifth)
+      second -> assertCharacter('A', second),
+      third -> assertCharacter('-', third),
+      fourth -> assertCharacter('Z', fourth),
+      fifth -> assertCharacter('#', fifth)
     );
   }
 
@@ -187,8 +187,8 @@ class CharacterClassTreeTest {
     CharacterClassElementTree contents = assertCharacterClass(false, assertSuccessfulParse("[\\\\QA-Z\\\\E&&]"));
     CharacterClassIntersectionTree union = assertType(CharacterClassIntersectionTree.class, contents);
     assertListElements(union.getCharacterClasses(),
-      first -> assertPlainCharacterUnion("A-Z", first),
-      second -> assertPlainCharacterUnion("", second)
+      first -> assertCharacterUnion("A-Z", first),
+      second -> assertCharacterUnion("", second)
     );
   }
 
@@ -222,18 +222,18 @@ class CharacterClassTreeTest {
     assertFailParsing("[\\\\b]", "Invalid escape sequence inside character class");
   }
 
-  private void assertPlainCharacterUnion(String expectedCharacters, CharacterClassElementTree characterClassElement) {
+  private void assertCharacterUnion(String expectedCharacters, CharacterClassElementTree characterClassElement) {
     CharacterClassUnionTree union = assertType(CharacterClassUnionTree.class, characterClassElement);
     List<CharacterClassElementTree> elements = union.getCharacterClasses();
     assertListSize(expectedCharacters.length(), elements);
     for (int i = 0; i < expectedCharacters.length(); i++) {
-      assertPlainCharacter(expectedCharacters.charAt(i), elements.get(i));
+      assertCharacter(expectedCharacters.charAt(i), elements.get(i));
     }
   }
 
-  private void assertPlainCharacterUnionCharacterClass(String expectedCharacters, String regex) {
+  private void assertCharacterUnionCharacterClass(String expectedCharacters, String regex) {
     CharacterClassElementTree contents = assertCharacterClass(false, assertSuccessfulParse(regex));
-    assertPlainCharacterUnion(expectedCharacters, contents);
+    assertCharacterUnion(expectedCharacters, contents);
   }
 
 }

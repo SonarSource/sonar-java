@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.regex.RegexParseResult;
-import org.sonar.java.regex.ast.PlainCharacterTree;
+import org.sonar.java.regex.ast.CharacterTree;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 
@@ -41,7 +41,7 @@ public class EscapeSequenceControlCharacterCheck extends AbstractRegexCheck {
 
   private class WrongEscapeSequenceVisitor extends RegexBaseVisitor {
     @Override
-    public void visitPlainCharacter(PlainCharacterTree tree) {
+    public void visitCharacter(CharacterTree tree) {
       if (WRONG_ESCAPED_SEQUENCE.matcher(tree.getText()).matches()) {
         reportIssue(tree, MESSAGE, null, Collections.emptyList());
       }

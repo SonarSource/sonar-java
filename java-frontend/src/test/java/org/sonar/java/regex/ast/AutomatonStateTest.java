@@ -42,7 +42,7 @@ class AutomatonStateTest {
           "NonCapturingGroupTree<flags: m:3>\n" +
           "BoundaryTree<flags: m:3>\n" +
           "NonCapturingGroupTree<flags: i:9>\n" +
-          "PlainCharacterTree 'a' <flags: i:9>\n" +
+          "CharacterTree 'a' <flags: i:9>\n" +
           "NonCapturingGroupTree<flags: s:15>\n" +
           "DotTree<flags: s:15>\n" +
           "NonCapturingGroupTree<flags: u:21>\n" +
@@ -54,7 +54,7 @@ class AutomatonStateTest {
           "NonCapturingGroupTree<flags: d:34>\n" +
           "BoundaryTree<flags: d:34>\n" +
           "NonCapturingGroupTree<flags: U:40>\n" +
-          "PlainCharacterTree 'ö' <flags: U:40>\n" +
+          "CharacterTree 'ö' <flags: U:40>\n" +
           "NonCapturingGroupTree<flags: x:52>\n" +
           "DisjunctionTree<flags: x:52>\n" +
           "SequenceTree<flags: x:52>\n" +
@@ -77,26 +77,26 @@ class AutomatonStateTest {
           "DisjunctionTree\n" +
           "SequenceTree\n" +
           "NonCapturingGroupTree<flags: i:3>\n" +
-          "PlainCharacterTree 'a' <flags: i:3>\n" +
+          "CharacterTree 'a' <flags: i:3>\n" +
           "NonCapturingGroupTree<flags: i:3 u:8>\n" +
-          "PlainCharacterTree 'b' <flags: i:3 u:8>\n" +
+          "CharacterTree 'b' <flags: i:3 u:8>\n" +
           "FinalState<flags: i:3 U:39>\n" +
           "SequenceTree<flags: i:3>\n" +
           "CharacterClassTree<flags: i:3>\n" +
           "NonCapturingGroupTree\n" +
-          "PlainCharacterTree 'd' \n" +
+          "CharacterTree 'd' \n" +
           "NonCapturingGroupTree<flags: i:3 u:25>\n" +
-          "PlainCharacterTree 'e' <flags: i:3 u:25>\n" +
+          "CharacterTree 'e' <flags: i:3 u:25>\n" +
           "CapturingGroupTree<flags: i:3 u:25>\n" +
           "SequenceTree<flags: i:3 u:25>\n" +
           "NonCapturingGroupTree<flags: i:3>\n" +
-          "PlainCharacterTree 'f' <flags: i:3>\n" +
+          "CharacterTree 'f' <flags: i:3>\n" +
           "EndOfCapturingGroupState<flags: i:3 u:25>\n" +
-          "PlainCharacterTree 'g' <flags: i:3 u:25>\n" +
+          "CharacterTree 'g' <flags: i:3 u:25>\n" +
           "NonCapturingGroupTree<flags: i:3 u:25 U:39>\n" +
-          "PlainCharacterTree 'h' <flags: i:3 u:25 U:39>\n" +
+          "CharacterTree 'h' <flags: i:3 u:25 U:39>\n" +
           "NonCapturingGroupTree<flags: i:3 U:39>\n" +
-          "PlainCharacterTree 'i' <flags: i:3 U:39>");
+          "CharacterTree 'i' <flags: i:3 U:39>");
   }
 
   @Test
@@ -110,34 +110,34 @@ class AutomatonStateTest {
           "DisjunctionTree\n" +
           "SequenceTree\n" +
           "NonCapturingGroupTree<flags: i:3>\n" +
-          "PlainCharacterTree 'a' <flags: i:3>\n" +
+          "CharacterTree 'a' <flags: i:3>\n" +
           "NonCapturingGroupTree<flags: i:3>\n" +
           "SequenceTree<flags: i:3>\n" +
           "NonCapturingGroupTree<flags: i:3 u:11>\n" +
-          "PlainCharacterTree 'b' <flags: i:3 u:11>\n" +
+          "CharacterTree 'b' <flags: i:3 u:11>\n" +
           "FinalState<flags: i:3 U:47>\n" +
           "SequenceTree<flags: i:3>\n" +
           "CharacterClassTree<flags: i:3>\n" +
           "AtomicGroupTree<flags: i:3>\n" +
           "SequenceTree<flags: i:3>\n" +
           "NonCapturingGroupTree\n" +
-          "PlainCharacterTree 'd' \n" +
+          "CharacterTree 'd' \n" +
           "NonCapturingGroupTree<flags: i:3 u:31>\n" +
-          "PlainCharacterTree 'e' <flags: i:3 u:31>\n" +
+          "CharacterTree 'e' <flags: i:3 u:31>\n" +
           "LookAroundTree<flags: i:3 u:31>\n" +
           "SequenceTree<flags: i:3 u:31>\n" +
           "NonCapturingGroupTree<flags: i:3>\n" +
-          "PlainCharacterTree 'f' <flags: i:3>\n" +
+          "CharacterTree 'f' <flags: i:3>\n" +
           "EndOfLookaroundState<flags: i:3 u:31>\n" +
-          "PlainCharacterTree 'g' <flags: i:3 u:31>\n" +
+          "CharacterTree 'g' <flags: i:3 u:31>\n" +
           "NonCapturingGroupTree<flags: i:3 u:31 U:47>\n" +
-          "PlainCharacterTree 'h' <flags: i:3 u:31 U:47>\n" +
+          "CharacterTree 'h' <flags: i:3 u:31 U:47>\n" +
           "NonCapturingGroupTree<flags: i:3 U:47>\n" +
-          "PlainCharacterTree 'i' <flags: i:3 U:47>");
+          "CharacterTree 'i' <flags: i:3 U:47>");
   }
 
   private static String printClassAndFlags(AutomatonState state) {
-    String content = (state instanceof PlainCharacterTree) ? " '" + ((PlainCharacterTree) state).characterAsString() + "' " : "";
+    String content = (state instanceof CharacterTree) ? " '" + ((CharacterTree) state).characterAsString() + "' " : "";
     return state.getClass().getSimpleName() + content + printFlags(state.activeFlags());
   }
 

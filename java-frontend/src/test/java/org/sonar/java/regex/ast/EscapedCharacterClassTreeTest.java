@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.sonar.java.regex.RegexParserTestUtils.assertCharacterClass;
 import static org.sonar.java.regex.RegexParserTestUtils.assertFailParsing;
 import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
-import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
+import static org.sonar.java.regex.RegexParserTestUtils.assertCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 import static org.sonar.java.regex.RegexParserTestUtils.assertType;
 import static org.sonar.java.regex.RegexParserTestUtils.makeSource;
@@ -140,7 +140,7 @@ class EscapedCharacterClassTreeTest {
 
     @Test
     void notCharacterClasses() {
-      assertPlainCharacter('i', "\\\\i");
+      assertCharacter('i', "\\\\i");
     }
 
     @Test

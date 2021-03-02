@@ -33,7 +33,7 @@ public abstract class RegexTree extends AbstractRegexSyntaxElement implements Au
     NON_CAPTURING_GROUP,
     ATOMIC_GROUP,
     LOOK_AROUND,
-    PLAIN_CHARACTER,
+    CHARACTER,
     REPETITION,
     SEQUENCE,
     MISC_ESCAPE_SEQUENCE,

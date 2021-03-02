@@ -94,10 +94,10 @@ class RegexBaseVisitorTest {
 
       RegexBaseVisitor visitor = new RegexBaseVisitor() {
         @Override
-        public void visitPlainCharacter(PlainCharacterTree tree) {
+        public void visitCharacter(CharacterTree tree) {
           items.add(tree);
           // does nothing
-          super.visitPlainCharacter(tree);
+          super.visitCharacter(tree);
         }
       };
 
@@ -108,7 +108,7 @@ class RegexBaseVisitorTest {
       assertThat(tree).isInstanceOf(DisjunctionTree.class);
       assertThat(((DisjunctionTree) tree).getAlternatives())
         .hasSize(3)
-        .allMatch(PlainCharacterTree.class::isInstance);
+        .allMatch(CharacterTree.class::isInstance);
       assertThat(items).hasSize(3);
     }
 
@@ -118,10 +118,10 @@ class RegexBaseVisitorTest {
 
       RegexBaseVisitor visitor = new RegexBaseVisitor() {
         @Override
-        public void visitPlainCharacter(PlainCharacterTree tree) {
+        public void visitCharacter(CharacterTree tree) {
           items.add(tree);
           // does nothing
-          super.visitPlainCharacter(tree);
+          super.visitCharacter(tree);
         }
       };
 
@@ -132,7 +132,7 @@ class RegexBaseVisitorTest {
       assertThat(tree).isInstanceOf(SequenceTree.class);
       assertThat(((SequenceTree) tree).getItems())
         .hasSize(3)
-        .allMatch(PlainCharacterTree.class::isInstance);
+        .allMatch(CharacterTree.class::isInstance);
       assertThat(items).hasSize(3);
     }
   }
@@ -188,9 +188,9 @@ class RegexBaseVisitorTest {
       StringBuilder characters = new StringBuilder();
 
       @Override
-      public void visitPlainCharacter(PlainCharacterTree tree) {
+      public void visitCharacter(CharacterTree tree) {
         characters.append(tree.characterAsString());
-        super.visitPlainCharacter(tree);
+        super.visitCharacter(tree);
       }
 
       @Override
@@ -241,7 +241,7 @@ class RegexBaseVisitorTest {
     private class FlagChecker extends LeafCollector {
 
       @Override
-      public void visitPlainCharacter(PlainCharacterTree tree) {
+      public void visitCharacter(CharacterTree tree) {
         switch (tree.characterAsString()) {
           case "a": case "c": case "f":
             assertActiveFlags(tree, true, false, false);
@@ -261,10 +261,10 @@ class RegexBaseVisitorTest {
           default:
             fail("Uncovered character in regex");
         }
-        super.visitPlainCharacter(tree);
+        super.visitCharacter(tree);
       }
 
-      void assertActiveFlags(PlainCharacterTree tree, boolean i, boolean u, boolean U) {
+      void assertActiveFlags(CharacterTree tree, boolean i, boolean u, boolean U) {
         assertThat(tree.activeFlags().contains(Pattern.CASE_INSENSITIVE)).isEqualTo(i);
         assertThat(tree.activeFlags().contains(Pattern.UNICODE_CASE)).isEqualTo(u);
         assertThat(tree.activeFlags().contains(Pattern.UNICODE_CHARACTER_CLASS)).isEqualTo(U);

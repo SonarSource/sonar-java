@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
 import static org.sonar.java.regex.RegexParserTestUtils.assertLocation;
-import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
+import static org.sonar.java.regex.RegexParserTestUtils.assertCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainString;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParseResult;
 import static org.sonar.java.regex.RegexParserTestUtils.assertType;
@@ -69,7 +69,7 @@ class CombinedTests {
     List<RegexTree> repeatedAlternatives = repeatedDisjunction.getAlternatives();
     assertEquals(2, repeatedAlternatives.size(), "First disjunction should have two alternatives.");
     assertPlainString("ab", repeatedAlternatives.get(0));
-    assertPlainCharacter('b', repeatedAlternatives.get(1));
+    assertCharacter('b', repeatedAlternatives.get(1));
 
     assertKind(RegexTree.Kind.CAPTURING_GROUP, items.get(1));
     CapturingGroupTree secondPart = assertType(CapturingGroupTree.class, items.get(1));
@@ -112,11 +112,11 @@ class CombinedTests {
     List<RegexTree> repeatedAlternatives = repeatedDisjunction.getAlternatives();
     assertEquals(2, repeatedAlternatives.size(), "First disjunction should have two alternatives.");
     assertPlainString("ab", repeatedAlternatives.get(0));
-    assertPlainCharacter('b', repeatedAlternatives.get(1));
+    assertCharacter('b', repeatedAlternatives.get(1));
 
-    assertKind(RegexTree.Kind.PLAIN_CHARACTER, items.get(1));
+    assertKind(RegexTree.Kind.CHARACTER, items.get(1));
     assertLocation(31, 34, items.get(1));
-    assertPlainCharacter('#', items.get(1));
+    assertCharacter('#', items.get(1));
 
     assertKind(RegexTree.Kind.CAPTURING_GROUP, items.get(2));
     CapturingGroupTree thirdPart = assertType(CapturingGroupTree.class, items.get(2));

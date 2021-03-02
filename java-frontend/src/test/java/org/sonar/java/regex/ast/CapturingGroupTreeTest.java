@@ -58,7 +58,7 @@ class CapturingGroupTreeTest {
     List<RegexTree> bcItems = ((SequenceTree) bcElement).getItems();
     assertThat(bcItems).hasSize(2);
 
-    assertKind(RegexTree.Kind.PLAIN_CHARACTER, bcItems.get(0));
+    assertKind(RegexTree.Kind.CHARACTER, bcItems.get(0));
     assertKind(RegexTree.Kind.CAPTURING_GROUP, bcItems.get(1));
 
     CapturingGroupTree c = ((CapturingGroupTree) bcItems.get(1));

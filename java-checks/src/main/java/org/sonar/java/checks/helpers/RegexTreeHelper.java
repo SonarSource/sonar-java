@@ -30,7 +30,7 @@ import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.ast.AutomatonState;
 import org.sonar.java.regex.ast.AutomatonState.TransitionType;
 import org.sonar.java.regex.ast.BoundaryTree;
-import org.sonar.java.regex.ast.PlainCharacterTree;
+import org.sonar.java.regex.ast.CharacterTree;
 import org.sonar.java.regex.ast.EndOfLookaroundState;
 import org.sonar.java.regex.ast.FinalState;
 import org.sonar.java.regex.ast.LookAroundTree;
@@ -57,8 +57,8 @@ public class RegexTreeHelper {
     RegexSyntaxElement startGrapheme = null;
     RegexSyntaxElement endGrapheme = null;
     for (RegexSyntaxElement child : trees) {
-      if (child instanceof PlainCharacterTree) {
-        PlainCharacterTree currentCharacter = (PlainCharacterTree) child;
+      if (child instanceof CharacterTree) {
+        CharacterTree currentCharacter = (CharacterTree) child;
         if (!currentCharacter.isEscapeSequence()) {
           if (!isMark(currentCharacter)) {
             addCurrentGrapheme(result, startGrapheme, endGrapheme);
@@ -78,7 +78,7 @@ public class RegexTreeHelper {
     return result;
   }
 
-  private static boolean isMark(PlainCharacterTree currentChar) {
+  private static boolean isMark(CharacterTree currentChar) {
     return MARK_PATTERN.matcher(currentChar.characterAsString()).matches();
   }
 

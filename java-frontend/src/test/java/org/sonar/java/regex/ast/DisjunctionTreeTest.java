@@ -28,7 +28,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.sonar.java.regex.RegexParserTestUtils.assertJavaCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
-import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
+import static org.sonar.java.regex.RegexParserTestUtils.assertCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSingleEdge;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 import static org.sonar.java.regex.RegexParserTestUtils.assertType;
@@ -40,8 +40,8 @@ class DisjunctionTreeTest {
   void disjunctionWithTwoAlternatives(String regex, int expectedCharacterIndex) {
     DisjunctionTree disjunction = assertType(DisjunctionTree.class, assertSuccessfulParse(regex));
     assertListElements(disjunction.getAlternatives(),
-      first -> assertPlainCharacter('a', first),
-      second -> assertPlainCharacter('b', second)
+      first -> assertCharacter('a', first),
+      second -> assertCharacter('b', second)
     );
     assertListElements(disjunction.getOrOperators(),
       first -> assertJavaCharacter(expectedCharacterIndex, '|', first)
@@ -68,9 +68,9 @@ class DisjunctionTreeTest {
   void disjunctionWithThreeAlternatives() {
     DisjunctionTree disjunction = assertType(DisjunctionTree.class, assertSuccessfulParse("a|b|c"));
     assertListElements(disjunction.getAlternatives(),
-      first -> assertPlainCharacter('a', first),
-      second -> assertPlainCharacter('b', second),
-      third -> assertPlainCharacter('c', third)
+      first -> assertCharacter('a', first),
+      second -> assertCharacter('b', second),
+      third -> assertCharacter('c', third)
     );
     assertListElements(disjunction.getOrOperators(),
       first -> assertJavaCharacter(1, '|', first),

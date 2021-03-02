@@ -64,11 +64,7 @@ public class RegexBaseVisitor implements RegexVisitor {
   }
 
   @Override
-  public void visitPlainCharacter(PlainCharacterTree tree) {
-    visitCharacter(tree);
-  }
-
-  protected void visitCharacter(PlainCharacterTree tree) {
+  public void visitCharacter(CharacterTree tree) {
     // No children to visit
   }
 

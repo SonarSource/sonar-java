@@ -23,24 +23,24 @@ import javax.annotation.Nonnull;
 
 public class CharacterRangeTree extends AbstractRegexSyntaxElement implements CharacterClassElementTree {
 
-  private final PlainCharacterTree lowerBound;
+  private final CharacterTree lowerBound;
 
-  private final PlainCharacterTree upperBound;
+  private final CharacterTree upperBound;
 
   private final FlagSet activeFlags;
 
-  public CharacterRangeTree(RegexSource source, IndexRange range, PlainCharacterTree lowerBound, PlainCharacterTree upperBound, FlagSet activeFlags) {
+  public CharacterRangeTree(RegexSource source, IndexRange range, CharacterTree lowerBound, CharacterTree upperBound, FlagSet activeFlags) {
     super(source, range);
     this.lowerBound = lowerBound;
     this.upperBound = upperBound;
     this.activeFlags = activeFlags;
   }
 
-  public PlainCharacterTree getLowerBound() {
+  public CharacterTree getLowerBound() {
     return lowerBound;
   }
 
-  public PlainCharacterTree getUpperBound() {
+  public CharacterTree getUpperBound() {
     return upperBound;
   }
 
