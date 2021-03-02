@@ -1,6 +1,6 @@
 {
   "title": "\"@RequestMapping\" methods should be \"public\"",
-  "type": "VULNERABILITY",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
