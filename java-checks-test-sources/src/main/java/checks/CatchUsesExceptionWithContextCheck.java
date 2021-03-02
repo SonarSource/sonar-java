@@ -7,6 +7,8 @@ import org.apache.xerces.xni.XNIException;
 import org.slf4j.Logger;
 
 import static java.util.logging.Level.WARNING;
+import static checks.CatchUsesExceptionWithContextCheck.MyCustomLogger.staticallyImportedMethod;
+import static checks.CatchUsesExceptionWithContextCheck.Provider.staticallyImportedMethodFromProvider;
 
 class CatchUsesExceptionWithContextCheck {
   private static final Logger LOGGER = null;
@@ -455,6 +457,24 @@ class CatchUsesExceptionWithContextCheck {
     } catch (Exception e) { // Noncompliant
       CUSTOM_LOGGER.log(e.getMessage());
     }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      String message = "Some context for exception" + e.getMessage();
+      MyCustomLogger.staticallyImportedMethod(message);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant, type contains "log"
+      String message = "Some context for exception" + e.getMessage();
+      staticallyImportedMethod(message);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Noncompliant
+      String message = "Some context for exception" + e.getMessage();
+      staticallyImportedMethodFromProvider(message);
+    }
   }
 
   private void doSomething(Object e) {}
@@ -512,6 +532,8 @@ class CatchUsesExceptionWithContextCheck {
     }
     void doSomethingWithMessage(String t) {
     }
+    public static void staticallyImportedMethod(String t) {
+    }
     MyCustomLogger setSomething(String s) {
       return this;
     }
@@ -524,6 +546,8 @@ class CatchUsesExceptionWithContextCheck {
     void doSomethingWithException(Throwable t) {
     }
     void doSomethingWithMessage(String t) {
+    }
+    public static void staticallyImportedMethodFromProvider(String t) {
     }
   }
 
