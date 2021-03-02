@@ -21,8 +21,6 @@ package org.sonar.java.checks.helpers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
@@ -35,8 +33,6 @@ import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -178,44 +174,6 @@ public final class MethodTreeUtils {
     @Override
     public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
       // Skip lambdas
-    }
-  }
-
-  /**
-   * Helper to determine if a method invocation's member select matches a given predicate.
-   * It stores intermediates results to avoid duplicate computation.
-   */
-  public static class MethodSelectMatcher {
-    private final Map<MethodInvocationTree, Boolean> visitedToMatch = new HashMap<>();
-    private final Predicate<String> namePredicate;
-
-    public MethodSelectMatcher(Predicate<String> namePredicate) {
-      this.namePredicate = namePredicate;
-    }
-
-    public void reset() {
-      visitedToMatch.clear();
-    }
-
-    public boolean matches(MethodInvocationTree mit) {
-      Boolean match = visitedToMatch.get(mit);
-      if (match == null) {
-        match = expressionMatch(mit.methodSelect());
-        visitedToMatch.put(mit, match);
-      }
-      return match;
-    }
-
-    private boolean expressionMatch(ExpressionTree expression) {
-      if (expression.is(Tree.Kind.IDENTIFIER)) {
-        return namePredicate.test(((IdentifierTree) expression).name());
-      } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
-        MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) expression;
-        return expressionMatch(memberSelect.identifier()) || expressionMatch(memberSelect.expression());
-      } else if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
-        return matches((MethodInvocationTree) expression);
-      }
-      return false;
     }
   }
 
