@@ -38,7 +38,6 @@ import org.sonar.java.regex.ast.PlainCharacterTree;
 import org.sonar.java.regex.ast.RegexSource;
 import org.sonar.java.regex.ast.RegexTree;
 import org.sonar.java.regex.ast.SequenceTree;
-import org.sonar.java.regex.ast.UnicodeCodePointTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -193,7 +192,7 @@ class SimplifiedRegexCharacterClassTest {
     assertThat(maxCodePoint).matches(".");
 
     RegexTree result = parseRegex(maxCodePoint, new FlagSet()).getResult();
-    assertThat(result).isInstanceOf(UnicodeCodePointTree.class);
+    assertThat(result).isInstanceOf(PlainCharacterTree.class);
     assertIntersects(".", maxCodePoint, false, NO_FLAGS).isTrue();
   }
 

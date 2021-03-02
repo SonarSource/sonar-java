@@ -137,7 +137,6 @@ public class RegexParserTestUtils {
     PlainCharacterTree characterTree = assertType(PlainCharacterTree.class, regex);
     assertKind(RegexTree.Kind.PLAIN_CHARACTER, characterTree);
     assertKind(CharacterClassElementTree.Kind.PLAIN_CHARACTER, characterTree);
-    assertEquals(expected, characterTree.getCharacter(), "Regex should contain the right characters.");
     assertEquals(expected, characterTree.codePointOrUnit(), "Code unit should equal character.");
     assertEquals("" + expected, characterTree.characterAsString());
     assertEquals(AutomatonState.TransitionType.CHARACTER, characterTree.incomingTransitionType());

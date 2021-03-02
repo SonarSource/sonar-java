@@ -52,7 +52,7 @@ class CharacterClassTreeTest {
   void closingBracket() {
     RegexTree regex = assertSuccessfulParse("[]]");
     PlainCharacterTree character = assertType(PlainCharacterTree.class, assertCharacterClass(false, regex));
-    assertEquals(']', character.getCharacter(), "Matched character should be ']'.");
+    assertEquals("]", character.characterAsString(), "Matched character should be ']'.");
   }
 
   @Test

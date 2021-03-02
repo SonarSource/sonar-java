@@ -29,7 +29,7 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.AutomatonState;
-import org.sonar.java.regex.ast.CharacterTree;
+import org.sonar.java.regex.ast.PlainCharacterTree;
 import org.sonar.java.regex.ast.DisjunctionTree;
 import org.sonar.java.regex.ast.GroupTree;
 import org.sonar.java.regex.ast.Quantifier;
@@ -172,7 +172,7 @@ public class RegexStackOverflowCheck extends AbstractRegexCheck {
       }
       AutomatonState next = start.continuation();
       if (start instanceof RegexTree) {
-        if (start instanceof CharacterTree && next instanceof CharacterTree) {
+        if (start instanceof PlainCharacterTree && next instanceof PlainCharacterTree) {
           // Consecutive characters don't create an extra recursion, so we skip the character edge between them and use
           // a 1,0 edge instead.
           return new PathInfo(1, 0).add(worstPath(next, end));

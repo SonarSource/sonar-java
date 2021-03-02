@@ -41,6 +41,7 @@ public class InvalidRegexCheck {
   void unicode16(String str) {
     str.matches("[😂😊]"); // Compliant
     str.matches("[^\ud800\udc00-\udbff\udfff]"); // Compliant
+    str.matches("[^\\ud800\\udc00-\\udbff\\udfff]"); // Compliant
   }
 
 }

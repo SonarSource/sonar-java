@@ -54,7 +54,7 @@ class AutomatonStateTest {
           "NonCapturingGroupTree<flags: d:34>\n" +
           "BoundaryTree<flags: d:34>\n" +
           "NonCapturingGroupTree<flags: U:40>\n" +
-          "UnicodeCodePointTree<flags: U:40>\n" +
+          "PlainCharacterTree 'ö' <flags: U:40>\n" +
           "NonCapturingGroupTree<flags: x:52>\n" +
           "DisjunctionTree<flags: x:52>\n" +
           "SequenceTree<flags: x:52>\n" +
@@ -137,7 +137,7 @@ class AutomatonStateTest {
   }
 
   private static String printClassAndFlags(AutomatonState state) {
-    String content = (state instanceof PlainCharacterTree) ? " '" + ((PlainCharacterTree) state).getCharacter() + "' " : "";
+    String content = (state instanceof PlainCharacterTree) ? " '" + ((PlainCharacterTree) state).characterAsString() + "' " : "";
     return state.getClass().getSimpleName() + content + printFlags(state.activeFlags());
   }
 

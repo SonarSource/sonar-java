@@ -32,7 +32,7 @@ import org.sonar.java.regex.ast.CharacterClassElementTree;
 import org.sonar.java.regex.ast.CharacterClassIntersectionTree;
 import org.sonar.java.regex.ast.CharacterClassTree;
 import org.sonar.java.regex.ast.CharacterRangeTree;
-import org.sonar.java.regex.ast.CharacterTree;
+import org.sonar.java.regex.ast.PlainCharacterTree;
 import org.sonar.java.regex.ast.DotTree;
 import org.sonar.java.regex.ast.EscapedCharacterClassTree;
 import org.sonar.java.regex.ast.MiscEscapeSequenceTree;
@@ -214,7 +214,7 @@ public class SimplifiedRegexCharacterClass {
     }
 
     @Override
-    protected void visitCharacter(CharacterTree tree) {
+    protected void visitCharacter(PlainCharacterTree tree) {
       addRange(tree.codePointOrUnit(), tree.codePointOrUnit(), tree);
     }
 

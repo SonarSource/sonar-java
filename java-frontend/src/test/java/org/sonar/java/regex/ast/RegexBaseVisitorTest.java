@@ -157,7 +157,7 @@ class RegexBaseVisitorTest {
         "^[ab&&[^c]]+|(?<x>d)[e-f][\\\\x01-\\\\x02].\\\\1\\\\k<x>\\\\w\\\\x0A\\\\R$")
       );
       assertThat(visitor.visitedCharacters()).isEqualTo(
-        "<boundary:^>abcd<range:e-f><range:<u 1>-<u 2>><dot><backref:1><backref:x><char-class-escape:\\\\w><u a><boundary:$>"
+        "<boundary:^>abcd<range:e-f><range:\u0001-\u0002><dot><backref:1><backref:x><char-class-escape:\\\\w>\n<boundary:$>"
       );
     }
 
@@ -189,16 +189,8 @@ class RegexBaseVisitorTest {
 
       @Override
       public void visitPlainCharacter(PlainCharacterTree tree) {
-        characters.append(tree.getCharacter());
+        characters.append(tree.characterAsString());
         super.visitPlainCharacter(tree);
-      }
-
-      @Override
-      public void visitUnicodeCodePoint(UnicodeCodePointTree tree) {
-        characters.append("<u ");
-        characters.append(Integer.toHexString(tree.codePointOrUnit()));
-        characters.append(">");
-        super.visitUnicodeCodePoint(tree);
       }
 
       @Override
@@ -250,20 +242,20 @@ class RegexBaseVisitorTest {
 
       @Override
       public void visitPlainCharacter(PlainCharacterTree tree) {
-        switch (tree.getCharacter()) {
-          case 'a': case 'c': case 'f':
+        switch (tree.characterAsString()) {
+          case "a": case "c": case "f":
             assertActiveFlags(tree, true, false, false);
             break;
-          case 'b': case 'e': case 'g':
+          case "b": case "e": case "g":
             assertActiveFlags(tree, true, true, false);
             break;
-          case 'd':
+          case "d":
             assertActiveFlags(tree, false, false, false);
             break;
-          case 'h':
+          case "h":
             assertActiveFlags(tree, true, true, true);
             break;
-          case 'i':
+          case "i":
             assertActiveFlags(tree, true, false, true);
             break;
           default:

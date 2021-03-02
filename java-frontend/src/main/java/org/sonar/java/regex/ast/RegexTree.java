@@ -36,7 +36,6 @@ public abstract class RegexTree extends AbstractRegexSyntaxElement implements Au
     PLAIN_CHARACTER,
     REPETITION,
     SEQUENCE,
-    UNICODE_CODE_POINT,
     MISC_ESCAPE_SEQUENCE,
   }
 

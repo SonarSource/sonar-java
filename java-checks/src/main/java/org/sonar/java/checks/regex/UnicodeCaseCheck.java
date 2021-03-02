@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.regex.RegexParseResult;
-import org.sonar.java.regex.ast.CharacterTree;
+import org.sonar.java.regex.ast.PlainCharacterTree;
 import org.sonar.java.regex.ast.FlagSet;
 import org.sonar.java.regex.ast.JavaCharacter;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
@@ -55,7 +55,7 @@ public class UnicodeCaseCheck extends AbstractRegexCheck {
     }
 
     @Override
-    protected void visitCharacter(CharacterTree tree) {
+    protected void visitCharacter(PlainCharacterTree tree) {
       if (isProblematic(tree.activeFlags(), tree.codePointOrUnit())) {
         JavaCharacter character = tree.activeFlags().getJavaCharacterForFlag(Pattern.CASE_INSENSITIVE);
         if (character == null) {

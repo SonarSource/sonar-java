@@ -68,15 +68,7 @@ public class RegexBaseVisitor implements RegexVisitor {
     visitCharacter(tree);
   }
 
-  @Override
-  public void visitUnicodeCodePoint(UnicodeCodePointTree tree) {
-    visitCharacter(tree);
-  }
-
-  /**
-   * Override to visit both PlainCharacterTrees and UnicodeCodePointTrees
-   */
-  protected void visitCharacter(CharacterTree tree) {
+  protected void visitCharacter(PlainCharacterTree tree) {
     // No children to visit
   }
 

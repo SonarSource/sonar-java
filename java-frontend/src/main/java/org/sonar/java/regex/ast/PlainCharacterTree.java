@@ -21,36 +21,27 @@ package org.sonar.java.regex.ast;
 
 import javax.annotation.Nonnull;
 
-public class PlainCharacterTree extends CharacterTree {
+public class PlainCharacterTree extends RegexTree implements CharacterClassElementTree {
 
-  private final JavaCharacter contents;
+  private final int codePoint;
+  private final boolean isEscapeSequence;
 
-  public PlainCharacterTree(RegexSource source, IndexRange range, JavaCharacter character, FlagSet activeFlags) {
+  public PlainCharacterTree(RegexSource source, IndexRange range, int codePoint, boolean isEscapeSequence, FlagSet activeFlags) {
     super(source, range, activeFlags);
-    this.contents = character;
+    this.codePoint = codePoint;
+    this.isEscapeSequence = isEscapeSequence;
   }
 
-  public char getCharacter() {
-    return contents.getCharacter();
-  }
-
-  public JavaCharacter getContents() {
-    return contents;
-  }
-
-  @Override
-  public String characterAsString() {
-    return String.valueOf(getCharacter());
-  }
-
-  @Override
   public int codePointOrUnit() {
-    return getCharacter();
+    return codePoint;
   }
 
-  @Override
   public boolean isEscapeSequence() {
-    return contents.isEscapeSequence();
+    return isEscapeSequence;
+  }
+
+  public String characterAsString() {
+    return String.valueOf(Character.toChars(codePoint));
   }
 
   @Override
@@ -69,4 +60,9 @@ public class PlainCharacterTree extends CharacterTree {
     return CharacterClassElementTree.Kind.PLAIN_CHARACTER;
   }
 
+  @Nonnull
+  @Override
+  public TransitionType incomingTransitionType() {
+    return TransitionType.CHARACTER;
+  }
 }

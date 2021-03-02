@@ -99,7 +99,6 @@ public class ReluctantQuantifierCheck extends AbstractRegexCheck {
       String result;
       switch (tree.kind()) {
         case PLAIN_CHARACTER:
-        case UNICODE_CODE_POINT:
           result = "[^" + tree.getText() + negateEscapedCharacter(base) + "]";
           break;
         case ESCAPED_CHARACTER_CLASS:
