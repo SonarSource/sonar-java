@@ -94,10 +94,10 @@ class RegexBaseVisitorTest {
 
       RegexBaseVisitor visitor = new RegexBaseVisitor() {
         @Override
-        public void visitPlainCharacter(PlainCharacterTree tree) {
+        public void visitCharacter(CharacterTree tree) {
           items.add(tree);
           // does nothing
-          super.visitPlainCharacter(tree);
+          super.visitCharacter(tree);
         }
       };
 
@@ -108,7 +108,7 @@ class RegexBaseVisitorTest {
       assertThat(tree).isInstanceOf(DisjunctionTree.class);
       assertThat(((DisjunctionTree) tree).getAlternatives())
         .hasSize(3)
-        .allMatch(PlainCharacterTree.class::isInstance);
+        .allMatch(CharacterTree.class::isInstance);
       assertThat(items).hasSize(3);
     }
 
@@ -118,10 +118,10 @@ class RegexBaseVisitorTest {
 
       RegexBaseVisitor visitor = new RegexBaseVisitor() {
         @Override
-        public void visitPlainCharacter(PlainCharacterTree tree) {
+        public void visitCharacter(CharacterTree tree) {
           items.add(tree);
           // does nothing
-          super.visitPlainCharacter(tree);
+          super.visitCharacter(tree);
         }
       };
 
@@ -132,7 +132,7 @@ class RegexBaseVisitorTest {
       assertThat(tree).isInstanceOf(SequenceTree.class);
       assertThat(((SequenceTree) tree).getItems())
         .hasSize(3)
-        .allMatch(PlainCharacterTree.class::isInstance);
+        .allMatch(CharacterTree.class::isInstance);
       assertThat(items).hasSize(3);
     }
   }
@@ -157,7 +157,7 @@ class RegexBaseVisitorTest {
         "^[ab&&[^c]]+|(?<x>d)[e-f][\\\\x01-\\\\x02].\\\\1\\\\k<x>\\\\w\\\\x0A\\\\R$")
       );
       assertThat(visitor.visitedCharacters()).isEqualTo(
-        "<boundary:^>abcd<range:e-f><range:<u 1>-<u 2>><dot><backref:1><backref:x><char-class-escape:\\\\w><u a><boundary:$>"
+        "<boundary:^>abcd<range:e-f><range:\u0001-\u0002><dot><backref:1><backref:x><char-class-escape:\\\\w>\n<boundary:$>"
       );
     }
 
@@ -188,17 +188,9 @@ class RegexBaseVisitorTest {
       StringBuilder characters = new StringBuilder();
 
       @Override
-      public void visitPlainCharacter(PlainCharacterTree tree) {
-        characters.append(tree.getCharacter());
-        super.visitPlainCharacter(tree);
-      }
-
-      @Override
-      public void visitUnicodeCodePoint(UnicodeCodePointTree tree) {
-        characters.append("<u ");
-        characters.append(Integer.toHexString(tree.codePointOrUnit()));
-        characters.append(">");
-        super.visitUnicodeCodePoint(tree);
+      public void visitCharacter(CharacterTree tree) {
+        characters.append(tree.characterAsString());
+        super.visitCharacter(tree);
       }
 
       @Override
@@ -249,30 +241,30 @@ class RegexBaseVisitorTest {
     private class FlagChecker extends LeafCollector {
 
       @Override
-      public void visitPlainCharacter(PlainCharacterTree tree) {
-        switch (tree.getCharacter()) {
-          case 'a': case 'c': case 'f':
+      public void visitCharacter(CharacterTree tree) {
+        switch (tree.characterAsString()) {
+          case "a": case "c": case "f":
             assertActiveFlags(tree, true, false, false);
             break;
-          case 'b': case 'e': case 'g':
+          case "b": case "e": case "g":
             assertActiveFlags(tree, true, true, false);
             break;
-          case 'd':
+          case "d":
             assertActiveFlags(tree, false, false, false);
             break;
-          case 'h':
+          case "h":
             assertActiveFlags(tree, true, true, true);
             break;
-          case 'i':
+          case "i":
             assertActiveFlags(tree, true, false, true);
             break;
           default:
             fail("Uncovered character in regex");
         }
-        super.visitPlainCharacter(tree);
+        super.visitCharacter(tree);
       }
 
-      void assertActiveFlags(PlainCharacterTree tree, boolean i, boolean u, boolean U) {
+      void assertActiveFlags(CharacterTree tree, boolean i, boolean u, boolean U) {
         assertThat(tree.activeFlags().contains(Pattern.CASE_INSENSITIVE)).isEqualTo(i);
         assertThat(tree.activeFlags().contains(Pattern.UNICODE_CASE)).isEqualTo(u);
         assertThat(tree.activeFlags().contains(Pattern.UNICODE_CHARACTER_CLASS)).isEqualTo(U);

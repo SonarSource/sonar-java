@@ -34,7 +34,7 @@ import org.sonar.java.regex.ast.DotTree;
 import org.sonar.java.regex.ast.FlagSet;
 import org.sonar.java.regex.ast.IndexRange;
 import org.sonar.java.regex.ast.MiscEscapeSequenceTree;
-import org.sonar.java.regex.ast.PlainCharacterTree;
+import org.sonar.java.regex.ast.CharacterTree;
 import org.sonar.java.regex.ast.RegexSource;
 import org.sonar.java.regex.ast.RegexTree;
 import org.sonar.java.regex.ast.SequenceTree;
@@ -192,10 +192,8 @@ class SimplifiedRegexCharacterClassTest {
     assertThat(maxCodePoint).matches(".");
 
     RegexTree result = parseRegex(maxCodePoint, new FlagSet()).getResult();
-    // FIXME result should be a single PlainCharacterTree and not a SequenceTree of two PlainCharacterTree s
-    // In oder to assert: assertIntersects(".", maxCodePoint, false, NO_FLAGS).isTrue();
-    // Instead of:
-    assertThat(result).isInstanceOf(SequenceTree.class);
+    assertThat(result).isInstanceOf(CharacterTree.class);
+    assertIntersects(".", maxCodePoint, false, NO_FLAGS).isTrue();
   }
 
   @Test
@@ -322,8 +320,8 @@ class SimplifiedRegexCharacterClassTest {
 
   @Test
   void conversion() {
-    PlainCharacterTree plainCharacterTree = (PlainCharacterTree) parseRegex("a", new FlagSet()).getResult();
-    assertThat(SimplifiedRegexCharacterClass.of(plainCharacterTree)).isNotNull();
+    CharacterTree characterTree = (CharacterTree) parseRegex("a", new FlagSet()).getResult();
+    assertThat(SimplifiedRegexCharacterClass.of(characterTree)).isNotNull();
 
     DotTree dotTree = (DotTree) parseRegex(".", new FlagSet()).getResult();
     assertThat(SimplifiedRegexCharacterClass.of(dotTree)).isNotNull();

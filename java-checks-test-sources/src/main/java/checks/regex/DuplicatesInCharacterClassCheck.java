@@ -121,4 +121,9 @@ public class DuplicatesInCharacterClassCheck {
   @javax.validation.constraints.Email(regexp = "[0-99]") // Noncompliant [[sc=50;ec=53]] {{Remove duplicates in this character class.}}
   String email;
 
+  void emoji(String str) {
+    str.matches("[😂😊]"); // Compliant
+    str.matches("[^\ud800\udc00-\udbff\udfff]"); // Compliant
+  }
+  
 }

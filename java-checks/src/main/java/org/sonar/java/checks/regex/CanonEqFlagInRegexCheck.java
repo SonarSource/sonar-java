@@ -68,7 +68,7 @@ public class CanonEqFlagInRegexCheck extends AbstractRegexCheck {
     if (regexForLiterals.getInitialFlags().contains(Pattern.CANON_EQ)) {
       return;
     }
-    PlainCharacterVisitor visitor = new PlainCharacterVisitor();
+    CharacterVisitor visitor = new CharacterVisitor();
     visitor.visit(regexForLiterals);
 
     if (!visitor.subjectToNormalization.isEmpty()) {
@@ -87,7 +87,7 @@ public class CanonEqFlagInRegexCheck extends AbstractRegexCheck {
     }
   }
 
-  private static class PlainCharacterVisitor extends RegexBaseVisitor {
+  private static class CharacterVisitor extends RegexBaseVisitor {
 
     private final List<RegexIssueLocation> subjectToNormalization = new ArrayList<>();
 
@@ -103,7 +103,7 @@ public class CanonEqFlagInRegexCheck extends AbstractRegexCheck {
     }
 
     @Override
-    protected void visitCharacter(CharacterTree tree) {
+    public void visitCharacter(CharacterTree tree) {
       String str = tree.characterAsString();
       if (isSubjectToNormalization(str)) {
         subjectToNormalization.add(new RegexIssueLocation(tree, ""));

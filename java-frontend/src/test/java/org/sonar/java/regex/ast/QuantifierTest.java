@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.sonar.java.regex.RegexParserTestUtils.assertEdge;
 import static org.sonar.java.regex.RegexParserTestUtils.assertFailParsing;
 import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
-import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
+import static org.sonar.java.regex.RegexParserTestUtils.assertCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSingleEdge;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 import static org.sonar.java.regex.RegexParserTestUtils.assertType;
@@ -48,7 +48,7 @@ class QuantifierTest {
   void testGreedyPlus() {
     RegexTree regex = assertSuccessfulParse("x+");
     RepetitionTree repetition = assertType(RepetitionTree.class, regex);
-    assertPlainCharacter('x', repetition.getElement());
+    assertCharacter('x', repetition.getElement());
     SimpleQuantifier quantifier = assertType(SimpleQuantifier.class, repetition.getQuantifier());
     assertEquals(SimpleQuantifier.Kind.PLUS, quantifier.getKind(), "Quantifier should be a plus.");
     assertEquals(1, quantifier.getMinimumRepetitions(), "Lower bound should be 1.");
@@ -64,7 +64,7 @@ class QuantifierTest {
     RegexTree regex = assertSuccessfulParse("x?");
     RepetitionTree repetition = assertType(RepetitionTree.class, regex);
     RegexTree x = repetition.getElement();
-    assertPlainCharacter('x', x);
+    assertCharacter('x', x);
     SimpleQuantifier quantifier = assertType(SimpleQuantifier.class, repetition.getQuantifier());
     assertEquals(SimpleQuantifier.Kind.QUESTION_MARK, quantifier.getKind(), "Quantifier should be a question mark.");
     assertEquals(0, quantifier.getMinimumRepetitions(), "Lower bound should be 0.");
@@ -84,7 +84,7 @@ class QuantifierTest {
   void testReluctantStar() {
     RegexTree regex = assertSuccessfulParse("x*?");
     RepetitionTree repetition = assertType(RepetitionTree.class, regex);
-    assertPlainCharacter('x', repetition.getElement());
+    assertCharacter('x', repetition.getElement());
     SimpleQuantifier quantifier = assertType(SimpleQuantifier.class, repetition.getQuantifier());
     assertEquals(SimpleQuantifier.Kind.STAR, quantifier.getKind(), "Quantifier should be a Kleene star.");
     assertEquals(Quantifier.Modifier.RELUCTANT, quantifier.getModifier(), "Quantifier should be reluctant.");
@@ -96,7 +96,7 @@ class QuantifierTest {
   void testPossessiveStar() {
     RegexTree regex = assertSuccessfulParse("x*+");
     RepetitionTree repetition = assertType(RepetitionTree.class, regex);
-    assertPlainCharacter('x', repetition.getElement());
+    assertCharacter('x', repetition.getElement());
     SimpleQuantifier quantifier = assertType(SimpleQuantifier.class, repetition.getQuantifier());
     assertEquals(SimpleQuantifier.Kind.STAR, quantifier.getKind(), "Quantifier should be a Kleene star.");
     assertEquals(Quantifier.Modifier.POSSESSIVE, quantifier.getModifier(), "Quantifier should be possessive.");
@@ -134,7 +134,7 @@ class QuantifierTest {
   private void assertXWithKleeneStar(String regexSource) {
     RegexTree regex = assertSuccessfulParse(regexSource);
     RepetitionTree repetition = assertType(RepetitionTree.class, regex);
-    assertPlainCharacter('x', repetition.getElement());
+    assertCharacter('x', repetition.getElement());
     SimpleQuantifier quantifier = assertType(SimpleQuantifier.class, repetition.getQuantifier());
     assertEquals(SimpleQuantifier.Kind.STAR, quantifier.getKind(), "Quantifier should be a Kleene star.");
     assertEquals(0, quantifier.getMinimumRepetitions(), "Lower bound should be 0.");

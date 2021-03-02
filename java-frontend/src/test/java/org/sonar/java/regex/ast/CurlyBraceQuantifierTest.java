@@ -33,7 +33,7 @@ import static org.sonar.java.regex.RegexParserTestUtils.assertEdge;
 import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
 import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
 import static org.sonar.java.regex.RegexParserTestUtils.assertLocation;
-import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
+import static org.sonar.java.regex.RegexParserTestUtils.assertCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSingleEdge;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 import static org.sonar.java.regex.RegexParserTestUtils.assertType;
@@ -46,7 +46,7 @@ class CurlyBraceQuantifierTest {
     RegexTree regex = assertSuccessfulParse("x{23,42}");
     RepetitionTree repetition = assertType(RepetitionTree.class, regex);
     assertKind(RegexTree.Kind.REPETITION, repetition);
-    assertPlainCharacter('x', repetition.getElement());
+    assertCharacter('x', repetition.getElement());
     CurlyBraceQuantifier quantifier = assertType(CurlyBraceQuantifier.class, repetition.getQuantifier());
     assertLocation(2, 4, quantifier.getMinimumRepetitionsToken());
     assertLocation(4, 5, quantifier.getCommaToken());
@@ -65,7 +65,7 @@ class CurlyBraceQuantifierTest {
     RegexTree regex = assertSuccessfulParse("x{42,}");
     RepetitionTree repetition = assertType(RepetitionTree.class, regex);
     assertKind(RegexTree.Kind.REPETITION, repetition);
-    assertPlainCharacter('x', repetition.getElement());
+    assertCharacter('x', repetition.getElement());
     CurlyBraceQuantifier quantifier = assertType(CurlyBraceQuantifier.class, repetition.getQuantifier());
     assertEquals(42, quantifier.getMinimumRepetitions(), "Lower bound should be 42.");
     assertNull(quantifier.getMaximumRepetitions(), "Quantifier should be open ended.");
@@ -80,7 +80,7 @@ class CurlyBraceQuantifierTest {
   void testFixedCurlyBracedQuantifier() {
     RegexTree regex = assertSuccessfulParse("x{42}");
     RepetitionTree repetition = assertType(RepetitionTree.class, regex);
-    assertPlainCharacter('x', repetition.getElement());
+    assertCharacter('x', repetition.getElement());
     CurlyBraceQuantifier quantifier = assertType(CurlyBraceQuantifier.class, repetition.getQuantifier());
     assertEquals(42, quantifier.getMinimumRepetitions(), "Lower bound should be 42.");
     assertEquals(42, quantifier.getMaximumRepetitions(), "Upper bound should be the same as lower bound.");
@@ -95,7 +95,7 @@ class CurlyBraceQuantifierTest {
   void testReluctantCurlyBracedQuantifier() {
     RegexTree regex = assertSuccessfulParse("x{23,42}?");
     RepetitionTree repetition = assertType(RepetitionTree.class, regex);
-    assertPlainCharacter('x', repetition.getElement());
+    assertCharacter('x', repetition.getElement());
     CurlyBraceQuantifier quantifier = assertType(CurlyBraceQuantifier.class, repetition.getQuantifier());
     assertEquals(23, quantifier.getMinimumRepetitions(), "Lower bound should be 23.");
     assertEquals(42, quantifier.getMaximumRepetitions(), "Upper bound should be 42.");
@@ -108,7 +108,7 @@ class CurlyBraceQuantifierTest {
   void testPossessiveCurlyBracedQuantifier() {
     RegexTree regex = assertSuccessfulParse("x{23,42}+");
     RepetitionTree repetition = assertType(RepetitionTree.class, regex);
-    assertPlainCharacter('x', repetition.getElement());
+    assertCharacter('x', repetition.getElement());
     CurlyBraceQuantifier quantifier = assertType(CurlyBraceQuantifier.class, repetition.getQuantifier());
     assertEquals(23, quantifier.getMinimumRepetitions(), "Lower bound should be 23.");
     assertEquals(42, quantifier.getMaximumRepetitions(), "Upper bound should be 42.");
@@ -122,7 +122,7 @@ class CurlyBraceQuantifierTest {
     RegexTree regex = assertSuccessfulParse("x{1,1}");
     RepetitionTree repetition = assertType(RepetitionTree.class, regex);
     RegexTree x = repetition.getElement();
-    assertPlainCharacter('x', x);
+    assertCharacter('x', x);
     CurlyBraceQuantifier quantifier = assertType(CurlyBraceQuantifier.class, repetition.getQuantifier());
     assertEquals(1, quantifier.getMinimumRepetitions(), "Lower bound should be 1.");
     assertEquals(1, quantifier.getMaximumRepetitions(), "Upper bound should be 1.");
@@ -139,7 +139,7 @@ class CurlyBraceQuantifierTest {
     RegexTree regex = assertSuccessfulParse("x{0,0}");
     RepetitionTree repetition = assertType(RepetitionTree.class, regex);
     RegexTree x = repetition.getElement();
-    assertPlainCharacter('x', x);
+    assertCharacter('x', x);
     CurlyBraceQuantifier quantifier = assertType(CurlyBraceQuantifier.class, repetition.getQuantifier());
     assertEquals(0, quantifier.getMinimumRepetitions(), "Lower bound should be 0.");
     assertEquals(0, quantifier.getMaximumRepetitions(), "Upper bound should be 0.");

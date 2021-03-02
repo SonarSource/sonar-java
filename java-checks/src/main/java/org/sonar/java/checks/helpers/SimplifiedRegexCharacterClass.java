@@ -214,7 +214,7 @@ public class SimplifiedRegexCharacterClass {
     }
 
     @Override
-    protected void visitCharacter(CharacterTree tree) {
+    public void visitCharacter(CharacterTree tree) {
       addRange(tree.codePointOrUnit(), tree.codePointOrUnit(), tree);
     }
 

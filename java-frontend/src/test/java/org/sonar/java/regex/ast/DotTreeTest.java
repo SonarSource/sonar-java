@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.sonar.java.regex.RegexParserTestUtils.assertCharacterClass;
 import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
-import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
+import static org.sonar.java.regex.RegexParserTestUtils.assertCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 import static org.sonar.java.regex.RegexParserTestUtils.assertType;
 
@@ -40,13 +40,13 @@ class DotTreeTest {
 
   @Test
   void escapedDot() {
-    assertPlainCharacter('.', "\\\\.");
+    assertCharacter('.', "\\\\.");
   }
 
   @Test
   void dotInCharacterClass() {
     RegexTree regex = assertSuccessfulParse("[.]");
-    assertPlainCharacter('.', assertCharacterClass(false, regex));
+    assertCharacter('.', assertCharacterClass(false, regex));
   }
 
   @Test

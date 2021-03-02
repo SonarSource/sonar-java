@@ -68,6 +68,7 @@ public class RedundantRegexAlternativesCheck {
     f(compile(".*|a")); // Noncompliant
     f(compile("[ab]"));
     f(compile(".*"));
+    f(compile("[\uD83D\uDE02]" + "[\uD83D\uDE0A]")); // Compliant 
   }
 
 }

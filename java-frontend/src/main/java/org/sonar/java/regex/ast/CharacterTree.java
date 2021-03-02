@@ -21,20 +21,44 @@ package org.sonar.java.regex.ast;
 
 import javax.annotation.Nonnull;
 
-/**
- * Base class for PlainCharacterTree and UnicodeCodePointTree
- */
-public abstract class CharacterTree extends RegexTree implements CharacterClassElementTree {
+public class CharacterTree extends RegexTree implements CharacterClassElementTree {
 
-  protected CharacterTree(RegexSource source, IndexRange range, FlagSet activeFlags) {
+  private final int codePoint;
+  private final boolean isEscapeSequence;
+
+  public CharacterTree(RegexSource source, IndexRange range, int codePoint, boolean isEscapeSequence, FlagSet activeFlags) {
     super(source, range, activeFlags);
+    this.codePoint = codePoint;
+    this.isEscapeSequence = isEscapeSequence;
   }
 
-  public abstract String characterAsString();
+  public int codePointOrUnit() {
+    return codePoint;
+  }
 
-  public abstract int codePointOrUnit();
+  public boolean isEscapeSequence() {
+    return isEscapeSequence;
+  }
 
-  public abstract boolean isEscapeSequence();
+  public String characterAsString() {
+    return String.valueOf(Character.toChars(codePoint));
+  }
+
+  @Override
+  public void accept(RegexVisitor visitor) {
+    visitor.visitCharacter(this);
+  }
+
+  @Override
+  public RegexTree.Kind kind() {
+    return RegexTree.Kind.CHARACTER;
+  }
+
+  @Nonnull
+  @Override
+  public CharacterClassElementTree.Kind characterClassElementKind() {
+    return CharacterClassElementTree.Kind.PLAIN_CHARACTER;
+  }
 
   @Nonnull
   @Override

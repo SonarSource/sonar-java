@@ -37,7 +37,7 @@ import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
 import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
 import static org.sonar.java.regex.RegexParserTestUtils.assertListSize;
 import static org.sonar.java.regex.RegexParserTestUtils.assertLocation;
-import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
+import static org.sonar.java.regex.RegexParserTestUtils.assertCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainString;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSingleEdge;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
@@ -56,7 +56,7 @@ class GroupTreesTest {
     assertNotNull(group.getGroupHeader());
     assertToken(0, "(", group.getGroupHeader());
     assertNotNull(group.getElement());
-    assertPlainCharacter('x', group.getElement());
+    assertCharacter('x', group.getElement());
     assertLocation(0, 3, group);
     assertLocation(1, 2, group.getElement());
   }
@@ -92,7 +92,7 @@ class GroupTreesTest {
     assertKind(RegexTree.Kind.NON_CAPTURING_GROUP, group);
     RegexTree element = group.getElement();
     assertNotNull(element, "Group should have a body.");
-    assertPlainCharacter('x', element);
+    assertCharacter('x', element);
     assertLocation(0, 5, group);
     assertLocation(3, 4, group.getElement());
   }
@@ -107,8 +107,8 @@ class GroupTreesTest {
     RegexTree regex = assertSuccessfulParse("a (?x:b c) d");
     SequenceTree seq = assertType(SequenceTree.class, regex);
     assertListElements(seq.getItems(),
-      first -> assertPlainCharacter('a', first),
-      second -> assertPlainCharacter(' ', second),
+      first -> assertCharacter('a', first),
+      second -> assertCharacter(' ', second),
       third -> {
         NonCapturingGroupTree group = assertType(NonCapturingGroupTree.class, third);
         assertNotNull(group.getGroupHeader());
@@ -118,8 +118,8 @@ class GroupTreesTest {
         assertNotNull(element, "Group should have a body.");
         assertPlainString("bc", element);
       },
-      fourth -> assertPlainCharacter(' ', fourth),
-      fifth -> assertPlainCharacter('d', fifth)
+      fourth -> assertCharacter(' ', fourth),
+      fifth -> assertCharacter('d', fifth)
     );
   }
 
@@ -128,22 +128,22 @@ class GroupTreesTest {
     RegexTree regex = assertSuccessfulParse("a (?x)b c(?-x) d");
     SequenceTree seq = assertType(SequenceTree.class, regex);
     assertListElements(seq.getItems(),
-      first -> assertPlainCharacter('a', first),
-      second -> assertPlainCharacter(' ', second),
+      first -> assertCharacter('a', first),
+      second -> assertCharacter(' ', second),
       third -> {
         NonCapturingGroupTree group = assertType(NonCapturingGroupTree.class, third);
         assertEquals(Pattern.COMMENTS, group.getEnabledFlags().getMask());
         assertNull(group.getElement(), "Group should not have a body.");
       },
-      fourth -> assertPlainCharacter('b', fourth),
-      fifth -> assertPlainCharacter('c', fifth),
+      fourth -> assertCharacter('b', fourth),
+      fifth -> assertCharacter('c', fifth),
       sixth -> {
         NonCapturingGroupTree group = assertType(NonCapturingGroupTree.class, sixth);
         assertEquals(Pattern.COMMENTS, group.getDisabledFlags().getMask());
         assertNull(group.getElement(), "Group should not have a body.");
       },
-      seventh -> assertPlainCharacter(' ', seventh),
-      eighth -> assertPlainCharacter('d', eighth)
+      seventh -> assertCharacter(' ', seventh),
+      eighth -> assertCharacter('d', eighth)
     );
   }
 
@@ -169,7 +169,7 @@ class GroupTreesTest {
     assertKind(RegexTree.Kind.CAPTURING_GROUP, group);
     assertThat(group.getName()).hasValue("foo");
     assertNotNull(group.getElement());
-    assertPlainCharacter('x', group.getElement());
+    assertCharacter('x', group.getElement());
   }
 
   @Test
@@ -186,7 +186,7 @@ class GroupTreesTest {
     assertEquals(LookAroundTree.Direction.AHEAD, lookAround.getDirection());
     assertNotNull(lookAround.getElement());
     RegexTree x = lookAround.getElement();
-    assertPlainCharacter('x', x);
+    assertCharacter('x', x);
 
     FinalState finalState = assertType(FinalState.class, regex.continuation());
     assertEquals(AutomatonState.TransitionType.EPSILON, lookAround.incomingTransitionType());
@@ -208,7 +208,7 @@ class GroupTreesTest {
     assertEquals(LookAroundTree.Direction.BEHIND, lookAround.getDirection());
     assertNotNull(lookAround.getElement());
     RegexTree x = lookAround.getElement();
-    assertPlainCharacter('x', x);
+    assertCharacter('x', x);
 
     FinalState finalState = assertType(FinalState.class, regex.continuation());
     assertEquals(AutomatonState.TransitionType.EPSILON, lookAround.incomingTransitionType());
@@ -233,7 +233,7 @@ class GroupTreesTest {
     assertEquals(LookAroundTree.Direction.AHEAD, lookAround.getDirection());
     assertNotNull(lookAround.getElement());
     RegexTree x = lookAround.getElement();
-    assertPlainCharacter('x', x);
+    assertCharacter('x', x);
 
     FinalState finalState = assertType(FinalState.class, regex.continuation());
     assertEquals(AutomatonState.TransitionType.EPSILON, lookAround.incomingTransitionType());
@@ -258,7 +258,7 @@ class GroupTreesTest {
     assertEquals(LookAroundTree.Direction.BEHIND, lookAround.getDirection());
     assertNotNull(lookAround.getElement());
     RegexTree x = lookAround.getElement();
-    assertPlainCharacter('x', x);
+    assertCharacter('x', x);
 
     FinalState finalState = assertType(FinalState.class, regex.continuation());
     assertEquals(AutomatonState.TransitionType.EPSILON, lookAround.incomingTransitionType());
@@ -284,7 +284,7 @@ class GroupTreesTest {
     AtomicGroupTree group = assertType(AtomicGroupTree.class, regex);
     assertKind(RegexTree.Kind.ATOMIC_GROUP, group);
     assertNotNull(group.getElement());
-    assertPlainCharacter('x', group.getElement());
+    assertCharacter('x', group.getElement());
   }
 
 }

@@ -27,7 +27,7 @@ import static org.sonar.java.regex.RegexParserTestUtils.assertFailParsing;
 import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
 import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
 import static org.sonar.java.regex.RegexParserTestUtils.assertLocation;
-import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
+import static org.sonar.java.regex.RegexParserTestUtils.assertCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainString;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSingleEdge;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
@@ -49,11 +49,11 @@ class SequenceTreeTest {
     SequenceTree sequence = assertType(SequenceTree.class, assertSuccessfulParse("\\123\\124"));
     assertListElements(sequence.getItems(),
       first -> {
-        assertPlainCharacter('S', first);
+        assertCharacter('S', first);
         assertLocation(0, 4, first);
       },
       second -> {
-        assertPlainCharacter('T', second);
+        assertCharacter('T', second);
         assertLocation(4, 8, second);
       }
     );
@@ -68,11 +68,11 @@ class SequenceTreeTest {
     SequenceTree sequence = assertType(SequenceTree.class, assertSuccessfulParse("\\456"));
     assertListElements(sequence.getItems(),
       first -> {
-        assertPlainCharacter('%', first);
+        assertCharacter('%', first);
         assertLocation(0, 3, first);
       },
       second -> {
-        assertPlainCharacter('6', second);
+        assertCharacter('6', second);
         assertLocation(3, 4, second);
       }
     );

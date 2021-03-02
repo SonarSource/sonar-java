@@ -27,9 +27,7 @@ public interface RegexVisitor {
 
   void visitBackReference(BackReferenceTree tree);
 
-  void visitPlainCharacter(PlainCharacterTree tree);
-
-  void visitUnicodeCodePoint(UnicodeCodePointTree tree);
+  void visitCharacter(CharacterTree tree);
 
   void visitSequence(SequenceTree tree);
 

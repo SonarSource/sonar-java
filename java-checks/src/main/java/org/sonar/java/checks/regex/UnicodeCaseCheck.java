@@ -55,7 +55,7 @@ public class UnicodeCaseCheck extends AbstractRegexCheck {
     }
 
     @Override
-    protected void visitCharacter(CharacterTree tree) {
+    public void visitCharacter(CharacterTree tree) {
       if (isProblematic(tree.activeFlags(), tree.codePointOrUnit())) {
         JavaCharacter character = tree.activeFlags().getJavaCharacterForFlag(Pattern.CASE_INSENSITIVE);
         if (character == null) {

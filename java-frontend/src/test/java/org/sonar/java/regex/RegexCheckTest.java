@@ -23,7 +23,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.AnalyzerMessage.TextSpan;
 import org.sonar.java.regex.ast.Location;
-import org.sonar.java.regex.ast.PlainCharacterTree;
+import org.sonar.java.regex.ast.CharacterTree;
 import org.sonar.java.regex.ast.RegexTree;
 import org.sonar.java.regex.ast.SequenceTree;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,14 +41,14 @@ class RegexCheckTest implements RegexCheck {
     List<RegexTree> items = ((SequenceTree) regex).getItems();
     assertThat(items)
       .hasSize(2)
-      .allMatch(tree -> tree.is(RegexTree.Kind.PLAIN_CHARACTER));
+      .allMatch(tree -> tree.is(RegexTree.Kind.CHARACTER));
     assertThat(regex.getLocations())
       .hasSize(2)
       .allMatch(loc -> !loc.isEmpty());
 
     assertThat(correspondingTextSpans(regex)).hasSize(2);
 
-    PlainCharacterTree char1 = (PlainCharacterTree) items.get(0);
+    CharacterTree char1 = (CharacterTree) items.get(0);
     List<Location> char1Locs = char1.getLocations();
     assertThat(char1Locs).hasSize(2);
     assertThat(char1Locs.get(0).isEmpty()).isFalse();
@@ -57,7 +57,7 @@ class RegexCheckTest implements RegexCheck {
     // empty filtered out
     assertThat(correspondingTextSpans(char1)).hasSize(1);
 
-    PlainCharacterTree char2 = (PlainCharacterTree) items.get(1);
+    CharacterTree char2 = (CharacterTree) items.get(1);
     List<Location> char2Locs = char2.getLocations();
     assertThat(char2Locs)
       .hasSize(1)
