@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
@@ -57,6 +58,8 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     "com.google.common.collect.ImmutableCollection");
 
   private static final MethodMatchers UNMODIFIABLE_COLLECTION_CALL = MethodMatchers.or(
+    MethodMatchers.create().ofType(type -> MutableMembersUsageCheck.containsImmutableLikeTerm(type.name())).anyName().withAnyParameters().build(),
+    MethodMatchers.create().ofAnyType().name(MutableMembersUsageCheck::containsImmutableLikeTerm).withAnyParameters().build(),
     MethodMatchers.create().ofTypes("java.util.Collections").name(name -> name.startsWith("unmodifiable") || name.startsWith("singleton")).withAnyParameters().build(),
     MethodMatchers.create().ofTypes("java.util.Set", "java.util.List").names("of", "copyOf").withAnyParameters().build()
   );
@@ -223,6 +226,11 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
       }
     }
     return true;
+  }
+
+  public static boolean containsImmutableLikeTerm(String methodName) {
+    String lowerCaseName = methodName.toLowerCase(Locale.ROOT);
+    return lowerCaseName.contains("unmodifiable") || lowerCaseName.contains("immutable");
   }
 
 }

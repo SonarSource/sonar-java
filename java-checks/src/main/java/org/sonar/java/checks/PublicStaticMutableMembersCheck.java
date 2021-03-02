@@ -66,7 +66,8 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
   // java.util and apache commons
   private static final MethodMatchers UNMODIFIABLE_METHOD_CALLS = MethodMatchers.or(
     MethodMatchers.create().ofTypes("java.util.Collections").name(name -> name.startsWith("singleton") || name.startsWith("empty")).withAnyParameters().build(),
-    MethodMatchers.create().ofAnyType().name(name -> name.startsWith("unmodifiable")).withAnyParameters().build(),
+    MethodMatchers.create().ofType(type -> MutableMembersUsageCheck.containsImmutableLikeTerm(type.name())).anyName().withAnyParameters().build(),
+    MethodMatchers.create().ofAnyType().name(MutableMembersUsageCheck::containsImmutableLikeTerm).withAnyParameters().build(),
     // Java 9s
     MethodMatchers.create().ofTypes("java.util.Set", "java.util.List", "java.util.Map").names("of", "ofEntries", "copyOf").withAnyParameters().build(),
     // apache...
