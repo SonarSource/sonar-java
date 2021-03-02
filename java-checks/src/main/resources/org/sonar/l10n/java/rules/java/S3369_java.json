@@ -1,27 +1,16 @@
 {
   "title": "Security constraints should be defined",
   "type": "VULNERABILITY",
-  "status": "ready",
+  "status": "deprecated",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "3h"
   },
   "tags": [
-    "cwe",
-    "websphere",
-    "jee",
-    "owasp-a5"
+    
   ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-3369",
   "sqKey": "S3369",
-  "scope": "Main",
-  "securityStandards": {
-    "CWE": [
-      284
-    ],
-    "OWASP": [
-      "A5"
-    ]
-  }
+  "scope": "Main"
 }
