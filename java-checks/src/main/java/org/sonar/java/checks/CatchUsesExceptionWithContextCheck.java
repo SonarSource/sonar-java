@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import org.apache.commons.lang3.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
@@ -80,6 +81,8 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
     .ofTypes(JAVA_UTIL_LOGGING_LOGGER).names("logrb").withAnyParameters().build();
 
   private static final MethodMatchers LOGGING_METHODS = MethodMatchers.or(
+    MethodMatchers.create().ofAnyType().name(CatchUsesExceptionWithContextCheck::containsLogIgnoreCase).withAnyParameters().build(),
+    MethodMatchers.create().ofType(type -> containsLogIgnoreCase(type.name())).anyName().withAnyParameters().build(),
     MethodMatchers.create()
       .ofTypes(JAVA_UTIL_LOGGING_LOGGER).names("config", "fine", "finer", "finest", "info", "severe", "warning").withAnyParameters().build(),
     JAVA_UTIL_LOG_METHOD,
@@ -132,6 +135,10 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
     EnumValueOfVisitor visitor = new EnumValueOfVisitor();
     tree.accept(visitor);
     return visitor.hasEnumValueOf;
+  }
+
+  private static boolean containsLogIgnoreCase(String name) {
+    return StringUtils.containsIgnoreCase(name, "log");
   }
 
   private static class EnumValueOfVisitor extends BaseTreeVisitor {
