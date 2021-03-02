@@ -44,6 +44,7 @@ import static java.util.Collections.singletonList;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
   JavaExtensionsTest.class,
+  JavaTutorialTest.class,
   UnitTestsTest.class,
   JavaTest.class,
   JavaComplexityTest.class,
@@ -58,6 +59,7 @@ import static java.util.Collections.singletonList;
 public class JavaTestSuite {
 
   public static final FileLocation JAVA_PLUGIN_LOCATION = FileLocation.byWildcardMavenFilename(new File("../../../sonar-java-plugin/target"), "sonar-java-plugin-*.jar");
+  public static final FileLocation TUTORIAL_EXAMPLE_PLUGIN_LOCATION = FileLocation.byWildcardMavenFilename(new File("../../../docs/java-custom-rules-example/target"), "java-custom-rules-example-*.jar");
 
   @ClassRule
   public static final Orchestrator ORCHESTRATOR;
@@ -68,10 +70,13 @@ public class JavaTestSuite {
       .addPlugin(JAVA_PLUGIN_LOCATION)
       // for support of custom rules
       .addPlugin(FileLocation.of(TestUtils.pluginJar("java-extension-plugin")))
+      // making sure the tutorial is still working
+      .addPlugin(TUTORIAL_EXAMPLE_PLUGIN_LOCATION)
       // for suppress-warnings tests
       .addPlugin(MavenLocation.of("org.sonarsource.pmd", "sonar-pmd-plugin", "3.2.1"))
       // profiles for each test projects
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-java-extension.xml"))
+      .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-java-tutorial.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-java-version-aware-visitor.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-dit.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-ignored-test.xml"))
