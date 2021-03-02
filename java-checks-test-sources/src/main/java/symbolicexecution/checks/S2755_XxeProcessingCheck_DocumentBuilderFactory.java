@@ -122,6 +122,23 @@ class DocumentBuilderFactoryTest {
     Document document = builder.parse(new File("xxe.xml"));
   }
 
+  void new_document_in_method() throws ParserConfigurationException {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Compliant
+    Document doc = factory.newDocumentBuilder().newDocument();
+  }
+
+  Document new_document_returned() throws ParserConfigurationException {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Compliant
+    Document doc = factory.newDocumentBuilder().newDocument();
+    return doc;
+  }
+
+  DocumentBuilder document_builder_returned() throws ParserConfigurationException {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    DocumentBuilder builder = factory.newDocumentBuilder(); // Noncompliant
+    return builder;
+  }
+
   void used_in_try_catch_throw_new(String content) {
     try {
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
