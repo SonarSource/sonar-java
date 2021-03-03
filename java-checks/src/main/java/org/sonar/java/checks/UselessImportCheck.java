@@ -42,7 +42,6 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
@@ -59,6 +58,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
   private final Map<String, ImportTree> lineByImportReference = new HashMap<>();
   private final Set<String> pendingImports = new HashSet<>();
   private final Set<String> pendingReferences = new HashSet<>();
+  private final Set<Symbol> importedFromParent = new HashSet<>();
 
   private String currentPackage;
   private JavaFileScannerContext context;
@@ -79,27 +79,35 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
     pendingReferences.clear();
     lineByImportReference.clear();
     pendingImports.clear();
+    importedFromParent.clear();
 
+    List<ImportTree> imports = cut.imports().stream()
+      // discard empty statements, which can be part of imports
+      .filter(i -> i.is(Tree.Kind.IMPORT))
+      .map(ImportTree.class::cast)
+      .collect(Collectors.toList());
+
+    // First path to collect all types imported from the parent
+    imports.forEach(this::addNestedTypes);
+    // Second path to report issues
     currentPackage = ExpressionsHelper.concatenate(packageName);
-    for (ImportClauseTree importClauseTree : cut.imports()) {
-      ImportTree importTree = null;
+    imports.forEach(this::reportIssue);
 
-      if (importClauseTree.is(Tree.Kind.IMPORT)) {
-        importTree = (ImportTree) importClauseTree;
-      }
-
-      if (importTree == null) {
-        // discard empty statements, which can be part of imports
-        continue;
-      }
-
-      reportIssue(importTree);
-    }
     //check references
     scan(cut);
     //check references from comments.
     new CommentVisitor().checkImportsFromComments(cut);
     leaveFile();
+  }
+
+  private void addNestedTypes(ImportTree importTree) {
+    Symbol symbol = JUtils.importTreeSymbol(importTree);
+    if (symbol != null && symbol.isTypeSymbol()) {
+      Symbol.TypeSymbol typeSymbol = (Symbol.TypeSymbol) symbol;
+      typeSymbol.memberSymbols().stream()
+        .filter(Symbol::isTypeSymbol)
+        .forEach(importedFromParent::add);
+    }
   }
 
   private void reportIssue(ImportTree importTree) {
@@ -116,8 +124,13 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
       } else if(importTree.isStatic()) {
         checkSymbolUsage(importTree, importName);
       } else {
-        lineByImportReference.put(importName, importTree);
-        pendingImports.add(importName);
+        Symbol symbol = JUtils.importTreeSymbol(importTree);
+        if (importedFromParent.contains(symbol)) {
+          context.reportIssue(this, importTree, "Remove this unnecessary import: this nested class is already imported from the parent.");
+        } else {
+          lineByImportReference.put(importName, importTree);
+          pendingImports.add(importName);
+        }
       }
     }
   }

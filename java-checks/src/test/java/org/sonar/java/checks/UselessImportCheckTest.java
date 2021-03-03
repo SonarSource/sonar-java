@@ -19,7 +19,10 @@
  */
 package org.sonar.java.checks;
 
+import java.io.File;
+import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.checks.verifier.FilesUtils;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
@@ -72,6 +75,25 @@ class UselessImportCheckTest {
   void intersection_type() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/UselessImportCheck/IntersectionCase.java"))
+      .withCheck(new UselessImportCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void useless_import_of_nested_class() {
+    List<File> classPath = FilesUtils.getClassPath(FilesUtils.DEFAULT_TEST_JARS_DIRECTORY);
+    // Add "UselessImportCheckWithNestedClass" to class path to be able to resolve the import.
+    classPath.add(new File("../java-checks-test-sources/target/classes"));
+
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/UselessImportCheck/subpackage/UselessImportCheckImportingNested.java"))
+      .withClassPath(classPath)
+      .withCheck(new UselessImportCheck())
+      .verifyIssues();
+
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/UselessImportCheck/subpackage/UselessImportCheckImportingNestedOrder.java"))
+      .withClassPath(classPath)
       .withCheck(new UselessImportCheck())
       .verifyIssues();
   }
