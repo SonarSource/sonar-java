@@ -30,6 +30,7 @@ import org.sonar.java.regex.ast.AutomatonState;
 import org.sonar.java.regex.ast.CharacterClassElementTree;
 import org.sonar.java.regex.ast.CharacterClassTree;
 import org.sonar.java.regex.ast.CharacterRangeTree;
+import org.sonar.java.regex.ast.EndOfRepetitionState;
 import org.sonar.java.regex.ast.FlagSet;
 import org.sonar.java.regex.ast.JavaCharacter;
 import org.sonar.java.regex.ast.CharacterTree;
@@ -37,6 +38,7 @@ import org.sonar.java.regex.ast.RegexSource;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.java.regex.ast.RegexToken;
 import org.sonar.java.regex.ast.RegexTree;
+import org.sonar.java.regex.ast.RepetitionTree;
 import org.sonar.java.regex.ast.SequenceTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -75,7 +77,12 @@ public class RegexParserTestUtils {
     }
     assertSame(result.getResult(), result.getStartState().continuation());
     assertSingleEdge(result.getStartState(), result.getResult(), result.getResult().incomingTransitionType());
-    assertSame(result.getFinalState(), result.getResult().continuation());
+    AutomatonState finalState = result.getResult().continuation();
+    if (result.getResult() instanceof RepetitionTree) {
+      assertType(EndOfRepetitionState.class, finalState);
+      finalState = finalState.continuation();
+    }
+    assertSame(result.getFinalState(), finalState);
     assertEquals(AutomatonState.TransitionType.EPSILON, result.getFinalState().incomingTransitionType());
     assertEquals(AutomatonState.TransitionType.EPSILON, result.getStartState().incomingTransitionType());
     assertListSize(0, result.getFinalState().successors());
@@ -190,7 +197,10 @@ public class RegexParserTestUtils {
     assertEquals(expectedUpperBound, range.getUpperBound().codePointOrUnit(), "Upper bound should be '" + expectedUpperBound + "'.");
   }
 
-  public static <T> T assertType(Class<T> klass, Object o) {
+  public static <T> T assertType(Class<T> klass, @Nullable Object o) {
+    if (o == null) {
+      throw new AssertionFailedError("Object should not be null.");
+    }
     String actual = o.getClass().getSimpleName();
     String expected = klass.getSimpleName();
     if (!klass.isInstance(o)) {
