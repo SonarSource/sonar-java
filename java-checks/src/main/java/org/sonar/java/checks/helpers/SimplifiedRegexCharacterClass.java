@@ -63,23 +63,7 @@ public class SimplifiedRegexCharacterClass {
   }
 
   public SimplifiedRegexCharacterClass(DotTree tree) {
-    char[] orderedExcludedCharacters;
-    if (tree.activeFlags().contains(Pattern.DOTALL)) {
-      orderedExcludedCharacters = new char[] {};
-    } else if (tree.activeFlags().contains(Pattern.UNIX_LINES)) {
-      orderedExcludedCharacters = new char[] {'\n'};
-    } else {
-      orderedExcludedCharacters = new char[] {'\n', '\r', '\u0085', '\u2028', '\u2029'};
-    }
-    int from = 0;
-    for (char excludedCharacter : orderedExcludedCharacters) {
-      int to = excludedCharacter - 1;
-      if (to > from) {
-        addRange(from, to, tree);
-      }
-      from = excludedCharacter + 1;
-    }
-    addRange(from, Character.MAX_CODE_POINT, tree);
+    add(tree);
   }
 
   @Nullable
@@ -99,6 +83,30 @@ public class SimplifiedRegexCharacterClass {
 
   public void add(CharacterClassElementTree tree) {
     new Builder(this).visitInCharClass(tree);
+  }
+
+  public void add(DotTree tree) {
+    char[] orderedExcludedCharacters;
+    if (tree.activeFlags().contains(Pattern.DOTALL)) {
+      orderedExcludedCharacters = new char[] {};
+    } else if (tree.activeFlags().contains(Pattern.UNIX_LINES)) {
+      orderedExcludedCharacters = new char[] {'\n'};
+    } else {
+      orderedExcludedCharacters = new char[] {'\n', '\r', '\u0085', '\u2028', '\u2029'};
+    }
+    int from = 0;
+    for (char excludedCharacter : orderedExcludedCharacters) {
+      int to = excludedCharacter - 1;
+      if (to > from) {
+        addRange(from, to, tree);
+      }
+      from = excludedCharacter + 1;
+    }
+    addRange(from, Character.MAX_CODE_POINT, tree);
+  }
+
+  public boolean matchesAnyCharacter() {
+    return contents.containsKey(0) && !contents.containsValue(null);
   }
 
   public boolean intersects(SimplifiedRegexCharacterClass that, boolean defaultAnswer) {

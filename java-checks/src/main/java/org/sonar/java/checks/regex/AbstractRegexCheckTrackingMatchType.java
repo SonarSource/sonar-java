@@ -35,7 +35,7 @@ public abstract class AbstractRegexCheckTrackingMatchType extends AbstractRegexC
   private static final MethodMatchers PARTIAL_MATCHERS = MethodMatchers.or(
     MethodMatchers.create()
       .ofTypes("java.util.regex.Pattern", "java.lang.String")
-      .names("split", "splitAsStream", "asPredicate")
+      .names("split", "splitAsStream", "asPredicate", "replaceAll", "replaceFirst")
       .withAnyParameters()
       .build(),
     MethodMatchers.create()
@@ -58,7 +58,7 @@ public abstract class AbstractRegexCheckTrackingMatchType extends AbstractRegexC
 
   private static final MethodMatchers MATCHERS = MethodMatchers.or(PARTIAL_MATCHERS, FULL_MATCHERS);
 
-  protected abstract void checkRegex(RegexParseResult regex, MatchType matchType);
+  protected abstract void checkRegex(RegexParseResult regex, ExpressionTree methodInvocationOrAnnotation, MatchType matchType);
 
   @Override
   protected MethodMatchers trackedMethodMatchers() {
@@ -66,18 +66,11 @@ public abstract class AbstractRegexCheckTrackingMatchType extends AbstractRegexC
   }
 
   @Override
-  public void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation) {
-    if (methodInvocationOrAnnotation.is(Tree.Kind.ANNOTATION)) {
-      checkRegex(regexForLiterals, MatchType.FULL);
-    } else {
-      super.checkRegex(regexForLiterals, methodInvocationOrAnnotation);
-    }
-  }
-
-  @Override
-  protected void checkRegex(RegexParseResult regexForLiterals, List<MethodInvocationTree> trackedMethodsCalled, boolean didEscape) {
+  protected void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation, List<MethodInvocationTree> trackedMethodsCalled, boolean didEscape) {
     MatchType matchType;
-    if (didEscape) {
+    if (methodInvocationOrAnnotation.is(Tree.Kind.ANNOTATION)) {
+      matchType = MatchType.FULL;
+    } else if (didEscape) {
       matchType = MatchType.UNKNOWN;
     } else {
       boolean partial = trackedMethodsCalled.stream().anyMatch(PARTIAL_MATCHERS::matches);
@@ -92,6 +85,6 @@ public abstract class AbstractRegexCheckTrackingMatchType extends AbstractRegexC
         matchType = MatchType.UNKNOWN;
       }
     }
-    checkRegex(regexForLiterals, matchType);
+    checkRegex(regexForLiterals, methodInvocationOrAnnotation, matchType);
   }
 }

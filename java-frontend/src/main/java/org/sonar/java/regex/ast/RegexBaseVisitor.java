@@ -24,7 +24,7 @@ import org.sonar.java.regex.RegexParseResult;
 
 public class RegexBaseVisitor implements RegexVisitor {
 
-  protected void visit(RegexTree tree) {
+  public void visit(RegexTree tree) {
     tree.accept(this);
   }
 

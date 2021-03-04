@@ -88,6 +88,8 @@ class QuantifierTest {
     SimpleQuantifier quantifier = assertType(SimpleQuantifier.class, repetition.getQuantifier());
     assertEquals(SimpleQuantifier.Kind.STAR, quantifier.getKind(), "Quantifier should be a Kleene star.");
     assertEquals(Quantifier.Modifier.RELUCTANT, quantifier.getModifier(), "Quantifier should be reluctant.");
+    assertTrue(repetition.isReluctant());
+    assertFalse(repetition.isPossessive());
 
     testStarAutomaton(repetition, true);
   }
@@ -100,6 +102,8 @@ class QuantifierTest {
     SimpleQuantifier quantifier = assertType(SimpleQuantifier.class, repetition.getQuantifier());
     assertEquals(SimpleQuantifier.Kind.STAR, quantifier.getKind(), "Quantifier should be a Kleene star.");
     assertEquals(Quantifier.Modifier.POSSESSIVE, quantifier.getModifier(), "Quantifier should be possessive.");
+    assertTrue(repetition.isPossessive());
+    assertFalse(repetition.isReluctant());
 
     testStarAutomaton(repetition, false);
   }

@@ -39,7 +39,11 @@ public abstract class AbstractAutomataChecker {
     this.defaultAnswer = defaultAnswer;
   }
 
-  public boolean check(SubAutomaton auto1, SubAutomaton auto2, boolean hasConsumedInput) {
+  public boolean check(SubAutomaton auto1, SubAutomaton auto2) {
+    return check(auto1, auto2, false);
+  }
+
+  protected boolean check(SubAutomaton auto1, SubAutomaton auto2, boolean hasConsumedInput) {
     if (hasUnsupportedTransitionType(auto1) || hasUnsupportedTransitionType(auto2)) {
       return defaultAnswer;
     }
@@ -63,6 +67,10 @@ public abstract class AbstractAutomataChecker {
     } else {
       return cache.save(entry, checkAuto1AndAuto2Successors(auto1, auto2, defaultAnswer, hasConsumedInput));
     }
+  }
+
+  public void clearCache() {
+    cache.clear();
   }
 
   protected abstract boolean checkAuto1AndAuto2Successors(SubAutomaton auto1, SubAutomaton auto2, boolean defaultAnswer, boolean hasConsumedInput);

@@ -76,7 +76,7 @@ public class UnusedGroupNamesCheck extends AbstractRegexCheckTrackingMatchers {
   }
 
   @Override
-  protected void checkRegex(RegexParseResult regexForLiterals, List<MethodInvocationTree> trackedMethodsCalled, boolean didEscape) {
+  protected void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation, List<MethodInvocationTree> trackedMethodsCalled, boolean didEscape) {
     KnownGroupsCollector knownGroups = collectGroups(regexForLiterals);
     List<CapturingGroupTree> namedGroups = new ArrayList<>(knownGroups.groupsByName.values());
     if (trackedMethodsCalled.isEmpty() && !didEscape && !namedGroups.isEmpty() && !knownGroups.usesBackReferences) {

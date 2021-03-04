@@ -223,8 +223,8 @@ class RegexTreeHelperTest {
     // Boundary not supported
     assertSupersetOf("^ab", "ab", false).isFalse();
     assertSupersetOf("ab$", "ab", false).isFalse();
-    assertSupersetOf("ab", "^ab", false).isFalse();
-    assertSupersetOf("ab", "ab$", false).isFalse();
+    assertSupersetOf("ab", "^ab", true).isTrue();
+    assertSupersetOf("ab", "ab$", true).isTrue();
     assertSupersetOf("()", "()", false).isFalse();
   }
 
