@@ -31,6 +31,7 @@ import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.AutomatonState;
 import org.sonar.java.regex.ast.CharacterTree;
 import org.sonar.java.regex.ast.DisjunctionTree;
+import org.sonar.java.regex.ast.EndOfRepetitionState;
 import org.sonar.java.regex.ast.GroupTree;
 import org.sonar.java.regex.ast.Quantifier;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
@@ -185,11 +186,15 @@ public class RegexStackOverflowCheck extends AbstractRegexCheck {
       return edgeCost(next).add(worstPath(next, end));
     }
 
+    private boolean ignoredNode(AutomatonState state) {
+      // Java's regex implementation does not have an equivalent of these nodes, so we consider them zero cost
+      return state instanceof SequenceTree || state instanceof EndOfRepetitionState;
+    }
+
     private PathInfo edgeCost(AutomatonState state) {
       switch (state.incomingTransitionType()) {
         case EPSILON:
-          // Java's regex implementation does not have an equivalent of SequenceTree, so we consider it zero cost
-          return new PathInfo(0, state instanceof SequenceTree ? 0 : 1);
+          return new PathInfo(0, ignoredNode(state) ? 0 : 1);
         case CHARACTER:
           return new PathInfo(1, 1);
         case BACK_REFERENCE:

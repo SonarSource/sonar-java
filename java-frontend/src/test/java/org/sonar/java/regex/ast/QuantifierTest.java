@@ -72,12 +72,12 @@ class QuantifierTest {
     assertFalse(quantifier.isOpenEnded(), "Question mark should not be open ended.");
     assertEquals(Quantifier.Modifier.GREEDY, quantifier.getModifier(), "Quantifier should be greedy.");
 
-    FinalState finalState = assertType(FinalState.class, repetition.continuation());
+    EndOfRepetitionState endOfRep = assertType(EndOfRepetitionState.class, repetition.continuation());
     assertListElements(repetition.successors(),
       assertEdge(x, AutomatonState.TransitionType.CHARACTER),
-      assertEdge(finalState, AutomatonState.TransitionType.EPSILON)
+      assertEdge(endOfRep, AutomatonState.TransitionType.EPSILON)
     );
-    assertSingleEdge(x, finalState, AutomatonState.TransitionType.EPSILON);
+    assertSingleEdge(x, endOfRep, AutomatonState.TransitionType.EPSILON);
   }
 
   @Test
@@ -146,18 +146,21 @@ class QuantifierTest {
   }
 
   private static void testStarAutomaton(RepetitionTree repetition, boolean reluctant) {
-    FinalState finalState = assertType(FinalState.class, repetition.continuation());
+    EndOfRepetitionState endOfRep = assertType(EndOfRepetitionState.class, repetition.continuation());
+    assertEquals(repetition.activeFlags(), endOfRep.activeFlags());
+    FinalState finalState = assertType(FinalState.class, endOfRep.continuation());
+    assertSingleEdge(endOfRep, finalState, AutomatonState.TransitionType.EPSILON);
     RegexTree x = repetition.getElement();
     assertEquals(AutomatonState.TransitionType.EPSILON, repetition.incomingTransitionType());
     if (reluctant) {
       assertListElements(repetition.successors(),
-        assertEdge(finalState, AutomatonState.TransitionType.EPSILON),
+        assertEdge(endOfRep, AutomatonState.TransitionType.EPSILON),
         assertEdge(x, AutomatonState.TransitionType.CHARACTER)
       );
     } else {
       assertListElements(repetition.successors(),
         assertEdge(x, AutomatonState.TransitionType.CHARACTER),
-        assertEdge(finalState, AutomatonState.TransitionType.EPSILON)
+        assertEdge(endOfRep, AutomatonState.TransitionType.EPSILON)
       );
     }
     assertSingleEdge(x, repetition, AutomatonState.TransitionType.EPSILON);

@@ -128,10 +128,10 @@ class CurlyBraceQuantifierTest {
     assertEquals(1, quantifier.getMaximumRepetitions(), "Upper bound should be 1.");
     assertEquals(Quantifier.Modifier.GREEDY, quantifier.getModifier(), "Quantifier should be possessive.");
 
-    FinalState finalState = assertType(FinalState.class, repetition.continuation());
+    EndOfRepetitionState endOfRep = assertType(EndOfRepetitionState.class, repetition.continuation());
     assertEquals(AutomatonState.TransitionType.EPSILON, repetition.incomingTransitionType());
     assertSingleEdge(repetition, x, AutomatonState.TransitionType.CHARACTER);
-    assertSingleEdge(x, finalState, AutomatonState.TransitionType.EPSILON);
+    assertSingleEdge(x, endOfRep, AutomatonState.TransitionType.EPSILON);
   }
 
   @Test
@@ -145,9 +145,9 @@ class CurlyBraceQuantifierTest {
     assertEquals(0, quantifier.getMaximumRepetitions(), "Upper bound should be 0.");
     assertEquals(Quantifier.Modifier.GREEDY, quantifier.getModifier(), "Quantifier should be possessive.");
 
-    FinalState finalState = assertType(FinalState.class, repetition.continuation());
+    EndOfRepetitionState endOfRep = assertType(EndOfRepetitionState.class, repetition.continuation());
     assertEquals(AutomatonState.TransitionType.EPSILON, repetition.incomingTransitionType());
-    assertSingleEdge(repetition, finalState, AutomatonState.TransitionType.EPSILON);
+    assertSingleEdge(repetition, endOfRep, AutomatonState.TransitionType.EPSILON);
   }
 
   @Test
@@ -239,21 +239,24 @@ class CurlyBraceQuantifierTest {
 
   static void testAutomaton(RepetitionTree repetition, boolean reluctant) {
     RegexTree x = repetition.getElement();
-    FinalState finalState = assertType(FinalState.class, repetition.continuation());
+    EndOfRepetitionState endOfRep = assertType(EndOfRepetitionState.class, repetition.continuation());
+    assertEquals(repetition.activeFlags(), endOfRep.activeFlags());
+    FinalState finalState = assertType(FinalState.class, endOfRep.continuation());
+    assertSingleEdge(endOfRep, finalState, AutomatonState.TransitionType.EPSILON);
     assertEquals(AutomatonState.TransitionType.EPSILON, repetition.incomingTransitionType());
     assertSingleEdge(repetition, x, AutomatonState.TransitionType.CHARACTER);
     BranchState branch = assertType(BranchState.class, x.continuation());
     assertSingleEdge(x, branch, AutomatonState.TransitionType.EPSILON);
-    assertSame(finalState, branch.continuation());
+    assertSame(endOfRep, branch.continuation());
     if (reluctant) {
       assertListElements(branch.successors(),
-        assertEdge(finalState, AutomatonState.TransitionType.EPSILON),
+        assertEdge(endOfRep, AutomatonState.TransitionType.EPSILON),
         assertEdge(repetition, AutomatonState.TransitionType.EPSILON)
       );
     } else {
       assertListElements(branch.successors(),
         assertEdge(repetition, AutomatonState.TransitionType.EPSILON),
-        assertEdge(finalState, AutomatonState.TransitionType.EPSILON)
+        assertEdge(endOfRep, AutomatonState.TransitionType.EPSILON)
       );
     }
   }

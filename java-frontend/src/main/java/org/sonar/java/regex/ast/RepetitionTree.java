@@ -77,6 +77,7 @@ public class RepetitionTree extends RegexTree {
 
   @Override
   public void setContinuation(AutomatonState continuation) {
+    continuation = new EndOfRepetitionState(this, continuation);
     super.setContinuation(continuation);
     int min = quantifier.getMinimumRepetitions();
     Integer max = quantifier.getMaximumRepetitions();
