@@ -19,7 +19,7 @@ class RegexStackOverflowCheckWithHighStackConsumption {
     Pattern.compile("(.|\n)*"), // Noncompliant
     Pattern.compile("(.|\n)*\\w{4,}"), // Noncompliant
     Pattern.compile("(.|\n)*\\w*"), // Noncompliant
-    Pattern.compile("(.|\n)*"), // Noncompliant
+    Pattern.compile("(.|\n)*\\w"), // Noncompliant
   };
 
 }
