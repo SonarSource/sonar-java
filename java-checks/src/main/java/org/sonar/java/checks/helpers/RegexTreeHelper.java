@@ -123,23 +123,7 @@ public class RegexTreeHelper {
    * It should be whichever answer does not lead to an issue being reported to avoid false positives.
    */
   public static boolean intersects(SubAutomaton auto1, SubAutomaton auto2, boolean defaultAnswer) {
-    return intersects(auto1, auto2, defaultAnswer, new OrderedStatePairCache<>());
-  }
-
-  private static boolean intersects(SubAutomaton auto1, SubAutomaton auto2, boolean defaultAnswer, OrderedStatePairCache<Boolean> cache) {
-    return computeIfAbsentFromCache(auto1, auto2, defaultAnswer, cache,
-      () -> auto1.anySuccessorMatch(successor -> intersects(successor, auto2, defaultAnswer, cache), false),
-      () -> auto2.anySuccessorMatch(successor -> intersects(auto1, successor, defaultAnswer, cache), false),
-      () -> {
-        SimplifiedRegexCharacterClass characterClass1 = SimplifiedRegexCharacterClass.of(auto1.start);
-        SimplifiedRegexCharacterClass characterClass2 = SimplifiedRegexCharacterClass.of(auto2.start);
-        boolean answer = defaultAnswer;
-        if (characterClass1 != null && characterClass2 != null) {
-          answer = characterClass1.intersects(characterClass2, defaultAnswer) &&
-            auto1.anySuccessorMatch(successor1 -> auto2.anySuccessorMatch(successor2 -> intersects(successor1, successor2, defaultAnswer, cache), true), true);
-        }
-        return answer;
-      });
+    return new IntersectAutomataChecker(new OrderedStatePairCache<>()).check(auto1, auto2, defaultAnswer, false);
   }
 
   /**
@@ -148,75 +132,7 @@ public class RegexTreeHelper {
    * If both are set, it means either one can be the case.
    */
   public static boolean supersetOf(SubAutomaton auto1, SubAutomaton auto2, boolean defaultAnswer) {
-    return  supersetOf(auto1, auto2, defaultAnswer, new OrderedStatePairCache<>());
-  }
-
-  private static boolean supersetOf(SubAutomaton auto1, SubAutomaton auto2, boolean defaultAnswer, OrderedStatePairCache<Boolean> cache) {
-    return computeIfAbsentFromCache(auto1, auto2, defaultAnswer, cache,
-      () -> auto1.anySuccessorMatch(successor -> supersetOf(successor, auto2, defaultAnswer, cache), false),
-      () -> auto2.allSuccessorMatch(successor -> supersetOf(auto1, successor, defaultAnswer, cache), false),
-      () -> {
-        SimplifiedRegexCharacterClass characterClass1 = SimplifiedRegexCharacterClass.of(auto1.start);
-        SimplifiedRegexCharacterClass characterClass2 = SimplifiedRegexCharacterClass.of(auto2.start);
-        boolean answer = defaultAnswer;
-        if (characterClass1 != null && characterClass2 != null) {
-          answer = characterClass1.supersetOf(characterClass2, defaultAnswer) &&
-            auto1.anySuccessorMatch(successor1 -> auto2.anySuccessorMatch(successor2 -> supersetOf(successor1, successor2, defaultAnswer, cache), true), true);
-        }
-        return answer;
-      });
-  }
-
-  private static boolean hasNotSupportedTransitionType(SubAutomaton auto) {
-    TransitionType transition = auto.start.incomingTransitionType();
-    return transition == LOOKAROUND_BACKTRACKING ||
-      transition == NEGATION ||
-      auto.start instanceof LookAroundTree ||
-      auto.start instanceof BoundaryTree ||
-      // We could support back-references by having a stack of sub-automata, onto which we push the referenced group,
-      // but for now we'll simply bail here
-      transition == BACK_REFERENCE ||
-      // Properly supporting fixed-max loops would require unrolling the automaton, potentially making it huge
-      // Technically the case where min > 1 is unsupported for the same reason, but in that case we treat it
-      // as if min were 1, which should hopefully not produce a lot of FPs
-      isMoreThanOneFiniteRepetition(auto.start);
-  }
-
-  private static boolean isMoreThanOneFiniteRepetition(AutomatonState state) {
-    if (state instanceof RepetitionTree) {
-      Integer maximumRepetitions = ((RepetitionTree) state).getQuantifier().getMaximumRepetitions();
-      return maximumRepetitions != null && maximumRepetitions > 1;
-    }
-    return false;
-  }
-
-  private static boolean computeIfAbsentFromCache(SubAutomaton auto1, SubAutomaton auto2, boolean defaultAnswer, OrderedStatePairCache<Boolean> cache,
-    BooleanSupplier evaluateAuto1Successors, BooleanSupplier evaluateAuto2Successors, BooleanSupplier compareAuto1AndAuto2) {
-    if (hasNotSupportedTransitionType(auto1) || hasNotSupportedTransitionType(auto2)) {
-      return defaultAnswer;
-    }
-    OrderedStatePair entry = new OrderedStatePair(auto1.start, auto2.start);
-    Boolean cachedValue = cache.startCalculation(entry, defaultAnswer);
-    if (cachedValue != null) {
-      return cachedValue;
-    }
-    if (auto1.isAtEnd() && auto2.isAtEnd()) {
-      return cache.save(entry, checkMatchedCharacters(auto1, auto2, true, defaultAnswer));
-    } else if (auto1.isAtEnd() && auto2.incomingTransitionType() != EPSILON) {
-      return cache.save(entry, checkMatchedCharacters(auto1, auto2, auto2.allowPrefix, defaultAnswer));
-    } else if (auto2.isAtEnd() && auto1.incomingTransitionType() != EPSILON) {
-      return cache.save(entry, checkMatchedCharacters(auto1, auto2, auto1.allowPrefix, defaultAnswer));
-    } else if (auto2.incomingTransitionType() == EPSILON && !auto2.isAtEnd()) {
-      return cache.save(entry, evaluateAuto2Successors.getAsBoolean());
-    } else if (auto1.incomingTransitionType() == EPSILON && !auto1.isAtEnd()) {
-      return cache.save(entry, evaluateAuto1Successors.getAsBoolean());
-    } else {
-      return cache.save(entry, compareAuto1AndAuto2.getAsBoolean());
-    }
-  }
-
-  private static boolean checkMatchedCharacters(SubAutomaton auto1, SubAutomaton auto2, boolean answer, boolean defaultAnswer) {
-    return (auto1.followMatchedCharacters && auto2.followMatchedCharacters) ? answer : defaultAnswer;
+    return new SupersetAutomataChecker(new OrderedStatePairCache<>()).check(auto1, auto2, defaultAnswer, false);
   }
 
   public static boolean isAnchoredAtEnd(AutomatonState start) {
@@ -276,5 +192,4 @@ public class RegexTreeHelper {
     }
     return true;
   }
-
 }
