@@ -69,7 +69,7 @@ public class PossessiveQuantifierContinuationCheck extends AbstractRegexCheck {
       if (!quantifier.isOpenEnded() || quantifier.getModifier() != Quantifier.Modifier.POSSESSIVE) {
         return false;
       }
-      SubAutomaton potentialSuperset = new SubAutomaton(repetitionTree, repetitionTree.continuation(), false);
+      SubAutomaton potentialSuperset = new SubAutomaton(repetitionTree.getElement(), repetitionTree.continuation(), false);
       SubAutomaton potentialSubset = new SubAutomaton(repetitionTree.continuation(), finalState, true);
       return RegexTreeHelper.supersetOf(potentialSuperset, potentialSubset, false);
     }

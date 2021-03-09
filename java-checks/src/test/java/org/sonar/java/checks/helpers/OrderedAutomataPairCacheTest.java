@@ -25,14 +25,14 @@ import org.sonar.java.regex.ast.FlagSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class OrderedStatePairCacheTest {
+class OrderedAutomataPairCacheTest {
 
-  OrderedStatePairCache<String> cache = new OrderedStatePairCache<>();
+  AbstractAutomataChecker.OrderedAutomataPairCache<String> cache = new AbstractAutomataChecker.OrderedAutomataPairCache<>();
 
   @Test
   void test() {
-    for (int i = 0; i < OrderedStatePairCache.MAX_CACHE_SIZE; i++) {
-      OrderedStatePair pair = createPair();
+    for (int i = 0; i < AbstractAutomataChecker.OrderedAutomataPairCache.MAX_CACHE_SIZE; i++) {
+      AbstractAutomataChecker.OrderedAutomataPair pair = createPair();
       assertThat(cache.startCalculation(pair, "default")).isNull();
       assertThat(cache.startCalculation(pair, "default")).isEqualTo("default");
       assertThat(cache.save(pair, "foo")).isEqualTo("foo");
@@ -42,8 +42,10 @@ class OrderedStatePairCacheTest {
     assertThat(cache.startCalculation(createPair(), "default")).isEqualTo("default");
   }
 
-  private static OrderedStatePair createPair() {
-    return new OrderedStatePair(new FinalState(new FlagSet()), new FinalState(new FlagSet()));
+  private static AbstractAutomataChecker.OrderedAutomataPair createPair() {
+    SubAutomaton automaton1 = new SubAutomaton(new FinalState(new FlagSet()), new FinalState(new FlagSet()), false);
+    SubAutomaton automaton2 = new SubAutomaton(new FinalState(new FlagSet()), new FinalState(new FlagSet()), false);
+    return new AbstractAutomataChecker.OrderedAutomataPair(automaton1, automaton2);
   }
 
 }

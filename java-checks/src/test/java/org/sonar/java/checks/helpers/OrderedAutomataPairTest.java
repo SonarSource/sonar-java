@@ -26,26 +26,37 @@ import org.sonar.java.regex.ast.FlagSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class OrderedStatePairTest {
+class OrderedAutomataPairTest {
 
   @Test
   void equals_and_hashCode() {
-    AutomatonState state1 = new FinalState(new FlagSet());
-    AutomatonState state2 = new FinalState(new FlagSet());
+    AutomatonState state11 = new FinalState(new FlagSet());
+    AutomatonState state12 = new FinalState(new FlagSet());
+    AutomatonState state21 = new FinalState(new FlagSet());
+    AutomatonState state22 = new FinalState(new FlagSet());
 
-    OrderedStatePair pairS1S2A = new OrderedStatePair(state1, state2);
+    SubAutomaton auto1 = new SubAutomaton(state11, state12, false);
+    SubAutomaton auto2 = new SubAutomaton(state21, state22, false);
+
+    AbstractAutomataChecker.OrderedAutomataPair pairS1S2A = new AbstractAutomataChecker.OrderedAutomataPair(auto1, auto2);
+    assertThat(pairS1S2A)
+      .isNotNull()
+      .isNotEqualTo("")
+      .isEqualTo(pairS1S2A)
+      .hasSameHashCodeAs(pairS1S2A);
+
+    // isEqualTo() in this case doesn't actually call .equals() method
     assertThat(pairS1S2A.equals(pairS1S2A)).isTrue();
+    assertThat(pairS1S2A.equals("pairS1S2A")).isFalse();
     assertThat(pairS1S2A.equals(null)).isFalse();
-    assertThat(pairS1S2A.equals("")).isFalse();
-    assertThat(pairS1S2A).isEqualTo(pairS1S2A).hasSameHashCodeAs(pairS1S2A);
 
-    OrderedStatePair pairS1S2B = new OrderedStatePair(state1, state2);
+    AbstractAutomataChecker.OrderedAutomataPair pairS1S2B = new AbstractAutomataChecker.OrderedAutomataPair(auto1, auto2);
     assertThat(pairS1S2B).isEqualTo(pairS1S2A).hasSameHashCodeAs(pairS1S2A);
 
-    OrderedStatePair pairS2S1 = new OrderedStatePair(state2, state1);
+    AbstractAutomataChecker.OrderedAutomataPair pairS2S1 = new AbstractAutomataChecker.OrderedAutomataPair(auto2, auto1);
     assertThat(pairS2S1).isNotEqualTo(pairS1S2A);
 
-    OrderedStatePair pairS1S1 = new OrderedStatePair(state1, state1);
+    AbstractAutomataChecker.OrderedAutomataPair pairS1S1 = new AbstractAutomataChecker.OrderedAutomataPair(auto1, auto1);
     assertThat(pairS1S1).isNotEqualTo(pairS1S2A);
   }
 

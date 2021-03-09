@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks.helpers;
 
+import java.util.Objects;
 import java.util.function.Predicate;
 import org.sonar.java.regex.ast.AutomatonState;
 import org.sonar.java.regex.ast.AutomatonState.TransitionType;
@@ -27,17 +28,11 @@ public class SubAutomaton {
   public final AutomatonState start;
   public final AutomatonState end;
   public final boolean allowPrefix;
-  public final boolean followMatchedCharacters;
 
   public SubAutomaton(AutomatonState start, AutomatonState end, boolean allowPrefix) {
-    this(start, end, allowPrefix, false);
-  }
-
-  public SubAutomaton(AutomatonState start, AutomatonState end, boolean allowPrefix, boolean followMatchedCharacters) {
     this.start = start;
     this.end = end;
     this.allowPrefix = allowPrefix;
-    this.followMatchedCharacters = followMatchedCharacters;
   }
 
   public TransitionType incomingTransitionType() {
@@ -48,22 +43,36 @@ public class SubAutomaton {
     return start == end;
   }
 
-  public boolean anySuccessorMatch(Predicate<SubAutomaton> predicate, boolean followMatchedCharacter) {
+  public boolean anySuccessorMatch(Predicate<SubAutomaton> predicate) {
     for (AutomatonState successor : start.successors()) {
-      if (predicate.test(new SubAutomaton(successor, end, allowPrefix, this.followMatchedCharacters || followMatchedCharacter))) {
+      if (predicate.test(new SubAutomaton(successor, end, allowPrefix))) {
         return true;
       }
     }
     return false;
   }
 
-  public boolean allSuccessorMatch(Predicate<SubAutomaton> predicate, boolean followMatchedCharacter) {
+  public boolean allSuccessorMatch(Predicate<SubAutomaton> predicate) {
     for (AutomatonState successor : start.successors()) {
-      if (!predicate.test(new SubAutomaton(successor, end, allowPrefix, this.followMatchedCharacters || followMatchedCharacter))) {
+      if (!predicate.test(new SubAutomaton(successor, end, allowPrefix))) {
         return false;
       }
     }
     return true;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    SubAutomaton automaton = (SubAutomaton) o;
+    return allowPrefix == automaton.allowPrefix &&
+      Objects.equals(start, automaton.start) &&
+      Objects.equals(end, automaton.end);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(start, end, allowPrefix);
+  }
 }
