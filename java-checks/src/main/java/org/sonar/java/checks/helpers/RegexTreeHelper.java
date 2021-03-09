@@ -107,8 +107,8 @@ public class RegexTreeHelper {
       // after the edge won't directly follow what's before the edge. However, we do consider the end-of-lookahead
       // state itself reachable (but not any state behind it), so that we can check whether the end of the lookahead
       // can be reached without input from a given place within the lookahead.
-      if (((transition == EPSILON || transition == NEGATION) && canReachWithoutConsumingInput(successor, goal, stopAtBoundaries, visited))
-        || (successor instanceof EndOfLookaroundState && successor == goal)) {
+      if ((successor instanceof EndOfLookaroundState && successor == goal)
+        || ((transition == EPSILON || transition == NEGATION) && canReachWithoutConsumingInput(successor, goal, stopAtBoundaries, visited))) {
         return true;
       }
     }
