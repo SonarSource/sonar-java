@@ -28,13 +28,14 @@ import static org.sonar.java.regex.ast.AutomatonState.TransitionType.*;
 
 public abstract class AbstractAutomataChecker {
 
-  private final OrderedStatePairCache<Boolean> cache;
+  private final OrderedStatePairCache<Boolean> cache = new OrderedStatePairCache<>();
+  private final boolean defaultAnswer;
 
-  protected AbstractAutomataChecker(OrderedStatePairCache<Boolean> cache) {
-    this.cache = cache;
+  protected AbstractAutomataChecker(boolean defaultAnswer) {
+    this.defaultAnswer = defaultAnswer;
   }
 
-  public boolean check(SubAutomaton auto1, SubAutomaton auto2, boolean defaultAnswer, boolean hasConsumedInput) {
+  public boolean check(SubAutomaton auto1, SubAutomaton auto2, boolean hasConsumedInput) {
     if (hasUnsupportedTransitionType(auto1) || hasUnsupportedTransitionType(auto2)) {
       return defaultAnswer;
     }

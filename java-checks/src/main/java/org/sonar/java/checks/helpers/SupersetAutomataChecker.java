@@ -20,8 +20,8 @@
 package org.sonar.java.checks.helpers;
 
 public class SupersetAutomataChecker extends AbstractAutomataChecker {
-  public SupersetAutomataChecker(OrderedStatePairCache<Boolean> cache) {
-    super(cache);
+  public SupersetAutomataChecker(boolean defaultAnswer) {
+    super(defaultAnswer);
   }
 
   @Override
@@ -31,17 +31,17 @@ public class SupersetAutomataChecker extends AbstractAutomataChecker {
     return  (characterClass1 != null && characterClass2 != null) ?
       characterClass1.supersetOf(characterClass2, defaultAnswer) &&
         auto2.allSuccessorMatch(successor2 -> auto1.anySuccessorMatch(successor1 ->
-          check(successor1, successor2, defaultAnswer, true))) :
+          check(successor1, successor2, true))) :
       defaultAnswer;
   }
 
   @Override
   protected boolean checkAuto1Successors(SubAutomaton auto1, SubAutomaton auto2, boolean defaultAnswer, boolean hasConsumedInput) {
-    return auto1.anySuccessorMatch(successor -> check(successor, auto2, defaultAnswer, hasConsumedInput));
+    return auto1.anySuccessorMatch(successor -> check(successor, auto2, hasConsumedInput));
   }
 
   @Override
   protected boolean checkAuto2Successors(SubAutomaton auto1, SubAutomaton auto2, boolean defaultAnswer, boolean hasConsumedInput) {
-    return auto2.allSuccessorMatch(successor -> check(auto1, successor, defaultAnswer, hasConsumedInput));
+    return auto2.allSuccessorMatch(successor -> check(auto1, successor, hasConsumedInput));
   }
 }

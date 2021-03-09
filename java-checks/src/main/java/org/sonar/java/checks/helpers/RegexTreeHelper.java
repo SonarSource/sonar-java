@@ -23,23 +23,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BooleanSupplier;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
-import org.sonar.java.regex.RegexCheck;
-import org.sonar.java.regex.ast.AutomatonState;
-import org.sonar.java.regex.ast.AutomatonState.TransitionType;
-import org.sonar.java.regex.ast.BoundaryTree;
-import org.sonar.java.regex.ast.CharacterTree;
-import org.sonar.java.regex.ast.EndOfLookaroundState;
-import org.sonar.java.regex.ast.FinalState;
-import org.sonar.java.regex.ast.LookAroundTree;
-import org.sonar.java.regex.ast.RegexSyntaxElement;
-import org.sonar.java.regex.ast.RepetitionTree;
 
-import static org.sonar.java.regex.ast.AutomatonState.TransitionType.BACK_REFERENCE;
+import org.sonar.java.regex.RegexCheck;
+import org.sonar.java.regex.ast.*;
+import org.sonar.java.regex.ast.AutomatonState.TransitionType;
+
 import static org.sonar.java.regex.ast.AutomatonState.TransitionType.EPSILON;
-import static org.sonar.java.regex.ast.AutomatonState.TransitionType.LOOKAROUND_BACKTRACKING;
 import static org.sonar.java.regex.ast.AutomatonState.TransitionType.NEGATION;
 
 public class RegexTreeHelper {
@@ -123,7 +114,7 @@ public class RegexTreeHelper {
    * It should be whichever answer does not lead to an issue being reported to avoid false positives.
    */
   public static boolean intersects(SubAutomaton auto1, SubAutomaton auto2, boolean defaultAnswer) {
-    return new IntersectAutomataChecker(new OrderedStatePairCache<>()).check(auto1, auto2, defaultAnswer, false);
+    return new IntersectAutomataChecker(defaultAnswer).check(auto1, auto2, false);
   }
 
   /**
@@ -132,7 +123,7 @@ public class RegexTreeHelper {
    * If both are set, it means either one can be the case.
    */
   public static boolean supersetOf(SubAutomaton auto1, SubAutomaton auto2, boolean defaultAnswer) {
-    return new SupersetAutomataChecker(new OrderedStatePairCache<>()).check(auto1, auto2, defaultAnswer, false);
+    return new SupersetAutomataChecker(defaultAnswer).check(auto1, auto2, false);
   }
 
   public static boolean isAnchoredAtEnd(AutomatonState start) {
