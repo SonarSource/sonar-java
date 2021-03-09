@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks.helpers;
 
+import java.util.Objects;
 import java.util.function.Predicate;
 import org.sonar.java.regex.ast.AutomatonState;
 import org.sonar.java.regex.ast.AutomatonState.TransitionType;
@@ -60,4 +61,18 @@ public class SubAutomaton {
     return true;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    SubAutomaton automaton = (SubAutomaton) o;
+    return allowPrefix == automaton.allowPrefix &&
+      Objects.equals(start, automaton.start) &&
+      Objects.equals(end, automaton.end);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(start, end, allowPrefix);
+  }
 }

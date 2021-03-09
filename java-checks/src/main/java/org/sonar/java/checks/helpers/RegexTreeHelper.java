@@ -27,8 +27,14 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 import org.sonar.java.regex.RegexCheck;
-import org.sonar.java.regex.ast.*;
+import org.sonar.java.regex.ast.AutomatonState;
 import org.sonar.java.regex.ast.AutomatonState.TransitionType;
+import org.sonar.java.regex.ast.BoundaryTree;
+import org.sonar.java.regex.ast.CharacterTree;
+import org.sonar.java.regex.ast.EndOfLookaroundState;
+import org.sonar.java.regex.ast.FinalState;
+import org.sonar.java.regex.ast.LookAroundTree;
+import org.sonar.java.regex.ast.RegexSyntaxElement;
 
 import static org.sonar.java.regex.ast.AutomatonState.TransitionType.EPSILON;
 import static org.sonar.java.regex.ast.AutomatonState.TransitionType.NEGATION;

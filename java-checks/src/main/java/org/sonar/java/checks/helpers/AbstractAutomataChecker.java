@@ -19,16 +19,20 @@
  */
 package org.sonar.java.checks.helpers;
 
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.regex.ast.AutomatonState;
 import org.sonar.java.regex.ast.BoundaryTree;
 import org.sonar.java.regex.ast.LookAroundTree;
 import org.sonar.java.regex.ast.RepetitionTree;
 
+import javax.annotation.CheckForNull;
+import java.util.HashMap;
+
 import static org.sonar.java.regex.ast.AutomatonState.TransitionType.*;
 
 public abstract class AbstractAutomataChecker {
 
-  private final OrderedStatePairCache<Boolean> cache = new OrderedStatePairCache<>();
+  private final OrderedAutomataPairCache<Boolean> cache = new OrderedAutomataPairCache<>();
   private final boolean defaultAnswer;
 
   protected AbstractAutomataChecker(boolean defaultAnswer) {
@@ -39,20 +43,22 @@ public abstract class AbstractAutomataChecker {
     if (hasUnsupportedTransitionType(auto1) || hasUnsupportedTransitionType(auto2)) {
       return defaultAnswer;
     }
-    OrderedStatePair entry = new OrderedStatePair(auto1.start, auto2.start);
+    OrderedAutomataPair entry = new OrderedAutomataPair(auto1, auto2);
     Boolean cachedValue = cache.startCalculation(entry, defaultAnswer);
     if (cachedValue != null) {
       return cachedValue;
     }
+    boolean answer = hasConsumedInput || defaultAnswer;
     if (auto1.isAtEnd() && auto2.isAtEnd()) {
-      return cache.save(entry, hasConsumedInput || defaultAnswer);
+      return cache.save(entry, answer);
     } else if (auto1.isAtEnd() && auto2.incomingTransitionType() != EPSILON) {
-      return cache.save(entry, auto2.allowPrefix && (hasConsumedInput || defaultAnswer));
+      return cache.save(entry, auto2.allowPrefix && answer);
     } else if (auto2.isAtEnd() && auto1.incomingTransitionType() != EPSILON) {
-      return cache.save(entry, auto1.allowPrefix && (hasConsumedInput || defaultAnswer));
+      return cache.save(entry, auto1.allowPrefix && answer);
     } else if (auto2.incomingTransitionType() == EPSILON && !auto2.isAtEnd()) {
       return cache.save(entry, checkAuto2Successors(auto1, auto2, defaultAnswer, hasConsumedInput));
-    } else if (auto1.incomingTransitionType() == EPSILON && !auto1.isAtEnd()) {
+    } else if (auto1.incomingTransitionType() == EPSILON) {
+      // In this branch auto1 can't be at the end
       return cache.save(entry, checkAuto1Successors(auto1, auto2, defaultAnswer, hasConsumedInput));
     } else {
       return cache.save(entry, checkAuto1AndAuto2Successors(auto1, auto2, defaultAnswer, hasConsumedInput));
@@ -88,4 +94,59 @@ public abstract class AbstractAutomataChecker {
     return false;
   }
 
+  @VisibleForTesting
+  static class OrderedAutomataPairCache<T> extends HashMap<OrderedAutomataPair, T> {
+
+    public static final int MAX_CACHE_SIZE = 5_000;
+
+    /**
+     * If a cached value exists in the cache return it. Otherwise return null and
+     * put in the cache defaultAnswer while we are in the process of calculating it
+     * @param statePair to look for and return the cached value
+     * @param defaultAnswer to put in the cache while we are in the process of calculating the value
+     * @return cached value if exists or null if it need to be computed
+     */
+    @CheckForNull
+    T startCalculation(OrderedAutomataPair statePair, T defaultAnswer) {
+      T cachedResult = get(statePair);
+      if (cachedResult != null) {
+        return cachedResult;
+      } else if (size() >= MAX_CACHE_SIZE) {
+        return defaultAnswer;
+      }
+      // cache contains 'defaultAnswer' because we're currently in the process of calculating it
+      put(statePair, defaultAnswer);
+      return null;
+    }
+
+    T save(OrderedAutomataPair statePair, T value) {
+      put(statePair, value);
+      return value;
+    }
+
+  }
+
+  @VisibleForTesting
+  static class OrderedAutomataPair {
+    public final SubAutomaton auto1;
+    public final SubAutomaton auto2;
+
+    public OrderedAutomataPair(SubAutomaton auto1, SubAutomaton auto2) {
+      this.auto1 = auto1;
+      this.auto2 = auto2;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      OrderedAutomataPair that = (OrderedAutomataPair) o;
+      return auto1.equals(that.auto1) && auto2.equals(that.auto2);
+    }
+
+    @Override
+    public int hashCode() {
+      return 31 * auto1.hashCode() + auto2.hashCode();
+    }
+  }
 }
