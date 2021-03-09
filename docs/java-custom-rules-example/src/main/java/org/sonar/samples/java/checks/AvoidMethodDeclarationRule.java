@@ -52,9 +52,6 @@ public class AvoidMethodDeclarationRule extends BaseTreeVisitor implements JavaF
 
     // The call to the scan method on the root of the tree triggers the visit of the AST by this visitor
     scan(context.getTree());
-
-    // For debugging purpose, you can print out the entire AST of the analyzed file
-    System.out.println(PrinterVisitor.print(context.getTree()));
   }
 
   /**

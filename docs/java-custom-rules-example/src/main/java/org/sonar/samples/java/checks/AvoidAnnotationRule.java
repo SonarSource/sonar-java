@@ -50,10 +50,7 @@ public class AvoidAnnotationRule extends BaseTreeVisitor implements JavaFileScan
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
-
     scan(context.getTree());
-
-    System.out.println(PrinterVisitor.print(context.getTree()));
   }
 
   @Override
@@ -63,8 +60,6 @@ public class AvoidAnnotationRule extends BaseTreeVisitor implements JavaFileScan
       TypeTree annotationType = annotationTree.annotationType();
       if (annotationType.is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifier = (IdentifierTree) annotationType;
-        System.out.println(identifier.name());
-
         if (identifier.name().equals(name)) {
           context.reportIssue(this, identifier, String.format("Avoid using annotation @%s", name));
         }
