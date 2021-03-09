@@ -20,14 +20,19 @@
 package org.sonar.samples.java.checks;
 
 import java.util.Locale;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.samples.java.utils.PrinterVisitor;
 
 @Rule(key = "AvoidBrandInMethodNames")
 public class AvoidBrandInMethodNamesRule extends BaseTreeVisitor implements JavaFileScanner {
+
+  private static final Logger LOGGER = Loggers.get(AvoidBrandInMethodNamesRule.class);
 
   private JavaFileScannerContext context;
 
@@ -41,7 +46,7 @@ public class AvoidBrandInMethodNamesRule extends BaseTreeVisitor implements Java
     scan(context.getTree());
 
     // For debugging purpose, you can print out the entire AST of the analyzed file
-    System.out.println(PrinterVisitor.print(context.getTree()));
+    PrinterVisitor.print(context.getTree(), LOGGER::debug);
   }
 
   /**

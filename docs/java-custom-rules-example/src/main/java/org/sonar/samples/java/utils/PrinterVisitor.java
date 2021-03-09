@@ -17,16 +17,15 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.samples.java.checks;
+package org.sonar.samples.java.utils;
 
 import java.util.List;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.samples.java.utils.StringUtils;
 
 public class PrinterVisitor extends BaseTreeVisitor {
-
   private static final int INDENT_SPACES = 2;
 
   private final StringBuilder sb;
@@ -37,10 +36,10 @@ public class PrinterVisitor extends BaseTreeVisitor {
     indentLevel = 0;
   }
 
-  public static String print(Tree tree) {
+  public static void print(Tree tree, Consumer<String> output) {
     PrinterVisitor pv = new PrinterVisitor();
     pv.scan(tree);
-    return pv.sb.toString();
+    output.accept(pv.sb.toString());
   }
 
   private StringBuilder indent() {

@@ -20,9 +20,18 @@
 package org.sonar.samples.java.checks;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.sonar.api.utils.log.LogTesterJUnit5;
+import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 class AvoidBrandInMethodNamesRuleTest {
+
+  // Register the logTester, to see the Syntax Tree when running tests and executing the rule
+  @RegisterExtension
+  LogTesterJUnit5 logTester = new LogTesterJUnit5();
 
   @Test
   void detected() {
@@ -33,5 +42,50 @@ class AvoidBrandInMethodNamesRuleTest {
       .onFile("src/test/files/AvoidBrandInMethodNamesRule.java")
       .withCheck(new AvoidBrandInMethodNamesRule())
       .verifyIssues();
+  }
+
+  @Test
+  void printingTreeInDebug() {
+    // Make sure logs are visible during the tests, and at DEBUG level in production
+    logTester.setLevel(LoggerLevel.DEBUG);
+
+    // re-execute the test
+    JavaCheckVerifier.newVerifier()
+    .onFile("src/test/files/AvoidBrandInMethodNamesRule.java")
+    .withCheck(new AvoidBrandInMethodNamesRule())
+    .verifyIssues();
+
+    // verify that the tree has been correctly displayed in DEBUG
+    assertThat(logTester.logs(LoggerLevel.DEBUG))
+      .hasSize(1)
+      .containsOnly("CompilationUnitTree : [\n"
+        + "  ClassTree\n"
+        + "    ModifiersTree\n"
+        + "    IdentifierTree\n"
+        + "    TypeParameters : [\n"
+        + "    VariableTree\n"
+        + "      ModifiersTree\n"
+        + "      PrimitiveTypeTree\n"
+        + "      IdentifierTree\n"
+        + "    MethodTree\n"
+        + "      ModifiersTree\n"
+        + "      TypeParameters\n"
+        + "      PrimitiveTypeTree\n"
+        + "      IdentifierTree\n"
+        + "      BlockTree\n"
+        + "    MethodTree\n"
+        + "      ModifiersTree\n"
+        + "      TypeParameters\n"
+        + "      PrimitiveTypeTree\n"
+        + "      IdentifierTree\n"
+        + "      BlockTree\n"
+        + "    MethodTree\n"
+        + "      ModifiersTree\n"
+        + "      TypeParameters\n"
+        + "      PrimitiveTypeTree\n"
+        + "      IdentifierTree\n"
+        + "      BlockTree\n"
+        + "    ]\n"
+        + "  ]\n");
   }
 }
