@@ -19,9 +19,6 @@
  */
 package org.sonar.java.regex.ast;
 
-import java.util.Collections;
-import java.util.List;
-
 /**
  * This class should only be instantiated by RegexParseResult.openingQuote() and only used when using
  * the opening quote of a regex as an issue location. It should never appear within a regex AST.
@@ -37,8 +34,4 @@ public class OpeningQuote extends AbstractRegexSyntaxElement {
     throw new UnsupportedOperationException("getText should not be called on OpeningQuote objects.");
   }
 
-  @Override
-  public List<Location> getLocations() {
-    return Collections.singletonList(new Location(getSource().getStringLiterals().get(0), -1, 0));
-  }
 }

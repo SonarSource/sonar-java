@@ -34,6 +34,7 @@ import org.sonar.java.regex.ast.EndOfRepetitionState;
 import org.sonar.java.regex.ast.FlagSet;
 import org.sonar.java.regex.ast.JavaCharacter;
 import org.sonar.java.regex.ast.CharacterTree;
+import org.sonar.java.regex.ast.JavaRegexSource;
 import org.sonar.java.regex.ast.RegexSource;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.java.regex.ast.RegexToken;
@@ -249,7 +250,7 @@ public class RegexParserTestUtils {
     VariableTree str = (VariableTree) foo.members().get(0);
     LiteralCollector visitor = new LiteralCollector();
     str.initializer().accept(visitor);
-    return new RegexSource(visitor.stringLiterals);
+    return new JavaRegexSource(visitor.stringLiterals);
   }
 
   public static List<LiteralTree> getAllStringLiteralsFromFile(File file) {

@@ -19,12 +19,14 @@
  */
 package org.sonar.java.regex;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.java.AnalyzerMessage;
-import org.sonar.java.regex.ast.Location;
+import org.sonar.java.regex.ast.IndexRange;
+import org.sonar.java.regex.ast.JavaRegexSource;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.plugins.java.api.JavaCheck;
 
@@ -43,12 +45,12 @@ public interface RegexCheck extends JavaCheck {
     private final String message;
 
     public RegexIssueLocation(RegexSyntaxElement tree, String message) {
-      this.locations = textSpansFromRegexSyntaxElement(tree);
+      this.locations = ((JavaRegexSource) tree.getSource()).textSpansFor(tree.getRange());
       this.message = message;
     }
 
-    public RegexIssueLocation(RegexSyntaxElement start, RegexSyntaxElement end, String message) {
-      this.locations = textSpansBetweenRegexSyntaxElement(start, end);
+    public RegexIssueLocation(List<RegexSyntaxElement> trees, String message) {
+      this.locations = textSpansFromRegexSyntaxElements(trees);
       this.message = message;
     }
 
@@ -75,39 +77,24 @@ public interface RegexCheck extends JavaCheck {
         .collect(Collectors.toList());
     }
 
-    private static List<AnalyzerMessage.TextSpan> textSpansBetweenRegexSyntaxElement(RegexSyntaxElement start, RegexSyntaxElement end) {
-      Location startLocation = start.getLocations().get(0);
-      AnalyzerMessage.TextSpan startSpan = AnalyzerMessage.textSpanFor(startLocation.getJavaTree());
-
-      Location endLocation = end.getLocations().get(0);
-      AnalyzerMessage.TextSpan endSpan = AnalyzerMessage.textSpanFor(endLocation.getJavaTree());
-
-      return Collections.singletonList(new AnalyzerMessage.TextSpan(
-        startSpan.startLine,
-        startSpan.startCharacter + startLocation.getBeginningOffset() + 1,
-        endSpan.endLine,
-        endSpan.startCharacter + endLocation.getEndingOffset() + 1
-      ));
-    }
-
-    private static List<AnalyzerMessage.TextSpan> textSpansFromRegexSyntaxElement(RegexSyntaxElement tree) {
-      List<Location> locs = tree.getLocations().stream()
-        .filter(location -> !location.isEmpty())
-        .collect(Collectors.toList());
-      if (locs.isEmpty()) {
-        // contains only empty locations, take the first one
-        locs = Collections.singletonList(tree.getLocations().get(0));
+    private static List<AnalyzerMessage.TextSpan> textSpansFromRegexSyntaxElements(List<RegexSyntaxElement> trees) {
+      JavaRegexSource source = (JavaRegexSource) trees.get(0).getSource();
+      List<AnalyzerMessage.TextSpan> locations = new ArrayList<>();
+      IndexRange current = null;
+      for (RegexSyntaxElement tree : trees) {
+        if (current == null) {
+          current = tree.getRange();
+        } else if (tree.getRange().getBeginningOffset() == current.getEndingOffset()) {
+          current = new IndexRange(current.getBeginningOffset(), tree.getRange().getEndingOffset());
+        } else {
+          locations.addAll(source.textSpansFor(current));
+          current = tree.getRange();
+        }
       }
-      return locs.stream().map(location -> {
-          AnalyzerMessage.TextSpan result = AnalyzerMessage.textSpanFor(location.getJavaTree());
-          return new AnalyzerMessage.TextSpan(
-            result.startLine,
-            // Adding 1 to handle beginning of the String with quote
-            result.startCharacter + location.getBeginningOffset() + 1,
-            result.endLine,
-            // Adding 1 to handle beginning of the String with quote
-            result.startCharacter + location.getEndingOffset() + 1 + (location.isEmpty() ? 1 : 0));
-        }).collect(Collectors.toList());
+      if (current != null) {
+        locations.addAll(source.textSpansFor(current));
+      }
+      return locations;
     }
   }
 

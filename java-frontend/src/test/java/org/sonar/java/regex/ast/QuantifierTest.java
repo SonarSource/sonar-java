@@ -19,7 +19,6 @@
  */
 package org.sonar.java.regex.ast;
 
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.SyntaxError;
@@ -115,10 +114,7 @@ class QuantifierTest {
     SyntaxError error = result.getSyntaxErrors().get(0);
     assertEquals("Unexpected quantifier '*'", error.getMessage(), "Error should have the right message.");
     assertEquals("*", error.getOffendingSyntaxElement().getText(), "Error should complain about the correct part of the regex.");
-    List<Location> locations = error.getLocations();
-    assertEquals(1, locations.size(), "Error should only have one location.");
-    assertEquals(new IndexRange(2,3), locations.get(0).getIndexRange(), "Error should have the right location.");
-    assertFalse(locations.get(0).getIndexRange().isEmpty(), "Error location should not be empty range.");
+    assertEquals(new IndexRange(2,3), error.range(), "Error should have the right location.");
   }
 
   @Test

@@ -23,8 +23,6 @@ import java.util.List;
 
 public interface RegexSyntaxElement {
 
-  List<Location> getLocations();
-
   String getText();
 
   IndexRange getRange();

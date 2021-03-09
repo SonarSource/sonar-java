@@ -24,8 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
-
 import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.ast.AutomatonState;
 import org.sonar.java.regex.ast.AutomatonState.TransitionType;
@@ -51,27 +49,25 @@ public class RegexTreeHelper {
 
   public static List<RegexCheck.RegexIssueLocation> getGraphemeInList(List<? extends RegexSyntaxElement> trees) {
     List<RegexCheck.RegexIssueLocation> result = new ArrayList<>();
-    RegexSyntaxElement startGrapheme = null;
-    RegexSyntaxElement endGrapheme = null;
+    List<RegexSyntaxElement> codeUnits = new ArrayList<>();
     for (RegexSyntaxElement child : trees) {
       if (child instanceof CharacterTree) {
         CharacterTree currentCharacter = (CharacterTree) child;
         if (!currentCharacter.isEscapeSequence()) {
           if (!isMark(currentCharacter)) {
-            addCurrentGrapheme(result, startGrapheme, endGrapheme);
-            startGrapheme = child;
-            endGrapheme = null;
-          } else if (startGrapheme != null) {
-            endGrapheme = child;
+            addCurrentGrapheme(result, codeUnits);
+            codeUnits.clear();
+            codeUnits.add(currentCharacter);
+          } else if (!codeUnits.isEmpty()) {
+            codeUnits.add(currentCharacter);
           }
           continue;
         }
       }
-      addCurrentGrapheme(result, startGrapheme, endGrapheme);
-      startGrapheme = null;
-      endGrapheme = null;
+      addCurrentGrapheme(result, codeUnits);
+      codeUnits.clear();
     }
-    addCurrentGrapheme(result, startGrapheme, endGrapheme);
+    addCurrentGrapheme(result, codeUnits);
     return result;
   }
 
@@ -79,9 +75,9 @@ public class RegexTreeHelper {
     return MARK_PATTERN.matcher(currentChar.characterAsString()).matches();
   }
 
-  private static void addCurrentGrapheme(List<RegexCheck.RegexIssueLocation> result, @Nullable RegexSyntaxElement start, @Nullable RegexSyntaxElement end) {
-    if (start != null && end != null) {
-      result.add(new RegexCheck.RegexIssueLocation(start, end, ""));
+  private static void addCurrentGrapheme(List<RegexCheck.RegexIssueLocation> result, List<RegexSyntaxElement> codePoints) {
+    if (codePoints.size() > 1) {
+      result.add(new RegexCheck.RegexIssueLocation(codePoints, ""));
     }
   }
 

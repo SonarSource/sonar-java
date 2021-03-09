@@ -19,7 +19,6 @@
  */
 package org.sonar.java.regex.ast;
 
-import java.util.List;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.regex.RegexParseResult;
@@ -67,10 +66,7 @@ class GroupTreesTest {
     assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
     SyntaxError error = result.getSyntaxErrors().get(0);
     assertEquals("Expected ')', but found the end of the regex", error.getMessage(), "Error should have the right message.");
-    List<Location> locations = error.getLocations();
-    assertEquals(1, locations.size(), "Error should only have one location.");
-    assertEquals(new IndexRange(2,2), locations.get(0).getIndexRange(), "Error should have the right location.");
-    assertTrue(locations.get(0).getIndexRange().isEmpty(), "Error location should be empty range.");
+    assertEquals(new IndexRange(2,3), error.range(), "Error should have the right location.");
   }
 
   @Test
@@ -79,10 +75,7 @@ class GroupTreesTest {
     assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
     SyntaxError error = result.getSyntaxErrors().get(0);
     assertEquals("Unexpected ')'", error.getMessage(), "Error should have the right message.");
-    List<Location> locations = error.getLocations();
-    assertEquals(1, locations.size(), "Error should only have one location.");
-    assertEquals(new IndexRange(3,4), locations.get(0).getIndexRange(), "Error should have the right location.");
-    assertFalse(locations.get(0).getIndexRange().isEmpty(), "Error location should not be empty range.");
+    assertEquals(new IndexRange(3,4), error.range(), "Error should have the right location.");
   }
 
   @Test

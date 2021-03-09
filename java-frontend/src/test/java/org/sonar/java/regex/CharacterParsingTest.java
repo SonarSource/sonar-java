@@ -26,6 +26,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.regex.ast.JavaCharacter;
+import org.sonar.java.regex.ast.JavaRegexSource;
 import org.sonar.java.regex.ast.RegexSource;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 
@@ -47,7 +48,7 @@ class CharacterParsingTest {
     LiteralTree source = literals.get(0);
     assertThat(source.value()).isEqualTo("\"\\t\\u1234\"");
 
-    RegexSource regexSource = new RegexSource(Collections.singletonList(source));
+    RegexSource regexSource = new JavaRegexSource(Collections.singletonList(source));
 
     List<JavaCharacter> unicodeCharacters = parseUnicode(regexSource);
     assertThat(unicodeCharacters.stream().map(JavaCharacter::getCharacter))
@@ -66,7 +67,7 @@ class CharacterParsingTest {
     LiteralTree source = literals.get(1);
     assertThat(source.value()).isEqualTo("\"\\\\\\\\u+[a-fA-F0-9]{4}\"");
 
-    RegexSource regexSource = new RegexSource(Collections.singletonList(source));
+    RegexSource regexSource = new JavaRegexSource(Collections.singletonList(source));
 
     List<JavaCharacter> unicodeCharacters = parseUnicode(regexSource);
     assertThat(unicodeCharacters.stream().map(JavaCharacter::getCharacter))

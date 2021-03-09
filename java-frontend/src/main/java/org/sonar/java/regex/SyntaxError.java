@@ -19,8 +19,7 @@
  */
 package org.sonar.java.regex;
 
-import java.util.List;
-import org.sonar.java.regex.ast.Location;
+import org.sonar.java.regex.ast.IndexRange;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
 
 public class SyntaxError {
@@ -34,8 +33,8 @@ public class SyntaxError {
     this.message = message;
   }
 
-  public List<Location> getLocations() {
-    return offendingSyntaxElement.getLocations();
+  public IndexRange range() {
+    return offendingSyntaxElement.getRange();
   }
 
   public RegexSyntaxElement getOffendingSyntaxElement() {

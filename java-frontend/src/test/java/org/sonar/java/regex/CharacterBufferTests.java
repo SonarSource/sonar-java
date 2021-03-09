@@ -24,7 +24,7 @@ import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.regex.ast.IndexRange;
 import org.sonar.java.regex.ast.JavaCharacter;
-import org.sonar.java.regex.ast.RegexSource;
+import org.sonar.java.regex.ast.JavaRegexSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -82,6 +82,6 @@ class CharacterBufferTests {
   }
 
   private JavaCharacter makeCharacter(char c) {
-    return new JavaCharacter(new RegexSource(Collections.emptyList()), new IndexRange(0, 1), c);
+    return new JavaCharacter(new JavaRegexSource(Collections.emptyList()), new IndexRange(0, 1), c);
   }
 }

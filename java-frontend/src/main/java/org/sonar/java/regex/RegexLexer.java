@@ -98,7 +98,9 @@ public class RegexLexer {
     if (isNotAtEnd()) {
       return getCurrent().getRange();
     } else {
-      return new IndexRange(source.length(), source.length());
+      // When we're at the end of the regex, the end index extends one past the end of the regex, so that the closing
+      // quote will be the character that's marked as the offending character.
+      return new IndexRange(source.length(), source.length() + 1);
     }
   }
 
