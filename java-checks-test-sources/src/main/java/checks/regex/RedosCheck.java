@@ -50,12 +50,34 @@ public class RedosCheck {
   }
 
   void alwaysQuadratic(String str) {
+    // Always quadratic when two non-possessive quantifiers overlap in a sequence
     str.matches("x*\\w*"); // Noncompliant {{Make sure the regex used here, which is vulnerable to quadratic runtime due to backtracking, cannot lead to denial of service.}}
     str.matches(".*.*X"); // Noncompliant {{Make sure the regex used here, which is vulnerable to quadratic runtime due to backtracking, cannot lead to denial of service.}}
     str.matches("x*a*x*"); // Noncompliant {{Make sure the regex used here, which is vulnerable to quadratic runtime due to backtracking, cannot lead to denial of service.}}
+    str.matches("x*,a*x*"); // Compliant, can fail between the two quantifiers
     str.matches("x*a*b*c*d*e*f*g*h*i*x*"); // Noncompliant {{Make sure the regex used here, which is vulnerable to quadratic runtime due to backtracking, cannot lead to denial of service.}}
     str.matches("x*a*b*c*d*e*f*g*h*i*j*x*"); // FN because we forget about the first x* when the maximum number of tracked repetitions is exceeded
     str.matches("x*a*b*c*d*e*f*g*h*i*j*x*x*"); // Noncompliant {{Make sure the regex used here, which is vulnerable to quadratic runtime due to backtracking, cannot lead to denial of service.}}
+    // Non-possessive followed by possessive quantifier is actually quadratic
+    str.matches(".*\\s*"); // Noncompliant {{Make sure the regex used here, which is vulnerable to quadratic runtime due to backtracking, cannot lead to denial of service.}}
+    str.matches(".*\\s*+"); // Noncompliant {{Make sure the regex used here, which is vulnerable to quadratic runtime due to backtracking, cannot lead to denial of service.}}
+    str.matches(".*+\\s*"); // Compliant, other way (possessive then non-possessive) is fine
+    str.matches(".*+\\s*+"); // Compliant, two possessives is fine
+    str.matches(".*,\\s*+,"); // Compliant, can fail between the two quantifiers
+    str.matches("\\s*\\s*+,"); // Noncompliant {{Make sure the regex used here, which is vulnerable to quadratic runtime due to backtracking, cannot lead to denial of service.}}
+    str.matches("a*\\s*+,"); // Compliant, no overlap
+    str.matches("[a\\s]*\\s*+,"); // Noncompliant {{Make sure the regex used here, which is vulnerable to quadratic runtime due to backtracking, cannot lead to denial of service.}}
+    str.matches("[a\\s]*b*\\s*+,"); // Noncompliant {{Make sure the regex used here, which is vulnerable to quadratic runtime due to backtracking, cannot lead to denial of service.}}
+    str.matches("\\s*+[a\\s]*b*,"); // Compliant, possessive then non-possessive
+    str.matches("\\s*+b*[a\\s]*,"); // Compliant, possessive then non-possessive
+    // Implicit reluctant quantifier in partial match also leads to quadratic runtime
+    str.split("\\s*,"); // Noncompliant {{Make sure the regex used here, which is vulnerable to quadratic runtime due to backtracking, cannot lead to denial of service.}}
+    str.split("\\s*+,"); // Noncompliant {{Make sure the regex used here, which is vulnerable to quadratic runtime due to backtracking, cannot lead to denial of service.}}
+    str.matches("(?s:.*)\\s*,(?s:.*)"); // Noncompliant {{Make sure the regex used here, which is vulnerable to quadratic runtime due to backtracking, cannot lead to denial of service.}}
+    str.matches("(?s:.*)\\s*+,(?s:.*)"); // Noncompliant {{Make sure the regex used here, which is vulnerable to quadratic runtime due to backtracking, cannot lead to denial of service.}}
+    str.split(",\\s*+"); // Compliant
+    str.split(",\\s*+,"); // Compliant
+    str.split("\\s*+"); // Compliant
   }
 
   void fixedInJava9(String str) {
