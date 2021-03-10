@@ -64,7 +64,7 @@ public class SecurityAnnotationMandatoryRule extends BaseTreeVisitor implements 
   public void visitClass(ClassTree tree) {
     implementsSpecificInterface = false;
     for (TypeTree typeTree : tree.superInterfaces()) {
-      LOGGER.info("implements Interface: {}", typeTree);
+      LOGGER.debug("implements Interface: {}", typeTree);
       if ("MySecurityInterface".equals(typeTree.toString())) {
         implementsSpecificInterface = true;
       }
@@ -95,7 +95,7 @@ public class SecurityAnnotationMandatoryRule extends BaseTreeVisitor implements 
     IdentifierTree idt = (IdentifierTree) expr;
     sb.insert(0, idt.name());
 
-    LOGGER.info("PackageName: {}", sb);
+    LOGGER.debug("PackageName: {}", sb);
   }
 
   @Override
@@ -109,7 +109,7 @@ public class SecurityAnnotationMandatoryRule extends BaseTreeVisitor implements 
         TypeTree annotationType = annotationTree.annotationType();
         if (annotationType.is(Tree.Kind.IDENTIFIER)) {
           String annotationName = ((IdentifierTree) annotationType).name();
-          LOGGER.info("Method Name {}", annotationName);
+          LOGGER.debug("Method Name {}", annotationName);
 
           if (annotationName.equals(name)) {
             isHavingMandatoryAnnotation = Boolean.TRUE;
