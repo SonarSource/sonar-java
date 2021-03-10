@@ -148,7 +148,7 @@ public class RedosCheck extends AbstractRegexCheckTrackingMatchType {
   private class RedosFinder extends RegexBaseVisitor {
 
 
-    private final Deque<RepetitionTree> repetitions = new ArrayDeque<>();
+    private final Deque<RepetitionTree> nonPossessiveRepetitions = new ArrayDeque<>();
     private final Map<AutomatonState, Boolean> canFailCache = new HashMap<>();
 
     private final AutomatonState startOfRegex;
@@ -177,7 +177,7 @@ public class RedosCheck extends AbstractRegexCheckTrackingMatchType {
 
     private void checkForOverlappingRepetitions(RepetitionTree tree) {
       if (tree.getQuantifier().isOpenEnded() && canFail(tree)) {
-        for (RepetitionTree repetition : repetitions) {
+        for (RepetitionTree repetition : nonPossessiveRepetitions) {
           if (reachabilityChecker.canReach(repetition, tree)) {
             SubAutomaton auto1 = new SubAutomaton(repetition.getElement(), tree.continuation(), false);
             SubAutomaton auto2 = new SubAutomaton(repetition.continuation(), tree.continuation(), false);
@@ -189,9 +189,15 @@ public class RedosCheck extends AbstractRegexCheckTrackingMatchType {
         if (overlapsWithImplicitMatchAlls(tree)) {
           addBacktracking(BacktrackingType.ALWAYS_QUADRATIC);
         }
-        repetitions.add(tree);
-        if (repetitions.size() > MAX_TRACKED_REPETITIONS) {
-          repetitions.removeFirst();
+        addIfNonPossessive(tree);
+      }
+    }
+
+    private void addIfNonPossessive(RepetitionTree tree) {
+      if (!tree.isPossessive()) {
+        nonPossessiveRepetitions.add(tree);
+        if (nonPossessiveRepetitions.size() > MAX_TRACKED_REPETITIONS) {
+          nonPossessiveRepetitions.removeFirst();
         }
       }
     }
