@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -146,23 +145,19 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
         return false;
       }
       // Test if the first null check and the first usage are part of the same higher if structure
-      Optional<IfStatementTree> test = getParentConditionalBranch(firstNullCheck.get());
-      Optional<IfStatementTree> parentConditionalBranch = getParentConditionalBranch((ExpressionTree) firstUsage);
-      return test.equals(parentConditionalBranch);
+      Optional<IfStatementTree> ifStatementWithNullCheck = getParentConditionalBranch(firstNullCheck.get());
+      Optional<IfStatementTree> ifStatementWithFirstUsage = getParentConditionalBranch((ExpressionTree) firstUsage);
+      return ifStatementWithNullCheck.equals(ifStatementWithFirstUsage);
     }
     return false;
   }
 
   private static Optional<ExpressionTree> getFirstNullCheck(List<IdentifierTree> usages) {
-    List<ExpressionTree> nullChecks = usages.stream()
+    return usages.stream()
       .map(IdentifierTree::parent)
       .filter(tree -> tree.is(Kind.EQUAL_TO, Kind.NOT_EQUAL_TO) && isNullCheck((ExpressionTree) tree))
       .map(ExpressionTree.class::cast)
-      .collect(Collectors.toList());
-    if (nullChecks.isEmpty()) {
-      return Optional.empty();
-    }
-    return Optional.of(nullChecks.get(0));
+      .findFirst();
   }
 
   private static Optional<IfStatementTree> getParentConditionalBranch(ExpressionTree tree) {
@@ -170,10 +165,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
     while (parent != null && !parent.is(Kind.IF_STATEMENT)) {
       parent = parent.parent();
     }
-    if (parent == null) {
-      return Optional.empty();
-    }
-    return Optional.of((IfStatementTree) parent);
+    return Optional.ofNullable((IfStatementTree) parent);
   }
 
   @CheckForNull
