@@ -44,6 +44,12 @@
       <scope>provided</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.sonarsource.analyzer-commons</groupId>
+      <artifactId>sonar-analyzer-commons</artifactId>
+      <version>1.13.0.662</version>
+    </dependency>
+
     <!-- TEST sources dependencies -->
     <dependency>
       <groupId>org.sonarsource.java</groupId>
@@ -54,15 +60,16 @@
 
     <!-- version to be specified manually -->
     <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>2.8.6</version>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>5.7.0</version>
+      <scope>test</scope>
     </dependency>
 
     <!-- version to be specified manually -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
+      <artifactId>junit-jupiter-migrationsupport</artifactId>
       <version>5.7.0</version>
       <scope>test</scope>
     </dependency>

@@ -19,22 +19,22 @@
  */
 package org.sonar.samples.java.checks;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
-import org.sonar.api.utils.log.LogTesterJUnit5;
+import org.junit.Rule;
+import org.junit.Test;
+import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class AvoidBrandInMethodNamesRuleTest {
+public class AvoidBrandInMethodNamesRuleTest {
 
-  // Register the logTester, to see the Syntax Tree when running tests and executing the rule
-  @RegisterExtension
-  LogTesterJUnit5 logTester = new LogTesterJUnit5();
+  // Enable a LogTester to see the Syntax Tree when running tests and executing the rule
+  @Rule
+  public LogTester logTester = new LogTester().setLevel(LoggerLevel.DEBUG);
 
   @Test
-  void detected() {
+  public void detected() {
     // Verifies that the check will raise the adequate issues with the expected message.
     // In the test file, lines which should raise an issue have been commented out
     // by using the following syntax: "// Noncompliant {{EXPECTED_MESSAGE}}"
@@ -45,10 +45,7 @@ class AvoidBrandInMethodNamesRuleTest {
   }
 
   @Test
-  void printingTreeInDebug() {
-    // Make sure logs are visible during the tests, and at DEBUG level in production
-    logTester.setLevel(LoggerLevel.DEBUG);
-
+  public void printingTreeInDebug() {
     // re-execute the test
     JavaCheckVerifier.newVerifier()
     .onFile("src/test/files/AvoidBrandInMethodNamesRule.java")
