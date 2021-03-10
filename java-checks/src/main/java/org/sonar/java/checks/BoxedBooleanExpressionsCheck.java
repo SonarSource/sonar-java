@@ -19,7 +19,9 @@
  */
 package org.sonar.java.checks;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
@@ -54,8 +56,13 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
   private static final String BOOLEAN = "java.lang.Boolean";
   private JavaFileScannerContext context;
 
+  private static final Map<Tree, Optional<IfStatementTree>> ifStatementCache = new HashMap<>();
+  private static final Map<IdentifierTree, Optional<ExpressionTree>> firstNullCheckCache = new HashMap<>();
+
   @Override
   public void scanFile(JavaFileScannerContext context) {
+    ifStatementCache.clear();
+    firstNullCheckCache.clear();
     this.context = context;
     if (context.getSemanticModel() != null) {
       scan(context.getTree());
@@ -140,7 +147,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
         return false;
       }
       // Fetch the first null check in the usages list
-      Optional<ExpressionTree> firstNullCheck = getFirstNullCheck(usages);
+      Optional<ExpressionTree> firstNullCheck = getFirstNullCheck(identifier);
       if (!firstNullCheck.isPresent()) {
         return false;
       }
@@ -152,6 +159,16 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
     return false;
   }
 
+  private static Optional<ExpressionTree> getFirstNullCheck(IdentifierTree identifier) {
+    if (firstNullCheckCache.containsKey(identifier)) {
+      return firstNullCheckCache.get(identifier);
+    }
+    List<IdentifierTree> usages = identifier.symbol().usages();
+    Optional<ExpressionTree> firstNullCheck = getFirstNullCheck(usages);
+    firstNullCheckCache.put(identifier, firstNullCheck);
+    return firstNullCheck;
+  }
+
   private static Optional<ExpressionTree> getFirstNullCheck(List<IdentifierTree> usages) {
     return usages.stream()
       .map(IdentifierTree::parent)
@@ -161,11 +178,16 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
   }
 
   private static Optional<IfStatementTree> getParentConditionalBranch(ExpressionTree tree) {
+    if (ifStatementCache.containsKey(tree)) {
+      return ifStatementCache.get(tree);
+    }
     Tree parent = tree;
     while (parent != null && !parent.is(Kind.IF_STATEMENT)) {
       parent = parent.parent();
     }
-    return Optional.ofNullable((IfStatementTree) parent);
+    Optional<IfStatementTree> result = Optional.ofNullable((IfStatementTree) parent);
+    ifStatementCache.put(tree, result);
+    return result;
   }
 
   @CheckForNull
