@@ -44,6 +44,14 @@ public class RepetitionTree extends RegexTree {
     return quantifier;
   }
 
+  public boolean isPossessive() {
+    return quantifier.getModifier() == Quantifier.Modifier.POSSESSIVE;
+  }
+
+  public boolean isReluctant() {
+    return quantifier.getModifier() == Quantifier.Modifier.RELUCTANT;
+  }
+
   @Override
   public void accept(RegexVisitor visitor) {
     visitor.visitRepetition(this);

@@ -29,6 +29,7 @@ import org.sonar.java.regex.ast.LookAroundTree;
 import org.sonar.java.regex.ast.LookAroundTree.Direction;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
 import org.sonar.java.regex.ast.RegexTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 
 @Rule(key = "S6002")
 public class RegexLookaheadCheck extends AbstractRegexCheckTrackingMatchType {
@@ -36,7 +37,7 @@ public class RegexLookaheadCheck extends AbstractRegexCheckTrackingMatchType {
   private static final String MESSAGE = "Remove or fix this lookahead assertion that can never be true.";
 
   @Override
-  protected void checkRegex(RegexParseResult regex, MatchType matchType) {
+  protected void checkRegex(RegexParseResult regex, ExpressionTree methodInvocationOrAnnotation, MatchType matchType) {
     new LookaheadFinder(matchType, regex.getFinalState()).visit(regex);
   }
 

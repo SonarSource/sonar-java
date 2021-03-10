@@ -27,9 +27,27 @@ import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 class RedosCheckTest {
 
   @Test
-  void test() {
+  void test_java_version_unset() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/regex/RedosCheck.java"))
+      .withCheck(new RedosCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_java_version_9() {
+    JavaCheckVerifier.newVerifier()
+      .withJavaVersion(9)
+      .onFile(testSourcesPath("checks/regex/RedosCheck.java"))
+      .withCheck(new RedosCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_java_version_8() {
+    JavaCheckVerifier.newVerifier()
+      .withJavaVersion(8)
+      .onFile(testSourcesPath("checks/regex/RedosCheckJava8.java"))
       .withCheck(new RedosCheck())
       .verifyIssues();
   }

@@ -86,14 +86,18 @@ public class RegexTreeHelper {
   }
 
   public static boolean canReachWithoutConsumingInput(AutomatonState start, AutomatonState goal) {
-    return canReachWithoutConsumingInput(start, goal, new HashSet<>());
+    return canReachWithoutConsumingInput(start, goal, false, new HashSet<>());
   }
 
-  private static boolean canReachWithoutConsumingInput(AutomatonState start, AutomatonState goal, Set<AutomatonState> visited) {
+  public static boolean canReachWithoutConsumingInputOrGoingThroughBoundaries(AutomatonState start, AutomatonState goal) {
+    return canReachWithoutConsumingInput(start, goal, true, new HashSet<>());
+  }
+
+  private static boolean canReachWithoutConsumingInput(AutomatonState start, AutomatonState goal, boolean stopAtBoundaries, Set<AutomatonState> visited) {
     if (start == goal) {
       return true;
     }
-    if (visited.contains(start)) {
+    if (visited.contains(start) || (stopAtBoundaries && start instanceof BoundaryTree)) {
       return false;
     }
     visited.add(start);
@@ -103,8 +107,8 @@ public class RegexTreeHelper {
       // after the edge won't directly follow what's before the edge. However, we do consider the end-of-lookahead
       // state itself reachable (but not any state behind it), so that we can check whether the end of the lookahead
       // can be reached without input from a given place within the lookahead.
-      if (((transition == EPSILON || transition == NEGATION) && canReachWithoutConsumingInput(successor, goal, visited))
-        || (successor instanceof EndOfLookaroundState && successor == goal)) {
+      if ((successor instanceof EndOfLookaroundState && successor == goal)
+        || ((transition == EPSILON || transition == NEGATION) && canReachWithoutConsumingInput(successor, goal, stopAtBoundaries, visited))) {
         return true;
       }
     }
@@ -120,7 +124,7 @@ public class RegexTreeHelper {
    * It should be whichever answer does not lead to an issue being reported to avoid false positives.
    */
   public static boolean intersects(SubAutomaton auto1, SubAutomaton auto2, boolean defaultAnswer) {
-    return new IntersectAutomataChecker(defaultAnswer).check(auto1, auto2, false);
+    return new IntersectAutomataChecker(defaultAnswer).check(auto1, auto2);
   }
 
   /**
@@ -129,7 +133,7 @@ public class RegexTreeHelper {
    * If both are set, it means either one can be the case.
    */
   public static boolean supersetOf(SubAutomaton auto1, SubAutomaton auto2, boolean defaultAnswer) {
-    return new SupersetAutomataChecker(defaultAnswer).check(auto1, auto2, false);
+    return new SupersetAutomataChecker(defaultAnswer).check(auto1, auto2);
   }
 
   public static boolean isAnchoredAtEnd(AutomatonState start) {

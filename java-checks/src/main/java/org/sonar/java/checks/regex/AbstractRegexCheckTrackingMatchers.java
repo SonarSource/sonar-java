@@ -55,13 +55,15 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
 
   /**
    * @param regexForLiterals The regex to be checked
+   * @param methodInvocationOrAnnotation The method invocation or annotation that the regex string is passed to
    * @param trackedMethodsCalled The list of method invocations performed on the Pattern or Matcher object associated
    *                             with the regex (only taking into account methods returned by trackedMethodMatchers)
    * @param didEscape Whether or not the regex escaped the method in which it was created (via return, being assigned to
    *                  a non-local variable or being passed to a different method). If true, trackedMethodsCalled may not
    *                  be exhaustive.
    */
-  protected abstract void checkRegex(RegexParseResult regexForLiterals, List<MethodInvocationTree> trackedMethodsCalled, boolean didEscape);
+  protected abstract void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation,
+    List<MethodInvocationTree> trackedMethodsCalled, boolean didEscape);
 
   private static final String JAVA_UTIL_REGEX_PATTERN = "java.util.regex.Pattern";
   private static final String JAVA_UTIL_REGEX_MATCHER = "java.util.regex.Matcher";
@@ -101,6 +103,8 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
 
   private final Map<RegexParseResult, List<MethodInvocationTree>> methodsCalledOnRegex = new LinkedHashMap<>();
 
+  private final Map<RegexParseResult, ExpressionTree> regexCreations = new HashMap<>();
+
   /**
    * This sets contains all regexes whose Pattern and/or Matcher object escapes, meaning it is used in such a way that
    * we no longer know which methods are called on it.
@@ -123,7 +127,7 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
       collectReturnedVariables(((ReturnStatementTree) tree).expression());
     } else if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
       methodsCalledOnRegex.forEach((regex, invocation) ->
-        checkRegex(regex, invocation, escapingRegexes.contains(regex))
+        checkRegex(regex, regexCreations.get(regex), invocation, escapingRegexes.contains(regex))
       );
       // clear all the structures used during analysis to start fresh in next file
       variableToRegex.clear();
@@ -205,6 +209,7 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
 
   @Override
   public void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation) {
+    regexCreations.put(regexForLiterals, methodInvocationOrAnnotation);
     if (methodInvocationOrAnnotation.is(Tree.Kind.ANNOTATION)) {
       methodsCalledOnRegex.put(regexForLiterals, new ArrayList<>());
       return;
