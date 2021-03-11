@@ -20,6 +20,7 @@
 package org.sonar.java.regex.ast;
 
 import javax.annotation.CheckForNull;
+import org.sonar.java.regex.RegexSource;
 
 public abstract class Quantifier extends AbstractRegexSyntaxElement {
 

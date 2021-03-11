@@ -17,16 +17,20 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.regex.ast;
+package org.sonar.java.regex;
 
-public interface RegexSource {
-  String getSourceText();
+import org.sonar.java.regex.ast.SourceCharacter;
 
-  default String substringAt(IndexRange range) {
-    return getSourceText().substring(range.getBeginningOffset(), Math.min(range.getEndingOffset(), length()));
+public interface CharacterParser {
+  void moveNext();
+
+  SourceCharacter getCurrent();
+
+  boolean isAtEnd();
+
+  default boolean isNotAtEnd() {
+    return !isAtEnd();
   }
 
-  default int length() {
-    return getSourceText().length();
-  }
+  void resetTo(int index);
 }

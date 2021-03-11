@@ -19,6 +19,8 @@
  */
 package org.sonar.java.regex.ast;
 
+import org.sonar.java.regex.RegexSource;
+
 public abstract class AbstractRegexSyntaxElement implements RegexSyntaxElement {
 
   private final RegexSource source;

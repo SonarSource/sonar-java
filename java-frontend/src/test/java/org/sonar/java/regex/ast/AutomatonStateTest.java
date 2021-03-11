@@ -146,7 +146,7 @@ class AutomatonStateTest {
     if (!flags.isEmpty()) {
       out.append("<flags:");
       for (int i = 1; i <= flags.getMask(); i <<= 1) {
-        JavaCharacter characterForFlag = flags.getJavaCharacterForFlag(i);
+        SourceCharacter characterForFlag = flags.getJavaCharacterForFlag(i);
         if (characterForFlag != null) {
           out
             .append(" ")

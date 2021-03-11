@@ -32,10 +32,8 @@ import org.sonar.java.regex.ast.CharacterClassTree;
 import org.sonar.java.regex.ast.CharacterRangeTree;
 import org.sonar.java.regex.ast.EndOfRepetitionState;
 import org.sonar.java.regex.ast.FlagSet;
-import org.sonar.java.regex.ast.JavaCharacter;
+import org.sonar.java.regex.ast.SourceCharacter;
 import org.sonar.java.regex.ast.CharacterTree;
-import org.sonar.java.regex.ast.JavaRegexSource;
-import org.sonar.java.regex.ast.RegexSource;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.java.regex.ast.RegexToken;
 import org.sonar.java.regex.ast.RegexTree;
@@ -157,10 +155,10 @@ public class RegexParserTestUtils {
     assertCharacter(expected, null, regex);
   }
 
-  public static void assertJavaCharacter(int index, char ch, JavaCharacter javaCharacter) {
-    assertEquals(ch, javaCharacter.getCharacter());
-    assertEquals("" + ch, javaCharacter.getText());
-    assertLocation(index, index + 1, javaCharacter);
+  public static void assertJavaCharacter(int index, char ch, SourceCharacter sourceCharacter) {
+    assertEquals(ch, sourceCharacter.getCharacter());
+    assertEquals("" + ch, sourceCharacter.getText());
+    assertLocation(index, index + 1, sourceCharacter);
   }
 
   public static void assertToken(int index, String str, RegexToken token) {

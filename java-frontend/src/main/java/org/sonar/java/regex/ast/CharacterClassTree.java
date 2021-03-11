@@ -20,16 +20,17 @@
 package org.sonar.java.regex.ast;
 
 import javax.annotation.Nonnull;
+import org.sonar.java.regex.RegexSource;
 
 public class CharacterClassTree extends RegexTree implements CharacterClassElementTree {
 
-  private final JavaCharacter openingBracket;
+  private final SourceCharacter openingBracket;
 
   private final CharacterClassElementTree contents;
 
   private final boolean negated;
 
-  public CharacterClassTree(RegexSource source, IndexRange range, JavaCharacter openingBracket, boolean negated,
+  public CharacterClassTree(RegexSource source, IndexRange range, SourceCharacter openingBracket, boolean negated,
     CharacterClassElementTree contents, FlagSet activeFlags) {
     super(source, range, activeFlags);
     this.negated = negated;
@@ -45,7 +46,7 @@ public class CharacterClassTree extends RegexTree implements CharacterClassEleme
     return negated;
   }
 
-  public JavaCharacter getOpeningBracket() {
+  public SourceCharacter getOpeningBracket() {
     return openingBracket;
   }
 

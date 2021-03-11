@@ -19,16 +19,18 @@
  */
 package org.sonar.java.regex.ast;
 
-public class JavaCharacter extends AbstractRegexSyntaxElement {
+import org.sonar.java.regex.RegexSource;
+
+public class SourceCharacter extends AbstractRegexSyntaxElement {
 
   private final char character;
   private final boolean isEscapeSequence;
 
-  public JavaCharacter(RegexSource source, IndexRange range, char character) {
+  public SourceCharacter(RegexSource source, IndexRange range, char character) {
     this(source, range, character, false);
   }
 
-  public JavaCharacter(RegexSource source, IndexRange range, char character, boolean isEscapeSequence) {
+  public SourceCharacter(RegexSource source, IndexRange range, char character, boolean isEscapeSequence) {
     super(source, range);
     this.character = character;
     this.isEscapeSequence = isEscapeSequence;

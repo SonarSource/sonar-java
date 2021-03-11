@@ -22,14 +22,13 @@ package org.sonar.java.regex;
 import java.util.NoSuchElementException;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import org.sonar.java.regex.ast.JavaCharacter;
-import org.sonar.java.regex.ast.RegexSource;
+import org.sonar.java.regex.ast.SourceCharacter;
 
 /**
  * Parse the contents of string literals and provide the individual characters of the string after processing escape
  * sequences
  */
-public class JavaCharacterParser {
+public class JavaCharacterParser implements CharacterParser {
 
   private final RegexSource source;
 
@@ -39,7 +38,7 @@ public class JavaCharacterParser {
    * Will be null if and only if the end of input has been reached
    */
   @CheckForNull
-  private JavaCharacter current;
+  private SourceCharacter current;
 
   public JavaCharacterParser(RegexSource source) {
     this.source = source;
@@ -57,7 +56,7 @@ public class JavaCharacterParser {
   }
 
   @Nonnull
-  public JavaCharacter getCurrent() {
+  public SourceCharacter getCurrent() {
     if (current == null) {
       throw new NoSuchElementException();
     }
@@ -68,31 +67,27 @@ public class JavaCharacterParser {
     return current == null;
   }
 
-  public boolean isNotAtEnd() {
-    return current != null;
-  }
-
   @CheckForNull
-  private JavaCharacter parseJavaCharacter() {
-    JavaCharacter javaCharacter = unicodeProcessedCharacters.getCurrent();
-    if (javaCharacter == null) {
+  private SourceCharacter parseJavaCharacter() {
+    SourceCharacter sourceCharacter = unicodeProcessedCharacters.getCurrent();
+    if (sourceCharacter == null) {
       return null;
     }
-    if (javaCharacter.getCharacter() == '\\') {
-      return parseJavaEscapeSequence(javaCharacter);
+    if (sourceCharacter.getCharacter() == '\\') {
+      return parseJavaEscapeSequence(sourceCharacter);
     }
     unicodeProcessedCharacters.moveNext();
-    return javaCharacter;
+    return sourceCharacter;
   }
 
-  private JavaCharacter parseJavaEscapeSequence(JavaCharacter backslash) {
+  private SourceCharacter parseJavaEscapeSequence(SourceCharacter backslash) {
     unicodeProcessedCharacters.moveNext();
-    JavaCharacter javaCharacter = unicodeProcessedCharacters.getCurrent();
-    if (javaCharacter == null) {
+    SourceCharacter sourceCharacter = unicodeProcessedCharacters.getCurrent();
+    if (sourceCharacter == null) {
       // Should only happen in case of syntactically invalid string literals
       return backslash;
     }
-    char ch = javaCharacter.getCharacter();
+    char ch = sourceCharacter.getCharacter();
     switch (ch) {
       case 'n':
         ch = '\n';
@@ -112,22 +107,22 @@ public class JavaCharacterParser {
       default:
         if (isOctalDigit(ch)) {
           ch = 0;
-          for (int i = 0; i < 3 && javaCharacter != null && isOctalDigit(javaCharacter.getCharacter()); i++) {
-            int newValue = ch * 8 + javaCharacter.getCharacter() - '0';
+          for (int i = 0; i < 3 && sourceCharacter != null && isOctalDigit(sourceCharacter.getCharacter()); i++) {
+            int newValue = ch * 8 + sourceCharacter.getCharacter() - '0';
             if (newValue > 0xFF) {
               break;
             }
             ch = (char) newValue;
             unicodeProcessedCharacters.moveNext();
-            javaCharacter = unicodeProcessedCharacters.getCurrent();
+            sourceCharacter = unicodeProcessedCharacters.getCurrent();
           }
-          int endIndex = javaCharacter == null ? source.length() : javaCharacter.getRange().getBeginningOffset();
-          return new JavaCharacter(source, backslash.getRange().extendTo(endIndex), ch, true);
+          int endIndex = sourceCharacter == null ? source.length() : sourceCharacter.getRange().getBeginningOffset();
+          return new SourceCharacter(source, backslash.getRange().extendTo(endIndex), ch, true);
         }
         break;
     }
     unicodeProcessedCharacters.moveNext();
-    return new JavaCharacter(source, backslash.getRange().merge(javaCharacter.getRange()), ch, true);
+    return new SourceCharacter(source, backslash.getRange().merge(sourceCharacter.getRange()), ch, true);
   }
 
   private static boolean isOctalDigit(int c) {

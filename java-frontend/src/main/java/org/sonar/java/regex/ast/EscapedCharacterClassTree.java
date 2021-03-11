@@ -21,6 +21,7 @@ package org.sonar.java.regex.ast;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.sonar.java.regex.RegexSource;
 
 public class EscapedCharacterClassTree extends RegexTree implements CharacterClassElementTree {
 
@@ -29,14 +30,14 @@ public class EscapedCharacterClassTree extends RegexTree implements CharacterCla
   @Nullable
   private final String property;
 
-  private EscapedCharacterClassTree(RegexSource source, IndexRange range, JavaCharacter marker, @Nullable String property, FlagSet activeFlags) {
+  private EscapedCharacterClassTree(RegexSource source, IndexRange range, SourceCharacter marker, @Nullable String property, FlagSet activeFlags) {
     super(source, range, activeFlags);
     this.type = marker.getCharacter();
     this.property = property;
   }
 
-  public EscapedCharacterClassTree(RegexSource source, JavaCharacter backslash, JavaCharacter marker, JavaCharacter openingCurlyBrace,
-    JavaCharacter closingCurlyBrace, FlagSet activeFlags) {
+  public EscapedCharacterClassTree(RegexSource source, SourceCharacter backslash, SourceCharacter marker, SourceCharacter openingCurlyBrace,
+    SourceCharacter closingCurlyBrace, FlagSet activeFlags) {
     this(
       source,
       backslash.getRange().merge(closingCurlyBrace.getRange()),
@@ -52,7 +53,7 @@ public class EscapedCharacterClassTree extends RegexTree implements CharacterCla
     }
   }
 
-  public EscapedCharacterClassTree(RegexSource source, JavaCharacter backslash, JavaCharacter marker, FlagSet activeFlags) {
+  public EscapedCharacterClassTree(RegexSource source, SourceCharacter backslash, SourceCharacter marker, FlagSet activeFlags) {
     this(source, backslash.getRange().merge(marker.getRange()), marker, null, activeFlags);
     if (isProperty()) {
       throw new IllegalArgumentException("\\p needs a property string");

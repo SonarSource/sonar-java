@@ -21,16 +21,17 @@ package org.sonar.java.regex.ast;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.sonar.java.regex.RegexSource;
 
 public class BackReferenceTree extends RegexTree {
 
   private final String groupName;
   @Nullable
-  private final JavaCharacter key;
+  private final SourceCharacter key;
   @Nullable
   private CapturingGroupTree group;
 
-  public BackReferenceTree(RegexSource source, JavaCharacter backslash, @Nullable JavaCharacter key, JavaCharacter start, JavaCharacter end, FlagSet activeFlags) {
+  public BackReferenceTree(RegexSource source, SourceCharacter backslash, @Nullable SourceCharacter key, SourceCharacter start, SourceCharacter end, FlagSet activeFlags) {
     super(source, backslash.getRange().merge(end.getRange()), activeFlags);
     this.key = key;
     if (start.getCharacter() != '<') {

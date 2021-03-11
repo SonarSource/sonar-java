@@ -21,6 +21,7 @@ package org.sonar.java.regex.ast;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import org.sonar.java.regex.RegexSource;
 
 public class NonCapturingGroupTree extends GroupTree {
 

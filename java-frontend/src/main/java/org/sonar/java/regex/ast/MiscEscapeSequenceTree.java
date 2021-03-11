@@ -20,6 +20,7 @@
 package org.sonar.java.regex.ast;
 
 import javax.annotation.Nonnull;
+import org.sonar.java.regex.RegexSource;
 
 /**
  * This class represents escape sequences inside regular expression that we don't particularly care about.

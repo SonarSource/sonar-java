@@ -22,6 +22,7 @@ package org.sonar.java.regex.ast;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.sonar.java.regex.RegexSource;
 
 public class CapturingGroupTree extends GroupTree {
 

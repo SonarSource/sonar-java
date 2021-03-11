@@ -22,8 +22,7 @@ package org.sonar.java.regex;
 import java.util.NoSuchElementException;
 import javax.annotation.Nonnull;
 import org.sonar.java.regex.ast.IndexRange;
-import org.sonar.java.regex.ast.JavaCharacter;
-import org.sonar.java.regex.ast.RegexSource;
+import org.sonar.java.regex.ast.SourceCharacter;
 
 public class RegexLexer {
 
@@ -31,7 +30,7 @@ public class RegexLexer {
 
   private final RegexSource source;
 
-  private final JavaCharacterParser characters;
+  private final CharacterParser characters;
 
   private CharacterBuffer buffer = new CharacterBuffer(2);
 
@@ -43,9 +42,9 @@ public class RegexLexer {
 
   private boolean quotingMode = false;
 
-  public RegexLexer(RegexSource source) {
+  public RegexLexer(RegexSource source, CharacterParser characters) {
     this.source = source;
-    this.characters = new JavaCharacterParser(source);
+    this.characters = characters;
     moveNext();
   }
 
@@ -78,7 +77,7 @@ public class RegexLexer {
   }
 
   @Nonnull
-  public JavaCharacter getCurrent() {
+  public SourceCharacter getCurrent() {
     fillBuffer(1);
     if (buffer.isEmpty()) {
       throw new NoSuchElementException();
@@ -164,9 +163,9 @@ public class RegexLexer {
   private void fillBuffer(int size) {
     skipCommentsAndWhiteSpace();
     while (buffer.size() < size && characters.isNotAtEnd()) {
-      JavaCharacter javaCharacter = characters.getCurrent();
+      SourceCharacter sourceCharacter = characters.getCurrent();
       characters.moveNext();
-      if (!escaped && javaCharacter.getCharacter() == '\\') {
+      if (!escaped && sourceCharacter.getCharacter() == '\\') {
         if (readQuotingDelimiter()) {
           skipCommentsAndWhiteSpace();
           continue;
@@ -176,7 +175,7 @@ public class RegexLexer {
       } else {
         escaped = false;
       }
-      buffer.add(javaCharacter);
+      buffer.add(sourceCharacter);
       skipCommentsAndWhiteSpace();
     }
   }

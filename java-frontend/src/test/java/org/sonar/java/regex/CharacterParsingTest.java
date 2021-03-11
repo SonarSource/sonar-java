@@ -25,9 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.regex.ast.JavaCharacter;
-import org.sonar.java.regex.ast.JavaRegexSource;
-import org.sonar.java.regex.ast.RegexSource;
+import org.sonar.java.regex.ast.SourceCharacter;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,13 +48,13 @@ class CharacterParsingTest {
 
     RegexSource regexSource = new JavaRegexSource(Collections.singletonList(source));
 
-    List<JavaCharacter> unicodeCharacters = parseUnicode(regexSource);
-    assertThat(unicodeCharacters.stream().map(JavaCharacter::getCharacter))
+    List<SourceCharacter> unicodeCharacters = parseUnicode(regexSource);
+    assertThat(unicodeCharacters.stream().map(SourceCharacter::getCharacter))
       .hasSize(3)
       .containsExactly('\\', 't', '\u1234');
 
-    List<JavaCharacter> javaCharacters = parseJavaCharacters(regexSource);
-    assertThat(javaCharacters.stream().map(JavaCharacter::getCharacter))
+    List<SourceCharacter> sourceCharacters = parseJavaCharacters(regexSource);
+    assertThat(sourceCharacters.stream().map(SourceCharacter::getCharacter))
       .hasSize(2)
       .containsExactly('\t', '\u1234');
   }
@@ -69,30 +67,30 @@ class CharacterParsingTest {
 
     RegexSource regexSource = new JavaRegexSource(Collections.singletonList(source));
 
-    List<JavaCharacter> unicodeCharacters = parseUnicode(regexSource);
-    assertThat(unicodeCharacters.stream().map(JavaCharacter::getCharacter))
+    List<SourceCharacter> unicodeCharacters = parseUnicode(regexSource);
+    assertThat(unicodeCharacters.stream().map(SourceCharacter::getCharacter))
       .hasSize(20)
       .startsWith('\\', '\\', '\\', '\\', 'u', '+', '[');
 
-    List<JavaCharacter> javaCharacters = parseJavaCharacters(regexSource);
-    assertThat(javaCharacters.stream().map(JavaCharacter::getCharacter))
+    List<SourceCharacter> sourceCharacters = parseJavaCharacters(regexSource);
+    assertThat(sourceCharacters.stream().map(SourceCharacter::getCharacter))
       .hasSize(18)
       .startsWith('\\', '\\', 'u', '+', '[');
   }
 
-  private static List<JavaCharacter> parseJavaCharacters(RegexSource regexSource) {
+  private static List<SourceCharacter> parseJavaCharacters(RegexSource regexSource) {
     JavaCharacterParser characterParser = new JavaCharacterParser(regexSource);
-    List<JavaCharacter> javaCharacters = new ArrayList<>();
+    List<SourceCharacter> sourceCharacters = new ArrayList<>();
     while (!characterParser.isAtEnd()) {
-      javaCharacters.add(characterParser.getCurrent());
+      sourceCharacters.add(characterParser.getCurrent());
       characterParser.moveNext();
     }
-    return javaCharacters;
+    return sourceCharacters;
   }
 
-  private static List<JavaCharacter> parseUnicode(RegexSource regexSource) {
+  private static List<SourceCharacter> parseUnicode(RegexSource regexSource) {
     JavaUnicodeEscapeParser unicodeParser = new JavaUnicodeEscapeParser(regexSource);
-    List<JavaCharacter> unicodeCharacters = new ArrayList<>();
+    List<SourceCharacter> unicodeCharacters = new ArrayList<>();
     while (unicodeParser.getCurrent() != null) {
       unicodeCharacters.add(unicodeParser.getCurrent());
       unicodeParser.moveNext();

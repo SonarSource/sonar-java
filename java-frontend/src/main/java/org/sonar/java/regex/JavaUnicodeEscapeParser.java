@@ -21,8 +21,7 @@ package org.sonar.java.regex;
 
 import javax.annotation.CheckForNull;
 import org.sonar.java.regex.ast.IndexRange;
-import org.sonar.java.regex.ast.JavaCharacter;
-import org.sonar.java.regex.ast.RegexSource;
+import org.sonar.java.regex.ast.SourceCharacter;
 
 /**
  * Parses unicode escape sequences in Java code. Given an Unicode escape sequence, it will give you the character
@@ -37,7 +36,7 @@ public class JavaUnicodeEscapeParser {
 
   private int index;
 
-  private JavaCharacter current;
+  private SourceCharacter current;
   private boolean isEscaping = false;
 
   public JavaUnicodeEscapeParser(RegexSource source) {
@@ -54,7 +53,7 @@ public class JavaUnicodeEscapeParser {
   }
 
   @CheckForNull
-  public JavaCharacter getCurrent() {
+  public SourceCharacter getCurrent() {
     return current;
   }
 
@@ -84,7 +83,7 @@ public class JavaUnicodeEscapeParser {
       index++;
       isEscaping = isBackslash && !isEscaping;
     }
-    current = new JavaCharacter(source, new IndexRange(startIndex, index), ch, isEscapedUnicode);
+    current = new SourceCharacter(source, new IndexRange(startIndex, index), ch, isEscapedUnicode);
   }
 
 }

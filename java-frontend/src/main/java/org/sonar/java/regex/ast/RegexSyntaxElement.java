@@ -19,7 +19,7 @@
  */
 package org.sonar.java.regex.ast;
 
-import java.util.List;
+import org.sonar.java.regex.RegexSource;
 
 public interface RegexSyntaxElement {
 

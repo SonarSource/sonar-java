@@ -22,14 +22,15 @@ package org.sonar.java.regex.ast;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
+import org.sonar.java.regex.RegexSource;
 
 public class DisjunctionTree extends RegexTree {
 
   private final List<RegexTree> alternatives;
 
-  private final List<JavaCharacter> orOperators;
+  private final List<SourceCharacter> orOperators;
 
-  public DisjunctionTree(RegexSource source, IndexRange range, List<RegexTree> alternatives, List<JavaCharacter> orOperators, FlagSet activeFlags) {
+  public DisjunctionTree(RegexSource source, IndexRange range, List<RegexTree> alternatives, List<SourceCharacter> orOperators, FlagSet activeFlags) {
     super(source, range, activeFlags);
     this.alternatives = Collections.unmodifiableList(alternatives);
     this.orOperators = Collections.unmodifiableList(orOperators);
@@ -39,7 +40,7 @@ public class DisjunctionTree extends RegexTree {
     return alternatives;
   }
 
-  public List<JavaCharacter> getOrOperators() {
+  public List<SourceCharacter> getOrOperators() {
     return orOperators;
   }
 

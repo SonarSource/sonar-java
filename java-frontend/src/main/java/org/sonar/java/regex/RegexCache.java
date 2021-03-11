@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.sonar.java.regex.ast.FlagSet;
-import org.sonar.java.regex.ast.JavaRegexSource;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 
 public final class RegexCache {

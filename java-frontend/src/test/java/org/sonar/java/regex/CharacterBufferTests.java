@@ -23,8 +23,7 @@ import java.util.Collections;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.regex.ast.IndexRange;
-import org.sonar.java.regex.ast.JavaCharacter;
-import org.sonar.java.regex.ast.JavaRegexSource;
+import org.sonar.java.regex.ast.SourceCharacter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -81,7 +80,7 @@ class CharacterBufferTests {
     assertNotEquals(0, buffer.size(), "Non-empty buffer should not have size 0");
   }
 
-  private JavaCharacter makeCharacter(char c) {
-    return new JavaCharacter(new JavaRegexSource(Collections.emptyList()), new IndexRange(0, 1), c);
+  private SourceCharacter makeCharacter(char c) {
+    return new SourceCharacter(new JavaRegexSource(Collections.emptyList()), new IndexRange(0, 1), c);
   }
 }

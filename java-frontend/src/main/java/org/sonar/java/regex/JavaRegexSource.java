@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.regex.ast;
+package org.sonar.java.regex;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.AnalyzerMessage.TextSpan;
+import org.sonar.java.regex.ast.IndexRange;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 
 public class JavaRegexSource implements RegexSource {
@@ -86,6 +87,11 @@ public class JavaRegexSource implements RegexSource {
       result.add(new TextSpan(endSpan.startLine, endSpan.startCharacter, endSpan.endLine, endSpan.startCharacter + endOffset));
     }
     return result;
+  }
+
+  @Override
+  public CharacterParser createCharacterParser() {
+    return new JavaCharacterParser(this);
   }
 
   private static String getString(LiteralTree literal) {

@@ -19,6 +19,8 @@
  */
 package org.sonar.java.regex.ast;
 
+import org.sonar.java.regex.RegexSource;
+
 public class RegexToken extends AbstractRegexSyntaxElement {
   public RegexToken(RegexSource source, IndexRange range) {
     super(source, range);

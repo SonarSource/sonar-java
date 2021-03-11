@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.regex.ast.IndexRange;
-import org.sonar.java.regex.ast.JavaRegexSource;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.plugins.java.api.JavaCheck;
 
