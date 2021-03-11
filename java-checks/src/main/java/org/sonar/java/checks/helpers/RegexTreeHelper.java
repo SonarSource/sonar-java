@@ -36,6 +36,7 @@ import org.sonar.java.regex.ast.FinalState;
 import org.sonar.java.regex.ast.LookAroundTree;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
 
+import static org.sonar.java.regex.ast.AutomatonState.TransitionType.CHARACTER;
 import static org.sonar.java.regex.ast.AutomatonState.TransitionType.EPSILON;
 import static org.sonar.java.regex.ast.AutomatonState.TransitionType.NEGATION;
 
@@ -89,6 +90,10 @@ public class RegexTreeHelper {
     return canReachWithoutConsumingInput(start, goal, false, new HashSet<>());
   }
 
+  public static boolean canReachWithConsumingInput(AutomatonState start, AutomatonState goal) {
+    return canReachWithConsumingInput(start, goal, new HashSet<>());
+  }
+
   public static boolean canReachWithoutConsumingInputOrGoingThroughBoundaries(AutomatonState start, AutomatonState goal) {
     return canReachWithoutConsumingInput(start, goal, true, new HashSet<>());
   }
@@ -109,6 +114,25 @@ public class RegexTreeHelper {
       // can be reached without input from a given place within the lookahead.
       if ((successor instanceof EndOfLookaroundState && successor == goal)
         || ((transition == EPSILON || transition == NEGATION) && canReachWithoutConsumingInput(successor, goal, stopAtBoundaries, visited))) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  private static boolean canReachWithConsumingInput(AutomatonState start, AutomatonState goal, Set<AutomatonState> visited) {
+    if (start == goal) {
+      return false;
+    }
+    if (visited.contains(start)) {
+      return true;
+    }
+    visited.add(start);
+    
+    for (AutomatonState successor : start.successors()) {
+      TransitionType transition = successor.incomingTransitionType();
+      if (((transition == CHARACTER) && canReachWithoutConsumingInput(successor, goal, false, new HashSet<>())) 
+        || canReachWithConsumingInput(successor, goal, visited)) {
         return true;
       }
     }

@@ -74,14 +74,16 @@ public class ImpossibleBoundariesCheck extends AbstractRegexCheck {
       switch (boundaryTree.type()) {
         case LINE_START:
         case INPUT_START:
-          if (!RegexTreeHelper.canReachWithoutConsumingInput(start, boundaryTree)) {
+          if (!RegexTreeHelper.canReachWithoutConsumingInput(start, boundaryTree)
+          || RegexTreeHelper.canReachWithConsumingInput(start, boundaryTree)) {
             reportIssue(boundaryTree, String.format(MESSAGE, "after"), null, Collections.emptyList());
           }
           break;
         case LINE_END:
         case INPUT_END:
         case INPUT_END_FINAL_TERMINATOR:
-          if (!RegexTreeHelper.canReachWithoutConsumingInput(boundaryTree, end)) {
+          if (!RegexTreeHelper.canReachWithoutConsumingInput(boundaryTree, end) 
+            || RegexTreeHelper.canReachWithConsumingInput(boundaryTree, end)) {
             reportIssue(boundaryTree, String.format(MESSAGE, "before"), null, Collections.emptyList());
           }
           break;

@@ -30,6 +30,32 @@ public class ImpossibleBoundariesCheck {
     // FP we raise an issue below because the usage of $ in the middle of a regex is suspicious and redundant
     str.matches("(?m)^1$\n2"); // Noncompliant
   }
+  
+  void probablyNonCompliant(String str) {
+    str.matches("$.*");
+    str.matches("$.?");
+    str.matches("$()*");
+    str.matches("$a*");
+    str.matches("$a?");
+    str.matches("$[abc]*");
+    str.matches("$[abc]?");
+
+    str.matches(".*^");
+    str.matches(".?^");
+    str.matches("()*^");
+    str.matches("a*^");
+    str.matches("a?^");
+    str.matches("[abc]*^");
+    str.matches("[abc]?^");
+
+    str.matches("$.*^");
+    str.matches("$.?^");
+    str.matches("$()*^");
+    str.matches("$a*^");
+    str.matches("$a?^");
+    str.matches("$[abc]*^");
+    str.matches("$[abc]?^");
+  }
 
   void compliant(String str) {
     str.matches("^[a-z]$");
