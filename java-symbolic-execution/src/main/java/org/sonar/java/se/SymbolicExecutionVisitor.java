@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonar.java.PerformanceMeasure;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.JUtils;
@@ -53,10 +54,15 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    behaviorCache.cleanup();
-    behaviorCache.setFileContext(this);
-    if (mode.isEnabled()) {
-      super.scanFile(context);
+    PerformanceMeasure.Duration symbolicExecutionVisitorDuration = PerformanceMeasure.start("SymbolicExecutionVisitor");
+    try {
+      behaviorCache.cleanup();
+      behaviorCache.setFileContext(this);
+      if (mode.isEnabled()) {
+        super.scanFile(context);
+      }
+    } finally {
+      symbolicExecutionVisitorDuration.stop();
     }
   }
 

@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.sonar.java.PerformanceMeasure;
 import org.sonar.java.regex.ast.FlagSet;
 import org.sonar.java.regex.ast.RegexSource;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -33,7 +34,12 @@ public final class RegexCache {
   public RegexParseResult getRegexForLiterals(FlagSet initialFlags, LiteralTree... stringLiterals) {
     return cache.computeIfAbsent(
       Arrays.asList(stringLiterals),
-      k -> new RegexParser(new RegexSource(k), initialFlags).parse());
+      k -> {
+        PerformanceMeasure.Duration regexForLiteralsDuration = PerformanceMeasure.start("RegexParser");
+        RegexParseResult result = new RegexParser(new RegexSource(k), initialFlags).parse();
+        regexForLiteralsDuration.stop();
+        return result;
+      });
   }
 
 }

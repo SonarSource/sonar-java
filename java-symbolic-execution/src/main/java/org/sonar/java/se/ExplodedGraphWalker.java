@@ -19,8 +19,6 @@
  */
 package org.sonar.java.se;
 
-import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.Preconditions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,6 +36,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import org.sonar.java.PerformanceMeasure;
+import org.sonar.java.Preconditions;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.collections.ListUtils;
@@ -220,10 +221,17 @@ public class ExplodedGraphWalker {
   }
 
   private void execute(MethodTree tree) {
+    PerformanceMeasure.Duration cfgDuration = PerformanceMeasure.start("cfg");
     CFG cfg = CFG.build(tree);
     exitBlock = cfg.exitBlock();
+    cfgDuration.stop();
+
     checkerDispatcher.init(tree, cfg);
+
+    PerformanceMeasure.Duration liveVariablesDuration = PerformanceMeasure.start("LiveVariables.analyze");
     liveVariables = LiveVariables.analyze(cfg);
+    liveVariablesDuration.stop();
+
     explodedGraph = new ExplodedGraph();
     methodTree = tree;
     constraintManager = new ConstraintManager();
@@ -257,12 +265,18 @@ public class ExplodedGraphWalker {
           handleBlockExit(programPosition);
         } else if (programPosition.i == block.elements().size()) {
           // process block exist, which is conditional jump such as if-statement
+          PerformanceMeasure.Duration postStatementDuration = PerformanceMeasure.start("PostStatement");
           checkerDispatcher.executeCheckPostStatement(terminator);
+          postStatementDuration.stop();
         } else {
           // process branch
           // process block exist, which is conditional jump such as if-statement
+          PerformanceMeasure.Duration preStatementDuration = PerformanceMeasure.start("PreStatement");
           checkerDispatcher.executeCheckPreStatement(terminator);
+          preStatementDuration.stop();
+          PerformanceMeasure.Duration handleBlockExitDuration = PerformanceMeasure.start("handleBlockExit");
           handleBlockExit(programPosition);
+          handleBlockExitDuration.stop();
         }
       } catch (TooManyNestedBooleanStatesException e) {
         throwTooManyBooleanStates(tree, e);
@@ -272,7 +286,9 @@ public class ExplodedGraphWalker {
     }
 
     handleEndOfExecutionPath(false);
+    PerformanceMeasure.Duration endOfExecutionDuration = PerformanceMeasure.start("EndOfExecution");
     checkerDispatcher.executeCheckEndOfExecution();
+    endOfExecutionDuration.stop();
     // Cleanup:
     workList = null;
     node = null;
