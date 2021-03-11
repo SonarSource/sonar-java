@@ -64,6 +64,38 @@ class BackReferenceTreeTest {
   }
 
   @Test
+  void backReferenceNumericGroup() {
+    RegexTree regex = assertSuccessfulParse("(a)(b)\\\\k<foo>\\\\1\\\\2\\\\3");
+    assertThat(regex.is(RegexTree.Kind.SEQUENCE)).isTrue();
+    List<RegexTree> items = ((SequenceTree) regex).getItems();
+    assertThat(items).hasSize(6);
+    assertThat(items.get(0)).isInstanceOf(CapturingGroupTree.class);
+    assertThat(items.get(1)).isInstanceOf(CapturingGroupTree.class);
+    CapturingGroupTree capturingGroup1 = (CapturingGroupTree) items.get(0);
+    CapturingGroupTree capturingGroup2 = (CapturingGroupTree) items.get(1);
+
+    assertThat(((BackReferenceTree)items.get(2)).group()).isNull();
+    assertThat(((BackReferenceTree)items.get(3)).group()).isEqualTo(capturingGroup1);
+    assertThat(((BackReferenceTree)items.get(4)).group()).isEqualTo(capturingGroup2);
+    assertThat(((BackReferenceTree)items.get(5)).group()).isNull();
+  }
+
+  @Test
+  void backReferenceNameGroup() {
+    RegexTree regex = assertSuccessfulParse("(?<foo>a)\\\\k<foo>\\\\k<bar>\\\\1\\\\2");
+    assertThat(regex.is(RegexTree.Kind.SEQUENCE)).isTrue();
+    List<RegexTree> items = ((SequenceTree) regex).getItems();
+    assertThat(items).hasSize(5);
+    assertThat(items.get(0)).isInstanceOf(CapturingGroupTree.class);
+    CapturingGroupTree capturingGroup = (CapturingGroupTree) items.get(0);
+
+    assertThat(((BackReferenceTree)items.get(1)).group()).isEqualTo(capturingGroup);
+    assertThat(((BackReferenceTree)items.get(2)).group()).isNull();
+    assertThat(((BackReferenceTree)items.get(3)).group()).isEqualTo(capturingGroup);
+    assertThat(((BackReferenceTree)items.get(4)).group()).isNull();
+  }
+
+  @Test
   void failingInvalidBackReferences() {
     assertFailParsing(escapeJava("\\ko"), "Expected '<', but found 'o'");
     assertFailParsing(escapeJava("\\k<"), "Expected a group name, but found the end of the regex");

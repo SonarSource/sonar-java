@@ -9,7 +9,8 @@ public class RegexStackOverflowCheckWithLowStackConsumption {
     Pattern.compile("(.................................................................................................." + // Noncompliant
       "..............................................................|.................................................." +
       "..............................................................................................................)*"),
-    Pattern.compile("(hello|world)*"), // Noncompliant
+    Pattern.compile("(hello)(hello|world)*"), // Noncompliant
+    Pattern.compile("(hello)(\\1|world)*"), // Noncompliant
     Pattern.compile("(abc|def)*"), // Noncompliant
     Pattern.compile("(ab|cd)*"), // Noncompliant
     Pattern.compile("(...|...)*"), // Noncompliant
