@@ -19,24 +19,6 @@
  */
 package org.sonar.java.regex;
 
-import org.sonar.java.regex.ast.IndexRange;
-
-public interface RegexSource {
-  String getSourceText();
-
-  default String substringAt(IndexRange range) {
-    return getSourceText().substring(range.getBeginningOffset(), Math.min(range.getEndingOffset(), length()));
-  }
-
-  default int length() {
-    return getSourceText().length();
-  }
-
-  CharacterParser createCharacterParser();
-
-  default RegexLexer createLexer() {
-    return new RegexLexer(this, createCharacterParser());
-  }
-
-  RegexDialect dialect();
+public enum RegexDialect {
+  JAVA
 }

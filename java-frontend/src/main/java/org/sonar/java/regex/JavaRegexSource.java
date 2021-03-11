@@ -94,6 +94,11 @@ public class JavaRegexSource implements RegexSource {
     return new JavaCharacterParser(this);
   }
 
+  @Override
+  public RegexDialect dialect() {
+    return RegexDialect.JAVA;
+  }
+
   private static String getString(LiteralTree literal) {
     return literal.asConstant(String.class)
       .orElseThrow(() -> new IllegalArgumentException("Only string literals allowed"));
