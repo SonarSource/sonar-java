@@ -27,6 +27,8 @@ public class BackReferenceTree extends RegexTree {
   private final String groupName;
   @Nullable
   private final JavaCharacter key;
+  @Nullable
+  private CapturingGroupTree group;
 
   public BackReferenceTree(RegexSource source, JavaCharacter backslash, @Nullable JavaCharacter key, JavaCharacter start, JavaCharacter end, FlagSet activeFlags) {
     super(source, backslash.getRange().merge(end.getRange()), activeFlags);
@@ -41,6 +43,15 @@ public class BackReferenceTree extends RegexTree {
           start.getRange().getBeginningOffset() + 1,
           end.getRange().getBeginningOffset()));
     }
+  }
+
+  public void setGroup(@Nullable CapturingGroupTree group) {
+    this.group = group;
+  }
+
+  @Nullable
+  public CapturingGroupTree group() {
+    return group;
   }
 
   @Override

@@ -9,6 +9,7 @@ public class RegexStackOverflowCheckWithConstantStackConsumption {
     Pattern.compile("(a)*"),
     Pattern.compile("((?i)a)*"),
     Pattern.compile("[ab]*"),
+    Pattern.compile("(ab)\\1*"),
     Pattern.compile("(?s).*"),
     Pattern.compile("(.{42})*"),
     Pattern.compile("[\\s\\S]*"),

@@ -20,7 +20,9 @@
 package org.sonar.java.regex;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import javax.annotation.CheckForNull;
@@ -73,6 +75,10 @@ public class RegexParser {
 
   private FlagSet activeFlags;
 
+  private List<BackReferenceTree> backReferences = new ArrayList<>();
+
+  private Map<String, CapturingGroupTree> capturingGroups = new HashMap<>();
+
   private final List<SyntaxError> errors = new ArrayList<>();
 
   private int groupNumber = 1;
@@ -102,6 +108,7 @@ public class RegexParser {
     StartState startState = new StartState(result, initialFlags);
     FinalState finalState = new FinalState(activeFlags);
     result.setContinuation(finalState);
+    backReferences.forEach(reference -> reference.setGroup(capturingGroups.get(reference.groupName())));
     return new RegexParseResult(result, startState, finalState, errors, characters.hasComments());
   }
 
@@ -316,7 +323,7 @@ public class RegexParser {
   private GroupConstructor newCapturingGroup(@Nullable String name) {
     int index = groupNumber;
     groupNumber++;
-    return (range, inner) -> new CapturingGroupTree(source, range, name, index, inner, activeFlags);
+    return (range, inner) -> index(new CapturingGroupTree(source, range, name, index, inner, activeFlags));
   }
 
   private String parseGroupName() {
@@ -615,7 +622,18 @@ public class RegexParser {
 
   private RegexTree parseNamedBackReference(JavaCharacter backslash) {
     return parseEscapedSequence('<', '>', "a group name",
-      dh -> new BackReferenceTree(source, backslash, dh.marker, dh.opener, dh.closer, activeFlags));
+      dh -> collect(new BackReferenceTree(source, backslash, dh.marker, dh.opener, dh.closer, activeFlags)));
+  }
+
+  private BackReferenceTree collect(BackReferenceTree backReference) {
+    backReferences.add(backReference);
+    return backReference;
+  }
+
+  private CapturingGroupTree index(CapturingGroupTree capturingGroup) {
+    capturingGroups.put(Integer.toString(capturingGroup.getGroupNumber()), capturingGroup);
+    capturingGroup.getName().ifPresent(name -> capturingGroups.put(name, capturingGroup));
+    return capturingGroup;
   }
 
   private RegexTree parseEscapedSequence(char opener, char closer, String expected, Function<EscapedSequenceDataHolder, RegexTree> builder) {
@@ -681,7 +699,7 @@ public class RegexParser {
         }
       }
     } while (!characters.isAtEnd());
-    return new BackReferenceTree(source, backslash, null, firstDigit, lastDigit, activeFlags);
+    return collect(new BackReferenceTree(source, backslash, null, firstDigit, lastDigit, activeFlags));
   }
 
   private RegexTree parseOctalEscape(JavaCharacter backslash) {
