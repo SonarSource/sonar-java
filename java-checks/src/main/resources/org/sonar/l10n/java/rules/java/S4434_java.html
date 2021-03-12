@@ -1,6 +1,14 @@
-<p>JNDI supports the deserialization of objects from LDAP directories, which is fundamentally insecure and can lead to remote code execution.</p>
+<p>JNDI supports the deserialization of objects from LDAP directories, which can lead to remote code execution.</p>
 <p>This rule raises an issue when an LDAP search query is executed with <code>SearchControls</code> configured to allow deserialization.</p>
-<h2>Noncompliant Code Example</h2>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> The application connects to an untrusted LDAP directory. </li>
+  <li> User-controlled objects can be stored in the LDAP directory. </li>
+</ul>
+<p>There is a risk if you answered yes to any of those questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>It is recommended to disable deserialization of LDAP objects.</p>
+<h2>Sensitive Code Example</h2>
 <pre>
 DirContext ctx = new InitialDirContext();
 // ...
@@ -15,7 +23,7 @@ DirContext ctx = new InitialDirContext();
 // ...
 ctx.search(query, filter,
         new SearchControls(scope, countLimit, timeLimit, attributes,
-            false,
+            false, // Compliant
             deref));
 </pre>
 <h2>See</h2>
