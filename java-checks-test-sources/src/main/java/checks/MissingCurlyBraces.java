@@ -1,6 +1,8 @@
+package checks;
+
 class MissingCurlyBraces {
 
-  void method() {
+  void method(boolean condition) {
     if (condition) doSomething(); // Noncompliant [[sc=5;ec=7]] {{Missing curly brace.}}
 
     if (condition) doSomething(); // Noncompliant
@@ -38,6 +40,15 @@ class MissingCurlyBraces {
     if (condition) { doSomething(); }
     else // Noncompliant
       doSomethingElse();
+  }
+
+  private void something() {
+  }
+
+  private void doSomething() {
+  }
+
+  private void doSomethingElse() {
   }
 
 }
