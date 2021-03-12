@@ -1,6 +1,6 @@
 {
-  "title": "LDAP deserialization should be disabled",
-  "type": "VULNERABILITY",
+  "title": "Allowing deserialization of LDAP objects is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -10,7 +10,7 @@
     "cwe",
     "owasp-a8"
   ],
-  "defaultSeverity": "Blocker",
+  "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-4434",
   "sqKey": "S4434",
   "scope": "Main",
