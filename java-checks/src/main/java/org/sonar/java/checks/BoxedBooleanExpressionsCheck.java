@@ -19,6 +19,8 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,8 +58,8 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
   private static final String BOOLEAN = "java.lang.Boolean";
   private JavaFileScannerContext context;
 
-  private static final Map<Tree, Optional<IfStatementTree>> ifStatementCache = new HashMap<>();
-  private static final Map<IdentifierTree, Optional<ExpressionTree>> firstNullCheckCache = new HashMap<>();
+  private static final Map<Tree, IfStatementTree> ifStatementCache = new HashMap<>();
+  private static final Map<Symbol, ExpressionTree> firstNullCheckCache = new HashMap<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -147,7 +149,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
         return false;
       }
       // Fetch the first null check in the usages list
-      Optional<ExpressionTree> firstNullCheck = getFirstNullCheck(identifier);
+      Optional<ExpressionTree> firstNullCheck = getFirstNullCheck(identifier.symbol());
       if (!firstNullCheck.isPresent()) {
         return false;
       }
@@ -159,35 +161,40 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
     return false;
   }
 
-  private static Optional<ExpressionTree> getFirstNullCheck(IdentifierTree identifier) {
-    if (firstNullCheckCache.containsKey(identifier)) {
-      return firstNullCheckCache.get(identifier);
+  private static Optional<ExpressionTree> getFirstNullCheck(Symbol symbol) {
+    if (firstNullCheckCache.containsKey(symbol)) {
+      return Optional.ofNullable(firstNullCheckCache.get(symbol));
     }
-    List<IdentifierTree> usages = identifier.symbol().usages();
-    Optional<ExpressionTree> firstNullCheck = getFirstNullCheck(usages);
-    firstNullCheckCache.put(identifier, firstNullCheck);
-    return firstNullCheck;
-  }
-
-  private static Optional<ExpressionTree> getFirstNullCheck(List<IdentifierTree> usages) {
-    return usages.stream()
+    Optional<ExpressionTree> firstNullCheck = symbol.usages().stream()
       .map(IdentifierTree::parent)
       .filter(tree -> tree.is(Kind.EQUAL_TO, Kind.NOT_EQUAL_TO) && isNullCheck((ExpressionTree) tree))
       .map(ExpressionTree.class::cast)
       .findFirst();
+    firstNullCheckCache.put(symbol, firstNullCheck.isPresent() ? firstNullCheck.get() : null);
+    return firstNullCheck;
   }
 
+
   private static Optional<IfStatementTree> getParentConditionalBranch(ExpressionTree tree) {
-    if (ifStatementCache.containsKey(tree)) {
-      return ifStatementCache.get(tree);
+    Deque<Tree> trees = new ArrayDeque<>();
+    Tree current = tree;
+    IfStatementTree ifStatementTree = null;
+
+    while (current != null && ifStatementTree == null) {
+      if (ifStatementCache.containsKey(tree)) {
+        ifStatementTree = ifStatementCache.get(tree);
+      } else if (current.is(Kind.IF_STATEMENT)) {
+        ifStatementTree = (IfStatementTree) current;
+      }
+      trees.add(current);
+      current = current.parent();
     }
-    Tree parent = tree;
-    while (parent != null && !parent.is(Kind.IF_STATEMENT)) {
-      parent = parent.parent();
+
+    while (!trees.isEmpty()) {
+      ifStatementCache.put(trees.pop(), ifStatementTree);
     }
-    Optional<IfStatementTree> result = Optional.ofNullable((IfStatementTree) parent);
-    ifStatementCache.put(tree, result);
-    return result;
+
+    return Optional.ofNullable(ifStatementTree);
   }
 
   @CheckForNull
