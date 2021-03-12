@@ -33,7 +33,7 @@ import static org.sonar.java.regex.ast.AutomatonState.TransitionType.*;
 public abstract class AbstractAutomataChecker {
 
   private final OrderedAutomataPairCache<Boolean> cache = new OrderedAutomataPairCache<>();
-  private final boolean defaultAnswer;
+  protected final boolean defaultAnswer;
 
   protected AbstractAutomataChecker(boolean defaultAnswer) {
     this.defaultAnswer = defaultAnswer;
@@ -48,7 +48,7 @@ public abstract class AbstractAutomataChecker {
       return defaultAnswer;
     }
     OrderedAutomataPair entry = new OrderedAutomataPair(auto1, auto2);
-    Boolean cachedValue = cache.startCalculation(entry, defaultAnswer);
+    Boolean cachedValue = cache.startCalculation(entry, neutralAnswer());
     if (cachedValue != null) {
       return cachedValue;
     }
@@ -72,6 +72,15 @@ public abstract class AbstractAutomataChecker {
   public void clearCache() {
     cache.clear();
   }
+
+  /**
+   * The answer that should be returned when running into a cycle in the automaton. This should be the neutral element
+   * with respect to the operation that's used to combine the results from multiple paths. That is, if there are multiple
+   * paths, one of whom is part of a cycle whereas the others are not, then the end result should just depend on the
+   * non-cyclic paths.
+   * Thus if the results are combined with "any", the neutral element should be false and for "all" it should be true.
+   */
+  protected abstract boolean neutralAnswer();
 
   protected abstract boolean checkAuto1AndAuto2Successors(SubAutomaton auto1, SubAutomaton auto2, boolean defaultAnswer, boolean hasConsumedInput);
 
