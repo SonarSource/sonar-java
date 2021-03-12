@@ -206,9 +206,7 @@ public class RedosCheck extends AbstractRegexCheckTrackingMatchType {
      * When used for partial matches, a regex acts as if it had `(?s:.*)` attached to its beginning and end unless anchored.
      */
     private boolean overlapsWithImplicitMatchAlls(RepetitionTree tree) {
-      return isUsedForPartialMatch &&
-        (canReachWithoutConsumingInputOrGoingThroughBoundaries(startOfRegex, tree)
-          || canReachWithoutConsumingInputOrGoingThroughBoundaries(tree, endOfRegex));
+      return isUsedForPartialMatch && canReachWithoutConsumingInputOrGoingThroughBoundaries(startOfRegex, tree);
     }
 
     @Override
