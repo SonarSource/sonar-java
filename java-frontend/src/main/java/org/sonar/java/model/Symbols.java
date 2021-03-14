@@ -22,7 +22,6 @@ package org.sonar.java.model;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
 import javax.annotation.CheckForNull;
 
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -256,6 +255,11 @@ public class Symbols {
     @Override
     public Symbol.MethodSymbol overriddenSymbol() {
       return null;
+    }
+
+    @Override
+    public List<Symbol.MethodSymbol> overriddenSymbols() {
+      return Collections.emptyList();
     }
 
     @Override
