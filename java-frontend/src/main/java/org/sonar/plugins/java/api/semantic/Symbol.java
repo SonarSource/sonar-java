@@ -187,9 +187,19 @@ public interface Symbol {
      * Note that if the method returns null, the method is not overriding any method for sure.
      *
      * @return the overridden symbol, null if the method is not overriding any method or overriding can not be determined (incomplete semantic)
+     * @deprecated This method only returns the first symbol that has been overridden, rather than all symbols that are being overridden. Use {@link #overriddenSymbols()} to get a list of all symbols
      */
     @Nullable
+    @Deprecated
     Symbol.MethodSymbol overriddenSymbol();
+
+    /**
+     * Retrieve the overridden symbols, which may may not be able to be determined (returning 'unknown' symbol).
+     * Note that if the method returns an empty ist, the method is not overriding any method for sure.
+     *
+     * @return the overridden symbols, or an empty list if the method is not overriding any method or overriding can not be determined (incomplete semantics)
+     */
+    List<Symbol.MethodSymbol> overriddenSymbols();
 
     @Nullable
     @Override

@@ -19,13 +19,16 @@
  */
 package org.sonar.java.model;
 
+import java.util.Arrays;
 import java.util.Objects;
+
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,6 +46,69 @@ class JMethodSymbolTest {
       .isSameAs(cu.sema.typeSymbol(Objects.requireNonNull(c.typeBinding)));
     assertThat(symbol.thrownTypes())
       .containsOnly(cu.sema.type(Objects.requireNonNull(cu.sema.resolveType("java.lang.Exception"))));
+  }
+
+  @Test
+  void testSingleInheritance() {
+    JavaTree.CompilationUnitTreeImpl cu = test("interface A { void a(); }  class C implements A { public void a() { } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(1);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    JMethodSymbol symbol = cu.sema.methodSymbol(Objects.requireNonNull(m.methodBinding));
+    assertThat(symbol.overriddenSymbols()).containsOnly(retrieveMethodSymbol("A", "a", cu));
+  }
+
+  @Test
+  void testClassInheritanceChainOnlyFindsDirectOverride() {
+    JavaTree.CompilationUnitTreeImpl cu = test("interface AInt { void a() {} } class A implements AInt { public void a() {} } class B extends A { public void a() {}}  class C extends B { public void a() { } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(3);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    JMethodSymbol symbol = cu.sema.methodSymbol(Objects.requireNonNull(m.methodBinding));
+    assertThat(symbol.overriddenSymbols()).containsOnly(retrieveMethodSymbol("AInt", "a", cu), retrieveMethodSymbol("B", "a", cu));
+  }
+
+  @Test
+  void testObjectExtension() {
+    JavaTree.CompilationUnitTreeImpl cu = test("interface A { boolean equals(Object other); }  interface B { boolean equals(Object other); } interface Z extends B { } class C { public boolean equals(Object other) { return false;} }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(3);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    JMethodSymbol symbol = cu.sema.methodSymbol(Objects.requireNonNull(m.methodBinding));
+    assertThat(symbol.overriddenSymbols()).containsOnly(new JMethodSymbol(cu.sema, Arrays.stream(cu.sema.resolveType("java.lang.Object").getDeclaredMethods()).filter(a -> a.getName().equals("equals")).findFirst().orElseThrow(() -> new IllegalStateException("Could not find Object#equals"))));
+  }
+
+  @Test
+  void testMultipleInheritance() {
+    JavaTree.CompilationUnitTreeImpl cu = test("interface A { void a(); }  interface B { void a(); } class C implements A, B { public void a() { } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(2);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    JMethodSymbol symbol = cu.sema.methodSymbol(Objects.requireNonNull(m.methodBinding));
+    assertThat(symbol.overriddenSymbols()).containsOnly(
+      retrieveMethodSymbol("A", "a", cu),
+      retrieveMethodSymbol("B", "a", cu));
+  }
+
+  @Test
+  void testMultipleInheritanceWithExtensionOfObject() {
+    JavaTree.CompilationUnitTreeImpl cu = test("interface A { boolean equals(Object other); }  interface B { boolean equals(Object other); } interface Z extends B { } class C implements A, Z { public boolean equals(Object other) { return false;} }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(3);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    JMethodSymbol symbol = cu.sema.methodSymbol(Objects.requireNonNull(m.methodBinding));
+    assertThat(symbol.overriddenSymbols()).containsOnly(
+      new JMethodSymbol(cu.sema, Arrays.stream(cu.sema.resolveType("java.lang.Object").getDeclaredMethods()).filter(a -> a.getName().equals("equals")).findFirst().orElseThrow(() -> new IllegalStateException("Could not find Object#equals"))),
+      retrieveMethodSymbol("A", "equals", cu),
+      retrieveMethodSymbol("B", "equals", cu));
+  }
+
+  private static JMethodSymbol retrieveMethodSymbol(String className, String methodName, CompilationUnitTreeImpl cu) {
+    return cu.sema.methodSymbol(cu.types().stream().filter(a -> a instanceof ClassTreeImpl)
+      .map(a -> (ClassTreeImpl) a)
+      .filter(c -> className.equals(c.simpleName().name()))
+      .flatMap(c -> c.children().stream())
+      .filter(c -> c.is(Tree.Kind.METHOD))
+      .map(m -> (MethodTreeImpl) m)
+      .filter(m -> m.simpleName().name().equals(methodName))
+      .map(m -> m.methodBinding)
+      .findFirst()
+      .orElseThrow(() -> new IllegalStateException("No method could be found with the given name in the given class")));
   }
 
   @Test
