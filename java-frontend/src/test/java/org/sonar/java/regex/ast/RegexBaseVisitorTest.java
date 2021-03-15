@@ -175,11 +175,11 @@ class RegexBaseVisitorTest {
       assertThat(visitor.visitedCharacters()).isEqualTo("abcdefghi");
       List<RegexTree> items = ((SequenceTree) ((DisjunctionTree) parseResult.getResult()).getAlternatives().get(1)).getItems();
       FlagSet activeFlags = items.get(items.size() - 1).activeFlags();
-      JavaCharacter iFlag = activeFlags.getJavaCharacterForFlag(Pattern.CASE_INSENSITIVE);
+      SourceCharacter iFlag = activeFlags.getJavaCharacterForFlag(Pattern.CASE_INSENSITIVE);
       assertThat(iFlag).isNotNull();
       assertThat(iFlag.getCharacter()).isEqualTo('i');
       assertThat(activeFlags.getMask()).isEqualTo(Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CHARACTER_CLASS);
-      JavaCharacter uFlag = activeFlags.getJavaCharacterForFlag(Pattern.UNICODE_CASE);
+      SourceCharacter uFlag = activeFlags.getJavaCharacterForFlag(Pattern.UNICODE_CASE);
       assertThat(uFlag).isNull();
     }
 

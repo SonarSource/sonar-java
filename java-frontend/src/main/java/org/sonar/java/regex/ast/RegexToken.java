@@ -19,18 +19,10 @@
  */
 package org.sonar.java.regex.ast;
 
+import org.sonar.java.regex.RegexSource;
+
 public class RegexToken extends AbstractRegexSyntaxElement {
-
-  private final String value;
-
   public RegexToken(RegexSource source, IndexRange range) {
     super(source, range);
-    value = super.getText();
-  }
-
-
-  @Override
-  public String getText() {
-    return value;
   }
 }

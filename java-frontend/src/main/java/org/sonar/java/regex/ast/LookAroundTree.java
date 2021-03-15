@@ -22,6 +22,7 @@ package org.sonar.java.regex.ast;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nonnull;
+import org.sonar.java.regex.RegexSource;
 
 public class LookAroundTree extends GroupTree {
 

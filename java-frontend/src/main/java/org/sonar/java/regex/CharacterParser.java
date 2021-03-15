@@ -17,23 +17,20 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.regex.ast;
+package org.sonar.java.regex;
 
-import org.sonar.java.regex.RegexSource;
+import org.sonar.java.regex.ast.SourceCharacter;
 
-/**
- * This class should only be instantiated by RegexParseResult.openingQuote() and only used when using
- * the opening quote of a regex as an issue location. It should never appear within a regex AST.
- */
-public class OpeningQuote extends AbstractRegexSyntaxElement {
+public interface CharacterParser {
+  void moveNext();
 
-  public OpeningQuote(RegexSource source) {
-    super(source, new IndexRange(-1, 0));
+  SourceCharacter getCurrent();
+
+  boolean isAtEnd();
+
+  default boolean isNotAtEnd() {
+    return !isAtEnd();
   }
 
-  @Override
-  public String getText() {
-    throw new UnsupportedOperationException("getText should not be called on OpeningQuote objects.");
-  }
-
+  void resetTo(int index);
 }

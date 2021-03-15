@@ -27,7 +27,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.CharacterTree;
 import org.sonar.java.regex.ast.FlagSet;
-import org.sonar.java.regex.ast.JavaCharacter;
+import org.sonar.java.regex.ast.SourceCharacter;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -44,7 +44,7 @@ public class UnicodeCaseCheck extends AbstractRegexCheck {
 
   private class Visitor extends RegexBaseVisitor {
 
-    final Set<JavaCharacter> problematicFlags = new HashSet<>();
+    final Set<SourceCharacter> problematicFlags = new HashSet<>();
 
     boolean problematicFlagSetOutsideOfRegex = false;
 
@@ -57,7 +57,7 @@ public class UnicodeCaseCheck extends AbstractRegexCheck {
     @Override
     public void visitCharacter(CharacterTree tree) {
       if (isProblematic(tree.activeFlags(), tree.codePointOrUnit())) {
-        JavaCharacter character = tree.activeFlags().getJavaCharacterForFlag(Pattern.CASE_INSENSITIVE);
+        SourceCharacter character = tree.activeFlags().getJavaCharacterForFlag(Pattern.CASE_INSENSITIVE);
         if (character == null) {
           problematicFlagSetOutsideOfRegex = true;
         } else {
@@ -75,7 +75,7 @@ public class UnicodeCaseCheck extends AbstractRegexCheck {
           reportIssue(flagsTree, String.format(MESSAGE, flagName))
         );
       }
-      for (JavaCharacter flag : problematicFlags) {
+      for (SourceCharacter flag : problematicFlags) {
         reportIssue(flag, String.format(MESSAGE, "the \"u\" flag"), null, Collections.emptyList());
       }
     }

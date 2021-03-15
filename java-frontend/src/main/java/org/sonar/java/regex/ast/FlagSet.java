@@ -28,7 +28,7 @@ public class FlagSet {
 
   private int mask;
 
-  private final Map<Integer, JavaCharacter> flagCharacters;
+  private final Map<Integer, SourceCharacter> flagCharacters;
 
   public FlagSet() {
     this(0);
@@ -55,7 +55,7 @@ public class FlagSet {
    * to Pattern.compile). Therefore this should not be used to check whether a flag is contained in this set.
    */
   @CheckForNull
-  public JavaCharacter getJavaCharacterForFlag(int flag) {
+  public SourceCharacter getJavaCharacterForFlag(int flag) {
     return flagCharacters.get(flag);
   }
 
@@ -67,7 +67,7 @@ public class FlagSet {
     mask |= flag;
   }
 
-  public void add(int flag, JavaCharacter character) {
+  public void add(int flag, SourceCharacter character) {
     add(flag);
     flagCharacters.put(flag, character);
   }

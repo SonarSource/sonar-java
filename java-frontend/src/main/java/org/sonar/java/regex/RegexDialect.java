@@ -17,29 +17,8 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.regex.ast;
+package org.sonar.java.regex;
 
-public class JavaCharacter extends AbstractRegexSyntaxElement {
-
-  private final char character;
-  private final boolean isEscapeSequence;
-
-  public JavaCharacter(RegexSource source, IndexRange range, char character) {
-    this(source, range, character, false);
-  }
-
-  public JavaCharacter(RegexSource source, IndexRange range, char character, boolean isEscapeSequence) {
-    super(source, range);
-    this.character = character;
-    this.isEscapeSequence = isEscapeSequence;
-  }
-
-  public char getCharacter() {
-    return character;
-  }
-
-  public boolean isEscapeSequence() {
-    return isEscapeSequence;
-  }
-
+public enum RegexDialect {
+  JAVA
 }

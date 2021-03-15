@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
+import org.sonar.java.regex.RegexSource;
 
 public class RepetitionTree extends RegexTree {
 

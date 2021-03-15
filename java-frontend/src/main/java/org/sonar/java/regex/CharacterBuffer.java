@@ -20,30 +20,30 @@
 package org.sonar.java.regex;
 
 import java.util.NoSuchElementException;
-import org.sonar.java.regex.ast.JavaCharacter;
+import org.sonar.java.regex.ast.SourceCharacter;
 
 public class CharacterBuffer {
 
   private static final int RESIZE_FACTOR = 2;
 
-  private JavaCharacter[] contents;
+  private SourceCharacter[] contents;
 
   private int startIndex = 0;
 
   private int size = 0;
 
   public CharacterBuffer(int initialCapacity) {
-    contents = new JavaCharacter[initialCapacity];
+    contents = new SourceCharacter[initialCapacity];
   }
 
-  public JavaCharacter get(int index) {
+  public SourceCharacter get(int index) {
     if (index >= size) {
       throw new IndexOutOfBoundsException("Invalid index " + index + " for buffer of size " + size + ".");
     }
     return contents[(startIndex + index) % contents.length];
   }
 
-  public void add(JavaCharacter character) {
+  public void add(SourceCharacter character) {
     if (size + 1 == contents.length) {
       resize(contents.length * RESIZE_FACTOR);
     }
@@ -71,7 +71,7 @@ public class CharacterBuffer {
   }
 
   private void resize(int newCapacity) {
-    JavaCharacter[] newContents = new JavaCharacter[newCapacity];
+    SourceCharacter[] newContents = new SourceCharacter[newCapacity];
     System.arraycopy(contents, startIndex, newContents, 0, contents.length - startIndex);
     System.arraycopy(contents, 0, newContents, contents.length - startIndex, startIndex);
     contents = newContents;

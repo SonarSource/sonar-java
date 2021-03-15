@@ -20,6 +20,7 @@
 package org.sonar.java.regex.ast;
 
 import javax.annotation.Nonnull;
+import org.sonar.java.regex.RegexSource;
 
 public class CharacterRangeTree extends AbstractRegexSyntaxElement implements CharacterClassElementTree {
 

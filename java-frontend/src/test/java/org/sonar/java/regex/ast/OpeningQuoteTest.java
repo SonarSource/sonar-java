@@ -24,7 +24,6 @@ import org.sonar.java.regex.RegexParseResult;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParseResult;
 
 class OpeningQuoteTest {
@@ -32,10 +31,7 @@ class OpeningQuoteTest {
   @Test
   void testLocation() {
     RegexParseResult result = assertSuccessfulParseResult("abc");
-    assertListElements(result.openingQuote().getLocations(), location -> {
-      assertEquals(-1, location.getBeginningOffset());
-      assertEquals(0, location.getEndingOffset());
-    });
+    assertEquals(new IndexRange(-1, 0), result.openingQuote().getRange());
   }
 
   @Test

@@ -47,10 +47,6 @@ public class IndexRange {
     return new IndexRange(beginningOffset, newEnd);
   }
 
-  public boolean isEmpty() {
-    return beginningOffset == endingOffset;
-  }
-
   @Override
   public boolean equals(Object other) {
     return other instanceof IndexRange

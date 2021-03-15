@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.sonar.java.regex.RegexLexer;
+import org.sonar.java.regex.RegexSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -153,17 +154,17 @@ class EscapedCharacterClassTreeTest {
 
     private void assertIllegalArgument(String regex, boolean includesProperty, String message) {
       RegexSource source = makeSource(regex);
-      RegexLexer lexer = new RegexLexer(source);
-      JavaCharacter backslash = lexer.getCurrent();
+      RegexLexer lexer = source.createLexer();
+      SourceCharacter backslash = lexer.getCurrent();
       lexer.moveNext();
-      JavaCharacter type = lexer.getCurrent();
+      SourceCharacter type = lexer.getCurrent();
       FlagSet activeFlags = new FlagSet();
       Executable createTree;
       if (includesProperty) {
         lexer.moveNext();
-        JavaCharacter openingBrace = lexer.getCurrent();
+        SourceCharacter openingBrace = lexer.getCurrent();
         lexer.moveNext(2);
-        JavaCharacter closingBrace = lexer.getCurrent();
+        SourceCharacter closingBrace = lexer.getCurrent();
         createTree = () -> new EscapedCharacterClassTree(source, backslash, type, openingBrace, closingBrace, activeFlags);
       } else {
         createTree = () -> new EscapedCharacterClassTree(source, backslash, type, activeFlags);

@@ -21,6 +21,7 @@ package org.sonar.java.regex.ast;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.sonar.java.regex.RegexSource;
 
 public class BoundaryTree extends RegexTree {
 

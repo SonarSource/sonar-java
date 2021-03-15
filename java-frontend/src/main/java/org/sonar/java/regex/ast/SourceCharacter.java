@@ -19,37 +19,29 @@
  */
 package org.sonar.java.regex.ast;
 
-import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.java.regex.RegexSource;
 
-public class Location {
+public class SourceCharacter extends AbstractRegexSyntaxElement {
 
-  private final Tree javaTree;
+  private final char character;
+  private final boolean isEscapeSequence;
 
-  private final IndexRange indexRange;
-
-  public Location(Tree javaTree, int beginningOffset, int endingOffset) {
-    this.javaTree = javaTree;
-    this.indexRange = new IndexRange(beginningOffset, endingOffset);
+  public SourceCharacter(RegexSource source, IndexRange range, char character) {
+    this(source, range, character, false);
   }
 
-  public Tree getJavaTree() {
-    return javaTree;
+  public SourceCharacter(RegexSource source, IndexRange range, char character, boolean isEscapeSequence) {
+    super(source, range);
+    this.character = character;
+    this.isEscapeSequence = isEscapeSequence;
   }
 
-  public IndexRange getIndexRange() {
-    return indexRange;
+  public char getCharacter() {
+    return character;
   }
 
-  public int getBeginningOffset() {
-    return indexRange.getBeginningOffset();
-  }
-
-  public int getEndingOffset() {
-    return indexRange.getEndingOffset();
-  }
-
-  public boolean isEmpty() {
-    return indexRange.isEmpty();
+  public boolean isEscapeSequence() {
+    return isEscapeSequence;
   }
 
 }

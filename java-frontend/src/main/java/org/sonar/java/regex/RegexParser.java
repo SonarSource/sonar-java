@@ -47,12 +47,11 @@ import org.sonar.java.regex.ast.FinalState;
 import org.sonar.java.regex.ast.FlagSet;
 import org.sonar.java.regex.ast.GroupTree;
 import org.sonar.java.regex.ast.IndexRange;
-import org.sonar.java.regex.ast.JavaCharacter;
+import org.sonar.java.regex.ast.SourceCharacter;
 import org.sonar.java.regex.ast.LookAroundTree;
 import org.sonar.java.regex.ast.MiscEscapeSequenceTree;
 import org.sonar.java.regex.ast.NonCapturingGroupTree;
 import org.sonar.java.regex.ast.Quantifier;
-import org.sonar.java.regex.ast.RegexSource;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.java.regex.ast.RegexToken;
 import org.sonar.java.regex.ast.RegexTree;
@@ -75,9 +74,9 @@ public class RegexParser {
 
   private FlagSet activeFlags;
 
-  private List<BackReferenceTree> backReferences = new ArrayList<>();
+  private final List<BackReferenceTree> backReferences = new ArrayList<>();
 
-  private Map<String, CapturingGroupTree> capturingGroups = new HashMap<>();
+  private final Map<String, CapturingGroupTree> capturingGroups = new HashMap<>();
 
   private final List<SyntaxError> errors = new ArrayList<>();
 
@@ -85,7 +84,7 @@ public class RegexParser {
 
   public RegexParser(RegexSource source, FlagSet initialFlags) {
     this.source = source;
-    this.characters = new RegexLexer(source);
+    this.characters = source.createLexer();
     this.characters.setFreeSpacingMode(initialFlags.contains(Pattern.COMMENTS));
     this.activeFlags = initialFlags;
   }
@@ -115,7 +114,7 @@ public class RegexParser {
   private RegexTree parseDisjunction() {
     FlagSet disjunctionFlags = activeFlags;
     List<RegexTree> alternatives = new ArrayList<>();
-    List<JavaCharacter> orOperators = new ArrayList<>();
+    List<SourceCharacter> orOperators = new ArrayList<>();
     RegexTree first = parseSequence();
     alternatives.add(first);
     while (characters.currentIs('|')) {
@@ -182,7 +181,7 @@ public class RegexParser {
       default:
         return null;
     }
-    JavaCharacter current = characters.getCurrent();
+    SourceCharacter current = characters.getCurrent();
     characters.moveNext();
     Quantifier.Modifier modifier = parseQuantifierModifier();
     IndexRange range = current.getRange().extendTo(characters.getCurrentStartIndex());
@@ -190,7 +189,7 @@ public class RegexParser {
   }
 
   CurlyBraceQuantifier parseCurlyBraceQuantifier() {
-    JavaCharacter openingBrace = characters.getCurrent();
+    SourceCharacter openingBrace = characters.getCurrent();
     characters.moveNext();
     RegexToken lowerBound = parseInteger();
     if (lowerBound == null) {
@@ -281,13 +280,13 @@ public class RegexParser {
   }
 
   private CharacterTree readCharacter() {
-    JavaCharacter character = characters.getCurrent();
+    SourceCharacter character = characters.getCurrent();
     characters.moveNext();
     return characterTree(character);
   }
 
   private GroupTree parseGroup() {
-    JavaCharacter openingParen = characters.getCurrent();
+    SourceCharacter openingParen = characters.getCurrent();
     characters.moveNext();
     if (characters.currentIs("?=")) {
       characters.moveNext(2);
@@ -339,7 +338,7 @@ public class RegexParser {
     return name;
   }
 
-  private GroupTree parseNonCapturingGroup(JavaCharacter openingParen) {
+  private GroupTree parseNonCapturingGroup(SourceCharacter openingParen) {
     // Discard '?'
     characters.moveNext();
     FlagSet enabledFlags = parseFlags();
@@ -365,7 +364,7 @@ public class RegexParser {
       activeFlags.removeAll(disabledFlags);
     }
     if (characters.currentIs(')')) {
-      JavaCharacter closingParen = characters.getCurrent();
+      SourceCharacter closingParen = characters.getCurrent();
       characters.moveNext();
       IndexRange range = openingParen.getRange().merge(closingParen.getRange());
       return new NonCapturingGroupTree(source, range, enabledFlags, disabledFlags, null, activeFlags);
@@ -417,11 +416,11 @@ public class RegexParser {
     }
   }
 
-  private GroupTree finishGroup(JavaCharacter openingParen, GroupConstructor groupConstructor) {
+  private GroupTree finishGroup(SourceCharacter openingParen, GroupConstructor groupConstructor) {
     return finishGroup(characters.getFreeSpacingMode(), openingParen, groupConstructor);
   }
 
-  private GroupTree finishGroup(boolean previousFreeSpacingMode, JavaCharacter openingParen, GroupConstructor groupConstructor) {
+  private GroupTree finishGroup(boolean previousFreeSpacingMode, SourceCharacter openingParen, GroupConstructor groupConstructor) {
     FlagSet previousFlagSet = activeFlags;
     RegexTree inner = parseDisjunction();
     activeFlags = previousFlagSet;
@@ -436,13 +435,13 @@ public class RegexParser {
   }
 
   private RegexTree parseEscapeSequence() {
-    JavaCharacter backslash = characters.getCurrent();
+    SourceCharacter backslash = characters.getCurrent();
     characters.moveNext();
     if (characters.isAtEnd()) {
       expected("any character");
       return characterTree(backslash);
     } else {
-      JavaCharacter character = characters.getCurrent();
+      SourceCharacter character = characters.getCurrent();
       switch (character.getCharacter()) {
         case 'p':
         case 'P':
@@ -492,7 +491,7 @@ public class RegexParser {
           characters.moveNext();
           char c = simpleEscapeToCharacter(character.getCharacter());
           IndexRange range = backslash.getRange().extendTo(characters.getCurrentStartIndex());
-          return characterTree(new JavaCharacter(source, range, c, true));
+          return characterTree(new SourceCharacter(source, range, c, true));
         case 'c':
           return parseControlSequence(backslash);
         case 'N':
@@ -512,7 +511,7 @@ public class RegexParser {
     }
   }
 
-  private RegexTree parseNamedUnicodeCharacter(JavaCharacter backslash) {
+  private RegexTree parseNamedUnicodeCharacter(SourceCharacter backslash) {
     return parseEscapedSequence('{', '}', "a Unicode character name", content ->
       // TODO: Once we move to Java 9+, use Character.codePointOf to produce a CharacterTree with the named Unicode
       //       character instead of a MiscEscapeSequenceTree and produce a syntax error for illegal character names
@@ -520,8 +519,8 @@ public class RegexParser {
     );
   }
 
-  private RegexTree parseControlSequence(JavaCharacter backslash) {
-    JavaCharacter c = characters.getCurrent();
+  private RegexTree parseControlSequence(SourceCharacter backslash) {
+    SourceCharacter c = characters.getCurrent();
     characters.moveNext();
     if (characters.isAtEnd()) {
       expected("any character");
@@ -530,7 +529,7 @@ public class RegexParser {
     char controlCharacter = (char) (0x40 ^ characters.getCurrentChar());
     characters.moveNext();
     IndexRange range = backslash.getRange().extendTo(characters.getCurrentStartIndex());
-    return characterTree(new JavaCharacter(source, range, controlCharacter, true));
+    return characterTree(new SourceCharacter(source, range, controlCharacter, true));
   }
 
   private static char simpleEscapeToCharacter(char escapeCharacter) {
@@ -552,14 +551,14 @@ public class RegexParser {
     }
   }
 
-  private RegexTree parseUnicodeEscape(JavaCharacter backslash) {
+  private RegexTree parseUnicodeEscape(SourceCharacter backslash) {
     // Discard 'u'
     characters.moveNext();
     char codeUnit = (char) parseFixedAmountOfHexDigits(4);
-    return characterTree(new JavaCharacter(source, backslash.getRange().extendTo(characters.getCurrentStartIndex()), codeUnit, true));
+    return characterTree(new SourceCharacter(source, backslash.getRange().extendTo(characters.getCurrentStartIndex()), codeUnit, true));
   }
 
-  private RegexTree parseHexEscape(JavaCharacter backslash) {
+  private RegexTree parseHexEscape(SourceCharacter backslash) {
     // Discard 'x'
     characters.moveNext();
     int codePoint = 0;
@@ -609,18 +608,18 @@ public class RegexParser {
     return value;
   }
 
-  private RegexTree parseEscapedCharacterClass(JavaCharacter backslash) {
+  private RegexTree parseEscapedCharacterClass(SourceCharacter backslash) {
     RegexTree result = new EscapedCharacterClassTree(source, backslash, characters.getCurrent(), activeFlags);
     characters.moveNext();
     return result;
   }
 
-  private RegexTree parseEscapedProperty(JavaCharacter backslash) {
+  private RegexTree parseEscapedProperty(SourceCharacter backslash) {
     return parseEscapedSequence('{', '}', "a property name",
       dh -> new EscapedCharacterClassTree(source, backslash, dh.marker, dh.opener, dh.closer, activeFlags));
   }
 
-  private RegexTree parseNamedBackReference(JavaCharacter backslash) {
+  private RegexTree parseNamedBackReference(SourceCharacter backslash) {
     return parseEscapedSequence('<', '>', "a group name",
       dh -> collect(new BackReferenceTree(source, backslash, dh.marker, dh.opener, dh.closer, activeFlags)));
   }
@@ -637,14 +636,14 @@ public class RegexParser {
   }
 
   private RegexTree parseEscapedSequence(char opener, char closer, String expected, Function<EscapedSequenceDataHolder, RegexTree> builder) {
-    JavaCharacter marker = characters.getCurrent();
+    SourceCharacter marker = characters.getCurrent();
     characters.moveNext();
 
     if (!characters.currentIs(opener)) {
       expected(("'" + opener + "'"));
       return characterTree(marker);
     }
-    JavaCharacter openerChar = characters.getCurrent();
+    SourceCharacter openerChar = characters.getCurrent();
     boolean atLeastOneChar = false;
     do {
       characters.moveNext();
@@ -658,17 +657,17 @@ public class RegexParser {
       }
       atLeastOneChar = true;
     } while (!characters.currentIs(closer));
-    JavaCharacter closerChar = characters.getCurrent();
+    SourceCharacter closerChar = characters.getCurrent();
     characters.moveNext();
     return builder.apply(new EscapedSequenceDataHolder(marker, openerChar, closerChar));
   }
 
   private static final class EscapedSequenceDataHolder {
-    private final JavaCharacter marker;
-    private final JavaCharacter opener;
-    private final JavaCharacter closer;
+    private final SourceCharacter marker;
+    private final SourceCharacter opener;
+    private final SourceCharacter closer;
 
-    private EscapedSequenceDataHolder(JavaCharacter marker, JavaCharacter opener, JavaCharacter closer) {
+    private EscapedSequenceDataHolder(SourceCharacter marker, SourceCharacter opener, SourceCharacter closer) {
       this.marker = marker;
       this.opener = opener;
       this.closer = closer;
@@ -680,14 +679,14 @@ public class RegexParser {
    * as a back reference, but multi digit numbers are only treated as a back reference if at least that many back
    * references exist at this point in the regex. See {@link java.util.regex.Pattern#ref(int refNum)}
    */
-  private RegexTree parseNumericalBackReference(JavaCharacter backslash) {
-    JavaCharacter firstDigit = characters.getCurrent();
-    JavaCharacter lastDigit = firstDigit;
+  private RegexTree parseNumericalBackReference(SourceCharacter backslash) {
+    SourceCharacter firstDigit = characters.getCurrent();
+    SourceCharacter lastDigit = firstDigit;
     int referenceNumber = firstDigit.getCharacter() - '0';
     do {
       characters.moveNext();
       if (!characters.isAtEnd()) {
-        JavaCharacter currentChar = characters.getCurrent();
+        SourceCharacter currentChar = characters.getCurrent();
         char asChar = currentChar.getCharacter();
         int newReferenceNumber = (referenceNumber * 10) + (asChar - '0');
         boolean matchingGroupExistsAtThisPoint = newReferenceNumber < groupNumber;
@@ -702,7 +701,7 @@ public class RegexParser {
     return collect(new BackReferenceTree(source, backslash, null, firstDigit, lastDigit, activeFlags));
   }
 
-  private RegexTree parseOctalEscape(JavaCharacter backslash) {
+  private RegexTree parseOctalEscape(SourceCharacter backslash) {
     // Discard '0'
     characters.moveNext();
     char byteValue = 0;
@@ -720,10 +719,10 @@ public class RegexParser {
       expected("octal digit");
     }
     IndexRange range = backslash.getRange().extendTo(characters.getCurrentStartIndex());
-    return characterTree(new JavaCharacter(source, range, byteValue, true));
+    return characterTree(new SourceCharacter(source, range, byteValue, true));
   }
 
-  private RegexTree parseBoundary(JavaCharacter backslash) {
+  private RegexTree parseBoundary(SourceCharacter backslash) {
     if (characters.currentIs("b{")) {
       return parseEscapedSequence(
         '{',
@@ -731,13 +730,13 @@ public class RegexParser {
         "an Unicode extended grapheme cluster",
         dh -> new BoundaryTree(source, BoundaryTree.Type.UNICODE_EXTENDED_GRAPHEME_CLUSTER, backslash.getRange().merge(dh.closer.getRange()), activeFlags));
     }
-    JavaCharacter boundary = characters.getCurrent();
+    SourceCharacter boundary = characters.getCurrent();
     characters.moveNext();
     return new BoundaryTree(source, BoundaryTree.Type.forKey(boundary.getCharacter()), backslash.getRange().merge(boundary.getRange()), activeFlags);
   }
 
   private CharacterClassTree parseCharacterClass() {
-    JavaCharacter openingBracket = characters.getCurrent();
+    SourceCharacter openingBracket = characters.getCurrent();
     characters.moveNext();
     boolean negated = false;
     if (characters.currentIs('^')) {
@@ -760,9 +759,9 @@ public class RegexParser {
     List<RegexToken> andOperators = new ArrayList<>();
     elements.add(parseCharacterClassUnion(true));
     while (characters.currentIs("&&")) {
-      JavaCharacter firstAnd = characters.getCurrent();
+      SourceCharacter firstAnd = characters.getCurrent();
       characters.moveNext();
-      JavaCharacter secondAnd = characters.getCurrent();
+      SourceCharacter secondAnd = characters.getCurrent();
       characters.moveNext();
       andOperators.add(new RegexToken(source, firstAnd.getRange().merge(secondAnd.getRange())));
       elements.add(parseCharacterClassUnion(false));
@@ -794,7 +793,7 @@ public class RegexParser {
     if (characters.isAtEnd() || characters.currentIs("&&")) {
       return null;
     }
-    JavaCharacter startCharacter = characters.getCurrent();
+    SourceCharacter startCharacter = characters.getCurrent();
     switch (startCharacter.getCharacter()) {
       case '\\':
         RegexTree escape = parseEscapeSequence();
@@ -806,7 +805,7 @@ public class RegexParser {
           errors.add(new SyntaxError(escape, "Invalid escape sequence inside character class"));
           // Produce dummy AST and keep parsing to catch more errors.
           // The 'x' here doesn't matter because we're not going to actually use the AST when there are syntax errors.
-          return characterTree(new JavaCharacter(source, escape.getRange(), 'x'));
+          return characterTree(new SourceCharacter(source, escape.getRange(), 'x'));
         }
       case '[':
         return parseCharacterClass();
@@ -830,7 +829,7 @@ public class RegexParser {
         return startCharacter;
       } else if (lookAhead == '\\') {
         characters.moveNext();
-        JavaCharacter backslash = characters.getCurrent();
+        SourceCharacter backslash = characters.getCurrent();
         RegexTree escape = parseEscapeSequence();
         if (escape.is(RegexTree.Kind.CHARACTER)) {
           return characterRange(startCharacter, (CharacterTree) escape);
@@ -840,7 +839,7 @@ public class RegexParser {
         }
       } else {
         characters.moveNext();
-        JavaCharacter endCharacter = characters.getCurrent();
+        SourceCharacter endCharacter = characters.getCurrent();
         characters.moveNext();
         return characterRange(startCharacter, characterTree(endCharacter));
       }
@@ -849,7 +848,7 @@ public class RegexParser {
     }
   }
 
-  private CharacterTree characterTree(JavaCharacter character) {
+  private CharacterTree characterTree(SourceCharacter character) {
     char c1 = character.getCharacter();
     if (Character.isHighSurrogate(c1)) {
       // c1 is in the range from '\uD800' to '\uDBFF', it should be the first char of a series of two,

@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.sonar.java.regex.RegexSource;
 
 public abstract class GroupTree extends RegexTree {
 

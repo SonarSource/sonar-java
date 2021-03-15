@@ -19,7 +19,7 @@
  */
 package org.sonar.java.regex.ast;
 
-import java.util.List;
+import org.sonar.java.regex.RegexSource;
 
 public abstract class AbstractRegexSyntaxElement implements RegexSyntaxElement {
 
@@ -30,11 +30,6 @@ public abstract class AbstractRegexSyntaxElement implements RegexSyntaxElement {
   protected AbstractRegexSyntaxElement(RegexSource source, IndexRange range) {
     this.source = source;
     this.range = range;
-  }
-
-  @Override
-  public List<Location> getLocations() {
-    return source.locationsFor(range);
   }
 
   @Override

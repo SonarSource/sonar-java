@@ -19,11 +19,12 @@
  */
 package org.sonar.java.regex;
 
+import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.AnalyzerMessage.TextSpan;
-import org.sonar.java.regex.ast.Location;
 import org.sonar.java.regex.ast.CharacterTree;
+import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.java.regex.ast.RegexTree;
 import org.sonar.java.regex.ast.SequenceTree;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,26 +43,15 @@ class RegexCheckTest implements RegexCheck {
     assertThat(items)
       .hasSize(2)
       .allMatch(tree -> tree.is(RegexTree.Kind.CHARACTER));
-    assertThat(regex.getLocations())
-      .hasSize(2)
-      .allMatch(loc -> !loc.isEmpty());
 
     assertThat(correspondingTextSpans(regex)).hasSize(2);
 
     CharacterTree char1 = (CharacterTree) items.get(0);
-    List<Location> char1Locs = char1.getLocations();
-    assertThat(char1Locs).hasSize(2);
-    assertThat(char1Locs.get(0).isEmpty()).isFalse();
-    assertThat(char1Locs.get(1).isEmpty()).isTrue();
 
     // empty filtered out
     assertThat(correspondingTextSpans(char1)).hasSize(1);
 
     CharacterTree char2 = (CharacterTree) items.get(1);
-    List<Location> char2Locs = char2.getLocations();
-    assertThat(char2Locs)
-      .hasSize(1)
-      .allMatch(loc -> !loc.isEmpty());
     assertThat(correspondingTextSpans(char2)).hasSize(1);
   }
 
@@ -70,30 +60,38 @@ class RegexCheckTest implements RegexCheck {
     RegexTree regex = assertSuccessfulParse("ABCD");
     assertKind(RegexTree.Kind.SEQUENCE, regex);
 
-    assertThat(regex.getLocations())
-      .hasSize(1)
-      .allMatch(loc -> !loc.isEmpty());
-
     List<RegexTree> items = ((SequenceTree) regex).getItems();
     assertThat(items).hasSize(4);
 
     RegexTree A = items.get(0);
     RegexTree B = items.get(1);
+    RegexTree C = items.get(2);
     RegexTree D = items.get(3);
 
-    List<TextSpan> AB = correspondingTextSpansBetween(A,B);
+    List<TextSpan> AB = correspondingTextSpans(Arrays.asList(A,B));
     assertThat(AB).hasSize(1);
     TextSpan ABTestSpan = AB.get(0);
 
     assertThat(ABTestSpan.startCharacter).isEqualTo(1);
     assertThat(ABTestSpan.endCharacter).isEqualTo(3);
 
-    List<TextSpan> BD = correspondingTextSpansBetween(B,D);
-    assertThat(BD).hasSize(1);
-    TextSpan BDTestSpan = BD.get(0);
+    List<TextSpan> BCD = correspondingTextSpans(Arrays.asList(B, C, D));
+    assertThat(BCD).hasSize(1);
+    TextSpan BCDTestSpan = BCD.get(0);
 
-    assertThat(BDTestSpan.startCharacter).isEqualTo(2);
-    assertThat(BDTestSpan.endCharacter).isEqualTo(5);
+    assertThat(BCDTestSpan.startCharacter).isEqualTo(2);
+    assertThat(BCDTestSpan.endCharacter).isEqualTo(5);
+
+    List<TextSpan> BD = correspondingTextSpans(Arrays.asList(B, D));
+    assertThat(BD).hasSize(2);
+    TextSpan BTestSpan = BD.get(0);
+    TextSpan DTestSpan = BD.get(1);
+
+    assertThat(BTestSpan.startCharacter).isEqualTo(2);
+    assertThat(BTestSpan.endCharacter).isEqualTo(3);
+    assertThat(DTestSpan.startCharacter).isEqualTo(4);
+    assertThat(DTestSpan.endCharacter).isEqualTo(5);
+
   }
 
   @Test
@@ -147,8 +145,8 @@ class RegexCheckTest implements RegexCheck {
     return new RegexCheck.RegexIssueLocation(tree, "message").locations();
   }
 
-  private static List<TextSpan> correspondingTextSpansBetween(RegexTree start, RegexTree end) {
-    return new RegexCheck.RegexIssueLocation(start, end, "message").locations();
+  private static List<TextSpan> correspondingTextSpans(List<RegexSyntaxElement> trees) {
+    return new RegexCheck.RegexIssueLocation(trees, "message").locations();
   }
 
 }

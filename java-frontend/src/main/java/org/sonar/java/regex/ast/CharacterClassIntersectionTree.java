@@ -22,6 +22,7 @@ package org.sonar.java.regex.ast;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
+import org.sonar.java.regex.RegexSource;
 
 public class CharacterClassIntersectionTree extends AbstractRegexSyntaxElement implements CharacterClassElementTree {
 

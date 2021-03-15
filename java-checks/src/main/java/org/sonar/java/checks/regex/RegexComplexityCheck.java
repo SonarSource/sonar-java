@@ -33,7 +33,7 @@ import org.sonar.java.regex.ast.CharacterClassIntersectionTree;
 import org.sonar.java.regex.ast.CharacterClassTree;
 import org.sonar.java.regex.ast.DisjunctionTree;
 import org.sonar.java.regex.ast.FlagSet;
-import org.sonar.java.regex.ast.JavaCharacter;
+import org.sonar.java.regex.ast.SourceCharacter;
 import org.sonar.java.regex.ast.LookAroundTree;
 import org.sonar.java.regex.ast.NonCapturingGroupTree;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
@@ -197,7 +197,7 @@ public class RegexComplexityCheck extends AbstractRegexCheck {
     @Override
     public void visitDisjunction(DisjunctionTree tree) {
       increaseComplexity(tree.getOrOperators().get(0), nesting);
-      for (JavaCharacter orOperator : tree.getOrOperators().subList(1, tree.getOrOperators().size())) {
+      for (SourceCharacter orOperator : tree.getOrOperators().subList(1, tree.getOrOperators().size())) {
         increaseComplexity(orOperator, 1);
       }
       nesting++;
