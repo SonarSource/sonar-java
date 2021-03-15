@@ -29,7 +29,7 @@ class DITCheckTest {
   @Test
   void defaults() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/DitOk.java")
+      .onFile(testSourcesPath("checks/DitOk.java"))
       .withCheck(new DITCheck())
       .verifyNoIssues();
   }
@@ -39,13 +39,15 @@ class DITCheckTest {
     DITCheck check = new DITCheck();
     check.setMax(2);
 
+    String filename = testSourcesPath("checks/Dit.java");
+
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/Dit.java")
+      .onFile(filename)
       .withCheck(check)
       .verifyIssues();
 
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/Dit.java")
+      .onFile(filename)
       .withCheck(check)
       .withoutSemantic()
       .verifyNoIssues();
@@ -58,7 +60,7 @@ class DITCheckTest {
     check.setFilteredClasses("java.lang.Object");
 
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/DitFiltered.java")
+      .onFile(testSourcesPath("checks/DitFiltered.java"))
       .withCheck(check)
       .verifyIssues();
   }
