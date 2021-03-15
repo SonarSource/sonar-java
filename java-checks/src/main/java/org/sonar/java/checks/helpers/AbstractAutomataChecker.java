@@ -89,6 +89,9 @@ public abstract class AbstractAutomataChecker {
   protected abstract boolean checkAuto2Successors(SubAutomaton auto1, SubAutomaton auto2, boolean defaultAnswer, boolean hasConsumedInput);
 
   private static boolean hasUnsupportedTransitionType(SubAutomaton auto) {
+    if (auto.isAtEnd()) {
+      return false;
+    }
     AutomatonState.TransitionType transition = auto.start.incomingTransitionType();
     return transition == LOOKAROUND_BACKTRACKING ||
       transition == NEGATION ||
