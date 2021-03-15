@@ -19,6 +19,10 @@
  */
 package org.sonar.java.checks.helpers;
 
+import org.sonar.java.regex.ast.BoundaryTree;
+
+import static org.sonar.java.regex.ast.AutomatonState.TransitionType.BOUNDARY;
+
 public class SupersetAutomataChecker extends AbstractAutomataChecker {
   public SupersetAutomataChecker(boolean defaultAnswer) {
     super(defaultAnswer);
@@ -31,13 +35,20 @@ public class SupersetAutomataChecker extends AbstractAutomataChecker {
 
   @Override
   protected boolean checkAuto1AndAuto2Successors(SubAutomaton auto1, SubAutomaton auto2, boolean defaultAnswer, boolean hasConsumedInput) {
-    SimplifiedRegexCharacterClass characterClass1 = SimplifiedRegexCharacterClass.of(auto1.start);
-    SimplifiedRegexCharacterClass characterClass2 = SimplifiedRegexCharacterClass.of(auto2.start);
-    return ((characterClass1 != null) && (characterClass2 != null)) ?
-      (characterClass1.supersetOf(characterClass2, defaultAnswer) &&
-        auto2.allSuccessorMatch(successor2 -> auto1.anySuccessorMatch(successor1 ->
-          check(successor1, successor2, true)))) :
-      defaultAnswer;
+    boolean start1SupersetOfStart2;
+    if (auto1.incomingTransitionType() == BOUNDARY && auto2.incomingTransitionType() == BOUNDARY) {
+      start1SupersetOfStart2 = ((BoundaryTree) auto1.start).type() == ((BoundaryTree) auto2.start).type();
+    } else {
+      SimplifiedRegexCharacterClass characterClass1 = SimplifiedRegexCharacterClass.of(auto1.start);
+      SimplifiedRegexCharacterClass characterClass2 = SimplifiedRegexCharacterClass.of(auto2.start);
+      if (characterClass1 == null || characterClass2 == null) {
+        return defaultAnswer;
+      }
+      start1SupersetOfStart2 = characterClass1.supersetOf(characterClass2, defaultAnswer);
+    }
+    return start1SupersetOfStart2 &&
+      auto2.allSuccessorMatch(successor2 -> auto1.anySuccessorMatch(successor1 ->
+        check(successor1, successor2, true)));
   }
 
   @Override

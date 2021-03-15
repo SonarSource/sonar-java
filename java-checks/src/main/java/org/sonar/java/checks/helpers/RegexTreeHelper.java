@@ -34,6 +34,7 @@ import org.sonar.java.regex.ast.FinalState;
 import org.sonar.java.regex.ast.LookAroundTree;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
 
+import static org.sonar.java.regex.ast.AutomatonState.TransitionType.BOUNDARY;
 import static org.sonar.java.regex.ast.AutomatonState.TransitionType.EPSILON;
 import static org.sonar.java.regex.ast.AutomatonState.TransitionType.NEGATION;
 
@@ -93,7 +94,7 @@ public class RegexTreeHelper {
     if (start == goal) {
       return true;
     }
-    if (visited.contains(start) || (stopAtBoundaries && start instanceof BoundaryTree)) {
+    if (visited.contains(start) || (stopAtBoundaries && start.incomingTransitionType() == BOUNDARY)) {
       return false;
     }
     visited.add(start);
@@ -104,7 +105,7 @@ public class RegexTreeHelper {
       // state itself reachable (but not any state behind it), so that we can check whether the end of the lookahead
       // can be reached without input from a given place within the lookahead.
       if ((successor instanceof EndOfLookaroundState && successor == goal)
-        || ((transition == EPSILON || transition == NEGATION) && canReachWithoutConsumingInput(successor, goal, stopAtBoundaries, visited))) {
+        || ((transition == EPSILON || transition == BOUNDARY || transition == NEGATION) && canReachWithoutConsumingInput(successor, goal, stopAtBoundaries, visited))) {
         return true;
       }
     }
@@ -153,7 +154,7 @@ public class RegexTreeHelper {
   }
 
   public static boolean isEndBoundary(AutomatonState state) {
-    if (!(state instanceof BoundaryTree)) {
+    if (state.incomingTransitionType() != BOUNDARY) {
       return false;
     }
     switch (((BoundaryTree) state).type()) {
@@ -178,7 +179,7 @@ public class RegexTreeHelper {
     if (start instanceof LookAroundTree) {
       return onlyMatchesEmptySuffix(start.continuation(), visited);
     }
-    if (start.incomingTransitionType() != EPSILON) {
+    if (start.incomingTransitionType() != EPSILON && start.incomingTransitionType() != BOUNDARY) {
       return false;
     }
 

@@ -26,6 +26,8 @@ import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.FlagSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.checks.helpers.RegexTreeHelper.canReachWithoutConsumingInput;
+import static org.sonar.java.checks.helpers.RegexTreeHelper.canReachWithoutConsumingInputOrGoingThroughBoundaries;
 import static org.sonar.java.checks.helpers.SimplifiedRegexCharacterClassTest.parseRegex;
 
 class RegexTreeHelperTest {
@@ -86,7 +88,8 @@ class RegexTreeHelperTest {
     assertIntersects("ab", "ac", false).isFalse();
     assertIntersects("a[b-d]", "ac", false).isTrue();
     assertIntersects("ac", "a[b-d]", false).isTrue();
-    // Boundary not supported
+    assertIntersects("ab$", "ab$", false).isTrue();
+    assertIntersects("^ab", "^ab", false).isTrue();
     assertIntersects("^ab", "ab", false).isFalse();
     assertIntersects("ab$", "ab", false).isFalse();
     assertIntersects("()", "()", false).isFalse();
@@ -100,6 +103,10 @@ class RegexTreeHelperTest {
     assertIntersects("(abc|aab)", "(xyz|xy|ab)", false).isFalse();
     assertIntersects("((a|(b|c))|(d|e|f))", "((x|y)|(a|z))", false).isTrue();
     assertIntersects("((a|(b|c))|(d|e|f))", "((x|y)|(w|z))", false).isFalse();
+    assertIntersects("(a$|b$)", "(b$|c$)", false).isTrue();
+    assertIntersects("(a$|b$)", "(b\\b|c$)", false).isFalse();
+    assertIntersects("(a$|b$)", "(bx|c$)", false).isFalse();
+    assertIntersects("(a$|bx)", "(b$|c$)", false).isFalse();
   }
 
   @Test
@@ -222,15 +229,21 @@ class RegexTreeHelperTest {
     assertSupersetOf("a[b-d]", "ac", false).isTrue();
     // Boundary not supported
     assertSupersetOf("^ab", "ab", false).isFalse();
+    assertSupersetOf("ab$", "ab$", true).isTrue();
     assertSupersetOf("ab$", "ab", false).isFalse();
+    assertSupersetOf("ab", "ab$", true).isFalse();
     assertSupersetOf("ab", "^ab", true).isTrue();
-    assertSupersetOf("ab", "ab$", true).isTrue();
     assertSupersetOf("()", "()", false).isFalse();
   }
 
   @Test
   void superset_of_disjunction() {
     assertSupersetOf("a|b|c", "a|b", false).isTrue();
+    assertSupersetOf("a$|b$", "(a|b)$", false).isTrue();
+    assertSupersetOf("a$|b", "(a|b)$", false).isFalse();
+    assertSupersetOf("a$|b", "ax|b", false).isFalse();
+    assertSupersetOf("ax|b", "a$|b", false).isFalse();
+    assertSupersetOf("a$|b", "a\\b|b", false).isFalse();
     assertSupersetOf("a|b|c", "a|b|c", false).isTrue();
     assertSupersetOf("a|b|c", "a|b|c|d", false).isFalse();
     assertSupersetOf("((a|(b|c))|(d|e|f))", "a|b", false).isTrue();
@@ -276,6 +289,9 @@ class RegexTreeHelperTest {
     assertSupersetOf("x", false, "x*y", true, false).isFalse();
     assertSupersetOf("\\d+", false, "789", true, false).isTrue();
     assertSupersetOf("\\d+", false, "(7|x)89", true, false).isFalse();
+    assertSupersetOf("x", false, "x$", true, false).isTrue();
+    assertSupersetOf("x$", false, "x", true, false).isFalse();
+    assertSupersetOf("x$", false, "x$", true, false).isTrue();
 
     assertSupersetOf("xy", false, "x", false, false).isFalse();
     assertSupersetOf("xy", true, "x", false, false).isTrue();
@@ -406,6 +422,36 @@ class RegexTreeHelperTest {
 
     assertSupersetOf(longEmailRegex, longEmailSample, false).isFalse();
     assertSupersetOf(longEmailRegex, longEmailSample, true).isTrue();
+  }
+
+  @Test
+  void can_reach_without_consuming_input() {
+    SubAutomaton subAutomaton1 = parseSubAutomaton("a|b", false, 0);
+    assertThat(canReachWithoutConsumingInput(subAutomaton1.start, subAutomaton1.end)).isFalse();
+
+    SubAutomaton subAutomaton2 = parseSubAutomaton("a|$", false, 0);
+    assertThat(canReachWithoutConsumingInput(subAutomaton2.start, subAutomaton2.end)).isTrue();
+
+    SubAutomaton subAutomaton3 = parseSubAutomaton("a|$|", false, 0);
+    assertThat(canReachWithoutConsumingInput(subAutomaton3.start, subAutomaton3.end)).isTrue();
+
+    SubAutomaton subAutomaton4 = parseSubAutomaton("(a|$)*", false, 0);
+    assertThat(canReachWithoutConsumingInput(subAutomaton4.start, subAutomaton4.end)).isTrue();
+  }
+
+  @Test
+  void can_reach_without_consuming_input_or_going_through_boundaries() {
+    SubAutomaton subAutomaton1 = parseSubAutomaton("a|b", false, 0);
+    assertThat(canReachWithoutConsumingInputOrGoingThroughBoundaries(subAutomaton1.start, subAutomaton1.end)).isFalse();
+
+    SubAutomaton subAutomaton2 = parseSubAutomaton("a|$", false, 0);
+    assertThat(canReachWithoutConsumingInputOrGoingThroughBoundaries(subAutomaton2.start, subAutomaton2.end)).isFalse();
+
+    SubAutomaton subAutomaton3 = parseSubAutomaton("a|$|", false, 0);
+    assertThat(canReachWithoutConsumingInputOrGoingThroughBoundaries(subAutomaton3.start, subAutomaton3.end)).isTrue();
+
+    SubAutomaton subAutomaton4 = parseSubAutomaton("(a|$)*", false, 0);
+    assertThat(canReachWithoutConsumingInputOrGoingThroughBoundaries(subAutomaton4.start, subAutomaton4.end)).isTrue();
   }
 
   private static AbstractBooleanAssert<?> assertIntersects(String set1, String set2, boolean defaultAnswer) {

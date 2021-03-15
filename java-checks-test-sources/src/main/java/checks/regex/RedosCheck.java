@@ -132,6 +132,11 @@ public class RedosCheck {
     str.matches("(?s)x*.*");
     str.matches("x*(?s)*"); // Coverage
     str.matches("(.*,)*("); // Rule is not applied to syntactically invalid regular expressions
+
+    // false-negative, limitation of the IntersectAutomataChecker. Currently intersection between
+    // ".*" and "\b.*" return the defaultAnswer because comparison between (DotTree or CharacterClassElementTree) and BoundaryTree
+    // is not supported.
+    str.matches(".*\\b.*X"); // false-negative
   }
 
 }

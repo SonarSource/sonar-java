@@ -19,17 +19,18 @@
  */
 package org.sonar.java.checks.helpers;
 
+import java.util.HashMap;
+import javax.annotation.CheckForNull;
 import java.util.Objects;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.regex.ast.AutomatonState;
-import org.sonar.java.regex.ast.BoundaryTree;
 import org.sonar.java.regex.ast.LookAroundTree;
 import org.sonar.java.regex.ast.RepetitionTree;
 
-import javax.annotation.CheckForNull;
-import java.util.HashMap;
-
-import static org.sonar.java.regex.ast.AutomatonState.TransitionType.*;
+import static org.sonar.java.regex.ast.AutomatonState.TransitionType.BACK_REFERENCE;
+import static org.sonar.java.regex.ast.AutomatonState.TransitionType.EPSILON;
+import static org.sonar.java.regex.ast.AutomatonState.TransitionType.LOOKAROUND_BACKTRACKING;
+import static org.sonar.java.regex.ast.AutomatonState.TransitionType.NEGATION;
 
 public abstract class AbstractAutomataChecker {
 
@@ -97,7 +98,6 @@ public abstract class AbstractAutomataChecker {
     return transition == LOOKAROUND_BACKTRACKING ||
       transition == NEGATION ||
       auto.start instanceof LookAroundTree ||
-      auto.start instanceof BoundaryTree ||
       // We could support back-references by having a stack of sub-automata, onto which we push the referenced group,
       // but for now we'll simply bail here
       transition == BACK_REFERENCE ||

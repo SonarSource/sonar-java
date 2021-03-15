@@ -200,6 +200,7 @@ public class RegexStackOverflowCheck extends AbstractRegexCheck {
     private PathInfo edgeCost(AutomatonState state) {
       switch (state.incomingTransitionType()) {
         case EPSILON:
+        case BOUNDARY:
           return new PathInfo(0, ignoredNode(state) ? 0 : 1);
         case CHARACTER:
           return new PathInfo(1, 1);

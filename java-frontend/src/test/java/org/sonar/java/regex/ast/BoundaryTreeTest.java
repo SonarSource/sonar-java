@@ -54,7 +54,7 @@ class BoundaryTreeTest {
 
     BoundaryTree boundaryTree = (BoundaryTree) tree;
     assertThat(boundaryTree.type()).isEqualTo(expectedType);
-    assertThat(boundaryTree.incomingTransitionType()).isEqualTo(AutomatonState.TransitionType.EPSILON);
+    assertThat(boundaryTree.incomingTransitionType()).isEqualTo(AutomatonState.TransitionType.BOUNDARY);
   }
 
 }

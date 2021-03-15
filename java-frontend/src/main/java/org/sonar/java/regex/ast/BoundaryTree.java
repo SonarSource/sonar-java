@@ -78,7 +78,7 @@ public class BoundaryTree extends RegexTree {
   @Nonnull
   @Override
   public TransitionType incomingTransitionType() {
-    return TransitionType.EPSILON;
+    return TransitionType.BOUNDARY;
   }
 
 }

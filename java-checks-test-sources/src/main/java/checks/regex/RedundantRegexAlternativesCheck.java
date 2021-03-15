@@ -68,7 +68,13 @@ public class RedundantRegexAlternativesCheck {
     f(compile(".*|a")); // Noncompliant
     f(compile("[ab]"));
     f(compile(".*"));
-    f(compile("[\uD83D\uDE02]" + "[\uD83D\uDE0A]")); // Compliant 
+    f(compile("[\uD83D\uDE02]" + "[\uD83D\uDE0A]")); // Compliant
+    f(compile("\\w\\b|\\d\\b")); // Noncompliant {{Remove or rework this redundant alternative.}}
+    f(compile("\\w\\B|\\d\\B")); // Noncompliant {{Remove or rework this redundant alternative.}}
+    f(compile("\\w\\b|\\d\\B")); // Compliant
+    f(compile("\\w\\b.|\\d\\b")); // Compliant
+    f(compile("\\w\\b.|\\d\\b.")); // Noncompliant
+    f(compile("\\w\\b,y|\\d\\b,x")); // Compliant
   }
 
 }
