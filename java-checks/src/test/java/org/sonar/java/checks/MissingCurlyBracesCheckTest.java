@@ -22,12 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+
 class MissingCurlyBracesCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/MissingCurlyBraces.java")
+      .onFile(testSourcesPath("checks/MissingCurlyBraces.java"))
       .withCheck(new MissingCurlyBracesCheck())
       .verifyIssues();
   }
