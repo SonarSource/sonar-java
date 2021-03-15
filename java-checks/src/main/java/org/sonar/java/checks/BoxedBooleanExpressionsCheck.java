@@ -170,7 +170,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
       .filter(tree -> tree.is(Kind.EQUAL_TO, Kind.NOT_EQUAL_TO) && isNullCheck((ExpressionTree) tree))
       .map(ExpressionTree.class::cast)
       .findFirst();
-    firstNullCheckCache.put(symbol, firstNullCheck.isPresent() ? firstNullCheck.get() : null);
+    firstNullCheckCache.put(symbol, firstNullCheck.orElse(null));
     return firstNullCheck;
   }
 
