@@ -19,7 +19,12 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -53,8 +58,13 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
   private static final String BOOLEAN = "java.lang.Boolean";
   private JavaFileScannerContext context;
 
+  private static final Map<Tree, IfStatementTree> ifStatementCache = new HashMap<>();
+  private static final Map<Symbol, ExpressionTree> firstNullCheckCache = new HashMap<>();
+
   @Override
   public void scanFile(JavaFileScannerContext context) {
+    ifStatementCache.clear();
+    firstNullCheckCache.clear();
     this.context = context;
     if (context.getSemanticModel() != null) {
       scan(context.getTree());
@@ -127,15 +137,64 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
   private static boolean isFirstUsageANullCheck(ExpressionTree boxedBoolean) {
     if (boxedBoolean.is(Kind.IDENTIFIER)) {
       IdentifierTree identifier = (IdentifierTree) boxedBoolean;
+      // Usages are not guaranteed to be ordered
       List<IdentifierTree> usages = identifier.symbol().usages();
-      if (!usages.isEmpty()) {
-        Tree parent = usages.get(0).parent();
-        if (parent.is(Kind.NOT_EQUAL_TO, Kind.EQUAL_TO) && isNullCheck((ExpressionTree) parent)) {
-          return true;
-        }
+      Tree firstUsage = usages.get(0).parent();
+      // Test if the first usage in our list is a null check
+      if (firstUsage.is(Kind.EQUAL_TO, Kind.NOT_EQUAL_TO) && isNullCheck((ExpressionTree) firstUsage)) {
+        return true;
       }
+      // Return false if the only usage is not a null check
+      if (usages.size() == 1) {
+        return false;
+      }
+      // Fetch the first null check in the usages list
+      Optional<ExpressionTree> firstNullCheck = getFirstNullCheck(identifier.symbol());
+      if (!firstNullCheck.isPresent()) {
+        return false;
+      }
+      // Test if the first null check and the first usage are part of the same higher if structure
+      Optional<IfStatementTree> ifStatementWithNullCheck = getParentConditionalBranch(firstNullCheck.get());
+      Optional<IfStatementTree> ifStatementWithFirstUsage = getParentConditionalBranch((ExpressionTree) firstUsage);
+      return ifStatementWithNullCheck.equals(ifStatementWithFirstUsage);
     }
     return false;
+  }
+
+  private static Optional<ExpressionTree> getFirstNullCheck(Symbol symbol) {
+    if (firstNullCheckCache.containsKey(symbol)) {
+      return Optional.ofNullable(firstNullCheckCache.get(symbol));
+    }
+    Optional<ExpressionTree> firstNullCheck = symbol.usages().stream()
+      .map(IdentifierTree::parent)
+      .filter(tree -> tree.is(Kind.EQUAL_TO, Kind.NOT_EQUAL_TO) && isNullCheck((ExpressionTree) tree))
+      .map(ExpressionTree.class::cast)
+      .findFirst();
+    firstNullCheckCache.put(symbol, firstNullCheck.orElse(null));
+    return firstNullCheck;
+  }
+
+
+  private static Optional<IfStatementTree> getParentConditionalBranch(ExpressionTree tree) {
+    Deque<Tree> trees = new ArrayDeque<>();
+    Tree current = tree;
+    IfStatementTree ifStatementTree = null;
+
+    while (current != null && ifStatementTree == null) {
+      if (ifStatementCache.containsKey(tree)) {
+        ifStatementTree = ifStatementCache.get(tree);
+      } else if (current.is(Kind.IF_STATEMENT)) {
+        ifStatementTree = (IfStatementTree) current;
+      }
+      trees.add(current);
+      current = current.parent();
+    }
+
+    while (!trees.isEmpty()) {
+      ifStatementCache.put(trees.pop(), ifStatementTree);
+    }
+
+    return Optional.ofNullable(ifStatementTree);
   }
 
   @CheckForNull
