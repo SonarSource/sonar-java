@@ -49,25 +49,25 @@ public class RegexTreeHelper {
 
   public static List<RegexCheck.RegexIssueLocation> getGraphemeInList(List<? extends RegexSyntaxElement> trees) {
     List<RegexCheck.RegexIssueLocation> result = new ArrayList<>();
-    List<RegexSyntaxElement> codeUnits = new ArrayList<>();
+    List<RegexSyntaxElement> codePoints = new ArrayList<>();
     for (RegexSyntaxElement child : trees) {
       if (child instanceof CharacterTree) {
         CharacterTree currentCharacter = (CharacterTree) child;
         if (!currentCharacter.isEscapeSequence()) {
           if (!isMark(currentCharacter)) {
-            addCurrentGrapheme(result, codeUnits);
-            codeUnits.clear();
-            codeUnits.add(currentCharacter);
-          } else if (!codeUnits.isEmpty()) {
-            codeUnits.add(currentCharacter);
+            addCurrentGrapheme(result, codePoints);
+            codePoints.clear();
+            codePoints.add(currentCharacter);
+          } else if (!codePoints.isEmpty()) {
+            codePoints.add(currentCharacter);
           }
           continue;
         }
       }
-      addCurrentGrapheme(result, codeUnits);
-      codeUnits.clear();
+      addCurrentGrapheme(result, codePoints);
+      codePoints.clear();
     }
-    addCurrentGrapheme(result, codeUnits);
+    addCurrentGrapheme(result, codePoints);
     return result;
   }
 
@@ -77,7 +77,7 @@ public class RegexTreeHelper {
 
   private static void addCurrentGrapheme(List<RegexCheck.RegexIssueLocation> result, List<RegexSyntaxElement> codePoints) {
     if (codePoints.size() > 1) {
-      result.add(new RegexCheck.RegexIssueLocation(codePoints, ""));
+      result.add(new RegexCheck.RegexIssueLocation(new ArrayList<>(codePoints), ""));
     }
   }
 
