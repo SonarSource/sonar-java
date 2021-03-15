@@ -1,6 +1,7 @@
 package checks.regex;
 
 import javax.validation.constraints.Email;
+import java.util.regex.Pattern;
 
 public class ImpossibleBoundariesCheck {
 
@@ -30,6 +31,37 @@ public class ImpossibleBoundariesCheck {
     // FP we raise an issue below because the usage of $ in the middle of a regex is suspicious and redundant
     str.matches("(?m)^1$\n2"); // Noncompliant
   }
+  
+  void probablyNonCompliant(String str) {
+    str.matches("$.*"); // Noncompliant {{Remove or replace this boundary that can only match if the previous part matched the empty string because it appears before mandatory input.}}
+    str.matches("$.?"); // Noncompliant {{Remove or replace this boundary that can only match if the previous part matched the empty string because it appears before mandatory input.}}
+
+    str.matches("$a*"); // Noncompliant {{Remove or replace this boundary that can only match if the previous part matched the empty string because it appears before mandatory input.}}
+    str.matches("$a?"); // Noncompliant {{Remove or replace this boundary that can only match if the previous part matched the empty string because it appears before mandatory input.}}
+    str.matches("$[abc]*"); // Noncompliant {{Remove or replace this boundary that can only match if the previous part matched the empty string because it appears before mandatory input.}}
+    str.matches("$[abc]?"); // Noncompliant {{Remove or replace this boundary that can only match if the previous part matched the empty string because it appears before mandatory input.}}
+
+    str.matches(".*^"); // Noncompliant {{Remove or replace this boundary that can only match if the previous part matched the empty string because it appears after mandatory input.}}
+    str.matches(".?^"); // Noncompliant {{Remove or replace this boundary that can only match if the previous part matched the empty string because it appears after mandatory input.}}
+
+    str.matches("a*^"); // Noncompliant {{Remove or replace this boundary that can only match if the previous part matched the empty string because it appears after mandatory input.}}
+    str.matches("a?^"); // Noncompliant {{Remove or replace this boundary that can only match if the previous part matched the empty string because it appears after mandatory input.}}
+    str.matches("[abc]*^"); // Noncompliant {{Remove or replace this boundary that can only match if the previous part matched the empty string because it appears after mandatory input.}}
+    str.matches("[abc]?^"); // Noncompliant {{Remove or replace this boundary that can only match if the previous part matched the empty string because it appears after mandatory input.}}
+
+    // Noncompliant@+1
+    str.matches("$.*^"); // Noncompliant
+    // Noncompliant@+1
+    str.matches("$.?^"); // Noncompliant
+    // Noncompliant@+1
+    str.matches("$a*^"); // Noncompliant
+    // Noncompliant@+1
+    str.matches("$a?^"); // Noncompliant
+    // Noncompliant@+1
+    str.matches("$[abc]*^"); // Noncompliant
+    // Noncompliant@+1
+    str.matches("$[abc]?^"); // Noncompliant
+  }
 
   void compliant(String str) {
     str.matches("^[a-z]$");
@@ -49,7 +81,10 @@ public class ImpossibleBoundariesCheck {
     str.matches("(?=$)");
     str.matches("(?i)(true)(?=(?:[^']|'[^']*')*$)");
     str.matches("(?:abc(X|$))*Y?");
-    str.matches("$()*");
+    str.matches("(?:x*(Xab|^)abc)*Y?");
+    Pattern.compile("^(0\\d{2}-\\d{8}(-\\d{1,4})?)|(0\\d{3}-\\d{7,8}(-\\d{1,4})?)$");
+    Pattern.compile("^(((13[0-9])|(15([0-3]|[5-9]))|(18[0,5-9]))\\d{8})|(0\\d{2}-\\d{8})|(0\\d{3}-\\d{7})$");
+    Pattern.compile("^((?<major>[0-9]{1,9})?(\\.(?<minor>[0-9]{1,9})(\\.$|[.-](?<micro>[0-9]{1,9}))?)?)([.-]?(?<qualifier>.+?))??([.-]redhat-(?<suffixversion>[0-9]{1,9}))?$");
   }
 
 }
