@@ -20,14 +20,18 @@
 package org.sonar.java.checks.helpers;
 
 import java.util.HashMap;
-import javax.annotation.CheckForNull;
 import java.util.Objects;
+import java.util.regex.Pattern;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.regex.ast.AutomatonState;
+import org.sonar.java.regex.ast.BoundaryTree;
 import org.sonar.java.regex.ast.LookAroundTree;
 import org.sonar.java.regex.ast.RepetitionTree;
 
 import static org.sonar.java.regex.ast.AutomatonState.TransitionType.BACK_REFERENCE;
+import static org.sonar.java.regex.ast.AutomatonState.TransitionType.BOUNDARY;
 import static org.sonar.java.regex.ast.AutomatonState.TransitionType.EPSILON;
 import static org.sonar.java.regex.ast.AutomatonState.TransitionType.LOOKAROUND_BACKTRACKING;
 import static org.sonar.java.regex.ast.AutomatonState.TransitionType.NEGATION;
@@ -113,6 +117,22 @@ public abstract class AbstractAutomataChecker {
       return maximumRepetitions != null && maximumRepetitions > 1;
     }
     return false;
+  }
+
+  @Nullable
+  protected static BoundaryTree.Type boundaryTypeOf(AutomatonState state) {
+    if (state.incomingTransitionType() != BOUNDARY) {
+      return null;
+    }
+    BoundaryTree.Type boundaryType = ((BoundaryTree) state).type();
+    if (!state.activeFlags().contains(Pattern.MULTILINE)) {
+      if (boundaryType == BoundaryTree.Type.LINE_START) {
+        boundaryType = BoundaryTree.Type.INPUT_START;
+      } else if (boundaryType == BoundaryTree.Type.LINE_END) {
+        boundaryType = BoundaryTree.Type.INPUT_END;
+      }
+    }
+    return boundaryType;
   }
 
   @VisibleForTesting
