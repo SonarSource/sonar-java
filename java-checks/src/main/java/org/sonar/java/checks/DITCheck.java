@@ -41,13 +41,21 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final int DEFAULT_MAX = 5;
+  private static final List<String> DEFAULT_PERMITTED_PATTERNS = Arrays.asList(
+    "android.",
+    "com.intellij.",
+    "com.persistit.",
+    "javax.swing.",
+    "org.eclipse.",
+    "org.springframework."
+  );
 
   private JavaFileScannerContext context;
 
   @RuleProperty(
-      key = "max",
-      description = "Maximum depth of the inheritance tree. (Number)",
-      defaultValue = "" + DEFAULT_MAX)
+    key = "max",
+    description = "Maximum depth of the inheritance tree. (Number)",
+    defaultValue = "" + DEFAULT_MAX)
   private Integer max = DEFAULT_MAX;
 
   @RuleProperty(
@@ -73,7 +81,8 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
       int dit = 0;
       while (superClass != null) {
         String fullyQualifiedName = superClass.fullyQualifiedName();
-        if (getPatterns().stream().anyMatch(wp -> wp.match(fullyQualifiedName))) {
+        if (DEFAULT_PERMITTED_PATTERNS.stream().anyMatch(fullyQualifiedName::startsWith) ||
+          getPatterns().stream().anyMatch(wp -> wp.match(fullyQualifiedName))) {
           break;
         }
         dit++;
@@ -103,7 +112,10 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private List<WildcardPattern> getPatterns() {
     if (filteredPatterns == null) {
-      filteredPatterns = Arrays.asList(PatternUtils.createPatterns(filteredClasses));
+      String permittedPatterns = String.join(",",
+        filteredClasses
+      );
+      filteredPatterns = Arrays.asList(PatternUtils.createPatterns(permittedPatterns));
     }
     return filteredPatterns;
   }

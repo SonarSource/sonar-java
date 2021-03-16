@@ -1,8 +1,10 @@
-public class Dit extends One {
+package checks;
+
+public class DitOk extends OneOk {
 }
 
-class One extends Two {
+class OneOk extends TwoOk {
 }
 
-class Two {
+class TwoOk {
 }

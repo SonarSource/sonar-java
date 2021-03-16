@@ -77,4 +77,14 @@ class DITCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_extending_framework() {
+    DITCheck check = new DITCheck();
+    check.setMax(1);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/DitKnownFrameworks.java"))
+      .withCheck(check)
+      .verifyNoIssues();
+  }
+
 }
