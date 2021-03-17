@@ -26,7 +26,6 @@ import org.sonar.java.checks.helpers.SubAutomaton;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.FinalState;
 import org.sonar.java.regex.ast.LookAroundTree;
-import org.sonar.java.regex.ast.LookAroundTree.Direction;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
 import org.sonar.java.regex.ast.RegexTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -54,7 +53,7 @@ public class RegexLookaheadCheck extends AbstractRegexCheckTrackingMatchType {
 
     @Override
     public void visitLookAround(LookAroundTree tree) {
-      if (tree.getDirection() == Direction.AHEAD && doesLookaheadContinuationAlwaysFail(tree)) {
+      if (tree.getDirection() == LookAroundTree.Direction.AHEAD && doesLookaheadContinuationAlwaysFail(tree)) {
         reportIssue(tree, MESSAGE, null, Collections.emptyList());
       }
       super.visitLookAround(tree);
@@ -65,6 +64,10 @@ public class RegexLookaheadCheck extends AbstractRegexCheckTrackingMatchType {
       boolean canLookAroundBeAPrefix = matchType != MatchType.FULL;
       SubAutomaton lookAroundSubAutomaton = new SubAutomaton(lookAroundElement, lookAroundElement.continuation(), canLookAroundBeAPrefix);
       SubAutomaton continuationSubAutomaton = new SubAutomaton(lookAround.continuation(), finalState, true);
+
+      if (lookAround.getPolarity() == LookAroundTree.Polarity.NEGATIVE) {
+        return RegexTreeHelper.supersetOf(lookAroundSubAutomaton, continuationSubAutomaton, false);
+      }
       return !RegexTreeHelper.intersects(lookAroundSubAutomaton, continuationSubAutomaton, true);
     }
 
