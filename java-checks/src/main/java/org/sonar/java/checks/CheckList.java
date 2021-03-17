@@ -383,7 +383,7 @@ public final class CheckList {
       DisallowedMethodCheck.class,
       DisallowedThreadGroupCheck.class,
       DisclosingTechnologyFingerprintsCheck.class,
-      DITCheck.class,
+      DepthOfInheritanceTreeCheck.class,
       DivisionByZeroCheck.class,
       DoubleBraceInitializationCheck.class,
       DoubleCheckedLockingAssignmentCheck.class,

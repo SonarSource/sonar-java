@@ -37,7 +37,7 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "MaximumInheritanceDepth", repositoryKey = "squid")
 @Rule(key = "S110")
-public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class DepthOfInheritanceTreeCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final int DEFAULT_MAX_DEPTH = 5;
   private static final List<String> FRAMEWORK_EXCLUSION_PATTERNS = Arrays.asList(

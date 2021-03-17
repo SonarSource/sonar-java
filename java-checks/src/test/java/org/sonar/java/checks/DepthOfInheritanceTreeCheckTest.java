@@ -25,19 +25,19 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
-class DITCheckTest {
+class DepthOfInheritanceTreeCheckTest {
 
   @Test
   void defaults() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/DitOk.java"))
-      .withCheck(new DITCheck())
+      .withCheck(new DepthOfInheritanceTreeCheck())
       .verifyNoIssues();
   }
 
   @Test
   void max_level_is_2() {
-    DITCheck check = new DITCheck();
+    DepthOfInheritanceTreeCheck check = new DepthOfInheritanceTreeCheck();
     check.setMax(2);
 
     String filename = testSourcesPath("checks/Dit.java");
@@ -56,7 +56,7 @@ class DITCheckTest {
 
   @Test
   void max_level_is_2_and_filtered() {
-    DITCheck check = new DITCheck();
+    DepthOfInheritanceTreeCheck check = new DepthOfInheritanceTreeCheck();
     check.setMax(2);
     check.setFilteredClasses("java.lang.Object");
 
@@ -68,7 +68,7 @@ class DITCheckTest {
 
   @Test
   void intermediate_match() {
-    DITCheck check = new DITCheck();
+    DepthOfInheritanceTreeCheck check = new DepthOfInheritanceTreeCheck();
     check.setMax(2);
     check.setFilteredClasses("checks.Dit_C");
 
@@ -80,7 +80,7 @@ class DITCheckTest {
 
   @Test
   void test_extending_framework() {
-    DITCheck check = new DITCheck();
+    DepthOfInheritanceTreeCheck check = new DepthOfInheritanceTreeCheck();
     check.setMax(1);
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/DitKnownFrameworks.java"))
