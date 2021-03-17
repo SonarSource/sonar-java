@@ -63,7 +63,6 @@ public class DepthOfInheritanceTreeCheck extends BaseTreeVisitor implements Java
     defaultValue = "")
   private String filteredClasses = "";
 
-  private List<WildcardPattern> filteredPatterns;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -111,14 +110,11 @@ public class DepthOfInheritanceTreeCheck extends BaseTreeVisitor implements Java
   }
 
   private List<WildcardPattern> getPatterns() {
-    if (filteredPatterns == null) {
-      String permittedPatterns = String.join(",",
-        String.join(",", FRAMEWORK_EXCLUSION_PATTERNS),
-        filteredClasses
-      );
-      filteredPatterns = Arrays.asList(PatternUtils.createPatterns(permittedPatterns));
-    }
-    return filteredPatterns;
+    String patterns = String.join(",",
+      String.join(",", FRAMEWORK_EXCLUSION_PATTERNS),
+      filteredClasses
+    );
+    return Arrays.asList(PatternUtils.createPatterns(patterns));
   }
 
   public void setFilteredClasses(String filteredClasses) {
