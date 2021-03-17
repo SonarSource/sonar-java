@@ -79,16 +79,16 @@ class DepthOfInheritanceTreeCheckTest {
   }
 
   @Test
-  void test_extending_framework() {
+  void test_framework_exclusion() {
     DepthOfInheritanceTreeCheck check = new DepthOfInheritanceTreeCheck();
     check.setMax(1);
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/DitKnownFrameworks.java"))
+      .onFile(testSourcesPath("checks/DitFrameworkExclusion.java"))
       .withCheck(check)
       .verifyNoIssues();
 
     JavaCheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/DitKnownFrameworks.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/DitFrameworkExclusion.java"))
       .withCheck(check)
       .verifyNoIssues();
   }

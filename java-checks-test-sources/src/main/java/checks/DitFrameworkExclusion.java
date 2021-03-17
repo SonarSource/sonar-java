@@ -4,7 +4,7 @@ import javax.swing.*;
 import org.eclipse.equinox.log.LogPermission;
 import org.springframework.dao.DataAccessException;
 
-public class DitKnownFrameworks {
+public class DitFrameworkExclusion {
   class MyJFrame extends JFrame {
   }
 

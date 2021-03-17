@@ -4,7 +4,7 @@ import android.view.View;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.persistit.ui.AdminPanel;
 
-public class DitKnownFrameworks {
+public class DitFrameworkExclusion {
   class MyView extends android.view.View {
   }
 
