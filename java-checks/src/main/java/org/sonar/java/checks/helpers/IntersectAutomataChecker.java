@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 import org.sonar.java.regex.ast.BoundaryTree;
+import org.sonar.java.regex.ast.BoundaryTree.Type;
 
 public class IntersectAutomataChecker extends AbstractAutomataChecker {
   private static final Map<BoundaryTree.Type, Map<BoundaryTree.Type, Boolean>> BOUNDARIES_INTERSECT_MAP = new EnumMap<>(BoundaryTree.Type.class);
@@ -56,7 +57,7 @@ public class IntersectAutomataChecker extends AbstractAutomataChecker {
 
   private static void mapIntersect(BoundaryTree.Type... types) {
     for (int i = 0; i < types.length; i++) {
-      for (int j = i + 1; j < types.length; j++) {
+      for (int j = 0; j < types.length; j++) {
         mapIntersect(types[i], types[j], true);
       }
     }
@@ -86,28 +87,24 @@ public class IntersectAutomataChecker extends AbstractAutomataChecker {
       return checkBoundariesIntersect(auto1, boundaryType1, auto2, boundaryType2);
     }
 
-    if (boundaryType2 != null) {
-      // characterClass1 != null, ignore the boundary of auto2 and check its successors
-      return checkAuto2Successors(auto1, auto2, defaultAnswer, hasConsumedInput);
-    } else {
-      // boundaryType1 != null && characterClass2 != null, ignore the boundary of auto1 and check its successors
-      return checkAuto1Successors(auto1, auto2, defaultAnswer, hasConsumedInput);
-    }
+    return defaultAnswer;
   }
 
   private boolean checkBoundariesIntersect(SubAutomaton auto1, BoundaryTree.Type boundaryType1, SubAutomaton auto2, BoundaryTree.Type boundaryType2) {
-    return BOUNDARIES_INTERSECT_MAP.getOrDefault(boundaryType1, Collections.emptyMap())
-      .getOrDefault(boundaryType2, defaultAnswer) &&
-      auto1.anySuccessorMatch(successor1 -> auto2.anySuccessorMatch(
-        successor2 -> check(successor1, successor2, true)));
+    Map<Type, Boolean> boundaryType1Intersects = BOUNDARIES_INTERSECT_MAP.getOrDefault(boundaryType1, Collections.emptyMap());
+    return boundaryType1Intersects.getOrDefault(boundaryType2, defaultAnswer)
+      && checkSuccessors(auto1, auto2);
   }
 
   private boolean checkCharacterClassIntersect(
     SubAutomaton auto1, SimplifiedRegexCharacterClass characterClass1,
     SubAutomaton auto2, SimplifiedRegexCharacterClass characterClass2) {
-    return characterClass1.intersects(characterClass2, defaultAnswer) &&
-      auto1.anySuccessorMatch(successor1 -> auto2.anySuccessorMatch(
-        successor2 -> check(successor1, successor2, true)));
+    return characterClass1.intersects(characterClass2, defaultAnswer)
+      && checkSuccessors(auto1, auto2);
+  }
+
+  private boolean checkSuccessors(SubAutomaton auto1, SubAutomaton auto2) {
+    return auto1.anySuccessorMatch(successor1 -> auto2.anySuccessorMatch(successor2 -> check(successor1, successor2, true)));
   }
 
   @Override

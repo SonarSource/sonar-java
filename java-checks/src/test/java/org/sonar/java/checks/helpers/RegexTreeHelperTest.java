@@ -356,20 +356,23 @@ class RegexTreeHelperTest {
 
   @Test
   void superset_of_sequence_with_one_boundary() {
-    assertSupersetOf("^ab", "ab", true).isFalse();
+    assertSupersetOf("^ab", "ab", true).isTrue();
     assertSupersetOf("^ab", "ab", false).isFalse();
 
     assertSupersetOf("ab", "^ab", true).isTrue();
     assertSupersetOf("ab", "^ab", false).isTrue();
 
+    assertSupersetOf("a$", "ab", true).isFalse();
+    assertSupersetOf("a$", "ab", false).isFalse();
+
+    assertSupersetOf("ab", "a$", true).isFalse();
+    assertSupersetOf("ab", "a$", false).isFalse();
+
     assertSupersetOf("ab$", "ab", true).isFalse();
     assertSupersetOf("ab$", "ab", false).isFalse();
 
-    assertSupersetOf("a$", "ab", true).isFalse();
-    assertSupersetOf("ab", "a$", true).isFalse();
-
-    assertSupersetOf("ab", "ab$", false).isFalse(); // TODO not yet supported
-    assertSupersetOf("ab", "ab$", true).isFalse();   // TODO not yet supported
+    assertSupersetOf("ab", "ab$", true).isFalse(); // TODO not yet supported, should be True
+    assertSupersetOf("ab", "ab$", false).isFalse(); // TODO not yet supported, should be True
   }
 
   @Test

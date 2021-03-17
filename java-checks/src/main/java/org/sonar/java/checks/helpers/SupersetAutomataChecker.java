@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 import org.sonar.java.regex.ast.BoundaryTree;
+import org.sonar.java.regex.ast.BoundaryTree.Type;
 
 public class SupersetAutomataChecker extends AbstractAutomataChecker {
 
@@ -93,23 +94,25 @@ public class SupersetAutomataChecker extends AbstractAutomataChecker {
     } else {
       // boundaryType1 != null && characterClass2 != null
       // with an additional boundary auto1 can not be a superset of auto2
-      return false;
+      return defaultAnswer && checkAuto1Successors(auto1, auto2, defaultAnswer, hasConsumedInput);
     }
   }
 
   private boolean checkSupersetOfBoundaries(SubAutomaton auto1, BoundaryTree.Type boundaryType1, SubAutomaton auto2, BoundaryTree.Type boundaryType2) {
-    return BOUNDARIES_SUPERSET_OF_MAP.getOrDefault(boundaryType1, Collections.emptyMap())
-      .getOrDefault(boundaryType2, defaultAnswer) &&
-      auto2.allSuccessorMatch(successor2 -> auto1.anySuccessorMatch(
-        successor1 -> check(successor1, successor2, true)));
+    Map<Type, Boolean> boundaryType1Supersets = BOUNDARIES_SUPERSET_OF_MAP.getOrDefault(boundaryType1, Collections.emptyMap());
+    return boundaryType1Supersets.getOrDefault(boundaryType2, defaultAnswer)
+      && checkSuccessors(auto1, auto2);
   }
 
   private boolean checkSupersetOfCharacterClass(
     SubAutomaton auto1, SimplifiedRegexCharacterClass characterClass1,
     SubAutomaton auto2, SimplifiedRegexCharacterClass characterClass2) {
-    return characterClass1.supersetOf(characterClass2, defaultAnswer) &&
-      auto2.allSuccessorMatch(successor2 -> auto1.anySuccessorMatch(
-        successor1 -> check(successor1, successor2, true)));
+    return characterClass1.supersetOf(characterClass2, defaultAnswer)
+      && checkSuccessors(auto1, auto2);
+  }
+
+  private boolean checkSuccessors(SubAutomaton auto1, SubAutomaton auto2) {
+    return auto2.allSuccessorMatch(successor2 -> auto1.anySuccessorMatch(successor1 -> check(successor1, successor2, true)));
   }
 
   @Override
