@@ -39,8 +39,8 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 @Rule(key = "S110")
 public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final int DEFAULT_MAX = 5;
-  private static final List<String> DEFAULT_PERMITTED_PATTERNS = Arrays.asList(
+  public static final int DEFAULT_MAX_DEPTH = 5;
+  private static final List<String> FRAMEWORK_EXCLUSION_PATTERNS = Arrays.asList(
     "android.**",
     "com.intellij.**",
     "com.persistit.**",
@@ -54,8 +54,8 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
   @RuleProperty(
     key = "max",
     description = "Maximum depth of the inheritance tree. (Number)",
-    defaultValue = "" + DEFAULT_MAX)
-  private Integer max = DEFAULT_MAX;
+    defaultValue = "" + DEFAULT_MAX_DEPTH)
+  private Integer max = DEFAULT_MAX_DEPTH;
 
   @RuleProperty(
     key = "filteredClasses",
@@ -113,7 +113,7 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
   private List<WildcardPattern> getPatterns() {
     if (filteredPatterns == null) {
       String permittedPatterns = String.join(",",
-        String.join(",", DEFAULT_PERMITTED_PATTERNS),
+        String.join(",", FRAMEWORK_EXCLUSION_PATTERNS),
         filteredClasses
       );
       filteredPatterns = Arrays.asList(PatternUtils.createPatterns(permittedPatterns));
