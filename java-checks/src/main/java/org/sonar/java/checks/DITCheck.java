@@ -19,6 +19,9 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.sonar.api.utils.WildcardPattern;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -30,10 +33,6 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "MaximumInheritanceDepth", repositoryKey = "squid")
@@ -42,12 +41,12 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final int DEFAULT_MAX = 5;
   private static final List<String> DEFAULT_PERMITTED_PATTERNS = Arrays.asList(
-    "android.",
-    "com.intellij.",
-    "com.persistit.",
-    "javax.swing.",
-    "org.eclipse.",
-    "org.springframework."
+    "android.**",
+    "com.intellij.**",
+    "com.persistit.**",
+    "javax.swing.**",
+    "org.eclipse.**",
+    "org.springframework.**"
   );
 
   private JavaFileScannerContext context;
@@ -79,10 +78,11 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
     if (!isBodyOfEnumConstantTree(tree)) {
       Type superClass = tree.symbol().superClass();
       int dit = 0;
+      List<WildcardPattern> exclusionPatterns = getPatterns();
+
       while (superClass != null) {
         String fullyQualifiedName = superClass.fullyQualifiedName();
-        if (DEFAULT_PERMITTED_PATTERNS.stream().anyMatch(fullyQualifiedName::startsWith) ||
-          getPatterns().stream().anyMatch(wp -> wp.match(fullyQualifiedName))) {
+        if (exclusionPatterns.stream().anyMatch(pattern -> pattern.match(fullyQualifiedName))) {
           break;
         }
         dit++;
@@ -113,6 +113,7 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
   private List<WildcardPattern> getPatterns() {
     if (filteredPatterns == null) {
       String permittedPatterns = String.join(",",
+        String.join(",", DEFAULT_PERMITTED_PATTERNS),
         filteredClasses
       );
       filteredPatterns = Arrays.asList(PatternUtils.createPatterns(permittedPatterns));
