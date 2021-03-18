@@ -1,6 +1,6 @@
 package checks;
 
-public class DitOk extends OneOk {
+public class DepthOfInheritanceTreeCheckOk extends OneOk {
 }
 
 class OneOk extends TwoOk {

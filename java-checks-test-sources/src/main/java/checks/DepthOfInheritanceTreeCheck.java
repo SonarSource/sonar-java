@@ -1,9 +1,9 @@
 package checks;
 
-public class Dit extends One { // Noncompliant {{This class has 3 parents which is greater than 2 authorized.}}
+public class DepthOfInheritanceTreeCheck extends One { // Noncompliant {{This class has 3 parents which is greater than 2 authorized.}}
 
   void foo() {
-    Object o = new Dit() {}; // Noncompliant {{This class has 4 parents which is greater than 2 authorized.}}
+    Object o = new DepthOfInheritanceTreeCheck() {}; // Noncompliant {{This class has 4 parents which is greater than 2 authorized.}}
   }
 }
 

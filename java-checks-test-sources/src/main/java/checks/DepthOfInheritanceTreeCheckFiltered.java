@@ -1,9 +1,9 @@
 package checks;
 
-class DitFiltered extends OneFiltered {
+class DepthOfInheritanceTreeCheckFiltered extends OneFiltered {
 
   void foo() {
-    Object o = new DitFiltered() {}; // Noncompliant {{This class has 3 parents which is greater than 2 authorized.}}
+    Object o = new DepthOfInheritanceTreeCheckFiltered() {}; // Noncompliant {{This class has 3 parents which is greater than 2 authorized.}}
   }
 }
 

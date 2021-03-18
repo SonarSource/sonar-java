@@ -63,6 +63,7 @@ public class DepthOfInheritanceTreeCheck extends BaseTreeVisitor implements Java
     defaultValue = "")
   private String filteredClasses = "";
 
+  private List<WildcardPattern> filteredPatterns;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -77,11 +78,9 @@ public class DepthOfInheritanceTreeCheck extends BaseTreeVisitor implements Java
     if (!isBodyOfEnumConstantTree(tree)) {
       Type superClass = tree.symbol().superClass();
       int dit = 0;
-      List<WildcardPattern> exclusionPatterns = getPatterns();
-
       while (superClass != null) {
         String fullyQualifiedName = superClass.fullyQualifiedName();
-        if (exclusionPatterns.stream().anyMatch(pattern -> pattern.match(fullyQualifiedName))) {
+        if (getPatterns().stream().anyMatch(pattern -> pattern.match(fullyQualifiedName))) {
           break;
         }
         dit++;
@@ -110,11 +109,14 @@ public class DepthOfInheritanceTreeCheck extends BaseTreeVisitor implements Java
   }
 
   private List<WildcardPattern> getPatterns() {
-    String patterns = String.join(",",
-      String.join(",", FRAMEWORK_EXCLUSION_PATTERNS),
-      filteredClasses
-    );
-    return Arrays.asList(PatternUtils.createPatterns(patterns));
+    if (filteredPatterns == null) {
+      String permittedPatterns = String.join(",",
+        String.join(",", FRAMEWORK_EXCLUSION_PATTERNS),
+        filteredClasses
+      );
+      filteredPatterns = Arrays.asList(PatternUtils.createPatterns(permittedPatterns));
+    }
+    return filteredPatterns;
   }
 
   public void setFilteredClasses(String filteredClasses) {

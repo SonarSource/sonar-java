@@ -30,7 +30,7 @@ class DepthOfInheritanceTreeCheckTest {
   @Test
   void defaults() {
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/DitOk.java"))
+      .onFile(testSourcesPath("checks/DepthOfInheritanceTreeCheckOk.java"))
       .withCheck(new DepthOfInheritanceTreeCheck())
       .verifyNoIssues();
   }
@@ -40,7 +40,7 @@ class DepthOfInheritanceTreeCheckTest {
     DepthOfInheritanceTreeCheck check = new DepthOfInheritanceTreeCheck();
     check.setMax(2);
 
-    String filename = testSourcesPath("checks/Dit.java");
+    String filename = testSourcesPath("checks/DepthOfInheritanceTreeCheck.java");
 
     JavaCheckVerifier.newVerifier()
       .onFile(filename)
@@ -61,7 +61,7 @@ class DepthOfInheritanceTreeCheckTest {
     check.setFilteredClasses("java.lang.Object");
 
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/DitFiltered.java"))
+      .onFile(testSourcesPath("checks/DepthOfInheritanceTreeCheckFiltered.java"))
       .withCheck(check)
       .verifyIssues();
   }
@@ -73,7 +73,7 @@ class DepthOfInheritanceTreeCheckTest {
     check.setFilteredClasses("checks.Dit_C");
 
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/DitIntermediateMatching.java"))
+      .onFile(testSourcesPath("checks/DepthOfInheritanceTreeCheckIntermediateMatching.java"))
       .withCheck(check)
       .verifyIssues();
   }
@@ -83,12 +83,12 @@ class DepthOfInheritanceTreeCheckTest {
     DepthOfInheritanceTreeCheck check = new DepthOfInheritanceTreeCheck();
     check.setMax(1);
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/DitFrameworkExclusion.java"))
+      .onFile(testSourcesPath("checks/DepthOfInheritanceTreeCheckFrameworkExclusion.java"))
       .withCheck(check)
-      .verifyNoIssues();
+      .verifyIssues();
 
     JavaCheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/DitFrameworkExclusion.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/DepthOfInheritanceTreeCheckFrameworkExclusion.java"))
       .withCheck(check)
       .verifyNoIssues();
   }
