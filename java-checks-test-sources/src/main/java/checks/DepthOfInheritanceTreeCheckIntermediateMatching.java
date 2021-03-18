@@ -1,5 +1,6 @@
 package checks;
 
+public class DepthOfInheritanceTreeCheckIntermediateMatching {}
 class Dit_A {}
 class Dit_B extends Dit_A {}
 class Dit_C extends Dit_B {} // Noncompliant {{This class has 3 parents which is greater than 2 authorized.}}

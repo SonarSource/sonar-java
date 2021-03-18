@@ -19,6 +19,9 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.sonar.api.utils.WildcardPattern;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -30,25 +33,29 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "MaximumInheritanceDepth", repositoryKey = "squid")
 @Rule(key = "S110")
-public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class DepthOfInheritanceTreeCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final int DEFAULT_MAX = 5;
+  public static final int DEFAULT_MAX_DEPTH = 5;
+  private static final List<String> FRAMEWORK_EXCLUSION_PATTERNS = Arrays.asList(
+    "android.**",
+    "com.intellij.**",
+    "com.persistit.**",
+    "javax.swing.**",
+    "org.eclipse.**",
+    "org.springframework.**"
+  );
 
   private JavaFileScannerContext context;
 
   @RuleProperty(
-      key = "max",
-      description = "Maximum depth of the inheritance tree. (Number)",
-      defaultValue = "" + DEFAULT_MAX)
-  private Integer max = DEFAULT_MAX;
+    key = "max",
+    description = "Maximum depth of the inheritance tree. (Number)",
+    defaultValue = "" + DEFAULT_MAX_DEPTH)
+  private Integer max = DEFAULT_MAX_DEPTH;
 
   @RuleProperty(
     key = "filteredClasses",
@@ -73,7 +80,7 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
       int dit = 0;
       while (superClass != null) {
         String fullyQualifiedName = superClass.fullyQualifiedName();
-        if (getPatterns().stream().anyMatch(wp -> wp.match(fullyQualifiedName))) {
+        if (getPatterns().stream().anyMatch(pattern -> pattern.match(fullyQualifiedName))) {
           break;
         }
         dit++;
@@ -103,7 +110,11 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private List<WildcardPattern> getPatterns() {
     if (filteredPatterns == null) {
-      filteredPatterns = Arrays.asList(PatternUtils.createPatterns(filteredClasses));
+      String permittedPatterns = String.join(",",
+        String.join(",", FRAMEWORK_EXCLUSION_PATTERNS),
+        filteredClasses
+      );
+      filteredPatterns = Arrays.asList(PatternUtils.createPatterns(permittedPatterns));
     }
     return filteredPatterns;
   }

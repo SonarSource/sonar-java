@@ -22,30 +22,33 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
-class DITCheckTest {
+class DepthOfInheritanceTreeCheckTest {
 
   @Test
   void defaults() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/DitOk.java")
-      .withCheck(new DITCheck())
+      .onFile(testSourcesPath("checks/DepthOfInheritanceTreeCheckOk.java"))
+      .withCheck(new DepthOfInheritanceTreeCheck())
       .verifyNoIssues();
   }
 
   @Test
   void max_level_is_2() {
-    DITCheck check = new DITCheck();
+    DepthOfInheritanceTreeCheck check = new DepthOfInheritanceTreeCheck();
     check.setMax(2);
 
+    String filename = testSourcesPath("checks/DepthOfInheritanceTreeCheck.java");
+
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/Dit.java")
+      .onFile(filename)
       .withCheck(check)
       .verifyIssues();
 
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/Dit.java")
+      .onFile(filename)
       .withCheck(check)
       .withoutSemantic()
       .verifyNoIssues();
@@ -53,26 +56,41 @@ class DITCheckTest {
 
   @Test
   void max_level_is_2_and_filtered() {
-    DITCheck check = new DITCheck();
+    DepthOfInheritanceTreeCheck check = new DepthOfInheritanceTreeCheck();
     check.setMax(2);
     check.setFilteredClasses("java.lang.Object");
 
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/DitFiltered.java")
+      .onFile(testSourcesPath("checks/DepthOfInheritanceTreeCheckFiltered.java"))
       .withCheck(check)
       .verifyIssues();
   }
 
   @Test
   void intermediate_match() {
-    DITCheck check = new DITCheck();
+    DepthOfInheritanceTreeCheck check = new DepthOfInheritanceTreeCheck();
     check.setMax(2);
     check.setFilteredClasses("checks.Dit_C");
 
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/DitIntermediateMatching.java"))
+      .onFile(testSourcesPath("checks/DepthOfInheritanceTreeCheckIntermediateMatching.java"))
       .withCheck(check)
       .verifyIssues();
+  }
+
+  @Test
+  void test_framework_exclusion() {
+    DepthOfInheritanceTreeCheck check = new DepthOfInheritanceTreeCheck();
+    check.setMax(1);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/DepthOfInheritanceTreeCheckFrameworkExclusion.java"))
+      .withCheck(check)
+      .verifyIssues();
+
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/DepthOfInheritanceTreeCheckFrameworkExclusion.java"))
+      .withCheck(check)
+      .verifyNoIssues();
   }
 
 }
