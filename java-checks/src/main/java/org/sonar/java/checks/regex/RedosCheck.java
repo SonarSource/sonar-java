@@ -58,7 +58,7 @@ public class RedosCheck extends AbstractRegexCheckTrackingMatchType {
     " cannot lead to denial of service%s.";
   private static final String JAVA8_MESSAGE = " or make sure the code is only run using Java 9 or later";
   private static final String EXP = "exponential";
-  private static final String QUAD = "quadratic";
+  private static final String POLY = "polynomial";
 
   /**
    * The maximum number of repetitions we keep track of in order to find overlapping consecutive repetitions.
@@ -106,7 +106,7 @@ public class RedosCheck extends AbstractRegexCheckTrackingMatchType {
       case QUADRATIC_WHEN_OPTIMIZED:
         // We only suggest upgrading to Java 9+ when that would make the regex safe (i.e. linear runtime), not if it would
         // merely improve it from exponential to quadratic.
-        return Optional.of(String.format(MESSAGE, optimized ? QUAD : EXP, ""));
+        return Optional.of(String.format(MESSAGE, optimized ? POLY : EXP, ""));
       case LINEAR_WHEN_OPTIMIZED:
         if (optimized) {
           return Optional.empty();
@@ -114,7 +114,7 @@ public class RedosCheck extends AbstractRegexCheckTrackingMatchType {
           return Optional.of(String.format(MESSAGE, EXP, canBeOptimized ? JAVA8_MESSAGE : ""));
         }
       case ALWAYS_QUADRATIC:
-        return Optional.of(String.format(MESSAGE, QUAD, ""));
+        return Optional.of(String.format(MESSAGE, POLY, ""));
       case NO_ISSUE:
         return Optional.empty();
     }
