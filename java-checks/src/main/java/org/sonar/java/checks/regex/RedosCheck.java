@@ -179,9 +179,12 @@ public class RedosCheck extends AbstractRegexCheckTrackingMatchType {
       if (tree.getQuantifier().isOpenEnded() && canFail(tree)) {
         for (RepetitionTree repetition : nonPossessiveRepetitions) {
           if (reachabilityChecker.canReach(repetition, tree)) {
-            SubAutomaton auto1 = new SubAutomaton(repetition.getElement(), tree.continuation(), false);
-            SubAutomaton auto2 = new SubAutomaton(repetition.continuation(), tree.continuation(), false);
-            if (intersectionChecker.check(auto1, auto2)) {
+            SubAutomaton repetitionAuto = new SubAutomaton(repetition.getElement(), repetition.continuation(), false);
+            SubAutomaton continuationAuto = new SubAutomaton(repetition.continuation(), tree, false);
+            SubAutomaton treeAuto = new SubAutomaton(tree.getElement(), tree.continuation(), false);
+            if (subAutomatonCanConsume(repetitionAuto, continuationAuto)
+              && automatonIsEmptyOrIntersects(continuationAuto, treeAuto)
+              && intersectionChecker.check(repetitionAuto, treeAuto)) {
               addBacktracking(BacktrackingType.ALWAYS_QUADRATIC);
             }
           }
@@ -191,6 +194,16 @@ public class RedosCheck extends AbstractRegexCheckTrackingMatchType {
         }
         addIfNonPossessive(tree);
       }
+    }
+
+    private boolean subAutomatonCanConsume(SubAutomaton auto1, SubAutomaton auto2) {
+      return canReachWithoutConsumingInputOrGoingThroughBoundaries(auto1.end, auto2.end)
+        || intersectionChecker.check(auto1, auto2);
+    }
+
+    private boolean automatonIsEmptyOrIntersects(SubAutomaton auto1, SubAutomaton auto2) {
+      return canReachWithoutConsumingInputOrGoingThroughBoundaries(auto1.start, auto1.end)
+        || intersectionChecker.check(auto1, auto2);
     }
 
     private void addIfNonPossessive(RepetitionTree tree) {

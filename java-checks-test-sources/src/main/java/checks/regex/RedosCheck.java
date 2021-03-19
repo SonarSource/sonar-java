@@ -56,7 +56,9 @@ public class RedosCheck {
     str.matches("x*a*x*"); // Noncompliant {{Make sure the regex used here, which is vulnerable to polynomial runtime due to backtracking, cannot lead to denial of service.}}
     str.matches("x*,a*x*"); // Compliant, can fail between the two quantifiers
     str.matches("x*(xy?)*"); // Noncompliant {{Make sure the regex used here, which is vulnerable to polynomial runtime due to backtracking, cannot lead to denial of service.}}
-    str.matches("(ab)*a(ba)*"); // Noncompliant {{Make sure the regex used here, which is vulnerable to polynomial runtime due to backtracking, cannot lead to denial of service.}}
+    str.matches("(ab)*a(ba)*"); // False Negative :-(
+    str.matches("x*xx*"); // Noncompliant {{Make sure the regex used here, which is vulnerable to polynomial runtime due to backtracking, cannot lead to denial of service.}}
+    str.matches("x*yx*"); // Compliant
     str.matches("x*a*b*c*d*e*f*g*h*i*x*"); // Noncompliant {{Make sure the regex used here, which is vulnerable to polynomial runtime due to backtracking, cannot lead to denial of service.}}
     str.matches("x*a*b*c*d*e*f*g*h*i*j*x*"); // FN because we forget about the first x* when the maximum number of tracked repetitions is exceeded
     str.matches("x*a*b*c*d*e*f*g*h*i*j*x*x*"); // Noncompliant {{Make sure the regex used here, which is vulnerable to polynomial runtime due to backtracking, cannot lead to denial of service.}}
@@ -125,8 +127,8 @@ public class RedosCheck {
     str.matches("(;*,)*");
     str.matches("x*|x*");
     str.matches("a*b*");
-    str.matches("a*a?b*"); // Noncompliant - false positive :-(
-    str.matches("a*(a?b)*"); // Noncompliant - false positive :-(
+    str.matches("a*a?b*");
+    str.matches("a*(a?b)*");
     str.matches("a*(ab)*");
     str.split("x*x*");
     str.matches("(?s)x*.*");
