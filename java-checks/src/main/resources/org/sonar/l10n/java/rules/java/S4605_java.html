@@ -1,7 +1,7 @@
 <p>Spring beans belonging to packages that are not included in a <code>@ComponentScan</code> configuration will not be accessible in the Spring
-Application Context. Therefore, it's likely to be a configuration mistake that will be detected by this rule. <strong>Note:</strong> the
-<code>@ComponentScan</code> is implicit in the <code>@SpringBootApplication</code> annotation, case in which Spring Boot will auto scan for components
-in the package containing the Spring Boot main class and its sub-packages.</p>
+Application Context. Therefore, it's likely to be a configuration mistake that will be detected by this rule. </p>
+<p><strong>Note:</strong> the <code>@ComponentScan</code> is implicit in the <code>@SpringBootApplication</code> annotation, case in which Spring Boot
+will auto scan for components in the package containing the Spring Boot main class and its sub-packages.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 @Configuration
@@ -18,9 +18,12 @@ public class MyController { // Noncompliant; MyController belong to "com.mycompa
 }
 </pre>
 <h2>Compliant Solution</h2>
+<p>If you are not using SpringBoot:</p>
 <pre>
 @Configuration
 @ComponentScan({"com.mycompany.app.beans","com.mycompany.app.web"})
+or
+@ComponentScan(basePackages= "com.mycompany.app")
 public class Application {
 ...
 }
@@ -29,6 +32,22 @@ package com.mycompany.app.web;
 
 @Controller
 public class MyController { // Compliant; "com.mycompany.app.web" is referenced by a @ComponentScan annotated class
+...
+}
+</pre>
+<p>If you are using SpringBoot:</p>
+<pre>
+package com.mycompany.app;
+
+@SpringBootApplication
+public class Application {
+...
+}
+
+package com.mycompany.app.web;
+
+@Controller
+public class MyController { // Compliant; "com.mycompany.app.web" is taken into account by @SpringBootApplication annotation which is in the package "com.mycompany.app"
 ...
 }
 </pre>

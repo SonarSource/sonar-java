@@ -2,6 +2,10 @@
   "title": "AssertJ assertions with \"Consumer\" arguments should contain assertion inside consumers",
   "type": "BUG",
   "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
   "tags": [
     "tests"
   ],

@@ -3,10 +3,9 @@ an input, in some cases it can cause performance issues, called <code>catastroph
 of the regular expression is exponential in the size of the input, this means that a small carefully-crafted input (like 20 chars) can trigger
 <code>catastrophic backtracking</code> and cause a denial of service of the application. Super-linear regex complexity can lead to the same impact too
 with, in this case, a large carefully-crafted input (thousands chars).</p>
-<p>This rule detects regular expression patterns known to have potential performance issues:</p>
-<ul>
-  <li> <code>Nested quantifiers</code> which are quantifiers inside a group that is itself repeated by a quantifier (eg: <code>/(a+)+/</code>). </li>
-</ul>
+<p>This rule determines the runtime complexity of a regular expression and informs you of the complexity if it is not linear.</p>
+<p>Note that, due to improvements to the matching algorithm, some cases of exponential runtime complexity have become impossible when run using Java 9
+or later. In such cases, an issue will only be reported if the project's target Java version is 8 or earlier.</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
   <li> The input is user-controlled. </li>
@@ -22,7 +21,13 @@ with, in this case, a large carefully-crafted input (thousands chars).</p>
   <li> Refactor <code>nested quantifiers</code> to limit the number of way the inner group can be matched by the outer quantifier, for instance this
   nested quantifier situation <code>(ba+)+</code> doesn't cause performance issues, indeed, the inner group can be matched only if it exists exactly
   one <code>b</code> char per repetition of the group. </li>
+  <li> Make sure that consecutive repetitions can't match the same contents or are separated by a non-optional separator that can't be matched by both
+  of the repetitions. So for example <code>a*b*</code> is not a problem because <code>a*</code> and <code>b*</code> match different things and
+  <code>a*_a*</code> is not a problem because the repetitions are separated by a '_' and can't match that '_'. However, <code>a*a*</code> and
+  <code>.*_.*</code> have quadratic runtime. </li>
   <li> Optimize regular expressions with <code>possessive quantifiers</code> and <code>atomic grouping</code>. </li>
+  <li> Use negated character classes instead of <code>.</code> to exclude separators where applicable. For example the quadratic regex
+  <code>.*_.*</code> can be made linear by changing it to <code>[^_]*_.*</code> </li>
 </ul>
 <h2>Sensitive Code Example</h2>
 <p>The first regex evaluation will never end in <code>OpenJDK</code> &lt;= 9 and the second regex evaluation will never end in any versions of

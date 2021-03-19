@@ -6,7 +6,7 @@
     "cwe",
     "owasp-a9"
   ],
-  "defaultSeverity": "Blocker",
+  "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5445",
   "sqKey": "S5445",
   "scope": "Main",

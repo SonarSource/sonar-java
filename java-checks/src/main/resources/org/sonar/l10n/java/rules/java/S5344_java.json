@@ -1,5 +1,5 @@
 {
-  "title": "Authentication should not rely on insecure \"PasswordEncoder\"",
+  "title": "Passwords should not be stored in plain-text or with a fast hashing algorithm",
   "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
@@ -11,7 +11,8 @@
     "spring",
     "owasp-a6",
     "sans-top25-porous",
-    "owasp-a2"
+    "owasp-a2",
+    "owasp-a3"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5344",
@@ -20,11 +21,13 @@
   "securityStandards": {
     "CWE": [
       328,
-      327
+      327,
+      916
     ],
     "OWASP": [
       "A2",
-      "A6"
+      "A6",
+      "A3"
     ]
   }
 }

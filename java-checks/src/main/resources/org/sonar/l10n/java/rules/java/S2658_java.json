@@ -7,19 +7,10 @@
     "constantCost": "45min"
   },
   "tags": [
-    "cwe",
-    "owasp-a1"
+    
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2658",
   "sqKey": "S2658",
-  "scope": "Main",
-  "securityStandards": {
-    "CWE": [
-      470
-    ],
-    "OWASP": [
-      "A1"
-    ]
-  }
+  "scope": "Main"
 }
