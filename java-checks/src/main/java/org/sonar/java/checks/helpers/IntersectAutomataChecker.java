@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 import org.sonar.java.regex.ast.BoundaryTree;
-import org.sonar.java.regex.ast.BoundaryTree.Type;
 
 public class IntersectAutomataChecker extends AbstractAutomataChecker {
   private static final Map<BoundaryTree.Type, Map<BoundaryTree.Type, Boolean>> BOUNDARIES_INTERSECT_MAP = new EnumMap<>(BoundaryTree.Type.class);
@@ -32,23 +31,16 @@ public class IntersectAutomataChecker extends AbstractAutomataChecker {
     Arrays.stream(BoundaryTree.Type.values())
       .forEach(type -> mapIntersect(type, type, true));
 
-    Arrays.stream(BoundaryTree.Type.values())
-      .filter(type -> type != BoundaryTree.Type.NON_WORD)
-      .filter(type -> type != BoundaryTree.Type.PREVIOUS_MATCH_END)
-      .forEach(type -> mapIntersect(BoundaryTree.Type.NON_WORD, type, false));
+    mapIntersect(BoundaryTree.Type.LINE_START, BoundaryTree.Type.INPUT_START);
+    mapIntersect(BoundaryTree.Type.LINE_END, BoundaryTree.Type.INPUT_END_FINAL_TERMINATOR, BoundaryTree.Type.INPUT_END);
 
-    mapIntersect(
-      BoundaryTree.Type.UNICODE_EXTENDED_GRAPHEME_CLUSTER,
-      BoundaryTree.Type.WORD,
-      BoundaryTree.Type.LINE_START,
-      BoundaryTree.Type.INPUT_START);
-
-    mapIntersect(
-      BoundaryTree.Type.UNICODE_EXTENDED_GRAPHEME_CLUSTER,
-      BoundaryTree.Type.WORD,
-      BoundaryTree.Type.LINE_END,
-      BoundaryTree.Type.INPUT_END_FINAL_TERMINATOR,
-      BoundaryTree.Type.INPUT_END);
+    mapIntersect(BoundaryTree.Type.NON_WORD, BoundaryTree.Type.WORD, false);
+    mapIntersect(BoundaryTree.Type.INPUT_START, BoundaryTree.Type.INPUT_END_FINAL_TERMINATOR, false);
+    mapIntersect(BoundaryTree.Type.INPUT_START, BoundaryTree.Type.INPUT_END, false);
+    mapIntersect(BoundaryTree.Type.INPUT_START, BoundaryTree.Type.LINE_END, false);
+    mapIntersect(BoundaryTree.Type.LINE_START, BoundaryTree.Type.INPUT_END_FINAL_TERMINATOR, false);
+    mapIntersect(BoundaryTree.Type.LINE_START, BoundaryTree.Type.INPUT_END, false);
+    mapIntersect(BoundaryTree.Type.LINE_START, BoundaryTree.Type.LINE_END, false);
   }
 
   public IntersectAutomataChecker(boolean defaultAnswer) {
@@ -87,12 +79,17 @@ public class IntersectAutomataChecker extends AbstractAutomataChecker {
       return checkBoundariesIntersect(auto1, boundaryType1, auto2, boundaryType2);
     }
 
-    return defaultAnswer;
+    if (boundaryType2 != null) {
+      // characterClass1 != null,
+      return defaultAnswer && checkAuto2Successors(auto1, auto2, defaultAnswer, hasConsumedInput);
+    } else {
+      // boundaryType1 != null && characterClass2 != null
+      return defaultAnswer && checkAuto1Successors(auto1, auto2, defaultAnswer, hasConsumedInput);
+    }
   }
 
   private boolean checkBoundariesIntersect(SubAutomaton auto1, BoundaryTree.Type boundaryType1, SubAutomaton auto2, BoundaryTree.Type boundaryType2) {
-    Map<Type, Boolean> boundaryType1Intersects = BOUNDARIES_INTERSECT_MAP.getOrDefault(boundaryType1, Collections.emptyMap());
-    return boundaryType1Intersects.getOrDefault(boundaryType2, defaultAnswer)
+    return BOUNDARIES_INTERSECT_MAP.getOrDefault(boundaryType1, Collections.emptyMap()).getOrDefault(boundaryType2, defaultAnswer)
       && checkSuccessors(auto1, auto2);
   }
 

@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 import org.sonar.java.regex.ast.BoundaryTree;
-import org.sonar.java.regex.ast.BoundaryTree.Type;
 
 public class SupersetAutomataChecker extends AbstractAutomataChecker {
 
@@ -33,23 +32,15 @@ public class SupersetAutomataChecker extends AbstractAutomataChecker {
     Arrays.stream(BoundaryTree.Type.values())
       .forEach(type -> mapSupersetOf(type, type, true));
 
-    Arrays.stream(BoundaryTree.Type.values())
-      .filter(type -> type != BoundaryTree.Type.NON_WORD)
-      .filter(type -> type != BoundaryTree.Type.PREVIOUS_MATCH_END)
-      .forEach(type -> mapSupersetOf(BoundaryTree.Type.NON_WORD, type, false));
+    mapSupersetOf(BoundaryTree.Type.LINE_START, BoundaryTree.Type.INPUT_START);
+    mapSupersetOf(BoundaryTree.Type.LINE_END, BoundaryTree.Type.INPUT_END_FINAL_TERMINATOR);
+    mapSupersetOf(BoundaryTree.Type.INPUT_END_FINAL_TERMINATOR, BoundaryTree.Type.INPUT_END);
 
-    mapSupersetOf(
-      BoundaryTree.Type.UNICODE_EXTENDED_GRAPHEME_CLUSTER,
-      BoundaryTree.Type.WORD,
-      BoundaryTree.Type.LINE_START,
-      BoundaryTree.Type.INPUT_START);
-
-    mapSupersetOf(
-      BoundaryTree.Type.UNICODE_EXTENDED_GRAPHEME_CLUSTER,
-      BoundaryTree.Type.WORD,
-      BoundaryTree.Type.LINE_END,
-      BoundaryTree.Type.INPUT_END_FINAL_TERMINATOR,
-      BoundaryTree.Type.INPUT_END);
+    mapIncompatibleSupersetOf(BoundaryTree.Type.NON_WORD, BoundaryTree.Type.WORD);
+    mapIncompatibleSupersetOf(BoundaryTree.Type.INPUT_START, BoundaryTree.Type.INPUT_END_FINAL_TERMINATOR);
+    mapIncompatibleSupersetOf(BoundaryTree.Type.INPUT_START, BoundaryTree.Type.INPUT_END);
+    mapIncompatibleSupersetOf(BoundaryTree.Type.LINE_START, BoundaryTree.Type.INPUT_END_FINAL_TERMINATOR);
+    mapIncompatibleSupersetOf(BoundaryTree.Type.LINE_START, BoundaryTree.Type.INPUT_END);
   }
 
   public SupersetAutomataChecker(boolean defaultAnswer) {
@@ -61,13 +52,14 @@ public class SupersetAutomataChecker extends AbstractAutomataChecker {
     return defaultAnswer;
   }
 
-  private static void mapSupersetOf(BoundaryTree.Type... types) {
-    for (int i = 0; i < types.length; i++) {
-      for (int j = i + 1; j < types.length; j++) {
-        mapSupersetOf(types[i], types[j], true);
-        mapSupersetOf(types[j], types[i], false);
-      }
-    }
+  private static void mapSupersetOf(BoundaryTree.Type type1, BoundaryTree.Type type2) {
+    mapSupersetOf(type1, type2, true);
+    mapSupersetOf(type2, type1, false);
+  }
+
+  private static void mapIncompatibleSupersetOf(BoundaryTree.Type type1, BoundaryTree.Type type2) {
+    mapSupersetOf(type1, type2, false);
+    mapSupersetOf(type2, type1, false);
   }
 
   private static void mapSupersetOf(BoundaryTree.Type type1, BoundaryTree.Type type2, Boolean isSupersetOf) {
@@ -93,14 +85,12 @@ public class SupersetAutomataChecker extends AbstractAutomataChecker {
       return checkAuto2Successors(auto1, auto2, defaultAnswer, hasConsumedInput);
     } else {
       // boundaryType1 != null && characterClass2 != null
-      // with an additional boundary auto1 can not be a superset of auto2
       return defaultAnswer && checkAuto1Successors(auto1, auto2, defaultAnswer, hasConsumedInput);
     }
   }
 
   private boolean checkSupersetOfBoundaries(SubAutomaton auto1, BoundaryTree.Type boundaryType1, SubAutomaton auto2, BoundaryTree.Type boundaryType2) {
-    Map<Type, Boolean> boundaryType1Supersets = BOUNDARIES_SUPERSET_OF_MAP.getOrDefault(boundaryType1, Collections.emptyMap());
-    return boundaryType1Supersets.getOrDefault(boundaryType2, defaultAnswer)
+    return BOUNDARIES_SUPERSET_OF_MAP.getOrDefault(boundaryType1, Collections.emptyMap()).getOrDefault(boundaryType2, defaultAnswer)
       && checkSuccessors(auto1, auto2);
   }
 

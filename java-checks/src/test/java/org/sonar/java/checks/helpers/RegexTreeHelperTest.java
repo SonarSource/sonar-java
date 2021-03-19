@@ -93,12 +93,26 @@ class RegexTreeHelperTest {
 
   @Test
   void intersects_sequence_with_one_boundary() {
-    assertIntersects("^ab", "ab", false).isTrue();
-    assertIntersects("a$", "ab", true).isFalse();
-    assertIntersects("ab", "a$", true).isFalse();
-    assertIntersects("^a", "ab", true).isFalse();
-    assertIntersects("ab", "^a", true).isFalse();
-    assertIntersects("ab$", "ab", false).isFalse(); // TODO not yet supported
+//    assertIntersects("^ab", "ab", false).isTrue();
+//    assertIntersects("a$", "ab", true).isFalse();
+//    assertIntersects("ab", "a$", true).isFalse();
+//    assertIntersects("^a", "ab", true).isFalse();
+//    assertIntersects("ab", "^a", true).isFalse();
+//    assertIntersects("ab$", "ab", false).isFalse(); // TODO not yet supported
+
+    assertThat("".matches("^$")).isTrue();
+    assertThat("".matches("^$")).isTrue();
+    assertThat("abc".matches("^abc$")).isTrue();
+    assertThat("abc".matches("(?m)^abc$")).isTrue();
+
+    assertThat("abc".matches("^abc")).isTrue();
+    assertThat("abc".matches("\\Aabc")).isTrue();
+    assertThat("abc".matches("(?m)^abc")).isTrue();
+
+    assertThat("abc\n".matches("abc\n\\z")).isTrue();
+    assertThat("abc\n".matches("abc\\Z\n")).isTrue();
+    assertThat("abc\n".matches("abc$\n")).isTrue();
+
   }
 
   @Test
@@ -129,86 +143,43 @@ class RegexTreeHelperTest {
 
   @Test
   void intersects_sequence_with_beginning_boundaries() {
-
-    // \b{g} ⊇ \b ⊇ (?m)^ ⊇ \A
-
-    assertIntersects("\\b{g}X", "\\bX", false).isTrue();
-    assertIntersects("\\bX", "\\b{g}X", false).isTrue();
-
-    assertIntersects("\\b{g}X", "(?m)^X", false).isTrue();
-    assertIntersects("(?m)^X", "\\b{g}X", false).isTrue();
-
-    assertIntersects("\\b{g}X", "\\AX", false).isTrue();
-    assertIntersects("\\AX", "\\b{g}X", false).isTrue();
-
-    assertIntersects("\\bX", "(?m)^X", false).isTrue();
-    assertIntersects("(?m)^X", "\\bX", false).isTrue();
-
-    assertIntersects("\\bX", "\\AX", false).isTrue();
-    assertIntersects("\\AX", "\\bX", false).isTrue();
-
     assertIntersects("(?m)^X", "^X", false).isTrue();
     assertIntersects("^X", "(?m)^X", false).isTrue();
-
-    assertIntersects("(?m)^X", "\\AX", false).isTrue();
     assertIntersects("\\AX", "(?m)^X", false).isTrue();
-    assertIntersects("^X", "(?m)^X", false).isTrue();
+    assertIntersects("\\AX", "^X", false).isTrue();
 
+    assertIntersects("(?m)^X", "(?m)$X", true).isFalse();
+    assertIntersects("^X", "$X", true).isFalse();
+    assertIntersects("^X", "\\ZX", true).isFalse();
+    assertIntersects("^X", "\\zX", true).isFalse();
+
+    assertIntersects("^X", "\\bX", false).isFalse();
+    assertIntersects("^X", "\\bX", true).isTrue();
   }
 
   @Test
   void intersects_sequence_with_ending_boundaries() {
-
-    // \b{g} ⊇ \b ⊇ (?m)$ ⊇ \Z ⊇ (\z or $)
-
-    assertIntersects("X\\b{g}", "X\\b", false).isTrue();
-    assertIntersects("X\\b", "X\\b{g}", false).isTrue();
-
-    assertIntersects("X\\b{g}", "(?m)X$", false).isTrue();
-    assertIntersects("(?m)X$", "X\\b{g}", false).isTrue();
-
-    assertIntersects("X\\b{g}", "X\\Z", false).isTrue();
-    assertIntersects("X\\Z", "X\\b{g}", false).isTrue();
-
-    assertIntersects("X\\b{g}", "X\\z", false).isTrue();
-    assertIntersects("X\\z", "X\\b{g}", false).isTrue();
-
-    assertIntersects("X\\b", "(?m)X$", false).isTrue();
-    assertIntersects("(?m)X$", "X\\b", false).isTrue();
-
-    assertIntersects("X\\b", "X\\Z", false).isTrue();
-    assertIntersects("X\\Z", "X\\b", false).isTrue();
-
-    assertIntersects("X\\b", "X\\z", false).isTrue();
-    assertIntersects("X\\z", "X\\b", false).isTrue();
-
-    assertIntersects("(?m)X$", "X\\Z", false).isTrue();
-    assertIntersects("X\\Z", "(?m)X$", false).isTrue();
-
-    assertIntersects("(?m)X$", "X\\z", false).isTrue();
-    assertIntersects("X\\z", "(?m)X$", false).isTrue();
-
     assertIntersects("X\\Z", "X\\z", false).isTrue();
     assertIntersects("X\\z", "X\\Z", false).isTrue();
+    assertIntersects("X$", "X\\Z", false).isTrue();
+    assertIntersects("X$", "X\\z", false).isTrue();
+    assertIntersects("(?m)X$", "X\\z", false).isTrue();
 
+    assertIntersects("X\\Z", "(?m)^X", true).isFalse();
+    assertIntersects("X\\z", "^X", true).isFalse();
+    assertIntersects("X$", "\\AX", true).isFalse();
+
+    assertIntersects("X$", "X\\b", false).isFalse();
+    assertIntersects("X$", "X\\b", true).isTrue();
   }
 
   @Test
   void intersects_sequence_with_non_world_boundary() {
-
-    // NON_WORD does not intersect almost all other boundaries (except \G for which it's undefined)
-
-    assertIntersects("\\BX", "^X", true).isFalse();
-    assertIntersects("X\\B", "X$", true).isFalse();
     assertIntersects("\\BX", "\\bX", true).isFalse();
-    assertIntersects("\\BX", "\\b{g}X", true).isFalse();
-    assertIntersects("\\BX", "\\AX", true).isFalse();
-    assertIntersects("X\\B", "X\\Z", true).isFalse();
-    assertIntersects("X\\B", "X\\z", true).isFalse();
+    assertIntersects("\\bX", "\\BX", true).isFalse();
 
-    assertIntersects("\\BX", "\\GX", true).isTrue();
-    assertIntersects("\\BX", "\\GX", false).isFalse();
-
+    assertIntersects("\\BX", "^X", false).isFalse();
+    assertIntersects("\\BX", "^X", true).isTrue();
   }
 
   @Test
@@ -228,7 +199,7 @@ class RegexTreeHelperTest {
     assertIntersects("((a|(b|c))|(d|e|f))", "((x|y)|(a|z))", false).isTrue();
     assertIntersects("((a|(b|c))|(d|e|f))", "((x|y)|(w|z))", false).isFalse();
     assertIntersects("(a$|b$)", "(b$|c$)", false).isTrue();
-    assertIntersects("(a$|b$)", "(b\\b|c$)", false).isTrue();
+    assertIntersects("(a$|b$)", "(b\\z|c$)", false).isTrue();
     assertIntersects("(a$|b$)", "(bx|c$)", false).isFalse();
     assertIntersects("(a$|bx)", "(b$|c$)", false).isFalse();
   }
@@ -406,102 +377,53 @@ class RegexTreeHelperTest {
 
   @Test
   void superset_of_sequence_with_beginning_boundaries() {
-
-    // \b{g} ⊇ \b ⊇ ^ ⊇ \A
-
-    assertSupersetOf("\\b{g}X", "\\bX", false).isTrue();
-    assertSupersetOf("\\bX", "\\b{g}X", true).isFalse();
-
-    assertSupersetOf("\\b{g}X", "(?m)^X", false).isTrue();
-    assertSupersetOf("(?m)^X", "\\b{g}X", true).isFalse();
-
-    assertSupersetOf("\\b{g}X", "\\AX", false).isTrue();
-    assertSupersetOf("\\AX", "\\b{g}X", true).isFalse();
-    assertSupersetOf("^X", "\\b{g}X", true).isFalse();
-
-    assertSupersetOf("\\bX", "(?m)^X", false).isTrue();
-    assertSupersetOf("(?m)^X", "\\bX", true).isFalse();
-
-    assertSupersetOf("\\bX", "\\AX", false).isTrue();
-    assertSupersetOf("\\AX", "\\bX", true).isFalse();
-    assertSupersetOf("^X", "\\bX", true).isFalse();
-
-    assertSupersetOf("(?m)^X", "^X", false).isTrue();
-    assertSupersetOf("^X", "(?m)^X", true).isFalse();
-
     assertSupersetOf("(?m)^X", "\\AX", false).isTrue();
     assertSupersetOf("\\AX", "(?m)^X", true).isFalse();
+    assertSupersetOf("(?m)^X", "^X", false).isTrue();
     assertSupersetOf("^X", "(?m)^X", true).isFalse();
-
     assertSupersetOf("^X", "\\AX", false).isTrue();
-    assertSupersetOf("\\AX", "^X", false).isTrue();
 
+    assertSupersetOf("^X", "X$", true).isFalse();
+    assertSupersetOf("^X", "X\\Z", true).isFalse();
+    assertSupersetOf("(?m)^X", "X$", true).isFalse();
+    assertSupersetOf("(?m)^X", "X\\z", true).isFalse();
+    assertSupersetOf("(?m)^X", "X\\Z", true).isFalse();
+    assertSupersetOf("(?m)^X", "(?m)X$", true).isFalse();
+
+    assertSupersetOf("\\AX", "\\bX", false).isFalse();
+    assertSupersetOf("\\AX", "\\bX", true).isTrue();
   }
 
   @Test
   void superset_of_sequence_with_ending_boundaries() {
-
-    // \b{g} ⊇ \b ⊇ (?m)$ ⊇ \Z ⊇ (\z or $)
-
-    assertSupersetOf("X\\b{g}", "X\\b", false).isTrue();
-    assertSupersetOf("X\\b", "X\\b{g}", true).isFalse();
-
-    assertSupersetOf("X\\b{g}", "(?m)X$", false).isTrue();
-    assertSupersetOf("(?m)X$", "X\\b{g}", true).isFalse();
-
-    assertSupersetOf("X\\b{g}", "X\\Z", false).isTrue();
-    assertSupersetOf("X\\Z", "X\\b{g}", true).isFalse();
-
-    assertSupersetOf("X\\b{g}", "X\\z", false).isTrue();
-    assertSupersetOf("X\\z", "X\\b{g}", true).isFalse();
-
-    assertSupersetOf("X\\b", "(?m)X$", false).isTrue();
-    assertSupersetOf("(?m)X$", "X\\b", true).isFalse();
-
-    assertSupersetOf("X\\b", "X\\Z", false).isTrue();
-    assertSupersetOf("X\\Z", "X\\b", true).isFalse();
-
-    assertSupersetOf("X\\b", "X\\z", false).isTrue();
-    assertSupersetOf("X\\z", "X\\b", true).isFalse();
-
     assertSupersetOf("(?m)X$", "X\\Z", false).isTrue();
     assertSupersetOf("X\\Z", "(?m)X$", true).isFalse();
-
-    assertSupersetOf("(?m)X$", "X\\z", false).isTrue();
-    assertSupersetOf("X\\z", "(?m)X$", true).isFalse();
-
     assertSupersetOf("X\\Z", "X\\z", false).isTrue();
     assertSupersetOf("X\\z", "X\\Z", true).isFalse();
 
-    assertSupersetOf("X\\z", "X$", false).isTrue();
-    assertSupersetOf("X$", "X\\z", false).isTrue();
+    assertSupersetOf("(?m)X$", "X\\z", false).isFalse();
+    assertSupersetOf("(?m)X$", "X\\z", true).isTrue();
 
+    assertSupersetOf("X$", "X\\A", true).isFalse();
+    assertSupersetOf("X$", "X^", true).isFalse();
+    assertSupersetOf("X$", "(?m)X^", true).isFalse();
   }
 
   @Test
   void superset_of_sequence_with_non_world_boundary() {
-
-    // NON_WORD isn't a superset of almost all other boundaries (except \G for which it's undefined)
-
-    assertSupersetOf("\\BX", "^X", true).isFalse();
-    assertSupersetOf("X\\B", "X$", true).isFalse();
     assertSupersetOf("\\BX", "\\bX", true).isFalse();
-    assertSupersetOf("\\BX", "\\b{g}X", true).isFalse();
-    assertSupersetOf("\\BX", "\\AX", true).isFalse();
-    assertSupersetOf("X\\B", "X\\Z", true).isFalse();
-    assertSupersetOf("X\\B", "X\\z", true).isFalse();
+    assertSupersetOf("\\bX", "\\BX", true).isFalse();
 
-    assertSupersetOf("\\BX", "\\GX", true).isTrue();
-    assertSupersetOf("\\BX", "\\GX", false).isFalse();
-
+    assertSupersetOf("X\\B", "X$", false).isFalse();
+    assertSupersetOf("X\\B", "X$", true).isTrue();
+    assertSupersetOf("\\BX", "^X", false).isFalse();
+    assertSupersetOf("\\BX", "^X", true).isTrue();
   }
 
   @Test
   void superset_of_sequence_with_unsupported_boundary_comparisons() {
-
     assertSupersetOf("\\GX", "\\bX", true).isTrue();
     assertSupersetOf("\\bX", "\\GX", false).isFalse();
-
   }
 
   @Test
