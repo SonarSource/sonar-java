@@ -38,7 +38,7 @@ class OrderedAutomataPairTest {
     SubAutomaton auto1 = new SubAutomaton(state11, state12, false);
     SubAutomaton auto2 = new SubAutomaton(state21, state22, false);
 
-    AbstractAutomataChecker.OrderedAutomataPair pairS1S2A = new AbstractAutomataChecker.OrderedAutomataPair(auto1, auto2);
+    AbstractAutomataChecker.OrderedAutomataPair pairS1S2A = new AbstractAutomataChecker.OrderedAutomataPair(auto1, auto2, false);
     assertThat(pairS1S2A)
       .isNotNull()
       .isNotEqualTo("")
@@ -50,13 +50,17 @@ class OrderedAutomataPairTest {
     assertThat(pairS1S2A.equals("pairS1S2A")).isFalse();
     assertThat(pairS1S2A.equals(null)).isFalse();
 
-    AbstractAutomataChecker.OrderedAutomataPair pairS1S2B = new AbstractAutomataChecker.OrderedAutomataPair(auto1, auto2);
+    AbstractAutomataChecker.OrderedAutomataPair pairS1S2B = new AbstractAutomataChecker.OrderedAutomataPair(auto1, auto2, false);
     assertThat(pairS1S2B).isEqualTo(pairS1S2A).hasSameHashCodeAs(pairS1S2A);
 
-    AbstractAutomataChecker.OrderedAutomataPair pairS2S1 = new AbstractAutomataChecker.OrderedAutomataPair(auto2, auto1);
+    AbstractAutomataChecker.OrderedAutomataPair pairS1S2BWithConsumedInput = new AbstractAutomataChecker.OrderedAutomataPair(auto1, auto2, true);
+    assertThat(pairS1S2BWithConsumedInput).isNotEqualTo(pairS1S2A);
+
+
+    AbstractAutomataChecker.OrderedAutomataPair pairS2S1 = new AbstractAutomataChecker.OrderedAutomataPair(auto2, auto1, false);
     assertThat(pairS2S1).isNotEqualTo(pairS1S2A);
 
-    AbstractAutomataChecker.OrderedAutomataPair pairS1S1 = new AbstractAutomataChecker.OrderedAutomataPair(auto1, auto1);
+    AbstractAutomataChecker.OrderedAutomataPair pairS1S1 = new AbstractAutomataChecker.OrderedAutomataPair(auto1, auto1, false);
     assertThat(pairS1S1).isNotEqualTo(pairS1S2A);
   }
 

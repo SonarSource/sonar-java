@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks.helpers;
 
+import java.util.Objects;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.regex.ast.AutomatonState;
 import org.sonar.java.regex.ast.BoundaryTree;
@@ -47,7 +48,7 @@ public abstract class AbstractAutomataChecker {
     if (hasUnsupportedTransitionType(auto1) || hasUnsupportedTransitionType(auto2)) {
       return defaultAnswer;
     }
-    OrderedAutomataPair entry = new OrderedAutomataPair(auto1, auto2);
+    OrderedAutomataPair entry = new OrderedAutomataPair(auto1, auto2, hasConsumedInput);
     Boolean cachedValue = cache.startCalculation(entry, neutralAnswer());
     if (cachedValue != null) {
       return cachedValue;
@@ -150,10 +151,12 @@ public abstract class AbstractAutomataChecker {
   static class OrderedAutomataPair {
     public final SubAutomaton auto1;
     public final SubAutomaton auto2;
+    public final boolean hasConsumedInput;
 
-    public OrderedAutomataPair(SubAutomaton auto1, SubAutomaton auto2) {
+    public OrderedAutomataPair(SubAutomaton auto1, SubAutomaton auto2, boolean hasConsumedInput) {
       this.auto1 = auto1;
       this.auto2 = auto2;
+      this.hasConsumedInput = hasConsumedInput;
     }
 
     @Override
@@ -161,12 +164,12 @@ public abstract class AbstractAutomataChecker {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       OrderedAutomataPair that = (OrderedAutomataPair) o;
-      return auto1.equals(that.auto1) && auto2.equals(that.auto2);
+      return hasConsumedInput == that.hasConsumedInput && auto1.equals(that.auto1) && auto2.equals(that.auto2);
     }
 
     @Override
     public int hashCode() {
-      return 31 * auto1.hashCode() + auto2.hashCode();
+      return Objects.hash(auto1, auto2, hasConsumedInput);
     }
   }
 }

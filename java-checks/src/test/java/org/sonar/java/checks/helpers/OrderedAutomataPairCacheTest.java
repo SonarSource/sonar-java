@@ -45,7 +45,7 @@ class OrderedAutomataPairCacheTest {
   private static AbstractAutomataChecker.OrderedAutomataPair createPair() {
     SubAutomaton automaton1 = new SubAutomaton(new FinalState(new FlagSet()), new FinalState(new FlagSet()), false);
     SubAutomaton automaton2 = new SubAutomaton(new FinalState(new FlagSet()), new FinalState(new FlagSet()), false);
-    return new AbstractAutomataChecker.OrderedAutomataPair(automaton1, automaton2);
+    return new AbstractAutomataChecker.OrderedAutomataPair(automaton1, automaton2, false);
   }
 
 }

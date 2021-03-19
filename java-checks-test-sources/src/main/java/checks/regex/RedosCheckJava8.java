@@ -32,8 +32,8 @@ public class RedosCheckJava8 {
   }
 
   void alwaysQuadratic(String str) {
-    str.matches("x*\\w*"); // Noncompliant {{Make sure the regex used here, which is vulnerable to quadratic runtime due to backtracking, cannot lead to denial of service.}}
-    str.matches(".*.*X"); // Noncompliant {{Make sure the regex used here, which is vulnerable to quadratic runtime due to backtracking, cannot lead to denial of service.}}
+    str.matches("x*\\w*"); // Noncompliant {{Make sure the regex used here, which is vulnerable to polynomial runtime due to backtracking, cannot lead to denial of service.}}
+    str.matches(".*.*X"); // Noncompliant {{Make sure the regex used here, which is vulnerable to polynomial runtime due to backtracking, cannot lead to denial of service.}}
   }
 
   void fixedInJava9(String str) {
