@@ -5,7 +5,7 @@ certificate.</p>
 <p>TLS/SSL libraries provide built-in hostname verification functions that should be used.</p>
 <p>This rule raises an issue when:</p>
 <ul>
-  <li> <code>HostnameVerifier.verify()</code> method always <code>return true</code> </li>
+  <li> <code>HostnameVerifier.verify()</code> method always returns <code>true</code> </li>
   <li> a JavaMail's <code>javax.mail.Session</code> is created with a <code>Properties</code> object having no
   <code>mail.smtp.ssl.checkserveridentity</code> or <code>mail.smtps.ssl.checkserveridentity</code> not configured to <code>true</code> </li>
   <li> a Apache Common Emails's <code>org.apache.commons.mail.SimpleEmail</code> is used with <code>setSSLOnConnect(true)</code> or
@@ -80,7 +80,7 @@ Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator
 <ul>
   <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A6-Security_Misconfiguration">OWASP Top 10 2017 Category A6</a> - Security
   Misconfiguration </li>
-  <li> <a href="http://cwe.mitre.org/data/definitions/295.html">MITRE, CWE-295</a> - Improper Certificate Validation </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/295.html">MITRE, CWE-295</a> - Improper Certificate Validation </li>
   <li> Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#WEAK_HOSTNAME_VERIFIER">WEAK_HOSTNAME_VERIFIER</a> </li>
 </ul>
 
