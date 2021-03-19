@@ -5,9 +5,10 @@ on:
     branches:
       - master
       - 'dogfood/*'
-  delete:
-    branches:
-      - 'dogfood/*'
+# commenting 'delete' action, as it is triggered way too often
+#  delete:
+#    branches:
+#      - 'dogfood/*'
 
 env:
   SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
