@@ -36,10 +36,12 @@ public class ExecutionTimeReport {
   private static class ExecutionTime {
     private final String file;
     private final long analysisTime;
+    private final long lengthInBytes;
 
-    public ExecutionTime(String file, long analysisTime) {
+    public ExecutionTime(String file, long analysisTime, long lengthInBytes) {
       this.file = file;
       this.analysisTime = analysisTime;
+      this.lengthInBytes = lengthInBytes;
     }
   }
 
@@ -55,15 +57,17 @@ public class ExecutionTimeReport {
   private final long analysisStartTimeMS;
   private String currentFile;
   private long currentFileStartTimeMS;
+  private long currentFileLengthInBytes;
 
   public ExecutionTimeReport(Clock clock) {
     this.clock = clock;
     analysisStartTimeMS = clock.millis();
   }
 
-  public void start(String currentFile) {
+  public void start(String currentFile, long lengthInBytes) {
     this.currentFile = currentFile;
     currentFileStartTimeMS = clock.millis();
+    currentFileLengthInBytes = lengthInBytes;
   }
 
   public void end() {
@@ -74,7 +78,7 @@ public class ExecutionTimeReport {
       LOG.debug("Analysis time of " + currentFile + " (" + currentAnalysisTime + "ms)");
     }
     if (currentAnalysisTime >= minRecordedOrderedExecutionTime) {
-      recordedOrderedExecutionTime.add(new ExecutionTime(currentFile, currentAnalysisTime));
+      recordedOrderedExecutionTime.add(new ExecutionTime(currentFile, currentAnalysisTime, currentFileLengthInBytes));
       recordedOrderedExecutionTime.sort(ORDER_BY_ANALYSIS_TIME_DESCENDING_AND_FILE_ASCENDING);
       if (recordedOrderedExecutionTime.size() > MAX_REPORTED_FILES) {
         recordedOrderedExecutionTime.removeLast();
@@ -100,7 +104,7 @@ public class ExecutionTimeReport {
   @Override
   public String toString() {
     return recordedOrderedExecutionTime.stream()
-      .map(e -> "    " + e.file + " (" + e.analysisTime + "ms)")
+      .map(e -> "    " + e.file + " (" + e.analysisTime + "ms, " + e.lengthInBytes + "B)")
       .collect(Collectors.joining(System.lineSeparator()));
   }
 
