@@ -22,7 +22,7 @@ package org.sonar.java.checks.helpers;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import org.sonar.java.regex.ast.AutomatonState;
+import org.sonarsource.analyzer.commons.regex.ast.AutomatonState;
 
 public class RegexReachabilityChecker {
   private static final int MAX_CACHE_SIZE = 5_000;

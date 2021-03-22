@@ -31,7 +31,6 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
-import org.sonar.java.regex.RegexParseResult;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -44,6 +43,7 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.regex.RegexParseResult;
 
 public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCheck {
 

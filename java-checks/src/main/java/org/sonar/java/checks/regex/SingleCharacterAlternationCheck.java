@@ -21,11 +21,11 @@ package org.sonar.java.checks.regex;
 
 import java.util.Collections;
 import org.sonar.check.Rule;
-import org.sonar.java.regex.RegexParseResult;
-import org.sonar.java.regex.ast.CharacterClassElementTree;
-import org.sonar.java.regex.ast.DisjunctionTree;
-import org.sonar.java.regex.ast.RegexBaseVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonarsource.analyzer.commons.regex.RegexParseResult;
+import org.sonarsource.analyzer.commons.regex.ast.CharacterClassElementTree;
+import org.sonarsource.analyzer.commons.regex.ast.DisjunctionTree;
+import org.sonarsource.analyzer.commons.regex.ast.RegexBaseVisitor;
 
 @Rule(key = "S6035")
 public class SingleCharacterAlternationCheck extends AbstractRegexCheck {

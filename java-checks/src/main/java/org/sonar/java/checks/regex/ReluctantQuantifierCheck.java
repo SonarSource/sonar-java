@@ -25,17 +25,17 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.SimplifiedRegexCharacterClass;
-import org.sonar.java.regex.RegexParseResult;
-import org.sonar.java.regex.ast.CharacterClassElementTree;
-import org.sonar.java.regex.ast.CharacterClassTree;
-import org.sonar.java.regex.ast.EscapedCharacterClassTree;
-import org.sonar.java.regex.ast.NonCapturingGroupTree;
-import org.sonar.java.regex.ast.Quantifier;
-import org.sonar.java.regex.ast.RegexBaseVisitor;
-import org.sonar.java.regex.ast.RegexTree;
-import org.sonar.java.regex.ast.RepetitionTree;
-import org.sonar.java.regex.ast.SequenceTree;
-import org.sonar.java.regex.ast.SimpleQuantifier;
+import org.sonarsource.analyzer.commons.regex.RegexParseResult;
+import org.sonarsource.analyzer.commons.regex.ast.CharacterClassElementTree;
+import org.sonarsource.analyzer.commons.regex.ast.CharacterClassTree;
+import org.sonarsource.analyzer.commons.regex.ast.EscapedCharacterClassTree;
+import org.sonarsource.analyzer.commons.regex.ast.NonCapturingGroupTree;
+import org.sonarsource.analyzer.commons.regex.ast.Quantifier;
+import org.sonarsource.analyzer.commons.regex.ast.RegexBaseVisitor;
+import org.sonarsource.analyzer.commons.regex.ast.RegexTree;
+import org.sonarsource.analyzer.commons.regex.ast.RepetitionTree;
+import org.sonarsource.analyzer.commons.regex.ast.SequenceTree;
+import org.sonarsource.analyzer.commons.regex.ast.SimpleQuantifier;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 
 @Rule(key = "S5857")

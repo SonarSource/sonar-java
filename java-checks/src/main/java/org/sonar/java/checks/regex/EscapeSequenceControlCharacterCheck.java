@@ -22,9 +22,9 @@ package org.sonar.java.checks.regex;
 import java.util.Collections;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
-import org.sonar.java.regex.RegexParseResult;
-import org.sonar.java.regex.ast.CharacterTree;
-import org.sonar.java.regex.ast.RegexBaseVisitor;
+import org.sonarsource.analyzer.commons.regex.RegexParseResult;
+import org.sonarsource.analyzer.commons.regex.ast.CharacterTree;
+import org.sonarsource.analyzer.commons.regex.ast.RegexBaseVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 
 @Rule(key = "S6070")

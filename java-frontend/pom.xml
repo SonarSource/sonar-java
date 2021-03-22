@@ -95,6 +95,10 @@
       <artifactId>sonar-analyzer-commons</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.sonarsource.analyzer-commons</groupId>
+      <artifactId>sonar-regex-parsing</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.openjdk.jol</groupId>
       <artifactId>jol-core</artifactId>
       <version>0.9</version>

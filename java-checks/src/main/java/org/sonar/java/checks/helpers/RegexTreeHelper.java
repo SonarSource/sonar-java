@@ -25,17 +25,17 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 import org.sonar.java.regex.RegexCheck;
-import org.sonar.java.regex.ast.AutomatonState;
-import org.sonar.java.regex.ast.AutomatonState.TransitionType;
-import org.sonar.java.regex.ast.BoundaryTree;
-import org.sonar.java.regex.ast.CharacterTree;
-import org.sonar.java.regex.ast.EndOfLookaroundState;
-import org.sonar.java.regex.ast.FinalState;
-import org.sonar.java.regex.ast.LookAroundTree;
-import org.sonar.java.regex.ast.RegexSyntaxElement;
+import org.sonarsource.analyzer.commons.regex.ast.AutomatonState;
+import org.sonarsource.analyzer.commons.regex.ast.AutomatonState.TransitionType;
+import org.sonarsource.analyzer.commons.regex.ast.BoundaryTree;
+import org.sonarsource.analyzer.commons.regex.ast.CharacterTree;
+import org.sonarsource.analyzer.commons.regex.ast.EndOfLookaroundState;
+import org.sonarsource.analyzer.commons.regex.ast.FinalState;
+import org.sonarsource.analyzer.commons.regex.ast.LookAroundTree;
+import org.sonarsource.analyzer.commons.regex.ast.RegexSyntaxElement;
 
-import static org.sonar.java.regex.ast.AutomatonState.TransitionType.EPSILON;
-import static org.sonar.java.regex.ast.AutomatonState.TransitionType.NEGATION;
+import static org.sonarsource.analyzer.commons.regex.ast.AutomatonState.TransitionType.EPSILON;
+import static org.sonarsource.analyzer.commons.regex.ast.AutomatonState.TransitionType.NEGATION;
 
 public class RegexTreeHelper {
 

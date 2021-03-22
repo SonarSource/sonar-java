@@ -24,12 +24,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.SimplifiedRegexCharacterClass;
-import org.sonar.java.regex.RegexParseResult;
-import org.sonar.java.regex.ast.CharacterClassElementTree;
-import org.sonar.java.regex.ast.CharacterClassUnionTree;
-import org.sonar.java.regex.ast.RegexBaseVisitor;
-import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonarsource.analyzer.commons.regex.RegexParseResult;
+import org.sonarsource.analyzer.commons.regex.ast.CharacterClassElementTree;
+import org.sonarsource.analyzer.commons.regex.ast.CharacterClassUnionTree;
+import org.sonarsource.analyzer.commons.regex.ast.RegexBaseVisitor;
+import org.sonarsource.analyzer.commons.regex.ast.RegexSyntaxElement;
 
 @Rule(key = "S5869")
 public class DuplicatesInCharacterClassCheck extends AbstractRegexCheck {

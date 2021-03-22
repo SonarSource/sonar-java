@@ -24,13 +24,13 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.RegexTreeHelper;
 import org.sonar.java.checks.helpers.SubAutomaton;
 import org.sonar.java.regex.RegexCheck;
-import org.sonar.java.regex.RegexParseResult;
-import org.sonar.java.regex.ast.AutomatonState;
-import org.sonar.java.regex.ast.FinalState;
-import org.sonar.java.regex.ast.Quantifier;
-import org.sonar.java.regex.ast.RegexBaseVisitor;
-import org.sonar.java.regex.ast.RegexSyntaxElement;
-import org.sonar.java.regex.ast.RepetitionTree;
+import org.sonarsource.analyzer.commons.regex.RegexParseResult;
+import org.sonarsource.analyzer.commons.regex.ast.AutomatonState;
+import org.sonarsource.analyzer.commons.regex.ast.FinalState;
+import org.sonarsource.analyzer.commons.regex.ast.Quantifier;
+import org.sonarsource.analyzer.commons.regex.ast.RegexBaseVisitor;
+import org.sonarsource.analyzer.commons.regex.ast.RegexSyntaxElement;
+import org.sonarsource.analyzer.commons.regex.ast.RepetitionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 
 @Rule(key = "S5994")

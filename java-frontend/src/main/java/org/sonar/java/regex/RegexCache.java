@@ -24,8 +24,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.sonar.java.PerformanceMeasure;
-import org.sonar.java.regex.ast.FlagSet;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonarsource.analyzer.commons.regex.RegexParseResult;
+import org.sonarsource.analyzer.commons.regex.RegexParser;
+import org.sonarsource.analyzer.commons.regex.ast.FlagSet;
 
 public final class RegexCache {
   private final Map<List<LiteralTree>, RegexParseResult> cache = new HashMap<>();
@@ -35,7 +37,7 @@ public final class RegexCache {
       Arrays.asList(stringLiterals),
       k -> {
         PerformanceMeasure.Duration regexForLiteralsDuration = PerformanceMeasure.start("RegexParser");
-        RegexParseResult result = new RegexParser(new JavaRegexSource(k), initialFlags).parse();
+        RegexParseResult result = new RegexParser(new JavaRegexSourceTrackingTextSpans(k), initialFlags).parse();
         regexForLiteralsDuration.stop();
         return result;
       });

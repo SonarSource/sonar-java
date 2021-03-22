@@ -32,10 +32,7 @@ import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.regex.RegexCheck;
-import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.RegexScannerContext;
-import org.sonar.java.regex.ast.FlagSet;
-import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -51,6 +48,9 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.regex.RegexParseResult;
+import org.sonarsource.analyzer.commons.regex.ast.FlagSet;
+import org.sonarsource.analyzer.commons.regex.ast.RegexSyntaxElement;
 
 public abstract class AbstractRegexCheck extends IssuableSubscriptionVisitor implements RegexCheck {
 

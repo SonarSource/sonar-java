@@ -25,9 +25,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.java.AnalyzerMessage;
-import org.sonar.java.regex.ast.IndexRange;
-import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonarsource.analyzer.commons.regex.ast.IndexRange;
+import org.sonarsource.analyzer.commons.regex.ast.RegexSyntaxElement;
 
 /**
  * Marker interface for rules targeting regexes
@@ -44,7 +44,7 @@ public interface RegexCheck extends JavaCheck {
     private final String message;
 
     public RegexIssueLocation(RegexSyntaxElement tree, String message) {
-      this.locations = ((JavaRegexSource) tree.getSource()).textSpansFor(tree.getRange());
+      this.locations = ((JavaRegexSourceTrackingTextSpans) tree.getSource()).textSpansFor(tree.getRange());
       this.message = message;
     }
 
@@ -77,7 +77,7 @@ public interface RegexCheck extends JavaCheck {
     }
 
     private static List<AnalyzerMessage.TextSpan> textSpansFromRegexSyntaxElements(List<RegexSyntaxElement> trees) {
-      JavaRegexSource source = (JavaRegexSource) trees.get(0).getSource();
+      JavaRegexSourceTrackingTextSpans source = (JavaRegexSourceTrackingTextSpans) trees.get(0).getSource();
       List<AnalyzerMessage.TextSpan> locations = new ArrayList<>();
       IndexRange current = null;
       for (RegexSyntaxElement tree : trees) {

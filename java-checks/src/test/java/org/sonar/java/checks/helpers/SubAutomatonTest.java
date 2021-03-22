@@ -20,8 +20,8 @@
 package org.sonar.java.checks.helpers;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.regex.ast.FinalState;
-import org.sonar.java.regex.ast.FlagSet;
+import org.sonarsource.analyzer.commons.regex.ast.FinalState;
+import org.sonarsource.analyzer.commons.regex.ast.FlagSet;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 

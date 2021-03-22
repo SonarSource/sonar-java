@@ -21,13 +21,13 @@ package org.sonar.java.checks.regex;
 
 import java.util.Collections;
 import org.sonar.check.Rule;
-import org.sonar.java.regex.RegexParseResult;
-import org.sonar.java.regex.ast.DisjunctionTree;
-import org.sonar.java.regex.ast.GroupTree;
-import org.sonar.java.regex.ast.RegexBaseVisitor;
-import org.sonar.java.regex.ast.RegexTree;
-import org.sonar.java.regex.ast.RepetitionTree;
-import org.sonar.java.regex.ast.SequenceTree;
+import org.sonarsource.analyzer.commons.regex.RegexParseResult;
+import org.sonarsource.analyzer.commons.regex.ast.DisjunctionTree;
+import org.sonarsource.analyzer.commons.regex.ast.GroupTree;
+import org.sonarsource.analyzer.commons.regex.ast.RegexBaseVisitor;
+import org.sonarsource.analyzer.commons.regex.ast.RegexTree;
+import org.sonarsource.analyzer.commons.regex.ast.RepetitionTree;
+import org.sonarsource.analyzer.commons.regex.ast.SequenceTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 
 @Rule(key = "S5842")

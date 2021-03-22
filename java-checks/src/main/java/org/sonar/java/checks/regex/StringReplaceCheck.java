@@ -21,9 +21,9 @@ package org.sonar.java.checks.regex;
 
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.regex.RegexParseResult;
-import org.sonar.java.regex.ast.RegexTree;
-import org.sonar.java.regex.ast.SequenceTree;
+import org.sonarsource.analyzer.commons.regex.RegexParseResult;
+import org.sonarsource.analyzer.commons.regex.ast.RegexTree;
+import org.sonarsource.analyzer.commons.regex.ast.SequenceTree;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;

@@ -28,31 +28,31 @@ import java.util.TreeMap;
 import javax.annotation.Nullable;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.AnalyzerMessage.TextSpan;
-import org.sonar.java.regex.ast.IndexRange;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonarsource.analyzer.commons.regex.JavaRegexSource;
+import org.sonarsource.analyzer.commons.regex.ast.IndexRange;
 
-public class JavaRegexSource implements RegexSource {
-
-  private final String sourceText;
-
+public class JavaRegexSourceTrackingTextSpans extends JavaRegexSource {
   /**
    * Maps an index of the regular expression to the TextSpan string literal that starts at the index
    */
   private final TextSpanTracker indexToTextSpan = new TextSpanTracker();
 
-  public JavaRegexSource(List<LiteralTree> stringLiterals) {
+  public JavaRegexSourceTrackingTextSpans(List<LiteralTree> stringLiterals) {
+    super(literalsToString(stringLiterals));
+    for (LiteralTree literal : stringLiterals) {
+      String text = getString(literal);
+      indexToTextSpan.addLiteral(literal, text.length());
+    }
+  }
+
+  private static String literalsToString(List<LiteralTree> stringLiterals) {
     StringBuilder sb = new StringBuilder();
     for (LiteralTree literal : stringLiterals) {
       String text = getString(literal);
       sb.append(text);
-      indexToTextSpan.addLiteral(literal, text.length());
     }
-    sourceText = sb.toString();
-  }
-
-  @Override
-  public String getSourceText() {
-    return sourceText;
+    return sb.toString();
   }
 
   public List<TextSpan> textSpansFor(IndexRange range) {
@@ -79,16 +79,6 @@ public class JavaRegexSource implements RegexSource {
       result.add(new TextSpan(endSpan.startLine, endSpan.startCharacter, endSpan.endLine, endSpan.startCharacter + endOffset));
     }
     return result;
-  }
-
-  @Override
-  public CharacterParser createCharacterParser() {
-    return new JavaCharacterParser(this);
-  }
-
-  @Override
-  public RegexDialect dialect() {
-    return RegexDialect.JAVA;
   }
 
   private static String getString(LiteralTree literal) {

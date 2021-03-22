@@ -35,11 +35,8 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.regex.RegexCache;
 import org.sonar.java.regex.RegexCheck;
-import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.RegexScannerContext;
-import org.sonar.java.regex.ast.FlagSet;
 import org.sonar.java.regex.RegexCheck.RegexIssueLocation;
-import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -47,6 +44,9 @@ import org.sonar.plugins.java.api.SourceMap;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.regex.RegexParseResult;
+import org.sonarsource.analyzer.commons.regex.ast.FlagSet;
+import org.sonarsource.analyzer.commons.regex.ast.RegexSyntaxElement;
 
 public class DefaultJavaFileScannerContext implements JavaFileScannerContext, RegexScannerContext {
   private final JavaTree.CompilationUnitTreeImpl tree;
