@@ -140,6 +140,6 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
-    return version.isNotSet() || version.asInt() >= 7;
+    return version.isJava7Compatible();
   }
 }
