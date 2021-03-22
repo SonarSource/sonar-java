@@ -65,9 +65,9 @@ Looking inside the `pom`, you will see that both versions of SonarQube and the J
 > 
 > SonarQube `8.7` embed version `6.12.0.24852` of the Java Analyzer, which unfortunately suffer from a dependency-related-bug. This bug impacts custom-rules plugins compatibility with latest SonarQube APIs. It might also prevent you to build or run tests of custom-rules plugins.
 >
-> The issue has been fixed in ticket [SONARJAVA-3690](https://jira.sonarsource.com/browse/SONARJAVA-3690), but the fix has been shipped with version `6.13.0.2513` of the Java Analyzer, itself only available for SonarCloud users.
+> The issue has been fixed in ticket [SONARJAVA-3690](https://jira.sonarsource.com/browse/SONARJAVA-3690), but the fix has been shipped with version `6.13.0.25138` of the Java Analyzer, itself only available for SonarCloud users.
 >
-> SonarQube `8.8` will embed a newer version of the Java Analyzer (probably version `6.14`), and the issue will be solved for custom-rules plugins. However, in the meantime, we recommend you to use version `6.13` instead of `6.12` of the Java Analyzer to build your custom plugin. No new APIs has been introduced between these 2 versions, and deploying a custom-rules plugin relying on `6.13` Java Analyzer API on a SonarQube `8.7` having version 6.12 will work just fine.
+> SonarQube `8.8` will embed a newer version of the Java Analyzer (`6.14.0.25463`), and the issue will be solved for custom-rules plugins. However, in the meantime, we recommend you to use version `6.13` instead of `6.12` of the Java Analyzer to build your custom plugin. No new APIs has been introduced between these 2 versions, and deploying a custom-rules plugin relying on `6.13` Java Analyzer API on a SonarQube `8.7` having version 6.12 will work just fine.
 >
 
 ```xml
