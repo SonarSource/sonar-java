@@ -313,8 +313,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
   private static Optional<String> getConstantName(ExpressionTree argument) {
     return argument.asConstant(String.class)
       .map(String::toUpperCase)
-      .map(ALIAS_TO_CONSTANT::get)
-      .flatMap(Optional::ofNullable);
+      .map(ALIAS_TO_CONSTANT::get);
   }
 
   @Override

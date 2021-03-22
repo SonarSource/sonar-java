@@ -63,6 +63,6 @@ public class CombineCatchCheck extends IssuableSubscriptionVisitor implements Ja
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
-    return version.isNotSet() || version.asInt() >= 7;
+    return version.isJava7Compatible();
   }
 }
