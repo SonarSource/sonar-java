@@ -1,6 +1,10 @@
 package checks;
 
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JUnit5DefaultPackageClassAndMethodCheck {
 
@@ -52,5 +56,52 @@ class JUnit5DefaultPackageClassAndMethodCheck {
   static class WithOneTest { // Compliant
     @Test
     void test() {}
+  }
+
+  public abstract class AbstractTest {
+
+    @Test
+    protected void test_inherited() {
+      assertEquals(42, 21 * 2);
+    }
+
+    protected abstract void test_abstract();
+
+    @Test
+    public void test_to_override() {
+      assertEquals(12, 23 - 11);
+    }
+  }
+
+  interface InterfaceTest {
+    void test_to_implement();
+
+    @Test
+    default void default_test() {
+      assertEquals(49, 7 * 7);
+    }
+  }
+
+
+  class ChildTest extends AbstractTest implements InterfaceTest {
+
+    @Test
+    @Override
+    public void test_to_implement() {
+      assertEquals("aaa", "AAA".toLowerCase(Locale.ROOT));
+    }
+
+    @Test
+    @Override
+    protected void test_abstract() {
+      assertTrue("   ".trim().isEmpty());
+    }
+
+    @Override
+    @Test
+    public void test_to_override() {
+      super.test_to_override();
+      assertEquals(23, 12 + 11);
+    }
   }
 }

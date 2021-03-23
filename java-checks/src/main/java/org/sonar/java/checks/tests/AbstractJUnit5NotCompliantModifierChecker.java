@@ -43,10 +43,14 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
+    if (classTree.symbol().isAbstract()) {
+      return;
+    }
     List<MethodTree> testMethods = classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
       .filter(UnitTestUtils::hasJUnit5TestAnnotation)
+      .filter(AbstractJUnit5NotCompliantModifierChecker::isNotOverriding)
       .collect(Collectors.toList());
 
     for (MethodTree testMethod : testMethods) {
@@ -64,6 +68,10 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
       .filter(modifier -> isNotCompliantModifier(modifier.modifier(), isMethod))
       .findFirst()
       .ifPresent(modifier -> reportIssue(modifier, "Remove this '" + modifier.keyword().text() + "' modifier."));
+  }
+
+  private static boolean isNotOverriding(MethodTree tree) {
+    return !tree.isOverriding();
   }
 
 }
