@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -40,6 +41,8 @@ import org.sonar.java.PerformanceMeasure.DurationReport;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
+import static org.sonar.java.PerformanceMeasure.ensureParentDirectoryExists;
 
 class PerformanceMeasureTest {
 
@@ -52,7 +55,7 @@ class PerformanceMeasureTest {
 
   @Test
   void not_active_system_property() {
-    Configuration config = createConfig(false, LoggerLevel.DEBUG);
+    Configuration config = createConfig(false, null , LoggerLevel.DEBUG);
     DurationReport duration_1 = PerformanceMeasure.start(config, "root", timeNanos::get);
     Duration duration_1_1 = PerformanceMeasure.start("cat-1");
     duration_1_1.stop();
@@ -64,7 +67,7 @@ class PerformanceMeasureTest {
 
   @Test
   void active_system_property(@TempDir File workDir) {
-    Configuration config = createConfig(true, LoggerLevel.DEBUG);
+    Configuration config = createConfig(true, "", LoggerLevel.DEBUG);
     DurationReport duration = PerformanceMeasure.start(config, "root", timeNanos::get);
 
     Duration duration_1 = PerformanceMeasure.start("cat-1");
@@ -116,7 +119,7 @@ class PerformanceMeasureTest {
 
   @Test
   void append_measurement_cost(@TempDir File workDir) throws IOException {
-    Configuration config = createConfig(true, LoggerLevel.DEBUG);
+    Configuration config = createConfig(true, null, LoggerLevel.DEBUG);
     DurationReport duration_1 = PerformanceMeasure.start(config, "root", System::nanoTime);
     timeNanos.addAndGet(1_382_190L);
     duration_1.stopAndLog(workDir, true);
@@ -143,7 +146,7 @@ class PerformanceMeasureTest {
 
   @Test
   void merge_performance_measures(@TempDir File workDir) throws IOException {
-    Configuration config = createConfig(true, LoggerLevel.DEBUG);
+    Configuration config = createConfig(true, null, LoggerLevel.DEBUG);
     DurationReport duration_1 = PerformanceMeasure.start(config, "root", timeNanos::get);
     timeNanos.addAndGet(1_382_190L);
 
@@ -190,8 +193,20 @@ class PerformanceMeasureTest {
   }
 
   @Test
+  void custom_performance_measure_file(@TempDir File workDir) throws IOException {
+    Path customPerformanceFile = workDir.toPath().resolve("new-directory").resolve("custom-path.json");
+    Configuration config = createConfig(true, customPerformanceFile.toString(), LoggerLevel.DEBUG);
+    DurationReport duration_1 = PerformanceMeasure.start(config, "root", timeNanos::get);
+    timeNanos.addAndGet(1_382_190L);
+    duration_1.stopAndLog(workDir, false);
+
+    String jsonContent = new String(Files.readAllBytes(customPerformanceFile), UTF_8);
+    assertThat(jsonContent).isEqualTo("{ \"name\": \"root\", \"calls\": 1, \"durationNanos\": 1382190 }");
+  }
+
+  @Test
   void can_not_merge_incompatible_json(@TempDir File workDir) throws IOException {
-    Configuration config = createConfig(true, LoggerLevel.DEBUG);
+    Configuration config = createConfig(true, null, LoggerLevel.DEBUG);
     DurationReport duration_1 = PerformanceMeasure.start(config, "root1", timeNanos::get);
     timeNanos.addAndGet(1_382_190L);
     duration_1.stopAndLog(workDir, false);
@@ -209,7 +224,7 @@ class PerformanceMeasureTest {
   @Test
   void working_directory_does_not_exist(@TempDir File parentWorkDir) throws IOException {
     File workDir = new File(parentWorkDir, "new-directory");
-    Configuration config = createConfig(true, LoggerLevel.DEBUG);
+    Configuration config = createConfig(true, null, LoggerLevel.DEBUG);
     DurationReport duration = PerformanceMeasure.start(config, "root", timeNanos::get);
     timeNanos.addAndGet(1_382_190L);
     duration.stopAndLog(workDir, false);
@@ -227,7 +242,7 @@ class PerformanceMeasureTest {
   @Test
   void log_info_and_null_working_directory() throws IOException {
     File workDir = null;
-    Configuration config = createConfig(true, LoggerLevel.INFO);
+    Configuration config = createConfig(true, null, LoggerLevel.INFO);
     DurationReport duration = PerformanceMeasure.start(config, "root", timeNanos::get);
     timeNanos.addAndGet(1_382_190L);
     duration.stopAndLog(workDir, true);
@@ -236,10 +251,19 @@ class PerformanceMeasureTest {
     assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
   }
 
-  private static Configuration createConfig(boolean measurePerformance, LoggerLevel loggerLevel) {
+  @Test
+  void ensure_parent_directory_exists(@TempDir Path workDir) throws IOException {
+    assertThatNoException().isThrownBy(() -> ensureParentDirectoryExists(Paths.get("file-without-parent.json")));
+
+    ensureParentDirectoryExists(workDir.resolve("parent-dir/file.json"));
+    assertThat(workDir.resolve("parent-dir")).isDirectory();
+  }
+
+  private static Configuration createConfig(boolean measurePerformance, String performanceMeasurePath, LoggerLevel loggerLevel) {
     Loggers.get(PerformanceMeasure.class).setLevel(loggerLevel);
     MapSettings settings = new MapSettings();
     settings.setProperty("sonar.java.performance.measure", measurePerformance ? "true" : "false");
+    settings.setProperty("sonar.java.performance.measure.path", performanceMeasurePath);
     return new ConfigurationBridge(settings);
   }
 
