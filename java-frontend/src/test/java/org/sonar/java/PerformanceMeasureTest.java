@@ -58,7 +58,7 @@ class PerformanceMeasureTest {
     duration_1_1.stop();
     Duration duration_1_2 = PerformanceMeasure.start(arrayList);
     duration_1_2.stop();
-    duration_1.stopAndLog(null);
+    duration_1.stopAndLog(null, false);
     assertThat(logTester.logs(LoggerLevel.INFO)).isEmpty();
   }
 
@@ -96,7 +96,7 @@ class PerformanceMeasureTest {
     timeNanos.addAndGet(12_434_522L);
     duration_2.stop();
 
-    duration.stopAndLog(workDir);
+    duration.stopAndLog(workDir, false);
     assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("" +
       "Performance Measures:\n" +
       "{ \"name\": \"root\", \"calls\": 1, \"durationNanos\": 1280715556, \"children\": [\n" +
@@ -115,6 +115,33 @@ class PerformanceMeasureTest {
   }
 
   @Test
+  void append_measurement_cost(@TempDir File workDir) throws IOException {
+    Configuration config = createConfig(true, LoggerLevel.DEBUG);
+    DurationReport duration_1 = PerformanceMeasure.start(config, "root", System::nanoTime);
+    timeNanos.addAndGet(1_382_190L);
+    duration_1.stopAndLog(workDir, true);
+
+    Path jsonPath = workDir.toPath().resolve("sonar.java.performance.measure.json");
+    String jsonContent = new String(Files.readAllBytes(jsonPath), UTF_8);
+    // measurements may vary from one test to another, but should not be zero
+    jsonContent = jsonContent
+      .replaceAll("\"durationNanos\": 0(?=[, ])", "\"durationNanos\": ZERO")
+      .replaceAll("\"durationNanos\": \\d++(?=[, ])", "\"durationNanos\": NOT_ZERO");
+
+    assertThat(jsonContent).isEqualTo("" +
+      "{ \"name\": \"root\", \"calls\": 1, \"durationNanos\": NOT_ZERO, \"children\": [\n" +
+      "    { \"name\": \"#MeasurementCost_v1\", \"calls\": 1, \"durationNanos\": NOT_ZERO, \"children\": [\n" +
+      "        { \"name\": \"createChild\", \"calls\": 1, \"durationNanos\": NOT_ZERO },\n" +
+      "        { \"name\": \"emptyDuration\", \"calls\": 1, \"durationNanos\": NOT_ZERO },\n" +
+      "        { \"name\": \"incrementChild\", \"calls\": 1, \"durationNanos\": NOT_ZERO },\n" +
+      "        { \"name\": \"nanoTime\", \"calls\": 1, \"durationNanos\": NOT_ZERO }\n" +
+      "      ]\n" +
+      "    }\n" +
+      "  ]\n" +
+      "}");
+  }
+
+  @Test
   void merge_performance_measures(@TempDir File workDir) throws IOException {
     Configuration config = createConfig(true, LoggerLevel.DEBUG);
     DurationReport duration_1 = PerformanceMeasure.start(config, "root", timeNanos::get);
@@ -125,7 +152,7 @@ class PerformanceMeasureTest {
     duration_1_1.stop();
 
     timeNanos.addAndGet(2_456_121L);
-    duration_1.stopAndLog(workDir);
+    duration_1.stopAndLog(workDir, false);
 
     assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("Performance Measures:\n" +
       "{ \"name\": \"root\", \"calls\": 1, \"durationNanos\": 51280432, \"children\": [\n" +
@@ -145,7 +172,7 @@ class PerformanceMeasureTest {
     duration_2_2.stop();
 
     timeNanos.addAndGet(12_567_151L);
-    duration_2.stopAndLog(workDir);
+    duration_2.stopAndLog(workDir, false);
     assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("Performance Measures:\n" +
       "{ \"name\": \"root\", \"calls\": 1, \"durationNanos\": 60458758, \"children\": [\n" +
       "    { \"name\": \"child-1\", \"calls\": 1, \"durationNanos\": 32478123 },\n" +
@@ -167,13 +194,13 @@ class PerformanceMeasureTest {
     Configuration config = createConfig(true, LoggerLevel.DEBUG);
     DurationReport duration_1 = PerformanceMeasure.start(config, "root1", timeNanos::get);
     timeNanos.addAndGet(1_382_190L);
-    duration_1.stopAndLog(workDir);
+    duration_1.stopAndLog(workDir, false);
 
     assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
 
     DurationReport duration_2 = PerformanceMeasure.start(config, "root2", timeNanos::get);
     timeNanos.addAndGet(2_176_361L);
-    duration_2.stopAndLog(workDir);
+    duration_2.stopAndLog(workDir, false);
 
     assertThat(logTester.logs(LoggerLevel.ERROR))
       .contains("Can't save performance measure: Incompatible name 'root2' and 'root1'");
@@ -185,7 +212,7 @@ class PerformanceMeasureTest {
     Configuration config = createConfig(true, LoggerLevel.DEBUG);
     DurationReport duration = PerformanceMeasure.start(config, "root", timeNanos::get);
     timeNanos.addAndGet(1_382_190L);
-    duration.stopAndLog(workDir);
+    duration.stopAndLog(workDir, false);
 
     assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("Performance Measures:\n" +
       "{ \"name\": \"root\", \"calls\": 1, \"durationNanos\": 1382190 }");
@@ -203,7 +230,7 @@ class PerformanceMeasureTest {
     Configuration config = createConfig(true, LoggerLevel.INFO);
     DurationReport duration = PerformanceMeasure.start(config, "root", timeNanos::get);
     timeNanos.addAndGet(1_382_190L);
-    duration.stopAndLog(workDir);
+    duration.stopAndLog(workDir, true);
 
     assertThat(logTester.logs(LoggerLevel.DEBUG)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();

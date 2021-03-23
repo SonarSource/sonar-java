@@ -104,7 +104,7 @@ public class JavaSquidSensor implements Sensor {
       sonarComponents.checkClasses());
     squid.scan(getSourceFiles(), getTestFiles(), runJasper(context));
 
-    sensorDuration.stopAndLog(context.fileSystem().workDir());
+    sensorDuration.stopAndLog(context.fileSystem().workDir(), true);
   }
 
   private Collection<GeneratedFile> runJasper(SensorContext context) {

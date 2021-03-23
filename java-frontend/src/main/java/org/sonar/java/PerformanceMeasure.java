@@ -27,12 +27,15 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import javax.annotation.Nullable;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.utils.log.Logger;
@@ -128,7 +131,7 @@ public class PerformanceMeasure {
   }
 
   public interface DurationReport {
-    void stopAndLog(@Nullable File workDir);
+    void stopAndLog(@Nullable File workDir, boolean appendMeasurementCost);
   }
 
   private static final class IgnoredDuration implements Duration, DurationReport {
@@ -138,7 +141,7 @@ public class PerformanceMeasure {
     }
 
     @Override
-    public void stopAndLog(@Nullable File workDir) {
+    public void stopAndLog(@Nullable File workDir, boolean appendMeasurementCost) {
       // no op
     }
   }
@@ -162,12 +165,49 @@ public class PerformanceMeasure {
     }
 
     @Override
-    public void stopAndLog(@Nullable File workDir) {
+    public void stopAndLog(@Nullable File workDir, boolean appendMeasurementCost) {
+      if (appendMeasurementCost) {
+        setCurrent(measure);
+        appendMeasurementCost();
+      }
       stop();
       saveToFile(workDir, measure);
       if (LOG.isDebugEnabled()) {
         LOG.debug("Performance Measures:\n" + jsonFormat(toJson(measure)));
       }
+    }
+
+    private static void appendMeasurementCost() {
+      int numberOfSamples = 99;
+      String[] sampleNames = IntStream.range(0, numberOfSamples).mapToObj(i -> "m" + i).toArray(String[]::new);
+      Duration totalDuration = start("#MeasurementCost_v1");
+      PerformanceMeasure measurementCost = currentMeasure;
+      Duration temporaryDuration = start("#temporary");
+      measurementCost.getOrCreateChild("nanoTime").add(median(IntStream.range(0, numberOfSamples).mapToLong(i -> {
+        long start = System.nanoTime();
+        return System.nanoTime() - start;
+      })));
+      measurementCost.getOrCreateChild("createChild").add(median(IntStream.range(0, numberOfSamples).mapToLong(i -> {
+        long start = System.nanoTime();
+        start(sampleNames[i]).stop();
+        return System.nanoTime() - start;
+      })));
+      measurementCost.getOrCreateChild("emptyDuration").add(median(Arrays.stream(sampleNames)
+        .map(n -> currentMeasure.childrenMap.get(n)).mapToLong(m -> m.totalDurationNanos)));
+      start("measure").stop();
+      measurementCost.getOrCreateChild("incrementChild").add(median(IntStream.range(0, numberOfSamples).mapToLong(i -> {
+        long start = System.nanoTime();
+        start("measure").stop();
+        return System.nanoTime() - start;
+      })));
+      temporaryDuration.stop();
+      measurementCost.childrenMap.remove("#temporary");
+      totalDuration.stop();
+    }
+
+    protected static long median(LongStream measures) {
+      long[] sortedMeasures = measures.sorted().toArray();
+      return sortedMeasures[(sortedMeasures.length - 1)/2];
     }
 
     private static void saveToFile(@Nullable File workDir, PerformanceMeasure measure) {
