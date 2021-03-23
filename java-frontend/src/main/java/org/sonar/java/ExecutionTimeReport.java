@@ -57,9 +57,8 @@ public class ExecutionTimeReport {
 
   private final Clock clock;
   private final long analysisStartTimeMS;
-  private String currentFile;
+  private InputFile currentFile;
   private long currentFileStartTimeMS;
-  private InputFile inputFile;
 
   public ExecutionTimeReport(Clock clock) {
     this.clock = clock;
@@ -67,9 +66,8 @@ public class ExecutionTimeReport {
   }
 
   public void start(InputFile inputFile) {
-    this.currentFile = inputFile.filename();
+    this.currentFile = inputFile;
     currentFileStartTimeMS = clock.millis();
-    this.inputFile = inputFile;
   }
 
   public void end() {
@@ -82,12 +80,12 @@ public class ExecutionTimeReport {
     if (currentAnalysisTime >= minRecordedOrderedExecutionTime) {
       long currentFileLengthInBytes;
       try {
-        currentFileLengthInBytes = inputFile.contents().length();
+        currentFileLengthInBytes = currentFile.contents().length();
       } catch (IOException ignored) {
         // Ignore and use the default size
         currentFileLengthInBytes = -1;
       }
-      recordedOrderedExecutionTime.add(new ExecutionTime(currentFile, currentAnalysisTime, currentFileLengthInBytes));
+      recordedOrderedExecutionTime.add(new ExecutionTime(currentFile.toString(), currentAnalysisTime, currentFileLengthInBytes));
       recordedOrderedExecutionTime.sort(ORDER_BY_ANALYSIS_TIME_DESCENDING_AND_FILE_ASCENDING);
       if (recordedOrderedExecutionTime.size() > MAX_REPORTED_FILES) {
         recordedOrderedExecutionTime.removeLast();

@@ -52,7 +52,7 @@ class ExecutionTimeReportTest {
 
   InputFile mockEmptyInputFile(String filename) {
     InputFile inputFile = mock(InputFile.class);
-    when(inputFile.filename()).thenReturn(filename);
+    when(inputFile.toString()).thenReturn(filename);
     try {
       when(inputFile.contents()).thenReturn("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ");
     } catch (IOException ignored) {
