@@ -222,6 +222,7 @@ public abstract class AbstractRegexCheck extends IssuableSubscriptionVisitor imp
       case PARENTHESIZED_EXPRESSION:
         return getLiterals(ExpressionUtils.skipParentheses(expr));
       case STRING_LITERAL:
+      case TEXT_BLOCK:
         return Optional.of(new LiteralTree[] {(LiteralTree) expr});
       default:
         return Optional.empty();

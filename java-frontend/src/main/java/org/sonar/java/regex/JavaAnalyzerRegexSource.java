@@ -28,7 +28,9 @@ import java.util.TreeMap;
 import javax.annotation.Nullable;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.AnalyzerMessage.TextSpan;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.regex.JavaRegexSource;
 import org.sonarsource.analyzer.commons.regex.ast.IndexRange;
 
@@ -92,10 +94,29 @@ public class JavaAnalyzerRegexSource extends JavaRegexSource {
     int index = 0;
 
     void addLiteral(LiteralTree literal, int length) {
+      if (literal.is(Tree.Kind.TEXT_BLOCK)) {
+        addTextBlock(literal);
+      } else {
+        addStringLiteral(literal, length);
+      }
+    }
+
+    void addStringLiteral(LiteralTree literal, int length) {
       TextSpan literalSpan = AnalyzerMessage.textSpanFor(literal);
       // Create a text span for the string with the quotes stripped out
       indexToTextSpan.put(index, new TextSpan(literalSpan.startLine, literalSpan.startCharacter + 1, literalSpan.endLine, literalSpan.endCharacter - 1));
       index += length;
+    }
+
+    void addTextBlock(LiteralTree literal) {
+      int indent = LiteralUtils.indentationOfTextBlock(literal.value().split("\n"));
+      String[] lines = getString(literal).split("(?<=\r?\n)");
+      for (int i = 0; i < lines.length; i++) {
+        int line = literal.token().line() + i + 1;
+        int lineLength = lines[i].length();
+        indexToTextSpan.put(index, new TextSpan(line, indent, line, indent + lineLength));
+        index += lineLength;
+      }
     }
 
     @Nullable

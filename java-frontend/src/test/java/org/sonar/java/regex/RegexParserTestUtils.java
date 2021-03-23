@@ -75,7 +75,7 @@ public class RegexParserTestUtils {
 
     @Override
     public void visitLiteral(LiteralTree tree) {
-      if (tree.is(Tree.Kind.STRING_LITERAL)) {
+      if (tree.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK)) {
         stringLiterals.add(tree);
       }
     }
