@@ -211,8 +211,8 @@ public final class ExpressionUtils {
     if (expression.is(Tree.Kind.BOOLEAN_LITERAL)) {
       return Boolean.parseBoolean(((LiteralTree) expression).value());
     }
-    if (expression.is(Tree.Kind.STRING_LITERAL)) {
-      return LiteralUtils.trimQuotes(((LiteralTree) expression).value());
+    if (expression.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK)) {
+      return LiteralUtils.getAsStringValue((LiteralTree) expression);
     }
     if (tree.is(Tree.Kind.INT_LITERAL, Tree.Kind.UNARY_MINUS, Tree.Kind.UNARY_PLUS)) {
       return LiteralUtils.intLiteralValue(tree);
