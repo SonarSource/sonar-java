@@ -122,12 +122,13 @@ public class VisitorsBridge {
 
     PerformanceMeasure.Duration scannersDuration = PerformanceMeasure.start("Scanners");
     for (JavaFileScanner scanner : executableScanners) {
+      PerformanceMeasure.Duration scannerDuration = PerformanceMeasure.start(scanner);
       try {
-        PerformanceMeasure.Duration scannerDuration = PerformanceMeasure.start(scanner);
         runScanner(javaFileScannerContext, scanner);
-        scannerDuration.stop();
       } catch (CheckFailureException e) {
         interruptIfFailFast(e);
+      } finally {
+        scannerDuration.stop();
       }
     }
     scannersDuration.stop();
@@ -137,8 +138,9 @@ public class VisitorsBridge {
       issuableSubscriptionVisitorsRunner.run(javaFileScannerContext);
     } catch (CheckFailureException e) {
       interruptIfFailFast(e);
+    } finally {
+      issuableSubscriptionVisitorsDuration.stop();
     }
-    issuableSubscriptionVisitorsDuration.stop();
   }
 
   private void interruptIfFailFast(CheckFailureException e) {
