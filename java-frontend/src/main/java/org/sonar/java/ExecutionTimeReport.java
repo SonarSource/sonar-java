@@ -80,11 +80,12 @@ public class ExecutionTimeReport {
       LOG.debug("Analysis time of " + currentFile + " (" + currentAnalysisTime + "ms)");
     }
     if (currentAnalysisTime >= minRecordedOrderedExecutionTime) {
-      long currentFileLengthInBytes = -1;
+      long currentFileLengthInBytes;
       try {
         currentFileLengthInBytes = inputFile.contents().length();
       } catch (IOException ignored) {
         // Ignore and use the default size
+        currentFileLengthInBytes = -1;
       }
       recordedOrderedExecutionTime.add(new ExecutionTime(currentFile, currentAnalysisTime, currentFileLengthInBytes));
       recordedOrderedExecutionTime.sort(ORDER_BY_ANALYSIS_TIME_DESCENDING_AND_FILE_ASCENDING);

@@ -55,8 +55,8 @@ class ExecutionTimeReportTest {
     when(inputFile.filename()).thenReturn(filename);
     try {
       when(inputFile.contents()).thenReturn("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ");
-    } catch (IOException e) {
-      //Ignore
+    } catch (IOException ignored) {
+      // Ignore the exception
     }
     return inputFile;
   }
@@ -160,8 +160,7 @@ class ExecutionTimeReportTest {
   }
 
   @Test
-  void interrupt_the_report() {
-    String filename = "f1";
+  void interrupt_the_report() throws IOException {
     InputFile inputFile = mockEmptyInputFile("f1");
     report.start(inputFile);
     clock.addMilliseconds(50_000);
@@ -198,6 +197,18 @@ class ExecutionTimeReportTest {
     assertThat(logTester.logs(LoggerLevel.DEBUG)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.INFO)).isEmpty();
     assertThat(report).hasToString("    f2 (2000ms, 52B)");
+  }
+
+  @Test
+  void use_default_file_length_of_minus_1_when_contents_cannot_be_read() throws IOException {
+    InputFile inputFile = mockEmptyInputFile("default_size");
+    when(inputFile.contents()).thenThrow(IOException.class);
+    report.start(inputFile);
+    clock.addMilliseconds(50_000);
+    report.end();
+    report.report();
+    assertThat(logTester.logs(LoggerLevel.INFO)).contains("Slowest analyzed files:" + NL +
+      "    default_size (50000ms, -1B)");
   }
 
   private static class UnitTestClock extends Clock {
