@@ -34,6 +34,7 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.ExecutionTimeReport;
+import org.sonar.java.PerformanceMeasure;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.JParser;
@@ -103,6 +104,7 @@ public class JavaAstScanner {
 
   private void simpleScan(InputFile inputFile) {
     visitor.setCurrentFile(inputFile);
+    PerformanceMeasure.Duration parseDuration = PerformanceMeasure.start("JParser");
     try {
       String version;
       JavaVersion javaVersion = visitor.getJavaVersion();
@@ -120,6 +122,7 @@ public class JavaAstScanner {
         inputFile.contents(),
         visitor.getClasspath()
       );
+      parseDuration.stop();
       visitor.visitFile(ast);
       collectUndefinedTypes(ast.sema.undefinedTypes());
       // release environment used for semantic resolution
@@ -138,6 +141,9 @@ public class JavaAstScanner {
     } catch (StackOverflowError error) {
       LOG.error(String.format(LOG_ERROR_STACKOVERFLOW, inputFile), error);
       throw error;
+    } finally {
+      // redundant stop in case of exception
+      parseDuration.stop();
     }
   }
 
