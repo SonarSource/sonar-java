@@ -19,10 +19,12 @@
  */
 package org.sonar.java;
 
+import java.io.IOException;
 import java.time.Clock;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
@@ -36,10 +38,12 @@ public class ExecutionTimeReport {
   private static class ExecutionTime {
     private final String file;
     private final long analysisTime;
+    private final long lengthInBytes;
 
-    public ExecutionTime(String file, long analysisTime) {
+    public ExecutionTime(String file, long analysisTime, long lengthInBytes) {
       this.file = file;
       this.analysisTime = analysisTime;
+      this.lengthInBytes = lengthInBytes;
     }
   }
 
@@ -53,7 +57,7 @@ public class ExecutionTimeReport {
 
   private final Clock clock;
   private final long analysisStartTimeMS;
-  private String currentFile;
+  private InputFile currentFile;
   private long currentFileStartTimeMS;
 
   public ExecutionTimeReport(Clock clock) {
@@ -61,8 +65,8 @@ public class ExecutionTimeReport {
     analysisStartTimeMS = clock.millis();
   }
 
-  public void start(String currentFile) {
-    this.currentFile = currentFile;
+  public void start(InputFile inputFile) {
+    this.currentFile = inputFile;
     currentFileStartTimeMS = clock.millis();
   }
 
@@ -74,7 +78,14 @@ public class ExecutionTimeReport {
       LOG.debug("Analysis time of " + currentFile + " (" + currentAnalysisTime + "ms)");
     }
     if (currentAnalysisTime >= minRecordedOrderedExecutionTime) {
-      recordedOrderedExecutionTime.add(new ExecutionTime(currentFile, currentAnalysisTime));
+      long currentFileLengthInBytes;
+      try {
+        currentFileLengthInBytes = currentFile.contents().length();
+      } catch (IOException ignored) {
+        // Ignore and use the default size
+        currentFileLengthInBytes = -1;
+      }
+      recordedOrderedExecutionTime.add(new ExecutionTime(currentFile.toString(), currentAnalysisTime, currentFileLengthInBytes));
       recordedOrderedExecutionTime.sort(ORDER_BY_ANALYSIS_TIME_DESCENDING_AND_FILE_ASCENDING);
       if (recordedOrderedExecutionTime.size() > MAX_REPORTED_FILES) {
         recordedOrderedExecutionTime.removeLast();
@@ -100,7 +111,7 @@ public class ExecutionTimeReport {
   @Override
   public String toString() {
     return recordedOrderedExecutionTime.stream()
-      .map(e -> "    " + e.file + " (" + e.analysisTime + "ms)")
+      .map(e -> "    " + e.file + " (" + e.analysisTime + "ms, " + e.lengthInBytes + "B)")
       .collect(Collectors.joining(System.lineSeparator()));
   }
 

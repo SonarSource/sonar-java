@@ -74,7 +74,7 @@ public class JavaAstScanner {
           cancelled = true;
           break;
         }
-        executionTimeReport.start(inputFile.toString());
+        executionTimeReport.start(inputFile);
         simpleScan(inputFile);
         executionTimeReport.end();
         progressReport.nextFile();
