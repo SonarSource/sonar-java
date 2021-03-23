@@ -19,10 +19,12 @@
  */
 package org.sonar.java;
 
+import java.io.IOException;
 import java.time.Clock;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
@@ -57,17 +59,17 @@ public class ExecutionTimeReport {
   private final long analysisStartTimeMS;
   private String currentFile;
   private long currentFileStartTimeMS;
-  private long currentFileLengthInBytes;
+  private InputFile inputFile;
 
   public ExecutionTimeReport(Clock clock) {
     this.clock = clock;
     analysisStartTimeMS = clock.millis();
   }
 
-  public void start(String currentFile, long lengthInBytes) {
-    this.currentFile = currentFile;
+  public void start(InputFile inputFile) {
+    this.currentFile = inputFile.filename();
     currentFileStartTimeMS = clock.millis();
-    currentFileLengthInBytes = lengthInBytes;
+    this.inputFile = inputFile;
   }
 
   public void end() {
@@ -78,6 +80,12 @@ public class ExecutionTimeReport {
       LOG.debug("Analysis time of " + currentFile + " (" + currentAnalysisTime + "ms)");
     }
     if (currentAnalysisTime >= minRecordedOrderedExecutionTime) {
+      long currentFileLengthInBytes = -1;
+      try {
+        currentFileLengthInBytes = inputFile.contents().length();
+      } catch (IOException ignored) {
+        // Ignore and use the default size
+      }
       recordedOrderedExecutionTime.add(new ExecutionTime(currentFile, currentAnalysisTime, currentFileLengthInBytes));
       recordedOrderedExecutionTime.sort(ORDER_BY_ANALYSIS_TIME_DESCENDING_AND_FILE_ASCENDING);
       if (recordedOrderedExecutionTime.size() > MAX_REPORTED_FILES) {

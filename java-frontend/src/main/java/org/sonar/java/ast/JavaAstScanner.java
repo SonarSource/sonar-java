@@ -20,7 +20,6 @@
 package org.sonar.java.ast;
 
 import com.sonar.sslr.api.RecognitionException;
-import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.time.Clock;
 import java.util.Collections;
@@ -75,13 +74,7 @@ public class JavaAstScanner {
           cancelled = true;
           break;
         }
-        int lengthInBytes = -1;
-        try {
-          lengthInBytes = inputFile.contents().length();
-        } catch (IOException e) {
-          lengthInBytes = -1;
-        }
-        executionTimeReport.start(inputFile.toString(), lengthInBytes);
+        executionTimeReport.start(inputFile);
         simpleScan(inputFile);
         executionTimeReport.end();
         progressReport.nextFile();

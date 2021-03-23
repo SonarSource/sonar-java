@@ -19,16 +19,20 @@
  */
 package org.sonar.java;
 
+import java.io.IOException;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ExecutionTimeReportTest {
 
@@ -39,13 +43,22 @@ class ExecutionTimeReportTest {
   public UnitTestClock clock = new UnitTestClock();
   public ExecutionTimeReport report = new ExecutionTimeReport(clock);
 
-  void simulateAnalysis(String file, long timeMs) {
-    simulateAnalysis(file, timeMs, -1);
-  }
-  void simulateAnalysis(String file, long timeMs, long lengthInBytes) {
-    report.start(file, lengthInBytes);
+  void simulateAnalysis(String filename, long timeMs) {
+    InputFile inputFile = mockEmptyInputFile(filename);
+    report.start(inputFile);
     clock.addMilliseconds(timeMs);
     report.end();
+  }
+
+  InputFile mockEmptyInputFile(String filename) {
+    InputFile inputFile = mock(InputFile.class);
+    when(inputFile.filename()).thenReturn(filename);
+    try {
+      when(inputFile.contents()).thenReturn("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    } catch (IOException e) {
+      //Ignore
+    }
+    return inputFile;
   }
 
   @Test
@@ -57,8 +70,8 @@ class ExecutionTimeReportTest {
     assertThat(logTester.logs(LoggerLevel.DEBUG)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.INFO)).isEmpty();
     assertThat(report).hasToString("" +
-      "    f1 (2000ms, -1B)" + NL +
-      "    f2 (2000ms, -1B)");
+      "    f1 (2000ms, 52B)" + NL +
+      "    f2 (2000ms, 52B)");
   }
 
   @Test
@@ -79,20 +92,20 @@ class ExecutionTimeReportTest {
     simulateAnalysis("f1400", 1400);
     simulateAnalysis("f100", 100);
     assertThat(report).hasToString("" +
-      "    f1400 (1400ms, -1B)" + NL +
-      "    f1200 (1200ms, -1B)");
+      "    f1400 (1400ms, 52B)" + NL +
+      "    f1200 (1200ms, 52B)");
     simulateAnalysis("f2800", 2800);
     simulateAnalysis("f1300", 1300);
     simulateAnalysis("f1700", 1700);
     simulateAnalysis("f200", 200);
     simulateAnalysis("f2900", 2900);
     assertThat(report).hasToString("" +
-      "    f2900 (2900ms, -1B)" + NL +
-      "    f2800 (2800ms, -1B)" + NL +
-      "    f1700 (1700ms, -1B)" + NL +
-      "    f1400 (1400ms, -1B)" + NL +
-      "    f1300 (1300ms, -1B)" + NL +
-      "    f1200 (1200ms, -1B)");
+      "    f2900 (2900ms, 52B)" + NL +
+      "    f2800 (2800ms, 52B)" + NL +
+      "    f1700 (1700ms, 52B)" + NL +
+      "    f1400 (1400ms, 52B)" + NL +
+      "    f1300 (1300ms, 52B)" + NL +
+      "    f1200 (1200ms, 52B)");
     simulateAnalysis("f1000", 1000);
     simulateAnalysis("f2000", 2000);
     simulateAnalysis("f1500", 1500);
@@ -102,30 +115,30 @@ class ExecutionTimeReportTest {
     simulateAnalysis("f1100", 1100);
     simulateAnalysis("f2700", 2700);
     assertThat(report).hasToString("" +
-      "    f2900 (2900ms, -1B)" + NL +
-      "    f2800 (2800ms, -1B)" + NL +
-      "    f2700 (2700ms, -1B)" + NL +
-      "    f2000 (2000ms, -1B)" + NL +
-      "    f1800 (1800ms, -1B)" + NL +
-      "    f1700 (1700ms, -1B)" + NL +
-      "    f1600 (1600ms, -1B)" + NL +
-      "    f1500 (1500ms, -1B)" + NL +
-      "    f1400 (1400ms, -1B)" + NL +
-      "    f1300 (1300ms, -1B)");
+      "    f2900 (2900ms, 52B)" + NL +
+      "    f2800 (2800ms, 52B)" + NL +
+      "    f2700 (2700ms, 52B)" + NL +
+      "    f2000 (2000ms, 52B)" + NL +
+      "    f1800 (1800ms, 52B)" + NL +
+      "    f1700 (1700ms, 52B)" + NL +
+      "    f1600 (1600ms, 52B)" + NL +
+      "    f1500 (1500ms, 52B)" + NL +
+      "    f1400 (1400ms, 52B)" + NL +
+      "    f1300 (1300ms, 52B)");
     simulateAnalysis("f2100", 2100);
     simulateAnalysis("f1900", 1900);
     simulateAnalysis("f2500", 2500);
     assertThat(report).hasToString("" +
-      "    f2900 (2900ms, -1B)" + NL +
-      "    f2800 (2800ms, -1B)" + NL +
-      "    f2700 (2700ms, -1B)" + NL +
-      "    f2500 (2500ms, -1B)" + NL +
-      "    f2100 (2100ms, -1B)" + NL +
-      "    f2000 (2000ms, -1B)" + NL +
-      "    f1900 (1900ms, -1B)" + NL +
-      "    f1800 (1800ms, -1B)" + NL +
-      "    f1700 (1700ms, -1B)" + NL +
-      "    f1600 (1600ms, -1B)");
+      "    f2900 (2900ms, 52B)" + NL +
+      "    f2800 (2800ms, 52B)" + NL +
+      "    f2700 (2700ms, 52B)" + NL +
+      "    f2500 (2500ms, 52B)" + NL +
+      "    f2100 (2100ms, 52B)" + NL +
+      "    f2000 (2000ms, 52B)" + NL +
+      "    f1900 (1900ms, 52B)" + NL +
+      "    f1800 (1800ms, 52B)" + NL +
+      "    f1700 (1700ms, 52B)" + NL +
+      "    f1600 (1600ms, 52B)");
     simulateAnalysis("f2300", 2300);
     simulateAnalysis("f2200", 2200);
     simulateAnalysis("f2400", 2400);
@@ -134,28 +147,30 @@ class ExecutionTimeReportTest {
     assertThat(logTester.logs(LoggerLevel.TRACE)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.DEBUG)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.INFO)).contains("Slowest analyzed files:" + NL +
-      "    f2900 (2900ms, -1B)" + NL +
-      "    f2800 (2800ms, -1B)" + NL +
-      "    f2700 (2700ms, -1B)" + NL +
-      "    f2600 (2600ms, -1B)" + NL +
-      "    f2500 (2500ms, -1B)" + NL +
-      "    f2400 (2400ms, -1B)" + NL +
-      "    f2300 (2300ms, -1B)" + NL +
-      "    f2200 (2200ms, -1B)" + NL +
-      "    f2100 (2100ms, -1B)" + NL +
-      "    f2000 (2000ms, -1B)");
+      "    f2900 (2900ms, 52B)" + NL +
+      "    f2800 (2800ms, 52B)" + NL +
+      "    f2700 (2700ms, 52B)" + NL +
+      "    f2600 (2600ms, 52B)" + NL +
+      "    f2500 (2500ms, 52B)" + NL +
+      "    f2400 (2400ms, 52B)" + NL +
+      "    f2300 (2300ms, 52B)" + NL +
+      "    f2200 (2200ms, 52B)" + NL +
+      "    f2100 (2100ms, 52B)" + NL +
+      "    f2000 (2000ms, 52B)");
   }
 
   @Test
   void interrupt_the_report() {
-    report.start("f1", -1);
+    String filename = "f1";
+    InputFile inputFile = mockEmptyInputFile("f1");
+    report.start(inputFile);
     clock.addMilliseconds(50_000);
     // do not call end()
     report.report();
     assertThat(logTester.logs(LoggerLevel.TRACE)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.DEBUG)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.INFO)).contains("Slowest analyzed files:" + NL +
-      "    f1 (50000ms, -1B)");
+      "    f1 (50000ms, 52B)");
   }
 
   @Test
@@ -167,7 +182,7 @@ class ExecutionTimeReportTest {
     assertThat(logTester.logs(LoggerLevel.TRACE)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("Analysis time of f2 (2000ms)");
     assertThat(logTester.logs(LoggerLevel.INFO)).isEmpty();
-    assertThat(report).hasToString("    f2 (2000ms, -1B)");
+    assertThat(report).hasToString("    f2 (2000ms, 52B)");
   }
 
   @Test
@@ -182,7 +197,7 @@ class ExecutionTimeReportTest {
     );
     assertThat(logTester.logs(LoggerLevel.DEBUG)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.INFO)).isEmpty();
-    assertThat(report).hasToString("    f2 (2000ms, -1B)");
+    assertThat(report).hasToString("    f2 (2000ms, 52B)");
   }
 
   private static class UnitTestClock extends Clock {
