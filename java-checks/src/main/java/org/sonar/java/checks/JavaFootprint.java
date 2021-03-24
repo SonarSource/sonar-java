@@ -21,12 +21,12 @@ package org.sonar.java.checks;
 
 import java.util.HashSet;
 import java.util.Set;
-import org.sonarsource.analyzer.recognizers.CamelCaseDetector;
-import org.sonarsource.analyzer.recognizers.ContainsDetector;
-import org.sonarsource.analyzer.recognizers.Detector;
-import org.sonarsource.analyzer.recognizers.EndWithDetector;
-import org.sonarsource.analyzer.recognizers.KeywordsDetector;
-import org.sonarsource.analyzer.recognizers.LanguageFootprint;
+import org.sonarsource.analyzer.commons.recognizers.CamelCaseDetector;
+import org.sonarsource.analyzer.commons.recognizers.ContainsDetector;
+import org.sonarsource.analyzer.commons.recognizers.Detector;
+import org.sonarsource.analyzer.commons.recognizers.EndWithDetector;
+import org.sonarsource.analyzer.commons.recognizers.KeywordsDetector;
+import org.sonarsource.analyzer.commons.recognizers.LanguageFootprint;
 
 public final class JavaFootprint implements LanguageFootprint {
 
