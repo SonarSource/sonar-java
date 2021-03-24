@@ -132,9 +132,9 @@ class PerformanceMeasureTest {
       "{ \"name\": \"root\", \"calls\": 1, \"durationNanos\": NOT_ZERO, \"children\": [\n" +
       "    { \"name\": \"#MeasurementCost_v1\", \"calls\": 1, \"durationNanos\": NOT_ZERO, \"children\": [\n" +
       "        { \"name\": \"createChild\", \"calls\": 1, \"durationNanos\": NOT_ZERO },\n" +
-      "        { \"name\": \"emptyDuration\", \"calls\": 1, \"durationNanos\": NOT_ZERO },\n" +
       "        { \"name\": \"incrementChild\", \"calls\": 1, \"durationNanos\": NOT_ZERO },\n" +
-      "        { \"name\": \"nanoTime\", \"calls\": 1, \"durationNanos\": NOT_ZERO }\n" +
+      "        { \"name\": \"nanoTime\", \"calls\": 1, \"durationNanos\": NOT_ZERO },\n" +
+      "        { \"name\": \"observationCost\", \"calls\": 1, \"durationNanos\": NOT_ZERO }\n" +
       "      ]\n" +
       "    }\n" +
       "  ]\n" +

@@ -147,6 +147,11 @@ public class PerformanceMeasure {
   }
 
   private static class RecordedDuration implements Duration, DurationReport {
+
+    private static final String PARENT_OF_THROWAWAY_MEASURES_TO_COMPUTE_OBSERVATION_COST = "#measures to compute observation cost";
+    private static final int SAMPLING_COUNT_TO_EVALUATE_OBSERVATION_COST = 99;
+    private static final Supplier<IntStream> SAMPLES = () -> IntStream.range(0, SAMPLING_COUNT_TO_EVALUATE_OBSERVATION_COST);
+
     private final PerformanceMeasure measure;
     private long startNanos;
 
@@ -178,34 +183,33 @@ public class PerformanceMeasure {
     }
 
     private static void appendMeasurementCost() {
-      int numberOfSamples = 99;
-      String[] sampleNames = IntStream.range(0, numberOfSamples).mapToObj(i -> "m" + i).toArray(String[]::new);
+      String[] sampleNames = SAMPLES.get().mapToObj(i -> "m" + i).toArray(String[]::new);
       Duration totalDuration = start("#MeasurementCost_v1");
       PerformanceMeasure measurementCost = currentMeasure;
-      Duration temporaryDuration = start("#temporary");
-      measurementCost.getOrCreateChild("nanoTime").add(median(IntStream.range(0, numberOfSamples).mapToLong(i -> {
+      Duration temporaryDuration = start(PARENT_OF_THROWAWAY_MEASURES_TO_COMPUTE_OBSERVATION_COST);
+      measurementCost.getOrCreateChild("nanoTime").add(median(SAMPLES.get().mapToLong(i -> {
         long start = System.nanoTime();
         return System.nanoTime() - start;
       })));
-      measurementCost.getOrCreateChild("createChild").add(median(IntStream.range(0, numberOfSamples).mapToLong(i -> {
+      measurementCost.getOrCreateChild("createChild").add(median(SAMPLES.get().mapToLong(i -> {
         long start = System.nanoTime();
         start(sampleNames[i]).stop();
         return System.nanoTime() - start;
       })));
-      measurementCost.getOrCreateChild("emptyDuration").add(median(Arrays.stream(sampleNames)
+      measurementCost.getOrCreateChild("observationCost").add(median(Arrays.stream(sampleNames)
         .map(n -> currentMeasure.childrenMap.get(n)).mapToLong(m -> m.totalDurationNanos)));
       start("measure").stop();
-      measurementCost.getOrCreateChild("incrementChild").add(median(IntStream.range(0, numberOfSamples).mapToLong(i -> {
+      measurementCost.getOrCreateChild("incrementChild").add(median(SAMPLES.get().mapToLong(i -> {
         long start = System.nanoTime();
         start("measure").stop();
         return System.nanoTime() - start;
       })));
       temporaryDuration.stop();
-      measurementCost.childrenMap.remove("#temporary");
+      measurementCost.childrenMap.remove(PARENT_OF_THROWAWAY_MEASURES_TO_COMPUTE_OBSERVATION_COST);
       totalDuration.stop();
     }
 
-    protected static long median(LongStream measures) {
+    private static long median(LongStream measures) {
       long[] sortedMeasures = measures.sorted().toArray();
       return sortedMeasures[(sortedMeasures.length - 1)/2];
     }
