@@ -27,17 +27,17 @@ import java.util.Objects;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
-import org.sonar.java.regex.ast.AutomatonState;
-import org.sonar.java.regex.ast.CharacterClassElementTree;
-import org.sonar.java.regex.ast.CharacterClassIntersectionTree;
-import org.sonar.java.regex.ast.CharacterClassTree;
-import org.sonar.java.regex.ast.CharacterRangeTree;
-import org.sonar.java.regex.ast.CharacterTree;
-import org.sonar.java.regex.ast.DotTree;
-import org.sonar.java.regex.ast.EscapedCharacterClassTree;
-import org.sonar.java.regex.ast.MiscEscapeSequenceTree;
-import org.sonar.java.regex.ast.RegexBaseVisitor;
-import org.sonar.java.regex.ast.RegexSyntaxElement;
+import org.sonarsource.analyzer.commons.regex.ast.AutomatonState;
+import org.sonarsource.analyzer.commons.regex.ast.CharacterClassElementTree;
+import org.sonarsource.analyzer.commons.regex.ast.CharacterClassIntersectionTree;
+import org.sonarsource.analyzer.commons.regex.ast.CharacterClassTree;
+import org.sonarsource.analyzer.commons.regex.ast.CharacterRangeTree;
+import org.sonarsource.analyzer.commons.regex.ast.CharacterTree;
+import org.sonarsource.analyzer.commons.regex.ast.DotTree;
+import org.sonarsource.analyzer.commons.regex.ast.EscapedCharacterClassTree;
+import org.sonarsource.analyzer.commons.regex.ast.MiscEscapeSequenceTree;
+import org.sonarsource.analyzer.commons.regex.ast.RegexBaseVisitor;
+import org.sonarsource.analyzer.commons.regex.ast.RegexSyntaxElement;
 
 public class SimplifiedRegexCharacterClass {
 

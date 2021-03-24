@@ -31,12 +31,12 @@ import org.sonar.check.Rule;
 import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.collections.SetUtils;
 import org.sonar.java.regex.RegexCheck;
-import org.sonar.java.regex.RegexParseResult;
-import org.sonar.java.regex.ast.CharacterRangeTree;
-import org.sonar.java.regex.ast.EscapedCharacterClassTree;
-import org.sonar.java.regex.ast.NonCapturingGroupTree;
-import org.sonar.java.regex.ast.RegexBaseVisitor;
-import org.sonar.java.regex.ast.RegexTree;
+import org.sonarsource.analyzer.commons.regex.RegexParseResult;
+import org.sonarsource.analyzer.commons.regex.ast.CharacterRangeTree;
+import org.sonarsource.analyzer.commons.regex.ast.EscapedCharacterClassTree;
+import org.sonarsource.analyzer.commons.regex.ast.NonCapturingGroupTree;
+import org.sonarsource.analyzer.commons.regex.ast.RegexBaseVisitor;
+import org.sonarsource.analyzer.commons.regex.ast.RegexTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 

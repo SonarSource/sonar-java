@@ -21,15 +21,18 @@ package org.sonar.java.checks.helpers;
 
 import java.util.Objects;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.regex.ast.AutomatonState;
-import org.sonar.java.regex.ast.BoundaryTree;
-import org.sonar.java.regex.ast.LookAroundTree;
-import org.sonar.java.regex.ast.RepetitionTree;
 
 import javax.annotation.CheckForNull;
 import java.util.HashMap;
+import org.sonarsource.analyzer.commons.regex.ast.AutomatonState;
+import org.sonarsource.analyzer.commons.regex.ast.BoundaryTree;
+import org.sonarsource.analyzer.commons.regex.ast.LookAroundTree;
+import org.sonarsource.analyzer.commons.regex.ast.RepetitionTree;
 
-import static org.sonar.java.regex.ast.AutomatonState.TransitionType.*;
+import static org.sonarsource.analyzer.commons.regex.ast.AutomatonState.TransitionType.BACK_REFERENCE;
+import static org.sonarsource.analyzer.commons.regex.ast.AutomatonState.TransitionType.EPSILON;
+import static org.sonarsource.analyzer.commons.regex.ast.AutomatonState.TransitionType.LOOKAROUND_BACKTRACKING;
+import static org.sonarsource.analyzer.commons.regex.ast.AutomatonState.TransitionType.NEGATION;
 
 public abstract class AbstractAutomataChecker {
 

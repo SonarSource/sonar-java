@@ -30,7 +30,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.JParserTestUtils;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
-import org.sonar.java.regex.RegexParseResult;
+import org.sonarsource.analyzer.commons.regex.RegexParseResult;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;

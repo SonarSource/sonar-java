@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.regex.RegexCheck;
-import org.sonar.java.regex.RegexParseResult;
-import org.sonar.java.regex.SyntaxError;
-import org.sonar.java.regex.ast.RegexSyntaxElement;
+import org.sonarsource.analyzer.commons.regex.RegexParseResult;
+import org.sonarsource.analyzer.commons.regex.SyntaxError;
+import org.sonarsource.analyzer.commons.regex.ast.RegexSyntaxElement;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 
 @Rule(key = "S5856")

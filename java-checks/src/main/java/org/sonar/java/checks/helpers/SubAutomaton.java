@@ -21,8 +21,8 @@ package org.sonar.java.checks.helpers;
 
 import java.util.Objects;
 import java.util.function.Predicate;
-import org.sonar.java.regex.ast.AutomatonState;
-import org.sonar.java.regex.ast.AutomatonState.TransitionType;
+import org.sonarsource.analyzer.commons.regex.ast.AutomatonState;
+import org.sonarsource.analyzer.commons.regex.ast.AutomatonState.TransitionType;
 
 public class SubAutomaton {
   public final AutomatonState start;

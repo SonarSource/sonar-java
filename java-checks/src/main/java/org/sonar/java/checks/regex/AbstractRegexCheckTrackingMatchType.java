@@ -20,11 +20,11 @@
 package org.sonar.java.checks.regex;
 
 import java.util.List;
-import org.sonar.java.regex.RegexParseResult;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.regex.RegexParseResult;
 
 public abstract class AbstractRegexCheckTrackingMatchType extends AbstractRegexCheckTrackingMatchers {
 

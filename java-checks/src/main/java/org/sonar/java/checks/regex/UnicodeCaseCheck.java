@@ -24,11 +24,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
-import org.sonar.java.regex.RegexParseResult;
-import org.sonar.java.regex.ast.CharacterTree;
-import org.sonar.java.regex.ast.FlagSet;
-import org.sonar.java.regex.ast.SourceCharacter;
-import org.sonar.java.regex.ast.RegexBaseVisitor;
+import org.sonarsource.analyzer.commons.regex.RegexParseResult;
+import org.sonarsource.analyzer.commons.regex.ast.CharacterTree;
+import org.sonarsource.analyzer.commons.regex.ast.FlagSet;
+import org.sonarsource.analyzer.commons.regex.ast.SourceCharacter;
+import org.sonarsource.analyzer.commons.regex.ast.RegexBaseVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 

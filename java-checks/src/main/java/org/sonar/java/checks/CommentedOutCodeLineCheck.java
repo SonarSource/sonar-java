@@ -33,7 +33,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
-import org.sonarsource.analyzer.recognizers.CodeRecognizer;
+import org.sonarsource.analyzer.commons.recognizers.CodeRecognizer;
 
 @DeprecatedRuleKey(ruleKey = "CommentedOutCodeLine", repositoryKey = "squid")
 @Rule(key = "S125")

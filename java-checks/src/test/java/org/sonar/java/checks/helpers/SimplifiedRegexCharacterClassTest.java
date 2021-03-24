@@ -27,20 +27,20 @@ import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.LiteralTreeImpl;
-import org.sonar.java.regex.RegexParseResult;
-import org.sonar.java.regex.RegexParser;
-import org.sonar.java.regex.ast.CharacterClassElementTree;
-import org.sonar.java.regex.ast.DotTree;
-import org.sonar.java.regex.ast.FlagSet;
-import org.sonar.java.regex.ast.IndexRange;
-import org.sonar.java.regex.JavaRegexSource;
-import org.sonar.java.regex.ast.MiscEscapeSequenceTree;
-import org.sonar.java.regex.ast.CharacterTree;
-import org.sonar.java.regex.RegexSource;
-import org.sonar.java.regex.ast.RegexTree;
-import org.sonar.java.regex.ast.SequenceTree;
+import org.sonar.java.regex.JavaAnalyzerRegexSource;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.regex.RegexParseResult;
+import org.sonarsource.analyzer.commons.regex.RegexParser;
+import org.sonarsource.analyzer.commons.regex.RegexSource;
+import org.sonarsource.analyzer.commons.regex.ast.CharacterClassElementTree;
+import org.sonarsource.analyzer.commons.regex.ast.CharacterTree;
+import org.sonarsource.analyzer.commons.regex.ast.DotTree;
+import org.sonarsource.analyzer.commons.regex.ast.FlagSet;
+import org.sonarsource.analyzer.commons.regex.ast.IndexRange;
+import org.sonarsource.analyzer.commons.regex.ast.MiscEscapeSequenceTree;
+import org.sonarsource.analyzer.commons.regex.ast.RegexTree;
+import org.sonarsource.analyzer.commons.regex.ast.SequenceTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -53,7 +53,7 @@ class SimplifiedRegexCharacterClassTest {
 
   @Test
   void testIntersectionWithTrueAsDefaultAnswer() {
-    RegexSource dummySource = new JavaRegexSource(Collections.emptyList());
+    RegexSource dummySource = new JavaAnalyzerRegexSource(Collections.emptyList());
     IndexRange dummyRange = new IndexRange(0, 0);
     CharacterClassElementTree dummyTree = new MiscEscapeSequenceTree(dummySource, dummyRange, new FlagSet());
 
@@ -353,7 +353,7 @@ class SimplifiedRegexCharacterClassTest {
     String literalSourceCode = "\"" + StringEscapeUtils.escapeJava(stringLiteral) + "\"";
     InternalSyntaxToken literalToken = new InternalSyntaxToken(1, 1, literalSourceCode, Collections.emptyList(), false);
     List<LiteralTree> literals = Collections.singletonList(new LiteralTreeImpl(Tree.Kind.STRING_LITERAL, literalToken));
-    RegexParseResult result = new RegexParser(new JavaRegexSource(literals), flagSet).parse();
+    RegexParseResult result = new RegexParser(new JavaAnalyzerRegexSource(literals), flagSet).parse();
     assertThat(result.getSyntaxErrors()).isEmpty();
     return result;
   }

@@ -26,16 +26,16 @@ import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.RegexReachabilityChecker;
 import org.sonar.java.checks.helpers.RegexTreeHelper;
-import org.sonar.java.regex.RegexParseResult;
-import org.sonar.java.regex.ast.AutomatonState;
-import org.sonar.java.regex.ast.BoundaryTree;
-import org.sonar.java.regex.ast.DisjunctionTree;
-import org.sonar.java.regex.ast.LookAroundTree;
-import org.sonar.java.regex.ast.RegexBaseVisitor;
-import org.sonar.java.regex.ast.RegexTree;
+import org.sonarsource.analyzer.commons.regex.RegexParseResult;
+import org.sonarsource.analyzer.commons.regex.ast.AutomatonState;
+import org.sonarsource.analyzer.commons.regex.ast.BoundaryTree;
+import org.sonarsource.analyzer.commons.regex.ast.DisjunctionTree;
+import org.sonarsource.analyzer.commons.regex.ast.LookAroundTree;
+import org.sonarsource.analyzer.commons.regex.ast.RegexBaseVisitor;
+import org.sonarsource.analyzer.commons.regex.ast.RegexTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 
-import static org.sonar.java.regex.ast.AutomatonState.TransitionType.CHARACTER;
+import static org.sonarsource.analyzer.commons.regex.ast.AutomatonState.TransitionType.CHARACTER;
 
 @Rule(key = "S5996")
 public class ImpossibleBoundariesCheck extends AbstractRegexCheck {

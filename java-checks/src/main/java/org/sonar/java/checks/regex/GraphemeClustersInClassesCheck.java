@@ -22,10 +22,10 @@ package org.sonar.java.checks.regex;
 import java.util.ArrayList;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.regex.RegexParseResult;
-import org.sonar.java.regex.ast.CharacterClassTree;
-import org.sonar.java.regex.ast.CharacterClassUnionTree;
-import org.sonar.java.regex.ast.RegexBaseVisitor;
+import org.sonarsource.analyzer.commons.regex.RegexParseResult;
+import org.sonarsource.analyzer.commons.regex.ast.CharacterClassTree;
+import org.sonarsource.analyzer.commons.regex.ast.CharacterClassUnionTree;
+import org.sonarsource.analyzer.commons.regex.ast.RegexBaseVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 
 import static org.sonar.java.checks.helpers.RegexTreeHelper.getGraphemeInList;

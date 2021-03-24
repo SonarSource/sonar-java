@@ -22,8 +22,8 @@ package org.sonar.java.checks.helpers;
 import java.util.regex.Pattern;
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.regex.RegexParseResult;
-import org.sonar.java.regex.ast.FlagSet;
+import org.sonarsource.analyzer.commons.regex.RegexParseResult;
+import org.sonarsource.analyzer.commons.regex.ast.FlagSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.helpers.SimplifiedRegexCharacterClassTest.parseRegex;
