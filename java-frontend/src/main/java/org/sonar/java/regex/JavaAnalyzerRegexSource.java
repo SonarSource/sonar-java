@@ -32,13 +32,13 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonarsource.analyzer.commons.regex.JavaRegexSource;
 import org.sonarsource.analyzer.commons.regex.ast.IndexRange;
 
-public class JavaRegexSourceTrackingTextSpans extends JavaRegexSource {
+public class JavaAnalyzerRegexSource extends JavaRegexSource {
   /**
    * Maps an index of the regular expression to the TextSpan string literal that starts at the index
    */
   private final TextSpanTracker indexToTextSpan = new TextSpanTracker();
 
-  public JavaRegexSourceTrackingTextSpans(List<LiteralTree> stringLiterals) {
+  public JavaAnalyzerRegexSource(List<LiteralTree> stringLiterals) {
     super(literalsToString(stringLiterals));
     for (LiteralTree literal : stringLiterals) {
       String text = getString(literal);

@@ -44,7 +44,7 @@ public interface RegexCheck extends JavaCheck {
     private final String message;
 
     public RegexIssueLocation(RegexSyntaxElement tree, String message) {
-      this.locations = ((JavaRegexSourceTrackingTextSpans) tree.getSource()).textSpansFor(tree.getRange());
+      this.locations = ((JavaAnalyzerRegexSource) tree.getSource()).textSpansFor(tree.getRange());
       this.message = message;
     }
 
@@ -77,7 +77,7 @@ public interface RegexCheck extends JavaCheck {
     }
 
     private static List<AnalyzerMessage.TextSpan> textSpansFromRegexSyntaxElements(List<RegexSyntaxElement> trees) {
-      JavaRegexSourceTrackingTextSpans source = (JavaRegexSourceTrackingTextSpans) trees.get(0).getSource();
+      JavaAnalyzerRegexSource source = (JavaAnalyzerRegexSource) trees.get(0).getSource();
       List<AnalyzerMessage.TextSpan> locations = new ArrayList<>();
       IndexRange current = null;
       for (RegexSyntaxElement tree : trees) {

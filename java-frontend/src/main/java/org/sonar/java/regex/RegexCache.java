@@ -37,7 +37,7 @@ public final class RegexCache {
       Arrays.asList(stringLiterals),
       k -> {
         PerformanceMeasure.Duration regexForLiteralsDuration = PerformanceMeasure.start("RegexParser");
-        RegexParseResult result = new RegexParser(new JavaRegexSourceTrackingTextSpans(k), initialFlags).parse();
+        RegexParseResult result = new RegexParser(new JavaAnalyzerRegexSource(k), initialFlags).parse();
         regexForLiteralsDuration.stop();
         return result;
       });

@@ -66,7 +66,7 @@ public class RegexParserTestUtils {
     VariableTree str = (VariableTree) foo.members().get(0);
     LiteralCollector visitor = new LiteralCollector();
     str.initializer().accept(visitor);
-    return new JavaRegexSourceTrackingTextSpans(visitor.stringLiterals);
+    return new JavaAnalyzerRegexSource(visitor.stringLiterals);
   }
 
   private static class LiteralCollector extends BaseTreeVisitor {

@@ -27,7 +27,7 @@ import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.LiteralTreeImpl;
-import org.sonar.java.regex.JavaRegexSourceTrackingTextSpans;
+import org.sonar.java.regex.JavaAnalyzerRegexSource;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.regex.RegexParseResult;
@@ -53,7 +53,7 @@ class SimplifiedRegexCharacterClassTest {
 
   @Test
   void testIntersectionWithTrueAsDefaultAnswer() {
-    RegexSource dummySource = new JavaRegexSourceTrackingTextSpans(Collections.emptyList());
+    RegexSource dummySource = new JavaAnalyzerRegexSource(Collections.emptyList());
     IndexRange dummyRange = new IndexRange(0, 0);
     CharacterClassElementTree dummyTree = new MiscEscapeSequenceTree(dummySource, dummyRange, new FlagSet());
 
@@ -353,7 +353,7 @@ class SimplifiedRegexCharacterClassTest {
     String literalSourceCode = "\"" + StringEscapeUtils.escapeJava(stringLiteral) + "\"";
     InternalSyntaxToken literalToken = new InternalSyntaxToken(1, 1, literalSourceCode, Collections.emptyList(), false);
     List<LiteralTree> literals = Collections.singletonList(new LiteralTreeImpl(Tree.Kind.STRING_LITERAL, literalToken));
-    RegexParseResult result = new RegexParser(new JavaRegexSourceTrackingTextSpans(literals), flagSet).parse();
+    RegexParseResult result = new RegexParser(new JavaAnalyzerRegexSource(literals), flagSet).parse();
     assertThat(result.getSyntaxErrors()).isEmpty();
     return result;
   }
