@@ -50,6 +50,7 @@ import no.finn.lambdacompanion.Try;
 import org.apache.commons.lang.StringUtils;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Fail;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -128,6 +129,11 @@ public class JavaRulingTest {
       .forEach(ruleKey -> Fail.fail("Specified rule does not exist: " + ruleKey));
 
     prepareDumpOldFolder();
+  }
+
+  @AfterClass
+  public static void afterAllAnalysis() throws IOException {
+    PerformanceStatistics.generate(Paths.get("target","performance"));
   }
 
   private static void prepareDumpOldFolder() {
@@ -237,7 +243,8 @@ public class JavaRulingTest {
 
   private static void executeBuildWithCommonProperties(Build<?> build, String projectName, boolean buildQuietly) throws IOException {
     build.setProperty("sonar.cpd.exclusions", "**/*")
-      .setProperty("sonar.java.performance.measure", System.getProperty("sonar.java.performance.measure", "false"))
+      .setProperty("sonar.java.performance.measure", "true")
+      .setProperty("sonar.java.performance.measure.path", "target/performance/sonar.java.performance.measure.json")
       .setProperty("sonar.import_unknown_files", "true")
       .setProperty("sonar.skipPackageDesign", "true")
       .setProperty("dump.old", effectiveDumpOldFolder.resolve(projectName).toString())

@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -40,17 +41,20 @@ import javax.annotation.Nullable;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonar.java.annotations.VisibleForTesting;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class PerformanceMeasure {
   private static final Logger LOG = Loggers.get(PerformanceMeasure.class);
   private static final String ACTIVATION_PROPERTY = "sonar.java.performance.measure";
+  private static final String FILE_PATH_PROPERTY = "sonar.java.performance.measure.path";
   private static final String DESTINATION_FILE = "sonar.java.performance.measure.json";
   /**
    * In a multi-threaded environment, this variable should be stored in a ThreadLocal
    */
   private static PerformanceMeasure currentMeasure = null;
+  private static Path performanceMeasureFile = null;
   private static final IgnoredDuration NO_OP_DURATION = new IgnoredDuration();
 
   @Nullable
@@ -62,6 +66,11 @@ public class PerformanceMeasure {
   private Map<String, PerformanceMeasure> childrenMap = null;
 
   public static DurationReport start(Configuration config, String name, Supplier<Long> nanoTimeSupplier) {
+    performanceMeasureFile = config.get(PerformanceMeasure.FILE_PATH_PROPERTY)
+      .filter(path -> !path.isEmpty())
+      .map(path -> path.replace('\\', File.separatorChar).replace('/', File.separatorChar))
+      .map(Paths::get)
+      .orElse(null);
     if (!config.get(PerformanceMeasure.ACTIVATION_PROPERTY).filter("true"::equals).isPresent()) {
       return NO_OP_DURATION;
     }
@@ -215,14 +224,17 @@ public class PerformanceMeasure {
     }
 
     private static void saveToFile(@Nullable File workDir, PerformanceMeasure measure) {
+      Path performanceFile = performanceMeasureFile;
+      if (performanceFile == null && workDir == null) {
+        return;
+      }
       try {
-        if (workDir == null) {
-          return;
+        if (performanceFile == null) {
+          if (!workDir.exists()) {
+            throw new IOException("Directory does not exist: " + workDir.toString());
+          }
+          performanceFile = workDir.toPath().resolve(DESTINATION_FILE);
         }
-        if (!workDir.exists()) {
-          throw new IOException("Directory does not exist: " + workDir.toString());
-        }
-        Path performanceFile = workDir.toPath().resolve(DESTINATION_FILE);
         PerformanceMeasure allMeasures;
         if (Files.exists(performanceFile)) {
           LOG.info("Adding performance measures into: " + performanceFile);
@@ -230,6 +242,7 @@ public class PerformanceMeasure {
         } else {
           LOG.info("Saving performance measures into: " + performanceFile);
           allMeasures = measure;
+          ensureParentDirectoryExists(performanceFile);
         }
         Files.write(performanceFile, jsonFormat(toJson(allMeasures)).getBytes(UTF_8));
       } catch (IOException e) {
@@ -281,6 +294,14 @@ public class PerformanceMeasure {
         .replaceAll("(\\d)\n *+\\}", "$1 }");
     }
 
+  }
+
+  @VisibleForTesting
+  static void ensureParentDirectoryExists(Path path) throws IOException {
+    Path parentDirectory = path.getParent();
+    if (parentDirectory != null && !Files.isDirectory(parentDirectory)) {
+      Files.createDirectory(parentDirectory);
+    }
   }
 
 }
