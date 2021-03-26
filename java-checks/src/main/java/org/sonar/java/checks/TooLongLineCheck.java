@@ -90,8 +90,7 @@ public class TooLongLineCheck extends IssuableSubscriptionVisitor {
     for (int i = 0; i < lines.size(); i++) {
       if (!ignoredLines.contains(i + 1)) {
         String origLine = lines.get(i);
-        String line = removeIgnoredPatterns(origLine);
-        if (line.length() > maximumLineLength) {
+        if (origLine.length() > maximumLineLength && removeIgnoredPatterns(origLine).length() > maximumLineLength) {
           addIssue(i + 1, MessageFormat.format("Split this {0} characters long line (which is greater than {1} authorized).", origLine.length(), maximumLineLength));
         }
       }
