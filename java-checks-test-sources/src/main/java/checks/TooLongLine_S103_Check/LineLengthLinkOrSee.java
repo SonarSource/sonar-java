@@ -29,4 +29,9 @@ package checks.TooLongLine_S103_Check;
 // Noncompliant@+1 {{Split this 134 characters long line (which is greater than 100 authorized).}}
 // Long see, but also long text on the same line, longer than the marker line above.................. @see package.class#member  label
 
-class LineLengthLinkOrSee {}
+class LineLengthLinkOrSee {
+  // Noncompliant@+1 {{Split this 115 characters long line (which is greater than 100 authorized).}}
+  String s = "The @see in here will not be ignored because it's not inside a comment xxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+  // Noncompliant@+1 {{Split this 115 characters long line (which is greater than 100 authorized).}}
+  String t = "Same for this {@link xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx}";
+}
