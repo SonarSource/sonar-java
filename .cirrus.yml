@@ -1,5 +1,5 @@
 gcp_credentials: ENCRYPTED[!17c59813193e86cc337bce848b358412b90f50bc5fe1b8b39d363cdf14a41ebe76cfba0482e7f81d076994b9f6dbfb4c!]
- 
+
 env:
   ARTIFACTORY_URL: ENCRYPTED[!2f8fa307d3289faa0aa6791f18b961627ae44f1ef46b136e1a1e63b0b4c86454dbb25520d49b339e2d50a1e1e5f95c88!]
   ARTIFACTORY_PRIVATE_USERNAME: private-reader
@@ -43,14 +43,14 @@ build_task:
     <<: *CONTAINER_DEFINITION
     cpu: 2
     memory: 2G
-  env:    
+  env:
     # analysis on next
     SONAR_TOKEN: ENCRYPTED[!5ba7cbb5bf9d168de69bcd444d9e884c9cf664be1115640cc64e49df6d241c309a87fc527cab533c08f289b167187017!]
     SONAR_HOST_URL: https://next.sonarqube.com/sonarqube
     #allow deployment of pull request artifacts to repox
     DEPLOY_PULL_REQUEST: true
   maven_cache:
-    folder: ${CIRRUS_WORKING_DIR}/.m2/repository 
+    folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   build_script:
     - source cirrus-env BUILD
     - regular_mvn_build_deploy_analyze
@@ -152,7 +152,7 @@ promote_task:
     - ruling_win
     - plugin_qa
   <<: *ONLY_SONARSOURCE_QA
-  gke_container:    
+  gke_container:
     <<: *CONTAINER_DEFINITION
     cpu: 1
     memory: 1G
