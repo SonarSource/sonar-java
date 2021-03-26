@@ -62,8 +62,7 @@ qa_os_win_task:
     - build
   <<: *WINDOWS_VM_DEFINITION
   maven_cache:
-    #folder is specified in order to prevent cache miss on windows
-    folder: ~/.m2/repository
+    folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   build_script:
     - source cirrus-env CI
     - mvn.cmd clean verify
@@ -136,7 +135,7 @@ ruling_win_task:
   <<: *ONLY_SONARSOURCE_QA
   <<: *WINDOWS_VM_DEFINITION
   maven_cache:
-    folder: ~/.m2/repository
+    folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   ruling_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
