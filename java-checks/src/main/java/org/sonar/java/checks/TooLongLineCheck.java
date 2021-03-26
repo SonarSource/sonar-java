@@ -48,7 +48,7 @@ public class TooLongLineCheck extends IssuableSubscriptionVisitor {
       defaultValue = "" + DEFAULT_MAXIMUM_LINE_LENGTH)
   int maximumLineLength = DEFAULT_MAXIMUM_LINE_LENGTH;
 
-  private Set<Integer> ignoredLines = new HashSet<>();
+  private final Set<Integer> ignoredLines = new HashSet<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -90,8 +90,7 @@ public class TooLongLineCheck extends IssuableSubscriptionVisitor {
     for (int i = 0; i < lines.size(); i++) {
       if (!ignoredLines.contains(i + 1)) {
         String origLine = lines.get(i);
-        String line = removeIgnoredPatterns(origLine);
-        if (line.length() > maximumLineLength) {
+        if (origLine.length() > maximumLineLength && removeIgnoredPatterns(origLine).length() > maximumLineLength) {
           addIssue(i + 1, MessageFormat.format("Split this {0} characters long line (which is greater than {1} authorized).", origLine.length(), maximumLineLength));
         }
       }
@@ -99,10 +98,11 @@ public class TooLongLineCheck extends IssuableSubscriptionVisitor {
   }
 
   private static String removeIgnoredPatterns(String line) {
+    if (!line.matches("\\s*(?:\\*|//).*")) return line;
     return line
       // @see <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#link">@link ...</a>
-      .replaceAll("^(\\s*(\\*|//).*?)\\s*\\{@link [^}]+\\}\\s*", "$1")
+      .replaceFirst("\\{@link [^}]+\\}\\s*", "")
       // @see <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#see">@see reference</a>
-      .replaceAll("^(\\s*(\\*|//).*?)\\s*@see .+\\s*", "$1");
+      .replaceFirst("@see .+", "");
   }
 }
