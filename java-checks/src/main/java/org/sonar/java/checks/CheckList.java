@@ -633,6 +633,7 @@ public final class CheckList {
       ReplaceGuavaWithJava8Check.class,
       ReplaceLambdaByMethodRefCheck.class,
       RequestMappingMethodPublicCheck.class,
+      RestrictedIdentifiersUsageCheck.class,
       ResultSetIsLastCheck.class,
       ReturnEmptyArrayNotNullCheck.class,
       ReturnInFinallyCheck.class,
