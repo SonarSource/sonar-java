@@ -10,6 +10,7 @@ import org.springframework.security.web.savedrequest.SavedCookie;
 
 class CookieShouldNotContainSensitiveDataCheck {
   private static final String VALUE = "value";
+  private static final String EMPTY_STRING = "";
 
   void servletCookie(Cookie c){
     Cookie cookie = new Cookie("name", "value"); // Noncompliant [[sc=40;ec=47]] {{Make sure that this cookie is used safely.}}
@@ -19,6 +20,8 @@ class CookieShouldNotContainSensitiveDataCheck {
     cookie.setValue(VALUE); // Noncompliant
     c.setValue("x"); // Noncompliant
     cookie.getValue(); // compliant
+    Cookie cookie2 = new Cookie("name", ""); // Compliant
+    Cookie cookie3 = new Cookie("name", EMPTY_STRING); // Compliant
   }
 
   void jaxRsCookie() {
