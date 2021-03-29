@@ -22,18 +22,24 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+
 class CookieShouldNotContainSensitiveDataCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/security/CookieShouldNotContainSensitiveDataCheck.java")
+      .onFile(testSourcesPath("checks/security/CookieShouldNotContainSensitiveDataCheck.java"))
       .withCheck(new CookieShouldNotContainSensitiveDataCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_play_cookie() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/security/CookieShouldNotContainSensitiveDataCheck.java")
+      .onFile(nonCompilingTestSourcesPath("checks/security/CookieShouldNotContainSensitiveDataCheck_PlayCookie.java"))
       .withCheck(new CookieShouldNotContainSensitiveDataCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
+      .verifyIssues();
   }
 }
