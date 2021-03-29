@@ -19,15 +19,33 @@
  */
 package org.sonar.java.checks;
 
+import java.io.File;
+import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.checks.verifier.FilesUtils;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
+
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class AnnotationDefaultArgumentCheckTest {
 
   @Test
   void test() {
+    List<File> classPath = FilesUtils.getClassPath(FilesUtils.DEFAULT_TEST_JARS_DIRECTORY);
+    // Add CustomAnnotation to the classPath
+    classPath.add(new File("../java-checks-test-sources/target/classes/"));
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/AnnotationDefaultArgumentCheck.java")
+      .onFile(testSourcesPath("checks/AnnotationDefaultArgumentCheck.java"))
+      .withClassPath(classPath)
+      .withCheck(new AnnotationDefaultArgumentCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/AnnotationDefaultArgumentCheck.java"))
       .withCheck(new AnnotationDefaultArgumentCheck())
       .verifyIssues();
   }
