@@ -22,24 +22,23 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+
 class WeakSSLContextCheckTest {
 
   @Test
   void test() {
-    WeakSSLContextCheck check = new WeakSSLContextCheck();
-    String filename = "src/test/files/checks/WeakSSLContextCheck.java";
     JavaCheckVerifier.newVerifier()
-      .onFile(filename)
-      .withCheck(check)
+      .onFile(testSourcesPath("checks/WeakSSLContextCheck.java"))
+      .withCheck(new WeakSSLContextCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_java_8() {
     JavaCheckVerifier.newVerifier()
-      .onFile(filename)
-      .withCheck(check)
-      .withoutSemantic()
-      .verifyNoIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/WeakSSLContextCheckJava8.java")
-      .withCheck(check)
+      .onFile(testSourcesPath("checks/WeakSSLContextCheckJava8.java"))
+      .withCheck(new WeakSSLContextCheck())
       .withJavaVersion(8)
       .verifyIssues();
   }
