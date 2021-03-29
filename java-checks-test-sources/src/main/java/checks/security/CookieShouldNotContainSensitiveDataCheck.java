@@ -1,3 +1,5 @@
+package checks.security;
+
 import java.net.HttpCookie;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -6,7 +8,7 @@ import javax.ws.rs.core.NewCookie;
 import org.apache.shiro.web.servlet.SimpleCookie;
 import org.springframework.security.web.savedrequest.SavedCookie;
 
-class S2255 {
+class CookieShouldNotContainSensitiveDataCheck {
   private static final String VALUE = "value";
 
   void servletCookie(Cookie c){
@@ -50,22 +52,6 @@ class S2255 {
 
   public String myPage(@org.springframework.web.bind.annotation.CookieValue("cookieName") String myCookie) { // compliant
     return "test";
-  }
-
-  void playCookie(play.mvc.Http.Cookie cookie) {
-    play.mvc.Http.Cookie.builder("name", "value"); // Noncompliant [[sc=42;ec=49]]
-    play.mvc.Http.Cookie.builder("name", "");
-
-    new play.mvc.Http.CookieBuilder()
-      .withName("name")
-      .withValue("value") // Noncompliant [[sc=18;ec=25]]
-      .build();
-
-    new play.mvc.Http.CookieBuilder()
-      .withName("name")
-      .withValue(null)
-      .build();
-    cookie.value(); // compliant
   }
 
   void foo(HttpServletRequest request, HttpServletResponse response){
