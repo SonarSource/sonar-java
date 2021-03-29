@@ -113,6 +113,7 @@ class SymbolsTest {
     assertThat(unknownMethodSymbol.parameterTypes()).isEmpty();
     assertThat(unknownMethodSymbol.thrownTypes()).isEmpty();
     assertThat(unknownMethodSymbol.overriddenSymbol()).isNull();
+    assertThat(unknownMethodSymbol.overriddenSymbols()).isEmpty();
   }
 
   private static void assertCommonProperties(Symbol unknownSymbol) {

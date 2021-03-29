@@ -108,7 +108,10 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
   rules relying on parents of Tree, as the overall shape of the AST may also change.
 
 * **Deprecated**
-  `org.sonar.plugins.java.api.tree.SwitchStatementTree`: The `asSwitchExpression()` method is deprecated for removal.
+
+    * `org.sonar.plugins.java.api.tree.SwitchStatementTree`: The `asSwitchExpression()` method is deprecated for removal.
+
+    * `org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol`: The `overriddenSymbol()` method is deprecated for removal. It is replaced by method `overriddenSymbols()` which returns all the overridden symbols in the type hierarchy instead of only the first one found.
 
 * **New interface `SwitchTree`**
   Switch Expression and Switch Statement share the same fields, it can sometimes make sense to manipulate a Switch as

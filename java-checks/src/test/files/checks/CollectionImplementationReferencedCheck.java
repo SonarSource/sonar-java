@@ -6,14 +6,14 @@ public class EmployeesTopLevel {
     return employees;
   }
 
-  public LinkedList<Employee> foo() {                             // Noncompliant {{The return type of this method should be an interface such as "List" rather than the implementation "LinkedList".}} [[sc=10;ec=30]]
+  public LinkedList<Employee> foo1() {                             // Noncompliant {{The return type of this method should be an interface such as "List" rather than the implementation "LinkedList".}} [[sc=10;ec=30]]
   }
-  private LinkedList<Employee> foo() { }
+  private LinkedList<Employee> foo2() { }
 
-  public java.util.HashSet<Employee> foo() {                      // Compliant - limitation
+  public java.util.HashSet<Employee> foo3() {                      // Compliant - limitation
   }
 
-  public HashMap foo() {                                          // Noncompliant {{The return type of this method should be an interface such as "Map" rather than the implementation "HashMap".}} [[sc=10;ec=17]]
+  public HashMap foo4() {                                          // Noncompliant {{The return type of this method should be an interface such as "Map" rather than the implementation "HashMap".}} [[sc=10;ec=17]]
   }
 
   public Employees() {
@@ -29,8 +29,8 @@ public class EmployeesTopLevel {
   public ConcurrentSkipListMap concurrentSkipListMap() { // Noncompliant {{The return type of this method should be an interface such as "ConcurrentMap" rather than the implementation "ConcurrentSkipListMap".}}
     return null;
   }
-  private method(LinkedList<Employee> employees) {}
-  public method(LinkedList<Employee> employees) {} // Noncompliant {{The type of the "employees" object should be an interface such as "List" rather than the implementation "LinkedList".}}
+  private void method1(LinkedList<Employee> employees) {}
+  public void method2(LinkedList<Employee> employees) {} // Noncompliant {{The type of the "employees" object should be an interface such as "List" rather than the implementation "LinkedList".}}
 }
 
 public class Employees {
