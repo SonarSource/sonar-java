@@ -128,6 +128,7 @@ class PerformanceMeasureTest {
     String jsonContent = new String(Files.readAllBytes(jsonPath), UTF_8);
     // measurements may vary from one test to another, but should not be zero
     jsonContent = jsonContent
+      .replaceAll("(\"name\": \"(?:nanoTime|observationCost)\", \"calls\": 1, \"durationNanos\": )\\d++(?=[, ])", "$1ZERO_OR_MORE")
       .replaceAll("\"durationNanos\": 0(?=[, ])", "\"durationNanos\": ZERO")
       .replaceAll("\"durationNanos\": \\d++(?=[, ])", "\"durationNanos\": NOT_ZERO");
 
@@ -136,8 +137,8 @@ class PerformanceMeasureTest {
       "    { \"name\": \"#MeasurementCost_v1\", \"calls\": 1, \"durationNanos\": NOT_ZERO, \"children\": [\n" +
       "        { \"name\": \"createChild\", \"calls\": 1, \"durationNanos\": NOT_ZERO },\n" +
       "        { \"name\": \"incrementChild\", \"calls\": 1, \"durationNanos\": NOT_ZERO },\n" +
-      "        { \"name\": \"nanoTime\", \"calls\": 1, \"durationNanos\": NOT_ZERO },\n" +
-      "        { \"name\": \"observationCost\", \"calls\": 1, \"durationNanos\": NOT_ZERO }\n" +
+      "        { \"name\": \"nanoTime\", \"calls\": 1, \"durationNanos\": ZERO_OR_MORE },\n" +
+      "        { \"name\": \"observationCost\", \"calls\": 1, \"durationNanos\": ZERO_OR_MORE }\n" +
       "      ]\n" +
       "    }\n" +
       "  ]\n" +
