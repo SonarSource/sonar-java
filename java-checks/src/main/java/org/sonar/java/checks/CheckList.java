@@ -724,6 +724,7 @@ public final class CheckList {
       SwitchDefaultLastCaseCheck.class,
       SwitchInsteadOfIfSequenceCheck.class,
       SwitchLastCaseIsDefaultCheck.class,
+      SwitchRedundantKeywordCheck.class,
       SwitchWithLabelsCheck.class,
       SwitchWithTooManyCasesCheck.class,
       SymmetricEqualsCheck.class,
