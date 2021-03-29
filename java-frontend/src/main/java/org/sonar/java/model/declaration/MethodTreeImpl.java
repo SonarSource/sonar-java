@@ -19,14 +19,13 @@
  */
 package org.sonar.java.model.declaration;
 
-import org.sonar.java.Preconditions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
-
 import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.sonar.java.Preconditions;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
@@ -279,14 +278,11 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     if (isAnnotatedOverride()) {
       return true;
     }
-    if (symbol() == null) {
-      return null;
+    List<Symbol.MethodSymbol> overriddenSymbols = symbol().overriddenSymbols();
+    if (overriddenSymbols.isEmpty()) {
+      return false;
     }
-    Symbol.MethodSymbol methodSymbol = symbol().overriddenSymbol();
-    if (methodSymbol != null) {
-      return methodSymbol.isUnknown() ? null : true;
-    }
-    return false;
+    return overriddenSymbols.stream().allMatch(Symbol::isUnknown) ? null : true;
   }
 
   private boolean isStatic() {

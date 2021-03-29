@@ -63,20 +63,22 @@ public class Example {
      throw new int[0];        // Compliant
      }
 
-  @Override
-  public void throws_Exception() throws Exception { //Compliant because of overrides
-
-  }
-
   @Deprecated
-  public void throws_Exception() throws Exception { // Noncompliant
+  public void throws_Exception2() throws Exception { // Noncompliant
   }
 }
 class SubClass extends Example {
 
-  public void throws_Exception() throws Exception { //Compliant because overrides.
+  @Override
+  public void throws_Exception() throws Exception { // Compliant because overrides.
     super.throws_Exception();
   }
+
+  @Override
+  @Deprecated
+  public void throws_Exception2() throws Exception { // Compliant because overrides.
+  }
+
   public static void main(String[] args) throws Exception { //should not raise issue SONARJAVA-671
   }
 }
