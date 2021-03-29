@@ -21,10 +21,8 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -52,11 +50,9 @@ public class InappropriateRegexpCheck extends AbstractMethodDetection {
   }
 
   private static boolean isInappropriateRegexpStringLiteral(ExpressionTree firstArg) {
-    if (firstArg.is(Tree.Kind.STRING_LITERAL)) {
-      String regexp = LiteralUtils.trimQuotes(((LiteralTree) firstArg).value());
-      return regexp.matches(INAPPROPRIATE_REGEXPS);
-    }
-    return false;
+    return firstArg.asConstant(String.class)
+      .filter(regexp -> regexp.matches(INAPPROPRIATE_REGEXPS))
+      .isPresent();
   }
 
   private static boolean isFileSeparator(ExpressionTree firstArg) {
