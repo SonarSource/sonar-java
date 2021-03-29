@@ -21,6 +21,9 @@ import org.springframework.security.crypto.password.StandardPasswordEncoder;
 import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 
 class HashMethodsCheck {
+
+  private static final String ALGORITHM = "MD2";
+
   void myMethod(String algorithm, Provider provider, Properties props) throws NoSuchAlgorithmException, NoSuchProviderException {
     MessageDigest md = null;
     md = MessageDigest.getInstance("MD2"); // Noncompliant [[sc=24;ec=35]] {{Use a stronger hashing algorithm than MD2.}}
@@ -69,6 +72,8 @@ class HashMethodsCheck {
     md = MessageDigest.getInstance(getAlgo(), provider);
     md = DigestUtils.getDigest(props.getProperty("mySuperOtherAlgo", "SHA-1")); // Noncompliant
     md = DigestUtils.getDigest(props.getProperty("mySuperOtherAlgo"));
+
+    md = MessageDigest.getInstance(ALGORITHM); // Noncompliant
   }
 
   private String getAlgo() {
