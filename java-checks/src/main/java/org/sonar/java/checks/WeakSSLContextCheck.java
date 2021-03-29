@@ -30,11 +30,8 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import static org.sonar.java.model.LiteralUtils.trimQuotes;
 
 @Rule(key = "S4423")
 public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
@@ -67,12 +64,11 @@ public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
     Arguments arguments = mit.arguments();
     if (SSLCONTEXT_GETINSTANCE_MATCHER.matches(mit)) {
       ExpressionTree firstArgument = arguments.get(0);
-      if (firstArgument.is(Tree.Kind.STRING_LITERAL)) {
-        String protocol = trimQuotes(((LiteralTree) firstArgument).value());
+      firstArgument.asConstant(String.class).ifPresent(protocol -> {
         if (!isStrongProtocol(protocol)) {
           reportIssue(firstArgument, "Change this code to use a stronger protocol.");
         }
-      }
+      });
     }
   }
 
