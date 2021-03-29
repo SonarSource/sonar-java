@@ -63,9 +63,6 @@ public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     MethodInvocationTree mit = (MethodInvocationTree) tree;
     Arguments arguments = mit.arguments();
     if (SSLCONTEXT_GETINSTANCE_MATCHER.matches(mit)) {
