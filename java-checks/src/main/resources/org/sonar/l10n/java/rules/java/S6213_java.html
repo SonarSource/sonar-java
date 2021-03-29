@@ -1,0 +1,42 @@
+<p>Even if it is technically possible, <a href="https://docs.oracle.com/javase/specs/jls/se16/html/jls-3.html#jls-3.8">Restricted Identifiers</a>
+should not be used as identifiers. This is only possible for compatibility reasons, using it in Java code is confusing and should be avoided.</p>
+<p>Note that this applies to any version of Java, including the one where these identifiers are not yet restricted, to avoid future confusion.</p>
+<p>This rule reports an issue when restricted identifiers:</p>
+<ul>
+  <li> var </li>
+  <li> yield </li>
+  <li> record </li>
+</ul>
+<p>are used as identifiers.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+var var = "var"; // Noncompliant: compiles but this code is confusing
+var = "what is this?";
+
+int yield(int i) { // Noncompliant
+  return switch (i) {
+    case 1: yield(0); // This is a yield from switch expression, not a recursive call.
+    default: yield(i-1);
+  };
+}
+
+String record = "record"; // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+var myVariable = "var";
+
+int minusOne(int i) {
+  return switch (i) {
+    case 1: yield(0);
+    default: yield(i-1);
+  };
+}
+
+String myRecord = "record";
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/specs/jls/se16/html/jls-3.html#jls-3.8">JLS16, 3.8: Identifiers</a> </li>
+</ul>
+
