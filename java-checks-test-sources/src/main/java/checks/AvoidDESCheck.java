@@ -1,7 +1,11 @@
-import javax.crypto.Cipher;
+package checks;
 
-class A {
-  void foo(){
+import java.security.NoSuchAlgorithmException;
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+
+class AvoidDESCheck {
+  void foo() throws NoSuchPaddingException, NoSuchAlgorithmException {
     Cipher c;
     c = Cipher.getInstance("DESede/ECB/PKCS5Padding"); // Noncompliant [[sc=28;ec=53]] {{Use the recommended AES (Advanced Encryption Standard) instead.}}
     c = Cipher.getInstance("DES/ECB/PKCS5Padding");// Noncompliant {{Use the recommended AES (Advanced Encryption Standard) instead.}}
@@ -9,7 +13,8 @@ class A {
     c = Cipher.getInstance("AES/GCM/NoPadding");//Compliant
   }
   
-  void usingJavaUtilProperties(java.util.Properties props, String otherAlgo) {
+  void usingJavaUtilProperties(java.util.Properties props, String otherAlgo) throws NoSuchPaddingException, NoSuchAlgorithmException {
+    Cipher c;
     String algo = props.getProperty("myAlgo", "DES/ECB/PKCS5Padding");
     c = Cipher.getInstance(algo); // Noncompliant {{Use the recommended AES (Advanced Encryption Standard) instead.}}
     c = Cipher.getInstance(props.getProperty("myAlgo", "DES/ECB/PKCS5Padding")); // Noncompliant {{Use the recommended AES (Advanced Encryption Standard) instead.}}

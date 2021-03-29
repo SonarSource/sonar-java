@@ -21,13 +21,14 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.TestUtils;
 
 class AvoidDESCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/AvoidDESCheck.java")
+      .onFile(TestUtils.testSourcesPath("checks/AvoidDESCheck.java"))
       .withCheck(new AvoidDESCheck())
       .verifyIssues();
   }
