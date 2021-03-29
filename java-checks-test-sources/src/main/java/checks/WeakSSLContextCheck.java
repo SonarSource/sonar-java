@@ -6,6 +6,8 @@ import javax.net.ssl.SSLContext;
 
 class WeakSSLContextCheck {
 
+  private static final String PROTOCOL = "SSL";
+
   void foo(String protocol, String provider) throws NoSuchAlgorithmException, NoSuchProviderException {
     bar(SSLContext.getInstance(protocol));
 
@@ -25,6 +27,8 @@ class WeakSSLContextCheck {
     bar(SSLContext.getInstance("SSL", provider)); // Noncompliant
     bar(SSLContext.getInstance("TLSv1.2", provider));
     bar(SSLContext.getInstance("TLSv1.2", "SSL"));
+
+    bar(SSLContext.getInstance(PROTOCOL)); // Noncompliant
   }
 
   void bar(SSLContext ctx) {
