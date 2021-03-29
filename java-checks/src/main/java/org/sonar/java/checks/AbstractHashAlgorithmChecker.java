@@ -25,17 +25,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import org.sonar.java.checks.helpers.JavaPropertiesHelper;
-import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
@@ -209,8 +206,9 @@ public abstract class AbstractHashAlgorithmChecker extends AbstractMethodDetecti
     if (defaultPropertyValue != null) {
       expectedAlgorithm = defaultPropertyValue;
     }
-    if (expectedAlgorithm.is(Tree.Kind.STRING_LITERAL)) {
-      String algorithmName = LiteralUtils.trimQuotes(((LiteralTree) expectedAlgorithm).value());
+    Optional<String> stringConstant = expectedAlgorithm.asConstant(String.class);
+    if (stringConstant.isPresent()) {
+      String algorithmName = stringConstant.get();
       return Arrays.stream(InsecureAlgorithm.values())
         .filter(alg -> alg.match(algorithmName))
         .findFirst();
