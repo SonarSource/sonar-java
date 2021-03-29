@@ -486,6 +486,7 @@ public final class CheckList {
       InvalidDateValuesCheck.class,
       InvalidRegexCheck.class,
       InvariantReturnCheck.class,
+      IsInstanceMethodCheck.class,
       IterableIteratorCheck.class,
       IteratorNextExceptionCheck.class,
       JacksonDeserializationCheck.class,

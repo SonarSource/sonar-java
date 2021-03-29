@@ -1,0 +1,46 @@
+<p>The <code>instanceof</code> construction is a preferred way to check whether a variable can be cast to some type statically because a compile-time
+error will occur in case of incompatible types. The method <a
+href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html#isInstance-java.lang.Object-">isInstance()</a> from <code>java.lang.Class</code>
+works differently and does type check at runtime only, incompatible types will therefore not be detected early in the developement, potentially
+resulting in dead code. The <code>isInstance()</code> method should only be used in dynamic cases when the <code>instanceof</code> operator can't be
+used.</p>
+<p>This rule raises an issue when <code>isInstance()</code> is used and could be replaced with an <code>instanceof</code> check.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+int f(Object o) {
+&nbsp; if (String.class.isInstance(o)) {&nbsp; // Noncompliant
+&nbsp; &nbsp; return 42;
+&nbsp; }
+&nbsp; return 0;
+}
+
+int f(Number n) {
+&nbsp; if (String.class.isInstance(n)) {&nbsp; // Noncompliant
+&nbsp; &nbsp; return 42;
+&nbsp; }
+&nbsp; return 0;
+}
+
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+int f(Object o) {
+&nbsp; if (o instanceof String) {&nbsp; // Compliant
+&nbsp; &nbsp; return 42;
+&nbsp; }
+&nbsp; return 0;
+}
+
+int f(Number n) {
+&nbsp; if (n instanceof String) {&nbsp; // Compile-time error
+&nbsp; &nbsp; return 42;
+&nbsp; }
+&nbsp; return 0;
+}
+
+boolean fun(Object o, String c) throws ClassNotFoundException
+{
+  return Class.forName(c).isInstance(o); // Compliant, can't use instanceof operator here
+}
+</pre>
+
