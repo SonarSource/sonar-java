@@ -13,6 +13,9 @@ import checks.annotations.CustomAnnotation;
   int myHexaInteger() default 0x000;
 }
 class AnnotationDefaultArgumentCheck {
+  private static final String FIELD_VALUE = "field1Default";
+  private static final int FIELD_VALUE_INT = 0;
+
   @CustomAnnotation(field1="field1Default", field2="", field3="") // Noncompliant
   @MyAnnotationDefaultCheck(myName="myName", myInteger=2) // Noncompliant [[sc=29;ec=44]] {{Remove this default value assigned to parameter "myName".}}
   @MyAnnotationDefaultCheck2("defaultValue") // Noncompliant
@@ -24,10 +27,13 @@ class AnnotationDefaultArgumentCheck {
   @CustomAnnotation(field1="", field2="field2Default", field3="") // Noncompliant
   void m2() { }
 
-
   @MyAnnotationDefaultCheck(myName="foo", myInteger=2)
-  @CustomAnnotation(field1="", field2="field2"+"Default", field3="") // compliant : unsupported computation of constants
+  @CustomAnnotation(field1="", field2="field2"+"Default", field3="") // Noncompliant
   void m3() { }
+
+  @CustomAnnotation(field1=FIELD_VALUE, field2="", field3="") // Noncompliant
+  @MyAnnotationDefaultCheck(myName="foo", myInteger=FIELD_VALUE_INT) // Noncompliant {{Remove this default value assigned to parameter "myInteger".}}
+  void m4() { }
 
   @CustomAnnotation(field1="", field2="field2", field3="") // compliant
   void m5() { }

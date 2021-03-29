@@ -19,9 +19,14 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JUtils;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.TypeSymbol;
@@ -29,15 +34,7 @@ import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.Nullable;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Rule(key = "S3254")
 public class AnnotationDefaultArgumentCheck extends IssuableSubscriptionVisitor {
@@ -61,7 +58,7 @@ public class AnnotationDefaultArgumentCheck extends IssuableSubscriptionVisitor 
       .collect(Collectors.toMap(Symbol::name, JUtils::defaultValue));
 
     for (ExpressionTree argument : annotationTree.arguments()) {
-      Tree valueSet = argument;
+      ExpressionTree valueSet = argument;
       // Single element annotation : JLS8 9.7.3 : one param must be named value.
       String paramName = "value";
       if (argument.is(Tree.Kind.ASSIGNMENT)) {
@@ -76,14 +73,13 @@ public class AnnotationDefaultArgumentCheck extends IssuableSubscriptionVisitor 
     }
   }
 
-  private static boolean setValueIsSameAsDefaultValue(@Nullable Object defaultValue, Tree valueSet) {
-    if (valueSet.is(Tree.Kind.STRING_LITERAL)) {
-      return LiteralUtils.trimQuotes(((LiteralTree) valueSet).value()).equals(defaultValue);
-    } else if (valueSet.is(Tree.Kind.INT_LITERAL)) {
-      Integer intLiteralValue = LiteralUtils.intLiteralValue((LiteralTree) valueSet);
-      return intLiteralValue != null && intLiteralValue.equals(defaultValue);
+  private static boolean setValueIsSameAsDefaultValue(@Nullable Object defaultValue, ExpressionTree valueSet) {
+    Optional<String> valueAsStringConstant = valueSet.asConstant(String.class);
+    if (valueAsStringConstant.isPresent()) {
+      return valueAsStringConstant.get().equals(defaultValue);
     }
-    return false;
+    Optional<Integer> valueAsIntConstant = valueSet.asConstant(Integer.class);
+    return valueAsIntConstant.map(integer -> integer.equals(defaultValue)).orElse(false);
   }
 
 }
