@@ -24,11 +24,9 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -120,8 +118,8 @@ public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDete
     return secondArgument.symbolType().isSubtypeOf(JAVA_LANG_STRING) && isNotNullOrWhitespace(secondArgument);
   }
 
-  private static boolean isNotNullOrWhitespace(Tree tree) {
+  private static boolean isNotNullOrWhitespace(ExpressionTree tree) {
     return !tree.is(Tree.Kind.NULL_LITERAL)
-        && !(tree.is(Tree.Kind.STRING_LITERAL) && StringUtils.isBlank(LiteralUtils.trimQuotes(((LiteralTree) tree).value())));
+      && !tree.asConstant(String.class).filter(StringUtils::isBlank).isPresent();
   }
 }
