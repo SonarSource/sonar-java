@@ -22,12 +22,9 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.JavaPropertiesHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S2278")
 public class AvoidDESCheck extends AbstractMethodDetection {
@@ -45,13 +42,13 @@ public class AvoidDESCheck extends AbstractMethodDetection {
     if (defaultPropertyValue == null) {
       defaultPropertyValue = firstArg;
     }
-    if (defaultPropertyValue.is(Tree.Kind.STRING_LITERAL)) {
-      checkIssue(firstArg, (LiteralTree) defaultPropertyValue);
-    }
+    defaultPropertyValue.asConstant(String.class).ifPresent(defaultProperty ->
+      checkIssue(firstArg, defaultProperty)
+    );
   }
 
-  private void checkIssue(ExpressionTree argumentForReport, LiteralTree argument) {
-    String[] transformationElements = LiteralUtils.trimQuotes(argument.value()).split("/");
+  private void checkIssue(ExpressionTree argumentForReport, String argument) {
+    String[] transformationElements = argument.split("/");
     if (transformationElements.length > 0 && isExcludedAlgorithm(transformationElements[0])) {
       reportIssue(argumentForReport, "Use the recommended AES (Advanced Encryption Standard) instead.");
     }

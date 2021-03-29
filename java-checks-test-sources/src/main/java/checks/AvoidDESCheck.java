@@ -5,12 +5,15 @@ import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 
 class AvoidDESCheck {
+  private static final String TRANSFORMATION = "DESede/ECB/PKCS5Padding";
+
   void foo() throws NoSuchPaddingException, NoSuchAlgorithmException {
     Cipher c;
     c = Cipher.getInstance("DESede/ECB/PKCS5Padding"); // Noncompliant [[sc=28;ec=53]] {{Use the recommended AES (Advanced Encryption Standard) instead.}}
     c = Cipher.getInstance("DES/ECB/PKCS5Padding");// Noncompliant {{Use the recommended AES (Advanced Encryption Standard) instead.}}
     c = Cipher.getInstance("RC2/ECB/PKCS5Padding"); // Noncompliant {{Use the recommended AES (Advanced Encryption Standard) instead.}}
     c = Cipher.getInstance("AES/GCM/NoPadding");//Compliant
+    c = Cipher.getInstance(TRANSFORMATION); // Noncompliant
   }
   
   void usingJavaUtilProperties(java.util.Properties props, String otherAlgo) throws NoSuchPaddingException, NoSuchAlgorithmException {
