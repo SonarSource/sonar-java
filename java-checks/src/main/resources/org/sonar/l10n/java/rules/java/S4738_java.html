@@ -1,6 +1,8 @@
-<p>Some Guava features were really useful for Java 7 application because Guava was bringing APIs missing in the JDK. Java 8 fixed these limitations.
-When migrating an application to Java 8 or even when starting a new one, it's recommended to prefer Java 8 APIs over Guava ones to ease its
-maintenance: developers don't need to learn how to use two APIs and can stick to the standard one.</p>
+<p>Some Guava features were really useful for Java 7 application because Guava was bringing APIs missing in the JDK. Java 8 fixed some of these
+limitations. When migrating an application to Java 8 or even when starting a new one, it's recommended to prefer Java 8 APIs over Guava ones to ease
+its maintenance: developers don't need to learn how to use two APIs and can stick to the standard one.</p>
+<p>Java 9 brought even more useful methods to the standard Java library and if Java version is equal to or higher than 9, these standard methods
+should be used.</p>
 <p>This rule raises an issue when the following Guava APIs are used:</p>
 <table>
   <tbody>
@@ -51,6 +53,22 @@ maintenance: developers don't need to learn how to use two APIs and can stick to
     <tr>
       <td> com.google.common.io.Files.createTempDir </td>
       <td> java.nio.file.Files.createTempDirectory </td>
+    </tr>
+    <tr>
+      <th> Guava API </th>
+      <th> Java 9 API </th>
+    </tr>
+    <tr>
+      <td> com.google.common.collect.ImmutableSet#of() </td>
+      <td> java.util.Set#of() </td>
+    </tr>
+    <tr>
+      <td> com.google.common.collect.ImmutableList#of() </td>
+      <td> java.util.List#of() </td>
+    </tr>
+    <tr>
+      <td> com.google.common.collect.ImmutableMap#of() </td>
+      <td> java.util.Map#of() or java.util.Map#ofEntries()</td>
     </tr>
   </tbody>
 </table>

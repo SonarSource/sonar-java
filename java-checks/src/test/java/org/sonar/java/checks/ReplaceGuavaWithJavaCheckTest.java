@@ -22,17 +22,18 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
-class ReplaceGuavaWithJava8CheckTest {
+class ReplaceGuavaWithJavaCheckTest {
 
-  private static final String FILENAME = testSourcesPath("checks/ReplaceGuavaWithJava8Check.java");
+  private static final String FILENAME = testSourcesPath("checks/ReplaceGuavaWithJavaCheck.java");
 
   @Test
   void test_with_java_7() {
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/ReplaceGuavaWithJava8Check_java7.java"))
-      .withCheck(new ReplaceGuavaWithJava8Check())
+      .onFile(testSourcesPath("checks/ReplaceGuavaWithJavaCheck_java7.java"))
+      .withCheck(new ReplaceGuavaWithJavaCheck())
       .withJavaVersion(7)
       .verifyNoIssues();
   }
@@ -41,7 +42,7 @@ class ReplaceGuavaWithJava8CheckTest {
   void test_java_8_without_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile(FILENAME)
-      .withCheck(new ReplaceGuavaWithJava8Check())
+      .withCheck(new ReplaceGuavaWithJavaCheck())
       .withJavaVersion(8)
       .withoutSemantic()
       .verifyNoIssues();
@@ -51,16 +52,25 @@ class ReplaceGuavaWithJava8CheckTest {
   void test_java_8() {
     JavaCheckVerifier.newVerifier()
       .onFile(FILENAME)
-      .withCheck(new ReplaceGuavaWithJava8Check())
+      .withCheck(new ReplaceGuavaWithJavaCheck())
       .withJavaVersion(8)
       .verifyIssues();
   }
   
   @Test
+  void test_java_9() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/ReplaceGuavaWithJavaCheck_java9.java"))
+      .withCheck(new ReplaceGuavaWithJavaCheck())
+      .withJavaVersion(9)
+      .verifyIssues();
+  }
+
+  @Test
   void test_no_version() {
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/ReplaceGuavaWithJava8Check_no_version.java"))
-      .withCheck(new ReplaceGuavaWithJava8Check())
+      .onFile(testSourcesPath("checks/ReplaceGuavaWithJavaCheck_no_version.java"))
+      .withCheck(new ReplaceGuavaWithJavaCheck())
       .verifyIssues();
   }
 

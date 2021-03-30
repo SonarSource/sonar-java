@@ -1,5 +1,5 @@
 {
-  "title": "Java 8 features should be preferred to Guava",
+  "title": "Java features should be preferred to Guava",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
@@ -8,6 +8,7 @@
   },
   "tags": [
     "java8",
+    "java9",
     "guava"
   ],
   "defaultSeverity": "Major",

@@ -630,7 +630,7 @@ public final class CheckList {
       ReluctantQuantifierCheck.class,
       ReluctantQuantifierWithEmptyContinuationCheck.class,
       RepeatAnnotationCheck.class,
-      ReplaceGuavaWithJava8Check.class,
+      ReplaceGuavaWithJavaCheck.class,
       ReplaceLambdaByMethodRefCheck.class,
       RequestMappingMethodPublicCheck.class,
       ResultSetIsLastCheck.class,

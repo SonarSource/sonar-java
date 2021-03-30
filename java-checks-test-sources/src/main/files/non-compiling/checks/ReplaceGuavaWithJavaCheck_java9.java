@@ -1,17 +1,21 @@
 package checks;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Files;
+
 import java.io.IOException;
 
-class ReplaceGuavaWithJava8Check {
-  ReplaceGuavaWithJava8Check(com.google.common.base.Predicate p) {} // Noncompliant [[sc=30;ec=62]] {{Use "java.util.function.Predicate" instead.}}
-  ReplaceGuavaWithJava8Check(com.google.common.base.Function f) {} // Noncompliant {{Use "java.util.function.Function" instead.}}
-  ReplaceGuavaWithJava8Check(com.google.common.base.Supplier s) {} // Noncompliant {{Use "java.util.function.Supplier" instead.}}
-  ReplaceGuavaWithJava8Check(com.google.common.base.Optional o) {} // Noncompliant {{Use "java.util.Optional" instead.}}
-  ReplaceGuavaWithJava8Check(java.util.function.Predicate p) {}
-  ReplaceGuavaWithJava8Check(java.util.function.Function f) {}
-  ReplaceGuavaWithJava8Check(java.util.function.Supplier s) {}
-  ReplaceGuavaWithJava8Check(java.util.Optional o) {}
+class ReplaceGuavaWithJavaCheck {
+  ReplaceGuavaWithJavaCheck(com.google.common.base.Predicate p) {} // Noncompliant [[sc=29;ec=61]] {{Use "java.util.function.Predicate" instead.}}
+  ReplaceGuavaWithJavaCheck(com.google.common.base.Function f) {} // Noncompliant {{Use "java.util.function.Function" instead.}}
+  ReplaceGuavaWithJavaCheck(com.google.common.base.Supplier s) {} // Noncompliant {{Use "java.util.function.Supplier" instead.}}
+  ReplaceGuavaWithJavaCheck(com.google.common.base.Optional o) {} // Noncompliant {{Use "java.util.Optional" instead.}}
+  ReplaceGuavaWithJavaCheck(java.util.function.Predicate p) {}
+  ReplaceGuavaWithJavaCheck(java.util.function.Function f) {}
+  ReplaceGuavaWithJavaCheck(java.util.function.Supplier s) {}
+  ReplaceGuavaWithJavaCheck(java.util.Optional o) {}
   void doX() {
     com.google.common.base.Predicate p; // Noncompliant {{Use "java.util.function.Predicate" instead.}}
     com.google.common.base.Function f; // Noncompliant {{Use "java.util.function.Function" instead.}}
@@ -49,5 +53,11 @@ class ReplaceGuavaWithJava8Check {
     Files.createTempDir(); // Noncompliant [[sc=5;ec=26]] {{Use "java.nio.file.Files.createTempDirectory" instead.}}
 
     java.nio.file.Files.createTempDirectory(""); // Compliant
+  }
+
+  void immutableCollections() {
+    ImmutableSet.of("A", "B", "C"); // Noncompliant {{Use "java.util.Set.of()" instead.}}
+    ImmutableList.of("A", "B", "C"); // Noncompliant {{Use "java.util.List.of()" instead.}}
+    ImmutableMap.of("A", "B", "C", "D"); // Noncompliant {{Use "java.util.Map.of()" or "java.util.Map.ofEntries()" instead.}}
   }
 }
