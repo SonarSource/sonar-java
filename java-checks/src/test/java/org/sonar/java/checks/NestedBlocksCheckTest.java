@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class NestedBlocksCheckTest {
@@ -30,6 +31,14 @@ class NestedBlocksCheckTest {
   void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/NestedBlocksCheck.java"))
+      .withCheck(new NestedBlocksCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_java_14() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/NestedBlocksCheck.java"))
       .withCheck(new NestedBlocksCheck())
       .verifyIssues();
   }

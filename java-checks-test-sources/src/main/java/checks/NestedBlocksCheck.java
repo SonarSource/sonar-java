@@ -21,10 +21,72 @@ class NestedBlocksCheck {
     }
 
     switch (s) {
-      case "false":
-      { // Noncompliant
+      case "a": { // Compliant
       }
+      case "b": { // Compliant
+        break;
+      }
+      case "c": { // Compliant
+        doSomething();
+      }
+      case "d": { // Compliant
+        doSomething();
+        break;
+      }
+      case "e": { // Compliant
+        doSomething();
+        doSomething();
+      }
+      case "f": { // Compliant
+        doSomething();
+        doSomething();
+        break;
+      }
+      case "0":
     }
+
+    switch (s) {
+      case "a": {
+        { // Noncompliant
+          System.out.println();
+        }
+      }
+      case "b":
+        { // Noncompliant
+          doSomething();
+        }
+        { // Noncompliant
+          doSomething();
+          break;
+        }
+      case "b2":
+        { // Noncompliant
+          doSomething();
+        }
+        { // Noncompliant
+          doSomething();
+        }
+        break;
+      case "c":
+        { // Compliant
+          doSomething();
+        }
+        break;
+      case "d":
+        { // Compliant
+          doSomething();
+        }
+        return;
+      case "e":
+        { // Noncompliant
+          doSomething();
+        }
+        doSomething();
+    }
+  }
+
+
+  private void doSomething() {
   }
 
   {
