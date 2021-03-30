@@ -33,13 +33,16 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S4738")
-public class ReplaceGuavaWithJava8Check extends AbstractMethodDetection implements JavaVersionAwareVisitor {
+public class ReplaceGuavaWithJavaCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
 
   private static final String USE_INSTEAD = "Use \"%s\" instead.";
 
   private static final String GUAVA_BASE_ENCODING = "com.google.common.io.BaseEncoding";
   private static final String GUAVA_OPTIONAL = "com.google.common.base.Optional";
   private static final String GUAVA_FILES = "com.google.common.io.Files";
+  private static final String GUAVA_IMMUTABLE_SET = "com.google.common.collect.ImmutableSet";
+  private static final String GUAVA_IMMUTABLE_LIST = "com.google.common.collect.ImmutableList";
+  private static final String GUAVA_IMMUTABLE_MAP = "com.google.common.collect.ImmutableMap";
 
   private static final Map<String, String> GUAVA_TO_JAVA_UTIL_TYPES = MapBuilder.<String, String>newMap()
     .put("com.google.common.base.Predicate", "java.util.function.Predicate")
@@ -65,7 +68,9 @@ public class ReplaceGuavaWithJava8Check extends AbstractMethodDetection implemen
       MethodMatchers.create().ofTypes(GUAVA_BASE_ENCODING).names("base64", "base64Url").addWithoutParametersMatcher().build(),
       MethodMatchers.create().ofTypes(GUAVA_OPTIONAL).names("absent").addWithoutParametersMatcher().build(),
       MethodMatchers.create().ofTypes(GUAVA_OPTIONAL).names("fromNullable", "of").withAnyParameters().build(),
-      MethodMatchers.create().ofTypes(GUAVA_FILES).names("createTempDir").addWithoutParametersMatcher().build());
+      MethodMatchers.create().ofTypes(GUAVA_FILES).names("createTempDir").addWithoutParametersMatcher().build(),
+      MethodMatchers.create().ofTypes(GUAVA_IMMUTABLE_LIST, GUAVA_IMMUTABLE_SET, GUAVA_IMMUTABLE_MAP)
+        .names("of").withAnyParameters().build());
   }
 
   @Override
@@ -103,8 +108,23 @@ public class ReplaceGuavaWithJava8Check extends AbstractMethodDetection implemen
       case GUAVA_FILES:
         reportIssue(mit, replacementMessage("java.nio.file.Files.createTempDirectory"));
         break;
+      case GUAVA_IMMUTABLE_LIST:
+        reportJava9Issue(mit, "java.util.List.of()");
+        break;
+      case GUAVA_IMMUTABLE_SET:
+        reportJava9Issue(mit, "java.util.Set.of()");
+        break;
+      case GUAVA_IMMUTABLE_MAP:
+        reportJava9Issue(mit, "java.util.Map.of()\" or \"java.util.Map.ofEntries()");
+        break;
       default:
         break;
+    }
+  }
+
+  private void reportJava9Issue(MethodInvocationTree mit, String replacement) {
+    if (context.getJavaVersion().isJava9Compatible()) {
+      reportIssue(mit, replacementMessage(replacement));
     }
   }
 
