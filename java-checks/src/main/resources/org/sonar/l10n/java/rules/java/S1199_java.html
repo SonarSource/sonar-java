@@ -3,29 +3,20 @@ typically indicates that the method has too many responsibilities, and should be
 <h2>Noncompliant Code Example</h2>
 <pre>
 public void evaluate(int operator) {
-  switch (operator) {
-    /* ... */
-    case ADD: {                                // Noncompliant - nested code block '{' ... '}'
-        int a = stack.pop();
-        int b = stack.pop();
-        int result = a + b;
-        stack.push(result);
-        break;
-      }
-    /* ... */
+  // Do some computation...
+  {
+    int a = stack.pop();
+    int b = stack.pop();
+    int result = a + b;
+    stack.push(result);
   }
 }
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
 public void evaluate(int operator) {
-  switch (operator) {
-    /* ... */
-    case ADD:                                  // Compliant
-      evaluateAdd();
-      break;
-    /* ... */
-  }
+  // Do some computation...
+  evaluateAdd();
 }
 
 private void evaluateAdd() {
