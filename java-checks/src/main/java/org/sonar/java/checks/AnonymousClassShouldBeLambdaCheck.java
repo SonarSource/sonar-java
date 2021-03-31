@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -105,14 +106,22 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
       // remove generic methods, which can not be written as lambda (JLS-11 §15.27)
       .filter(symbol -> !JUtils.isParametrizedMethod(symbol))
       // always take same symbol if method is redeclared over and over in hierarchy
-      .map(symbol -> symbol.overriddenSymbol() != null ? symbol.overriddenSymbol() : symbol)
+      .map(AnonymousClassShouldBeLambdaCheck::overridenSymbolIfAny)
       .collect(Collectors.toSet())
       .size() == 1;
   }
 
+  private static Symbol.MethodSymbol overridenSymbolIfAny(MethodSymbol symbol) {
+    return symbol.overriddenSymbols().stream()
+      .findFirst()
+      .orElse(symbol);
+  }
+
   private static boolean isObjectMethod(Symbol.MethodSymbol methodSymbol) {
-    Symbol overridenSymbol = methodSymbol.overriddenSymbol();
-    return overridenSymbol != null && overridenSymbol.owner().type().is(JAVA_LANG_OBJECT);
+    return methodSymbol.overriddenSymbols().stream()
+      .map(Symbol::owner)
+      .map(Symbol::type)
+      .anyMatch(t -> t.is(JAVA_LANG_OBJECT));
   }
 
   private static boolean hasOnlyOneMethod(List<Tree> members) {
@@ -120,7 +129,8 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
     for (Tree tree : members) {
       if (!tree.is(Tree.Kind.EMPTY_STATEMENT, Tree.Kind.METHOD)) {
         return false;
-      } else if (tree.is(Tree.Kind.METHOD)) {
+      }
+      if (tree.is(Tree.Kind.METHOD)) {
         if (methodTree != null) {
           return false;
         }

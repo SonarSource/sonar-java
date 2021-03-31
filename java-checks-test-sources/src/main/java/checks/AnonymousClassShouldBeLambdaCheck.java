@@ -1,37 +1,40 @@
+package checks;
+
 import com.google.common.base.Function;
 import java.util.Date;
 
-enum foo  {
-  FOO{
-    @Override
+class AnonymousClassShouldBeLambdaCheck {
+
+  enum Foo {
+    FOO {
+      @Override
+      public String method() {
+        return "foo";
+      }
+    },
+    BAR {
+      @Override
+      public String method() {
+        return "bar";
+      }
+    };
+
+
     public String method() {
-      return "foo";
+      return "";
     }
-  },
-  BAR{
-    @Override
-    public String method() {
-      return "bar";
+  }
+
+  interface Handler {
+    String handle();
+  }
+
+  interface MyInterface {
+    enum InnerEnum {
+      A, B, C;
     }
-  };
-
-
-  public String method(){
-    return "";
   }
-}
 
-interface Handler {
-  String handle();
-}
-
-interface MyInterface {
-  enum InnerEnum {
-    A,B,C;
-  }
-}
-
-class A {
   void toto() {
     new MyInterface() {}; // Compliant
 
@@ -97,11 +100,12 @@ class A {
     (){
       @Override
       public String handle() {
-        return A.this.toStr();
+        return AnonymousClassShouldBeLambdaCheck.this.toString();
       }
     };
 
     new Handler(){ // Compliant, annotation prevent to transform to a lambda
+      @Override
       @SuppressWarnings("something")
       public String handle() {
         return "handled";
@@ -121,8 +125,21 @@ class A {
     return "";
   }
 
+  abstract static class AbstractClass {
+    public abstract void foo();
+
+    static void bar() {
+      AbstractClass ac1 = new AbstractClass() { // Compliant: not a SAM
+        @Override
+        public void foo() {
+        }
+      };
+    }
+  }
+
   interface MyHandler extends Handler{}
-  public abstract class Main {
+
+  public abstract static class Main {
 
     public abstract void myMethod();
 
@@ -249,24 +266,6 @@ class Alpha {
   Function<Object, Date> b = o -> new Date();
 }
 
-abstract class AbstractClass {
-  public abstract void foo();
-
-  static void bar() {
-    AbstractClass ac1 = new AbstractClass() { // Compliant: not a SAM
-      @Override
-      public void foo() {
-      }
-    };
-
-    Unknown u = new Unknown() { // Compliant: can not resolve parent
-      @Override
-      void foo() {
-      }
-    };
-  }
-}
-
 class ThisInstanceTest {
 
   interface WithDefault {
@@ -307,24 +306,6 @@ class ThisInstanceTest {
       }
     };
   }
-
-  interface InvokeStatic {
-
-    int func();
-
-    static int staticFunc() {
-      InvokeStatic f = new InvokeStatic() {  // Noncompliant
-        @Override
-        public int func() {
-          unknown();
-          staticFunc();
-          return 0;
-        }
-      };
-      return f.func();
-    }
-  }
-
 }
 
 abstract class GenericType<X> {
@@ -341,6 +322,6 @@ abstract class GenericType<X> {
   abstract <T extends Comparable<T>> void bar(GenericType<T> object, MyComparable comp);
 
   interface MyComparable {
-    public <T extends Comparable<T>> int compare(T obj1, T obj2);
+    <T extends Comparable<T>> int compare(T obj1, T obj2);
   }
 }
