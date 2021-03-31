@@ -20,8 +20,10 @@
 package org.sonar.java.checks;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -48,9 +50,6 @@ public abstract class AbstractCallToDeprecatedCodeChecker extends IssuableSubscr
 
   @Override
   public final void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     if (nestedDeprecationLevel == 0) {
       if (tree.is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifierTree = (IdentifierTree) tree;
@@ -60,7 +59,10 @@ public abstract class AbstractCallToDeprecatedCodeChecker extends IssuableSubscr
         tryGetDeprecatedSymbol(identifierTree).ifPresent(deprecatedSymbol -> checkDeprecatedIdentifier(identifierTree, deprecatedSymbol));
       } else if (tree.is(Tree.Kind.METHOD)) {
         MethodTree methodTree = (MethodTree) tree;
-        tryGetDeprecatedSymbol(methodTree).ifPresent(deprecatedSymbol -> checkOverridingMethod(methodTree, deprecatedSymbol));
+        List<Symbol.MethodSymbol> deprectatedMethods = deprecatedMethodSymbols(methodTree);
+        if (!deprectatedMethods.isEmpty()) {
+          checkOverridingMethod(methodTree, deprectatedMethods);
+        }
       }
     }
     if (isDeprecatedMethod(tree) || isDeprecatedClassTree(tree)) {
@@ -70,9 +72,6 @@ public abstract class AbstractCallToDeprecatedCodeChecker extends IssuableSubscr
 
   @Override
   public final void leaveNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     if (isDeprecatedMethod(tree) || isDeprecatedClassTree(tree)) {
       nestedDeprecationLevel--;
     }
@@ -107,29 +106,18 @@ public abstract class AbstractCallToDeprecatedCodeChecker extends IssuableSubscr
     return parent.is(Tree.Kind.VARIABLE) && (identifierTree.equals(((VariableTree) parent).simpleName()) || ((VariableTree) parent).symbol().isDeprecated());
   }
 
-  private static Optional<Symbol.MethodSymbol> tryGetDeprecatedSymbol(MethodTree methodTree) {
+  private static List<Symbol.MethodSymbol> deprecatedMethodSymbols(MethodTree methodTree) {
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
     if (methodSymbol.isDeprecated()) {
-      return Optional.empty();
+      return Collections.emptyList();
     }
-    return tryGetOverridingDeprecatedConcreteMethod(methodSymbol);
+    return methodSymbol.overriddenSymbols()
+      .stream()
+      .filter(Symbol.MethodSymbol::isDeprecated)
+      .collect(Collectors.toList());
   }
 
-  abstract void checkOverridingMethod(MethodTree methodTree, Symbol.MethodSymbol deprecatedSymbol);
-
-  private static Optional<Symbol.MethodSymbol> tryGetOverridingDeprecatedConcreteMethod(Symbol.MethodSymbol symbol) {
-    Symbol.MethodSymbol overriddenMethod = symbol.overriddenSymbol();
-    while(overriddenMethod != null && !overriddenMethod.isUnknown()) {
-      if (overriddenMethod.isAbstract()) {
-        return Optional.empty();
-      }
-      if (overriddenMethod.isDeprecated()) {
-        return Optional.of(overriddenMethod);
-      }
-      overriddenMethod = overriddenMethod.overriddenSymbol();
-    }
-    return Optional.empty();
-  }
+  abstract void checkOverridingMethod(MethodTree methodTree, List<Symbol.MethodSymbol> deprecatedSymbol);
 
   private static boolean isDeprecatedMethod(Tree tree) {
     return tree.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR) && ((MethodTree) tree).symbol().isDeprecated();

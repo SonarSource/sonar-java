@@ -19,9 +19,9 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 
@@ -48,11 +48,9 @@ public class CallToDeprecatedCodeMarkedForRemovalCheck extends AbstractCallToDep
   }
 
   @Override
-  void checkOverridingMethod(MethodTree methodTree, MethodSymbol deprecatedSymbol) {
-    if (!isFlaggedForRemoval(deprecatedSymbol)) {
-      // do not overlap with S1874
-      return;
+  void checkOverridingMethod(MethodTree methodTree, List<Symbol.MethodSymbol> deprecatedSymbols) {
+    if (deprecatedSymbols.stream().anyMatch(this::isFlaggedForRemoval)) {
+      reportIssue(methodTree.simpleName(), "Don't override this deprecated method, it has been marked for removal.");
     }
-    reportIssue(methodTree.simpleName(), "Don't override this deprecated method, it has been marked for removal.");
   }
 }
