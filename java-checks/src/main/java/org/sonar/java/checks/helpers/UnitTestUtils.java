@@ -38,6 +38,7 @@ import static java.util.Arrays.asList;
 
 public final class UnitTestUtils {
 
+  private static final String ORG_JUNIT_TEST = "org.junit.Test";
   public static final Pattern ASSERTION_METHODS_PATTERN = Pattern.compile("(assert|verify|fail|should|check|expect|validate).*");
   public static final Pattern TEST_METHODS_PATTERN = Pattern.compile("test.*|.*Test");
 
@@ -115,7 +116,7 @@ public final class UnitTestUtils {
     FAIL_METHOD_MATCHER, ASSERTIONS_METHOD_MATCHER
   );
 
-  private static final Set<String> TEST_ANNOTATIONS = new HashSet<>(asList("org.junit.Test", "org.testng.annotations.Test"));
+  private static final Set<String> TEST_ANNOTATIONS = new HashSet<>(asList(ORG_JUNIT_TEST, "org.testng.annotations.Test"));
   private static final Set<String> JUNIT5_TEST_ANNOTATIONS = new HashSet<>(asList(
     "org.junit.jupiter.api.Test",
     "org.junit.jupiter.api.RepeatedTest",
@@ -157,12 +158,8 @@ public final class UnitTestUtils {
   }
 
   public static boolean isUnitTest(MethodTree methodTree) {
-    Symbol.MethodSymbol symbol = methodTree.symbol();
-    while (symbol != null) {
-      if (symbol.metadata().isAnnotatedWith("org.junit.Test")) {
-        return true;
-      }
-      symbol = symbol.overriddenSymbol();
+    if (isOrOverridesJunit4TestMethod(methodTree)) {
+      return true;
     }
 
     if (hasJUnit5TestAnnotation(methodTree)) {
@@ -171,6 +168,15 @@ public final class UnitTestUtils {
     }
     Symbol.TypeSymbol enclosingClass = Objects.requireNonNull(methodTree.symbol().enclosingClass(), "Must not be null for method symbols");
     return enclosingClass.type().isSubtypeOf("junit.framework.TestCase") && methodTree.simpleName().name().startsWith("test");
+  }
+
+  private static boolean isOrOverridesJunit4TestMethod(MethodTree methodTree) {
+    Symbol.MethodSymbol symbol = methodTree.symbol();
+    return symbol.metadata().isAnnotatedWith(ORG_JUNIT_TEST)
+      // JUnit 4 considers as test any method overriding another annotated with @Test
+      || symbol.overriddenSymbols().stream()
+        .map(Symbol::metadata)
+        .anyMatch(meta -> meta.isAnnotatedWith(ORG_JUNIT_TEST));
   }
 
   public static boolean isTestClass(ClassTree classTree) {
