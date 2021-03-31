@@ -19,16 +19,42 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.CaseGroupTree;
+import org.sonar.plugins.java.api.tree.CaseLabelTree;
+import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6208")
 public class SwitchCasesShouldBeCommaSeparatedCheck extends IssuableSubscriptionVisitor {
+  private static final String MESSAGE = "Merge the previous cases into this one using comma-separated label.";
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.emptyList();
+    return Arrays.asList(Tree.Kind.SWITCH_EXPRESSION);
+  }
+
+  @Override
+  public void visitNode(Tree tree) {
+    SwitchExpressionTree switchExpression = (SwitchExpressionTree) tree;
+    for (CaseGroupTree aCase : switchExpression.cases()) {
+      List<CaseLabelTree> labels = aCase.labels();
+      int size = labels.size();
+      if (size == 1) {
+        continue;
+      }
+      CaseLabelTree lastLabel = labels.get(size - 1);
+      List<JavaFileScannerContext.Location> secondaries = labels.stream()
+        .limit(size - 1L)
+        .map(label -> new JavaFileScannerContext.Location("", label))
+        .collect(Collectors.toList());
+      reportIssue(lastLabel, MESSAGE, secondaries, null);
+    }
+    super.visitNode(tree);
   }
 }

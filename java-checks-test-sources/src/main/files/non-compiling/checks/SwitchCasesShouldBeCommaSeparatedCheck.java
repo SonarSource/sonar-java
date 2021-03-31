@@ -6,7 +6,7 @@ public class SwitchCasesShouldBeCommaSeparatedCheck {
     // Switch Expression
     int i = switch (mode) {
       case "a":
-      case "b": // Noncompliant {{Merge the previous cases into this one using comma-separated label.}}
+      case "b": // Noncompliant [[sc=7;ec=16;secondary=-1]] {{Merge the previous cases into this one using comma-separated label.}}
         yield 1;
       default:
         yield 3;

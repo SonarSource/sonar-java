@@ -6,8 +6,12 @@ public class SwitchCasesShouldBeCommaSeparatedCheck {
     // Switch Statement
     switch (mode) {
       case "a":
-      case "b": // Noncompliant {{Merge the previous cases into this one using comma-separated label.}}
         doSomething();
+        break;
+      case "b":
+      case "c": // Noncompliant [[sc=7;ec=16;secondary=-1]] {{Merge the previous cases into this one using comma-separated label.}}
+        doSomething();
+        doSomethingElse();
         break;
       default:
         doSomethingElse();
