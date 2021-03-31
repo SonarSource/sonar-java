@@ -1675,7 +1675,7 @@ class JavaTreeModelTest {
       SwitchStatementTree tree = (SwitchStatementTree) firstMethodFirstStatement("class T { void m() { switch (e) { default: } } }");
       assertThat(tree.cases()).hasSize(1);
       assertThat(tree.cases().get(0).body()).isEmpty();
-      assertThat(tree).hasChildrenSize(1);
+      assertThat(tree).hasChildrenSize(7);
     }
   }
 

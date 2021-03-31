@@ -19,8 +19,10 @@
  */
 package org.sonar.java.model.statement;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -90,7 +92,11 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
 
   @Override
   public List<Tree> children() {
-    return Collections.singletonList(switchExpression);
+    return ListUtils.concat(
+      Arrays.asList(switchExpression.switchKeyword(), switchExpression.openParenToken(),
+        switchExpression.expression(), switchExpression.closeParenToken(), switchExpression.openBraceToken()),
+      switchExpression.cases(),
+      Collections.singletonList(switchExpression.closeBraceToken()));
   }
 
 }
