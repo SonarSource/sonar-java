@@ -61,11 +61,13 @@ qa_os_win_task:
   depends_on:
     - build
   <<: *WINDOWS_VM_DEFINITION
+  env:
+    CIRRUS_SHELL: powershell
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   build_script:
     - source cirrus-env CI
-    - mvn.cmd clean verify
+    - .\java-16-build-win.cmd
   cleanup_before_cache_script: cleanup_maven_repository
 
 plugin_qa_task:
@@ -107,7 +109,7 @@ sanity_task:
   sanity_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
-    - mvn clean verify -Psanity
+    - bash ./java-16-build-sanity.sh
   cleanup_before_cache_script: cleanup_maven_repository
 
 ruling_task:
