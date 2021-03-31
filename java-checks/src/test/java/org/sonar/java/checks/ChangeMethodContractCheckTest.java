@@ -22,14 +22,25 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+
 class ChangeMethodContractCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ChangeMethodContractCheck.java")
+      .onFile(testSourcesPath("checks/ChangeMethodContractCheck.java"))
       .withCheck(new ChangeMethodContractCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void non_compiling() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/ChangeMethodContractCheck.java"))
+      .withCheck(new ChangeMethodContractCheck())
+      .verifyNoIssues();
   }
 
 }
