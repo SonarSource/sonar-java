@@ -37,18 +37,19 @@ public class OverrideAnnotationCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic() || isExcludedByVersion(context.getJavaVersion())) {
+    if (isExcludedByVersion(context.getJavaVersion())) {
       return;
     }
     MethodTree methodTree = (MethodTree) tree;
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
-    Symbol.MethodSymbol overriddenSymbol = methodSymbol.overriddenSymbol();
-    if (overriddenSymbol == null || overriddenSymbol.isUnknown()) {
+    List<Symbol.MethodSymbol> overriddenSymbols = methodSymbol.overriddenSymbols();
+    if (overriddenSymbols.isEmpty()) {
       return;
     }
+    Symbol.MethodSymbol overriddenSymbol = overriddenSymbols.get(0);
     if (!overriddenSymbol.isAbstract()
-      && !overriddenSymbol.owner().type().is("java.lang.Object")
-      && !methodSymbol.metadata().isAnnotatedWith("java.lang.Override")) {
+      && !isObjectMethod(overriddenSymbol)
+      && !isAnnotatedOverride(methodSymbol)) {
       reportIssue(methodTree.simpleName(), "Add the \"@Override\" annotation above this method signature");
     }
   }
@@ -58,6 +59,15 @@ public class OverrideAnnotationCheck extends IssuableSubscriptionVisitor {
       return false;
     }
     return javaVersion.asInt() <= 4;
+  }
+
+  private static boolean isObjectMethod(Symbol.MethodSymbol method) {
+    return method.owner().type().is("java.lang.Object");
+  }
+
+  private static boolean isAnnotatedOverride(Symbol.MethodSymbol method) {
+    return method.metadata()
+      .isAnnotatedWith("java.lang.Override");
   }
 
 }
