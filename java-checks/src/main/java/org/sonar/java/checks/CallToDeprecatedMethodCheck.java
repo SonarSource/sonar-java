@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -43,11 +44,16 @@ public class CallToDeprecatedMethodCheck extends AbstractCallToDeprecatedCodeChe
   }
 
   @Override
-  void checkOverridingMethod(MethodTree methodTree, Symbol.MethodSymbol deprecatedSymbol) {
-    if (isFlaggedForRemoval(deprecatedSymbol)) {
-      // do not overlap with S5738
-      return;
+  void checkOverridingMethod(MethodTree methodTree, List<Symbol.MethodSymbol> deprecatedSymbols) {
+    if (deprecatedSymbols.stream().allMatch(this::nonAbstractOrFlaggedForRemoval)) {
+      reportIssue(methodTree.simpleName(), "Don't override a deprecated method or explicitly mark it as \"@Deprecated\".");
     }
-    reportIssue(methodTree.simpleName(), "Don't override a deprecated method or explicitly mark it as \"@Deprecated\".");
+  }
+
+  private boolean nonAbstractOrFlaggedForRemoval(Symbol.MethodSymbol method) {
+    // if the method is abstract, you are forced to implement it
+    return !(method.isAbstract()
+      // if the method is flagged for removal, it will be handled by S5738
+      || isFlaggedForRemoval(method));
   }
 }
