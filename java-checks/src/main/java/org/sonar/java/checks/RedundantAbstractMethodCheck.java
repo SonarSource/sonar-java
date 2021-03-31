@@ -19,6 +19,9 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -28,10 +31,6 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationInstance;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
 
 @Rule(key = "S3038")
 public class RedundantAbstractMethodCheck extends IssuableSubscriptionVisitor {
@@ -43,9 +42,6 @@ public class RedundantAbstractMethodCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     Symbol.MethodSymbol method = ((MethodTree) tree).symbol();
     if (method.isAbstract() && method.owner().isAbstract()) {
       checkMethod(method);
@@ -53,8 +49,12 @@ public class RedundantAbstractMethodCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkMethod(Symbol.MethodSymbol method) {
-    Symbol.MethodSymbol overridee = method.overriddenSymbol();
-    if (overridee != null && overridee.owner().isInterface() && !differentContract(method, overridee)) {
+    List<Symbol.MethodSymbol> overridees = method.overriddenSymbols();
+    if (overridees.isEmpty()) {
+      return;
+    }
+    Symbol.MethodSymbol overridee = overridees.get(0);
+    if (!overridees.isEmpty() && overridee.owner().isInterface() && !differentContract(method, overridee)) {
       reportIssue(method.declaration(), "\"" + method.name() + "\" is defined in the \"" + overridee.owner().name() + "\" interface and can be removed from this class.");
     }
   }
