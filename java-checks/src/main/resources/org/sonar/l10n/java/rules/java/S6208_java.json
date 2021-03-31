@@ -1,0 +1,16 @@
+{
+  "title": "Comma-separated labels should be used in Switch with colon case",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java14"
+  ],
+  "defaultSeverity": "Info",
+  "ruleSpecification": "RSPEC-6208",
+  "sqKey": "S6208",
+  "scope": "Main"
+}
