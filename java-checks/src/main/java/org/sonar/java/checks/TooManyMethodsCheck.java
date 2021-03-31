@@ -90,13 +90,8 @@ public class TooManyMethodsCheck extends IssuableSubscriptionVisitor {
   }
 
   private boolean shouldNotReportIssue(ClassTree classTree, List<Tree> methods) {
-    return (classTree.simpleName() == null && methods.stream().filter(member -> !isOverriding((MethodTree) member)).count() == 0)
+    return (classTree.simpleName() == null && methods.stream().allMatch(member -> ((MethodTree) member).isOverriding()))
       ||  methods.size() <= maximumMethodThreshold;
-  }
-
-  private static boolean isOverriding(MethodTree member) {
-    Symbol symbol = member.symbol();
-    return symbol.isMethodSymbol() && ((Symbol.MethodSymbol) symbol).overriddenSymbol() != null;
   }
 
 }
