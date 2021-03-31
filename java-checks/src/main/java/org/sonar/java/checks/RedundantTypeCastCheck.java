@@ -192,7 +192,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     Symbol owner = symbol.owner();
     return owner.isTypeSymbol() && calcOverloads((Symbol.TypeSymbol) owner, symbol.name()) > 1;
   }
-  
+
   private static long calcOverloads(Symbol.TypeSymbol owner, String methodName) {
     return owner.memberSymbols().stream()
       .filter(member -> member.isMethodSymbol() && member.name().equals(methodName))
@@ -219,9 +219,12 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isSingleAbstractMethodOverride(Symbol.MethodSymbol childMethod, Type parentType) {
-    Symbol.MethodSymbol overriddenSymbol = childMethod.overriddenSymbol();
+    List<Symbol.MethodSymbol> overriddenSymbols = childMethod.overriddenSymbols();
+    if (overriddenSymbols.isEmpty()) {
+      return false;
+    }
+    Symbol.MethodSymbol overriddenSymbol = overriddenSymbols.get(0);
     return !JUtils.isDefaultMethod(childMethod)
-      && overriddenSymbol != null
       && getMethodSymbolsOf(parentType).filter(NON_DEFAULT_METHOD_PREDICATE).anyMatch(overriddenSymbol::equals);
   }
 
