@@ -32,12 +32,4 @@ class RedundantAbstractMethodCheckTest {
       .withCheck(new RedundantAbstractMethodCheck())
       .verifyIssues();
   }
-
-  @Test
-  void no_issues_without_semantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/RedundantAbstractMethodCheck.java"))
-      .withCheck(new RedundantAbstractMethodCheck())
-      .verifyIssues();
-  }
 }
