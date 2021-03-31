@@ -25,6 +25,7 @@ import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -42,16 +43,13 @@ public class SynchronizedOverrideCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
-
     MethodTree methodTree = (MethodTree) tree;
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
-    Symbol.MethodSymbol overriddenSymbol =  methodSymbol.overriddenSymbol();
-    if (overriddenSymbol == null || overriddenSymbol.isUnknown()) {
+    List<MethodSymbol> overriddenSymbols = methodSymbol.overriddenSymbols();
+    if (overriddenSymbols.isEmpty()) {
       return;
     }
+    Symbol.MethodSymbol overriddenSymbol = overriddenSymbols.get(0);
     if (JUtils.isSynchronizedMethod(overriddenSymbol) && !JUtils.isSynchronizedMethod(methodSymbol)) {
       List<JavaFileScannerContext.Location> secondaries = Collections.emptyList();
       MethodTree overridenMethodTree = overriddenSymbol.declaration();
