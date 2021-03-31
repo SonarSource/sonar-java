@@ -43,7 +43,21 @@ public class NestedBlocksCheck extends BaseTreeVisitor implements JavaFileScanne
 
   @Override
   public void visitCaseGroup(CaseGroupTree tree) {
-    checkStatements(tree.body());
+    List<StatementTree> body = tree.body();
+    int statementsInBody = body.size();
+    if (statementsInBody == 0) {
+      return;
+    }
+
+    if (isTerminalStatement(body.get(statementsInBody - 1))) {
+      // If the last statement is a break, yield or return, we do not count it
+      statementsInBody--;
+    }
+
+    if (statementsInBody > 1) {
+      checkStatements(tree.body());
+    }
+
     super.visitCaseGroup(tree);
   }
 
@@ -51,6 +65,10 @@ public class NestedBlocksCheck extends BaseTreeVisitor implements JavaFileScanne
   public void visitBlock(BlockTree tree) {
     checkStatements(tree.body());
     super.visitBlock(tree);
+  }
+
+  private static boolean isTerminalStatement(StatementTree statementTree) {
+    return statementTree.is(Tree.Kind.YIELD_STATEMENT, Tree.Kind.BREAK_STATEMENT, Tree.Kind.RETURN_STATEMENT);
   }
 
   private void checkStatements(List<StatementTree> statements) {
