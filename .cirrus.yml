@@ -53,7 +53,7 @@ build_task:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   build_script:
     - source cirrus-env BUILD
-    - regular_mvn_build_deploy_analyze
+    - bash ./java-16-build.sh
     - ./check-license-compliance.sh
   cleanup_before_cache_script: cleanup_maven_repository
 
