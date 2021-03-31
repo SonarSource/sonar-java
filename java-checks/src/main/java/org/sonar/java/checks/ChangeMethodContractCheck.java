@@ -44,8 +44,12 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
-    Symbol.MethodSymbol overridee = methodSymbol.overriddenSymbol();
-    if (overridee != null && overridee.isMethodSymbol()) {
+    List<Symbol.MethodSymbol> overriddenSymbols = methodSymbol.overriddenSymbols();
+    if (overriddenSymbols.isEmpty()) {
+      return;
+    }
+    Symbol.MethodSymbol overridee = overriddenSymbols.get(0);
+    if (overridee.isMethodSymbol()) {
       checkContractChange(methodTree, overridee);
     }
   }
