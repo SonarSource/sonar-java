@@ -36,6 +36,23 @@ class PrintfMisuseCheckTest {
   }
 
   @Test
+  void test_test() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/PrintfMisuseCheck2.java"))
+      .withCheck(new PrintfMisuseCheck())
+      .withJavaVersion(15)
+      .verifyIssues();
+  }
+
+  @Test
+  void test_test_test() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/PrintfMisuseCheck2.java"))
+      .withCheck(new PrintfMisuseCheck())
+      .verifyIssues();
+  }
+
+  @Test
   void test_lambda_in_unknown_method_invocation() {
     JavaCheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/PrintfMisuseCheckLambda.java"))

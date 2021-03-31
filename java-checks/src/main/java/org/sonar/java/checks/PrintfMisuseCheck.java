@@ -74,6 +74,22 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     .map(l -> MethodMatchers.create().ofTypes(ORG_SLF4J_LOGGER).names(l).withAnyParameters().build())
     .collect(Collectors.toList()));
 
+  private static MethodMatchers FORMATTED = MethodMatchers
+    .create()
+    .ofTypes("java.lang.String")
+    .names("formatted")
+    .withAnyParameters()
+    .build();
+
+  @Override
+  public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.METHOD_INVOCATION) && FORMATTED.matches(((MethodInvocationTree) tree))) {
+      reportIssue(tree, "TA-DA!!!");
+    } else {
+      super.visitNode(tree);
+    }
+  }
+
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
     ArrayList<MethodMatchers> matchers = new ArrayList<>();
