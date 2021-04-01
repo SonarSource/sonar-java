@@ -28,4 +28,10 @@ public class SwitchCasesShouldBeCommaSeparatedCheck {
       default -> doSomethingElse();
     }
   }
+
+  private void doSomething() {
+  }
+
+  private void doSomethingElse() {
+  }
 }

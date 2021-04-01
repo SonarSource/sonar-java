@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
@@ -38,25 +38,28 @@ public class SwitchCasesShouldBeCommaSeparatedCheck extends IssuableSubscription
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.SWITCH_EXPRESSION);
+    return Collections.singletonList(Tree.Kind.SWITCH_EXPRESSION);
   }
 
   @Override
   public void visitNode(Tree tree) {
     SwitchExpressionTree switchExpression = (SwitchExpressionTree) tree;
+    if (usesArrows(switchExpression)) {
+      return;
+    }
     for (CaseGroupTree aCase : switchExpression.cases()) {
       List<CaseLabelTree> labels = aCase.labels();
       int size = labels.size();
       if (size == 1) {
-        if (!labels.get(0).colonOrArrowToken().text().equals(":")) {
-          return;
-        }
         continue;
+      }
+      while (size >= 2 && labels.get(size - 1).caseOrDefaultKeyword().text().equals("default")) {
+        size--;
+      }
+      if (size == 1) {
+        return;
       }
       CaseLabelTree lastLabel = labels.get(size - 1);
-      if (lastLabel.caseOrDefaultKeyword().text().equals("default")) {
-        continue;
-      }
       List<JavaFileScannerContext.Location> secondaries = labels.stream()
         .limit(size - 1L)
         .map(label -> new JavaFileScannerContext.Location("", label))
@@ -64,6 +67,11 @@ public class SwitchCasesShouldBeCommaSeparatedCheck extends IssuableSubscription
       reportIssue(lastLabel, MESSAGE, secondaries, null);
     }
     super.visitNode(tree);
+  }
+
+  public static boolean usesArrows(SwitchExpressionTree switchExpression) {
+    return !switchExpression.cases().isEmpty() &&
+      switchExpression.cases().get(0).labels().get(0).colonOrArrowToken().text().equals("->");
   }
 
   @Override
