@@ -800,6 +800,7 @@ public final class CheckList {
       ValueBasedObjectsShouldNotBeSerializedCheck.class,
       ValueBasedObjectUsedForLockCheck.class,
       VarArgCheck.class,
+      VarCanBeUsedCheck.class,
       VariableDeclarationScopeCheck.class,
       VerifiedServerHostnamesCheck.class,
       VisibleForTestingUsageCheck.class,

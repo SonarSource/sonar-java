@@ -1,0 +1,16 @@
+<p>In Java 10 <a href="https://openjdk.java.net/jeps/286">Local-Variable Type Inference</a> was introduced. It allows you to omit the expected type of
+a variable by declaring it with the <code>var</code> keyword. </p>
+<p>While it is not always possible or cleaner to use this new way of declaring a variable, when the type on the left is the same as the one on the
+right in an assignment, using the <code>var</code> will result in a more concise code.</p>
+<p>This rule reports an issue when the expected type of the variable is the same as the returned type of assigned expression.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+MyClass myClass = new MyClass();
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+var myClass = new MyClass();
+</pre>
+<h2>See</h2>
+<p> * <a href="https://openjdk.java.net/jeps/286">JEP 286: Local-Variable Type Inference</a></p>
+

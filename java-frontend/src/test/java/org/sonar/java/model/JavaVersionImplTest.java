@@ -32,6 +32,7 @@ class JavaVersionImplTest {
     assertThat(version.isJava7Compatible()).isTrue();
     assertThat(version.isJava8Compatible()).isTrue();
     assertThat(version.isJava9Compatible()).isFalse();
+    assertThat(version.isJava10Compatible()).isFalse();
     assertThat(version.isJava12Compatible()).isFalse();
     assertThat(version.isJava14Compatible()).isFalse();
     assertThat(version.isJava15Compatible()).isFalse();
@@ -45,6 +46,7 @@ class JavaVersionImplTest {
     assertThat(version.isJava7Compatible()).isFalse();
     assertThat(version.isJava8Compatible()).isFalse();
     assertThat(version.isJava9Compatible()).isFalse();
+    assertThat(version.isJava10Compatible()).isFalse();
     assertThat(version.isJava12Compatible()).isFalse();
     assertThat(version.isJava14Compatible()).isFalse();
     assertThat(version.isJava15Compatible()).isFalse();
@@ -58,6 +60,7 @@ class JavaVersionImplTest {
     assertThat(version.isJava7Compatible()).isFalse();
     assertThat(version.isJava8Compatible()).isFalse();
     assertThat(version.isJava9Compatible()).isFalse();
+    assertThat(version.isJava10Compatible()).isFalse();
     assertThat(version.isJava12Compatible()).isFalse();
     assertThat(version.isJava14Compatible()).isFalse();
     assertThat(version.isJava15Compatible()).isFalse();
@@ -71,6 +74,7 @@ class JavaVersionImplTest {
     assertThat(version.isJava7Compatible()).isTrue();
     assertThat(version.isJava8Compatible()).isFalse();
     assertThat(version.isJava9Compatible()).isFalse();
+    assertThat(version.isJava10Compatible()).isFalse();
     assertThat(version.isJava12Compatible()).isFalse();
     assertThat(version.isJava14Compatible()).isFalse();
     assertThat(version.isJava15Compatible()).isFalse();
@@ -84,6 +88,7 @@ class JavaVersionImplTest {
     assertThat(version.isJava7Compatible()).isTrue();
     assertThat(version.isJava8Compatible()).isTrue();
     assertThat(version.isJava9Compatible()).isFalse();
+    assertThat(version.isJava10Compatible()).isFalse();
     assertThat(version.isJava12Compatible()).isFalse();
     assertThat(version.isJava14Compatible()).isFalse();
     assertThat(version.isJava15Compatible()).isFalse();
@@ -97,10 +102,25 @@ class JavaVersionImplTest {
     assertThat(version.isJava7Compatible()).isTrue();
     assertThat(version.isJava8Compatible()).isTrue();
     assertThat(version.isJava9Compatible()).isTrue();
+    assertThat(version.isJava10Compatible()).isFalse();
     assertThat(version.isJava12Compatible()).isFalse();
     assertThat(version.isJava14Compatible()).isFalse();
     assertThat(version.isJava15Compatible()).isFalse();
     assertThat(version.asInt()).isEqualTo(9);
+  }
+
+  @Test
+  void java_10() throws Exception {
+    JavaVersion version = new JavaVersionImpl(10);
+    assertThat(version.isJava6Compatible()).isTrue();
+    assertThat(version.isJava7Compatible()).isTrue();
+    assertThat(version.isJava8Compatible()).isTrue();
+    assertThat(version.isJava9Compatible()).isTrue();
+    assertThat(version.isJava10Compatible()).isTrue();
+    assertThat(version.isJava12Compatible()).isFalse();
+    assertThat(version.isJava14Compatible()).isFalse();
+    assertThat(version.isJava15Compatible()).isFalse();
+    assertThat(version.asInt()).isEqualTo(10);
   }
 
   @Test
@@ -110,18 +130,21 @@ class JavaVersionImplTest {
     assertThat(version.isJava7Compatible()).isTrue();
     assertThat(version.isJava8Compatible()).isTrue();
     assertThat(version.isJava9Compatible()).isTrue();
+    assertThat(version.isJava10Compatible()).isTrue();
     assertThat(version.isJava12Compatible()).isTrue();
     assertThat(version.isJava14Compatible()).isFalse();
     assertThat(version.isJava15Compatible()).isFalse();
     assertThat(version.asInt()).isEqualTo(12);
   }
 
+  @Test
   void java_14() {
     JavaVersion version = new JavaVersionImpl(14);
     assertThat(version.isJava6Compatible()).isTrue();
     assertThat(version.isJava7Compatible()).isTrue();
     assertThat(version.isJava8Compatible()).isTrue();
     assertThat(version.isJava9Compatible()).isTrue();
+    assertThat(version.isJava10Compatible()).isTrue();
     assertThat(version.isJava12Compatible()).isTrue();
     assertThat(version.isJava14Compatible()).isTrue();
     assertThat(version.isJava15Compatible()).isFalse();
@@ -135,6 +158,7 @@ class JavaVersionImplTest {
     assertThat(version.isJava7Compatible()).isTrue();
     assertThat(version.isJava8Compatible()).isTrue();
     assertThat(version.isJava9Compatible()).isTrue();
+    assertThat(version.isJava10Compatible()).isTrue();
     assertThat(version.isJava12Compatible()).isTrue();
     assertThat(version.isJava14Compatible()).isTrue();
     assertThat(version.isJava15Compatible()).isTrue();

@@ -1,0 +1,16 @@
+{
+  "title": "Local-Variable Type Inference should be used",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java10"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-6212",
+  "sqKey": "S6212",
+  "scope": "Main"
+}
