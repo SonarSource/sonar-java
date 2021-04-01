@@ -99,10 +99,16 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 #### **6.15**
 
+* **Switch representation change in the AST**
+
+  Previously, Switch Statements were represented thanks to a Switch Expression. It means that the child of the Switch
+  Statement was a Switch Expression. This is no longer the case, a Switch statement is now a distinct node in the AST
+  and does not contain a Switch Expression anymore. This may impact existing custom rules relying explicitly on Switch
+  Expressions, via the kind SWITCH_EXPRESSION or the method visitSwitchExpression. More rarely, this could also impact
+  rules relying on parents of Tree, as the overall shape of the AST may also change.
+
 * **Deprecated**
-  * `org.sonar.plugins.java.api.tree.SwitchStatementTree`: The `asSwitchExpression()` method is deprecated for removal.
-    In a future SonarJava version, SwitchStatementTree will not have an underlying SwitchExpressionTree but will only
-    share the same SwitchTree interface.
+  `org.sonar.plugins.java.api.tree.SwitchStatementTree`: The `asSwitchExpression()` method is deprecated for removal.
 
 #### **6.3**
 
