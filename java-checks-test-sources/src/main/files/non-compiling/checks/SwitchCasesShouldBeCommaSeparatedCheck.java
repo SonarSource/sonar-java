@@ -6,10 +6,24 @@ public class SwitchCasesShouldBeCommaSeparatedCheck {
     // Switch Expression
     int i = switch (mode) {
       case "a":
-      case "b": // Noncompliant [[sc=7;ec=16;secondary=-1]] {{Merge the previous cases into this one using comma-separated label.}}
-        yield 1;
+        yield 0;
+      case "b":
+      case "c": // Noncompliant [[sc=7;ec=16;secondary=-1]] {{Merge the previous cases into this one using comma-separated label.}}
+        yield 42;
       default:
-        yield 3;
+        yield returnSomethingElse();
+    };
+
+    // Switch expression with multiple issues
+    i = switch (mode) {
+      case "a":
+      case "b":
+      case "c": // Noncompliant [[sc=7;ec=16;secondary=-1,-2]] {{Merge the previous cases into this one using comma-separated label.}}
+        yield 42;
+      case "d":
+      case "e": // Noncompliant [[sc=7;ec=16;secondary=-1,]] {{Merge the previous cases into this one using comma-separated label.}}
+      default:
+        yield returnSomethingElse();
     };
   }
 
@@ -23,15 +37,16 @@ public class SwitchCasesShouldBeCommaSeparatedCheck {
     };
 
     // Or even better:
-    switch (mode) {
-      case "a", "b" -> doSomething();
-      default -> doSomethingElse();
-    }
+    i = switch (mode) {
+      case "a", "b" -> returnSomething();
+      default -> returnSomethingElse();
+    };
+  }
+  private int returnSomething() {
+    return -1;
   }
 
-  private void doSomething() {
-  }
-
-  private void doSomethingElse() {
+  private int returnSomethingElse() {
+    return -42;
   }
 }
