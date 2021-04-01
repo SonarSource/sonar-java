@@ -33,6 +33,7 @@ public class JavaVersionImpl implements JavaVersion {
   private static final int JAVA_8 = 8;
   private static final int JAVA_9 = 9;
   private static final int JAVA_12 = 12;
+  private static final int JAVA_14 = 14;
   private static final int JAVA_15 = 15;
   private final int javaVersion;
 
@@ -83,6 +84,11 @@ public class JavaVersionImpl implements JavaVersion {
   @Override
   public boolean isJava12Compatible() {
     return JAVA_12 <= javaVersion;
+  }
+
+  @Override
+  public boolean isJava14Compatible() {
+    return JAVA_14 <= javaVersion;
   }
 
   @Override
