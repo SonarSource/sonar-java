@@ -86,11 +86,12 @@ public class SwitchRedundantKeywordCheck extends IssuableSubscriptionVisitor imp
   }
 
   private void reportStatementInBlock(Tree statement, BlockTree blockTree, String redundantParts) {
-    reportIssue(statement,
-      String.format(MESSAGE, redundantParts),
-      Arrays.asList(new JavaFileScannerContext.Location("Redundant opening brace", blockTree.openBraceToken()),
-        new JavaFileScannerContext.Location("Redundant closing brace", blockTree.closeBraceToken())),
-      null);
+    reportIssue(statement, String.format(MESSAGE, redundantParts), blockBraceLocations(blockTree), null);
+  }
+
+  private static List<JavaFileScannerContext.Location> blockBraceLocations(BlockTree blockTree) {
+    return Arrays.asList(new JavaFileScannerContext.Location("Redundant opening brace", blockTree.openBraceToken()),
+      new JavaFileScannerContext.Location("Redundant closing brace", blockTree.closeBraceToken()));
   }
 
   @Override

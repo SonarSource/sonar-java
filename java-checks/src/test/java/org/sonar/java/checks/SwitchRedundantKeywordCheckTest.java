@@ -54,6 +54,4 @@ class SwitchRedundantKeywordCheckTest {
       .withCheck(new SwitchRedundantKeywordCheck())
       .verifyNoIssues();
   }
-
-
 }
