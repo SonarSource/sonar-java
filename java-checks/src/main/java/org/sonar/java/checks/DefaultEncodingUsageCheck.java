@@ -21,14 +21,11 @@ package org.sonar.java.checks;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -38,7 +35,6 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S1943")
 public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
@@ -49,6 +45,7 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
   private static final String TO_STRING = "toString";
   private static final String WRITE = "write";
   private static final String JAVA_IO_FILE = "java.io.File";
+  private static final String JAVA_IO_FILEDESCRIPTOR = "java.io.FileDescriptor";
   private static final String JAVA_IO_READER = "java.io.Reader";
   private static final String JAVA_IO_WRITER = "java.io.Writer";
   private static final String JAVA_IO_FILEWRITER = "java.io.FileWriter";
@@ -67,7 +64,6 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
   private static final String JAVA_UTIL_SCANNER = "java.util.Scanner";
   private static final String JAVA_UTIL_FORMATTER = "java.util.Formatter";
 
-  private static final String[] FORBIDDEN_TYPES = {JAVA_IO_FILEREADER, JAVA_IO_FILEWRITER};
   private static final String COMMONS_IOUTILS = "org.apache.commons.io.IOUtils";
   private static final String COMMONS_FILEUTILS = "org.apache.commons.io.FileUtils";
 
@@ -130,43 +126,9 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
   private static final MethodMatchers FILEUTILS_WRITE_WITH_CHARSET_MATCHERS =
     MethodMatchers.or(FILEUTILS_WRITE_WITH_CHARSET);
 
-  private Set<Tree> excluded = new HashSet<>();
-
-  @Override
-  public void leaveFile(JavaFileScannerContext context) {
-    excluded.clear();
-  }
-
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS, Tree.Kind.VARIABLE);
-  }
-
-  @Override
-  public void visitNode(Tree tree) {
-    if (!excluded.contains(tree)) {
-      super.visitNode(tree);
-      if (tree.is(Tree.Kind.VARIABLE)) {
-        VariableTree variableTree = (VariableTree) tree;
-        boolean foundIssue = checkForbiddenTypes(variableTree.simpleName(), variableTree.type().symbolType());
-        if (foundIssue) {
-          excluded.add(variableTree.initializer());
-        }
-      } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-        MethodInvocationTree mit = (MethodInvocationTree) tree;
-        checkForbiddenTypes(ExpressionUtils.methodName(mit), mit.symbolType());
-      }
-    }
-  }
-
-  private boolean checkForbiddenTypes(Tree reportTree, Type symbolType) {
-    for (String forbiddenType : FORBIDDEN_TYPES) {
-      if (symbolType.is(forbiddenType)) {
-        reportIssue(reportTree, "Remove this use of \"" + forbiddenType + "\"");
-        return true;
-      }
-    }
-    return false;
   }
 
   @Override
@@ -184,14 +146,13 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
         .addWithoutParametersMatcher()
         .build(),
       MethodMatchers.create().ofTypes(JAVA_IO_FILEREADER).constructor()
-        .addParametersMatcher("java.io.FileDescriptor")
         .addParametersMatcher(JAVA_IO_FILE)
+        .addParametersMatcher(JAVA_IO_FILEDESCRIPTOR)
         .addParametersMatcher(JAVA_LANG_STRING)
         .build(),
       MethodMatchers.create().ofTypes(JAVA_IO_FILEWRITER).constructor()
-        .addParametersMatcher("java.io.FileDescriptor")
         .addParametersMatcher(JAVA_IO_FILE)
-        .addParametersMatcher(JAVA_LANG_STRING)
+        .addParametersMatcher(JAVA_IO_FILEDESCRIPTOR)
         .addParametersMatcher(JAVA_IO_FILE, BOOLEAN)
         .addParametersMatcher(JAVA_LANG_STRING)
         .addParametersMatcher(JAVA_LANG_STRING, BOOLEAN)

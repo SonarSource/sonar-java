@@ -19,7 +19,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.FileUtils;
 
 class A {
-  void myMethod(byte[] bytes, java.io.File file, OutputStream outputStream) {
+  void myMethod(byte[] bytes, java.io.File file, OutputStream outputStream, java.io.FileDescriptor fileDescriptor) {
     new String(bytes); // Noncompliant {{Remove this use of constructor "String(byte[])"}}
     new String(bytes, 0, 1); // Noncompliant {{Remove this use of constructor "String(byte[],int,int)"}}
     "".getBytes(); // Noncompliant {{Remove this use of "getBytes"}}
@@ -49,11 +49,24 @@ class A {
     new Formatter(outputStream); // Noncompliant
     new Scanner(file); // Noncompliant
     new java.util.Scanner(new java.io.FileInputStream("")); // Noncompliant
-    FileReader reader = null; // Noncompliant
-    FileReader reader3 = new FileReader(""); // Noncompliant
-    java.io.Reader reader2 = fileReader(); // Noncompliant [[sc=30;ec=40]]
-    FileWriter writer = null; // Noncompliant
-    java.io.Writer writer2 = fileWriter(); // Noncompliant
+    FileReader reader1 = null; // Compliant
+    FileReader reader2 = new FileReader(file); // Noncompliant
+    FileReader reader2 = new FileReader(file, StandardCharsets.UTF_8); // Compliant
+    FileReader reader3 = new FileReader(fileDescriptor); // Noncompliant
+    FileReader reader4 = new FileReader("filename"); // Noncompliant
+    FileReader reader5 = new FileReader("filename", StandardCharsets.UTF_8); // Compliant
+    java.io.Reader reader2 = fileReader(); // Compliant
+    FileWriter writer = null; // Compliant
+    java.io.Writer writer2 = fileWriter(); // Compliant
+    FileWriter writer = new FileWriter(file); // Noncompliant
+    FileWriter writer = new FileWriter(fileDescriptor); // Noncompliant
+    FileWriter writer = new FileWriter(file, true); // Noncompliant
+    FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8); // Compliant
+    FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8, true); // Compliant
+    FileWriter writer = new FileWriter("filename"); // Noncompliant
+    FileWriter writer = new FileWriter("filename", true); // Noncompliant
+    FileWriter writer = new FileWriter("filename", StandardCharsets.UTF_8); // Compliant
+    FileWriter writer = new FileWriter("filename", StandardCharsets.UTF_8, true); // Compliant
 
     // Compliant
     new String("");
