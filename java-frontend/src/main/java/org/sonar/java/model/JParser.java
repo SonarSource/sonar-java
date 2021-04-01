@@ -1428,7 +1428,7 @@ public class JParser {
       }
       case ASTNode.SWITCH_STATEMENT: {
         SwitchStatement e = (SwitchStatement) node;
-        return new SwitchStatementTreeImpl(new SwitchExpressionTreeImpl(
+        return new SwitchStatementTreeImpl(
           firstTokenIn(e, TerminalTokens.TokenNameswitch),
           firstTokenBefore(e.getExpression(), TerminalTokens.TokenNameLPAREN),
           convertExpression(e.getExpression()),
@@ -1436,7 +1436,7 @@ public class JParser {
           firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameLBRACE),
           convertSwitchStatements(e.statements()),
           lastTokenIn(e, TerminalTokens.TokenNameRBRACE)
-        ));
+        );
       }
       case ASTNode.SYNCHRONIZED_STATEMENT: {
         SynchronizedStatement e = (SynchronizedStatement) node;
@@ -2208,7 +2208,7 @@ public class JParser {
       }
       case ASTNode.SWITCH_EXPRESSION: {
         SwitchExpression e = (SwitchExpression) node;
-        return new SwitchExpressionTreeImpl(
+        SwitchExpressionTreeImpl t = new SwitchExpressionTreeImpl(
           firstTokenIn(e, TerminalTokens.TokenNameswitch),
           firstTokenIn(e, TerminalTokens.TokenNameLPAREN),
           convertExpression(e.getExpression()),
@@ -2217,6 +2217,8 @@ public class JParser {
           convertSwitchStatements(e.statements()),
           lastTokenIn(e, TerminalTokens.TokenNameRBRACE)
         );
+        t.typeBinding = e.resolveTypeBinding();
+        return t;
       }
       case ASTNode.NULL_LITERAL: {
         NullLiteral e = (NullLiteral) node;

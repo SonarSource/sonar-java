@@ -369,7 +369,7 @@ public class SyntaxTreeDebug {
   }
 
   private static String switchStatementString(SwitchStatementTree syntaxNode) {
-    return switchExpressionString(syntaxNode.asSwitchExpression());
+    return  "switch (" + toString(syntaxNode.expression()) + ')';
   }
 
   private static String switchExpressionString(SwitchExpressionTree syntaxNode) {

@@ -35,12 +35,12 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 public class SwitchExpressionTreeImpl extends AssessableExpressionTree implements SwitchExpressionTree {
 
-  private final ExpressionTree expression;
-  private final List<CaseGroupTree> cases;
   private final InternalSyntaxToken switchKeyword;
   private final InternalSyntaxToken openParenToken;
+  private final ExpressionTree expression;
   private final InternalSyntaxToken closeParenToken;
   private final InternalSyntaxToken openBraceToken;
+  private final List<CaseGroupTree> cases;
   private final InternalSyntaxToken closeBraceToken;
 
   public SwitchExpressionTreeImpl(InternalSyntaxToken switchKeyword, InternalSyntaxToken openParenToken, ExpressionTree expression,

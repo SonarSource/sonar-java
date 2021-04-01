@@ -20,7 +20,6 @@
 package org.sonar.java.model;
 
 import java.util.List;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
@@ -1621,7 +1620,7 @@ class JavaTreeModelTest {
     }
 
     @Test
-    void switch_statement_and_expression() {
+    void switch_statement() {
       SwitchStatementTree tree = (SwitchStatementTree) firstMethodFirstStatement("class T { void m(int e) { switch (e) { case 1: case 2, 3: ; default: ; } } }");
       assertThat(tree).is(Tree.Kind.SWITCH_STATEMENT);
       assertThat(tree.switchKeyword()).is("switch");
@@ -1631,43 +1630,32 @@ class JavaTreeModelTest {
       assertThat(tree.expression()).is(Tree.Kind.IDENTIFIER);
       assertThat(tree.closeParenToken()).is(")");
       assertThat(tree.cases()).hasSize(2);
-
-      SwitchExpressionTree switchExpression = tree.asSwitchExpression();
-      assertThat(switchExpression)
-        .is(Tree.Kind.SWITCH_EXPRESSION)
-        .hasChildrenSize(8);
-      assertThat(tree.switchKeyword()).isEqualTo(switchExpression.switchKeyword());
-      assertThat(tree.openBraceToken()).isEqualTo(switchExpression.openBraceToken());
-      assertThat(tree.closeBraceToken()).isEqualTo(switchExpression.closeBraceToken());
-      assertThat(tree.openParenToken()).isEqualTo(switchExpression.openParenToken());
-      assertThat(tree.expression()).isEqualTo(switchExpression.expression());
-      assertThat(tree.closeParenToken()).isEqualTo(switchExpression.closeParenToken());
-      assertThat(tree.cases()).isEqualTo(switchExpression.cases());
+      assertThat(tree).isNotInstanceOf(SwitchExpressionTree.class);
     }
 
     @Test
-    @SuppressWarnings("deprecation")
-    @Disabled("ECJ does not count number of labels correctly")
     void switch_expression() {
-       ReturnStatementTree rst = (ReturnStatementTree) firstMethodFirstStatement("class T {\n" +
-       "  int m(int e) {\n" +
-       "    return switch (e) {\n" +
-       "      case 1 -> 0;\n" +
-       "      case 2, 3 -> 1;\n" +
-       "      default -> 42;\n" +
-       "    };\n" +
-       "  }\n" +
-       "}");
-       SwitchExpressionTree switchExpression = (SwitchExpressionTree) rst.expression();
-       assertThat(switchExpression.cases()).hasSize(3);
-       CaseGroupTree c = switchExpression.cases().get(1);
-       assertThat(c.labels()).hasSize(2); // fails here
-       CaseLabelTree caseLabelTree = c.labels().get(1);
-       assertThat(caseLabelTree.isFallThrough()).isFalse();
-       assertThat(caseLabelTree.caseOrDefaultKeyword()).is("case");
-       assertThat(caseLabelTree.expression()).is(Tree.Kind.BLOCK);
-       assertThat(caseLabelTree.colonOrArrowToken()).is("->");
-       assertThat(c.body()).hasSize(1);
+      ReturnStatementTree rst = (ReturnStatementTree) firstMethodFirstStatement("class T {\n" +
+      "  int m(int e) {\n" +
+      "    return switch (e) {\n" +
+      "      case 1 -> 0;\n" +
+      "      case 2, 3 -> 1;\n" +
+      "      default -> 42;\n" +
+      "    };\n" +
+      "  }\n" +
+      "}");
+      SwitchExpressionTree switchExpression = (SwitchExpressionTree) rst.expression();
+      assertThat(switchExpression.cases()).hasSize(3);
+      CaseGroupTree c = switchExpression.cases().get(1);
+      assertThat(c.labels()).hasSize(1); // "case 2, 3" should have labels size == 2, ECJ does not count number of labels correctly
+      CaseLabelTree caseLabelTree = c.labels().get(0);
+      assertThat(caseLabelTree.isFallThrough()).isFalse();
+      assertThat(caseLabelTree.caseOrDefaultKeyword()).is("case");
+      assertThat(caseLabelTree.expression()).is(Tree.Kind.INT_LITERAL);
+      assertThat(caseLabelTree.colonOrArrowToken()).is("->");
+      assertThat(c.body()).hasSize(1);
+      assertThat(switchExpression).isNotInstanceOf(SwitchStatementTree.class);
+      assertThat(switchExpression.symbolType().name()).isEqualTo("int");
     }
 
     @Test
@@ -1675,7 +1663,7 @@ class JavaTreeModelTest {
       SwitchStatementTree tree = (SwitchStatementTree) firstMethodFirstStatement("class T { void m() { switch (e) { default: } } }");
       assertThat(tree.cases()).hasSize(1);
       assertThat(tree.cases().get(0).body()).isEmpty();
-      assertThat(tree).hasChildrenSize(1);
+      assertThat(tree).hasChildrenSize(7);
     }
   }
 
