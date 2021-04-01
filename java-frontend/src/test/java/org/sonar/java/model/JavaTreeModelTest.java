@@ -1630,7 +1630,12 @@ class JavaTreeModelTest {
       assertThat(tree.expression()).is(Tree.Kind.IDENTIFIER);
       assertThat(tree.closeParenToken()).is(")");
       assertThat(tree.cases()).hasSize(2);
-      assertThat(tree).isNotInstanceOf(SwitchExpressionTree.class);
+      // Method "asSwitchExpression()" is deprecated for removal, once removed
+      // we should test that a SwitchStatementTree is not anymore an instance of ExpressionTree
+      assertThat(tree.asSwitchExpression()).isSameAs(tree);
+      assertThat(tree)
+        .isInstanceOf(ExpressionTree.class)
+        .isInstanceOf(SwitchExpressionTree.class);
     }
 
     @Test

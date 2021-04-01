@@ -97,6 +97,13 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 ### API changes
 
+#### **6.15**
+
+* **Deprecated**
+  * `org.sonar.plugins.java.api.tree.SwitchStatementTree`: The `asSwitchExpression()` method is deprecated for removal.
+    In a future SonarJava version, SwitchStatementTree will not have an underlying SwitchExpressionTree but will only
+    share the same SwitchTree interface.
+
 #### **6.3**
 
 * API is now enriched with `MethodMatchers`. You can use it to identify a method with given a Type, Name and Parameters.

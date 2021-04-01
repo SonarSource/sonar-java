@@ -2208,7 +2208,7 @@ public class JParser {
       }
       case ASTNode.SWITCH_EXPRESSION: {
         SwitchExpression e = (SwitchExpression) node;
-        SwitchExpressionTreeImpl t = new SwitchExpressionTreeImpl(
+        return new SwitchExpressionTreeImpl(
           firstTokenIn(e, TerminalTokens.TokenNameswitch),
           firstTokenIn(e, TerminalTokens.TokenNameLPAREN),
           convertExpression(e.getExpression()),
@@ -2217,8 +2217,6 @@ public class JParser {
           convertSwitchStatements(e.statements()),
           lastTokenIn(e, TerminalTokens.TokenNameRBRACE)
         );
-        t.typeBinding = e.resolveTypeBinding();
-        return t;
       }
       case ASTNode.NULL_LITERAL: {
         NullLiteral e = (NullLiteral) node;

@@ -21,6 +21,9 @@ package org.sonar.plugins.java.api.tree;
 
 import java.util.List;
 
+/**
+ * Common interface shared between {@link SwitchStatementTree} and {@link SwitchExpressionTree}
+ */
 public interface SwitchTree extends Tree {
 
   SyntaxToken switchKeyword();
