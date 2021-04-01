@@ -4,17 +4,19 @@ public class SwitchRedundantKeywordCheck {
 
   int switchExpression(String mode) {
     int nonCompliant = switch (mode) {
-      case "a" -> { yield 1; } // Noncompliant [[sc=19;ec=31]] {{Remove this redundant block and "yield".}}
-      default -> {             // Noncompliant {{Remove this redundant block and "yield".}}
-        yield 2;
+      case "a" -> {
+        yield 1; // Noncompliant [[sc=9;ec=14;secondary=-1,+1]] {{Remove this redundant block and "yield".}}
+      }
+      default -> {
+        yield 2; // Noncompliant {{Remove this redundant block and "yield".}}
       }
     };
 
     int compliant1 = switch (mode) {
       case "a" -> 1; // Compliant
-      case "b" -> { // Compliant
+      case "b" -> {
         doSomethingElse();
-        yield 1;
+        yield 1; // Compliant
       }
       default -> 2;  // Compliant
     };
@@ -41,10 +43,13 @@ public class SwitchRedundantKeywordCheck {
   int switchStatement(String mode) {
     int result = 0;
     switch (mode) {
-      case "a" -> { result = 1; break; } // Noncompliant [[sc=19;ec=41]] {{Remove this redundant block and "break".}}
-      case "b" -> { // Noncompliant {{Remove this redundant block and "break".}}
+      case "a" -> {
+        result = 1;
+        break; // Noncompliant [[sc=9;ec=15;secondary=-2,+1]] {{Remove this redundant block and "break".}}
+      }
+      case "b" -> {
         result = 2;
-        break;
+        break; // Noncompliant {{Remove this redundant block and "break".}}
       }
       default -> {
         doSomethingElse();
@@ -55,7 +60,7 @@ public class SwitchRedundantKeywordCheck {
 
     switch (mode) {
       case "a" -> result = 1; // Compliant
-      case "b" -> { // Noncompliant [[sc=19;ec=20]] {{Remove this redundant block.}}
+      case "b" -> { // Noncompliant [[sc=19;ec=20;secondary=+2]] {{Remove this redundant block.}}
         result = 2;
       }
       case "c" -> { // Compliant, probably not the best code, but no choice to add an empty block if you want a case that does nothing.

@@ -19,17 +19,21 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.YieldStatementTree;
 
 @Rule(key = "S6205")
 public class SwitchRedundantKeywordCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
@@ -61,17 +65,32 @@ public class SwitchRedundantKeywordCheck extends IssuableSubscriptionVisitor imp
 
     if (statementsInBody == 1) {
       if (lastStatement.is(Tree.Kind.YIELD_STATEMENT)) {
-        reportIssue(blockTree, String.format(MESSAGE, "block and \"yield\""));
+        SyntaxToken yieldKeyword = ((YieldStatementTree) lastStatement).yieldKeyword();
+        // Yield can never be implicit in a block, still checking it for defensive programming
+        if (yieldKeyword != null) {
+          reportStatementInBlock(yieldKeyword, blockTree, "block and \"yield\"");
+        }
       } else {
-        reportIssue(blockTree.openBraceToken(), String.format(MESSAGE, "block"));
+        reportIssue(blockTree.openBraceToken(),
+          String.format(MESSAGE, "block"),
+          Collections.singletonList(new JavaFileScannerContext.Location("Redundant close brace", blockTree.closeBraceToken())),
+          null);
       }
     } else if (lastStatement.is(Tree.Kind.BREAK_STATEMENT)) {
       if (statementsInBody == 2) {
-        reportIssue(blockTree, String.format(MESSAGE, "block and \"break\""));
+        reportStatementInBlock(lastStatement, blockTree, "block and \"break\"");
       } else {
         reportIssue(lastStatement, String.format(MESSAGE, "\"break\""));
       }
     }
+  }
+
+  private void reportStatementInBlock(Tree statement, BlockTree blockTree, String redundantParts) {
+    reportIssue(statement,
+      String.format(MESSAGE, redundantParts),
+      Arrays.asList(new JavaFileScannerContext.Location("Redundant opening brace", blockTree.openBraceToken()),
+        new JavaFileScannerContext.Location("Redundant closing brace", blockTree.closeBraceToken())),
+      null);
   }
 
   @Override
