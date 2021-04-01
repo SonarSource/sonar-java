@@ -1,25 +1,27 @@
+package checks;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.Reader;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.Formatter;
 import java.util.Scanner;
-import java.util.Collection;
-
-
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.checkerframework.common.reflection.qual.UnknownClass;
 
-class A {
-  void myMethod(byte[] bytes, java.io.File file, OutputStream outputStream, java.io.FileDescriptor fileDescriptor) {
+public class DefaultEncodingUsageCheck {
+  void myMethod(byte[] bytes, java.io.File file, OutputStream outputStream, java.io.FileDescriptor fileDescriptor) throws IOException {
     new String(bytes); // Noncompliant {{Remove this use of constructor "String(byte[])"}}
     new String(bytes, 0, 1); // Noncompliant {{Remove this use of constructor "String(byte[],int,int)"}}
     "".getBytes(); // Noncompliant {{Remove this use of "getBytes"}}
@@ -51,22 +53,22 @@ class A {
     new java.util.Scanner(new java.io.FileInputStream("")); // Noncompliant
     FileReader reader1 = null; // Compliant
     FileReader reader2 = new FileReader(file); // Noncompliant
-    FileReader reader2 = new FileReader(file, StandardCharsets.UTF_8); // Compliant
-    FileReader reader3 = new FileReader(fileDescriptor); // Noncompliant
-    FileReader reader4 = new FileReader("filename"); // Noncompliant
-    FileReader reader5 = new FileReader("filename", StandardCharsets.UTF_8); // Compliant
-    java.io.Reader reader2 = fileReader(); // Compliant
-    FileWriter writer = null; // Compliant
+    FileReader reader3 = new FileReader(file, StandardCharsets.UTF_8); // Compliant
+    FileReader reader4 = new FileReader(fileDescriptor); // Noncompliant
+    FileReader reader5 = new FileReader("filename"); // Noncompliant
+    FileReader reader6 = new FileReader("filename", StandardCharsets.UTF_8); // Compliant
+    java.io.Reader reader7 = fileReader(); // Compliant
+    FileWriter writer1 = null; // Compliant
     java.io.Writer writer2 = fileWriter(); // Compliant
-    FileWriter writer = new FileWriter(file); // Noncompliant
-    FileWriter writer = new FileWriter(fileDescriptor); // Noncompliant
-    FileWriter writer = new FileWriter(file, true); // Noncompliant
-    FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8); // Compliant
-    FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8, true); // Compliant
-    FileWriter writer = new FileWriter("filename"); // Noncompliant
-    FileWriter writer = new FileWriter("filename", true); // Noncompliant
-    FileWriter writer = new FileWriter("filename", StandardCharsets.UTF_8); // Compliant
-    FileWriter writer = new FileWriter("filename", StandardCharsets.UTF_8, true); // Compliant
+    FileWriter writer3 = new FileWriter(file); // Noncompliant
+    FileWriter writer4 = new FileWriter(fileDescriptor); // Noncompliant
+    FileWriter writer5 = new FileWriter(file, true); // Noncompliant
+    FileWriter writer6 = new FileWriter(file, StandardCharsets.UTF_8); // Compliant
+    FileWriter writer7 = new FileWriter(file, StandardCharsets.UTF_8, true); // Compliant
+    FileWriter writer8 = new FileWriter("filename"); // Noncompliant
+    FileWriter writer9 = new FileWriter("filename", true); // Noncompliant
+    FileWriter writer10 = new FileWriter("filename", StandardCharsets.UTF_8); // Compliant
+    FileWriter writer11 = new FileWriter("filename", StandardCharsets.UTF_8, true); // Compliant
 
     // Compliant
     new String("");
@@ -84,7 +86,7 @@ class A {
   }
 
   void commons_io(Reader reader, Writer writer, InputStream input, OutputStream output, String s, CharSequence charSequence, byte[] bytes,
-                  java.net.URI uri, java.net.URL url, char[] chars, StringBuffer buffer, Collection<?> lines) {
+                  java.net.URI uri, java.net.URL url, char[] chars, StringBuffer buffer, Collection<?> lines) throws IOException {
     IOUtils.copy(input, writer); // Noncompliant
     IOUtils.copy(reader, output); // Noncompliant
     IOUtils.readLines(input); // Noncompliant
@@ -104,7 +106,7 @@ class A {
     IOUtils.writeLines(lines, "\n", output); // Noncompliant
   }
 
-  void commons_fileutils(File file, CharSequence charSequence) {
+  void commons_fileutils(File file, CharSequence charSequence) throws IOException {
     FileUtils.readFileToString(file); // Noncompliant
     FileUtils.readLines(file); // Noncompliant
     FileUtils.write(file, charSequence); // Noncompliant
@@ -113,7 +115,7 @@ class A {
   }
 
   void commons_io_with_null(Reader reader, Writer writer, InputStream input, OutputStream output, String s, CharSequence charSequence, byte[] bytes,
-                  java.net.URI uri, java.net.URL url, char[] chars, StringBuffer buffer, Collection<?> lines) {
+                  java.net.URI uri, java.net.URL url, char[] chars, StringBuffer buffer, Collection<?> lines) throws IOException {
     IOUtils.copy(input, writer, (String) null); // Noncompliant
     IOUtils.copy(input, writer, ((String) (((null))))); // Noncompliant
     IOUtils.copy(reader, output, (String) null); // Noncompliant
@@ -133,7 +135,7 @@ class A {
     IOUtils.writeLines(lines, "\n", output, (String) null); // Noncompliant
   }
 
-  void commons_fileutils_with_null(File file, CharSequence charSequence) {
+  void commons_fileutils_with_null(File file, CharSequence charSequence) throws IOException {
     FileUtils.readFileToString(file, (java.nio.charset.Charset) null); // Noncompliant
     FileUtils.readLines(file, (java.nio.charset.Charset) null); // Noncompliant
     FileUtils.write(file, charSequence, (java.nio.charset.Charset) null); // Noncompliant
