@@ -22,10 +22,10 @@ import org.checkerframework.common.reflection.qual.UnknownClass;
 
 public class DefaultEncodingUsageCheck {
   void myMethod(byte[] bytes, java.io.File file, OutputStream outputStream, java.io.FileDescriptor fileDescriptor) throws IOException {
-    new String(bytes); // Noncompliant {{Remove this use of constructor "String(byte[])"}}
-    new String(bytes, 0, 1); // Noncompliant {{Remove this use of constructor "String(byte[],int,int)"}}
-    "".getBytes(); // Noncompliant {{Remove this use of "getBytes"}}
-    "".getBytes(0, 0, bytes, 0); // Noncompliant {{Remove this use of "getBytes"}}
+    new String(bytes); // Noncompliant {{Remove this use of constructor "String(byte[])".}}
+    new String(bytes, 0, 1); // Noncompliant {{Remove this use of constructor "String(byte[],int,int)".}}
+    "".getBytes(); // Noncompliant {{Remove this use of "getBytes".}}
+    "".getBytes(0, 0, bytes, 0); // Noncompliant {{Remove this use of "getBytes".}}
     new java.io.ByteArrayOutputStream().toString(); // Noncompliant
     new FileReader("fileName"); // Noncompliant
     new FileReader(file); // Noncompliant [[sc=9;ec=19]]
@@ -52,21 +52,21 @@ public class DefaultEncodingUsageCheck {
     new Scanner(file); // Noncompliant
     new java.util.Scanner(new java.io.FileInputStream("")); // Noncompliant
     FileReader reader1 = null; // Compliant
-    FileReader reader2 = new FileReader(file); // Noncompliant
+    FileReader reader2 = new FileReader(file); // Noncompliant [[sc=30;ec=40]] {{Remove this use of constructor "FileReader(File)".}}
     FileReader reader3 = new FileReader(file, StandardCharsets.UTF_8); // Compliant
-    FileReader reader4 = new FileReader(fileDescriptor); // Noncompliant
-    FileReader reader5 = new FileReader("filename"); // Noncompliant
+    FileReader reader4 = new FileReader(fileDescriptor); // Noncompliant {{Remove this use of constructor "FileReader(FileDescriptor)".}}
+    FileReader reader5 = new FileReader("filename"); // Noncompliant {{Remove this use of constructor "FileReader(String)".}}
     FileReader reader6 = new FileReader("filename", StandardCharsets.UTF_8); // Compliant
     java.io.Reader reader7 = fileReader(); // Compliant
     FileWriter writer1 = null; // Compliant
     java.io.Writer writer2 = fileWriter(); // Compliant
-    FileWriter writer3 = new FileWriter(file); // Noncompliant
-    FileWriter writer4 = new FileWriter(fileDescriptor); // Noncompliant
-    FileWriter writer5 = new FileWriter(file, true); // Noncompliant
+    FileWriter writer3 = new FileWriter(file); // Noncompliant [[sc=30;ec=40]] {{Remove this use of constructor "FileWriter(File)".}}
+    FileWriter writer4 = new FileWriter(fileDescriptor); // Noncompliant {{Remove this use of constructor "FileWriter(FileDescriptor)".}}
+    FileWriter writer5 = new FileWriter(file, true); // Noncompliant {{Remove this use of constructor "FileWriter(File,boolean)".}}
     FileWriter writer6 = new FileWriter(file, StandardCharsets.UTF_8); // Compliant
     FileWriter writer7 = new FileWriter(file, StandardCharsets.UTF_8, true); // Compliant
-    FileWriter writer8 = new FileWriter("filename"); // Noncompliant
-    FileWriter writer9 = new FileWriter("filename", true); // Noncompliant
+    FileWriter writer8 = new FileWriter("filename"); // Noncompliant {{Remove this use of constructor "FileWriter(String)".}}
+    FileWriter writer9 = new FileWriter("filename", true); // Noncompliant {{Remove this use of constructor "FileWriter(String,boolean)".}}
     FileWriter writer10 = new FileWriter("filename", StandardCharsets.UTF_8); // Compliant
     FileWriter writer11 = new FileWriter("filename", StandardCharsets.UTF_8, true); // Compliant
 
@@ -107,7 +107,7 @@ public class DefaultEncodingUsageCheck {
   }
 
   void commons_fileutils(File file, CharSequence charSequence) throws IOException {
-    FileUtils.readFileToString(file); // Noncompliant
+    FileUtils.readFileToString(file); // Noncompliant [[sc=15;ec=31]] {{Remove this use of "readFileToString".}}
     FileUtils.readLines(file); // Noncompliant
     FileUtils.write(file, charSequence); // Noncompliant
     FileUtils.write(file, charSequence, false); // Noncompliant
@@ -117,7 +117,7 @@ public class DefaultEncodingUsageCheck {
   void commons_io_with_null(Reader reader, Writer writer, InputStream input, OutputStream output, String s, CharSequence charSequence, byte[] bytes,
                   java.net.URI uri, java.net.URL url, char[] chars, StringBuffer buffer, Collection<?> lines) throws IOException {
     IOUtils.copy(input, writer, (String) null); // Noncompliant
-    IOUtils.copy(input, writer, ((String) (((null))))); // Noncompliant
+    IOUtils.copy(input, writer, ((String) (((null))))); // Noncompliant [[sc=33;ec=54]] {{Replace this "null" with actual charset.}}
     IOUtils.copy(reader, output, (String) null); // Noncompliant
     IOUtils.readLines(input, (String) null); // Noncompliant
     IOUtils.toByteArray(reader, (String) null); // Noncompliant
@@ -136,7 +136,7 @@ public class DefaultEncodingUsageCheck {
   }
 
   void commons_fileutils_with_null(File file, CharSequence charSequence) throws IOException {
-    FileUtils.readFileToString(file, (java.nio.charset.Charset) null); // Noncompliant
+    FileUtils.readFileToString(file, (java.nio.charset.Charset) null); // Noncompliant [[sc=38;ec=69]] {{Replace this "null" with actual charset.}}
     FileUtils.readLines(file, (java.nio.charset.Charset) null); // Noncompliant
     FileUtils.write(file, charSequence, (java.nio.charset.Charset) null); // Noncompliant
     FileUtils.write(file, charSequence, (java.nio.charset.Charset) null, false); // Noncompliant
