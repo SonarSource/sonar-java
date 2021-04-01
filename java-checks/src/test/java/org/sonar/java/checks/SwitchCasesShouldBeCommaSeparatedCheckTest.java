@@ -31,11 +31,19 @@ class SwitchCasesShouldBeCommaSeparatedCheckTest {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/SwitchCasesShouldBeCommaSeparatedCheck.java"))
       .withCheck(new SwitchCasesShouldBeCommaSeparatedCheck())
+      .withJavaVersion(14)
       .verifyIssues();
+
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/SwitchCasesShouldBeCommaSeparatedCheck.java"))
+      .withCheck(new SwitchCasesShouldBeCommaSeparatedCheck())
+      .withJavaVersion(13)
+      .verifyNoIssues();
 
     JavaCheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/SwitchCasesShouldBeCommaSeparatedCheck.java"))
       .withCheck(new SwitchCasesShouldBeCommaSeparatedCheck())
+      .withJavaVersion(14)
       .verifyIssues();
   }
 

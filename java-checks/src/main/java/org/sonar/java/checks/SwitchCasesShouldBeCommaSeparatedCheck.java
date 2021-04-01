@@ -23,15 +23,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6208")
-public class SwitchCasesShouldBeCommaSeparatedCheck extends IssuableSubscriptionVisitor {
+public class SwitchCasesShouldBeCommaSeparatedCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
   private static final String MESSAGE = "Merge the previous cases into this one using comma-separated label.";
 
   @Override
@@ -56,5 +58,10 @@ public class SwitchCasesShouldBeCommaSeparatedCheck extends IssuableSubscription
       reportIssue(lastLabel, MESSAGE, secondaries, null);
     }
     super.visitNode(tree);
+  }
+
+  @Override
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return 14 <= version.asInt();
   }
 }
