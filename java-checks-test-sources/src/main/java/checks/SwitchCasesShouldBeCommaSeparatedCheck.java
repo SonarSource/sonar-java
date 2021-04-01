@@ -18,6 +18,26 @@ public class SwitchCasesShouldBeCommaSeparatedCheck {
     }
   }
 
+  public void compliant(String mode) {
+    // Empty switch statement
+    switch (mode) {
+    }
+    // Switch case with default only
+    switch (mode) {
+      default:
+    }
+    // Switch case with empty case
+    switch (mode) {
+      case "a":
+    }
+    // Switch case with empty case and default
+    switch (mode) {
+      case "a":
+      default:
+        doSomething();
+    }
+  }
+
   private void doSomething() {
   }
 

@@ -48,9 +48,15 @@ public class SwitchCasesShouldBeCommaSeparatedCheck extends IssuableSubscription
       List<CaseLabelTree> labels = aCase.labels();
       int size = labels.size();
       if (size == 1) {
+        if (!labels.get(0).colonOrArrowToken().text().equals(":")) {
+          return;
+        }
         continue;
       }
       CaseLabelTree lastLabel = labels.get(size - 1);
+      if (lastLabel.caseOrDefaultKeyword().text().equals("default")) {
+        continue;
+      }
       List<JavaFileScannerContext.Location> secondaries = labels.stream()
         .limit(size - 1L)
         .map(label -> new JavaFileScannerContext.Location("", label))
