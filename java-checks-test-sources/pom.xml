@@ -15,6 +15,7 @@
   <name>SonarQube Java :: Checks Test Sources</name>
 
   <properties>
+    <maven.compiler.release>11</maven.compiler.release>
     <sonar.skip>true</sonar.skip>
     <forbiddenapis.skip>true</forbiddenapis.skip>
   </properties>
