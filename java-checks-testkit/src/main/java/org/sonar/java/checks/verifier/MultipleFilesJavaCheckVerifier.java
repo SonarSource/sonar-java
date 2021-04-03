@@ -42,7 +42,7 @@ public final class MultipleFilesJavaCheckVerifier {
    *
    * <br /><br />
    *
-   * By default, any jar or zip archive present in the folder defined by {@link JavaCheckVerifier#DEFAULT_TEST_JARS_DIRECTORY} will be used
+   * By default, any jar or zip archive present in the folder defined by {@link FilesUtils#DEFAULT_TEST_JARS_DIRECTORY} will be used
    * to add extra classes to the classpath. If this folder is empty or does not exist, then the analysis will be based on the source of
    * the provided file.
    *
