@@ -128,7 +128,6 @@ import org.sonar.java.checks.spring.RequestMappingMethodPublicCheck;
 import org.sonar.java.checks.spring.SpringAntMatcherOrderCheck;
 import org.sonar.java.checks.spring.SpringAutoConfigurationCheck;
 import org.sonar.java.checks.spring.SpringBeansShouldBeAccessibleCheck;
-import org.sonar.java.checks.spring.SpringComponentScanCheck;
 import org.sonar.java.checks.spring.SpringComponentWithNonAutowiredMembersCheck;
 import org.sonar.java.checks.spring.SpringComponentWithWrongScopeCheck;
 import org.sonar.java.checks.spring.SpringComposedRequestMappingCheck;
@@ -672,7 +671,6 @@ public final class CheckList {
       SpringAntMatcherOrderCheck.class,
       SpringAutoConfigurationCheck.class,
       SpringBeansShouldBeAccessibleCheck.class,
-      SpringComponentScanCheck.class,
       SpringComponentWithNonAutowiredMembersCheck.class,
       SpringComponentWithWrongScopeCheck.class,
       SpringComposedRequestMappingCheck.class,
