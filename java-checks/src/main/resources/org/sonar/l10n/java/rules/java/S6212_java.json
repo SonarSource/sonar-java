@@ -4,12 +4,12 @@
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "5min"
+    "constantCost": "0min"
   },
   "tags": [
     "java10"
   ],
-  "defaultSeverity": "Minor",
+  "defaultSeverity": "Info",
   "ruleSpecification": "RSPEC-6212",
   "sqKey": "S6212",
   "scope": "Main"
