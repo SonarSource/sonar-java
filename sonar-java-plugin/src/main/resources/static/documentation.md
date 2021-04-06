@@ -110,6 +110,12 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 * **Deprecated**
   `org.sonar.plugins.java.api.tree.SwitchStatementTree`: The `asSwitchExpression()` method is deprecated for removal.
 
+* **New interface `SwitchTree`**
+  Switch Expression and Switch Statement share the same fields, it can sometimes make sense to manipulate a Switch as
+  either one. Previously, it was possible to use the method asSwitchExpression() to do this. Since this method is
+  deprecated, you can now use the new common interface `SwitchTree`, containing all the elements shared between Switch
+  Expressions and Statements.
+
 #### **6.3**
 
 * API is now enriched with `MethodMatchers`. You can use it to identify a method with given a Type, Name and Parameters.
