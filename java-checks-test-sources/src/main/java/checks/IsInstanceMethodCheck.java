@@ -35,10 +35,19 @@ public class IsInstanceMethodCheck {
     Utility.clazz.isInstance(o); // Compliant
     (Utility.clazz).isInstance(o); // Compliant
     (Utility.clazz).getClass().isInstance(o); // Compliant
+    
+    
+    int[].class.isInstance(o); // Noncompliant {{Replace this usage of "int[].class.isInstance()" with "instanceof int[]".}}
+    int[][].class.isInstance(o); // Noncompliant {{Replace this usage of "int[][].class.isInstance()" with "instanceof int[][]".}}
+    int[][][].class.isInstance(o); // Noncompliant {{Replace this usage of "int[][][].class.isInstance()" with "instanceof int[][][]".}}
+
+    boolean b = o instanceof int[]; // Compliant
 
     if (o instanceof Utility) {// Compliant
       return false;
     }
+    
+    checks.Utility.class.isInstance(0); // Noncompliant {{Replace this usage of "Utility.class.isInstance()" with "instanceof Utility".}}
     
     return Class.forName(c).isInstance(o); // Compliant, can't use instanceof operator here
   }

@@ -20,5 +20,10 @@ class Class {
   void function(Object o) {
     boolean instance = isInstance(o);
     boolean instance2 = this.isInstance(o);
+    
+    
+    XXXX.class.isInstance(o);
+    XXXX[].class.isInstance(o);
+    com.example.xxx.XXXX[].class.isInstance(o);
   }
 }
