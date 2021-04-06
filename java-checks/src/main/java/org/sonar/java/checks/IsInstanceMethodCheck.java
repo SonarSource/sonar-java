@@ -26,8 +26,8 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -55,21 +55,27 @@ public class IsInstanceMethodCheck extends IssuableSubscriptionVisitor {
       if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
         ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
         getClassIdentifier(expression)
-          .ifPresent(identifierTree -> reportIssue(tree, String.format(MESSAGE, identifierTree.name())));
+          .ifPresent(identifier -> reportIssue(tree, String.format(MESSAGE, identifier)));
       }
     }
   }
 
-  private static Optional<IdentifierTree> getClassIdentifier(ExpressionTree expression) {
+  private static Optional<String> getClassIdentifier(ExpressionTree expression) {
     ExpressionTree originalExpression = ExpressionUtils.skipParentheses(expression);
     if (originalExpression.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) originalExpression;
       if (memberSelect.identifier().name().equals("class")) {
         ExpressionTree selectedExpression = ExpressionUtils.skipParentheses(memberSelect.expression());
-        // ".class" can only be called on type identifier
-        return Optional.of(((IdentifierTree) selectedExpression));
+        return getName(selectedExpression);
       }
     }
     return Optional.empty();
+  }
+
+  private static Optional<String> getName(ExpressionTree selectedExpression) {
+    Type type = selectedExpression.symbolType();
+    return type.isUnknown() ? 
+      Optional.empty() :
+      Optional.of(type.name());
   }
 }
