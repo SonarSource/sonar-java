@@ -375,7 +375,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>26.0-jre</version>
+      <version>30.1.1-jre</version>
       <type>jar</type>
       <scope>provided</scope>
     </dependency>
