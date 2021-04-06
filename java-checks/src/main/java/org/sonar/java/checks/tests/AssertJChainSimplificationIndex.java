@@ -68,6 +68,7 @@ public class AssertJChainSimplificationIndex {
   private static final String DOES_NOT_CONTAIN = "doesNotContain";
   private static final String DOES_NOT_START_WITH = "doesNotStartWith";
   private static final String HAS_SIZE = "hasSize";
+  private static final String IS_BLANK = "isBlank";
   private static final String IS_EMPTY = "isEmpty";
   private static final String IS_EQUAL_TO = "isEqualTo";
   private static final String IS_EQUAL_TO_IGNORING_CASE = "isEqualToIgnoringCase";
@@ -176,6 +177,7 @@ public class AssertJChainSimplificationIndex {
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.EQUAL_TO), msgWithActualExpected("isNotSameAs")),
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.NOT_EQUAL_TO), msgWithActualExpected(IS_SAME_AS)),
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.INSTANCE_OF), msgWithActualCustom("isNotInstanceOf", "ExpectedClass.class")),
+      methodCallInSubject(Matchers.IS_BLANK, msgWithActual(IS_NOT_BLANK)),
       methodCallInSubject(Matchers.IS_EMPTY_GENERIC, msgWithActual(IS_NOT_EMPTY)),
       methodCallInSubject(Matchers.FILE_EXISTS, msgWithActual("doesNotExist")),
       methodCallInSubject(Matchers.FILE_AND_PATH_IS_ABSOLUTE, msgWithActual("isRelative")),
@@ -236,6 +238,7 @@ public class AssertJChainSimplificationIndex {
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.EQUAL_TO), msgWithActualExpected(IS_SAME_AS)),
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.NOT_EQUAL_TO), msgWithActualExpected("isNotSameAs")),
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.INSTANCE_OF), msgWithActualCustom("isInstanceOf", "ExpectedClass.class")),
+      methodCallInSubject(Matchers.IS_BLANK, msgWithActual(IS_BLANK)),
       methodCallInSubject(Matchers.IS_EMPTY_GENERIC, msgWithActual(IS_EMPTY)),
       methodCallInSubject(Matchers.FILE_CAN_READ, msgWithActual("canRead")),
       methodCallInSubject(Matchers.FILE_CAN_WRITE, msgWithActual("canWrite")),
@@ -306,6 +309,8 @@ public class AssertJChainSimplificationIndex {
       .addWithoutParametersMatcher().build();
     public static final MethodMatchers INDEX_OF_STRING = MethodMatchers.create().ofTypes(JAVA_LANG_STRING)
       .names("indexOf").addParametersMatcher(JAVA_LANG_STRING).build();
+    public static final MethodMatchers IS_BLANK = MethodMatchers.create().ofTypes(JAVA_LANG_STRING)
+      .names(AssertJChainSimplificationIndex.IS_BLANK).addWithoutParametersMatcher().build();
     public static final MethodMatchers IS_EMPTY_GENERIC = MethodMatchers.create().ofTypes(JAVA_LANG_STRING, JAVA_UTIL_COLLECTION, JAVA_UTIL_MAP)
       .names(IS_EMPTY).addWithoutParametersMatcher().build();
     public static final MethodMatchers IS_EMPTY_OPTIONAL = MethodMatchers.create().ofTypes(JAVA_UTIL_OPTIONAL)
