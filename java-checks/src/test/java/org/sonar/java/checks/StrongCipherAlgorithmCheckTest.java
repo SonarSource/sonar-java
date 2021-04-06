@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class StrongCipherAlgorithmCheckTest {
@@ -31,6 +32,15 @@ class StrongCipherAlgorithmCheckTest {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/StrongCipherAlgorithmCheck.java"))
       .withCheck(new StrongCipherAlgorithmCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_java_15() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/StrongCipherAlgorithmCheck.java"))
+      .withCheck(new StrongCipherAlgorithmCheck())
+      .withJavaVersion(15)
       .verifyIssues();
   }
 
