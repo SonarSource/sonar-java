@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
@@ -29,7 +29,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
-import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
+import org.sonar.plugins.java.api.tree.SwitchTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6208")
@@ -38,12 +38,15 @@ public class SwitchCasesShouldBeCommaSeparatedCheck extends IssuableSubscription
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.SWITCH_EXPRESSION);
+    return Arrays.asList(
+      Tree.Kind.SWITCH_EXPRESSION,
+      Tree.Kind.SWITCH_STATEMENT
+    );
   }
 
   @Override
   public void visitNode(Tree tree) {
-    SwitchExpressionTree switchExpression = (SwitchExpressionTree) tree;
+    SwitchTree switchExpression = (SwitchTree) tree;
     if (usesArrows(switchExpression)) {
       return;
     }
@@ -69,7 +72,7 @@ public class SwitchCasesShouldBeCommaSeparatedCheck extends IssuableSubscription
     super.visitNode(tree);
   }
 
-  public static boolean usesArrows(SwitchExpressionTree switchExpression) {
+  public static boolean usesArrows(SwitchTree switchExpression) {
     return !switchExpression.cases().isEmpty() &&
       switchExpression.cases().get(0).labels().get(0).colonOrArrowToken().text().equals("->");
   }
