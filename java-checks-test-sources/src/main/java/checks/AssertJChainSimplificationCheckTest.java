@@ -202,6 +202,10 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(getString().length()).isEqualTo(x); // Noncompliant {{Use assertThat(actual).hasSize(expected) instead.}}
     assertThat(getString().isEmpty()).isTrue(); // Noncompliant {{Use assertThat(actual).isEmpty() instead.}}
     assertThat(getString().isEmpty()).isFalse(); // Noncompliant {{Use assertThat(actual).isNotEmpty() instead.}}
+    assertThat(getString().isBlank()).isTrue(); // Noncompliant {{Use assertThat(actual).isBlank() instead.}}
+    assertThat(getString().isBlank()).isFalse(); // Noncompliant {{Use assertThat(actual).isNotBlank() instead.}}
+    assertThat(getString()).isBlank(); // Compliant
+    assertThat(getString()).isNotBlank(); // Compliant
     assertThat(getString().length()).isEqualTo(x.length()); // Noncompliant {{Use assertThat(actual).hasSameSizeAs(expected) instead.}}
   }
 
