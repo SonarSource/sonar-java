@@ -738,6 +738,7 @@ public final class CheckList {
       TabCharacterCheck.class,
       TernaryOperatorCheck.class,
       TestsInSeparateFolderCheck.class,
+      TextBlocksInComplexExpressionsCheck.class,
       TextBlockTabsAndSpacesCheck.class,
       ThisExposedFromConstructorCheck.class,
       ThreadAsRunnableArgumentCheck.class,

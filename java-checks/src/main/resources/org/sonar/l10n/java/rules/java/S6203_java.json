@@ -1,0 +1,16 @@
+{
+  "title": "Text blocks should not be used in complex expressions",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-6203",
+  "sqKey": "S6203",
+  "scope": "Main"
+}

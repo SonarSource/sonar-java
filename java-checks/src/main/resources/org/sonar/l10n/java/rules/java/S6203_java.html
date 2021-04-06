@@ -1,0 +1,47 @@
+<p>In Java 15 Text Blocks are official and can be used just like an ordinary String. However, when they are used to represent a big chunk of text,
+they should not be used directly in complex expressions, as it decreases the readability. In this case, it is better to extract the text block into a
+variable or a field.</p>
+<p>This rule reports an issue when a text block longer than a number of lines given as a parameter is directly used within a lambda expression.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+listOfString.stream()
+  .map(str -&gt; !"""
+    &lt;project&gt;
+      &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+      &lt;parent&gt;
+        &lt;groupId&gt;com.mycompany.app&lt;/groupId&gt;
+        &lt;artifactId&gt;my-app&lt;/artifactId&gt;
+        &lt;version&gt;1&lt;/version&gt;
+      &lt;/parent&gt;
+
+      &lt;groupId&gt;com.mycompany.app&lt;/groupId&gt;
+      &lt;artifactId&gt;my-module&lt;/artifactId&gt;
+      &lt;version&gt;1&lt;/version&gt;
+    &lt;/project&gt;
+    """.equals(str));
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+String myTextBlock = """
+    &lt;project&gt;
+      &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+      &lt;parent&gt;
+        &lt;groupId&gt;com.mycompany.app&lt;/groupId&gt;
+        &lt;artifactId&gt;my-app&lt;/artifactId&gt;
+        &lt;version&gt;1&lt;/version&gt;
+      &lt;/parent&gt;
+
+      &lt;groupId&gt;com.mycompany.app&lt;/groupId&gt;
+      &lt;artifactId&gt;my-module&lt;/artifactId&gt;
+      &lt;version&gt;1&lt;/version&gt;
+    &lt;/project&gt;
+    """;
+
+listOfString.stream()
+  .map(str -&gt; !myTextBlock.equals(str));
+</pre>
+<h2>See</h2>
+<p> * <a href="https://openjdk.java.net/jeps/378">JEP 378: Text Blocks</a></p>
+<p> * <a href="https://cr.openjdk.java.net/~jlaskey/Strings/TextBlocksGuide_v9.html">Programmer's Guide To Text Blocks</a>, by Jim Laskey and Stuart
+Marks</p>
+
