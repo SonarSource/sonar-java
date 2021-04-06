@@ -20,7 +20,6 @@
 package org.sonar.plugins.java.api.tree;
 
 import org.sonar.java.annotations.Beta;
-import java.util.List;
 
 /**
  * 'switch' statement.
@@ -34,30 +33,17 @@ import java.util.List;
  * </pre>
  *
  * @since Java 1.3
- * @since SonarJava 5.12: Starting from this version and introduction of support of Java 12, this Tree is now only a wrapper on top of a {@link SwitchExpressionTree}.
- *        Syntactically, each SwitchStatementTree now has a SwitchExpressionTree as direct and only child.
  */
 @Beta
-public interface SwitchStatementTree extends StatementTree {
-
-  SyntaxToken switchKeyword();
-
-  SyntaxToken openParenToken();
-
-  ExpressionTree expression();
-
-  SyntaxToken closeParenToken();
-
-  SyntaxToken openBraceToken();
-
-  // TODO groups() a better name?
-  List<CaseGroupTree> cases();
-
-  SyntaxToken closeBraceToken();
+public interface SwitchStatementTree extends SwitchTree, StatementTree {
 
   /**
    * Consider the statement as a Switch expression
    * @since SonarJava 5.12: Support of Java 12
+   * @deprecated since SonarJava 6.15, for removal, SwitchStatementTree will not have an underlying SwitchExpressionTree
+   * but share the same SwitchTree interface with SwitchExpressionTree
    */
+  @Deprecated
   SwitchExpressionTree asSwitchExpression();
+
 }

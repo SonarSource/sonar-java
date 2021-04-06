@@ -72,6 +72,7 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
+import org.sonar.plugins.java.api.tree.SwitchTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -733,20 +734,20 @@ public class CFG implements ControlFlowGraph {
   }
 
   private void buildSwitchStatement(SwitchStatementTree switchStatementTree) {
-    buildSwitchExpression(switchStatementTree.asSwitchExpression(), switchStatementTree);
+    buildSwitch(switchStatementTree, switchStatementTree);
   }
 
   private void buildSwitchExpression(SwitchExpressionTree switchExpressionTree) {
-    buildSwitchExpression(switchExpressionTree, switchExpressionTree);
+    buildSwitch(switchExpressionTree, switchExpressionTree);
   }
 
-  private void buildSwitchExpression(SwitchExpressionTree switchExpressionTree, Tree terminator) {
+  private void buildSwitch(SwitchTree switchTree, Tree terminator) {
     Block switchSuccessor = currentBlock;
     // process condition
     currentBlock = createBlock();
     currentBlock.terminator = terminator;
     Block switchBlock = currentBlock;
-    List<ExpressionTree> switchCasesExpressions = switchExpressionTree.cases()
+    List<ExpressionTree> switchCasesExpressions = switchTree.cases()
       .stream()
       .map(CaseGroupTree::labels)
       .flatMap(List::stream)
@@ -754,16 +755,16 @@ public class CFG implements ControlFlowGraph {
       .flatMap(List::stream).collect(Collectors.toList());
     ListUtils.reverse(switchCasesExpressions).forEach(this::build);
 
-    build(switchExpressionTree.expression());
+    build(switchTree.expression());
     Block conditionBlock = currentBlock;
     // process body
     currentBlock = createBlock(switchSuccessor);
     breakTargets.addLast(switchSuccessor);
     boolean hasDefaultCase = false;
-    if (!switchExpressionTree.cases().isEmpty()) {
-      boolean withoutFallTrough = switchWithoutFallThrough(switchExpressionTree);
-      CaseGroupTree firstCase = switchExpressionTree.cases().get(0);
-      for (CaseGroupTree caseGroupTree : ListUtils.reverse(switchExpressionTree.cases())) {
+    if (!switchTree.cases().isEmpty()) {
+      boolean withoutFallTrough = switchWithoutFallThrough(switchTree);
+      CaseGroupTree firstCase = switchTree.cases().get(0);
+      for (CaseGroupTree caseGroupTree : ListUtils.reverse(switchTree.cases())) {
         if (withoutFallTrough) {
           currentBlock.successors().clear();
           currentBlock.addSuccessor(switchSuccessor);
@@ -795,11 +796,11 @@ public class CFG implements ControlFlowGraph {
    * A switch expression can use the traditional cases with 'colon' (with fall-through) or,
    * starting with java 12, the 'arrow' cases (without fall-through). Cases can not be mixed.
    *
-   * @param switchExpressionTree the switch to evaluate
+   * @param switchTree the switch to evaluate
    * @return true if the switch uses fall-through
    */
-  private static boolean switchWithoutFallThrough(SwitchExpressionTree switchExpressionTree) {
-    return switchExpressionTree.cases().stream()
+  private static boolean switchWithoutFallThrough(SwitchTree switchTree) {
+    return switchTree.cases().stream()
       .map(CaseGroupTree::labels)
       .flatMap(List::stream)
       .noneMatch(CaseLabelTree::isFallThrough);

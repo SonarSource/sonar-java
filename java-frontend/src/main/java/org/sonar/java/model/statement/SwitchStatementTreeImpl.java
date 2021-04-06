@@ -19,28 +19,18 @@
  */
 package org.sonar.java.model.statement;
 
-import java.util.Collections;
 import java.util.List;
-import org.sonar.java.model.JavaTree;
-import org.sonar.plugins.java.api.tree.CaseGroupTree;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
-import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatementTree {
+public class SwitchStatementTreeImpl extends SwitchTreeImpl implements SwitchStatementTree, SwitchExpressionTree {
 
-  private final SwitchExpressionTree switchExpression;
-
-  public SwitchStatementTreeImpl(SwitchExpressionTree switchExpression) {
-    this.switchExpression = switchExpression;
-  }
-
-  @Override
-  public SwitchExpressionTree asSwitchExpression() {
-    return switchExpression;
+  public SwitchStatementTreeImpl(InternalSyntaxToken switchKeyword, InternalSyntaxToken openParenToken, ExpressionTree expression,
+    InternalSyntaxToken closeParenToken, InternalSyntaxToken openBraceToken, List<CaseGroupTreeImpl> groups, InternalSyntaxToken closeBraceToken) {
+    super(switchKeyword, openParenToken, expression, closeParenToken, openBraceToken, groups, closeBraceToken);
   }
 
   @Override
@@ -49,48 +39,13 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
   }
 
   @Override
-  public SyntaxToken switchKeyword() {
-    return switchExpression.switchKeyword();
-  }
-
-  @Override
-  public SyntaxToken openParenToken() {
-    return switchExpression.openParenToken();
-  }
-
-  @Override
-  public ExpressionTree expression() {
-    return switchExpression.expression();
-  }
-
-  @Override
-  public SyntaxToken closeParenToken() {
-    return switchExpression.closeParenToken();
-  }
-
-  @Override
-  public SyntaxToken openBraceToken() {
-    return switchExpression.openBraceToken();
-  }
-
-  @Override
-  public List<CaseGroupTree> cases() {
-    return switchExpression.cases();
-  }
-
-  @Override
-  public SyntaxToken closeBraceToken() {
-    return switchExpression.closeBraceToken();
-  }
-
-  @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitSwitchStatement(this);
   }
 
   @Override
-  public List<Tree> children() {
-    return Collections.singletonList(switchExpression);
+  public SwitchExpressionTree asSwitchExpression() {
+    return this;
   }
 
 }

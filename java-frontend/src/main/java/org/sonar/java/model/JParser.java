@@ -1428,7 +1428,7 @@ public class JParser {
       }
       case ASTNode.SWITCH_STATEMENT: {
         SwitchStatement e = (SwitchStatement) node;
-        return new SwitchStatementTreeImpl(new SwitchExpressionTreeImpl(
+        return new SwitchStatementTreeImpl(
           firstTokenIn(e, TerminalTokens.TokenNameswitch),
           firstTokenBefore(e.getExpression(), TerminalTokens.TokenNameLPAREN),
           convertExpression(e.getExpression()),
@@ -1436,7 +1436,7 @@ public class JParser {
           firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameLBRACE),
           convertSwitchStatements(e.statements()),
           lastTokenIn(e, TerminalTokens.TokenNameRBRACE)
-        ));
+        );
       }
       case ASTNode.SYNCHRONIZED_STATEMENT: {
         SynchronizedStatement e = (SynchronizedStatement) node;

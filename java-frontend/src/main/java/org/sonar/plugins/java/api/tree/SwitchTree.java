@@ -19,22 +19,25 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import org.sonar.java.annotations.Beta;
+import java.util.List;
 
 /**
- * 'switch' expression.
- *
- * JLS 14.11
- *
- * <pre>
- *   switch ( {@link #expression()} ) {
- *     {@link #cases()}
- *   }
- * </pre>
- *
- * @since Java 12 (SonarJava 5.12 - Support of Java 12)
+ * Common interface shared between {@link SwitchStatementTree} and {@link SwitchExpressionTree}
  */
-@Beta
-public interface SwitchExpressionTree extends SwitchTree, ExpressionTree {
+public interface SwitchTree extends Tree {
+
+  SyntaxToken switchKeyword();
+
+  SyntaxToken openParenToken();
+
+  ExpressionTree expression();
+
+  SyntaxToken closeParenToken();
+
+  SyntaxToken openBraceToken();
+
+  List<CaseGroupTree> cases();
+
+  SyntaxToken closeBraceToken();
 
 }
