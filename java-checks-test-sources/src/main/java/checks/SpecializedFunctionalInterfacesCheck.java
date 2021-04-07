@@ -415,4 +415,23 @@ public class SpecializedFunctionalInterfacesCheck {
     BiConsumer<String, Double> myConsumerDB = (s, d) -> System.out.println(s + d); // Compliant, uses andThen
     myConsumerDB.andThen((s, l) -> System.out.println("After" + s + l));
   }
+
+  void biConsumersWithWrappers() {
+    BiConsumer<Integer, Integer> myConsumerII = (s, l) -> System.out.println(s + l); // Compliant
+    BiConsumer<Integer, Long> myConsumerIL = (s, l) -> System.out.println(s + l); // Compliant
+    BiConsumer<Integer, Double> myConsumerID = (s, l) -> System.out.println(s + l); // Compliant
+
+    BiConsumer<Long, Integer> myConsumerLI = (s, l) -> System.out.println(s + l); // Compliant
+    BiConsumer<Long, Long> myConsumerLL = (s, l) -> System.out.println(s + l); // Compliant
+    BiConsumer<Long, Double> myConsumerLD = (s, l) -> System.out.println(s + l); // Compliant
+
+    BiConsumer<Double, Integer> myConsumerDI = (s, l) -> System.out.println(s + l); // Compliant
+    BiConsumer<Double, Long> myConsumerDL = (s, l) -> System.out.println(s + l); // Compliant
+    BiConsumer<Double, Double> myConsumerDD = (s, l) -> System.out.println(s + l); // Compliant
+
+    BiConsumer<Character, Double> myConsumerCD = (s, l) -> System.out.println(s + l); // Compliant
+    BiConsumer<Float, Long> myConsumerFL = (s, l) -> System.out.println(s + l); // Compliant
+    BiConsumer<Byte, Integer> myConsumerBI = (s, l) -> System.out.println(s + l); // Compliant
+    BiConsumer<Short, Integer> myConsumerSI = (s, l) -> System.out.println(s + l); // Compliant
+  }
 }
