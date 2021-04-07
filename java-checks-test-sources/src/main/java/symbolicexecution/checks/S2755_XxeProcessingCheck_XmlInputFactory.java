@@ -1,9 +1,10 @@
 package symbolicexecution.checks;
 
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.XMLConstants;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLResolver;
+import javax.xml.stream.XMLStreamException;
 
 class XMLInputFactoryTest {
   // Vulnerable when nothing is made to protect against xxe
@@ -293,6 +294,18 @@ class XMLInputFactoryDirect {
     securing(factory);
   }
 
+  void factory_with_custom_resolver(java.io.Reader reader) throws XMLStreamException {
+    XMLInputFactory factory = XMLInputFactory.newInstance(); // Compliant, custom resolver set.
+    factory.setXMLResolver(NoopXMLResolver.create()); // resolver set
+    XMLEventReader eventReader = factory.createXMLEventReader(reader);
+  }
+
+  void factory_with_null_resolver(java.io.Reader reader) throws XMLStreamException {
+    XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant
+    factory.setXMLResolver(null); // null resolver set, no effect
+    XMLEventReader eventReader = factory.createXMLEventReader(reader);
+  }
+
   void securing(XMLInputFactory factory) {
     factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
     factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
@@ -352,5 +365,17 @@ class XMLInputFactoryTest2 {
 
   private static void setFactoryProperty(XMLInputFactory factory) {
     factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, "false");
+  }
+}
+
+class NoopXMLResolver implements XMLResolver {
+
+  static NoopXMLResolver create() {
+    return new NoopXMLResolver();
+  }
+
+  @Override
+  public Object resolveEntity(String publicID, String systemID, String baseURI, String namespace) throws XMLStreamException {
+    return null;
   }
 }
