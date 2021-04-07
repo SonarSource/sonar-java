@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -196,9 +197,10 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     if (isReferenced(usages) || usesMethods(usages, Collections.singletonList(AND_THEN))) {
       return Optional.empty();
     }
+
     ParameterTypeNameAndTreeType firstArgument = new ParameterTypeNameAndTreeType(parametrizedType, 0);
     ParameterTypeNameAndTreeType secondArgument = new ParameterTypeNameAndTreeType(parametrizedType, 1);
-    if (secondArgument.paramTypeName != null) {
+    if (secondArgument.paramTypeName != null && !JUtils.isPrimitiveWrapper(firstArgument.paramType)) {
       return Optional.of(String.format("Obj%sConsumer<%s>", secondArgument.paramTypeName, firstArgument.paramType));
     }
     return Optional.empty();
