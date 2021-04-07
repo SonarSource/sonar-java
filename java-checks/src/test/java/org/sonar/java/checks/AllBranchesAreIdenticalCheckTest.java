@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class AllBranchesAreIdenticalCheckTest {
@@ -32,6 +33,15 @@ class AllBranchesAreIdenticalCheckTest {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/AllBranchesAreIdentical.java"))
       .withCheck(new AllBranchesAreIdenticalCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_switch_expressions() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/AllBranchesAreIdentical.java"))
+      .withCheck(new AllBranchesAreIdenticalCheck())
+      .withJavaVersion(14)
       .verifyIssues();
   }
 
