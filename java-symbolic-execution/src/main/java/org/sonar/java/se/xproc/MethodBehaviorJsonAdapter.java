@@ -78,7 +78,7 @@ public class MethodBehaviorJsonAdapter implements JsonSerializer<MethodBehavior>
 
     jsonMB.get(JSON_YIELDS)
       .getAsJsonArray()
-      .forEach(yield -> mb.addYield(yieldsFromJson(mb, (JsonObject) yield)));
+      .forEach(methodYield -> mb.addYield(yieldsFromJson(mb, (JsonObject) methodYield)));
 
     mb.completed();
     return mb;
@@ -156,23 +156,23 @@ public class MethodBehaviorJsonAdapter implements JsonSerializer<MethodBehavior>
   }
 
   private static JsonElement toJson(MethodYield methodYield, int arity) {
-    JsonObject yield = new JsonObject();
+    JsonObject jsonMethodYield = new JsonObject();
     JsonArray jsonParameterConstraints = new JsonArray();
     for (int i = 0; i < arity; i++) {
       jsonParameterConstraints.add(toJson(methodYield.parametersConstraints.get(i)));
     }
-    yield.add(JSON_PARAMETERS_CONSTRAINTS, jsonParameterConstraints);
+    jsonMethodYield.add(JSON_PARAMETERS_CONSTRAINTS, jsonParameterConstraints);
     if (methodYield instanceof HappyPathYield) {
       HappyPathYield happyPathYield = (HappyPathYield) methodYield;
-      yield.addProperty(JSON_RESULT_INDEX, happyPathYield.resultIndex());
-      yield.add(JSON_RESULT_CONSTRAINTS, toJson(happyPathYield.resultConstraint()));
+      jsonMethodYield.addProperty(JSON_RESULT_INDEX, happyPathYield.resultIndex());
+      jsonMethodYield.add(JSON_RESULT_CONSTRAINTS, toJson(happyPathYield.resultConstraint()));
     } else if (methodYield instanceof ExceptionalYield) {
       ExceptionalYield exceptionalYield = (ExceptionalYield) methodYield;
-      yield.addProperty(JSON_THROWN_EXCEPTION, exceptionalYield.getExceptionType());
+      jsonMethodYield.addProperty(JSON_THROWN_EXCEPTION, exceptionalYield.getExceptionType());
     } else {
       throw new IllegalStateException("Hardcoded yields should only be HappyPathYield or ExceptionalYield.");
     }
-    return yield;
+    return jsonMethodYield;
   }
 
   private static JsonElement toJson(@Nullable ConstraintsByDomain constraints) {

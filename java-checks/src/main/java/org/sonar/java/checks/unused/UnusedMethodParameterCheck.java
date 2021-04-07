@@ -79,13 +79,13 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
     List<String> undocumentedParameters = new Javadoc(methodTree).undocumentedParameters();
     boolean overridableMethod = JUtils.isOverridable(methodTree.symbol());
     List<IdentifierTree> unused = new ArrayList<>();
-    for (VariableTree var : methodTree.parameters()) {
-      Symbol symbol = var.symbol();
+    for (VariableTree parameter : methodTree.parameters()) {
+      Symbol symbol = parameter.symbol();
       if (symbol.usages().isEmpty()
         && !symbol.metadata().isAnnotatedWith(AUTHORIZED_ANNOTATION)
-        && !isStrutsActionParameter(var)
+        && !isStrutsActionParameter(parameter)
         && (!overridableMethod || undocumentedParameters.contains(symbol.name()))) {
-        unused.add(var.simpleName());
+        unused.add(parameter.simpleName());
       }
     }
     Set<String> unresolvedIdentifierNames = UNRESOLVED_IDENTIFIERS_VISITOR.check(methodTree.block());

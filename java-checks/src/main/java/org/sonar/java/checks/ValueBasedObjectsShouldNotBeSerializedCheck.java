@@ -39,7 +39,7 @@ import java.util.List;
 public class ValueBasedObjectsShouldNotBeSerializedCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Make this value-based field transient so it is not included in the serialization of this class.";
-  
+
   @Override
   public List<Kind> nodesToVisit() {
     return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE);
@@ -59,15 +59,15 @@ public class ValueBasedObjectsShouldNotBeSerializedCheck extends IssuableSubscri
       classTree.members().stream()
         .filter(ValueBasedObjectsShouldNotBeSerializedCheck::isVariable)
         .map(VariableTree.class::cast)
-        .filter(var -> !isStatic(var))
-        .filter(var -> !isTransient(var))
+        .filter(v -> !isStatic(v))
+        .filter(v -> !isTransient(v))
         .filter(ValueBasedObjectsShouldNotBeSerializedCheck::isVarSerializableAndValueBased)
-        .forEach(var -> reportIssue(var.simpleName(), MESSAGE));
+        .forEach(v -> reportIssue(v.simpleName(), MESSAGE));
     }
   }
 
-  private static boolean isVarSerializableAndValueBased(VariableTree var) {
-    return var.type() != null && isSerializableAndValueBased(var.type().symbolType());
+  private static boolean isVarSerializableAndValueBased(VariableTree variable) {
+    return variable.type() != null && isSerializableAndValueBased(variable.type().symbolType());
   }
 
   private static boolean isReturnTypeValueBased(MethodTree method) {

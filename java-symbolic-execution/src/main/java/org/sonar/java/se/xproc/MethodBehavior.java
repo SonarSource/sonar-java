@@ -63,22 +63,22 @@ public class MethodBehavior {
     this.declaredExceptions = Collections.emptyList();
   }
 
-  public void addYield(MethodYield yield) {
-    yields.add(yield);
+  public void addYield(MethodYield methodYield) {
+    yields.add(methodYield);
   }
 
   public void createYield(ExplodedGraph.Node node) {
     boolean expectReturnValue = !(SignatureUtils.isConstructor(signature) || SignatureUtils.isVoidMethod(signature));
     SymbolicValue resultSV = node.programState.exitValue();
 
-    MethodYield yield;
+    MethodYield methodYield;
     if ((resultSV == null && expectReturnValue) || resultSV instanceof SymbolicValue.ExceptionalSymbolicValue) {
-      yield = newExceptionalYield(node, resultSV);
+      methodYield = newExceptionalYield(node, resultSV);
     } else {
-      yield = newHappyPathYield(node, expectReturnValue, resultSV);
+      methodYield = newHappyPathYield(node, expectReturnValue, resultSV);
     }
-    addParameterConstraints(node, yield);
-    yields.add(yield);
+    addParameterConstraints(node, methodYield);
+    yields.add(methodYield);
   }
 
   private MethodYield newExceptionalYield(ExplodedGraph.Node nodeForYield, @Nullable SymbolicValue resultSV) {
@@ -112,7 +112,7 @@ public class MethodBehavior {
     return happyPathYield;
   }
 
-  private void addParameterConstraints(ExplodedGraph.Node node, MethodYield yield) {
+  private void addParameterConstraints(ExplodedGraph.Node node, MethodYield methodYield) {
     // add the constraints on all the parameters
     int index = 0;
     for (SymbolicValue parameter : parameters) {
@@ -123,7 +123,7 @@ public class MethodBehavior {
         //cleanup based on signature
         constraints = cleanup(constraints, index);
       }
-      yield.parametersConstraints.add(constraints);
+      methodYield.parametersConstraints.add(constraints);
       index++;
     }
   }
@@ -149,10 +149,10 @@ public class MethodBehavior {
   }
 
   public ExceptionalYield createExceptionalCheckBasedYield(SymbolicValue target, ExplodedGraph.Node node, String exceptionType, SECheck check) {
-    ExceptionalYield yield = new ExceptionalCheckBasedYield(target, exceptionType, check.getClass(), node, this);
-    addParameterConstraints(node, yield);
-    yields.add(yield);
-    return yield;
+    ExceptionalYield exceptionalYield = new ExceptionalCheckBasedYield(target, exceptionType, check.getClass(), node, this);
+    addParameterConstraints(node, exceptionalYield);
+    yields.add(exceptionalYield);
+    return exceptionalYield;
   }
 
   public boolean isMethodVarArgs() {

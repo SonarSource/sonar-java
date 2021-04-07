@@ -131,10 +131,10 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     if (id.is(Tree.Kind.IDENTIFIER)) {
       Tree decl = ((IdentifierTree) id).symbol().declaration();
       if (decl != null && decl.is(Tree.Kind.VARIABLE)) {
-        VariableTree var = ((VariableTree) decl);
-        ExpressionTree init = var.initializer();
-        if (init != null && init.is(Tree.Kind.METHOD_INVOCATION)) {
-          return GET_LOGGER.matches((MethodInvocationTree) init);
+        VariableTree variable = ((VariableTree) decl);
+        ExpressionTree initializer = variable.initializer();
+        if (initializer != null && initializer.is(Tree.Kind.METHOD_INVOCATION)) {
+          return GET_LOGGER.matches((MethodInvocationTree) initializer);
         }
       }
     }

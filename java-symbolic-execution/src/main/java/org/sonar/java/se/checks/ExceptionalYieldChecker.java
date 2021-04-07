@@ -57,12 +57,12 @@ public class ExceptionalYieldChecker {
 
   void reportOnExceptionalYield(ExplodedGraph.Node node, SECheck check) {
     node.edges().stream().forEach(edge -> edge.yields().stream()
-      .filter(yield -> yield.generatedByCheck(check))
-      .forEach(yield -> reportIssue(edge.parent(), (ExceptionalCheckBasedYield) yield, check))
+      .filter(methodYield -> methodYield.generatedByCheck(check))
+      .forEach(methodYield -> reportIssue(edge.parent(), (ExceptionalCheckBasedYield) methodYield, check))
     );
   }
 
-  private void reportIssue(ExplodedGraph.Node node, ExceptionalCheckBasedYield yield, SECheck check) {
+  private void reportIssue(ExplodedGraph.Node node, ExceptionalCheckBasedYield exceptionalYield, SECheck check) {
     MethodInvocationTree mit = (MethodInvocationTree) node.programPoint.syntaxTree();
     ExpressionTree methodSelect = mit.methodSelect();
     String methodName = mit.symbol().name();
@@ -73,7 +73,7 @@ public class ExceptionalYieldChecker {
     }
 
     JavaFileScannerContext.Location methodInvocationMessage;
-    int parameterCausingExceptionIndex = yield.parameterCausingExceptionIndex();
+    int parameterCausingExceptionIndex = exceptionalYield.parameterCausingExceptionIndex();
     IdentifierTree identifierTree = FlowComputation.getArgumentIdentifier(mit, parameterCausingExceptionIndex);
     if (identifierTree != null) {
       methodInvocationMessage = new JavaFileScannerContext.Location(String.format("'%s' is passed to '%s()'.", identifierTree.name(), methodName), identifierTree);
@@ -81,9 +81,9 @@ public class ExceptionalYieldChecker {
       methodInvocationMessage = new JavaFileScannerContext.Location(String.format("'%s()' is invoked.", methodName), reportTree);
     }
 
-    Flow argumentChangingNameFlows = flowsForArgumentsChangingName(yield, mit);
+    Flow argumentChangingNameFlows = flowsForArgumentsChangingName(exceptionalYield, mit);
     Set<Flow> argumentsFlows = flowsForMethodArguments(node, mit, parameterCausingExceptionIndex, FlowComputation.MAX_REPORTED_FLOWS);
-    Set<Flow> exceptionFlows = yield.exceptionFlows(FlowComputation.MAX_REPORTED_FLOWS);
+    Set<Flow> exceptionFlows = exceptionalYield.exceptionFlows(FlowComputation.MAX_REPORTED_FLOWS);
 
     Set<Flow> flows = new HashSet<>();
     for (Flow argumentFlow : argumentsFlows) {
@@ -140,7 +140,7 @@ public class ExceptionalYieldChecker {
       .collect(Collectors.toList());
   }
 
-  private static Flow flowsForArgumentsChangingName(ExceptionalCheckBasedYield yield, MethodInvocationTree mit) {
-    return FlowComputation.flowsForArgumentsChangingName(Collections.singletonList(yield.parameterCausingExceptionIndex()), mit);
+  private static Flow flowsForArgumentsChangingName(ExceptionalCheckBasedYield exceptionalYield, MethodInvocationTree mit) {
+    return FlowComputation.flowsForArgumentsChangingName(Collections.singletonList(exceptionalYield.parameterCausingExceptionIndex()), mit);
   }
 }

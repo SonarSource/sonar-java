@@ -155,21 +155,21 @@ public class DivisionByZeroCheck extends SECheck {
 
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      SymbolicValue var;
-      SymbolicValue expr;
+      SymbolicValue variable;
+      SymbolicValue expression;
       Symbol symbol;
       if (ExpressionUtils.isSimpleAssignment(tree)) {
         symbol = ExpressionUtils.extractIdentifier(tree).symbol();
-        var = programState.getValue(symbol);
-        expr = programState.peekValue();
+        variable = programState.getValue(symbol);
+        expression = programState.peekValue();
       } else {
         ProgramState.Pop unstackValue = programState.unstackValue(2);
-        var = unstackValue.values.get(1);
-        expr = unstackValue.values.get(0);
+        variable = unstackValue.values.get(1);
+        expression = unstackValue.values.get(0);
         symbol = unstackValue.valuesAndSymbols.get(0).symbol();
       }
 
-      checkExpression(tree, var, expr, symbol);
+      checkExpression(tree, variable, expression, symbol);
     }
 
     @Override
