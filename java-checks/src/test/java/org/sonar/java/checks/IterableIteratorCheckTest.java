@@ -30,12 +30,5 @@ class IterableIteratorCheckTest {
       .onFile("src/test/files/checks/IterableIteratorCheck.java")
       .withCheck(new IterableIteratorCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/IterableIteratorCheck.java")
-      .withCheck(new IterableIteratorCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-
   }
-
 }

@@ -23,20 +23,12 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 class ExternalizableClassConstructorCheckTest {
+
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/serialization/ExternalizableClassConstructorCheck.java")
       .withCheck(new ExternalizableClassConstructorCheck())
       .verifyIssues();
-  }
-
-  @Test
-  void no_semantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/serialization/ExternalizableClassConstructorCheck.java")
-      .withCheck(new ExternalizableClassConstructorCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

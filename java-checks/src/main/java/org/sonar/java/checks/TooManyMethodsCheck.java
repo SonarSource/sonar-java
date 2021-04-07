@@ -58,9 +58,6 @@ public class TooManyMethodsCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     ClassTree classTree = (ClassTree) tree;
     List<Tree> methods = classTree.members().stream()
         .filter(member -> member.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR) && (countNonPublic || ((MethodTree) member).symbol().isPublic()))

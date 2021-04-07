@@ -47,10 +47,6 @@ public class CommandLineArgumentsCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
-
     ClassTree classTree = (ClassTree) tree;
     for (Tree member : classTree.members()) {
       if (member.is(Tree.Kind.METHOD)) {
@@ -80,7 +76,8 @@ public class CommandLineArgumentsCheck extends IssuableSubscriptionVisitor {
   private static boolean hasArgs4JAnnotation(Tree tree) {
     if (tree.is(Tree.Kind.METHOD)) {
       return hasArgs4JAnnotation(((MethodTree) tree).symbol());
-    } else if (tree.is(Tree.Kind.VARIABLE)) {
+    }
+    if (tree.is(Tree.Kind.VARIABLE)) {
       return hasArgs4JAnnotation(((VariableTree) tree).symbol());
     }
     return false;

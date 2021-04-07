@@ -19,6 +19,8 @@
  */
 package org.sonar.java.checks.serialization;
 
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -26,29 +28,23 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
-
-import java.util.Collections;
-import java.util.List;
 
 @Rule(key = "S2063")
 public class SerializableComparatorCheck extends IssuableSubscriptionVisitor {
 
   @Override
-  public List<Kind> nodesToVisit() {
+  public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.CLASS);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      ClassTree classTree = (ClassTree) tree;
-      Symbol.TypeSymbol symbol = classTree.symbol();
-      Type type = symbol.type();
-      IdentifierTree simpleName = classTree.simpleName();
-      if (simpleName != null && type.isSubtypeOf("java.util.Comparator") && !type.isSubtypeOf("java.io.Serializable") && !symbol.isAbstract()) {
-        reportIssue(simpleName, "Make this class \"Serializable\".");
-      }
+    ClassTree classTree = (ClassTree) tree;
+    Symbol.TypeSymbol symbol = classTree.symbol();
+    Type type = symbol.type();
+    IdentifierTree simpleName = classTree.simpleName();
+    if (simpleName != null && type.isSubtypeOf("java.util.Comparator") && !type.isSubtypeOf("java.io.Serializable") && !symbol.isAbstract()) {
+      reportIssue(simpleName, "Make this class \"Serializable\".");
     }
   }
 

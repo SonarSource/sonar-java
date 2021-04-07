@@ -30,7 +30,6 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S2156")
@@ -39,15 +38,12 @@ public class ProtectedMemberInFinalClassCheck extends IssuableSubscriptionVisito
   private static final String MESSAGE = "Remove this \"protected\" modifier.";
 
   @Override
-  public List<Kind> nodesToVisit() {
+  public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.CLASS);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     ClassTree classTree = (ClassTree) tree;
     if (ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.FINAL)) {
       classTree.members().forEach(this::checkMember);
@@ -55,10 +51,10 @@ public class ProtectedMemberInFinalClassCheck extends IssuableSubscriptionVisito
   }
 
   private void checkMember(Tree member) {
-    if (member.is(Kind.VARIABLE)) {
+    if (member.is(Tree.Kind.VARIABLE)) {
       VariableTree variableTree = (VariableTree) member;
       checkVariableCompliance(variableTree);
-    } else if (member.is(Kind.METHOD)) {
+    } else if (member.is(Tree.Kind.METHOD)) {
       MethodTree methodTree = (MethodTree) member;
       if (Boolean.FALSE.equals(methodTree.isOverriding())) {
         checkMethodCompliance(methodTree);

@@ -34,11 +34,6 @@ class TooManyMethodsCheckTest {
       .onFile("src/test/files/checks/TooManyMethodsCheck.java")
       .withCheck(check)
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/TooManyMethodsCheck.java")
-      .withCheck(check)
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 
   @Test
@@ -50,12 +45,5 @@ class TooManyMethodsCheckTest {
       .onFile(testSourcesPath("checks/TooManyMethodsCheckOnlyPublic.java"))
       .withCheck(check)
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/TooManyMethodsCheck.java")
-      .withCheck(check)
-      .withoutSemantic()
-      .verifyNoIssues();
-
   }
-
 }

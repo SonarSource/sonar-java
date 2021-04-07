@@ -20,7 +20,6 @@
 package org.sonar.java.ast.visitors;
 
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.model.Sema;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -37,7 +36,6 @@ public abstract class SubscriptionVisitor implements JavaFileScanner {
   private EnumSet<Tree.Kind> nodesToVisit;
   private boolean visitToken;
   private boolean visitTrivia;
-  private Sema semanticModel;
 
   public abstract List<Tree.Kind> nodesToVisit();
 
@@ -59,7 +57,6 @@ public abstract class SubscriptionVisitor implements JavaFileScanner {
 
   public void setContext(JavaFileScannerContext context) {
     this.context = context;
-    semanticModel = (Sema) context.getSemanticModel();
   }
 
   public void leaveFile(JavaFileScannerContext context) {
@@ -129,17 +126,5 @@ public abstract class SubscriptionVisitor implements JavaFileScanner {
         }
       }
     }
-  }
-
-  /**
-   * Checks if semantic model is present.
-   * 
-   * @deprecated Since moving to Eclipse frontend doesn't really emulates incomplete semantic.
-   * Usages of this method should be removed and tests with .noSemantic() should be added to clarify
-   * that rules are not behaving unexpectedly in case of incomplete semantic.
-   */
-  @Deprecated
-  public boolean hasSemantic(){
-    return semanticModel != null;
   }
 }

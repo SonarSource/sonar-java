@@ -34,11 +34,6 @@ class NoTestInTestClassCheckTest {
       .onFile(nonCompilingTestSourcesPath("checks/NoTestInTestClassCheck.java"))
       .withCheck(new NoTestInTestClassCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/NoTestInTestClassCheck.java"))
-      .withCheck(new NoTestInTestClassCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 
   @Test
@@ -67,11 +62,6 @@ class NoTestInTestClassCheckTest {
       .onFile(testSourcesPath("checks/tests/NoTestInTestClassCheckEnclosed.java"))
       .withCheck(new NoTestInTestClassCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/tests/NoTestInTestClassCheckEnclosed.java"))
-      .withCheck(new NoTestInTestClassCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 
   @Test
@@ -97,11 +87,5 @@ class NoTestInTestClassCheckTest {
       .onFile(testSourcesPath("checks/tests/NoTestsInTestClassCheckPactTest.java"))
       .withCheck(new NoTestInTestClassCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/tests/NoTestsInTestClassCheckPactTest.java"))
-      .withCheck(new NoTestInTestClassCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
-
 }

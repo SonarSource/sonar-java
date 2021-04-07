@@ -81,9 +81,6 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     ClassTree classTree = (ClassTree) tree;
     Map<Symbol, String> methodsPropagationMap = collectMethodsPropagation(classTree);
     if (hasSameValues(methodsPropagationMap.values())) {
@@ -157,13 +154,12 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
     List<AnnotationValue> values = symbol.metadata().valuesForAnnotation(SPRING_TRANSACTIONAL_ANNOTATION);
     if (values != null) {
       return getAnnotationAttributeAsString(values, "propagation", defaultValue);
+    }
+    values = symbol.metadata().valuesForAnnotation(JAVAX_TRANSACTIONAL_ANNOTATION);
+    if (values != null) {
+      return getAnnotationAttributeAsString(values, "value", defaultValue);
     } else {
-      values = symbol.metadata().valuesForAnnotation(JAVAX_TRANSACTIONAL_ANNOTATION);
-      if (values != null) {
-        return getAnnotationAttributeAsString(values, "value", defaultValue);
-      } else {
-        return inheritedPropagation;
-      }
+      return inheritedPropagation;
     }
   }
 

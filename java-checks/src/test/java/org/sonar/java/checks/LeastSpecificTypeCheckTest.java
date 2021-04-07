@@ -31,14 +31,4 @@ class LeastSpecificTypeCheckTest {
       .withCheck(new LeastSpecificTypeCheck())
       .verifyIssues();
   }
-
-  @Test
-  void no_semantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/LeastSpecificTypeCheck.java")
-      .withCheck(new LeastSpecificTypeCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
-
 }

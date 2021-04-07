@@ -47,9 +47,6 @@ public class FinalClassCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     ClassTree classTree = (ClassTree) tree;
     if (hasOnlyPrivateConstructors(classTree) && !isExtended(classTree) && !ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.FINAL)) {
       reportIssue(classTree.simpleName(), "Make this class \"final\" or add a public constructor.");

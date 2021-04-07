@@ -30,11 +30,5 @@ class StandardFunctionalInterfaceCheckTest {
       .onFile("src/test/files/checks/StandardFunctionalInterfaceCheck.java")
       .withCheck(new StandardFunctionalInterfaceCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/StandardFunctionalInterfaceCheck.java")
-      .withCheck(new StandardFunctionalInterfaceCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
-
 }

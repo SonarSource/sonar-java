@@ -30,11 +30,5 @@ class HasNextCallingNextCheckTest {
       .onFile("src/test/files/checks/HasNextCallingNextCheck.java")
       .withCheck(new HasNextCallingNextCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/HasNextCallingNextCheck.java")
-      .withCheck(new HasNextCallingNextCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
-
 }

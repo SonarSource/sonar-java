@@ -63,9 +63,6 @@ public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisito
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     ExpressionTree expression;
     if (tree instanceof UnaryExpressionTree) {
       expression = ExpressionUtils.skipParentheses(((UnaryExpressionTree) tree).expression());
@@ -88,7 +85,8 @@ public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisito
   private static IdentifierTree getVariableIdentifier(ExpressionTree expressionTree) {
     if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
       return (IdentifierTree) expressionTree;
-    } else if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
+    }
+    if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
       return ((MemberSelectExpressionTree) expressionTree).identifier();
     }
     return null;

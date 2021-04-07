@@ -50,9 +50,6 @@ public class SimpleClassNameCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     CompilationUnitTree cut = (CompilationUnitTree) tree;
     cut.types().stream().filter(NOT_EMPTY_STATEMENT).map(t -> ((ClassTree) t).symbol()).forEach(this::checkSymbol);
     List<ImportTree> imports = cut.imports().stream().filter(NOT_EMPTY_STATEMENT).map(ImportTree.class::cast).collect(Collectors.toList());

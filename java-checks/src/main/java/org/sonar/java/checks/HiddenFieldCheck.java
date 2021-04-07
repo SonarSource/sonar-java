@@ -76,9 +76,6 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if(!hasSemantic()) {
-      return;
-    }
     if (isClassTree(tree)) {
       ClassTree classTree = (ClassTree) tree;
       MapBuilder<String, VariableTree> builder = MapBuilder.newMap();
@@ -138,9 +135,6 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
-    if(!hasSemantic()) {
-      return;
-    }
     if (isClassTree(tree)) {
       fields.pop();
       flattenExcludedVariables.removeAll(excludedVariables.pop());

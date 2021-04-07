@@ -43,9 +43,6 @@ public class BooleanMethodReturnCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if(!hasSemantic()) {
-      return;
-    }
     MethodTree methodTree = (MethodTree) tree;
     if (returnsBoolean(methodTree) && !isAnnotatedNullable(methodTree.symbol().metadata())) {
       methodTree.accept(new ReturnStatementVisitor());

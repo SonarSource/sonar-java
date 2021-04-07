@@ -31,13 +31,4 @@ class TransactionalMethodVisibilityCheckTest {
       .withCheck(new TransactionalMethodVisibilityCheck())
       .verifyIssues();
   }
-
-  @Test
-  void test_wo_semantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/TransactionalMethodVisibilityCheck.java")
-      .withCheck(new TransactionalMethodVisibilityCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
 }

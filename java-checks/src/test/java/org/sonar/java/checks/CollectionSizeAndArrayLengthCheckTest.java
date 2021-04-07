@@ -33,13 +33,4 @@ class CollectionSizeAndArrayLengthCheckTest {
       .withCheck(new CollectionSizeAndArrayLengthCheck())
       .verifyIssues();
   }
-
-  @Test
-  void noIssueWithoutSemantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/CollectionSizeAndArrayLengthCheck.java"))
-      .withCheck(new CollectionSizeAndArrayLengthCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
 }

@@ -46,10 +46,6 @@ public class StandardInputReadCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
-
     if (tree.is(Tree.Kind.METHOD_INVOCATION) && METHOD_MATCHERS.matches((MethodInvocationTree) tree)) {
       reportIssue(tree);
     } else if (tree.is(Tree.Kind.METHOD_REFERENCE) && METHOD_MATCHERS.matches((MethodReferenceTree) tree)) {
@@ -77,7 +73,8 @@ public class StandardInputReadCheck extends IssuableSubscriptionVisitor {
   private static boolean isClosingStream(Tree parentExpression) {
     if (parentExpression.is(Tree.Kind.PARENTHESIZED_EXPRESSION) || parentExpression.is(Tree.Kind.MEMBER_SELECT)) {
       return isClosingStream(parentExpression.parent());
-    } else if (parentExpression.is(Tree.Kind.METHOD_INVOCATION)) {
+    }
+    if (parentExpression.is(Tree.Kind.METHOD_INVOCATION)) {
       return CLOSE_METHOD.matches((MethodInvocationTree) parentExpression);
     } else if (parentExpression.is(Tree.Kind.METHOD_REFERENCE)) {
       return CLOSE_METHOD.matches((MethodReferenceTree) parentExpression);

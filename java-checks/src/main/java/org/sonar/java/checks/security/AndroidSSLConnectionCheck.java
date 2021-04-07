@@ -38,14 +38,12 @@ public class AndroidSSLConnectionCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      MethodTree methodTree = (MethodTree) tree;
-      List<VariableTree> parameters = methodTree.parameters();
-      if (methodTree.simpleName().name().equals("onReceivedSslError") &&
-        !parameters.isEmpty() &&
-        parameters.get(0).symbol().type().is("android.webkit.WebView")) {
-        reportIssue(methodTree.simpleName(), MESSAGE);
-      }
+    MethodTree methodTree = (MethodTree) tree;
+    List<VariableTree> parameters = methodTree.parameters();
+    if (methodTree.simpleName().name().equals("onReceivedSslError") &&
+      !parameters.isEmpty() &&
+      parameters.get(0).symbol().type().is("android.webkit.WebView")) {
+      reportIssue(methodTree.simpleName(), MESSAGE);
     }
   }
 }

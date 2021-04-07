@@ -49,9 +49,6 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     ClassTree classTree = (ClassTree) tree;
     List<Symbol> allMembers = retrieveMembers(classTree.symbol());
     Map<String, List<Symbol>> membersByName = allMembers.stream().collect(Collectors.groupingBy(Symbol::name));

@@ -32,10 +32,5 @@ class IgnoredTestsCheckTest {
       .onFile(testSourcesPath("checks/IgnoredTestsCheck.java"))
       .withCheck(new IgnoredTestsCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/IgnoredTestsCheck.java"))
-      .withCheck(new IgnoredTestsCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

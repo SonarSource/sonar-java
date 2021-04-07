@@ -30,10 +30,5 @@ class BooleanMethodReturnCheckTest {
       .onFile("src/test/files/checks/BooleanMethodReturnCheck.java")
       .withCheck(new BooleanMethodReturnCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/BooleanMethodReturnCheck.java")
-      .withCheck(new BooleanMethodReturnCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

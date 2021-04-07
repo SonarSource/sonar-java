@@ -30,10 +30,5 @@ class FinalClassCheckTest {
       .onFile("src/test/files/checks/FinalClassCheck.java")
       .withCheck(new FinalClassCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/FinalClassCheck.java")
-      .withCheck(new FinalClassCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

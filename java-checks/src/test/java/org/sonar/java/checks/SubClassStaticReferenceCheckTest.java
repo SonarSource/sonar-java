@@ -35,13 +35,4 @@ class SubClassStaticReferenceCheckTest {
       .withCheck(new SubClassStaticReferenceCheck())
       .verifyIssues();
   }
-
-  @Test
-  void no_issue_without_semantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile(filename)
-      .withCheck(new SubClassStaticReferenceCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
 }

@@ -67,9 +67,6 @@ public class AtLeastOneConstructorCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if(!hasSemantic()) {
-      return;
-    }
     checkClassTree((ClassTree) tree);
   }
 

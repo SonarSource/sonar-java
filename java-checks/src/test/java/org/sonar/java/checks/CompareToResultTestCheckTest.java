@@ -30,10 +30,5 @@ class CompareToResultTestCheckTest {
       .onFile("src/test/files/checks/CompareToResultTestCheck.java")
       .withCheck(new CompareToResultTestCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/CompareToResultTestCheck.java")
-      .withCheck(new CompareToResultTestCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

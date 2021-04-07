@@ -55,9 +55,6 @@ public class ForLoopIncrementAndUpdateCheck extends IssuableSubscriptionVisitor 
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     ForStatementTree forStatementTree = (ForStatementTree) tree;
     if (forStatementTree.update().isEmpty() || forStatementTree.condition() == null) {
       return;

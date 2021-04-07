@@ -132,6 +132,7 @@ import org.sonar.java.checks.spring.SpringComponentWithNonAutowiredMembersCheck;
 import org.sonar.java.checks.spring.SpringComponentWithWrongScopeCheck;
 import org.sonar.java.checks.spring.SpringComposedRequestMappingCheck;
 import org.sonar.java.checks.spring.SpringConfigurationWithAutowiredFieldsCheck;
+import org.sonar.java.checks.spring.SpringConstructorInjectionCheck;
 import org.sonar.java.checks.spring.SpringIncompatibleTransactionalCheck;
 import org.sonar.java.checks.spring.SpringRequestMappingMethodCheck;
 import org.sonar.java.checks.spring.SpringScanDefaultPackageCheck;

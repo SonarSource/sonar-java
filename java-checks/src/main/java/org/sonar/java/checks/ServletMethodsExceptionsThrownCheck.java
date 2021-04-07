@@ -55,9 +55,6 @@ public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVis
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     if (tree.is(Tree.Kind.METHOD)) {
       shouldCheck.push(IS_SERVLET_DO_METHOD.matches((MethodTree) tree));
     } else if (shouldCheck()) {
@@ -80,9 +77,6 @@ public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVis
 
   @Override
   public void leaveNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     if (tree.is(Tree.Kind.METHOD)) {
       shouldCheck.pop();
     } else if (shouldCheck() && tree.is(Tree.Kind.TRY_STATEMENT)) {

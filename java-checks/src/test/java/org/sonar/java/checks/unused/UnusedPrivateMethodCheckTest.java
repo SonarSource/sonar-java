@@ -30,11 +30,6 @@ class UnusedPrivateMethodCheckTest {
       .onFile("src/test/files/checks/UnusedPrivateMethod.java")
       .withCheck(new UnusedPrivateMethodCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/UnusedPrivateMethod.java")
-      .withCheck(new UnusedPrivateMethodCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 
 }

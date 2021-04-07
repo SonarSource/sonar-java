@@ -61,14 +61,4 @@ class RunFinalizersCheckTest {
         .verifyNoIssues();
     }
   }
-
-  @Test
-  void noSemantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/RunFinalizersCheck.java")
-      .withCheck(new RunFinalizersCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
-
 }

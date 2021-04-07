@@ -50,9 +50,6 @@ public class UselessExtendsCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     ClassTree classTree = (ClassTree) tree;
     checkExtendsObject(classTree);
 
@@ -120,7 +117,8 @@ public class UselessExtendsCheck extends IssuableSubscriptionVisitor {
   private static String extractInterfaceName(Tree interfaceTree) {
     if (interfaceTree.is(Tree.Kind.IDENTIFIER)) {
       return ((IdentifierTree) interfaceTree).name();
-    } else if (interfaceTree.is(Tree.Kind.MEMBER_SELECT)) {
+    }
+    if (interfaceTree.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mset = (MemberSelectExpressionTree) interfaceTree;
       return extractInterfaceName(mset.expression()) + "." + mset.identifier().name();
     } else {

@@ -36,12 +36,6 @@ class ClassWithoutHashCodeInHashStructureCheckTest {
       .verifyIssues();
 
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/ClassWithoutHashCodeInHashStructureCheck.java"))
-      .withCheck(new ClassWithoutHashCodeInHashStructureCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-
-    JavaCheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/ClassWithoutHashCodeInHashStructureCheck.java"))
       .withCheck(new ClassWithoutHashCodeInHashStructureCheck())
       .verifyNoIssues();

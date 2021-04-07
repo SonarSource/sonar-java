@@ -24,7 +24,6 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import static org.sonar.java.checks.helpers.UnitTestUtils.FAIL_METHOD_MATCHER;
 
@@ -45,6 +44,6 @@ public class AssertionFailInCatchBlockCheck extends AbstractMethodDetection {
 
   private static boolean isInCatch(Tree tree) {
     Tree parent = tree.parent();
-    return parent != null && !parent.is(Kind.METHOD) && (parent.is(Kind.CATCH) || isInCatch(parent));
+    return parent != null && !parent.is(Tree.Kind.METHOD) && (parent.is(Tree.Kind.CATCH) || isInCatch(parent));
   }
 }

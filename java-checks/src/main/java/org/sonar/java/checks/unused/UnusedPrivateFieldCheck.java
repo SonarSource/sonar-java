@@ -44,7 +44,6 @@ import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S1068")
@@ -70,7 +69,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
   private boolean hasNativeMethod = false;
 
   @Override
-  public List<Kind> nodesToVisit() {
+  public List<Tree.Kind> nodesToVisit() {
     return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.METHOD, Tree.Kind.EXPRESSION_STATEMENT, Tree.Kind.IDENTIFIER);
   }
 
@@ -87,9 +86,6 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     switch (tree.kind()) {
       case METHOD:
         checkIfNativeMethod((MethodTree) tree);
@@ -124,9 +120,8 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
     }
     if (parent.is(Tree.Kind.METHOD_INVOCATION)) {
       return identifier.equals(ExpressionUtils.methodName((MethodInvocationTree) parent));
-    } else {
-      return identifier.equals(((MethodReferenceTree) parent).method());
     }
+    return identifier.equals(((MethodReferenceTree) parent).method());
   }
 
   private void checkIfNativeMethod(MethodTree method) {

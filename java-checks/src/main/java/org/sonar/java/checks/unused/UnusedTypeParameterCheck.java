@@ -42,27 +42,25 @@ public class UnusedTypeParameterCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      TypeParameters typeParameters;
-      String messageEnd;
-      if (tree.is(Tree.Kind.METHOD)) {
-        typeParameters = ((MethodTree) tree).typeParameters();
-        messageEnd = "method.";
-      } else {
-        typeParameters = ((ClassTree) tree).typeParameters();
-        messageEnd = "class.";
-        if (tree.is(Tree.Kind.INTERFACE)) {
-          messageEnd = "interface.";
-        }
+    TypeParameters typeParameters;
+    String messageEnd;
+    if (tree.is(Tree.Kind.METHOD)) {
+      typeParameters = ((MethodTree) tree).typeParameters();
+      messageEnd = "method.";
+    } else {
+      typeParameters = ((ClassTree) tree).typeParameters();
+      messageEnd = "class.";
+      if (tree.is(Tree.Kind.INTERFACE)) {
+        messageEnd = "interface.";
       }
-      for (TypeParameterTree typeParameter : typeParameters) {
-        Symbol symbol = JUtils.typeParameterTreeSymbol(typeParameter);
-        if (symbol.usages().isEmpty()) {
-          String message = new StringBuilder(typeParameter.identifier().name())
-            .append(" is not used in the ")
-            .append(messageEnd).toString();
-          reportIssue(typeParameter.identifier(), message);
-        }
+    }
+    for (TypeParameterTree typeParameter : typeParameters) {
+      Symbol symbol = JUtils.typeParameterTreeSymbol(typeParameter);
+      if (symbol.usages().isEmpty()) {
+        String message = new StringBuilder(typeParameter.identifier().name())
+          .append(" is not used in the ")
+          .append(messageEnd).toString();
+        reportIssue(typeParameter.identifier(), message);
       }
     }
   }

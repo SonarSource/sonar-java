@@ -24,19 +24,11 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 class ForLoopVariableTypeCheckTest {
 
-  private static final String FILENAME = "src/test/files/checks/ForLoopVariableTypeCheck.java";
-  private static final ForLoopVariableTypeCheck CHECK = new ForLoopVariableTypeCheck();
-
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile(FILENAME)
-      .withCheck(CHECK)
+      .onFile("src/test/files/checks/ForLoopVariableTypeCheck.java")
+      .withCheck(new ForLoopVariableTypeCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile(FILENAME)
-      .withCheck(CHECK)
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

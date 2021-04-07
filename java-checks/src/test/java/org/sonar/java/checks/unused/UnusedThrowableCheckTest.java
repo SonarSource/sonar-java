@@ -30,11 +30,5 @@ class UnusedThrowableCheckTest {
       .onFile("src/test/files/checks/unused/UnusedThrowableCheck.java")
       .withCheck(new UnusedThrowableCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/unused/UnusedThrowableCheck.java")
-      .withCheck(new UnusedThrowableCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
-
 }

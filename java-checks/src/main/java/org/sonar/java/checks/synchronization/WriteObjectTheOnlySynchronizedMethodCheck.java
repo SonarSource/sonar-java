@@ -47,9 +47,6 @@ public class WriteObjectTheOnlySynchronizedMethodCheck extends IssuableSubscript
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     MethodTree methodTree = (MethodTree) tree;
     Symbol.TypeSymbol enclosingClass = methodTree.symbol().enclosingClass();
     String className = enclosingClass.type().fullyQualifiedName();

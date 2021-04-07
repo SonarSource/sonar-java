@@ -42,9 +42,6 @@ public class AssertionInThreadRunCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     MethodTree methodTree = (MethodTree) tree;
     BlockTree block = methodTree.block();
     if (block != null && isRunMethod(methodTree)) {

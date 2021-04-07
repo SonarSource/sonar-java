@@ -70,7 +70,7 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
   @Override
   public void visitNode(Tree tree) {
     super.visitNode(tree);
-    if (hasSemantic() && tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
+    if (tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
       BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) tree;
       String name = getThresholdToCheck(binaryExpressionTree.leftOperand());
       ExpressionTree argToCheck = null;

@@ -43,9 +43,6 @@ public class NullCheckWithInstanceofCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     BinaryExpressionTree binaryExpression = (BinaryExpressionTree) tree;
     ExpressionTree leftOp = ExpressionUtils.skipParentheses(binaryExpression.leftOperand());
     ExpressionTree rightOp = ExpressionUtils.skipParentheses(binaryExpression.rightOperand());
@@ -77,7 +74,8 @@ public class NullCheckWithInstanceofCheck extends IssuableSubscriptionVisitor {
       binaryExpression = (BinaryExpressionTree) expression;
       if (binaryExpression.leftOperand().is(Tree.Kind.NULL_LITERAL)) {
         return binaryExpression.rightOperand();
-      } else if (binaryExpression.rightOperand().is(Tree.Kind.NULL_LITERAL)) {
+      }
+      if (binaryExpression.rightOperand().is(Tree.Kind.NULL_LITERAL)) {
         return binaryExpression.leftOperand();
       }
     }
@@ -86,15 +84,14 @@ public class NullCheckWithInstanceofCheck extends IssuableSubscriptionVisitor {
 
   @CheckForNull
   private static ExpressionTree instanceofFound(ExpressionTree expressionTree, Tree.Kind kind) {
-    if (kind == Tree.Kind.CONDITIONAL_OR) {
-      /* if CONDITIONAL_OR we want LOGICAL COMPLEMENT before instanceof */
-      if (expressionTree.is(Tree.Kind.LOGICAL_COMPLEMENT)) {
-        return instanceofLHS(ExpressionUtils.skipParentheses(((UnaryExpressionTree) expressionTree).expression()));
-      } else {
-        return null;
-      }
-    } else {
+    if (kind != Tree.Kind.CONDITIONAL_OR) {
       return instanceofLHS(expressionTree);
+    }
+    /* if CONDITIONAL_OR we want LOGICAL COMPLEMENT before instanceof */
+    if (expressionTree.is(Tree.Kind.LOGICAL_COMPLEMENT)) {
+      return instanceofLHS(ExpressionUtils.skipParentheses(((UnaryExpressionTree) expressionTree).expression()));
+    } else {
+      return null;
     }
   }
 

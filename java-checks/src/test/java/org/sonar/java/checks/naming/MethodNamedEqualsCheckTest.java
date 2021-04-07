@@ -30,11 +30,5 @@ class MethodNamedEqualsCheckTest {
       .onFile("src/test/files/checks/naming/MethodNamedEqualsCheck.java")
       .withCheck(new MethodNamedEqualsCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/naming/MethodNamedEqualsCheck.java")
-      .withCheck(new MethodNamedEqualsCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
-
 }

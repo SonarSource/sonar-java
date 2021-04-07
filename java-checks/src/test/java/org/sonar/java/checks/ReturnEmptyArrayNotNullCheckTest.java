@@ -31,14 +31,4 @@ class ReturnEmptyArrayNotNullCheckTest {
       .withCheck(new ReturnEmptyArrayNotNullCheck())
       .verifyIssues();
   }
-
-  @Test
-  void noIssueWithoutSemantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ReturnEmptyArrayNotNullCheck.java")
-      .withCheck(new ReturnEmptyArrayNotNullCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
-
 }

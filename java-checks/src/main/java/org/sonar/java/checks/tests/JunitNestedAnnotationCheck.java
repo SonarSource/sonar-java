@@ -43,7 +43,7 @@ public class JunitNestedAnnotationCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     IdentifierTree className = classTree.simpleName();
-    if (!hasSemantic() || className == null) {
+    if (className == null) {
       return;
     }
     Symbol.TypeSymbol classSymbol = classTree.symbol();

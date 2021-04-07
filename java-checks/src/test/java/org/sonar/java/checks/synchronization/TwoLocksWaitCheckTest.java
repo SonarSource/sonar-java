@@ -30,11 +30,5 @@ class TwoLocksWaitCheckTest {
       .onFile("src/test/files/checks/TwoLocksWaitCheck.java")
       .withCheck(new TwoLocksWaitCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/TwoLocksWaitCheck.java")
-      .withCheck(new TwoLocksWaitCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
-
 }

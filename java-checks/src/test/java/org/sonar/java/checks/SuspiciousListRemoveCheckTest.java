@@ -30,10 +30,5 @@ class SuspiciousListRemoveCheckTest {
       .onFile("src/test/files/checks/SuspiciousListRemove.java")
       .withCheck(new SuspiciousListRemoveCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/SuspiciousListRemove.java")
-      .withCheck(new SuspiciousListRemoveCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

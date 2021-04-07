@@ -32,11 +32,5 @@ class DeprecatedHashAlgorithmCheckTest {
       .onFile(testSourcesPath("checks/DeprecatedHashAlgorithmCheck.java"))
       .withCheck(new DeprecatedHashAlgorithmCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/DeprecatedHashAlgorithmCheck.java"))
-      .withCheck(new DeprecatedHashAlgorithmCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
-
 }

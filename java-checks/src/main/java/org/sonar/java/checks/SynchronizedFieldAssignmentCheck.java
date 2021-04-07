@@ -19,6 +19,9 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
@@ -31,27 +34,19 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
-
-import javax.annotation.CheckForNull;
-import java.util.Collections;
-import java.util.List;
 
 @Rule(key = "S2445")
 public class SynchronizedFieldAssignmentCheck extends IssuableSubscriptionVisitor {
 
   @Override
-  public List<Kind> nodesToVisit() {
-    return Collections.singletonList(Kind.SYNCHRONIZED_STATEMENT);
+  public List<Tree.Kind> nodesToVisit() {
+    return Collections.singletonList(Tree.Kind.SYNCHRONIZED_STATEMENT);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     SynchronizedStatementTree sst = (SynchronizedStatementTree) tree;
-    if(sst.expression().is(Kind.NEW_CLASS)) {
+    if(sst.expression().is(Tree.Kind.NEW_CLASS)) {
       reportIssue(tree, "Synchronizing on a new instance is a no-op.");
       return;
     }
@@ -68,7 +63,7 @@ public class SynchronizedFieldAssignmentCheck extends IssuableSubscriptionVisito
 
   @CheckForNull
   private static Symbol getParam(ExpressionTree tree) {
-    if (tree.is(Kind.IDENTIFIER)) {
+    if (tree.is(Tree.Kind.IDENTIFIER)) {
       Symbol reference = ((IdentifierTree) tree).symbol();
       if (JUtils.isParameter(reference)) {
         return reference;
@@ -79,12 +74,12 @@ public class SynchronizedFieldAssignmentCheck extends IssuableSubscriptionVisito
 
   @CheckForNull
   private static Symbol getField(ExpressionTree tree) {
-    if (tree.is(Kind.IDENTIFIER)) {
+    if (tree.is(Tree.Kind.IDENTIFIER)) {
       Symbol reference = ((IdentifierTree) tree).symbol();
       if (!reference.isUnknown() && reference.owner().isTypeSymbol()) {
         return reference;
       }
-    } else if (tree.is(Kind.MEMBER_SELECT)) {
+    } else if (tree.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
       if (isField(mse)) {
         return getField(mse.identifier());
@@ -94,10 +89,11 @@ public class SynchronizedFieldAssignmentCheck extends IssuableSubscriptionVisito
   }
 
   private static boolean isField(ExpressionTree tree) {
-    if (tree.is(Kind.IDENTIFIER)) {
+    if (tree.is(Tree.Kind.IDENTIFIER)) {
       Symbol reference = ((IdentifierTree) tree).symbol();
       return !reference.isUnknown() && reference.owner().isTypeSymbol();
-    } else if (tree.is(Kind.MEMBER_SELECT)) {
+    }
+    if (tree.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
       ExpressionTree mseExpression = mse.expression();
       if (ExpressionUtils.isThis(mseExpression)) {
@@ -125,13 +121,13 @@ public class SynchronizedFieldAssignmentCheck extends IssuableSubscriptionVisito
     }
 
     private void checkSymbolAssignment(Tree variable) {
-      if (variable.is(Kind.IDENTIFIER)) {
+      if (variable.is(Tree.Kind.IDENTIFIER)) {
         if (field.equals(((IdentifierTree) variable).symbol())) {
           reportIssue(
             synchronizedStatement,
             String.format("\"%s\" is not \"private final\", and should not be used for synchronization. ", field.name()));
         }
-      } else if (variable.is(Kind.MEMBER_SELECT)) {
+      } else if (variable.is(Tree.Kind.MEMBER_SELECT)) {
         checkSymbolAssignment(((MemberSelectExpressionTree) variable).identifier());
       }
     }

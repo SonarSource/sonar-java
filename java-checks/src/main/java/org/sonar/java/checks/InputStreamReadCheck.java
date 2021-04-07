@@ -45,9 +45,6 @@ public class InputStreamReadCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     MethodTree method = (MethodTree) tree;
     if (method.block() != null && INPUT_STREAM_READ.matches(method)) {
       method.accept(new ReturnStatementVisitor());

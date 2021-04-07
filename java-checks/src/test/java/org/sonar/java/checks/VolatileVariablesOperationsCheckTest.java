@@ -31,14 +31,4 @@ class VolatileVariablesOperationsCheckTest {
       .withCheck(new VolatileVariablesOperationsCheck())
       .verifyIssues();
   }
-
-  @Test
-  void test_noSemantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/VolatileVariablesOperationsCheck.java")
-      .withCheck(new VolatileVariablesOperationsCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
-
 }

@@ -53,11 +53,7 @@ public class HostnameVerifierImplementationCheck extends IssuableSubscriptionVis
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
-
-    if (tree.kind().equals(Tree.Kind.METHOD)) {
+    if (tree.is(Tree.Kind.METHOD)) {
       checkMethodDefinition((MethodTree) tree);
     } else {
       checkLambdaDefinition(((LambdaExpressionTree) tree));

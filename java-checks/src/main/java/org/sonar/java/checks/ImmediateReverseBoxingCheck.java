@@ -38,7 +38,6 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S2153")
@@ -59,15 +58,12 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
   private static final MethodMatchers valueOfInvocationMatchers = valueOfInvocationMatchers();
 
   @Override
-  public List<Kind> nodesToVisit() {
+  public List<Tree.Kind> nodesToVisit() {
     return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.VARIABLE, Tree.Kind.ASSIGNMENT, Tree.Kind.NEW_CLASS);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       visitMethodInvocationTree((MethodInvocationTree) tree);
     } else if (tree.is(Tree.Kind.VARIABLE)) {

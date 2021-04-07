@@ -58,15 +58,13 @@ public class KeySetInsteadOfEntrySetCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      ForEachStatement forEachTree = (ForEachStatement) tree;
-      ExpressionTree expressionTree = forEachTree.expression();
-      if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
-        MethodInvocationTree methodTree = (MethodInvocationTree) expressionTree;
-        Symbol ownerSymbol = getOwnerSymbol(methodTree);
-        if (ownerSymbol != null && MAP_KEYSET_METHOD.matches(methodTree)) {
-          new GetUsageVisitor().isCallingGetWithSymbol(forEachTree, forEachTree.variable().symbol(), ownerSymbol);
-        }
+    ForEachStatement forEachTree = (ForEachStatement) tree;
+    ExpressionTree expressionTree = forEachTree.expression();
+    if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree methodTree = (MethodInvocationTree) expressionTree;
+      Symbol ownerSymbol = getOwnerSymbol(methodTree);
+      if (ownerSymbol != null && MAP_KEYSET_METHOD.matches(methodTree)) {
+        new GetUsageVisitor().isCallingGetWithSymbol(forEachTree, forEachTree.variable().symbol(), ownerSymbol);
       }
     }
   }

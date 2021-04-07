@@ -37,11 +37,6 @@ class SecureCookieCheckTest {
       .onFile(TEST_SOURCE_PATH)
       .withCheck(new SecureCookieCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile(TEST_SOURCE_PATH)
-      .withCheck(new SecureCookieCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
   @Test
   void test_non_compiling() {
@@ -49,10 +44,5 @@ class SecureCookieCheckTest {
       .onFile(NON_COMPILING_TEST_SOURCE_PATH)
       .withCheck(new SecureCookieCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile(NON_COMPILING_TEST_SOURCE_PATH)
-      .withCheck(new SecureCookieCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

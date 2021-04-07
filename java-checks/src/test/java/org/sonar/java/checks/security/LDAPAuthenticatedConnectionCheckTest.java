@@ -38,11 +38,5 @@ class LDAPAuthenticatedConnectionCheckTest {
       // FIXME should not requires an empty classpath
       .withClassPath(Collections.emptyList())
       .verifyIssues();
-
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/LDAPAuthenticatedConnectionCheck.java"))
-      .withCheck(new LDAPAuthenticatedConnectionCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

@@ -79,9 +79,6 @@ public class SyncGetterAndSetterCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     MethodTree methodTree = (MethodTree) tree;
     checkMethodTree(methodTree, GETTER, SETTER);
     checkMethodTree(methodTree, GETTER_BOOLEAN, SETTER);

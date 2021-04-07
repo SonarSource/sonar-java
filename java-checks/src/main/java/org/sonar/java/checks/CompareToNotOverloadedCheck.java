@@ -39,7 +39,7 @@ public class CompareToNotOverloadedCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (hasSemantic() && isCompareToMethod(methodTree) && Boolean.FALSE.equals(methodTree.isOverriding())) {
+    if (isCompareToMethod(methodTree) && Boolean.FALSE.equals(methodTree.isOverriding())) {
       Symbol.TypeSymbol ownerType = (Symbol.TypeSymbol) methodTree.symbol().owner();
       JUtils.superTypes(ownerType).stream().filter(supertype -> supertype.is("java.lang.Comparable")).findFirst().ifPresent(
         comparableType -> {

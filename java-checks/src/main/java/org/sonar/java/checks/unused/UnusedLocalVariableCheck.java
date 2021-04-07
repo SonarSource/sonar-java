@@ -35,7 +35,6 @@ import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -72,7 +71,7 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
   private final Map<Symbol, List<IdentifierTree>> assignments = new HashMap<>();
 
   @Override
-  public List<Kind> nodesToVisit() {
+  public List<Tree.Kind> nodesToVisit() {
     return Arrays.asList(
       Tree.Kind.BLOCK, Tree.Kind.STATIC_INITIALIZER,
       Tree.Kind.FOR_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT,
@@ -83,23 +82,21 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
-    if (hasSemantic()) {
-      if (tree.is(Tree.Kind.BLOCK, Tree.Kind.STATIC_INITIALIZER)) {
-        BlockTree blockTree = (BlockTree) tree;
-        addVariables(blockTree.body());
-      } else if (tree.is(Tree.Kind.FOR_STATEMENT)) {
-        ForStatementTree forStatementTree = (ForStatementTree) tree;
-        addVariables(forStatementTree.initializer());
-      } else if (tree.is(Tree.Kind.FOR_EACH_STATEMENT)) {
-        ForEachStatement forEachStatement = (ForEachStatement) tree;
-        addVariables(Collections.singletonList(forEachStatement.variable()));
-      } else if (tree.is(Tree.Kind.EXPRESSION_STATEMENT)) {
-        leaveExpressionStatement((ExpressionStatementTree) tree);
-      } else {
-        checkVariableUsages();
-        variables.clear();
-        assignments.clear();
-      }
+    if (tree.is(Tree.Kind.BLOCK, Tree.Kind.STATIC_INITIALIZER)) {
+      BlockTree blockTree = (BlockTree) tree;
+      addVariables(blockTree.body());
+    } else if (tree.is(Tree.Kind.FOR_STATEMENT)) {
+      ForStatementTree forStatementTree = (ForStatementTree) tree;
+      addVariables(forStatementTree.initializer());
+    } else if (tree.is(Tree.Kind.FOR_EACH_STATEMENT)) {
+      ForEachStatement forEachStatement = (ForEachStatement) tree;
+      addVariables(Collections.singletonList(forEachStatement.variable()));
+    } else if (tree.is(Tree.Kind.EXPRESSION_STATEMENT)) {
+      leaveExpressionStatement((ExpressionStatementTree) tree);
+    } else {
+      checkVariableUsages();
+      variables.clear();
+      assignments.clear();
     }
   }
 

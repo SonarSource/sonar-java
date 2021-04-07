@@ -42,23 +42,21 @@ public class CollectionCallingItselfCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
-      Symbol symbolReference = null;
-      Symbol method = null;
-      String reportedName = "";
-      if (methodInvocationTree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-        MemberSelectExpressionTree mse = (MemberSelectExpressionTree) methodInvocationTree.methodSelect();
-        IdentifierTree identifier = mse.identifier();
-        reportedName = identifier.name();
-        method = identifier.symbol();
-        if (mse.expression().is(Tree.Kind.IDENTIFIER)) {
-          symbolReference = ((IdentifierTree) mse.expression()).symbol();
-        }
+    MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
+    Symbol symbolReference = null;
+    Symbol method = null;
+    String reportedName = "";
+    if (methodInvocationTree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) methodInvocationTree.methodSelect();
+      IdentifierTree identifier = mse.identifier();
+      reportedName = identifier.name();
+      method = identifier.symbol();
+      if (mse.expression().is(Tree.Kind.IDENTIFIER)) {
+        symbolReference = ((IdentifierTree) mse.expression()).symbol();
       }
-      if (symbolReference != null && isMethodFromCollection(method)) {
-        reportIssueForParameters(methodInvocationTree, symbolReference, reportedName);
-      }
+    }
+    if (symbolReference != null && isMethodFromCollection(method)) {
+      reportIssueForParameters(methodInvocationTree, symbolReference, reportedName);
     }
   }
 

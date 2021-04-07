@@ -56,9 +56,6 @@ public class CollectionSizeAndArrayLengthCheck extends IssuableSubscriptionVisit
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     BinaryExpressionTree bet = (BinaryExpressionTree) tree;
     ExpressionTree leftOperand = ExpressionUtils.skipParentheses(bet.leftOperand());
     ExpressionTree rightOperand = ExpressionUtils.skipParentheses(bet.rightOperand());

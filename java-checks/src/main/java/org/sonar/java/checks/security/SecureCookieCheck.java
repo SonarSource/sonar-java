@@ -130,9 +130,6 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     if (tree.is(Tree.Kind.VARIABLE)) {
       addToUnsecuredCookies((VariableTree) tree);
     } else if (tree.is(Tree.Kind.ASSIGNMENT)) {

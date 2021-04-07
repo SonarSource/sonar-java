@@ -30,11 +30,5 @@ class RedundantStreamCollectCheckTest {
       .onFile("src/test/files/checks/RedundantStreamCollectCheck.java")
       .withCheck(new RedundantStreamCollectCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/RedundantStreamCollectCheck.java")
-      .withCheck(new RedundantStreamCollectCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
-
 }

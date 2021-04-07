@@ -68,9 +68,6 @@ public class DoubleCheckedLockingCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     isIfFieldEqNull(tree).ifPresent(ifFieldEqNull -> {
       ifFieldStack.push(ifFieldEqNull);
       visitIfStatement(ifFieldEqNull.ifTree);
@@ -86,9 +83,6 @@ public class DoubleCheckedLockingCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     isIfFieldEqNull(tree).ifPresent(cl -> ifFieldStack.pop());
     if (tree.is(SYNCHRONIZED_STATEMENT)) {
       synchronizedStmtStack.pop();

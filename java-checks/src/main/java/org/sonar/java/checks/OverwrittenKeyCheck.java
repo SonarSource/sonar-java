@@ -65,10 +65,6 @@ public class OverwrittenKeyCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
-
     Map<CollectionAndKey, List<Tree>> usedKeys = new HashMap<>();
     for (StatementTree statementTree: ((BlockTree) tree).body()){
       CollectionAndKey mapPut = isMapPut(statementTree);

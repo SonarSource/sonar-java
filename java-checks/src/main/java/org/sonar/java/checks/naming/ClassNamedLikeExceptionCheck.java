@@ -28,26 +28,23 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 @Rule(key = "S2166")
 public class ClassNamedLikeExceptionCheck extends IssuableSubscriptionVisitor {
 
   @Override
-  public List<Kind> nodesToVisit() {
+  public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.CLASS);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      ClassTree classTree = (ClassTree) tree;
-      Symbol.TypeSymbol symbol = classTree.symbol();
-      String className = symbol.name();
-      if (endsWithException(className) && !isSubtypeOfException(symbol) && !hasUnknownSuperType(symbol)) {
-        String suffix = className.substring(className.length() - "exception".length());
-        reportIssue(classTree.simpleName(), "Rename this class to remove \"" + suffix + "\" or correct its inheritance.");
-      }
+    ClassTree classTree = (ClassTree) tree;
+    Symbol.TypeSymbol symbol = classTree.symbol();
+    String className = symbol.name();
+    if (endsWithException(className) && !isSubtypeOfException(symbol) && !hasUnknownSuperType(symbol)) {
+      String suffix = className.substring(className.length() - "exception".length());
+      reportIssue(classTree.simpleName(), "Rename this class to remove \"" + suffix + "\" or correct its inheritance.");
     }
   }
 

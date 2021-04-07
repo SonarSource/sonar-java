@@ -30,11 +30,5 @@ class MembersDifferOnlyByCapitalizationCheckTest {
       .onFile("src/test/files/checks/MembersDifferOnlyByCapitalizationCheck.java")
       .withCheck(new MembersDifferOnlyByCapitalizationCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/MembersDifferOnlyByCapitalizationCheck.java")
-      .withCheck(new MembersDifferOnlyByCapitalizationCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
-
 }

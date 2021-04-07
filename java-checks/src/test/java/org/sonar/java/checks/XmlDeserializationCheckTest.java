@@ -31,14 +31,4 @@ class XmlDeserializationCheckTest {
       .withCheck(new XmlDeserializationCheck())
       .verifyIssues();
   }
-
-  @Test
-  void test_no_semantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/XmlDeserialization.java")
-      .withCheck(new XmlDeserializationCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
-
 }

@@ -29,11 +29,6 @@ class SynchronizedClassUsageCheckTest {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/SynchronizedClassUsageCheck.java")
       .withCheck(new SynchronizedClassUsageCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/SynchronizedClassUsageCheck.java")
-      .withCheck(new SynchronizedClassUsageCheck())
       .verifyIssues();
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/SynchronizedClassUsageByAPICheck.java")

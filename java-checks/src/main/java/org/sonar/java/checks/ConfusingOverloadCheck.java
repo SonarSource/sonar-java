@@ -41,9 +41,6 @@ public class ConfusingOverloadCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     MethodTree methodTree = (MethodTree) tree;
     if (Boolean.FALSE.equals(methodTree.isOverriding())) {
       Symbol.MethodSymbol methodSymbol = methodTree.symbol();

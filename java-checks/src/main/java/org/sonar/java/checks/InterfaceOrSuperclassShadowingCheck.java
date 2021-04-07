@@ -25,8 +25,6 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
-
 import javax.annotation.Nullable;
 
 import java.util.Arrays;
@@ -36,19 +34,17 @@ import java.util.List;
 public class InterfaceOrSuperclassShadowingCheck extends IssuableSubscriptionVisitor {
 
   @Override
-  public List<Kind> nodesToVisit() {
+  public List<Tree.Kind> nodesToVisit() {
     return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.INTERFACE);
   }
 
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (hasSemantic()) {
-      Symbol.TypeSymbol classSymbol = classTree.symbol();
-      checkSuperType(classTree, classSymbol.superClass());
-      for (Type interfaceType : classSymbol.interfaces()) {
-        checkSuperType(classTree, interfaceType);
-      }
+    Symbol.TypeSymbol classSymbol = classTree.symbol();
+    checkSuperType(classTree, classSymbol.superClass());
+    for (Type interfaceType : classSymbol.interfaces()) {
+      checkSuperType(classTree, interfaceType);
     }
   }
 

@@ -77,17 +77,15 @@ public class ConstantMathCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      if (tree.is(Tree.Kind.REMAINDER)) {
-        BinaryExpressionTree remainderTree = (BinaryExpressionTree) tree;
-        if (isIntegralOne(remainderTree.rightOperand()) && isIntOrLong(remainderTree.leftOperand())) {
-          reportIssue(remainderTree.operatorToken(), "Remove this computation of % 1, which always evaluates to zero.");
-        }
-      } else {
-        MethodInvocationTree mit = (MethodInvocationTree) tree;
-        if (isConstantWithLiteral(mit) || isTruncation(mit) || isConstantWithZero(mit) || isConstantWithZeroOrOne(mit)) {
-          reportIssue(mit.methodSelect(), String.format("Remove this silly call to \"Math.%s\"", mit.symbol().name()));
-        }
+    if (tree.is(Tree.Kind.REMAINDER)) {
+      BinaryExpressionTree remainderTree = (BinaryExpressionTree) tree;
+      if (isIntegralOne(remainderTree.rightOperand()) && isIntOrLong(remainderTree.leftOperand())) {
+        reportIssue(remainderTree.operatorToken(), "Remove this computation of % 1, which always evaluates to zero.");
+      }
+    } else {
+      MethodInvocationTree mit = (MethodInvocationTree) tree;
+      if (isConstantWithLiteral(mit) || isTruncation(mit) || isConstantWithZero(mit) || isConstantWithZeroOrOne(mit)) {
+        reportIssue(mit.methodSelect(), String.format("Remove this silly call to \"Math.%s\"", mit.symbol().name()));
       }
     }
   }

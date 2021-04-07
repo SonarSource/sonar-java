@@ -48,10 +48,6 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
-
     ForEachStatement actualStatement = (ForEachStatement) tree;
     Type variableType = actualStatement.variable().type().symbolType();
     Type collectionItemType = getCollectionItemType(actualStatement.expression());
@@ -79,7 +75,8 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
     }
     if (expressionType.isArray()) {
       return ((Type.ArrayType) expressionType).elementType();
-    } else if(expressionType.isClass()) {
+    }
+    if(expressionType.isClass()) {
       return JUtils.superTypes(expressionType.symbol()).stream()
         .filter(t -> t.is("java.lang.Iterable") && t.isParameterized())
         .findFirst()

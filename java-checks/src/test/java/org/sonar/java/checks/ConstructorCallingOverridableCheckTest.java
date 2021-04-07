@@ -30,10 +30,5 @@ class ConstructorCallingOverridableCheckTest {
       .onFile("src/test/files/checks/ConstructorCallingOverridableCheck.java")
       .withCheck(new ConstructorCallingOverridableCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ConstructorCallingOverridableCheck.java")
-      .withCheck(new ConstructorCallingOverridableCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

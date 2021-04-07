@@ -53,9 +53,6 @@ public class StaticFieldUpdateInConstructorCheck extends IssuableSubscriptionVis
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     MethodTree constructor = (MethodTree) tree;
 
     Symbol.TypeSymbol owner = constructor.symbol().enclosingClass();

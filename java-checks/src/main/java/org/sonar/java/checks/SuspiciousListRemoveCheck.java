@@ -56,9 +56,6 @@ public class SuspiciousListRemoveCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     ForStatementTree forStatementTree = (ForStatementTree) tree;
     Symbol counter = findLoopCounter(forStatementTree);
     if (counter == null || !isIncrementingLoop(forStatementTree, counter)) {

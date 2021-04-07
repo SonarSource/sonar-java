@@ -23,16 +23,12 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 class AndroidSSLConnectionCheckTest {
+
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/security/AndroidSSLConnection.java")
       .withCheck(new AndroidSSLConnectionCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/security/AndroidSSLConnection.java")
-      .withCheck(new AndroidSSLConnectionCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

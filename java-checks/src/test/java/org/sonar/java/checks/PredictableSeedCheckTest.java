@@ -30,11 +30,5 @@ class PredictableSeedCheckTest {
       .onFile("src/test/files/checks/PredictableSeedCheck.java")
       .withCheck(new PredictableSeedCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/PredictableSeedCheck.java")
-      .withCheck(new PredictableSeedCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
-
 }

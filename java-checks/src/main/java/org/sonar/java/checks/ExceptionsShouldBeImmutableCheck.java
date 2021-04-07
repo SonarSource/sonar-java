@@ -36,9 +36,6 @@ public class ExceptionsShouldBeImmutableCheck extends IssuableSubscriptionVisito
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     ClassTree classTree = (ClassTree) tree;
     if (isException(classTree)) {
       for (Tree member : classTree.members()) {

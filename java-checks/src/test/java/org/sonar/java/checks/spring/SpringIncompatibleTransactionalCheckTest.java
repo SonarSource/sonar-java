@@ -30,11 +30,5 @@ class SpringIncompatibleTransactionalCheckTest {
       .onFile("src/test/files/checks/spring/SpringIncompatibleTransactionalCheck.java")
       .withCheck(new SpringIncompatibleTransactionalCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/spring/SpringIncompatibleTransactionalCheck.java")
-      .withCheck(new SpringIncompatibleTransactionalCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
-
 }

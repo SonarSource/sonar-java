@@ -30,11 +30,5 @@ class UnusedMethodParameterCheckTest {
       .onFile("src/test/files/checks/unused/UnusedMethodParameterCheck.java")
       .withCheck(new UnusedMethodParameterCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/unused/UnusedMethodParameterCheck.java")
-      .withCheck(new UnusedMethodParameterCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
-
 }

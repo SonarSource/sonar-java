@@ -30,10 +30,5 @@ class ThisExposedFromConstructorCheckTest {
       .onFile("src/test/files/checks/ThisExposedFromConstructorCheck.java")
       .withCheck(new ThisExposedFromConstructorCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ThisExposedFromConstructorCheck.java")
-      .withCheck(new ThisExposedFromConstructorCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

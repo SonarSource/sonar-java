@@ -31,14 +31,4 @@ class UselessExtendsCheckTest {
       .withCheck(new UselessExtendsCheck())
       .verifyIssues();
   }
-
-  @Test
-  void noSemantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/UselessExtendsCheck.java")
-      .withCheck(new UselessExtendsCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
-
 }

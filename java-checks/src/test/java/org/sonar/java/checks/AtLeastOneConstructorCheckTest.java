@@ -30,11 +30,5 @@ class AtLeastOneConstructorCheckTest {
       .onFile("src/test/files/checks/AtLeastOneConstructorCheck.java")
       .withCheck(new AtLeastOneConstructorCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/AtLeastOneConstructorCheck.java")
-      .withCheck(new AtLeastOneConstructorCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
-
 }

@@ -31,14 +31,4 @@ class PrivateReadResolveCheckTest {
       .withCheck(new PrivateReadResolveCheck())
       .verifyIssues();
   }
-
-  @Test
-  void private_read_resolve_check_no_semantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/serialization/PrivateReadResolveCheck.java")
-      .withCheck(new PrivateReadResolveCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
-
 }

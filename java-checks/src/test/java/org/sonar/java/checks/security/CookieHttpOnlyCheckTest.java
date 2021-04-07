@@ -37,11 +37,6 @@ class CookieHttpOnlyCheckTest {
       .onFile(TEST_SOURCE_PATH)
       .withCheck(new CookieHttpOnlyCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile(TEST_SOURCE_PATH)
-      .withCheck(new CookieHttpOnlyCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
   @Test
   void test_non_compiling() {

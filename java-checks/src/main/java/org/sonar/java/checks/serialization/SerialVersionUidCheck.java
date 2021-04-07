@@ -30,22 +30,19 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S2057")
 public class SerialVersionUidCheck extends IssuableSubscriptionVisitor {
 
   @Override
-  public List<Kind> nodesToVisit() {
+  public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.CLASS);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      visitClassTree((ClassTree) tree);
-    }
+    visitClassTree((ClassTree) tree);
   }
 
   private void visitClassTree(ClassTree classTree) {

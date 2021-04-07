@@ -42,9 +42,6 @@ public class MethodNamedEqualsCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     MethodTree methodTree = (MethodTree) tree;
     if (equalsWithSingleParam(methodTree) && !hasProperEquals(methodTree)) {
       reportIssue(methodTree.simpleName(), "Either override Object.equals(Object), or rename the method to prevent any confusion.");

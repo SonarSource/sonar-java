@@ -53,9 +53,6 @@ public class SynchronizationOnGetClassCheck extends IssuableSubscriptionVisitor 
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     SynchronizedStatementTree synchronizedTree = (SynchronizedStatementTree) tree;
     if (synchronizedTree.expression().is(METHOD_INVOCATION)) {
       MethodInvocationTree synchronizedExpr = (MethodInvocationTree) synchronizedTree.expression();
@@ -70,9 +67,8 @@ public class SynchronizationOnGetClassCheck extends IssuableSubscriptionVisitor 
       MethodTree methodTree = findMethodTreeAncestor(expressionTree);
       if (methodTree != null) {
         return methodTree.symbol().owner().isFinal();
-      } else {
-        return findClassTreeAncestor(expressionTree).symbol().isFinal();
       }
+      return findClassTreeAncestor(expressionTree).symbol().isFinal();
     }
     return ((MemberSelectExpressionTree) expressionTree).expression().symbolType().symbol().isFinal();
   }

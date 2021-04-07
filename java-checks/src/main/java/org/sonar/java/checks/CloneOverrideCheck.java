@@ -41,9 +41,6 @@ public class CloneOverrideCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if(!hasSemantic()) {
-      return;
-    }
     MethodTree methodTree = (MethodTree) tree;
     IdentifierTree identifierTree = methodTree.simpleName();
     if (methodTree.parameters().isEmpty() && "clone".equals(identifierTree.name()) && !isUnsupportedCloneOverride(methodTree)) {

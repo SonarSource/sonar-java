@@ -45,9 +45,6 @@ public class SubClassStaticReferenceCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     ClassTree classTree = (ClassTree) tree;
     Type classType = classTree.symbol().type();
     List<Tree> members = classTree.members();

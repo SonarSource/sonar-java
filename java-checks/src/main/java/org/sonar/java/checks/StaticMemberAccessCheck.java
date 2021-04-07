@@ -50,9 +50,6 @@ public class StaticMemberAccessCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
     Symbol symbol = mse.identifier().symbol();
     if (symbol.isStatic()  && !isListOrSetOf(mse)) {

@@ -64,21 +64,19 @@ public class CompareToResultTestCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private boolean isInvalidTest(ExpressionTree operand1, ExpressionTree operand2) {
+  private static boolean isInvalidTest(ExpressionTree operand1, ExpressionTree operand2) {
     operand1 = ExpressionUtils.skipParentheses(operand1);
     operand2 = ExpressionUtils.skipParentheses(operand2);
     return (isNonZeroInt(operand1) && isCompareToResult(operand2))
       || (isNonZeroInt(operand2) && isCompareToResult(operand1));
   }
 
-  private boolean isCompareToResult(ExpressionTree expression) {
-    if (hasSemantic()) {
-      if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
-        return COMPARE_TO.matches((MethodInvocationTree) expression);
-      }
-      if (expression.is(Tree.Kind.IDENTIFIER)) {
-        return isIdentifierContainingCompareToResult((IdentifierTree) expression);
-      }
+  private static boolean isCompareToResult(ExpressionTree expression) {
+    if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
+      return COMPARE_TO.matches((MethodInvocationTree) expression);
+    }
+    if (expression.is(Tree.Kind.IDENTIFIER)) {
+      return isIdentifierContainingCompareToResult((IdentifierTree) expression);
     }
     return false;
   }

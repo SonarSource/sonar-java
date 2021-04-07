@@ -29,10 +29,5 @@ class CloneOverrideCheckTest {
       .onFile("src/test/files/checks/CloneOverrideCheck.java")
       .withCheck(new CloneOverrideCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/CloneOverrideCheck.java")
-      .withCheck(new CloneOverrideCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

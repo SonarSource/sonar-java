@@ -31,10 +31,5 @@ class SwitchLastCaseIsDefaultCheckTest {
       .onFile(testSourcesPath("checks/SwitchLastCaseIsDefaultCheck.java"))
       .withCheck(new SwitchLastCaseIsDefaultCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/SwitchLastCaseIsDefaultCheck.java"))
-      .withCheck(new SwitchLastCaseIsDefaultCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

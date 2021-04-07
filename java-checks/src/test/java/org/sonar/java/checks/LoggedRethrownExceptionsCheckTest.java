@@ -29,10 +29,5 @@ class LoggedRethrownExceptionsCheckTest {
       .onFile("src/test/files/checks/LoggedRethrownExceptionsCheck.java")
       .withCheck(new LoggedRethrownExceptionsCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/LoggedRethrownExceptionsCheck.java")
-      .withCheck(new LoggedRethrownExceptionsCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

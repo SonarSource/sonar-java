@@ -30,11 +30,6 @@ class ImmediateReverseBoxingCheckTest {
       .onFile("src/test/files/checks/ImmediateReverseBoxingCheck.java")
       .withCheck(new ImmediateReverseBoxingCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ImmediateReverseBoxingCheck.java")
-      .withCheck(new ImmediateReverseBoxingCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 
 }

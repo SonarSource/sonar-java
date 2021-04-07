@@ -33,13 +33,4 @@ class CipherBlockChainingCheckTest {
       .withCheck(new CipherBlockChainingCheck())
       .verifyIssues();
   }
-
-  @Test
-  void test_no_semantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/CipherBlockChainingCheck.java"))
-      .withCheck(new CipherBlockChainingCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
 }

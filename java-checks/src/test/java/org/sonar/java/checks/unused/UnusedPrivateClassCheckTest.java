@@ -32,11 +32,5 @@ class UnusedPrivateClassCheckTest {
       .onFile(testSourcesPath("checks/UnusedPrivateClass.java"))
       .withCheck(new UnusedPrivateClassCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/UnusedPrivateClass.java"))
-      .withCheck(new UnusedPrivateClassCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
-
 }

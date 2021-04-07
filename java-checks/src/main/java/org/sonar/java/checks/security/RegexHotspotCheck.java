@@ -67,9 +67,6 @@ public class RegexHotspotCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       if (REGEX_HOTSPOTS.matches((MethodInvocationTree) tree)) {
         Arguments args = ((MethodInvocationTree) tree).arguments();

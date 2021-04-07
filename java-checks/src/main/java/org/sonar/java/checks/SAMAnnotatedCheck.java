@@ -61,9 +61,6 @@ public class SAMAnnotatedCheck extends IssuableSubscriptionVisitor implements Ja
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     ClassTree classTree = (ClassTree) tree;
     if (hasOneAbstractMethod(classTree.symbol()) && !isAnnotated(classTree)) {
       IdentifierTree simpleName = classTree.simpleName();

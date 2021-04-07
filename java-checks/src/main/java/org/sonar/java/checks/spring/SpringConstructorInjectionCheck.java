@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.spring;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,22 +33,18 @@ import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S4288")
 public class SpringConstructorInjectionCheck extends IssuableSubscriptionVisitor {
 
   @Override
-  public List<Kind> nodesToVisit() {
-    return Collections.singletonList(Kind.CLASS);
+  public List<Tree.Kind> nodesToVisit() {
+    return Collections.singletonList(Tree.Kind.CLASS);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if(!hasSemantic()) {
-      return;
-    }
     ClassTree classTree = (ClassTree) tree;
     if (isClassTreeAnnotatedWith(classTree,
       "org.springframework.stereotype.Controller",
@@ -66,7 +62,7 @@ public class SpringConstructorInjectionCheck extends IssuableSubscriptionVisitor
 
         // find constructor
         classTree.members().stream()
-          .filter(m -> m.is(Kind.CONSTRUCTOR))
+          .filter(m -> m.is(Tree.Kind.CONSTRUCTOR))
           .map(m -> ((MethodTree) m).simpleName())
           .findFirst()
           .map(id -> new JavaFileScannerContext.Location("Constructor where you can inject these fields.", id))
@@ -81,9 +77,9 @@ public class SpringConstructorInjectionCheck extends IssuableSubscriptionVisitor
 
   private static boolean isMemberAutowired(Tree member) {
     Symbol s = null;
-    if (member.is(Kind.VARIABLE)) {
+    if (member.is(Tree.Kind.VARIABLE)) {
       s = ((VariableTree) member).symbol();
-    } else if (member.is(Kind.METHOD)) {
+    } else if (member.is(Tree.Kind.METHOD)) {
       s = ((MethodTree) member).symbol();
     }
     return s != null && !s.isStatic() && isAutowired(s);
@@ -95,9 +91,9 @@ public class SpringConstructorInjectionCheck extends IssuableSubscriptionVisitor
 
   private static Tree toReportTree(Tree member) {
     Stream<AnnotationTree> stream = Stream.empty();
-    if (member.is(Kind.VARIABLE)) {
+    if (member.is(Tree.Kind.VARIABLE)) {
       stream = ((VariableTree) member).modifiers().annotations().stream();
-    } else if (member.is(Kind.METHOD)) {
+    } else if (member.is(Tree.Kind.METHOD)) {
       stream = ((MethodTree) member).modifiers().annotations().stream();
     }
     return stream

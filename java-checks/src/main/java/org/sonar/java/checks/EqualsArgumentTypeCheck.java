@@ -63,9 +63,6 @@ public class EqualsArgumentTypeCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     MethodTree methodTree = (MethodTree) tree;
     if (methodTree.block() != null && "equals".equals(methodTree.symbol().name()) && methodTree.parameters().size() == 1) {
       Symbol parameterSymbol = methodTree.parameters().get(0).symbol();

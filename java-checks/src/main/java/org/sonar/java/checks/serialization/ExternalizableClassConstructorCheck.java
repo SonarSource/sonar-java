@@ -39,9 +39,6 @@ public class ExternalizableClassConstructorCheck extends IssuableSubscriptionVis
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     ClassTree classTree = (ClassTree) tree;
     if (!isAnonymous(classTree) && implementsExternalizable(classTree)) {
       Collection<Symbol> constructors = classTree.symbol().lookupSymbols("<init>");

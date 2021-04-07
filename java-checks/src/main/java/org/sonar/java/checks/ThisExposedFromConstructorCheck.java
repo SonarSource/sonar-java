@@ -45,9 +45,6 @@ public class ThisExposedFromConstructorCheck extends IssuableSubscriptionVisitor
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     MethodTree methodTree = (MethodTree) tree;
     methodTree.block().accept(new ConstructorBodyVisitor(methodTree.symbol().owner()));
   }

@@ -81,7 +81,7 @@ public class StaticFieldUpateCheck extends AbstractInSynchronizeChecker {
       withinStaticMethod.push(isMethodStatic((MethodTree) tree));
     } else if (tree.is(Kind.STATIC_INITIALIZER)) {
       withinStaticMethod.push(true);
-    } else if (hasSemantic() && isInInstanceMethod() && !hasAnyParentStatic() && !hasAnyParentSync()) {
+    } else if (isInInstanceMethod() && !hasAnyParentStatic() && !hasAnyParentSync()) {
       if (tree.is(ASSIGNMENT_EXPRESSIONS)) {
         checkVariableModification(((AssignmentExpressionTree) tree).variable());
       } else if (tree.is(UNARY_EXPRESSIONS)) {

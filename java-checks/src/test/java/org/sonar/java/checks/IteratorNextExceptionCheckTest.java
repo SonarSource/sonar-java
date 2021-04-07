@@ -30,11 +30,6 @@ class IteratorNextExceptionCheckTest {
       .onFile("src/test/files/checks/IteratorNextExceptionCheck.java")
       .withCheck(new IteratorNextExceptionCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/IteratorNextExceptionCheck.java")
-      .withCheck(new IteratorNextExceptionCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 
 }

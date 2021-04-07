@@ -44,7 +44,7 @@ class BadConstantNameCheckTest {
   }
 
   @Test
-  void test2() {
+  void test_custom_value() {
     BadConstantNameCheck check = new BadConstantNameCheck();
     check.format = "^[a-zA-Z0-9_]*$";
     JavaCheckVerifier.newVerifier()
@@ -52,5 +52,4 @@ class BadConstantNameCheckTest {
       .withCheck(check)
       .verifyNoIssues();
   }
-
 }

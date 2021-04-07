@@ -33,14 +33,4 @@ class InputStreamReadCheckTest {
       .withCheck(new InputStreamReadCheck())
       .verifyIssues();
   }
-
-  @Test
-  void no_issues_without_semantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/InputStreamReadCheck.java"))
-      .withCheck(new InputStreamReadCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
-
 }

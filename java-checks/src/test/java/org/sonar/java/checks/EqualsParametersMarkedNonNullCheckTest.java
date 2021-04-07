@@ -30,11 +30,5 @@ class EqualsParametersMarkedNonNullCheckTest {
       .onFile("src/test/files/checks/EqualsParametersMarkedNonNullCheck.java")
       .withCheck(new EqualsParametersMarkedNonNullCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/EqualsParametersMarkedNonNullCheck.java")
-      .withCheck(new EqualsParametersMarkedNonNullCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
-
 }

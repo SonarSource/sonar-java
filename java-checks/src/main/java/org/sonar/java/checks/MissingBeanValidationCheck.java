@@ -49,10 +49,6 @@ public class MissingBeanValidationCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
-
     ClassTree classTree = (ClassTree) tree;
     for (Tree member : classTree.members()) {
       if (member.is(Tree.Kind.VARIABLE)) {
@@ -117,10 +113,9 @@ public class MissingBeanValidationCheck extends IssuableSubscriptionVisitor {
   private static Stream<SymbolMetadata.AnnotationInstance> annotationInstances(VariableTree variable) {
     if (variable.type().is(Tree.Kind.PARAMETERIZED_TYPE)) {
       return typeArgumentAnnotationInstances(variable);
-    } else {
-      Symbol.TypeSymbol classSymbol = variable.symbol().type().symbol();
-      return classAndFieldAnnotationInstances(classSymbol);
     }
+    Symbol.TypeSymbol classSymbol = variable.symbol().type().symbol();
+    return classAndFieldAnnotationInstances(classSymbol);
   }
 
   private static Stream<SymbolMetadata.AnnotationInstance> typeArgumentAnnotationInstances(VariableTree variable) {

@@ -54,7 +54,7 @@ public class URLHashCodeAndEqualsCheck extends IssuableSubscriptionVisitor {
           reportIssue(variableTree.type(), "Use the URI class instead.");
         }
       }
-    } else if (hasSemantic() && URL_MATCHERS.matches((MethodInvocationTree) tree)) {
+    } else if (URL_MATCHERS.matches((MethodInvocationTree) tree)) {
       reportIssue(tree, "Use the URI class instead.");
     }
   }

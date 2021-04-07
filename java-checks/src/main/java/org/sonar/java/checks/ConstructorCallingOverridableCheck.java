@@ -47,12 +47,10 @@ public class ConstructorCallingOverridableCheck extends IssuableSubscriptionVisi
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      MethodTree m = (MethodTree) tree;
-      Symbol.TypeSymbol constructorType = m.symbol().enclosingClass();
-      if (!constructorType.isFinal()) {
-        ((MethodTree) tree).block().accept(new ConstructorBodyVisitor(constructorType));
-      }
+    MethodTree m = (MethodTree) tree;
+    Symbol.TypeSymbol constructorType = m.symbol().enclosingClass();
+    if (!constructorType.isFinal()) {
+      ((MethodTree) tree).block().accept(new ConstructorBodyVisitor(constructorType));
     }
   }
 

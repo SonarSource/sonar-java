@@ -33,11 +33,6 @@ class HiddenFieldCheckTest {
       .onFile(testSourcesPath("checks/HiddenFieldCheck.java"))
       .withCheck(new HiddenFieldCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/HiddenFieldCheck.java"))
-      .withCheck(new HiddenFieldCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 
   @Test

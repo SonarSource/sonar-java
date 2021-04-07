@@ -31,11 +31,5 @@ class CompareToNotOverloadedCheckTest {
       .onFile(testSourcesPath("checks/CompareToNotOverloadedCheck.java"))
       .withCheck(new CompareToNotOverloadedCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/CompareToNotOverloadedCheck.java"))
-      .withCheck(new CompareToNotOverloadedCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-
   }
 }

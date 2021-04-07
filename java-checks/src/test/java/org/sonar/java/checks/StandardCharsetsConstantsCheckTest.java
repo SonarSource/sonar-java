@@ -52,11 +52,5 @@ class StandardCharsetsConstantsCheckTest {
       .withCheck(new StandardCharsetsConstantsCheck())
       .withJavaVersion(6)
       .verifyNoIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/StandardCharsetsConstantsCheck.java"))
-      .withCheck(new StandardCharsetsConstantsCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
-
 }

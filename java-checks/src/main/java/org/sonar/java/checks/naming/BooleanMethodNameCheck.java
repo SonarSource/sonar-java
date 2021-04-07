@@ -38,9 +38,6 @@ public class BooleanMethodNameCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     MethodTree methodTree = (MethodTree) tree;
     IdentifierTree simpleName = methodTree.simpleName();
     if (returnsBoolean(methodTree) && isBooleanGetter(simpleName) && isNotOverriding(methodTree)) {

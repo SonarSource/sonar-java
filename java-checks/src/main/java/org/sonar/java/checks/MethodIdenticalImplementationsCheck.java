@@ -55,9 +55,6 @@ public class MethodIdenticalImplementationsCheck extends IssuableSubscriptionVis
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     ClassTree classTree = (ClassTree) tree;
     List<MethodWithUsedVariables> methods = classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))

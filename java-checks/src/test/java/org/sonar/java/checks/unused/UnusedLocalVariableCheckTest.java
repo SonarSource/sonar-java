@@ -30,11 +30,5 @@ class UnusedLocalVariableCheckTest {
       .onFile("src/test/files/checks/unused/UnusedLocalVariableCheck.java")
       .withCheck(new UnusedLocalVariableCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/unused/UnusedLocalVariableCheck.java")
-      .withCheck(new UnusedLocalVariableCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
-
 }

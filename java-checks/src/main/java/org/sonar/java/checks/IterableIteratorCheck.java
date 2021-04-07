@@ -49,9 +49,6 @@ public class IterableIteratorCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     ReturnThis returnThis = new ReturnThis();
     ClassTree classTree = (ClassTree) tree;
     Type classType = classTree.symbol().type();

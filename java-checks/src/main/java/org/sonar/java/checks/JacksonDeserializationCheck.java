@@ -54,9 +54,6 @@ public class JacksonDeserializationCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     if (tree.is(Tree.Kind.METHOD_INVOCATION) && ENABLE_DEFAULT_TYPING.matches((MethodInvocationTree) tree)) {
       reportIssue(tree, MESSAGE);
     } else if (tree.is(Tree.Kind.ANNOTATION)) {

@@ -31,7 +31,6 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.Arrays;
@@ -43,26 +42,24 @@ public class StringToPrimitiveConversionCheck extends IssuableSubscriptionVisito
   private final List<PrimitiveCheck> primitiveChecks = buildPrimitiveChecks();
 
   @Override
-  public List<Kind> nodesToVisit() {
+  public List<Tree.Kind> nodesToVisit() {
     return Arrays.asList(Tree.Kind.VARIABLE, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      if (tree.is(Tree.Kind.VARIABLE)) {
-        VariableTree variableTree = (VariableTree) tree;
-        Type variableType = variableTree.type().symbolType();
-        PrimitiveCheck primitiveCheck = getPrimitiveCheck(variableType);
-        ExpressionTree initializer = variableTree.initializer();
-        if (primitiveCheck != null && initializer != null) {
-          primitiveCheck.checkInstantiation(initializer);
-        }
-      } else {
-        MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
-        for (PrimitiveCheck primitiveCheck : primitiveChecks) {
-          primitiveCheck.checkMethodInvocation(methodInvocationTree);
-        }
+    if (tree.is(Tree.Kind.VARIABLE)) {
+      VariableTree variableTree = (VariableTree) tree;
+      Type variableType = variableTree.type().symbolType();
+      PrimitiveCheck primitiveCheck = getPrimitiveCheck(variableType);
+      ExpressionTree initializer = variableTree.initializer();
+      if (primitiveCheck != null && initializer != null) {
+        primitiveCheck.checkInstantiation(initializer);
+      }
+    } else {
+      MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
+      for (PrimitiveCheck primitiveCheck : primitiveChecks) {
+        primitiveCheck.checkMethodInvocation(methodInvocationTree);
       }
     }
   }

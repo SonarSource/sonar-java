@@ -47,7 +47,7 @@ public class CompareToReturnValueCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (hasSemantic() && isCompareToDeclaration(methodTree)) {
+    if (isCompareToDeclaration(methodTree)) {
       methodTree.accept(new ReturnStatementVisitor());
     }
   }

@@ -30,11 +30,5 @@ class ProtectedMemberInFinalClassCheckTest {
       .onFile("src/test/files/checks/ProtectedMemberInFinalClassCheck.java")
       .withCheck(new ProtectedMemberInFinalClassCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ProtectedMemberInFinalClassCheck.java")
-      .withCheck(new ProtectedMemberInFinalClassCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
-
 }

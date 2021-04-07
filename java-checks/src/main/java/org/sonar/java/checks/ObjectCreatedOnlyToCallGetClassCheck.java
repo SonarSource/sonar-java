@@ -30,7 +30,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S2133")
@@ -43,11 +43,12 @@ public class ObjectCreatedOnlyToCallGetClassCheck extends AbstractMethodDetectio
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    if (hasSemantic() && mit.methodSelect().is(Kind.MEMBER_SELECT)) {
+    if (mit.methodSelect()
+      .is(Tree.Kind.MEMBER_SELECT)) {
       ExpressionTree expressionTree = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
-      if (expressionTree.is(Kind.NEW_CLASS, Kind.NEW_ARRAY)) {
+      if (expressionTree.is(Tree.Kind.NEW_CLASS, Tree.Kind.NEW_ARRAY)) {
         reportIssue(expressionTree);
-      } else if (expressionTree.is(Kind.IDENTIFIER) && variableUsedOnlyToGetClass((IdentifierTree) expressionTree)) {
+      } else if (expressionTree.is(Tree.Kind.IDENTIFIER) && variableUsedOnlyToGetClass((IdentifierTree) expressionTree)) {
         reportIssue(getInitializer((IdentifierTree) expressionTree));
       }
     }
@@ -75,7 +76,7 @@ public class ObjectCreatedOnlyToCallGetClassCheck extends AbstractMethodDetectio
 
   private static boolean hasBeenInitialized(IdentifierTree tree) {
     ExpressionTree initializer = getInitializer(tree);
-    return initializer != null && initializer.is(Kind.NEW_CLASS);
+    return initializer != null && initializer.is(Tree.Kind.NEW_CLASS);
   }
 
   private void reportIssue(@Nullable ExpressionTree expressionTree) {

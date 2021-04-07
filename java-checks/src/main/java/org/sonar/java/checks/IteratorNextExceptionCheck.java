@@ -52,7 +52,7 @@ public class IteratorNextExceptionCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (hasSemantic() && isIteratorNextMethod(methodTree.symbol()) && methodTree.block() != null) {
+    if (isIteratorNextMethod(methodTree.symbol()) && methodTree.block() != null) {
       NextMethodBodyVisitor visitor = new NextMethodBodyVisitor();
       tree.accept(visitor);
       if (!visitor.foundThrow) {

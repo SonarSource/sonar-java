@@ -29,10 +29,5 @@ class StaticFieldInitializationCheckTest {
       .onFile("src/test/files/checks/StaticFieldInitializationCheck.java")
       .withCheck(new StaticFieldInitializationCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/StaticFieldInitializationCheck.java")
-      .withCheck(new StaticFieldInitializationCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }
