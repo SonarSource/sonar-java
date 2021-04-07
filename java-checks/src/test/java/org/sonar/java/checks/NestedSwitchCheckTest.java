@@ -23,13 +23,23 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
-class NestedSwitchStatementCheckTest {
+class NestedSwitchCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(TestUtils.testSourcesPath("checks/NestedSwitchStatementCheck.java"))
-      .withCheck(new NestedSwitchStatementCheck())
+      .withCheck(new NestedSwitchCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_switch_expressions() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/NestedSwitchExpressionCheck.java"))
+      .withCheck(new NestedSwitchCheck())
+      .withJavaVersion(14)
+      .verifyIssues();
+  }
+
 }
