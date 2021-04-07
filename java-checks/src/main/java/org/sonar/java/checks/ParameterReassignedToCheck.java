@@ -81,40 +81,40 @@ public class ParameterReassignedToCheck extends BaseTreeVisitor implements JavaF
   @Override
   public void visitCatch(CatchTree tree) {
     CFG cfg = CFG.buildCFG(tree.block().body(), true);
-    Symbol var = tree.parameter().symbol();
+    Symbol variable = tree.parameter().symbol();
     boolean liveVar = true;
-    if(var.owner().isMethodSymbol()) {
-      cfg.setMethodSymbol((Symbol.MethodSymbol) var.owner());
+    if(variable.owner().isMethodSymbol()) {
+      cfg.setMethodSymbol((Symbol.MethodSymbol) variable.owner());
       LiveVariables analyze = LiveVariables.analyze(cfg);
       Set<Symbol> live = analyze.getIn(cfg.entryBlock());
-      liveVar = live.contains(var);
+      liveVar = live.contains(variable);
     }
     if(!liveVar) {
-      variables.add(var);
+      variables.add(variable);
     }
     super.visitCatch(tree);
     if(!liveVar) {
-      variables.remove(var);
+      variables.remove(variable);
     }
   }
 
   @Override
   public void visitForEachStatement(ForEachStatement tree) {
     CFG cfg = CFG.buildCFG(Collections.singletonList(tree), true);
-    Symbol var = tree.variable().symbol();
+    Symbol variable = tree.variable().symbol();
     boolean liveVar = true;
-    if(var.owner().isMethodSymbol()) {
-      cfg.setMethodSymbol((Symbol.MethodSymbol) var.owner());
+    if(variable.owner().isMethodSymbol()) {
+      cfg.setMethodSymbol((Symbol.MethodSymbol) variable.owner());
       LiveVariables analyze = LiveVariables.analyze(cfg);
       Set<Symbol> live = analyze.getOut(cfg.reversedBlocks().get(1));
-      liveVar = live.contains(var);
+      liveVar = live.contains(variable);
     }
     if(!liveVar) {
-      variables.add(var);
+      variables.add(variable);
     }
     super.visitForEachStatement(tree);
     if(!liveVar) {
-      variables.remove(var);
+      variables.remove(variable);
     }
   }
 

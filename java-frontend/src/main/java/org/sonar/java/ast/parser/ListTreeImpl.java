@@ -94,7 +94,7 @@ public abstract class ListTreeImpl<T extends Tree> extends JavaTree implements L
   }
 
   @Override
-  public <T> T[] toArray(T[] a) {
+  public <U> U[] toArray(U[] a) {
     return list.toArray(a);
   }
 

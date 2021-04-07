@@ -21,6 +21,7 @@ package org.sonar.java.model.expression;
 
 import java.util.Arrays;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -29,9 +30,6 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
-import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.Nullable;
 
 public class InstanceOfTreeImpl extends AssessableExpressionTree implements InstanceOfTree {
 

@@ -778,19 +778,19 @@ public class ExplodedGraphWalker {
 
       // Enqueue exceptional paths from exceptional yields
       methodInvokedBehavior.exceptionalPathYields()
-        .forEach(yield -> yield.statesAfterInvocation(
+        .forEach(methodYield -> methodYield.statesAfterInvocation(
           invocationArguments,
           invocationTypes,
           programState,
-          () -> thrownExceptionsByExceptionType.computeIfAbsent(yield.exceptionType(semanticModel), constraintManager::createExceptionalSymbolicValue))
-          .forEach(psYield -> enqueueExceptionalPaths(psYield, methodSymbol, yield)));
+          () -> thrownExceptionsByExceptionType.computeIfAbsent(methodYield.exceptionType(semanticModel), constraintManager::createExceptionalSymbolicValue))
+          .forEach(psYield -> enqueueExceptionalPaths(psYield, methodSymbol, methodYield)));
 
       // Enqueue happy paths
       methodInvokedBehavior.happyPathYields()
-        .forEach(yield ->
-          yield.statesAfterInvocation(invocationArguments, invocationTypes, programState, () -> resultValue)
+        .forEach(methodYield ->
+          methodYield.statesAfterInvocation(invocationArguments, invocationTypes, programState, () -> resultValue)
             .map(psYield -> handleSpecialMethods(psYield, mit))
-            .forEach(psYield -> enqueueHappyPath(psYield, mit,  yield)));
+            .forEach(psYield -> enqueueHappyPath(psYield, mit,  methodYield)));
     } else {
       // Enqueue exceptional paths from thrown exceptions
       enqueueThrownExceptionalPaths(methodSymbol);
@@ -802,9 +802,9 @@ public class ExplodedGraphWalker {
     }
   }
 
-  private void enqueueHappyPath(ProgramState programState, MethodInvocationTree mit, MethodYield yield) {
+  private void enqueueHappyPath(ProgramState programState, MethodInvocationTree mit, MethodYield methodYield) {
     checkerDispatcher.syntaxNode = mit;
-    checkerDispatcher.methodYield = yield;
+    checkerDispatcher.methodYield = methodYield;
     checkerDispatcher.addTransition(programState);
     checkerDispatcher.methodYield = null;
     clearStack(mit);
