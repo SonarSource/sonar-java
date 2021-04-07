@@ -111,6 +111,12 @@
                   <type>jar</type>
                 </artifactItem>
                 <artifactItem>
+                  <groupId>org.eclipse.jgit</groupId>
+                  <artifactId>org.eclipse.jgit</artifactId>
+                  <version>5.11.0.202103091610-r</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
                   <groupId>org.springframework</groupId>
                   <artifactId>spring-core</artifactId>
                   <version>5.0.7.RELEASE</version>

@@ -1,8 +1,11 @@
 package org.foo;
 
+import java.lang.reflect.Constructor;
 import java.text.ParseException;
+import java.util.LinkedList;
 import java.util.List;
 
+import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -43,6 +46,9 @@ class NullPointerTest {
   public Object[] nullableField;
 
   @Nullable
+  public String nullableFieldString;
+
+  @Nullable
   public Object[] nullableMethod() {
     return nullableField;
   }
@@ -54,8 +60,16 @@ class NullPointerTest {
     return nullableField;
   }
   @reactor.util.annotation.Nullable
-  public Object[] springNullableMethod() {
+  public Object[] reactorNullableMethod() {
     return nullableField;
+  }
+  @org.eclipse.jdt.annotation.Nullable
+  public String eclipseJdtNullableMethod() {
+    return nullableFieldString;
+  }
+  @org.eclipse.jgit.annotations.Nullable
+  public String eclipseJgitNullableMethod() {
+    return nullableFieldString;
   }
 
   public void testNotnullable(Object[] parameter) {
@@ -106,8 +120,12 @@ class NullPointerTest {
 
     i = nullableMethod().length; // Compliant
 
-    // Spring nullable should be considered as a "CheckForNull".
+    // Spring, reactor and Eclipse nullable should be considered as a "CheckForNull".
     i = springNullableMethod().length; // Noncompliant
+    i = reactorNullableMethod().length; // Noncompliant
+
+    i = eclipseJdtNullableMethod().length(); // Noncompliant
+    i = eclipseJgitNullableMethod().length(); // Noncompliant
   }
 
   class A {
