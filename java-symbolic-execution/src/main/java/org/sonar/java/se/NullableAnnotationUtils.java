@@ -62,7 +62,11 @@ public final class NullableAnnotationUtils {
     // Despite the name, some Nullable annotations are meant to be used as CheckForNull
     // as they are using meta-annotation from javax: @Nonnull(When.MAYBE), same as javax @CheckForNull.
     "org.springframework.lang.Nullable",
-    "reactor.util.annotation.Nullable");
+    "reactor.util.annotation.Nullable",
+    // From the documentation (https://wiki.eclipse.org/JDT_Core/Null_Analysis):
+    // For any variable who's type is annotated with @Nullable [...] It is illegal to dereference such a variable for either field or method access.
+    "org.eclipse.jdt.annotation.Nullable",
+    "org.eclipse.jgit.annotations.Nullable");
 
 
   private static final Set<String> WEAK_NULLABLE_ANNOTATIONS = SetUtils.immutableSetOf(
@@ -78,8 +82,6 @@ public final class NullableAnnotationUtils {
     "org.checkerframework.checker.nullness.compatqual.NullableDecl",
     "org.checkerframework.checker.nullness.compatqual.NullableType",
     "org.checkerframework.checker.nullness.qual.Nullable",
-    "org.eclipse.jdt.annotation.Nullable",
-    "org.eclipse.jgit.annotations.Nullable",
     "org.jetbrains.annotations.Nullable",
     "org.jmlspecs.annotation.Nullable",
     "org.netbeans.api.annotations.common.NullAllowed",
