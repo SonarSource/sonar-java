@@ -19,8 +19,8 @@
   <description>Java Custom Rules Example for SonarQube</description>
 
   <properties>
-    <sonarqube.version>8.7.0.41497</sonarqube.version>
-    <sonarjava.version>6.13.0.25138</sonarjava.version>
+    <sonarqube.version>8.8.0.42792</sonarqube.version>
+    <sonarjava.version>6.14.0.25463</sonarjava.version>
     <!-- Don't forget to update this version -->
     <jacoco.version>0.8.6</jacoco.version>
     <!-- Use UTF-8 for all resources -->
@@ -96,9 +96,7 @@
           <pluginClass>org.sonar.samples.java.MyJavaRulesPlugin</pluginClass>
           <sonarLintSupported>true</sonarLintSupported>
           <sonarQubeMinVersion>${sonarqube.version}</sonarQubeMinVersion>
-          <!-- FIXME after release of SQ 8.8 -->
-          <requirePlugins>java:6.12.0.24852</requirePlugins>
-          <!-- <requirePlugins>java:${sonarjava.version}</requirePlugins> -->
+          <requirePlugins>java:${sonarjava.version}</requirePlugins>
         </configuration>
       </plugin>
 
