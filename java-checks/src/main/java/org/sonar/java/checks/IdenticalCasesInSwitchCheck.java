@@ -37,6 +37,7 @@ import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
+import org.sonar.plugins.java.api.tree.SwitchTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S1871")
@@ -80,7 +81,7 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
     return body.size() == 1 || (body.size() == 2 && body.get(1).is(Tree.Kind.BREAK_STATEMENT));
   }
 
-  protected Map<CaseGroupTree, Set<CaseGroupTree>> checkSwitchStatement(SwitchStatementTree node) {
+  protected Map<CaseGroupTree, Set<CaseGroupTree>> checkSwitchStatement(SwitchTree node) {
     Map<CaseGroupTree, Set<CaseGroupTree>> identicalBranches = new HashMap<>();
     int index = 0;
     List<CaseGroupTree> cases = node.cases();
@@ -159,7 +160,7 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
     return !node.is(Tree.Kind.BLOCK) || ((BlockTree) node).body().size() <= 1;
   }
 
-  protected static boolean hasDefaultClause(SwitchStatementTree switchStatement) {
+  protected static boolean hasDefaultClause(SwitchTree switchStatement) {
     return switchStatement.cases().stream()
       .flatMap(caseGroupTree -> caseGroupTree.labels().stream())
       .anyMatch(caseLabelTree -> caseLabelTree.caseOrDefaultKeyword().text().equals("default"));

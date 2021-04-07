@@ -29,7 +29,7 @@ import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
-import org.sonar.plugins.java.api.tree.SwitchStatementTree;
+import org.sonar.plugins.java.api.tree.SwitchTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S3923")
@@ -39,16 +39,16 @@ public class AllBranchesAreIdenticalCheck extends IdenticalCasesInSwitchCheck {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.SWITCH_STATEMENT, Tree.Kind.IF_STATEMENT, Tree.Kind.CONDITIONAL_EXPRESSION);
+    return Arrays.asList(Tree.Kind.SWITCH_STATEMENT, Tree.Kind.SWITCH_EXPRESSION, Tree.Kind.IF_STATEMENT, Tree.Kind.CONDITIONAL_EXPRESSION);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.SWITCH_STATEMENT)) {
-      SwitchStatementTree switchStatement = (SwitchStatementTree) tree;
-      Map<CaseGroupTree, Set<CaseGroupTree>> identicalBranches = checkSwitchStatement(switchStatement);
-      if (hasDefaultClause(switchStatement) && allBranchesSame(identicalBranches, switchStatement.cases().size())) {
-        reportIssue(switchStatement.switchKeyword(), IF_SWITCH_MSG);
+    if (tree.is(Tree.Kind.SWITCH_STATEMENT, Tree.Kind.SWITCH_EXPRESSION)) {
+      SwitchTree switchTree = (SwitchTree) tree;
+      Map<CaseGroupTree, Set<CaseGroupTree>> identicalBranches = checkSwitchStatement(switchTree);
+      if (hasDefaultClause(switchTree) && allBranchesSame(identicalBranches, switchTree.cases().size())) {
+        reportIssue(switchTree.switchKeyword(), IF_SWITCH_MSG);
       }
     } else if (tree.is(Tree.Kind.IF_STATEMENT)) {
       IfStatementTree ifStatementTree = (IfStatementTree) tree;
