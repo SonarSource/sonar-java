@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class SwitchDefaultLastCaseCheckTest {
@@ -32,4 +33,14 @@ class SwitchDefaultLastCaseCheckTest {
       .withCheck(new SwitchDefaultLastCaseCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_switch_expressions() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/SwitchDefaultLastCaseCheck.java"))
+      .withCheck(new SwitchDefaultLastCaseCheck())
+      .withJavaVersion(14)
+      .verifyIssues();
+  }
+
 }
