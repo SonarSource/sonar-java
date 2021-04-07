@@ -19,22 +19,20 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
-import org.sonar.plugins.java.api.tree.SwitchStatementTree;
+import org.sonar.plugins.java.api.tree.SwitchTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Rule(key = "S1479")
 public class SwitchWithTooManyCasesCheck extends IssuableSubscriptionVisitor {
-
 
   private static final int DEFAULT_MAXIMUM_CASES = 30;
 
@@ -46,28 +44,30 @@ public class SwitchWithTooManyCasesCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.SWITCH_STATEMENT);
+    return Arrays.asList(Tree.Kind.SWITCH_STATEMENT, Tree.Kind.SWITCH_EXPRESSION);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
-    if (isSwitchOverEnum(switchStatementTree)) {
+    SwitchTree switchTree = (SwitchTree) tree;
+    if (isSwitchOverEnum(switchTree)) {
       return;
     }
 
-    List<CaseGroupTree> cases = switchStatementTree.cases();
+    List<CaseGroupTree> cases = switchTree.cases();
     int size = cases.size();
     if (size > maximumCases) {
       List<JavaFileScannerContext.Location> secondary = new ArrayList<>();
       for (CaseGroupTree element : cases) {
         secondary.add(new JavaFileScannerContext.Location("+1", element.labels().get(0)));
       }
-      reportIssue(switchStatementTree.switchKeyword(), "Reduce the number of non-empty switch cases from " + size + " to at most " + maximumCases + ".", secondary, null);
+      reportIssue(switchTree.switchKeyword(),
+        String.format("Reduce the number of non-empty switch cases from %d to at most %d.", size, maximumCases),
+        secondary, null);
     }
   }
 
-  private static boolean isSwitchOverEnum(SwitchStatementTree switchStatementTree) {
+  private static boolean isSwitchOverEnum(SwitchTree switchStatementTree) {
     Type type = switchStatementTree.expression().symbolType();
     return type.symbol().isEnum();
   }
