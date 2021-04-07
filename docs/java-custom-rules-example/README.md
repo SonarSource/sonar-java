@@ -3,10 +3,10 @@ SonarQube Java Custom Rules Plugin Template
 
 This example demonstrates how to write **Custom Rules** for SonarJava.
 
-If you are using SonarQube 8.7 (latest release), use the following command to build it without any dependency to the current project status:
+If you are using SonarQube 8.8 (latest release), use the following command to build it without any dependency to the current project status:
 
 ```
-mvn clean install -f pom_SQ_8_7.xml
+mvn clean install -f pom_SQ_8_8.xml
 ```
 
 If you are using SonarQube 7.9 LTS, use this one:
