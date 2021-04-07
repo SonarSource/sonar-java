@@ -19,15 +19,14 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.tree.SwitchStatementTree;
+import org.sonar.plugins.java.api.tree.SwitchTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Collections;
-import java.util.List;
 
 @Rule(key = "S1151")
 public class SwitchCaseTooBigCheck extends IssuableSubscriptionVisitor {
@@ -41,14 +40,14 @@ public class SwitchCaseTooBigCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.SWITCH_STATEMENT);
+    return Arrays.asList(Tree.Kind.SWITCH_STATEMENT, Tree.Kind.SWITCH_EXPRESSION);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
+    SwitchTree switchTree = (SwitchTree) tree;
     LinesOfCodeVisitor locVisitor = new LinesOfCodeVisitor();
-    switchStatementTree.cases().forEach(
+    switchTree.cases().forEach(
       cgt -> {
         int lines = cgt.body().stream().mapToInt(locVisitor::linesOfCode).sum();
         if (lines > max) {
