@@ -541,7 +541,7 @@ public final class CheckList {
       NestedBlocksCheck.class,
       NestedEnumStaticCheck.class,
       NestedIfStatementsCheck.class,
-      NestedSwitchStatementCheck.class,
+      NestedSwitchCheck.class,
       NestedTernaryOperatorsCheck.class,
       NestedTryCatchCheck.class,
       NioFileDeleteCheck.class,
