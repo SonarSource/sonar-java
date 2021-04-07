@@ -1,4 +1,6 @@
-class A {
+package checks;
+
+class IdenticalCasesInSwitchCheck {
   void foo(){
     switch (1) {
       case 1:
@@ -8,12 +10,12 @@ class A {
       case 2:
         System.out.println("bar"); //Compliant
         break;
-      case 3: // Noncompliant [[sc=7;el=+4;ec=15;secondary=4]] {{This case's code block is the same as the block for the case on line 4.}}
+      case 3: // Noncompliant [[sc=7;el=+4;ec=15;secondary=-7]] {{This case's code block is the same as the block for the case on line 6.}}
       case 4:
         System.out.println("plop");
         System.out.println("plop");
         break;
-      case 5: // Noncompliant [[sc=7;el=+3;ec=15;secondary=4]] {{This case's code block is the same as the block for the case on line 4.}}
+      case 5: // Noncompliant [[sc=7;el=+3;ec=15;secondary=-12]] {{This case's code block is the same as the block for the case on line 6.}}
         System.out.println("plop");
         System.out.println("plop");
         break;
@@ -31,7 +33,7 @@ class A {
     switch (1) {
       case 1:
         trivial();
-      case 2: // Noncompliant [[secondary=32]]
+      case 2: // Noncompliant [[secondary=-2]]
         trivial();
     }
 
@@ -39,10 +41,10 @@ class A {
       case 1:
         trivial();
         break;
-      case 2: // Noncompliant [[secondary=39]]
+      case 2: // Noncompliant [[secondary=-3]]
         trivial();
         break;
-      case 3: // Noncompliant [[secondary=39]]
+      case 3: // Noncompliant [[secondary=-6]]
         trivial();
         break;
     }
@@ -144,10 +146,10 @@ class A {
       // skip empty blocks
     } else if (true) {
       System.out.println("bar");
-    } else if (true) { // Noncompliant [[sc=22;el=+3;ec=6;secondary=138]] {{This branch's code block is the same as the block for the branch on line 138.}}
+    } else if (true) { // Noncompliant [[sc=22;el=+3;ec=6;secondary=-9]] {{This branch's code block is the same as the block for the branch on line 140.}}
       System.out.println("foo");
       System.out.println("foo");
-    } else { // Noncompliant [[sc=12;el=+3;ec=6;secondary=138]] {{This branch's code block is the same as the block for the branch on line 138.}}
+    } else { // Noncompliant [[sc=12;el=+3;ec=6;secondary=-12]] {{This branch's code block is the same as the block for the branch on line 140.}}
       System.out.println("foo");
       System.out.println("foo");
     }
@@ -163,13 +165,13 @@ class A {
     else f();
 
     if (true) f();
-    else if (true) f(); // Noncompliant [[secondary=165]]
+    else if (true) f(); // Noncompliant [[secondary=-1]]
 
     if (true) {
       f();
       f();
     }
-    else if (true) { // Noncompliant [[secondary=168]]
+    else if (true) { // Noncompliant [[secondary=-4]]
       f();
       f();
     }
@@ -177,11 +179,26 @@ class A {
       g();
       g();
     }
-    else if (true) {  // Noncompliant [[secondary=176]]
+    else if (true) {  // Noncompliant [[secondary=-4]]
       g();
       g();
     }
     else ;
+  }
+
+  private void g() {
+  }
+
+  private void nonTrivial() {
+  }
+
+  private void trivial() {
+  }
+
+  private void f() {
+  }
+
+  private void f(int i) {
   }
 
 }
