@@ -1,13 +1,15 @@
-class A {
-  void f() {
-    switch (x) {
+package checks;
+
+class SwitchCaseTooBigCheckCustom {
+  void f(int myVariable) {
+    switch (myVariable) {
       case 0:
         System.out.println(); // 1
         System.out.println(); // 2
         System.out.println(); // 3
         System.out.println(); // 4
         System.out.println(); // 5
-      case 1: // Noncompliant [[sc=7;ec=14]] {{Reduce this switch case number of lines from 7 to at most 5, for example by extracting code into methods.}}
+      case 1: // Noncompliant {{Reduce this switch case number of lines from 7 to at most 6, for example by extracting code into methods.}}
         System.out.println(); // 1
         System.out.println(); // 2
         System.out.println(); // 3
@@ -15,13 +17,13 @@ class A {
         System.out.println(); // 5
         System.out.println(); // 6
         break;                // 7
-      case 2: { System.out.println();   // Noncompliant 1
+      case 2: { System.out.println();   // 1
         System.out.println();           // 2
         System.out.println();           // 3
         System.out.println();           // 4
         System.out.println();           // 5
         System.out.println(); }         // 6
-      case 3: // compliant : empty spaces and comments do not count in loc
+      case 3:
         System.out.println();           // 1
                                 /* foo */                       // 2
 
@@ -29,7 +31,7 @@ class A {
         );                              // 5
                                 /* tata */                      // 6
       case 4: // 1
-      case 5: // Compliant: only comments 1
+      case 5: // 1
         // 2
         // 3
         // 4
@@ -38,15 +40,14 @@ class A {
       case 6:
 
 
-      case 7: // Noncompliant {{Reduce this switch case number of lines from 6 to at most 5, for example by extracting code into methods.}}
-        // my empty comment  (does not count)
-        System.out.println();   // 1
+      case 7:
+        // my empty comment     // 1
         System.out.println();   // 2
         System.out.println();   // 3
         System.out.println();   // 4
         System.out.println();   // 5
         System.out.println();   // 6
-      default: // Noncompliant
+      default:
         System.out.println("");  // 1
         System.out.println("");  // 2
         System.out.println("");  // 3
