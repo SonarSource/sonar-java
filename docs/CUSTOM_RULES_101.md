@@ -58,7 +58,7 @@ Note that you can also decide to **delete** the original pom.xml file (**NOT REC
 mvn clean install
 ```
 
-Looking inside the `pom`, you will see that both versions of SonarQube and the Java Analyzer are hardcoded. This is because SonarSource's analyzers are directly embedded in the various SonarQube versions and are shipped together. For instance, SonarQube `7.9` (LTS) is shipped with the version `6.3.2.22818` of the Java Analyzer, while SonarQube `8.8` is shipped with a much more recent version `6.14.0.25463` of the Java Analyzer. **These versions can not be changed**.
+Looking inside the `pom`, you will see that both versions of SonarQube and the Java Analyzer are hard-coded. This is because SonarSource's analyzers are directly embedded in the various SonarQube versions and are shipped together. For instance, SonarQube `7.9` (LTS) is shipped with the version `6.3.2.22818` of the Java Analyzer, while SonarQube `8.8` is shipped with a much more recent version `6.14.0.25463` of the Java Analyzer. **These versions can not be changed**.
 
 ```xml
 <properties>
@@ -240,7 +240,7 @@ Prior to running any rule, the SonarQube Java Analyzer parses a given Java code 
 
 When creating the rule class, we chose to implement the `IssuableSubscriptionVisitor` class from the API. This class, on top of providing a bunch of useful methods to raise issues, also **defines the strategy which will be used when analyzing a file**. As its name is telling us, it is based on a subscription mechanism, allowing to specify on what kind of tree the rule should react. The list of node types to cover is specified through the `nodesToVisit()` method. In the previous steps, we modified the implementation of the method to return an empty list, therefore not subscribing to any node of the syntax tree.
 
-Now its finally time to jump in to the implementation of our first rule! Go back to the `MyFirstCustomCheck` class, and modify the list of Kinds returned by the nodesToVisit() method. Since our rule targets method declarations, we only need to visit methods. To do so, simply make sure that we return a singleton list containing only `Kind.METHOD` as a parameter of the returned list, as shown in the following code snippet.
+Now it's finally time to jump in to the implementation of our first rule! Go back to the `MyFirstCustomCheck` class, and modify the list of Kinds returned by the nodesToVisit() method. Since our rule targets method declarations, we only need to visit methods. To do so, simply make sure that we return a singleton list containing only `Kind.METHOD` as a parameter of the returned list, as shown in the following code snippet.
 
 ```java
 @Override
@@ -304,7 +304,7 @@ Of course, our test failed again... The `JavaCheckVerifier` reported that lines 
 
 ### Second version: Using semantic API
 
-Up to now, our rule implementation only relied on the data provided directly by syntax tree that resulted from the parsing of the code. However, the SonarAnalyzer for Java provides a lot more regarding the code being analyzed, because it also construct a ***semantic model*** of the code. This semantic model provides information related to each ***symbol*** being manipulated. For a method, for instance, the semantic API will provide useful data such as a method's owner, its usages, the types of its parameters and its return type, the exception it may throw, etc. Don't hesitate to explore the [semantic package of the API](https://github.com/SonarSource/sonar-java/tree/6.13.0.25138/java-frontend/src/main/java/org/sonar/plugins/java/api/semantic) in order to have an idea of what kind of information you will have access to during analysis!
+Up to now, our rule implementation only relied on the data provided directly by syntax tree that resulted from the parsing of the code. However, the SonarAnalyzer for Java provides a lot more regarding the code being analyzed, because it also constructs a ***semantic model*** of the code. This semantic model provides information related to each ***symbol*** being manipulated. For a method, for instance, the semantic API will provide useful data such as a method's owner, its usages, the types of its parameters and its return type, the exception it may throw, etc. Don't hesitate to explore the [semantic package of the API](https://github.com/SonarSource/sonar-java/tree/6.13.0.25138/java-frontend/src/main/java/org/sonar/plugins/java/api/semantic) in order to have an idea of what kind of information you will have access to during analysis!
 
 But now, let's go back to our implementation and take advantage of the semantic.
 
@@ -394,7 +394,7 @@ public class MyFirstCustomCheck extends IssuableSubscriptionVisitor {
 ```
 
 ### Rule Activation
-The second things to do is to activate the rule within the plugin. To do so, open class `RulesList` (`org.sonar.samples.java.RulesList`). In this class, you will notice methods `getJavaChecks()` and `getJavaTestChecks()`. These methods are used to register our rules with alongside the rule of the Java plugin. Note that rules registered in `getJavaChecks()` will only be played against source files, while rules registered in `getJavaTestChecks()` will only be played against test files. To register the rule, simply add the rule class to the list builder, as in the following code snippet:
+The second thing to do is to activate the rule within the plugin. To do so, open class `RulesList` (`org.sonar.samples.java.RulesList`). In this class, you will notice methods `getJavaChecks()` and `getJavaTestChecks()`. These methods are used to register our rules with alongside the rule of the Java plugin. Note that rules registered in `getJavaChecks()` will only be played against source files, while rules registered in `getJavaTestChecks()` will only be played against test files. To register the rule, simply add the rule class to the list builder, as in the following code snippet:
 
 ```java
 public static List<Class<? extends JavaCheck>> getJavaChecks() {
