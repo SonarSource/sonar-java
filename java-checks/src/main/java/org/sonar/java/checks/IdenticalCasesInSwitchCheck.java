@@ -36,7 +36,6 @@ import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
-import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -45,16 +44,16 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.SWITCH_STATEMENT, Tree.Kind.IF_STATEMENT);
+    return Arrays.asList(Tree.Kind.SWITCH_STATEMENT, Tree.Kind.SWITCH_EXPRESSION, Tree.Kind.IF_STATEMENT);
   }
 
   @Override
   public void visitNode(Tree node) {
-    if (node.is(Tree.Kind.SWITCH_STATEMENT)) {
-      SwitchStatementTree switchStatement = (SwitchStatementTree) node;
-      Map<CaseGroupTree, Set<CaseGroupTree>> identicalBranches = checkSwitchStatement(switchStatement);
-      boolean allBranchesSame = allBranchesSame(identicalBranches, switchStatement.cases().size());
-      boolean allBranchesSameWithoutDefault = allBranchesSame && !hasDefaultClause(switchStatement);
+    if (node.is(Tree.Kind.SWITCH_STATEMENT, Tree.Kind.SWITCH_EXPRESSION)) {
+      SwitchTree switchTree = (SwitchTree) node;
+      Map<CaseGroupTree, Set<CaseGroupTree>> identicalBranches = checkSwitchStatement(switchTree);
+      boolean allBranchesSame = allBranchesSame(identicalBranches, switchTree.cases().size());
+      boolean allBranchesSameWithoutDefault = allBranchesSame && !hasDefaultClause(switchTree);
       if (!allBranchesSame || allBranchesSameWithoutDefault) {
         identicalBranches.forEach((first, others) -> {
           if (!isTrivialCase(first.body()) || allBranchesSameWithoutDefault) {
