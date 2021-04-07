@@ -39,9 +39,6 @@ public class PrivateReadResolveCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     MethodTree method = (MethodTree) tree;
     if (isPrivateReadResolve(method) && isOwnedBySerializableExtensibleClass(method)) {
       reportIssue(method.simpleName(), "Make this class \"private\" or elevate the visibility of \"readResolve\".");

@@ -30,10 +30,5 @@ class FieldModifierCheckTest {
       .onFile("src/test/files/checks/FieldModifier.java")
       .withCheck(new FieldModifierCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/FieldModifier.java")
-      .withCheck(new FieldModifierCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

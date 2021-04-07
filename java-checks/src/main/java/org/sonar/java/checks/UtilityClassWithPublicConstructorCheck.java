@@ -44,7 +44,7 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (!hasSemantic() || !isUtilityClass(classTree) || isPrivateInnerClass(classTree)) {
+    if (!isUtilityClass(classTree) || isPrivateInnerClass(classTree)) {
       return;
     }
     boolean hasImplicitPublicConstructor = true;
@@ -98,7 +98,8 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
   private static boolean isStatic(Tree member) {
     if (member.is(Tree.Kind.STATIC_INITIALIZER)) {
       return true;
-    } else if (member.is(Tree.Kind.VARIABLE)) {
+    }
+    if (member.is(Tree.Kind.VARIABLE)) {
       VariableTree variableTree = (VariableTree) member;
       return hasStaticModifier(variableTree.modifiers());
     } else if (member.is(Tree.Kind.METHOD)) {

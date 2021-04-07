@@ -30,11 +30,5 @@ class WriteObjectTheOnlySynchronizedMethodCheckTest {
       .onFile("src/test/files/checks/WriteObjectTheOnlySynchronizedMethodCheck.java")
       .withCheck(new WriteObjectTheOnlySynchronizedMethodCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/WriteObjectTheOnlySynchronizedMethodCheck.java")
-      .withCheck(new WriteObjectTheOnlySynchronizedMethodCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
-
 }

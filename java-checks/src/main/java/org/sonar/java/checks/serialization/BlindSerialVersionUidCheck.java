@@ -21,7 +21,6 @@ package org.sonar.java.checks.serialization;
 
 import java.util.Arrays;
 import java.util.List;
-
 import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -29,27 +28,23 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 @Rule(key = "S4926")
 public class BlindSerialVersionUidCheck extends IssuableSubscriptionVisitor {
 
   @Override
-  public List<Kind> nodesToVisit() {
-    return Arrays.asList(Kind.CLASS, Kind.ENUM);
+  public List<Tree.Kind> nodesToVisit() {
+    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.ENUM);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      Symbol.TypeSymbol symbol = ((ClassTree) tree).symbol();
-      if (isSerializable(symbol.type())) {
-        findSerialVersionUid(symbol)
-          .filter(BlindSerialVersionUidCheck::isValidSerialVersionUid)
-          .ifPresent(serialVersionUidSymbol ->
-            reportIssue(serialVersionUidSymbol.declaration().simpleName(), "Remove this \"serialVersionUID\".")
-          );
-      }
+    Symbol.TypeSymbol symbol = ((ClassTree) tree).symbol();
+    if (isSerializable(symbol.type())) {
+      findSerialVersionUid(symbol)
+        .filter(BlindSerialVersionUidCheck::isValidSerialVersionUid)
+        .map(serialVersionUidSymbol -> serialVersionUidSymbol.declaration().simpleName())
+        .ifPresent(declarationTree -> reportIssue(declarationTree, "Remove this \"serialVersionUID\"."));
     }
   }
 

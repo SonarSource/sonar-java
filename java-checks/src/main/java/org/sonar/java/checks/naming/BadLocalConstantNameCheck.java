@@ -63,9 +63,6 @@ public class BadLocalConstantNameCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     VariableTree variableTree = (VariableTree) tree;
     Symbol symbol = variableTree.symbol();
     if (!symbol.owner().isMethodSymbol() || !symbol.isFinal()) {

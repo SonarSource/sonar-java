@@ -85,7 +85,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
 
-    if (!hasSemantic() || classTree.simpleName() == null) {
+    if (classTree.simpleName() == null) {
       return;
     }
 

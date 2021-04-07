@@ -32,13 +32,4 @@ class StaticFieldUpdateInConstructorCheckTest {
       .withCheck(new StaticFieldUpdateInConstructorCheck())
       .verifyIssues();
   }
-
-  @Test
-  void no_issue_without_semantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/StaticFieldUpdateInConstructorCheck.java"))
-      .withCheck(new StaticFieldUpdateInConstructorCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
 }

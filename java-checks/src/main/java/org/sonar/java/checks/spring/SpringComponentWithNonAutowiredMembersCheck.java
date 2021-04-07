@@ -34,7 +34,6 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.sonar.java.checks.helpers.SpringUtils.isScopeSingleton;
@@ -72,7 +71,7 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
     Set<Symbol> symbolsUsedInConstructors = symbolsUsedInConstructors(clazzTree);
 
     if (isSpringSingletonComponent(clazzTree.symbol().metadata())) {
-      clazzTree.members().stream().filter(v -> v.is(Kind.VARIABLE))
+      clazzTree.members().stream().filter(v -> v.is(Tree.Kind.VARIABLE))
         .map(VariableTree.class::cast)
         .filter(v -> !v.symbol().isStatic())
         .filter(v -> !isSpringInjectionAnnotated(v.symbol().metadata()))

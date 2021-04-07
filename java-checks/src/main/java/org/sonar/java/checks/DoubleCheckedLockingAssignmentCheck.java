@@ -54,9 +54,6 @@ public class DoubleCheckedLockingAssignmentCheck extends IssuableSubscriptionVis
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     IfStatementTree ifStatementTree = (IfStatementTree) tree;
     StatementTree body = getOnlyStatement(ifStatementTree);
     if (body == null || !body.is(Tree.Kind.SYNCHRONIZED_STATEMENT)) {

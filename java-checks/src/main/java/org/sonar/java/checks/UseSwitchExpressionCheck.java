@@ -64,9 +64,6 @@ public class UseSwitchExpressionCheck extends IssuableSubscriptionVisitor implem
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     SwitchStatementTree switchTree = (SwitchStatementTree) tree;
     Symbol switchAssigningVariable = isSwitchAssigningVariable(switchTree);
     if (switchAssigningVariable != null) {

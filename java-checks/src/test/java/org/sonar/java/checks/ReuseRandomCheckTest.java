@@ -29,10 +29,5 @@ class ReuseRandomCheckTest {
       .onFile("src/test/files/checks/ReuseRandomCheck.java")
       .withCheck(new ReuseRandomCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ReuseRandomCheck.java")
-      .withCheck(new ReuseRandomCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

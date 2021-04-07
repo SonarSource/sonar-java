@@ -30,11 +30,5 @@ class StringToPrimitiveConversionCheckTest {
       .onFile("src/test/files/checks/StringToPrimitiveConversionCheck.java")
       .withCheck(new StringToPrimitiveConversionCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/StringToPrimitiveConversionCheck.java")
-      .withCheck(new StringToPrimitiveConversionCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
-
 }

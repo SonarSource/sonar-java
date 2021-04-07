@@ -67,7 +67,7 @@ public class BadConstantNameCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     for (Tree member : classTree.members()) {
-      if (member.is(Tree.Kind.VARIABLE) && hasSemantic()) {
+      if (member.is(Tree.Kind.VARIABLE)) {
         VariableTree variableTree = (VariableTree) member;
         Type symbolType = variableTree.type().symbolType();
         if (isConstantType(symbolType) && (classTree.is(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE) || isStaticFinal(variableTree))) {

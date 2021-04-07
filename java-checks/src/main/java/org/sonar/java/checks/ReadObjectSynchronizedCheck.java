@@ -41,9 +41,6 @@ public class ReadObjectSynchronizedCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     ClassTree classTree = (ClassTree) tree;
     if (implementsSerializable(classTree)) {
       for (Tree member : classTree.members()) {

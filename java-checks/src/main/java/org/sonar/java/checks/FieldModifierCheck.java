@@ -42,9 +42,6 @@ public class FieldModifierCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     ClassTree classTree = (ClassTree) tree;
     classTree.members().stream()
       .filter(FieldModifierCheck::isConsentWithCheck)

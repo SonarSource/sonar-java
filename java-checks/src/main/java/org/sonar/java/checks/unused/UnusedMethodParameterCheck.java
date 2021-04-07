@@ -69,9 +69,6 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     MethodTree methodTree = (MethodTree) tree;
     if (methodTree.block() == null || methodTree.parameters().isEmpty() || isExcluded(methodTree)) {
       return;
@@ -132,7 +129,8 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
       AnnotationTree annotationTree = (AnnotationTree) tree;
       return annotationTree.annotationType().symbolType().is(SUPPRESS_WARNINGS_ANNOTATION)
         && annotationTree.arguments().stream().allMatch(UnusedMethodParameterCheck::isExcludedLiteral);
-    } else if (tree.is(Tree.Kind.STRING_LITERAL)) {
+    }
+    if (tree.is(Tree.Kind.STRING_LITERAL)) {
       return EXCLUDED_WARNINGS_SUPPRESSIONS.contains(((LiteralTree) tree).value());
     } else if (tree.is(Tree.Kind.NEW_ARRAY)) {
       return ((NewArrayTree) tree).initializers().stream().allMatch(UnusedMethodParameterCheck::isExcludedLiteral);

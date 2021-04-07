@@ -32,11 +32,5 @@ class ToArrayCheckTest {
       .onFile(testSourcesPath("checks/ToArrayCheck.java"))
       .withCheck(new ToArrayCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/ToArrayCheck.java"))
-      .withCheck(new ToArrayCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
-
 }

@@ -35,12 +35,6 @@ class JdbcDriverExplicitLoadingCheckTest {
       .withCheck(new JdbcDriverExplicitLoadingCheck())
       .withJavaVersion(6)
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile(FILENAME)
-      .withCheck(new JdbcDriverExplicitLoadingCheck())
-      .withJavaVersion(6)
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 
   @Test

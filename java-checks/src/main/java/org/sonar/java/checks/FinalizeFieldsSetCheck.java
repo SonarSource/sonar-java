@@ -47,7 +47,7 @@ public class FinalizeFieldsSetCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (hasSemantic() && isFinalizeDeclaration(methodTree)) {
+    if (isFinalizeDeclaration(methodTree)) {
       methodTree.accept(new AssignmentVisitor());
     }
   }

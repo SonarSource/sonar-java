@@ -29,7 +29,6 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 @Rule(key = "S2674")
 public class IgnoredStreamReturnValueCheck extends IssuableSubscriptionVisitor {
@@ -47,18 +46,14 @@ public class IgnoredStreamReturnValueCheck extends IssuableSubscriptionVisitor {
       .build());
 
   @Override
-  public List<Kind> nodesToVisit() {
+  public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.EXPRESSION_STATEMENT);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
-
     ExpressionTree statement = ((ExpressionStatementTree) tree).expression();
-    if (statement.is(Kind.METHOD_INVOCATION)) {
+    if (statement.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) statement;
       if (MATCHERS.matches(mit)) {
         reportIssue(ExpressionUtils.methodName(mit), "Check the return value of the \"" + mit.symbol().name() + "\" call to see how many bytes were read.");

@@ -52,9 +52,6 @@ public class RedundantCloseCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     TryStatementTree tryStatementTree = (TryStatementTree) tree;
     Set<Symbol> resourceSymbols = tryStatementTree.resourceList().stream()
       .map(RedundantCloseCheck::resourceSymbol)

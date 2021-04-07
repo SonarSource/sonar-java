@@ -27,7 +27,7 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S4433")
 public class LDAPAuthenticatedConnectionCheck extends AbstractMethodDetection {
@@ -56,7 +56,7 @@ public class LDAPAuthenticatedConnectionCheck extends AbstractMethodDetection {
   }
 
   private static boolean isSecurityAuthenticationConstant(ExpressionTree tree) {
-    if (tree.is(Kind.MEMBER_SELECT)) {
+    if (tree.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree constantExpression = (MemberSelectExpressionTree) tree;
       return "javax.naming.Context".equals(constantExpression.expression().symbolType().fullyQualifiedName())
         && "SECURITY_AUTHENTICATION".equals(constantExpression.identifier().name());

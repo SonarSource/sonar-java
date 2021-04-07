@@ -51,9 +51,6 @@ public class AssertsOnParametersOfPublicMethodCheck extends IssuableSubscription
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     MethodTree methodTree = (MethodTree) tree;
     if (!methodTree.symbol().isPublic()) {
       return;

@@ -43,9 +43,6 @@ public class UselessIncrementCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     if (tree.is(Tree.Kind.RETURN_STATEMENT)) {
       ExpressionTree returnExpression = ((ReturnStatementTree) tree).expression();
       if (returnExpression != null && isPostfix(returnExpression)) {

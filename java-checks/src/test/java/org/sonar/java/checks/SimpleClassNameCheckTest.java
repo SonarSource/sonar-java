@@ -50,19 +50,4 @@ class SimpleClassNameCheckTest {
       .withCheck(new SimpleClassNameCheck())
       .verifyNoIssues();
   }
-
-  @Test
-  void test_without_semantic() throws Exception {
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/SimpleClassNameCheck.java"))
-      .withCheck(new SimpleClassNameCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
- 
-    JavaCheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/SimpleClassNameCheck.java"))
-      .withCheck(new SimpleClassNameCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
 }

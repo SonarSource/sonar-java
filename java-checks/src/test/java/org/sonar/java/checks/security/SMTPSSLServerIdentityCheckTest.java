@@ -49,10 +49,5 @@ class SMTPSSLServerIdentityCheckTest {
       .withCheck(new SMTPSSLServerIdentityCheck())
       .withoutSemantic()
       .verifyNoIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/security/SMTPSSLServerIdentityCheck/JavaMailSession.java")
-      .withCheck(new SMTPSSLServerIdentityCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

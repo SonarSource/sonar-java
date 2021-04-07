@@ -31,14 +31,4 @@ class CommandLineArgumentsCheckTest {
       .withCheck(new CommandLineArgumentsCheck())
       .verifyIssues();
   }
-
-  @Test
-  void noSemantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/security/CommandLineArgumentsCheck.java")
-      .withCheck(new CommandLineArgumentsCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
-
 }

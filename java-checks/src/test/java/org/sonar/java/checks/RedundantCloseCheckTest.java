@@ -31,13 +31,4 @@ class RedundantCloseCheckTest {
       .withCheck(new RedundantCloseCheck())
       .verifyIssues();
   }
-
-  @Test
-  void noIssueWithoutSemantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/RedundantCloseCheck.java")
-      .withCheck(new RedundantCloseCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
 }

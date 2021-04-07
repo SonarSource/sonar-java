@@ -30,7 +30,6 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 @Rule(key = "S2055")
 public class SerializableSuperConstructorCheck extends IssuableSubscriptionVisitor {
@@ -42,15 +41,12 @@ public class SerializableSuperConstructorCheck extends IssuableSubscriptionVisit
     .build();
 
   @Override
-  public List<Kind> nodesToVisit() {
+  public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.CLASS);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     ClassTree classTree = (ClassTree) tree;
     if (classTree.simpleName() == null) {
       // do not cover anonymous classes

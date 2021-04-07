@@ -92,8 +92,7 @@ public class StaticFieldInitializationCheck extends AbstractInSynchronizeChecker
         break;
       case ASSIGNMENT:
         AssignmentExpressionTree aet = (AssignmentExpressionTree) tree;
-        if (hasSemantic()
-          && aet.variable().is(Tree.Kind.IDENTIFIER)
+        if (aet.variable().is(Tree.Kind.IDENTIFIER)
           && !isInSyncBlock()
           && !isInStaticInitializer()
           && !isUsingLock()

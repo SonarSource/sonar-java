@@ -107,7 +107,8 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
         }
         if (returnType.is(Tree.Kind.ARRAY_TYPE)) {
           return ARRAY;
-        } else if (isCollection(returnType)) {
+        }
+        if (isCollection(returnType)) {
           return COLLECTION;
         }
       }
@@ -137,9 +138,6 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     if (tree.is(Tree.Kind.METHOD)) {
       MethodTree methodTree = (MethodTree) tree;
       if (isAnnotatedNullable(methodTree.symbol().metadata()) || requiresReturnNull(methodTree)) {
@@ -163,9 +161,6 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     if (!tree.is(Tree.Kind.RETURN_STATEMENT)) {
       returnType.pop();
     }

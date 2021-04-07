@@ -34,11 +34,6 @@ class ClassFieldCountCheckTest {
       .onFile(testSourcesPath("checks/ClassFieldCountCheck/SimpleDefaultCase.java"))
       .withCheck(new ClassFieldCountCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/ClassFieldCountCheck/SimpleDefaultCase.java"))
-      .withCheck(new ClassFieldCountCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 
   @Test

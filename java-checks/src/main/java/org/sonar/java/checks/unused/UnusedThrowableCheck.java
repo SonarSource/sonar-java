@@ -37,9 +37,6 @@ public class UnusedThrowableCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     NewClassTree newClassTree = (NewClassTree) tree;
     if (newClassTree.symbolType().isSubtypeOf("java.lang.Throwable") && newClassTree.parent().is(Tree.Kind.EXPRESSION_STATEMENT)) {
       reportIssue(newClassTree, "Throw this exception or remove this useless statement");

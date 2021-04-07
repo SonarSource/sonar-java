@@ -131,9 +131,6 @@ public class StandardFunctionalInterfaceCheck extends IssuableSubscriptionVisito
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     ClassTree classTree = (ClassTree) tree;
     // classTree.simpleName() never null for Tree.Kind.INTERFACE
     IdentifierTree issueLocation = classTree.simpleName();
@@ -184,9 +181,8 @@ public class StandardFunctionalInterfaceCheck extends IssuableSubscriptionVisito
   private static String buildIssueMessage(ClassTree interfaceTree, String standardInterface) {
     if (interfaceTree.members().size() <= 1) {
       return "Drop this interface in favor of \"" + standardInterface + "\".";
-    } else {
-      return "Make this interface extend \"" + standardInterface + "\" and remove the functional method declaration.";
     }
+    return "Make this interface extend \"" + standardInterface + "\" and remove the functional method declaration.";
   }
 
   private static boolean isNotObjectMethod(MethodSymbol method) {

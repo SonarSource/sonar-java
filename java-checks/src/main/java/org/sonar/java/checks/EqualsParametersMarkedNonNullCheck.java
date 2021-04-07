@@ -39,9 +39,6 @@ public class EqualsParametersMarkedNonNullCheck extends IssuableSubscriptionVisi
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     MethodTree methodTree = (MethodTree) tree;
     List<VariableTree> params = methodTree.parameters();
     if ("equals".equals(methodTree.symbol().name()) && params.size() == 1) {

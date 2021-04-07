@@ -31,14 +31,4 @@ class ObjectDeserializationCheckTest {
       .withCheck(new ObjectDeserializationCheck())
       .verifyIssues();
   }
-
-  @Test
-  void test_no_semantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ObjectDeserialization.java")
-      .withCheck(new ObjectDeserializationCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
-
 }

@@ -29,7 +29,6 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.Collections;
@@ -39,14 +38,14 @@ import java.util.List;
 public class TransientFieldInNonSerializableCheck extends IssuableSubscriptionVisitor {
 
   @Override
-  public List<Kind> nodesToVisit() {
+  public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.CLASS);
   }
 
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (hasSemantic() && isNotSerializable(classTree.symbol())) {
+    if (isNotSerializable(classTree.symbol())) {
       for (Tree member : classTree.members()) {
         ModifierKeywordTree transientModifier = isTransient(member);
         if (transientModifier != null) {

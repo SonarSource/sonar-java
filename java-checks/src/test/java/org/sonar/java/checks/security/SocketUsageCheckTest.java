@@ -31,14 +31,4 @@ class SocketUsageCheckTest {
       .withCheck(new SocketUsageCheck())
       .verifyIssues();
   }
-
-  @Test
-  void noSemantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/security/SocketUsageCheck.java")
-      .withCheck(new SocketUsageCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
-
 }

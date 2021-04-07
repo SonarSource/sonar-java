@@ -40,9 +40,6 @@ public class ConstructorInjectionCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     List<Tree> members = ((ClassTree) tree).members();
     Optional<Tree> first = members.stream().filter(t -> t.is(Tree.Kind.CONSTRUCTOR) && isPrivateConstructor((MethodTree) t)).findFirst();
     if(first.isPresent()) {

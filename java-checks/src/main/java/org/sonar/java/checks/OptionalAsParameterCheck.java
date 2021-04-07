@@ -48,9 +48,6 @@ public class OptionalAsParameterCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     for (VariableTree parameter : ((MethodTree) tree).parameters()) {
       TypeTree typeTree = parameter.type();
       Optional<String> msg = expectedTypeInsteadOfOptional(typeTree.symbolType());

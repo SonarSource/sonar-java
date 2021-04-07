@@ -29,10 +29,5 @@ class ObjectFinalizeOverridenCallsSuperFinalizeCheckTest {
       .onFile("src/test/files/checks/ObjectFinalizeOverridenCallsSuperFinalizeCheck.java")
       .withCheck(new ObjectFinalizeOverridenCallsSuperFinalizeCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ObjectFinalizeOverridenCallsSuperFinalizeCheck.java")
-      .withCheck(new ObjectFinalizeOverridenCallsSuperFinalizeCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

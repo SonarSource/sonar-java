@@ -30,10 +30,5 @@ class VariableDeclarationScopeCheckTest {
       .onFile("src/test/files/checks/VariableDeclarationScopeCheck.java")
       .withCheck(new VariableDeclarationScopeCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/VariableDeclarationScopeCheck.java")
-      .withCheck(new VariableDeclarationScopeCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

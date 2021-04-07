@@ -82,9 +82,6 @@ public class ControllingPermissionsCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     switch (tree.kind()) {
       case CLASS:
       case ENUM:

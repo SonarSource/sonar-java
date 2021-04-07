@@ -30,11 +30,6 @@ class ExceptionsShouldBeImmutableCheckTest {
       .onFile("src/test/files/checks/ExceptionsShouldBeImmutableCheck.java")
       .withCheck(new ExceptionsShouldBeImmutableCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ExceptionsShouldBeImmutableCheck.java")
-      .withCheck(new ExceptionsShouldBeImmutableCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 
 }

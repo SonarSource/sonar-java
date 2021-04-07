@@ -71,12 +71,10 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      MethodInvocationTree mit = (MethodInvocationTree) tree;
-      TYPE_CHECKERS.stream()
-        .filter(typeChecker -> typeChecker.methodMatcher.matches(mit))
-        .forEach(typeChecker -> checkMethodInvocation(mit, typeChecker));
-    }
+    MethodInvocationTree mit = (MethodInvocationTree) tree;
+    TYPE_CHECKERS.stream()
+      .filter(typeChecker -> typeChecker.methodMatcher.matches(mit))
+      .forEach(typeChecker -> checkMethodInvocation(mit, typeChecker));
   }
 
   private void checkMethodInvocation(MethodInvocationTree tree, TypeChecker typeChecker) {
@@ -113,11 +111,10 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
     String typeDescription = checkedTypeHasSeveralParameters ? (" in a \"" + parameterType + "\" type") : "";
     if (actualTypeHasTheParameterType) {
       return MessageFormat.format("A \"{0}\" cannot contain a \"{1}\"{2}.", actualType, argumentType.name(), typeDescription);
-    } else {
-      String checkedType = typeNameWithParameters(checkedMethodType);
-      return MessageFormat.format("\"{0}\" is a \"{1}\" which cannot contain a \"{2}\"{3}.",
-        actualType, checkedType, argumentType.name(), typeDescription);
     }
+    String checkedType = typeNameWithParameters(checkedMethodType);
+    return MessageFormat.format("\"{0}\" is a \"{1}\" which cannot contain a \"{2}\"{3}.",
+      actualType, checkedType, argumentType.name(), typeDescription);
   }
 
   private static String typeNameWithParameters(Type type) {

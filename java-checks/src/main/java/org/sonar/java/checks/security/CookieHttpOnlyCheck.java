@@ -157,18 +157,16 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      if (tree.is(Tree.Kind.VARIABLE)) {
-        checkVariableDeclaration((VariableTree) tree);
-      } else if (tree.is(Tree.Kind.ASSIGNMENT)) {
-        checkAssignment((AssignmentExpressionTree) tree);
-      } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-        MethodInvocationTree invocationTree = (MethodInvocationTree) tree;
-        checkSetterInvocation(invocationTree);
-        invocationTree.arguments().forEach(this::categorizeBasedOnConstructor);
-      } else {
-        categorizeBasedOnConstructor(((ReturnStatementTree) tree).expression());
-      }
+    if (tree.is(Tree.Kind.VARIABLE)) {
+      checkVariableDeclaration((VariableTree) tree);
+    } else if (tree.is(Tree.Kind.ASSIGNMENT)) {
+      checkAssignment((AssignmentExpressionTree) tree);
+    } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree invocationTree = (MethodInvocationTree) tree;
+      checkSetterInvocation(invocationTree);
+      invocationTree.arguments().forEach(this::categorizeBasedOnConstructor);
+    } else {
+      categorizeBasedOnConstructor(((ReturnStatementTree) tree).expression());
     }
   }
 

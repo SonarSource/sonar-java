@@ -46,9 +46,6 @@ public class GettersSettersOnRightFieldCheck extends IssuableSubscriptionVisitor
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     MethodTree methodTree = (MethodTree) tree;
     isGetterLike(methodTree.symbol()).ifPresent(fieldName -> checkGetter(fieldName, methodTree));
     isSetterLike(methodTree.symbol()).ifPresent(fieldName -> checkSetter(fieldName, methodTree));

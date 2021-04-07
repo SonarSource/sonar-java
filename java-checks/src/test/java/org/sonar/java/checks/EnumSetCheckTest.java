@@ -39,17 +39,6 @@ class EnumSetCheckTest {
         .withCheck(new EnumSetCheck())
         .verifyIssues();
     }
-
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/EnumSetCheck.java")
-      .withCheck(new EnumSetCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/EnumSetCheck_java9.java")
-      .withCheck(new EnumSetCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 
 }

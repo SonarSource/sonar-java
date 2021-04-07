@@ -60,9 +60,6 @@ public class LoggedRethrownExceptionsCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     CatchTree catchTree = (CatchTree) tree;
     boolean isLogging = false;
     List<Location> secondaryLocations = new ArrayList<>();
@@ -74,7 +71,8 @@ public class LoggedRethrownExceptionsCheck extends IssuableSubscriptionVisitor {
         secondaryLocations.add(new Location("Thrown exception.", ((ThrowStatementTree) statementTree).expression()));
         reportIssue(catchTree.parameter(), "Either log this exception and handle it, or rethrow it with some contextual information.", secondaryLocations, 0);
         return;
-      } else if (isLoggingMethod(statementTree, exceptionIdentifier)) {
+      }
+      if (isLoggingMethod(statementTree, exceptionIdentifier)) {
         secondaryLocations.add(new Location("Logging statement.", statementTree));
         isLogging = true;
       }

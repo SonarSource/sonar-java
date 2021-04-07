@@ -25,7 +25,6 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 
 import java.util.Collections;
@@ -47,8 +46,8 @@ public class BadTypeParameterNameCheck extends IssuableSubscriptionVisitor {
   private Pattern pattern = null;
 
   @Override
-  public List<Kind> nodesToVisit() {
-    return Collections.singletonList(Kind.TYPE_PARAMETER);
+  public List<Tree.Kind> nodesToVisit() {
+    return Collections.singletonList(Tree.Kind.TYPE_PARAMETER);
   }
 
   @Override

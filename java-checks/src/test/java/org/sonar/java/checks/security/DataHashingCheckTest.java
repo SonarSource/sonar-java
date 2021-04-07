@@ -32,11 +32,6 @@ class DataHashingCheckTest {
       .onFile(testSourcesPath("checks/security/DataHashingCheck.java"))
       .withCheck(new DataHashingCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/DataHashingCheck.java"))
-      .withCheck(new DataHashingCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 
 }

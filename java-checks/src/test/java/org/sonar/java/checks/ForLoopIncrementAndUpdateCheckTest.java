@@ -30,10 +30,5 @@ class ForLoopIncrementAndUpdateCheckTest {
       .onFile("src/test/files/checks/ForLoopIncrementAndUpdateCheck.java")
       .withCheck(new ForLoopIncrementAndUpdateCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ForLoopIncrementAndUpdateCheck.java")
-      .withCheck(new ForLoopIncrementAndUpdateCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

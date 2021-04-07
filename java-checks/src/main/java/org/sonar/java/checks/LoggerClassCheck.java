@@ -75,9 +75,6 @@ public class LoggerClassCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     Symbol.TypeSymbol clazz = ((ClassTree) tree).symbol();
     clazz.memberSymbols().stream()
       .filter(Symbol::isVariableSymbol)

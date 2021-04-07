@@ -30,10 +30,5 @@ class ClassNamedLikeExceptionCheckTest {
       .onFile("src/test/files/checks/naming/ClassNamedLikeExceptionCheck.java")
       .withCheck(new ClassNamedLikeExceptionCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/naming/ClassNamedLikeExceptionCheck.java")
-      .withCheck(new ClassNamedLikeExceptionCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

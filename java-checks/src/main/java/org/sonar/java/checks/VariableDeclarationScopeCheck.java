@@ -29,7 +29,6 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.Collections;
@@ -39,21 +38,18 @@ import java.util.List;
 public class VariableDeclarationScopeCheck extends IssuableSubscriptionVisitor {
 
   @Override
-  public List<Kind> nodesToVisit() {
-    return Collections.singletonList(Kind.BLOCK);
+  public List<Tree.Kind> nodesToVisit() {
+    return Collections.singletonList(Tree.Kind.BLOCK);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if(!hasSemantic()) {
-      return;
-    }
     BlockTree block = (BlockTree) tree;
     List<StatementTree> body = block.body();
     int bodySize = body.size();
     for (int i = 0; i < bodySize; i++) {
       StatementTree statement = body.get(i);
-      if (statement.is(Kind.VARIABLE)) {
+      if (statement.is(Tree.Kind.VARIABLE)) {
         VariableTree variableTree = (VariableTree) statement;
         if (!variableTree.symbol().usages().isEmpty()) {
           check(variableTree, body, bodySize, i + 1);
@@ -69,7 +65,8 @@ public class VariableDeclarationScopeCheck extends IssuableSubscriptionVisitor {
       referenceVisitor.visit(body.get(i));
       if (referenceVisitor.referenceSymbol) {
         return;
-      } else if (referenceVisitor.hasBreakingStatement) {
+      }
+      if (referenceVisitor.hasBreakingStatement) {
         reportIssue(variable.simpleName(), "Move the declaration of \"" + symbol.name() + "\" closer to the code that uses it.");
         return;
       }

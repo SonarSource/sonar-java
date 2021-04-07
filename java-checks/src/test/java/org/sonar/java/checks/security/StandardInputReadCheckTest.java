@@ -31,14 +31,4 @@ class StandardInputReadCheckTest {
       .withCheck(new StandardInputReadCheck())
       .verifyIssues();
   }
-
-  @Test
-  void noSemantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/security/StandardInputReadCheck.java")
-      .withCheck(new StandardInputReadCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
-
 }

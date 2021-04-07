@@ -32,11 +32,6 @@ class ThreadLocalCleanupCheckTest {
       .onFile(testSourcesPath("checks/ThreadLocalCleanup.java"))
       .withCheck(new ThreadLocalCleanupCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/ThreadLocalCleanup.java"))
-      .withCheck(new ThreadLocalCleanupCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 
 }

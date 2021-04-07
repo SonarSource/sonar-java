@@ -30,10 +30,5 @@ class DataEncryptionCheckTest {
       .onFile("src/test/files/checks/security/DataEncryptionCheck.java")
       .withCheck(new DataEncryptionCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/security/DataEncryptionCheck.java")
-      .withCheck(new DataEncryptionCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

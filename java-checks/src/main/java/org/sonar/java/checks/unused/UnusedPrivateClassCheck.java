@@ -38,9 +38,6 @@ public class UnusedPrivateClassCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if(!hasSemantic()) {
-      return;
-    }
     ClassTree classTree = (ClassTree) tree;
     Symbol.TypeSymbol classSymbol = classTree.symbol();
     if(classSymbol.isPrivate() && classSymbol.usages().isEmpty()) {

@@ -33,7 +33,6 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import static org.sonar.java.model.ExpressionUtils.getAssignedSymbol;
 import static org.sonar.java.model.ExpressionUtils.isInvocationOnVariable;
@@ -99,7 +98,7 @@ public class XxeActiveMQCheck extends AbstractMethodDetection {
       if (isInvocationOnVariable(methodInvocation, variable, true)) {
         Arguments arguments = methodInvocation.arguments();
         if (SET_TRUSTED_PACKAGES.matches(methodInvocation)) {
-          hasTrustedPackages |= !arguments.get(0).is(Kind.NULL_LITERAL);
+          hasTrustedPackages |= !arguments.get(0).is(Tree.Kind.NULL_LITERAL);
           callArgumentsOfSetTrustedPackages = true;
         } else if (SET_TRUST_ALL_PACKAGES.matches(methodInvocation)) {
           hasTrustAllPackages |= Boolean.TRUE.equals(arguments.get(0).asConstant(Boolean.class).orElse(null));
@@ -112,7 +111,7 @@ public class XxeActiveMQCheck extends AbstractMethodDetection {
     @Override
     public void visitLiteral(LiteralTree tree) {
       if (callArgumentsOfSetTrustedPackages &&
-        tree.is(Kind.STRING_LITERAL) &&
+        tree.is(Tree.Kind.STRING_LITERAL) &&
         "*".equals(LiteralUtils.trimQuotes(tree.value()))) {
         hasTrustAllPackages = true;
       }

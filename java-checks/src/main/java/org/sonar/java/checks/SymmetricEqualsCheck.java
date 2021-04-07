@@ -45,11 +45,9 @@ public class SymmetricEqualsCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      MethodTree methodTree = (MethodTree) tree;
-      if (MethodTreeUtils.isEqualsMethod(methodTree) && methodTree.block() != null) {
-        methodTree.block().accept(new SymmetryBrokePatterns(methodTree.symbol()));
-      }
+    MethodTree methodTree = (MethodTree) tree;
+    if (MethodTreeUtils.isEqualsMethod(methodTree) && methodTree.block() != null) {
+      methodTree.block().accept(new SymmetryBrokePatterns(methodTree.symbol()));
     }
   }
 

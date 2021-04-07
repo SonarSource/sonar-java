@@ -19,22 +19,20 @@
  */
 package org.sonar.java.checks.serialization;
 
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
-
-import java.util.Collections;
-import java.util.List;
 
 @Rule(key = "S2061")
 public class CustomSerializationMethodCheck extends IssuableSubscriptionVisitor {
 
   @Override
-  public List<Kind> nodesToVisit() {
+  public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.METHOD);
   }
 
@@ -42,7 +40,7 @@ public class CustomSerializationMethodCheck extends IssuableSubscriptionVisitor 
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
-    if (hasSemantic() && isOwnedBySerializable(methodSymbol)) {
+    if (isOwnedBySerializable(methodSymbol)) {
       if (hasSignature(methodSymbol, "writeObject", "java.io.ObjectOutputStream")
         || hasSignature(methodSymbol, "readObject", "java.io.ObjectInputStream")
         || hasSignature(methodSymbol, "readObjectNoData")) {

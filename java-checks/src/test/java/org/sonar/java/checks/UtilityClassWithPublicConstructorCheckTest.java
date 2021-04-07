@@ -30,11 +30,5 @@ class UtilityClassWithPublicConstructorCheckTest {
       .onFile("src/test/files/checks/UtilityClassWithPublicConstructorCheck.java")
       .withCheck(new UtilityClassWithPublicConstructorCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/UtilityClassWithPublicConstructorCheck.java")
-      .withCheck(new UtilityClassWithPublicConstructorCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
-
 }

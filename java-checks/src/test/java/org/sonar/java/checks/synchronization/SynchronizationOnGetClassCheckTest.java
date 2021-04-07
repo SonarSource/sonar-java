@@ -30,11 +30,5 @@ class SynchronizationOnGetClassCheckTest {
       .onFile("src/test/files/checks/SynchronizationOnGetClassCheck.java")
       .withCheck(new SynchronizationOnGetClassCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/SynchronizationOnGetClassCheck.java")
-      .withCheck(new SynchronizationOnGetClassCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
-
 }

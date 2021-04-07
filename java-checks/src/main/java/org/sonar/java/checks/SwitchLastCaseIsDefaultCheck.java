@@ -42,9 +42,6 @@ public class SwitchLastCaseIsDefaultCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
     if (getDefaultLabel(switchStatementTree)) {
       if (!isSwitchOnEnum(switchStatementTree)) {

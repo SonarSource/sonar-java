@@ -30,10 +30,5 @@ class RegexHotspotCheckTest {
       .onFile("src/test/files/checks/security/RegexHotspotCheck.java")
       .withCheck(new RegexHotspotCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/security/RegexHotspotCheck.java")
-      .withCheck(new RegexHotspotCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

@@ -59,9 +59,6 @@ public class TwoLocksWaitCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     if (tree.is(METHOD, CONSTRUCTOR)) {
       MethodTree methodTree = (MethodTree) tree;
       int initialCounter = findModifier(methodTree.modifiers(), SYNCHRONIZED).map(m -> 1).orElse(0);
@@ -72,9 +69,6 @@ public class TwoLocksWaitCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     if (tree.is(METHOD, CONSTRUCTOR)) {
       synchronizedStack.pop();
     }

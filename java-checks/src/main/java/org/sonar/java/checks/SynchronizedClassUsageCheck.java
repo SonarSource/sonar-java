@@ -63,9 +63,6 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     ExclusionsVisitor exclusionsVisitor = new ExclusionsVisitor();
     tree.accept(exclusionsVisitor);
     Set<String> currentClassExclusions = exclusionsVisitor.exclusions;
@@ -78,9 +75,6 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     exclusions.pop();
   }
 

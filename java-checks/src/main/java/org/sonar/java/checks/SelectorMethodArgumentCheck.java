@@ -50,9 +50,6 @@ public class SelectorMethodArgumentCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     MethodTree methodTree = (MethodTree) tree;
     if (Boolean.TRUE.equals(methodTree.isOverriding())) {
       return;

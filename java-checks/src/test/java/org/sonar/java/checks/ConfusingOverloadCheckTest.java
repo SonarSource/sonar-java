@@ -30,10 +30,5 @@ class ConfusingOverloadCheckTest {
       .onFile("src/test/files/checks/ConfusingOverloadCheck.java")
       .withCheck(new ConfusingOverloadCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ConfusingOverloadCheck.java")
-      .withCheck(new ConfusingOverloadCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

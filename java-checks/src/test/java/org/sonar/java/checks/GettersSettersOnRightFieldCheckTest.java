@@ -30,10 +30,5 @@ class GettersSettersOnRightFieldCheckTest {
       .onFile("src/test/files/checks/GettersSettersOnRightField.java")
       .withCheck(new GettersSettersOnRightFieldCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/GettersSettersOnRightField.java")
-      .withCheck(new GettersSettersOnRightFieldCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

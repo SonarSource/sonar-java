@@ -41,14 +41,4 @@ class UnusedPrivateFieldCheckTest {
       .withCheck(new UnusedPrivateFieldCheck())
       .verifyNoIssues();
   }
-
-  @Test
-  void no_issue_without_semantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/unused/UnusedPrivateFieldCheck.java")
-      .withCheck(new UnusedPrivateFieldCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
-
 }

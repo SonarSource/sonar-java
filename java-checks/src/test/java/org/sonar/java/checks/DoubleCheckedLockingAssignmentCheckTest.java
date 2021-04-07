@@ -30,11 +30,5 @@ class DoubleCheckedLockingAssignmentCheckTest {
       .onFile("src/test/files/checks/DoubleCheckedLockingAssignment.java")
       .withCheck(new DoubleCheckedLockingAssignmentCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/DoubleCheckedLockingAssignment.java")
-      .withCheck(new DoubleCheckedLockingAssignmentCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
-
 }

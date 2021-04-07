@@ -29,8 +29,6 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
-
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
@@ -39,18 +37,15 @@ import java.util.List;
 public class ThreadAsRunnableArgumentCheck extends IssuableSubscriptionVisitor {
 
   @Override
-  public List<Kind> nodesToVisit() {
-    return Arrays.asList(Kind.NEW_CLASS, Kind.METHOD_INVOCATION);
+  public List<Tree.Kind> nodesToVisit() {
+    return Arrays.asList(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     List<ExpressionTree> arguments;
     Symbol methodSymbol;
-    if (tree.is(Kind.NEW_CLASS)) {
+    if (tree.is(Tree.Kind.NEW_CLASS)) {
       NewClassTree nct = (NewClassTree) tree;
       methodSymbol = nct.constructorSymbol();
       arguments = nct.arguments();
@@ -72,7 +67,7 @@ public class ThreadAsRunnableArgumentCheck extends IssuableSubscriptionVisitor {
       for (int index = 0; index < arguments.size(); index++) {
         ExpressionTree argument = arguments.get(index);
         Type providedType = argument.symbolType();
-        if (!argument.is(Kind.NULL_LITERAL) && isThreadAsRunnable(providedType, parametersTypes, index, JUtils.isVarArgsMethod(methodSymbol))) {
+        if (!argument.is(Tree.Kind.NULL_LITERAL) && isThreadAsRunnable(providedType, parametersTypes, index, JUtils.isVarArgsMethod(methodSymbol))) {
           reportIssue(argument, getMessage(argument, providedType, index));
         }
       }
@@ -101,7 +96,7 @@ public class ThreadAsRunnableArgumentCheck extends IssuableSubscriptionVisitor {
   }
 
   private static String getArgName(ExpressionTree tree, int index) {
-    if (tree.is(Kind.IDENTIFIER)) {
+    if (tree.is(Tree.Kind.IDENTIFIER)) {
       return ((IdentifierTree) tree).name();
     }
     return "Argument " + (index + 1);

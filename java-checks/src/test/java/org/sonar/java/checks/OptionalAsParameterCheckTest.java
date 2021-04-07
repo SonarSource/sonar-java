@@ -31,10 +31,5 @@ class OptionalAsParameterCheckTest {
       .onFile(testSourcesPath("checks/OptionalAsParameterCheck.java"))
       .withCheck(new OptionalAsParameterCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/OptionalAsParameterCheck.java"))
-      .withCheck(new OptionalAsParameterCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

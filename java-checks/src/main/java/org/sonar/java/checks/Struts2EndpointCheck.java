@@ -43,9 +43,6 @@ public class Struts2EndpointCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     MethodTree methodTree = (MethodTree) tree;
     Symbol owner = methodTree.symbol().owner();
     if (owner.type().isSubtypeOf("com.opensymphony.xwork2.ActionSupport") && STRUTS2_METHOD.matches(methodTree)) {

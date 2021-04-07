@@ -23,16 +23,12 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 class AssertsOnParametersOfPublicMethodCheckTest {
+
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/AssertsOnParametersOfPublicMethodCheck.java")
       .withCheck(new AssertsOnParametersOfPublicMethodCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/AssertsOnParametersOfPublicMethodCheck.java")
-      .withCheck(new AssertsOnParametersOfPublicMethodCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

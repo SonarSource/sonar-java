@@ -38,12 +38,6 @@ class BadTestMethodNameCheckTest {
       .onFile("src/test/files/checks/naming/BadTestMethodNameCheck.java")
       .withCheck(check)
       .verifyIssues();
-
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/naming/BadTestMethodNameCheck.java")
-      .withCheck(check)
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 
   @Test
@@ -55,5 +49,4 @@ class BadTestMethodNameCheckTest {
       .withCheck(check)
       .verifyIssues();
   }
-
 }

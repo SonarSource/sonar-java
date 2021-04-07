@@ -36,7 +36,6 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
@@ -51,20 +50,17 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends IssuableSubs
   private MethodInvocationTree lastStatementTree;
 
   @Override
-  public List<Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD, Kind.METHOD_INVOCATION);
+  public List<Tree.Kind> nodesToVisit() {
+    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
-    if (tree.is(Kind.METHOD_INVOCATION)) {
+    if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
-      if (methodInvocationTree.methodSelect().is(Kind.MEMBER_SELECT)) {
+      if (methodInvocationTree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mset = (MemberSelectExpressionTree) methodInvocationTree.methodSelect();
-        if (FINALIZE.equals(mset.identifier().name()) && mset.expression().is(Kind.IDENTIFIER) && "super".equals(((IdentifierTree) mset.expression()).name())) {
+        if (FINALIZE.equals(mset.identifier().name()) && mset.expression().is(Tree.Kind.IDENTIFIER) && "super".equals(((IdentifierTree) mset.expression()).name())) {
           lastStatementTree = methodInvocationTree;
         }
       }
@@ -75,7 +71,7 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends IssuableSubs
 
   @Override
   public void leaveNode(Tree tree) {
-    if (hasSemantic() && tree.is(Kind.METHOD)) {
+    if (tree.is(Tree.Kind.METHOD)) {
       MethodTree methodTree = (MethodTree) tree;
       if (FINALIZE_MATCHER.matches(methodTree) && doesOverrideFinalize(methodTree.symbol().owner())) {
         if (lastStatementTree == null) {
@@ -90,7 +86,8 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends IssuableSubs
   private static boolean isLastStatement(MethodTree methodTree, MethodInvocationTree lastStatementTree) {
     BlockTree blockTree = methodTree.block();
     if (blockTree != null
-      && blockTree.body().stream().anyMatch(statement -> statement.is(Kind.TRY_STATEMENT) && isLastStatement(((TryStatementTree) statement).finallyBlock(), lastStatementTree))) {
+      && blockTree.body().stream().anyMatch(statement -> 
+        statement.is(Tree.Kind.TRY_STATEMENT)&& isLastStatement(((TryStatementTree) statement).finallyBlock(), lastStatementTree))) {
       return true;
     }
     return isLastStatement(blockTree, lastStatementTree);
@@ -99,9 +96,9 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends IssuableSubs
   private static boolean isLastStatement(@Nullable BlockTree blockTree, MethodInvocationTree lastStatementTree) {
     if (blockTree != null) {
       StatementTree last = ListUtils.getLast(blockTree.body());
-      if (last.is(Kind.EXPRESSION_STATEMENT)) {
+      if (last.is(Tree.Kind.EXPRESSION_STATEMENT)) {
         return lastStatementTree.equals(((ExpressionStatementTree) last).expression());
-      } else if (last.is(Kind.TRY_STATEMENT)) {
+      } else if (last.is(Tree.Kind.TRY_STATEMENT)) {
         return isLastStatement(((TryStatementTree) last).finallyBlock(), lastStatementTree);
       }
     }

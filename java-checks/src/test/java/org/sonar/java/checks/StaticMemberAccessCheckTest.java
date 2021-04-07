@@ -27,7 +27,7 @@ import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class StaticMemberAccessCheckTest {
 
-  private static final String FILE_NAME = "checks/StaticMemberAccess.java";;
+  private static final String FILE_NAME = "checks/StaticMemberAccess.java";
 
   @Test
   void test() {
@@ -35,15 +35,6 @@ class StaticMemberAccessCheckTest {
       .onFile(testSourcesPath(FILE_NAME))
       .withCheck(new StaticMemberAccessCheck())
       .verifyIssues();
-  }
-
-  @Test
-  void test_without_semantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath(FILE_NAME))
-      .withCheck(new StaticMemberAccessCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 
   @Test

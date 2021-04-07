@@ -50,9 +50,6 @@ public class ThreadLocalCleanupCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     if (tree.is(Tree.Kind.CLASS)) {
       Symbol.TypeSymbol clazz = ((ClassTree) tree).symbol();
       if (clazz.type().isSubtypeOf(THREAD_LOCAL)) {

@@ -30,10 +30,5 @@ class OutputStreamOverrideWriteCheckTest {
       .onFile("src/test/files/checks/OutputStreamOverrideWriteCheck.java")
       .withCheck(new OutputStreamOverrideWriteCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/OutputStreamOverrideWriteCheck.java")
-      .withCheck(new OutputStreamOverrideWriteCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

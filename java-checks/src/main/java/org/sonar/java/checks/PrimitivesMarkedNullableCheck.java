@@ -38,10 +38,6 @@ public final class PrimitivesMarkedNullableCheck extends IssuableSubscriptionVis
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
-
     MethodTree methodTree = (MethodTree) tree;
     TypeTree returnType = methodTree.returnType();
     if (returnType.symbolType().isPrimitive()) {

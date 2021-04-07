@@ -33,7 +33,6 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 @Rule(key = "S2118")
 public class NonSerializableWriteCheck extends IssuableSubscriptionVisitor {
@@ -47,7 +46,7 @@ public class NonSerializableWriteCheck extends IssuableSubscriptionVisitor {
   private final List<Symbol> testedSymbols = new ArrayList<>();
 
   @Override
-  public List<Kind> nodesToVisit() {
+  public List<Tree.Kind> nodesToVisit() {
     return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.INSTANCE_OF);
   }
 
@@ -59,12 +58,10 @@ public class NonSerializableWriteCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-        visitMethodInvocation((MethodInvocationTree) tree);
-      } else {
-        visitInstanceOf((InstanceOfTree) tree);
-      }
+    if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+      visitMethodInvocation((MethodInvocationTree) tree);
+    } else {
+      visitInstanceOf((InstanceOfTree) tree);
     }
   }
 

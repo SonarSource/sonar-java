@@ -19,6 +19,8 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -27,30 +29,24 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeTree;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Rule(key = "S1695")
 public class NPEThrowCheck extends IssuableSubscriptionVisitor {
 
   @Override
-  public List<Kind> nodesToVisit() {
-    return Arrays.asList(Kind.THROW_STATEMENT, Kind.METHOD, Kind.CONSTRUCTOR);
+  public List<Tree.Kind> nodesToVisit() {
+    return Arrays.asList(Tree.Kind.THROW_STATEMENT, Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      if (tree.is(Kind.THROW_STATEMENT)) {
-        ExpressionTree expressionTree = ((ThrowStatementTree) tree).expression();
-        raiseIssueOnNpe(expressionTree, expressionTree.symbolType());
-      } else {
-        for (TypeTree throwClause : ((MethodTree) tree).throwsClauses()) {
-          raiseIssueOnNpe(throwClause, throwClause.symbolType());
-        }
+    if (tree.is(Tree.Kind.THROW_STATEMENT)) {
+      ExpressionTree expressionTree = ((ThrowStatementTree) tree).expression();
+      raiseIssueOnNpe(expressionTree, expressionTree.symbolType());
+    } else {
+      for (TypeTree throwClause : ((MethodTree) tree).throwsClauses()) {
+        raiseIssueOnNpe(throwClause, throwClause.symbolType());
       }
     }
   }
@@ -62,7 +58,7 @@ public class NPEThrowCheck extends IssuableSubscriptionVisitor {
   }
 
   private static Tree treeAtFault(Tree tree) {
-    return tree.is(Kind.NEW_CLASS) ? ((NewClassTree) tree).identifier() : tree;
+    return tree.is(Tree.Kind.NEW_CLASS) ? ((NewClassTree) tree).identifier() : tree;
   }
 
 }

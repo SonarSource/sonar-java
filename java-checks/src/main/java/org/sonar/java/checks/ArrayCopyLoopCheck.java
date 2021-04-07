@@ -62,9 +62,6 @@ public class ArrayCopyLoopCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     StatementTree statement;
     if (tree.is(Kind.FOR_STATEMENT)) {
       statement = checkFor((ForStatementTree) tree);
@@ -293,10 +290,9 @@ public class ArrayCopyLoopCheck extends IssuableSubscriptionVisitor {
     if (tree.is(Kind.FOR_STATEMENT)) {
       ForStatementTree loop = (ForStatementTree) tree;
       return getBody(loop.statement(), 1);
-    } else {
-      ForEachStatement loop = (ForEachStatement) tree;
-      return getBody(loop.statement(), 1);
     }
+    ForEachStatement loop = (ForEachStatement) tree;
+    return getBody(loop.statement(), 1);
   }
 
   @CheckForNull

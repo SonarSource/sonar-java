@@ -41,7 +41,6 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 @Rule(key = "S2187")
 public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
@@ -65,17 +64,17 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   private Pattern testClassNamePatternRegEx;
 
   @Override
-  public List<Kind> nodesToVisit() {
-    return Collections.singletonList(Kind.COMPILATION_UNIT);
+  public List<Tree.Kind> nodesToVisit() {
+    return Collections.singletonList(Tree.Kind.COMPILATION_UNIT);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      resetAnnotationCache();
-      CompilationUnitTree cut = (CompilationUnitTree) tree;
-      cut.types().stream().filter(typeTree -> typeTree.is(Kind.CLASS)).forEach(typeTree -> checkClass((ClassTree) typeTree));
-    }
+    resetAnnotationCache();
+    CompilationUnitTree cut = (CompilationUnitTree) tree;
+    cut.types().stream()
+      .filter(typeTree -> typeTree.is(Tree.Kind.CLASS))
+      .forEach(typeTree -> checkClass((ClassTree) typeTree));
   }
 
   private void resetAnnotationCache() {

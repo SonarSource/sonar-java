@@ -51,9 +51,6 @@ public class ClassWithoutHashCodeInHashStructureCheck extends IssuableSubscripti
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     Type type = ((NewClassTree) tree).symbolType();
     if (type.isParameterized() && useHashDataStructure(type)) {
       Symbol.TypeSymbol symbol = type.typeArguments().get(0).symbol();

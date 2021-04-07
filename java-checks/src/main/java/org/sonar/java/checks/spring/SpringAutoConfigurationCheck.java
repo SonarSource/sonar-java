@@ -50,9 +50,6 @@ public class SpringAutoConfigurationCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     ((ClassTree) tree).modifiers().annotations().stream()
       .filter(SpringAutoConfigurationCheck::isAutoConfiguration)
       .filter(annotation -> !hasExclude(annotation.arguments()))

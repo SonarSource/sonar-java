@@ -30,10 +30,5 @@ class ThreadAsRunnableArgumentCheckTest {
       .onFile("src/test/files/checks/ThreadAsRunnableArgumentCheck.java")
       .withCheck(new ThreadAsRunnableArgumentCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ThreadAsRunnableArgumentCheck.java")
-      .withCheck(new ThreadAsRunnableArgumentCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

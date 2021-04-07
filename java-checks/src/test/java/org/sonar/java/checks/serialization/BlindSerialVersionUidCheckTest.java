@@ -23,18 +23,12 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 class BlindSerialVersionUidCheckTest {
+
   @Test
   void test() {
-    String fixtureFileName = "src/test/files/checks/serialization/BlindSerialVersionUidCheck.java";
-    BlindSerialVersionUidCheck check = new BlindSerialVersionUidCheck();
     JavaCheckVerifier.newVerifier()
-      .onFile(fixtureFileName)
-      .withCheck(check)
+      .onFile("src/test/files/checks/serialization/BlindSerialVersionUidCheck.java")
+      .withCheck(new BlindSerialVersionUidCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile(fixtureFileName)
-      .withCheck(check)
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

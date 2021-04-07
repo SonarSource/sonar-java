@@ -60,9 +60,6 @@ public class BadTestMethodNameCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     MethodTree methodTree = (MethodTree) tree;
     if (isNotOverriden(methodTree) && hasTestAnnotation(methodTree) && !pattern.matcher(methodTree.simpleName().name()).matches()) {
       reportIssue(methodTree.simpleName(), "Rename this method name to match the regular expression: '" + format + "'");

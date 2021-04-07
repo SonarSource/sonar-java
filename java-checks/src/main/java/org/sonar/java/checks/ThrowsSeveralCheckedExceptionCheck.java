@@ -41,7 +41,7 @@ public class ThrowsSeveralCheckedExceptionCheck extends IssuableSubscriptionVisi
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (hasSemantic() && isPublic(methodTree) && !MethodTreeUtils.isMainMethod(methodTree)) {
+    if (isPublic(methodTree) && !MethodTreeUtils.isMainMethod(methodTree)) {
       List<String> thrownCheckedExceptions = getThrownCheckedExceptions(methodTree);
       if (thrownCheckedExceptions.size() > 1 && isNotOverridden(methodTree)) {
         reportIssue(methodTree.simpleName(), "Refactor this method to throw at most one checked exception instead of: " + String.join(", ", thrownCheckedExceptions));

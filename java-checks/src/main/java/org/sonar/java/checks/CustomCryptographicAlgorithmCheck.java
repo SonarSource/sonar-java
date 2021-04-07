@@ -43,7 +43,7 @@ public class CustomCryptographicAlgorithmCheck extends IssuableSubscriptionVisit
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (hasSemantic() && isJavaSecurityMessageDigestSubClass(classTree)) {
+    if (isJavaSecurityMessageDigestSubClass(classTree)) {
       reportIssue(ExpressionsHelper.reportOnClassTree(classTree), MESSAGE);
     }
   }

@@ -37,9 +37,6 @@ public class TransactionalMethodVisibilityCheck extends IssuableSubscriptionVisi
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     MethodTree method = (MethodTree) tree;
     if (!method.symbol().isPublic() && hasTransactionalAnnotation(method)) {
       reportIssue(method.simpleName(), "Make this method \"public\" or remove the \"@Transactional\" annotation");

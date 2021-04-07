@@ -39,22 +39,20 @@ public abstract class AbstractMethodDetection extends IssuableSubscriptionVisito
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-        MethodInvocationTree mit = (MethodInvocationTree) tree;
-        if (matchers().matches(mit)) {
-          onMethodInvocationFound(mit);
-        }
-      } else if (tree.is(Tree.Kind.NEW_CLASS)) {
-        NewClassTree newClassTree = (NewClassTree) tree;
-        if (matchers().matches(newClassTree)) {
-          onConstructorFound(newClassTree);
-        }
-      } else if (tree.is(Tree.Kind.METHOD_REFERENCE)) {
-        MethodReferenceTree methodReferenceTree = (MethodReferenceTree) tree;
-        if (matchers().matches(methodReferenceTree)) {
-          onMethodReferenceFound(methodReferenceTree);
-        }
+    if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree mit = (MethodInvocationTree) tree;
+      if (matchers().matches(mit)) {
+        onMethodInvocationFound(mit);
+      }
+    } else if (tree.is(Tree.Kind.NEW_CLASS)) {
+      NewClassTree newClassTree = (NewClassTree) tree;
+      if (matchers().matches(newClassTree)) {
+        onConstructorFound(newClassTree);
+      }
+    } else if (tree.is(Tree.Kind.METHOD_REFERENCE)) {
+      MethodReferenceTree methodReferenceTree = (MethodReferenceTree) tree;
+      if (matchers().matches(methodReferenceTree)) {
+        onMethodReferenceFound(methodReferenceTree);
       }
     }
   }

@@ -46,9 +46,6 @@ public class HasNextCallingNextCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (!hasSemantic()) {
-      return;
-    }
     if (methodTree.block() != null && isHasNextMethod(methodTree)) {
       hasNextBodyVisitor.setHasNextOwner(methodTree.symbol().owner());
       methodTree.block().accept(hasNextBodyVisitor);

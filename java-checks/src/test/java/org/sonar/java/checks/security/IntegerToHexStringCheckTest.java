@@ -35,14 +35,4 @@ class IntegerToHexStringCheckTest {
       .withCheck(new IntegerToHexStringCheck())
       .verifyIssues();
   }
-
-  @Test
-  void test_no_semantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile(TEST_FILE)
-      .withCheck(new IntegerToHexStringCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
-
 }

@@ -222,7 +222,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
   @Override
   public void visitNode(Tree tree) {
     super.visitNode(tree);
-    if (hasSemantic() && tree.is(Tree.Kind.IDENTIFIER)) {
+    if (tree.is(Tree.Kind.IDENTIFIER)) {
       onMemberSelectExpressionFound((IdentifierTree) tree);
     }
   }

@@ -43,14 +43,4 @@ class BadLocalConstantNameCheckTest {
       .withCheck(check)
       .verifyIssues();
   }
-
-  @Test
-  void noIssueWithoutSemantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/naming/BadLocalConstantNameCheck/BadLocalConstantNameCheck.java")
-      .withCheck(new BadLocalConstantNameCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
-
 }

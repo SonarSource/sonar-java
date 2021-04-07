@@ -79,10 +79,6 @@ public class SocketUsageCheck extends AbstractMethodDetection {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
-
     if (tree.is(Tree.Kind.CLASS)) {
       checkExtensions(((ClassTree) tree));
     } else {

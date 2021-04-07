@@ -54,10 +54,6 @@ public class PersistentEntityUsedAsRequestParameterCheck extends IssuableSubscri
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
-
     MethodTree methodTree = (MethodTree) tree;
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
 

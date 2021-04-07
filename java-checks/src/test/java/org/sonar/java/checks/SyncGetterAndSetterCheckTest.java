@@ -30,10 +30,5 @@ class SyncGetterAndSetterCheckTest {
       .onFile("src/test/files/checks/SyncGetterAndSetterCheck.java")
       .withCheck(new SyncGetterAndSetterCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/SyncGetterAndSetterCheck.java")
-      .withCheck(new SyncGetterAndSetterCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

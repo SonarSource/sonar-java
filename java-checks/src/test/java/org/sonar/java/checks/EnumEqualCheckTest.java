@@ -30,10 +30,5 @@ class EnumEqualCheckTest {
       .onFile("src/test/files/checks/EnumEqualCheck.java")
       .withCheck(new EnumEqualCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/EnumEqualCheck.java")
-      .withCheck(new EnumEqualCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }

@@ -28,7 +28,6 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S1641")
@@ -48,21 +47,18 @@ public class EnumSetCheck extends IssuableSubscriptionVisitor {
     MethodMatchers.create().ofTypes("com.google.common.collect.Sets").anyName().withAnyParameters().build());
 
   @Override
-  public List<Kind> nodesToVisit() {
-    return Collections.singletonList(Kind.VARIABLE);
+  public List<Tree.Kind> nodesToVisit() {
+    return Collections.singletonList(Tree.Kind.VARIABLE);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     VariableTree variableTree = (VariableTree) tree;
     ExpressionTree initializer = variableTree.initializer();
     if (initializer == null) {
       return;
     }
-    if (initializer.is(Kind.METHOD_INVOCATION)) {
+    if (initializer.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) initializer;
       if (COLLECTIONS_UNMODIFIABLE.matches(mit)) {
         // check the collection used as parameter

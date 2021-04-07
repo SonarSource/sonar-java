@@ -46,10 +46,6 @@ public class InputStreamOverrideReadCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
-
     ClassTree classTree = (ClassTree) tree;
     Type superType = classTree.symbol().superClass();
     IdentifierTree className = classTree.simpleName();

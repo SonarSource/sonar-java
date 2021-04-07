@@ -55,9 +55,6 @@ public class Struts1EndpointCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if(!hasSemantic()) {
-      return;
-    }
     MethodTree methodTree = (MethodTree) tree;
     if (methodTree.symbol().owner().type().isSubtypeOf("org.apache.struts.action.Action") && STRUTS_METHOD.matches(methodTree)) {
       List<IdentifierTree> actionMappingUsages = methodTree.parameters().get(1).symbol().usages();

@@ -34,11 +34,6 @@ class SAMAnnotatedCheckTest {
       .onFile("src/test/files/checks/SAMAnnotatedCheck_no_version.java")
       .withCheck(new SAMAnnotatedCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/SAMAnnotatedCheck_no_version.java")
-      .withCheck(new SAMAnnotatedCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 
   @Test

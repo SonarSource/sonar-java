@@ -30,11 +30,6 @@ class InterfaceOrSuperclassShadowingCheckTest {
       .onFile("src/test/files/checks/InterfaceOrSuperclassShadowingCheck.java")
       .withCheck(new InterfaceOrSuperclassShadowingCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/InterfaceOrSuperclassShadowingCheck.java")
-      .withCheck(new InterfaceOrSuperclassShadowingCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 
 }

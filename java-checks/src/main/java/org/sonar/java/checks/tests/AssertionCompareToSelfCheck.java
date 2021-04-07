@@ -35,7 +35,6 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import static org.sonar.java.model.ExpressionUtils.methodName;
 
@@ -110,7 +109,7 @@ public class AssertionCompareToSelfCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Kind.METHOD_INVOCATION);
+    return Collections.singletonList(Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
