@@ -30,6 +30,7 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -39,6 +40,8 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import static org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationInstance;
 
 @Rule(key = "S5979")
 public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSubscriptionVisitor {
@@ -81,7 +84,7 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
       return;
     }
 
-    if (hasAnnotation(testClass, EXTEND_WITH_ANNOTATION)) {
+    if (isMetaAnnotated(testClass.symbol(), EXTEND_WITH_ANNOTATION, new HashSet<>())) {
       List<ClassTree> classes = getInnerClassesCoveredByAnnotation(testClass);
       coveredByExtendWithAnnotation.addAll(classes);
       return;
@@ -102,6 +105,23 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
   public void leaveFile(JavaFileScannerContext context) {
     super.leaveFile(context);
     coveredByExtendWithAnnotation.clear();
+  }
+
+  private static boolean isMetaAnnotated(Symbol symbol, String annotation, Set<Symbol> visited) {
+    if (visited.contains(symbol)) {
+      return false;
+    }
+    for (AnnotationInstance a : symbol.metadata().annotations()) {
+      visited.add(symbol);
+      if (a.symbol().type().is(annotation)) {
+        return true;
+      } else {
+        if (isMetaAnnotated(a.symbol(), annotation, visited)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   private static boolean hasAnnotation(ClassTree tree, String annotation) {

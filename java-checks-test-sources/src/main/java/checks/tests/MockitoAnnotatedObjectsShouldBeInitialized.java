@@ -12,6 +12,8 @@ import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.junit.runner.Runner;
 import org.junit.runner.notification.RunNotifier;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -20,6 +22,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.MockitoRule;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 
 public class MockitoAnnotatedObjectsShouldBeInitialized {
   class MixedNonCompliant {
@@ -292,5 +295,42 @@ public class MockitoAnnotatedObjectsShouldBeInitialized {
     static MockitoRule returnNull() {
       return null;
     }
+  }
+
+  // Meta annotations
+  @ExtendWith(MockitoExtension.class)
+  public @interface SetupItTest
+  {
+  }
+
+  @SetupItTest
+  class SetUpViaMetaAnnotation {
+    @Captor
+    private ArgumentCaptor<String> someCaptor; // Compliant, ExtendWith setup via meta annotation
+  }
+
+  @MockitoSettings
+  class SetUpViaMockitoSettings {
+    @Captor private ArgumentCaptor<String> someCaptor; // Compliant, MockitoSettings is a meta annotation containing @ExtendWith({MockitoExtension.class})
+  }
+
+  @LoopB
+  public @interface LoopA
+  {
+  }
+
+  @LoopC
+  public @interface LoopB
+  {
+  }
+
+  @LoopA
+  public @interface LoopC
+  {
+  }
+
+  @LoopA
+  class LoopInAnnotation {
+    @Captor private ArgumentCaptor<String> someCaptor; // Noncompliant
   }
 }
