@@ -97,11 +97,6 @@
     <artifactsToPublish>${project.groupId}:sonar-java-plugin:jar</artifactsToPublish>
 
     <version.compiler.plugin>3.8.0</version.compiler.plugin>
-    <!-- Parent uses 1.16 which has bug in overrideUrl https://github.com/mojohaus/license-maven-plugin/issues/331 -->
-    <!-- TODO remove when parent is updated -->
-    <version.codehaus.license.plugin>2.0.0</version.codehaus.license.plugin>
-    <!-- FIXME: warnings on javadoc should be fixed -->
-    <doclint>none</doclint>
   </properties>
 
   <dependencyManagement>
