@@ -379,20 +379,30 @@ Note that we are always open to discussion, so don't hesitate to reach us and pa
 OK, you are probably quite happy at this point, as our first rule is running as expected... However, we are not really done yet. Before playing our rule against any real projects, we have to finalize its creation within the custom plugin, by registering it.
 
 ### Rule Metadata
-The first thing to do is to provide to our rule all the metadata which will allow us to register it properly in the SonarQube platform. To do so, add the `org.sonar.check.Rule` annotation to `MyFirstCustomCheck` class rule, and provide a **key**, a **name**, a **description**, a **priority**, and optional **tags**, as in the following code snippet.
+The first thing to do is to provide our rule all the metadata which will allow us to register it properly in the SonarQube platform.
+There are 2 ways to add metadata for your rule: annotation and static documentation.
+While annotation provides a handy way to document the rule, static documentation offers the possibility for richer information.
+Incidentally, static documentation is also the way rules in the sonar-java analyzer are described.
 
-```java
-@Rule(
-  key = "MyFirstCustomCheck",
-  name = "Return type and parameter of a method should not be the same",
-  description = "For a method having a single parameter, the types of its return value and its parameter should never be the same.",
-  priority = org.sonar.check.Priority.CRITICAL,
-  tags = {"bug"})
-public class MyFirstCustomCheck extends IssuableSubscriptionVisitor {
-  // ...
+To provide metadata for your rule, you need to create an HTML file, where you can provide an extended textual description of the rule, and a JSON file, with the actual metadata.
+In the case of `MyFirstCustomCheck`, you will head to the `src/main/resources/org/sonar/l10n/java/rules/java/` folder to create `MyFirstCustomCheck.html` and `MyFirstCustomCheck.json`.
+Please note that both files are needed to register our rule but the HTML one can be left empty.
+We can now add metadata to `src/main/resources/org/sonar/l10n/java/rules/java/MyFirstCustomCheck.json`:
+```json
+{
+  "title": "Return type and parameter of a method should not be the same",
+  "type": "Bug",
+  "status": "ready",
+  "tags": [
+    "bugs",
+    "gandalf",
+    "magic"
+  ],
+  "defaultSeverity": "Critical"
 }
 ```
-
+With this example, we have a concise but descriptive `title` for our rule, the `type` of issue it highlights, its `status` (ready or deprecated), the `tags` that should bring it up in a search and the `severity` of the issue.
+Further information can be fed to SonarQube by describing the context in the HTML file or by adding fields in the JSON document but this minimal example should be enough to register our rule.
 ### Rule Activation
 The second thing to do is to activate the rule within the plugin. To do so, open class `RulesList` (`org.sonar.samples.java.RulesList`). In this class, you will notice methods `getJavaChecks()` and `getJavaTestChecks()`. These methods are used to register our rules with alongside the rule of the Java plugin. Note that rules registered in `getJavaChecks()` will only be played against source files, while rules registered in `getJavaTestChecks()` will only be played against test files. To register the rule, simply add the rule class to the list builder, as in the following code snippet:
 
