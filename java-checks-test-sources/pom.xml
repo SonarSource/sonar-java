@@ -730,6 +730,8 @@
       <groupId>org.mockito</groupId>
       <artifactId>mockito-junit-jupiter</artifactId>
       <version>3.7.7</version>
+      <type>jar</type>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.auth0</groupId>
