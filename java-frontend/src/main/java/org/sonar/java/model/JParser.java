@@ -149,6 +149,8 @@ public class JParser {
 
   private static final Predicate<IProblem> IS_SYNTAX_ERROR = error -> (error.getID() & IProblem.Syntax) != 0;
   private static final Predicate<IProblem> IS_UNDEFINED_TYPE_ERROR = error -> (error.getID() & IProblem.UndefinedType) != 0;
+  private static final Predicate<IProblem> IS_UNUSED_IMPORT_WARN = warn -> warn.getID() == IProblem.UnusedImport;
+  private static final Predicate<IProblem> IS_UNNECESSARY_CAST_WARN = warn -> (warn.getID() & IProblem.ImportRelated) != 0;
 
   /**
    * @param unitName see {@link ASTParser#setUnitName(String)}
@@ -194,6 +196,16 @@ public class JParser {
       throw new RecognitionException(-1, "ECJ: Unable to parse file.", e);
     }
 
+    Map<JWarning.Type, List<JWarning>> warnings = Arrays.stream(astNode.getProblems())
+      .filter(IS_UNUSED_IMPORT_WARN.or(IS_UNNECESSARY_CAST_WARN))
+      .map(iproblem -> new JWarning(iproblem.getMessage(),
+        getWarningType(iproblem.getID()),
+        iproblem.getSourceLineNumber(),
+        astNode.getColumnNumber(iproblem.getSourceStart()),
+        astNode.getLineNumber(iproblem.getSourceEnd()),
+        astNode.getColumnNumber(iproblem.getSourceEnd())))
+      .collect(Collectors.groupingBy(JWarning::getType));
+
     List<IProblem> errors = Stream.of(astNode.getProblems()).filter(IProblem::isError).collect(Collectors.toList());
     Optional<IProblem> possibleSyntaxError = errors.stream().filter(IS_SYNTAX_ERROR).findFirst();
     if (possibleSyntaxError.isPresent()) {
@@ -218,11 +230,21 @@ public class JParser {
 
     JavaTree.CompilationUnitTreeImpl tree = converter.convertCompilationUnit(astNode);
     tree.sema = converter.sema;
+    tree.warnings.putAll(warnings);
 
     ASTUtils.mayTolerateMissingType(astNode.getAST());
 
     setParents(tree);
     return tree;
+  }
+
+  private static JWarning.Type getWarningType(int id) {
+    if ((id & IProblem.UnusedImport) != 0) {
+      return JWarning.Type.UNUSED_IMPORT;
+    } else if ((id & IProblem.UnnecessaryCast) != 0) {
+      return JWarning.Type.UNNECESSARY_CAST;
+    }
+    return null;
   }
 
   private static void setParents(Tree node) {

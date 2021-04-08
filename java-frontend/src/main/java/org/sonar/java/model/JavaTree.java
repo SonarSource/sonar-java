@@ -25,8 +25,10 @@ import org.sonar.java.Preconditions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.IBinding;
@@ -154,6 +156,7 @@ public abstract class JavaTree implements Tree {
     private final ModuleDeclarationTree moduleDeclaration;
     private final SyntaxToken eofToken;
     public JSema sema;
+    public final Map<JWarning.Type, List<JWarning>> warnings = new HashMap<>();
 
     public CompilationUnitTreeImpl(@Nullable PackageDeclarationTree packageDeclaration, List<ImportClauseTree> imports, List<Tree> types,
       @Nullable ModuleDeclarationTree moduleDeclaration, SyntaxToken eofToken) {
@@ -178,6 +181,11 @@ public abstract class JavaTree implements Tree {
     @Override
     public List<Tree> types() {
       return types;
+    }
+
+    @Override
+    public Map<JWarning.Type, List<JWarning>> warnings() {
+      return warnings;
     }
 
     @Override
