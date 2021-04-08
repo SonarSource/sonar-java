@@ -100,6 +100,13 @@ class JParserTest {
   }
 
   @Test
+  void warnings_are_collected() {
+    // import org.foo missing, type Bar unknown
+    CompilationUnitTree cut = test("import java.util.List;\n import java.util.ArrayList;\n class Foo {\n void foo(Bar b) {}\n }\n");
+    assertThat(((CompilationUnitTreeImpl) cut).sema.undefinedTypes).containsExactlyInAnyOrder("Bar cannot be resolved to a type");
+  }
+
+  @Test
   void eof() {
     {
       CompilationUnitTree t = test("");

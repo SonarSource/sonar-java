@@ -150,7 +150,6 @@ public class JParser {
   private static final Predicate<IProblem> IS_SYNTAX_ERROR = error -> (error.getID() & IProblem.Syntax) != 0;
   private static final Predicate<IProblem> IS_UNDEFINED_TYPE_ERROR = error -> (error.getID() & IProblem.UndefinedType) != 0;
   private static final Predicate<IProblem> IS_UNUSED_IMPORT_WARN = warn -> warn.getID() == IProblem.UnusedImport;
-  private static final Predicate<IProblem> IS_UNNECESSARY_CAST_WARN = warn -> (warn.getID() & IProblem.ImportRelated) != 0;
 
   /**
    * @param unitName see {@link ASTParser#setUnitName(String)}
@@ -197,9 +196,9 @@ public class JParser {
     }
 
     Map<JWarning.Type, List<JWarning>> warnings = Arrays.stream(astNode.getProblems())
-      .filter(IS_UNUSED_IMPORT_WARN.or(IS_UNNECESSARY_CAST_WARN))
+      .filter(IS_UNUSED_IMPORT_WARN)
       .map(iproblem -> new JWarning(iproblem.getMessage(),
-        getWarningType(iproblem.getID()),
+        JWarning.Type.UNUSED_IMPORT,
         iproblem.getSourceLineNumber(),
         astNode.getColumnNumber(iproblem.getSourceStart()),
         astNode.getLineNumber(iproblem.getSourceEnd()),
@@ -230,21 +229,12 @@ public class JParser {
 
     JavaTree.CompilationUnitTreeImpl tree = converter.convertCompilationUnit(astNode);
     tree.sema = converter.sema;
-    tree.warnings.putAll(warnings);
+    tree.addWarnings(warnings);
 
     ASTUtils.mayTolerateMissingType(astNode.getAST());
 
     setParents(tree);
     return tree;
-  }
-
-  private static JWarning.Type getWarningType(int id) {
-    if ((id & IProblem.UnusedImport) != 0) {
-      return JWarning.Type.UNUSED_IMPORT;
-    } else if ((id & IProblem.UnnecessaryCast) != 0) {
-      return JWarning.Type.UNNECESSARY_CAST;
-    }
-    return null;
   }
 
   private static void setParents(Tree node) {

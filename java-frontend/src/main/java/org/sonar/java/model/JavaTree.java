@@ -19,22 +19,23 @@
  */
 package org.sonar.java.model;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-import org.sonar.java.Preconditions;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.sonar.java.Preconditions;
 import org.sonar.java.ast.parser.TypeUnionListTreeImpl;
 import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
@@ -156,7 +157,8 @@ public abstract class JavaTree implements Tree {
     private final ModuleDeclarationTree moduleDeclaration;
     private final SyntaxToken eofToken;
     public JSema sema;
-    public final Map<JWarning.Type, List<JWarning>> warnings = new HashMap<>();
+
+    private final EnumMap<JWarning.Type, List<JWarning>> warnings = new EnumMap<>(JWarning.Type.class);
 
     public CompilationUnitTreeImpl(@Nullable PackageDeclarationTree packageDeclaration, List<ImportClauseTree> imports, List<Tree> types,
       @Nullable ModuleDeclarationTree moduleDeclaration, SyntaxToken eofToken) {
@@ -184,7 +186,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public Map<JWarning.Type, List<JWarning>> warnings() {
+    public EnumMap<JWarning.Type, List<JWarning>> warnings() {
       return warnings;
     }
 
@@ -220,6 +222,10 @@ public abstract class JavaTree implements Tree {
     @Override
     public SyntaxToken eofToken() {
       return eofToken;
+    }
+
+    public void addWarnings(Map<JWarning.Type, List<JWarning>> warnings) {
+      this.warnings.putAll(warnings);
     }
 
   }

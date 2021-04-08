@@ -37,7 +37,7 @@ public final class JWarning {
     this.endColumn = endColumn;
   }
 
-  public static enum Type {
+  public enum Type {
     UNUSED_IMPORT,
     UNNECESSARY_CAST
   }
