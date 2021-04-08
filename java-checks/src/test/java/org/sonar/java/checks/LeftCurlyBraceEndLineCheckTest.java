@@ -32,4 +32,13 @@ class LeftCurlyBraceEndLineCheckTest {
       .withCheck(new LeftCurlyBraceEndLineCheck())
       .verifyIssues();
   }
+
+  @Test
+  void detected_switch_expressions() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/LeftCurlyBraceEndLineCheck.java"))
+      .withCheck(new LeftCurlyBraceEndLineCheck())
+      .withJavaVersion(14)
+      .verifyIssues();
+  }
 }

@@ -39,6 +39,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.StaticInitializerTree;
+import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -122,6 +123,12 @@ public abstract class LeftCurlyBraceBaseTreeVisitor extends BaseTreeVisitor impl
   public void visitSwitchStatement(SwitchStatementTree tree) {
     checkTokens(tree.closeParenToken(), tree.openBraceToken());
     super.visitSwitchStatement(tree);
+  }
+
+  @Override
+  public void visitSwitchExpression(SwitchExpressionTree tree) {
+    checkTokens(tree.closeParenToken(), tree.openBraceToken());
+    super.visitSwitchExpression(tree);
   }
 
   @Override
