@@ -113,12 +113,8 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
     }
     for (AnnotationInstance a : symbol.metadata().annotations()) {
       visited.add(symbol);
-      if (a.symbol().type().is(annotation)) {
+      if (a.symbol().type().is(annotation) || isMetaAnnotated(a.symbol(), annotation, visited)) {
         return true;
-      } else {
-        if (isMetaAnnotated(a.symbol(), annotation, visited)) {
-          return true;
-        }
       }
     }
     return false;

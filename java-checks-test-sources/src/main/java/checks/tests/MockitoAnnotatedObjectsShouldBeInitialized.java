@@ -333,4 +333,21 @@ public class MockitoAnnotatedObjectsShouldBeInitialized {
   class LoopInAnnotation {
     @Captor private ArgumentCaptor<String> someCaptor; // Noncompliant
   }
+
+  // Meta annotations
+  public @interface UnRelatedAnnotation
+  {
+  }
+
+  @UnRelatedAnnotation
+  @ExtendWith(MockitoExtension.class)
+  class WithUnrelatedAnnotation1 {
+    @Captor private ArgumentCaptor<String> someCaptor; // Compliant
+  }
+
+  @ExtendWith(MockitoExtension.class)
+  @UnRelatedAnnotation
+  class WithUnrelatedAnnotation2 {
+    @Captor private ArgumentCaptor<String> someCaptor; // Compliant
+  }
 }
