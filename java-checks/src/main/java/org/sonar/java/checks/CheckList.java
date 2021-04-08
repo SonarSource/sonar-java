@@ -718,6 +718,7 @@ public final class CheckList {
       SuppressWarningsCheck.class,
       SuspiciousListRemoveCheck.class,
       SwitchAtLeastThreeCasesCheck.class,
+      SwitchCasesShouldBeCommaSeparatedCheck.class,
       SwitchCaseTooBigCheck.class,
       SwitchCaseWithoutBreakCheck.class,
       SwitchDefaultLastCaseCheck.class,
