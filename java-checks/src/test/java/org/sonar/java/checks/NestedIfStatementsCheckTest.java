@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class NestedIfStatementsCheckTest {
@@ -43,6 +44,16 @@ class NestedIfStatementsCheckTest {
     check.max = 4;
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/NestedIfStatementsCheckCustom.java"))
+      .withCheck(check)
+      .verifyIssues();
+  }
+
+  @Test
+  void detected_switch_expressions() {
+    NestedIfStatementsCheck check = new NestedIfStatementsCheck();
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/NestedIfStatementsCheck.java"))
+      .withJavaVersion(14)
       .withCheck(check)
       .verifyIssues();
   }
