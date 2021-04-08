@@ -60,7 +60,7 @@ matches, for which it is quite hard to avoid quadratic runtimes. In those cases 
   <li> When using `Matcher.find()` it is often possible to make the regex infallible by making all the parts that could fail optional, which will
   prevent backtracking. Of course this means that you'll accept more strings than intended, but this can be handled by using capturing groups to check
   whether the optional parts were matched or not and then ignoring the match if they weren't. For example the regex <code>x*y</code> could be replaced
-  with <code>x*\(y)?</code> and then the call to <code>matcher.find()</code> could be replaced with <code>matcher.find() &amp;&amp; matcher.group(1)
+  with <code>x*(y)?</code> and then the call to <code>matcher.find()</code> could be replaced with <code>matcher.find() &amp;&amp; matcher.group(1)
   != null</code>. </li>
 </ul>
 <h2>Sensitive Code Example</h2>
