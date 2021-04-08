@@ -1,5 +1,7 @@
-class A {
-  private void f() {
+package checks;
+
+class NestedIfStatementsCheck {
+  private void f(int foo, boolean cond) {
     if (false) { // Compliant - 1
     }
 
@@ -16,12 +18,12 @@ class A {
       if (true) { // Compliant - 2
       } else {
         if (false) { // Compliant - 3
-          if (true) { // Compliant - 4
-            if (false) { // Noncompliant {{Refactor this code to not nest more than 4 if/for/while/switch/try statements.}}
+          if (true) { // Noncompliant [[sc=11;ec=13;secondary=-1,-3,-4]] {{Refactor this code to not nest more than 3 if/for/while/switch/try statements.}}
+            if (false) { // Compliant - 5
             }
           } else if (true) { // Compliant - 4
           } else {
-            if (false) { // Noncompliant
+            if (false) { // Compliant - 5
             }
           }
         }
@@ -38,13 +40,13 @@ class A {
     if (false) // Compliant - 1
       if (false) // Compliant - 2
         if (false) // Compliant - 3
-          if (true) // Compliant - 4
+          if (true) // Noncompliant
             System.out.println();
 
     if (false) // Compliant - 1
       if (false) // Compliant - 2
         if (false) // Compliant - 3
-          if (false) System.out.println(); // Compliant - 4
+          if (false) System.out.println(); // Noncompliant
           else System.out.println();
         else System.out.println();
       else System.out.println();
@@ -52,31 +54,35 @@ class A {
 
     for (int i = 0; i < 0; i++) { // Compliant - 1
       for (Object o: getObjects()) { // Compliant - 2
-        while (false) { // Compliant - 3
+        while (cond) { // Compliant - 3
 
-          for (int i = 0; i < 0; i++) { // Compliant - 4
+          for (int j = 0; i < 0; i++) { // Noncompliant
           }
 
-          for (Object o: getObjects()) { // Compliant - 4
+          for (Object p: getObjects()) { // Noncompliant
           }
 
-          while (false) { // Compliant - 4
+          while (cond) { // Noncompliant
           }
 
-          do { // Compliant - 4
+          do { // Noncompliant
           } while (false);
 
-          if (false) { // Compliant
+          if (false) { // Noncompliant
           }
 
-          switch (foo) { // Compliant
+          switch (foo) { // Noncompliant
           }
 
-          try {  // Compliant
+          try {  // Noncompliant
           } catch (Exception e) {
           }
         }
       }
     }
+  }
+
+  private Iterable<? extends Object> getObjects() {
+    return null;
   }
 }
