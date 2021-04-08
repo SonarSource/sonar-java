@@ -144,7 +144,8 @@ public class XxeProcessingCheck extends SECheck {
       .put(XML_INPUT_FACTORY_NEW_INSTANCE,
         c -> (c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeSchema.SECURED))
           || c.hasConstraint(FeatureSupportDtd.SECURED)
-          || c.hasConstraint(FeatureIsSupportingExternalEntities.SECURED))
+          || c.hasConstraint(FeatureIsSupportingExternalEntities.SECURED)
+          || c.hasConstraint(XxeEntityResolver.CUSTOM_ENTITY_RESOLVER))
       .put(DOCUMENT_BUILDER_FACTORY_NEW_INSTANCE, XxeProcessingCheck::documentBuilderFactoryIsSecured)
       .put(NEW_DOCUMENT_BUILDER, c -> c.hasConstraint(XxeEntityResolver.CUSTOM_ENTITY_RESOLVER))
       .put(SAX_PARSER_FACTORY_NEW_INSTANCE,
@@ -192,9 +193,12 @@ public class XxeProcessingCheck extends SECheck {
 
   private static final String DOCUMENT_BUILDER = "javax.xml.parsers.DocumentBuilder";
 
-  private static final MethodMatchers ENTITY_RESOLVER_SETTERS =
+  private static final MethodMatchers ENTITY_RESOLVER_SETTERS = MethodMatchers.or(
     MethodMatchers.create().ofSubTypes(XML_READER, SAX_BUILDER, SAX_READER, DOCUMENT_BUILDER)
-      .names("setEntityResolver").addParametersMatcher(MethodMatchers.ANY).build();
+      .names("setEntityResolver").addParametersMatcher(MethodMatchers.ANY).build(),
+    MethodMatchers.create().ofSubTypes(XML_INPUT_FACTORY)
+      .names("setXMLResolver").addParametersMatcher(MethodMatchers.ANY).build()
+  );
 
   private static final MethodMatchers TRANSFERRING_METHOD_CALLS = MethodMatchers.or(
     MethodMatchers.create().ofTypes(SAX_PARSER_FACTORY).names("newSAXParser").withAnyParameters().build(),
