@@ -1,9 +1,13 @@
+package checks;
+
 import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.annotation.Documented;
 import java.util.List;
+import org.sonar.api.Properties;
 
-class Foo {
+class LeftCurlyBraceEndLineCheck {
   
   private static final int MY_CONST;
   static
@@ -12,10 +16,12 @@ class Foo {
   }
   
   public enum MyEnum {
-    A
+    A(1)
+    // Duplicated issue...
+    // Noncompliant@+1
     {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
     },
-    B,
+    B(2),
     C(42) {                             // Compliant
     };
     
@@ -26,7 +32,7 @@ class Foo {
     }
   }
   
-  private Foo() {                       // Compliant
+  public LeftCurlyBraceEndLineCheck() {                       // Compliant
   }
   
   public void bar() throws Exception
@@ -36,7 +42,7 @@ class Foo {
     }
   }
   
-  void doStuff(boolean test, MyEnum myEnum, List myList)
+  void doStuff(boolean test, MyEnum myEnum, List myList) throws IOException
   {                                     // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
     if (test)
       System.out.println();
@@ -100,22 +106,25 @@ class Foo {
     
     LABEL:
     {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
-      myMethod();
+      doSomethingElse();
     }
   }
   
-  public void myMethod() {              // Compliant
+  public void myMethod(boolean something, boolean something3, boolean something4, boolean param1, boolean param2, boolean param3) {              // Compliant
     if(something)
     {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
-      executeTask();
+      doSomethingElse();
     } else {                            // Compliant
       doSomethingElse();
     }
     if( param1 && param2 && param3
       && something3 && something4)
     {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
-      executeAnotherTask();
+      doSomethingElse();
     }
+  }
+
+  private void doSomethingElse() {
   }
 
   {                                     // Compliant
@@ -128,10 +137,10 @@ class Foo {
   }
 }
 
-class Bar extends Foo {                 // Compliant
+class LeftCurlyBraceEndLineCheckBar extends LeftCurlyBraceEndLineCheck {                 // Compliant
 }
 
-class ReBar extends sonar.Foo {         // Compliant
+class LeftCurlyBraceEndLineCheckReBar extends checks.LeftCurlyBraceEndLineCheck {         // Compliant
 }
 
 abstract class Dul implements Closeable
@@ -190,8 +199,8 @@ and {@code getY()} or the other way around.</p>
 
 @since 1.6
 */
-@Documented @Target(CONSTRUCTOR) @Retention(RUNTIME)
-public @interface ConstructorProperties {
+@Documented
+@interface ConstructorProperties {
  /**
     <p>The getter names.</p>
     @return the getter names corresponding to the parameters in the
