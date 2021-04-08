@@ -21,13 +21,14 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.TestUtils;
 
 class LeftCurlyBraceEndLineCheckTest {
 
   @Test
   void detected() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/LeftCurlyBraceEndLineCheck.java")
+      .onFile(TestUtils.testSourcesPath("checks/LeftCurlyBraceEndLineCheck.java"))
       .withCheck(new LeftCurlyBraceEndLineCheck())
       .verifyIssues();
   }
