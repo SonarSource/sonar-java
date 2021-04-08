@@ -27,19 +27,16 @@ import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class SwitchCasesShouldBeCommaSeparatedCheckTest {
   @Test
-  void test() {
+  void test_switch_statements() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/SwitchCasesShouldBeCommaSeparatedCheck.java"))
       .withCheck(new SwitchCasesShouldBeCommaSeparatedCheck())
       .withJavaVersion(14)
       .verifyIssues();
+  }
 
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/SwitchCasesShouldBeCommaSeparatedCheck.java"))
-      .withCheck(new SwitchCasesShouldBeCommaSeparatedCheck())
-      .withJavaVersion(13)
-      .verifyNoIssues();
-
+  @Test
+  void test_switch_expressions() {
     JavaCheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/SwitchCasesShouldBeCommaSeparatedCheck.java"))
       .withCheck(new SwitchCasesShouldBeCommaSeparatedCheck())
@@ -47,4 +44,12 @@ class SwitchCasesShouldBeCommaSeparatedCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_unsupported_java_version() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/SwitchCasesShouldBeCommaSeparatedCheck.java"))
+      .withCheck(new SwitchCasesShouldBeCommaSeparatedCheck())
+      .withJavaVersion(13)
+      .verifyNoIssues();
+  }
 }

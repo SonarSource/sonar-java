@@ -19,7 +19,9 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
@@ -47,7 +49,7 @@ public class SwitchCasesShouldBeCommaSeparatedCheck extends IssuableSubscription
   @Override
   public void visitNode(Tree tree) {
     SwitchTree switchExpression = (SwitchTree) tree;
-    if (usesArrows(switchExpression)) {
+    if (!usesColons(switchExpression)) {
       return;
     }
     for (CaseGroupTree aCase : switchExpression.cases()) {
@@ -56,25 +58,26 @@ public class SwitchCasesShouldBeCommaSeparatedCheck extends IssuableSubscription
       if (size == 1) {
         continue;
       }
-      while (size >= 2 && labels.get(size - 1).caseOrDefaultKeyword().text().equals("default")) {
-        size--;
+
+      Deque<CaseLabelTree> caseLabels = labels.stream()
+        .filter(label -> "case".equals(label.caseOrDefaultKeyword().text()))
+        .collect(Collectors.toCollection(ArrayDeque::new));
+
+      if (caseLabels.size() > 1) {
+        CaseLabelTree lastLabel = caseLabels.removeLast();
+        List<JavaFileScannerContext.Location> secondaries = caseLabels.stream()
+          .map(label -> new JavaFileScannerContext.Location("", label))
+          .collect(Collectors.toList());
+        reportIssue(lastLabel, MESSAGE, secondaries, null);
       }
-      if (size == 1) {
-        return;
-      }
-      CaseLabelTree lastLabel = labels.get(size - 1);
-      List<JavaFileScannerContext.Location> secondaries = labels.stream()
-        .limit(size - 1L)
-        .map(label -> new JavaFileScannerContext.Location("", label))
-        .collect(Collectors.toList());
-      reportIssue(lastLabel, MESSAGE, secondaries, null);
+
     }
     super.visitNode(tree);
   }
 
-  public static boolean usesArrows(SwitchTree switchExpression) {
-    return !switchExpression.cases().isEmpty() &&
-      switchExpression.cases().get(0).labels().get(0).colonOrArrowToken().text().equals("->");
+  public static boolean usesColons(SwitchTree tree) {
+    return !tree.cases().isEmpty() &&
+      tree.cases().get(0).labels().get(0).colonOrArrowToken().text().equals(":");
   }
 
   @Override

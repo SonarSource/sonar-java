@@ -49,6 +49,13 @@ public class SwitchCasesShouldBeCommaSeparatedCheck {
       default:
         doSomething();
     }
+
+    // Uncommon cases ordering
+    switch (mode) {
+      default:
+      case "a":
+        doSomething();
+    }
   }
 
   private void doSomething() {

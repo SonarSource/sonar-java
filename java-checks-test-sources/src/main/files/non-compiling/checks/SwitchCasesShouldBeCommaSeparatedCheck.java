@@ -41,6 +41,13 @@ public class SwitchCasesShouldBeCommaSeparatedCheck {
       case "a", "b" -> returnSomething();
       default -> returnSomethingElse();
     };
+
+    // Uncommon cases ordering
+    i = switch (mode) {
+      default:
+      case "a":
+        yield 42;
+    };
   }
   private int returnSomething() {
     return -1;
