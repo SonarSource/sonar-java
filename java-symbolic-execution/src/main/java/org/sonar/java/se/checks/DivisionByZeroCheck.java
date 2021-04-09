@@ -407,12 +407,47 @@ public class DivisionByZeroCheck extends SECheck {
       if (tree.is(Tree.Kind.CHAR_LITERAL) && isNullCharacter(value)) {
         addZeroConstraint(sv, ZeroConstraint.ZERO);
       } else if (tree.is(Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL, Tree.Kind.DOUBLE_LITERAL, Tree.Kind.FLOAT_LITERAL)) {
-        addZeroConstraint(sv, isNumberZero(value) ? ZeroConstraint.ZERO : ZeroConstraint.NON_ZERO);
+        addZeroConstraint(sv, isZeroLiteral(tree) ? ZeroConstraint.ZERO : ZeroConstraint.NON_ZERO);
       }
     }
 
-    private static boolean isNumberZero(String literalValue) {
-      return !(literalValue.matches("(.)*[1-9]+(.)*") || literalValue.matches("(0x|0X){1}(.)*[1-9a-fA-F]+(.)*") || literalValue.matches("(0b|0B){1}(.)*[1]+(.)*"));
+    // LiteralTree.asConstant() could fit here logically but is not an optimal algorithm for such a hot paths
+    private static boolean isZeroLiteral(LiteralTree literalTree) {
+      String value = literalTree.value();
+      if (value.length() == 1) {
+        return value.equals("0");
+      }
+      int startIndex = 0;
+      int endIndex = value.length() - 1;
+      switch (literalTree.kind()) {
+        case LONG_LITERAL:
+          endIndex = value.length() - 2;
+        case INT_LITERAL:
+          if (value.charAt(0) == '0' && (value.charAt(1) == 'x' || value.charAt(1) == 'X' ||
+            value.charAt(1) == 'b' || value.charAt(1) == 'B')) {
+            startIndex = 2;
+          }
+          break;
+        case FLOAT_LITERAL:
+          endIndex = value.length() - 2;
+          break;
+        case DOUBLE_LITERAL:
+          if (value.charAt(endIndex) == 'd' || value.charAt(endIndex) == 'D') {
+            endIndex = value.length() - 2;
+          }
+          break;
+      }
+      return isNumberZero(value, startIndex, endIndex);
+    }
+
+
+    private static boolean isNumberZero(String literalValue, int startIndex, int endIndex) {
+      for (int i = startIndex; i <= endIndex; ++i) {
+        if (literalValue.charAt(i) != '_' && literalValue.charAt(i) != '0' && literalValue.charAt(i) != '.') {
+          return false;
+        }
+      }
+      return true;
     }
 
     private static boolean isNullCharacter(String literalValue) {

@@ -37,6 +37,10 @@ class A {
     r = 1 / (int) 0b0101_000_01; // Compliant
   }
 
+  void moo(int r) {
+    r = 1 / (int) 0B0101_000_01; // Compliant
+  }
+
   void doo(int r) {
     r = 1 / (int) getDoubleValue(); // Compliant
   }
@@ -47,6 +51,13 @@ class A {
 
   void zug(int r) {
     int z1 = 0x0;
+    int z2 = 15;
+    z2 *= z1;
+    r = 1 / z2; // Noncompliant {{Make sure "z2" can't be zero before doing this division.}}
+  }
+
+  void zug2(int r) {
+    int z1 = 0X0;
     int z2 = 15;
     z2 *= z1;
     r = 1 / z2; // Noncompliant {{Make sure "z2" can't be zero before doing this division.}}
@@ -81,6 +92,12 @@ class A {
   void mug(int r) {
     int z1 = 0x00;
     int z2 = 0x00L;
+    r = 1 / (z2 + z1); // Noncompliant [[sc=13;ec=22]] {{Make sure this expression can't be zero before doing this division.}}
+  }
+
+  void mug2(int r) {
+    int z1 = 0x00;
+    int z2 = 0x00l;
     r = 1 / (z2 + z1); // Noncompliant [[sc=13;ec=22]] {{Make sure this expression can't be zero before doing this division.}}
   }
 
@@ -273,6 +290,36 @@ class A {
       z1 = 3.0f;
     } else {
       r = 1.0f;
+    }
+    r %= z1; // Noncompliant {{Make sure "z1" can't be zero before doing this modulation.}}
+  }
+
+  void gou2(boolean b, float r) {
+    float z1 = 0.0F;
+    if (b) {
+      z1 = 3.0F;
+    } else {
+      r = 1.0F;
+    }
+    r %= z1; // Noncompliant {{Make sure "z1" can't be zero before doing this modulation.}}
+  }
+
+  void gou3(boolean b, double r) {
+    double z1 = 0.0d;
+    if (b) {
+      z1 = 3.0d;
+    } else {
+      r = 1.0d;
+    }
+    r %= z1; // Noncompliant {{Make sure "z1" can't be zero before doing this modulation.}}
+  }
+
+  void gou4(boolean b, double r) {
+    double z1 = 0.0D;
+    if (b) {
+      z1 = 3.0D;
+    } else {
+      r = 1.0D;
     }
     r %= z1; // Noncompliant {{Make sure "z1" can't be zero before doing this modulation.}}
   }
