@@ -551,4 +551,19 @@ class CatchUsesExceptionWithContextCheck {
     }
   }
 
+  private void log_builder() {
+    class Builder {
+      Builder(String message) {
+      }
+      void log() {
+      }
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      String message = "Exception raised while authenticating user: " + e.getMessage();
+      new Builder(message).log();
+    }
+  }
+
 }

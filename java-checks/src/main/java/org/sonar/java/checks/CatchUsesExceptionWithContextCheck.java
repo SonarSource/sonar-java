@@ -249,11 +249,11 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
 
   private static class UsageStatus {
     private final Collection<IdentifierTree> validUsages;
-    private final Set<MethodInvocationTree> loggingMethodInvocations;
+    private final List<MethodInvocationTree> loggingMethodInvocations;
 
     UsageStatus(Collection<IdentifierTree> usages) {
       validUsages = new ArrayList<>(usages);
-      loggingMethodInvocations = new HashSet<>();
+      loggingMethodInvocations = new ArrayList<>();
     }
 
     public void addInvalidUsage(IdentifierTree exceptionIdentifier) {
@@ -304,6 +304,9 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
     private static boolean hasDynamicExceptionMessageUsage(MethodInvocationTree mit) {
       Arguments arguments = mit.arguments();
       int argumentsCount = arguments.size();
+      if (argumentsCount == 0) {
+        return true;
+      }
       ExpressionTree firstArg = arguments.get(0);
       ExpressionTree argumentToCheck;
       if (mit.symbol().owner().type().is(SLF4J_LOGGER)) {
