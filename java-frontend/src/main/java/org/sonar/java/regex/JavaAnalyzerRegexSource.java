@@ -21,6 +21,7 @@ package org.sonar.java.regex;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -71,9 +72,19 @@ public class JavaAnalyzerRegexSource extends JavaRegexSource {
     int endOffset = range.getEndingOffset() - endEntry.startIndex;
     TextSpan startSpan = startEntry.textSpan;
     TextSpan endSpan = endEntry.textSpan;
+
     if (startSpan == endSpan) {
-      // This assumes that startSpan.startLine == startSpan.endLine, which should always be the case
-      result.add(new TextSpan(startSpan.startLine, startSpan.startCharacter + startOffset, startSpan.endLine, startSpan.startCharacter + endOffset));
+      if (startSpan.onLine()) {
+        result.add(startSpan);
+      } else {
+        // This assumes that startSpan.startLine == startSpan.endLine, which should always be the case
+        TextSpan newTextSpan = new TextSpan(startSpan.startLine, startSpan.startCharacter + startOffset, startSpan.endLine, startSpan.startCharacter + endOffset);
+        if (shouldUseLine(startSpan, newTextSpan)) {
+          result.add(new TextSpan(newTextSpan.startLine));
+        } else {
+          result.add(newTextSpan);
+        }
+      }
     } else {
       result.add(new TextSpan(startSpan.startLine, startSpan.startCharacter + startOffset, startSpan.endLine, startSpan.endCharacter));
       int indexAfterStartSpan = startEntry.startIndex + startSpan.endCharacter - startSpan.startCharacter;
@@ -81,6 +92,23 @@ public class JavaAnalyzerRegexSource extends JavaRegexSource {
       result.add(new TextSpan(endSpan.startLine, endSpan.startCharacter, endSpan.endLine, endSpan.startCharacter + endOffset));
     }
     return result;
+  }
+
+  boolean shouldUseLine(TextSpan textSpan, TextSpan newTextSpan) {
+    // is exceeding limits of existing text span
+    if (newTextSpan.endCharacter <= textSpan.endCharacter) {
+      return false;
+    }
+    LiteralTree literal = indexToTextSpan.getLiteral(textSpan);
+    // is not a text block
+    if (literal == null || !literal.is(Tree.Kind.TEXT_BLOCK)) {
+      return false;
+    }
+    int lastLine = literal.token().line()
+      + literal.value().split("\n").length
+      - 1;
+    // last line will benefit from the closing """
+    return textSpan.endLine != lastLine;
   }
 
   private static String getString(LiteralTree literal) {
@@ -91,6 +119,7 @@ public class JavaAnalyzerRegexSource extends JavaRegexSource {
 
   private static class TextSpanTracker {
     final NavigableMap<Integer, TextSpan> indexToTextSpan = new TreeMap<>();
+    final Map<TextSpan, LiteralTree> textSpanToLiteral = new HashMap<>();
     int index = 0;
 
     void addLiteral(LiteralTree literal, int length) {
@@ -104,17 +133,31 @@ public class JavaAnalyzerRegexSource extends JavaRegexSource {
     void addStringLiteral(LiteralTree literal, int length) {
       TextSpan literalSpan = AnalyzerMessage.textSpanFor(literal);
       // Create a text span for the string with the quotes stripped out
-      indexToTextSpan.put(index, new TextSpan(literalSpan.startLine, literalSpan.startCharacter + 1, literalSpan.endLine, literalSpan.endCharacter - 1));
+      TextSpan textSpan = new TextSpan(literalSpan.startLine, literalSpan.startCharacter + 1, literalSpan.endLine, literalSpan.endCharacter - 1);
+      indexToTextSpan.put(index, textSpan);
+      textSpanToLiteral.put(textSpan, literal);
       index += length;
     }
 
     void addTextBlock(LiteralTree literal) {
-      int indent = LiteralUtils.indentationOfTextBlock(literal.value().split("\n"));
-      String[] lines = getString(literal).split("(?<=\r?\n)");
-      for (int i = 0; i < lines.length; i++) {
-        int line = literal.token().line() + i + 1;
-        int lineLength = lines[i].length();
-        indexToTextSpan.put(index, new TextSpan(line, indent, line, indent + lineLength));
+      String[] literalTreeLines = literal.value().split("\n");
+      String[] stringLines = getString(literal).split("(?<=\r?\n)");
+
+      int indent = LiteralUtils.indentationOfTextBlock(literalTreeLines);
+      int textBlockLine = literal.token().line();
+      for (int i = 0; i < stringLines.length; i++) {
+        int line = textBlockLine + i + 1;
+        String stringLine = stringLines[i];
+        int lineLength = stringLine.length();
+        TextSpan textSpan;
+        if (stringLine.trim().isEmpty()) {
+          textSpan = new TextSpan(line);
+        } else {
+          int endLineTrimming = stringLine.endsWith("\n") ? 1 : 0;
+          textSpan = new TextSpan(line, indent, line, indent + lineLength - endLineTrimming);
+        }
+        indexToTextSpan.put(index, textSpan);
+        textSpanToLiteral.put(textSpan, literal);
         index += lineLength;
       }
     }
@@ -127,6 +170,11 @@ public class JavaAnalyzerRegexSource extends JavaRegexSource {
     @Nullable
     TextSpanEntry entryBeforeIndex(Integer index) {
       return entry(indexToTextSpan.lowerEntry(index));
+    }
+
+    @Nullable
+    LiteralTree getLiteral(TextSpan textSpan) {
+      return textSpanToLiteral.get(textSpan);
     }
 
     @Nullable

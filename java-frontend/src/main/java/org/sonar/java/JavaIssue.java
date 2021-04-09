@@ -91,6 +91,9 @@ public final class JavaIssue {
   }
 
   private static TextRange range(InputFile file, AnalyzerMessage.TextSpan textSpan) {
+    if (textSpan.onLine()) {
+      return file.selectLine(textSpan.startLine);
+    }
     return file.newRange(textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
   }
 
