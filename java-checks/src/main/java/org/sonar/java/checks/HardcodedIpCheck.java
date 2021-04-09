@@ -36,13 +36,13 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S1313")
 public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final Pattern IP_V4_REGEX = Pattern.compile("([^\\d.]*\\/)?((?<ip>(?:\\d{1,3}\\.){3}\\d{1,3})(:\\d{1,5})?(?!\\d|\\.))(\\/.*)?");
+  private static final Pattern IP_V4_REGEX = Pattern.compile("([^\\d.]*\\/)?((?<ip>(?:\\d{1,3}\\.){3}\\d{1,3})(:\\d{1,5})?(?![\\d.]))(\\/.*)?");
 
   private static final String IP_V6_WITH_FIRST_PART = "(\\p{XDigit}{1,4}::?){1,7}\\p{XDigit}{0,4}";
   private static final String IP_V6_WITHOUT_FIRST_PART = "::((\\p{XDigit}{1,4}:){0,6}\\p{XDigit}{1,4})?";
   private static final String IP_V6_ALONE = ("(?<ip>" + IP_V6_WITH_FIRST_PART + "|" + IP_V6_WITHOUT_FIRST_PART + ")");
   private static final String IP_V6_BRACKET = "\\[" + IP_V6_ALONE + "\\]";
-  private static final String IP_V6_URL = "([^\\d.]*\\/)" + IP_V6_BRACKET + "((:\\d{1,5})?(?!\\d|\\.))(\\/.*)?";
+  private static final String IP_V6_URL = "([^\\d.]*\\/)" + IP_V6_BRACKET + "((:\\d{1,5})?(?![\\d.]))(\\/.*)?";
 
   private static final List<Pattern> IP_V6_REGEX_LIST = Arrays.asList(
     Pattern.compile(IP_V6_ALONE),
