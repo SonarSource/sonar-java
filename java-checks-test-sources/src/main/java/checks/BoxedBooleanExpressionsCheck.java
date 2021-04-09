@@ -653,7 +653,7 @@ class BoxedBooleanExpressionsCheck {
     } else if (irrelevant != null) {
       // ... Do something
     } else {
-      ignored = (ifDoesNotCoverUse ? "a" : "b"); // Noncompliant
+      ignored = (ifDoesNotCoverUse ? "a" : "b"); // false-negative, first usage is a null check
     }
 
     Boolean conditionalDoesNotCoverUse = getSurprizeBoxedBoolean();
@@ -662,7 +662,7 @@ class BoxedBooleanExpressionsCheck {
     } else if (irrelevant != null) {
       // ... Do something
     } else {
-      ignored = (conditionalDoesNotCoverUse ? "a" : "b"); // Noncompliant
+      ignored = (conditionalDoesNotCoverUse ? "a" : "b"); // false-negative, first usage is a null check
     }
 
     Boolean whileDoesNotCoverUse = getSurprizeBoxedBoolean();
@@ -673,7 +673,7 @@ class BoxedBooleanExpressionsCheck {
     } else if (irrelevant != null) {
       // ... Do something
     } else {
-      ignored = (whileDoesNotCoverUse ? "a" : "b"); // Noncompliant
+      ignored = (whileDoesNotCoverUse ? "a" : "b"); // // false-negative, first usage is a null check
     }
 
     Boolean forDoesNotCoverUse = getSurprizeBoxedBoolean();
@@ -684,7 +684,7 @@ class BoxedBooleanExpressionsCheck {
     } else if (irrelevant != null) {
       // ... Do something
     } else {
-      ignored = (forDoesNotCoverUse ? "a" : "b"); // Noncompliant
+      ignored = (forDoesNotCoverUse ? "a" : "b"); // false-negative, first usage is a null check
     }
     Boolean conditonalUsedBeforeCheck = getSurprizeBoxedBoolean();
     ignored = conditonalUsedBeforeCheck ? "a" : " b"; // Noncompliant
