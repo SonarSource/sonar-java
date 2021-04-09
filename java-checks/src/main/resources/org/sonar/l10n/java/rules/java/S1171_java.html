@@ -23,6 +23,13 @@ class MyClass {
   }
 }
 </pre>
+<p>or using Java 9 <code>Map.of</code>:</p>
+<pre>
+class MyClass {
+  // Compliant
+  private static final Map&lt;String, String&gt; MY_MAP = java.util.Map.of("a", "b");
+}
+</pre>
 <p>or using Guava:</p>
 <pre>
 class MyClass {

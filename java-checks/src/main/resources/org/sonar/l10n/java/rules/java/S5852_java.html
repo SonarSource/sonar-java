@@ -57,11 +57,11 @@ matches, for which it is quite hard to avoid quadratic runtimes. In those cases 
   <li> Use multiple passes. This could mean pre- and/or post-processing the string manually before/after applying the regular expression to it or
   using multiple regular expressions. One example of this would be to replace <code>str.split("\\s*,\\s*")</code> with <code>str.split(",")</code> and
   then trimming the spaces from the strings as a second step. </li>
-  <li> When using `Matcher.find()` it is often possible to make the regex infallible by making all the parts that could fail optional, which will
-  prevent backtracking. Of course this means that you'll accept more strings than intended, but this can be handled by using capturing groups to check
-  whether the optional parts were matched or not and then ignoring the match if they weren't. For example the regex <code>x*y</code> could be replaced
-  with <code>x*(y)?</code> and then the call to <code>matcher.find()</code> could be replaced with <code>matcher.find() &amp;&amp; matcher.group(1)
-  != null</code>. </li>
+  <li> When using <code>Matcher.find()</code>, it is often possible to make the regex infallible by making all the parts that could fail optional,
+  which will prevent backtracking. Of course this means that you'll accept more strings than intended, but this can be handled by using capturing
+  groups to check whether the optional parts were matched or not and then ignoring the match if they weren't. For example the regex <code>x*y</code>
+  could be replaced with <code>x*(y)?</code> and then the call to <code>matcher.find()</code> could be replaced with <code>matcher.find() &amp;&amp;
+  matcher.group(1) != null</code>. </li>
 </ul>
 <h2>Sensitive Code Example</h2>
 <p>The first regex evaluation will never end in <code>JDK</code> &lt;= 9 and the second regex evaluation will never end in any versions of the
