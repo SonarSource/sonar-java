@@ -100,25 +100,24 @@ class JavaIssueTest {
     DefaultIssue newIssueWithFlow = new DefaultIssue(project, storage);
     Mockito.when(sensorContext.newIssue()).thenReturn(newIssueEmptyFlow, newIssueWithFlow);
 
-    JavaIssue javaIssue = JavaIssue.create(sensorContext, ruleKey, null);
-    javaIssue.setPrimaryLocation(inputFile, "main message", 1, 2, 1, 6);
-    javaIssue.addFlow(inputFile, new ArrayList<>());
-    javaIssue.save();
+    JavaIssue javaIssue1 = JavaIssue.create(sensorContext, ruleKey, null);
+    javaIssue1.setPrimaryLocation(inputFile, "main message", 1, 2, 1, 6);
+    javaIssue1.addFlow(inputFile, new ArrayList<>());
+    javaIssue1.save();
     Mockito.verify(storage, Mockito.times(1)).store(newIssueEmptyFlow);
     assertThat(newIssueEmptyFlow.flows()).isEmpty();
 
-
-    javaIssue = JavaIssue.create(sensorContext, ruleKey, null);
-    javaIssue.setPrimaryLocation(inputFile, "main message", 1, 2, 1, 6);
+    JavaIssue javaIssue2 = JavaIssue.create(sensorContext, ruleKey, null);
+    javaIssue2.setPrimaryLocation(inputFile, "main message", 1, 2, 1, 6);
     List<List<AnalyzerMessage>> flows = new ArrayList<>();
     flows.add(
       Arrays.asList(
         new AnalyzerMessage(null, inputFile, new AnalyzerMessage.TextSpan(2, 2, 2, 4), "flow message 1", 0)));
     flows.add(
       Arrays.asList(
-        new AnalyzerMessage(null, inputFile, new AnalyzerMessage.TextSpan(3, 1, 3, 5), "flow message 2", 0)));
-    javaIssue.addFlow(inputFile, flows);
-    javaIssue.save();
+        new AnalyzerMessage(null, inputFile, new AnalyzerMessage.TextSpan(3), "flow message 2", 0)));
+    javaIssue2.addFlow(inputFile, flows);
+    javaIssue2.save();
     Mockito.verify(storage, Mockito.times(1)).store(newIssueWithFlow);
     assertThat(newIssueWithFlow.flows()).hasSize(2);
   }

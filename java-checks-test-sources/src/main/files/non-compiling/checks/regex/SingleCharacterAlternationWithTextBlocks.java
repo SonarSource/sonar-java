@@ -8,11 +8,11 @@ public class SingleCharacterAlternationWithTextBlocks {
     // Matches [ab\n]
     str.matches("""
       a|b|
-      """); // Noncompliant@-1 [[sc=7;ec=12]]
+      """); // Noncompliant@-1
     // Matches [ab\nc]
     str.matches("""
       a|b|
-      |c"""); // Noncompliant@-1 [[sc=7;ec=12;secondary=+0]]
+      |c"""); // Noncompliant@-1 [[sc=7;ec=11;secondary=+0]]
     str.matches("""
       (?x)
       (a|b)
