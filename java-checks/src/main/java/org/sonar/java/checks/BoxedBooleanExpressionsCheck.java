@@ -155,7 +155,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
       }
       // Test if the first null check and the first usage are part of the same higher if structure
       Optional<IfStatementTree> ifStatementWithNullCheck = getParentConditionalBranch(firstNullCheck.get());
-      Optional<IfStatementTree> ifStatementWithFirstUsage = getParentConditionalBranch((ExpressionTree) firstUsage);
+      Optional<IfStatementTree> ifStatementWithFirstUsage = getParentConditionalBranch(firstUsage);
       return ifStatementWithNullCheck.equals(ifStatementWithFirstUsage);
     }
     return false;
@@ -175,7 +175,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
   }
 
 
-  private static Optional<IfStatementTree> getParentConditionalBranch(ExpressionTree tree) {
+  private static Optional<IfStatementTree> getParentConditionalBranch(Tree tree) {
     Deque<Tree> trees = new ArrayDeque<>();
     Tree current = tree;
     IfStatementTree ifStatementTree = null;

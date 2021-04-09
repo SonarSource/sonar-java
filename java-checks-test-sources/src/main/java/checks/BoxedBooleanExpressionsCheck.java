@@ -703,4 +703,12 @@ class BoxedBooleanExpressionsCheck {
     }
   }
 
+  void testBoxedValue(Boolean value) {
+    if (value == null) {
+      if (value) {
+      }
+    } else if (value) {
+    }
+  }
+
 }
