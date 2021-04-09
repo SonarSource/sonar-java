@@ -1365,15 +1365,17 @@ public class JParser {
         Expression expression = e.getExpression();
         Statement elseStatement = e.getElseStatement();
         if (elseStatement != null) {
+          ExpressionTree condition = convertExpression(expression);
+          StatementTree thenStatement = convertStatement(e.getThenStatement());
           return new IfStatementTreeImpl(
             firstTokenAfter(e.getThenStatement(), TerminalTokens.TokenNameelse),
             convertStatement(elseStatement)
           ).complete(
             firstTokenIn(e, TerminalTokens.TokenNameif),
             firstTokenBefore(expression, TerminalTokens.TokenNameLPAREN),
-            convertExpression(expression),
+            condition,
             firstTokenAfter(expression, TerminalTokens.TokenNameRPAREN),
-            convertStatement(e.getThenStatement())
+            thenStatement
           );
         } else {
           return new IfStatementTreeImpl(
