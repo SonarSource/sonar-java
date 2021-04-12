@@ -19,8 +19,9 @@
  */
 package org.sonar.plugins.java;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.rule.RuleKey;
@@ -96,27 +97,26 @@ class JavaRulesDefinitionTest {
     RulesDefinition.NewRepository newRepository = context.createRepository("test", "java");
     newRepository.createRule("correctRule");
     JavaRulesDefinition definition = new JavaRulesDefinition();
-    JavaSonarWayProfile.Profile profile = new JavaSonarWayProfile.Profile();
-    profile.ruleKeys = new ArrayList<>();
+    Set<String> sonarWayRuleKeys = new HashSet<>();
     try {
-      definition.newRule(CheckWithNoAnnotation.class, newRepository, profile);
+      definition.newRule(CheckWithNoAnnotation.class, newRepository, sonarWayRuleKeys);
     } catch (IllegalArgumentException iae) {
       assertThat(iae).hasMessage("No Rule annotation was found on class " + CheckWithNoAnnotation.class.getName());
     }
 
     try {
-      definition.newRule(EmptyRuleKey.class, newRepository, profile);
+      definition.newRule(EmptyRuleKey.class, newRepository, sonarWayRuleKeys);
     } catch (IllegalArgumentException iae) {
       assertThat(iae).hasMessage("No key is defined in Rule annotation of class " + EmptyRuleKey.class.getName());
     }
 
     try {
-      definition.newRule(UnregisteredRule.class, newRepository, profile);
+      definition.newRule(UnregisteredRule.class, newRepository, sonarWayRuleKeys);
     } catch (IllegalStateException ise) {
       assertThat(ise).hasMessage("No rule was created for class " + UnregisteredRule.class.getName() + " in test");
     }
     // no metadata defined, does not fail on registration of rule
-    definition.newRule(CorrectRule.class, newRepository, profile);
+    definition.newRule(CorrectRule.class, newRepository, sonarWayRuleKeys);
 
   }
 
@@ -178,7 +178,7 @@ class JavaRulesDefinitionTest {
     RulesDefinition.NewRepository repository = mock(RulesDefinition.NewRepository.class);
     RulesDefinition.NewRule newRule = mock(RulesDefinition.NewRule.class);
     when(repository.rule(any())).thenReturn(newRule);
-    definition.newRule(ServletMethodsExceptionsThrownCheck.class, repository, JavaSonarWayProfile.readProfile());
+    definition.newRule(ServletMethodsExceptionsThrownCheck.class, repository, new HashSet<>(JavaSonarWayProfile.readProfile().ruleKeys));
 
     verify(newRule, never()).addOwaspTop10();
     verify(newRule, never()).addCwe();

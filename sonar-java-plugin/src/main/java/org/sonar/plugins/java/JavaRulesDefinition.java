@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -68,16 +69,17 @@ public class JavaRulesDefinition implements RulesDefinition {
       .createRepository(CheckList.REPOSITORY_KEY, Java.KEY)
       .setName("SonarAnalyzer");
     List<Class<?>> checks = CheckList.getChecks();
-    new RulesDefinitionAnnotationLoader().load(repository, checks.toArray(new Class[]{}));
+    new RulesDefinitionAnnotationLoader().load(repository, checks.toArray(new Class[] {}));
     JavaSonarWayProfile.Profile profile = JavaSonarWayProfile.readProfile();
+    Set<String> sonarWayRuleKeys = new HashSet<>(profile.ruleKeys);
     for (Class ruleClass : checks) {
-      newRule(ruleClass, repository, profile);
+      newRule(ruleClass, repository, sonarWayRuleKeys);
     }
     repository.done();
   }
 
   @VisibleForTesting
-  protected void newRule(Class<?> ruleClass, NewRepository repository, JavaSonarWayProfile.Profile profile) {
+  protected void newRule(Class<?> ruleClass, NewRepository repository, Set<String> sonarWayRuleKeys) {
     org.sonar.check.Rule ruleAnnotation = AnnotationUtils.getAnnotation(ruleClass, org.sonar.check.Rule.class);
     if (ruleAnnotation == null) {
       throw new IllegalArgumentException("No Rule annotation was found on " + ruleClass);
@@ -105,7 +107,7 @@ public class JavaRulesDefinition implements RulesDefinition {
       rule.setHtmlDescription(ruleHtmlDescription);
     }
     // 'setActivatedByDefault' is used by SonarLint standalone, to define which rules will be active
-    boolean activatedInProfile = profile.ruleKeys.contains(ruleKey) || profile.ruleKeys.contains(rspecKey);
+    boolean activatedInProfile = sonarWayRuleKeys.contains(ruleKey) || sonarWayRuleKeys.contains(rspecKey);
     boolean isSecurityHotspot = ruleMetadata != null && ruleMetadata.isSecurityHotspot();
     rule.setActivatedByDefault(activatedInProfile && !isSecurityHotspot);
     rule.setTemplate(TEMPLATE_RULE_KEY.contains(ruleKey));
