@@ -20,11 +20,14 @@
 package org.sonar.java.se.checks;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.Flow;
@@ -46,6 +49,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
@@ -74,6 +78,8 @@ public class DivisionByZeroCheck extends SECheck {
       "doubleValue", "floatValue", "intValue", "intValueExact", "longValue", "longValueExact").addParametersMatcher().build();
   private static final MethodMatchers KEEPING_CONSTRAINTS_WITH_ONE_PARAM = BIG_INTEGER_AND_DECIMAL
     .names("pow", "round", "shiftRight", "shiftLeft").addParametersMatcher(MethodMatchers.ANY).build();
+
+  private final Map<String, Boolean> zeroValuesCache = new HashMap<>();
 
   public enum ZeroConstraint implements Constraint {
     ZERO,
@@ -134,6 +140,11 @@ public class DivisionByZeroCheck extends SECheck {
     DeferredConstraintHolderSV(@Nullable ZeroConstraint deferredConstraint) {
       this.deferredConstraint = deferredConstraint;
     }
+  }
+
+  @Override
+  public void init(MethodTree methodTree, CFG cfg) {
+    zeroValuesCache.clear();
   }
 
   @Override
@@ -357,15 +368,18 @@ public class DivisionByZeroCheck extends SECheck {
 
   @Override
   public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
-    PostStatementVisitor visitor = new PostStatementVisitor(context);
+    PostStatementVisitor visitor = new PostStatementVisitor(context, zeroValuesCache);
     syntaxNode.accept(visitor);
     return visitor.programState;
   }
 
   private static class PostStatementVisitor extends CheckerTreeNodeVisitor {
 
-    PostStatementVisitor(CheckerContext context) {
+    private final Map<String, Boolean> zeroValuesCache;
+
+    PostStatementVisitor(CheckerContext context, Map<String, Boolean> zeroValuesCache) {
       super(context.getState());
+      this.zeroValuesCache = zeroValuesCache;
     }
 
     @Override
@@ -407,12 +421,59 @@ public class DivisionByZeroCheck extends SECheck {
       if (tree.is(Tree.Kind.CHAR_LITERAL) && isNullCharacter(value)) {
         addZeroConstraint(sv, ZeroConstraint.ZERO);
       } else if (tree.is(Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL, Tree.Kind.DOUBLE_LITERAL, Tree.Kind.FLOAT_LITERAL)) {
-        addZeroConstraint(sv, isNumberZero(value) ? ZeroConstraint.ZERO : ZeroConstraint.NON_ZERO);
+        addZeroConstraint(sv, checkZeroLiteral(tree) ? ZeroConstraint.ZERO : ZeroConstraint.NON_ZERO);
       }
     }
 
-    private static boolean isNumberZero(String literalValue) {
-      return !(literalValue.matches("(.)*[1-9]+(.)*") || literalValue.matches("(0x|0X){1}(.)*[1-9a-fA-F]+(.)*") || literalValue.matches("(0b|0B){1}(.)*[1]+(.)*"));
+    private boolean checkZeroLiteral(LiteralTree literalTree) {
+      String value = literalTree.value();
+      return zeroValuesCache.computeIfAbsent(value, v -> isZeroLiteral(literalTree, value));
+    }
+
+    /**
+     * This method is used to check whether the string value of a given number literal (int, long, float or double)
+     * is zero. As far as this method is considered to be on the hot paths, it requires some performant solution
+     * with early returns rather then computing the value of the literal and than checking it, because that will
+     * require a lot of boxing and unboxing operations.
+     *
+     * asConstant() method is not applicable here because it requires boxing and unboxing to get the value and then
+     * to check it.
+     **/
+    private static boolean isZeroLiteral(LiteralTree literalTree, String value) {
+      if (value.length() == 1) {
+        return value.equals("0");
+      }
+      int startIndex = 0;
+      int endIndex = value.length() - 1;
+      switch (literalTree.kind()) {
+        case LONG_LITERAL:
+          endIndex = value.length() - 2;
+        case INT_LITERAL:
+          if (value.charAt(0) == '0' && (value.charAt(1) == 'x' || value.charAt(1) == 'X' ||
+            value.charAt(1) == 'b' || value.charAt(1) == 'B')) {
+            startIndex = 2;
+          }
+          break;
+        case FLOAT_LITERAL:
+          endIndex = value.length() - 2;
+          break;
+        case DOUBLE_LITERAL:
+          if (value.charAt(endIndex) == 'd' || value.charAt(endIndex) == 'D') {
+            endIndex = value.length() - 2;
+          }
+          break;
+      }
+      return isNumberZero(value, startIndex, endIndex);
+    }
+
+
+    private static boolean isNumberZero(String literalValue, int startIndex, int endIndex) {
+      for (int i = startIndex; i <= endIndex; ++i) {
+        if (literalValue.charAt(i) != '_' && literalValue.charAt(i) != '0' && literalValue.charAt(i) != '.') {
+          return false;
+        }
+      }
+      return true;
     }
 
     private static boolean isNullCharacter(String literalValue) {
