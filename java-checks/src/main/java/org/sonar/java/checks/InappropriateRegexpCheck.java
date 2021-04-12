@@ -30,7 +30,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S2639")
 public class InappropriateRegexpCheck extends AbstractMethodDetection {
 
-  private static final String INAPPROPRIATE_REGEXPS = "\\.|\\|";
+  private static final String INAPPROPRIATE_REGEXPS = "[.|]";
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {

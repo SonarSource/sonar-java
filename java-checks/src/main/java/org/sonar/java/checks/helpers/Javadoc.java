@@ -101,7 +101,6 @@ public final class Javadoc {
   private static final Tree.Kind[] CLASS_KINDS = PublicApiChecker.classKinds();
   private static final Tree.Kind[] METHOD_KINDS = PublicApiChecker.methodKinds();
   private static final List<String> GENERIC_EXCEPTIONS = Arrays.asList("Exception", "java.lang.Exception");
-  private static final Pattern BLOCK_TAG_LINE_PATTERN = Pattern.compile("^@\\S+.*");
   private static final Set<String> PLACEHOLDERS = SetUtils.immutableSetOf("TODO", "FIXME", "...", ".");
 
   private final List<String> elementParameters;
@@ -264,7 +263,7 @@ public final class Javadoc {
     StringBuilder sb = new StringBuilder();
     sb.append(currentValue != null ? currentValue : "");
     int currentIndex = lineIndex;
-    while (currentIndex + 1 < lines.size() && !BLOCK_TAG_LINE_PATTERN.matcher(lines.get(currentIndex + 1)).matches()) {
+    while (currentIndex + 1 < lines.size() && !lines.get(currentIndex + 1).startsWith("@")) {
       sb.append(" ");
       sb.append(lines.get(currentIndex + 1));
       currentIndex++;
