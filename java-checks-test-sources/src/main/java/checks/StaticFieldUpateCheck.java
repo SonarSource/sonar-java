@@ -1,4 +1,9 @@
-class A {
+package checks;
+
+
+import java.util.function.Consumer;
+
+class StaticFieldUpateCheck {
   public static int staticValue = 0;
   private static final int CONST = staticValue++; // Compliant
   private int value;
@@ -9,9 +14,9 @@ class A {
     staticValue += value; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
     staticValue++; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
     ++staticValue; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
-    A.staticValue++; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
+    StaticFieldUpateCheck.staticValue++; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
     this.staticValue--; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
-    A myA = new A();
+    StaticFieldUpateCheck myA = new StaticFieldUpateCheck();
     myA.staticValue = 1; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
     myA.staticArray[0] = 1; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
     myA.toString();
@@ -40,7 +45,7 @@ class A {
   public void compliantCode() {
     value++; // Compliant
 
-    A myA = new A();
+    StaticFieldUpateCheck myA = new StaticFieldUpateCheck();
     myA.value = value++; // Compliant
 
     int variable;
@@ -50,12 +55,10 @@ class A {
       staticValue++; // Compliant
       staticValue = value + 1; // Compliant
     }
-
-    MyUnknownClass.staticField = value; // Compliant
   }
 }
 
-class B {
+class StaticFieldUpateCheckB {
   private static int value;
 
   private static Comparable<Object> myComparator;

@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,7 +31,15 @@ class StaticFieldUpateCheckTest {
   @Test
   void detected() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/StaticFieldUpateCheck.java")
+      .onFile(TestUtils.testSourcesPath("checks/StaticFieldUpateCheck.java"))
+      .withCheck(new StaticFieldUpateCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void detected_non_compiling() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/StaticFieldUpateCheck.java"))
       .withCheck(new StaticFieldUpateCheck())
       .verifyIssues();
   }
