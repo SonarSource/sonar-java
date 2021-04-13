@@ -19,7 +19,7 @@
  */
 package org.sonar.plugins.java;
 
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
@@ -97,7 +97,7 @@ class JavaRulesDefinitionTest {
     newRepository.createRule("correctRule");
     JavaRulesDefinition definition = new JavaRulesDefinition();
     JavaSonarWayProfile.Profile profile = new JavaSonarWayProfile.Profile();
-    profile.ruleKeys = new ArrayList<>();
+    profile.ruleKeys = new LinkedHashSet<>();
     try {
       definition.newRule(CheckWithNoAnnotation.class, newRepository, profile);
     } catch (IllegalArgumentException iae) {

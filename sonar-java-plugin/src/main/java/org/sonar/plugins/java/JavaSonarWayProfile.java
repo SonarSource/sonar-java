@@ -29,7 +29,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -137,7 +136,7 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
 
   static class Profile {
     String name;
-    List<String> ruleKeys;
+    Set<String> ruleKeys;
   }
 
 }
