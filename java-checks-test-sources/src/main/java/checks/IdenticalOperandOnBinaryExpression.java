@@ -1,8 +1,9 @@
-class A {
-  void foo() {
-    boolean a,b;
+package checks;
+
+class IdenticalOperandOnBinaryExpressionCheck {
+  void foo(boolean a, boolean b, boolean c, boolean e) {
     if(a == b) { }
-    if(a == a) { } // Noncompliant [[sc=13;ec=14;secondary=5]] {{Correct one of the identical sub-expressions on both sides of operator "=="}}
+    if(a == a) { } // Noncompliant [[sc=13;ec=14;secondary=+0]] {{Correct one of the identical sub-expressions on both sides of operator "=="}}
     if(a != a) { } // Noncompliant [[sc=13;ec=14]] {{Correct one of the identical sub-expressions on both sides of operator "!="}}
     if(a || a) { } // Noncompliant
     if(a && a) { } // Noncompliant
@@ -13,7 +14,7 @@ class A {
     if(a && b && c && e && a) {} // Noncompliant [[sc=28;ec=29]]
     if(b
         || a
-        || a) {} // Noncompliant [[sc=12;ec=13;secondary=15]]
+        || a) {} // Noncompliant [[sc=12;ec=13;secondary=-1]]
 
     double d = 0.0d;
     float f = 0.0f;
