@@ -21,14 +21,24 @@ package org.sonar.java.checks.unused;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.TestUtils;
 
 class UnusedLocalVariableCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/unused/UnusedLocalVariableCheck.java")
+      .onFile(TestUtils.testSourcesPath("checks/unused/UnusedLocalVariableCheck.java"))
       .withCheck(new UnusedLocalVariableCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_non_compiling() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/unused/UnusedLocalVariableCheck.java"))
+      .withCheck(new UnusedLocalVariableCheck())
+      .verifyIssues();
+  }
+
 }
