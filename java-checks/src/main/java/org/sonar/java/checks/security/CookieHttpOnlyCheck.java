@@ -21,15 +21,18 @@ package org.sonar.java.checks.security;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -50,7 +53,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S3330")
 public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
-  private final List<Symbol.VariableSymbol> ignoredVariables = new ArrayList<>();
+  private final Set<Symbol.VariableSymbol> ignoredVariables = new HashSet<>();
   private final Map<VariableSymbol, TypeTree> symbolConstructorMapToReport = new LinkedHashMap<>();
   private final List<MethodInvocationTree> settersToReport = new ArrayList<>();
   private final List<TypeTree> newClassToReport = new ArrayList<>();
@@ -76,9 +79,9 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
     private static final String PLAY_COOKIE_BUILDER = "play.mvc.Http$CookieBuilder";
   }
 
-  private static final List<String> SETTER_NAMES = Arrays.asList("setHttpOnly", "withHttpOnly");
+  private static final Set<String> SETTER_NAMES = SetUtils.immutableSetOf("setHttpOnly", "withHttpOnly");
 
-  private static final List<String> CLASSES = Arrays.asList(
+  private static final Set<String> CLASSES = SetUtils.immutableSetOf(
     ClassName.SERVLET_COOKIE,
     ClassName.NET_HTTP_COOKIE,
     ClassName.JAX_RS_COOKIE,

@@ -19,8 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -36,9 +36,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class RawByteBitwiseOperationsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   JavaFileScannerContext context;
-  List<ExpressionTree> shifts = new LinkedList<>();
-  List<ExpressionTree> byteContainments = new LinkedList<>();
-
+  Set<ExpressionTree> shifts = new HashSet<>();
+  Set<ExpressionTree> byteContainments = new HashSet<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {

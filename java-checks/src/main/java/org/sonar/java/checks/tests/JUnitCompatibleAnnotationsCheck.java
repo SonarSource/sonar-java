@@ -20,15 +20,14 @@
 package org.sonar.java.checks.tests;
 
 import org.sonar.check.Rule;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,12 +35,12 @@ import java.util.stream.Collectors;
 @Rule(key = "S5967")
 public class JUnitCompatibleAnnotationsCheck extends IssuableSubscriptionVisitor {
 
-  private static final Set<String> ANNOTATIONS = new HashSet<>(Arrays.asList(
+  private static final Set<String> ANNOTATIONS = SetUtils.immutableSetOf(
     "org.junit.jupiter.api.Test",
     "org.junit.jupiter.api.RepeatedTest",
     "org.junit.jupiter.api.TestFactory",
     "org.junit.jupiter.api.TestTemplate",
-    "org.junit.jupiter.params.ParameterizedTest"));
+    "org.junit.jupiter.params.ParameterizedTest");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

@@ -20,6 +20,7 @@
 package org.sonar.java.checks.helpers;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -99,7 +100,7 @@ class JavadocTest {
     assertThat(fullParamsDescriptionJavadoc.undocumentedParameters()).isEmpty();
     assertThat(genericExceptionThrownJavadoc.undocumentedParameters()).isEmpty();
     assertThat(genericExceptionThrownUndocumented.undocumentedParameters()).isEmpty();
-    assertThat(emptyJavadocs.stream().map(Javadoc::undocumentedParameters)).hasSize(6).allMatch(p -> p.size() == 1 && "a".equals(p.get(0)));
+    assertThat(emptyJavadocs.stream().map(Javadoc::undocumentedParameters)).hasSize(6).allMatch(p -> p.size() == 1 && "a".equals(p.iterator().next()));
   }
 
   @Test
@@ -111,7 +112,7 @@ class JavadocTest {
     assertThat(genericExceptionThrownJavadoc.undocumentedThrownExceptions()).containsExactlyInAnyOrder("ObjectStreamException", "InvalidObjectException");
     assertThat(genericExceptionThrownUndocumented.undocumentedThrownExceptions()).containsExactlyInAnyOrder("Exception");
     assertThat(invalidThrownExceptionUndocumented.undocumentedThrownExceptions()).isEmpty();
-    assertThat(emptyJavadocs.stream().map(Javadoc::undocumentedThrownExceptions)).hasSize(6).allMatch(List::isEmpty);
+    assertThat(emptyJavadocs.stream().map(Javadoc::undocumentedThrownExceptions)).hasSize(6).allMatch(Collection::isEmpty);
   }
 
   @Test

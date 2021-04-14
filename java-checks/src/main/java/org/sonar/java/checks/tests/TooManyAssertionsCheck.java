@@ -22,8 +22,10 @@ package org.sonar.java.checks.tests;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -94,12 +96,13 @@ public class TooManyAssertionsCheck extends IssuableSubscriptionVisitor {
 
   private List<Tree> collectAssertionsInMethod(Symbol symbol) {
     if (!assertionsInMethod.containsKey(symbol)) {
+      // can not be rewritten with map.computeIfAbsent() because of concurrent modification
       assertionsInMethod.put(symbol, Collections.emptyList());
       Tree declaration = symbol.declaration();
       if (declaration != null) {
         AssertionsCounterVisitor assertionsCounterVisitor = new AssertionsCounterVisitor();
         declaration.accept(assertionsCounterVisitor);
-        assertionsInMethod.put(symbol, assertionsCounterVisitor.assertions);
+        assertionsInMethod.put(symbol, new ArrayList<>(assertionsCounterVisitor.assertions));
       }
     }
 
@@ -108,8 +111,8 @@ public class TooManyAssertionsCheck extends IssuableSubscriptionVisitor {
 
   private class AssertionsCounterVisitor extends BaseTreeVisitor {
 
-    private final List<Tree> assertions = new ArrayList<>();
-    private final List<Tree> chainedAssertions = new ArrayList<>();
+    private final Set<Tree> assertions = new LinkedHashSet<>();
+    private final Set<Tree> chainedAssertions = new LinkedHashSet<>();
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {

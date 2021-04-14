@@ -19,12 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -33,8 +32,8 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 @Rule(key = "S2718")
 public class DateUtilsTruncateCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
 
-  private static final Set<String> FIRST_PARAMETER_TYPES = new HashSet<>(Arrays.asList(
-    "java.util.Date", "java.util.Calendar", "java.lang.Object"));
+  private static final Set<String> FIRST_PARAMETER_TYPES = SetUtils.immutableSetOf(
+    "java.util.Date", "java.util.Calendar", "java.lang.Object");
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {

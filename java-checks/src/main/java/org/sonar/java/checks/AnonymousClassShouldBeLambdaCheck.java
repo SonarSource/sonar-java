@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -48,7 +48,7 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
 
   private static final String JAVA_LANG_OBJECT = "java.lang.Object";
   private JavaFileScannerContext context;
-  private List<IdentifierTree> enumConstants;
+  private final Set<IdentifierTree> enumConstants = new HashSet<>();
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
@@ -58,7 +58,7 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
-    enumConstants = new ArrayList<>();
+    enumConstants.clear();
     scan(context.getTree());
   }
 

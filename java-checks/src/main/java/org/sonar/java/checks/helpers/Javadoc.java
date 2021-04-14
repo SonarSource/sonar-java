@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -100,7 +101,7 @@ public final class Javadoc {
 
   private static final Tree.Kind[] CLASS_KINDS = PublicApiChecker.classKinds();
   private static final Tree.Kind[] METHOD_KINDS = PublicApiChecker.methodKinds();
-  private static final List<String> GENERIC_EXCEPTIONS = Arrays.asList("Exception", "java.lang.Exception");
+  private static final Set<String> GENERIC_EXCEPTIONS = SetUtils.immutableSetOf("Exception", "java.lang.Exception");
   private static final Set<String> PLACEHOLDERS = SetUtils.immutableSetOf("TODO", "FIXME", "...", ".");
 
   private final List<String> elementParameters;
@@ -145,12 +146,12 @@ public final class Javadoc {
     return isEmptyDescription(blockTagDescriptions.get(BlockTagKey.of(BlockTag.RETURN, null)));
   }
 
-  public List<String> undocumentedParameters() {
-    return undocumentedNamedTags.computeIfAbsent(BlockTag.PARAM, key -> computeUndocumentedParameters());
+  public Set<String> undocumentedParameters() {
+    return new LinkedHashSet<>(undocumentedNamedTags.computeIfAbsent(BlockTag.PARAM, key -> computeUndocumentedParameters()));
   }
 
-  public List<String> undocumentedThrownExceptions() {
-    return undocumentedNamedTags.computeIfAbsent(BlockTag.EXCEPTIONS, key -> computeUndocumentedThrownExceptions());
+  public Set<String> undocumentedThrownExceptions() {
+    return new LinkedHashSet<>(undocumentedNamedTags.computeIfAbsent(BlockTag.EXCEPTIONS, key -> computeUndocumentedThrownExceptions()));
   }
 
   private List<String> computeUndocumentedParameters() {

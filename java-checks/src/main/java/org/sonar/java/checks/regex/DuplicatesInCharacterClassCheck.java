@@ -19,11 +19,13 @@
  */
 package org.sonar.java.checks.regex;
 
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.SimplifiedRegexCharacterClass;
+import org.sonar.java.regex.RegexCheck.RegexIssueLocation;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonarsource.analyzer.commons.regex.RegexParseResult;
 import org.sonarsource.analyzer.commons.regex.ast.CharacterClassElementTree;
@@ -45,7 +47,7 @@ public class DuplicatesInCharacterClassCheck extends AbstractRegexCheck {
 
     @Override
     public void visitCharacterClassUnion(CharacterClassUnionTree tree) {
-      List<RegexSyntaxElement> duplicates = new ArrayList<>();
+      Set<RegexSyntaxElement> duplicates = new LinkedHashSet<>();
       SimplifiedRegexCharacterClass characterClass = new SimplifiedRegexCharacterClass();
       for (CharacterClassElementTree element : tree.getCharacterClasses()) {
         List<RegexSyntaxElement> intersections = new SimplifiedRegexCharacterClass(element).findIntersections(characterClass);
@@ -66,7 +68,7 @@ public class DuplicatesInCharacterClassCheck extends AbstractRegexCheck {
           .skip(1)
           .map(duplicate -> new RegexIssueLocation(duplicate, "Additional duplicate"))
           .collect(Collectors.toList());
-        reportIssue(duplicates.get(0), MESSAGE, null, secondaries);
+        reportIssue(duplicates.iterator().next(), MESSAGE, null, secondaries);
       }
       super.visitCharacterClassUnion(tree);
     }

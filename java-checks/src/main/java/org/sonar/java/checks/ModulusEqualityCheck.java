@@ -19,6 +19,10 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -35,14 +39,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 @Rule(key = "S2197")
 public class ModulusEqualityCheck extends IssuableSubscriptionVisitor {
 
-  private List<Symbol> methodParams = new ArrayList<>();
+  private Set<Symbol> methodParams = new HashSet<>();
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {

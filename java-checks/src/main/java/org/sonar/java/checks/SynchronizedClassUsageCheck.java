@@ -99,7 +99,7 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
     }
 
     private static boolean isMethodFromJavaPackage(String fqn) {
-      return fqn.startsWith("java") && !REPLACEMENTS.keySet().contains(fqn);
+      return fqn.startsWith("java") && !REPLACEMENTS.containsKey(fqn);
     }
   }
 

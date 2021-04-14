@@ -78,7 +78,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
   private void checkMethodThrownList(MethodTree methodTree, ListTree<TypeTree> thrownList) {
     Set<Type> thrownExceptions = thrownExceptionsFromBody(methodTree);
     boolean isOverridableMethod = JUtils.isOverridable(methodTree.symbol());
-    List<String> undocumentedExceptionNames = new Javadoc(methodTree).undocumentedThrownExceptions();
+    Set<String> undocumentedExceptionNames = new Javadoc(methodTree).undocumentedThrownExceptions();
     Set<String> reported = new HashSet<>();
 
     for (TypeTree typeTree : thrownList) {

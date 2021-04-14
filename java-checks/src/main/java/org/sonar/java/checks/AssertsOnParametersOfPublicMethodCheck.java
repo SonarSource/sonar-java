@@ -41,7 +41,7 @@ public class AssertsOnParametersOfPublicMethodCheck extends IssuableSubscription
     return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
   }
 
-  private Set<AssertStatementTree> assertReported = new HashSet<>();
+  private final Set<AssertStatementTree> assertReported = new HashSet<>();
 
   @Override
   public void setContext(JavaFileScannerContext context) {

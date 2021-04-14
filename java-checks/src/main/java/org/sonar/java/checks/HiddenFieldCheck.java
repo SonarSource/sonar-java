@@ -19,9 +19,19 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.collections.MapBuilder;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -33,14 +43,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "HiddenFieldCheck", repositoryKey = "squid")
@@ -49,7 +51,7 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
 
   private final Deque<Map<String, VariableTree>> fields = new LinkedList<>();
   private final Deque<List<VariableTree>> excludedVariables = new LinkedList<>();
-  private final List<VariableTree> flattenExcludedVariables = new ArrayList<>();
+  private final Set<VariableTree> flattenExcludedVariables = new HashSet<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -104,7 +106,7 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
 
   private void isVariableHidingField(VariableTree variableTree) {
     for (Map<String, VariableTree> variables : fields) {
-      if (variables.values().contains(variableTree)) {
+      if (variables.containsValue(variableTree)) {
         return;
       }
       String identifier = variableTree.simpleName().name();
@@ -152,8 +154,8 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
   private static class VariableList {
 
     private List<VariableTree> variables;
-    private List<Tree.Kind> visitNodes;
-    private List<Tree.Kind> excludedNodes;
+    private Set<Tree.Kind> visitNodes;
+    private Set<Tree.Kind> excludedNodes;
 
     List<VariableTree> scan(Tree tree) {
       visitNodes = nodesToVisit();
@@ -163,12 +165,12 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
       return variables;
     }
 
-    public List<Tree.Kind> nodesToVisit() {
-      return Collections.singletonList(Tree.Kind.VARIABLE);
+    public Set<Tree.Kind> nodesToVisit() {
+      return Collections.singleton(Tree.Kind.VARIABLE);
     }
 
-    public List<Tree.Kind> excludedNodes() {
-      return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.NEW_CLASS);
+    public Set<Tree.Kind> excludedNodes() {
+      return SetUtils.immutableSetOf(Tree.Kind.METHOD, Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.NEW_CLASS);
     }
 
     private void visit(Tree tree) {
