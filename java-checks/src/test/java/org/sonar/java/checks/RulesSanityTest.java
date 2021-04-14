@@ -120,12 +120,11 @@ class RulesSanityTest {
       .collect(Collectors.toList());
 
     assertThat(errorLogs)
-      .hasSize(8)
+      .hasSize(6)
       .allMatch(log -> log.getFormattedMsg().toLowerCase().contains("parse"));
     assertThat(parsingErrorFiles)
-      .hasSize(4)
-      .allMatch(log -> log.contains("KeywordAsIdentifierCheck") || log.contains("EmptyStatementsInImportsBug")
-        || log.contains("RestrictedIdentifiersUsageCheck"));
+      .hasSize(3)
+      .allMatch(log -> log.contains("KeywordAsIdentifierCheck") || log.contains("EmptyStatementsInImportsBug"));
 
   }
 

@@ -32,7 +32,7 @@ class RestrictedIdentifiersUsageCheckTest {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/RestrictedIdentifiersUsageCheck.java"))
       .withCheck(new RestrictedIdentifiersUsageCheck())
-      .withJavaVersion(8)
+      .withJavaVersion(14)
       .verifyIssues();
   }
 
@@ -41,14 +41,14 @@ class RestrictedIdentifiersUsageCheckTest {
     JavaCheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/RestrictedIdentifiersUsageCheck.java"))
       .withCheck(new RestrictedIdentifiersUsageCheck())
-      .withJavaVersion(14)
+      .withJavaVersion(8)
       .verifyIssues();
   }
 
   @Test
   void test_no_version() {
     JavaCheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/RestrictedIdentifiersUsageCheck.java"))
+      .onFile(testSourcesPath("checks/RestrictedIdentifiersUsageCheck.java"))
       .withCheck(new RestrictedIdentifiersUsageCheck())
       .verifyIssues();
   }

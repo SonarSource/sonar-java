@@ -15,7 +15,7 @@
   <name>SonarQube Java :: Checks Test Sources</name>
 
   <properties>
-    <maven.compiler.release>11</maven.compiler.release>
+    <maven.compiler.release>16</maven.compiler.release>
     <sonar.skip>true</sonar.skip>
     <forbiddenapis.skip>true</forbiddenapis.skip>
   </properties>
@@ -334,7 +334,7 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.18.12</version>
+      <version>1.18.20</version>
       <type>jar</type>
       <scope>provided</scope>
     </dependency>
