@@ -38,7 +38,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S5542")
 public class EncryptionAlgorithmCheck extends AbstractMethodDetection {
 
-  private static final Pattern ALGORITHM_PATTERN = Pattern.compile("(.+)/(.+)/(.+)");
+  private static final Pattern ALGORITHM_PATTERN = Pattern.compile("([^/]+)/([^/]+)/([^/]+)");
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
