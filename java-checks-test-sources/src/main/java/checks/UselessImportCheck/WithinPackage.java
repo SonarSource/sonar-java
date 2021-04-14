@@ -5,6 +5,7 @@ import a.b.c.Bar;
 import a.b.c.Baz;
 import a.b.c.Qux;
 import a.b.c.ReferencedFromJavadoc;
+import java.util.Map;
 import java.util.Map.Entry;
 import a.b.c.NotReferencedFromJavadoc; // Noncompliant
 import a.b.c.MyException;
@@ -36,7 +37,6 @@ import java.lang.reflect.Array;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.HashMap;
 import javax.annotation.Nonnull;
 
@@ -53,7 +53,6 @@ import static checks.UselessImportCheck.Foo2.A.qix; // Noncompliant
  * see NotReferencedFromJavadoc
  */
 class Foo2 extends Foo {
-  Entry entry;
   Bar a = new Baz<String>();
   Map<String, String> modulesMap = new HashMap<>();
   @Qux
@@ -128,4 +127,32 @@ class SomeEntity {
 
 @interface MyAnnotation {
   String name();
+}
+
+class MyEntry implements Entry<String, String> {
+
+  @Override
+  public String getKey() {
+    return null;
+  }
+
+  @Override
+  public String getValue() {
+    return null;
+  }
+
+  @Override
+  public String setValue(String value) {
+    return null;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return 0;
+  }
 }
