@@ -41,6 +41,7 @@ only_sonarsource_qa: &ONLY_SONARSOURCE_QA
 build_task:
   gke_container:
     <<: *CONTAINER_DEFINITION
+    image: gcr.io/language-team/base-jdk16:latest
     cpu: 2
     memory: 2G
   env:
@@ -62,7 +63,14 @@ build_task:
 qa_os_win_task:
   depends_on:
     - build
-  <<: *WINDOWS_VM_DEFINITION
+  gce_instance:
+    image_project: language-team
+    image_family: lt-base-windows-jdk16
+    platform: windows
+    zone: us-central1-a
+    preemptible: false
+    disk: 128
+    type: n1-standard-4
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   build_script:
@@ -102,6 +110,7 @@ sanity_task:
   <<: *ONLY_SONARSOURCE_QA
   gke_container:
     <<: *CONTAINER_DEFINITION
+    image: gcr.io/language-team/base-jdk16:latest
     cpu: 4
     memory: 8G
   maven_cache:

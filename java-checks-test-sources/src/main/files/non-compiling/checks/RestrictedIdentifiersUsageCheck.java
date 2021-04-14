@@ -3,26 +3,48 @@ package checks;
 public class RestrictedIdentifiersUsageCheck {
 
   void noncompliant() {
-    var var = "var"; // Noncompliant: compiles but this code is confusing
+    String var = "var"; // Noncompliant [[sc=12;ec=15]]{{Rename this variable to not match a restricted identifier.}}
     var = "what is this?";
+
+    String record = "record"; // Noncompliant [[sc=12;ec=18]]{{Rename this variable to not match a restricted identifier.}}
   }
 
-  int yield(int i) { // Noncompliant
-    return switch (i) {
-      case 1: yield(0); // This is a yield from switch expression, not a recursive call.
-      default: yield(i-1);
-    };
+  void yield(int i) { // Noncompliant [[sc=8;ec=13]]{{Rename this method to not match a restricted identifier.}}
+    switch (i) {
+      case 1:
+        System.out.println(1);
+      default:
+        System.out.println(i - 1);
+    }
   }
 
-  void compliant() {
-    var myVariable = "var";
+  void method(String var) { // Noncompliant {{Rename this variable to not match a restricted identifier.}}
+    String myVariable = "var";
+    String myRecord = "record";
+
+    yield(3); // is allowed if Java version <= 12, otherwise won't compile
+  }
+
+  void metho1(String yield) { // Noncompliant {{Rename this variable to not match a restricted identifier.}}
+  }
+
+  void method2(String record) { // Noncompliant {{Rename this variable to not match a restricted identifier.}}
+  }
+
+  void record() { // Noncompliant {{Rename this method to not match a restricted identifier.}}
+  }
+
+  void var() { // Noncompliant {{Rename this method to not match a restricted identifier.}}
   }
 
   int minusOne(int i) {
-    return switch (i) {
-      case 1: yield(0);
-      default: yield(i-1);
-    };
+    switch (i) {
+      case 1:
+        System.out.println(0);
+      default:
+        System.out.println(i - 1);
+    }
+    return i - 1;
   }
 
 }
