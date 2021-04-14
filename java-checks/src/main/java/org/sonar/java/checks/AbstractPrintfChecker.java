@@ -60,7 +60,7 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
 
   protected static final String PRINTF_METHOD_NAME = "printf";
   private static final String FORMAT_METHOD_NAME = "format";
-  protected static final List<String> LEVELS = Arrays.asList("debug", "error", "info", "trace", "warn", "fatal");
+  protected static final Set<String> LEVELS = SetUtils.immutableSetOf("debug", "error", "info", "trace", "warn", "fatal");
 
   protected static final MethodMatchers MESSAGE_FORMAT = MethodMatchers.create()
     .ofTypes("java.text.MessageFormat")

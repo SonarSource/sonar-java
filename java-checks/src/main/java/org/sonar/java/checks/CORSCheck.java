@@ -22,9 +22,11 @@ package org.sonar.java.checks;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
@@ -49,7 +51,7 @@ public class CORSCheck extends IssuableSubscriptionVisitor {
     .build();
 
   private static final String ACCESS_CONTROL_ALLOW_ORIGIN = "access-control-allow-origin";
-  private static final List<String> ANNOTATION_ORIGINS_KEY_ALIAS = Arrays.asList("origins", "value");
+  private static final Set<String> ANNOTATION_ORIGINS_KEY_ALIAS = SetUtils.immutableSetOf("origins", "value");
 
   private static final MethodMatchers ADD_ALLOWED_ORIGIN_MATCHER = MethodMatchers.or(
     MethodMatchers.create()

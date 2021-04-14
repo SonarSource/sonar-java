@@ -19,9 +19,10 @@
  */
 package org.sonar.java.checks.serialization;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -43,7 +44,7 @@ public class NonSerializableWriteCheck extends IssuableSubscriptionVisitor {
     .addParametersMatcher("java.lang.Object")
     .build();
 
-  private final List<Symbol> testedSymbols = new ArrayList<>();
+  private final Set<Symbol> testedSymbols = new HashSet<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

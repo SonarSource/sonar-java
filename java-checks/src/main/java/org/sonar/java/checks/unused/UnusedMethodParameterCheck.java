@@ -21,7 +21,7 @@ package org.sonar.java.checks.unused;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,6 +29,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.Javadoc;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.checks.helpers.UnresolvedIdentifiersVisitor;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -52,13 +53,16 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
 
   private static final String AUTHORIZED_ANNOTATION = "javax.enterprise.event.Observes";
   private static final String SUPPRESS_WARNINGS_ANNOTATION = "java.lang.SuppressWarnings";
-  private static final Collection<String> EXCLUDED_WARNINGS_SUPPRESSIONS = Arrays.asList("\"rawtypes\"", "\"unchecked\"");
+  private static final Set<String> EXCLUDED_WARNINGS_SUPPRESSIONS = SetUtils.immutableSetOf("\"rawtypes\"", "\"unchecked\"");
   private static final MethodMatchers SERIALIZABLE_METHODS = MethodMatchers.or(
     MethodMatchers.create().ofAnyType().names("writeObject").addParametersMatcher("java.io.ObjectOutputStream").build(),
     MethodMatchers.create().ofAnyType().names("readObject").addParametersMatcher("java.io.ObjectInputStream").build());
   private static final String STRUTS_ACTION_SUPERCLASS = "org.apache.struts.action.Action";
-  private static final Collection<String> EXCLUDED_STRUTS_ACTION_PARAMETER_TYPES = Arrays.asList("org.apache.struts.action.ActionMapping",
-    "org.apache.struts.action.ActionForm", "javax.servlet.http.HttpServletRequest", "javax.servlet.http.HttpServletResponse");
+  private static final Set<String> EXCLUDED_STRUTS_ACTION_PARAMETER_TYPES = SetUtils.immutableSetOf(
+    "org.apache.struts.action.ActionMapping",
+    "org.apache.struts.action.ActionForm",
+    "javax.servlet.http.HttpServletRequest",
+    "javax.servlet.http.HttpServletResponse");
 
   private static final UnresolvedIdentifiersVisitor UNRESOLVED_IDENTIFIERS_VISITOR = new UnresolvedIdentifiersVisitor();
 
@@ -73,7 +77,7 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
     if (methodTree.block() == null || methodTree.parameters().isEmpty() || isExcluded(methodTree)) {
       return;
     }
-    List<String> undocumentedParameters = new Javadoc(methodTree).undocumentedParameters();
+    Set<String> undocumentedParameters = new HashSet<>(new Javadoc(methodTree).undocumentedParameters());
     boolean overridableMethod = JUtils.isOverridable(methodTree.symbol());
     List<IdentifierTree> unused = new ArrayList<>();
     for (VariableTree parameter : methodTree.parameters()) {
@@ -132,7 +136,8 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
     }
     if (tree.is(Tree.Kind.STRING_LITERAL)) {
       return EXCLUDED_WARNINGS_SUPPRESSIONS.contains(((LiteralTree) tree).value());
-    } else if (tree.is(Tree.Kind.NEW_ARRAY)) {
+    }
+    if (tree.is(Tree.Kind.NEW_ARRAY)) {
       return ((NewArrayTree) tree).initializers().stream().allMatch(UnusedMethodParameterCheck::isExcludedLiteral);
     }
 

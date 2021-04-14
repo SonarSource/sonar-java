@@ -49,7 +49,7 @@ public class SwitchCaseWithoutBreakCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
-    List<CaseGroupTree> caseGroupTrees = switchStatementTree.cases();
+    Set<CaseGroupTree> caseGroupTrees = new HashSet<>(switchStatementTree.cases());
     CFG cfg = CFG.buildCFG(Collections.singletonList(tree), true);
     Set<CFG.Block> switchSuccessors = cfg.entryBlock().successors();
 
@@ -62,7 +62,7 @@ public class SwitchCaseWithoutBreakCheck extends IssuableSubscriptionVisitor {
       .forEach(label -> reportIssue(label, "End this switch case with an unconditional break, return or throw statement."));
   }
 
-  private static Map<CFG.Block, CaseGroupTree> createMapping(Set<CFG.Block> switchSuccessors, List<CaseGroupTree> caseGroupTrees) {
+  private static Map<CFG.Block, CaseGroupTree> createMapping(Set<CFG.Block> switchSuccessors, Set<CaseGroupTree> caseGroupTrees) {
     return switchSuccessors.stream()
       .filter(cfgBlock -> cfgBlock.caseGroup() != null && caseGroupTrees.contains(cfgBlock.caseGroup()))
       .collect(

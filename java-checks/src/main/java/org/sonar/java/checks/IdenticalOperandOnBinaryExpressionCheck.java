@@ -22,8 +22,10 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -57,7 +59,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends IssuableSubscriptio
   /**
    * symetric operators : a OP b is equivalent to b OP a
    */
-  private static final List<Tree.Kind> SYMMETRIC_OPERATORS = Arrays.asList(
+  private static final Set<Tree.Kind> SYMMETRIC_OPERATORS = SetUtils.immutableSetOf(
     Tree.Kind.EQUAL_TO,
     Tree.Kind.NOT_EQUAL_TO,
     Tree.Kind.AND,

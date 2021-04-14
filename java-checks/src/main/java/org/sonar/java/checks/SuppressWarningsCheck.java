@@ -19,7 +19,13 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -30,13 +36,6 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Rule(key = "S1309")
 public class SuppressWarningsCheck extends IssuableSubscriptionVisitor {
@@ -50,17 +49,17 @@ public class SuppressWarningsCheck extends IssuableSubscriptionVisitor {
     defaultValue = "")
   public String warningsCommaSeparated = "";
 
-  private List<String> allowedWarnings;
+  private Set<String> allowedWarnings;
 
   @Override
-  public List<Kind> nodesToVisit() {
+  public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.ANNOTATION);
   }
 
   @Override
   public void visitNode(Tree tree) {
     AnnotationTree annotationTree = (AnnotationTree) tree;
-    List<String> ruleWarnings = getAllowedWarnings();
+    Set<String> ruleWarnings = getAllowedWarnings();
 
     if (isJavaLangSuppressWarnings(annotationTree)) {
       if (ruleWarnings.isEmpty()) {
@@ -83,16 +82,15 @@ public class SuppressWarningsCheck extends IssuableSubscriptionVisitor {
     return tree.symbolType().is("java.lang.SuppressWarnings");
   }
 
-  private List<String> getAllowedWarnings() {
+  private Set<String> getAllowedWarnings() {
     if (allowedWarnings != null) {
       return allowedWarnings;
     }
 
-    allowedWarnings = new ArrayList<>();
-    Arrays.stream(warningsCommaSeparated.split(","))
+    allowedWarnings = Arrays.stream(warningsCommaSeparated.split(","))
       .filter(StringUtils::isNotBlank)
       .map(SuppressWarningsCheck::replaceFormerRepositoryPrefix)
-      .forEach(allowedWarnings::add);
+      .collect(Collectors.toSet());
 
     return allowedWarnings;
   }
@@ -104,7 +102,7 @@ public class SuppressWarningsCheck extends IssuableSubscriptionVisitor {
     } else if (argument.is(Tree.Kind.NEW_ARRAY)) {
       NewArrayTree array = (NewArrayTree) argument;
       for (ExpressionTree expressionTree : array.initializers()) {
-        if (expressionTree.is(Kind.STRING_LITERAL)) {
+        if (expressionTree.is(Tree.Kind.STRING_LITERAL)) {
           result.add(getAnnotationArgument((LiteralTree) expressionTree));
         }
       }

@@ -130,7 +130,7 @@ public class UnusedGroupNamesCheck extends AbstractRegexCheckTrackingMatchers {
   }
 
   private void checkNoSuchName(KnownGroupsCollector knownGroups, ExpressionTree arg0, String groupName) {
-    if (!knownGroups.groupsByName.keySet().contains(groupName)) {
+    if (!knownGroups.groupsByName.containsKey(groupName)) {
       String message = String.format(ISSUE_NO_GROUP_WITH_SUCH_NAME, groupName);
       List<RegexIssueLocation> secondaries = knownGroups.groupsByName.values()
         .stream()

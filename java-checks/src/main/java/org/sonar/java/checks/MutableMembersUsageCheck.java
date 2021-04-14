@@ -19,12 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
@@ -65,7 +66,7 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
   );
 
   private JavaFileScannerContext context;
-  private Deque<List<Symbol>> parametersStack = new LinkedList<>();
+  private Deque<Set<Symbol>> parametersStack = new LinkedList<>();
 
   @Override
   public void scanFile(final JavaFileScannerContext context) {
@@ -81,11 +82,9 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
         return;
       }
     }
-    ArrayList<Symbol> parameters = new ArrayList<>();
-    for (VariableTree variableTree : tree.parameters()) {
-      parameters.add(variableTree.symbol());
-    }
-    parametersStack.push(parameters);
+    parametersStack.push(tree.parameters().stream()
+      .map(VariableTree::symbol)
+      .collect(Collectors.toSet()));
     super.visitMethod(tree);
     parametersStack.pop();
   }

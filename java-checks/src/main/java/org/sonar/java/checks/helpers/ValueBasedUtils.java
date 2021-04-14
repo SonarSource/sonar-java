@@ -19,8 +19,8 @@
  */
 package org.sonar.java.checks.helpers;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Set;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.semantic.Type.ArrayType;
 
@@ -30,7 +30,7 @@ import org.sonar.plugins.java.api.semantic.Type.ArrayType;
  */
 public final class ValueBasedUtils {
 
-  private static final List<String> KNOWN_VALUE_BASED_CLASSES = Arrays.asList(
+  private static final Set<String> KNOWN_VALUE_BASED_CLASSES = SetUtils.immutableSetOf(
     "java.time.chrono.HijrahDate",
     "java.time.chrono.JapaneseDate",
     "java.time.chrono.MinguoDate",

@@ -19,12 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -33,7 +32,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 @Rule(key = "S4925")
 public class JdbcDriverExplicitLoadingCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
 
-  private static final List<String> JDBC_4_DRIVERS = Collections.unmodifiableList(Arrays.asList(
+  private static final Set<String> JDBC_4_DRIVERS = SetUtils.immutableSetOf(
     "com.mysql.jdbc.Driver",
     "oracle.jdbc.driver.OracleDriver",
     "com.ibm.db2.jdbc.app.DB2Driver",
@@ -49,7 +48,7 @@ public class JdbcDriverExplicitLoadingCheck extends AbstractMethodDetection impl
     "org.firebirdsql.jdbc.FBDriver",
     "net.sourceforge.jtds.jdbc.Driver",
     "com.ibm.db2.jcc.DB2Driver"
-  ));
+  );
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {

@@ -19,10 +19,11 @@
  */
 package org.sonar.java.checks.unused;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -33,7 +34,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S2924")
 public class UnusedTestRuleCheck extends IssuableSubscriptionVisitor {
 
-  private static final List<String> CHECKED_RULE = Arrays.asList(
+  private static final Set<String> CHECKED_RULE = SetUtils.immutableSetOf(
     "org.junit.rules.TemporaryFolder",
     "org.junit.rules.TestName"
   );

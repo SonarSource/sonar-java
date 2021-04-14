@@ -19,9 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -36,7 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class StringBufferAndBuilderWithCharCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;
-  private static final List<String> TARGETED_CLASS = Arrays.asList("StringBuilder", "StringBuffer");
+  private static final Set<String> TARGETED_CLASS = SetUtils.immutableSetOf("StringBuilder", "StringBuffer");
 
   @Override
   public void scanFile(JavaFileScannerContext context) {

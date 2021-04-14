@@ -19,9 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.se.NullableAnnotationUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -43,7 +43,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S2789")
 public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final List<String> OPTIONAL_CLASSES = Arrays.asList("java.util.Optional", "com.google.common.base.Optional");
+  private static final Set<String> OPTIONAL_CLASSES = SetUtils.immutableSetOf("java.util.Optional", "com.google.common.base.Optional");
 
   private JavaFileScannerContext context;
 

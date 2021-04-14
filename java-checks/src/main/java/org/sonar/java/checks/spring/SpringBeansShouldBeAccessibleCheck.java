@@ -30,6 +30,7 @@ import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.EndOfAnalysisCheck;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -53,7 +54,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
   };
 
   private static final String COMPONENT_SCAN_ANNOTATION = "org.springframework.context.annotation.ComponentScan";
-  private static final Set<String> COMPONENT_SCAN_ARGUMENTS = new HashSet<>(Arrays.asList("basePackages", "value"));
+  private static final Set<String> COMPONENT_SCAN_ARGUMENTS = SetUtils.immutableSetOf("basePackages", "value");
 
   private static final String SPRING_BOOT_APP_ANNOTATION = "org.springframework.boot.autoconfigure.SpringBootApplication";
 

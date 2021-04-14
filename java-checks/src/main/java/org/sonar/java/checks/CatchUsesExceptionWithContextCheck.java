@@ -106,8 +106,8 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
 
   private JavaFileScannerContext context;
   private Deque<UsageStatus> usageStatusStack;
-  private List<String> exceptions;
-  private List<String> exceptionIdentifiers;
+  private Set<String> exceptions;
+  private Set<String> exceptionIdentifiers;
   private Set<CatchTree> excludedCatchTrees = new HashSet<>();
 
   @Override
@@ -226,23 +226,23 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
     return getExceptions().contains(ExpressionsHelper.concatenate((MemberSelectExpressionTree) tree));
   }
 
-  private List<String> getExceptions() {
+  private Set<String> getExceptions() {
     if (exceptions == null) {
       if ("-".equals(exceptionsCommaSeparated.trim())) {
         // explicitly handle '-' as discarding character
-        exceptions = Collections.emptyList();
+        exceptions = Collections.emptySet();
       } else {
-        exceptions = Stream.of(exceptionsCommaSeparated.split(",")).map(String::trim).collect(Collectors.toList());
+        exceptions = Stream.of(exceptionsCommaSeparated.split(",")).map(String::trim).collect(Collectors.toSet());
       }
     }
     return exceptions;
   }
 
-  private List<String> getExceptionIdentifiers() {
+  private Set<String> getExceptionIdentifiers() {
     if (exceptionIdentifiers == null) {
       exceptionIdentifiers = getExceptions().stream()
         .map(exception -> exception.substring(exception.lastIndexOf('.') + 1))
-        .collect(Collectors.toList());
+        .collect(Collectors.toSet());
     }
     return exceptionIdentifiers;
   }

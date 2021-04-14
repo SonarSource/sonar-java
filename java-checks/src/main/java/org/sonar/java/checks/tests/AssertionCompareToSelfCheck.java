@@ -19,14 +19,15 @@
  */
 package org.sonar.java.checks.tests;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.checks.helpers.UnitTestUtils;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
@@ -103,7 +104,7 @@ public class AssertionCompareToSelfCheck extends IssuableSubscriptionVisitor {
       .addParametersMatcher(MethodMatchers.ANY)
       .build());
 
-  private static final List<String> EQUALS_HASH_CODE_METHODS = Arrays.asList(ASSERT_EQUALS, IS_EQUAL_TO, "hasSameHashCodeAs");
+  private static final Set<String> EQUALS_HASH_CODE_METHODS = SetUtils.immutableSetOf(ASSERT_EQUALS, IS_EQUAL_TO, "hasSameHashCodeAs");
 
   private static final String MESSAGE = "Replace this assertion to not have the same actual and expected expression.";
 

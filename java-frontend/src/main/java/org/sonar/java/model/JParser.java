@@ -141,7 +141,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @ParametersAreNonnullByDefault
 public class JParser {
 
-  private static final HashSet<String> JRE_JARS = new HashSet<>(Arrays.asList("rt.jar", "jrt-fs.jar", "android.jar"));
+  private static final Set<String> JRE_JARS = new HashSet<>(Arrays.asList("rt.jar", "jrt-fs.jar", "android.jar"));
 
   private static final Logger LOG = Loggers.get(JParser.class);
 
