@@ -1,4 +1,14 @@
 {
+'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpHeader.java':[
+179,
+184,
+],
+'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpMethod.java':[
+165,
+],
+'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpVersion.java':[
+118,
+],
 'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/UriTemplatePathSpec.java':[
 422,
 ],

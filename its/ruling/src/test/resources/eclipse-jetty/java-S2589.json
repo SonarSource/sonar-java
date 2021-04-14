@@ -27,9 +27,6 @@
 324,
 1000,
 ],
-'org.eclipse.jetty:jetty-project:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertorFactory.java':[
-88,
-],
 'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/TypeUtil.java':[
 650,
 ],
