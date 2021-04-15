@@ -166,7 +166,19 @@ class DefaultJavaFileScannerContextTest {
     assertThat(reportedMessage.getCost()).isNull();
     assertThat(reportedMessage.flows).isEmpty();
 
-    assertMessagePosition(reportedMessage, 1, 0, 4, 1);
+    assertMessagePosition(reportedMessage, 1, 0, 6, 1);
+  }
+
+  @Test
+  void report_issue_from_warning() {
+    context.reportIssue(CHECK, compilationUnitTree.warnings().get(JWarning.Type.UNUSED_IMPORT).get(0), "msg");
+
+    assertThat(reportedMessage.getMessage()).isEqualTo("msg");
+
+    assertThat(reportedMessage.getCost()).isNull();
+    assertThat(reportedMessage.flows).isEmpty();
+
+    assertMessagePosition(reportedMessage, 1, 7, 1, 20);
   }
 
   @Test
@@ -184,7 +196,7 @@ class DefaultJavaFileScannerContextTest {
     assertThat(reportedMessage.getCost()).isNull();
     assertThat(reportedMessage.flows).isEmpty();
 
-    assertMessagePosition(reportedMessage, 1, 0, 4, 1);
+    assertMessagePosition(reportedMessage, 1, 0, 6, 1);
   }
 
   @Test
@@ -204,7 +216,7 @@ class DefaultJavaFileScannerContextTest {
     assertThat(reportedMessage.getCost()).isNull();
     assertThat(reportedMessage.flows).isEmpty();
 
-    assertMessagePosition(reportedMessage, 1, 6, 1, 7);
+    assertMessagePosition(reportedMessage, 3, 6, 3, 7);
   }
 
   @Test
@@ -217,7 +229,7 @@ class DefaultJavaFileScannerContextTest {
     assertThat(reportedMessage.getCost()).isEqualTo(COST);
     assertThat(reportedMessage.flows).isEmpty();
 
-    assertMessagePosition(reportedMessage, 1, 6, 1, 7);
+    assertMessagePosition(reportedMessage, 3, 6, 3, 7);
   }
 
   @Test
@@ -236,11 +248,11 @@ class DefaultJavaFileScannerContextTest {
     assertThat(reportedMessage.getCost()).isNull();
     assertThat(reportedMessage.flows).hasSize(2);
 
-    assertMessagePosition(reportedMessage, 1, 6, 1, 7);
+    assertMessagePosition(reportedMessage, 3, 6, 3, 7);
     List<AnalyzerMessage> secondaries = reportedMessage.flows.stream().map(flow -> flow.get(0)).collect(Collectors.toList());
     assertThat(secondaries).hasSize(2);
-    assertMessagePosition(secondaries.get(0), 2, 2, 2, 13);
-    assertMessagePosition(secondaries.get(1), 3, 2, 3, 15);
+    assertMessagePosition(secondaries.get(0), 4, 2, 4, 13);
+    assertMessagePosition(secondaries.get(1), 5, 2, 5, 15);
   }
 
   @Test
@@ -255,7 +267,7 @@ class DefaultJavaFileScannerContextTest {
     assertThat(reportedMessage.getCost()).isNull();
     assertThat(reportedMessage.flows).isEmpty();
 
-    assertMessagePosition(reportedMessage, 2, 6, 3, 10);
+    assertMessagePosition(reportedMessage, 4, 6, 5, 10);
   }
 
   @Test

@@ -130,6 +130,11 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
   }
 
   @Override
+  public void reportIssue(JavaCheck javaCheck, JWarning warning, String message) {
+    reportIssue(createAnalyzerMessage(inputFile, javaCheck, warning, message));
+  }
+
+  @Override
   public void reportIssue(RegexCheck regexCheck, RegexSyntaxElement regexTree, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries) {
     List<RegexCheck.RegexIssueLocation> completedSecondaries = new ArrayList<>();
 
@@ -219,6 +224,12 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
     AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, inputFile, location, message, cost != null ? cost : 0);
     completeAnalyzerMessageWithFlows(analyzerMessage, flows, loc -> AnalyzerMessage.textSpanFor(loc.syntaxNode), loc -> loc.msg);
     return analyzerMessage;
+  }
+
+  protected static AnalyzerMessage createAnalyzerMessage(InputFile inputFile, JavaCheck javaCheck, JWarning warning, String message) {
+    AnalyzerMessage.TextSpan location = new AnalyzerMessage.TextSpan(warning.getStartLine(), warning.getStartColumn(),
+      warning.getEndLine(), warning.getEndColumn());
+    return new AnalyzerMessage(javaCheck, inputFile, location, message, 0);
   }
 
   private static <L> void completeAnalyzerMessageWithFlows(

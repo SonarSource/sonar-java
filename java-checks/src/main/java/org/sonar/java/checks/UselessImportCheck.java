@@ -88,7 +88,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
         } else {
           message = "Remove this unused import '" + importName + "'.";
         }
-        context.addIssue(warning.getStartLine(), this, message);
+        context.reportIssue(this, warning, message);
       }
     });
   }
