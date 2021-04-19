@@ -24,20 +24,26 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+
 class SpringBeansShouldBeAccessibleCheckTest {
+
+  private static final String BASE_PATH = "checks/spring/s4605/";
 
   @Test
   void testComponentScan() {
+    final String testFolder = BASE_PATH + "componentScan/";
     List<String> files = Arrays.asList(
-      "src/test/files/checks/spring/SpringBeansShouldBeAccessibleCheck/ComponentScan/A.java",
-      "src/test/files/checks/spring/SpringBeansShouldBeAccessibleCheck/ComponentScan/B.java",
-      "src/test/files/checks/spring/SpringBeansShouldBeAccessibleCheck/ComponentScan/C.java",
-      "src/test/files/checks/spring/SpringBeansShouldBeAccessibleCheck/ComponentScan/DefaultPackage.java",
-      "src/test/files/checks/spring/SpringBeansShouldBeAccessibleCheck/ComponentScan/FalsePositive.java",
-      "src/test/files/checks/spring/SpringBeansShouldBeAccessibleCheck/ComponentScan/Y1.java",
-      "src/test/files/checks/spring/SpringBeansShouldBeAccessibleCheck/ComponentScan/Y2.java",
-      "src/test/files/checks/spring/SpringBeansShouldBeAccessibleCheck/ComponentScan/Z2.java",
-      "src/test/files/checks/spring/SpringBeansShouldBeAccessibleCheck/ComponentScan/ComponentScan.java");
+      testSourcesPath("SpringBootAppInDefaultPackage.java"),
+      testSourcesPath(testFolder + "packageA/ComponentA.java"),
+      testSourcesPath(testFolder + "packageB/ComponentB.java"),
+      testSourcesPath(testFolder + "packageC/ComponentC.java"),
+      testSourcesPath(testFolder + "packageX/ComponentX.java"),
+      testSourcesPath(testFolder + "packageY/ComponentY.java"),
+      testSourcesPath(testFolder + "packageZ/ComponentZ.java"),
+      testSourcesPath(testFolder + "packageFP/ComponentFP.java"),
+      testSourcesPath(testFolder + "ComponentScan.java"));
+
     JavaCheckVerifier.newVerifier()
       .onFiles(files)
       .withCheck(new SpringBeansShouldBeAccessibleCheck())
@@ -51,12 +57,14 @@ class SpringBeansShouldBeAccessibleCheckTest {
 
   @Test
   void testSpringBootApplication() {
+    final String testFolder = BASE_PATH + "springBootApplication/";
     List<String> files = Arrays.asList(
-      "src/test/files/checks/spring/SpringBeansShouldBeAccessibleCheck/SpringBootApplication/Ko.java",
-      "src/test/files/checks/spring/SpringBeansShouldBeAccessibleCheck/SpringBootApplication/SpringBoot.java",
-      "src/test/files/checks/spring/SpringBeansShouldBeAccessibleCheck/SpringBootApplication/AnotherSpringBoot.java",
-      "src/test/files/checks/spring/SpringBeansShouldBeAccessibleCheck/SpringBootApplication/AnotherOk.java",
-      "src/test/files/checks/spring/SpringBeansShouldBeAccessibleCheck/SpringBootApplication/Ok.java");
+      testSourcesPath(testFolder + "Ko/Ko.java"),
+      testSourcesPath(testFolder + "app/Ok/Ok.java"),
+      testSourcesPath(testFolder + "app/SpringBootApp.java"),
+      testSourcesPath(testFolder + "secondApp/AnotherOk.java"),
+      testSourcesPath(testFolder + "secondApp/AnotherSpringBootApp.java"));
+
     JavaCheckVerifier.newVerifier()
       .onFiles(files)
       .withCheck(new SpringBeansShouldBeAccessibleCheck())

@@ -1,4 +1,4 @@
-package foo;
+package checks.spring.s4605.componentScan;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -9,39 +9,31 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.function.Consumer;
 
 @Configuration
-@ComponentScan({"src.test.files.checks.spring.A", "src.test.files.checks.spring.B"})
-class Foo1 {
-}
+@ComponentScan({"checks.spring.s4605.componentScan.packageA", "checks.spring.s4605.componentScan.packageB"})
+class Foo1 { }
 
-@ComponentScan("src.test.files.checks.spring.X")
+@ComponentScan("checks.spring.s4605.componentScan.packageX")
 class Foo2 {
   Consumer<Foo1> foo = new Consumer<Foo1>() { // anonymous classes are ignored
     @Override public void accept(Foo1 foo1) { }
   };
 }
 
-@ComponentScan(basePackageClasses = Bar4.class, basePackages = {"src.test.files.checks.spring.Y1"})
-class Foo3 {
+@ComponentScan(basePackageClasses = Bar4.class, basePackages = {"checks.spring.s4605.componentScan.packageY"})
+class Foo3 { }
 
-}
+@ComponentScan(basePackages = "checks.spring.s4605.componentScan.packageZ")
+class Foo4 { }
 
-@ComponentScan(basePackages = "src.Y2")
-class Foo4 {
+@ComponentScan(value = "checks.spring.s4605.componentScan.unknownPackage1")
+class Foo5 { }
 
-}
-
-@ComponentScan(value = "src.test.files.checks.spring.Z1")
-class Foo5 {
-
-}
-
-@ComponentScan(value = {"src.test.files.checks.spring.Z2", "src.test.files.checks.spring.Z3"})
-class Foo6 {
-}
+@ComponentScan(value = {"checks.spring.s4605.componentScan.unknownPackage2", "checks.spring.s4605.componentScan.unknownPackage3"})
+class Foo6 { }
 
 @ComponentScan(Foo7.PACKAGE) // this is not taken in consideration, see FalsePositive.java
 class Foo7 {
-  static final String PACKAGE = "falsey.positive";
+  static final String PACKAGE = "checks.spring.s4605.componentScan.packageFP";
 }
 
 @Component

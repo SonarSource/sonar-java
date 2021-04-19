@@ -1,7 +1,7 @@
-package src.test.files.checks.spring.Z2;
+package checks.spring.s4605.componentScan.packageZ;
 
 import org.springframework.stereotype.Component;
 
 // need to be on line 7 to avoid clashes in case of failure
 @Component
-class Z2 {} // Compliant
+class ComponentZ {} // Compliant
