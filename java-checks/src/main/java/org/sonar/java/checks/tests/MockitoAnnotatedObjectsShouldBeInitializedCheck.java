@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -63,7 +64,8 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
   private static final String RULE_ANNOTATION = "org.junit.Rule";
 
   private static final MethodMatchers MOCKITO_JUNIT_RULE = MethodMatchers.create()
-    .ofAnyType()
+    //.ofTypes("org.mockito.junit.MockitoJUnit")
+    .ofSubTypes("org.mockito.junit.MockitoJUnit")
     .names("rule")
     .addWithoutParametersMatcher()
     .build();
@@ -155,13 +157,28 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
       if (field.type().symbolType().is("org.mockito.junit.MockitoRule")) {
         ExpressionTree initializer = field.initializer();
         if (initializer != null && initializer.is(Tree.Kind.METHOD_INVOCATION) &&
-          MOCKITO_JUNIT_RULE.matches((MethodInvocationTree) initializer) &&
-          field.symbol().metadata().isAnnotatedWith(RULE_ANNOTATION)) {
+          field.symbol().metadata().isAnnotatedWith(RULE_ANNOTATION) &&
+          isInitializedWithRule((MethodInvocationTree) initializer)) {
           return true;
         }
       }
     }
     return false;
+  }
+
+  private static boolean isInitializedWithRule(MethodInvocationTree mit) {
+    MethodInvocationTree current = mit;
+    while (true) {
+      if (MOCKITO_JUNIT_RULE.matches(current)) {
+        return true;
+      }
+      MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) current.methodSelect();
+      ExpressionTree expression = memberSelect.expression();
+      if (!expression.is(Tree.Kind.METHOD_INVOCATION)) {
+        return false;
+      }
+      current = (MethodInvocationTree) expression;
+    }
   }
 
   private static boolean areMocksInitializedInSetup(ClassTree clazz) {
