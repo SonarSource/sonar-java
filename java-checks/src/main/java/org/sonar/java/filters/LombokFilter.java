@@ -83,6 +83,7 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
   private static final String LOMBOK_VAL = "lombok.val";
   private static final String LOMBOK_VALUE = "lombok.Value";
   private static final String LOMBOK_FIELD_DEFAULTS = "lombok.experimental.FieldDefaults";
+  private static final String LOMBOK_DATA = "lombok.Data";
 
   private static final List<String> GENERATE_UNUSED_FIELD_RELATED_METHODS = Arrays.asList(
     "lombok.Getter",
@@ -96,11 +97,12 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
   private static final List<String> GENERATE_CONSTRUCTOR = Arrays.asList(
     "lombok.AllArgsConstructor",
     "lombok.NoArgsConstructor",
-    "lombok.RequiredArgsConstructor");
+    "lombok.RequiredArgsConstructor",
+    LOMBOK_DATA);
 
   private static final List<String> GENERATE_EQUALS = Arrays.asList(
     "lombok.EqualsAndHashCode",
-    "lombok.Data",
+    LOMBOK_DATA,
     LOMBOK_VALUE);
 
   private static final List<String> UTILITY_CLASS = Collections.singletonList("lombok.experimental.UtilityClass");
