@@ -1,10 +1,12 @@
+package checks;
+
 import com.google.common.collect.Lists;
 
 import java.lang.Exception;
 import java.io.*;
 import java.util.function.IntFunction;
 
-class A {
+class DeadStoreCheck {
 
   int var;
 
@@ -37,33 +39,9 @@ class A {
     System.out.println(a);
   }
 
-  Object anonymous_class() {
-    int a,b = 7; // Noncompliant
-    a = 42;
-    if(a == 42) {
-      b = 12; // Noncompliant
-    }
-    return new Object() {
-      @Override
-      public int hashCode() {
-        b = 14; // Noncompliant
-        return a;
-      }
-    };
-  }
-
   void lambdas_using_local_vars(IntFunction lambda) {
     int a = 42;
     lambdas_using_local_vars(y -> a + y);
-  }
-
-  void lambdas_not_resolved(UnknnownFunction lambda) {
-    int a = 42; // Compliant
-    lambdas_not_resolved(y -> a + y);
-    lambdas_not_resolved(y -> {
-      int x = 1; // Compliant
-      return y + x;
-    });
   }
 
   void ignore_try_finally() {
@@ -253,7 +231,7 @@ class A {
   }
 }
 
-class Stuff {
+class DeadStoreCheckStuff {
   void foo(boolean b1, boolean b2) {
     boolean x = false;  // Compliant
     x = b1 && b2;       // Noncompliant
@@ -267,7 +245,7 @@ class Stuff {
 
 }
 
-class NoIssueOnInitializers {
+class DeadStoreCheckNoIssueOnInitializers {
 
   // no issue if variable initializer is 'true' or 'false'
   boolean testBoolean(boolean arg0) {
@@ -334,7 +312,7 @@ class NoIssueOnInitializers {
     return 0;
   }
 }
-class B {
+class DeadStoreCheckB {
   void foo() {
     int attemptNumber = 0;
     while (true) {
@@ -351,22 +329,7 @@ class B {
   static class MyException extends Exception {  }
 }
 
-abstract class C {
-  public void testCodeWithForLoop1() {
-    RuntimeException e = null;
-    for (;;) {
-      for (int i = 0; i < 2; ) {
-        try {
-          e = new RuntimeException(); // Noncompliant
-          break;
-        } finally {
-          doSomething();
-        }
-      }
-    }
-    // unreachable
-    throw e;
-  }
+abstract class DeadStoreCheckC {
 
   public void testCodeWithForLoop2() {
     RuntimeException e = null;
@@ -408,21 +371,6 @@ abstract class C {
   }
 
   abstract void doSomething();
-
-  void test_enquing_unknown_exceptions() {
-    int retriesLeft = 10;
-    while (true) {
-      try {
-        bar();
-      } catch (FooException e) {
-        if (retriesLeft == 0) {
-          throw e;
-        }
-      }
-    }
-  }
-
-  abstract void bar() throws UnknownException;
 
   public class FooException extends Exception { }
 }
