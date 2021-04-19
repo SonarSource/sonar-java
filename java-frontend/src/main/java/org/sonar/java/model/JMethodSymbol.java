@@ -137,6 +137,10 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
 
   private void findOverridesInTypes(Collection<MethodSymbol> accumulator, Predicate<IMethodBinding> overridesCondition, ITypeBinding... types) {
     for (ITypeBinding type : types) {
+      if (type == null) {
+        // Can happen for unknown reason.
+        continue;
+      }
       // check current type
       Stream.of(type.getDeclaredMethods())
         .filter(overridesCondition)

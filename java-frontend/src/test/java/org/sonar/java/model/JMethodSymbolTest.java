@@ -155,6 +155,16 @@ class JMethodSymbolTest {
   }
 
   @Test
+  void testUnknownExtends() {
+    JavaTree.CompilationUnitTreeImpl cu = test(""
+      + "class B extends String { public void a() { } }");
+    ClassTreeImpl a = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) a.members().get(0);
+    JMethodSymbol symbol = cu.sema.methodSymbol(Objects.requireNonNull(m.methodBinding));
+    assertThat(symbol.overriddenSymbols()).isEmpty();
+  }
+
+  @Test
   void testMultipleInheritanceWithExtensionOfObject() {
     JavaTree.CompilationUnitTreeImpl cu = test(""
       + "interface A { boolean equals(Object other); }\n"
