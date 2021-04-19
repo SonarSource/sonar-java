@@ -36,7 +36,7 @@ class Fields {
   }
 
   @lombok.Data
-  class Data { // WithIssue
+  class Data { // NoIssue
     private int foo; // NoIssue
   }
 
@@ -92,6 +92,11 @@ class Fields {
 
   @lombok.RequiredArgsConstructor
   class RequiredArgsConstructor { // NoIssue
+    private int foo; // NoIssue
+  }
+
+  @lombok.Data
+  class RequiredArgsConstructor15 { // NoIssue
     private int foo; // NoIssue
   }
 
@@ -394,7 +399,7 @@ class PrivateFieldOnlyUsedLocally {
   }
 
   @lombok.Data
-  class D { // WithIssue
+  class D { // NoIssue
     private int foo; // NoIssue
     public void bar(int y){
       foo = y + 5;
@@ -513,6 +518,12 @@ class SpringComponentsInjected {
   @Repository
   @lombok.NoArgsConstructor(force = true)
   public class SampleService3 { // NoIssue
+    private final String someField; // NoIssue
+  }
+
+  @Controller
+  @lombok.Data
+  public class SampleService4 { // NoIssue
     private final String someField; // NoIssue
   }
 }
