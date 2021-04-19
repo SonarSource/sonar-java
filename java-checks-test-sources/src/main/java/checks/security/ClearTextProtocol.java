@@ -1,5 +1,9 @@
 package checks.security;
 
+import java.util.Arrays;
+import java.util.Collections;
+import okhttp3.ConnectionSpec;
+import okhttp3.OkHttpClient;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPSClient;
 import org.apache.commons.net.smtp.SMTPClient;
@@ -18,6 +22,39 @@ public class ClearTextProtocol {
   void compliant() {
     new FTPSClient();
     new SMTPSClient();
+  }
+
+  void okHttp() {
+    OkHttpClient client1 = new OkHttpClient.Builder()
+      .connectionSpecs(Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.CLEARTEXT)) // Noncompliant [[sc=80;ec=89]] {{Using HTTP protocol is insecure. Use HTTPS instead.}}
+      .build();
+
+    OkHttpClient client15 = new OkHttpClient.Builder()
+      .connectionSpecs(Collections.singletonList(ConnectionSpec.CLEARTEXT)) // Noncompliant [[sc=65;ec=74]] {{Using HTTP protocol is insecure. Use HTTPS instead.}}
+      .build();
+
+    ConnectionSpec spec = new ConnectionSpec.Builder(ConnectionSpec.CLEARTEXT) // Noncompliant [[sc=69;ec=78]] {{Using HTTP protocol is insecure. Use HTTPS instead.}}
+      .build();
+
+    OkHttpClient client2 = new OkHttpClient.Builder()
+      .connectionSpecs(Collections.singletonList(spec))
+      .build();
+
+    // Compliant
+    OkHttpClient client3 = new OkHttpClient.Builder()
+      .connectionSpecs(Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS)) // Compliant
+      .build();
+
+    OkHttpClient client4 = new OkHttpClient.Builder()
+      .connectionSpecs(Collections.singletonList(ConnectionSpec.MODERN_TLS)) // Compliant
+      .build();
+
+    ConnectionSpec spec2 = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS) // Compliant
+      .build();
+
+    OkHttpClient client5 = new OkHttpClient.Builder()
+      .connectionSpecs(Collections.singletonList(spec2))
+      .build();
   }
 
 }
