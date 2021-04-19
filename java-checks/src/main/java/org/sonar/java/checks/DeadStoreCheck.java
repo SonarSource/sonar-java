@@ -156,7 +156,10 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
     ExpressionTree lhs = ExpressionUtils.skipParentheses(element.variable());
     if (lhs.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = ((IdentifierTree) lhs).symbol();
-      if (isLocalVariable(symbol) && !out.contains(symbol) && (element.is(Tree.Kind.ASSIGNMENT) || isParentExpressionStatement(element))) {
+      if (isLocalVariable(symbol)
+        && !out.contains(symbol)
+        && (element.is(Tree.Kind.ASSIGNMENT) || isParentExpressionStatement(element))
+        && !UNRESOLVED_IDENTIFIERS_VISITOR.isUnresolved(symbol.name())) {
         createIssue(element.operatorToken(), element.expression(), symbol);
       }
       assignmentLHS.add(lhs);
