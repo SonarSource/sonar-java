@@ -26,7 +26,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.EndOfAnalysisCheck;
@@ -97,10 +99,33 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
     if (componentScanValues != null) {
       componentScanValues.forEach(this::addToScannedPackages);
     } else if (hasAnnotation(classSymbolMetadata, SPRING_BOOT_APP_ANNOTATION)) {
-      packagesScannedBySpring.add(classPackageName);
+      packagesScannedBySpring.addAll(targetedPackages(classPackageName, classSymbolMetadata));
     } else if (hasAnnotation(classSymbolMetadata, SPRING_BEAN_ANNOTATIONS)) {
       addMessageToMap(classPackageName, classTree.simpleName());
     }
+  }
+
+  private static List<String> targetedPackages(String classPackageName, SymbolMetadata classSymbolMetadata) {
+    // annotation is necessarily there already
+    return Objects.requireNonNull(classSymbolMetadata.valuesForAnnotation(SPRING_BOOT_APP_ANNOTATION))
+      .stream()
+      .filter(v -> "scanBasePackages".equals(v.name()))
+      .map(SymbolMetadata.AnnotationValue::value)
+      .findFirst()
+      // list of packages to scan
+      .filter(Object[].class::isInstance)
+      .map(Object[].class::cast)
+      .map(SpringBeansShouldBeAccessibleCheck::asStringList)
+      // Using this annotation without arguments tells Spring to scan the current package and all of its sub-packages.
+      .orElse(Collections.singletonList(classPackageName));
+  }
+
+  private static List<String> asStringList(Object[] array) {
+    return Arrays.asList(array)
+      .stream()
+      .filter(String.class::isInstance)
+      .map(String.class::cast)
+      .collect(Collectors.toList());
   }
 
   private void addMessageToMap(String classPackageName, IdentifierTree classNameTree) {
