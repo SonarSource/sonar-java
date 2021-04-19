@@ -1,4 +1,4 @@
-package foo.bar.Ko;
+package checks.spring.s4605.springBootApplication.Ko;
 
 import org.springframework.stereotype.*;
 import org.springframework.web.bind.annotation.RestController;

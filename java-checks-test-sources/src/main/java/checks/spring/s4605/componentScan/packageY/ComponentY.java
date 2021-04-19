@@ -1,6 +1,6 @@
-package src.Y2;
+package checks.spring.s4605.componentScan.packageY;
 
 import org.springframework.stereotype.Component;
 // need to be on line 6 to avoid clashes in case of failure
 @Component
-class Y2 {} // Compliant
+class ComponentY {} // Compliant

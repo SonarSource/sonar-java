@@ -1,4 +1,4 @@
-package src.test.files.checks.spring.SpringBootApplication.Ok;
+package checks.spring.s4605.springBootApplication.app.Ok;
 
 import org.springframework.stereotype.*;
 import org.springframework.web.bind.annotation.RestController;
