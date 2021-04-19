@@ -19,20 +19,20 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Collections;
-import java.util.List;
-
 @Rule(key = "S2757")
 public class WrongAssignmentOperatorCheck extends IssuableSubscriptionVisitor {
 
-  private static final List<String> SUSPICIOUS_TOKEN_VALUES = Arrays.asList("!", "+", "-");
+  private static final Set<String> SUSPICIOUS_TOKEN_VALUES = SetUtils.immutableSetOf("!", "+", "-");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
