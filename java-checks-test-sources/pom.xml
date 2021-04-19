@@ -47,6 +47,12 @@
       <version>2.7.2</version>
       <type>jar</type>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.santuario</groupId>
@@ -447,6 +453,12 @@
       <version>5.0.2.Final</version>
       <type>jar</type>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
@@ -713,6 +725,12 @@
       <artifactId>junit5</artifactId>
       <version>4.1.0</version>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>au.com.dius</groupId>
