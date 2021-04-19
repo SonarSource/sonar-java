@@ -24,6 +24,8 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -85,9 +87,22 @@ public class VolatileNonPrimitiveFieldCheck extends IssuableSubscriptionVisitor 
       .filter(m -> m.is(Tree.Kind.VARIABLE))
       .map(VariableTree.class::cast)
       .filter(v -> ModifiersUtils.hasModifier(v.modifiers(), Modifier.VOLATILE))
-      .filter(v -> !v.type().symbolType().isPrimitive())
-      .filter(v -> !isImmutableType(v.type().symbolType()))
+      .filter(v -> isUnsafeVolatile(v.type().symbolType()))
       .forEach(v -> reportIssue(ModifiersUtils.getModifier(v.modifiers(), Modifier.VOLATILE), v.type(), getMessage(v)));
+  }
+
+  private static boolean isUnsafeVolatile(Type symbolType) {
+    return !(symbolType.isPrimitive()
+      || isImmutableType(symbolType)
+      || isSafelyAnnotated(symbolType.symbol().metadata()));
+  }
+
+  private static boolean isSafelyAnnotated(SymbolMetadata metadata) {
+    return metadata.annotations().stream()
+      .map(SymbolMetadata.AnnotationInstance::symbol)
+      .map(Symbol::type)
+      .anyMatch(type -> type.is("javax.annotation.concurrent.Immutable")
+        || type.is("javax.annotation.concurrent.ThreadSafe"));
   }
 
   private static boolean isImmutableType(Type type) {

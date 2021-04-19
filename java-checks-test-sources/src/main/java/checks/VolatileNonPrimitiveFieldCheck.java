@@ -82,6 +82,12 @@ class VolatileNonPrimitiveFieldCheck {
   private volatile Locale myLocale;
   private volatile UUID myUUID;
 
+  // User defined Immutable/ThreadSafe classes
+  private volatile VolatileNonPrimitiveFieldCheckImmutable immutable;
+  private volatile VolatileNonPrimitiveFieldCheckThreadSafe threadSafe;
+  // Not thread safe
+  private volatile VolatileNonPrimitiveFieldCheckNotThreadSafe notThreadSafe; // Noncompliant
+
   void foo(){}
 }
 enum VolatileNonPrimitiveFieldCheckEnum {
@@ -97,4 +103,16 @@ enum VolatileNonPrimitiveFieldCheckEnum {
 
 class VolatileNonPrimitiveFieldCheckObj {
 
+}
+
+@javax.annotation.concurrent.Immutable
+class VolatileNonPrimitiveFieldCheckImmutable {
+}
+
+@javax.annotation.concurrent.ThreadSafe
+class VolatileNonPrimitiveFieldCheckThreadSafe {
+}
+
+@javax.annotation.concurrent.NotThreadSafe
+class VolatileNonPrimitiveFieldCheckNotThreadSafe {
 }
