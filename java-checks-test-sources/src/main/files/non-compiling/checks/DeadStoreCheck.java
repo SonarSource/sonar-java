@@ -11,6 +11,16 @@ abstract class DeadStoreCheck {
     });
   }
 
+  void fpLambdaWithAssignment(boolean cond) {
+    String myStr;
+    if (cond) {
+      myStr = "A"; // Compliant, even if used in a unresolved lambda
+    } else {
+      myStr = "B"; //  Compliant, even if used in a unresolved lambda
+    }
+    new SomeUnknownClass(i -> unknown(i, myStr));
+  }
+
   public void testCodeWithForLoop1() {
     RuntimeException e = null;
     for (;;) {
