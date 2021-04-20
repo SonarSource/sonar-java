@@ -19,9 +19,11 @@
  */
 package org.sonar.java.model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
@@ -32,6 +34,9 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class JMethodSymbolTest {
 
@@ -152,6 +157,38 @@ class JMethodSymbolTest {
 
     assertThat(symbol.overriddenSymbols()).containsExactly(
       retrieveMethodSymbol("KnownInterface", "a", cu));
+  }
+
+  @Test
+  void testUnknownExtends() {
+    JavaTree.CompilationUnitTreeImpl cu = test(""
+      + "class B extends Unknown { public void a() { } }");
+    ClassTreeImpl a = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) a.members().get(0);
+    JMethodSymbol symbol = cu.sema.methodSymbol(Objects.requireNonNull(m.methodBinding));
+    assertThat(symbol.overriddenSymbols()).isEmpty();
+  }
+
+  @Test
+  void testBindingReturnNullSuperClass() {
+    JavaTree.CompilationUnitTreeImpl cu = test(""
+      + "class A { public void a() { } }");
+    ClassTreeImpl a = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) a.members().get(0);
+    // We create a real JMethodSymbol because it is not possible to mock JMethodSymbol (it is final), and not easy
+    // to mock the arguments either, because the constructor is using an external helper method.
+    JMethodSymbol symbol = cu.sema.methodSymbol(Objects.requireNonNull(m.methodBinding));
+
+    ITypeBinding iTypeBinding = mock(ITypeBinding.class);
+    // In some rare situation, the "getSuperclass" can return null. It is not easy to write code reproducing the issue, we test it by "hand".
+    when(iTypeBinding.getSuperclass()).thenReturn(null);
+    ITypeBinding[] interfaces = {null};
+    when(iTypeBinding.getInterfaces()).thenReturn(interfaces);
+
+    Collection<Symbol.MethodSymbol> overrides = new ArrayList<>();
+    assertDoesNotThrow(() ->
+      symbol.findOverridesInParentTypes(overrides, methodBinding -> false, iTypeBinding));
+    assertThat(overrides).isEmpty();
   }
 
   @Test
