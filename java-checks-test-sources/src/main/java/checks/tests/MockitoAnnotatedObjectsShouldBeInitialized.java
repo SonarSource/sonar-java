@@ -156,6 +156,20 @@ public class MockitoAnnotatedObjectsShouldBeInitialized {
     }
   }
 
+  public class NonPublicMockitoRule {
+
+    @Rule
+    MockitoRule mockitoRule = MockitoJUnit.rule(); // This field should be public
+
+    @Mock // Noncompliant {{Initialize mocks before using them.}}
+    private Bar bar;
+
+    @Test
+    public void someTest() {
+      // ...
+    }
+  }
+
   public class UntaggedSetup {
     @Mock // Noncompliant {{Initialize mocks before using them.}}
     private Bar bar;

@@ -156,8 +156,10 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
     for (VariableTree field : collected) {
       if (field.type().symbolType().is("org.mockito.junit.MockitoRule")) {
         ExpressionTree initializer = field.initializer();
+        Symbol symbol = field.symbol();
         if (initializer != null && initializer.is(Tree.Kind.METHOD_INVOCATION) &&
-          field.symbol().metadata().isAnnotatedWith(RULE_ANNOTATION) &&
+          symbol.metadata().isAnnotatedWith(RULE_ANNOTATION) &&
+          symbol.isPublic() &&
           isInitializedWithRule((MethodInvocationTree) initializer)) {
           return true;
         }
