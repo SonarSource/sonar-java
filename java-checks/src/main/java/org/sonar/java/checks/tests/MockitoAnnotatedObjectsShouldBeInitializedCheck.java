@@ -64,7 +64,6 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
   private static final String RULE_ANNOTATION = "org.junit.Rule";
 
   private static final MethodMatchers MOCKITO_JUNIT_RULE = MethodMatchers.create()
-    //.ofTypes("org.mockito.junit.MockitoJUnit")
     .ofSubTypes("org.mockito.junit.MockitoJUnit")
     .names("rule")
     .addWithoutParametersMatcher()
