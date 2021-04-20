@@ -158,7 +158,6 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
         Symbol symbol = field.symbol();
         if (initializer != null && initializer.is(Tree.Kind.METHOD_INVOCATION) &&
           symbol.metadata().isAnnotatedWith(RULE_ANNOTATION) &&
-          symbol.isPublic() &&
           isInitializedWithRule((MethodInvocationTree) initializer)) {
           return true;
         }
@@ -173,8 +172,11 @@ public class MockitoAnnotatedObjectsShouldBeInitializedCheck extends IssuableSub
       if (MOCKITO_JUNIT_RULE.matches(current)) {
         return true;
       }
-      MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) current.methodSelect();
-      ExpressionTree expression = memberSelect.expression();
+      ExpressionTree expressionTree = current.methodSelect();
+      if (!expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
+        return false;
+      }
+      ExpressionTree expression = ((MemberSelectExpressionTree) expressionTree).expression();
       if (!expression.is(Tree.Kind.METHOD_INVOCATION)) {
         return false;
       }
