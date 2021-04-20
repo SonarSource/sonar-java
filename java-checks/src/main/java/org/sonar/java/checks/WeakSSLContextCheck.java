@@ -23,13 +23,17 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -38,10 +42,17 @@ public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
 
   private static final Set<String> STRONG_PROTOCOLS = new HashSet<>(Arrays.asList("TLSv1.2", "DTLSv1.2", "TLSv1.3", "DTLSv1.3"));
   private static final Set<String> STRONG_AFTER_JAVA_8 = new HashSet<>(Arrays.asList("TLS", "DTLS"));
+  private static final Set<String> WEAK_FOR_OK_HTTP = new HashSet<>(Arrays.asList("TLSv1", "TLSv1.1", "TLS_1_0", "TLS_1_1"));
 
   private static final MethodMatchers SSLCONTEXT_GETINSTANCE_MATCHER = MethodMatchers.create()
     .ofTypes("javax.net.ssl.SSLContext")
     .names("getInstance")
+    .withAnyParameters()
+    .build();
+
+  private static final MethodMatchers OK_HTTP_TLS_VERSION = MethodMatchers.create()
+    .ofTypes("okhttp3.ConnectionSpec$Builder")
+    .names("tlsVersions")
     .withAnyParameters()
     .build();
 
@@ -69,11 +80,39 @@ public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
           reportIssue(firstArgument, "Change this code to use a stronger protocol.");
         }
       });
+    } else if (OK_HTTP_TLS_VERSION.matches(mit)) {
+      List<Tree> unsecureVersions = getUnsecureVersionsInArguments(arguments);
+      if (!unsecureVersions.isEmpty()) {
+        List<JavaFileScannerContext.Location> secondaries = unsecureVersions.stream()
+          .skip(1)
+          .map(secondary -> new JavaFileScannerContext.Location("Other weak protocol.", secondary))
+          .collect(Collectors.toList());
+        reportIssue(unsecureVersions.get(0), "Change this code to use a stronger protocol.", secondaries, null);
+      }
     }
   }
 
   private boolean isStrongProtocol(String protocol) {
     return STRONG_PROTOCOLS.contains(protocol) || (projectHasJava8OrHigher && STRONG_AFTER_JAVA_8.contains(protocol));
+  }
+
+  private static List<Tree> getUnsecureVersionsInArguments(Arguments arguments) {
+    return arguments.stream()
+      .filter(WeakSSLContextCheck::isUnsecureVersion)
+      .collect(Collectors.toList());
+  }
+
+  private static boolean isUnsecureVersion(ExpressionTree expressionTree) {
+    String argumentValue = null;
+    Optional<String> stringArgument = expressionTree.asConstant(String.class);
+    if (stringArgument.isPresent()) {
+      argumentValue = stringArgument.get();
+    } else if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
+      argumentValue = ((IdentifierTree) expressionTree).name();
+    } else if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
+      argumentValue = ((MemberSelectExpressionTree) expressionTree).identifier().name();
+    }
+    return WEAK_FOR_OK_HTTP.contains(argumentValue);
   }
 
 }
