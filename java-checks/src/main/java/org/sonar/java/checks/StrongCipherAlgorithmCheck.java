@@ -37,8 +37,13 @@ public class StrongCipherAlgorithmCheck extends AbstractMethodDetection {
 
   private static final String MESSAGE = "Use a strong cipher algorithm.";
 
-  private static final Set<String> VULNERABLE_ALGORITHMS = Stream.of("DES", "DESede", "RC2", "RC4", "Blowfish")
-    .map(name -> name.toUpperCase(Locale.ROOT)).collect(Collectors.toSet());
+  private static final Set<String> VULNERABLE_ALGORITHMS = Stream.of(
+    "DES", "DESede", "DESedeWrap",
+    "RC2", "ARC2",
+    "RC4", "ARC4", "ARCFOUR",
+    "Blowfish")
+    .map(name -> name.toUpperCase(Locale.ROOT))
+    .collect(Collectors.toSet());
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
