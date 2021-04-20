@@ -4,6 +4,7 @@ import javax.crypto.Cipher;
 import javax.crypto.NullCipher;
 import javax.crypto.NoSuchPaddingException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 
 class MyCipher extends Cipher {
   public MyCipher() {
@@ -14,7 +15,7 @@ class MyCipher extends Cipher {
 class StrongCipherAlgorithmCheck {
   private final static String DES = "DES";
 
-  void foo() throws NoSuchAlgorithmException, NoSuchPaddingException {
+  void foo() throws NoSuchAlgorithmException, NoSuchPaddingException, NoSuchProviderException {
     Cipher.getInstance("DESede/ECB/PKCS5Padding"); // Noncompliant [[sc=24;ec=49]] {{Use a strong cipher algorithm.}}
     Cipher.getInstance("DES/ECB/PKCS5Padding");// Noncompliant
     Cipher.getInstance("RC2/ECB/PKCS5Padding"); // Noncompliant
@@ -40,6 +41,10 @@ class StrongCipherAlgorithmCheck {
     Cipher.getInstance("DESede/GCM/NoPadding"); // Noncompliant
     Cipher.getInstance("DESede/GCM/PKCS5Padding"); // Noncompliant
 
+    // DESedeWrap
+    Cipher.getInstance("DESedeWrap"); // Noncompliant
+    Cipher.getInstance("DESedeWrap/GCM/PKCS5Padding"); // Noncompliant
+
     // RC2
     Cipher.getInstance("RC2"); // Noncompliant
     Cipher.getInstance("RC2/ECB"); // Noncompliant
@@ -48,6 +53,10 @@ class StrongCipherAlgorithmCheck {
     Cipher.getInstance("RC2/GCM/NoPadding"); // Noncompliant
     Cipher.getInstance("RC2/GCM/PKCS5Padding"); // Noncompliant
 
+    // ARC2 (alias of RC2, not officially supported)
+    Cipher.getInstance("ARC2"); // Noncompliant
+    Cipher.getInstance("ARC2/GCM/PKCS5Padding"); // Noncompliant
+
     // RC4
     Cipher.getInstance("RC4"); // Noncompliant
     Cipher.getInstance("RC4/ECB"); // Noncompliant
@@ -55,6 +64,14 @@ class StrongCipherAlgorithmCheck {
     Cipher.getInstance("RC4/GCM"); // Noncompliant
     Cipher.getInstance("RC4/GCM/NoPadding"); // Noncompliant
     Cipher.getInstance("RC4/GCM/PKCS5Padding"); // Noncompliant
+
+    // ARC4
+    Cipher.getInstance("ARC4"); // Noncompliant
+    Cipher.getInstance("ARC4/GCM/PKCS5Padding"); // Noncompliant
+
+    // ARCFOUR
+    Cipher.getInstance("ARCFOUR"); // Noncompliant
+    Cipher.getInstance("ARCFOUR/GCM/PKCS5Padding", "IAIK"); // Noncompliant
 
     // Blowfish
     Cipher.getInstance("Blowfish"); // Noncompliant
