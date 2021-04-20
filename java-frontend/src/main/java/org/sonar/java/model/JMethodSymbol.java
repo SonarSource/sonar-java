@@ -30,6 +30,7 @@ import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.ASTUtils;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -125,7 +126,8 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     return new ArrayList<>(results);
   }
 
-  private void findOverridesInParentTypes(Collection<MethodSymbol> accumulator, Predicate<IMethodBinding> overridesCondition, ITypeBinding type) {
+  @VisibleForTesting
+  void findOverridesInParentTypes(Collection<MethodSymbol> accumulator, Predicate<IMethodBinding> overridesCondition, ITypeBinding type) {
     if (type.isInterface()) {
       // check Object for interfaces forcing overrides from Object
       findOverridesInTypes(accumulator, overridesCondition, sema.resolveType("java.lang.Object"));
