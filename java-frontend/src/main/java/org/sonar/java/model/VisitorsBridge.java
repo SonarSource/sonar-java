@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -161,7 +162,9 @@ public class VisitorsBridge {
       throw new AnalysisException("Bad configuration of rule parameter", e);
     } catch (Exception e) {
       Throwable rootCause = ThrowableUtils.getRootCause(e);
-      if (rootCause instanceof InterruptedIOException || rootCause instanceof InterruptedException) {
+      if (rootCause instanceof InterruptedIOException
+        || rootCause instanceof InterruptedException
+        || rootCause instanceof CancellationException) {
         throw e;
       }
 

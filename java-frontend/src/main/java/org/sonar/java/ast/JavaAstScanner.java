@@ -24,6 +24,7 @@ import java.io.InterruptedIOException;
 import java.time.Clock;
 import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -168,7 +169,9 @@ public class JavaAstScanner {
 
   private static void checkInterrupted(Exception e) {
     Throwable cause = ExceptionUtils.getRootCause(e);
-    if (cause instanceof InterruptedException || cause instanceof InterruptedIOException) {
+    if (cause instanceof InterruptedException
+      || cause instanceof InterruptedIOException
+      || cause instanceof CancellationException) {
       throw new AnalysisException("Analysis cancelled", e);
     }
   }
