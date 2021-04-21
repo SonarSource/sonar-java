@@ -26,9 +26,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
@@ -147,24 +150,16 @@ class JavaAstScannerTest {
     verifyNoMoreInteractions(visitor);
   }
 
-  @Test
-  void should_interrupt_analysis_when_InterruptedException_is_thrown() {
+  @ParameterizedTest
+  @ValueSource(classes = { InterruptedException.class, InterruptedIOException.class, CancellationException.class})
+  void should_interrupt_analysis_when_specific_exception_are_thrown(Class<? extends Exception> exceptionClass) throws Exception {
     InputFile inputFile = TestUtils.inputFile("src/test/files/metrics/NoSonar.java");
-    VisitorsBridge visitorsBridge = new VisitorsBridge(new CheckThrowingException(new RecognitionException(42, "interrupted", new InterruptedException())));
-    AnalysisException e = assertThrows(AnalysisException.class,
-      () -> JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge));
-    assertThat(e.getMessage()).isEqualTo("Analysis cancelled");
-    assertThat(e.getCause().getClass()).isEqualTo(RecognitionException.class);
-  }
+    VisitorsBridge visitorsBridge = new VisitorsBridge(new CheckThrowingException(new RecognitionException(42, "interrupted", exceptionClass.newInstance())));
 
-  @Test
-  void should_interrupt_analysis_when_InterruptedIOException_is_thrown() {
-    InputFile inputFile = TestUtils.inputFile("src/test/files/metrics/NoSonar.java");
-    VisitorsBridge visitorsBridge = new VisitorsBridge(new CheckThrowingException(new RecognitionException(42, "interrupted", new InterruptedIOException())));
-    AnalysisException e = assertThrows(AnalysisException.class,
-      () -> JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge));
-    assertThat(e.getMessage()).isEqualTo("Analysis cancelled");
-    assertThat(e.getCause().getClass()).isEqualTo(RecognitionException.class);
+    AnalysisException e = assertThrows(AnalysisException.class, () -> JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge));
+    assertThat(e)
+      .hasMessage("Analysis cancelled")
+      .hasCauseInstanceOf(RecognitionException.class);
   }
 
   @Test
@@ -187,7 +182,7 @@ class JavaAstScannerTest {
       + scannedFile.toString()
       + "', To help improve the SonarSource Java Analyzer, please report this problem to SonarSource: see https://community.sonarsource.com/");
   }
-  
+
   @Test
   void should_propagate_SOError() {
     JavaAstScanner scanner = new JavaAstScanner(null);
