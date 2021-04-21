@@ -89,14 +89,12 @@ public class EncryptionAlgorithmCheck extends AbstractMethodDetection {
 
       if ("ECB".equalsIgnoreCase(mode) && !isRSA) {
         return true;
-      } else if ("CBC".equalsIgnoreCase(mode)) {
-        return "PKCS5Padding".equalsIgnoreCase(padding) || "PKCS7Padding".equalsIgnoreCase(padding);
+      }
+      if ("CBC".equalsIgnoreCase(mode)) {
+        return false;
       }
 
-      if (isRSA) {
-        return !(padding.toUpperCase(Locale.ROOT).startsWith("OAEP"));
-      }
-      return false;
+      return isRSA && !(padding.toUpperCase(Locale.ROOT).startsWith("OAEP"));
     }
     // By default, ECB is used.
     return true;
