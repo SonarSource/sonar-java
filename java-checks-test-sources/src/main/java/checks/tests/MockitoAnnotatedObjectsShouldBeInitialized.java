@@ -12,6 +12,8 @@ import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.junit.runner.Runner;
 import org.junit.runner.notification.RunNotifier;
+import org.junit.runners.model.FrameworkMethod;
+import org.junit.runners.model.Statement;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -23,6 +25,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.MockitoRule;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 public class MockitoAnnotatedObjectsShouldBeInitialized {
   class MixedNonCompliant {
@@ -115,11 +118,11 @@ public class MockitoAnnotatedObjectsShouldBeInitialized {
     private Bar bar;
   }
 
-  public class FalseNegativeRule {
+  public class FakeRuleInitialization {
     @Rule
     public MockitoRule rule = FakeRule.rule();
 
-    @Mock // Compliant FN
+    @Mock // Noncompliant {{Initialize mocks before using them.}}
     private Bar bar;
   }
 
@@ -129,6 +132,38 @@ public class MockitoAnnotatedObjectsShouldBeInitialized {
 
     @Mock // Compliant
     private Bar bar;
+  }
+
+  public class InheritedRuleProviderInitialization {
+    @Rule
+    public MockitoRule rule = InheritedRuleProvider.rule();
+
+    @Mock // Compliant
+    private Bar bar;
+  }
+
+  public class MockitoRuleWithTheStrictness {
+
+    @Rule
+    public MockitoRule mockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
+    @Mock // Compliant
+    private Bar bar;
+
+    @Test
+    public void someTest() {
+      // ...
+    }
+  }
+
+  public class MockitoRuleWrongStaticMethod {
+    @Rule
+    public MockitoRule rule = foo();
+
+    @Mock // Noncompliant  {{Initialize mocks before using them.}}
+    private Bar bar;
+
+    private MockitoRule foo() { return null; }
   }
 
   public class UntaggedSetup {
@@ -285,6 +320,9 @@ public class MockitoAnnotatedObjectsShouldBeInitialized {
 
   private static class EmptyExtension implements Extension {
 
+  }
+
+  private static class InheritedRuleProvider extends MockitoJUnit {
   }
 
   private static class FakeRule {
