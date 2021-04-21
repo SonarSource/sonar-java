@@ -34,13 +34,13 @@ abstract class EncryptionAlgorithmCheck {
       Cipher.getInstance("AES/GCM/NoPadding"); // Compliant
 
       // Second case
-      Cipher.getInstance("AES/CBC/PKCS5Padding"); // Noncompliant
-      Cipher.getInstance("Blowfish/CBC/PKCS5Padding"); // Noncompliant
-      Cipher.getInstance("DES/CBC/PKCS5Padding"); // Noncompliant
-      Cipher.getInstance("AES/CBC/PKCS7Padding"); // Noncompliant
-      Cipher.getInstance("Blowfish/CBC/PKCS7Padding"); // Noncompliant
-      Cipher.getInstance("DES/CBC/PKCS7Padding"); // Noncompliant
-      Cipher.getInstance("DES/CBC/NoPadding"); // Compliant
+      Cipher.getInstance("AES/CBC/PKCS5Padding"); // Compliant - CBC considered as safe
+      Cipher.getInstance("Blowfish/CBC/PKCS5Padding"); // Compliant - CBC considered as safe
+      Cipher.getInstance("DES/CBC/PKCS5Padding"); // Compliant - CBC considered as safe
+      Cipher.getInstance("AES/CBC/PKCS7Padding"); // Compliant - CBC considered as safe
+      Cipher.getInstance("Blowfish/CBC/PKCS7Padding"); // Compliant - CBC considered as safe
+      Cipher.getInstance("DES/CBC/PKCS7Padding"); // Compliant - CBC considered as safe
+      Cipher.getInstance("DES/CBC/NoPadding"); // Compliant - CBC considered as safe
       Cipher.getInstance("AES/GCM/NoPadding"); // Compliant
       Cipher.getInstance("Blowfish/GCM/NoPadding"); // Compliant
 
