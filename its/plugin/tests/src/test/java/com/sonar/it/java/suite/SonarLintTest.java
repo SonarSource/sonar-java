@@ -37,6 +37,8 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.sonarsource.sonarlint.core.StandaloneSonarLintEngineImpl;
+import org.sonarsource.sonarlint.core.client.api.common.LogOutput;
+import org.sonarsource.sonarlint.core.client.api.common.ProgressMonitor;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisResults;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.ClientInputFile;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.Issue;
@@ -45,6 +47,7 @@ import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneGlobalConf
 import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneSonarLintEngine;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 
 public class SonarLintTest {
@@ -189,6 +192,47 @@ public class SonarLintTest {
     assertThat(analysisResults.failedAnalysisFiles()).hasSize(1);
   }
 
+  @Test
+  public void sonarlint_cancel_analysis() throws Exception {
+    List<LogOutput.Level> logs = new ArrayList<>();
+    StandaloneGlobalConfiguration config = StandaloneGlobalConfiguration.builder()
+      .addPlugin(JavaTestSuite.JAVA_PLUGIN_LOCATION.getFile().toURI().toURL())
+      .setSonarLintUserHome(temp.newFolder().toPath())
+      .setLogOutput((formattedMessage, level) -> logs.add(level))
+      .build();
+    sonarlintEngine = new StandaloneSonarLintEngineImpl(config);
+
+    ClientInputFile inputFile = prepareInputFile("Foo.java",
+      "public class Foo {\n"
+        + "  @SuppressWarnings(\"java:S106\")\n"
+        + "  public void foo() {\n"
+        + "    int x;\n"
+        + "    System.out.println(\"Foo\");\n"
+        + "    System.out.println(\"Foo\"); //NOSONAR\n"
+        + "  }\n"
+        + "}",
+      false);
+
+    StandaloneAnalysisConfiguration standaloneAnalysisConfiguration = StandaloneAnalysisConfiguration.builder()
+      .setBaseDir(baseDir.toPath())
+      .addInputFile(inputFile)
+      .build();
+
+    final List<Issue> issues = new ArrayList<>();
+    CancellableProgressMonitor progressMonitor = new CancellableProgressMonitor();
+    assertThatThrownBy(() -> sonarlintEngine.analyze(standaloneAnalysisConfiguration, i -> {
+      if (!issues.isEmpty()) {
+        progressMonitor.isCanceled = true;
+        throw new MyCancelException();
+      }
+      issues.add(i);
+    }, null, progressMonitor)).hasMessage("Analysis cancelled");
+
+    // When any Exception (including user defined) is thrown and the progress is cancelled, no errors should be logged.
+    assertThat(logs).doesNotContain(LogOutput.Level.ERROR);
+    assertThat(issues).hasSize(1);
+  }
+
   private ClientInputFile prepareInputFile(String relativePath, String content, final boolean isTest) throws IOException {
     final File file = new File(baseDir, relativePath);
     FileUtils.write(file, content, StandardCharsets.UTF_8);
@@ -243,6 +287,17 @@ public class SonarLintTest {
   @AfterClass
   public static void stop() {
     sonarlintEngine.stop();
+  }
+
+  static class MyCancelException extends RuntimeException {
+  }
+
+  static class CancellableProgressMonitor extends ProgressMonitor {
+    boolean isCanceled = false;
+    @Override
+    public boolean isCanceled() {
+      return isCanceled;
+    }
   }
 
 }
