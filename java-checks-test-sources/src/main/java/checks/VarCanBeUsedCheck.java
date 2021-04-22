@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 class MyTestClass {}
 
@@ -75,6 +77,20 @@ public class VarCanBeUsedCheck {
 
 
     Abc myCustom = varAbc; // Noncompliant
+
+    // When the initializer is a lambda, you have to cast the rhs. The result is not really cleaner and should not be reported.
+    Consumer consumer = (str) -> System.out.println("s" + str); // Compliant
+    var consumer2 = (Consumer)(str) -> System.out.println("s" + str); // Compliant: not cleaner
+    Consumer consumer3 = (str) -> { // Compliant
+      var a = "A";
+      System.out.println(a + str);
+    };
+    Consumer<String> consumer4 = ((str) -> System.out.println("s" + str)); // Compliant
+    Consumer<String> consumer5 = (str) -> System.out.println("s" + str); // Compliant, excluded by both parameterized type and lambda in rhs.
+
+    // Same applies to functions:
+    Function function1 = VarCanBeUsedCheck::objectToObject; // Compliant
+    Function function2 = this::objectToObject2; // Compliant
   }
 
   void testFile(File file) {
@@ -101,6 +117,14 @@ public class VarCanBeUsedCheck {
 
   private Object getO() {
     return new Object();
+  }
+
+  static Object objectToObject(Object o) {
+    return o;
+  }
+
+  Object objectToObject2(Object o) {
+    return o;
   }
 }
 
