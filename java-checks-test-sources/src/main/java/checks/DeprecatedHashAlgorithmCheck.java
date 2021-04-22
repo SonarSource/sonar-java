@@ -30,14 +30,19 @@ class HashMethodsCheck {
     md = MessageDigest.getInstance("MD4"); // Noncompliant {{Use a stronger hashing algorithm than MD4.}}
     md = MessageDigest.getInstance("MD6"); // Noncompliant {{Use a stronger hashing algorithm than MD6.}}
     md = MessageDigest.getInstance("MD5"); // Noncompliant [[sc=24;ec=35]] {{Use a stronger hashing algorithm than MD5.}}
-    md = MessageDigest.getInstance("SHA-1"); // Noncompliant {{Use a stronger hashing algorithm than SHA-1.}}
     md = MessageDigest.getInstance("HAVAL-128"); // Noncompliant {{Use a stronger hashing algorithm than HAVAL-128.}}
     md = MessageDigest.getInstance("HMAC-MD5"); // Noncompliant {{Use a stronger hashing algorithm than MD5.}}
     md = MessageDigest.getInstance("RIPEMD"); // Noncompliant {{Use a stronger hashing algorithm than RIPEMD.}}
     md = MessageDigest.getInstance("RIPEMD-128"); // Noncompliant {{Use a stronger hashing algorithm than RIPEMD.}}
     md = MessageDigest.getInstance("RIPEMD160"); // Noncompliant {{Use a stronger hashing algorithm than RIPEMD.}}
     md = MessageDigest.getInstance("HMACRIPEMD160"); // Noncompliant {{Use a stronger hashing algorithm than RIPEMD.}}
-    md = MessageDigest.getInstance("SHA-256");
+    md = MessageDigest.getInstance("SHA"); // Noncompliant {{Use a stronger hashing algorithm than SHA.}}
+    md = MessageDigest.getInstance("SHA-0"); // Noncompliant {{Use a stronger hashing algorithm than SHA-0.}}
+    md = MessageDigest.getInstance("SHA-1"); // Noncompliant {{Use a stronger hashing algorithm than SHA-1.}}
+    md = MessageDigest.getInstance("SHA-224"); // Noncompliant {{Use a stronger hashing algorithm than SHA-224.}}
+    md = MessageDigest.getInstance("SHA-256"); // Compliant
+    md = MessageDigest.getInstance("SHA-384"); // Compliant
+    md = MessageDigest.getInstance("SHA-512"); // Compliant
     md = DigestUtils.getDigest("MD2"); // Noncompliant
     md = DigestUtils.getDigest("MD5"); // Noncompliant
     md = DigestUtils.getDigest("SHA-1"); // Noncompliant

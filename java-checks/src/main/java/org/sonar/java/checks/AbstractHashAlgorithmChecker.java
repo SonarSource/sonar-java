@@ -85,10 +85,29 @@ public abstract class AbstractHashAlgorithmChecker extends AbstractMethodDetecti
         return "HAVAL-128";
       }
     },
+    SHA {
+      @Override
+      public boolean match(String algorithm) {
+        // exact match required for SHA, so it doesn't match compliant SHA-512
+        return "SHA".equals(algorithm);
+      }
+    },
+    SHA0 {
+      @Override
+      public String toString() {
+        return "SHA-0";
+      }
+    },
     SHA1 {
       @Override
       public String toString() {
         return "SHA-1";
+      }
+    },
+    SHA224 {
+      @Override
+      public String toString() {
+        return "SHA-224";
       }
     },
     DSA {
