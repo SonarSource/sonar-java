@@ -151,7 +151,10 @@ class JavaAstScannerTest {
   }
 
   @ParameterizedTest
-  @ValueSource(classes = { InterruptedException.class, InterruptedIOException.class, CancellationException.class})
+  @ValueSource(classes = {
+    InterruptedException.class,
+    InterruptedIOException.class,
+    CancellationException.class})
   void should_interrupt_analysis_when_specific_exception_are_thrown(Class<? extends Exception> exceptionClass) throws Exception {
     InputFile inputFile = TestUtils.inputFile("src/test/files/metrics/NoSonar.java");
     VisitorsBridge visitorsBridge = new VisitorsBridge(new CheckThrowingException(new RecognitionException(42, "interrupted", exceptionClass.newInstance())));
@@ -160,6 +163,23 @@ class JavaAstScannerTest {
     assertThat(e)
       .hasMessage("Analysis cancelled")
       .hasCauseInstanceOf(RecognitionException.class);
+  }
+
+  @Test
+  void should_interrupt_analysis_when_is_cancelled() throws Exception {
+    InputFile inputFile = TestUtils.inputFile("src/test/files/metrics/NoSonar.java");
+    SonarComponents sonarComponent = new SonarComponents(null, context.fileSystem(), null, null, null);
+    sonarComponent.setSensorContext(context);
+    VisitorsBridge visitorsBridge = new VisitorsBridge(Collections.singletonList(new CheckCancellingAnalysis(context)),
+      new ArrayList<>(),
+      sonarComponent);
+
+    final JavaVersionImpl javaVersion = new JavaVersionImpl();
+    AnalysisException e = assertThrows(AnalysisException.class,
+      () -> JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge, javaVersion, sonarComponent));
+    assertThat(e)
+      .hasMessage("Analysis cancelled")
+      .hasCauseInstanceOf(MyCancelException.class);
   }
 
   @Test
@@ -270,11 +290,28 @@ class JavaAstScannerTest {
     }
   }
 
+  private static class CheckCancellingAnalysis implements JavaFileScanner {
+    SensorContextTester sensorContext;
+
+    public CheckCancellingAnalysis(SensorContextTester sensorContext) {
+      this.sensorContext = sensorContext;
+    }
+
+    @Override
+    public void scanFile(JavaFileScannerContext context) {
+      sensorContext.setCancelled(true);
+      throw new MyCancelException();
+    }
+  }
+
   @org.sonar.check.Rule(key = "AnnotatedCheck")
   private static class AnnotatedCheck extends CheckThrowingException {
     public AnnotatedCheck(RuntimeException e) {
       super(e);
     }
+  }
+
+  private static class MyCancelException extends RuntimeException {
   }
 
   private static class FakeAuditListener implements JavaFileScanner, ExceptionHandler {
@@ -292,5 +329,4 @@ class JavaAstScannerTest {
 
     }
   }
-
 }

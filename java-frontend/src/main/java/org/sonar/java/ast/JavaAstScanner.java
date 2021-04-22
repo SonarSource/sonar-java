@@ -167,11 +167,12 @@ public class JavaAstScanner {
     }
   }
 
-  private static void checkInterrupted(Exception e) {
+  private void checkInterrupted(Exception e) {
     Throwable cause = ExceptionUtils.getRootCause(e);
     if (cause instanceof InterruptedException
       || cause instanceof InterruptedIOException
-      || cause instanceof CancellationException) {
+      || cause instanceof CancellationException
+      || analysisCancelled()) {
       throw new AnalysisException("Analysis cancelled", e);
     }
   }

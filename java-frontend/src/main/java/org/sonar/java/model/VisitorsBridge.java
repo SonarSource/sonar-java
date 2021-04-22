@@ -164,7 +164,8 @@ public class VisitorsBridge {
       Throwable rootCause = ThrowableUtils.getRootCause(e);
       if (rootCause instanceof InterruptedIOException
         || rootCause instanceof InterruptedException
-        || rootCause instanceof CancellationException) {
+        || rootCause instanceof CancellationException
+        || analysisCancelled()) {
         throw e;
       }
 
@@ -176,6 +177,10 @@ public class VisitorsBridge {
 
       throw new CheckFailureException(message, e);
     }
+  }
+
+  private boolean analysisCancelled() {
+    return sonarComponents != null && sonarComponents.analysisCancelled();
   }
 
   private static String ruleKey(JavaFileScanner scanner) {
