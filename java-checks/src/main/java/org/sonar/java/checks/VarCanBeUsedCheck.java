@@ -77,8 +77,13 @@ public class VarCanBeUsedCheck extends IssuableSubscriptionVisitor implements Ja
       type.is(Tree.Kind.VAR_TYPE) ||
       symbolType.isUnknown() ||
       !JUtils.isLocalVariable(variableTree.symbol()) ||
-      initializer.is(Tree.Kind.CONDITIONAL_EXPRESSION) ||
       symbolType.isParameterized()) {
+      return;
+    }
+
+    initializer = ExpressionUtils.skipParentheses(initializer);
+
+    if (initializer.is(Tree.Kind.CONDITIONAL_EXPRESSION, Tree.Kind.METHOD_REFERENCE, Tree.Kind.LAMBDA_EXPRESSION)) {
       return;
     }
 
