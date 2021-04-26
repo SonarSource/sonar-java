@@ -4,6 +4,8 @@ Application Context. Therefore, it's likely to be a configuration mistake that w
 will auto scan for components in the package containing the Spring Boot main class and its sub-packages.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
+package com.mycompany.app;
+
 @Configuration
 @ComponentScan("com.mycompany.app.beans")
 public class Application {
@@ -18,28 +20,15 @@ public class MyController { // Noncompliant; MyController belong to "com.mycompa
 }
 </pre>
 <h2>Compliant Solution</h2>
-<p>If you are not using SpringBoot:</p>
-<pre>
-@Configuration
-@ComponentScan({"com.mycompany.app.beans","com.mycompany.app.web"})
-or
-@ComponentScan(basePackages= "com.mycompany.app")
-public class Application {
-...
-}
-
-package com.mycompany.app.web;
-
-@Controller
-public class MyController { // Compliant; "com.mycompany.app.web" is referenced by a @ComponentScan annotated class
-...
-}
-</pre>
-<p>If you are using SpringBoot:</p>
 <pre>
 package com.mycompany.app;
 
-@SpringBootApplication
+@Configuration
+@ComponentScan({"com.mycompany.app.beans","com.mycompany.app.web"})
+or
+@ComponentScan("com.mycompany.app")
+or
+@ComponentScan
 public class Application {
 ...
 }
@@ -47,7 +36,7 @@ public class Application {
 package com.mycompany.app.web;
 
 @Controller
-public class MyController { // Compliant; "com.mycompany.app.web" is taken into account by @SpringBootApplication annotation which is in the package "com.mycompany.app"
+public class MyController { // "com.mycompany.app.web" is referenced by a @ComponentScan annotated class
 ...
 }
 </pre>

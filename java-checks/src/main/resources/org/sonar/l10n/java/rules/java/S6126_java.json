@@ -1,5 +1,5 @@
 {
-  "title": "String multiline concatenation can be replaced with Text Blocks",
+  "title": "String multiline concatenation should be replaced with Text Blocks",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

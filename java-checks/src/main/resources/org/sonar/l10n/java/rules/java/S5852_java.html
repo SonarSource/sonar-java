@@ -23,9 +23,11 @@ regex counts as a pattern that can fail because it will only succeed when the en
   possible matches (of possibly different lengths) on the same input, the worst case matching time can be exponential. This can be the case if
   <code>r</code> contains optional parts, alternations or additional repetitions (but not if the repetition is written in such a way that there's only
   one way to match it).
-    <p>When using JDK 9 or later an optimization applies when the repetition is greedy and the entire regex does not contain any back references. In that
-      case the runtime will only be polynomial (in case of nested repetitions) or even linear (in case of alternations or optional parts).</p>
-  </li>
+    <ul>
+      <li> When using JDK 9 or later an optimization applies when the repetition is greedy and the entire regex does not contain any back references.
+      In that case the runtime will only be polynomial (in case of nested repetitions) or even linear (in case of alternations or optional parts).
+      </li>
+    </ul> </li>
   <li> If you have multiple non-possessive repetitions that can match the same contents and are consecutive or are only separated by an optional
   separator or a separator that can be matched by both of the repetitions, the worst case matching time can be polynomial (O(n^c) where c is the
   number of problematic repetitions). For example <code>a*b*</code> is not a problem because <code>a*</code> and <code>b*</code> match different

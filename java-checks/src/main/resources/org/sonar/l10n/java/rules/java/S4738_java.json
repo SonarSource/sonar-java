@@ -7,8 +7,8 @@
     "constantCost": "10min"
   },
   "tags": [
-    "java8",
     "java9",
+    "java8",
     "guava"
   ],
   "defaultSeverity": "Major",

@@ -16,11 +16,12 @@ better to use algorithms that do not compute too "quickly", like <code>bcrypt</c
 because it slows down <code>brute force attacks</code>.</p>
 <h2>Sensitive Code Example</h2>
 <pre>
-MessageDigest md = MessageDigest.getInstance("SHA1");  // Sensitive
+MessageDigest md1 = MessageDigest.getInstance("SHA");  // Sensitive:  SHA is not a standard name, for most security providers it's an alias of SHA-1
+MessageDigest md2 = MessageDigest.getInstance("SHA1");  // Sensitive
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-MessageDigest md = MessageDigest.getInstance("SHA-512"); // Compliant
+MessageDigest md1 = MessageDigest.getInstance("SHA-512"); // Compliant
 </pre>
 <h2>See</h2>
 <ul>

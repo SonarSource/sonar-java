@@ -41,6 +41,12 @@ FTPClient ftpClient = new FTPClient(); // Sensitive
 
 SMTPClient smtpClient = new SMTPClient(); // Sensitive
 </pre>
+<p>Unencrypted HTTP connections, when using <a href="https://square.github.io/okhttp/https/">okhttp</a> library for instance, should be avoided:</p>
+<pre>
+ConnectionSpec spec = new ConnectionSpec.Builder(ConnectionSpec.CLEARTEXT) // Sensitive
+  .build();
+</pre>
+<p> </p>
 <h2>Compliant Solution</h2>
 <p>Use instead these clients from <a href="https://commons.apache.org/proper/commons-net/">Apache commons net</a> and <a
 href="http://www.jcraft.com/jsch/">JSch/ssh</a> library:</p>
@@ -66,6 +72,11 @@ else {
     // commands
   }
 }
+</pre>
+<p>Perform HTTP encrypted connections, with <a href="https://square.github.io/okhttp/https/">okhttp</a> library for instance:</p>
+<pre>
+ConnectionSpec spec = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS) // Compliant
+  .build();
 </pre>
 <h2>Exceptions</h2>
 <p>No issue is reported for the following cases because they are not considered sensitive:</p>
