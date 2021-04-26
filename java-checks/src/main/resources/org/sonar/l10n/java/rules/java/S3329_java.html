@@ -1,19 +1,7 @@
-<p>In encryption, when Cipher Block Chaining (CBC) is used, the Initialization Vector (IV) must be random and unpredictable. Otherwise, the encrypted
-value is vulnerable to crypto-analysis attacks such as the "Chosen-Plaintext Attack".</p>
-<p>An IV value should be associated to one, and only one encryption cycle, because the IV's purpose is to ensure that the same plaintext encrypted
-twice will yield two different ciphertexts.</p>
-<p>To that end, IV's should be:</p>
-<ul>
-  <li> random </li>
-  <li> unpredictable </li>
-  <li> publishable (IVs are frequently published) </li>
-  <li> authenticated, along with the ciphertext, with a Message Authentication Code (MAC) </li>
-</ul>
-<p>This rule raises an issue when the IV is:</p>
-<ul>
-  <li> hard-coded </li>
-  <li> created using <code>java.util.Random</code> rather than <code>java.security.SecureRandom</code>. </li>
-</ul>
+<p>When encrypting data with the Cipher Block Chaining (CBC) mode an Initialization Vector (IV) is used to randomize the encryption, ie under a given
+key the same plaintext doesn't always produce the same ciphertext. The IV doesn't need to be secret but should be unpredictable to avoid
+"Chosen-Plaintext Attack".</p>
+<p>To generate Initialization Vectors, NIST recommends to use a secure random number generator.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public class MyCbcClass {
@@ -27,9 +15,9 @@ public class MyCbcClass {
 
     /* Ciphering */
     Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-    cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);  // Noncompliant because IV hard coded and cannot vary with each ciphering round
+    cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);  // Noncompliant: the IV is hard coded and thus not generated with a secure random generator
     byte[] encryptedBytes = cipher.doFinal(plainText.getBytes("UTF-8"));
-    return DatatypeConverter.printBase64Binary(bytesIV) // IV is typically published
+    return DatatypeConverter.printBase64Binary(bytesIV)
             + ";" + DatatypeConverter.printBase64Binary(encryptedBytes);
   }
 }
@@ -50,7 +38,7 @@ public class MyCbcClass {
 
     /* Ciphering */
     Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-    cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
+    cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv); // Compliant
     byte[] encryptedBytes = cipher.doFinal(plainText.getBytes("UTF-8"));
     return DatatypeConverter.printBase64Binary(bytesIV)
             + ";" + DatatypeConverter.printBase64Binary(encryptedBytes);
@@ -59,8 +47,12 @@ public class MyCbcClass {
 </pre>
 <h2>See</h2>
 <ul>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A6-Security_Misconfiguration">OWASP Top 10 2017 Category A6</a> - Security
+  Misconfiguration </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/329">MITRE, CWE-329</a> - CWE-329: Not Using an Unpredictable IV with CBC Mode </li>
   <li> <a href="http://cwe.mitre.org/data/definitions/330">MITRE, CWE-330</a> - Use of Insufficiently Random Values </li>
-  <li> OWASP Top 10 2017 Category A6 - Security Misconfiguration </li>
+  <li> <a href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38a.pdf">NIST, SP-800-38A</a> - Recommendation for Block Cipher
+  Modes of Operation </li>
   <li> Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#STATIC_IV">STATIC_IV</a> </li>
 </ul>
 

@@ -1,5 +1,5 @@
 {
-  "title": "Cipher Block Chaining IV's should be random and unique",
+  "title": "Cipher Block Chaining IV's should be unpredictable",
   "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
@@ -16,7 +16,8 @@
   "scope": "Main",
   "securityStandards": {
     "CWE": [
-      330
+      330,
+      329
     ],
     "OWASP": [
       "A6"

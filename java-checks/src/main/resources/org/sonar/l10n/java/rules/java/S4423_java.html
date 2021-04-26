@@ -1,20 +1,26 @@
-<p><code>javax.net.ssl.SSLContext.getInstance</code> returns a SSLContext object that implements the specified secure socket protocol. However, older
-protocol versions like "SSLv3" have been proven to be insecure.</p>
-<p>This rule raises an issue when an <code>SSLContext</code> is created with an insecure protocol version (ie: a protocol different from "TLS",
-"DTLS", "TLSv1.2", "DTLSv1.2", "TLSv1.3", "DTLSv1.3").</p>
-<p>The recommended value is "TLS" or "DTLS" as it will always use the latest version of the protocol. However an issue will be raised if the bytecode
-was compiled with JDK7 or an even older version of JDK because they are not alias for "TLSv1.2" and "DTLSv1.2" but for weaker protocols.</p>
-<p>Note that calling <code>SSLContext.getInstance(...)</code> with "TLSv1.2" or "DTLSv1.2" doesn't prevent protocol version negotiation. For example,
-if a client connects with "TLSv1.1" and the server used <code>SSLContext.getInstance("TLSv1.2")</code>, the connection will use "TLSv1.1". It is
-possible to enable only specific protocol versions by calling <code>setEnabledProtocols</code> on <code>SSLSocket</code>, <code>SSLServerSocket</code>
-or <code>SSLEngine</code>. However this should be rarely needed as clients usually ask for the most secure protocol supported.</p>
+<p>This rule raises an issue when an insecure TLS protocol version is used (ie: a protocol different from "TLSv1.2", "TLSv1.3", "DTLSv1.2" or
+"DTLSv1.3").</p>
 <h2>Noncompliant Code Example</h2>
+<p><code>javax.net.ssl.SSLContext</code> library:</p>
 <pre>
-context = SSLContext.getInstance("SSLv3"); // Noncompliant
+context = SSLContext.getInstance("TLSv1.1"); // Noncompliant
+</pre>
+<p><a href="https://square.github.io/okhttp/">okhttp</a> library:</p>
+<pre>
+ConnectionSpec spec = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
+      .tlsVersions(TlsVersion.TLS_1_1) // Noncompliant
+      .build();
 </pre>
 <h2>Compliant Solution</h2>
+<p><code>javax.net.ssl.SSLContext</code> library:</p>
 <pre>
-context = SSLContext.getInstance("TLSv1.2");
+context = SSLContext.getInstance("TLSv1.2"); // Compliant
+</pre>
+<p><a href="https://square.github.io/okhttp/">okhttp</a> library:</p>
+<pre>
+ConnectionSpec spec = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
+      .tlsVersions(TlsVersion.TLS_1_2) // Compliant
+      .build();
 </pre>
 <h2>See</h2>
 <ul>
