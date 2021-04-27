@@ -22,17 +22,18 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.6.2</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>log4j-over-slf4j</artifactId>
-      <version>1.6.2</version>
+      <version>1.7.30</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.sonarsource.orchestrator</groupId>
@@ -49,7 +50,8 @@
     <dependency>
       <groupId>org.sonarsource.sonarqube</groupId>
       <artifactId>sonar-ws</artifactId>
-      <version>7.9.1</version>
+      <version>${sonar.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -59,12 +61,6 @@
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>no.finn.lambda</groupId>
-      <artifactId>lambda-companion</artifactId>
-      <version>0.26</version>
       <scope>test</scope>
     </dependency>
     <dependency>

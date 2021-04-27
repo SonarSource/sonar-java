@@ -20,8 +20,8 @@
 package org.sonar.java.model;
 
 import org.junit.jupiter.api.Test;
-import org.openjdk.jol.datamodel.X86_64_COOPS_DataModel;
-import org.openjdk.jol.datamodel.X86_64_DataModel;
+import org.openjdk.jol.datamodel.Model64;
+import org.openjdk.jol.datamodel.Model64_COOPS_CCPS;
 import org.openjdk.jol.info.ClassLayout;
 import org.openjdk.jol.layouters.HotSpotLayouter;
 import org.openjdk.jol.layouters.Layouter;
@@ -36,8 +36,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 class ClassesLayoutTest {
 
-  private static final Layouter X86_64 = new HotSpotLayouter(new X86_64_DataModel());
-  private static final Layouter X86_64_COOPS = new HotSpotLayouter(new X86_64_COOPS_DataModel());
+  private static final int JDK_VERSION = 11;
+
+  private static final Layouter X86_64 = new HotSpotLayouter(new Model64(), JDK_VERSION);
+  private static final Layouter X86_64_COOPS = new HotSpotLayouter(new Model64_COOPS_CCPS(), JDK_VERSION);
 
   @Test
   void token() {

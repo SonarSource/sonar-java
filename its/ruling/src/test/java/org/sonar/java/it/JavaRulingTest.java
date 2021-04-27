@@ -20,10 +20,8 @@
 package org.sonar.java.it;
 
 import com.google.common.base.Splitter;
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.Gson;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.Build;
 import com.sonar.orchestrator.build.BuildResult;
@@ -46,7 +44,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import no.finn.lambdacompanion.Try;
 import org.apache.commons.lang.StringUtils;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Fail;
@@ -89,10 +86,9 @@ public class JavaRulingTest {
     .addPlugin(FileLocation.byWildcardMavenFilename(new File("../../sonar-java-plugin/target"), "sonar-java-plugin-*.jar"))
     .addPlugin(MavenLocation.of("org.sonarsource.sonar-lits-plugin","sonar-lits-plugin", "0.9.0.1682"))
     .build();
-  private static final Gson GSON = new Gson();
 
   @BeforeClass
-  public static void prepare_quality_profiles() {
+  public static void prepare_quality_profiles() throws Exception {
     ImmutableMap<String, ImmutableMap<String, String>> rulesParameters = ImmutableMap.<String, ImmutableMap<String, String>>builder()
       .put(
         "S1120",
@@ -136,25 +132,36 @@ public class JavaRulingTest {
     PerformanceStatistics.generate(Paths.get("target","performance"));
   }
 
-  private static void prepareDumpOldFolder() {
+  private static void prepareDumpOldFolder() throws Exception {
     Path allRulesFolder = Paths.get("src/test/resources");
     if (SUBSET_OF_ENABLED_RULES.isEmpty()) {
       effectiveDumpOldFolder = allRulesFolder.toAbsolutePath();
     } else {
       effectiveDumpOldFolder = TMP_DUMP_OLD_FOLDER.getRoot().toPath().toAbsolutePath();
-      Try.of(() -> Files.list(allRulesFolder)).orElseThrow(Throwables::propagate)
+      Files.list(allRulesFolder)
         .filter(p -> p.toFile().isDirectory())
         .forEach(srcProjectDir -> copyDumpSubset(srcProjectDir, effectiveDumpOldFolder.resolve(srcProjectDir.getFileName())));
     }
   }
 
   private static void copyDumpSubset(Path srcProjectDir, Path dstProjectDir) {
-    Try.of(() -> Files.createDirectory(dstProjectDir)).orElseThrow(Throwables::propagate);
+    try {
+      Files.createDirectory(dstProjectDir);
+    } catch (IOException e) {
+      throw new IllegalStateException("Unable to create directory: " + dstProjectDir.toString());
+    }
     SUBSET_OF_ENABLED_RULES.stream()
       .map(ruleKey -> srcProjectDir.resolve("java-" + ruleKey + ".json"))
       .filter(p -> p.toFile().exists())
-      .forEach(srcJsonFile -> Try.of(() -> Files.copy(srcJsonFile, dstProjectDir.resolve(srcJsonFile.getFileName()), StandardCopyOption.REPLACE_EXISTING))
-        .orElseThrow(Throwables::propagate));
+      .forEach(srcJsonFile -> copyFile(srcJsonFile, dstProjectDir));
+  }
+
+  private static void copyFile(Path source, Path targetDir) {
+    try {
+      Files.copy(source, targetDir.resolve(source.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+    } catch (IOException e) {
+      throw new IllegalStateException("Unable to copy file: " + source.toString());
+    }
   }
 
   @Test
