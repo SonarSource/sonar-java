@@ -42,9 +42,9 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.ExecutionTimeReport;
-import org.sonar.java.PerformanceMeasure;
 import org.sonar.java.ProgressMonitor;
 import org.sonarsource.analyzer.commons.ProgressReport;
+import org.sonarsource.performance.measure.PerformanceMeasure;
 
 public abstract class JParserConfig {
 

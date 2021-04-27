@@ -19,10 +19,12 @@
  */
 package org.sonar.plugins.java;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.Phase;
@@ -37,8 +39,6 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.JavaFrontend;
 import org.sonar.java.Measurer;
-import org.sonar.java.PerformanceMeasure;
-import org.sonar.java.PerformanceMeasure.DurationReport;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.CheckList;
@@ -51,11 +51,16 @@ import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonarsource.performance.measure.PerformanceMeasure;
 
 @Phase(name = Phase.Name.PRE)
 public class JavaSensor implements Sensor {
 
   private static final Logger LOG = Loggers.get(JavaSensor.class);
+
+  private static final String PERFORMANCE_MEASURE_ACTIVATION_PROPERTY = "sonar.java.performance.measure";
+  private static final String PERFORMANCE_MEASURE_FILE_PATH_PROPERTY = "sonar.java.performance.measure.path";
+  private static final String PERFORMANCE_MEASURE_DESTINATION_FILE = "sonar.java.performance.measure.json";
 
   private final SonarComponents sonarComponents;
   private final FileSystem fs;
@@ -90,7 +95,7 @@ public class JavaSensor implements Sensor {
 
   @Override
   public void execute(SensorContext context) {
-    DurationReport sensorDuration = PerformanceMeasure.start(context.config(), "JavaSensor", System::nanoTime);
+    PerformanceMeasure.Duration sensorDuration = createPerformanceMeasureReport(context);
 
     sonarComponents.setSensorContext(context);
 
@@ -103,7 +108,20 @@ public class JavaSensor implements Sensor {
       insertSymbolicExecutionVisitor(sonarComponents.mainChecks()));
     frontend.scan(getSourceFiles(), getTestFiles(), runJasper(context));
 
-    sensorDuration.stopAndLog(context.fileSystem().workDir(), true);
+    sensorDuration.stop();
+  }
+
+  private static PerformanceMeasure.Duration createPerformanceMeasureReport(SensorContext context) {
+    return PerformanceMeasure.reportBuilder()
+      .activate(context.config().get(PERFORMANCE_MEASURE_ACTIVATION_PROPERTY).filter("true"::equals).isPresent())
+      .toFile(context.config().get(PERFORMANCE_MEASURE_FILE_PATH_PROPERTY)
+        .filter(path -> !path.isEmpty())
+        .orElseGet(() -> Optional.ofNullable(context.fileSystem().workDir())
+          .filter(File::exists)
+          .map(file -> file.toPath().resolve(PERFORMANCE_MEASURE_DESTINATION_FILE).toString())
+          .orElse(null)))
+      .appendMeasurementCost()
+      .start("JavaSensor");
   }
 
   @VisibleForTesting
