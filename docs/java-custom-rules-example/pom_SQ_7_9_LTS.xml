@@ -21,7 +21,7 @@
   <properties>
     <sonarqube.version>7.9.6</sonarqube.version>
     <sonarjava.version>6.3.2.22818</sonarjava.version>
-    <!-- Don't forget to update this version -->
+    <!-- Don't forget to update this version of JaCoCo -->
     <jacoco.version>0.8.6</jacoco.version>
     <!-- Use UTF-8 for all resources -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -47,7 +47,7 @@
     <dependency>
       <groupId>org.sonarsource.analyzer-commons</groupId>
       <artifactId>sonar-analyzer-commons</artifactId>
-      <version>1.13.0.662</version>
+      <version>1.14.0.681</version>
     </dependency>
 
     <!-- TEST sources dependencies -->
@@ -78,7 +78,7 @@
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
-      <version>3.17.2</version>
+      <version>3.19.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -88,7 +88,7 @@
       <plugin>
         <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
         <artifactId>sonar-packaging-maven-plugin</artifactId>
-        <version>1.18.0.372</version>
+        <version>1.20.0.405</version>
         <extensions>true</extensions>
         <configuration>
           <pluginKey>java-custom</pluginKey>

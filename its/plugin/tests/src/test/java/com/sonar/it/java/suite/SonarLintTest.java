@@ -37,6 +37,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.sonarsource.sonarlint.core.StandaloneSonarLintEngineImpl;
+import org.sonarsource.sonarlint.core.client.api.common.Language;
 import org.sonarsource.sonarlint.core.client.api.common.LogOutput;
 import org.sonarsource.sonarlint.core.client.api.common.ProgressMonitor;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisResults;
@@ -64,6 +65,7 @@ public class SonarLintTest {
       .addPlugin(JavaTestSuite.JAVA_PLUGIN_LOCATION.getFile().toURI().toURL())
       .setSonarLintUserHome(temp.newFolder().toPath())
       .setLogOutput((formattedMessage, level) -> { /* Don't pollute logs*/ })
+      .addEnabledLanguage(Language.JAVA)
       .build();
     sonarlintEngine = new StandaloneSonarLintEngineImpl(config);
     baseDir = temp.newFolder();
@@ -199,8 +201,9 @@ public class SonarLintTest {
       .addPlugin(JavaTestSuite.JAVA_PLUGIN_LOCATION.getFile().toURI().toURL())
       .setSonarLintUserHome(temp.newFolder().toPath())
       .setLogOutput((formattedMessage, level) -> logs.add(level))
+      .addEnabledLanguage(Language.JAVA)
       .build();
-    sonarlintEngine = new StandaloneSonarLintEngineImpl(config);
+    StandaloneSonarLintEngine sonarlintEngine = new StandaloneSonarLintEngineImpl(config);
 
     ClientInputFile inputFile = prepareInputFile("Foo.java",
       "public class Foo {\n"
@@ -279,7 +282,7 @@ public class SonarLintTest {
 
       @Override
       public String contents() throws IOException {
-        return Files.toString(path.toFile(), StandardCharsets.UTF_8);
+        return Files.asCharSource(path.toFile(), StandardCharsets.UTF_8).read();
       }
     };
   }

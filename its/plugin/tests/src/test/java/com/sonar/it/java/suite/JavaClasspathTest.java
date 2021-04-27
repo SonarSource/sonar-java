@@ -92,7 +92,7 @@ public class JavaClasspathTest {
     SonarScanner scanner = ditProjectSonarScanner();
     scanner.setProperty("sonar.java.binaries", "target/dummy__Dir");
     BuildResult buildResult = ORCHESTRATOR.executeBuildQuietly(scanner);
-    assertThat(buildResult.getStatus()).isNotZero();
+    assertThat(buildResult.getLastStatus()).isNotZero();
     assertThat(buildResult.getLogs()).contains("No files nor directories matching 'target/dummy__Dir'");
   }
 

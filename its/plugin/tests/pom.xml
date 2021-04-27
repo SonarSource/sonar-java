@@ -13,7 +13,7 @@
 
   <properties>
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
-    <sonarlint-core.version>4.6.0.2652</sonarlint-core.version>
+    <sonarlint-core.version>5.3.0.30337</sonarlint-core.version>
   </properties>
 
   <dependencies>
@@ -49,11 +49,13 @@
     <dependency>
       <groupId>org.sonarsource.sonarqube</groupId>
       <artifactId>sonar-ws</artifactId>
-      <version>7.9.1</version>
+      <version>${sonar.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -64,11 +66,6 @@
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.javaslang</groupId>
-      <artifactId>javaslang</artifactId>
-      <version>2.1.0-alpha</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
@@ -93,7 +90,7 @@
         <plugin>
           <groupId>com.googlecode.maven-download-plugin</groupId>
           <artifactId>download-maven-plugin</artifactId>
-          <version>1.6.0</version>
+          <version>1.6.3</version>
         </plugin>
       </plugins>
     </pluginManagement>
