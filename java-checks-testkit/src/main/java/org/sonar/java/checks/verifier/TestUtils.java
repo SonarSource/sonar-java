@@ -21,11 +21,8 @@ package org.sonar.java.checks.verifier;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
+import org.sonar.java.checks.verifier.internal.InternalInputFile;
 
 public class TestUtils {
   private TestUtils() {
@@ -56,34 +53,22 @@ public class TestUtils {
   }
 
   public static InputFile emptyInputFile(String filename) {
-    return emptyInputFile(filename, InputFile.Type.MAIN);
+    return InternalInputFile.emptyInputFile(filename, InputFile.Type.MAIN);
   }
 
   public static InputFile emptyInputFile(String filename, InputFile.Type type) {
-    return new TestInputFileBuilder("", filename)
-      .setCharset(UTF_8)
-      .setLanguage("java")
-      .setType(type)
-      .build();
+    return InternalInputFile.emptyInputFile(filename, type);
   }
 
   public static InputFile inputFile(String filepath) {
-    return inputFile("", new File(filepath));
+    return InternalInputFile.inputFile("", new File(filepath));
   }
 
   public static InputFile inputFile(File file) {
-    return inputFile("", file);
+    return InternalInputFile.inputFile("", file);
   }
 
   public static InputFile inputFile(String moduleKey, File file) {
-    try {
-      return new TestInputFileBuilder(moduleKey, file.getPath())
-        .setContents(new String(Files.readAllBytes(file.toPath()), UTF_8))
-        .setCharset(UTF_8)
-        .setLanguage("java")
-        .build();
-    } catch (Exception e) {
-      throw new IllegalStateException(String.format("Unable to read file '%s", file.getAbsolutePath()));
-    }
+    return InternalInputFile.inputFile(moduleKey, file);
   }
 }

@@ -121,7 +121,7 @@ class InternalCheckVerifierTest {
       assertThat(e)
         .isInstanceOf(IllegalStateException.class)
         .hasMessageStartingWith("Unable to read file")
-        .hasMessageEndingWith("dummy.test");
+        .hasMessageEndingWith("dummy.test'");
     }
 
     @Test
