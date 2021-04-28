@@ -20,14 +20,16 @@
 package org.sonar.java.se.utils;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.java.checks.verifier.FilesUtils;
-import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
@@ -55,7 +57,7 @@ public class SETestUtils {
   }
 
   public static Pair<SymbolicExecutionVisitor, Sema> createSymbolicExecutionVisitorAndSemantic(String fileName, SECheck... checks) {
-    InputFile inputFile = TestUtils.inputFile(fileName);
+    InputFile inputFile = inputFile(fileName);
     JavaTree.CompilationUnitTreeImpl cut = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(inputFile.file(), CLASS_PATH);
     Sema semanticModel = cut.sema;
     SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Arrays.asList(checks));
@@ -84,6 +86,22 @@ public class SETestUtils {
 
   public static MethodBehavior mockMethodBehavior() {
     return mockMethodBehavior(0, false);
+  }
+
+  public static InputFile inputFile(String filename) {
+    return inputFile(new File(filename));
+  }
+
+  public static InputFile inputFile(File file) {
+    try {
+      return new TestInputFileBuilder("", file.getPath())
+        .setContents(new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8))
+        .setCharset(StandardCharsets.UTF_8)
+        .setLanguage("java")
+        .build();
+    } catch (Exception e) {
+      throw new IllegalStateException(String.format("Unable to read file '%s", file.getAbsolutePath()));
+    }
   }
 
   private static class MethodBehaviorStub extends MethodBehavior {

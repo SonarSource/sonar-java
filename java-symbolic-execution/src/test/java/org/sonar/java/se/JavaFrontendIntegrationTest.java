@@ -49,7 +49,6 @@ import org.sonar.java.CheckFailureException;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.cfg.CFG;
-import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.collections.SetUtils;
@@ -58,6 +57,7 @@ import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.utils.JParserTestUtils;
+import org.sonar.java.se.utils.SETestUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -90,7 +90,7 @@ class JavaFrontendIntegrationTest {
       Mockito.mock(CheckFactory.class));
     sonarComponents.setSensorContext(context);
 
-    inputFile = TestUtils.inputFile("src/test/files/se/SimpleClass.java");
+    inputFile = SETestUtils.inputFile("src/test/files/se/SimpleClass.java");
     tree = (CompilationUnitTreeImpl) JParserTestUtils.parse(inputFile.contents());
   }
 

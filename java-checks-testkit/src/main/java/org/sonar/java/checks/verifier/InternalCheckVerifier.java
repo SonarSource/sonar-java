@@ -21,7 +21,6 @@ package org.sonar.java.checks.verifier;
 
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,17 +39,15 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
-import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.api.config.internal.MapSettings;
-import org.sonar.api.internal.SonarRuntimeImpl;
-import org.sonar.api.utils.Version;
+import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.config.Configuration;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.Beta;
 import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.checks.verifier.internal.InternalSensorContext;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.JavaVersionImpl;
@@ -58,7 +55,6 @@ import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaVersion;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.EFFORT_TO_FIX;
 import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.END_COLUMN;
 import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.END_LINE;
@@ -148,7 +144,10 @@ public class InternalCheckVerifier implements CheckVerifier {
   public InternalCheckVerifier onFiles(Collection<String> filenames) {
     requiresNull(files, FILE_OR_FILES);
     requiresNonEmpty(filenames, "file");
-    files = filenames.stream().map(File::new).map(InternalCheckVerifier::inputFile).collect(Collectors.toList());
+    files = filenames.stream()
+      .map(File::new)
+      .map(TestUtils::inputFile)
+      .collect(Collectors.toList());
     return this;
   }
 
@@ -536,28 +535,13 @@ public class InternalCheckVerifier implements CheckVerifier {
     }
   }
 
-  private static InputFile inputFile(File file) {
-    try {
-      return new TestInputFileBuilder("", file.getPath())
-        .setContents(new String(Files.readAllBytes(file.toPath()), UTF_8))
-        .setCharset(UTF_8)
-        .setLanguage("java")
-        .build();
-    } catch (Exception e) {
-      throw new IllegalStateException(String.format("Unable to read file '%s", file.getAbsolutePath()));
-    }
-  }
-
   private static SonarComponents sonarComponents() {
-    SensorContextTester context = SensorContextTester.create(new File(""))
-      .setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
-    MapSettings settings = new MapSettings();
-    DefaultFileSystem fileSystem = context.fileSystem();
+    SensorContext context = new InternalSensorContext();
+    FileSystem fileSystem = context.fileSystem();
+    Configuration config = context.config();
 
-    context.setSettings(settings.setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, true));
-
-    ClasspathForMain classpathForMain = new ClasspathForMain(context.config(), fileSystem);
-    ClasspathForTest classpathForTest = new ClasspathForTest(context.config(), fileSystem);
+    ClasspathForMain classpathForMain = new ClasspathForMain(config, fileSystem);
+    ClasspathForTest classpathForTest = new ClasspathForTest(config, fileSystem);
 
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, classpathForMain, classpathForTest, null) {
       @Override
@@ -568,5 +552,4 @@ public class InternalCheckVerifier implements CheckVerifier {
     sonarComponents.setSensorContext(context);
     return sonarComponents;
   }
-
 }

@@ -162,7 +162,7 @@ class BehaviorCacheTest {
       TestUtils.testSourcesPath("symbolicexecution/behaviorcache/EclipseAssert.java"))
       .stream()
       .map(File::new)
-      .map(TestUtils::inputFile)
+      .map(SETestUtils::inputFile)
       .collect(Collectors.toList());
 
     for (InputFile inputFile : inputFiles) {
