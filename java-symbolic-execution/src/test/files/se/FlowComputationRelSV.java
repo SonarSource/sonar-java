@@ -58,7 +58,7 @@ class A {
 
   void npe2(Object a, Object b) {
     if (a == b) {
-      // FIXME SONARJAVA-2272
+      // FIXME SONARJAVA-2303
       if (b == null) { // flow@npe2 {{Implies 'b' can be null.}}
         a.toString(); // Noncompliant [[flows=npe2]] flow@npe2 {{'a' is dereferenced.}}
       }
