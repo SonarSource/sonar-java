@@ -167,7 +167,7 @@ class SurefireJavaParserTest {
         String className = (String) invocation.getArguments()[0];
         if (className.equals("org.foo.Junit4ParameterizedTest")
           || className.startsWith("org.foo.Junit5_0ParameterizedTest")
-          || className.startsWith("org.foo.Junit5_1ParameterizedTest")) {
+          || className.startsWith("org.foo.Junit5_7ParameterizedTest")) {
           return new TestInputFileBuilder("", className).build();
         }
         return null;
@@ -184,27 +184,26 @@ class SurefireJavaParserTest {
     assertThat(context.measure(":org.foo.Junit5_0ParameterizedTest", CoreMetrics.TESTS).value()).isEqualTo(13);
     assertThat(context.measure(":org.foo.Junit5_0ParameterizedTest", CoreMetrics.TEST_EXECUTION_TIME).value()).isEqualTo(48);
 
-    // test file with expected fix from JUnit 5.1 (TODO: to be confirmed once 5.1 released)
-    assertThat(context.measure(":org.foo.Junit5_1ParameterizedTest", CoreMetrics.TESTS).value()).isEqualTo(13);
-    assertThat(context.measure(":org.foo.Junit5_1ParameterizedTest", CoreMetrics.TEST_EXECUTION_TIME).value()).isEqualTo(48);
+    // test file with with JUnit 5.7.1
+    assertThat(context.measure(":org.foo.Junit5_7ParameterizedTest", CoreMetrics.TESTS).value()).isEqualTo(12);
+    assertThat(context.measure(":org.foo.Junit5_7ParameterizedTest", CoreMetrics.TEST_EXECUTION_TIME).value()).isEqualTo(150);
   }
 
   @Test
   void should_log_missing_resource_with_debug_level() throws Exception {
-    SensorContextTester context = mockContext();
     parser = new SurefireJavaParser(mock(JavaResourceLocator.class));
-    parser.collect(context, getDirs("resourceNotFound"), true);
+    parser.collect(mockContext(), getDirs("resourceNotFound"), true);
     assertThat(logTester.logs(LoggerLevel.WARN)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("Resource not found: org.sonar.Foo");
   }
 
-  private List<File> getDirs(String... directoryNames) throws URISyntaxException {
+  private static List<File> getDirs(String... directoryNames) throws URISyntaxException {
     return Stream.of(directoryNames)
       .map(directoryName -> new File("src/test/resources/org/sonar/plugins/surefire/api/SurefireParserTest/" + directoryName))
       .collect(Collectors.toList());
   }
 
-  private SensorContextTester mockContext() {
+  private static SensorContextTester mockContext() {
     return SensorContextTester.create(new File(""));
   }
 }

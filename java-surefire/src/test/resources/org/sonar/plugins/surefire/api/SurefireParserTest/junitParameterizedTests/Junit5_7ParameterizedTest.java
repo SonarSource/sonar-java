@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class Junit5ParameterizedTest {
+class Junit5_7ParameterizedTest {
 
   static class A {
     public String bar(String s) {
@@ -16,6 +16,7 @@ class Junit5ParameterizedTest {
     }
   }
 
+  // can not be executed by junit5 test runner
   @org.junit.Test
   public void myNormalJunit4Test() {
     assertThat(new A()).isNotNull();

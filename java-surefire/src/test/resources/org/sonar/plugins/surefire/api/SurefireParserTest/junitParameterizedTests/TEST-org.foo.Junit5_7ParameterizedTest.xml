@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="org.foo.Junit5_7ParameterizedTest" time="0.179" tests="12" errors="0" skipped="0" failures="0">
+  <properties>
+    <!-- list of properties... -->
+  </properties>
+  <testcase name="myRepeatedTest[1]" classname="org.foo.Junit5_7ParameterizedTest" time="0.116"/>
+  <testcase name="myRepeatedTest[1]" classname="org.foo.Junit5_7ParameterizedTest$RunTest" time="0.001"/>
+  <testcase name="myRepeatedTest[2]" classname="org.foo.Junit5_7ParameterizedTest" time="0"/>
+  <testcase name="myRepeatedTest[2]" classname="org.foo.Junit5_7ParameterizedTest$RunTest" time="0.001"/>
+  <testcase name="myRepeatedTest[3]" classname="org.foo.Junit5_7ParameterizedTest" time="0.001"/>
+  <testcase name="myRepeatedTest[3]" classname="org.foo.Junit5_7ParameterizedTest$RunTest" time="0"/>
+  <testcase name="myParametrizedTest{String}[1]" classname="org.foo.Junit5_7ParameterizedTest" time="0.029"/>
+  <testcase name="myParametrizedTest{String}[1]" classname="org.foo.Junit5_7ParameterizedTest$RunTest" time="0"/>
+  <testcase name="myParametrizedTest{String}[2]" classname="org.foo.Junit5_7ParameterizedTest" time="0"/>
+  <testcase name="myParametrizedTest{String}[2]" classname="org.foo.Junit5_7ParameterizedTest$RunTest" time="0.001"/>
+  <testcase name="myNormalJunit5Test" classname="org.foo.Junit5_7ParameterizedTest" time="0"/>
+  <testcase name="myNormalJunit5Test" classname="org.foo.Junit5_7ParameterizedTest$RunTest" time="0.001"/>
+</testsuite>
