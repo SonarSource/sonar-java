@@ -72,7 +72,7 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
 
   @Override
   public void accept(TreeVisitor visitor) {
-    // FIXME do nothing at the moment
+    // do nothing
   }
 
   @Override

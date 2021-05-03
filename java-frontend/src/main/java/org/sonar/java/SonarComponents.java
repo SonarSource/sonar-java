@@ -333,8 +333,7 @@ public class SonarComponents {
   }
 
   public InputComponent project() {
-    // TODO to be changed to context.project() once LTS 7.x has been released
-    return context.module();
+    return context.project();
   }
 
   public void collectUndefinedTypes(Set<String> undefinedTypes) {
