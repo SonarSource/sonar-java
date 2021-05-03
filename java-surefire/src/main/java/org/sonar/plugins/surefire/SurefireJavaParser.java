@@ -163,7 +163,7 @@ public class SurefireJavaParser {
     InputFile resource = javaResourceLocator.findResourceByClassName(className);
     if (resource == null) {
       // fall back on testSuite class name (repeated and parameterized tests from JUnit 5.0 are using test name as classname)
-      // Should be fixed with JUnit 5.1, see: https://github.com/junit-team/junit5/issues/1182
+      // Was fixed in JUnit 5.0.3 (see: https://github.com/junit-team/junit5/issues/1182)
       return unitTestClassReport.getResults().stream()
         .map(r -> javaResourceLocator.findResourceByClassName(r.getTestSuiteClassName()))
         .filter(Objects::nonNull)

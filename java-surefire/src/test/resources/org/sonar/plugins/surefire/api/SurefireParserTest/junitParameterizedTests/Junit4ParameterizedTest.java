@@ -1,6 +1,5 @@
 package org.foo;
 
-import Junit5ParameterizedTest.A;
 import java.util.Arrays;
 import java.util.Collection;
 import org.junit.Test;
@@ -13,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
-class Junit4ParameterizedTest {
+public class Junit4ParameterizedTest {
 
   @Parameters(name = "{index}: {0}+{1} = {2}")
   public static Collection<Object[]> data() {
@@ -32,12 +31,12 @@ class Junit4ParameterizedTest {
   public int c;
 
   @Test
-  void test() {
+  public void test() {
     assertEquals(a + b, c);
   }
 
   @Test
-  void myNormalJunit4Test() {
+  public void myNormalJunit4Test() {
     assertThat(new Object()).isNotNull();
   }
 }
