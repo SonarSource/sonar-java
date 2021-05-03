@@ -63,7 +63,7 @@ public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
 
   @Override
   public void accept(TreeVisitor visitor) {
-    //FIXME do nothing
+    // do nothing
   }
 
   public static SyntaxTrivia create(String comment, int startLine, int column) {

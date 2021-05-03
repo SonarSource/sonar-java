@@ -115,7 +115,6 @@ class SonarSymbolTableVisitorTest {
   private void verifyUsages(String componentKey, int line, int offset, TextPointer... tps) {
     Collection<TextRange> textRanges = context.referencesForSymbolAt(componentKey, line, offset);
     if(tps.length == 0) {
-      // TODO assert correctly that symbol is effectevly created see : SONAR-7850
       assertThat(textRanges).isEmpty();
     } else {
       assertThat(textRanges.stream().map(TextRange::start).collect(Collectors.toList())).isNotEmpty().containsOnly(tps);
