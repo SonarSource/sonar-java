@@ -25,6 +25,8 @@
     <jacoco.version>0.8.6</jacoco.version>
     <!-- Use UTF-8 for all resources -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- Make sure to be compatible with java 8 -->
+    <maven.compiler.release>8</maven.compiler.release>
   </properties>
 
   <dependencies>
