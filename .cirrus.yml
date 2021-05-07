@@ -88,7 +88,7 @@ plugin_qa_task:
     memory: 8G
   env:
     matrix:
-      - SQ_VERSION: LATEST_RELEASE[7.9]
+      - SQ_VERSION: LATEST_RELEASE[8.9]
       - SQ_VERSION: LATEST_RELEASE
       - SQ_VERSION: DOGFOOD
   maven_cache:
@@ -137,7 +137,7 @@ ruling_task:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - cd its/ruling
-    - mvn package -Pit-ruling -Dsonar.runtimeVersion=LATEST_RELEASE[7.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V
+    - mvn package -Pit-ruling -Dsonar.runtimeVersion=LATEST_RELEASE[8.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V
   cleanup_before_cache_script: cleanup_maven_repository
 
 ruling_win_task:
@@ -152,7 +152,7 @@ ruling_win_task:
     - source set_maven_build_version $BUILD_NUMBER
     - init_git_submodules its/sources
     - cd its/ruling
-    - mvn package -Pit-ruling -Dsonar.runtimeVersion=LATEST_RELEASE[7.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V
+    - mvn package -Pit-ruling -Dsonar.runtimeVersion=LATEST_RELEASE[8.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V
   cleanup_before_cache_script: cleanup_maven_repository
 
 promote_task:

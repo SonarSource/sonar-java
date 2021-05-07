@@ -22,7 +22,7 @@
     <sonarqube.version>8.9.0.43852</sonarqube.version>
     <sonarjava.version>6.15.1.26025</sonarjava.version>
     <!-- Don't forget to update this version of JaCoCo -->
-    <jacoco.version>0.8.6</jacoco.version>
+    <jacoco.version>0.8.7</jacoco.version>
     <!-- Use UTF-8 for all resources -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- Make sure to be compatible with java 8 -->
@@ -97,7 +97,9 @@
           <pluginName>Java Custom Rules</pluginName>
           <pluginClass>org.sonar.samples.java.MyJavaRulesPlugin</pluginClass>
           <sonarLintSupported>true</sonarLintSupported>
-          <sonarQubeMinVersion>${sonarqube.version}</sonarQubeMinVersion>
+          <!-- FIXME: https://jira.sonarsource.com/browse/SLCORE-315 -->
+          <!-- SonarLint currently supports only up to SQ 8.5, instead of 8.9 LTS -->
+          <sonarQubeMinVersion>7.9</sonarQubeMinVersion>
           <requirePlugins>java:${sonarjava.version}</requirePlugins>
         </configuration>
       </plugin>

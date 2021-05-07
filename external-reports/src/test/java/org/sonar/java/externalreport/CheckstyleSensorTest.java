@@ -94,7 +94,7 @@ class CheckstyleSensorTest {
   }
 
   @Test
-  void issues_with_sonarqube_72() throws IOException {
+  void expected_issues() throws IOException {
     List<ExternalIssue> externalIssues = executeSensorImporting("checkstyle-result.xml");
     assertThat(externalIssues).hasSize(3);
 

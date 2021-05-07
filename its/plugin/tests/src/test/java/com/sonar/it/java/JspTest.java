@@ -67,24 +67,15 @@ public class JspTest {
     Path visitTest = TestUtils.projectDir(PROJECT).toPath().resolve("target/sonar/visit.txt");
     List<String> visitTestLines = Files.readAllLines(visitTest);
     Path sourceMapTest = TestUtils.projectDir(PROJECT).toPath().resolve("target/sonar/JspCodeCheck.txt");
-    if (jspSupported()) {
-      assertThat(visitTestLines).containsExactlyInAnyOrder("GreetingServlet extends javax.servlet.http.HttpServlet",
-        "org.apache.jsp.views.greeting_jsp extends org.apache.jasper.runtime.HttpJspBase",
-        "org.apache.jsp.index_jsp extends org.apache.jasper.runtime.HttpJspBase",
-        "org.apache.jsp.views.include_jsp extends org.apache.jasper.runtime.HttpJspBase",
-        "org.apache.jsp.views.test_005finclude_jsp extends org.apache.jasper.runtime.HttpJspBase"
-      );
-      List<String> actual = Files.readAllLines(sourceMapTest);
-      assertThat(actual).containsExactlyInAnyOrder("index.jsp 1:6",
-        "include.jsp 3:3",
-        "test_include.jsp 7:7");
-    } else {
-      assertThat(visitTestLines).containsExactlyInAnyOrder("GreetingServlet extends javax.servlet.http.HttpServlet");
-      assertThat(sourceMapTest).doesNotExist();
-    }
-  }
-
-  private static boolean jspSupported() {
-    return ORCHESTRATOR.getServer().version().isGreaterThanOrEquals(8, 3);
+    assertThat(visitTestLines).containsExactlyInAnyOrder("GreetingServlet extends javax.servlet.http.HttpServlet",
+      "org.apache.jsp.views.greeting_jsp extends org.apache.jasper.runtime.HttpJspBase",
+      "org.apache.jsp.index_jsp extends org.apache.jasper.runtime.HttpJspBase",
+      "org.apache.jsp.views.include_jsp extends org.apache.jasper.runtime.HttpJspBase",
+      "org.apache.jsp.views.test_005finclude_jsp extends org.apache.jasper.runtime.HttpJspBase"
+    );
+    List<String> actual = Files.readAllLines(sourceMapTest);
+    assertThat(actual).containsExactlyInAnyOrder("index.jsp 1:6",
+      "include.jsp 3:3",
+      "test_include.jsp 7:7");
   }
 }
