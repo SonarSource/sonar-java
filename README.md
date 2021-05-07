@@ -6,8 +6,8 @@ This SonarSource project is a code analyzer for Java projects. Information about
 Features
 --------
 
-* 500+ rules (including 100+ bug detection rules and 300+ code smells)
-* Metrics (complexity, number of lines etc.)
+* 600+ rules (including 150+ bug detection rules and 350+ code smells)
+* Metrics (cognitive complexity, number of lines etc.)
 * Import of [test coverage reports](https://docs.sonarqube.org/display/PLUG/Code+Coverage+by+Unit+Tests+for+Java+Project)
 * [Custom rules](https://docs.sonarqube.org/latest/analysis/languages/java/)
 
@@ -52,6 +52,11 @@ Testing
 
 To run tests locally follow these instructions.
 
+### Java versions
+
+You need `Java 16` to build the project.
+You need `Java 11` to run the Integration Tests (ITs).
+
 ### Build the Project and Run Unit Tests
 
 To build the plugin and run its unit tests, execute this command from the project's root directory:
@@ -66,7 +71,7 @@ To run integration tests, you will need to create a properties file like the one
     sonar.runtimeVersion=7.9
 
     orchestrator.updateCenterUrl=http://update.sonarsource.org/update-center-dev.properties
-    
+
     # Location of Maven local repository is not automatically guessed. It can also be set with the env variable MAVEN_LOCAL_REPOSITORY.
     maven.localRepository=/home/myName/.m2/repository
 
