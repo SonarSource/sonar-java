@@ -86,7 +86,7 @@
 
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
-    <sonar.version>8.8.0.42792</sonar.version>
+    <sonar.version>8.9.0.43852</sonar.version>
     <analyzer.commons.version>1.14.1.690</analyzer.commons.version>
     <orchestrator.version>3.35.1.2719</orchestrator.version>
     <sslr.version>1.24.0.633</sslr.version>
@@ -98,8 +98,6 @@
 
     <!-- FIXME: Overrides OSS parent pom for java 16 compatibility -->
     <version.artifactory.plugin>3.2.1</version.artifactory.plugin>
-
-    <version.compiler.plugin>3.8.0</version.compiler.plugin>
   </properties>
 
   <dependencyManagement>

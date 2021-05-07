@@ -36,7 +36,6 @@ public class Struts139Test {
   public static Orchestrator orchestrator = JavaTestSuite.ORCHESTRATOR;
 
   private static final String PROJECT_STRUTS = "org.apache.struts:struts-parent";
-  private static final String MODULE_CORE = "org.apache.struts:struts-core";
   private static final String MODULE_CORE_PHYSICAL_NAME = "core";
 
   @BeforeClass
@@ -52,7 +51,7 @@ public class Struts139Test {
   @Test
   public void struts_is_analyzed() throws Exception {
     assertThat(getComponent(PROJECT_STRUTS).getName()).isEqualTo("Struts");
-    assertThat(getComponent(moduleKey()).getName()).isEqualTo(isGreater75() ? "core/src" : "Struts Core");
+    assertThat(getComponent(moduleKey()).getName()).isEqualTo("core/src");
   }
 
   @Test
@@ -91,21 +90,10 @@ public class Struts139Test {
   }
 
   private static String componentKey(String path, String file) {
-    if (isGreater75()) {
-      return String.format("%s:%s/src/main/java/%s%s", PROJECT_STRUTS, MODULE_CORE_PHYSICAL_NAME, path, file);
-    }
-    return String.format("%s:src/main/java/%s%s", MODULE_CORE, path, file);
+    return String.format("%s:%s/src/main/java/%s%s", PROJECT_STRUTS, MODULE_CORE_PHYSICAL_NAME, path, file);
   }
 
   private static String moduleKey() {
-    if (isGreater75()) {
-      return String.format("%s:%s/src", PROJECT_STRUTS, MODULE_CORE_PHYSICAL_NAME);
-    }
-    return MODULE_CORE;
+    return String.format("%s:%s/src", PROJECT_STRUTS, MODULE_CORE_PHYSICAL_NAME);
   }
-
-  private static boolean isGreater75() {
-    return orchestrator.getServer().version().isGreaterThanOrEquals(7, 6);
-  }
-
 }
