@@ -36,6 +36,7 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.java.Preconditions;
+import org.sonar.java.annotations.Beta;
 import org.sonar.java.ast.parser.TypeUnionListTreeImpl;
 import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
@@ -158,7 +159,7 @@ public abstract class JavaTree implements Tree {
     private final SyntaxToken eofToken;
     public JSema sema;
 
-    private final EnumMap<JWarning.Type, List<JWarning>> warnings = new EnumMap<>(JWarning.Type.class);
+    private final Map<JWarning.Type, List<JWarning>> warnings = new EnumMap<>(JWarning.Type.class);
 
     public CompilationUnitTreeImpl(@Nullable PackageDeclarationTree packageDeclaration, List<ImportClauseTree> imports, List<Tree> types,
       @Nullable ModuleDeclarationTree moduleDeclaration, SyntaxToken eofToken) {
@@ -185,8 +186,9 @@ public abstract class JavaTree implements Tree {
       return types;
     }
 
-    public EnumMap<JWarning.Type, List<JWarning>> warnings() {
-      return warnings;
+    @Beta
+    public Map<JWarning.Type, List<JWarning>> warnings() {
+      return Collections.unmodifiableMap(warnings);
     }
 
     @Override

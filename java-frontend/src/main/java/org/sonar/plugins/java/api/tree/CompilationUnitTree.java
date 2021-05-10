@@ -19,10 +19,11 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import java.util.List;
+import org.sonar.java.annotations.Beta;
+
 import javax.annotation.Nullable;
 
-import org.sonar.java.annotations.Beta;
+import java.util.List;
 
 /**
  * Compilation unit.

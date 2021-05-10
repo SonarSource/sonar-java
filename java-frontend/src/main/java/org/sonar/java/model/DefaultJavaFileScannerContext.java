@@ -32,6 +32,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.annotations.Beta;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.regex.RegexCache;
 import org.sonar.java.regex.RegexCheck;
@@ -129,6 +130,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
     reportIssue(javaCheck, tree, message, Collections.emptyList(), null);
   }
 
+  @Beta
   public void reportIssue(JavaCheck javaCheck, JWarning warning, String message) {
     reportIssue(createAnalyzerMessage(inputFile, javaCheck, warning, message));
   }
@@ -225,7 +227,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
     return analyzerMessage;
   }
 
-  protected static AnalyzerMessage createAnalyzerMessage(InputFile inputFile, JavaCheck javaCheck, JWarning warning, String message) {
+  private static AnalyzerMessage createAnalyzerMessage(InputFile inputFile, JavaCheck javaCheck, JWarning warning, String message) {
     AnalyzerMessage.TextSpan location = new AnalyzerMessage.TextSpan(warning.getStartLine(), warning.getStartColumn(),
       warning.getEndLine(), warning.getEndColumn());
     return new AnalyzerMessage(javaCheck, inputFile, location, message, 0);
