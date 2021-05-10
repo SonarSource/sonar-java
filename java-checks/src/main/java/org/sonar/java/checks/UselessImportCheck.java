@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -28,73 +29,79 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JWarning;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
-import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
+import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "UselessImportCheck", repositoryKey = "squid")
 @Rule(key = "S1128")
-public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class UselessImportCheck extends IssuableSubscriptionVisitor {
 
   private static final Pattern COMPILER_WARNING = Pattern.compile("The import ([$\\w]+(\\.[$\\w]+)*+) is never used");
   private static final Pattern NON_WORDS_CHARACTERS = Pattern.compile("\\W+");
   private static final Pattern JAVADOC_REFERENCE = Pattern.compile("\\{@link[^\\}]*\\}|(@see|@throws)[^\n]*\n");
 
-  private String currentPackage;
-  private DefaultJavaFileScannerContext context;
+  private String currentPackage = "";
+
+  private final Set<String> allImports = new HashSet<>();
+  private final Set<String> duplicatedImports = new HashSet<>();
+  private final Set<String> usedInJavaDoc = new HashSet<>();
+
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    CompilationUnitTreeImpl cut = (CompilationUnitTreeImpl) context.getTree();
-    this.context = (DefaultJavaFileScannerContext) context;
-    currentPackage = ExpressionsHelper.concatenate(getPackageName(cut));
-
-    List<ImportTree> imports = cut.imports().stream()
-      .filter(importClauseTree -> importClauseTree.is(Tree.Kind.IMPORT))
-      .map(ImportTree.class::cast)
-      .collect(Collectors.toList());
-
-    Set<String> duplicatedImports = new HashSet<>();
-    Set<String> allImports = new HashSet<>();
-    imports.forEach(importTree -> handleImportTree(importTree, allImports, duplicatedImports));
-
-    CommentVisitor commentVisitor = new CommentVisitor(allImports);
-    commentVisitor.checkImportsFromComments(cut);
-    cut.warnings().getOrDefault(JWarning.Type.UNUSED_IMPORT, Collections.emptyList())
-      .forEach(warn -> checkWarnings(warn, commentVisitor.usedInJavaDoc, duplicatedImports));
-
+  public List<Tree.Kind> nodesToVisit() {
+    return Arrays.asList(Tree.Kind.TRIVIA, Tree.Kind.PACKAGE, Tree.Kind.IMPORT);
   }
 
-  private void checkWarnings(JWarning warning, Set<String> excluded, Set<String> duplicated) {
-    Matcher matcher = COMPILER_WARNING.matcher(warning.getMessage());
-    Optional<String> fqn = matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
-    fqn.ifPresent(importName -> {
-      if (!excluded.contains(importName) && !importName.startsWith("java.lang")) {
-        String message;
-        if (duplicated.contains(importName)) {
-          message = "Remove this duplicated import.";
-        } else if (importName.startsWith(currentPackage)) {
-          message = "Remove this unnecessary import: same package classes are always implicitly imported.";
-        } else {
-          message = "Remove this unused import '" + importName + "'.";
+  @Override
+  public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.PACKAGE)) {
+      currentPackage = ExpressionsHelper.concatenate(((PackageDeclarationTree) tree).packageName());
+    } else {
+      handleImportTree((ImportTree) tree);
+    }
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    handleWarnings((DefaultJavaFileScannerContext) context);
+    allImports.clear();
+    duplicatedImports.clear();
+    usedInJavaDoc.clear();
+    currentPackage = "";
+  }
+
+  private void handleWarnings(DefaultJavaFileScannerContext context) {
+    List<JWarning> warnings = ((CompilationUnitTreeImpl) context.getTree()).warnings().getOrDefault(JWarning.Type.UNUSED_IMPORT, Collections.emptyList());
+    for (JWarning warning : warnings) {
+      Matcher matcher = COMPILER_WARNING.matcher(warning.getMessage());
+      Optional<String> fqn = matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+      fqn.ifPresent(importName -> {
+        if (!usedInJavaDoc.contains(importName) && !importName.startsWith("java.lang")) {
+          String message;
+          if (duplicatedImports.contains(importName)) {
+            message = "Remove this duplicated import.";
+          } else if (importName.startsWith(currentPackage)) {
+            message = "Remove this unnecessary import: same package classes are always implicitly imported.";
+          } else {
+            message = "Remove this unused import '" + importName + "'.";
+          }
+          context.reportIssue(this, warning, message);
         }
-        context.reportIssue(this, warning, message);
-      }
-    });
+      });
+    }
   }
 
-  private void handleImportTree(ImportTree importTree, Set<String> allImports, Set<String> duplicatedImports) {
+  private void handleImportTree(ImportTree importTree) {
     String importName = ExpressionsHelper.concatenate(((ExpressionTree) importTree.qualifiedIdentifier()));
     if (allImports.contains(importName)) {
       duplicatedImports.add(importName);
@@ -106,54 +113,32 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
     }
   }
 
-  private static ExpressionTree getPackageName(CompilationUnitTree cut) {
-    return cut.packageDeclaration() != null ? cut.packageDeclaration().packageName() : null;
-  }
-
   private static boolean isJavaLangImport(String reference) {
     return reference.startsWith("java.lang.") && reference.indexOf('.', "java.lang.".length()) == -1;
   }
 
-  private static class CommentVisitor extends SubscriptionVisitor {
-    private Set<String> usedInJavaDoc = new HashSet<>();
-    private Set<String> allImports;
-
-    public CommentVisitor(Set<String> allImports) {
-      this.allImports = allImports;
+  @Override
+  public void visitTrivia(SyntaxTrivia syntaxTrivia) {
+    String comment = syntaxTrivia.comment();
+    if (!comment.startsWith("/**")) {
+      return;
     }
+    Matcher matcher = JAVADOC_REFERENCE.matcher(comment);
+    while (matcher.find()) {
+      String line = matcher.group(0);
+      Set<String> words = NON_WORDS_CHARACTERS.splitAsStream(line)
+        .filter(w -> !w.isEmpty())
+        .collect(Collectors.toSet());
 
-    @Override
-    public List<Tree.Kind> nodesToVisit() {
-      return Collections.singletonList(Tree.Kind.TRIVIA);
-    }
-
-    public void checkImportsFromComments(CompilationUnitTree cut) {
-      scanTree(cut);
-    }
-
-    @Override
-    public void visitTrivia(SyntaxTrivia syntaxTrivia) {
-      String comment = syntaxTrivia.comment();
-      if (!comment.startsWith("/**")) {
-        return;
-      }
-      Matcher matcher = JAVADOC_REFERENCE.matcher(comment);
-      while (matcher.find()) {
-        String line = matcher.group(0);
-        Set<String> words = NON_WORDS_CHARACTERS.splitAsStream(line)
-          .filter(w -> !w.isEmpty())
-          .collect(Collectors.toSet());
-
-        if (!words.isEmpty()) {
-          usedInJavaDoc.addAll(allImports.stream().filter(i -> words.contains(extractLastClassName(i)))
-            .collect(Collectors.toSet()));
-        }
+      if (!words.isEmpty()) {
+        usedInJavaDoc.addAll(allImports.stream().filter(i -> words.contains(extractLastClassName(i)))
+          .collect(Collectors.toSet()));
       }
     }
+  }
 
-    private static String extractLastClassName(String reference) {
-      int lastIndexOfDot = reference.lastIndexOf('.');
-      return lastIndexOfDot == -1 ? reference : reference.substring(lastIndexOfDot + 1);
-    }
+  private static String extractLastClassName(String reference) {
+    int lastIndexOfDot = reference.lastIndexOf('.');
+    return lastIndexOfDot == -1 ? reference : reference.substring(lastIndexOfDot + 1);
   }
 }
