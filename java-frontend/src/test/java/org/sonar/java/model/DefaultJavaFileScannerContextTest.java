@@ -31,6 +31,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultInputDir;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.AnalyzerMessage.TextSpan;
+import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
@@ -171,7 +172,7 @@ class DefaultJavaFileScannerContextTest {
 
   @Test
   void report_issue_from_warning() {
-    context.reportIssue(CHECK, compilationUnitTree.warnings().get(JWarning.Type.UNUSED_IMPORT).get(0), "msg");
+    context.reportIssue(CHECK, ((CompilationUnitTreeImpl) compilationUnitTree).warnings().get(JWarning.Type.UNUSED_IMPORT).get(0), "msg");
 
     assertThat(reportedMessage.getMessage()).isEqualTo("msg");
 

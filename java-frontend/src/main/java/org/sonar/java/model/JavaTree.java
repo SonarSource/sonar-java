@@ -185,7 +185,6 @@ public abstract class JavaTree implements Tree {
       return types;
     }
 
-    @Override
     public EnumMap<JWarning.Type, List<JWarning>> warnings() {
       return warnings;
     }

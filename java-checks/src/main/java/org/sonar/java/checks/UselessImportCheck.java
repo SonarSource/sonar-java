@@ -27,11 +27,12 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
 import org.sonar.check.Rule;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JWarning;
+import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -51,12 +52,12 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
   private static final Pattern JAVADOC_REFERENCE = Pattern.compile("\\{@link[^\\}]*\\}|(@see|@throws)[^\n]*\n");
 
   private String currentPackage;
-  private JavaFileScannerContext context;
+  private DefaultJavaFileScannerContext context;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    CompilationUnitTree cut = context.getTree();
-    this.context = context;
+    CompilationUnitTreeImpl cut = (CompilationUnitTreeImpl) context.getTree();
+    this.context = (DefaultJavaFileScannerContext) context;
     currentPackage = ExpressionsHelper.concatenate(getPackageName(cut));
 
     List<ImportTree> imports = cut.imports().stream()

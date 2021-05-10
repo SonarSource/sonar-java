@@ -149,7 +149,6 @@ public class JParser {
 
   private static final Predicate<IProblem> IS_SYNTAX_ERROR = error -> (error.getID() & IProblem.Syntax) != 0;
   private static final Predicate<IProblem> IS_UNDEFINED_TYPE_ERROR = error -> (error.getID() & IProblem.UndefinedType) != 0;
-  private static final Predicate<IProblem> IS_UNUSED_IMPORT_WARN = warn -> warn.getID() == IProblem.UnusedImport;
 
   /**
    * @param unitName see {@link ASTParser#setUnitName(String)}
@@ -195,15 +194,7 @@ public class JParser {
       throw new RecognitionException(-1, "ECJ: Unable to parse file.", e);
     }
 
-    Map<JWarning.Type, List<JWarning>> warnings = Arrays.stream(astNode.getProblems())
-      .filter(IS_UNUSED_IMPORT_WARN)
-      .map(iproblem -> new JWarning(iproblem.getMessage(),
-        JWarning.Type.UNUSED_IMPORT,
-        iproblem.getSourceLineNumber(),
-        astNode.getColumnNumber(iproblem.getSourceStart()),
-        astNode.getLineNumber(iproblem.getSourceEnd()),
-        astNode.getColumnNumber(iproblem.getSourceEnd())))
-      .collect(Collectors.groupingBy(JWarning::getType));
+    Map<JWarning.Type, List<JWarning>> warnings = JWarning.getWarnings(astNode);
 
     List<IProblem> errors = Stream.of(astNode.getProblems()).filter(IProblem::isError).collect(Collectors.toList());
     Optional<IProblem> possibleSyntaxError = errors.stream().filter(IS_SYNTAX_ERROR).findFirst();

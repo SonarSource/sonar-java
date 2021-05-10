@@ -19,6 +19,13 @@
  */
 package org.sonar.java.model;
 
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import org.eclipse.jdt.core.compiler.IProblem;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+
 public final class JWarning {
 
   private final String message;
@@ -38,8 +45,36 @@ public final class JWarning {
   }
 
   public enum Type {
-    UNUSED_IMPORT,
-    UNNECESSARY_CAST
+    UNUSED_IMPORT(IProblem.UnusedImport);
+
+    private final int warningID;
+
+    Type(int warningID) {
+      this.warningID = warningID;
+    }
+
+    boolean isMatching(IProblem warning) {
+      return warning.getID() == warningID;
+    }
+  }
+
+  public static Map<Type, List<JWarning>> getWarnings(CompilationUnit astNode) {
+    Map<JWarning.Type, List<JWarning>> results = new EnumMap<>(Type.class);
+    for (IProblem warning : astNode.getProblems()) {
+      for (Type type : Type.values()) {
+        if (type.isMatching(warning)) {
+          JWarning newWarning = new JWarning(
+            warning.getMessage(),
+            type,
+            warning.getSourceLineNumber(),
+            astNode.getColumnNumber(warning.getSourceStart()),
+            astNode.getLineNumber(warning.getSourceEnd()),
+            astNode.getColumnNumber(warning.getSourceEnd()));
+          results.computeIfAbsent(type, k -> new ArrayList<>()).add(newWarning);
+        }
+      }
+    }
+    return results;
   }
 
   public String getMessage() {

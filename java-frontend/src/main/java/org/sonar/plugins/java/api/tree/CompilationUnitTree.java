@@ -19,12 +19,10 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import java.util.EnumMap;
 import java.util.List;
 import javax.annotation.Nullable;
 
 import org.sonar.java.annotations.Beta;
-import org.sonar.java.model.JWarning;
 
 /**
  * Compilation unit.
@@ -42,8 +40,6 @@ public interface CompilationUnitTree extends Tree {
   List<ImportClauseTree> imports();
 
   List<Tree> types();
-
-  EnumMap<JWarning.Type, List<JWarning>> warnings();
 
   /**
    * Experimental feature allowing retrieval of java 9 module declaration from 'module-info.java' files.

@@ -27,7 +27,6 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.java.model.JWarning;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -137,14 +136,6 @@ public interface JavaFileScannerContext {
    * @param message Message to display to the user.
    */
   void reportIssue(JavaCheck javaCheck, Tree tree, String message);
-
-  /**
-   * Report an issue.
-   * @param javaCheck check raising the issue
-   * @param warning the warning received from ECJ
-   * @param message Message to display to the user.
-   */
-  void reportIssue(JavaCheck javaCheck, JWarning warning, String message);
 
   /**
    * Report an issue.

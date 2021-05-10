@@ -129,7 +129,6 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
     reportIssue(javaCheck, tree, message, Collections.emptyList(), null);
   }
 
-  @Override
   public void reportIssue(JavaCheck javaCheck, JWarning warning, String message) {
     reportIssue(createAnalyzerMessage(inputFile, javaCheck, warning, message));
   }
