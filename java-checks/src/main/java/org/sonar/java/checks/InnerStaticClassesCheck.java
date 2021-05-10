@@ -41,6 +41,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S2694")
 public class InnerStaticClassesCheck extends BaseTreeVisitor implements JavaFileScanner {
 
+  private static final String JUNIT_NESTED_TEST = "org.junit.jupiter.api.Nested";
   private JavaFileScannerContext context;
   private Deque<Symbol> outerClasses = new LinkedList<>();
   private Deque<Boolean> atLeastOneReference = new LinkedList<>();
@@ -86,6 +87,10 @@ public class InnerStaticClassesCheck extends BaseTreeVisitor implements JavaFile
       if (!superClassSymbol.owner().isPackageSymbol() && !superClassSymbol.isStatic()) {
         return false;
       }
+    }
+    if (symbol.metadata().isAnnotatedWith(JUNIT_NESTED_TEST)) {
+      // JUnit nested tests must be non-static https://junit.org/junit5/docs/current/user-guide/#writing-tests-nested
+      return false;
     }
     if (outerClasses.size() == 1) {
       return true;

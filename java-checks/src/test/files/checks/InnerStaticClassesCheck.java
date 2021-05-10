@@ -222,3 +222,8 @@ class Other {
   static class Generic<X> {}
 }
 
+class SomeTest {
+  @org.junit.jupiter.api.Nested
+  class NestedTest { // compliant, nested tests must be inner classes
+  }
+}
