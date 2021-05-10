@@ -56,15 +56,19 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
   private final Set<String> duplicatedImports = new HashSet<>();
   private final Set<String> usedInJavaDoc = new HashSet<>();
 
-
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.TRIVIA, Tree.Kind.PACKAGE, Tree.Kind.IMPORT);
+    return Arrays.asList(Tree.Kind.TRIVIA, Tree.Kind.COMPILATION_UNIT, Tree.Kind.PACKAGE, Tree.Kind.IMPORT);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.PACKAGE)) {
+    if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
+      allImports.clear();
+      duplicatedImports.clear();
+      usedInJavaDoc.clear();
+      currentPackage = "";
+    } else if (tree.is(Tree.Kind.PACKAGE)) {
       currentPackage = ExpressionsHelper.concatenate(((PackageDeclarationTree) tree).packageName());
     } else {
       handleImportTree((ImportTree) tree);
@@ -74,10 +78,6 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
   @Override
   public void leaveFile(JavaFileScannerContext context) {
     handleWarnings((DefaultJavaFileScannerContext) context);
-    allImports.clear();
-    duplicatedImports.clear();
-    usedInJavaDoc.clear();
-    currentPackage = "";
   }
 
   private void handleWarnings(DefaultJavaFileScannerContext context) {
