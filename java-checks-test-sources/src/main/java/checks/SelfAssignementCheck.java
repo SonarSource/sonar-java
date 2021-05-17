@@ -6,7 +6,7 @@ class SelfAssignementCheck {
   void method() {
     a = a; // Noncompliant [[sc=7;ec=8]] {{Remove or correct this useless self-assignment.}}
     this.a = this.a; // Noncompliant
-    this.a = a; // false negative
+    this.a = a; // Noncompliant [[sc=5;ec=14]] {{Remove or correct this useless self-assignment.}}
     b[0] = b[0]; // Noncompliant
     a = c = c; // Noncompliant
     b[fun()] = b[fun()]; // Noncompliant
@@ -26,7 +26,7 @@ class SelfAssignementCheckB {
   int foo;
   class SelfAssignementCheckC {
     void fun() {
-      SelfAssignementCheckB.b = b; // false negative
+      SelfAssignementCheckB.b = b; // Noncompliant
     }
   }
   void setFoo(int foo){

@@ -20,11 +20,17 @@
 package org.sonar.java.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 
 public final class JWarning {
 
@@ -45,16 +51,30 @@ public final class JWarning {
   }
 
   public enum Type {
-    UNUSED_IMPORT(IProblem.UnusedImport);
+    UNUSED_IMPORT(IProblem.UnusedImport, JavaCore.COMPILER_PB_UNUSED_IMPORT),
+    ASSIGNMENT_HAS_NO_EFFECT(IProblem.AssignmentHasNoEffect, JavaCore.COMPILER_PB_NO_EFFECT_ASSIGNMENT);
 
     private final int warningID;
+    private final String compilerOptionKey;
 
-    Type(int warningID) {
+    private static final Set<String> COMPILER__OPTIONS = new HashSet<>();
+
+    Type(int warningID, String compilerOptionKey) {
       this.warningID = warningID;
+      this.compilerOptionKey = compilerOptionKey;
     }
 
     boolean isMatching(IProblem warning) {
       return warning.getID() == warningID;
+    }
+
+    public static Set<String> compilerOptions() {
+      if (COMPILER__OPTIONS.isEmpty()) {
+        Stream.of(Type.values())
+          .map(t -> t.compilerOptionKey)
+          .forEach(COMPILER__OPTIONS::add);
+      }
+      return Collections.unmodifiableSet(COMPILER__OPTIONS);
     }
   }
 
@@ -99,5 +119,24 @@ public final class JWarning {
 
   public int getEndColumn() {
     return endColumn;
+  }
+
+  public boolean contains(SyntaxToken syntaxToken) {
+    int tokenLine = syntaxToken.line();
+    int tokenStartColumn = syntaxToken.column();
+    int tokendEndColumn = tokenStartColumn + syntaxToken.text().length();
+
+    if (startLine == endLine) {
+      return startLine == tokenLine
+        && startColumn <= tokenStartColumn
+        && endColumn >= tokendEndColumn;
+    }
+    if (startLine == tokenLine) {
+      return startColumn <= tokenStartColumn;
+    }
+    if (endLine == tokenLine) {
+      return endColumn >= tokendEndColumn;
+    }
+    return tokenLine > startLine && tokenLine < endLine;
   }
 }

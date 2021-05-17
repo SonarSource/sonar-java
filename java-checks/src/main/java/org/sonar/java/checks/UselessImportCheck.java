@@ -36,7 +36,6 @@ import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JWarning;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
@@ -78,12 +77,13 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void leaveFile(JavaFileScannerContext context) {
-    handleWarnings((DefaultJavaFileScannerContext) context);
+  public void leaveNode(Tree tree) {
+    if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
+      handleWarnings(((CompilationUnitTreeImpl) tree).warnings().getOrDefault(JWarning.Type.UNUSED_IMPORT, Collections.emptyList()));
+    }
   }
 
-  private void handleWarnings(DefaultJavaFileScannerContext context) {
-    List<JWarning> warnings = ((CompilationUnitTreeImpl) context.getTree()).warnings().getOrDefault(JWarning.Type.UNUSED_IMPORT, Collections.emptyList());
+  private void handleWarnings(List<JWarning> warnings) {
     for (JWarning warning : warnings) {
       Matcher matcher = COMPILER_WARNING.matcher(warning.getMessage());
       Optional<String> fqn = matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
@@ -97,7 +97,7 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
           } else {
             message = "Remove this unused import '" + importName + "'.";
           }
-          context.reportIssue(this, warning, message);
+          ((DefaultJavaFileScannerContext) context).reportIssue(this, warning, message);
         }
       });
     }
