@@ -23,9 +23,11 @@ import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -40,8 +42,6 @@ public class ThreadLocalCleanupCheck extends IssuableSubscriptionVisitor {
   private static final String THREAD_LOCAL = "java.lang.ThreadLocal";
   private static final MethodMatchers THREADLOCAL_SET = MethodMatchers.create()
     .ofTypes(THREAD_LOCAL).names("set").addParametersMatcher(ANY).build();
-  private static final MethodMatchers THREADLOCAL_REMOVE = MethodMatchers.create()
-    .ofTypes(THREAD_LOCAL).names("remove").addWithoutParametersMatcher().build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -52,7 +52,8 @@ public class ThreadLocalCleanupCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.CLASS)) {
       Symbol.TypeSymbol clazz = ((ClassTree) tree).symbol();
-      if (clazz.type().isSubtypeOf(THREAD_LOCAL)) {
+      Type superClass = clazz.superClass();
+      if (clazz.type().isSubtypeOf(THREAD_LOCAL) || (superClass != null && superClass.isUnknown())) {
         return;
       }
       clazz.memberSymbols().stream()
@@ -75,7 +76,8 @@ public class ThreadLocalCleanupCheck extends IssuableSubscriptionVisitor {
 
   private static boolean usageIsRemove(IdentifierTree usage) {
     return MethodTreeUtils.consecutiveMethodInvocation(usage)
-      .filter(THREADLOCAL_REMOVE::matches)
+      // At this point, we know that "usage" is of type ThreadLocal, we don't have to check the full type, the name is enough.
+      .filter(mit -> ExpressionUtils.methodName(mit).name().equals("remove"))
       .isPresent();
   }
 }

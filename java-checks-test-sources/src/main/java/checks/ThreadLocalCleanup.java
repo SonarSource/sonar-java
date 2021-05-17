@@ -64,12 +64,14 @@ class UserSessionClosed2 {
 class AnonymousSubclass {
 
   private static ThreadLocal<char[]> DEST_TL = new ThreadLocal<char[]>() {  // Noncompliant
+    private final ThreadLocal<String> delegate = new ThreadLocal<>(); // Compliant, inside a class subtype of ThreadLocal
     @Override
     protected char[] initialValue() {
       return new char[1024];
     }
 
     void foo() {
+      delegate.set("1");
       set(new char[] {'1'});
     }
   };
@@ -78,5 +80,9 @@ class AnonymousSubclass {
     DEST_TL = null;
     this.DEST_TL = null;
   }
+}
+
+class ThreadLocalCleanupExtends extends ThreadLocal {
+  private static final ThreadLocal<UserSession> DELEGATE = new ThreadLocal<>(); // Compliant, extends ThreadLocal
 }
 
