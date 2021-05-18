@@ -1,22 +1,18 @@
-package javax.annotation;
+package checks;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.springframework.batch.item.ItemProcessor;
 
+class ReturnEmptyArrayNotNullCheckA {
 
-@interface CheckForNull {}
-
-@interface Nonnull {}
-
-@interface Nullable {}
-
-class A {
-
-  public A() {
-    return null;        
+  public ReturnEmptyArrayNotNullCheckA() {
+    return;
   }
 
   public void f1() {     
@@ -35,8 +31,8 @@ class A {
     return null;        // Noncompliant
   }
 
-  public int[] f5() {
-    new B() {
+  public int[] f5(boolean cond) {
+    new ReturnEmptyArrayNotNullCheckB() {
       public Object g1() {
         return null;    
       }
@@ -45,8 +41,9 @@ class A {
         return null;    // Noncompliant
       }
     };
-
-    return new int[0];  
+    if (cond) {
+      return new int[0];
+    }
     return null;        // Noncompliant
   }
 
@@ -58,8 +55,10 @@ class A {
     return null;        // Noncompliant
   }
 
-  public Set<Integer> f8() {
-    return Collections.EMPTY_SET;
+  public Set<Integer> f8(boolean cond) {
+    if (cond) {
+      return Collections.EMPTY_SET;
+    }
     return null;        // Noncompliant {{Return an empty collection instead of null.}}
   }
 
@@ -70,13 +69,9 @@ class A {
   public java.util.Collection f10() {
     return null;        // Noncompliant
   }
-
-  public int f11() {
-    return null;        
-  }
 }
 
-interface B{
+interface ReturnEmptyArrayNotNullCheckB{
   default int[] a(){
     return null; // Noncompliant
   }
@@ -102,8 +97,8 @@ interface B{
   }
 }
 
-class C {
-  @Other
+class ReturnEmptyArrayNotNullCheckC {
+  @SuppressWarnings("Something")
   public int[] gul() {
     return null;  // Noncompliant
   }
@@ -129,15 +124,20 @@ class C {
   }
 
   int[] qix(){
-    plop(a -> {
+    takeLambda(a -> {
       return null;
     });
+    return new int[1];
   }
 
-  static final Object CONSTANT = plop(a->{return null;});
+  static final Object CONSTANT = takeLambda(a->{return null;});
+
+  private static Object takeLambda(Function<String, Object> o) {
+    return o.apply("");
+  }
 }
 
-class D implements ItemProcessor<Integer, List<String>> {
+class ReturnEmptyArrayNotNullCheckD implements ItemProcessor<Integer, List<String>> {
   @Override
   public List<String> process(Integer i) {
     return null; // Compliant: ItemProcessor requires to return null value to stop the processing
@@ -148,27 +148,36 @@ class D implements ItemProcessor<Integer, List<String>> {
   }
 }
 
-interface E {
+interface ReturnEmptyArrayNotNullCheckE {
   List<String> bar();
 }
 
-class F implements E {
+class ReturnEmptyArrayNotNullCheckF implements ReturnEmptyArrayNotNullCheckE {
   @Override
   public List<String> bar() {
     return null; // Noncompliant
   }
 }
 
-class G implements ItemProcessor<Integer, List<String>>, E {
-  @Override
-  public int[] process(Integer a) {
-    return null; // Compliant
-  }
-  public int[] process(String a) {
-    return null; // Noncompliant
-  }
+class ReturnEmptyArrayNotNullCheckG implements ItemProcessor<Integer, List<String>>, ReturnEmptyArrayNotNullCheckE {
   @Override
   public List<String> bar() {
+    return null; // Noncompliant
+  }
+
+  @Override
+  public List<String> process(Integer integer) throws Exception {
+    return Collections.emptyList();
+  }
+}
+
+class ReturnEmptyArrayNotNullCheckH implements ItemProcessor<Integer, Integer[]> {
+  @Override
+  public Integer[] process(Integer a) {
+    return null; // Compliant
+  }
+
+  public int[] process(String a) {
     return null; // Noncompliant
   }
 }
