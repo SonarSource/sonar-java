@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
@@ -58,12 +57,14 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
   private static final String REQUIRED = "REQUIRED";
   private static final String REQUIRES_NEW = "REQUIRES_NEW";
   private static final String SUPPORTS = "SUPPORTS";
+  // Made name to represent no annotation
+  private static final String NOT_TRANSACTIONAL = "SONAR_NOT_TRANSACTIONAL";
 
   private static final Map<String, Set<String>> INCOMPATIBLE_PROPAGATION_MAP = buildIncompatiblePropagationMap();
 
   private static Map<String, Set<String>> buildIncompatiblePropagationMap() {
     Map<String, Set<String>> map = new HashMap<>();
-    map.put(null, new HashSet<>(Arrays.asList(MANDATORY, NESTED, REQUIRED, REQUIRES_NEW)));
+    map.put(NOT_TRANSACTIONAL, new HashSet<>(Arrays.asList(MANDATORY, NESTED, REQUIRED, REQUIRES_NEW)));
     map.put(MANDATORY, new HashSet<>(Arrays.asList(NESTED, NEVER, NOT_SUPPORTED, REQUIRES_NEW)));
     map.put(NESTED, new HashSet<>(Arrays.asList(NESTED, NEVER, NOT_SUPPORTED, REQUIRES_NEW)));
     map.put(NEVER, new HashSet<>(Arrays.asList(MANDATORY, NESTED, REQUIRED, REQUIRES_NEW)));
@@ -132,7 +133,7 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
 
   private static Map<Symbol, String> collectMethodsPropagation(ClassTree classTree) {
     Map<Symbol, String> methodPropagationMap = new HashMap<>();
-    String classPropagation = getPropagation(classTree.symbol(), null);
+    String classPropagation = getPropagation(classTree.symbol(), NOT_TRANSACTIONAL);
     for (Tree member : classTree.members()) {
       if (member.is(Tree.Kind.METHOD)) {
         MethodTree method = (MethodTree) member;
@@ -148,9 +149,8 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
     return methodsPropagationList.stream().distinct().count() <= 1;
   }
 
-  @CheckForNull
-  private static String getPropagation(Symbol symbol, @Nullable String inheritedPropagation) {
-    String defaultValue = inheritedPropagation != null ? inheritedPropagation : REQUIRED;
+  private static String getPropagation(Symbol symbol, String inheritedPropagation) {
+    String defaultValue = NOT_TRANSACTIONAL.equals(inheritedPropagation) ? REQUIRED : inheritedPropagation;
     List<AnnotationValue> values = symbol.metadata().valuesForAnnotation(SPRING_TRANSACTIONAL_ANNOTATION);
     if (values != null) {
       return getAnnotationAttributeAsString(values, "propagation", defaultValue);
