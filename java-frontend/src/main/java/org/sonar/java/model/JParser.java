@@ -166,9 +166,9 @@ public class JParser {
     options.put(JavaCore.COMPILER_SOURCE, version);
     if (MAXIMUM_SUPPORTED_JAVA_VERSION.equals(version)) {
       options.put(JavaCore.COMPILER_PB_ENABLE_PREVIEW_FEATURES, "enabled");
-      // enabling all supported compiler warnings
-      JWarning.Type.compilerOptions().forEach(option -> options.put(option, "warning"));
     }
+    // enabling all supported compiler warnings
+    JWarning.Type.compilerOptions().forEach(option -> options.put(option, "warning"));
 
     astParser.setCompilerOptions(options);
 

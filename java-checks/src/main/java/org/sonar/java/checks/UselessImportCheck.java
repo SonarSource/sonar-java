@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -79,7 +78,7 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
   @Override
   public void leaveNode(Tree tree) {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
-      handleWarnings(((CompilationUnitTreeImpl) tree).warnings().getOrDefault(JWarning.Type.UNUSED_IMPORT, Collections.emptyList()));
+      handleWarnings(((CompilationUnitTreeImpl) tree).warnings(JWarning.Type.UNUSED_IMPORT));
     }
   }
 

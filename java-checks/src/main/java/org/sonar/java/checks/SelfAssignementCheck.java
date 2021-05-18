@@ -20,8 +20,8 @@
 package org.sonar.java.checks;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
@@ -39,7 +39,6 @@ public class SelfAssignementCheck extends IssuableSubscriptionVisitor {
 
   private static final String ISSUE_MESSAGE = "Remove or correct this useless self-assignment.";
   private final Set<JWarning> warnings = new HashSet<>();
-  private final Set<JWarning> reportedWarnings = new HashSet<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -49,31 +48,31 @@ public class SelfAssignementCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
-      reportedWarnings.clear();
       warnings.clear();
-      warnings.addAll(((JavaTree.CompilationUnitTreeImpl) tree).warnings().getOrDefault(JWarning.Type.ASSIGNMENT_HAS_NO_EFFECT, Collections.emptyList()));
+      warnings.addAll(((JavaTree.CompilationUnitTreeImpl) tree).warnings(JWarning.Type.ASSIGNMENT_HAS_NO_EFFECT));
       return;
     }
     AssignmentExpressionTree node = (AssignmentExpressionTree) tree;
     if (SyntacticEquivalence.areEquivalent(node.expression(), node.variable())) {
       SyntaxToken reportTree = node.operatorToken();
-      markReportedWarnings(reportTree);
       reportIssue(reportTree, ISSUE_MESSAGE);
+      updateWarnings(reportTree);
     }
   }
 
   @Override
   public void leaveNode(Tree tree) {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
-      warnings.removeAll(reportedWarnings);
       warnings.forEach(warning -> ((DefaultJavaFileScannerContext) context).reportIssue(this, warning, ISSUE_MESSAGE));
     }
   }
 
-  private void markReportedWarnings(SyntaxToken reportTree) {
-    warnings.stream()
-      .filter(warning -> !reportedWarnings.contains(warning))
-      .filter(warning -> warning.contains(reportTree))
-      .forEach(reportedWarnings::add);
+  private void updateWarnings(SyntaxToken reportTree) {
+    for (Iterator<JWarning> iterator = warnings.iterator(); iterator.hasNext();) {
+      JWarning warning = iterator.next();
+      if (warning.contains(reportTree)) {
+        iterator.remove();
+      }
+    }
   }
 }

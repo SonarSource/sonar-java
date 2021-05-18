@@ -172,7 +172,7 @@ class DefaultJavaFileScannerContextTest {
 
   @Test
   void report_issue_from_warning() {
-    context.reportIssue(CHECK, ((CompilationUnitTreeImpl) compilationUnitTree).warnings().get(JWarning.Type.UNUSED_IMPORT).get(0), "msg");
+    context.reportIssue(CHECK, ((CompilationUnitTreeImpl) compilationUnitTree).warnings(JWarning.Type.UNUSED_IMPORT).get(0), "msg");
 
     assertThat(reportedMessage.getMessage()).isEqualTo("msg");
 
