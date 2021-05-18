@@ -1,4 +1,4 @@
-package files.checks.spring;
+package checks.spring;
 
 import javax.transaction.Transactional.TxType;
 import org.springframework.transaction.annotation.Propagation;
@@ -6,9 +6,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static javax.transaction.Transactional.TxType.REQUIRED;
 
-public class CheckMessage {
+public class SpringIncompatibleTransactionalCheck {
 
-  CheckMessage other;
+  SpringIncompatibleTransactionalCheck other;
 
   @Transactional
   public void springTransactionalDefault() {
@@ -30,13 +30,13 @@ public class CheckMessage {
     this.equals(other);
   }
 
-  CheckMessage getOther() {
+  SpringIncompatibleTransactionalCheck getOther() {
     return other;
   }
 
 }
 
-public class IncompatibilityMatrix {
+class SpringIncompatibleTransactionalCheckIncompatibilityMatrix {
 
   public void nonTransactional() {
     nonTransactional();
@@ -169,9 +169,10 @@ public class IncompatibilityMatrix {
 
 }
 
-public class SupportJavaxTransactional {
+class SpringIncompatibleTransactionalCheckSupportJavaxTransactional {
 
   public void nonTransactional() {
+
     javaxTransactionalDefault();      // Noncompliant
     javaxTransactionalRequired();     // Noncompliant
     javaxTransactionalNotSupported();
@@ -197,7 +198,7 @@ public class SupportJavaxTransactional {
 }
 
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
-public class ClassInheritanceNotSupported {
+class SpringIncompatibleTransactionalCheckClassInheritanceNotSupported {
 
   public void nonTransactional() {
     transactional();
@@ -210,7 +211,7 @@ public class ClassInheritanceNotSupported {
 }
 
 @Transactional(propagation = Propagation.REQUIRED)
-class ClassInheritanceRequired {
+class SpringIncompatibleTransactionalCheckClassInheritanceRequired {
 
   // even if not anotated with @Transactional, this "public" method inherit form the class transactional propagation.
   public void methodA() {
@@ -224,14 +225,14 @@ class ClassInheritanceRequired {
 
 }
 
-public class ClassWithoutTransactionnal {
+class SpringIncompatibleTransactionalCheckClassWithoutTransactionnal {
 
   public void method() {
   }
 
 }
 
-public class ClassWithOneTransactionnal {
+class SpringIncompatibleTransactionalCheckClassWithOneTransactionnal {
 
   @Transactional(propagation = Propagation.REQUIRED)
   public void methodA() {
@@ -239,7 +240,7 @@ public class ClassWithOneTransactionnal {
 
 }
 
-public class ClassWithSameTransactionnal {
+class SpringIncompatibleTransactionalCheckClassWithSameTransactionnal {
 
   @Transactional(propagation = Propagation.REQUIRED)
   public void methodA() {
@@ -252,7 +253,7 @@ public class ClassWithSameTransactionnal {
 
 }
 
-public abstract class AbstractClass {
+abstract class SpringIncompatibleTransactionalCheckAbstractClass {
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public abstract void methodA();
@@ -264,20 +265,7 @@ public abstract class AbstractClass {
 
 }
 
-public class InvalidPropagation {
-
-  @Transactional(propagation = null)
-  public void methodA() {
-    methodB();
-  }
-
-  @Transactional(propagation = Propagation.REQUIRED)
-  public void methodB() {
-  }
-
-}
-
-public class ComplexMethodInvocation {
+class SpringIncompatibleTransactionalCheckComplexMethodInvocation {
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public String methodA() {
@@ -287,18 +275,19 @@ public class ComplexMethodInvocation {
   @Transactional(propagation = Propagation.REQUIRED)
   public int methodB() {
     methodA().length(); // Noncompliant
+    return 1;
   }
 
 }
 
-public interface BaseInterface {
+interface SpringIncompatibleTransactionalCheckBaseInterface {
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public String methodA();
 
 }
 
-public class DerivedClass implements BaseInterface {
+class SpringIncompatibleTransactionalCheckDerivedClass implements SpringIncompatibleTransactionalCheckBaseInterface {
 
   // Knonwn limitation, Spring also look at the "interface that the invoked method has been called through" to determine
   // the "propagation" value, and this rule ignore super classes/interfaces.
@@ -308,14 +297,15 @@ public class DerivedClass implements BaseInterface {
     return "";
   }
 
-  @Transactional(propagation = Propagation.REQUIRES)
+  @Transactional(propagation = Propagation.REQUIRED)
   public int methodB() {
     methodA(); // false-negative, see above
+    return 1;
   }
 
 }
 
-public class IntermediatePrivateMethodA {
+class SpringIncompatibleTransactionalCheckIntermediatePrivateMethodA {
 
   @Transactional(propagation = Propagation.REQUIRED)
   public void methodA() {
@@ -333,7 +323,7 @@ public class IntermediatePrivateMethodA {
 
 }
 
-class IntermediatePrivateMethodFalseNegative {
+class SpringIncompatibleTransactionalCheckIntermediatePrivateMethodFalseNegative {
 
   @Transactional(propagation = Propagation.REQUIRED)
   public void methodA() {
