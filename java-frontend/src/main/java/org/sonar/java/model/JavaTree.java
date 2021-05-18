@@ -187,8 +187,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Beta
-    public Map<JWarning.Type, List<JWarning>> warnings() {
-      return Collections.unmodifiableMap(warnings);
+    public List<JWarning> warnings(JWarning.Type type) {
+      return Collections.unmodifiableList(warnings.getOrDefault(type, Collections.emptyList()));
     }
 
     @Override

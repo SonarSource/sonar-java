@@ -1625,8 +1625,7 @@ class JParserSemanticTest {
                     "}\n";
 
     JavaTree.CompilationUnitTreeImpl cu = test(source);
-    assertThat(cu.warnings()).hasSize(1);
-    List<JWarning> warningList = cu.warnings().get(JWarning.Type.UNUSED_IMPORT);
+    List<JWarning> warningList = cu.warnings(JWarning.Type.UNUSED_IMPORT);
     assertThat(warningList).hasSize(2);
 
     JWarning jWarning = warningList.get(0);
