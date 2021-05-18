@@ -78,7 +78,9 @@ public class IteratorNextExceptionCheck extends IssuableSubscriptionVisitor {
       ExpressionTree expression = throwStatementTree.expression();
       if (expression.is(Tree.Kind.NEW_CLASS)) {
         NewClassTree newClassTree = (NewClassTree) expression;
-        if (newClassTree.symbolType().is("java.util.NoSuchElementException")) {
+        Type symbolType = newClassTree.symbolType();
+        if (symbolType.is("java.util.NoSuchElementException") || symbolType.isUnknown()) {
+          // Consider any unknown Exception as NoSuchElementException to avoid FP.
           foundThrow = true;
         }
       }
@@ -95,6 +97,10 @@ public class IteratorNextExceptionCheck extends IssuableSubscriptionVisitor {
 
     private static boolean throwsNoSuchElementException(MethodInvocationTree methodInvocationTree) {
       Symbol symbol = methodInvocationTree.symbol();
+      if (symbol.isUnknown()) {
+        // Consider that it could throw an Exception to avoid FP.
+        return true;
+      }
       if (!symbol.isMethodSymbol()) {
         return false;
       }
