@@ -32,4 +32,13 @@ class BooleanMethodReturnCheckTest {
       .withCheck(new BooleanMethodReturnCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_non_compiling() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/BooleanMethodReturnCheck.java"))
+      .withCheck(new BooleanMethodReturnCheck())
+      .verifyNoIssues();
+
+  }
 }
