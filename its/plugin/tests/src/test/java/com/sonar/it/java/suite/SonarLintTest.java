@@ -124,7 +124,6 @@ public class SonarLintTest {
     sonarlintEngine.analyze(standaloneAnalysisConfiguration, issues::add, null, null);
 
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
-      tuple("java:S1607", 4, inputFile.getPath(), "MAJOR"),
       // tuple("squid:S2970", 6, inputFile.getPath(), "BLOCKER"),
       tuple("java:S2925", 7, inputFile.getPath(), "MAJOR"));
   }
