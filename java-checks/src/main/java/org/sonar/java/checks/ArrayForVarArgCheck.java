@@ -77,23 +77,26 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
         return;
       }
       if (lastArgType.equals(lastParamType)) {
-        String message = "Remove this array creation";
-        NewArrayTree newArrayTree = (NewArrayTree) lastArg;
-        if (newArrayTree.openBraceToken() == null) {
-          ExpressionTree expression = newArrayTree.dimensions().get(0).expression();
-          Integer literalValue = LiteralUtils.intLiteralValue(expression);
-          if (literalValue == null || literalValue != 0 || isCallingOverload(methodSymbol, lastArg)) {
-            return;
-          }
-        } else if (!newArrayTree.initializers().isEmpty()) {
-          message += " and simply pass the elements";
-        }
-        reportIssue(lastArg, message + ".");
+        reportIssueForSameType(methodSymbol, (NewArrayTree) lastArg);
       } else {
         String type = ((Type.ArrayType) lastParamType).elementType().name();
         reportIssue(lastArg, "Disambiguate this call by either casting as \"" + type + "\" or \"" + type + "[]\".");
       }
     }
+  }
+
+  private void reportIssueForSameType(Symbol.MethodSymbol methodSymbol, NewArrayTree newArrayTree) {
+    String message = "Remove this array creation";
+    if (newArrayTree.openBraceToken() == null) {
+      ExpressionTree expression = newArrayTree.dimensions().get(0).expression();
+      Integer literalValue = LiteralUtils.intLiteralValue(expression);
+      if (literalValue == null || literalValue != 0 || isCallingOverload(methodSymbol, newArrayTree)) {
+        return;
+      }
+    } else if (!newArrayTree.initializers().isEmpty()) {
+      message += " and simply pass the elements";
+    }
+    reportIssue(newArrayTree, message + ".");
   }
 
   private static boolean isLastArgumentVarargs(Symbol.MethodSymbol methodSymbol, Arguments args) {
