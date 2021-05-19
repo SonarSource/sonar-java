@@ -56,7 +56,7 @@ public class UnusedTypeParameterCheck extends IssuableSubscriptionVisitor {
     }
     for (TypeParameterTree typeParameter : typeParameters) {
       Symbol symbol = JUtils.typeParameterTreeSymbol(typeParameter);
-      if (symbol.usages().isEmpty()) {
+      if (!symbol.isUnknown() && symbol.usages().isEmpty()) {
         String message = new StringBuilder(typeParameter.identifier().name())
           .append(" is not used in the ")
           .append(messageEnd).toString();
