@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,6 +30,9 @@ import org.sonar.java.collections.SetUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -88,11 +90,8 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
     "TreeSet",
     "Vector");
 
-  private static final List<String> REQUIRES_RETURN_NULL = Collections.singletonList(
-    "org.springframework.batch.item.ItemProcessor");
-
   private static final MethodMatchers ITEM_PROCESSOR_PROCESS_METHOD = MethodMatchers.create()
-    .ofAnyType().names("process").withAnyParameters().build();
+    .ofSubTypes("org.springframework.batch.item.ItemProcessor").names("process").withAnyParameters().build();
 
   private final Deque<Returns> returnType = new LinkedList<>();
 
@@ -140,7 +139,8 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.METHOD)) {
       MethodTree methodTree = (MethodTree) tree;
-      if (isAnnotatedNullable(methodTree.symbol().metadata()) || requiresReturnNull(methodTree)) {
+      SymbolMetadata metadata = methodTree.symbol().metadata();
+      if (hasUnknownAnnotation(metadata) || isAnnotatedNullable(metadata) || requiresReturnNull(methodTree)) {
         returnType.push(Returns.OTHERS);
       } else {
         returnType.push(Returns.getReturnType(methodTree.returnType()));
@@ -172,12 +172,22 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean requiresReturnNull(MethodTree methodTree) {
+    Symbol owner = methodTree.symbol().owner();
+    if (owner == null || !owner.isTypeSymbol()) {
+      // Unknown hierarchy, consider it as requires null to avoid FP
+      // At this point, owner should never be null, defensive programming
+      return true;
+    }
+    List<Type> interfaces = ((Symbol.TypeSymbol) owner).interfaces();
     return isOverriding(methodTree)
-      && REQUIRES_RETURN_NULL.stream().anyMatch(methodTree.symbol().owner().type()::isSubtypeOf)
-      && ITEM_PROCESSOR_PROCESS_METHOD.matches(methodTree);
+      && (interfaces.stream().anyMatch(Type::isUnknown) || ITEM_PROCESSOR_PROCESS_METHOD.matches(methodTree));
   }
 
   private static boolean isOverriding(MethodTree tree) {
     return Boolean.TRUE.equals(tree.isOverriding());
+  }
+
+  private static boolean hasUnknownAnnotation(SymbolMetadata symbolMetadata) {
+    return symbolMetadata.annotations().stream().anyMatch(annotation -> annotation.symbol().isUnknown());
   }
 }
