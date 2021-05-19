@@ -42,4 +42,40 @@ class KillTheNoiseUnresolvedMethodCall {
       Member memberID(String memberID);
     }
   }
+
+  private void mOverloaded(Unknown1 s) { // Compliant
+  }
+
+  private void mOverloaded(Unknown2 s) { // Compliant
+  }
+
+  void callmOverloaded(Unknown1 u1, Unknown2 u2) {
+    mOverloaded(u1);
+    mOverloaded(u2); // Incorrectly resolved to the other overload
+  }
+
+  private void mOverloaded2(Object s) { // Compliant
+  }
+
+  private void mOverloaded2(Unknown2 s) { // Compliant
+  }
+  void callmOverloaded(java.util.List<Unknown2> objects) {
+    objects.stream().forEach(this::mOverloaded2);
+    objects.stream().forEach(this::mOverloaded2);
+  }
+
+  class OverLoadConstructor {
+    private OverLoadConstructor(Unknown1 s) {
+      System.out.println();
+    }
+
+    private OverLoadConstructor(Unknown2 s) {
+      System.out.println();
+    }
+
+    void callConstructor(Unknown1 u1, Unknown2 u2) {
+      new OverLoadConstructor(u1);
+      new OverLoadConstructor(u2);
+    }
+  }
 }
