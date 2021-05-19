@@ -88,13 +88,13 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
     for (SymbolMetadata.AnnotationInstance annotation : symbolMetadata.annotations()) {
       Type type = annotation.symbol().type();
       // In case of broken semantics, the annotation may match the fully qualified name but still miss the type binding.
-      // In such a case, it is best to consider that the test is not ignored.
+      // As a consequence, fetching the values from the annotation returns an empty list, as if there were no value, even though there might be one or more.
+      // In such cases, it is best to consider that the test is not ignored.
       if (type.isUnknown()) {
         return false;
       }
       if (type.is(fullyQualifiedName)) {
-        List<SymbolMetadata.AnnotationValue> annotationValues = annotation.values();
-        return annotationValues != null && annotationValues.isEmpty();
+        return annotation.values().isEmpty();
       }
     }
     return false;
