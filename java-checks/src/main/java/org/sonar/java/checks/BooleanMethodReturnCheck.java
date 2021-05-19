@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
@@ -44,13 +45,18 @@ public class BooleanMethodReturnCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (returnsBoolean(methodTree) && !isAnnotatedNullable(methodTree.symbol().metadata())) {
+    SymbolMetadata metadata = methodTree.symbol().metadata();
+    if (returnsBoolean(methodTree) && !isAnnotatedNullable(metadata) && !hasUnknownAnnotation(metadata)) {
       methodTree.accept(new ReturnStatementVisitor());
     }
   }
 
   private static boolean returnsBoolean(MethodTree methodTree) {
     return methodTree.returnType().symbolType().is("java.lang.Boolean");
+  }
+
+  private static boolean hasUnknownAnnotation(SymbolMetadata symbolMetadata) {
+    return symbolMetadata.annotations().stream().anyMatch(annotation -> annotation.symbol().isUnknown());
   }
 
   private class ReturnStatementVisitor extends BaseTreeVisitor {

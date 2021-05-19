@@ -68,7 +68,7 @@ public class WildcardReturnParameterTypeCheck extends IssuableSubscriptionVisito
         // Second type parameter of Collector is ignored as it is an implementation detail
         reportIfWildcard(typeArguments.get(0));
         reportIfWildcard(typeArguments.get(2));
-      } else if (!symbolType.is("java.lang.Class")) {
+      } else if (!symbolType.is("java.lang.Class") && !symbolType.isUnknown()) {
         typeArguments.forEach(this::reportIfWildcard);
       }
       super.visitParameterizedType(tree);
