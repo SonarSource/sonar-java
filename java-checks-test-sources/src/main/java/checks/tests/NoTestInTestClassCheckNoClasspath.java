@@ -10,7 +10,7 @@ class TestCaseB extends junit.framework.TestCase {
   }
 }
 
-class ATest { // Noncompliant {{Add some tests to this class.}}
+class ATest { // Noncompliant [[sc=7;ec=12]] {{Add some tests to this class.}}
   ATest() {}
   void foo() {
     new AnonymousClass() {

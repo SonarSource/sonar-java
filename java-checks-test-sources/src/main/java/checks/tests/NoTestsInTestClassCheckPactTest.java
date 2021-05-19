@@ -54,7 +54,7 @@ class NoTestsInTestClassCheckPactSpringTest { //Compliant
 @Consumer("glory")
 @PactBroker
 @RunWith(RestPactRunner.class)
-class NoTestsInTestClassCheckPactNonCompliantTest{ // Noncompliant
+class NoTestsInTestClassCheckPactNonCompliantTest{ // Noncompliant [[sc=7;ec=50]]
 
   public void testA() {
     // Prepare service before interaction that require "default" state
