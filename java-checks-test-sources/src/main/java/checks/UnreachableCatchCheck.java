@@ -13,7 +13,7 @@ public class UnreachableCatchCheck {
       throwExtendsCustomException();
     } catch (ExtendsCustomException e) {
       // ...
-    } catch (CustomException e) { // Noncompliant [[sc=7;ec=12;secondary=14]] {{Remove or refactor this catch clause because it is unreachable as hidden by previous catch blocks.}}
+    } catch (CustomException e) { // Noncompliant [[sc=7;ec=12;secondary=14]] {{Remove or refactor this catch clause because it is unreachable, hidden by previous catch block(s).}}
       // ...
     }
 
@@ -21,18 +21,18 @@ public class UnreachableCatchCheck {
       throw new ExtendsCustomException();
     } catch (ExtendsCustomException e) {
       // ...
-    } catch (CustomException|IllegalStateException e) { // Noncompliant [[sc=14;ec=29]] {{Remove this type because it is unreachable as hidden by previous catch blocks.}}
+    } catch (CustomException|IllegalStateException e) { // Noncompliant [[sc=14;ec=29;secondary=22]] {{Remove this type because it is unreachable, hidden by previous catch block(s).}}
       // ...
     }
 
     try {
       if (true) throw new ExtendsExtendsCustomException();
-      else throw new ExtendsOtherExtendsCustomException();
+      throw new ExtendsOtherExtendsCustomException();
     } catch (ExtendsExtendsCustomException e) {
       // ...
     } catch (ExtendsOtherExtendsCustomException e) {
       // ...
-    } catch (ExtendsCustomException|OtherExtendsCustomException e) { // Noncompliant [[sc=7;ec=12;secondary=31,33]] {{Remove or refactor this catch clause because it is unreachable as hidden by previous catch blocks.}}
+    } catch (ExtendsCustomException | OtherExtendsCustomException e) { // Noncompliant [[sc=7;ec=12;secondary=31,33]] {{Remove or refactor this catch clause because it is unreachable, hidden by previous catch block(s).}}
       // ...
     }
 
@@ -64,11 +64,11 @@ public class UnreachableCatchCheck {
 
     try {
       throwExtendsCustomException();
-    } catch (ExtendsExtendsCustomException e) {
+    } catch (ExtendsExtendsCustomException e) { // reported as secondary, even if it can not be raised from code
       // ...
     } catch (ExtendsCustomException e) {
       // ...
-    } catch (CustomException e) { // Noncompliant [[secondary=69]]
+    } catch (CustomException e) { // Noncompliant [[secondary=67,69]]
       // ...
     }
 
@@ -100,7 +100,7 @@ public class UnreachableCatchCheck {
           throwCustomException(); // not in the same scope
         }
       }
-      takeObject((Executable)(() -> throwCustomException())); // not in the same scope
+      takeObject((Executable)(this::throwCustomException)); // not in the same scope
     } catch (ExtendsCustomException e) {
       // ...
     } catch (CustomException e) { // Noncompliant
@@ -198,7 +198,7 @@ public class UnreachableCatchCheck {
     } catch (IOException e) { // Compliant, close throws an IOException
     } catch (ExtendsCustomException e) {
       // ...
-    } catch (CustomException e) { // FN
+    } catch (CustomException e) { // Noncompliant
       // ...
     }
 
@@ -212,7 +212,7 @@ public class UnreachableCatchCheck {
     try (B a = new B()) {
     } catch (FileNotFoundException e) {
       e.printStackTrace();
-    } catch (IOException e) { // FN: this can happen only if the class implementing Closable specify a subtype of IOException in the declaration.
+    } catch (IOException e) { // Noncompliant - this can happen only if the class implementing Closable specify a subtype of IOException in the declaration.
       e.printStackTrace();
     }
 

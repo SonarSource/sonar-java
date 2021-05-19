@@ -3,14 +3,6 @@ package checks;
 public class UnreachableCatchCheck {
   void unreachable(boolean cond) {
     try {
-      throwExtendsCustomException();
-    } catch (ExtendsCustomException e) {
-      // ...
-    } catch (CustomException e) { // Noncompliant
-      // ...
-    }
-
-    try {
       throwUnknownException();
     } catch (ExtendsCustomException e) {
       // ...

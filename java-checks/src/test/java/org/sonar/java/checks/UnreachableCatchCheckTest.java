@@ -40,7 +40,7 @@ class UnreachableCatchCheckTest {
     JavaCheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/UnreachableCatchCheck.java"))
       .withCheck(new UnreachableCatchCheck())
-      .verifyIssues();
+      .verifyNoIssues();
   }
 
 }

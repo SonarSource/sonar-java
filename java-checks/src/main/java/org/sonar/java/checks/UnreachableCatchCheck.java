@@ -20,26 +20,21 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.model.JWarning;
+import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CatchTree;
-import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.ThrowStatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -48,203 +43,114 @@ import org.sonar.plugins.java.api.tree.UnionTypeTree;
 @Rule(key = "S4970")
 public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
 
+  private final List<JWarning> warnings = new ArrayList<>();
+  private static final Comparator<Location> LOCATION_COMAPRATOR = Comparator.<Location>comparingInt(loc -> loc.syntaxNode.firstToken().line())
+    .thenComparing(Comparator.comparingInt(loc -> loc.syntaxNode.firstToken().column()));
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.TRY_STATEMENT);
+    return Arrays.asList(Tree.Kind.COMPILATION_UNIT, Tree.Kind.TRY_STATEMENT);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    TryStatementTree tryStatementTree = (TryStatementTree) tree;
-    if (!tryStatementTree.resourceList().isEmpty()) {
-      // Try with resource will call close, throwing by default an Exception or IOException.
-      // Supporting potential problems is not worth since it is really unlikely that something wrong happen.
+    if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
+      warnings.clear();
+      warnings.addAll(((CompilationUnitTreeImpl) tree).warnings(JWarning.Type.MASKED_CATCH));
       return;
     }
-
-    new UnreachableCatchFinder(tryStatementTree).find();
+    checkWarnings((TryStatementTree) tree);
   }
 
-  private class UnreachableCatchFinder {
-    Map<Type, Tree> typeToTypeTree = new HashMap<>();
-    List<CatchClauseInfo> catchClauses = new ArrayList<>();
-    Map<Type, Set<Type>> baseToSubtype = new HashMap<>();
-    TryStatementTree tryStatementTree;
-    List<Type> thrownTypes;
+  private void checkWarnings(TryStatementTree tryStatementTree) {
+    List<TypeTree> typesWithWarnings = new ArrayList<>(warnings.size());
+    List<UnionTypeTree> unionTypes = new ArrayList<>();
+    Map<TypeTree, Type> typeByExceptions = new HashMap<>();
+    Map<TypeTree, Tree> reportTrees = new HashMap<>();
 
-    UnreachableCatchFinder(TryStatementTree tryStatementTree) {
-      this.tryStatementTree = tryStatementTree;
+    for (CatchTree catchTree : tryStatementTree.catches()) {
+      SyntaxToken catchKeyword = catchTree.catchKeyword();
+      TypeTree caughtException = catchTree.parameter().type();
+
+      boolean withinUnionType = caughtException.is(Tree.Kind.UNION_TYPE);
+      if (withinUnionType) {
+        // in case we need to report on the entire union type
+        reportTrees.put(caughtException, catchKeyword);
+        unionTypes.add((UnionTypeTree) caughtException);
+      }
+
+      for (TypeTree typeTree : caughtExceptionTypes(caughtException)) {
+        typeByExceptions.put(typeTree, typeTree.symbolType());
+        // types from union types should be reported individually
+        reportTrees.put(typeTree, withinUnionType ? typeTree : catchKeyword);
+
+        SyntaxToken typeFirstToken = typeTree.firstToken();
+        warnings.stream()
+          .filter(warning -> warning.contains(typeFirstToken))
+          .forEach(warning -> typesWithWarnings.add(typeTree));
+      }
     }
+    reportUnreacheableCatch(typesWithWarnings, typeByExceptions, reportTrees, unionTypes);
+  }
 
-    void find() {
-      getBaseTypeCaughtAfterSubtype(tryStatementTree.catches());
-      if (baseToSubtype.isEmpty()) {
-        return;
+  private static List<TypeTree> caughtExceptionTypes(TypeTree caughtException) {
+    if (caughtException.is(Tree.Kind.UNION_TYPE)) {
+      return ((UnionTypeTree) caughtException).typeAlternatives();
+    }
+    return Collections.singletonList(caughtException);
+  }
+
+  private void reportUnreacheableCatch(List<TypeTree> typesWithWarnings, Map<TypeTree, Type> typeByExceptions, Map<TypeTree, Tree> reportTrees, List<UnionTypeTree> unionTypes) {
+    for (TypeTree type : typesToReport(typesWithWarnings, unionTypes)) {
+      reportIssue(reportTrees.get(type), message(reportTrees.get(type)), secondaries(type, typeByExceptions), null);
+    }
+  }
+
+  private static List<TypeTree> typesToReport(List<TypeTree> typesWithWarnings, List<UnionTypeTree> unionTypes) {
+    List<TypeTree> typesToReport = new ArrayList<>(typesWithWarnings);
+    for (UnionTypeTree unionType : unionTypes) {
+      List<TypeTree> typeAlternatives = unionType.typeAlternatives();
+      if (typesWithWarnings.containsAll(typeAlternatives)) {
+        typesToReport.add(unionType);
+        typesToReport.removeAll(typeAlternatives);
       }
+    }
+    return typesToReport;
+  }
 
-      ThrownExceptionCollector collector = new ThrownExceptionCollector();
-      tryStatementTree.block().accept(collector);
+  private static String message(Tree reportTree) {
+    if (reportTree.is(Tree.Kind.TOKEN)) {
+      return "Remove or refactor this catch clause because it is unreachable, hidden by previous catch block(s).";
+    }
+    // reporting on the type alternative of an union type
+    return "Remove this type because it is unreachable, hidden by previous catch block(s).";
+  }
 
-      if (collector.unknownVisited || collector.thrownTypes.isEmpty()) {
-        // Unknown method can throw anything, we can not tell anything about it.
-        return;
-      }
+  private static List<Location> secondaries(TypeTree type, Map<TypeTree, Type> typeByExceptions) {
+    List<Type> targets;
+    if (type.is(Tree.Kind.UNION_TYPE)) {
+      targets = ((UnionTypeTree) type).typeAlternatives()
+        .stream()
+        .map(typeByExceptions::get)
+        .collect(Collectors.toList());
+    } else {
+      targets = Collections.singletonList(typeByExceptions.get(type));
+    }
+    return childrenExceptionTypes(targets, typeByExceptions);
+  }
 
-      thrownTypes = collector.thrownTypes;
-
-      for (CatchClauseInfo catchClause : catchClauses) {
-        List<Type> hiddenTypes = catchClause.types.stream()
-          .filter(type -> isUnreachable(type, baseToSubtype.getOrDefault(type, Collections.emptySet()), thrownTypes))
-          .collect(Collectors.toList());
-
-        if (hiddenTypes.size() == catchClause.types.size()) {
-          reportWholeCatchClause(catchClause);
-        } else {
-          for (Type hiddenType : hiddenTypes) {
-            reportSingleType(hiddenType);
-          }
+  private static List<Location> childrenExceptionTypes(List<Type> targets, Map<TypeTree, Type> exceptionTypes) {
+    List<Location> secondaries = new ArrayList<>();
+    targets.forEach(target -> {
+      for (Map.Entry<TypeTree, Type> exceptionType : exceptionTypes.entrySet()) {
+        TypeTree tree = exceptionType.getKey();
+        Type type = exceptionType.getValue();
+        if (!type.equals(target) && type.isSubtypeOf(target)) {
+          secondaries.add(new Location("Already catch the exception", tree));
         }
       }
-    }
-
-    void reportWholeCatchClause(CatchClauseInfo catchClause) {
-      List<Type> subtypesHiding = catchClause.types.stream()
-        .flatMap(type -> baseToSubtype.get(type).stream())
-        .filter(subtype -> isHiding(subtype, thrownTypes))
-        .collect(Collectors.toList());
-
-      reportIssue(catchClause.tree.catchKeyword(),
-        "Remove or refactor this catch clause because it is unreachable as hidden by previous catch blocks.",
-        subtypesHiding.stream().map(type -> new JavaFileScannerContext.Location("Already catch the exception", typeToTypeTree.get(type)))
-          .collect(Collectors.toList()),
-        null);
-    }
-
-    void reportSingleType(Type hiddenType) {
-      List<Type> subtypesHiding = baseToSubtype.get(hiddenType).stream()
-        .filter(subtype -> isHiding(subtype, thrownTypes))
-        .collect(Collectors.toList());
-
-      reportIssue(typeToTypeTree.get(hiddenType),
-        "Remove this type because it is unreachable as hidden by previous catch blocks.",
-        subtypesHiding.stream().map(type -> new JavaFileScannerContext.Location("Already catch the exception", typeToTypeTree.get(type)))
-          .collect(Collectors.toList()),
-        null);
-    }
-
-    void getBaseTypeCaughtAfterSubtype(List<CatchTree> catches) {
-      List<Type> catchTypes = catches.stream()
-        .flatMap(c -> {
-          List<Type> types = new ArrayList<>();
-          collectTypesFromTypeTree(c.parameter().type(), types);
-          catchClauses.add(new CatchClauseInfo(types, c));
-          return types.stream();
-        })
-        .filter(UnreachableCatchCheck::isChecked)
-        .collect(Collectors.toList());
-
-      for (int i = 0; i < catchTypes.size() - 1; i++) {
-        Type topType = catchTypes.get(i);
-        for (int j = i + 1; j < catchTypes.size(); j++) {
-          Type bottomType = catchTypes.get(j);
-          if (topType.isSubtypeOf(bottomType)) {
-            baseToSubtype.computeIfAbsent(bottomType, k -> new HashSet<>()).add(topType);
-          }
-        }
-      }
-    }
-
-    void collectTypesFromTypeTree(TypeTree typeTree, List<Type> types) {
-      if (typeTree.is(Tree.Kind.UNION_TYPE)) {
-        ((UnionTypeTree) typeTree).typeAlternatives().forEach(t -> collectTypesFromTypeTree(t, types));
-      } else {
-        Type type = typeTree.symbolType();
-        typeToTypeTree.put(type, typeTree);
-        types.add(type);
-      }
-    }
-
+    });
+    secondaries.sort(LOCATION_COMAPRATOR);
+    return secondaries;
   }
-
-  private static boolean isChecked(Type type) {
-    return !type.isUnknown()
-      && !type.isSubtypeOf("java.lang.RuntimeException")
-      && !type.isSubtypeOf("java.lang.Error")
-      && !type.is("java.lang.Exception")
-      && !type.is("java.lang.Throwable");
-  }
-
-  private static boolean isHiding(Type subtype, List<Type> thrownTypes) {
-    return thrownTypes.stream()
-      .anyMatch(thrownType ->
-        thrownType.isSubtypeOf(subtype)
-      );
-  }
-
-  private static boolean isUnreachable(Type baseType, Collection<Type> subtypes, List<Type> thrownTypes) {
-    return !subtypes.isEmpty() && thrownTypes.stream()
-      .allMatch(thrownType ->
-        !relatedTypes(thrownType, baseType) || subtypes.stream().anyMatch(thrownType::isSubtypeOf)
-      );
-  }
-
-  private static boolean relatedTypes(Type type1, Type type2) {
-    return type1.isSubtypeOf(type2) || type2.isSubtypeOf(type1);
-  }
-
-  private static class ThrownExceptionCollector extends BaseTreeVisitor {
-    List<Type> thrownTypes = new ArrayList<>();
-    boolean unknownVisited = false;
-
-    @Override
-    public void visitMethodInvocation(MethodInvocationTree mit) {
-      addAllThrownTypes(mit.symbol());
-      super.visitMethodInvocation(mit);
-    }
-
-    @Override
-    public void visitNewClass(NewClassTree tree) {
-      addAllThrownTypes(tree.constructorSymbol());
-      super.visitNewClass(tree);
-    }
-
-    @Override
-    public void visitThrowStatement(ThrowStatementTree tree) {
-      thrownTypes.add(tree.expression().symbolType());
-      super.visitThrowStatement(tree);
-    }
-
-    private void addAllThrownTypes(Symbol symbol) {
-      if (symbol.isMethodSymbol()) {
-        List<Type> newThrownTypes = ((Symbol.MethodSymbol) symbol).thrownTypes();
-        thrownTypes.addAll(newThrownTypes);
-        unknownVisited = unknownVisited || newThrownTypes.stream().anyMatch(Type::isUnknown);
-      } else if (symbol.isUnknown()) {
-        unknownVisited = true;
-      }
-    }
-
-    @Override
-    public void visitClass(ClassTree tree) {
-      // Skip class
-    }
-
-    @Override
-    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
-      // Skip lambdas
-    }
-  }
-
-  private static class CatchClauseInfo {
-
-    List<Type> types;
-    CatchTree tree;
-
-    CatchClauseInfo(List<Type> types, CatchTree tree) {
-      this.types = types;
-      this.tree = tree;
-    }
-
-  }
-
 }
