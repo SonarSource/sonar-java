@@ -21,13 +21,22 @@ package org.sonar.java.checks.spring;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.TestUtils;
 
 class SpringIncompatibleTransactionalCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/spring/SpringIncompatibleTransactionalCheck.java")
+      .onFile(TestUtils.testSourcesPath("checks/spring/SpringIncompatibleTransactionalCheck.java"))
+      .withCheck(new SpringIncompatibleTransactionalCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/spring/SpringIncompatibleTransactionalCheck.java"))
       .withCheck(new SpringIncompatibleTransactionalCheck())
       .verifyIssues();
   }

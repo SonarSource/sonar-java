@@ -56,6 +56,11 @@ public class SillyEqualsCheck extends AbstractMethodDetection {
       argumentType = JUtils.primitiveWrapperType(argumentType);
     }
     Type ownerType = getMethodOwnerType(tree).erasure();
+
+    if (ownerType.isUnknown() || argumentType.isUnknown()) {
+      return;
+    }
+
     IdentifierTree methodInvocationName = ExpressionUtils.methodName(tree);
     if (isLiteralNull(firstArgument)) {
       reportIssue(methodInvocationName, "Remove this call to \"equals\"; comparisons against null always return false; consider using '== null' to check for nullity.");
@@ -108,6 +113,7 @@ public class SillyEqualsCheck extends AbstractMethodDetection {
   }
 
   private static boolean areNotRelated(Type type1, Type type2) {
+    // At this point, the type should not be unknown, but to prevent FP in case of strange semantic from ECJ, we check it again.
     return !type1.isUnknown() && !type2.isUnknown() && !type1.isSubtypeOf(type2) && !type2.isSubtypeOf(type1);
   }
 

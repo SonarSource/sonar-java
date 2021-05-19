@@ -25,8 +25,14 @@ class ExtendsUnknown extends Unknown {
     return o.toString().equals("abc");
   }
 
-  public void unknownArg(Unknown unknown, Object object) {
+  public void unknownArg(Unknown unknown, Object object, Unknown[] unknownArray) {
     object.equals(unknown); // Compliant
     unknown.equals(object); // Compliant
+
+    object.equals(unknownArray); // Compliant
+    unknownArray.equals(object); // Compliant
+
+    unknownArray.equals(unknown); // Compliant
+    unknown.equals(unknownArray); // Compliant
   }
 }

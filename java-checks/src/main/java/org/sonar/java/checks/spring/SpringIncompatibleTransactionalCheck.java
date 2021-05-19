@@ -26,15 +26,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
-import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationValue;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -58,12 +60,14 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
   private static final String REQUIRED = "REQUIRED";
   private static final String REQUIRES_NEW = "REQUIRES_NEW";
   private static final String SUPPORTS = "SUPPORTS";
+  // Made name to represent no annotation
+  private static final String NOT_TRANSACTIONAL = "SONAR_NOT_TRANSACTIONAL";
 
   private static final Map<String, Set<String>> INCOMPATIBLE_PROPAGATION_MAP = buildIncompatiblePropagationMap();
 
   private static Map<String, Set<String>> buildIncompatiblePropagationMap() {
     Map<String, Set<String>> map = new HashMap<>();
-    map.put(null, new HashSet<>(Arrays.asList(MANDATORY, NESTED, REQUIRED, REQUIRES_NEW)));
+    map.put(NOT_TRANSACTIONAL, new HashSet<>(Arrays.asList(MANDATORY, NESTED, REQUIRED, REQUIRES_NEW)));
     map.put(MANDATORY, new HashSet<>(Arrays.asList(NESTED, NEVER, NOT_SUPPORTED, REQUIRES_NEW)));
     map.put(NESTED, new HashSet<>(Arrays.asList(NESTED, NEVER, NOT_SUPPORTED, REQUIRES_NEW)));
     map.put(NEVER, new HashSet<>(Arrays.asList(MANDATORY, NESTED, REQUIRED, REQUIRES_NEW)));
@@ -100,6 +104,9 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
       public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
         super.visitMethodInvocation(methodInvocation);
         Symbol calleeMethodSymbol = methodInvocation.symbol();
+        if (calleeMethodSymbol.isUnknown()) {
+          return;
+        }
         if (methodsPropagationMap.containsKey(calleeMethodSymbol) && methodInvocationOnThisInstance(methodInvocation)) {
           String calleePropagation = methodsPropagationMap.get(calleeMethodSymbol);
           checkIncompatiblePropagation(methodInvocation, callerPropagation, calleeMethodSymbol, calleePropagation);
@@ -132,15 +139,19 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
 
   private static Map<Symbol, String> collectMethodsPropagation(ClassTree classTree) {
     Map<Symbol, String> methodPropagationMap = new HashMap<>();
-    String classPropagation = getPropagation(classTree.symbol(), null);
-    for (Tree member : classTree.members()) {
-      if (member.is(Tree.Kind.METHOD)) {
-        MethodTree method = (MethodTree) member;
-        if (method.symbol().isPublic()) {
-          methodPropagationMap.put(method.symbol(), getPropagation(method.symbol(), classPropagation));
+    // When the propagation of the class itself is unknown (incomplete semantic), we do nothing to avoid FP.
+    getPropagationIfKnown(classTree.symbol(), NOT_TRANSACTIONAL).ifPresent(classPropagation -> {
+      for (Tree member : classTree.members()) {
+        if (member.is(Tree.Kind.METHOD)) {
+          MethodTree method = (MethodTree) member;
+          if (method.symbol().isPublic()) {
+            getPropagationIfKnown(method.symbol(), classPropagation).ifPresent(propagation ->
+              methodPropagationMap.put(method.symbol(), propagation)
+            );
+          }
         }
       }
-    }
+    });
     return methodPropagationMap;
   }
 
@@ -148,32 +159,40 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
     return methodsPropagationList.stream().distinct().count() <= 1;
   }
 
-  @CheckForNull
-  private static String getPropagation(Symbol symbol, @Nullable String inheritedPropagation) {
-    String defaultValue = inheritedPropagation != null ? inheritedPropagation : REQUIRED;
-    List<AnnotationValue> values = symbol.metadata().valuesForAnnotation(SPRING_TRANSACTIONAL_ANNOTATION);
-    if (values != null) {
-      return getAnnotationAttributeAsString(values, "propagation", defaultValue);
+  /**
+   * Returns Optional.Empty if the Propagation can not be reliably known: if something has unknown type in the process.
+   */
+  private static Optional<String> getPropagationIfKnown(Symbol symbol, String inheritedPropagation) {
+    String defaultValue = NOT_TRANSACTIONAL.equals(inheritedPropagation) ? REQUIRED : inheritedPropagation;
+    Optional<String> propagation = Optional.of(inheritedPropagation);
+
+    for (SymbolMetadata.AnnotationInstance annotationInstance : symbol.metadata().annotations()) {
+      Symbol annotationSymbol = annotationInstance.symbol();
+      Type annotationType = annotationSymbol.type();
+      if (annotationSymbol.isUnknown()) {
+        return Optional.empty();
+      } else if (annotationType.is(SPRING_TRANSACTIONAL_ANNOTATION)) {
+        propagation = getAnnotationAttributeAsString(annotationInstance.values(), "propagation", defaultValue);
+      } else if (annotationType.is(JAVAX_TRANSACTIONAL_ANNOTATION)) {
+        propagation = getAnnotationAttributeAsString(annotationInstance.values(), "value", defaultValue);
+      }
     }
-    values = symbol.metadata().valuesForAnnotation(JAVAX_TRANSACTIONAL_ANNOTATION);
-    if (values != null) {
-      return getAnnotationAttributeAsString(values, "value", defaultValue);
-    } else {
-      return inheritedPropagation;
-    }
+    return propagation;
   }
 
-  private static String getAnnotationAttributeAsString(List<AnnotationValue> values, String attributeName, String defaultValue) {
+  private static Optional<String> getAnnotationAttributeAsString(List<AnnotationValue> values, String attributeName, String defaultValue) {
     for (AnnotationValue annotationValue : values) {
       if (attributeName.equals(annotationValue.name())) {
         Object value = annotationValue.value();
         if (value instanceof Symbol.VariableSymbol) {
           // expected values are constant from a Enum, translated into variable symbol
-          return ((Symbol.VariableSymbol) value).name();
+          return Optional.of(((Symbol.VariableSymbol) value).name());
+        } else {
+          return Optional.empty();
         }
       }
     }
-    return defaultValue;
+    return Optional.of(defaultValue);
   }
 
 }
