@@ -1,25 +1,25 @@
-package org.sonar.java.checks.targets;
+package checks;
 
-import java.util.ArrayList;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-import java.util.stream.Collectors;
-import java.util.List;
+import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import static java.util.Collections.emptySet;
-import java.io.Serializable;
 
-class UnusedPrivateMethod {
+class UnusedPrivateMethodCheck {
 
-  private UnusedPrivateMethod() {}
-  private UnusedPrivateMethod(int a) {} // Noncompliant
+  private UnusedPrivateMethodCheck() {}
+  private UnusedPrivateMethodCheck(int a) {} // Noncompliant
 
-  public UnusedPrivateMethod(String s) {
+  public UnusedPrivateMethodCheck(String s) {
     init();
   }
 
@@ -130,7 +130,7 @@ class OuterClass {
 
 }
 
-class Lambdas {
+class UnusedPrivateMethodCheckLambdas {
   void method(){
     IntStream.range(1, 5)
       .map((x)-> x*x )
@@ -141,58 +141,14 @@ class Lambdas {
   }
 }
 
-class ReturnTypeInference {
+class UnusedPrivateMethodCheckReturnTypeInference {
   private void foo(java.util.List<String> l) {}
   void test() {
     java.util.List<String> l = new ArrayList<>();
     foo(l.stream().sorted().collect(Collectors.toList()));
   }
 }
-
-class KillTheNoiseUnresolvedMethodCall {
-
-  static class A {
-    private A(int i) {}  // Compliant - unresolved constructor invocation
-  }
-
-  void foo(Object o, java.util.List<Object> objects) {
-    unresolvedMethod(unknown); // unresolved
-
-    A a;
-    a = new A(unknown); // unresolved
-    a = new org.sonar.java.checks.targets.KillTheNoiseUnresolvedMethodCall.A(o); // unresolved
-    A[] as = new A[0];
-
-    new Unknown<String>(o); // unresolved
-
-    objects.stream().forEach(this::unresolvedMethodRef); // unresolved
-    objects.stream().forEach(this::methodRef); // resolved
-  }
-
-  private void unresolvedMethod(int i) {} // Compliant - method with the same name not resolved
-  private void unresolvedMethodRef(int i) {} // Compliant - method ref with the same name not resolved
-  private void methodRef(Object o) {} // Compliant
-
-  static class Member {
-    private Member(String firstName, String lastName, String memberID) { // Compliant
-    }
-
-    public static LastNameBuilder member(String firstName) {
-      return lastName -> memberID -> new Member(firstName, lastName, memberID); // constructor not resolved
-    }
-
-    @FunctionalInterface
-    public interface LastNameBuilder {
-      MemberIDBuilder lastName(String lastName);
-    }
-
-    @FunctionalInterface
-    public interface MemberIDBuilder {
-      Member memberID(String memberID);
-    }
-  }
-}
-class Bar {
+class UnusedPrivateMethodCheckBar {
   public void print() {
     java.util.List<String> list = java.util.Arrays.asList("x", "y", "z");
     java.util.List<Foo> foos = list.stream().map(Foo::new).collect(Collectors.toList());
@@ -207,7 +163,7 @@ class Bar {
   }
 }
 
-class NestedTypeInference1 {
+class UnusedPrivateMethodCheckNestedTypeInference1 {
   public <D, L extends List<D>> void foo(Callback2<L> cb2) {
     qix(rs -> bar(cb2.doStuff(rs)));
   }
@@ -227,7 +183,7 @@ class NestedTypeInference1 {
   }
 }
 
-class NestedTypeInference2 {
+class UnusedPrivateMethodCheckNestedTypeInference2 {
   public Supplier<Map<Boolean, BigDecimal>> branch() {
     return turnover(calculateTurnover(this::extractSourceBranches));
   }
@@ -245,15 +201,15 @@ class NestedTypeInference2 {
   }
 }
 
-class MyClass<A extends Serializable> {
+class UnusedPrivateMethodCheckMyClass<A extends Serializable> {
 
-  private MyClass(MyClassBuilder<A> builder) { // Compliant: used in MyClassBuilder
+  private UnusedPrivateMethodCheckMyClass(MyClassBuilder<A> builder) { // Compliant: used in MyClassBuilder
     builder.build();
   }
 
   public static final class MyClassBuilder<B extends Serializable> {
-    public MyClass<B> build() {
-      return new MyClass<>(this); // constructor is correctly resolved when using diamond
+    public UnusedPrivateMethodCheckMyClass<B> build() {
+      return new UnusedPrivateMethodCheckMyClass<>(this); // constructor is correctly resolved when using diamond
     }
   }
 }
