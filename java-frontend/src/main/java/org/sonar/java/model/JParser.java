@@ -147,6 +147,8 @@ public class JParser {
 
   public static final String MAXIMUM_SUPPORTED_JAVA_VERSION = "15";
 
+  private static final String MAXIMUM_ECJ_WARNINGS = "42000";
+
   private static final Predicate<IProblem> IS_SYNTAX_ERROR = error -> (error.getID() & IProblem.Syntax) != 0;
   private static final Predicate<IProblem> IS_UNDEFINED_TYPE_ERROR = error -> (error.getID() & IProblem.UndefinedType) != 0;
 
@@ -164,6 +166,7 @@ public class JParser {
     Map<String, String> options = new HashMap<>();
     options.put(JavaCore.COMPILER_COMPLIANCE, version);
     options.put(JavaCore.COMPILER_SOURCE, version);
+    options.put(JavaCore.COMPILER_PB_MAX_PER_UNIT, MAXIMUM_ECJ_WARNINGS);
     if (MAXIMUM_SUPPORTED_JAVA_VERSION.equals(version)) {
       options.put(JavaCore.COMPILER_PB_ENABLE_PREVIEW_FEATURES, "enabled");
     }
