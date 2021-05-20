@@ -16,7 +16,7 @@ public class RegexStackOverflowCheckWithConstantStackConsumption {
     Pattern.compile("(.|\n)?"),
     Pattern.compile("(.|\n)*+"),
     Pattern.compile("(.|\n){1,42}"),
-    Pattern.compile("(ax*+)*"),
+    Pattern.compile("(ax*+)*+"),
   };
 
 }
