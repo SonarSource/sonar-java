@@ -29,6 +29,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -53,7 +54,6 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
     SymbolMetadata symbolMetadata = methodTree.symbol().metadata();
-
     // check for @Ignore or @Disabled annotations
     boolean hasIgnoreAnnotation = isSilentlyIgnored(symbolMetadata, "org.junit.Ignore");
     boolean hasDisabledAnnotation = isSilentlyIgnored(symbolMetadata, "org.junit.jupiter.api.Disabled");
@@ -77,15 +77,27 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
             "A constant boolean value is passed as argument, causing this test to always be skipped.", mit.arguments()));
 
           reportIssue(ExpressionUtils.methodName(mit), "This assumption is called with a boolean constant; remove it or, to skip this " +
-            "test use an @Ignore/@Disabled annotation in combination with an explanation about why it is skipped.",
+              "test use an @Ignore/@Disabled annotation in combination with an explanation about why it is skipped.",
             secondaryLocation, null);
         });
     }
   }
 
-  private static boolean isSilentlyIgnored(SymbolMetadata symbolMetadata, String annotation) {
-    List<SymbolMetadata.AnnotationValue> annotationValues = symbolMetadata.valuesForAnnotation(annotation);
-    return annotationValues != null && annotationValues.isEmpty();
+  private static boolean isSilentlyIgnored(SymbolMetadata symbolMetadata, String fullyQualifiedName) {
+    // This code duplicates the behavior of SymbolMetadata.valuesForAnnotation but checks for broken semantics
+    for (SymbolMetadata.AnnotationInstance annotation : symbolMetadata.annotations()) {
+      Type type = annotation.symbol().type();
+      // In case of broken semantics, the annotation may match the fully qualified name but still miss the type binding.
+      // As a consequence, fetching the values from the annotation returns an empty list, as if there were no value, even though there might be one or more.
+      // In such cases, it is best to consider that the test is not ignored.
+      if (type.isUnknown()) {
+        return false;
+      }
+      if (type.is(fullyQualifiedName)) {
+        return annotation.values().isEmpty();
+      }
+    }
+    return false;
   }
 
   private static boolean hasConstantOppositeArg(MethodInvocationTree mit) {

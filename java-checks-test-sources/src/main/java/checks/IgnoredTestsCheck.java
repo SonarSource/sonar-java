@@ -19,11 +19,14 @@ abstract class IgnoredTestsCheck {
   @org.junit.Ignore("withComment") // compliant : explicit comment about why this test is ignored.
   void foo2() {}
 
+  @Ignore("withComment") // compliant : explicit comment about why this test is ignored.
+  void foo2WithoutFQN() {}
+
   @Disabled("withComment") // compliant : explicit comment about why this test is ignored.
   void disabledJunit5WithComment() {}
 
   void assume1() {
-    Assume.assumeTrue(false); // Noncompliant [[sc=12;ec=22;secondary=26]] {{This assumption is called with a boolean constant; remove it or, to skip this test use an @Ignore/@Disabled annotation in combination with an explanation about why it is skipped.}}
+    Assume.assumeTrue(false); // Noncompliant [[sc=12;ec=22;secondary=+0]] {{This assumption is called with a boolean constant; remove it or, to skip this test use an @Ignore/@Disabled annotation in combination with an explanation about why it is skipped.}}
     Assume.assumeTrue(true);
   }
   void assume2() {

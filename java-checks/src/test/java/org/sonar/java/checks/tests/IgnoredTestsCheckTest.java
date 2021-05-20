@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks.tests;
 
+import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
@@ -32,5 +33,14 @@ class IgnoredTestsCheckTest {
       .onFile(testSourcesPath("checks/IgnoredTestsCheck.java"))
       .withCheck(new IgnoredTestsCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_without_semantic() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/IgnoredTestsCheck.java"))
+      .withCheck(new IgnoredTestsCheck())
+      .withClassPath(Collections.emptyList())
+      .verifyNoIssues();
   }
 }
