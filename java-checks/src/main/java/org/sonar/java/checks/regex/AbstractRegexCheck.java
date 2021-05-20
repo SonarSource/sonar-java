@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.IntFunction;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -70,6 +71,12 @@ public abstract class AbstractRegexCheck extends IssuableSubscriptionVisitor imp
     .withAnyParameters()
     .build();
 
+  private static final MethodMatchers PATTERN_COMPILE = MethodMatchers.create()
+    .ofTypes("java.util.regex.Pattern")
+    .names("compile")
+    .withAnyParameters()
+    .build();
+
   protected static final MethodMatchers REGEX_METHODS = MethodMatchers.or(
     MethodMatchers.create()
       .ofTypes(JAVA_LANG_STRING)
@@ -81,9 +88,10 @@ public abstract class AbstractRegexCheck extends IssuableSubscriptionVisitor imp
       .names("replaceAll", "replaceFirst", "split")
       .withAnyParameters()
       .build(),
+    PATTERN_COMPILE,
     MethodMatchers.create()
       .ofTypes("java.util.regex.Pattern")
-      .names("compile", "matches")
+      .names("matches")
       .withAnyParameters()
       .build(),
     MethodMatchers.create()
@@ -224,22 +232,29 @@ public abstract class AbstractRegexCheck extends IssuableSubscriptionVisitor imp
       case STRING_LITERAL:
       case TEXT_BLOCK:
         return Optional.of(new LiteralTree[] {(LiteralTree) expr});
+      case METHOD_INVOCATION:
+        // We do not need to consider flags or precedence issues here because Pattern.toString() does not include
+        // the flags passed to Pattern.compile nor does it add any parentheses for precedence - it just returns the
+        // pattern string exactly as it was given to Pattern.compile, so we can simply take that string and work with
+        // it as-is.
+        MethodInvocationTree mit = (MethodInvocationTree) expr;
+        if (PATTERN_COMPILE.matches(mit)) {
+          return getLiterals(mit.arguments().get(0));
+        }
+        // else fall through
       default:
         return Optional.empty();
     }
   }
 
   private static Optional<LiteralTree[]> getLiteralsFromStringConcatenation(BinaryExpressionTree expr) {
-    Optional<LiteralTree[]> leftLiterals = getLiterals(expr.leftOperand());
-    if (!leftLiterals.isPresent()) {
-      return Optional.empty();
-    }
-    Optional<LiteralTree[]> rightLiterals = getLiterals(expr.rightOperand());
-    if (!rightLiterals.isPresent()) {
-      return Optional.empty();
-    }
-    LiteralTree[] combined = Stream.of(leftLiterals.get(), rightLiterals.get()).flatMap(Arrays::stream).toArray(LiteralTree[]::new);
-    return Optional.of(combined);
+    return getLiterals(expr.leftOperand()).flatMap(leftLiterals ->
+      getLiterals(expr.rightOperand()).map(rightLiterals ->
+        concatenateArrays(leftLiterals, rightLiterals, LiteralTree[]::new)));
+  }
+
+  private static <T> T[] concatenateArrays(T[] array1, T[] array2, IntFunction<T[]> arrayConstructor) {
+    return Stream.of(array1, array2).flatMap(Arrays::stream).toArray(arrayConstructor);
   }
 
   protected static Optional<ExpressionTree> getFinalVariableInitializer(IdentifierTree identifier) {

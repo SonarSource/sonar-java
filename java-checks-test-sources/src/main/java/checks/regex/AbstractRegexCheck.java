@@ -61,6 +61,11 @@ public abstract class AbstractRegexCheck {
     f("text".split(",")[0]); // Noncompliant {{,}}
     f("text".split(";", -1)[0]); // Noncompliant {{;}}
 
+    Pattern p = Pattern.compile("abc", Pattern.CASE_INSENSITIVE); // Noncompliant {{abc,initialFlags=2}}
+    f(Pattern.compile(p + "d")); // Noncompliant {{abcd}}
+
+    f(Pattern.compile(id("abc"))); // Not detected because we don't track regex patterns through methods
+
     // org.apache.commons.lang3.RegExUtils
     Pattern pattern = Pattern.compile(regex);
     f(RegExUtils.removeAll("text", pattern));
@@ -78,5 +83,9 @@ public abstract class AbstractRegexCheck {
   abstract void f(boolean x);
   abstract void f(String x);
   abstract void f(Pattern x);
+
+  private String id(String s) {
+    return s;
+  }
 
 }

@@ -18,7 +18,7 @@ public class RegexStackOverflowCheckWithLowStackConsumption {
   };
 
   // Regex from the .net incident
-  private static final String SEQUENCE_POINT = "\\[(\\d++),\\d++,\\d++,\\d++,(\\d++)]";
+  private static final Pattern SEQUENCE_POINT = Pattern.compile("\\[(\\d++),\\d++,\\d++,\\d++,(\\d++)]");
   private static final String SEQUENCE_POINTS_GROUP_NAME = "SequencePoints";
   private static final Pattern FILE_COVERAGE = Pattern.compile(
     ".*<script type=\"text/javascript\">\\s*+highlightRanges\\(\\[(?<" + SEQUENCE_POINTS_GROUP_NAME + ">" + SEQUENCE_POINT + "(," + SEQUENCE_POINT + ")*)]\\);\\s*+</script>.*", // Noncompliant
