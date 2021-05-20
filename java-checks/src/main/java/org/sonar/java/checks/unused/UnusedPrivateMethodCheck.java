@@ -30,6 +30,7 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -95,21 +96,22 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkIfUnknown(MethodInvocationTree mit) {
-    if (mit.symbol().isUnknown()) {
-      unresolvedMethodNames.add(ExpressionUtils.methodName(mit).name());
-    }
+    addIfUnknownOrAmbiguous(mit.symbol(), ExpressionUtils.methodName(mit).name());
   }
 
   private void checkIfUnknown(NewClassTree nct) {
-    if (nct.constructorSymbol().isUnknown()) {
-      unresolvedMethodNames.add(constructorName(nct.identifier()));
-    }
+    addIfUnknownOrAmbiguous(nct.constructorSymbol(), constructorName(nct.identifier()));
   }
 
   private void checkIfUnknown(MethodReferenceTree mref) {
     IdentifierTree methodIdentifier = mref.method();
-    if (methodIdentifier.symbol().isUnknown()) {
-      unresolvedMethodNames.add(methodIdentifier.name());
+    addIfUnknownOrAmbiguous(methodIdentifier.symbol(), methodIdentifier.name());
+  }
+
+  private void addIfUnknownOrAmbiguous(Symbol symbol, String name) {
+    // In case of broken semantic (overload with unknown args), ECJ wrongly link the symbol to the good overload.
+    if (symbol.isUnknown() || (symbol.isMethodSymbol() && ((Symbol.MethodSymbol) symbol).parameterTypes().stream().anyMatch(Type::isUnknown))) {
+      unresolvedMethodNames.add(name);
     }
   }
 
