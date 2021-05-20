@@ -179,7 +179,7 @@ class DefaultJavaFileScannerContextTest {
     assertThat(reportedMessage.getCost()).isNull();
     assertThat(reportedMessage.flows).isEmpty();
 
-    assertMessagePosition(reportedMessage, 1, 7, 1, 20);
+    assertMessagePosition(reportedMessage, 1, 7, 1, 21);
   }
 
   @Test

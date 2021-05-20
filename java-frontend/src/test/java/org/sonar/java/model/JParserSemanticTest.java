@@ -1633,6 +1633,6 @@ class JParserSemanticTest {
     assertThat(jWarning.getStartLine()).isEqualTo(2);
     assertThat(jWarning.getStartColumn()).isEqualTo(7);
     assertThat(jWarning.getEndLine()).isEqualTo(2);
-    assertThat(jWarning.getEndColumn()).isEqualTo(20);
+    assertThat(jWarning.getEndColumn()).isEqualTo(21);
   }
 }

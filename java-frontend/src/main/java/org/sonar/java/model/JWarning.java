@@ -52,7 +52,8 @@ public final class JWarning {
 
   public enum Type {
     UNUSED_IMPORT(IProblem.UnusedImport, JavaCore.COMPILER_PB_UNUSED_IMPORT),
-    ASSIGNMENT_HAS_NO_EFFECT(IProblem.AssignmentHasNoEffect, JavaCore.COMPILER_PB_NO_EFFECT_ASSIGNMENT);
+    ASSIGNMENT_HAS_NO_EFFECT(IProblem.AssignmentHasNoEffect, JavaCore.COMPILER_PB_NO_EFFECT_ASSIGNMENT),
+    MASKED_CATCH(IProblem.MaskedCatch, JavaCore.COMPILER_PB_HIDDEN_CATCH_BLOCK);
 
     private final int warningID;
     private final String compilerOptionKey;
@@ -89,7 +90,7 @@ public final class JWarning {
             warning.getSourceLineNumber(),
             astNode.getColumnNumber(warning.getSourceStart()),
             astNode.getLineNumber(warning.getSourceEnd()),
-            astNode.getColumnNumber(warning.getSourceEnd()));
+            astNode.getColumnNumber(warning.getSourceEnd()) + 1);
           results.computeIfAbsent(type, k -> new ArrayList<>()).add(newWarning);
         }
       }
