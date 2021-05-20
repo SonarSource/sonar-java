@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model.declaration;
 
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JUtils;
@@ -27,8 +28,12 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 class MethodTreeImplTest {
 
@@ -80,7 +85,58 @@ class MethodTreeImplTest {
   @Test
   void override_unknown() {
     MethodTreeImpl method = getUniqueMethod("class A extends Unknown { void foo(){}}");
-    assertThat(method.isOverriding()).isFalse();
+    assertThat(method.isOverriding()).isNull();
+  }
+
+  @Test
+  void override_unknown_in_super_class() {
+    CompilationUnitTree cut = createTree("class A extends Unknown {}\n" +
+      "class B extends A { void foo(){}}");
+    MethodTreeImpl methodTree = (MethodTreeImpl)((ClassTree) cut.types().get(1)).members().get(0);
+    assertThat(methodTree.isOverriding()).isNull();
+  }
+
+  @Test
+  void override_unknown_in_interface() {
+    MethodTreeImpl method = getUniqueMethod("class A implements Unknown { void foo(){}}");
+    assertThat(method.isOverriding()).isNull();
+  }
+
+  @Test
+  void override_unknown_in_parent_interface() {
+    CompilationUnitTree cut = createTree("interface A extends Unknown {}\n" +
+      "class B implements A { void foo(){}}");
+    MethodTreeImpl methodTree = (MethodTreeImpl)((ClassTree) cut.types().get(1)).members().get(0);
+    assertThat(methodTree.isOverriding()).isNull();
+  }
+
+  @Test
+  void override_unknown_in_parent_interface_parent() {
+    CompilationUnitTree cut = createTree("interface I extends Unknown {}\n" +
+      "class A implements I {}\n" +
+      "class B extends A { void foo(){}}");
+    MethodTreeImpl methodTree = (MethodTreeImpl)((ClassTree) cut.types().get(2)).members().get(0);
+    assertThat(methodTree.isOverriding()).isNull();
+  }
+
+  @Test
+  void override_result_is_cached() {
+    MethodTreeImpl method = spy(getUniqueMethod("class A extends Unknown { void foo(){}}"));
+    assertThat(method.isOverriding()).isEqualTo(method.isOverriding());
+    verify(method, times(1)).isAnnotatedOverride();
+  }
+
+  @Test
+  void override_with_non_compiling_code() {
+    CompilationUnitTree cut = createTree("class A { " +
+      "void foo(){}\n" +
+      "void foo(){}\n" +
+      "}");
+    List<Tree> members = ((ClassTree) cut.types().get(0)).members();
+    // The semantic for the first method is correct
+    assertThat(((MethodTreeImpl) members.get(0)).isOverriding()).isFalse();
+    // The semantic for the second method is broken (due to the duplicate)
+    assertThat(((MethodTreeImpl) members.get(1)).isOverriding()).isNull();
   }
 
   @Test

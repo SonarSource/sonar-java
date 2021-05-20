@@ -34,6 +34,7 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -77,6 +78,14 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   @Nullable
   public IMethodBinding methodBinding;
+
+  /**
+   * Cache for {@link #isOverriding()}.
+   */
+  @Nullable
+  private Boolean isOverriding;
+  // isOverriding is Nullable, we need a way to know if the value null is a cache miss or a computed value.
+  private boolean isOverridingCached = false;
 
   public MethodTreeImpl(FormalParametersListTreeImpl parameters, @Nullable SyntaxToken defaultToken, @Nullable ExpressionTree defaultValue) {
     this.typeParameters = new TypeParameterListTreeImpl();
@@ -272,17 +281,29 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   @Override
   @Nullable
   public Boolean isOverriding() {
+    if (isOverridingCached) {
+      return isOverriding;
+    }
+    isOverridingCached = true;
+
     if (isStatic() || isPrivate()) {
-      return false;
+      isOverriding = false;
+    } else if (isAnnotatedOverride()) {
+      isOverriding = true;
+    } else {
+      Symbol.MethodSymbol symbol = symbol();
+      List<Symbol.MethodSymbol> overriddenSymbols = symbol.overriddenSymbols();
+      if (overriddenSymbols.isEmpty()) {
+        if (hasUnknownTypeInHierarchy(symbol)) {
+          isOverriding = null;
+        } else {
+          isOverriding = false;
+        }
+      } else {
+        isOverriding = overriddenSymbols.stream().allMatch(Symbol::isUnknown) ? null : true;
+      }
     }
-    if (isAnnotatedOverride()) {
-      return true;
-    }
-    List<Symbol.MethodSymbol> overriddenSymbols = symbol().overriddenSymbols();
-    if (overriddenSymbols.isEmpty()) {
-      return false;
-    }
-    return overriddenSymbols.stream().allMatch(Symbol::isUnknown) ? null : true;
+    return isOverriding;
   }
 
   private boolean isStatic() {
@@ -320,4 +341,26 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     return "Override".equals(id.name());
   }
 
+  private static boolean hasUnknownTypeInHierarchy(Symbol.MethodSymbol symbol) {
+    Symbol owner = symbol.owner();
+    if (owner == null || !owner.isTypeSymbol()) {
+      // Broken hierarchy
+      return true;
+    }
+    return hasUnknownTypeInHierarchy((Symbol.TypeSymbol) owner);
+  }
+
+  private static boolean hasUnknownTypeInHierarchy(Symbol.TypeSymbol typeSymbol) {
+    if (typeSymbol.isUnknown()) {
+      return true;
+    }
+    if (typeSymbol.interfaces().stream().map(Type::symbol).anyMatch(MethodTreeImpl::hasUnknownTypeInHierarchy)) {
+      return true;
+    }
+    Type superClass = typeSymbol.superClass();
+    if (superClass == null) {
+      return false;
+    }
+    return hasUnknownTypeInHierarchy(superClass.symbol());
+  }
 }

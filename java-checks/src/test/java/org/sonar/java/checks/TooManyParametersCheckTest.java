@@ -40,7 +40,7 @@ class TooManyParametersCheckTest {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/TooManyParametersCheck.java"))
       .withCheck(new TooManyParametersCheck())
-      .verifyIssues();
+      .verifyNoIssues();
   }
 
   @Test
