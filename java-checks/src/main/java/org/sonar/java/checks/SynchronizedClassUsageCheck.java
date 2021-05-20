@@ -56,6 +56,8 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
 
   private final Deque<Set<String>> exclusions = new ArrayDeque<>();
 
+  private Set<Tree> visited = new HashSet<>();
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE);
@@ -66,7 +68,7 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
     ExclusionsVisitor exclusionsVisitor = new ExclusionsVisitor();
     tree.accept(exclusionsVisitor);
     Set<String> currentClassExclusions = exclusionsVisitor.exclusions;
-    if(!exclusions.isEmpty()) {
+    if (!exclusions.isEmpty()) {
       currentClassExclusions.addAll(exclusions.peek());
     }
     exclusions.push(currentClassExclusions);
@@ -146,6 +148,10 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
     }
 
     private boolean reportIssueOnDeprecatedType(Tree tree, Type type) {
+      if (visited.contains(tree)) {
+        return false;
+      }
+      visited.add(tree);
       if (isDeprecatedType(type)) {
         reportIssue(tree, "Replace the synchronized class \"" + type.name() + "\" by an unsynchronized one such as " + REPLACEMENTS.get(type.fullyQualifiedName()) + ".");
         return true;
