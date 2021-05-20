@@ -1,7 +1,5 @@
 package checks;
 
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.Arrays;
 import java.util.Collection;
@@ -11,7 +9,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Comparator;
 import java.util.Set;
-import java.util.function.Supplier;
 
 class Outer {
   class Nested {
@@ -29,7 +26,11 @@ class Outer {
     Nested[][] as = (Nested[][]) new ExtendedNested[1][1]; // Noncompliant {{Remove this unnecessary cast to "Nested[][]".}}
     ExtendedNested b = null;
     fun(b);
+
     fun((ExtendedNested) b); // Noncompliant
+    fun(((ExtendedNested) b)); // Noncompliant
+    fun((((ExtendedNested) b))); // Noncompliant
+    fun((Nested) a, (ExtendedNested) a); // Noncompliant [[sc=10;ec=16]]
     fun((Nested) b); // Compliant - exception to distinguish the method to call
     List<ExtendedNested> bees = new java.util.ArrayList<ExtendedNested>();
     List<Nested> aaas = (List) bees;
@@ -67,6 +68,9 @@ class Outer {
     return null;
   }
   void fun(Nested a) {
+  }
+
+  void fun(Nested a, ExtendedNested b) {
   }
 
   void fun(ExtendedNested b) {
@@ -255,24 +259,9 @@ interface M {
 
   static void test() {
     M m1 = () -> { };
-    M m2 = (M) () -> { }; // Noncompliant {{Remove this unnecessary cast to "M".}}
+    M m2 = (M) () -> { }; // FN because we now allow all casts on lambdas to avoid FPs
     M m3 = (N) () -> { }; // compliant : cast changes method associated to lambda expression
-    M m4 = (O) () -> { }; // Noncompliant {{Remove this unnecessary cast to "O".}}
-    M m5 = (P) () -> { }; // Noncompliant {{Remove this unnecessary cast to "P".}}
     M m6 = (Q) () -> { }; // compliant : cast changes default definition of method foo
-  }
-}
-
-interface R {
-  void foo();
-  void bar();
-
-  interface S extends R {
-    default void foo() { }
-  }
-
-  static void test() {
-    R r1 = (S) () -> {  }; // compliant : cast is needed for it to be used as a lambda expression
   }
 }
 
@@ -286,21 +275,11 @@ class T {
   }
 
   Predicate<Object> methodReferenceCastNotNeeded() {
-    return (((Predicate<Object>) Objects::nonNull)); // Noncompliant
+    return (((Predicate<Object>) Objects::nonNull)); // FN because we now allow all casts on method references to avoid FPs
   }
 
   Comparator<Integer> methodReferenceCastNotNeeded2() {
-    return (Comparator<Integer>) Integer::compare; // Noncompliant
-  }
-}
-
-interface U<A extends Iterable> {
-  A foo(A param);
-
-  default void test() {
-    U u1 = (U<List>) (param) -> param.subList(0,1); // Compliant : cast needed to access sublist method
-    U<? extends Iterable> u2 = (U<List>) (param) -> param.subList(0,1); // Compliant : cast needed to access sublist method
-    U u4 = (U) (param) -> param; // Noncompliant
+    return (Comparator<Integer>) Integer::compare; // FN because we now allow all casts on method references to avoid FPs
   }
 }
 
@@ -402,94 +381,4 @@ class CastRawType {
   public static void paramsErrorMessage(Class clazz) {
     Outer.Nested r = (Outer.Nested) clazz.getAnnotation(Outer.Nested.class); // Handle cast of raw types
   }
-}
-
-class FP_S1905 {
-  static class Overloaded {
-    static String f() {
-      return "";
-    }
-
-    static String fff() {
-      return "";
-    }
-
-    static String f(String a) {
-      return "";
-    }
-  }
-
-  static class NotOverloaded {
-    static String notOverloded() {
-      return "";
-    }
-  }
-
-  void main() {
-    foo((Supplier<String>) Overloaded::f); // Compliant, cast is mandatory
-    foo((Function<String, String>) Overloaded::f); // Compliant, cast is mandatory
-
-    foo((Supplier<String>) Overloaded::fff); // Noncompliant, cast is redundant
-    bar((Supplier<String>) Overloaded::fff); // Noncompliant, cast is redundant
-    bar((Supplier<String>) Overloaded::f); // Compliant - FN
-
-    bar((Supplier<String>) NotOverloaded::notOverloded); // Noncompliant, cast is redundant
-    foo((Supplier<String>) NotOverloaded::notOverloded); // Noncompliant, cast is redundant
-
-    rawBar((Supplier<String>) Overloaded::fff); // Noncompliant, cast is redundant
-    rawBar((Supplier<String>) Overloaded::f); // Noncompliant, cast is redundant
-    foobar((Supplier<String>) Overloaded::fff); // Noncompliant, cast is redundant
-    foobar((Supplier<String>) NotOverloaded::notOverloded); // Noncompliant, cast is redundant
-
-    Supplier supplier = (Supplier<String>) Overloaded::f; // Noncompliant
-
-    bar(((Supplier<String>) Overloaded::fff));  // Noncompliant, cast is redundant
-
-    foo((Supplier<String>) String::new); // Compliant
-    foo((Function<String, String>) String::new); // Compliant
-  }
-
-  void foo(Supplier<String> supplier) {
-  }
-  void foo(Function<String, String> function) {
-  }
-
-  void bar(Supplier<String> supplier) {
-  }
-
-  void foobar(Supplier<String> supplier) {
-  }
-
-  void bar(BiFunction<String, String, String> biFunction) {
-  }
-
-  void rawBar(Supplier s) {
-  }
-}
-
-class FpWithVarargs {
-
-  static class Vargargs {
-    static String varargs(String... arg) {
-      return null;
-    }
-  }
-  
-  void main() {
-    func((Function<String, String>) Vargargs::varargs); // Compliant, cast is mandatory
-
-    func((Supplier<String>) Vargargs::varargs); // Compliant, cast is mandatory
-    
-    func1((Function<String, String>) Vargargs::varargs); // Noncompliant
-  }
-  
-  void func(Supplier<String> supplier) {
-  }
-
-  void func(Function<String, String> function) {
-  }
-
-  void func1(Function<String, String> function) {
-  }
-  
 }

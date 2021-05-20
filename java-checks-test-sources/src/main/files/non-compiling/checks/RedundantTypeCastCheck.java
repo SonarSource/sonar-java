@@ -30,7 +30,6 @@ class Outer {
     fun(b);
     fun((B) b); // Noncompliant
     fun((A) b); // Compliant - exception to distinguish the method to call
-    funBParameter((A) b); // Noncompliant
     List<B> bees = new java.util.ArrayList<B>();
     List<A> aaas = (List) bees;
     C c = new C((A) null); // Compliant - exception to distinguish the constructor to call
