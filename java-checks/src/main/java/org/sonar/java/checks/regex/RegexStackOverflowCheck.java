@@ -141,13 +141,7 @@ public class RegexStackOverflowCheck extends AbstractRegexCheck {
           return true;
         case REPETITION:
           RepetitionTree repetition = (RepetitionTree) tree;
-          if (isPossessive(repetition)) {
-            return false;
-          }
-          if (repetition.getQuantifier().isFixed()) {
-            return containsBacktrackableBranch(repetition.getElement());
-          }
-          return true;
+          return !repetition.getQuantifier().isFixed() || containsBacktrackableBranch(repetition.getElement());
         case CAPTURING_GROUP:
         case NON_CAPTURING_GROUP:
           return containsBacktrackableBranch(((GroupTree) tree).getElement());
