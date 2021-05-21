@@ -99,7 +99,6 @@ import org.sonar.java.checks.security.ReceivingIntentsCheck;
 import org.sonar.java.checks.security.RegexHotspotCheck;
 import org.sonar.java.checks.security.SecureCookieCheck;
 import org.sonar.java.checks.security.ServerCertificatesCheck;
-import org.sonar.java.checks.security.SocketUsageCheck;
 import org.sonar.java.checks.security.StandardInputReadCheck;
 import org.sonar.java.checks.security.UnpredictableSaltCheck;
 import org.sonar.java.checks.security.UserEnumerationCheck;
@@ -641,7 +640,6 @@ public final class CheckList {
       SimpleClassNameCheck.class,
       SimpleStringLiteralForSingleLineStringsCheck.class,
       SingleCharacterAlternationCheck.class,
-      SocketUsageCheck.class,
       SpecializedFunctionalInterfacesCheck.class,
       SpringAntMatcherOrderCheck.class,
       SpringAutoConfigurationCheck.class,
