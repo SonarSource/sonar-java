@@ -373,7 +373,6 @@ public final class CheckList {
       DefaultEncodingUsageCheck.class,
       DefaultInitializedFieldCheck.class,
       DefaultPackageCheck.class,
-      DeprecatedHashAlgorithmCheck.class,
       DeprecatedTagPresenceCheck.class,
       DiamondOperatorCheck.class,
       DisableAutoEscapingCheck.class,
