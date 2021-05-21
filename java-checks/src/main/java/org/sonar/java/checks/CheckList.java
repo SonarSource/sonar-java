@@ -82,7 +82,6 @@ import org.sonar.java.checks.security.DisableAutoEscapingCheck;
 import org.sonar.java.checks.security.DisclosingTechnologyFingerprintsCheck;
 import org.sonar.java.checks.security.EmptyDatabasePasswordCheck;
 import org.sonar.java.checks.security.EncryptionAlgorithmCheck;
-import org.sonar.java.checks.security.EnvVariablesHotspotCheck;
 import org.sonar.java.checks.security.ExcessiveContentRequestCheck;
 import org.sonar.java.checks.security.FilePermissionsCheck;
 import org.sonar.java.checks.security.IntegerToHexStringCheck;
@@ -386,7 +385,6 @@ public final class CheckList {
       EnumMapCheck.class,
       EnumMutableFieldCheck.class,
       EnumSetCheck.class,
-      EnvVariablesHotspotCheck.class,
       EqualsArgumentTypeCheck.class,
       EqualsNotOverriddenInSubclassCheck.class,
       EqualsNotOverridenWithCompareToCheck.class,
