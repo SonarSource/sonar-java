@@ -92,7 +92,6 @@ import org.sonar.java.checks.security.OpenSAML2AuthenticationBypassCheck;
 import org.sonar.java.checks.security.PasswordEncoderCheck;
 import org.sonar.java.checks.security.PubliclyWritableDirectoriesCheck;
 import org.sonar.java.checks.security.ReceivingIntentsCheck;
-import org.sonar.java.checks.security.RegexHotspotCheck;
 import org.sonar.java.checks.security.SecureCookieCheck;
 import org.sonar.java.checks.security.ServerCertificatesCheck;
 import org.sonar.java.checks.security.UnpredictableSaltCheck;
@@ -591,7 +590,6 @@ public final class CheckList {
       RedundantTypeCastCheck.class,
       ReflectionOnNonRuntimeAnnotationCheck.class,
       RegexComplexityCheck.class,
-      RegexHotspotCheck.class,
       RegexLookaheadCheck.class,
       RegexPatternsNeedlesslyCheck.class,
       RegexStackOverflowCheck.class,
