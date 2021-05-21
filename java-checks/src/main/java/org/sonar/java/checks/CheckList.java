@@ -271,7 +271,6 @@ public final class CheckList {
       AssignmentInSubExpressionCheck.class,
       AtLeastOneConstructorCheck.class,
       AuthorizationsStrongDecisionsCheck.class,
-      AvoidDESCheck.class,
       BadAbstractClassNameCheck.class,
       BadClassNameCheck.class,
       BadConstantNameCheck.class,
