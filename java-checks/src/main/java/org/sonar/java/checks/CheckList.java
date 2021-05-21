@@ -634,7 +634,6 @@ public final class CheckList {
       RightCurlyBraceDifferentLineAsNextBlockCheck.class,
       RightCurlyBraceSameLineAsNextBlockCheck.class,
       RightCurlyBraceStartLineCheck.class,
-      RSAUsesOAEPCheck.class,
       RunFinalizersCheck.class,
       ScheduledThreadPoolExecutorZeroCheck.class,
       SecureCookieCheck.class,
