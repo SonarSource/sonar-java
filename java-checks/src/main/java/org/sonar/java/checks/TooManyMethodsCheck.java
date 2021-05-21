@@ -86,8 +86,13 @@ public class TooManyMethodsCheck extends IssuableSubscriptionVisitor {
   }
 
   private boolean shouldNotReportIssue(ClassTree classTree, List<Tree> methods) {
-    return (classTree.simpleName() == null && methods.stream().allMatch(member -> ((MethodTree) member).isOverriding()))
+    return (classTree.simpleName() == null && methods.stream().allMatch(member -> isOverriding((MethodTree) member)))
       ||  methods.size() <= maximumMethodThreshold;
+  }
+
+  private static boolean isOverriding(MethodTree methodTree) {
+    // In case of unknown in hierarchy, isOverriding will return null, we consider it as an override
+    return !Boolean.FALSE.equals(methodTree.isOverriding());
   }
 
 }
