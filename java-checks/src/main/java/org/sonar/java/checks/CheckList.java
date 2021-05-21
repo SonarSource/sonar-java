@@ -791,7 +791,6 @@ public final class CheckList {
       WildcardReturnParameterTypeCheck.class,
       WriteObjectTheOnlySynchronizedMethodCheck.class,
       WrongAssignmentOperatorCheck.class,
-      XmlDeserializationCheck.class,
       XxeActiveMQCheck.class,
       XxeProcessingCheck.class,
       ZipEntryCheck.class);
