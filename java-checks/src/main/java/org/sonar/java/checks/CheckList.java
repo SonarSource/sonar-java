@@ -550,7 +550,6 @@ public final class CheckList {
       NoWayOutLoopCheck.class,
       NPEThrowCheck.class,
       NullCheckWithInstanceofCheck.class,
-      NullCipherCheck.class,
       NullDereferenceCheck.class,
       NullReturnedOnComputeIfPresentOrAbsentCheck.class,
       NullShouldNotBeUsedWithOptionalCheck.class,
