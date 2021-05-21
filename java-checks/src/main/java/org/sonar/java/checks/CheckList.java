@@ -103,7 +103,6 @@ import org.sonar.java.checks.security.ReceivingIntentsCheck;
 import org.sonar.java.checks.security.RegexHotspotCheck;
 import org.sonar.java.checks.security.SMTPSSLServerIdentityCheck;
 import org.sonar.java.checks.security.SecureCookieCheck;
-import org.sonar.java.checks.security.SecureXmlTransformerCheck;
 import org.sonar.java.checks.security.ServerCertificatesCheck;
 import org.sonar.java.checks.security.SocketUsageCheck;
 import org.sonar.java.checks.security.StandardInputReadCheck;
@@ -640,7 +639,6 @@ public final class CheckList {
       RunFinalizersCheck.class,
       ScheduledThreadPoolExecutorZeroCheck.class,
       SecureCookieCheck.class,
-      SecureXmlTransformerCheck.class,
       SelectorMethodArgumentCheck.class,
       SelfAssignementCheck.class,
       SerializableComparatorCheck.class,
