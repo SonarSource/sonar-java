@@ -78,4 +78,15 @@ class KillTheNoiseUnresolvedMethodCall {
       new OverLoadConstructor(u2);
     }
   }
+
+  private void doSomething(byte i) {
+  }
+
+  private void doSomething(int i) {
+  }
+
+  void callDoSomething() {
+    doSomething(someInt.UNKNOWN);
+    doSomething(someByte.UNKNOWN);
+  }
 }
