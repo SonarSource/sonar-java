@@ -684,7 +684,6 @@ public final class CheckList {
       StringConcatToTextBlockCheck.class,
       StringLiteralDuplicatedCheck.class,
       StringLiteralInsideEqualsCheck.class,
-      StringMethodsOnSingleCharCheck.class,
       StringMethodsWithLocaleCheck.class,
       StringOffsetMethodsCheck.class,
       StringPrimitiveConstructorCheck.class,
