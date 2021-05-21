@@ -76,7 +76,6 @@ import org.sonar.java.checks.security.ClearTextProtocolCheck;
 import org.sonar.java.checks.security.CommandLineArgumentsCheck;
 import org.sonar.java.checks.security.ControllingPermissionsCheck;
 import org.sonar.java.checks.security.CookieHttpOnlyCheck;
-import org.sonar.java.checks.security.CookieShouldNotContainSensitiveDataCheck;
 import org.sonar.java.checks.security.CryptographicKeySizeCheck;
 import org.sonar.java.checks.security.DataEncryptionCheck;
 import org.sonar.java.checks.security.DataHashingCheck;
@@ -349,7 +348,6 @@ public final class CheckList {
       ControllingPermissionsCheck.class,
       CookieDomainCheck.class,
       CookieHttpOnlyCheck.class,
-      CookieShouldNotContainSensitiveDataCheck.class,
       CORSCheck.class,
       CryptographicKeySizeCheck.class,
       CustomCryptographicAlgorithmCheck.class,
