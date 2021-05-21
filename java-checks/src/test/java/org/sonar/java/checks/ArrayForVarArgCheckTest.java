@@ -33,7 +33,10 @@ class ArrayForVarArgCheckTest {
       .onFile(testSourcesPath("checks/ArrayForVarArgCheck.java"))
       .withCheck(new ArrayForVarArgCheck())
       .verifyIssues();
+  }
 
+  @Test
+  void test_non_compiling() {
     JavaCheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/ArrayForVarArgCheck.java"))
       .withCheck(new ArrayForVarArgCheck())

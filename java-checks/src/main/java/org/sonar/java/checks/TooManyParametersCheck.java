@@ -76,7 +76,7 @@ public class TooManyParametersCheck extends BaseTreeVisitor implements JavaFileS
   @Override
   public void visitMethod(MethodTree tree) {
     super.visitMethod(tree);
-    if (isOverriding(tree) || (hasSemantic() && usesAuthorizedAnnotation(tree))) {
+    if (isOverriding(tree) || usesAuthorizedAnnotation(tree)) {
       return;
     }
     int max;
@@ -95,16 +95,17 @@ public class TooManyParametersCheck extends BaseTreeVisitor implements JavaFileS
   }
 
   private static boolean isOverriding(MethodTree tree) {
-    return Boolean.TRUE.equals(tree.isOverriding());
-  }
-
-  private boolean hasSemantic() {
-    return context.getSemanticModel() != null;
+    // In case of unknown hierarchy, isOverriding() returns null, we return true to avoid FPs.
+    return !Boolean.FALSE.equals(tree.isOverriding());
   }
 
   private static boolean usesAuthorizedAnnotation(MethodTree method) {
     SymbolMetadata metadata = method.symbol().metadata();
-    return WHITE_LIST.stream().anyMatch(metadata::isAnnotatedWith);
+    return hasUnknownAnnotation(metadata) || WHITE_LIST.stream().anyMatch(metadata::isAnnotatedWith);
+  }
+
+  private static boolean hasUnknownAnnotation(SymbolMetadata symbolMetadata) {
+    return symbolMetadata.annotations().stream().anyMatch(annotation -> annotation.symbol().isUnknown());
   }
 
 }

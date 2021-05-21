@@ -71,35 +71,38 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
 
   private void checkInvokedMethod(Symbol.MethodSymbol methodSymbol, ExpressionTree lastArg) {
     if (lastArg.is(Tree.Kind.NEW_ARRAY)) {
-      if (lastParamHasSameType(methodSymbol, lastArg.symbolType())) {
-        String message = "Remove this array creation";
-        NewArrayTree newArrayTree = (NewArrayTree) lastArg;
-        if (newArrayTree.openBraceToken() == null) {
-          ExpressionTree expression = newArrayTree.dimensions().get(0).expression();
-          Integer literalValue = LiteralUtils.intLiteralValue(expression);
-          if (literalValue == null || literalValue != 0 || isCallingOverload(methodSymbol, lastArg)) {
-            return;
-          }
-        } else if (!newArrayTree.initializers().isEmpty()) {
-          message += " and simply pass the elements";
-        }
-        reportIssue(lastArg, message + ".");
+      Type lastParamType = getLastParameterType(methodSymbol.parameterTypes());
+      Type lastArgType = lastArg.symbolType();
+      if (lastParamType.isUnknown() || lastArgType.isUnknown()) {
+        return;
+      }
+      if (lastArgType.equals(lastParamType)) {
+        reportIssueForSameType(methodSymbol, (NewArrayTree) lastArg);
       } else {
-        String type = ((Type.ArrayType) getLastParameterType(methodSymbol.parameterTypes())).elementType().name();
+        String type = ((Type.ArrayType) lastParamType).elementType().name();
         reportIssue(lastArg, "Disambiguate this call by either casting as \"" + type + "\" or \"" + type + "[]\".");
       }
     }
+  }
+
+  private void reportIssueForSameType(Symbol.MethodSymbol methodSymbol, NewArrayTree newArrayTree) {
+    String message = "Remove this array creation";
+    if (newArrayTree.openBraceToken() == null) {
+      ExpressionTree expression = newArrayTree.dimensions().get(0).expression();
+      Integer literalValue = LiteralUtils.intLiteralValue(expression);
+      if (literalValue == null || literalValue != 0 || isCallingOverload(methodSymbol, newArrayTree)) {
+        return;
+      }
+    } else if (!newArrayTree.initializers().isEmpty()) {
+      message += " and simply pass the elements";
+    }
+    reportIssue(newArrayTree, message + ".");
   }
 
   private static boolean isLastArgumentVarargs(Symbol.MethodSymbol methodSymbol, Arguments args) {
     // If we have less arguments than parameter types, it means that no arguments was pass to the varargs.
     // If we have more, the last argument can not be an array.
     return !args.isEmpty() && JUtils.isVarArgsMethod(methodSymbol) && args.size() == methodSymbol.parameterTypes().size();
-  }
-
-  private static boolean lastParamHasSameType(Symbol.MethodSymbol methodSymbol, Type lastArgType) {
-    Type lastParamType = getLastParameterType(methodSymbol.parameterTypes());
-    return lastArgType.equals(lastParamType);
   }
 
   private static Type getLastParameterType(List<? extends Type> list) {
