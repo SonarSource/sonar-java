@@ -686,7 +686,6 @@ public final class CheckList {
       StringToPrimitiveConversionCheck.class,
       StringToStringCheck.class,
       StrongCipherAlgorithmCheck.class,
-      Struts2EndpointCheck.class,
       SubClassStaticReferenceCheck.class,
       SunPackagesUsedCheck.class,
       SuppressWarningsCheck.class,
