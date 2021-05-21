@@ -69,7 +69,6 @@ import org.sonar.java.checks.regex.UnicodeCaseCheck;
 import org.sonar.java.checks.regex.UnusedGroupNamesCheck;
 import org.sonar.java.checks.security.AndroidBroadcastingCheck;
 import org.sonar.java.checks.security.AndroidExternalStorageCheck;
-import org.sonar.java.checks.security.AndroidSSLConnectionCheck;
 import org.sonar.java.checks.security.AuthorizationsStrongDecisionsCheck;
 import org.sonar.java.checks.security.CipherBlockChainingCheck;
 import org.sonar.java.checks.security.ClearTextProtocolCheck;
@@ -243,7 +242,6 @@ public final class CheckList {
       AnchorPrecedenceCheck.class,
       AndroidBroadcastingCheck.class,
       AndroidExternalStorageCheck.class,
-      AndroidSSLConnectionCheck.class,
       AnnotationDefaultArgumentCheck.class,
       AnonymousClassesTooBigCheck.class,
       AnonymousClassShouldBeLambdaCheck.class,
