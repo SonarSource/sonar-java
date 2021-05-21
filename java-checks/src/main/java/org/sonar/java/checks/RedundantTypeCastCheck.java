@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
@@ -36,20 +37,13 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 @Rule(key = "S1905")
 public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
 
-  private List<JWarning> warnings;
-
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.COMPILATION_UNIT, Tree.Kind.TYPE_CAST);
+    return Collections.singletonList(Tree.Kind.TYPE_CAST);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
-      warnings = ((JavaTree.CompilationUnitTreeImpl) tree).warnings(JWarning.Type.REDUNDANT_CAST);
-      return;
-    }
-
     TypeCastTree typeCastTree = (TypeCastTree) tree;
     Type cast = typeCastTree.type().symbolType();
     if (isUnnecessaryCast(typeCastTree)) {
@@ -62,26 +56,12 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     return tree;
   }
 
-  private boolean isUnnecessaryCast(TypeCastTree typeCastTree) {
+  private static boolean isUnnecessaryCast(TypeCastTree typeCastTree) {
     if (skipParentheses(typeCastTree.expression()).is(Tree.Kind.NULL_LITERAL)) {
       Tree parentTree = skipParentheses(typeCastTree.parent());
       return !parentTree.is(Tree.Kind.ARGUMENTS);
     }
-    return warnings.stream().anyMatch(warning -> matchesWarning(warning, typeCastTree));
-  }
-
-  private static boolean matchesWarning(JWarning warning, TypeCastTree tree) {
-    SyntaxToken startToken = tree.openParenToken();
-    // When a cast expression is nested inside one or more parenthesized expression, Eclipse raises the warning on
-    // the outermost parenthesized expression rather than the cast expression, so we need to take that into account
-    if (tree.parent().is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      ParenthesizedTree parent = (ParenthesizedTree) tree.parent();
-      while (parent.parent().is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-        parent = (ParenthesizedTree) parent.parent();
-      }
-      startToken = parent.openParenToken();
-    }
-    return warning.getStartLine() == startToken.line() && warning.getStartColumn() == startToken.column();
+    return ((JavaTree) typeCastTree).hasWarning(JWarning.Type.REDUNDANT_CAST);
   }
 
 }

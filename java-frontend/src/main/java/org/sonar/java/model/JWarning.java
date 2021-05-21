@@ -25,12 +25,15 @@ import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
+import javax.annotation.CheckForNull;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
 
 public final class JWarning {
 
@@ -51,19 +54,21 @@ public final class JWarning {
   }
 
   public enum Type {
-    UNUSED_IMPORT(IProblem.UnusedImport, JavaCore.COMPILER_PB_UNUSED_IMPORT),
-    REDUNDANT_CAST(IProblem.UnnecessaryCast, JavaCore.COMPILER_PB_UNNECESSARY_TYPE_CHECK),
-    ASSIGNMENT_HAS_NO_EFFECT(IProblem.AssignmentHasNoEffect, JavaCore.COMPILER_PB_NO_EFFECT_ASSIGNMENT),
-    MASKED_CATCH(IProblem.MaskedCatch, JavaCore.COMPILER_PB_HIDDEN_CATCH_BLOCK);
+    UNUSED_IMPORT(IProblem.UnusedImport, JavaCore.COMPILER_PB_UNUSED_IMPORT, Tree.Kind.IMPORT),
+    REDUNDANT_CAST(IProblem.UnnecessaryCast, JavaCore.COMPILER_PB_UNNECESSARY_TYPE_CHECK, Tree.Kind.TYPE_CAST),
+    ASSIGNMENT_HAS_NO_EFFECT(IProblem.AssignmentHasNoEffect, JavaCore.COMPILER_PB_NO_EFFECT_ASSIGNMENT, Tree.Kind.ASSIGNMENT),
+    MASKED_CATCH(IProblem.MaskedCatch, JavaCore.COMPILER_PB_HIDDEN_CATCH_BLOCK, Tree.Kind.CATCH);
 
     private final int warningID;
     private final String compilerOptionKey;
+    private final Tree.Kind treeKind;
 
     private static final Set<String> COMPILER__OPTIONS = new HashSet<>();
 
-    Type(int warningID, String compilerOptionKey) {
+    Type(int warningID, String compilerOptionKey, Tree.Kind treeKind) {
       this.warningID = warningID;
       this.compilerOptionKey = compilerOptionKey;
+      this.treeKind = treeKind;
     }
 
     boolean isMatching(IProblem warning) {
@@ -78,25 +83,30 @@ public final class JWarning {
       }
       return Collections.unmodifiableSet(COMPILER__OPTIONS);
     }
+
+    public Tree.Kind treeKind() {
+      return treeKind;
+    }
+
+    public int warningID() {
+      return warningID;
+    }
   }
 
-  public static Map<Type, List<JWarning>> getWarnings(CompilationUnit astNode) {
-    Map<JWarning.Type, List<JWarning>> results = new EnumMap<>(Type.class);
-    for (IProblem warning : astNode.getProblems()) {
-      for (Type type : Type.values()) {
-        if (type.isMatching(warning)) {
-          JWarning newWarning = new JWarning(
-            warning.getMessage(),
-            type,
-            warning.getSourceLineNumber(),
-            astNode.getColumnNumber(warning.getSourceStart()),
-            astNode.getLineNumber(warning.getSourceEnd()),
-            astNode.getColumnNumber(warning.getSourceEnd()) + 1);
-          results.computeIfAbsent(type, k -> new ArrayList<>()).add(newWarning);
-        }
+  @CheckForNull
+  public static JWarning ofIProblem(IProblem warning, CompilationUnit astRoot) {
+    for (Type type: Type.values()) {
+      if (type.isMatching(warning)) {
+        return new JWarning(
+          warning.getMessage(),
+          type,
+          warning.getSourceLineNumber(),
+          astRoot.getColumnNumber(warning.getSourceStart()),
+          astRoot.getLineNumber(warning.getSourceEnd()),
+          astRoot.getColumnNumber(warning.getSourceEnd()) + 1);
       }
     }
-    return results;
+    return null;
   }
 
   public String getMessage() {

@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -38,41 +39,18 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class SelfAssignementCheck extends IssuableSubscriptionVisitor {
 
   private static final String ISSUE_MESSAGE = "Remove or correct this useless self-assignment.";
-  private final Set<JWarning> warnings = new HashSet<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.COMPILATION_UNIT, Tree.Kind.ASSIGNMENT);
+    return Collections.singletonList(Tree.Kind.ASSIGNMENT);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
-      warnings.clear();
-      warnings.addAll(((JavaTree.CompilationUnitTreeImpl) tree).warnings(JWarning.Type.ASSIGNMENT_HAS_NO_EFFECT));
-      return;
-    }
     AssignmentExpressionTree node = (AssignmentExpressionTree) tree;
-    if (SyntacticEquivalence.areEquivalent(node.expression(), node.variable())) {
+    if (SyntacticEquivalence.areEquivalent(node.expression(), node.variable()) || ((JavaTree) tree).hasWarning(JWarning.Type.ASSIGNMENT_HAS_NO_EFFECT)) {
       SyntaxToken reportTree = node.operatorToken();
       reportIssue(reportTree, ISSUE_MESSAGE);
-      updateWarnings(reportTree);
-    }
-  }
-
-  @Override
-  public void leaveNode(Tree tree) {
-    if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
-      warnings.forEach(warning -> ((DefaultJavaFileScannerContext) context).reportIssue(this, warning, ISSUE_MESSAGE));
-    }
-  }
-
-  private void updateWarnings(SyntaxToken reportTree) {
-    for (Iterator<JWarning> iterator = warnings.iterator(); iterator.hasNext();) {
-      JWarning warning = iterator.next();
-      if (warning.contains(reportTree)) {
-        iterator.remove();
-      }
     }
   }
 }

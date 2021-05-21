@@ -78,7 +78,7 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
   @Override
   public void leaveNode(Tree tree) {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
-      handleWarnings(((CompilationUnitTreeImpl) tree).warnings(JWarning.Type.UNUSED_IMPORT));
+      // handleWarnings(((CompilationUnitTreeImpl) tree).warnings(JWarning.Type.UNUSED_IMPORT));
     }
   }
 

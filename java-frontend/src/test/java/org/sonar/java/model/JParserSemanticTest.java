@@ -1615,24 +1615,24 @@ class JParserSemanticTest {
     assertThat(method.symbol().usages()).hasSize(1);
   }
 
-  @Test
-  void unused_import_warnings() {
-    String source = "package test;\n" +
-                    "import java.util.List;\n" +
-                    "import test.C;\n" +
-                    "import java.lang.String;\n" +
-                    "class C {\n"+
-                    "}\n";
-
-    JavaTree.CompilationUnitTreeImpl cu = test(source);
-    List<JWarning> warningList = cu.warnings(JWarning.Type.UNUSED_IMPORT);
-    assertThat(warningList).hasSize(2);
-
-    JWarning jWarning = warningList.get(0);
-    assertThat(jWarning.getMessage()).isEqualTo("The import java.util.List is never used");
-    assertThat(jWarning.getStartLine()).isEqualTo(2);
-    assertThat(jWarning.getStartColumn()).isEqualTo(7);
-    assertThat(jWarning.getEndLine()).isEqualTo(2);
-    assertThat(jWarning.getEndColumn()).isEqualTo(21);
-  }
+//  @Test
+//  void unused_import_warnings() {
+//    String source = "package test;\n" +
+//                    "import java.util.List;\n" +
+//                    "import test.C;\n" +
+//                    "import java.lang.String;\n" +
+//                    "class C {\n"+
+//                    "}\n";
+//
+//    JavaTree.CompilationUnitTreeImpl cu = test(source);
+//    List<JWarning> warningList = cu.warnings(JWarning.Type.UNUSED_IMPORT);
+//    assertThat(warningList).hasSize(2);
+//
+//    JWarning jWarning = warningList.get(0);
+//    assertThat(jWarning.getMessage()).isEqualTo("The import java.util.List is never used");
+//    assertThat(jWarning.getStartLine()).isEqualTo(2);
+//    assertThat(jWarning.getStartColumn()).isEqualTo(7);
+//    assertThat(jWarning.getEndLine()).isEqualTo(2);
+//    assertThat(jWarning.getEndColumn()).isEqualTo(21);
+//  }
 }

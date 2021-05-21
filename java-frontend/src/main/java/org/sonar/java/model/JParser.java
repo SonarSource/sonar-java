@@ -199,8 +199,6 @@ public class JParser {
       throw new RecognitionException(-1, "ECJ: Unable to parse file.", e);
     }
 
-    Map<JWarning.Type, List<JWarning>> warnings = JWarning.getWarnings(astNode);
-
     List<IProblem> errors = Stream.of(astNode.getProblems()).filter(IProblem::isError).collect(Collectors.toList());
     Optional<IProblem> possibleSyntaxError = errors.stream().filter(IS_SYNTAX_ERROR).findFirst();
     if (possibleSyntaxError.isPresent()) {
@@ -225,7 +223,7 @@ public class JParser {
 
     JavaTree.CompilationUnitTreeImpl tree = converter.convertCompilationUnit(astNode);
     tree.sema = converter.sema;
-    tree.addWarnings(warnings);
+    new WarningMapper(astNode).scanTree(tree);
 
     ASTUtils.mayTolerateMissingType(astNode.getAST());
 

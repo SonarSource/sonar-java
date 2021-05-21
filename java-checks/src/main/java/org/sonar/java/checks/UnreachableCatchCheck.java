@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JWarning;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
@@ -43,27 +44,21 @@ import org.sonar.plugins.java.api.tree.UnionTypeTree;
 @Rule(key = "S4970")
 public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
 
-  private final List<JWarning> warnings = new ArrayList<>();
   private static final Comparator<Location> LOCATION_COMAPRATOR = Comparator.<Location>comparingInt(loc -> loc.syntaxNode.firstToken().line())
     .thenComparing(Comparator.comparingInt(loc -> loc.syntaxNode.firstToken().column()));
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.COMPILATION_UNIT, Tree.Kind.TRY_STATEMENT);
+    return Collections.singletonList(Tree.Kind.TRY_STATEMENT);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
-      warnings.clear();
-      warnings.addAll(((CompilationUnitTreeImpl) tree).warnings(JWarning.Type.MASKED_CATCH));
-      return;
-    }
     checkWarnings((TryStatementTree) tree);
   }
 
   private void checkWarnings(TryStatementTree tryStatementTree) {
-    List<TypeTree> typesWithWarnings = new ArrayList<>(warnings.size());
+    List<TypeTree> typesWithWarnings = new ArrayList<>();
     List<UnionTypeTree> unionTypes = new ArrayList<>();
     Map<TypeTree, Type> typeByExceptions = new HashMap<>();
     Map<TypeTree, Tree> reportTrees = new HashMap<>();
@@ -84,10 +79,9 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
         // types from union types should be reported individually
         reportTrees.put(typeTree, withinUnionType ? typeTree : catchKeyword);
 
-        SyntaxToken typeFirstToken = typeTree.firstToken();
-        warnings.stream()
-          .filter(warning -> warning.contains(typeFirstToken))
-          .forEach(warning -> typesWithWarnings.add(typeTree));
+        if (((JavaTree) typeTree).hasWarning(JWarning.Type.MASKED_CATCH)) {
+          typesWithWarnings.add(typeTree);
+        }
       }
     }
     reportUnreacheableCatch(typesWithWarnings, typeByExceptions, reportTrees, unionTypes);

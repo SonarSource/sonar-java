@@ -6,7 +6,7 @@ class SelfAssignementCheck {
   void method() {
     a = a; // Noncompliant [[sc=7;ec=8]] {{Remove or correct this useless self-assignment.}}
     this.a = this.a; // Noncompliant
-    this.a = a; // Noncompliant [[sc=5;ec=15]] {{Remove or correct this useless self-assignment.}}
+    this.a = a; // Noncompliant [[sc=12;ec=13]] {{Remove or correct this useless self-assignment.}}
     b[0] = b[0]; // Noncompliant
     a = c = c; // Noncompliant
     b[fun()] = b[fun()]; // Noncompliant

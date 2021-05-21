@@ -32,7 +32,7 @@ import java.util.List;
 public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {
 
   @Override
-  protected void scanTree(Tree tree) {
+  public void scanTree(Tree tree) {
     throw new UnsupportedOperationException("IssuableSubscriptionVisitor should not drive visit of AST.");
   }
 

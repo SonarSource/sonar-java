@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
@@ -35,6 +36,8 @@ import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.Preconditions;
 import org.sonar.java.annotations.Beta;
 import org.sonar.java.ast.parser.TypeUnionListTreeImpl;
@@ -65,6 +68,7 @@ import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 public abstract class JavaTree implements Tree {
+  private static final Logger LOGGER = Loggers.get(JavaTree.class);
 
   protected CompilationUnitTreeImpl root;
 
@@ -73,6 +77,24 @@ public abstract class JavaTree implements Tree {
 
   private List<Tree> children;
 
+  private final Map<JWarning.Type, JWarning> warnings = new EnumMap<>(JWarning.Type.class);
+
+  @Beta
+  public Optional<JWarning> warning(JWarning.Type type) {
+    return Optional.of(warnings.get(type));
+  }
+
+  @Beta
+  public boolean hasWarning(JWarning.Type type) {
+    return warnings.containsKey(type);
+  }
+
+  @Beta
+  public void addWarning(JWarning warning) {
+    if (warnings.put(warning.getType(), warning) != null) {
+      LOGGER.debug("Duplicate warning of type " + warning.getType());
+    }
+  }
 
   @Override
   @Nullable
@@ -159,8 +181,6 @@ public abstract class JavaTree implements Tree {
     private final SyntaxToken eofToken;
     public JSema sema;
 
-    private final Map<JWarning.Type, List<JWarning>> warnings = new EnumMap<>(JWarning.Type.class);
-
     public CompilationUnitTreeImpl(@Nullable PackageDeclarationTree packageDeclaration, List<ImportClauseTree> imports, List<Tree> types,
       @Nullable ModuleDeclarationTree moduleDeclaration, SyntaxToken eofToken) {
       this.root = this;
@@ -184,11 +204,6 @@ public abstract class JavaTree implements Tree {
     @Override
     public List<Tree> types() {
       return types;
-    }
-
-    @Beta
-    public List<JWarning> warnings(JWarning.Type type) {
-      return Collections.unmodifiableList(warnings.getOrDefault(type, Collections.emptyList()));
     }
 
     @Override
@@ -223,10 +238,6 @@ public abstract class JavaTree implements Tree {
     @Override
     public SyntaxToken eofToken() {
       return eofToken;
-    }
-
-    public void addWarnings(Map<JWarning.Type, List<JWarning>> warnings) {
-      this.warnings.putAll(warnings);
     }
 
   }

@@ -69,7 +69,7 @@ public abstract class SubscriptionVisitor implements JavaFileScanner {
     scanTree(context.getTree());
   }
 
-  protected void scanTree(Tree tree) {
+  public void scanTree(Tree tree) {
     if(nodesToVisit == null) {
       List<Tree.Kind> kinds = nodesToVisit();
       if(kinds.isEmpty()) {
