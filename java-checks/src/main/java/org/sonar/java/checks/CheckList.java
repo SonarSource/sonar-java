@@ -641,7 +641,6 @@ public final class CheckList {
       RightCurlyBraceStartLineCheck.class,
       RSAUsesOAEPCheck.class,
       RunFinalizersCheck.class,
-      SAMAnnotatedCheck.class,
       ScheduledThreadPoolExecutorZeroCheck.class,
       SecureCookieCheck.class,
       SecureXmlTransformerCheck.class,
