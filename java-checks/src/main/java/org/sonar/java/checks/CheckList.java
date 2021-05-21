@@ -164,7 +164,6 @@ import org.sonar.java.checks.tests.JUnit4AnnotationsCheck;
 import org.sonar.java.checks.tests.JUnit5DefaultPackageClassAndMethodCheck;
 import org.sonar.java.checks.tests.JUnit5SilentlyIgnoreClassAndMethodCheck;
 import org.sonar.java.checks.tests.JUnitCompatibleAnnotationsCheck;
-import org.sonar.java.checks.tests.JunitMethodDeclarationCheck;
 import org.sonar.java.checks.tests.JunitNestedAnnotationCheck;
 import org.sonar.java.checks.tests.MockingAllMethodsCheck;
 import org.sonar.java.checks.tests.MockitoAnnotatedObjectsShouldBeInitializedCheck;
@@ -831,7 +830,6 @@ public final class CheckList {
       JUnit45MethodAnnotationCheck.class,
       JUnit5DefaultPackageClassAndMethodCheck.class,
       JUnit5SilentlyIgnoreClassAndMethodCheck.class,
-      JunitMethodDeclarationCheck.class,
       JunitNestedAnnotationCheck.class,
       MockingAllMethodsCheck.class,
       MockitoAnnotatedObjectsShouldBeInitializedCheck.class,
