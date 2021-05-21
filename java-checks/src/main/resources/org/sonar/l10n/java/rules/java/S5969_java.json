@@ -2,6 +2,10 @@
   "title": "Mocking all non-private methods of a class should be avoided",
   "type": "CODE_SMELL",
   "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
   "tags": [
     "tests",
     "mockito"

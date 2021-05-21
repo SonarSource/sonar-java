@@ -2,6 +2,10 @@
   "title": "AssertJ configuration should be applied",
   "type": "BUG",
   "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
   "tags": [
     "tests",
     "assertj"

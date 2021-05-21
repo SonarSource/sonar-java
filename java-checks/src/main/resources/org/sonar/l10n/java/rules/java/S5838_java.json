@@ -2,6 +2,10 @@
   "title": "Chained AssertJ assertions should be simplified to the corresponding dedicated assertion",
   "type": "CODE_SMELL",
   "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
   "tags": [
     "tests",
     "assertj"

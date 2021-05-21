@@ -2,6 +2,10 @@
   "title": "Track comments matching a regular expression",
   "type": "CODE_SMELL",
   "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "0min"
+  },
   "tags": [
     
   ],

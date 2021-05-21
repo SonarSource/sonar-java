@@ -2,6 +2,10 @@
   "title": "Test methods should not contain too many assertions",
   "type": "CODE_SMELL",
   "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
   "tags": [
     "tests"
   ],

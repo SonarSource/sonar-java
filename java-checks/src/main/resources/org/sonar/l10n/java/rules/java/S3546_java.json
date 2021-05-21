@@ -2,6 +2,10 @@
   "title": "Custom resources should be closed",
   "type": "BUG",
   "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "0min"
+  },
   "tags": [
     "denial-of-service"
   ],

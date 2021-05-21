@@ -2,6 +2,10 @@
   "title": "Assertion methods should not be used within the try block of a try-catch catching an Error",
   "type": "BUG",
   "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
   "tags": [
     "junit",
     "tests"

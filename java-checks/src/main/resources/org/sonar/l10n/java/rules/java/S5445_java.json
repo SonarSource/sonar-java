@@ -2,6 +2,10 @@
   "title": "Insecure temporary file creation methods should not be used",
   "type": "VULNERABILITY",
   "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
   "tags": [
     "cwe",
     "owasp-a9"
