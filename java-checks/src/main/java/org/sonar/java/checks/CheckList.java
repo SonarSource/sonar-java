@@ -71,7 +71,6 @@ import org.sonar.java.checks.security.AndroidExternalStorageCheck;
 import org.sonar.java.checks.security.AuthorizationsStrongDecisionsCheck;
 import org.sonar.java.checks.security.CipherBlockChainingCheck;
 import org.sonar.java.checks.security.ClearTextProtocolCheck;
-import org.sonar.java.checks.security.ControllingPermissionsCheck;
 import org.sonar.java.checks.security.CookieHttpOnlyCheck;
 import org.sonar.java.checks.security.CryptographicKeySizeCheck;
 import org.sonar.java.checks.security.DataHashingCheck;
@@ -333,7 +332,6 @@ public final class CheckList {
       ConstructorInjectionCheck.class,
       ControlCharacterInLiteralCheck.class,
       ControllerWithSessionAttributesCheck.class,
-      ControllingPermissionsCheck.class,
       CookieHttpOnlyCheck.class,
       CORSCheck.class,
       CryptographicKeySizeCheck.class,
