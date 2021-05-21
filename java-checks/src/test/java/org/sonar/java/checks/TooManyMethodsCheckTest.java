@@ -31,7 +31,7 @@ class TooManyMethodsCheckTest {
     TooManyMethodsCheck check = new TooManyMethodsCheck();
     check.maximumMethodThreshold = 4;
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/TooManyMethodsCheck.java")
+      .onFile(testSourcesPath("checks/TooManyMethodsCheck.java"))
       .withCheck(check)
       .verifyIssues();
   }
