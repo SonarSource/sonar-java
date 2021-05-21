@@ -98,7 +98,6 @@ import org.sonar.java.checks.security.ReceivingIntentsCheck;
 import org.sonar.java.checks.security.RegexHotspotCheck;
 import org.sonar.java.checks.security.SecureCookieCheck;
 import org.sonar.java.checks.security.ServerCertificatesCheck;
-import org.sonar.java.checks.security.StandardInputReadCheck;
 import org.sonar.java.checks.security.UnpredictableSaltCheck;
 import org.sonar.java.checks.security.UserEnumerationCheck;
 import org.sonar.java.checks.security.VerifiedServerHostnamesCheck;
@@ -655,7 +654,6 @@ public final class CheckList {
       SQLInjectionCheck.class,
       StandardCharsetsConstantsCheck.class,
       StandardFunctionalInterfaceCheck.class,
-      StandardInputReadCheck.class,
       StaticFieldInitializationCheck.class,
       StaticFieldUpateCheck.class,
       StaticFieldUpdateInConstructorCheck.class,
