@@ -544,7 +544,6 @@ public final class CheckList {
       NullReturnedOnComputeIfPresentOrAbsentCheck.class,
       NullShouldNotBeUsedWithOptionalCheck.class,
       ObjectCreatedOnlyToCallGetClassCheck.class,
-      ObjectDeserializationCheck.class,
       ObjectFinalizeCheck.class,
       ObjectFinalizeOverloadedCheck.class,
       ObjectFinalizeOverridenCallsSuperFinalizeCheck.class,
