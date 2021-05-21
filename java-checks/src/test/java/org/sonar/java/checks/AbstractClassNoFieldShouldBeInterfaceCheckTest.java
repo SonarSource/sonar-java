@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
@@ -58,6 +59,46 @@ class AbstractClassNoFieldShouldBeInterfaceCheckTest {
       .onFile("src/test/files/checks/AbstractClassNoFieldShouldBeInterfaceCheck_java9.java")
       .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
       .withJavaVersion(9)
+      .verifyIssues();
+  }
+
+  @Test
+  void test_no_version_without_semantics() {
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AbstractClassNoFieldShouldBeInterfaceCheck_no_version.java")
+      .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
+      .withClassPath(Collections.emptyList())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_with_java_7_without_semantics() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(TEST_FILE)
+      .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
+      .withJavaVersion(7)
+      .withClassPath(Collections.emptyList())
+      .verifyNoIssues();
+  }
+
+  @Test
+  void test_with_java_8_without_semantics() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(TEST_FILE)
+      .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
+      .withJavaVersion(8)
+      .withClassPath(Collections.emptyList())
+      .verifyIssues();
+  }
+
+
+  @Test
+  void test_with_java_9_without_semantics() {
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AbstractClassNoFieldShouldBeInterfaceCheck_java9.java")
+      .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
+      .withJavaVersion(9)
+      .withClassPath(Collections.emptyList())
       .verifyIssues();
   }
 }
