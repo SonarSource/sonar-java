@@ -388,7 +388,6 @@ public final class CheckList {
       DoubleCheckedLockingAssignmentCheck.class,
       DoubleCheckedLockingCheck.class,
       DoublePrefixOperatorCheck.class,
-      DuplicateArgumentCheck.class,
       DuplicateConditionIfElseIfCheck.class,
       DuplicatesInCharacterClassCheck.class,
       DynamicClassLoadCheck.class,
