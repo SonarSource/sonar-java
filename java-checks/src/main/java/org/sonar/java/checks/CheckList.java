@@ -80,7 +80,6 @@ import org.sonar.java.checks.security.DataHashingCheck;
 import org.sonar.java.checks.security.DebugFeatureEnabledCheck;
 import org.sonar.java.checks.security.DisableAutoEscapingCheck;
 import org.sonar.java.checks.security.DisclosingTechnologyFingerprintsCheck;
-import org.sonar.java.checks.security.EmailHotspotCheck;
 import org.sonar.java.checks.security.EmptyDatabasePasswordCheck;
 import org.sonar.java.checks.security.EncryptionAlgorithmCheck;
 import org.sonar.java.checks.security.EnvVariablesHotspotCheck;
@@ -374,7 +373,6 @@ public final class CheckList {
       DuplicateConditionIfElseIfCheck.class,
       DuplicatesInCharacterClassCheck.class,
       DynamicClassLoadCheck.class,
-      EmailHotspotCheck.class,
       EmptyBlockCheck.class,
       EmptyClassCheck.class,
       EmptyDatabasePasswordCheck.class,
