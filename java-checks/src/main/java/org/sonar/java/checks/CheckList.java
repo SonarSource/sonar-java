@@ -396,7 +396,6 @@ public final class CheckList {
       ExternalizableClassConstructorCheck.class,
       FieldModifierCheck.class,
       FieldNameMatchingTypeNameCheck.class,
-      FileCreateTempFileCheck.class,
       FileHeaderCheck.class,
       FilePermissionsCheck.class,
       FilesExistsJDK8Check.class,
