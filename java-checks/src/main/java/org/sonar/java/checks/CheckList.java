@@ -421,7 +421,6 @@ public final class CheckList {
       HardcodedURICheck.class,
       HasNextCallingNextCheck.class,
       HiddenFieldCheck.class,
-      HttpRefererCheck.class,
       IdenticalCasesInSwitchCheck.class,
       IdenticalOperandOnBinaryExpressionCheck.class,
       IfElseIfStatementEndsWithElseCheck.class,
