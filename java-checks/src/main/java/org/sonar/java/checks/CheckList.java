@@ -475,7 +475,6 @@ public final class CheckList {
       InputStreamOverrideReadCheck.class,
       InputStreamReadCheck.class,
       InsecureCreateTempFileCheck.class,
-      InstanceOfAlwaysTrueCheck.class,
       InstanceofUsedOnExceptionCheck.class,
       IntegerToHexStringCheck.class,
       InterfaceAsConstantContainerCheck.class,
