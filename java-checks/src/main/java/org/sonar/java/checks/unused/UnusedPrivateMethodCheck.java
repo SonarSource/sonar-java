@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -96,16 +97,27 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkIfUnknown(MethodInvocationTree mit) {
-    addIfUnknownOrAmbiguous(mit.symbol(), ExpressionUtils.methodName(mit).name());
+    String name = ExpressionUtils.methodName(mit).name();
+    addIfArgumentsAreUnknown(mit.arguments(), name);
+    addIfUnknownOrAmbiguous(mit.symbol(), name);
   }
 
   private void checkIfUnknown(NewClassTree nct) {
-    addIfUnknownOrAmbiguous(nct.constructorSymbol(), constructorName(nct.identifier()));
+    String name = constructorName(nct.identifier());
+    addIfArgumentsAreUnknown(nct.arguments(), name);
+    addIfUnknownOrAmbiguous(nct.constructorSymbol(), name);
   }
 
   private void checkIfUnknown(MethodReferenceTree mref) {
     IdentifierTree methodIdentifier = mref.method();
     addIfUnknownOrAmbiguous(methodIdentifier.symbol(), methodIdentifier.name());
+  }
+
+  private void addIfArgumentsAreUnknown(Arguments arguments, String name) {
+    // In case of broken semantic, if the argument is unknown, the method call will not have the correct reference.
+    if (arguments.stream().anyMatch(arg -> arg.symbolType().isUnknown())) {
+      unresolvedMethodNames.add(name);
+    }
   }
 
   private void addIfUnknownOrAmbiguous(Symbol symbol, String name) {
