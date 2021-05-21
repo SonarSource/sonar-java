@@ -582,7 +582,6 @@ public final class CheckList {
       PrimitiveWrappersInTernaryOperatorCheck.class,
       PrintfFailCheck.class,
       PrintfMisuseCheck.class,
-      PrintStackTraceCalledWithoutArgumentCheck.class,
       PrivateFieldUsedLocallyCheck.class,
       PrivateReadResolveCheck.class,
       ProtectedMemberInFinalClassCheck.class,
