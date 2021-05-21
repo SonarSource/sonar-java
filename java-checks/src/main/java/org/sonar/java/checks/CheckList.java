@@ -345,7 +345,6 @@ public final class CheckList {
       ControlCharacterInLiteralCheck.class,
       ControllerWithSessionAttributesCheck.class,
       ControllingPermissionsCheck.class,
-      CookieDomainCheck.class,
       CookieHttpOnlyCheck.class,
       CORSCheck.class,
       CryptographicKeySizeCheck.class,
