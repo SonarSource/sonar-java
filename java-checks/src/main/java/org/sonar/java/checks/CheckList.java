@@ -482,7 +482,6 @@ public final class CheckList {
       LoopExecutingAtMostOnceCheck.class,
       LoopsOnSameSetCheck.class,
       MagicNumberCheck.class,
-      MainInServletCheck.class,
       MainMethodThrowsExceptionCheck.class,
       MapComputeIfAbsentOrPresentCheck.class,
       MathOnFloatCheck.class,
