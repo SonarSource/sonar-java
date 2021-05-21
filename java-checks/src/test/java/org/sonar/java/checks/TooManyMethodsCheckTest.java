@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class TooManyMethodsCheckTest {
@@ -46,4 +47,15 @@ class TooManyMethodsCheckTest {
       .withCheck(check)
       .verifyIssues();
   }
+
+  @Test
+  void test_non_compiling() {
+    TooManyMethodsCheck check = new TooManyMethodsCheck();
+    check.maximumMethodThreshold = 4;
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/TooManyMethodsCheck.java"))
+      .withCheck(check)
+      .verifyIssues();
+  }
+
 }
