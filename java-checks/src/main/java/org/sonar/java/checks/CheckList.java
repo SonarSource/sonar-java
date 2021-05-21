@@ -311,7 +311,6 @@ public final class CheckList {
       ChildClassShadowFieldCheck.class,
       CipherBlockChainingCheck.class,
       ClassComparedByNameCheck.class,
-      ClassComplexityCheck.class,
       ClassCouplingCheck.class,
       ClassFieldCountCheck.class,
       ClassNamedLikeExceptionCheck.class,
