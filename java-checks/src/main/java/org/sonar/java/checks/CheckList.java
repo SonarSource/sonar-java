@@ -52,7 +52,6 @@ import org.sonar.java.checks.regex.EscapeSequenceControlCharacterCheck;
 import org.sonar.java.checks.regex.GraphemeClustersInClassesCheck;
 import org.sonar.java.checks.regex.ImpossibleBackReferenceCheck;
 import org.sonar.java.checks.regex.ImpossibleBoundariesCheck;
-import org.sonar.java.checks.regex.ImpossibleRegexCheck;
 import org.sonar.java.checks.regex.InvalidRegexCheck;
 import org.sonar.java.checks.regex.PossessiveQuantifierContinuationCheck;
 import org.sonar.java.checks.regex.RedosCheck;
@@ -434,7 +433,6 @@ public final class CheckList {
       ImplementsEnumerationCheck.class,
       ImpossibleBackReferenceCheck.class,
       ImpossibleBoundariesCheck.class,
-      ImpossibleRegexCheck.class,
       InappropriateRegexpCheck.class,
       IncorrectOrderOfMembersCheck.class,
       IncrementDecrementInSubExpressionCheck.class,
