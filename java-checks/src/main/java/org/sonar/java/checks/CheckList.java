@@ -73,7 +73,6 @@ import org.sonar.java.checks.security.AndroidSSLConnectionCheck;
 import org.sonar.java.checks.security.AuthorizationsStrongDecisionsCheck;
 import org.sonar.java.checks.security.CipherBlockChainingCheck;
 import org.sonar.java.checks.security.ClearTextProtocolCheck;
-import org.sonar.java.checks.security.CommandLineArgumentsCheck;
 import org.sonar.java.checks.security.ControllingPermissionsCheck;
 import org.sonar.java.checks.security.CookieHttpOnlyCheck;
 import org.sonar.java.checks.security.CryptographicKeySizeCheck;
@@ -322,7 +321,6 @@ public final class CheckList {
       CollectionsEmptyConstantsCheck.class,
       CollectionSizeAndArrayLengthCheck.class,
       CombineCatchCheck.class,
-      CommandLineArgumentsCheck.class,
       CommentedOutCodeLineCheck.class,
       CommentRegularExpressionCheck.class,
       CompareObjectWithEqualsCheck.class,
