@@ -197,7 +197,7 @@ public class JavaTest {
     orchestrator.executeBuild(build);
     assertThat(getMeasureAsInteger(projectKey, "violations")).isZero();
 
-    // invalid java version. got issue on java 7 code
+    // invalid java version. got issue on java 6 code
     build.setProperty(sonarJavaSource, "jdk_1.6");
     BuildResult buildResult = orchestrator.executeBuild(build);
     // build should not fail
@@ -206,12 +206,12 @@ public class JavaTest {
     assertThat(buildResult.getLogs()).contains("Invalid java version");
     assertThat(getMeasureAsInteger(projectKey, "violations")).isEqualTo(1);
 
-    // upper version. got issue on java 7 code
+    // upper version. got issue on java 8 code
     build.setProperty(sonarJavaSource, "1.8");
     orchestrator.executeBuild(build);
     assertThat(getMeasureAsInteger(projectKey, "violations")).isEqualTo(1);
 
-    // lower version. no issue on java 7 code
+    // lower version. no issue on java 6 code
     build.setProperty(sonarJavaSource, "1.6");
     orchestrator.executeBuild(build);
     assertThat(getMeasureAsInteger(projectKey, "violations")).isZero();

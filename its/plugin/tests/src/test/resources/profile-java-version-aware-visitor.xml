@@ -5,7 +5,7 @@
   <rules>
     <rule>
       <repositoryKey>java</repositoryKey>
-      <key>S2976</key>
+      <key>S2293</key> <!-- diamond operator check -->
       <priority>MAJOR</priority>
     </rule>
   </rules>
