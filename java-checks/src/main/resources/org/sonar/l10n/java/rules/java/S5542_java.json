@@ -2,6 +2,10 @@
   "title": "Encryption algorithms should be used with secure mode and padding scheme",
   "type": "VULNERABILITY",
   "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
   "tags": [
     "cwe",
     "privacy",

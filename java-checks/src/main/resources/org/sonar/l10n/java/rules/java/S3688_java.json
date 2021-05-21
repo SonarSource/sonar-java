@@ -2,6 +2,10 @@
   "title": "Track uses of disallowed classes",
   "type": "CODE_SMELL",
   "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "0min"
+  },
   "tags": [
     
   ],

@@ -2,6 +2,10 @@
   "title": "Assertions should not be used in production code",
   "type": "BUG",
   "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
   "tags": [
     
   ],

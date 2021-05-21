@@ -2,6 +2,10 @@
   "title": "Tests method should not be annotated with competing annotations",
   "type": "BUG",
   "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
   "tags": [
     "tests"
   ],

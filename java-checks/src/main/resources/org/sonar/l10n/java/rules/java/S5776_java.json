@@ -2,6 +2,10 @@
   "title": "Exception testing via JUnit ExpectedException rule should not be mixed with other assertions",
   "type": "CODE_SMELL",
   "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
   "tags": [
     "junit",
     "tests"

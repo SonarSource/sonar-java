@@ -2,6 +2,10 @@
   "title": "Only one method invocation is expected when testing runtime exceptions",
   "type": "CODE_SMELL",
   "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
   "tags": [
     "junit",
     "tests"

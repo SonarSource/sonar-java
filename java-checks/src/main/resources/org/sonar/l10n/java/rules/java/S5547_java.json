@@ -2,6 +2,10 @@
   "title": "Cipher algorithms should be robust",
   "type": "VULNERABILITY",
   "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
   "tags": [
     "cwe",
     "privacy",

@@ -2,6 +2,10 @@
   "title": "Regular expressions should not overflow the stack",
   "type": "BUG",
   "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
   "tags": [
     "regex"
   ],
