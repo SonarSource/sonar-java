@@ -67,7 +67,6 @@ import org.sonar.java.checks.regex.StringReplaceCheck;
 import org.sonar.java.checks.regex.UnicodeAwareCharClassesCheck;
 import org.sonar.java.checks.regex.UnicodeCaseCheck;
 import org.sonar.java.checks.regex.UnusedGroupNamesCheck;
-import org.sonar.java.checks.security.AESAlgorithmCheck;
 import org.sonar.java.checks.security.AndroidBroadcastingCheck;
 import org.sonar.java.checks.security.AndroidExternalStorageCheck;
 import org.sonar.java.checks.security.AndroidSSLConnectionCheck;
@@ -249,7 +248,6 @@ public final class CheckList {
       AbstractClassNoFieldShouldBeInterfaceCheck.class,
       AbstractClassWithoutAbstractMethodCheck.class,
       AccessibilityChangeCheck.class,
-      AESAlgorithmCheck.class,
       AllBranchesAreIdenticalCheck.class,
       AnchorPrecedenceCheck.class,
       AndroidBroadcastingCheck.class,
