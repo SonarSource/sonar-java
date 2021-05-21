@@ -452,7 +452,6 @@ public final class CheckList {
       HttpRefererCheck.class,
       IdenticalCasesInSwitchCheck.class,
       IdenticalOperandOnBinaryExpressionCheck.class,
-      IfConditionAlwaysTrueOrFalseCheck.class,
       IfElseIfStatementEndsWithElseCheck.class,
       IgnoredOperationStatusCheck.class,
       IgnoredReturnValueCheck.class,
