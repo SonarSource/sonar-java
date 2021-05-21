@@ -90,8 +90,9 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
     "TreeSet",
     "Vector");
 
+  private static final String ITEM_PROCESSOR_PROCESS = "process";
   private static final MethodMatchers ITEM_PROCESSOR_PROCESS_METHOD = MethodMatchers.create()
-    .ofSubTypes("org.springframework.batch.item.ItemProcessor").names("process").withAnyParameters().build();
+    .ofSubTypes("org.springframework.batch.item.ItemProcessor").names(ITEM_PROCESSOR_PROCESS).withAnyParameters().build();
 
   private final Deque<Returns> returnType = new LinkedList<>();
 
@@ -172,6 +173,10 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean requiresReturnNull(MethodTree methodTree) {
+    if (!ITEM_PROCESSOR_PROCESS.equals(methodTree.simpleName().name())) {
+      return false;
+    }
+
     Symbol owner = methodTree.symbol().owner();
     if (owner == null || !owner.isTypeSymbol()) {
       // Unknown hierarchy, consider it as requires null to avoid FP
@@ -179,12 +184,12 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
       return true;
     }
     List<Type> interfaces = ((Symbol.TypeSymbol) owner).interfaces();
-    return isOverriding(methodTree)
-      && (interfaces.stream().anyMatch(Type::isUnknown) || ITEM_PROCESSOR_PROCESS_METHOD.matches(methodTree));
-  }
-
-  private static boolean isOverriding(MethodTree tree) {
-    return Boolean.TRUE.equals(tree.isOverriding());
+    Boolean isOverriding = methodTree.isOverriding();
+    if (isOverriding == null || interfaces.stream().anyMatch(Type::isUnknown)) {
+      // Return true in case of incomplete semantic
+      return true;
+    }
+    return Boolean.TRUE.equals(isOverriding) && ITEM_PROCESSOR_PROCESS_METHOD.matches(methodTree);
   }
 
   private static boolean hasUnknownAnnotation(SymbolMetadata symbolMetadata) {

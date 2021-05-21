@@ -46,3 +46,19 @@ class ReturnEmptyArrayNotNullCheckD implements ItemProcessor<Integer, List<Strin
     return null; // Noncompliant
   }
 }
+
+class ReturnEmptyArrayNotNullCheckE implements ItemProcessor<Integer, List<String>> {
+  public List<String> process(Integer i) {
+    return null; // Compliant: even when ItemProcessor is not imported (unknown)
+  }
+}
+
+class ReturnEmptyArrayNotNullCheckF implements ItemProcessor<Integer, List<String>> {
+}
+
+class ReturnEmptyArrayNotNullCheckG extends ReturnEmptyArrayNotNullCheckF {
+  @Override
+  public List<String> process(Integer i) {
+    return null; // Noncompliant - FP, incomplete semantic prevent us to match the process method. Only happen in subclasses, acceptable corner case
+  }
+}
