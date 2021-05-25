@@ -77,7 +77,6 @@ import org.sonar.java.checks.security.CommandLineArgumentsCheck;
 import org.sonar.java.checks.security.ControllingPermissionsCheck;
 import org.sonar.java.checks.security.CookieHttpOnlyCheck;
 import org.sonar.java.checks.security.CryptographicKeySizeCheck;
-import org.sonar.java.checks.security.DataEncryptionCheck;
 import org.sonar.java.checks.security.DataHashingCheck;
 import org.sonar.java.checks.security.DebugFeatureEnabledCheck;
 import org.sonar.java.checks.security.DisableAutoEscapingCheck;
@@ -352,7 +351,6 @@ public final class CheckList {
       CustomSerializationMethodCheck.class,
       CustomUnclosedResourcesCheck.class,
       DanglingElseStatementsCheck.class,
-      DataEncryptionCheck.class,
       DataHashingCheck.class,
       DateAndTimesCheck.class,
       DateFormatWeekYearCheck.class,
