@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.SimplifiedRegexCharacterClass;
-import org.sonar.java.regex.RegexCheck.RegexIssueLocation;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonarsource.analyzer.commons.regex.RegexParseResult;
 import org.sonarsource.analyzer.commons.regex.ast.CharacterClassElementTree;
