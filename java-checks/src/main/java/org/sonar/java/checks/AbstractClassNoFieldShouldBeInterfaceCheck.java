@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -123,14 +124,15 @@ public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscrip
    * @param fullPath Complete import path
    * @return true if the full path ends with the shorter one, false otherwise
    */
-  private static boolean matches(String path, String fullPath) {
+  @VisibleForTesting
+  static boolean matches(String path, String fullPath) {
     String[] fullPathTokens = fullPath.split("[\\.\\$]");
     String[] pathTokens = path.split("[\\.\\$]");
-    if (pathTokens.length >= fullPathTokens.length) {
+    if (fullPathTokens.length < pathTokens.length) {
       return false;
     }
-    for (int i = pathTokens.length - 1; i >= 0; i--) {
-      if (!pathTokens[i].equals(fullPathTokens[fullPathTokens.length - i - 1])) {
+    for (int i = 0; i < pathTokens.length; i++) {
+      if (!pathTokens[pathTokens.length - i - 1].equals(fullPathTokens[fullPathTokens.length - i - 1])) {
         return false;
       }
     }

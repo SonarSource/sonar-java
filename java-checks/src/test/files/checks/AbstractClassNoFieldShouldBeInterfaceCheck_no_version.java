@@ -1,3 +1,7 @@
+package checks;
+
+import org.immutables.value.Value;
+
 abstract class A {
   private int b;
 
@@ -22,4 +26,19 @@ abstract class D {
 }
 
 abstract class E extends A {
+}
+
+@Value.Immutable
+abstract class Bar { // Compliant
+  abstract String name();
+}
+
+@org.immutables.value.Value.Immutable
+abstract class BarWithFullAnnotation { // Compliant
+  abstract String name();
+}
+
+@creedthoughts.org.immutables.value.Value.Immutable
+abstract class BarWithFullAnnotation { // Noncompliant
+  abstract String name();
 }

@@ -23,6 +23,9 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 class AbstractClassNoFieldShouldBeInterfaceCheckTest {
 
   private static final String TEST_FILE = "src/test/files/checks/AbstractClassNoFieldShouldBeInterfaceCheck.java";
@@ -100,5 +103,15 @@ class AbstractClassNoFieldShouldBeInterfaceCheckTest {
       .withJavaVersion(9)
       .withClassPath(Collections.emptyList())
       .verifyIssues();
+  }
+
+  @Test
+  void test_path_match() {
+    assertTrue(
+      AbstractClassNoFieldShouldBeInterfaceCheck.matches("Value.Immutable", "org.immutables.value.Value.Immutable")
+    );
+    assertFalse(
+      AbstractClassNoFieldShouldBeInterfaceCheck.matches("creedthoughts.org.immutables.value.Value.Immutable", "org.immutables.value.Value.Immutable")
+    );
   }
 }
