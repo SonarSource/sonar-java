@@ -220,6 +220,11 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
   }
 
   private static boolean isAcceptedType(Type type, List<String> accepted) {
+    // In case of broken semantics, the type is unknown and can therefore not be matched against an accepted one.
+    // To avoid raising FPs, we consider that an unknown type is most likely an accepted one.
+    if (type.isUnknown()) {
+      return true;
+    }
     for (String acceptedType : accepted) {
       if (type.isSubtypeOf(acceptedType)) {
         return true;
