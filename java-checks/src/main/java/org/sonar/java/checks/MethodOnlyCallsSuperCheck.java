@@ -90,13 +90,17 @@ public class MethodOnlyCallsSuperCheck extends IssuableSubscriptionVisitor {
     } else if (statementTree.is(Tree.Kind.RETURN_STATEMENT)) {
       callToSuper = ((ReturnStatementTree) statementTree).expression();
     }
-    return callToSuper != null && isCallToSuper(methodTree, callToSuper) && sameVisibility(methodTree.symbol(), ((MethodInvocationTree) callToSuper).symbol());
+    if (callToSuper == null || !isCallToSuper(methodTree, callToSuper)) {
+      return false;
+    }
+    Symbol parentMethod = ((MethodInvocationTree) callToSuper).symbol();
+    if (parentMethod.isUnknown()) {
+      return false;
+    }
+    return sameVisibility(methodTree.symbol(), parentMethod);
   }
 
   private static boolean sameVisibility(Symbol.MethodSymbol method, Symbol parentMethod) {
-    if (parentMethod.isUnknown()) {
-      return true;
-    }
     return bothPackage(method, parentMethod)
       || bothProtected(method, parentMethod)
       || bothPublic(method, parentMethod);
