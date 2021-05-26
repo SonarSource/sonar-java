@@ -83,12 +83,6 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    visited.clear();
-    super.scanFile(context);
-  }
-
-  @Override
   // This specific override is meant to ensure that the visited set is cleared even for scans that do not go through scanFile (such as the sanity test).
   public void leaveFile(JavaFileScannerContext context) {
     visited.clear();
