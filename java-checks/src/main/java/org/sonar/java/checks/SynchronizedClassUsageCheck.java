@@ -32,6 +32,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.collections.MapBuilder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -75,9 +76,23 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
     tree.accept(new DeprecatedTypeVisitor());
   }
 
+
   @Override
   public void leaveNode(Tree tree) {
     exclusions.pop();
+  }
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    visited.clear();
+    super.scanFile(context);
+  }
+
+  @Override
+  // This specific override is meant to ensure that the visited set is cleared even for scans that do not go through scanFile (such as the sanity test).
+  public void leaveFile(JavaFileScannerContext context) {
+    visited.clear();
+    super.leaveFile(context);
   }
 
   private static class ExclusionsVisitor extends BaseTreeVisitor {
