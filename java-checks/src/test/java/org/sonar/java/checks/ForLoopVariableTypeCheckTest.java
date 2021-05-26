@@ -21,13 +21,16 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.TestUtils;
+
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class ForLoopVariableTypeCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ForLoopVariableTypeCheck.java")
+      .onFile(nonCompilingTestSourcesPath("checks/ForLoopVariableTypeCheck.java"))
       .withCheck(new ForLoopVariableTypeCheck())
       .verifyIssues();
   }
