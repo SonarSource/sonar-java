@@ -111,7 +111,10 @@ public class CatchOfThrowableOrErrorCheck extends IssuableSubscriptionVisitor {
     private boolean isGuavaCloserRethrow(ExpressionTree expression) {
       if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
         MethodInvocationTree mit = (MethodInvocationTree) expression;
-        if (MATCHERS.matches(mit)) {
+        // In case of broken semantics, the method matcher cannot identify the method invocation.
+        // To avoid raising FPs in these cases, we accept is as is and look at the first argument
+        if (MATCHERS.matches(mit) ||
+          (mit.symbol().isUnknown() && !mit.arguments().isEmpty())) {
           ExpressionTree firstArgument = mit.arguments().get(0);
           return firstArgument.is(Tree.Kind.IDENTIFIER) && exceptionSymbol.equals(((IdentifierTree) firstArgument).symbol());
         }

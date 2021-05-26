@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
@@ -31,6 +32,15 @@ class CatchOfThrowableOrErrorCheckTest {
     JavaCheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/CatchOfThrowableOrErrorCheck.java"))
       .withCheck(new CatchOfThrowableOrErrorCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_without_semantic() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/CatchOfThrowableOrErrorCheck.java"))
+      .withCheck(new CatchOfThrowableOrErrorCheck())
+      .withClassPath(Collections.emptyList())
       .verifyIssues();
   }
 }

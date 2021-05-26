@@ -46,6 +46,8 @@ class CatchOfThrowableOrErrorCheck {
         throw closer.<A>rethrow(e, A.class);
       } catch (Throwable e) {           // Compliant
         throw closer.<A, A>rethrow(e, A.class, A.class);
+      } catch(Throwable e) {            // Noncompliant
+        throw unknownMethodWithoutArgument();
       } finally {
       }
     }
