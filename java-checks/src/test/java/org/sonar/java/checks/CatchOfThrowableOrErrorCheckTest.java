@@ -22,12 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+
 class CatchOfThrowableOrErrorCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/CatchOfThrowableOrErrorCheck.java")
+      .onFile(nonCompilingTestSourcesPath("checks/CatchOfThrowableOrErrorCheck.java"))
       .withCheck(new CatchOfThrowableOrErrorCheck())
       .verifyIssues();
   }
