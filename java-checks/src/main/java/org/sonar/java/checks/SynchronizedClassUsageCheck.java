@@ -32,7 +32,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.collections.MapBuilder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -57,15 +56,20 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
 
   private final Deque<Set<String>> exclusions = new ArrayDeque<>();
 
-  private Set<Tree> visited = new HashSet<>();
+  private final Set<Tree> visited = new HashSet<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE);
+    // We register on compilation units to clear the visited data structure when scanning a new file
+    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.COMPILATION_UNIT, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE);
   }
 
   @Override
   public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
+      // We clear the visited data structure when entering every file
+      visited.clear();
+    }
     ExclusionsVisitor exclusionsVisitor = new ExclusionsVisitor();
     tree.accept(exclusionsVisitor);
     Set<String> currentClassExclusions = exclusionsVisitor.exclusions;
@@ -80,13 +84,6 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
   @Override
   public void leaveNode(Tree tree) {
     exclusions.pop();
-  }
-
-  @Override
-  // This specific override is meant to ensure that the visited set is cleared even for scans that do not go through scanFile (such as the sanity test).
-  public void leaveFile(JavaFileScannerContext context) {
-    visited.clear();
-    super.leaveFile(context);
   }
 
   private static class ExclusionsVisitor extends BaseTreeVisitor {

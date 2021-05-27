@@ -23,17 +23,22 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.sonar.java.checks.AbstractClassNoFieldShouldBeInterfaceCheck.matches;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class AbstractClassNoFieldShouldBeInterfaceCheckTest {
 
-  private static final String TEST_FILE = "src/test/files/checks/AbstractClassNoFieldShouldBeInterfaceCheck.java";
+  private static final String TEST_FILE = "checks/AbstractClassNoFieldShouldBeInterfaceCheck.java";
+  private static final String TEST_FILE_NO_JAVA_VERSION = "checks/AbstractClassNoFieldShouldBeInterfaceCheck_no_version.java";
+  private static final String TEST_FILE_JAVA_9 = "checks/AbstractClassNoFieldShouldBeInterfaceCheck_java9.java";
 
   @Test
   void test_no_version() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/AbstractClassNoFieldShouldBeInterfaceCheck_no_version.java")
+      .onFile(nonCompilingTestSourcesPath(TEST_FILE_NO_JAVA_VERSION))
       .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
       .verifyIssues();
   }
@@ -41,7 +46,7 @@ class AbstractClassNoFieldShouldBeInterfaceCheckTest {
   @Test
   void test_with_java_7() {
     JavaCheckVerifier.newVerifier()
-      .onFile(TEST_FILE)
+      .onFile(nonCompilingTestSourcesPath(TEST_FILE))
       .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
       .withJavaVersion(7)
       .verifyNoIssues();
@@ -50,7 +55,7 @@ class AbstractClassNoFieldShouldBeInterfaceCheckTest {
   @Test
   void test_with_java_8() {
     JavaCheckVerifier.newVerifier()
-      .onFile(TEST_FILE)
+      .onFile(nonCompilingTestSourcesPath(TEST_FILE))
       .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
       .withJavaVersion(8)
       .verifyIssues();
@@ -59,7 +64,7 @@ class AbstractClassNoFieldShouldBeInterfaceCheckTest {
   @Test
   void test_with_java_9() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/AbstractClassNoFieldShouldBeInterfaceCheck_java9.java")
+      .onFile(nonCompilingTestSourcesPath(TEST_FILE_JAVA_9))
       .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
       .withJavaVersion(9)
       .verifyIssues();
@@ -68,7 +73,7 @@ class AbstractClassNoFieldShouldBeInterfaceCheckTest {
   @Test
   void test_no_version_without_semantics() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/AbstractClassNoFieldShouldBeInterfaceCheck_no_version.java")
+      .onFile(nonCompilingTestSourcesPath(TEST_FILE_NO_JAVA_VERSION))
       .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
       .withClassPath(Collections.emptyList())
       .verifyIssues();
@@ -77,7 +82,7 @@ class AbstractClassNoFieldShouldBeInterfaceCheckTest {
   @Test
   void test_with_java_7_without_semantics() {
     JavaCheckVerifier.newVerifier()
-      .onFile(TEST_FILE)
+      .onFile(nonCompilingTestSourcesPath(TEST_FILE))
       .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
       .withJavaVersion(7)
       .withClassPath(Collections.emptyList())
@@ -87,7 +92,7 @@ class AbstractClassNoFieldShouldBeInterfaceCheckTest {
   @Test
   void test_with_java_8_without_semantics() {
     JavaCheckVerifier.newVerifier()
-      .onFile(TEST_FILE)
+      .onFile(nonCompilingTestSourcesPath(TEST_FILE))
       .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
       .withJavaVersion(8)
       .withClassPath(Collections.emptyList())
@@ -98,7 +103,7 @@ class AbstractClassNoFieldShouldBeInterfaceCheckTest {
   @Test
   void test_with_java_9_without_semantics() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/AbstractClassNoFieldShouldBeInterfaceCheck_java9.java")
+      .onFile(nonCompilingTestSourcesPath(TEST_FILE_JAVA_9))
       .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
       .withJavaVersion(9)
       .withClassPath(Collections.emptyList())
@@ -107,11 +112,11 @@ class AbstractClassNoFieldShouldBeInterfaceCheckTest {
 
   @Test
   void test_path_match() {
-    assertTrue(
-      AbstractClassNoFieldShouldBeInterfaceCheck.matches("Value.Immutable", "org.immutables.value.Value.Immutable")
-    );
-    assertFalse(
-      AbstractClassNoFieldShouldBeInterfaceCheck.matches("creedthoughts.org.immutables.value.Value.Immutable", "org.immutables.value.Value.Immutable")
-    );
+    assertThat(
+      matches("Value.Immutable", "org.immutables.value.Value.Immutable")
+    ).isTrue();
+    assertThat(
+      matches("creedthoughts.org.immutables.value.Value.Immutable", "org.immutables.value.Value.Immutable")
+    ).isFalse();
   }
 }

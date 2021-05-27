@@ -107,7 +107,7 @@ public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscrip
       return true;
     }
     for (SymbolMetadata.AnnotationInstance annotation : annotations) {
-      // If semantic is broken, we may not be able to resolve the full name on the class annotation.
+      // If semantic is incomplete, we may not be able to resolve the full name on the class annotation.
       // To reduce FPs, we test for a match on the end of the annotation names
       Symbol symbol = annotation.symbol();
       if (symbol.type().is(IMMUTABLE_ANNOTATION) ||
