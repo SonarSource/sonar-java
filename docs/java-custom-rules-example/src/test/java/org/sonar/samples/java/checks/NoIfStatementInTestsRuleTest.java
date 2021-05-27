@@ -17,23 +17,25 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.samples.java;
+package org.sonar.samples.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.plugins.java.api.CheckRegistrar;
-import static org.assertj.core.api.Assertions.assertThat;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.samples.java.utils.FilesUtils;
 
-class MyJavaFileCheckRegistrarTest {
+class NoIfStatementInTestsRuleTest {
 
   @Test
-  void checkNumberRules() {
-    CheckRegistrar.RegistrarContext context = new CheckRegistrar.RegistrarContext();
-
-    MyJavaFileCheckRegistrar registrar = new MyJavaFileCheckRegistrar();
-    registrar.register(context);
-
-    assertThat(context.checkClasses()).hasSize(8);
-    assertThat(context.testCheckClasses()).hasSize(1);
+  void check() {
+    // Verifies that the check will raise the adequate issues with the expected message.
+    // In the test file, lines which should raise an issue have been commented out
+    // by using the following syntax: "// Noncompliant {{EXPECTED_MESSAGE}}"
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/NoIfStatementInTestsRule.java")
+      .withCheck(new NoIfStatementInTestsRule())
+      // tells the analyzer to use the jars present in this folder for tracking bytecode and resolve anntotations such as "org.junit.Test"
+      .withClassPath(FilesUtils.getClassPath("target/test-jars"))
+      .verifyIssues();
   }
 
 }
