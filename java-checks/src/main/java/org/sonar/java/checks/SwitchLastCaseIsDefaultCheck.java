@@ -61,7 +61,8 @@ public class SwitchLastCaseIsDefaultCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isSwitchOnEnum(SwitchStatementTree switchStatementTree) {
-    return switchStatementTree.expression().symbolType().symbol().isEnum();
+    Symbol.TypeSymbol symbol = switchStatementTree.expression().symbolType().symbol();
+    return symbol.isEnum() || symbol.isUnknown();
   }
 
   private static boolean missingCasesOfEnum(SwitchStatementTree switchStatementTree) {
