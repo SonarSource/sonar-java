@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks.verifier;
+package org.sonar.java.checks.verifier.internal;
 
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
@@ -47,7 +47,9 @@ import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.Beta;
 import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.checks.verifier.internal.InternalSensorContext;
+import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.FilesUtils;
+import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.JavaVersionImpl;
@@ -55,13 +57,13 @@ import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaVersion;
 
-import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.EFFORT_TO_FIX;
-import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.END_COLUMN;
-import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.END_LINE;
-import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.FLOWS;
-import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.MESSAGE;
-import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.SECONDARY_LOCATIONS;
-import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.START_COLUMN;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.EFFORT_TO_FIX;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.END_COLUMN;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.END_LINE;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.FLOWS;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.MESSAGE;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.SECONDARY_LOCATIONS;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.START_COLUMN;
 
 public class InternalCheckVerifier implements CheckVerifier {
 

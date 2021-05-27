@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks.verifier;
+package org.sonar.java.checks.verifier.internal;
 
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Nested;
@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.RspecKey;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 

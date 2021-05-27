@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks.verifier;
+package org.sonar.java.checks.verifier.internal;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,13 +29,13 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.collections.MapBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.END_COLUMN;
-import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.END_LINE;
-import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.FLOWS;
-import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.LINE;
-import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.MESSAGE;
-import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.SECONDARY_LOCATIONS;
-import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.START_COLUMN;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.END_COLUMN;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.END_LINE;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.FLOWS;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.LINE;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.MESSAGE;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.SECONDARY_LOCATIONS;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.START_COLUMN;
 
 class ExpectationsTest {
 

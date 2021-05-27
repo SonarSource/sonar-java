@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks.verifier;
+package org.sonar.java.checks.verifier.internal;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
@@ -57,6 +57,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.RspecKey;
 import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.collections.MapBuilder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
@@ -64,15 +65,15 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
-import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.EFFORT_TO_FIX;
-import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.END_COLUMN;
-import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.END_LINE;
-import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.FLOWS;
-import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.LINE;
-import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.MESSAGE;
-import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.ORDER;
-import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.SECONDARY_LOCATIONS;
-import static org.sonar.java.checks.verifier.Expectations.IssueAttribute.START_COLUMN;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.EFFORT_TO_FIX;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.END_COLUMN;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.END_LINE;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.FLOWS;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.LINE;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.MESSAGE;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.ORDER;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.SECONDARY_LOCATIONS;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.START_COLUMN;
 
 class Expectations {
 
