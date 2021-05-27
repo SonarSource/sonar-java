@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class RedundantAbstractMethodCheckTest {
   @Test
@@ -30,6 +31,21 @@ class RedundantAbstractMethodCheckTest {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/RedundantAbstractMethodCheck.java"))
       .withCheck(new RedundantAbstractMethodCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_without_semantic() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/RedundantAbstractMethodCheck.java"))
+      .withCheck(new RedundantAbstractMethodCheck())
+      .withoutSemantic()
+      .verifyIssues();
+
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/RedundantAbstractMethodCheck.java"))
+      .withCheck(new RedundantAbstractMethodCheck())
+      .withoutSemantic()
       .verifyIssues();
   }
 }
