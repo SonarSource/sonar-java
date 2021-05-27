@@ -1,0 +1,27 @@
+<p>This rule is an example of custom rules targeting only TEST code.It is not a common good practice, but a simple illustration of what can be achieved when writing rules.</p>
+<p>In particular, this rules target test methods (method annotated with JUnit4 @Test annotation) which contains a "if" statement, completely arbitrarily. The only embrio of reasoning
+could be that some people might feel a test should not have any conditional path.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+@Test
+public void my_test_method() {
+  if (someCondition) {
+    // verify something
+  } else {
+    // verify something else
+  }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+@Test
+public void my_first_test_method() {
+  // verify something
+}
+
+@Test
+public void my_second_test_method() {
+  // verify something else
+}
+</pre>

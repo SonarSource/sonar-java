@@ -30,6 +30,7 @@ import org.sonar.samples.java.checks.AvoidMethodDeclarationRule;
 import org.sonar.samples.java.checks.AvoidSuperClassRule;
 import org.sonar.samples.java.checks.AvoidTreeListRule;
 import org.sonar.samples.java.checks.MyCustomSubscriptionRule;
+import org.sonar.samples.java.checks.NoIfStatementInTestsRule;
 import org.sonar.samples.java.checks.SecurityAnnotationMandatoryRule;
 import org.sonar.samples.java.checks.SpringControllerRequestMappingEntityRule;
 
@@ -45,6 +46,9 @@ public final class RulesList {
     return Collections.unmodifiableList(checks);
   }
 
+  /**
+   * These rules are going to target MAIN code only
+   */
   public static List<Class<? extends JavaCheck>> getJavaChecks() {
     return Collections.unmodifiableList(Arrays.asList(
       SpringControllerRequestMappingEntityRule.class,
@@ -57,7 +61,11 @@ public final class RulesList {
       SecurityAnnotationMandatoryRule.class));
   }
 
+  /**
+   * These rules are going to target TEST code only
+   */
   public static List<Class<? extends JavaCheck>> getJavaTestChecks() {
-    return Collections.emptyList();
+    return Collections.unmodifiableList(Arrays.asList(
+      NoIfStatementInTestsRule.class));
   }
 }
