@@ -24,11 +24,20 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class CatchOfThrowableOrErrorCheckTest {
 
   @Test
   void test() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/CatchOfThrowableOrErrorCheck.java"))
+      .withCheck(new CatchOfThrowableOrErrorCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
     JavaCheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/CatchOfThrowableOrErrorCheck.java"))
       .withCheck(new CatchOfThrowableOrErrorCheck())
@@ -36,11 +45,11 @@ class CatchOfThrowableOrErrorCheckTest {
   }
 
   @Test
-  void test_without_semantic() {
+  void test_non_compiling_without_semantic() {
     JavaCheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/CatchOfThrowableOrErrorCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/CatchOfThrowableOrErrorCheckIncompleteSemantics.java"))
       .withCheck(new CatchOfThrowableOrErrorCheck())
       .withClassPath(Collections.emptyList())
-      .verifyIssues();
+      .verifyNoIssues();
   }
 }

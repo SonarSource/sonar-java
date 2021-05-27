@@ -6,33 +6,17 @@ class CatchOfThrowableOrErrorCheck {
 
   class A extends Exception {
     private void f() throws Exception {
-      Closer closer = Closer.create();
-      try {} catch (foo.Throwable e) {       // Compliant
-      }
-      try {} catch (java.foo.Throwable e) {  // Compliant
-      }
-      try {} catch (foo.lang.Throwable e) {  // Compliant
-      }
-      try {} catch (java.lang.foo e) {       // Compliant
-      }
-      try {} catch (foo.java.lang.Throwable e) { // Compliant
-      }
-      try {} catch (Throwable e) {           // Noncompliant {{Catch Exception instead of Throwable.}}
-        throw e;
-      }
-      try {} catch (Throwable e) {           // Noncompliant {{Catch Exception instead of Throwable.}}
-        throw new Exception(e).getCause();
-      }
+
       try {} catch (Throwable e) {           // Compliant
         throw closer.rethrow(e);
       }
       try {} catch (java.lang.Throwable e) { // Compliant
         throw closer.rethrow(e);
       }
-      try {} catch (Throwable e) {           // Noncompliant {{Catch Exception instead of Throwable.}}
+      try {} catch (Throwable e) {           // Compliant
         throw closer.rethrow(new Exception(e));
       }
-      try {} catch (Throwable e) {           // Noncompliant {{Catch Exception instead of Throwable.}}
+      try {} catch (Throwable e) {           // Compliant
         Throwable myThrowable = new Throwable(e);
         throw closer.rethrow(myThrowable);
       }
@@ -47,9 +31,6 @@ class CatchOfThrowableOrErrorCheck {
       }
       try {} catch (Throwable e) {           // Compliant
         throw closer.<A, A>rethrow(e, A.class, A.class);
-      }
-      try {} catch(Throwable e) {            // Compliant
-        throw unknownMethodWithoutArgument();
       }
     }
 

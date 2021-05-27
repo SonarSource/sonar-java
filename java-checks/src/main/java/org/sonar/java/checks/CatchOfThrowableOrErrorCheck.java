@@ -42,7 +42,7 @@ import org.sonar.plugins.java.api.tree.UnionTypeTree;
 public class CatchOfThrowableOrErrorCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_LANG_THROWABLE = "java.lang.Throwable";
-  private final ThrowableExceptionVisitor throwableExceptionVisitor = new ThrowableExceptionVisitor();
+  private final TryBlockVisitor tryBlockVisitor = new TryBlockVisitor();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -52,7 +52,8 @@ public class CatchOfThrowableOrErrorCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     TryStatementTree tryStatement = (TryStatementTree) tree;
-    if (throwableExceptionVisitor.containsExplicitThrowableException(tryStatement.block())) {
+    tryStatement.block().accept(tryBlockVisitor);
+    if (tryBlockVisitor.containsExplicitThrowable || tryBlockVisitor.containsUnresolvableCall) {
       return;
     }
     for (CatchTree catchTree : tryStatement.catches()) {
@@ -72,7 +73,7 @@ public class CatchOfThrowableOrErrorCheck extends IssuableSubscriptionVisitor {
     if (type.is("java.lang.Error")) {
       insertIssue(typeTree, type);
     } else if (type.is(JAVA_LANG_THROWABLE)) {
-      GuavaCloserRethrowVisitor visitor = new GuavaCloserRethrowVisitor(catchTree.parameter().symbol());
+      ReThrowVisitor visitor = new ReThrowVisitor(catchTree.parameter().symbol());
       catchTree.block().accept(visitor);
       if (!visitor.foundRethrow) {
         insertIssue(typeTree, type);
@@ -84,7 +85,7 @@ public class CatchOfThrowableOrErrorCheck extends IssuableSubscriptionVisitor {
     reportIssue(typeTree, "Catch Exception instead of " + type.name() + ".");
   }
 
-  private static class GuavaCloserRethrowVisitor extends BaseTreeVisitor {
+  private static class ReThrowVisitor extends BaseTreeVisitor {
     private static final String JAVA_LANG_CLASS = "java.lang.Class";
     private static final MethodMatchers MATCHERS = MethodMatchers.create()
       .ofTypes("com.google.common.io.Closer")
@@ -97,40 +98,35 @@ public class CatchOfThrowableOrErrorCheck extends IssuableSubscriptionVisitor {
     private boolean foundRethrow = false;
     private final Symbol exceptionSymbol;
 
-    public GuavaCloserRethrowVisitor(Symbol exceptionSymbol) {
+    public ReThrowVisitor(Symbol exceptionSymbol) {
       this.exceptionSymbol = exceptionSymbol;
     }
 
     @Override
     public void visitThrowStatement(ThrowStatementTree tree) {
-      if (isGuavaCloserRethrow(tree.expression())) {
-        foundRethrow = true;
-      }
-    }
-
-    private boolean isGuavaCloserRethrow(ExpressionTree expression) {
+      ExpressionTree expression = tree.expression();
       if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
         MethodInvocationTree mit = (MethodInvocationTree) expression;
         // In case of broken semantics, the method matcher cannot identify the method invocation.
-        // To avoid raising FPs in these cases, we accept is as is and look at the first argument
-        if (MATCHERS.matches(mit) ||
-          (mit.symbol().isUnknown() && !mit.arguments().isEmpty())) {
-          ExpressionTree firstArgument = mit.arguments().get(0);
-          return firstArgument.is(Tree.Kind.IDENTIFIER) && exceptionSymbol.equals(((IdentifierTree) firstArgument).symbol());
+        // To avoid raising FPs in these cases, we accept it as is and move on.
+        if (mit.symbol().isUnknown() || isGuavaCloserRethrow(mit)) {
+          foundRethrow = true;
         }
       }
-      return false;
+    }
+
+    private boolean isGuavaCloserRethrow(MethodInvocationTree mit) {
+      if (!MATCHERS.matches(mit)) {
+        return false;
+      }
+      ExpressionTree firstArgument = mit.arguments().get(0);
+      return firstArgument.is(Tree.Kind.IDENTIFIER) && exceptionSymbol.equals(((IdentifierTree) firstArgument).symbol());
     }
   }
 
-  private static class ThrowableExceptionVisitor extends BaseTreeVisitor {
+  private static class TryBlockVisitor extends BaseTreeVisitor {
     private boolean containsExplicitThrowable;
-
-    boolean containsExplicitThrowableException(Tree tree) {
-      containsExplicitThrowable = false;
-      tree.accept(this);
-      return containsExplicitThrowable;
-    }
+    private boolean containsUnresolvableCall;
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
@@ -145,7 +141,11 @@ public class CatchOfThrowableOrErrorCheck extends IssuableSubscriptionVisitor {
     }
 
     private void checkIfThrowThrowable(Symbol symbol) {
-      if (containsExplicitThrowable) {
+      if (containsExplicitThrowable || containsUnresolvableCall) {
+        return;
+      }
+      if (symbol.isUnknown()) {
+        containsUnresolvableCall = true;
         return;
       }
       if (symbol.isMethodSymbol()) {
