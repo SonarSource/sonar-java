@@ -29,7 +29,7 @@ import java.util.function.Consumer;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.collections.ListUtils;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.InternalCheckVerifier;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 import org.sonar.plugins.java.api.JavaFileScanner;
 
 public class SECheckVerifier implements CheckVerifier {
