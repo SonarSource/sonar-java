@@ -60,12 +60,6 @@ public class BreakStatementTreeImpl extends JavaTree implements BreakStatementTr
     return labelOrValue instanceof IdentifierTree ? (IdentifierTree) labelOrValue : null;
   }
 
-  @Nullable
-  @Override
-  public ExpressionTree value() {
-    return labelOrValue;
-  }
-
   @Override
   public SyntaxToken semicolonToken() {
     return semicolonToken;

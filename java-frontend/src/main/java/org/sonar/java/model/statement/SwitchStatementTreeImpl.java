@@ -42,10 +42,4 @@ public class SwitchStatementTreeImpl extends SwitchTreeImpl implements SwitchSta
   public void accept(TreeVisitor visitor) {
     visitor.visitSwitchStatement(this);
   }
-
-  @Override
-  public SwitchExpressionTree asSwitchExpression() {
-    return this;
-  }
-
 }

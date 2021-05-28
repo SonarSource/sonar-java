@@ -21,7 +21,6 @@ package org.sonar.plugins.java.api.tree;
 
 import org.sonar.java.annotations.Beta;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * 'case' label in a 'switch' statement.
@@ -56,22 +55,9 @@ public interface CaseLabelTree extends Tree {
   boolean isFallThrough();
 
   /**
-   * @deprecated since SonarJava 5.12: use the {@link #expressions()} method instead
-   */
-  @Deprecated
-  @Nullable
-  ExpressionTree expression();
-
-  /**
    * @since SonarJava 5.12: Support of Java 12
    */
   List<ExpressionTree> expressions();
-
-  /**
-   * @deprecated since SonarJava 5.12: use the {@link #colonOrArrowToken()} method instead
-   */
-  @Deprecated
-  SyntaxToken colonToken();
 
   /**
    * @since SonarJava 5.12: Support of Java 12

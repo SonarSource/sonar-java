@@ -1576,7 +1576,6 @@ class JavaTreeModelTest {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     void simple_case() {
       CaseLabelTree c1 = firstCaseGroup.labels().get(0);
       assertThat(c1).hasChildrenSize(3);
@@ -1585,14 +1584,9 @@ class JavaTreeModelTest {
       assertThat(c1.expressions()).hasSize(1);
       assertThat(((LiteralTree) c1.expressions().get(0))).hasValue("1");
       assertThat(c1.colonOrArrowToken()).is(":");
-      assertThat(c1.colonToken()).is(":");
-      assertThat(((LiteralTree) c1.expression()))
-        .is(Tree.Kind.INT_LITERAL)
-        .hasValue("1");
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     void combined_case() {
       CaseLabelTree c23 = firstCaseGroup.labels().get(1);
       assertThat(c23).hasChildrenSize(4);
@@ -1602,21 +1596,15 @@ class JavaTreeModelTest {
       assertThat(((LiteralTree) c23.expressions().get(0))).hasValue("2");
       assertThat(((LiteralTree) c23.expressions().get(1))).hasValue("3");
       assertThat(c23.colonOrArrowToken()).is(":");
-      assertThat(c23.colonToken()).is(":");
-      assertThat(((LiteralTree) c23.expression()))
-        .is(Tree.Kind.INT_LITERAL)
-        .hasValue("2");
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     void default_case() {
       CaseLabelTree cDefault = secondCaseGroup.labels().get(0);
       assertThat(cDefault).hasChildrenSize(2);
       assertThat(cDefault.isFallThrough()).isTrue();
       assertThat(cDefault.caseOrDefaultKeyword()).is("default");
       assertThat(cDefault.colonOrArrowToken()).is(":");
-      assertThat(cDefault.expression()).isNull();
     }
 
     @Test
@@ -1630,9 +1618,6 @@ class JavaTreeModelTest {
       assertThat(tree.expression()).is(Tree.Kind.IDENTIFIER);
       assertThat(tree.closeParenToken()).is(")");
       assertThat(tree.cases()).hasSize(2);
-      // Method "asSwitchExpression()" is deprecated for removal, once removed
-      // we should test that a SwitchStatementTree is not anymore an instance of ExpressionTree
-      assertThat(tree.asSwitchExpression()).isSameAs(tree);
       assertThat(tree)
         .isInstanceOf(ExpressionTree.class)
         .isInstanceOf(SwitchExpressionTree.class);
@@ -1656,7 +1641,6 @@ class JavaTreeModelTest {
       CaseLabelTree caseLabelTree = c.labels().get(0);
       assertThat(caseLabelTree.isFallThrough()).isFalse();
       assertThat(caseLabelTree.caseOrDefaultKeyword()).is("case");
-      assertThat(caseLabelTree.expression()).is(Tree.Kind.INT_LITERAL);
       assertThat(caseLabelTree.colonOrArrowToken()).is("->");
       assertThat(c.body()).hasSize(1);
       assertThat(switchExpression).isNotInstanceOf(SwitchStatementTree.class);
@@ -1819,7 +1803,6 @@ class JavaTreeModelTest {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   void break_statement_With_label() {
     BreakStatementTree tree = (BreakStatementTree) firstMethodFirstStatement("class T { void m() { break label ; } }");
     assertThat(tree)
@@ -1827,7 +1810,6 @@ class JavaTreeModelTest {
       .hasChildrenSize(3);
     assertThat(tree.breakKeyword()).is("break");
     assertThat(tree.label()).hasName("label");
-    assertThat(((IdentifierTree) tree.value())).hasName("label");
     assertThat(tree.semicolonToken()).is(";");
   }
 

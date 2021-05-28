@@ -21,7 +21,6 @@ package org.sonar.java.model.statement;
 
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -60,20 +59,9 @@ public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
     return isFallThrough;
   }
 
-  @Nullable
-  @Override
-  public ExpressionTree expression() {
-    return expressions.isEmpty() ? null : expressions.get(0);
-  }
-
   @Override
   public List<ExpressionTree> expressions() {
     return expressions;
-  }
-
-  @Override
-  public SyntaxToken colonToken() {
-    return colonOrArrowToken;
   }
 
   @Override
