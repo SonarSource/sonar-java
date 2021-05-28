@@ -176,7 +176,7 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
     if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
       return returnValueIsMutable((MethodInvocationTree) expression);
     } else if (expression.is(Tree.Kind.NEW_CLASS)) {
-      return !isAcceptedType(expression.symbolType(), ACCEPTED_NEW_TYPES);
+      return !isUnknownOrAcceptedType(expression.symbolType(), ACCEPTED_NEW_TYPES);
     } else if (expression.is(Tree.Kind.IDENTIFIER)) {
       Symbol assigned = ((IdentifierTree) expression).symbol();
       return !IMMUTABLE_CANDIDATES.contains(assigned);
@@ -216,10 +216,15 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
 
   private static boolean isAcceptedTypeOrUnmodifiableMethodCall(MethodInvocationTree mit) {
     Type type = mit.symbolType();
-    return type.isUnknown() || isAcceptedType(type, ACCEPTED_TYPES) || UNMODIFIABLE_METHOD_CALLS.matches(mit);
+    return isUnknownOrAcceptedType(type, ACCEPTED_TYPES) || UNMODIFIABLE_METHOD_CALLS.matches(mit);
   }
 
-  private static boolean isAcceptedType(Type type, List<String> accepted) {
+  private static boolean isUnknownOrAcceptedType(Type type, List<String> accepted) {
+    // In case of broken semantics, the type is unknown and can therefore not be matched against an accepted one.
+    // To avoid raising FPs, we consider that an unknown type is most likely an accepted one.
+    if (type.isUnknown()) {
+      return true;
+    }
     for (String acceptedType : accepted) {
       if (type.isSubtypeOf(acceptedType)) {
         return true;

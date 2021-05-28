@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
@@ -40,6 +41,24 @@ class PublicStaticMutableMembersCheckTest {
     JavaCheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/PublicStaticMutableMembersCheck.java"))
       .withCheck(new PublicStaticMutableMembersCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_without_semantic() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/PublicStaticMutableMembersCheck.java"))
+      .withCheck(new PublicStaticMutableMembersCheck())
+      .withClassPath(Collections.emptyList())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling_without_semantic() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/PublicStaticMutableMembersCheck.java"))
+      .withCheck(new PublicStaticMutableMembersCheck())
+      .withClassPath(Collections.emptyList())
       .verifyIssues();
   }
 

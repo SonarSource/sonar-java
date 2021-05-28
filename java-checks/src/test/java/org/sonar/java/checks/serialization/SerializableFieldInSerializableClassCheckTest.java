@@ -40,7 +40,7 @@ class SerializableFieldInSerializableClassCheckTest {
   }
 
   @Test
-  void testWithoutSemantic() {
+  void test_without_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/serialization/SerializableFieldInSerializableClassCheck.java"))
       .withCheck(new SerializableFieldInSerializableClassCheck())
