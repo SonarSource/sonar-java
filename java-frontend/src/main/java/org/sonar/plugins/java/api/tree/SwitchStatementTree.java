@@ -37,13 +37,4 @@ import org.sonar.java.annotations.Beta;
 @Beta
 public interface SwitchStatementTree extends SwitchTree, StatementTree {
 
-  /**
-   * Consider the statement as a Switch expression
-   * @since SonarJava 5.12: Support of Java 12
-   * @deprecated since SonarJava 6.15, for removal, SwitchStatementTree will not have an underlying SwitchExpressionTree
-   * but share the same SwitchTree interface with SwitchExpressionTree
-   */
-  @Deprecated
-  SwitchExpressionTree asSwitchExpression();
-
 }

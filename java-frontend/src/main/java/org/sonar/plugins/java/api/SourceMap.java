@@ -20,7 +20,6 @@
 package org.sonar.plugins.java.api;
 
 import org.sonar.java.annotations.Beta;
-import java.nio.file.Path;
 import java.util.Optional;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -39,14 +38,6 @@ public interface SourceMap {
   Optional<Location> sourceMapLocationFor(Tree tree);
 
   interface Location {
-
-    /**
-     * @deprecated use {@link #file()}
-     */
-    @Deprecated
-    default Path inputFile() {
-      return file().path();
-    }
 
     InputFile file();
 

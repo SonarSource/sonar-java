@@ -82,15 +82,6 @@ public interface JavaFileScannerContext {
   Object getSemanticModel();
 
   /**
-   * FileKey of currently analyzed file.
-   *
-   * @return the fileKey of the file currently analyzed.
-   * @deprecated since SonarJava 5.12: Rely on the InputFile key instead, using {@link #getInputFile()}.
-   */
-  @Deprecated
-  String getFileKey();
-
-  /**
    * InputFile under analysis.
    * @return the currently analyzed {@link InputFile}.
    * @since SonarJava 5.12: Dropping support of file-related methods

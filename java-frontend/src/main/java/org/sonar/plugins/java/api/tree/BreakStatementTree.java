@@ -42,16 +42,6 @@ public interface BreakStatementTree extends StatementTree {
   @Nullable
   IdentifierTree label();
 
-  /**
-   * Within switch-expressions, break statements are used to return values.
-   * @since SonarJava 5.12: Support of Java 12
-   * @deprecated scheduled for removal since SonarJava 6.6,
-   * use {@link #label()} or {@link YieldStatementTree#expression()} instead
-   */
-  @Deprecated
-  @Nullable
-  ExpressionTree value();
-
   SyntaxToken semicolonToken();
 
 }

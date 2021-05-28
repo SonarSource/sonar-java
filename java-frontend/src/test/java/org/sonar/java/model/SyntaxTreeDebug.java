@@ -377,11 +377,11 @@ public class SyntaxTreeDebug {
   }
 
   private static String breakStatementString(BreakStatementTree syntaxNode) {
-    ExpressionTree value = syntaxNode.value();
-    if (value == null) {
+    ExpressionTree label = syntaxNode.label();
+    if (label == null) {
       return "break";
     }
-    return "break " + toString(value);
+    return "break " + toString(label);
   }
 
   private static String forEachStatementString(ForEachStatement syntaxNode) {

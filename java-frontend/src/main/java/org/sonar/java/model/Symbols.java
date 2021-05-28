@@ -253,11 +253,6 @@ public class Symbols {
     }
 
     @Override
-    public Symbol.MethodSymbol overriddenSymbol() {
-      return null;
-    }
-
-    @Override
     public List<Symbol.MethodSymbol> overriddenSymbols() {
       return Collections.emptyList();
     }
