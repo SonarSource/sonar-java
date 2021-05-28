@@ -69,6 +69,7 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
       // We clear the visited data structure when entering every file
       visited.clear();
+      return;
     }
     ExclusionsVisitor exclusionsVisitor = new ExclusionsVisitor();
     tree.accept(exclusionsVisitor);
@@ -83,7 +84,9 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
-    exclusions.pop();
+    if (!exclusions.isEmpty()) {
+      exclusions.pop();
+    }
   }
 
   private static class ExclusionsVisitor extends BaseTreeVisitor {

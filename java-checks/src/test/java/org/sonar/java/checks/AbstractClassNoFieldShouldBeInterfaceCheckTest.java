@@ -23,9 +23,7 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.AbstractClassNoFieldShouldBeInterfaceCheck.matches;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
