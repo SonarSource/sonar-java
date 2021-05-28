@@ -20,13 +20,13 @@
 package org.sonar.java.checks.naming;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class BadMethodNameCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/BadMethodName.java")
       .withCheck(new BadMethodNameCheck())
       .verifyIssues();
@@ -36,7 +36,7 @@ class BadMethodNameCheckTest {
   void test2() {
     BadMethodNameCheck check = new BadMethodNameCheck();
     check.format = "^[a-zA-Z0-9]*$";
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/BadMethodNameCustom.java")
       .withCheck(check)
       .verifyNoIssues();
@@ -46,7 +46,7 @@ class BadMethodNameCheckTest {
   void testOverrideWithoutAnnotation() throws Exception {
     BadMethodNameCheck check = new BadMethodNameCheck();
     check.format = "^[A-Z0-9]*$";
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/BadMethodNameCustomNoncompliant.java")
       .withCheck(check)
       .verifyIssues();

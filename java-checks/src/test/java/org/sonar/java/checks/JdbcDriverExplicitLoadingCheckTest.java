@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -30,7 +30,7 @@ class JdbcDriverExplicitLoadingCheckTest {
 
   @Test
   void java6() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(FILENAME)
       .withCheck(new JdbcDriverExplicitLoadingCheck())
       .withJavaVersion(6)
@@ -39,7 +39,7 @@ class JdbcDriverExplicitLoadingCheckTest {
 
   @Test
   void java5() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(FILENAME)
       .withCheck(new JdbcDriverExplicitLoadingCheck())
       .withJavaVersion(5)
@@ -48,7 +48,7 @@ class JdbcDriverExplicitLoadingCheckTest {
 
   @Test
   void unknownVersion() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/JdbcDriverExplicitLoadingCheck_no_version.java"))
       .withCheck(new JdbcDriverExplicitLoadingCheck())
       .verifyIssues();

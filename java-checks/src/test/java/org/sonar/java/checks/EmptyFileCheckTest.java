@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -28,7 +28,7 @@ class EmptyFileCheckTest {
 
   @Test
   void test_empty_file() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/EmptyFile.java"))
       .withCheck(new EmptyFileCheck())
       .verifyIssueOnFile("This file has 0 lines of code.");
@@ -36,7 +36,7 @@ class EmptyFileCheckTest {
 
   @Test
   void test_non_empty_file() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/NonEmptyFile.java"))
       .withCheck(new EmptyFileCheck())
       .verifyNoIssues();
@@ -44,7 +44,7 @@ class EmptyFileCheckTest {
 
   @Test
   void with_package() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/WithPackage.java"))
       .withCheck(new EmptyFileCheck())
       .verifyNoIssues();
@@ -52,7 +52,7 @@ class EmptyFileCheckTest {
 
   @Test
   void with_module() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/module/module-info.java")
       .withCheck(new EmptyFileCheck())
       .verifyNoIssues();

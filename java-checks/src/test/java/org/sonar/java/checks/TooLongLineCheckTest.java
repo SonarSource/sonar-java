@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -33,7 +33,7 @@ class TooLongLineCheckTest {
   @Test
   void test() {
     check.maximumLineLength = 40;
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath(BASEDIR + "/LineLength.java"))
       .withCheck(check)
       .verifyIssues();
@@ -42,7 +42,7 @@ class TooLongLineCheckTest {
   @Test
   void test_with_empty_import_on_first_line() {
     check.maximumLineLength = 40;
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath(BASEDIR + "/LineLengthEmptyStatementInImport.java"))
       .withCheck(check)
       .verifyIssues();
@@ -51,7 +51,7 @@ class TooLongLineCheckTest {
   @Test
   void test_with_no_import() {
     check.maximumLineLength = 40;
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath(BASEDIR + "/LineLengthNoImport.java"))
       .withCheck(check)
       .verifyIssues();
@@ -60,7 +60,7 @@ class TooLongLineCheckTest {
   @Test
   void test_with_noncompliant_link_or_see() {
     check.maximumLineLength = 100;
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath(BASEDIR + "/LineLengthLinkOrSee.java"))
       .withCheck(check)
       .verifyIssues();
@@ -69,7 +69,7 @@ class TooLongLineCheckTest {
   @Test
   void test_with_false_positive_link_or_see() {
     check.maximumLineLength = 42;
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath(BASEDIR + "/LineLengthLinkOrSeeFalsePositive.java"))
       .withCheck(check)
       .verifyNoIssues();

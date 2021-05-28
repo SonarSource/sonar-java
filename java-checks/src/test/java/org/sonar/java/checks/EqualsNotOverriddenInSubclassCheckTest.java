@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -29,12 +29,12 @@ class EqualsNotOverriddenInSubclassCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/EqualsNotOverriddenInSubclassCheck.java"))
       .withCheck(new EqualsNotOverriddenInSubclassCheck())
       .verifyIssues();
 
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/EqualsNotOverriddenInSubclassCheck.java"))
       .withCheck(new EqualsNotOverriddenInSubclassCheck())
       .verifyIssues();

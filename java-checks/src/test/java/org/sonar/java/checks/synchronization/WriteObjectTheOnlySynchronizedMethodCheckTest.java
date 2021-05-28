@@ -20,13 +20,13 @@
 package org.sonar.java.checks.synchronization;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class WriteObjectTheOnlySynchronizedMethodCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/WriteObjectTheOnlySynchronizedMethodCheck.java")
       .withCheck(new WriteObjectTheOnlySynchronizedMethodCheck())
       .verifyIssues();

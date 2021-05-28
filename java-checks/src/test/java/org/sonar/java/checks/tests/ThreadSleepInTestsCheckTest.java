@@ -20,13 +20,13 @@
 package org.sonar.java.checks.tests;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class ThreadSleepInTestsCheckTest {
 
   @Test
   void test() throws InterruptedException {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/ThreadSleepInTestsCheck.java")
       .withCheck(new ThreadSleepInTestsCheck())
       .verifyIssues();

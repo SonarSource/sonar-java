@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -36,7 +36,7 @@ class MethodTooBigCheckTest {
   void custom_at_4() {
     MethodTooBigCheck check = new MethodTooBigCheck();
     check.max = 4;
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/MethodTooBigCheckCustom4.java"))
       .withCheck(check)
       .verifyIssues();
@@ -46,7 +46,7 @@ class MethodTooBigCheckTest {
   void custom_at_5() {
     MethodTooBigCheck check = new MethodTooBigCheck();
     check.max = 5;
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/MethodTooBigCheckCustom5.java"))
       .withCheck(check)
       .verifyIssues();

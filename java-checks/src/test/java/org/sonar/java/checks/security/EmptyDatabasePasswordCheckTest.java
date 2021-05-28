@@ -22,7 +22,7 @@ package org.sonar.java.checks.security;
 import java.io.File;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.FilesUtils;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -33,7 +33,7 @@ class EmptyDatabasePasswordCheckTest {
   void test() throws Exception {
     List<File> classPath = FilesUtils.getClassPath(FilesUtils.DEFAULT_TEST_JARS_DIRECTORY);
     classPath.add(new File("../java-checks-test-sources/target/classes"));
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/security/EmptyDatabasePasswordCheck.java"))
       .withClassPath(classPath)
       .withCheck(new EmptyDatabasePasswordCheck())

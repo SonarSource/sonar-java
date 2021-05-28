@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -28,7 +28,7 @@ class LambdaTooBigCheckTest {
 
   @Test
   void detected() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/LambdaTooBigCheck.java"))
       .withCheck(new LambdaTooBigCheck())
       .verifyIssues();
@@ -38,7 +38,7 @@ class LambdaTooBigCheckTest {
   void custom() {
     LambdaTooBigCheck check = new LambdaTooBigCheck();
     check.max = 6;
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/LambdaTooBigCheckCustom.java"))
       .withCheck(check)
       .verifyIssues();

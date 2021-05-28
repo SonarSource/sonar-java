@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -31,13 +31,13 @@ class TrailingCommentCheckTest {
   void detected() {
     TrailingCommentCheck check = new TrailingCommentCheck();
     assertThat(check.legalCommentPattern).isEqualTo("^\\s*+[^\\s]++$");
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/TrailingCommentCheck.java"))
       .withCheck(check)
       .verifyIssues();
     check.legalCommentPattern = "";
     // parameter has changed but regexp is not recompiled, so we find the same issues.
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/TrailingCommentCheck.java"))
       .withCheck(check)
       .verifyIssues();
@@ -47,7 +47,7 @@ class TrailingCommentCheckTest {
   void custom() {
     TrailingCommentCheck check = new TrailingCommentCheck();
     check.legalCommentPattern = "";
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/TrailingCommentCheckCustom.java"))
       .withCheck(check)
       .verifyIssues();

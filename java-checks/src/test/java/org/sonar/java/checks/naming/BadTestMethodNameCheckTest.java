@@ -20,7 +20,7 @@
 package org.sonar.java.checks.naming;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -29,12 +29,12 @@ class BadTestMethodNameCheckTest {
   @Test
   void test() {
     BadTestMethodNameCheck check = new BadTestMethodNameCheck();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/BadTestMethodNameCheck.java")
       .withCheck(check)
       .verifyIssues();
     // test with same instance to cover reuse of regexp pattern (lazy initialization).
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/BadTestMethodNameCheck.java")
       .withCheck(check)
       .verifyIssues();
@@ -44,7 +44,7 @@ class BadTestMethodNameCheckTest {
   void test_with_customPattern() {
     BadTestMethodNameCheck check = new BadTestMethodNameCheck();
     check.format = "^test_sonar[A-Z][a-zA-Z0-9]*$";
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/naming/BadTestMethodNameCheckCustom.java"))
       .withCheck(check)
       .verifyIssues();

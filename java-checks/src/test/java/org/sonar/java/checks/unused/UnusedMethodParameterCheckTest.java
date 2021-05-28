@@ -20,13 +20,13 @@
 package org.sonar.java.checks.unused;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class UnusedMethodParameterCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/unused/UnusedMethodParameterCheck.java")
       .withCheck(new UnusedMethodParameterCheck())
       .verifyIssues();

@@ -20,14 +20,14 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
 class DeadStoreCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(TestUtils.testSourcesPath("checks/DeadStoreCheck.java"))
       .withCheck(new DeadStoreCheck())
       .verifyIssues();
@@ -35,7 +35,7 @@ class DeadStoreCheckTest {
 
   @Test
   void test_non_compiling() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(TestUtils.nonCompilingTestSourcesPath("checks/DeadStoreCheck.java"))
       .withCheck(new DeadStoreCheck())
       .verifyIssues();

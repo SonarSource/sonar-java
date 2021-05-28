@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -28,7 +28,7 @@ class DiamondOperatorCheckTest {
 
   @Test
   void test_no_version() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/DiamondOperatorCheck_no_version.java"))
       .withCheck(new DiamondOperatorCheck())
       .verifyIssues();
@@ -36,7 +36,7 @@ class DiamondOperatorCheckTest {
 
   @Test
   void test_with_java_7() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/DiamondOperatorCheck_java_7.java"))
       .withCheck(new DiamondOperatorCheck())
       .withJavaVersion(7)
@@ -46,7 +46,7 @@ class DiamondOperatorCheckTest {
   @Test
   void test_with_java_8() {
     // take into account ternary operators
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/DiamondOperatorCheck_java_8.java"))
       .withCheck(new DiamondOperatorCheck())
       .withJavaVersion(8)

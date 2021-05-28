@@ -20,7 +20,7 @@
 package org.sonar.java.checks.tests;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -29,11 +29,11 @@ class AssertionsCompletenessCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/AssertionsCompletenessCheck.java"))
       .withCheck(new AssertionsCompletenessCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/AssertionsCompletenessCheck.java"))
       .withCheck(new AssertionsCompletenessCheck())
       .withoutSemantic()
@@ -42,7 +42,7 @@ class AssertionsCompletenessCheckTest {
 
   @Test
   void test_non_compiling_because_of_removed_api() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/AssertionsCompletenessCheck.java"))
       .withCheck(new AssertionsCompletenessCheck())
       .verifyIssues();

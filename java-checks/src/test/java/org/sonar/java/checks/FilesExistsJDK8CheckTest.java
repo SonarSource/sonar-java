@@ -20,13 +20,13 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class FilesExistsJDK8CheckTest {
 
   @Test
   void java8() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/FilesExistsJDK8Check.java")
       .withCheck(new FilesExistsJDK8Check())
       .withJavaVersion(8)
@@ -35,7 +35,7 @@ class FilesExistsJDK8CheckTest {
 
   @Test
   void java7() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/FilesExistsJDK8Check_java7.java")
       .withCheck(new FilesExistsJDK8Check())
       .withJavaVersion(7)
@@ -44,7 +44,7 @@ class FilesExistsJDK8CheckTest {
 
   @Test
   void unknown_version() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/FilesExistsJDK8Check_no_version.java")
       .withCheck(new FilesExistsJDK8Check())
       .verifyNoIssues();

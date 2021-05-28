@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -31,7 +31,7 @@ class DisallowedConstructorCheckTest {
     DisallowedConstructorCheck disallowedConstructorCheck = new DisallowedConstructorCheck();
     disallowedConstructorCheck.setClassName("A");
     disallowedConstructorCheck.setArgumentTypes("int, long, java.lang.String[]");
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/DisallowedConstructorCheck/detected.java")
       .withCheck(disallowedConstructorCheck)
       .verifyIssues();
@@ -42,7 +42,7 @@ class DisallowedConstructorCheckTest {
     DisallowedConstructorCheck disallowedConstructorCheck = new DisallowedConstructorCheck();
     disallowedConstructorCheck.setClassName("checks.DisallowedConstructorCheck.A");
     disallowedConstructorCheck.setAllOverloads(true);
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/DisallowedConstructorCheck/detected_all_overload.java"))
       .withCheck(disallowedConstructorCheck)
       .verifyIssues();
@@ -52,7 +52,7 @@ class DisallowedConstructorCheckTest {
   void empty_parameters() {
     DisallowedConstructorCheck disallowedConstructorCheck = new DisallowedConstructorCheck();
     disallowedConstructorCheck.setClassName("A");
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/DisallowedConstructorCheck/empty_parameters.java")
       .withCheck(disallowedConstructorCheck)
       .verifyIssues();
@@ -61,7 +61,7 @@ class DisallowedConstructorCheckTest {
   @Test
   void empty_type_definition() {
     DisallowedConstructorCheck disallowedConstructorCheck = new DisallowedConstructorCheck();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/DisallowedConstructorCheck/empty_type_definition.java")
       .withCheck(disallowedConstructorCheck)
       .verifyNoIssues();

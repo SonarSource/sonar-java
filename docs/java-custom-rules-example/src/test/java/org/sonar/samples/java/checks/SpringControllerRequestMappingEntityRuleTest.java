@@ -20,14 +20,14 @@
 package org.sonar.samples.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.samples.java.utils.FilesUtils;
 
 class SpringControllerRequestMappingEntityRuleTest {
 
   @Test
   void check() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/SpringControllerRequestMappingEntityRule.java")
       .withCheck(new SpringControllerRequestMappingEntityRule())
       .withClassPath(FilesUtils.getClassPath("target/test-jars"))

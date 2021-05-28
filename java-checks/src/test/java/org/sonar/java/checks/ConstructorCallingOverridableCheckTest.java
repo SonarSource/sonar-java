@@ -20,13 +20,13 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class ConstructorCallingOverridableCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/ConstructorCallingOverridableCheck.java")
       .withCheck(new ConstructorCallingOverridableCheck())
       .verifyIssues();

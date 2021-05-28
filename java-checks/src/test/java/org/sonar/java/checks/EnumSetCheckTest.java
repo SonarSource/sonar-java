@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.model.JavaVersionImpl;
 
 class EnumSetCheckTest {
@@ -29,12 +29,12 @@ class EnumSetCheckTest {
   void test() {
     int javaVersion = JavaVersionImpl.fromString(System.getProperty("java.specification.version")).asInt();
     if (javaVersion >= 9) {
-      JavaCheckVerifier.newVerifier()
+      CheckVerifier.newVerifier()
         .onFile("src/test/files/checks/EnumSetCheck_java9.java")
         .withCheck(new EnumSetCheck())
         .verifyIssues();
     } else {
-      JavaCheckVerifier.newVerifier()
+      CheckVerifier.newVerifier()
         .onFile("src/test/files/checks/EnumSetCheck.java")
         .withCheck(new EnumSetCheck())
         .verifyIssues();

@@ -20,7 +20,7 @@
 package org.sonar.samples.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class MyCustomSubscriptionRuleTest {
 
@@ -29,7 +29,7 @@ class MyCustomSubscriptionRuleTest {
     // Verifies that the check will raise the adequate issues with the expected message.
     // In the test file, lines which should raise an issue have been commented out
     // by using the following syntax: "// Noncompliant {{EXPECTED_MESSAGE}}"
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/MyCustomSubscriptionRule.java")
       .withCheck(new MyCustomSubscriptionRule())
       .verifyIssues();

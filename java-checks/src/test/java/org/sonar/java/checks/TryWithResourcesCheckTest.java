@@ -20,13 +20,13 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class TryWithResourcesCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/TryWithResourcesCheck.java")
       .withCheck(new TryWithResourcesCheck())
       .withJavaVersion(7)
@@ -35,7 +35,7 @@ class TryWithResourcesCheckTest {
 
   @Test
   void test_no_java_version() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/TryWithResourcesCheck_no_java_version.java")
       .withCheck(new TryWithResourcesCheck())
       .verifyIssues();

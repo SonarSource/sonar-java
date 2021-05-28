@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -28,7 +28,7 @@ class CollectionInappropriateCallsCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/CollectionInappropriateCallsCheck.java"))
       .withCheck(new CollectionInappropriateCallsCheck())
       .verifyIssues();
@@ -36,7 +36,7 @@ class CollectionInappropriateCallsCheckTest {
 
   @Test
   void test_unknown_types() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/CollectionInappropriateCallsCheckUnknownTypes.java")
       .withCheck(new CollectionInappropriateCallsCheck())
       .verifyIssues();

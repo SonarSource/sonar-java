@@ -26,7 +26,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
@@ -67,7 +67,7 @@ class AssertionsInTestsCheckTest {
     "Awaitility"
   })
   void test(String framework) {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/tests/AssertionsInTestsCheck/" + framework + ".java"))
       .withCheck(check)
       .verifyIssues();
@@ -83,7 +83,7 @@ class AssertionsInTestsCheckTest {
     "Custom"
   })
   void testNonCompilingCode(String framework) {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/tests/AssertionsInTestsCheck/" + framework +
         ".java"))
       .withCheck(check)
@@ -92,7 +92,7 @@ class AssertionsInTestsCheckTest {
 
   @Test
   void testNoIssuesWithoutSemantic() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/tests/AssertionsInTestsCheck/Junit3.java"))
       .withCheck(check)
       .withoutSemantic()
@@ -102,7 +102,7 @@ class AssertionsInTestsCheckTest {
   @Test
   void testWithEmptyCustomAssertionMethods() {
     check.customAssertionMethods = "";
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/tests/AssertionsInTestsCheck/Junit3.java"))
       .withCheck(check)
       .verifyIssues();

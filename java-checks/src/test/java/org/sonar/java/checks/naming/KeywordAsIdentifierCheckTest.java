@@ -20,18 +20,18 @@
 package org.sonar.java.checks.naming;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class KeywordAsIdentifierCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/KeywordAsIdentifierCheck.java")
       .withCheck(new KeywordAsIdentifierCheck())
       .withJavaVersion(4)
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/KeywordAsIdentifierCheck_java1.java")
       .withCheck(new KeywordAsIdentifierCheck())
       .withJavaVersion(1)

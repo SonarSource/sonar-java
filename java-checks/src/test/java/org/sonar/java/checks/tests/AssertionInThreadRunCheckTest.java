@@ -20,17 +20,17 @@
 package org.sonar.java.checks.tests;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class AssertionInThreadRunCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/AssertionInThreadRunCheck.java")
       .withCheck(new AssertionInThreadRunCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/AssertionInThreadRunCheck.java")
       .withCheck(new AssertionInThreadRunCheck())
       .withoutSemantic()

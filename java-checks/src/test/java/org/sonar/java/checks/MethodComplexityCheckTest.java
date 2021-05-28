@@ -20,13 +20,13 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class MethodComplexityCheckTest {
 
   @Test
   void defaults() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/MethodComplexity.java")
       .withCheck(new MethodComplexityCheck())
       .verifyNoIssues();
@@ -36,7 +36,7 @@ class MethodComplexityCheckTest {
   void test() {
     MethodComplexityCheck check = new MethodComplexityCheck();
     check.setMax(1);
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/MethodComplexityNoncompliant.java")
       .withCheck(check)
       .verifyIssues();
@@ -46,7 +46,7 @@ class MethodComplexityCheckTest {
   void javaLangPackage() {
     MethodComplexityCheck check = new MethodComplexityCheck();
     check.setMax(1);
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/MethodComplexityJavaLangPackage.java")
       .withCheck(check)
       .verifyIssues();

@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -28,7 +28,7 @@ class UseSwitchExpressionCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/UseSwitchExpressionCheck.java")
       .withCheck(new UseSwitchExpressionCheck())
       .withJavaVersion(14)
@@ -37,17 +37,17 @@ class UseSwitchExpressionCheckTest {
 
   @Test
   void test_no_issue_below_java_14() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/UseSwitchExpressionCheck_java11.java"))
       .withCheck(new UseSwitchExpressionCheck())
       .withJavaVersion(11)
       .verifyNoIssues();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/UseSwitchExpressionCheck_java11.java"))
       .withCheck(new UseSwitchExpressionCheck())
       .withJavaVersion(12)
       .verifyNoIssues();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/UseSwitchExpressionCheck_java11.java"))
       .withCheck(new UseSwitchExpressionCheck())
       .withJavaVersion(13)

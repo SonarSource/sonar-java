@@ -20,7 +20,7 @@
 package org.sonar.java.checks.spring;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.spring.SpringAntMatcherOrderCheck.antMatcherToRegEx;
@@ -31,11 +31,11 @@ class SpringAntMatcherOrderCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/spring/SpringAntMatcherOrderCheck.java")
       .withCheck(new SpringAntMatcherOrderCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/spring/SpringAntMatcherOrderCheck.java")
       .withCheck(new SpringAntMatcherOrderCheck())
       .withoutSemantic()

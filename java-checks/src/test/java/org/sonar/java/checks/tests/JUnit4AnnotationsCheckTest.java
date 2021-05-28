@@ -20,14 +20,14 @@
 package org.sonar.java.checks.tests;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class JUnit4AnnotationsCheckTest {
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/JUnit4AnnotationsCheckTest.java"))
       .withCheck(new JUnit4AnnotationsCheck())
       .verifyIssues();
@@ -35,7 +35,7 @@ class JUnit4AnnotationsCheckTest {
 
   @Test
   void testNoSemantic() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/JUnit4AnnotationsCheckTest.java"))
       .withCheck(new JUnit4AnnotationsCheck())
       .withoutSemantic()

@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,7 +37,7 @@ class TooManyLinesOfCodeInFileCheckTest {
   void test() {
     TooManyLinesOfCodeInFileCheck check = new TooManyLinesOfCodeInFileCheck();
     check.maximum = 1;
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/TooManyLinesOfCode.java"))
       .withCheck(check)
       .verifyIssueOnFile("This file has 11 lines, which is greater than 1 authorized. Split it into smaller files.");
@@ -45,7 +45,7 @@ class TooManyLinesOfCodeInFileCheckTest {
 
   @Test
   void test2() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/TooManyLinesOfCode.java"))
       .withCheck(new TooManyLinesOfCodeInFileCheck())
       .verifyNoIssues();

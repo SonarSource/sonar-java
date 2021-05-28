@@ -20,7 +20,7 @@
 package org.sonar.java.checks.security;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -29,11 +29,11 @@ class DebugFeatureEnabledCheckTest {
 
   @Test
   void testEnableWebSecurity() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/security/DebugFeatureEnabledCheck.java"))
       .withCheck(new DebugFeatureEnabledCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/security/DebugFeatureEnabledCheck.java"))
       .withCheck(new DebugFeatureEnabledCheck())
       .withoutSemantic()
@@ -42,7 +42,7 @@ class DebugFeatureEnabledCheckTest {
 
   @Test
   void testPrintStackTrace() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/security/DebugFeatureEnabledCheck.java"))
       .withCheck(new DebugFeatureEnabledCheck())
       .verifyIssues();

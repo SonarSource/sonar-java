@@ -20,14 +20,14 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
 class NestedSwitchCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(TestUtils.testSourcesPath("checks/NestedSwitchStatementCheck.java"))
       .withCheck(new NestedSwitchCheck())
       .verifyIssues();
@@ -35,7 +35,7 @@ class NestedSwitchCheckTest {
 
   @Test
   void test_switch_expressions() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(TestUtils.nonCompilingTestSourcesPath("checks/NestedSwitchExpressionCheck.java"))
       .withCheck(new NestedSwitchCheck())
       .withJavaVersion(14)

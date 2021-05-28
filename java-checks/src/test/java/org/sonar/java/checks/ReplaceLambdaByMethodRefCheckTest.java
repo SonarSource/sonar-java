@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -32,12 +32,12 @@ class ReplaceLambdaByMethodRefCheckTest {
 
   @Test
   void java8() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath(FILENAME))
       .withCheck(new ReplaceLambdaByMethodRefCheck())
       .withJavaVersion(8)
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath(FILENAME))
       .withCheck(new ReplaceLambdaByMethodRefCheck())
       .withJavaVersion(8)
@@ -47,12 +47,12 @@ class ReplaceLambdaByMethodRefCheckTest {
 
   @Test
   void nonCompiling() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath(FILENAME))
       .withCheck(new ReplaceLambdaByMethodRefCheck())
       .withJavaVersion(8)
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath(FILENAME))
       .withCheck(new ReplaceLambdaByMethodRefCheck())
       .withJavaVersion(8)
@@ -62,7 +62,7 @@ class ReplaceLambdaByMethodRefCheckTest {
 
   @Test
   void no_version() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath(NO_VERSION_FILENAME))
       .withCheck(new ReplaceLambdaByMethodRefCheck())
       .verifyIssues();

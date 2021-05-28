@@ -20,13 +20,13 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class NioFileDeleteCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/NioFileDeleteCheck.java")
       .withCheck(new NioFileDeleteCheck())
       .verifyIssues();
@@ -34,7 +34,7 @@ class NioFileDeleteCheckTest {
 
   @Test
   void no_issue_with_version_6() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/NioFileDeleteCheck.java")
       .withCheck(new NioFileDeleteCheck())
       .withJavaVersion(6)

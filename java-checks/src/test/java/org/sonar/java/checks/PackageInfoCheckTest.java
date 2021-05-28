@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import java.util.Set;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -35,7 +35,7 @@ class PackageInfoCheckTest {
     PackageInfoCheck check = new PackageInfoCheck();
     String expectedMessage = "Add a 'package-info.java' file to document the '" + expectedPackage + "' package";
 
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFiles(
         testSourcesPath("DefaultPackage.java"),
         testSourcesPath("checks/packageInfo/HelloWorld.java"),

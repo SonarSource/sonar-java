@@ -20,7 +20,7 @@
 package org.sonar.java.checks.spring;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.plugins.java.api.JavaFileScanner;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -32,12 +32,12 @@ class SpringComponentWithNonAutowiredMembersCheckTest {
   @Test
   void default_annotations() {
     JavaFileScanner check = new SpringComponentWithNonAutowiredMembersCheck();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath(basePath + "S3749_DefaultAnnotations.java"))
       .withCheck(check)
       .verifyIssues();
 
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath(basePath + "S3749_DefaultAnnotations.java"))
       .withCheck(check)
       .withoutSemantic()
@@ -48,7 +48,7 @@ class SpringComponentWithNonAutowiredMembersCheckTest {
   void custom_annotations() {
     SpringComponentWithNonAutowiredMembersCheck check = new SpringComponentWithNonAutowiredMembersCheck();
     check.customInjectionAnnotations = "com.mycompany.myproject.MyController$MyInjectionAnnotation ,,";
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath(basePath + "S3749_CustomAnnotations.java"))
       .withCheck(check)
       .withoutSemantic()

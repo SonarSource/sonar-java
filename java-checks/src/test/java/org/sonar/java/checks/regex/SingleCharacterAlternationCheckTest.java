@@ -20,7 +20,7 @@
 package org.sonar.java.checks.regex;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -29,7 +29,7 @@ class SingleCharacterAlternationCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/regex/SingleCharacterAlternationCheck.java"))
       .withCheck(new SingleCharacterAlternationCheck())
       .verifyIssues();
@@ -37,7 +37,7 @@ class SingleCharacterAlternationCheckTest {
 
   @Test
   void test_textBlocks() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/regex/SingleCharacterAlternationWithTextBlocks.java"))
       .withCheck(new SingleCharacterAlternationCheck())
       .verifyIssues();

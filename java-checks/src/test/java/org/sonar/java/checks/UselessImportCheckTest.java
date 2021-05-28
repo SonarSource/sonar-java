@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.FilesUtils;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import java.io.File;
 import java.util.List;
@@ -33,7 +33,7 @@ class UselessImportCheckTest {
 
   @Test
   void detected_with_package() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .withClassPath(getClassPath())
       .onFile(testSourcesPath("checks/UselessImportCheck/WithinPackage.java"))
       .withCheck(new UselessImportCheck())
@@ -42,7 +42,7 @@ class UselessImportCheckTest {
 
   @Test
   void detected_within_package_info() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/UselessImportCheck/package-info.java"))
       .withCheck(new UselessImportCheck())
       .verifyIssues();
@@ -50,7 +50,7 @@ class UselessImportCheckTest {
 
   @Test
   void no_semantic() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/UselessImportCheck/NoSemanticWithPackage.java"))
       .withCheck(new UselessImportCheck())
       .withoutSemantic()
@@ -59,7 +59,7 @@ class UselessImportCheckTest {
 
   @Test
   void detected_without_package() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("WithoutPackage.java"))
       .withCheck(new UselessImportCheck())
       .withClassPath(getClassPath())
@@ -68,7 +68,7 @@ class UselessImportCheckTest {
 
   @Test
   void with_module() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("module/module-info.java"))
       .withCheck(new UselessImportCheck())
       .verifyNoIssues();
@@ -76,7 +76,7 @@ class UselessImportCheckTest {
 
   @Test
   void with_compiling_module() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("module-info.java"))
       .withCheck(new UselessImportCheck())
       .verifyNoIssues();
@@ -84,7 +84,7 @@ class UselessImportCheckTest {
 
   @Test
   void intersection_type() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/UselessImportCheck/IntersectionCase.java"))
       .withCheck(new UselessImportCheck())
       .verifyIssues();

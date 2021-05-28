@@ -20,13 +20,13 @@
 package org.sonar.java.checks.naming;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class BadClassNameCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/BadClassNameNoncompliant.java")
       .withCheck(new BadClassNameCheck())
       .verifyIssues();
@@ -36,7 +36,7 @@ class BadClassNameCheckTest {
   void test2() {
     BadClassNameCheck check = new BadClassNameCheck();
     check.format = "^[a-zA-Z0-9]*$";
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/BadClassName.java")
       .withCheck(check)
       .verifyNoIssues();

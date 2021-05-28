@@ -20,7 +20,7 @@
 package org.sonar.java.checks.serialization;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -28,7 +28,7 @@ class SerializableObjectInSessionCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/serialization/SerializableObjectInSessionCheck.java"))
       .withCheck(new SerializableObjectInSessionCheck())
       .verifyIssues();
@@ -36,7 +36,7 @@ class SerializableObjectInSessionCheckTest {
 
   @Test
   void unresolved() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/serialization/SerializableObjectInSessionCheckUnresolved.java")
       .withCheck(new SerializableObjectInSessionCheck())
       .verifyNoIssues();

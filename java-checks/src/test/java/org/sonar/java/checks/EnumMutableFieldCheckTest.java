@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -29,7 +29,7 @@ class EnumMutableFieldCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/EnumMutableFieldCheck.java"))
       .withCheck(new EnumMutableFieldCheck())
       .verifyIssues();
@@ -37,7 +37,7 @@ class EnumMutableFieldCheckTest {
 
   @Test
   void testNonCompiling() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/EnumMutableFieldCheck.java"))
       .withCheck(new EnumMutableFieldCheck())
       .verifyIssues();

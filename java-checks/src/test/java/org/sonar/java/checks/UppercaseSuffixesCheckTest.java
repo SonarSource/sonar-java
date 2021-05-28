@@ -20,13 +20,13 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class UppercaseSuffixesCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/UppercaseSuffixesCheck.java")
       .withCheck(new UppercaseSuffixesCheck())
       .verifyIssues();
@@ -36,7 +36,7 @@ class UppercaseSuffixesCheckTest {
   void test_only_long() {
     UppercaseSuffixesCheck check = new UppercaseSuffixesCheck();
     check.checkOnlyLong = true;
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/UppercaseSuffixesCheckOnlyLong.java")
       .withCheck(check)
       .verifyIssues();

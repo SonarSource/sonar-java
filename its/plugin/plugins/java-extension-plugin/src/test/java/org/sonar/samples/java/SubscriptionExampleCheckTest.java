@@ -20,11 +20,11 @@
 package org.sonar.samples.java;
 
 import org.junit.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 public class SubscriptionExampleCheckTest {
   @Test// Noncompliant
   public void test() {
-    JavaCheckVerifier.verify("src/test/java/org/sonar/samples/java/SubscriptionExampleCheckTest.java", new SubscriptionExampleCheck());
+    CheckVerifier.newVerifier().onFile("src/test/java/org/sonar/samples/java/SubscriptionExampleCheckTest.java").withCheck(new SubscriptionExampleCheck()).verifyIssues();
   }
 }

@@ -20,13 +20,13 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class OverrideAnnotationCheckTest {
 
   @Test
   void test_java() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/OverrideAnnotationCheck.java")
       .withCheck(new OverrideAnnotationCheck())
       .verifyIssues();
@@ -34,12 +34,12 @@ class OverrideAnnotationCheckTest {
 
   @Test
   void test_java_8() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/OverrideAnnotationCheck_java8.java")
       .withCheck(new OverrideAnnotationCheck())
       .withJavaVersion(8)
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/OverrideAnnotationCheck.java")
       .withCheck(new OverrideAnnotationCheck())
       .withJavaVersion(8)
@@ -48,7 +48,7 @@ class OverrideAnnotationCheckTest {
 
   @Test
   void test_java_6() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/OverrideAnnotationCheck.java")
       .withCheck(new OverrideAnnotationCheck())
       .withJavaVersion(6)
@@ -57,7 +57,7 @@ class OverrideAnnotationCheckTest {
 
   @Test
   void test_java_5() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/OverrideAnnotationCheck_java5.java")
       .withCheck(new OverrideAnnotationCheck())
       .withJavaVersion(5)
@@ -66,7 +66,7 @@ class OverrideAnnotationCheckTest {
 
   @Test
   void test_java_4() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/OverrideAnnotationCheck_java4.java")
       .withCheck(new OverrideAnnotationCheck())
       .withJavaVersion(4)

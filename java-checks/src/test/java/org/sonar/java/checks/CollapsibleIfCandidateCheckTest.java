@@ -19,14 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 import org.junit.jupiter.api.Test;
 
 class CollapsibleIfCandidateCheckTest {
 
   @Test
   void detected() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/CollapsibleIfCandidateCheck.java")
       .withCheck(new CollapsibleIfCandidateCheck())
       .verifyIssues();

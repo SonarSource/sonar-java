@@ -20,7 +20,7 @@
 package org.sonar.java.checks.tests;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -28,7 +28,7 @@ class AssertionCompareToSelfCheckTest {
 
   @Test
   void test_assertj() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/tests/AssertionCompareToSelfCheck_Assertj.java"))
       .withCheck(new AssertionCompareToSelfCheck())
       .verifyIssues();
@@ -36,7 +36,7 @@ class AssertionCompareToSelfCheckTest {
 
   @Test
   void test_junit5() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/tests/AssertionCompareToSelfCheck_JUnit5.java"))
       .withCheck(new AssertionCompareToSelfCheck())
       .verifyIssues();
@@ -44,7 +44,7 @@ class AssertionCompareToSelfCheckTest {
 
   @Test
   void test_junit4() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/tests/AssertionCompareToSelfCheck_JUnit4.java"))
       .withCheck(new AssertionCompareToSelfCheck())
       .verifyIssues();
@@ -52,7 +52,7 @@ class AssertionCompareToSelfCheckTest {
 
   @Test
   void test_fest_assert() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/tests/AssertionCompareToSelfCheck_FestAssert.java"))
       .withCheck(new AssertionCompareToSelfCheck())
       .verifyIssues();

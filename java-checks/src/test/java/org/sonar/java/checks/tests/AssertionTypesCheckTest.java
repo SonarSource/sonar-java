@@ -22,7 +22,7 @@ package org.sonar.java.checks.tests;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.helpers.JParserTestUtils;
 import org.sonar.java.checks.tests.AssertionTypesCheck.Argument;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -38,7 +38,7 @@ class AssertionTypesCheckTest {
 
   @Test
   void test_junit4() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/AssertionTypesCheck_JUnit4.java"))
       .withCheck(new AssertionTypesCheck())
       .verifyIssues();
@@ -46,7 +46,7 @@ class AssertionTypesCheckTest {
 
   @Test
   void test_junit4_unknown_symbol_coverage() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/AssertionTypesCheck_JUnit4.java"))
       .withCheck(new AssertionTypesCheck())
       .verifyIssues();
@@ -54,7 +54,7 @@ class AssertionTypesCheckTest {
 
   @Test
   void test_junit5() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/AssertionTypesCheck_JUnit5.java"))
       .withCheck(new AssertionTypesCheck())
       .verifyIssues();
@@ -62,7 +62,7 @@ class AssertionTypesCheckTest {
 
   @Test
   void test_assertj() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/AssertionTypesCheck_AssertJ.java"))
       .withCheck(new AssertionTypesCheck())
       .verifyIssues();

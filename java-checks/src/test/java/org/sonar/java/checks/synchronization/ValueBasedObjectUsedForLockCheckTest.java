@@ -20,13 +20,13 @@
 package org.sonar.java.checks.synchronization;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class ValueBasedObjectUsedForLockCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/synchronization/ValueBasedObjectUsedForLockCheck.java")
       .withCheck(new ValueBasedObjectUsedForLockCheck())
       .verifyIssues();
@@ -34,7 +34,7 @@ class ValueBasedObjectUsedForLockCheckTest {
 
   @Test
   void no_issue_if_not_java8() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/synchronization/ValueBasedObjectUsedForLockCheck.java")
       .withCheck(new ValueBasedObjectUsedForLockCheck())
       .withJavaVersion(7)

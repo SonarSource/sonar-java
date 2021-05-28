@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -32,7 +32,7 @@ class DisallowedMethodCheckTest {
     disallowedMethodCheck.setClassName("A");
     disallowedMethodCheck.setMethodName("foo");
     disallowedMethodCheck.setArgumentTypes("int, long, java.lang.String[]");
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/DisallowedMethodCheck/detected.java")
       .withCheck(disallowedMethodCheck)
       .verifyIssues();
@@ -44,7 +44,7 @@ class DisallowedMethodCheckTest {
     disallowedMethodCheck.setClassName("A");
     disallowedMethodCheck.setMethodName("foo");
     disallowedMethodCheck.setAllOverloads(true);
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/DisallowedMethodCheck/detected.java")
       .withCheck(disallowedMethodCheck)
       .verifyIssues();
@@ -55,7 +55,7 @@ class DisallowedMethodCheckTest {
     DisallowedMethodCheck disallowedMethodCheck = new DisallowedMethodCheck();
     disallowedMethodCheck.setClassName("A");
     disallowedMethodCheck.setMethodName("bar");
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/DisallowedMethodCheck/empty_parameters.java")
       .withCheck(disallowedMethodCheck)
       .verifyIssues();
@@ -65,7 +65,7 @@ class DisallowedMethodCheckTest {
   void empty_type_definition() {
     DisallowedMethodCheck disallowedMethodCheck = new DisallowedMethodCheck();
     disallowedMethodCheck.setMethodName("bar");
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/DisallowedMethodCheck/empty_type_definition.java")
       .withCheck(disallowedMethodCheck)
       .verifyIssues();
@@ -75,7 +75,7 @@ class DisallowedMethodCheckTest {
   void empty_method_name() {
     DisallowedMethodCheck disallowedMethodCheck = new DisallowedMethodCheck();
     disallowedMethodCheck.setClassName("A");
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/DisallowedMethodCheck/empty_method_name.java"))
       .withCheck(disallowedMethodCheck)
       .verifyNoIssues();
