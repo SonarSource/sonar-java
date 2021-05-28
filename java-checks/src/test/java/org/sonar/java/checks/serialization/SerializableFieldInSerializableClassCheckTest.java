@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.serialization;
 
-import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
@@ -45,12 +44,12 @@ class SerializableFieldInSerializableClassCheckTest {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/serialization/SerializableFieldInSerializableClassCheck.java"))
       .withCheck(new SerializableFieldInSerializableClassCheck())
-      .withClassPath(Collections.emptyList())
+      .withoutSemantic()
       .verifyIssues();
     JavaCheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/serialization/SerializableFieldInSerializableClassCheck.java"))
       .withCheck(new SerializableFieldInSerializableClassCheck())
-      .withClassPath(Collections.emptyList())
+      .withoutSemantic()
       .verifyIssues();
   }
 
