@@ -1,28 +1,28 @@
 package checks;
 
-class SimpleCases {
+class RedundantAbstractMethodCheck {
   interface I {
     void foo();
   }
-  
+
   abstract static class A implements I {
     @Override public abstract void foo(); // Noncompliant {{"foo" is defined in the "I" interface and can be removed from this class.}}
     abstract void bar();
   }
-  
+
   abstract static class B implements I {
     @Override public void foo() {} // Compliant
   }
-  
+
   abstract static class C implements I {
     abstract void bar();
   }
-  
+
   abstract static class D extends C {
     @Override public abstract void foo(); // Noncompliant {{"foo" is defined in the "I" interface and can be removed from this class.}}
     @Override abstract void bar();
   }
-  
+
   static class E implements I {
     @Override public void foo() {}
   }
@@ -59,7 +59,7 @@ class ReturnTypeChanged {
 class SpecilizationClass {
   @interface MyAnnotation {}
   static class MyException extends Exception {}
-  
+
   interface I {
     A foo();
     @MyAnnotation Object bar(A a);
@@ -83,7 +83,7 @@ class SpecilizationClass {
     @Override @MyAnnotation @Deprecated public abstract int size(); // Compliant - extra 'deprecated' annotation
     @Override public abstract void throwing(); // Compliant - removed thrown expression
   }
-  
+
   abstract static class E implements I {
     @Override public abstract A foo(); // Noncompliant
     @Override public abstract Object qix(C<A> c); // Noncompliant
@@ -93,7 +93,7 @@ class SpecilizationClass {
     @Override public abstract void dom(@MyAnnotation A a); // Noncompliant
     @Override public abstract void throwing() throws MyException; // Noncompliant
   }
-  
+
   abstract static class F implements I {
     @Override @MyAnnotation public abstract Object bar(A a); // Noncompliant
   }

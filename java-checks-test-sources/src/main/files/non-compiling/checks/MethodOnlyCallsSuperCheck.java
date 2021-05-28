@@ -2,8 +2,8 @@ package checks;
 
 class MethodOnlyCallsSuperCheck {
   abstract class A extends Unknown {
-    // When the parent method is Unknown, it is considered as having the same visibility.
-    private int f4() { // Noncompliant
+    // When the parent method is Unknown, we should not report anything
+    private int f4() { // Compliant
       return super.f4();
     }
 
@@ -26,7 +26,7 @@ class MethodOnlyCallsSuperCheck {
 
     @Override
     @Override
-    private <T> void f21() { // Noncompliant
+    private <T> void f21() { // Compliant
       super.f21();
     }
 

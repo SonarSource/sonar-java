@@ -27,8 +27,6 @@ import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class MethodOnlyCallsSuperCheckTest {
 
-  private static final String FILE = testSourcesPath("checks/MethodOnlyCallsSuperCheck.java");
-
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
@@ -39,7 +37,22 @@ class MethodOnlyCallsSuperCheckTest {
     JavaCheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/MethodOnlyCallsSuperCheck.java"))
       .withCheck(new MethodOnlyCallsSuperCheck())
+      .verifyNoIssues();
+  }
+
+  @Test
+  void test_without_semantic() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/MethodOnlyCallsSuperCheck.java"))
+      .withCheck(new MethodOnlyCallsSuperCheck())
+      .withoutSemantic()
       .verifyIssues();
+
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/MethodOnlyCallsSuperCheck.java"))
+      .withCheck(new MethodOnlyCallsSuperCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }
