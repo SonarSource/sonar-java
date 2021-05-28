@@ -20,13 +20,13 @@
 package org.sonar.java.checks.unused;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class UnusedTestRuleCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/unused/UnusedTestRuleCheck.java")
       .withCheck(new UnusedTestRuleCheck())
       .verifyIssues();
@@ -34,7 +34,7 @@ class UnusedTestRuleCheckTest {
 
   @Test
   void test_JUnit5() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/unused/UnusedTestRuleCheck_JUnit5.java")
       .withCheck(new UnusedTestRuleCheck())
       .verifyIssues();
@@ -42,7 +42,7 @@ class UnusedTestRuleCheckTest {
 
   @Test
   void test_no_issues_without_semantic() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/unused/UnusedTestRuleCheck_JUnit5.java")
       .withCheck(new UnusedTestRuleCheck())
       .withoutSemantic()

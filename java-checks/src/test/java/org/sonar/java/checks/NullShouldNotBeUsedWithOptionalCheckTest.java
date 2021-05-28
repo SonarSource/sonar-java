@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -29,11 +29,11 @@ class NullShouldNotBeUsedWithOptionalCheckTest {
   @Test
   void test() {
     NullShouldNotBeUsedWithOptionalCheck check = new NullShouldNotBeUsedWithOptionalCheck();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/NullShouldNotBeUsedWithOptionalCheck_jdk.java"))
       .withCheck(check)
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/NullShouldNotBeUsedWithOptionalCheck_guava.java"))
       .withCheck(check)
       .verifyIssues();

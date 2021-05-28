@@ -20,7 +20,7 @@
 package org.sonar.java.checks.unused;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -29,7 +29,7 @@ class UnusedTypeParameterCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/unused/UnusedTypeParameterCheck.java"))
       .withCheck(new UnusedTypeParameterCheck())
       .verifyIssues();
@@ -37,7 +37,7 @@ class UnusedTypeParameterCheckTest {
 
   @Test
   void test_non_compiling() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/unused/UnusedTypeParameterCheck.java"))
       .withCheck(new UnusedTypeParameterCheck())
       .verifyNoIssues();

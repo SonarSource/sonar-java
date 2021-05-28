@@ -20,13 +20,13 @@
 package org.sonar.java.checks.serialization;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
 class SerialVersionUidCheckTest {
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(TestUtils.testSourcesPath("checks/serialization/SerialVersionUidCheck.java"))
       .withCheck(new SerialVersionUidCheck())
       .verifyIssues();

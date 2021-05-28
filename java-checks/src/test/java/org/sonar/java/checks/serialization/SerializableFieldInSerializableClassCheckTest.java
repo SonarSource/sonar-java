@@ -20,7 +20,7 @@
 package org.sonar.java.checks.serialization;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -29,11 +29,11 @@ class SerializableFieldInSerializableClassCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/serialization/SerializableFieldInSerializableClassCheck.java"))
       .withCheck(new SerializableFieldInSerializableClassCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/serialization/SerializableFieldInSerializableClassCheck.java"))
       .withCheck(new SerializableFieldInSerializableClassCheck())
       .verifyIssues();
@@ -41,12 +41,12 @@ class SerializableFieldInSerializableClassCheckTest {
 
   @Test
   void test_without_semantic() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/serialization/SerializableFieldInSerializableClassCheck.java"))
       .withCheck(new SerializableFieldInSerializableClassCheck())
       .withoutSemantic()
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/serialization/SerializableFieldInSerializableClassCheck.java"))
       .withCheck(new SerializableFieldInSerializableClassCheck())
       .withoutSemantic()

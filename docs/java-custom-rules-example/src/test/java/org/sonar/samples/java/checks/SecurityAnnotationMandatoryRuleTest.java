@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 @EnableRuleMigrationSupport
 class SecurityAnnotationMandatoryRuleTest {
@@ -44,7 +44,7 @@ class SecurityAnnotationMandatoryRuleTest {
     // Verifies that the check will raise the adequate issues with the expected message.
     // In the test file, lines which should raise an issue have been commented out
     // by using the following syntax: "// Noncompliant {{EXPECTED_MESSAGE}}"
-    JavaCheckVerifier.newVerifier().onFile("src/test/files/SecurityAnnotationMandatoryRule.java").withCheck(check).verifyIssues();
+    CheckVerifier.newVerifier().onFile("src/test/files/SecurityAnnotationMandatoryRule.java").withCheck(check).verifyIssues();
   }
 
   @Test
@@ -58,7 +58,7 @@ class SecurityAnnotationMandatoryRuleTest {
     // Verifies that the check will raise the adequate issues with the expected message.
     // In the test file, lines which should raise an issue have been commented out
     // by using the following syntax: "// Noncompliant {{EXPECTED_MESSAGE}}"
-    JavaCheckVerifier.newVerifier().onFile("src/test/files/SecurityAnnotationMandatoryRuleWithoutPackage.java").withCheck(check).verifyIssues();
+    CheckVerifier.newVerifier().onFile("src/test/files/SecurityAnnotationMandatoryRuleWithoutPackage.java").withCheck(check).verifyIssues();
   }
 
 }

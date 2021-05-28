@@ -20,13 +20,13 @@
 package org.sonar.java.checks.naming;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class BadFieldNameStaticNonFinalCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/BadFieldNameStaticNonFinal.java")
       .withCheck(new BadFieldNameStaticNonFinalCheck())
       .verifyIssues();
@@ -36,7 +36,7 @@ class BadFieldNameStaticNonFinalCheckTest {
   void test2() {
     BadFieldNameStaticNonFinalCheck check = new BadFieldNameStaticNonFinalCheck();
     check.format = "^[a-zA-Z0-9_]*$";
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/BadFieldNameStaticNonFinal2.java")
       .withCheck(check)
       .verifyNoIssues();

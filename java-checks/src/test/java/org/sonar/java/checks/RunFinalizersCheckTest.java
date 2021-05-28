@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.model.JavaVersionImpl;
 
 class RunFinalizersCheckTest {
@@ -29,32 +29,32 @@ class RunFinalizersCheckTest {
   void test() {
     int javaVersion = JavaVersionImpl.fromString(System.getProperty("java.specification.version")).asInt();
     if (javaVersion < 11) {
-      JavaCheckVerifier.newVerifier()
+      CheckVerifier.newVerifier()
         .onFile("src/test/files/checks/RunFinalizersCheck.java")
         .withCheck(new RunFinalizersCheck())
         .verifyIssues();
-      JavaCheckVerifier.newVerifier()
+      CheckVerifier.newVerifier()
         .onFile("src/test/files/checks/RunFinalizersCheck.java")
         .withCheck(new RunFinalizersCheck())
         .withJavaVersion(javaVersion)
         .verifyIssues();
-      JavaCheckVerifier.newVerifier()
+      CheckVerifier.newVerifier()
         .onFile("src/test/files/checks/RunFinalizersCheck_no_issue.java")
         .withCheck(new RunFinalizersCheck())
         .withJavaVersion(11)
         .verifyNoIssues();
     } else {
       // No issue raised starting JDK 11 as the related APIs were removed from JDK and cannot be resolved
-      JavaCheckVerifier.newVerifier()
+      CheckVerifier.newVerifier()
         .onFile("src/test/files/checks/RunFinalizersCheck_no_issue.java")
         .withCheck(new RunFinalizersCheck())
         .verifyNoIssues();
-      JavaCheckVerifier.newVerifier()
+      CheckVerifier.newVerifier()
         .onFile("src/test/files/checks/RunFinalizersCheck_no_issue.java")
         .withCheck(new RunFinalizersCheck())
         .withJavaVersion(javaVersion)
         .verifyNoIssues();
-      JavaCheckVerifier.newVerifier()
+      CheckVerifier.newVerifier()
         .onFile("src/test/files/checks/RunFinalizersCheck_no_issue.java")
         .withCheck(new RunFinalizersCheck())
         .withJavaVersion(10)

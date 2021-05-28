@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -29,7 +29,7 @@ class MissingDeprecatedCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/MissingDeprecatedCheck.java"))
       .withCheck(new MissingDeprecatedCheck())
       .verifyIssues();
@@ -37,7 +37,7 @@ class MissingDeprecatedCheckTest {
 
   @Test
   void test_java9() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/MissingDeprecatedCheckJava9.java"))
       .withCheck(new MissingDeprecatedCheck())
       .withJavaVersion(9)
@@ -46,7 +46,7 @@ class MissingDeprecatedCheckTest {
 
   @Test
   void test_records() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/MissingDeprecatedCheckWithRecords.java"))
       .withCheck(new MissingDeprecatedCheck())
       .verifyIssues();

@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -28,7 +28,7 @@ class UselessPackageInfoCheckTest {
 
   @Test
   void withNoOtherFile() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFiles/package-info.java"))
       .withCheck(new UselessPackageInfoCheck())
       .verifyIssueOnFile("Remove this package.");
@@ -36,7 +36,7 @@ class UselessPackageInfoCheckTest {
 
   @Test
   void withOtherFile() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/UselessPackageInfoCheck/package-info.java"))
       .withCheck(new UselessPackageInfoCheck())
       .verifyNoIssues();
@@ -44,7 +44,7 @@ class UselessPackageInfoCheckTest {
 
   @Test
   void notAPackageInfo() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFiles(
         testSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java"),
         testSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld2.java"))
@@ -54,7 +54,7 @@ class UselessPackageInfoCheckTest {
 
   @Test
   void notAPackageInfoOnSingleFile() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java"))
       .withCheck(new UselessPackageInfoCheck())
       .verifyNoIssues();
@@ -62,7 +62,7 @@ class UselessPackageInfoCheckTest {
 
   @Test
   void defaultPackage() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("DefaultPackage.java"))
       .withCheck(new UselessPackageInfoCheck())
       .verifyNoIssues();

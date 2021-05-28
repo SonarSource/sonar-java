@@ -23,7 +23,7 @@ import java.io.File;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.FilesUtils;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -32,7 +32,7 @@ class ChangeMethodContractCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/S2638_ChangeMethodContractCheck/noPackageInfo/ChangeMethodContractCheck.java"))
       .withCheck(new ChangeMethodContractCheck())
       .verifyIssues();
@@ -43,7 +43,7 @@ class ChangeMethodContractCheckTest {
     List<File> classPath = FilesUtils.getClassPath(FilesUtils.DEFAULT_TEST_JARS_DIRECTORY);
     // Add package-info to the classPath
     classPath.add(new File("../java-checks-test-sources/target/classes/"));
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/S2638_ChangeMethodContractCheck/nonNullApi/ChangeMethodContractCheck.java"))
       .withClassPath(classPath)
       .withCheck(new ChangeMethodContractCheck())
@@ -52,7 +52,7 @@ class ChangeMethodContractCheckTest {
 
   @Test
   void non_compiling() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/ChangeMethodContractCheck.java"))
       .withCheck(new ChangeMethodContractCheck())
       .verifyNoIssues();

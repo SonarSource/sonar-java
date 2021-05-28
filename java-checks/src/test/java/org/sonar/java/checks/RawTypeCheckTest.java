@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -30,7 +30,7 @@ class RawTypeCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/RawTypeCheck.java"))
       .withCheck(new RawTypeCheck())
       .verifyIssues();
@@ -38,13 +38,13 @@ class RawTypeCheckTest {
 
   @Test
   void test_without_semantic() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/RawTypeCheck.java"))
       .withCheck(new RawTypeCheck())
       .withClassPath(Collections.emptyList())
       .verifyIssues();
 
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/RawTypeCheck.java"))
       .withCheck(new RawTypeCheck())
       .verifyIssues();

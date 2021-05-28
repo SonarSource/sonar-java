@@ -20,17 +20,17 @@
 package org.sonar.java.checks.spring;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class RequestMappingMethodPublicCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/spring/RequestMappingMethodPublicCheck.java")
       .withCheck(new RequestMappingMethodPublicCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/spring/RequestMappingMethodPublicCheck.java")
       .withCheck(new RequestMappingMethodPublicCheck())
       .withoutSemantic()

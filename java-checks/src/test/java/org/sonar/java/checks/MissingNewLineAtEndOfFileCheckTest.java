@@ -20,14 +20,14 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class MissingNewLineAtEndOfFileCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/MissingNewLineAtEndOfFile.java"))
       .withCheck(new MissingNewLineAtEndOfFileCheck())
       .verifyIssueOnFile("Add a new line at the end of this file.");
@@ -35,12 +35,12 @@ class MissingNewLineAtEndOfFileCheckTest {
 
   @Test
   void empty_file() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/EmptyFile.java"))
       .withCheck(new MissingNewLineAtEndOfFileCheck())
       .verifyIssueOnFile("Add a new line at the end of this file.");
 
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/CompletelyEmptyFile.java"))
       .withCheck(new MissingNewLineAtEndOfFileCheck())
       .verifyIssueOnFile("Add a new line at the end of this file.");
@@ -48,7 +48,7 @@ class MissingNewLineAtEndOfFileCheckTest {
 
   @Test
   void no_issues() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/NonEmptyFile.java"))
       .withCheck(new MissingNewLineAtEndOfFileCheck())
       .verifyNoIssues();

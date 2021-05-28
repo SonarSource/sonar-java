@@ -20,13 +20,13 @@
 package org.sonar.java.checks.serialization;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class ExternalizableClassConstructorCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/serialization/ExternalizableClassConstructorCheck.java")
       .withCheck(new ExternalizableClassConstructorCheck())
       .verifyIssues();

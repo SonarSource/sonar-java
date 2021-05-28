@@ -20,7 +20,7 @@
 package org.sonar.samples.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.samples.java.utils.FilesUtils;
 
 class AvoidTreeListRuleTest {
@@ -29,7 +29,7 @@ class AvoidTreeListRuleTest {
   void verify() {
 
     // Verifies automatically that the check will raise the adequate issues with the expected message
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/AvoidTreeListRule.java")
       .withCheck(new AvoidTreeListRule())
       // In order to test this check efficiently, we added the test-jar "org.apache.commons.commons-collections4" to the pom,

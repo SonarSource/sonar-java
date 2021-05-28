@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -29,7 +29,7 @@ class SwitchRedundantKeywordCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       // Non compiling because the code is Java 14
       .onFile(nonCompilingTestSourcesPath("checks/SwitchRedundantKeywordCheck.java"))
       .withCheck(new SwitchRedundantKeywordCheck())
@@ -39,7 +39,7 @@ class SwitchRedundantKeywordCheckTest {
 
   @Test
   void test_java_version_not_set() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       // Non compiling because the code is Java 14
       .onFile(nonCompilingTestSourcesPath("checks/SwitchRedundantKeywordCheck.java"))
       .withCheck(new SwitchRedundantKeywordCheck())
@@ -48,7 +48,7 @@ class SwitchRedundantKeywordCheckTest {
 
   @Test
   void test_java_version_8() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/SwitchRedundantKeywordCheck.java"))
       .withJavaVersion(8)
       .withCheck(new SwitchRedundantKeywordCheck())

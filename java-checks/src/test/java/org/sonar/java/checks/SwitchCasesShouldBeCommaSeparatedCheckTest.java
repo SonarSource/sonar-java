@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -28,7 +28,7 @@ import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 class SwitchCasesShouldBeCommaSeparatedCheckTest {
   @Test
   void test_switch_statements() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/SwitchCasesShouldBeCommaSeparatedCheck.java"))
       .withCheck(new SwitchCasesShouldBeCommaSeparatedCheck())
       .withJavaVersion(14)
@@ -37,7 +37,7 @@ class SwitchCasesShouldBeCommaSeparatedCheckTest {
 
   @Test
   void test_switch_expressions() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/SwitchCasesShouldBeCommaSeparatedCheck.java"))
       .withCheck(new SwitchCasesShouldBeCommaSeparatedCheck())
       .withJavaVersion(14)
@@ -46,7 +46,7 @@ class SwitchCasesShouldBeCommaSeparatedCheckTest {
 
   @Test
   void test_unsupported_java_version() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/SwitchCasesShouldBeCommaSeparatedCheck.java"))
       .withCheck(new SwitchCasesShouldBeCommaSeparatedCheck())
       .withJavaVersion(13)

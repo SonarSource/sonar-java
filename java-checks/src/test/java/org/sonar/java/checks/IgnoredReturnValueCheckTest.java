@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -31,17 +31,17 @@ class IgnoredReturnValueCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/S2201_IgnoredReturnValueCheck.java"))
       .withCheck(CHECK)
       .verifyIssues();
 
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/S2201_IgnoredReturnValueCheck.java"))
       .withCheck(CHECK)
       .verifyIssues();
 
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/S2201_IgnoredReturnValueCheckInternalCalls.java"))
       .withCheck(CHECK)
       .verifyNoIssues();
@@ -49,7 +49,7 @@ class IgnoredReturnValueCheckTest {
 
   @Test
   void java14_switch_expression() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/S2201_IgnoredReturnValueCheckJava14.java"))
       .withJavaVersion(14)
       .withCheck(CHECK)

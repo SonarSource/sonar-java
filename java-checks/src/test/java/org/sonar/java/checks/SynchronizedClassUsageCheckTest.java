@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -29,11 +29,11 @@ class SynchronizedClassUsageCheckTest {
 
   @Test
   void detected() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/SynchronizedClassUsageCheck.java"))
       .withCheck(new SynchronizedClassUsageCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/SynchronizedClassUsageByAPICheck.java"))
       .withCheck(new SynchronizedClassUsageCheck())
       .verifyIssues();
@@ -41,12 +41,12 @@ class SynchronizedClassUsageCheckTest {
 
   @Test
   void test_without_semantic() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/SynchronizedClassUsageCheck.java"))
       .withCheck(new SynchronizedClassUsageCheck())
       .withClassPath(Collections.emptyList())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/SynchronizedClassUsageByAPICheck.java"))
       .withCheck(new SynchronizedClassUsageCheck())
       .withClassPath(Collections.emptyList())

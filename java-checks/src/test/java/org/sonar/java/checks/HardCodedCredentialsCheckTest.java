@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -32,7 +32,7 @@ class HardCodedCredentialsCheckTest {
    */
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/HardCodedCredentialsCheck.java")
       .withCheck(new HardCodedCredentialsCheck())
       // FIXME should not requires an empty classpath
@@ -44,7 +44,7 @@ class HardCodedCredentialsCheckTest {
   void custom() {
     HardCodedCredentialsCheck check = new HardCodedCredentialsCheck();
     check.credentialWords = "marmalade,bazooka";
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/HardCodedCredentialsCheckCustom.java"))
       .withCheck(check)
       .verifyIssues();

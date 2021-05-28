@@ -20,14 +20,14 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
 class IteratorNextExceptionCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(TestUtils.testSourcesPath("checks/IteratorNextExceptionCheck.java"))
       .withCheck(new IteratorNextExceptionCheck())
       .verifyIssues();
@@ -35,7 +35,7 @@ class IteratorNextExceptionCheckTest {
 
   @Test
   void test_non_compiling() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(TestUtils.nonCompilingTestSourcesPath("checks/IteratorNextExceptionCheck.java"))
       .withCheck(new IteratorNextExceptionCheck())
       .verifyIssues();

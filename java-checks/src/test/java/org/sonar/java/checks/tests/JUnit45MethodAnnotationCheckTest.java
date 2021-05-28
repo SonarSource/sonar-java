@@ -20,7 +20,7 @@
 package org.sonar.java.checks.tests;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -29,7 +29,7 @@ class JUnit45MethodAnnotationCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/JUnit45MethodAnnotationCheck.java"))
       .withCheck(new JUnit45MethodAnnotationCheck())
       .verifyIssues();
@@ -37,7 +37,7 @@ class JUnit45MethodAnnotationCheckTest {
 
   @Test
   void test_unknown_symbols() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/JUnit45MethodAnnotationCheck.java"))
       .withCheck(new JUnit45MethodAnnotationCheck())
       .verifyIssues();

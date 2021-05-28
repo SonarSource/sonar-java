@@ -20,13 +20,13 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class JacksonDeserializationCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/JacksonDeserialization.java")
       .withCheck(new JacksonDeserializationCheck())
       .verifyIssues();
@@ -34,7 +34,7 @@ class JacksonDeserializationCheckTest {
 
   @Test
   void test_no_semantic() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/JacksonDeserialization.java")
       .withCheck(new JacksonDeserializationCheck())
       .withoutSemantic()

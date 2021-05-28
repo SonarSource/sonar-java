@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -29,7 +29,7 @@ class PrintfMisuseCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/PrintfMisuseCheck.java"))
       .withCheck(new PrintfMisuseCheck())
       .verifyIssues();
@@ -37,7 +37,7 @@ class PrintfMisuseCheckTest {
 
   @Test
   void test_lambda_in_unknown_method_invocation() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/PrintfMisuseCheckLambda.java"))
       .withCheck(new PrintfMisuseCheck())
       .verifyNoIssues();
@@ -45,7 +45,7 @@ class PrintfMisuseCheckTest {
 
   @Test
   void test_unknown_union_types() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/PrintfMisuseCheckUnionType.java"))
       .withCheck(new PrintfMisuseCheck())
       .verifyIssues();

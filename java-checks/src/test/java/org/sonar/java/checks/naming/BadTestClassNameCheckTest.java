@@ -20,7 +20,7 @@
 package org.sonar.java.checks.naming;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -30,12 +30,12 @@ class BadTestClassNameCheckTest {
   @Test
   void test() {
     BadTestClassNameCheck check = new BadTestClassNameCheck();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(TEST_FILE)
       .withCheck(check)
       .verifyIssues();
     // test with same instance to cover reuse of regexp pattern.
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(TEST_FILE)
       .withCheck(check)
       .verifyIssues();
@@ -43,7 +43,7 @@ class BadTestClassNameCheckTest {
 
   @Test
   void test_no_semantic() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/tests/BadTestClassNameCheckNoSemantic.java"))
       .withCheck(new BadTestClassNameCheck())
       .withoutSemantic()
@@ -54,7 +54,7 @@ class BadTestClassNameCheckTest {
   void test_with_customPattern() {
     BadTestClassNameCheck check = new BadTestClassNameCheck();
     check.format = "^[A-Z][a-zA-Z0-9]*SonarTest$";
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/tests/BadTestClassNameCheckCustom.java"))
       .withCheck(check)
       .verifyIssues();

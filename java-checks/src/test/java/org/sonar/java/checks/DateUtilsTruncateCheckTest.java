@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -30,7 +30,7 @@ class DateUtilsTruncateCheckTest {
 
   @Test
   void java8() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(FILENAME)
       .withCheck(new DateUtilsTruncateCheck())
       .withJavaVersion(8)
@@ -39,7 +39,7 @@ class DateUtilsTruncateCheckTest {
 
   @Test
   void java7() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(FILENAME)
       .withCheck(new DateUtilsTruncateCheck())
       .withJavaVersion(7)
@@ -48,7 +48,7 @@ class DateUtilsTruncateCheckTest {
 
   @Test
   void unknown_version() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/DateUtilsTruncateCheck_no_version.java"))
       .withCheck(new DateUtilsTruncateCheck())
       .verifyIssues();

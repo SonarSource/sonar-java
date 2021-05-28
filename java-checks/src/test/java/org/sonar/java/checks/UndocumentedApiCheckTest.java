@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,7 +31,7 @@ class UndocumentedApiCheckTest {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     assertThat(check.forClasses).isEqualTo("**.api.**");
     assertThat(check.exclusion).isEqualTo("**.internal.**");
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApi.java")
       .withCheck(check)
       .verifyIssues();
@@ -42,7 +42,7 @@ class UndocumentedApiCheckTest {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = null;
     check.exclusion = null;
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApi.java")
       .withCheck(check)
       .verifyIssues();
@@ -51,7 +51,7 @@ class UndocumentedApiCheckTest {
   @Test
   void no_issue_without_Semantic() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApi.java")
       .withCheck(check)
       .withoutSemantic()
@@ -63,7 +63,7 @@ class UndocumentedApiCheckTest {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = "**.open.**";
     check.exclusion = "";
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiCustom.java")
       .withCheck(check)
       .verifyNoIssues();
@@ -74,7 +74,7 @@ class UndocumentedApiCheckTest {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = "";
     check.exclusion = "**.internal.**";
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiExclusion.java")
       .withCheck(check)
       .verifyNoIssues();
@@ -84,7 +84,7 @@ class UndocumentedApiCheckTest {
   void testIncompleteJavadoc() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = "";
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiIncomplete.java")
       .withCheck(check)
       .verifyIssues();
@@ -94,7 +94,7 @@ class UndocumentedApiCheckTest {
   void testInvalidDeclaredException() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = "";
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiInvalidException.java")
       .withCheck(check)
       .verifyNoIssues();

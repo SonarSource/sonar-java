@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -28,7 +28,7 @@ class PrintfFailCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/PrintfFailCheck.java"))
       .withCheck(new PrintfFailCheck())
       .verifyIssues();
@@ -36,7 +36,7 @@ class PrintfFailCheckTest {
 
   @Test
   void test_lambda_in_unknown_method_invocation() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/PrintfFailCheckLambda.java")
       .withCheck(new PrintfFailCheck())
       .verifyNoIssues();

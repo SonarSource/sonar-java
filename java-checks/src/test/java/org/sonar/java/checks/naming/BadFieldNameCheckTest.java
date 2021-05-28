@@ -20,7 +20,7 @@
 package org.sonar.java.checks.naming;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -28,7 +28,7 @@ class BadFieldNameCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/naming/BadFieldName.java"))
       .withCheck(new BadFieldNameCheck())
       .verifyIssues();
@@ -38,7 +38,7 @@ class BadFieldNameCheckTest {
   void test2() {
     BadFieldNameCheck check = new BadFieldNameCheck();
     check.format = "^[a-zA-Z0-9_]*$";
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/naming/BadFieldName2.java"))
       .withCheck(check)
       .verifyNoIssues();

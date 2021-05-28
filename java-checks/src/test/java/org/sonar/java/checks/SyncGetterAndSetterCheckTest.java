@@ -20,13 +20,13 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class SyncGetterAndSetterCheckTest {
 
   @Test
   void syncGetterAndSetterCheckTest() throws Exception {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/SyncGetterAndSetterCheck.java")
       .withCheck(new SyncGetterAndSetterCheck())
       .verifyIssues();

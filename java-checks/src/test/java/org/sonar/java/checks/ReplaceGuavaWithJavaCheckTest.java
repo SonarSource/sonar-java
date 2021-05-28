@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -31,7 +31,7 @@ class ReplaceGuavaWithJavaCheckTest {
 
   @Test
   void test_with_java_7() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/ReplaceGuavaWithJavaCheck_java7.java"))
       .withCheck(new ReplaceGuavaWithJavaCheck())
       .withJavaVersion(7)
@@ -40,7 +40,7 @@ class ReplaceGuavaWithJavaCheckTest {
   
   @Test
   void test_java_8_without_semantic() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(FILENAME)
       .withCheck(new ReplaceGuavaWithJavaCheck())
       .withJavaVersion(8)
@@ -50,7 +50,7 @@ class ReplaceGuavaWithJavaCheckTest {
   
   @Test
   void test_java_8() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(FILENAME)
       .withCheck(new ReplaceGuavaWithJavaCheck())
       .withJavaVersion(8)
@@ -59,7 +59,7 @@ class ReplaceGuavaWithJavaCheckTest {
   
   @Test
   void test_java_9() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/ReplaceGuavaWithJavaCheck_java9.java"))
       .withCheck(new ReplaceGuavaWithJavaCheck())
       .withJavaVersion(9)
@@ -68,7 +68,7 @@ class ReplaceGuavaWithJavaCheckTest {
 
   @Test
   void test_no_version() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/ReplaceGuavaWithJavaCheck_no_version.java"))
       .withCheck(new ReplaceGuavaWithJavaCheck())
       .verifyIssues();

@@ -20,7 +20,7 @@
 package org.sonar.java.checks.tests;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -28,7 +28,7 @@ import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 class AssertJChainSimplificationCheckTest {
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/AssertJChainSimplificationCheckTest.java"))
       .withCheck(new AssertJChainSimplificationCheck())
       .verifyIssues();
@@ -36,7 +36,7 @@ class AssertJChainSimplificationCheckTest {
 
   @Test
   void testJava11Cases() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/tests/AssertJChainSimplificationCheckTestJava11.java"))
       .withCheck(new AssertJChainSimplificationCheck())
       .verifyIssues();

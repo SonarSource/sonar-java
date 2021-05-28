@@ -20,7 +20,7 @@
 package org.sonar.java.checks.tests;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -28,7 +28,7 @@ class RandomizedTestDataCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/RandomizedTestDataCheck.java"))
       .withCheck(new RandomizedTestDataCheck())
       .verifyIssues();
@@ -36,7 +36,7 @@ class RandomizedTestDataCheckTest {
 
   @Test
   void testNoIssues() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/NonRandomizedTestDataCheck.java"))
       .withCheck(new RandomizedTestDataCheck())
       .verifyNoIssues();

@@ -20,14 +20,14 @@
 package org.sonar.java.checks.unused;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
 class UnusedPrivateMethodCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(TestUtils.testSourcesPath("checks/UnusedPrivateMethod.java"))
       .withCheck(new UnusedPrivateMethodCheck())
       .verifyIssues();
@@ -35,7 +35,7 @@ class UnusedPrivateMethodCheckTest {
 
   @Test
   void test_non_compiling() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(TestUtils.nonCompilingTestSourcesPath("checks/UnusedPrivateMethod.java"))
       .withCheck(new UnusedPrivateMethodCheck())
       .verifyNoIssues();

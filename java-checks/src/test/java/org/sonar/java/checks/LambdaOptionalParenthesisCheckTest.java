@@ -20,13 +20,13 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class LambdaOptionalParenthesisCheckTest {
 
   @Test
   void no_version() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/LambdaOptionalParenthesisCheck_no_version.java")
       .withCheck(new LambdaOptionalParenthesisCheck())
       .verifyIssues();
@@ -34,7 +34,7 @@ class LambdaOptionalParenthesisCheckTest {
 
   @Test
   void java8() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/LambdaOptionalParenthesisCheck.java")
       .withCheck(new LambdaOptionalParenthesisCheck())
       .withJavaVersion(8)

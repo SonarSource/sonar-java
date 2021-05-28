@@ -20,14 +20,14 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
 class LeftCurlyBraceEndLineCheckTest {
 
   @Test
   void detected() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(TestUtils.testSourcesPath("checks/LeftCurlyBraceEndLineCheck.java"))
       .withCheck(new LeftCurlyBraceEndLineCheck())
       .verifyIssues();
@@ -35,7 +35,7 @@ class LeftCurlyBraceEndLineCheckTest {
 
   @Test
   void detected_switch_expressions() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(TestUtils.nonCompilingTestSourcesPath("checks/LeftCurlyBraceEndLineCheck.java"))
       .withCheck(new LeftCurlyBraceEndLineCheck())
       .withJavaVersion(14)

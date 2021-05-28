@@ -20,13 +20,13 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class MagicNumberCheckTest {
 
   @Test
   void detected() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/MagicNumberCheck.java")
       .withCheck(new MagicNumberCheck())
       .verifyIssues();
@@ -36,7 +36,7 @@ class MagicNumberCheckTest {
   void detectedWithTwoAuthorized() {
     MagicNumberCheck check = new MagicNumberCheck();
     check.authorizedNumbers = "-1,0,1,2";
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/MagicNumberCheckCustom.java")
       .withCheck(check)
       .verifyIssues();
@@ -46,7 +46,7 @@ class MagicNumberCheckTest {
   void detectedWithAuthorizedNumberSpaces() {
     MagicNumberCheck check = new MagicNumberCheck();
     check.authorizedNumbers = " -1,0 , 1 ,2";
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/MagicNumberCheckCustom.java")
       .withCheck(check)
       .verifyIssues();

@@ -20,7 +20,7 @@
 package org.sonar.java.checks.security;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -29,7 +29,7 @@ class ExcessiveContentRequestCheckTest {
 
   @Test
   void test_default_max() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/security/ExcessiveContentRequestCheck/ExcessiveContentRequestCheck.java"))
       .withCheck(new ExcessiveContentRequestCheck())
       .verifyIssues();
@@ -37,7 +37,7 @@ class ExcessiveContentRequestCheckTest {
 
   @Test
   void test_spring_2_4() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/security/ExcessiveContentRequestCheck_spring_2_4.java"))
       .withCheck(new ExcessiveContentRequestCheck())
       .verifyIssues();
@@ -47,7 +47,7 @@ class ExcessiveContentRequestCheckTest {
   void test_max_8_000_000() {
     ExcessiveContentRequestCheck check = new ExcessiveContentRequestCheck();
     check.fileUploadSizeLimit = 8_000_000L;
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/security/ExcessiveContentRequestCheck/ExcessiveContentRequestCheck_max8000000.java"))
       .withCheck(check)
       .verifyIssues();
@@ -55,7 +55,7 @@ class ExcessiveContentRequestCheckTest {
 
   @Test
   void test_max_not_set() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/security/ExcessiveContentRequestCheck/ExcessiveContentRequestCheck_sizeNotSet.java"))
       .withCheck(new ExcessiveContentRequestCheck())
       .verifyIssues();
@@ -64,7 +64,7 @@ class ExcessiveContentRequestCheckTest {
   @Test
   void test_max_set_in_another_file() {
     // As soon as the size is set somewhere in the project, do not report an issue.
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFiles(
         testSourcesPath("checks/security/ExcessiveContentRequestCheck/ExcessiveContentRequestCheck_setSize.java"),
         testSourcesPath("checks/security/ExcessiveContentRequestCheck/ExcessiveContentRequestCheck_sizeNotSet.java"))

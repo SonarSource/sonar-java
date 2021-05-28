@@ -20,19 +20,19 @@
 package org.sonar.java.checks.naming;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class BadTypeParameterNameCheckTest {
 
   @Test
   void test() {
     BadTypeParameterNameCheck check = new BadTypeParameterNameCheck();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/BadGenericNameNoncompliant.java")
       .withCheck(check)
       .verifyIssues();
     // verify that pattern was compiled once for the instance.
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/BadGenericNameNoncompliant.java")
       .withCheck(check)
       .verifyIssues();
@@ -43,7 +43,7 @@ class BadTypeParameterNameCheckTest {
   void test2() {
     BadTypeParameterNameCheck check = new BadTypeParameterNameCheck();
     check.format = "^[a-zA-Z0-9_]*$";
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/BadGenericName.java")
       .withCheck(check)
       .verifyNoIssues();

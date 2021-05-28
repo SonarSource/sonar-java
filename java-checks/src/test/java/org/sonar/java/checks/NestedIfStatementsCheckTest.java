@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
@@ -32,7 +32,7 @@ class NestedIfStatementsCheckTest {
   void detected() {
     NestedIfStatementsCheck check = new NestedIfStatementsCheck();
     assertThat(check.max).isEqualTo(3);
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/NestedIfStatementsCheck.java"))
       .withCheck(check)
       .verifyIssues();
@@ -42,7 +42,7 @@ class NestedIfStatementsCheckTest {
   void custom() {
     NestedIfStatementsCheck check = new NestedIfStatementsCheck();
     check.max = 4;
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/NestedIfStatementsCheckCustom.java"))
       .withCheck(check)
       .verifyIssues();
@@ -51,7 +51,7 @@ class NestedIfStatementsCheckTest {
   @Test
   void detected_switch_expressions() {
     NestedIfStatementsCheck check = new NestedIfStatementsCheck();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/NestedIfStatementsCheck.java"))
       .withJavaVersion(14)
       .withCheck(check)

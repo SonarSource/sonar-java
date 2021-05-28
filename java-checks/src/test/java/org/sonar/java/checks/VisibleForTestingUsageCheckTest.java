@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import java.io.File;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.FilesUtils;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
@@ -33,7 +33,7 @@ class VisibleForTestingUsageCheckTest {
   void test() {
     List<File> classPath = FilesUtils.getClassPath(FilesUtils.DEFAULT_TEST_JARS_DIRECTORY);
     classPath.add(new File("../java-checks-test-sources/target/classes/"));
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .withClassPath(classPath)
       .onFile(testSourcesPath("checks/VisibleForTestingUsageCheck/Service.java"))
       .withCheck(new VisibleForTestingUsageCheck())
@@ -44,7 +44,7 @@ class VisibleForTestingUsageCheckTest {
   void test_no_semantic() {
     List<File> classPath = FilesUtils.getClassPath(FilesUtils.DEFAULT_TEST_JARS_DIRECTORY);
     classPath.add(new File("../java-checks-test-sources/target/classes/"));
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .withClassPath(classPath)
       .onFile(testSourcesPath("checks/VisibleForTestingUsageCheck/Service.java"))
       .withCheck(new VisibleForTestingUsageCheck())
@@ -54,7 +54,7 @@ class VisibleForTestingUsageCheckTest {
 
   @Test
   void test_non_compiling() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/VisibleForTestingUsageCheck.java"))
       .withCheck(new VisibleForTestingUsageCheck())
       .verifyNoIssues();

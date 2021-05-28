@@ -21,7 +21,7 @@ package org.sonar.java.checks.tests;
 
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -30,7 +30,7 @@ class NoTestInTestClassCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/NoTestInTestClassCheck.java"))
       .withCheck(new NoTestInTestClassCheck())
       .verifyIssues();
@@ -40,7 +40,7 @@ class NoTestInTestClassCheckTest {
   void surefire_inclusions_class_name_pattern() {
     NoTestInTestClassCheck check = new NoTestInTestClassCheck();
     check.testClassNamePattern = "Test.*|.*(Test|Tests|TestCase)";
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/tests/NoTestInTestClassCustomPattern.java"))
       .withCheck(check)
       .verifyIssues();
@@ -50,7 +50,7 @@ class NoTestInTestClassCheckTest {
   void empty_class_name_pattern() {
     NoTestInTestClassCheck check = new NoTestInTestClassCheck();
     check.testClassNamePattern = "";
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/tests/NoTestInTestClassCustomPattern.java"))
       .withCheck(check)
       .verifyNoIssues();
@@ -58,7 +58,7 @@ class NoTestInTestClassCheckTest {
 
   @Test
   void testEnclosed() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/tests/NoTestInTestClassCheckEnclosed.java"))
       .withCheck(new NoTestInTestClassCheck())
       .verifyIssues();
@@ -66,7 +66,7 @@ class NoTestInTestClassCheckTest {
 
   @Test
   void noClasspath() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/tests/NoTestInTestClassCheckNoClasspath.java"))
       .withCheck(new NoTestInTestClassCheck())
       .withClassPath(Collections.emptyList())
@@ -75,7 +75,7 @@ class NoTestInTestClassCheckTest {
 
   @Test
   void archUnit() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/tests/NoTestInTestClassCheckArchUnitTest.java"))
       .withCheck(new NoTestInTestClassCheck())
       .verifyIssues();
@@ -83,7 +83,7 @@ class NoTestInTestClassCheckTest {
 
   @Test
   void pactUnit() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/tests/NoTestsInTestClassCheckPactTest.java"))
       .withCheck(new NoTestInTestClassCheck())
       .verifyIssues();

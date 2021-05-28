@@ -20,7 +20,7 @@
 package org.sonar.java.checks.tests;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
@@ -36,7 +36,7 @@ class TooManyAssertionsCheckTest {
   void custom_at_2() {
     TooManyAssertionsCheck check = new TooManyAssertionsCheck();
     check.maximum = 2;
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/TooManyAssertionsCheckCustom2.java"))
       .withCheck(check)
       .verifyIssues();
@@ -46,7 +46,7 @@ class TooManyAssertionsCheckTest {
   void custom_at_25() {
     TooManyAssertionsCheck check = new TooManyAssertionsCheck();
     check.maximum = 25;
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/TooManyAssertionsCheckCustom25.java"))
       .withCheck(check)
       .verifyIssues();
@@ -54,7 +54,7 @@ class TooManyAssertionsCheckTest {
 
   @Test
   void nonCompiling() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/TooManyAssertionsCheck.java"))
       .withCheck(new TooManyAssertionsCheck())
       .verifyNoIssues();

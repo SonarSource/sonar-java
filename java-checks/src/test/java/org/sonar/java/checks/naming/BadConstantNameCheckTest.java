@@ -20,7 +20,7 @@
 package org.sonar.java.checks.naming;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -28,7 +28,7 @@ class BadConstantNameCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/BadConstantNameNoncompliant.java")
       .withCheck(new BadConstantNameCheck())
       .verifyIssues();
@@ -36,7 +36,7 @@ class BadConstantNameCheckTest {
 
   @Test
   void no_semantic() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/naming/BadConstantNameNoIssueWithoutSemantic.java"))
       .withCheck(new BadConstantNameCheck())
       .withoutSemantic()
@@ -47,7 +47,7 @@ class BadConstantNameCheckTest {
   void test_custom_value() {
     BadConstantNameCheck check = new BadConstantNameCheck();
     check.format = "^[a-zA-Z0-9_]*$";
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/BadConstantName.java")
       .withCheck(check)
       .verifyNoIssues();

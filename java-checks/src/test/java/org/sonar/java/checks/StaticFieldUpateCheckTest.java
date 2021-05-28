@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 
@@ -30,7 +30,7 @@ class StaticFieldUpateCheckTest {
 
   @Test
   void detected() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(TestUtils.testSourcesPath("checks/StaticFieldUpateCheck.java"))
       .withCheck(new StaticFieldUpateCheck())
       .verifyIssues();
@@ -38,7 +38,7 @@ class StaticFieldUpateCheckTest {
 
   @Test
   void detected_non_compiling() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(TestUtils.nonCompilingTestSourcesPath("checks/StaticFieldUpateCheck.java"))
       .withCheck(new StaticFieldUpateCheck())
       .verifyIssues();

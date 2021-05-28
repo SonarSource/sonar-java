@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -28,7 +28,7 @@ class OneClassInterfacePerFileCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/OneClassInterfacePerFileCheck.java")
       .withCheck(new OneClassInterfacePerFileCheck())
       .verifyNoIssues();
@@ -36,7 +36,7 @@ class OneClassInterfacePerFileCheckTest {
 
   @Test
   void noncompliant() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/OneClassInterfacePerFileCheckNoncompliant.java"))
       .withCheck(new OneClassInterfacePerFileCheck())
       .verifyIssueOnFile("There are 4 top-level types in this file; move all but one of them to other files.");

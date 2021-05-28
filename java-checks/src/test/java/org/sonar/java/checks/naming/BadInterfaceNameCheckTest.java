@@ -20,7 +20,7 @@
 package org.sonar.java.checks.naming;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -28,7 +28,7 @@ class BadInterfaceNameCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/naming/BadInterfaceNameNoncompliant.java"))
       .withCheck(new BadInterfaceNameCheck())
       .verifyIssues();
@@ -38,7 +38,7 @@ class BadInterfaceNameCheckTest {
   void test2() {
     BadInterfaceNameCheck check = new BadInterfaceNameCheck();
     check.format = "^[a-zA-Z0-9]*$";
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/BadInterfaceName.java")
       .withCheck(check)
       .verifyNoIssues();

@@ -20,13 +20,13 @@
 package org.sonar.java.checks.tests;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 class AssertionFailInCatchBlockCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/AssertionFailInCatchBlockCheck.java")
       .withCheck(new AssertionFailInCatchBlockCheck())
       .verifyIssues();

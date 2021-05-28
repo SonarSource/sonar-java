@@ -22,7 +22,7 @@ package org.sonar.java.checks.spring;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
@@ -45,11 +45,11 @@ class SpringBeansShouldBeAccessibleCheckTest {
       testSourcesPath(testFolder + "packageFP/ComponentFP.java"),
       testSourcesPath(testFolder + "ComponentScan.java"));
 
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFiles(files)
       .withCheck(new SpringBeansShouldBeAccessibleCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFiles(files)
       .withCheck(new SpringBeansShouldBeAccessibleCheck())
       .withoutSemantic()
@@ -66,11 +66,11 @@ class SpringBeansShouldBeAccessibleCheckTest {
       testSourcesPath(testFolder + "secondApp/AnotherOk.java"),
       testSourcesPath(testFolder + "secondApp/SpringBootApp2.java"));
 
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFiles(files)
       .withCheck(new SpringBeansShouldBeAccessibleCheck())
       .verifyIssues();
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFiles(files)
       .withCheck(new SpringBeansShouldBeAccessibleCheck())
       .withoutSemantic()
@@ -85,7 +85,7 @@ class SpringBeansShouldBeAccessibleCheckTest {
       testSourcesPath(testFolderThirdApp + "domain/SomeClass.java"),
       testSourcesPath(testFolderThirdApp + "controller/Controller.java"));
 
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFiles(thirdAppTestFiles)
       .withCheck(new SpringBeansShouldBeAccessibleCheck())
       .verifyIssues();
@@ -98,7 +98,7 @@ class SpringBeansShouldBeAccessibleCheckTest {
       testSourcesPath(testFolderFourthApp + "utility/SomeUtilityClass.java"),
       testSourcesPath(testFolderFourthApp + "controller/Controller.java"));
 
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFiles(fourthAppTestFiles)
       .withCheck(new SpringBeansShouldBeAccessibleCheck())
       .verifyIssues();

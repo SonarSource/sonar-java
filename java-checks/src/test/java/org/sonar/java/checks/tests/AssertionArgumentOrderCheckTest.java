@@ -20,7 +20,7 @@
 package org.sonar.java.checks.tests;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -28,7 +28,7 @@ class AssertionArgumentOrderCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/AssertionArgumentOrderCheck.java"))
       .withCheck(new AssertionArgumentOrderCheck())
       .verifyIssues();
@@ -36,7 +36,7 @@ class AssertionArgumentOrderCheckTest {
 
   @Test
   void test_JUnit5() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/AssertionArgumentOrderCheck_JUnit5.java"))
       .withCheck(new AssertionArgumentOrderCheck())
       .verifyIssues();
@@ -44,7 +44,7 @@ class AssertionArgumentOrderCheckTest {
 
   @Test
   void test_TestNG() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/AssertionArgumentOrderCheck_TestNG.java"))
       .withCheck(new AssertionArgumentOrderCheck())
       .verifyIssues();

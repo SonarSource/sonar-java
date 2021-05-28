@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -29,7 +29,7 @@ class IdenticalCasesInSwitchCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/IdenticalCasesInSwitchCheck.java"))
       .withCheck(new IdenticalCasesInSwitchCheck())
       .verifyIssues();
@@ -37,7 +37,7 @@ class IdenticalCasesInSwitchCheckTest {
 
   @Test
   void test_switch_expression() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/IdenticalCasesInSwitchCheck.java"))
       .withCheck(new IdenticalCasesInSwitchCheck())
       .withJavaVersion(14)

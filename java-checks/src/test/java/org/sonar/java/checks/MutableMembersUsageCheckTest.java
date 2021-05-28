@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -29,7 +29,7 @@ class MutableMembersUsageCheckTest {
 
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/MutableMembersUsageCheck.java"))
       .withCheck(new MutableMembersUsageCheck())
       .verifyIssues();
@@ -37,7 +37,7 @@ class MutableMembersUsageCheckTest {
 
   @Test
   void test_java_9() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/MutableMembersUsageCheck.java"))
       .withCheck(new MutableMembersUsageCheck())
       .verifyIssues();
