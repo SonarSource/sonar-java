@@ -22,6 +22,7 @@ package org.sonar.java.checks.tests;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class MockitoArgumentMatchersUsedOnAllParametersCheckTest {
@@ -30,6 +31,14 @@ class MockitoArgumentMatchersUsedOnAllParametersCheckTest {
   void test() {
     CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/tests/MockitoArgumentMatchersUsedOnAllParameters.java"))
+      .withCheck(new MockitoArgumentMatchersUsedOnAllParametersCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/tests/MockitoArgumentMatchersUsedOnAllParameters.java"))
       .withCheck(new MockitoArgumentMatchersUsedOnAllParametersCheck())
       .verifyIssues();
   }

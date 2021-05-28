@@ -26,9 +26,14 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 
@@ -88,7 +93,25 @@ public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMoc
       return false;
     }
     MethodInvocationTree invocation = (MethodInvocationTree) unpacked;
-    return ARGUMENT_CAPTOR.matches(invocation) || ARGUMENT_MARCHER.matches(invocation);
+    if (ARGUMENT_CAPTOR.matches(invocation) || ARGUMENT_MARCHER.matches(invocation)) {
+      return true;
+    }
+    ExpressionTree methodSelect = invocation.methodSelect();
+    if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree identifier = (IdentifierTree) methodSelect;
+      Symbol symbol = identifier.symbol();
+      if (symbol.isUnknown()) {
+        return true;
+      }
+      if (symbol.isMethodSymbol()) {
+        Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
+        MethodTree declaration = methodSymbol.declaration();
+        MethodVisitor methodVisitor = new MethodVisitor();
+        declaration.accept(methodVisitor);
+        return methodVisitor.returnsAnArgumentMatcher;
+      }
+    }
+    return false;
   }
 
   /**
@@ -103,5 +126,27 @@ public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMoc
       current = ExpressionUtils.skipParentheses(cast.expression());
     }
     return current;
+  }
+
+  private static class MethodVisitor extends BaseTreeVisitor {
+    boolean returnsAnArgumentMatcher = false;
+
+    @Override
+    public void visitMethod(MethodTree tree) {
+      if (returnsAnArgumentMatcher) {
+        return;
+      }
+      List<ExpressionTree> expressionsReturned = tree.block().body().stream()
+        .filter(statement -> statement.is(Tree.Kind.RETURN_STATEMENT))
+        .map(ReturnStatementTree.class::cast)
+        .map(ReturnStatementTree::expression)
+        .filter(expression -> expression.is(Tree.Kind.METHOD_INVOCATION))
+        .collect(Collectors.toList());
+      if (expressionsReturned.isEmpty()) {
+        return;
+      }
+      returnsAnArgumentMatcher = expressionsReturned.stream()
+        .allMatch(MockitoArgumentMatchersUsedOnAllParametersCheck::isArgumentMatcherLike);
+    }
   }
 }

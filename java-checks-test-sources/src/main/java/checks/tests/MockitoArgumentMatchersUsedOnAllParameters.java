@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.intThat;
 import static org.mockito.ArgumentMatchers.notNull;
@@ -49,10 +50,15 @@ public class MockitoArgumentMatchersUsedOnAllParameters {
       i1.toString(), // Noncompliant [[sc=7;ec=20]] {{Add an "eq()" argument matcher on this parameter.}}
       any());
 
-    // FP Wrapped argument matcher is masked by behind a method call
     verify(foo).bar(
-      wrapArgumentMatcher(42), // Noncompliant [[sc=7;ec=30]] {{Add an "eq()" argument matcher on this parameter.}}
-      any(), any());
+      returnRawValue(), // Noncompliant [[sc=7;ec=23]] {{Add an "eq()" argument matcher on this parameter.}}
+      any(), any()
+    );
+
+    verify(foo).bar(
+      returnRawValueThroughLayers(), // Noncompliant [[sc=7;ec=36]] {{Add an "eq()" argument matcher on this parameter.}}
+      any(), any()
+    );
   }
 
   @Test
@@ -88,10 +94,40 @@ public class MockitoArgumentMatchersUsedOnAllParameters {
     eq(42);
     anySet();
     anyList();
+
+    // Cases where the method called returns an ArgumentMatcher
+    verify(foo).bar(
+      wrapArgumentMatcher(42), // Compliant
+      any(), any());
+
+    verify(foo).bar(
+      wrapArgThat(1), // Compliant
+      any(), any());
+
+    verify(foo).bar(
+      wrapThroughLayers(1), // Compliant
+      any(), any());
+  }
+
+
+  private int returnRawValue() {
+    return 42;
+  }
+
+  private int returnRawValueThroughLayers() {
+    return returnRawValue();
   }
 
   private int wrapArgumentMatcher(int value) {
     return eq(value);
+  }
+
+  private int wrapArgThat(int lowerBound) {
+    return argThat(number -> lowerBound < number);
+  }
+
+  private int wrapThroughLayers(int value) {
+    return wrapArgThat(value);
   }
 
   static class Foo {
