@@ -649,6 +649,9 @@
 426,
 439,
 ],
+'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/ws/QProfilesWsTest.java':[
+133,
+],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/rule/RegisterRulesMediumTest.java':[
 141,
 172,

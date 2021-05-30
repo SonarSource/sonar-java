@@ -196,6 +196,7 @@ public class AssertJChainSimplificationCheckTest {
 
     assertThat(getString().length()).isLessThanOrEqualTo(0); // Noncompliant {{Use isNotPositive() instead.}}
     assertThat(getString().length()).isLessThan(1); // Noncompliant {{Use isNotPositive() instead.}}
+    assertThat(getString().length()).isPositive(); // Noncompliant {{Use assertThat(actual).isNotEmpty() instead.}}
     assertThat(getString().length()).isNotPositive(); // Noncompliant {{Use assertThat(actual).isEmpty() instead.}}
     assertThat(getString().length()).isZero(); // Noncompliant {{Use assertThat(actual).isEmpty() instead.}}
     assertThat(getString().length()).isNotZero(); // Noncompliant {{Use assertThat(actual).isNotEmpty() instead.}}
@@ -249,6 +250,7 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(getCollection().size()).isLessThan(length); // Noncompliant {{Use assertThat(actual).hasSizeLessThan(expected) instead.}}
     assertThat(getCollection().size()).isGreaterThan(length); // Noncompliant {{Use assertThat(actual).hasSizeGreaterThan(expected) instead.}}
     assertThat(getCollection().size()).isGreaterThanOrEqualTo(length); // Noncompliant {{Use assertThat(actual).hasSizeGreaterThanOrEqualTo(expected) instead.}}
+    assertThat(getCollection().size()).isPositive(); // Noncompliant {{Use assertThat(actual).isNotEmpty() instead.}}
 
     assertThat(getCollection().contains(something)).isTrue(); // Noncompliant {{Use assertThat(actual).contains(expected) instead.}}
     assertThat(getCollection().contains(something)).isFalse(); // Noncompliant {{Use assertThat(actual).doesNotContain(expected) instead.}}
@@ -274,6 +276,7 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(getMap().size()).isGreaterThan(42); // Noncompliant {{Use assertThat(actual).hasSizeGreaterThan(expected) instead.}}
     assertThat(getMap().size()).isGreaterThanOrEqualTo(42); // Noncompliant {{Use assertThat(actual).hasSizeGreaterThanOrEqualTo(expected) instead.}}
     assertThat(getMap().size()).isLessThan(0); // Noncompliant {{Use isNegative() instead.}}
+    assertThat(getMap().size()).isPositive(); // Noncompliant {{Use assertThat(actual).isNotEmpty() instead.}}
 
     assertThat(getMap().containsKey(key)).isTrue(); // Noncompliant {{Use assertThat(actual).containsKey(expected) instead.}}
     assertThat(getMap().containsValue(value)).isTrue(); // Noncompliant {{Use assertThat(actual).containsValue(expected) instead.}}
@@ -299,6 +302,7 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(getFile().length()).isNotZero(); // Noncompliant {{Use assertThat(actual).isNotEmpty() instead.}}
     assertThat(getFile().length()).isNotEqualTo(0);	// Noncompliant {{Use isNotZero() instead.}}
     assertThat(getFile().length()).isEqualTo(size); // Noncompliant {{Use assertThat(actual).hasSize(expected) instead.}}
+    assertThat(getFile().length()).isPositive(); // Noncompliant {{Use assertThat(actual).isNotEmpty() instead.}}
 
     assertThat(getFile().canRead()).isTrue(); // Noncompliant {{Use assertThat(actual).canRead() instead.}}
     assertThat(getFile().canWrite()).isTrue(); // Noncompliant {{Use assertThat(actual).canWrite() instead.}}
