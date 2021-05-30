@@ -221,6 +221,8 @@ public class AssertJChainSimplificationIndex {
       arrayLengthSimplifier(msgWithActual(IS_NOT_EMPTY))))
     .put(IS_POSITIVE, Arrays.asList(
       compareToSimplifier(msgWithActualExpected(IS_GREATER_THAN)),
+      methodCallInSubject(MethodMatchers.or(Matchers.STRING_LENGTH, Matchers.COLLECTION_SIZE), msgWithActual(IS_NOT_EMPTY)),
+      methodCallInSubject(Matchers.FILE_LENGTH, msgWithActual(IS_NOT_EMPTY)),
       arrayLengthSimplifier(msgWithActual(IS_NOT_EMPTY))))
     .put(IS_SAME_AS, Collections.singletonList(
       methodCallInSubject(Matchers.GET, msgWithActualExpected("containsSame"))))
