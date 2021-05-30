@@ -245,7 +245,7 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(getCollection().size()).isEqualTo(otherCollection.size()); // Noncompliant {{Use assertThat(actual).hasSameSizeAs(expected) instead.}}
     assertThat(getCollection().size()).isEqualTo(getArray().length); // Noncompliant {{Use assertThat(actual).hasSize(expected) instead.}}
     assertThat(getCollection().size()).isEqualTo(something.length()); // Noncompliant {{Use assertThat(actual).hasSize(expected) instead.}}
-    assertThat(getCollection()).hasSameSizeAs(getArray().length); // Compliant
+    assertThat(getCollection()).hasSameSizeAs(getArray()); // Compliant
     assertThat(getCollection().size()).isLessThanOrEqualTo(length); // Noncompliant {{Use assertThat(actual).hasSizeLessThanOrEqualTo(expected) instead.}}
     assertThat(getCollection().size()).isLessThan(length); // Noncompliant {{Use assertThat(actual).hasSizeLessThan(expected) instead.}}
     assertThat(getCollection().size()).isGreaterThan(length); // Noncompliant {{Use assertThat(actual).hasSizeGreaterThan(expected) instead.}}
