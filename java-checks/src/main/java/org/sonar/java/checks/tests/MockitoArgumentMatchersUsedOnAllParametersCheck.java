@@ -107,6 +107,9 @@ public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMoc
       }
       Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
       MethodTree declaration = methodSymbol.declaration();
+      if (declaration == null) {
+        return false;
+      }
       MethodVisitor methodVisitor = new MethodVisitor();
       declaration.accept(methodVisitor);
       return methodVisitor.returnsAnArgumentMatcher;
@@ -139,16 +142,16 @@ public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMoc
         return;
       }
       cachedResults.put(tree, Boolean.FALSE);
-      List<ExpressionTree> expressionsReturned = tree.block().body().stream()
+      List<ExpressionTree> terminalMethodInvocations = tree.block().body().stream()
         .filter(statement -> statement.is(Tree.Kind.RETURN_STATEMENT))
         .map(ReturnStatementTree.class::cast)
         .map(ReturnStatementTree::expression)
         .filter(expression -> expression.is(Tree.Kind.METHOD_INVOCATION))
         .collect(Collectors.toList());
-      if (expressionsReturned.isEmpty()) {
+      if (terminalMethodInvocations.isEmpty()) {
         return;
       }
-      returnsAnArgumentMatcher = expressionsReturned.stream()
+      returnsAnArgumentMatcher = terminalMethodInvocations.stream()
         .allMatch(MockitoArgumentMatchersUsedOnAllParametersCheck::isArgumentMatcherLike);
       cachedResults.put(tree, returnsAnArgumentMatcher);
     }
