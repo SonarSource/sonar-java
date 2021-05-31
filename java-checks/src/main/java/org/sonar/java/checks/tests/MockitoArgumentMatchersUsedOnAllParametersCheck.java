@@ -20,7 +20,9 @@
 package org.sonar.java.checks.tests;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
@@ -103,13 +105,11 @@ public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMoc
       if (symbol.isUnknown()) {
         return true;
       }
-      if (symbol.isMethodSymbol()) {
-        Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
-        MethodTree declaration = methodSymbol.declaration();
-        MethodVisitor methodVisitor = new MethodVisitor();
-        declaration.accept(methodVisitor);
-        return methodVisitor.returnsAnArgumentMatcher;
-      }
+      Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
+      MethodTree declaration = methodSymbol.declaration();
+      MethodVisitor methodVisitor = new MethodVisitor();
+      declaration.accept(methodVisitor);
+      return methodVisitor.returnsAnArgumentMatcher;
     }
     return false;
   }
@@ -129,13 +129,16 @@ public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMoc
   }
 
   private static class MethodVisitor extends BaseTreeVisitor {
+    static Map<MethodTree, Boolean> cachedResults = new HashMap<>();
     boolean returnsAnArgumentMatcher = false;
 
     @Override
     public void visitMethod(MethodTree tree) {
-      if (returnsAnArgumentMatcher) {
+      if (cachedResults.containsKey(tree)) {
+        returnsAnArgumentMatcher = cachedResults.get(tree);
         return;
       }
+      cachedResults.put(tree, Boolean.FALSE);
       List<ExpressionTree> expressionsReturned = tree.block().body().stream()
         .filter(statement -> statement.is(Tree.Kind.RETURN_STATEMENT))
         .map(ReturnStatementTree.class::cast)
@@ -147,6 +150,7 @@ public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMoc
       }
       returnsAnArgumentMatcher = expressionsReturned.stream()
         .allMatch(MockitoArgumentMatchersUsedOnAllParametersCheck::isArgumentMatcherLike);
+      cachedResults.put(tree, returnsAnArgumentMatcher);
     }
   }
 }

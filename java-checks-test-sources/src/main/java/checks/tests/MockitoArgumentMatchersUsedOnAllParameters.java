@@ -1,6 +1,7 @@
 package checks.tests;
 
 
+import java.util.Random;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
@@ -59,6 +60,14 @@ public class MockitoArgumentMatchersUsedOnAllParameters {
       returnRawValueThroughLayers(), // Noncompliant [[sc=7;ec=36]] {{Add an "eq()" argument matcher on this parameter.}}
       any(), any()
     );
+
+    verify(foo).bar(
+      recursiveCall(), // Noncompliant , If one the branches of the method invoked returns something else than an argument matcher it is considered non-compliant
+      any(), any());
+
+    verify(foo).bar(
+      new Integer("42"), // Noncompliant
+      any(), any());
   }
 
   @Test
@@ -128,6 +137,14 @@ public class MockitoArgumentMatchersUsedOnAllParameters {
 
   private int wrapThroughLayers(int value) {
     return wrapArgThat(value);
+  }
+
+  private int recursiveCall() {
+    Random random = new Random();
+    if ((random.nextInt() % 2) == 0) {
+      return argThat(number -> number >= 0);
+    }
+    return recursiveCall();
   }
 
   static class Foo {
