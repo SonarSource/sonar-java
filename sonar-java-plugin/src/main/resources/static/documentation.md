@@ -97,6 +97,45 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 ### API changes
 
+#### **7.0**
+
+The following deprecated methods have been dropped:
+
+* **`org.sonar.plugins.java.api.JavaFileScannerContext.getFileKey()`**
+
+  The method was deprecated for a long time and still used by Sonar-Security. It's not the case anymore, and the method can be dropped, without replacement.
+
+* **`org.sonar.plugins.java.api.SourceMap.Location.inputFile()`**
+
+  The method has been deprecated a few versions away and was only used by Sonar-Security. It's not used anymore, and the method can be dropped, without replacement.
+
+* **`org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol.overriddenSymbol()`**
+
+  The method has been replaced by `MethodSymbol.overriddenSymbols()`, which provide a list of overridden methods instead of only one.
+
+* **`org.sonar.plugins.java.api.tree.BreakStatementTree.value()`**
+
+  The method was deprecated in SonarJava 6.6. It was added to cover new switch expression of Java 12. The new switch expression was introduced officially in Java 14, using a new `yield` statement instead of relying on `break` statement, leading to the removal of this method.
+
+* **`org.sonar.plugins.java.api.tree.CaseLabelTree.expression()`**
+
+  The method was deprecated since SonarJava 5.12 when introducing support of Java 12, in favor of `CaseLabelTree.expressions()` method.
+
+* **`org.sonar.plugins.java.api.tree.CaseLabelTree.colonToken()`**
+
+  The method was deprecated since SonarJava 5.12 when introducing support of Java 12, in favor of `CaseLabelTree.colonOrArrowToken()` method.
+
+
+* **`org.sonar.plugins.java.api.tree.SwitchStatementTree.asSwitchExpression()`**
+
+  The method was making no sense and starting from SonarJava 6.15, switch expressions have their own distinct interface (`org.sonar.plugins.java.api.tree.SwitchExpressionTree`) and kind (`org.sonar.plugins.java.api.tree.Tree.Kind.SWITCH_EXPRESSION`).
+
+The following classes have been dropped, since all their methods where already deprecated:
+
+* Classes `org.sonar.java.checks.verifier.JavaCheckVerifier` and `org.sonar.java.checks.verifier.MultipleFilesJavaCheckVerifier`.
+
+  All features are new achievable through `CheckVerifier.newVerifier()`.
+
 #### **6.15**
 
 * **Switch representation change in the AST**
