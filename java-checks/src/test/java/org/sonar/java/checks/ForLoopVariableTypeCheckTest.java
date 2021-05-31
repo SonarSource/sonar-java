@@ -19,16 +19,29 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
+
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class ForLoopVariableTypeCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ForLoopVariableTypeCheck.java")
+      .onFile(testSourcesPath("checks/ForLoopVariableTypeCheck.java"))
       .withCheck(new ForLoopVariableTypeCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/ForLoopVariableTypeCheck.java"))
+      .withCheck(new ForLoopVariableTypeCheck())
+      .withClassPath(Collections.emptyList())
+      .verifyIssues();
+  }
+
 }
