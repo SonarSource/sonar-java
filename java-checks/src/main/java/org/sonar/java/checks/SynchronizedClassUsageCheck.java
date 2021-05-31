@@ -56,25 +56,37 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
 
   private final Deque<Set<String>> exclusions = new ArrayDeque<>();
 
+  private final Set<Tree> visited = new HashSet<>();
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE);
+    // We register on compilation units to clear the visited set when scanning a new file
+    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.COMPILATION_UNIT, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE);
   }
 
   @Override
   public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
+      // We clear the visited set when entering every file
+      visited.clear();
+      return;
+    }
     ExclusionsVisitor exclusionsVisitor = new ExclusionsVisitor();
     tree.accept(exclusionsVisitor);
     Set<String> currentClassExclusions = exclusionsVisitor.exclusions;
-    if(!exclusions.isEmpty()) {
+    if (!exclusions.isEmpty()) {
       currentClassExclusions.addAll(exclusions.peek());
     }
     exclusions.push(currentClassExclusions);
     tree.accept(new DeprecatedTypeVisitor());
   }
 
+
   @Override
   public void leaveNode(Tree tree) {
+    if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
+      return;
+    }
     exclusions.pop();
   }
 
@@ -146,6 +158,10 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
     }
 
     private boolean reportIssueOnDeprecatedType(Tree tree, Type type) {
+      if (visited.contains(tree)) {
+        return false;
+      }
+      visited.add(tree);
       if (isDeprecatedType(type)) {
         reportIssue(tree, "Replace the synchronized class \"" + type.name() + "\" by an unsynchronized one such as " + REPLACEMENTS.get(type.fullyQualifiedName()) + ".");
         return true;

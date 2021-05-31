@@ -82,3 +82,13 @@ abstract class StringOrInteger { // Noncompliant
 abstract class Bar { // Compliant
   abstract String name();
 }
+
+@org.immutables.value.Value.Immutable
+abstract class BarWithFullAnnotation { // Compliant
+  abstract String name();
+}
+
+@creedthoughts.org.immutables.value.Value.Immutable
+abstract class BarWithFullAnnotation { // Noncompliant
+  abstract String name();
+}

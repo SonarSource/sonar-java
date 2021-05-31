@@ -19,21 +19,37 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
+
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class SynchronizedClassUsageCheckTest {
 
   @Test
   void detected() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/SynchronizedClassUsageCheck.java")
+      .onFile(testSourcesPath("checks/SynchronizedClassUsageCheck.java"))
       .withCheck(new SynchronizedClassUsageCheck())
       .verifyIssues();
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/SynchronizedClassUsageByAPICheck.java")
+      .onFile(testSourcesPath("checks/SynchronizedClassUsageByAPICheck.java"))
       .withCheck(new SynchronizedClassUsageCheck())
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/SynchronizedClassUsageCheck.java"))
+      .withCheck(new SynchronizedClassUsageCheck())
+      .withClassPath(Collections.emptyList())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/SynchronizedClassUsageByAPICheck.java"))
+      .withCheck(new SynchronizedClassUsageCheck())
+      .withClassPath(Collections.emptyList())
+      .verifyIssues();
+  }
 }

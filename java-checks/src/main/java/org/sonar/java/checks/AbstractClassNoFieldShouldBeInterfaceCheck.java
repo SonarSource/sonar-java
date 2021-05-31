@@ -23,10 +23,12 @@ import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -61,10 +63,10 @@ public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscrip
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     if (classTree.superClass() == null
-            && classIsAbstract(classTree)
-            && classHasNoFieldAndProtectedMethod(classTree)
-            && classHasNoImmutableAnnotation(classTree)
-            && supportPrivateMethod(classTree)) {
+      && classIsAbstract(classTree)
+      && classHasNoFieldAndProtectedMethod(classTree)
+      && classHasNoImmutableAnnotation(classTree)
+      && supportPrivateMethod(classTree)) {
       IdentifierTree simpleName = classTree.simpleName();
       reportIssue(
         simpleName,
@@ -100,7 +102,40 @@ public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscrip
   }
 
   private static boolean classHasNoImmutableAnnotation(ClassTree tree) {
-    SymbolMetadata classMetadata = tree.symbol().metadata();
-    return !classMetadata.isAnnotatedWith(IMMUTABLE_ANNOTATION);
+    List<SymbolMetadata.AnnotationInstance> annotations = tree.symbol().metadata().annotations();
+    if (annotations.isEmpty()) {
+      return true;
+    }
+    for (SymbolMetadata.AnnotationInstance annotation : annotations) {
+      // If semantic is incomplete, we may not be able to resolve the full name on the class annotation.
+      // To reduce FPs, we test for a match on the end of the annotation names
+      Symbol symbol = annotation.symbol();
+      if (symbol.type().is(IMMUTABLE_ANNOTATION) ||
+        (symbol.isUnknown() && matches(symbol.name(), IMMUTABLE_ANNOTATION))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Test if a shorter import path matches a full one.
+   * @param path Shorter input path
+   * @param fullPath Complete import path
+   * @return true if the full path ends with the shorter one, false otherwise
+   */
+  @VisibleForTesting
+  static boolean matches(String path, String fullPath) {
+    String[] fullPathTokens = fullPath.split("[\\.\\$]");
+    String[] pathTokens = path.split("[\\.\\$]");
+    if (fullPathTokens.length < pathTokens.length) {
+      return false;
+    }
+    for (int i = 0; i < pathTokens.length; i++) {
+      if (!pathTokens[pathTokens.length - i - 1].equals(fullPathTokens[fullPathTokens.length - i - 1])) {
+        return false;
+      }
+    }
+    return true;
   }
 }
