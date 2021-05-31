@@ -60,14 +60,14 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    // We register on compilation units to clear the visited data structure when scanning a new file
+    // We register on compilation units to clear the visited set when scanning a new file
     return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.COMPILATION_UNIT, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE);
   }
 
   @Override
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
-      // We clear the visited data structure when entering every file
+      // We clear the visited set when entering every file
       visited.clear();
       return;
     }
@@ -84,9 +84,10 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
-    if (!exclusions.isEmpty()) {
-      exclusions.pop();
+    if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
+      return;
     }
+    exclusions.pop();
   }
 
   private static class ExclusionsVisitor extends BaseTreeVisitor {
