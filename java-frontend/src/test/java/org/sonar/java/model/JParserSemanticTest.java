@@ -1141,6 +1141,7 @@ class JParserSemanticTest {
 
     assertThat(recovered.type().isUnknown()).isTrue();
     assertThat(recovered.declaration()).isNull();
+    assertThat(recovered.overriddenSymbol()).isNull();
     assertThat(recovered.overriddenSymbols()).isEmpty();
     assertThat(recovered.parameterTypes()).isEmpty();
     assertThat(recovered.thrownTypes()).isEmpty();

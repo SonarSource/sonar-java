@@ -67,6 +67,26 @@ class JMethodSymbolTest {
   }
 
   @Test
+  void testOverridenSymbolVSOverridenSymbols() {
+    JavaTree.CompilationUnitTreeImpl cu = test(""
+      + "interface A { void a(); }\n"
+      + "interface B { void a(); }\n"
+      + "class Clazz implements A, B { public void a() {} }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(2);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    JMethodSymbol symbol = cu.sema.methodSymbol(Objects.requireNonNull(m.methodBinding));
+
+    JMethodSymbol aA = retrieveMethodSymbol("A", "a", cu);
+    JMethodSymbol aB = retrieveMethodSymbol("B", "a", cu);
+
+    assertThat(symbol.overriddenSymbol()).isEqualTo(aA);
+    // call it again to not recompute overridden symbols
+    assertThat(symbol.overriddenSymbol()).isEqualTo(aA);
+
+    assertThat(symbol.overriddenSymbols()).containsExactly(aA, aB);
+  }
+
+  @Test
   void testClassInheritanceChainOnlyFindsDirectOverride() {
     JavaTree.CompilationUnitTreeImpl cu = test(""
       + "interface Interface { void a(); }\n"
