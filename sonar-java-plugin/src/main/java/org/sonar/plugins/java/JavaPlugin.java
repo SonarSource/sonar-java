@@ -48,7 +48,7 @@ public class JavaPlugin implements Plugin {
   @Override
   public void define(Context context) {
     List<Object> list = new ArrayList<>();
-    
+
     if (context.getRuntime().getProduct() == SonarProduct.SONARLINT) {
       list.add(ClasspathForMainForSonarLint.class);
     } else {
@@ -71,7 +71,7 @@ public class JavaPlugin implements Plugin {
         .category(JavaConstants.JAVA_CATEGORY)
         .name("File suffixes")
         .multiValues(true)
-        .description("Comma-separated list of suffixes for files to analyze. To not filter, leave the list empty.")
+        .description("List of suffixes for Java files to analyze. To not filter, leave the list empty.")
         .subCategory("General")
         .onQualifiers(Qualifiers.PROJECT)
         .build(),
