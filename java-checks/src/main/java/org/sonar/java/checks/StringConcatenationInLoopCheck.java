@@ -19,6 +19,9 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Deque;
+import java.util.LinkedList;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
@@ -37,9 +40,6 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
-
-import java.util.Deque;
-import java.util.LinkedList;
 
 @Rule(key = "S1643")
 public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -64,6 +64,9 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
 
   private boolean isNotLoopLocalVar(AssignmentExpressionTree tree) {
     IdentifierTree idTree = getIdentifierTree(tree.variable());
+    if (idTree == null) {
+      return false;
+    }
     Tree declaration = idTree.symbol().declaration();
     if (declaration == null) {
       return true;
@@ -89,18 +92,22 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
     return !tree.variable().is(Tree.Kind.ARRAY_ACCESS_EXPRESSION);
   }
 
+  @Nullable
   private static IdentifierTree getIdentifierTree(ExpressionTree tree) {
-    IdentifierTree idTree;
-    if (tree.is(Tree.Kind.MEMBER_SELECT)) {
-      idTree = getIdentifierTree(((MemberSelectExpressionTree) tree).expression());
-    } else if (tree.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
-      idTree = getIdentifierTree(((ArrayAccessExpressionTree) tree).expression());
-    } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-      idTree = getIdentifierTree(((MethodInvocationTree) tree).methodSelect());
-    } else {
-      idTree = (IdentifierTree) tree;
+    tree = ExpressionUtils.skipParentheses(tree);
+    switch (tree.kind()) {
+      case IDENTIFIER:
+        return (IdentifierTree) tree;
+      case MEMBER_SELECT:
+        return getIdentifierTree(((MemberSelectExpressionTree) tree).expression());
+      case ARRAY_ACCESS_EXPRESSION:
+        return getIdentifierTree(((ArrayAccessExpressionTree) tree).expression());
+      case METHOD_INVOCATION:
+        return getIdentifierTree(((MethodInvocationTree) tree).methodSelect());
+      default:
+        // any other unsupported case
+        return null;
     }
-    return idTree;
   }
 
   private static boolean isStringConcatenation(AssignmentExpressionTree tree) {

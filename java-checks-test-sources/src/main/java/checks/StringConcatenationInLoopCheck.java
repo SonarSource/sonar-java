@@ -1,4 +1,6 @@
-class A {
+package checks;
+
+class StringConcatenationInLoopCheck {
 
   static class Inner {
     public String s1;
@@ -46,8 +48,8 @@ class A {
     }
   }
 
-  A[] foo() {
-    return new A[0];
+  StringConcatenationInLoopCheck[] foo() {
+    return new StringConcatenationInLoopCheck[0];
   }
 
   static class MyObject {
@@ -58,4 +60,12 @@ class A {
     }
   }
 
+  void foo(StringConcatenationInLoopCheck p, Object o) {
+    while (true) {
+      (this).field += "abc"; // Noncompliant
+
+      (p = this).field += "abc"; // not supported... unclear how to handle it
+      ((StringConcatenationInLoopCheck) o).field += "abc"; // not supported... unclear how to handle it
+    }
+  }
 }
