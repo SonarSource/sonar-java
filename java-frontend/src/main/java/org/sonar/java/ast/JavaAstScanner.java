@@ -23,6 +23,7 @@ import com.sonar.sslr.api.RecognitionException;
 import java.io.InterruptedIOException;
 import java.time.Clock;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeUnit;
@@ -64,7 +65,8 @@ public class JavaAstScanner {
 
   public void scan(Iterable<? extends InputFile> inputFiles) {
     ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
-    progressReport.start(StreamSupport.stream(inputFiles.spliterator(), false).map(InputFile::toString).collect(Collectors.toList()));
+    List<String> filesNames = StreamSupport.stream(inputFiles.spliterator(), false).map(InputFile::toString).collect(Collectors.toList());
+    progressReport.start(filesNames);
 
     boolean successfullyCompleted = false;
     boolean cancelled = false;
@@ -107,18 +109,8 @@ public class JavaAstScanner {
     visitor.setCurrentFile(inputFile);
     PerformanceMeasure.Duration parseDuration = PerformanceMeasure.start("JParser");
     try {
-      String version;
-      JavaVersion javaVersion = visitor.getJavaVersion();
-      if (javaVersion == null || javaVersion.asInt() < 0) {
-        version = /* default */ JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
-      } else if ("module-info.java".equals(inputFile.filename()) && javaVersion.asInt() <= 8) {
-        logMisconfiguredVersion(inputFile, javaVersion);
-        version = /* default */ JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
-      } else {
-        version = Integer.toString(javaVersion.asInt());
-      }
       JavaTree.CompilationUnitTreeImpl ast = (JavaTree.CompilationUnitTreeImpl) JParser.parse(
-        version,
+        getJavaVersion(Collections.singletonList(inputFile.filename())), // TODO: can this version change? isn't it better to compute it only once?
         inputFile.filename(),
         inputFile.contents(),
         visitor.getClasspath()
@@ -148,13 +140,24 @@ public class JavaAstScanner {
     }
   }
 
+  private String getJavaVersion(List<String> filesNames) {
+    JavaVersion javaVersion = visitor.getJavaVersion();
+    if (javaVersion == null || javaVersion.asInt() < 0) {
+      return JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
+    } else if (filesNames.stream().anyMatch("module-info.java"::equals) && javaVersion.asInt() <= 8) {
+      logMisconfiguredVersion("module-info.java", javaVersion);
+      return JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
+    }
+    return Integer.toString(javaVersion.asInt());
+  }
+
   private void collectUndefinedTypes(Set<String> undefinedTypes) {
     if (sonarComponents != null) {
       sonarComponents.collectUndefinedTypes(undefinedTypes);
     }
   }
 
-  void logMisconfiguredVersion(InputFile inputFile, JavaVersion javaVersion) {
+  void logMisconfiguredVersion(String inputFile, JavaVersion javaVersion) {
     if (!reportedMisconfiguredVersion) {
       LOG.warn(String.format(LOG_WARN_MISCONFIGURED_JAVA_VERSION, inputFile, JavaVersion.SOURCE_VERSION, javaVersion.asInt()));
       reportedMisconfiguredVersion = true;

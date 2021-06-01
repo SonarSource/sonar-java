@@ -270,6 +270,24 @@ public class JParser {
     String source,
     List<File> classpath
   ) {
+    ASTParser astParser = createASTParser(version, classpath);
+
+    astParser.setUnitName(unitName);
+    char[] sourceChars = source.toCharArray();
+    astParser.setSource(sourceChars);
+
+    CompilationUnit astNode;
+    try {
+      astNode = (CompilationUnit) astParser.createAST(null);
+    } catch (Exception e) {
+      LOG.error("ECJ: Unable to parse file", e);
+      throw new RecognitionException(-1, "ECJ: Unable to parse file.", e);
+    }
+
+    return convert(version, unitName, source, astNode);
+  }
+
+  private static ASTParser createASTParser(String version, List<File> classpath) {
     ASTParser astParser = ASTParser.newParser(AST.JLS15);
     Map<String, String> options = new HashMap<>();
     options.put(JavaCore.COMPILER_COMPLIANCE, version);
@@ -291,22 +309,19 @@ public class JParser {
       new String[]{},
       includeRunningVMBootclasspath
     );
-    astParser.setUnitName(unitName);
 
     astParser.setResolveBindings(true);
     astParser.setBindingsRecovery(true);
 
-    char[] sourceChars = source.toCharArray();
-    astParser.setSource(sourceChars);
+    return astParser;
+  }
 
-    CompilationUnit astNode;
-    try {
-      astNode = (CompilationUnit) astParser.createAST(null);
-    } catch (Exception e) {
-      LOG.error("ECJ: Unable to parse file", e);
-      throw new RecognitionException(-1, "ECJ: Unable to parse file.", e);
-    }
-
+  private static CompilationUnitTree convert(
+    String version,
+    String unitName,
+    String source,
+    CompilationUnit astNode
+  ) {
     List<IProblem> errors = Stream.of(astNode.getProblems()).filter(IProblem::isError).collect(Collectors.toList());
     Optional<IProblem> possibleSyntaxError = errors.stream().filter(IS_SYNTAX_ERROR).findFirst();
     if (possibleSyntaxError.isPresent()) {
@@ -327,7 +342,7 @@ public class JParser {
     converter.sema = new JSema(astNode.getAST());
     converter.sema.undefinedTypes.addAll(undefinedTypes);
     converter.compilationUnit = astNode;
-    converter.tokenManager = new TokenManager(lex(version, unitName, sourceChars), source, new DefaultCodeFormatterOptions(new HashMap<>()));
+    converter.tokenManager = new TokenManager(lex(version, unitName, source.toCharArray()), source, new DefaultCodeFormatterOptions(new HashMap<>()));
 
     JavaTree.CompilationUnitTreeImpl tree = converter.convertCompilationUnit(astNode);
     tree.sema = converter.sema;
