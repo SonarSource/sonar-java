@@ -98,8 +98,6 @@
 
     <!-- FIXME: Overrides OSS parent pom for java 16 compatibility -->
     <version.artifactory.plugin>3.2.1</version.artifactory.plugin>
-
-    <sonar.skip>true</sonar.skip>
   </properties>
 
   <dependencyManagement>
