@@ -61,6 +61,11 @@ public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMoc
     .build();
 
   @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    MethodVisitor.cachedResults.clear();
+  }
+
+  @Override
   protected void visitArguments(Arguments arguments) {
     if (arguments.isEmpty()) {
       return;
@@ -95,9 +100,18 @@ public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMoc
       return false;
     }
     MethodInvocationTree invocation = (MethodInvocationTree) unpacked;
-    if (ARGUMENT_CAPTOR.matches(invocation) || ARGUMENT_MARCHER.matches(invocation)) {
-      return true;
-    }
+    return ARGUMENT_CAPTOR.matches(invocation) ||
+      ARGUMENT_MARCHER.matches(invocation) ||
+      returnsAnArgumentMatcher(invocation);
+  }
+
+  /**
+   * Test whether an invoked method eventually returns an argument matcher by checking if all its return paths lead to another method invocation.
+   * The return method invocations are not checked as they are most likely stored in some testing helper out of the file under analysis.
+   * @param invocation The method invocation to explore
+   * @return Whether the method invoked returns something that could be an argument matcher
+   */
+  private static boolean returnsAnArgumentMatcher(MethodInvocationTree invocation) {
     ExpressionTree methodSelect = invocation.methodSelect();
     if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifier = (IdentifierTree) methodSelect;
@@ -112,7 +126,7 @@ public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMoc
       }
       MethodVisitor methodVisitor = new MethodVisitor();
       declaration.accept(methodVisitor);
-      return methodVisitor.returnsAnArgumentMatcher;
+      return methodVisitor.onlyReturnsMethodInvocations;
     }
     return false;
   }
@@ -133,27 +147,21 @@ public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMoc
 
   private static class MethodVisitor extends BaseTreeVisitor {
     static Map<MethodTree, Boolean> cachedResults = new HashMap<>();
-    boolean returnsAnArgumentMatcher = false;
+    boolean onlyReturnsMethodInvocations = false;
 
     @Override
     public void visitMethod(MethodTree tree) {
       if (cachedResults.containsKey(tree)) {
-        returnsAnArgumentMatcher = cachedResults.get(tree);
+        onlyReturnsMethodInvocations = cachedResults.get(tree);
         return;
       }
       cachedResults.put(tree, Boolean.FALSE);
-      List<ExpressionTree> terminalMethodInvocations = tree.block().body().stream()
+      onlyReturnsMethodInvocations = tree.block().body().stream()
         .filter(statement -> statement.is(Tree.Kind.RETURN_STATEMENT))
         .map(ReturnStatementTree.class::cast)
         .map(ReturnStatementTree::expression)
-        .filter(expression -> expression.is(Tree.Kind.METHOD_INVOCATION))
-        .collect(Collectors.toList());
-      if (terminalMethodInvocations.isEmpty()) {
-        return;
-      }
-      returnsAnArgumentMatcher = terminalMethodInvocations.stream()
-        .allMatch(MockitoArgumentMatchersUsedOnAllParametersCheck::isArgumentMatcherLike);
-      cachedResults.put(tree, returnsAnArgumentMatcher);
+        .allMatch(expression -> expression.is(Tree.Kind.METHOD_INVOCATION));
+      cachedResults.put(tree, onlyReturnsMethodInvocations);
     }
   }
 }

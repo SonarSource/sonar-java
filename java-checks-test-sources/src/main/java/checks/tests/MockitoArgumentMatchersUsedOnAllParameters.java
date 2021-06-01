@@ -57,15 +57,6 @@ public class MockitoArgumentMatchersUsedOnAllParameters {
     );
 
     verify(foo).bar(
-      returnRawValueThroughLayers(), // Noncompliant [[sc=7;ec=36]] {{Add an "eq()" argument matcher on this parameter.}}
-      any(), any()
-    );
-
-    verify(foo).bar(
-      recursiveCall(), // Noncompliant , If one the branches of the method invoked returns something else than an argument matcher it is considered non-compliant
-      any(), any());
-
-    verify(foo).bar(
       new Integer("42"), // Noncompliant
       any(), any());
   }
@@ -115,6 +106,19 @@ public class MockitoArgumentMatchersUsedOnAllParameters {
 
     verify(foo).bar(
       wrapThroughLayers(1), // Compliant
+      any(), any());
+
+    verify(foo).bar(
+      wrapThroughLayers(42), // Compliant
+      any(), any());
+
+    verify(foo).bar(
+      returnRawValueThroughLayers(), // Compliant FN, if the method invoked calls another method, we don't go deeper and consider it eventually returns an argument matcher
+      any(), any()
+    );
+
+    verify(foo).bar(
+      recursiveCall(), // Compliant, if the method invoked calls another method, we don't go deeper and consider it eventually returns an argument matcher
       any(), any());
   }
 

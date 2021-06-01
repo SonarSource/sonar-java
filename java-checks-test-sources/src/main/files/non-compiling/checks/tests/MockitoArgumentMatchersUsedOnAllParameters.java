@@ -32,10 +32,6 @@ public class MockitoArgumentMatchersUsedOnAllParameters {
       returnRawValue(), // Noncompliant [[sc=7;ec=23]] {{Add an "eq()" argument matcher on this parameter.}}
       any(), any()
     );
-    verify(foo).bar(
-      returnRawValueThroughLayers(), // Noncompliant [[sc=7;ec=36]] {{Add an "eq()" argument matcher on this parameter.}}
-      any(), any()
-    );
   }
 
   @Test
@@ -58,6 +54,11 @@ public class MockitoArgumentMatchersUsedOnAllParameters {
       any(),
       any()))
       .willReturn(null);
+
+    verify(foo).bar(
+      returnRawValueThroughLayers(),  // Compliant FN, if the method invoked calls another method, we don't go deeper and consider it eventually returns an argument matcher
+      any(), any()
+    );
   }
 
   private int returnRawValue() {
