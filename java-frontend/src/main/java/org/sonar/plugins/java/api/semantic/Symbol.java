@@ -183,6 +183,19 @@ public interface Symbol {
     List<Type> thrownTypes();
 
     /**
+     * Retrieve the overridden symbol. If no overrides are found, null is returned.
+     * Note that an "unknown" method symbol might be returned in case of ambiguities.
+     *
+     * @return the overridden symbol, null if the method is not overriding any method or overriding can not be determined (incomplete semantic)
+     *
+     * @deprecated since SonarJava 6.15, for removal. This method only returns the first symbol that has been overridden, rather than all symbols that are being overridden.
+     *             Use {@link #overriddenSymbols()} to get a list of all symbols
+     */
+    @Nullable
+    @Deprecated
+    Symbol.MethodSymbol overriddenSymbol();
+
+    /**
      * Retrieve the overridden symbols in all the known type hierarchy.
      * Note that it will only returns the symbols which might be determined from known types. The list might therefore not be complete in case of missing dependencies.
      *
