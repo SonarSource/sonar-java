@@ -37,7 +37,7 @@ class MockitoArgumentMatchersUsedOnAllParametersCheckTest {
 
   @Test
   void test_non_compiling() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/tests/MockitoArgumentMatchersUsedOnAllParameters.java"))
       .withCheck(new MockitoArgumentMatchersUsedOnAllParametersCheck())
       .verifyIssues();
