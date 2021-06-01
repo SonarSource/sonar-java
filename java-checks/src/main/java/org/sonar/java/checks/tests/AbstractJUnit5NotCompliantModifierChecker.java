@@ -71,7 +71,8 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
   }
 
   private static boolean isNotOverriding(MethodTree tree) {
-    return !tree.isOverriding();
+    // When it cannot be decided, isOverriding will return null, we consider that it as an override to avoid FP.
+    return Boolean.FALSE.equals(tree.isOverriding());
   }
 
 }
