@@ -55,6 +55,8 @@ public class JavaAstScanner {
     + " Please check that property '%s' is correctly configured (currently set to: %d) or exclude 'module-info.java' files from analysis."
     + " Such files only exist in Java9+ projects.";
 
+  public static final String SONAR_BATCH_MODE_KEY = "sonar.java.internal.batchMode";
+
   private final SonarComponents sonarComponents;
   private VisitorsBridge visitor;
   private boolean reportedMisconfiguredVersion = false;
@@ -67,6 +69,10 @@ public class JavaAstScanner {
     ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
     List<String> filesNames = StreamSupport.stream(inputFiles.spliterator(), false).map(InputFile::toString).collect(Collectors.toList());
     progressReport.start(filesNames);
+
+    if (isBatchModeEnabled()) {
+      String version = getJavaVersion(filesNames);
+    }
 
     boolean successfullyCompleted = false;
     boolean cancelled = false;
@@ -93,6 +99,10 @@ public class JavaAstScanner {
       visitor.endOfAnalysis();
       logUndefinedTypes();
     }
+  }
+
+  public boolean isBatchModeEnabled() {
+    return sonarComponents != null && sonarComponents.isBatchModeEnabled();
   }
 
   private void logUndefinedTypes() {
