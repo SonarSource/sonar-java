@@ -342,9 +342,10 @@ public class JParser {
           ));
         } catch (Exception e) {
           result = new Result(e);
+        } finally {
+          parseDuration.stop();
         }
-        parseDuration.stop();
-
+        
         action.accept(inputFile, result);
 
         executionTimeReport.end();

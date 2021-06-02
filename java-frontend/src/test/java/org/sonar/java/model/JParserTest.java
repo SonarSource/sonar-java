@@ -27,9 +27,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.ProviderNotFoundException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
@@ -37,6 +40,8 @@ import java.util.jar.Manifest;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mockito;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -104,6 +109,56 @@ class JParserTest {
     // import org.foo missing, type Bar unknown
     CompilationUnitTree cut = test("import java.util.List;\n import java.util.ArrayList;\n class Foo {\n void foo(Bar b) {}\n }\n");
     assertThat(((CompilationUnitTreeImpl) cut).sema.undefinedTypes).containsExactlyInAnyOrder("Bar cannot be resolved to a type");
+  }
+
+  @Test
+  void should_rethrow_when_consumer_throws() {
+    RuntimeException expected = new RuntimeException();
+    BiConsumer<InputFile, JParser.Result> consumer = (inputFile, result) -> {
+      throw expected;
+    };
+    InputFile inputFile = Mockito.mock(InputFile.class);
+    Mockito.doReturn("/tmp/Example.java")
+      .when(inputFile).absolutePath();
+
+    List<File> classpath = Collections.emptyList();
+    Set<InputFile> inputFiles = Collections.singleton(inputFile);
+    RuntimeException actual = assertThrows(RuntimeException.class, () ->
+      JParser.parse(
+        JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
+        classpath,
+        inputFiles,
+        () -> false,
+        false,
+        consumer
+      )
+    );
+    assertSame(expected, actual);
+  }
+
+  @Test
+  void consumer_should_receive_exceptions_thrown_during_parsing() throws Exception {
+    List<JParser.Result> results = new ArrayList<>();
+    BiConsumer<InputFile, JParser.Result> consumer = (inputFile, result) -> results.add(result);
+
+    InputFile inputFile = Mockito.mock(InputFile.class);
+    Mockito
+      .doReturn("/tmp/Example.java")
+      .when(inputFile).absolutePath();
+    Mockito
+      .doThrow(IOException.class)
+      .when(inputFile).contents();
+
+    JParser.parse(
+      JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      Collections.emptyList(),
+      Collections.singleton(inputFile),
+      () -> false,
+      false,
+      consumer
+    );
+    JParser.Result result = results.get(0);
+    assertThrows(IOException.class, result::get);
   }
 
   @Test
@@ -219,41 +274,41 @@ class JParserTest {
     try {
       if (!source.exists()) {
         throw new IOException("Source directory is empty");
-        }
-        if (source.isDirectory()) {
-          // For Jar entries, all path separates should be '/'(OS independent)
-          String entryName = baseDir.toPath().relativize(source.toPath()).toFile().getPath().replace("\\", "/");
-          if (!entryName.isEmpty()) {
-            if (!entryName.endsWith("/")) {
-              entryName += "/";
-            }
-            JarEntry entry = new JarEntry(entryName);
-            entry.setTime(source.lastModified());
-            target.putNextEntry(entry);
-            target.closeEntry();
-          }
-          for (File nestedFile : source.listFiles()) {
-            add(nestedFile, baseDir, target);
-          }
-          return;
-        }
-
+      }
+      if (source.isDirectory()) {
+        // For Jar entries, all path separates should be '/'(OS independent)
         String entryName = baseDir.toPath().relativize(source.toPath()).toFile().getPath().replace("\\", "/");
-        JarEntry entry = new JarEntry(entryName);
-        entry.setTime(source.lastModified());
-        target.putNextEntry(entry);
-        in = new BufferedInputStream(new FileInputStream(source));
-
-        byte[] buffer = new byte[1024];
-        while (true) {
-          int count = in.read(buffer);
-          if (count == -1) {
-            break;
+        if (!entryName.isEmpty()) {
+          if (!entryName.endsWith("/")) {
+            entryName += "/";
           }
-          target.write(buffer, 0, count);
+          JarEntry entry = new JarEntry(entryName);
+          entry.setTime(source.lastModified());
+          target.putNextEntry(entry);
+          target.closeEntry();
         }
-        target.closeEntry();
-      } catch (Exception ignored) {
+        for (File nestedFile : source.listFiles()) {
+          add(nestedFile, baseDir, target);
+        }
+        return;
+      }
+
+      String entryName = baseDir.toPath().relativize(source.toPath()).toFile().getPath().replace("\\", "/");
+      JarEntry entry = new JarEntry(entryName);
+      entry.setTime(source.lastModified());
+      target.putNextEntry(entry);
+      in = new BufferedInputStream(new FileInputStream(source));
+
+      byte[] buffer = new byte[1024];
+      while (true) {
+        int count = in.read(buffer);
+        if (count == -1) {
+          break;
+        }
+        target.write(buffer, 0, count);
+      }
+      target.closeEntry();
+    } catch (Exception ignored) {
 
     } finally {
       if (in != null) {
