@@ -20,15 +20,23 @@
 package org.sonar.java.checks.tests;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 
@@ -52,6 +60,11 @@ public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMoc
     .names("capture")
     .addWithoutParametersMatcher()
     .build();
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    MethodVisitor.cachedResults.clear();
+  }
 
   @Override
   protected void visitArguments(Arguments arguments) {
@@ -88,7 +101,38 @@ public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMoc
       return false;
     }
     MethodInvocationTree invocation = (MethodInvocationTree) unpacked;
-    return ARGUMENT_CAPTOR.matches(invocation) || ARGUMENT_MARCHER.matches(invocation);
+    return ARGUMENT_CAPTOR.matches(invocation) ||
+      ARGUMENT_MARCHER.matches(invocation) ||
+      returnsAnArgumentMatcher(invocation);
+  }
+
+  /**
+   * Test whether an invoked method eventually returns an argument matcher by checking if all its return paths lead to another method invocation.
+   * The return method invocations are not checked as they are most likely stored in some testing helper out of the file under analysis.
+   * @param invocation The method invocation to explore
+   * @return Whether the method invoked returns something that could be an argument matcher
+   */
+  private static boolean returnsAnArgumentMatcher(MethodInvocationTree invocation) {
+    ExpressionTree methodSelect = invocation.methodSelect();
+    IdentifierTree identifier = null;
+    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      identifier = ((MemberSelectExpressionTree) methodSelect).identifier();
+    } else {
+      // If not a member select, then it must be an identifier
+      identifier = (IdentifierTree) methodSelect;
+    }
+    Symbol symbol = identifier.symbol();
+    if (symbol.isUnknown()) {
+      return true;
+    }
+    Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
+    MethodTree declaration = methodSymbol.declaration();
+    if (declaration == null) {
+      return false;
+    }
+    MethodVisitor methodVisitor = new MethodVisitor();
+    declaration.accept(methodVisitor);
+    return methodVisitor.onlyReturnsMethodInvocations;
   }
 
   /**
@@ -103,5 +147,25 @@ public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMoc
       current = ExpressionUtils.skipParentheses(cast.expression());
     }
     return current;
+  }
+
+  private static class MethodVisitor extends BaseTreeVisitor {
+    static Map<MethodTree, Boolean> cachedResults = new HashMap<>();
+    boolean onlyReturnsMethodInvocations = false;
+
+    @Override
+    public void visitMethod(MethodTree tree) {
+      if (cachedResults.containsKey(tree)) {
+        onlyReturnsMethodInvocations = cachedResults.get(tree);
+        return;
+      }
+      cachedResults.put(tree, Boolean.FALSE);
+      onlyReturnsMethodInvocations = tree.block().body().stream()
+        .filter(statement -> statement.is(Tree.Kind.RETURN_STATEMENT))
+        .map(ReturnStatementTree.class::cast)
+        .map(ReturnStatementTree::expression)
+        .allMatch(expression -> expression.is(Tree.Kind.METHOD_INVOCATION));
+      cachedResults.put(tree, onlyReturnsMethodInvocations);
+    }
   }
 }

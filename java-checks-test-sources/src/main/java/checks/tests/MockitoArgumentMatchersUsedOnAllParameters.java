@@ -1,6 +1,7 @@
 package checks.tests;
 
 
+import java.util.Random;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
@@ -13,6 +14,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.intThat;
 import static org.mockito.ArgumentMatchers.notNull;
@@ -49,9 +51,13 @@ public class MockitoArgumentMatchersUsedOnAllParameters {
       i1.toString(), // Noncompliant [[sc=7;ec=20]] {{Add an "eq()" argument matcher on this parameter.}}
       any());
 
-    // FP Wrapped argument matcher is masked by behind a method call
     verify(foo).bar(
-      wrapArgumentMatcher(42), // Noncompliant [[sc=7;ec=30]] {{Add an "eq()" argument matcher on this parameter.}}
+      returnRawValue(), // Noncompliant [[sc=7;ec=23]] {{Add an "eq()" argument matcher on this parameter.}}
+      any(), any()
+    );
+
+    verify(foo).bar(
+      new Integer("42"), // Noncompliant
       any(), any());
   }
 
@@ -88,10 +94,80 @@ public class MockitoArgumentMatchersUsedOnAllParameters {
     eq(42);
     anySet();
     anyList();
+
+    // Cases where the method called returns an ArgumentMatcher
+    verify(foo).bar(
+      wrapArgumentMatcher(42), // Compliant
+      any(), any());
+
+    verify(foo).bar(
+      wrapArgThat(1), // Compliant
+      any(), any());
+
+    verify(foo).bar(
+      wrapThroughLayers(1), // Compliant
+      any(), any());
+
+    verify(foo).bar(
+      wrapThroughLayers(42), // Compliant
+      any(), any());
+
+    verify(foo).bar(
+      returnRawValueThroughLayers(), // Compliant FN, if the method invoked calls another method, we don't go deeper and consider it eventually returns an argument matcher
+      any(), any()
+    );
+
+    verify(foo).bar(
+      recursiveCall(), // Compliant, if the method invoked calls another method, we don't go deeper and consider it eventually returns an argument matcher
+      any(), any());
+
+
+    verify(foo).bar(
+      staticallyWrapArgThat(41), // Compliant, if the method invoked calls another method, we don't go deeper and consider it eventually returns an argument matcher
+      any(), any());
+
+    MockitoArgumentMatchersUsedOnAllParameters obj = new MockitoArgumentMatchersUsedOnAllParameters();
+
+    verify(foo).bar(
+      obj.wrapArgThat(41), // Compliant
+      any(), any());
+
+    verify(foo).bar(
+      obj.staticallyWrapArgThat(41), // Compliant
+      any(), any());
+  }
+
+
+  private int returnRawValue() {
+    return 42;
+  }
+
+  private int returnRawValueThroughLayers() {
+    return returnRawValue();
   }
 
   private int wrapArgumentMatcher(int value) {
     return eq(value);
+  }
+
+  private int wrapArgThat(int lowerBound) {
+    return argThat(number -> lowerBound < number);
+  }
+
+  private int wrapThroughLayers(int value) {
+    return wrapArgThat(value);
+  }
+
+  private int recursiveCall() {
+    Random random = new Random();
+    if ((random.nextInt() % 2) == 0) {
+      return argThat(number -> number >= 0);
+    }
+    return recursiveCall();
+  }
+
+  private static int staticallyWrapArgThat(int lowerBound) {
+    return argThat(number -> lowerBound < number);
   }
 
   static class Foo {
