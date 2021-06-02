@@ -66,10 +66,10 @@ public class JavaAstScanner {
   public void scan(Iterable<? extends InputFile> inputFiles) {
     ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
     List<String> filesNames = StreamSupport.stream(inputFiles.spliterator(), false).map(InputFile::toString).collect(Collectors.toList());
+    String version = getJavaVersion(filesNames);
     progressReport.start(filesNames);
 
     if (isBatchModeEnabled()) {
-      String version = getJavaVersion(filesNames);
 
       // TODO: Performance monitoring (ExecutionTimeReport)
       // TODO: progressReport update
@@ -100,7 +100,7 @@ public class JavaAstScanner {
           break;
         }
         executionTimeReport.start(inputFile);
-        simpleScan(inputFile);
+        simpleScan(inputFile, version);
         executionTimeReport.end();
         progressReport.nextFile();
       }
@@ -131,12 +131,12 @@ public class JavaAstScanner {
     return sonarComponents != null && sonarComponents.analysisCancelled();
   }
 
-  private void simpleScan(InputFile inputFile) {
+  private void simpleScan(InputFile inputFile, String version) {
     visitor.setCurrentFile(inputFile);
     PerformanceMeasure.Duration parseDuration = PerformanceMeasure.start("JParser");
     try {
       JavaTree.CompilationUnitTreeImpl ast = (JavaTree.CompilationUnitTreeImpl) JParser.parse(
-        getJavaVersion(Collections.singletonList(inputFile.filename())), // TODO: can this version change? isn't it better to compute it only once?
+        version,
         inputFile.filename(),
         inputFile.contents(),
         visitor.getClasspath()
