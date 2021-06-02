@@ -72,6 +72,24 @@ public class JavaAstScanner {
 
     if (isBatchModeEnabled()) {
       String version = getJavaVersion(filesNames);
+
+      // TODO: Performance monitoring (ExecutionTimeReport)
+      // TODO: progressReport update
+      // TODO: dealing with interruption
+
+      try {
+        JParser.parseBatch(version,
+          visitor.getClasspath(),
+          inputFiles,
+          this::analysisCancelled,
+          this::scanForBatch);
+      } finally {
+        // TODO: do something smarter for this
+        progressReport.stop();
+        visitor.endOfAnalysis();
+        // TODO: logUndefinedTypes(); should we do it here?
+      }
+      return;
     }
 
     boolean successfullyCompleted = false;
@@ -147,6 +165,31 @@ public class JavaAstScanner {
     } finally {
       // redundant stop in case of exception
       parseDuration.stop();
+    }
+  }
+
+  private void scanForBatch(InputFile inputFile, JParser.Result result) {
+    visitor.setCurrentFile(inputFile);
+    try {
+      JavaTree.CompilationUnitTreeImpl ast = result.get();
+      visitor.visitFile(ast);
+      collectUndefinedTypes(ast.sema.undefinedTypes());
+      // release environment used for semantic resolution
+      ast.sema.cleanupEnvironment();
+    } catch (RecognitionException e) {
+      checkInterrupted(e);
+      LOG.error(String.format(LOG_ERROR_UNABLE_TO_PARSE_FILE, inputFile));
+      LOG.error(e.getMessage());
+
+      parseErrorWalkAndVisit(e, inputFile);
+    } catch (AnalysisException e) {
+      throw e;
+    } catch (Exception e) {
+      checkInterrupted(e);
+      interruptIfFailFast(e, inputFile);
+    } catch (StackOverflowError error) {
+      LOG.error(String.format(LOG_ERROR_STACKOVERFLOW, inputFile), error);
+      throw error;
     }
   }
 

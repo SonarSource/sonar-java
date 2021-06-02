@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -80,6 +82,7 @@ import org.eclipse.jdt.core.dom.ExpressionMethodReference;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.FileASTRequestor;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
@@ -156,6 +159,7 @@ import org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
 import org.eclipse.jdt.internal.formatter.DefaultCodeFormatterOptions;
 import org.eclipse.jdt.internal.formatter.Token;
 import org.eclipse.jdt.internal.formatter.TokenManager;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
@@ -260,6 +264,30 @@ public class JParser {
   private static final Predicate<IProblem> IS_SYNTAX_ERROR = error -> (error.getID() & IProblem.Syntax) != 0;
   private static final Predicate<IProblem> IS_UNDEFINED_TYPE_ERROR = error -> (error.getID() & IProblem.UndefinedType) != 0;
 
+  public static class Result {
+    private final Exception e;
+    private final JavaTree.CompilationUnitTreeImpl t;
+
+    Result(Exception e) {
+      this.e = e;
+      this.t = null;
+    }
+
+    Result(JavaTree.CompilationUnitTreeImpl t) {
+      this.e = null;
+      this.t = t;
+    }
+
+    public JavaTree.CompilationUnitTreeImpl get() throws Exception {
+      if (e != null) {
+        System.out.println("Result.get throws an exception");
+        throw e;
+      }
+      System.out.println("Result.get returned a tree");
+      return t;
+    }
+  }
+
   /**
    * @param unitName see {@link ASTParser#setUnitName(String)}
    * @throws RecognitionException in case of syntax errors
@@ -285,6 +313,57 @@ public class JParser {
     }
 
     return convert(version, unitName, source, astNode);
+  }
+
+  public static void parseBatch(
+    String version,
+    List<File> classpath,
+    Iterable<? extends InputFile> inputFiles,
+    BooleanSupplier isCanceled,
+    BiConsumer<InputFile, Result> action
+  ) {
+    System.err.println("Using ECJ batch");
+
+    ASTParser astParser = createASTParser(version, classpath);
+
+    List<String> sourceFilePaths = new ArrayList<>();
+    List<String> encodings = new ArrayList<>();
+    Map<File, InputFile> inputs = new HashMap<>();
+    for (InputFile inputFile : inputFiles) {
+      String sourceFilePath = inputFile.absolutePath();
+      inputs.put(
+        new File(sourceFilePath),
+        inputFile
+      );
+      sourceFilePaths.add(sourceFilePath);
+      encodings.add(inputFile.charset().name());
+    }
+
+    astParser.createASTs(
+      sourceFilePaths.toArray(new String[0]),
+      encodings.toArray(new String[0]),
+      new String[0],
+      new FileASTRequestor() {
+        @Override
+        public void acceptAST(String sourceFilePath, CompilationUnit ast) {
+          System.err.println("Processing " + sourceFilePath);
+          InputFile inputFile = inputs.get(new File(sourceFilePath));
+          Result result;
+          try {
+            result = new Result(convert(
+              version,
+              inputFile.filename(),
+              inputFile.contents(),
+              ast
+            ));
+          } catch (Exception e) {
+            result = new Result(e);
+          }
+          action.accept(inputFile, result);
+        }
+      },
+      null
+    );
   }
 
   private static ASTParser createASTParser(String version, List<File> classpath) {
@@ -316,7 +395,7 @@ public class JParser {
     return astParser;
   }
 
-  private static CompilationUnitTree convert(
+  private static JavaTree.CompilationUnitTreeImpl convert(
     String version,
     String unitName,
     String source,
