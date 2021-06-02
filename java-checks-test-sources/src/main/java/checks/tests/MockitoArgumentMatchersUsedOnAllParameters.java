@@ -120,6 +120,21 @@ public class MockitoArgumentMatchersUsedOnAllParameters {
     verify(foo).bar(
       recursiveCall(), // Compliant, if the method invoked calls another method, we don't go deeper and consider it eventually returns an argument matcher
       any(), any());
+
+
+    verify(foo).bar(
+      staticallyWrapArgThat(41), // Compliant, if the method invoked calls another method, we don't go deeper and consider it eventually returns an argument matcher
+      any(), any());
+
+    MockitoArgumentMatchersUsedOnAllParameters obj = new MockitoArgumentMatchersUsedOnAllParameters();
+
+    verify(foo).bar(
+      obj.wrapArgThat(41), // Compliant
+      any(), any());
+
+    verify(foo).bar(
+      obj.staticallyWrapArgThat(41), // Compliant
+      any(), any());
   }
 
 
@@ -149,6 +164,10 @@ public class MockitoArgumentMatchersUsedOnAllParameters {
       return argThat(number -> number >= 0);
     }
     return recursiveCall();
+  }
+
+  private static int staticallyWrapArgThat(int lowerBound) {
+    return argThat(number -> lowerBound < number);
   }
 
   static class Foo {

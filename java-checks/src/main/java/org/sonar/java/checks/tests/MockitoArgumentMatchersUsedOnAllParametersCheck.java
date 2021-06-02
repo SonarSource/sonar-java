@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
@@ -113,22 +114,25 @@ public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMoc
    */
   private static boolean returnsAnArgumentMatcher(MethodInvocationTree invocation) {
     ExpressionTree methodSelect = invocation.methodSelect();
-    if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree identifier = (IdentifierTree) methodSelect;
-      Symbol symbol = identifier.symbol();
-      if (symbol.isUnknown()) {
-        return true;
-      }
-      Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
-      MethodTree declaration = methodSymbol.declaration();
-      if (declaration == null) {
-        return false;
-      }
-      MethodVisitor methodVisitor = new MethodVisitor();
-      declaration.accept(methodVisitor);
-      return methodVisitor.onlyReturnsMethodInvocations;
+    IdentifierTree identifier = null;
+    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      identifier = ((MemberSelectExpressionTree) methodSelect).identifier();
+    } else {
+      // If not a member select, then it must be an identifier
+      identifier = (IdentifierTree) methodSelect;
     }
-    return false;
+    Symbol symbol = identifier.symbol();
+    if (symbol.isUnknown()) {
+      return true;
+    }
+    Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
+    MethodTree declaration = methodSymbol.declaration();
+    if (declaration == null) {
+      return false;
+    }
+    MethodVisitor methodVisitor = new MethodVisitor();
+    declaration.accept(methodVisitor);
+    return methodVisitor.onlyReturnsMethodInvocations;
   }
 
   /**

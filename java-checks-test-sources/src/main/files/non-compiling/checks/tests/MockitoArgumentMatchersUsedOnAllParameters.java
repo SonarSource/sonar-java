@@ -7,6 +7,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import not.a.real.SomeHelper;
+
 import static org.mockito.AdditionalMatchers.gt;
 import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.AdditionalMatchers.or;
@@ -23,6 +25,9 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static not.a.real.thing.unresolvableMethod;
+import static not.a.real.Helper.wrapArgThat;
 
 public class MockitoArgumentMatchersUsedOnAllParameters {
 
@@ -57,6 +62,16 @@ public class MockitoArgumentMatchersUsedOnAllParameters {
 
     verify(foo).bar(
       returnRawValueThroughLayers(),  // Compliant FN, if the method invoked calls another method, we don't go deeper and consider it eventually returns an argument matcher
+      any(), any()
+    );
+
+    verify(foo).bar(
+      wrapArgThat(), // Compliant
+      any(), any()
+    );
+
+    verify(foo).bar(
+      SomeHelper.wrapArgThat(), // Compliant
       any(), any()
     );
   }
