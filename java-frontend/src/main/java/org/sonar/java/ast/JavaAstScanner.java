@@ -21,12 +21,10 @@ package org.sonar.java.ast;
 
 import com.sonar.sslr.api.RecognitionException;
 import java.io.InterruptedIOException;
-import java.time.Clock;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
@@ -35,8 +33,6 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.AnalysisException;
-import org.sonar.java.ExecutionTimeReport;
-import org.sonar.java.PerformanceMeasure;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.JParser;
@@ -44,7 +40,6 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaVersion;
-import org.sonarsource.analyzer.commons.ProgressReport;
 
 public class JavaAstScanner {
   private static final Logger LOG = Loggers.get(JavaAstScanner.class);
@@ -64,54 +59,16 @@ public class JavaAstScanner {
   }
 
   public void scan(Iterable<? extends InputFile> inputFiles) {
-    ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
     List<String> filesNames = StreamSupport.stream(inputFiles.spliterator(), false).map(InputFile::toString).collect(Collectors.toList());
     String version = getJavaVersion(filesNames);
-    progressReport.start(filesNames);
-
-    if (isBatchModeEnabled()) {
-
-      // TODO: Performance monitoring (ExecutionTimeReport)
-      // TODO: progressReport update
-      // TODO: dealing with interruption
-
-      try {
-        JParser.parseBatch(version,
-          visitor.getClasspath(),
-          inputFiles,
-          this::analysisCancelled,
-          this::scanForBatch);
-      } finally {
-        // TODO: do something smarter for this
-        progressReport.stop();
-        visitor.endOfAnalysis();
-        // TODO: logUndefinedTypes(); should we do it here?
-      }
-      return;
-    }
-
-    boolean successfullyCompleted = false;
-    boolean cancelled = false;
-    ExecutionTimeReport executionTimeReport = new ExecutionTimeReport(Clock.systemUTC());
     try {
-      for (InputFile inputFile : inputFiles) {
-        if (analysisCancelled()) {
-          cancelled = true;
-          break;
-        }
-        executionTimeReport.start(inputFile);
-        simpleScan(inputFile, version);
-        executionTimeReport.end();
-        progressReport.nextFile();
-      }
-      successfullyCompleted = !cancelled;
+      JParser.parse(version,
+        visitor.getClasspath(),
+        inputFiles,
+        this::analysisCancelled,
+        isBatchModeEnabled(),
+        this::simpleScan);
     } finally {
-      if (successfullyCompleted) {
-        progressReport.stop();
-      } else {
-        progressReport.cancel();
-      }
-      executionTimeReport.report();
       visitor.endOfAnalysis();
       logUndefinedTypes();
     }
@@ -131,49 +88,15 @@ public class JavaAstScanner {
     return sonarComponents != null && sonarComponents.analysisCancelled();
   }
 
-  private void simpleScan(InputFile inputFile, String version) {
-    visitor.setCurrentFile(inputFile);
-    PerformanceMeasure.Duration parseDuration = PerformanceMeasure.start("JParser");
-    try {
-      JavaTree.CompilationUnitTreeImpl ast = (JavaTree.CompilationUnitTreeImpl) JParser.parse(
-        version,
-        inputFile.filename(),
-        inputFile.contents(),
-        visitor.getClasspath()
-      );
-      parseDuration.stop();
-      visitor.visitFile(ast);
-      collectUndefinedTypes(ast.sema.undefinedTypes());
-      // release environment used for semantic resolution
-      ast.sema.cleanupEnvironment();
-    } catch (RecognitionException e) {
-      checkInterrupted(e);
-      LOG.error(String.format(LOG_ERROR_UNABLE_TO_PARSE_FILE, inputFile));
-      LOG.error(e.getMessage());
-
-      parseErrorWalkAndVisit(e, inputFile);
-    } catch (AnalysisException e) {
-      throw e;
-    } catch (Exception e) {
-      checkInterrupted(e);
-      interruptIfFailFast(e, inputFile);
-    } catch (StackOverflowError error) {
-      LOG.error(String.format(LOG_ERROR_STACKOVERFLOW, inputFile), error);
-      throw error;
-    } finally {
-      // redundant stop in case of exception
-      parseDuration.stop();
-    }
-  }
-
-  private void scanForBatch(InputFile inputFile, JParser.Result result) {
+  private void simpleScan(InputFile inputFile, JParser.Result result) {
     visitor.setCurrentFile(inputFile);
     try {
       JavaTree.CompilationUnitTreeImpl ast = result.get();
+
       visitor.visitFile(ast);
       collectUndefinedTypes(ast.sema.undefinedTypes());
       // release environment used for semantic resolution
-      ast.sema.cleanupEnvironment();
+      ast.sema.cleanupEnvironment(); // FIXME: Is it correct to do this for batch mode? Do it only once at the end
     } catch (RecognitionException e) {
       checkInterrupted(e);
       LOG.error(String.format(LOG_ERROR_UNABLE_TO_PARSE_FILE, inputFile));
@@ -195,7 +118,7 @@ public class JavaAstScanner {
     JavaVersion javaVersion = visitor.getJavaVersion();
     if (javaVersion == null || javaVersion.asInt() < 0) {
       return JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    } else if (filesNames.stream().anyMatch("module-info.java"::endsWith) && javaVersion.asInt() <= 8) {
+    } else if (filesNames.stream().anyMatch(name -> name.endsWith("module-info.java")) && javaVersion.asInt() <= 8) {
       logMisconfiguredVersion("module-info.java", javaVersion);
       return JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
     }

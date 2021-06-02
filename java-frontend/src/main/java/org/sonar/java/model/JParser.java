@@ -21,6 +21,7 @@ package org.sonar.java.model;
 
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,11 +34,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.eclipse.jdt.core.JavaCore;
@@ -162,6 +165,8 @@ import org.eclipse.jdt.internal.formatter.TokenManager;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonar.java.ExecutionTimeReport;
+import org.sonar.java.PerformanceMeasure;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.ast.parser.BlockStatementListTreeImpl;
 import org.sonar.java.ast.parser.BoundListTreeImpl;
@@ -233,7 +238,6 @@ import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
@@ -249,6 +253,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.ProgressReport;
 
 @ParametersAreNonnullByDefault
 public class JParser {
@@ -288,40 +293,85 @@ public class JParser {
     }
   }
 
-  /**
-   * @param unitName see {@link ASTParser#setUnitName(String)}
-   * @throws RecognitionException in case of syntax errors
-   */
-  public static CompilationUnitTree parse(
+  public static void parse(
     String version,
-    String unitName,
-    String source,
-    List<File> classpath
+    List<File> classpath,
+    Iterable<? extends InputFile> inputFiles,
+    BooleanSupplier isCanceled,
+    boolean batchMode,
+    BiConsumer<InputFile, Result> action
   ) {
-    ASTParser astParser = createASTParser(version, classpath);
-
-    astParser.setUnitName(unitName);
-    char[] sourceChars = source.toCharArray();
-    astParser.setSource(sourceChars);
-
-    CompilationUnit astNode;
-    try {
-      astNode = (CompilationUnit) astParser.createAST(null);
-    } catch (Exception e) {
-      LOG.error("ECJ: Unable to parse file", e);
-      throw new RecognitionException(-1, "ECJ: Unable to parse file.", e);
+    if (batchMode) {
+      batch(version, classpath, inputFiles, isCanceled, action);
+    } else {
+      fileByFile(version, classpath, inputFiles, isCanceled, action);
     }
-
-    return convert(version, unitName, source, astNode);
   }
 
-  public static void parseBatch(
+  private static void fileByFile(
+    String version,
+    List<File> classpath,
+    Iterable<? extends InputFile> inputFiles,
+    BooleanSupplier isCanceled,
+    BiConsumer<InputFile, Result> action) {
+
+    boolean successfullyCompleted = false;
+    boolean cancelled = false;
+
+    ExecutionTimeReport executionTimeReport = new ExecutionTimeReport(Clock.systemUTC());
+    ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
+    // TODO: We already compute this list in JavaAstScanner, get this list though an argument?
+    List<String> filesNames = StreamSupport.stream(inputFiles.spliterator(), false).map(InputFile::toString).collect(Collectors.toList());
+    progressReport.start(filesNames);
+    try {
+      for (InputFile inputFile : inputFiles) {
+        if (isCanceled.getAsBoolean()) {
+          cancelled = true;
+          break;
+        }
+        executionTimeReport.start(inputFile);
+
+        Result result;
+        PerformanceMeasure.Duration parseDuration = PerformanceMeasure.start("JParser");
+        try {
+          result = new Result(parse(
+            version,
+            inputFile.filename(),
+            inputFile.contents(),
+            classpath
+          ));
+        } catch (Exception e) {
+          result = new Result(e);
+        }
+        parseDuration.stop();
+
+        action.accept(inputFile, result);
+
+        executionTimeReport.end();
+        progressReport.nextFile();
+      }
+      successfullyCompleted = !cancelled;
+    } finally {
+      if (successfullyCompleted) {
+        progressReport.stop();
+      } else {
+        progressReport.cancel();
+      }
+      executionTimeReport.report();
+    }
+  }
+
+  public static void batch(
     String version,
     List<File> classpath,
     Iterable<? extends InputFile> inputFiles,
     BooleanSupplier isCanceled,
     BiConsumer<InputFile, Result> action
   ) {
+
+    // TODO: Performance monitoring (ExecutionTimeReport)
+    // TODO: progressReport update
+    // TODO: dealing with interruption
     System.err.println("Using ECJ batch");
 
     ASTParser astParser = createASTParser(version, classpath);
@@ -365,6 +415,34 @@ public class JParser {
       },
       null
     );
+  }
+
+  //TODO: Change visibility of this method
+  /**
+   * @param unitName see {@link ASTParser#setUnitName(String)}
+   * @throws RecognitionException in case of syntax errors
+   */
+  public static JavaTree.CompilationUnitTreeImpl parse(
+    String version,
+    String unitName,
+    String source,
+    List<File> classpath
+  ) {
+    ASTParser astParser = createASTParser(version, classpath);
+
+    astParser.setUnitName(unitName);
+    char[] sourceChars = source.toCharArray();
+    astParser.setSource(sourceChars);
+
+    CompilationUnit astNode;
+    try {
+      astNode = (CompilationUnit) astParser.createAST(null);
+    } catch (Exception e) {
+      LOG.error("ECJ: Unable to parse file", e);
+      throw new RecognitionException(-1, "ECJ: Unable to parse file.", e);
+    }
+
+    return convert(version, unitName, source, astNode);
   }
 
   private static ASTParser createASTParser(String version, List<File> classpath) {
