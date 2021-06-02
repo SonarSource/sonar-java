@@ -55,8 +55,6 @@ public class JavaAstScanner {
     + " Please check that property '%s' is correctly configured (currently set to: %d) or exclude 'module-info.java' files from analysis."
     + " Such files only exist in Java9+ projects.";
 
-  public static final String SONAR_BATCH_MODE_KEY = "sonar.java.internal.batchMode";
-
   private final SonarComponents sonarComponents;
   private VisitorsBridge visitor;
   private boolean reportedMisconfiguredVersion = false;
@@ -119,7 +117,7 @@ public class JavaAstScanner {
     }
   }
 
-  public boolean isBatchModeEnabled() {
+  private boolean isBatchModeEnabled() {
     return sonarComponents != null && sonarComponents.isBatchModeEnabled();
   }
 
@@ -197,7 +195,7 @@ public class JavaAstScanner {
     JavaVersion javaVersion = visitor.getJavaVersion();
     if (javaVersion == null || javaVersion.asInt() < 0) {
       return JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    } else if (filesNames.stream().anyMatch("module-info.java"::equals) && javaVersion.asInt() <= 8) {
+    } else if (filesNames.stream().anyMatch("module-info.java"::endsWith) && javaVersion.asInt() <= 8) {
       logMisconfiguredVersion("module-info.java", javaVersion);
       return JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
     }

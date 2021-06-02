@@ -339,6 +339,7 @@ public class JParser {
       encodings.add(inputFile.charset().name());
     }
 
+    // TODO: catch somehow the exception that this method could throw
     astParser.createASTs(
       sourceFilePaths.toArray(new String[0]),
       encodings.toArray(new String[0]),
