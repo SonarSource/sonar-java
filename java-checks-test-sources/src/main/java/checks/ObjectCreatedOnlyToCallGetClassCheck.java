@@ -3,6 +3,9 @@ package checks;
 import static java.lang.Boolean.TRUE;
 
 class CallGetClassCheck_A {
+
+  private static class B {}
+
   void foo() {
     CallGetClassCheck_A a1 = new CallGetClassCheck_A(); // Noncompliant {{Remove this object instantiation and use "CallGetClassCheck_A.class" instead.}}
     new CallGetClassCheck_B().getClass(); // Noncompliant {{Remove this object instantiation and use "CallGetClassCheck_B.class" instead.}}

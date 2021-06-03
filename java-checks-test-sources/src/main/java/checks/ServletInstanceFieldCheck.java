@@ -37,13 +37,13 @@ class HttpServletB extends HttpServlet {
   }
 }
 
-class C extends Action {
-  
+class HttpServletC extends Action {
+
   private String userName; // Noncompliant
   private static String staticVar; 
   private final String finalVar;
-  
-  public C(String x) {
+
+  public HttpServletC(String x) {
     finalVar = x;
   }
 }
