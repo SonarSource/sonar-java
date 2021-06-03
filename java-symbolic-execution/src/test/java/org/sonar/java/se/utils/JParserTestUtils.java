@@ -23,9 +23,11 @@ import com.google.common.io.Files;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.java.model.JParser;
+import org.sonar.java.model.JProgressMonitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 public class JParserTestUtils {
@@ -67,7 +69,7 @@ public class JParserTestUtils {
   }
 
   public static CompilationUnitTree parse(String unitName, String source, List<File> classpath) {
-    return JParser.parse(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, unitName, source, classpath);
+    return JParser.parse(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, unitName, source, classpath, new JProgressMonitor(Collections.singletonList(unitName)));
   }
 
 }

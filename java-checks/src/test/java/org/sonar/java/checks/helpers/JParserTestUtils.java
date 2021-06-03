@@ -21,11 +21,13 @@ package org.sonar.java.checks.helpers;
 
 import com.google.common.io.Files;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import org.sonar.java.model.JParser;
+import org.sonar.java.model.JProgressMonitor;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -85,7 +87,7 @@ public abstract class JParserTestUtils {
 
   public static CompilationUnitTree parse(String source) {
     List<File> classpath = Arrays.asList(new File("target/test-classes"), new File("target/classes"));
-    return JParser.parse(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, "test", source, classpath);
+    return JParser.parse(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, "test", source, classpath, new JProgressMonitor(Collections.singletonList("test")));
   }
 
 }

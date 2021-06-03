@@ -71,13 +71,8 @@ class JParserTest {
   @Test
   void should_recover_if_parser_fails() {
     List<File> classpath = Collections.singletonList(new File("unknownFile"));
-    assertThrows(
-      RecognitionException.class,
-      () -> JParser.parse(
-        "12",
-        "A",
-        "class A { }",
-        classpath));
+    JProgressMonitor progressMonitor = new JProgressMonitor(Collections.singletonList("unknownFile"));
+    assertThrows(RecognitionException.class, () -> JParser.parse("12", "A", "class A { }", classpath, progressMonitor));
   }
 
   @Test

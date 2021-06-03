@@ -160,7 +160,8 @@ public class JParser {
     String version,
     String unitName,
     String source,
-    List<File> classpath
+    List<File> classpath,
+    JProgressMonitor progressMonitor
   ) {
     ASTParser astParser = ASTParser.newParser(AST.JLS15);
     Map<String, String> options = new HashMap<>();
@@ -193,7 +194,7 @@ public class JParser {
 
     CompilationUnit astNode;
     try {
-      astNode = (CompilationUnit) astParser.createAST(null);
+      astNode = (CompilationUnit) astParser.createAST(progressMonitor);
     } catch (Exception e) {
       LOG.error("ECJ: Unable to parse file", e);
       throw new RecognitionException(-1, "ECJ: Unable to parse file.", e);

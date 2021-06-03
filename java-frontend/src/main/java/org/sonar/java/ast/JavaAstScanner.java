@@ -23,9 +23,9 @@ import com.sonar.sslr.api.RecognitionException;
 import java.io.InterruptedIOException;
 import java.time.Clock;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
@@ -39,11 +39,11 @@ import org.sonar.java.PerformanceMeasure;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.JParser;
+import org.sonar.java.model.JProgressMonitor;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaVersion;
-import org.sonarsource.analyzer.commons.ProgressReport;
 
 public class JavaAstScanner {
   private static final Logger LOG = Loggers.get(JavaAstScanner.class);
@@ -63,8 +63,11 @@ public class JavaAstScanner {
   }
 
   public void scan(Iterable<? extends InputFile> inputFiles) {
-    ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
-    progressReport.start(StreamSupport.stream(inputFiles.spliterator(), false).map(InputFile::toString).collect(Collectors.toList()));
+    List<String> files = StreamSupport.stream(inputFiles.spliterator(), false)
+      .map(InputFile::toString)
+      .collect(Collectors.toList());
+    JProgressMonitor progressMonitor = new JProgressMonitor(files);
+    progressMonitor.start();
 
     boolean successfullyCompleted = false;
     boolean cancelled = false;
@@ -76,16 +79,16 @@ public class JavaAstScanner {
           break;
         }
         executionTimeReport.start(inputFile);
-        simpleScan(inputFile);
+        simpleScan(inputFile, progressMonitor);
         executionTimeReport.end();
-        progressReport.nextFile();
+        progressMonitor.nextFile();
       }
       successfullyCompleted = !cancelled;
     } finally {
       if (successfullyCompleted) {
-        progressReport.stop();
+        progressMonitor.done();
       } else {
-        progressReport.cancel();
+        progressMonitor.cancel();
       }
       executionTimeReport.report();
       visitor.endOfAnalysis();
@@ -103,7 +106,7 @@ public class JavaAstScanner {
     return sonarComponents != null && sonarComponents.analysisCancelled();
   }
 
-  private void simpleScan(InputFile inputFile) {
+  private void simpleScan(InputFile inputFile, JProgressMonitor progressMonitor) {
     visitor.setCurrentFile(inputFile);
     PerformanceMeasure.Duration parseDuration = PerformanceMeasure.start("JParser");
     try {
@@ -121,7 +124,8 @@ public class JavaAstScanner {
         version,
         inputFile.filename(),
         inputFile.contents(),
-        visitor.getClasspath()
+        visitor.getClasspath(),
+        progressMonitor
       );
       parseDuration.stop();
       visitor.visitFile(ast);
