@@ -103,7 +103,7 @@ public class JavaAstScanner {
       visitor.visitFile(ast);
       collectUndefinedTypes(ast.sema.undefinedTypes());
       // release environment used for semantic resolution
-      ast.sema.cleanupEnvironment(); // FIXME: Is it correct to do this for batch mode? Do it only once at the end
+//      ast.sema.cleanupEnvironment(); // FIXME: We should not do it for batch (causes NPE)
     } catch (RecognitionException e) {
       checkInterrupted(e);
       LOG.error(String.format(LOG_ERROR_UNABLE_TO_PARSE_FILE, inputFile));

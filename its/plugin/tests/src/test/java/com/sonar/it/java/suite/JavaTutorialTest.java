@@ -38,6 +38,20 @@ public class JavaTutorialTest {
   public void test() {
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("java-tutorial")).setCleanPackageSonarGoals();
     TestUtils.provisionProject(orchestrator, "org.sonarsource.it.projects:java-tutorial", "java-tutorial", "java", "java-tutorial");
+    executeAndAssertBuild(build);
+  }
+
+  @Test
+  public void test_as_batch_mode() {
+    MavenBuild build = MavenBuild.create(TestUtils.projectPom("java-tutorial"))
+      .setCleanPackageSonarGoals()
+      .setProperty("sonar.java.internal.batchMode", "true")
+      .setProperty("sonar.java.source", "1.5");
+    TestUtils.provisionProject(orchestrator, "org.sonarsource.it.projects:java-tutorial", "java-tutorial", "java", "java-tutorial");
+    executeAndAssertBuild(build);
+  }
+
+  private void executeAndAssertBuild(MavenBuild build) {
     orchestrator.executeBuild(build);
 
     List<Issue> issues = TestUtils.issuesForComponent(orchestrator, "org.sonarsource.it.projects:java-tutorial");
