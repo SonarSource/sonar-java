@@ -96,19 +96,19 @@ class Outer {
   }
 }
 
-class D {
+class RedundantTypeCastCheck_D {
   <T> List<T> genericCast() {
     List<Object> objectList = null;
     return (List<T>) objectList;
   }
 }
 
-class E<T> {
+class RedundantTypeCastCheck_E<T> {
   <K, V> Map<K, Set<V>> secondTypeChangeCast(Map<K, V> multimap) {
     return (Map<K, Set<V>>) (Map<K, ?>) multimap; // Compliant
   }
-  E<List<Object>> typeChangeCast(E<List<String>> list) {
-    return (E<List<Object>>) (E<?>) list; // Compliant
+  RedundantTypeCastCheck_E<List<Object>> typeChangeCast(RedundantTypeCastCheck_E<List<String>> list) {
+    return (RedundantTypeCastCheck_E<List<Object>>) (RedundantTypeCastCheck_E<?>) list; // Compliant
   }
 }
 interface Dto<T> {}
@@ -125,7 +125,7 @@ class CastToRawType {
 
 }
 
-class F<T, K, V> {
+class RedundantTypeCastCheck_F<T, K, V> {
   class Inner<J> {
     J fun(T t) {
       return (J) t;
@@ -150,14 +150,14 @@ class F<T, K, V> {
     return null;
   }
 }
-class G<T> {
+class RedundantTypeCastCheck_G<T> {
 
-  private G<?> resolveSupertype() {
+  private RedundantTypeCastCheck_G<?> resolveSupertype() {
     return null;
   }
 
   void foo() {
-    G<? super T> plop = (G<? super T>) resolveSupertype(); // this works but there is an issue in the returned type of resolveSupertype which returns raw type G instead of G<?>
+    RedundantTypeCastCheck_G<? super T> plop = (RedundantTypeCastCheck_G<? super T>) resolveSupertype(); // this works but there is an issue in the returned type of resolveSupertype which returns raw type RedundantTypeCastCheck_G instead of RedundantTypeCastCheck_G<?>
   }
 
   private int unsafeCompare(Object k1, Object k2) {
@@ -219,53 +219,53 @@ class G<T> {
   }
 }
 
-interface J {
+interface RedundantTypeCastCheck_J {
   default void foo() { }
   default void bar() { }
 
-  interface K extends J {
+  interface K extends RedundantTypeCastCheck_J {
     void foo();
   }
 
-  interface L extends J {
+  interface L extends RedundantTypeCastCheck_J {
     void foobar();
   }
 
   static void test() {
-    J j1 = (K) () -> { }; // compliant : cast is needed for it to be used as a lambda expression
-    J j2 = (L) () -> { }; // compliant : cast is needed for it to be used as a lambda expression
+    RedundantTypeCastCheck_J j1 = (K) () -> { }; // compliant : cast is needed for it to be used as a lambda expression
+    RedundantTypeCastCheck_J j2 = (L) () -> { }; // compliant : cast is needed for it to be used as a lambda expression
   }
 }
 
-interface M {
+interface RedundantTypeCastCheck_M {
   default void foo() { }
   default void bar() { }
   void foobar();
 
-  interface N extends M {
+  interface N extends RedundantTypeCastCheck_M {
     default void foobar() { }
     void foo();
   }
 
-  interface O extends M { }
+  interface O extends RedundantTypeCastCheck_M { }
 
-  interface P extends M {
+  interface P extends RedundantTypeCastCheck_M {
     void foobar();
   }
 
-  interface Q extends M {
+  interface Q extends RedundantTypeCastCheck_M {
     default void foo() { }
   }
 
   static void test() {
-    M m1 = () -> { };
-    M m2 = (M) () -> { }; // FN because we now allow all casts on lambdas to avoid FPs
-    M m3 = (N) () -> { }; // compliant : cast changes method associated to lambda expression
-    M m6 = (Q) () -> { }; // compliant : cast changes default definition of method foo
+    RedundantTypeCastCheck_M m1 = () -> { };
+    RedundantTypeCastCheck_M m2 = (RedundantTypeCastCheck_M) () -> { }; // FN because we now allow all casts on lambdas to avoid FPs
+    RedundantTypeCastCheck_M m3 = (N) () -> { }; // compliant : cast changes method associated to lambda expression
+    RedundantTypeCastCheck_M m6 = (Q) () -> { }; // compliant : cast changes default definition of method foo
   }
 }
 
-class T {
+class RedundantTypeCastCheck_T {
   Predicate<Object> methodReferenceCastNeeded() {
     return ((Predicate<Object>) Objects::nonNull).negate(); // Compliant : cannot call Predicate#negate() without casting it first
   }

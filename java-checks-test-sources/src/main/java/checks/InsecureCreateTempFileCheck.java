@@ -6,6 +6,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 class InsecureCreateTempFileCheck {
+
+  private static class A {}
+
   static File b;
 
   static {

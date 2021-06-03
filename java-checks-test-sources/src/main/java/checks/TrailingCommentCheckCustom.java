@@ -1,6 +1,6 @@
 package checks;
 
-class Foo {
+class TrailingCommentCheckCustom {
   int i = 0,
   // Noncompliant@+1
     j = 0, // This is non-compliant

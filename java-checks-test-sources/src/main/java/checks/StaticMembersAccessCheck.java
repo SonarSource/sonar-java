@@ -23,7 +23,7 @@ class StaticMembersAccessCheckA {
   }
 }
 
-class B {
+class StaticMembersAccessCheckB {
   private StaticMembersAccessCheckA first = new StaticMembersAccessCheckA();
   private StaticMembersAccessCheckA second = new StaticMembersAccessCheckA();
   private StaticMembersAccessCheckA.StaticMembersAccessCheckD third = new StaticMembersAccessCheckA.StaticMembersAccessCheckD();

@@ -11,6 +11,9 @@ import static checks.CatchUsesExceptionWithContextCheck.MyCustomLogger.staticall
 import static checks.CatchUsesExceptionWithContextCheck.Provider.staticallyImportedMethodFromProvider;
 
 class CatchUsesExceptionWithContextCheck {
+
+  private static class A {}
+
   private static final Logger LOGGER = null;
   private static final org.slf4j.Marker MARKER = null;
   private static final java.util.logging.Logger JAVA_LOGGER = null;

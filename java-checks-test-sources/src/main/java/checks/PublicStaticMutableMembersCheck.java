@@ -134,7 +134,7 @@ public class PublicStaticMutableMembersCheck {
   }
 }
 
-interface I {
+interface PublicStaticMutableMembersCheck_I {
   public static String[] MY_ARRAY = null; // Noncompliant {{Move "MY_ARRAY" to a class and lower its visibility}}
   public static Collection<String> MY_COLLECTION = null; // Noncompliant {{Move "MY_COLLECTION" to a class and lower its visibility}}
   public static Collection MY_2ND_COLLECTION = null; // Noncompliant {{Move "MY_2ND_COLLECTION" to a class and lower its visibility}}

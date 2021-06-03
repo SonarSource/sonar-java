@@ -62,7 +62,7 @@ class MissingDeprecatedCheck {
 
 }
 
-interface Bar {
+interface MissingDeprecatedCheck_Bar {
 
   @Deprecated
   int foo(); // Noncompliant
@@ -72,7 +72,7 @@ interface Bar {
 /**
 * @deprecated
 */
-class Qix  { // Noncompliant
+class MissingDeprecatedCheck_Qix  { // Noncompliant
 
   /**
    * @deprecated
