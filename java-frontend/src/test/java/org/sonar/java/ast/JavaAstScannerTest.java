@@ -81,7 +81,7 @@ class JavaAstScannerTest {
     scanTwoFilesWithVisitor(collector);
 
     assertThat(collector.fileNames).containsExactly("Classes.java", "Methods.java");
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).doesNotContain("Using ECJ batch to parse source files.");
+    assertThat(logTester.logs(LoggerLevel.INFO)).doesNotContain("Using ECJ batch to parse source files.");
   }
 
   @Test
@@ -92,7 +92,7 @@ class JavaAstScannerTest {
     scanTwoFilesWithVisitor(collector);
 
     assertThat(collector.fileNames).containsExactly("Classes.java", "Methods.java");
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("Using ECJ batch to parse source files.");
+    assertThat(logTester.logs(LoggerLevel.INFO)).contains("Using ECJ batch to parse source files.");
   }
 
   @Test
