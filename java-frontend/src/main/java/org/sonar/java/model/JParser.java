@@ -356,7 +356,8 @@ public class JParser {
     // TODO: Performance monitoring (ExecutionTimeReport)
     // TODO: progressReport update
     // TODO: dealing with interruption
-    System.err.println("Using ECJ batch");
+
+    LOG.debug("Using ECJ batch to parse source files.");
 
     ASTParser astParser = createASTParser(version, classpath);
 

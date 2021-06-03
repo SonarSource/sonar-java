@@ -33,7 +33,7 @@ public class JParserTestUtils {
     // Utility class
   }
 
-  private static final List<File> DEFAULT_CLASSPATH = Arrays.asList(new File("target/test-classes"), new File("target/classes"));
+  public static final List<File> DEFAULT_CLASSPATH = Arrays.asList(new File("target/test-classes"), new File("target/classes"));
 
   public static CompilationUnitTree parse(File file) {
     return parse(file, DEFAULT_CLASSPATH);

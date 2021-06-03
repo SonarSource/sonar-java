@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.BooleanSupplier;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
@@ -40,14 +41,18 @@ import java.util.jar.Manifest;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.java.TestUtils;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
+import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,6 +60,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+import static org.sonar.java.model.JParserTestUtils.DEFAULT_CLASSPATH;
 
 class JParserTest {
 
@@ -160,6 +169,24 @@ class JParserTest {
   }
 
   @Test
+  void consumer_should_receive_exceptions_thrown_during_parsing_as_batch() throws Exception {
+    List<JParser.Result> results = new ArrayList<>();
+    BiConsumer<InputFile, JParser.Result> consumer = (inputFile, result) -> results.add(result);
+    InputFile inputFile = spy(TestUtils.inputFile("src/test/files/metrics/Classes.java"));
+    when(inputFile.contents()).thenThrow(IOException.class);
+
+    JParser.parseAsBatch(
+      JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      Collections.emptyList(),
+      Collections.singleton(inputFile),
+      () -> false,
+      consumer
+    );
+    JParser.Result result = results.get(0);
+    assertThrows(IOException.class, result::get);
+  }
+
+  @Test
   void eof() {
     {
       CompilationUnitTree t = test("");
@@ -245,6 +272,95 @@ class JParserTest {
     } else {
       assertThat(expected).isInstanceOf(ClassFormatError.class).hasMessage("Truncated class file");
     }
+  }
+
+  @Test
+  void test_parse_file_by_file() throws Exception {
+    List<InputFile> inputFiles = Arrays.asList(TestUtils.inputFile("src/test/files/metrics/Classes.java"),
+      TestUtils.inputFile("src/test/files/metrics/Methods.java"));
+    List<JParser.Result> results = new ArrayList<>();
+    List<InputFile> inputFilesProcessed = new ArrayList<>();
+    JParser.parseFileByFile(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      DEFAULT_CLASSPATH,
+      inputFiles,
+      () -> false, (inputFile, result) -> {
+        results.add(result);
+        inputFilesProcessed.add(inputFile);
+      });
+
+    assertResultsOfParsing(results, inputFilesProcessed);
+  }
+
+  @Test
+  void test_parse_as_batch() throws Exception {
+    List<InputFile> inputFiles = Arrays.asList(TestUtils.inputFile("src/test/files/metrics/Classes.java"),
+      TestUtils.inputFile("src/test/files/metrics/Methods.java"));
+    List<JParser.Result> results = new ArrayList<>();
+    List<InputFile> inputFilesProcessed = new ArrayList<>();
+    JParser.parseAsBatch(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      DEFAULT_CLASSPATH,
+      inputFiles,
+      () -> false, (inputFile, result) -> {
+        results.add(result);
+        inputFilesProcessed.add(inputFile);
+      });
+
+    assertResultsOfParsing(results, inputFilesProcessed);
+  }
+
+  private void assertResultsOfParsing(List<JParser.Result> results, List<InputFile> inputFilesProcessed) throws Exception {
+    assertThat(inputFilesProcessed).hasSize(2);
+    assertThat(inputFilesProcessed.get(0).filename()).isEqualTo("Classes.java");
+    assertThat(inputFilesProcessed.get(1).filename()).isEqualTo("Methods.java");
+
+    assertThat(results).hasSize(2);
+    List<Tree> result1Children = results.get(0).get().children();
+    List<Tree> result2Children = results.get(1).get().children();
+
+    assertThat(result1Children).hasSize(5);
+    assertThat(result2Children).hasSize(6);
+    assertThat(((ClassTreeImpl) result1Children.get(0)).members().get(0)).isInstanceOf(MethodTree.class);
+    assertThat(((ClassTreeImpl) result2Children.get(0)).members()).isNotEmpty().allMatch(m -> m instanceof MethodTree);
+  }
+
+  @Test
+  void test_is_cancelled_is_called_before_each_action_file_by_file() throws Exception {
+    List<InputFile> inputFiles = Arrays.asList(TestUtils.inputFile("src/test/files/metrics/Classes.java"),
+      TestUtils.inputFile("src/test/files/metrics/Methods.java"));
+    BiConsumer<InputFile, JParser.Result> action = spy(new BiConsumer<InputFile, JParser.Result>() {
+      @Override
+      public void accept(InputFile inputFile, JParser.Result result) {
+        // Do nothing
+      }
+    });
+    BooleanSupplier isCancelled = spy(new BooleanSupplier() {
+      @Override
+      public boolean getAsBoolean() {
+        return false;
+      }
+    });
+
+    JParser.parseFileByFile(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH, inputFiles, isCancelled, action);
+
+    InOrder inOrder = Mockito.inOrder(action, isCancelled);
+    inOrder.verify(isCancelled).getAsBoolean();
+    inOrder.verify(action).accept(any(), any());
+    inOrder.verify(isCancelled).getAsBoolean();
+    inOrder.verify(action).accept(any(), any());
+  }
+
+  @Test
+  void test_is_cancelled_is_called_file_by_file() {
+    List<InputFile> inputFiles = Arrays.asList(TestUtils.inputFile("src/test/files/metrics/Classes.java"),
+      TestUtils.inputFile("src/test/files/metrics/Methods.java"));
+    List<JParser.Result> results = new ArrayList<>();
+    JParser.parseFileByFile(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      DEFAULT_CLASSPATH,
+      inputFiles,
+      () -> true,
+      (inputFile, result) -> results.add(result));
+
+    assertThat(results).isEmpty();
   }
 
   private Path createFakeJrtFs(Path tempFolder) throws IOException {

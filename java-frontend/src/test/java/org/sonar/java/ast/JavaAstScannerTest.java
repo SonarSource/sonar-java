@@ -41,6 +41,7 @@ import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.AnalysisException;
+import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.ExceptionHandler;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
@@ -72,6 +73,46 @@ class JavaAstScannerTest {
   @BeforeEach
   public void setUp() throws Exception {
     context = SensorContextTester.create(new File(""));
+  }
+
+  @Test
+  void test_file_by_file_scan() {
+    CollectorScanner collector = new CollectorScanner();
+    scanTwoFilesWithVisitor(collector);
+
+    assertThat(collector.fileNames).containsExactly("Classes.java", "Methods.java");
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).doesNotContain("Using ECJ batch to parse source files.");
+  }
+
+  @Test
+  void test_as_batch_scan() {
+    enableBatchMode();
+
+    CollectorScanner collector = spy(new CollectorScanner());
+    scanTwoFilesWithVisitor(collector);
+
+    assertThat(collector.fileNames).containsExactly("Classes.java", "Methods.java");
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("Using ECJ batch to parse source files.");
+  }
+
+  @Test
+  void test_end_of_analysis_should_be_called_once() {
+    EndOfAnalysisScanner endOfAnalysisScanner = spy(new EndOfAnalysisScanner());
+    scanTwoFilesWithVisitor(endOfAnalysisScanner);
+
+    verify(endOfAnalysisScanner, Mockito.times(2)).scanFile(any());
+    verify(endOfAnalysisScanner, Mockito.times(1)).endOfAnalysis();
+  }
+
+  @Test
+  void test_end_of_analysis_should_be_called_once_with_batch() {
+    enableBatchMode();
+
+    EndOfAnalysisScanner endOfAnalysisScanner = spy(new EndOfAnalysisScanner());
+    scanTwoFilesWithVisitor(endOfAnalysisScanner);
+
+    verify(endOfAnalysisScanner, Mockito.times(2)).scanFile(any());
+    verify(endOfAnalysisScanner, Mockito.times(1)).endOfAnalysis();
   }
 
   @Test
@@ -126,24 +167,15 @@ class JavaAstScannerTest {
   }
 
   @Test
-  void should_handle_analysis_cancellation() throws Exception {
+  void should_handle_analysis_cancellation() {
     JavaFileScanner visitor = spy(new JavaFileScanner() {
       @Override
       public void scanFile(JavaFileScannerContext context) {
         JavaAstScannerTest.this.context.setCancelled(true);
       }
     });
-    DefaultFileSystem fileSystem = context.fileSystem();
-    ClasspathForMain classpathForMain = new ClasspathForMain(context.config(), fileSystem);
-    ClasspathForTest classpathForTest = new ClasspathForTest(context.config(), fileSystem);
-    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, classpathForMain, classpathForTest, null);
-    sonarComponents.setSensorContext(context);
-    JavaAstScanner scanner = new JavaAstScanner(sonarComponents);
-    scanner.setVisitorBridge(new VisitorsBridge(Collections.singletonList(visitor), new ArrayList<>(), sonarComponents));
-    scanner.scan(Arrays.asList(
-      TestUtils.inputFile("src/test/files/metrics/Classes.java"),
-      TestUtils.inputFile("src/test/files/metrics/Methods.java")
-    ));
+
+    scanTwoFilesWithVisitor(visitor);
 
     verify(visitor, Mockito.times(1))
       .scanFile(any());
@@ -269,6 +301,26 @@ class JavaAstScannerTest {
     JavaAstScanner.scanSingleFileForTests(file, visitorsBridge, new JavaVersionImpl(), sonarComponents);
   }
 
+  private void enableBatchMode() {
+    MapSettings settings = mock(MapSettings.class);
+    when(settings.getString(SonarComponents.SONAR_BATCH_MODE_KEY)).thenReturn("true");
+    context.setSettings(settings);
+  }
+
+  private void scanTwoFilesWithVisitor(JavaFileScanner visitor) {
+    DefaultFileSystem fileSystem = context.fileSystem();
+    ClasspathForMain classpathForMain = new ClasspathForMain(context.config(), fileSystem);
+    ClasspathForTest classpathForTest = new ClasspathForTest(context.config(), fileSystem);
+    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, classpathForMain, classpathForTest, null);
+    sonarComponents.setSensorContext(context);
+    JavaAstScanner scanner = new JavaAstScanner(sonarComponents);
+    scanner.setVisitorBridge(new VisitorsBridge(Collections.singletonList(visitor), new ArrayList<>(), sonarComponents));
+    scanner.scan(Arrays.asList(
+      TestUtils.inputFile("src/test/files/metrics/Classes.java"),
+      TestUtils.inputFile("src/test/files/metrics/Methods.java")
+    ));
+  }
+
   private static class CheckThrowingSOError implements JavaFileScanner {
 
     @Override
@@ -327,6 +379,26 @@ class JavaAstScannerTest {
     @Override
     public void scanFile(JavaFileScannerContext context) {
 
+    }
+  }
+
+  private static class CollectorScanner implements JavaFileScanner {
+    List<String> fileNames = new ArrayList<>();
+    @Override
+    public void scanFile(JavaFileScannerContext context) {
+      fileNames.add(context.getInputFile().filename());
+    }
+  }
+
+  private static class EndOfAnalysisScanner implements JavaFileScanner, EndOfAnalysisCheck {
+    @Override
+    public void scanFile(JavaFileScannerContext context) {
+      // Do nothing
+    }
+
+    @Override
+    public void endOfAnalysis() {
+      // Do nothing
     }
   }
 }
