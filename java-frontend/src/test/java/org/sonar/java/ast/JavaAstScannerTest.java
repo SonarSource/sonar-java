@@ -182,6 +182,21 @@ class JavaAstScannerTest {
     verifyNoMoreInteractions(visitor);
   }
 
+  @Test
+  void test_should_use_java_version() {
+    scanWithJavaVersion(16, Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/Java15SwitchExpression.java")));
+    assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
+  }
+
+  @Test
+  void test_should_log_fail_parsing_with_incorrect_version() {
+    scanWithJavaVersion(8, Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/Java15SwitchExpression.java")));
+    assertThat(logTester.logs(LoggerLevel.ERROR)).containsExactly(
+      "Unable to parse source file : 'src/test/files/metrics/Java15SwitchExpression.java'",
+      "Parse error at line 3 column 12: Switch Expressions are supported from Java 14 onwards only"
+    );
+  }
+
   @ParameterizedTest
   @ValueSource(classes = {
     InterruptedException.class,
@@ -254,19 +269,11 @@ class JavaAstScannerTest {
 
   @Test
   void should_report_misconfigured_java_version() {
-    VisitorsBridge visitorsBridge = new VisitorsBridge(new JavaFileScanner() {
-      @Override
-      public void scanFile(JavaFileScannerContext context) { /* do nothing */ }
-    });
-    visitorsBridge.setJavaVersion(new JavaVersionImpl(8));
-
-    InputFile inputFile = TestUtils.inputFile("src/test/resources/module-info.java");
-    List<InputFile> files = Arrays.asList(inputFile, inputFile);
-
-    JavaAstScanner scanner = new JavaAstScanner(null);
-    scanner.setVisitorBridge(visitorsBridge);
-    scanner.scan(files);
-
+    scanWithJavaVersion(8,
+      Arrays.asList(
+        TestUtils.inputFile("src/test/files/metrics/Java15SwitchExpression.java"),
+        TestUtils.inputFile("src/test/resources/module-info.java")
+      ));
     assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.WARN))
       // two files, only one log
@@ -275,6 +282,17 @@ class JavaAstScannerTest {
       .allMatch(log -> log.endsWith("module-info.java' file with misconfigured Java version."
         + " Please check that property 'sonar.java.source' is correctly configured (currently set to: 8) or exclude 'module-info.java' files from analysis."
         + " Such files only exist in Java9+ projects."));
+  }
+
+  @Test
+  void test_module_info_no_warning_with_recent_java_version() {
+    scanWithJavaVersion(16,
+      Arrays.asList(
+        TestUtils.inputFile("src/test/files/metrics/Java15SwitchExpression.java"),
+        TestUtils.inputFile("src/test/resources/module-info.java")
+      ));
+    assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.WARN)).isEmpty();
   }
 
   @Test
@@ -308,17 +326,27 @@ class JavaAstScannerTest {
   }
 
   private void scanTwoFilesWithVisitor(JavaFileScanner visitor) {
+    scanWithJavaVersion(-1, Arrays.asList(
+      TestUtils.inputFile("src/test/files/metrics/Classes.java"),
+      TestUtils.inputFile("src/test/files/metrics/Methods.java")
+    ), Collections.singletonList(visitor));
+  }
+
+  private void scanWithJavaVersion(int version, List<InputFile> inputFiles) {
+    scanWithJavaVersion(version, inputFiles, Collections.emptyList());
+  }
+
+  private void scanWithJavaVersion(int version, List<InputFile> inputFiles, List<JavaFileScanner> visitors) {
     DefaultFileSystem fileSystem = context.fileSystem();
     ClasspathForMain classpathForMain = new ClasspathForMain(context.config(), fileSystem);
     ClasspathForTest classpathForTest = new ClasspathForTest(context.config(), fileSystem);
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, classpathForMain, classpathForTest, null);
     sonarComponents.setSensorContext(context);
     JavaAstScanner scanner = new JavaAstScanner(sonarComponents);
-    scanner.setVisitorBridge(new VisitorsBridge(Collections.singletonList(visitor), new ArrayList<>(), sonarComponents));
-    scanner.scan(Arrays.asList(
-      TestUtils.inputFile("src/test/files/metrics/Classes.java"),
-      TestUtils.inputFile("src/test/files/metrics/Methods.java")
-    ));
+    VisitorsBridge visitorBridge = new VisitorsBridge(visitors, new ArrayList<>(), sonarComponents);
+    visitorBridge.setJavaVersion(new JavaVersionImpl(version));
+    scanner.setVisitorBridge(visitorBridge);
+    scanner.scan(inputFiles);
   }
 
   private static class CheckThrowingSOError implements JavaFileScanner {

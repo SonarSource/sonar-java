@@ -60,6 +60,8 @@ public class JavaAstScanner {
 
   public void scan(Iterable<? extends InputFile> inputFiles) {
     List<String> filesNames = StreamSupport.stream(inputFiles.spliterator(), false).map(InputFile::filename).collect(Collectors.toList());
+    // FIXME: We now compute the version only once for the whole project. What if a user has a forgotten module-info.java in his project with Java < 9?
+    // We will force the analysis to run with java 16, with no way to change this...
     String version = getJavaVersion(filesNames);
     try {
       if (isBatchModeEnabled()) {
