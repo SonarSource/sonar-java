@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.java.checks.helpers.UnitTestUtils;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -36,6 +37,7 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
 
   protected abstract void raiseIssueOnNotCompliantReturnType(MethodTree methodTree);
 
+  @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.CLASS);
   }
@@ -46,9 +48,12 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
     if (classTree.symbol().isAbstract()) {
       return;
     }
-    List<MethodTree> testMethods = classTree.members().stream()
+    List<MethodTree> methods = classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
+      .collect(Collectors.toList());
+
+    List<MethodTree> testMethods = methods.stream()
       .filter(UnitTestUtils::hasJUnit5TestAnnotation)
       .filter(AbstractJUnit5NotCompliantModifierChecker::isNotOverriding)
       .collect(Collectors.toList());
@@ -58,9 +63,21 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
       raiseIssueOnNotCompliantReturnType(testMethod);
     }
 
+    methods.removeAll(testMethods);
+    if (methods.stream()
+      .map(MethodTree::modifiers)
+      .anyMatch(AbstractJUnit5NotCompliantModifierChecker::isPublicStaticMethod)) {
+      // if there is public static methods, we can not ask for a change of visibility of the class
+      return;
+    }
+
     if (!testMethods.isEmpty()) {
       raiseIssueOnNotCompliantModifiers(classTree.modifiers(), false);
     }
+  }
+
+  private static boolean isPublicStaticMethod(ModifiersTree modifiers) {
+    return ModifiersUtils.hasModifier(modifiers, Modifier.PUBLIC) && ModifiersUtils.hasModifier(modifiers, Modifier.STATIC);
   }
 
   private void raiseIssueOnNotCompliantModifiers(ModifiersTree modifierTree, boolean isMethod) {
