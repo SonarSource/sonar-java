@@ -124,12 +124,11 @@ class JParserTest {
     List<File> classpath = Collections.emptyList();
     Set<InputFile> inputFiles = Collections.singleton(inputFile);
     RuntimeException actual = assertThrows(RuntimeException.class, () ->
-      JParser.parse(
+      JParser.parseFileByFile(
         JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
         classpath,
         inputFiles,
         () -> false,
-        false,
         consumer
       )
     );
@@ -149,12 +148,11 @@ class JParserTest {
       .doThrow(IOException.class)
       .when(inputFile).contents();
 
-    JParser.parse(
+    JParser.parseFileByFile(
       JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
       Collections.emptyList(),
       Collections.singleton(inputFile),
       () -> false,
-      false,
       consumer
     );
     JParser.Result result = results.get(0);

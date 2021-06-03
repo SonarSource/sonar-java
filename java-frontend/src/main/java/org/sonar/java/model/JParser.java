@@ -167,6 +167,7 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.ExecutionTimeReport;
 import org.sonar.java.PerformanceMeasure;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.ast.parser.BlockStatementListTreeImpl;
 import org.sonar.java.ast.parser.BoundListTreeImpl;
@@ -285,30 +286,13 @@ public class JParser {
 
     public JavaTree.CompilationUnitTreeImpl get() throws Exception {
       if (e != null) {
-        System.out.println("Result.get throws an exception");
         throw e;
       }
-      System.out.println("Result.get returned a tree");
       return t;
     }
   }
 
-  public static void parse(
-    String version,
-    List<File> classpath,
-    Iterable<? extends InputFile> inputFiles,
-    BooleanSupplier isCanceled,
-    boolean batchMode,
-    BiConsumer<InputFile, Result> action
-  ) {
-    if (batchMode) {
-      batch(version, classpath, inputFiles, isCanceled, action);
-    } else {
-      fileByFile(version, classpath, inputFiles, isCanceled, action);
-    }
-  }
-
-  private static void fileByFile(
+  public static void parseFileByFile(
     String version,
     List<File> classpath,
     Iterable<? extends InputFile> inputFiles,
@@ -320,7 +304,6 @@ public class JParser {
 
     ExecutionTimeReport executionTimeReport = new ExecutionTimeReport(Clock.systemUTC());
     ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
-    // TODO: We already compute this list in JavaAstScanner, get this list though an argument?
     List<String> filesNames = StreamSupport.stream(inputFiles.spliterator(), false).map(InputFile::toString).collect(Collectors.toList());
     progressReport.start(filesNames);
     try {
@@ -362,7 +345,7 @@ public class JParser {
     }
   }
 
-  public static void batch(
+  public static void parseAsBatch(
     String version,
     List<File> classpath,
     Iterable<? extends InputFile> inputFiles,
@@ -418,11 +401,11 @@ public class JParser {
     );
   }
 
-  //TODO: Change visibility of this method
   /**
    * @param unitName see {@link ASTParser#setUnitName(String)}
    * @throws RecognitionException in case of syntax errors
    */
+  @VisibleForTesting
   public static JavaTree.CompilationUnitTreeImpl parse(
     String version,
     String unitName,

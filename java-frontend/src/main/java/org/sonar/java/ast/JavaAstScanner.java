@@ -59,15 +59,22 @@ public class JavaAstScanner {
   }
 
   public void scan(Iterable<? extends InputFile> inputFiles) {
-    List<String> filesNames = StreamSupport.stream(inputFiles.spliterator(), false).map(InputFile::toString).collect(Collectors.toList());
+    List<String> filesNames = StreamSupport.stream(inputFiles.spliterator(), false).map(InputFile::filename).collect(Collectors.toList());
     String version = getJavaVersion(filesNames);
     try {
-      JParser.parse(version,
-        visitor.getClasspath(),
-        inputFiles,
-        this::analysisCancelled,
-        isBatchModeEnabled(),
-        this::simpleScan);
+      if (isBatchModeEnabled()) {
+        JParser.parseAsBatch(version,
+          visitor.getClasspath(),
+          inputFiles,
+          this::analysisCancelled,
+          this::simpleScan);
+      } else {
+        JParser.parseFileByFile(version,
+          visitor.getClasspath(),
+          inputFiles,
+          this::analysisCancelled,
+          this::simpleScan);
+      }
     } finally {
       visitor.endOfAnalysis();
       logUndefinedTypes();
@@ -118,7 +125,7 @@ public class JavaAstScanner {
     JavaVersion javaVersion = visitor.getJavaVersion();
     if (javaVersion == null || javaVersion.asInt() < 0) {
       return JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    } else if (filesNames.stream().anyMatch(name -> name.endsWith("module-info.java")) && javaVersion.asInt() <= 8) {
+    } else if (filesNames.stream().anyMatch(name -> name.equals("module-info.java")) && javaVersion.asInt() <= 8) {
       logMisconfiguredVersion("module-info.java", javaVersion);
       return JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
     }
