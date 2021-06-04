@@ -28,8 +28,6 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.ParenthesizedTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 
@@ -71,17 +69,13 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean matchesWarning(JWarning warning, TypeCastTree tree) {
-    SyntaxToken startToken = tree.openParenToken();
-    // When a cast expression is nested inside one or more parenthesized expression, Eclipse raises the warning on
-    // the outermost parenthesized expression rather than the cast expression, so we need to take that into account
-    if (tree.parent().is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      ParenthesizedTree parent = (ParenthesizedTree) tree.parent();
-      while (parent.parent().is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-        parent = (ParenthesizedTree) parent.parent();
-      }
-      startToken = parent.openParenToken();
+    Tree warningTree = warning.syntaxTree();
+    if (warningTree.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
+      // When a cast expression is nested inside one or more parenthesized expression, Eclipse raises the warning on
+      // the outermost parenthesized expression rather than the cast expression, so we need to take that into account
+      return tree.equals(skipParentheses(warningTree));
     }
-    return warning.getStartLine() == startToken.line() && warning.getStartColumn() == startToken.column();
+    return tree.equals(warningTree);
   }
 
 }

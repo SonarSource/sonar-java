@@ -31,7 +31,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JWarning;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -84,7 +83,7 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
 
   private void handleWarnings(List<JWarning> warnings) {
     for (JWarning warning : warnings) {
-      Matcher matcher = COMPILER_WARNING.matcher(warning.getMessage());
+      Matcher matcher = COMPILER_WARNING.matcher(warning.message());
       Optional<String> fqn = matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
       fqn.ifPresent(importName -> {
         if (!usedInJavaDoc.contains(importName) && !importName.startsWith("java.lang")) {
@@ -96,7 +95,7 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
           } else {
             message = "Remove this unused import '" + importName + "'.";
           }
-          ((DefaultJavaFileScannerContext) context).reportIssue(this, warning, message);
+          reportIssue(((ImportTree) warning.syntaxTree()).qualifiedIdentifier(), message);
         }
       });
     }
@@ -110,7 +109,7 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
       importsNames.put(importName, extractLastClassName(importName));
     }
     if (isJavaLangImport(importName)) {
-      context.reportIssue(this, importTree, "Remove this unnecessary import: java.lang classes are always implicitly imported.");
+      reportIssue(importTree.qualifiedIdentifier(), "Remove this unnecessary import: java.lang classes are always implicitly imported.");
     }
   }
 
