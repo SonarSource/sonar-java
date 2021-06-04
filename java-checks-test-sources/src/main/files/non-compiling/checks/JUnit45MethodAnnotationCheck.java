@@ -9,6 +9,6 @@ class JUnit45MethodAnnotationCheck_JUnit4_Extends_Unknown extends Unknown {
 class JUnit45MethodAnnotationCheck_JUnit4_Extends_Unknown_FP extends Unknown {
   @org.junit.Test void test() { }
 
-  // FP, due to incomplete semantic, no way to known if this is an override or not.
-  public void setUp() { } // Noncompliant
+  // Due to incomplete semantic, no way to known if this is an override or not.
+  public void setUp() { } // Compliant
 }

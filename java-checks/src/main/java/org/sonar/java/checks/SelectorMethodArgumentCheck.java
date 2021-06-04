@@ -51,7 +51,8 @@ public class SelectorMethodArgumentCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (Boolean.TRUE.equals(methodTree.isOverriding())) {
+    if (!Boolean.FALSE.equals(methodTree.isOverriding())) {
+      // In case it can not be determined (isOverriding returns null), consider as overriding to avoid FP.
       return;
     }
     List<Symbol> booleanParameterSymbols = getBooleanParametersAsSymbol(methodTree.parameters());

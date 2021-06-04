@@ -97,8 +97,8 @@ public class JUnit45MethodAnnotationCheck extends IssuableSubscriptionVisitor {
 
   private void checkSetupTearDownSignature(MethodTree methodTree, int jUnitVersion) {
     Symbol.MethodSymbol symbol = methodTree.symbol();
-    if (Boolean.TRUE.equals(methodTree.isOverriding())) {
-      // Annotation can be in a parent.
+    if (!Boolean.FALSE.equals(methodTree.isOverriding())) {
+      // Annotation can be in a parent. If unknown (null), consider has override to avoid FP.
       return;
     }
 

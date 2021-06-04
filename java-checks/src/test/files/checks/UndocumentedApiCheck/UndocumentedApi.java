@@ -94,20 +94,20 @@ public class MyClass<T> implements Runnable {    // Noncompliant {{Document the 
    * Valid descriptions.
    * @param value Valid descriptions.
    */
- public void doSomething(int value) {           // Compliant
+ public void doSomething1(int value) {           // Compliant
  }
 
  /**
   * Valid descriptions.
   * @return foo Valid descriptions.
    */
- public int doSomething(int value) {            // Noncompliant {{Document the parameter(s): value}}
+ public int doSomething2(int value) {            // Noncompliant {{Document the parameter(s): value}}
    return value;
  }
 
  /** Valid descriptions.
   *  */
- public int doSomething() {                     // Noncompliant {{Document this method return value.}}
+ public int doSomething3() {                     // Noncompliant {{Document this method return value.}}
    return value;
  }
 }
@@ -121,17 +121,17 @@ interface FooInterface {
 
   /**
    * Valid descriptions. */
-  int foo(); // Noncompliant
+  int foo1(); // Noncompliant
 
   /**
    * Valid descriptions.
    * @return Valid descriptions.
    */
-  int foo(); // Compliant
+  int foo2(); // Compliant
 
   /** Valid descriptions.
    */
-  void foo(int a); // Noncompliant {{Document the parameter(s): a}}
+  void foo3(int a); // Noncompliant {{Document the parameter(s): a}}
 }
 
 /**
@@ -165,12 +165,12 @@ public class Foo { // Compliant
   // Noncompliant@+3
   /** Valid descriptions.
    */
-  public int foo(int a, int b, int c) { // Noncompliant
+  public int foo1(int a, int b, int c) { // Noncompliant
     return 0;
   }
 
 
-  public int foo(int a, int b, int c) { // Noncompliant {{Document this public method by adding an explicit description.}}
+  public int foo2(int a, int b, int c) { // Noncompliant {{Document this public method by adding an explicit description.}}
     return 0;
   }
 
@@ -178,10 +178,10 @@ public class Foo { // Compliant
     * Valid descriptions.
     * @param <T> foo
     */
-  public <T> void foo() { // Compliant - does not return anything
+  public <T> void foo3() { // Compliant - does not return anything
   }
 
-  public <T> void foo() { // Noncompliant {{Document this public method by adding an explicit description.}}
+  public <T> void foo4() { // Noncompliant {{Document this public method by adding an explicit description.}}
   }
 
   /**
@@ -262,7 +262,7 @@ public class MyRunner extends Foo {
   /**
    * {@inheritDoc}
    */
-  public int foo(int a, int b, int c) { // Compliant
+  public int foo1(int a, int b, int c) { // Compliant
     return 0;
   }
 
@@ -347,8 +347,8 @@ public class DeprecatedAPI { //Compliant
   public void bar() {} // Noncompliant
 
   @Deprecated
-  public void foo() {} // Compliant
+  public void foo1() {} // Compliant
 
   @org.foo.qix.Deprecated
-  public void foo() {} // Noncompliant
+  public void foo2() {} // Noncompliant
 }

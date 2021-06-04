@@ -44,7 +44,7 @@ public class WildcardReturnParameterTypeCheck extends IssuableSubscriptionVisito
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (!isPrivate(methodTree) && !isOverriding(methodTree)) {
+    if (!isPrivate(methodTree) && isNotOverriding(methodTree)) {
       methodTree.returnType().accept(new CheckWildcard());
     }
   }
@@ -53,8 +53,8 @@ public class WildcardReturnParameterTypeCheck extends IssuableSubscriptionVisito
     return ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PRIVATE);
   }
 
-  private static boolean isOverriding(MethodTree tree) {
-    return Boolean.TRUE.equals(tree.isOverriding());
+  private static boolean isNotOverriding(MethodTree tree) {
+    return Boolean.FALSE.equals(tree.isOverriding());
   }
 
   private class CheckWildcard extends BaseTreeVisitor {

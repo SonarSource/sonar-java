@@ -40,7 +40,7 @@ class JUnit45MethodAnnotationCheckTest {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/JUnit45MethodAnnotationCheck.java"))
       .withCheck(new JUnit45MethodAnnotationCheck())
-      .verifyIssues();
+      .verifyNoIssues();
   }
 
 }
