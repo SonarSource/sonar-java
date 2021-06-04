@@ -23,9 +23,8 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.checks.AbstractClassNoFieldShouldBeInterfaceCheck.matches;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class AbstractClassNoFieldShouldBeInterfaceCheckTest {
 
@@ -44,7 +43,7 @@ class AbstractClassNoFieldShouldBeInterfaceCheckTest {
   @Test
   void test_with_java_7() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath(TEST_FILE))
+      .onFile(testSourcesPath(TEST_FILE))
       .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
       .withJavaVersion(7)
       .verifyNoIssues();
@@ -53,7 +52,7 @@ class AbstractClassNoFieldShouldBeInterfaceCheckTest {
   @Test
   void test_with_java_8() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath(TEST_FILE))
+      .onFile(testSourcesPath(TEST_FILE))
       .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
       .withJavaVersion(8)
       .verifyIssues();
@@ -106,11 +105,5 @@ class AbstractClassNoFieldShouldBeInterfaceCheckTest {
       .withJavaVersion(9)
       .withClassPath(Collections.emptyList())
       .verifyIssues();
-  }
-
-  @Test
-  void test_path_match() {
-    assertThat(matches("Value.Immutable", "org.immutables.value.Value.Immutable")).isTrue();
-    assertThat(matches("creedthoughts.org.immutables.value.Value.Immutable", "org.immutables.value.Value.Immutable")).isFalse();
   }
 }

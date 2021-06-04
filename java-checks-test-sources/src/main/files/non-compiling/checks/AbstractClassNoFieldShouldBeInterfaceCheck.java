@@ -1,34 +1,36 @@
+package checks;
+
 import com.google.auto.value.AutoOneOf;
 import com.google.auto.value.AutoValue;
 import org.immutables.value.Value;
 
-abstract class A {
+abstract class AbstractClassNoFieldShouldBeInterfaceCheckA {
   private int b;
 
   abstract void method();
 }
-abstract class B { // Noncompliant [[sc=16;ec=17]] {{Convert the abstract class "B" into an interface.}}
+abstract class AbstractClassNoFieldShouldBeInterfaceCheckB { // Noncompliant [[sc=16;ec=59]] {{Convert the abstract class "AbstractClassNoFieldShouldBeInterfaceCheckB" into an interface.}}
   int method(){
     return 1;
   }
-  class F {}
+  class AbstractClassNoFieldShouldBeInterfaceCheckF {}
 }
-class C {
+class AbstractClassNoFieldShouldBeInterfaceCheckC {
   int method(){
     return 1;
   }
 }
 
-abstract class D {
+abstract class AbstractClassNoFieldShouldBeInterfaceCheckD {
   protected void method() {
 
   }
 }
 
-abstract class E extends A {
+abstract class AbstractClassNoFieldShouldBeInterfaceCheckE extends AbstractClassNoFieldShouldBeInterfaceCheckA {
 }
 
-public abstract class F {
+abstract class AbstractClassNoFieldShouldBeInterfaceCheckF {
   public abstract double v();
 
   @Override
@@ -37,7 +39,7 @@ public abstract class F {
   }
 }
 
-public abstract class G {
+abstract class AbstractClassNoFieldShouldBeInterfaceCheckG {
   public abstract double v();
 
   public String toString() {
@@ -45,10 +47,10 @@ public abstract class G {
   }
 }
 
-public abstract class Car { // Compliant - has private methods
+abstract class AbstractClassNoFieldShouldBeInterfaceCheckCar { // Compliant - has private methods
   public void start() {
-      turnOnLights();
-      startEngine();
+    turnOnLights();
+    startEngine();
   }
 
   public abstract void stop();
@@ -59,36 +61,43 @@ public abstract class Car { // Compliant - has private methods
 
 // Issue will be filtered by GoogleAutoFilter
 @AutoValue
-abstract class Foo { // Noncompliant
-  static Foo create(String name) {
-    return new AutoValue_Foo(name);
+abstract class AbstractClassNoFieldShouldBeInterfaceCheckFoo { // Compliant - FN due to unknown annotation
+  static AbstractClassNoFieldShouldBeInterfaceCheckFoo create(String name) {
+    return new AbstractClassNoFieldShouldBeInterfaceCheckFooImplem();
   }
   abstract String name();
   @AutoValue.Builder
-  abstract static class Builder { // Noncompliant
+  abstract static class Builder { // Compliant - FN due to unknown annotation
     abstract Builder namer(String name);
   }
 }
 
+class AbstractClassNoFieldShouldBeInterfaceCheckFooImplem extends AbstractClassNoFieldShouldBeInterfaceCheckFoo {
+  @Override
+  String name() {
+    return null;
+  }
+}
+
 // Issue will be filtered by GoogleAutoFilter
-@AutoOneOf(StringOrInteger.Kind.class)
-abstract class StringOrInteger { // Noncompliant
+@AutoOneOf(AbstractClassNoFieldShouldBeInterfaceCheckStringOrInteger.Kind.class)
+abstract class AbstractClassNoFieldShouldBeInterfaceCheckStringOrInteger { // Compliant - FN due to unknown annotation
   public enum Kind {
     STRING, INTEGER
   }
 }
 
 @Value.Immutable
-abstract class Bar { // Compliant
+abstract class AbstractClassNoFieldShouldBeInterfaceCheckBar { // Compliant
   abstract String name();
 }
 
 @org.immutables.value.Value.Immutable
-abstract class BarWithFullAnnotation { // Compliant
+abstract class AbstractClassNoFieldShouldBeInterfaceCheckWithFullAnnotation { // Compliant
   abstract String name();
 }
 
 @creedthoughts.org.immutables.value.Value.Immutable
-abstract class BarWithFullAnnotation { // Noncompliant
+abstract class AbstractClassNoFieldShouldBeInterfaceCheckWithFullAnnotation2 { // Compliant
   abstract String name();
 }
