@@ -25,7 +25,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JWarning;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.SyntacticEquivalence;
@@ -54,23 +53,26 @@ public class SelfAssignementCheck extends IssuableSubscriptionVisitor {
     }
     AssignmentExpressionTree node = (AssignmentExpressionTree) tree;
     if (SyntacticEquivalence.areEquivalent(node.expression(), node.variable())) {
-      SyntaxToken reportTree = node.operatorToken();
-      reportIssue(reportTree, ISSUE_MESSAGE);
-      updateWarnings(reportTree);
+      reportIssue(reportTree(node), ISSUE_MESSAGE);
+      updateWarnings(node);
     }
+  }
+
+  private static SyntaxToken reportTree(AssignmentExpressionTree node) {
+    return node.operatorToken();
   }
 
   @Override
   public void leaveNode(Tree tree) {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
-      warnings.forEach(warning -> ((DefaultJavaFileScannerContext) context).reportIssue(this, warning, ISSUE_MESSAGE));
+      warnings.forEach(warning -> reportIssue(reportTree((AssignmentExpressionTree) warning.syntaxTree()), ISSUE_MESSAGE));
     }
   }
 
-  private void updateWarnings(SyntaxToken reportTree) {
+  private void updateWarnings(AssignmentExpressionTree tree) {
     for (Iterator<JWarning> iterator = warnings.iterator(); iterator.hasNext();) {
       JWarning warning = iterator.next();
-      if (warning.contains(reportTree)) {
+      if (tree.equals(warning.syntaxTree())) {
         iterator.remove();
       }
     }

@@ -84,9 +84,8 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
         // types from union types should be reported individually
         reportTrees.put(typeTree, withinUnionType ? typeTree : catchKeyword);
 
-        SyntaxToken typeFirstToken = typeTree.firstToken();
         warnings.stream()
-          .filter(warning -> warning.contains(typeFirstToken))
+          .filter(warning -> typeTree.equals(warning.syntaxTree()))
           .forEach(warning -> typesWithWarnings.add(typeTree));
       }
     }
