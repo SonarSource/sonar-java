@@ -39,6 +39,6 @@ abstract class BarWithFullAnnotation { // Compliant
 }
 
 @creedthoughts.org.immutables.value.Value.Immutable
-abstract class BarWithFullAnnotation { // Noncompliant
+abstract class BarWithFullAnnotation2 { // Compliant
   abstract String name();
 }
