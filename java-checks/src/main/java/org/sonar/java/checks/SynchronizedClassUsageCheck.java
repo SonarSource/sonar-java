@@ -130,7 +130,7 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitMethod(MethodTree tree) {
       TypeTree returnTypeTree = tree.returnType();
-      if (!isOverriding(tree) || returnTypeTree == null) {
+      if (isNotOverriding(tree) || returnTypeTree == null) {
         if (returnTypeTree != null) {
           reportIssueOnDeprecatedType(returnTypeTree, returnTypeTree.symbolType());
         }
@@ -139,8 +139,9 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
       scan(tree.block());
     }
 
-    private boolean isOverriding(MethodTree tree) {
-      return Boolean.TRUE.equals(tree.isOverriding());
+    private boolean isNotOverriding(MethodTree tree) {
+      // In case it can not be determined (isOverriding returns null), return false to avoid FP.
+      return Boolean.FALSE.equals(tree.isOverriding());
     }
 
     @Override

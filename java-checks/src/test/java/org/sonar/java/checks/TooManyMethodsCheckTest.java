@@ -55,7 +55,7 @@ class TooManyMethodsCheckTest {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/TooManyMethodsCheck.java"))
       .withCheck(check)
-      .verifyIssues();
+      .verifyNoIssues();
   }
 
 }

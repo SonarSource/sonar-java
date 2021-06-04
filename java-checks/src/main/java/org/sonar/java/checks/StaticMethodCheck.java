@@ -79,7 +79,8 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
     scan(tree.block());
     MethodReference reference = methodReferences.pop();
     ClassTree classTree = (ClassTree) tree.parent();
-    if (Boolean.TRUE.equals(tree.isOverriding()) || classTree.is(Tree.Kind.ENUM)) {
+    if (!Boolean.FALSE.equals(tree.isOverriding()) || classTree.is(Tree.Kind.ENUM)) {
+      // In case it cannot be determined (isOverriding returns null), consider as overriding to avoid FP.
       return;
     }
     if ((symbol.isPrivate() || symbol.isFinal() || classTree.symbol().isFinal()) && !symbol.isStatic() && !reference.hasNonStaticReference()) {

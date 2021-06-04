@@ -218,7 +218,8 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
   }
 
   private static boolean isOverridingMethod(Tree tree) {
-    return tree.is(Tree.Kind.METHOD) && Boolean.TRUE.equals(((MethodTree) tree).isOverriding());
+    // Annotation can be in a parent. If unknown (isOverriding returns null), consider has override to avoid FP.
+    return tree.is(Tree.Kind.METHOD) && !Boolean.FALSE.equals(((MethodTree) tree).isOverriding());
   }
 
   private static boolean isVisibleForTestingMethod(Tree tree, SymbolMetadata symbolMetadata) {
