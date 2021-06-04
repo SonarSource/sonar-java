@@ -21,124 +21,232 @@ package org.sonar.java.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.CheckForNull;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.collections.SetUtils;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
 
 public final class JWarning {
 
   private final String message;
   private final Type type;
-  private final int startLine;
-  private final int startColumn;
-  private final int endLine;
-  private final int endColumn;
+  private final Position start;
+  private final Position end;
 
-  public JWarning(String message, Type type, int startLine, int startColumn, int endLine, int endColumn) {
+  private Tree syntaxTree;
+
+  @VisibleForTesting
+  JWarning(String message, Type type, int startLine, int startColumn, int endLine, int endColumn) {
     this.message = message;
     this.type = type;
-    this.startLine = startLine;
-    this.startColumn = startColumn;
-    this.endLine = endLine;
-    this.endColumn = endColumn;
+    this.start = Position.exact(startLine, startColumn);
+    this.end = Position.exact(endLine, endColumn);
+  }
+
+  public Type type() {
+    return type;
+  }
+
+  public String message() {
+    return message;
+  }
+
+  public Tree syntaxTree() {
+    return syntaxTree;
+  }
+
+  Position start() {
+    return start;
+  }
+
+  Position end() {
+    return end;
+  }
+
+  private static class Position implements Comparable<Position> {
+
+    private static final Comparator<Position> COMPARATOR = Comparator
+      .comparing(Position::line)
+      .thenComparing(Position::column);
+
+    private final int line;
+    private final int column;
+
+    private Position(int line, int column) {
+      this.line = line;
+      this.column = column;
+    }
+
+    private static Position exact(int line, int column) {
+      return new Position(line, column);
+    }
+
+    private static Position startOf(Tree tree) {
+      SyntaxToken token = tree.firstToken();
+      return new Position(token.line(), token.column());
+    }
+
+    private static Position endOf(Tree tree) {
+      SyntaxToken token = tree.lastToken();
+      return new Position(token.line(), token.column() + token.text().length());
+    }
+
+    int line() {
+      return line;
+    }
+
+    int column() {
+      return column;
+    }
+
+    @Override
+    public int compareTo(Position o) {
+      return COMPARATOR.compare(this, o);
+    }
   }
 
   public enum Type {
-    UNUSED_IMPORT(IProblem.UnusedImport, JavaCore.COMPILER_PB_UNUSED_IMPORT),
-    REDUNDANT_CAST(IProblem.UnnecessaryCast, JavaCore.COMPILER_PB_UNNECESSARY_TYPE_CHECK),
-    ASSIGNMENT_HAS_NO_EFFECT(IProblem.AssignmentHasNoEffect, JavaCore.COMPILER_PB_NO_EFFECT_ASSIGNMENT),
-    MASKED_CATCH(IProblem.MaskedCatch, JavaCore.COMPILER_PB_HIDDEN_CATCH_BLOCK);
+    UNUSED_IMPORT(IProblem.UnusedImport, JavaCore.COMPILER_PB_UNUSED_IMPORT, Tree.Kind.IMPORT),
+    REDUNDANT_CAST(IProblem.UnnecessaryCast, JavaCore.COMPILER_PB_UNNECESSARY_TYPE_CHECK, Tree.Kind.TYPE_CAST, Tree.Kind.PARENTHESIZED_EXPRESSION),
+    ASSIGNMENT_HAS_NO_EFFECT(IProblem.AssignmentHasNoEffect, JavaCore.COMPILER_PB_NO_EFFECT_ASSIGNMENT, Tree.Kind.ASSIGNMENT),
+    MASKED_CATCH(IProblem.MaskedCatch, JavaCore.COMPILER_PB_HIDDEN_CATCH_BLOCK, Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT);
 
     private final int warningID;
     private final String compilerOptionKey;
+    private final Set<Tree.Kind> kinds;
 
-    private static final Set<String> COMPILER__OPTIONS = new HashSet<>();
+    private static final Set<String> COMPILER_OPTIONS = new HashSet<>();
 
-    Type(int warningID, String compilerOptionKey) {
+    Type(int warningID, String compilerOptionKey, Tree.Kind... kinds) {
       this.warningID = warningID;
       this.compilerOptionKey = compilerOptionKey;
+      this.kinds = SetUtils.immutableSetOf(kinds);
     }
 
-    boolean isMatching(IProblem warning) {
+    private boolean matches(IProblem warning) {
       return warning.getID() == warningID;
     }
 
     public static Set<String> compilerOptions() {
-      if (COMPILER__OPTIONS.isEmpty()) {
+      if (COMPILER_OPTIONS.isEmpty()) {
         Stream.of(Type.values())
           .map(t -> t.compilerOptionKey)
-          .forEach(COMPILER__OPTIONS::add);
+          .forEach(COMPILER_OPTIONS::add);
       }
-      return Collections.unmodifiableSet(COMPILER__OPTIONS);
+      return Collections.unmodifiableSet(COMPILER_OPTIONS);
     }
   }
 
-  public static Map<Type, List<JWarning>> getWarnings(CompilationUnit astNode) {
-    Map<JWarning.Type, List<JWarning>> results = new EnumMap<>(Type.class);
-    for (IProblem warning : astNode.getProblems()) {
+  public static class Mapper extends SubscriptionVisitor {
+
+    private static final Set<Tree.Kind> KINDS = Stream.of(Type.values())
+      .map(t -> t.kinds)
+      .flatMap(Set::stream)
+      .collect(Collectors.toSet());
+
+    private final Map<Type, Set<JWarning>> warningsByType = new EnumMap<>(Type.class);
+
+    private final PriorityQueue<JWarning> warnings = new PriorityQueue<>(Comparator.comparing(JWarning::start).thenComparing(JWarning::end));
+
+    private Mapper(CompilationUnit ast) {
+      Stream.of(ast.getProblems())
+        .map(problem -> convert(problem, ast))
+        .filter(Objects::nonNull)
+        .forEach(warnings::add);
+    }
+
+    @CheckForNull
+    private static JWarning convert(IProblem problem, CompilationUnit root) {
       for (Type type : Type.values()) {
-        if (type.isMatching(warning)) {
-          JWarning newWarning = new JWarning(
-            warning.getMessage(),
+        if (type.matches(problem)) {
+          return new JWarning(problem.getMessage(),
             type,
-            warning.getSourceLineNumber(),
-            astNode.getColumnNumber(warning.getSourceStart()),
-            astNode.getLineNumber(warning.getSourceEnd()),
-            astNode.getColumnNumber(warning.getSourceEnd()) + 1);
-          results.computeIfAbsent(type, k -> new ArrayList<>()).add(newWarning);
+            problem.getSourceLineNumber(),
+            root.getColumnNumber(problem.getSourceStart()),
+            root.getLineNumber(problem.getSourceEnd()),
+            root.getColumnNumber(problem.getSourceEnd()) + 1);
+        }
+      }
+      return null;
+    }
+
+    public static Mapper warningsFor(CompilationUnit ast) {
+      return new Mapper(ast);
+    }
+
+    public void mappedInto(JavaTree.CompilationUnitTreeImpl cut) {
+      scanTree(cut);
+      cut.addWarnings(warningsByType);
+    }
+
+    @Override
+    public List<Tree.Kind> nodesToVisit() {
+      return new ArrayList<>(KINDS);
+    }
+
+    @Override
+    public void visitNode(Tree tree) {
+      if (warnings.isEmpty()) {
+        return;
+      }
+      for (Iterator<JWarning> iterator = warnings.iterator(); iterator.hasNext();) {
+        JWarning warning = iterator.next();
+        if (isInsideTree(warning, tree)) {
+          setSyntaxTree(warning, tree);
+          warningsByType.computeIfAbsent(warning.type(), k -> new LinkedHashSet<>()).add(warning);
+
+          if (matchesTreeExactly(warning)) {
+            iterator.remove();
+          }
         }
       }
     }
-    return results;
-  }
 
-  public String getMessage() {
-    return message;
-  }
-
-  public Type getType() {
-    return type;
-  }
-
-  public int getStartLine() {
-    return startLine;
-  }
-
-  public int getStartColumn() {
-    return startColumn;
-  }
-
-  public int getEndLine() {
-    return endLine;
-  }
-
-  public int getEndColumn() {
-    return endColumn;
-  }
-
-  public boolean contains(SyntaxToken syntaxToken) {
-    int tokenLine = syntaxToken.line();
-    int tokenStartColumn = syntaxToken.column();
-    int tokendEndColumn = tokenStartColumn + syntaxToken.text().length();
-
-    if (startLine == endLine) {
-      return startLine == tokenLine
-        && startColumn <= tokenStartColumn
-        && endColumn >= tokendEndColumn;
+    @VisibleForTesting
+    static void setSyntaxTree(JWarning warning, Tree tree) {
+      if (warning.syntaxTree == null || isMorePreciseTree(warning.syntaxTree, tree)) {
+        warning.syntaxTree = tree;
+      }
     }
-    if (startLine == tokenLine) {
-      return startColumn <= tokenStartColumn;
+
+    @VisibleForTesting
+    static boolean isInsideTree(JWarning warning, Tree tree) {
+      if (warning.type.kinds.stream().noneMatch(tree::is)) {
+        // wrong kind
+        return false;
+      }
+      return warning.start().compareTo(Position.startOf(tree)) >= 0
+        && warning.end().compareTo(Position.endOf(tree)) <= 0;
     }
-    if (endLine == tokenLine) {
-      return endColumn >= tokendEndColumn;
+
+    @VisibleForTesting
+    static boolean isMorePreciseTree(Tree currentTree, Tree newTree) {
+      return Position.startOf(newTree).compareTo( Position.startOf(currentTree)) >= 0
+        && Position.endOf(newTree).compareTo(Position.endOf(currentTree)) <= 0;
     }
-    return tokenLine > startLine && tokenLine < endLine;
+
+    @VisibleForTesting
+    static boolean matchesTreeExactly(JWarning warning) {
+      Tree syntaxTree = warning.syntaxTree();
+      return warning.start().compareTo(Position.startOf(syntaxTree)) == 0
+        && warning.end().compareTo(Position.endOf(syntaxTree)) == 0;
+    }
   }
 }

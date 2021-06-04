@@ -28,9 +28,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -159,7 +159,7 @@ public abstract class JavaTree implements Tree {
     private final SyntaxToken eofToken;
     public JSema sema;
 
-    private final Map<JWarning.Type, List<JWarning>> warnings = new EnumMap<>(JWarning.Type.class);
+    private final Map<JWarning.Type, Set<JWarning>> warnings = new EnumMap<>(JWarning.Type.class);
 
     public CompilationUnitTreeImpl(@Nullable PackageDeclarationTree packageDeclaration, List<ImportClauseTree> imports, List<Tree> types,
       @Nullable ModuleDeclarationTree moduleDeclaration, SyntaxToken eofToken) {
@@ -188,7 +188,7 @@ public abstract class JavaTree implements Tree {
 
     @Beta
     public List<JWarning> warnings(JWarning.Type type) {
-      return Collections.unmodifiableList(warnings.getOrDefault(type, Collections.emptyList()));
+      return Collections.unmodifiableList(new ArrayList<>(warnings.getOrDefault(type, Collections.emptySet())));
     }
 
     @Override
@@ -225,7 +225,7 @@ public abstract class JavaTree implements Tree {
       return eofToken;
     }
 
-    public void addWarnings(Map<JWarning.Type, List<JWarning>> warnings) {
+    public void addWarnings(Map<JWarning.Type, Set<JWarning>> warnings) {
       this.warnings.putAll(warnings);
     }
 

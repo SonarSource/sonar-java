@@ -76,10 +76,13 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
+import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.model.assertions.TypeAssert.assertThat;
@@ -1616,23 +1619,40 @@ class JParserSemanticTest {
   }
 
   @Test
-  void unused_import_warnings() {
-    String source = "package test;\n" +
-                    "import java.util.List;\n" +
-                    "import test.C;\n" +
-                    "import java.lang.String;\n" +
-                    "class C {\n"+
-                    "}\n";
+  void warnings_are_detected() {
+    String source = "package test;\n"
+      + "import java.util.List;\n"   // useless import
+      + "import test.C;\n"           // not detected by ECJ
+      + "import java.lang.Object;\n" // useless import
+      + "class C {\n"
+      + "  void foo(String s) {\n"
+      + "    String o = (String) ((String) s);\n" // 2x redundant cast
+      + "  }\n"
+      + "}\n";
 
     JavaTree.CompilationUnitTreeImpl cu = test(source);
-    List<JWarning> warningList = cu.warnings(JWarning.Type.UNUSED_IMPORT);
-    assertThat(warningList).hasSize(2);
+    List<JWarning> importsWarnings = cu.warnings(JWarning.Type.UNUSED_IMPORT);
+    assertThat(importsWarnings).hasSize(2);
 
-    JWarning jWarning = warningList.get(0);
-    assertThat(jWarning.getMessage()).isEqualTo("The import java.util.List is never used");
-    assertThat(jWarning.getStartLine()).isEqualTo(2);
-    assertThat(jWarning.getStartColumn()).isEqualTo(7);
-    assertThat(jWarning.getEndLine()).isEqualTo(2);
-    assertThat(jWarning.getEndColumn()).isEqualTo(21);
+    JWarning listWarning = importsWarnings.get(0);
+    assertThat(listWarning.message()).isEqualTo("The import java.util.List is never used");
+    assertThat(listWarning.syntaxTree()).isEqualTo(cu.imports().get(0));
+
+    JWarning objectWarning = importsWarnings.get(1);
+    assertThat(objectWarning.message()).isEqualTo("The import java.lang.Object is never used");
+    assertThat(objectWarning.syntaxTree()).isEqualTo(cu.imports().get(2));
+
+    List<JWarning> castWarnings = cu.warnings(JWarning.Type.REDUNDANT_CAST);
+    assertThat(castWarnings).hasSize(2);
+
+    TypeCastTree typeCast =  (TypeCastTree)((VariableTree)((MethodTree)(((ClassTree) cu.types().get(0)).members().get(0))).block().body().get(0)).initializer();
+    JWarning parentCastWarning = castWarnings.get(0);
+    assertThat(parentCastWarning.message()).isEqualTo("Unnecessary cast from String to String");
+    assertThat(parentCastWarning.syntaxTree()).isEqualTo(typeCast);
+
+    ParenthesizedTree parenthesizedTree = (ParenthesizedTree) typeCast.expression();
+    JWarning nestedCastWarning = castWarnings.get(1);
+    assertThat(nestedCastWarning.message()).isEqualTo("Unnecessary cast from String to String");
+    assertThat(nestedCastWarning.syntaxTree()).isEqualTo(parenthesizedTree);
   }
 }
