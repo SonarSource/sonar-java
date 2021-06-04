@@ -99,6 +99,9 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 #### **7.0**
 
+* **Method `MethodTree.isOverriding()` now correctly match the contract in case of unknowns in the hierarchy.**
+  Previously, isOverriding implementation could return misleading results when the hierarchy of the class containing the method contains unknowns. In such cases, null is now returned, because it is not possible to reliably determine if the method is an override or not.
+
 The following deprecated methods have been dropped:
 
 * **`org.sonar.plugins.java.api.JavaFileScannerContext.getFileKey()`**
