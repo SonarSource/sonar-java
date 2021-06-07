@@ -1,5 +1,5 @@
 <p>Authorizations granted or not to users to access resources of an application should be based on strong decisions. For instance, checking whether
-the user is authenticated or not, has the right roles/privileges. It may also depend on the user's location, or the date, time when the user requests
+the user is authenticated or not, has the right roles/privileges. It may also depend on the user’s location, or the date, time when the user requests
 access.</p>
 <h2>Noncompliant Code Example</h2>
 <p>In a Spring-security web application:</p>
@@ -27,7 +27,7 @@ public class WeakNightVoter implements AccessDecisionVoter {
 </pre>
 <ul>
   <li> the <code>hasPermission</code> method of a <a
-  href="https://docs.spring.io/spring-security/site/docs/4.2.13.RELEASE/apidocs/org/springframework/security/access/PermissionEvaluator.html">PermissionEvaluator</a> type is not compliant when it doesn't return <code>false</code>: </li>
+  href="https://docs.spring.io/spring-security/site/docs/4.2.13.RELEASE/apidocs/org/springframework/security/access/PermissionEvaluator.html">PermissionEvaluator</a> type is not compliant when it doesn’t return <code>false</code>: </li>
 </ul>
 <pre>
 public class MyPermissionEvaluator implements PermissionEvaluator {

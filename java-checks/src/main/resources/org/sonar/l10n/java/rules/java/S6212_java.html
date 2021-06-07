@@ -1,15 +1,28 @@
 <p>In Java 10 <a href="https://openjdk.java.net/jeps/286">Local-Variable Type Inference</a> was introduced. It allows you to omit the expected type of
-a variable by declaring it with the <code>var</code> keyword. </p>
+a variable by declaring it with the <code>var</code> keyword.</p>
 <p>While it is not always possible or cleaner to use this new way of declaring a variable, when the type on the left is the same as the one on the
 right in an assignment, using the <code>var</code> will result in a more concise code.</p>
-<p>This rule reports an issue when the expected type of the variable is the same as the returned type of assigned expression.</p>
+<p>This rule reports an issue when the expected type of the variable is the same as the returned type of assigned expression and the type can be
+easily inferred by the reader, either when the tye is already mentioned in the name or the initializer, or when the expression is self-explained.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 MyClass myClass = new MyClass();
+
+int i = 10; // Type is self explained
+
+MyClass something = MyClass.getMyClass(); // Type is already mentionned in the initializer
+
+MyClass myClass = get(); // Type is already mentionned in the name{code}
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
 var myClass = new MyClass();
+
+var i = 10;
+
+var something = MyClass.getMyClass();
+
+var myClass = get();
 </pre>
 <h2>See</h2>
 <ul>

@@ -1,87 +1,93 @@
 <p>Certain math operations are just silly and should not be performed because their results are predictable.</p>
 <p>In particular, <code>anyValue % 1</code> is silly because it will always return 0.</p>
 <p>Casting a non-floating-point value to floating-point and then passing it to <code>Math.round</code>, <code>Math.ceil</code>, or
-<code>Math.floor</code> is silly because the result will always be the original value. </p>
+<code>Math.floor</code> is silly because the result will always be the original value.</p>
 <p>These operations are silly with any constant value: <code>Math.abs</code>, <code>Math.ceil</code>, <code>Math.floor</code>, <code>Math.rint</code>,
 <code>Math.round</code>.</p>
 <p>And these oprations are silly with certain constant values:</p>
 <table>
-  <tbody>
+  <colgroup>
+    <col style="width: 50%;">
+    <col style="width: 50%;">
+  </colgroup>
+  <thead>
     <tr>
       <th>Operation</th>
       <th>Value</th>
     </tr>
+  </thead>
+  <tbody>
     <tr>
-      <td>acos</td>
-      <td>0.0 or 1.0</td>
+      <td><p>acos</p></td>
+      <td><p>0.0 or 1.0</p></td>
     </tr>
     <tr>
-      <td>asin</td>
-      <td>0.0 or 1.0</td>
+      <td><p>asin</p></td>
+      <td><p>0.0 or 1.0</p></td>
     </tr>
     <tr>
-      <td>atan</td>
-      <td>0.0 or 1.0</td>
+      <td><p>atan</p></td>
+      <td><p>0.0 or 1.0</p></td>
     </tr>
     <tr>
-      <td>atan2</td>
-      <td>0.0</td>
+      <td><p>atan2</p></td>
+      <td><p>0.0</p></td>
     </tr>
     <tr>
-      <td>cbrt</td>
-      <td>0.0 or 1.0</td>
+      <td><p>cbrt</p></td>
+      <td><p>0.0 or 1.0</p></td>
     </tr>
     <tr>
-      <td>cos</td>
-      <td>0.0</td>
+      <td><p>cos</p></td>
+      <td><p>0.0</p></td>
     </tr>
     <tr>
-      <td>cosh</td>
-      <td>0.0</td>
+      <td><p>cosh</p></td>
+      <td><p>0.0</p></td>
     </tr>
     <tr>
-      <td>exp</td>
-      <td>0.0 or 1.0</td>
+      <td><p>exp</p></td>
+      <td><p>0.0 or 1.0</p></td>
     </tr>
     <tr>
-      <td>expm1</td>
-      <td>0.0</td>
+      <td><p>expm1</p></td>
+      <td><p>0.0</p></td>
     </tr>
     <tr>
-      <td>log</td>
-      <td>0.0 or 1.0</td>
+      <td><p>log</p></td>
+      <td><p>0.0 or 1.0</p></td>
     </tr>
     <tr>
-      <td>log10</td>
-      <td>0.0 or 1.0</td>
+      <td><p>log10</p></td>
+      <td><p>0.0 or 1.0</p></td>
     </tr>
     <tr>
-      <td>sin</td>
-      <td>0.0</td>
+      <td><p>sin</p></td>
+      <td><p>0.0</p></td>
     </tr>
     <tr>
-      <td>sinh</td>
-      <td>0.0</td>
+      <td><p>sinh</p></td>
+      <td><p>0.0</p></td>
     </tr>
     <tr>
-      <td>sqrt</td>
-      <td>0.0 or 1.0</td>
+      <td><p>sqrt</p></td>
+      <td><p>0.0 or 1.0</p></td>
     </tr>
     <tr>
-      <td>tan</td>
-      <td>0.0</td>
+      <td><p>tan</p></td>
+      <td><p>0.0</p></td>
     </tr>
     <tr>
-      <td>tanh</td>
-      <td>0.0</td>
+      <td><p>tanh</p></td>
+      <td><p>0.0</p></td>
     </tr>
     <tr>
-      <td>toDegrees</td>
-      <td>0.0 or 1.0</td>
+      <td><p>toDegrees</p></td>
+      <td><p>0.0 or 1.0</p></td>
     </tr>
     <tr>
-      <td>toRadians</td>
-      <td>0.0</td>
+      <td><p>toRadians</p></td>
+      <td><p>0.0</p></td>
     </tr>
   </tbody>
 </table>

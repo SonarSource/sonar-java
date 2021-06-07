@@ -1,10 +1,10 @@
 <p>When reading bytes in order to build other primitive values such as <code>int</code>s or <code>long</code>s, the <code>byte</code> values are
 automatically promoted, but that promotion can have unexpected results.</p>
 <p>For instance, the binary representation of the integer 640 is <code>0b0000_0010_1000_0000</code>, which can also be written with the array of
-(unsigned) bytes <code>[2, 128]</code>. However, since Java uses two's complement, the representation of the integer in signed bytes will be <code>[2,
+(unsigned) bytes <code>[2, 128]</code>. However, since Java uses two’s complement, the representation of the integer in signed bytes will be <code>[2,
 -128]</code> (because the <code>byte</code> <code>0b1000_0000</code> is promoted to the <code>int</code>
 <code>0b1111_1111_1111_1111_1111_1111_1000_0000</code>). Consequently, trying to reconstruct the initial integer by shifting and adding the values of
-the bytes without taking care of the sign will not produce the expected result. </p>
+the bytes without taking care of the sign will not produce the expected result.</p>
 <p>To prevent such accidental value conversion, use bitwise and (<code>&amp;</code>) to combine the <code>byte</code> value with <code>0xff</code>
 (255) and turn all the higher bits back off.</p>
 <p>This rule raises an issue any time a <code>byte</code> value is used as an operand without <code>&amp; 0xff</code>, when combined with shifts.</p>

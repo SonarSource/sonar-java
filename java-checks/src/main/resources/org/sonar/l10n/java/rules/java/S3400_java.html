@@ -1,6 +1,6 @@
-<p>There's no point in forcing the overhead of a method call for a method that always returns the same constant value. Even worse, the fact that a
-method call must be made will likely mislead developers who call the method thinking that something more is done. Declare a constant instead. </p>
-<p>This rule raises an issue if on methods that contain only one statement: the <code>return</code> of a constant value. </p>
+<p>There’s no point in forcing the overhead of a method call for a method that always returns the same constant value. Even worse, the fact that a
+method call must be made will likely mislead developers who call the method thinking that something more is done. Declare a constant instead.</p>
+<p>This rule raises an issue if on methods that contain only one statement: the <code>return</code> of a constant value.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 int getBestNumber() {
@@ -12,5 +12,5 @@ int getBestNumber() {
 static final int BEST_NUMBER = 12;
 </pre>
 <h2>Exceptions</h2>
-<p>Methods with annotations, such as <code>@Override</code> and Spring's <code>@RequestMapping</code>, are ignored.</p>
+<p>Methods with annotations, such as <code>@Override</code> and Spring’s <code>@RequestMapping</code>, are ignored.</p>
 

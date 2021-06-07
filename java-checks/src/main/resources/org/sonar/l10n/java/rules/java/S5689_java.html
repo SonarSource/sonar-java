@@ -7,8 +7,8 @@ perform relevant security assessments more quickly (like the identification of k
 </ul>
 <p>There is a risk if you answered yes to any of these questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
-<p>It's recommended to not disclose technologies used on a website, with <code>x-powered-by</code> HTTP header for example. </p>
-<p>In addition, it's better to completely disable this HTTP header rather than setting it a random value.</p>
+<p>It’s recommended to not disclose technologies used on a website, with <code>x-powered-by</code> HTTP header for example.</p>
+<p>In addition, it’s better to completely disable this HTTP header rather than setting it a random value.</p>
 <h2>Sensitive Code Example</h2>
 <pre>
 public ResponseEntity&lt;String&gt; testResponseEntity() {
@@ -19,7 +19,7 @@ public ResponseEntity&lt;String&gt; testResponseEntity() {
 }
 </pre>
 <h2>Compliant Solution</h2>
-<p>Don't use <code>x-powered-by</code> or <code>Server</code> HTTP header or any other means disclosing fingerprints of the application. </p>
+<p>Don’t use <code>x-powered-by</code> or <code>Server</code> HTTP header or any other means disclosing fingerprints of the application.</p>
 <h2>See</h2>
 <ul>
   <li> <a

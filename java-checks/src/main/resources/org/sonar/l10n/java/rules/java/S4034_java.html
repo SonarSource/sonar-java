@@ -2,30 +2,36 @@
 also avoid creating unnecessary temporary objects.</p>
 <p>This rule raises an issue when one of the following substitution is possible:</p>
 <table>
-  <tbody>
+  <colgroup>
+    <col style="width: 50%;">
+    <col style="width: 50%;">
+  </colgroup>
+  <thead>
     <tr>
       <th>Original</th>
       <th>Preferred</th>
     </tr>
+  </thead>
+  <tbody>
     <tr>
-      <td><code>stream.filter(predicate).findFirst().isPresent()</code></td>
-      <td><code>stream.anyMatch(predicate)</code></td>
+      <td><p><code>stream.filter(predicate).findFirst().isPresent()</code></p></td>
+      <td><p><code>stream.anyMatch(predicate)</code></p></td>
     </tr>
     <tr>
-      <td><code>stream.filter(predicate).findAny().isPresent()</code></td>
-      <td><code>stream.anyMatch(predicate)</code></td>
+      <td><p><code>stream.filter(predicate).findAny().isPresent()</code></p></td>
+      <td><p><code>stream.anyMatch(predicate)</code></p></td>
     </tr>
     <tr>
-      <td><code>!stream.anyMatch(predicate)</code></td>
-      <td><code>stream.noneMatch(predicate)</code></td>
+      <td><p><code>!stream.anyMatch(predicate)</code></p></td>
+      <td><p><code>stream.noneMatch(predicate)</code></p></td>
     </tr>
     <tr>
-      <td><code>!stream.anyMatch(x -&gt; !(...))</code></td>
-      <td><code>stream.allMatch(...)</code></td>
+      <td><p><code>!stream.anyMatch(x -&gt; !(...))</code></p></td>
+      <td><p><code>stream.allMatch(...)</code></p></td>
     </tr>
     <tr>
-      <td><code>stream.map(mapper).anyMatch(Boolean::booleanValue)</code></td>
-      <td><code>stream.anyMatch(predicate)</code></td>
+      <td><p><code>stream.map(mapper).anyMatch(Boolean::booleanValue)</code></p></td>
+      <td><p><code>stream.anyMatch(predicate)</code></p></td>
     </tr>
   </tbody>
 </table>

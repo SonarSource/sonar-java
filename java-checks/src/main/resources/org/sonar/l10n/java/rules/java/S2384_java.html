@@ -1,7 +1,7 @@
 <p>Mutable objects are those whose state can be changed. For instance, an array is mutable, but a String is not. Mutable class members should never be
 returned to a caller or accepted and stored directly. Doing so leaves you vulnerable to unexpected changes in your class state.</p>
 <p>Instead use an unmodifiable <code>Collection</code> (via <code>Collections.unmodifiableCollection</code>,
-<code>Collections.unmodifiableList</code>, ...) or make a copy of the mutable object, and store or return the copy instead.</p>
+<code>Collections.unmodifiableList</code>, …​) or make a copy of the mutable object, and store or return the copy instead.</p>
 <p>This rule checks that arrays, collections and Dates are not stored or returned directly.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>

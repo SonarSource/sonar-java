@@ -3,142 +3,148 @@ references. In general it is recommended to use the more specialised form to avo
 should be preferred over <code>Function&lt;Integer, Foo&gt;</code>.</p>
 <p>This rule raises an issue when any of the following substitution is possible:</p>
 <table>
-  <tbody>
+  <colgroup>
+    <col style="width: 50%;">
+    <col style="width: 50%;">
+  </colgroup>
+  <thead>
     <tr>
       <th>Current Interface</th>
       <th>Preferred Interface</th>
     </tr>
+  </thead>
+  <tbody>
     <tr>
-      <td><code>Function&lt;Integer, R&gt;</code></td>
-      <td><code>IntFunction&lt;R&gt;</code></td>
+      <td><p><code>Function&lt;Integer, R&gt;</code></p></td>
+      <td><p><code>IntFunction&lt;R&gt;</code></p></td>
     </tr>
     <tr>
-      <td><code>Function&lt;Long, R&gt;</code></td>
-      <td><code>LongFunction&lt;R&gt;</code></td>
+      <td><p><code>Function&lt;Long, R&gt;</code></p></td>
+      <td><p><code>LongFunction&lt;R&gt;</code></p></td>
     </tr>
     <tr>
-      <td><code>Function&lt;Double, R&gt;</code></td>
-      <td><code>DoubleFunction&lt;R&gt;</code></td>
+      <td><p><code>Function&lt;Double, R&gt;</code></p></td>
+      <td><p><code>DoubleFunction&lt;R&gt;</code></p></td>
     </tr>
     <tr>
-      <td><code>Function&lt;Double,Integer&gt;</code> </td>
-      <td> <code>DoubleToIntFunction</code> </td>
+      <td><p><code>Function&lt;Double,Integer&gt;</code></p></td>
+      <td><p><code>DoubleToIntFunction</code></p></td>
     </tr>
     <tr>
-      <td><code>Function&lt;Double,Long&gt;</code> </td>
-      <td> <code>DoubleToLongFunction</code> </td>
+      <td><p><code>Function&lt;Double,Long&gt;</code></p></td>
+      <td><p><code>DoubleToLongFunction</code></p></td>
     </tr>
     <tr>
-      <td><code>Function&lt;Long,Double&gt;</code> </td>
-      <td> <code>LongToDoubleFunction</code> </td>
+      <td><p><code>Function&lt;Long,Double&gt;</code></p></td>
+      <td><p><code>LongToDoubleFunction</code></p></td>
     </tr>
     <tr>
-      <td><code>Function&lt;Long,Integer&gt;</code> </td>
-      <td> <code>LongToIntFunction</code></td>
+      <td><p><code>Function&lt;Long,Integer&gt;</code></p></td>
+      <td><p><code>LongToIntFunction</code></p></td>
     </tr>
     <tr>
-      <td><code>Function&lt;R,Integer&gt;</code> </td>
-      <td> <code>ToIntFunction&lt;R&gt;</code></td>
+      <td><p><code>Function&lt;R,Integer&gt;</code></p></td>
+      <td><p><code>ToIntFunction&lt;R&gt;</code></p></td>
     </tr>
     <tr>
-      <td><code>Function&lt;R,Long&gt;</code> </td>
-      <td> <code>ToLongFunction&lt;R&gt;</code></td>
+      <td><p><code>Function&lt;R,Long&gt;</code></p></td>
+      <td><p><code>ToLongFunction&lt;R&gt;</code></p></td>
     </tr>
     <tr>
-      <td><code>Function&lt;R,Double&gt;</code> </td>
-      <td> <code>ToDoubleFunction&lt;R&gt;</code></td>
+      <td><p><code>Function&lt;R,Double&gt;</code></p></td>
+      <td><p><code>ToDoubleFunction&lt;R&gt;</code></p></td>
     </tr>
     <tr>
-      <td><code>Function&lt;T,T&gt;</code> </td>
-      <td> <code>UnaryOperator&lt;T&gt;</code> </td>
+      <td><p><code>Function&lt;T,T&gt;</code></p></td>
+      <td><p><code>UnaryOperator&lt;T&gt;</code></p></td>
     </tr>
     <tr>
-      <td><code>BiFunction&lt;T,T,T&gt;</code> </td>
-      <td> <code>BinaryOperator&lt;T&gt;</code> </td>
+      <td><p><code>BiFunction&lt;T,T,T&gt;</code></p></td>
+      <td><p><code>BinaryOperator&lt;T&gt;</code></p></td>
     </tr>
     <tr>
-      <td><code>Consumer&lt;Integer&gt;</code></td>
-      <td><code>IntConsumer</code></td>
+      <td><p><code>Consumer&lt;Integer&gt;</code></p></td>
+      <td><p><code>IntConsumer</code></p></td>
     </tr>
     <tr>
-      <td><code>Consumer&lt;Double&gt;</code></td>
-      <td><code>DoubleConsumer</code></td>
+      <td><p><code>Consumer&lt;Double&gt;</code></p></td>
+      <td><p><code>DoubleConsumer</code></p></td>
     </tr>
     <tr>
-      <td><code>Consumer&lt;Long&gt;</code></td>
-      <td><code>LongConsumer</code></td>
+      <td><p><code>Consumer&lt;Long&gt;</code></p></td>
+      <td><p><code>LongConsumer</code></p></td>
     </tr>
     <tr>
-      <td><code>BiConsumer&lt;T,Integer&gt;</code> </td>
-      <td> <code>ObjIntConsumer&lt;T&gt;</code></td>
+      <td><p><code>BiConsumer&lt;T,Integer&gt;</code></p></td>
+      <td><p><code>ObjIntConsumer&lt;T&gt;</code></p></td>
     </tr>
     <tr>
-      <td><code>BiConsumer&lt;T,Long&gt;</code> </td>
-      <td> <code>ObjLongConsumer&lt;T&gt;</code></td>
+      <td><p><code>BiConsumer&lt;T,Long&gt;</code></p></td>
+      <td><p><code>ObjLongConsumer&lt;T&gt;</code></p></td>
     </tr>
     <tr>
-      <td><code>BiConsumer&lt;T,Double&gt;</code> </td>
-      <td> <code>ObjDoubleConsumer&lt;T&gt;</code></td>
+      <td><p><code>BiConsumer&lt;T,Double&gt;</code></p></td>
+      <td><p><code>ObjDoubleConsumer&lt;T&gt;</code></p></td>
     </tr>
     <tr>
-      <td><code>Predicate&lt;Integer&gt;</code></td>
-      <td><code>IntPredicate</code></td>
+      <td><p><code>Predicate&lt;Integer&gt;</code></p></td>
+      <td><p><code>IntPredicate</code></p></td>
     </tr>
     <tr>
-      <td><code>Predicate&lt;Double&gt;</code></td>
-      <td><code>DoublePredicate</code></td>
+      <td><p><code>Predicate&lt;Double&gt;</code></p></td>
+      <td><p><code>DoublePredicate</code></p></td>
     </tr>
     <tr>
-      <td><code>Predicate&lt;Long&gt;</code></td>
-      <td><code>LongPredicate</code></td>
+      <td><p><code>Predicate&lt;Long&gt;</code></p></td>
+      <td><p><code>LongPredicate</code></p></td>
     </tr>
     <tr>
-      <td><code>Supplier&lt;Integer&gt;</code></td>
-      <td><code>IntSupplier</code></td>
+      <td><p><code>Supplier&lt;Integer&gt;</code></p></td>
+      <td><p><code>IntSupplier</code></p></td>
     </tr>
     <tr>
-      <td><code>Supplier&lt;Double&gt;</code></td>
-      <td><code>DoubleSupplier</code></td>
+      <td><p><code>Supplier&lt;Double&gt;</code></p></td>
+      <td><p><code>DoubleSupplier</code></p></td>
     </tr>
     <tr>
-      <td><code>Supplier&lt;Long&gt;</code></td>
-      <td><code>LongSupplier</code></td>
+      <td><p><code>Supplier&lt;Long&gt;</code></p></td>
+      <td><p><code>LongSupplier</code></p></td>
     </tr>
     <tr>
-      <td><code>Supplier&lt;Boolean&gt;</code> </td>
-      <td> <code>BooleanSupplier</code></td>
+      <td><p><code>Supplier&lt;Boolean&gt;</code></p></td>
+      <td><p><code>BooleanSupplier</code></p></td>
     </tr>
     <tr>
-      <td><code>UnaryOperator&lt;Integer&gt;</code></td>
-      <td><code>IntUnaryOperator</code></td>
+      <td><p><code>UnaryOperator&lt;Integer&gt;</code></p></td>
+      <td><p><code>IntUnaryOperator</code></p></td>
     </tr>
     <tr>
-      <td><code>UnaryOperator&lt;Double&gt;</code></td>
-      <td><code>DoubleUnaryOperator</code></td>
+      <td><p><code>UnaryOperator&lt;Double&gt;</code></p></td>
+      <td><p><code>DoubleUnaryOperator</code></p></td>
     </tr>
     <tr>
-      <td><code>UnaryOperator&lt;Long&gt;</code></td>
-      <td><code>LongUnaryOperator</code></td>
+      <td><p><code>UnaryOperator&lt;Long&gt;</code></p></td>
+      <td><p><code>LongUnaryOperator</code></p></td>
     </tr>
     <tr>
-      <td><code>BinaryOperator&lt;Integer&gt;</code> </td>
-      <td> <code>IntBinaryOperator</code></td>
+      <td><p><code>BinaryOperator&lt;Integer&gt;</code></p></td>
+      <td><p><code>IntBinaryOperator</code></p></td>
     </tr>
     <tr>
-      <td><code>BinaryOperator&lt;Long&gt;</code> </td>
-      <td> <code>LongBinaryOperator</code></td>
+      <td><p><code>BinaryOperator&lt;Long&gt;</code></p></td>
+      <td><p><code>LongBinaryOperator</code></p></td>
     </tr>
     <tr>
-      <td><code>BinaryOperator&lt;Double&gt;</code> </td>
-      <td> <code>DoubleBinaryOperator</code></td>
+      <td><p><code>BinaryOperator&lt;Double&gt;</code></p></td>
+      <td><p><code>DoubleBinaryOperator</code></p></td>
     </tr>
     <tr>
-      <td><code>Function&lt;T, Boolean&gt;</code> </td>
-      <td> <code>Predicate&lt;T&gt;</code></td>
+      <td><p><code>Function&lt;T, Boolean&gt;</code></p></td>
+      <td><p><code>Predicate&lt;T&gt;</code></p></td>
     </tr>
     <tr>
-      <td><code>BiFunction&lt;T,U,Boolean&gt;</code> </td>
-      <td> <code>BiPredicate&lt;T,U&gt;</code></td>
+      <td><p><code>BiFunction&lt;T,U,Boolean&gt;</code></p></td>
+      <td><p><code>BiPredicate&lt;T,U&gt;</code></p></td>
     </tr>
   </tbody>
 </table>

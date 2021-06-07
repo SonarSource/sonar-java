@@ -1,5 +1,5 @@
 <p>When encrypting data with the Cipher Block Chaining (CBC) mode an Initialization Vector (IV) is used to randomize the encryption, ie under a given
-key the same plaintext doesn't always produce the same ciphertext. The IV doesn't need to be secret but should be unpredictable to avoid
+key the same plaintext doesn’t always produce the same ciphertext. The IV doesn’t need to be secret but should be unpredictable to avoid
 "Chosen-Plaintext Attack".</p>
 <p>To generate Initialization Vectors, NIST recommends to use a secure random number generator.</p>
 <h2>Noncompliant Code Example</h2>

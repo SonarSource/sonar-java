@@ -1,8 +1,8 @@
-<p>It's a common pattern to test the result of a <code>java.util.Map.get()</code> against <code>null</code> or calling
+<p>It’s a common pattern to test the result of a <code>java.util.Map.get()</code> against <code>null</code> or calling
 <code>java.util.Map.containsKey()</code> before proceeding with adding or changing the value in the map. However the <code>java.util.Map</code> API
 offers a significantly better alternative in the form of the <code>computeIfPresent()</code> and <code>computeIfAbsent()</code> methods. Using these
 instead leads to cleaner and more readable code.</p>
-<p><strong>Note</strong> that this rule is automatically disabled when the project's <code>sonar.java.source</code> is not 8.</p>
+<p><strong>Note</strong> that this rule is automatically disabled when the project’s <code>sonar.java.source</code> is not 8.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 V value = map.get(key);
@@ -27,7 +27,7 @@ return map.computeIfAbsent(key, k -&gt; V.createFor(k));
 <h2>Exceptions</h2>
 <p>This rule will not raise an issue when trying to add <code>null</code> to a map, because <code>computeIfAbsent</code> will not add the entry if the
 value returned by the function is <code>null</code>.</p>
-<h2>See also</h2>
+<h2>See Also</h2>
 <ul>
   <li> {rule:java:S6104} - Map "computeIfAbsent()" and "computeIfPresent()" should not be used to add "null" values. </li>
 </ul>

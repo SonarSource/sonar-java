@@ -6,7 +6,7 @@ insecure. Instead, <code>Files.createTempDirectory</code> (Java 7+) should be us
   <li> delete resulting file </li>
   <li> call <code>mkdir</code> on the File object </li>
 </ul>
-<p><strong>Note</strong> that this rule is automatically disabled when the project's <code>sonar.java.source</code> is lower than <code>7</code>.</p>
+<p><strong>Note</strong> that this rule is automatically disabled when the project’s <code>sonar.java.source</code> is lower than <code>7</code>.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 File tempDir;

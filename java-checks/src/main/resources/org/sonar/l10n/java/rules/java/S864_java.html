@@ -1,56 +1,66 @@
 <p>The rules of operator precedence are complicated and can lead to errors. For this reason, parentheses should be used for clarification in complex
-statements. However, this does not mean that parentheses should be gratuitously added around every operation. </p>
+statements. However, this does not mean that parentheses should be gratuitously added around every operation.</p>
 <p>This rule raises issues when <code>&amp;&amp;</code> and <code>||</code> are used in combination, when assignment and equality or relational
 operators are used in together in a condition, and for other operator combinations according to the following table:</p>
 <table>
+  <colgroup>
+    <col style="width: 16.6666%;">
+    <col style="width: 16.6666%;">
+    <col style="width: 16.6666%;">
+    <col style="width: 16.6666%;">
+    <col style="width: 16.6666%;">
+    <col style="width: 16.667%;">
+  </colgroup>
+  <thead>
+    <tr>
+      <th></th>
+      <th><code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code></th>
+      <th><code>&lt;&lt;</code>, <code>&gt;&gt;</code>, <code>&gt;&gt;&gt;</code></th>
+      <th><code>&amp;</code></th>
+      <th><code>^</code></th>
+      <th><code>|</code></th>
+    </tr>
+  </thead>
   <tbody>
     <tr>
-      <td> </td>
-      <td><code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code></td>
-      <td><code>&lt;&lt;</code>, <code>&gt;&gt;</code>, <code>&gt;&gt;&gt;</code></td>
-      <td><code>&amp;</code></td>
-      <td><code>^</code></td>
-      <td> <code>|</code> </td>
+      <td><p><code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code></p></td>
+      <td></td>
+      <td><p>x</p></td>
+      <td><p>x</p></td>
+      <td><p>x</p></td>
+      <td><p>x</p></td>
     </tr>
     <tr>
-      <td><code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code></td>
-      <td> </td>
-      <td>x</td>
-      <td>x</td>
-      <td>x</td>
-      <td>x</td>
+      <td><p><code>&lt;&lt;</code>, <code>&gt;&gt;</code>, <code>&gt;&gt;&gt;</code></p></td>
+      <td><p>x</p></td>
+      <td></td>
+      <td><p>x</p></td>
+      <td><p>x</p></td>
+      <td><p>x</p></td>
     </tr>
     <tr>
-      <td><code>&lt;&lt;</code>, <code>&gt;&gt;</code>, <code>&gt;&gt;&gt;</code></td>
-      <td>x</td>
-      <td> </td>
-      <td>x</td>
-      <td>x</td>
-      <td>x</td>
+      <td><p><code>&amp;</code></p></td>
+      <td><p>x</p></td>
+      <td><p>x</p></td>
+      <td></td>
+      <td><p>x</p></td>
+      <td><p>x</p></td>
     </tr>
     <tr>
-      <td><code>&amp;</code></td>
-      <td>x</td>
-      <td>x</td>
-      <td> </td>
-      <td>x</td>
-      <td>x</td>
+      <td><p><code>^</code></p></td>
+      <td><p>x</p></td>
+      <td><p>x</p></td>
+      <td><p>x</p></td>
+      <td></td>
+      <td><p>x</p></td>
     </tr>
     <tr>
-      <td><code>^</code></td>
-      <td>x</td>
-      <td>x</td>
-      <td>x</td>
-      <td> </td>
-      <td>x</td>
-    </tr>
-    <tr>
-      <td> <code>|</code> </td>
-      <td>x</td>
-      <td>x</td>
-      <td>x</td>
-      <td>x</td>
-      <td> </td>
+      <td><p><code>|</code></p></td>
+      <td><p>x</p></td>
+      <td><p>x</p></td>
+      <td><p>x</p></td>
+      <td><p>x</p></td>
+      <td></td>
     </tr>
   </tbody>
 </table>

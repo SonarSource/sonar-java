@@ -1,6 +1,6 @@
 <p>A <code>NullPointerException</code> should indicate that a <code>null</code> value was unexpectedly encountered. Good programming practice dictates
-that code is structured to avoid NPE's. </p>
-<p>Explicitly throwing <code>NullPointerException</code> forces a method's callers to explicitly catch it, rather than coding to avoid it. Further, it
+that code is structured to avoid NPE’s.</p>
+<p>Explicitly throwing <code>NullPointerException</code> forces a method’s callers to explicitly catch it, rather than coding to avoid it. Further, it
 makes it difficult to distinguish between the unexpectedly-encountered <code>null</code> value and the condition which causes the method to purposely
 throw an NPE.</p>
 <p>If an NPE is being thrown to indicate that a parameter to the method should not have been null, use the <code>@NotNull</code> annotation

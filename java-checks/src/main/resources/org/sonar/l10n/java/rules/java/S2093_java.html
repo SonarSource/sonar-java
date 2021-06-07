@@ -1,7 +1,7 @@
 <p>Java 7 introduced the try-with-resources statement, which guarantees that the resource in question will be closed. Since the new syntax is closer
 to bullet-proof, it should be preferred over the older <code>try</code>/<code>catch</code>/<code>finally</code> version.</p>
 <p>This rule checks that <code>close</code>-able resources are opened in a try-with-resources statement.</p>
-<p><strong>Note</strong> that this rule is automatically disabled when the project's <code>sonar.java.source</code> is lower than <code>7</code>.</p>
+<p><strong>Note</strong> that this rule is automatically disabled when the project’s <code>sonar.java.source</code> is lower than <code>7</code>.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 FileReader fr = null;

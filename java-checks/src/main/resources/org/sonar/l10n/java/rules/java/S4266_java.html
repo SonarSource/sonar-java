@@ -1,42 +1,48 @@
 <p>When using the <code>Stream</code> API, call chains should be simplified as much as possible to improve readability and maintainability.</p>
 <p>This rule raises an issue when one of the following substitution can be made:</p>
 <table>
-  <tbody>
+  <colgroup>
+    <col style="width: 50%;">
+    <col style="width: 50%;">
+  </colgroup>
+  <thead>
     <tr>
       <th>Original</th>
       <th>Preferred</th>
     </tr>
+  </thead>
+  <tbody>
     <tr>
-      <td><code>stream.collect(counting())</code></td>
-      <td><code>stream.count()</code></td>
+      <td><p><code>stream.collect(counting())</code></p></td>
+      <td><p><code>stream.count()</code></p></td>
     </tr>
     <tr>
-      <td><code>stream.collect(maxBy(comparator))</code></td>
-      <td><code>stream.max(comparator)</code></td>
+      <td><p><code>stream.collect(maxBy(comparator))</code></p></td>
+      <td><p><code>stream.max(comparator)</code></p></td>
     </tr>
     <tr>
-      <td><code>stream.collect(minBy(comparator))</code></td>
-      <td><code>stream.min(comparator)</code></td>
+      <td><p><code>stream.collect(minBy(comparator))</code></p></td>
+      <td><p><code>stream.min(comparator)</code></p></td>
     </tr>
     <tr>
-      <td><code>stream.collect(mapping(mapper))</code></td>
-      <td><code>stream.map(mapper).collect()</code></td>
+      <td><p><code>stream.collect(mapping(mapper))</code></p></td>
+      <td><p><code>stream.map(mapper).collect()</code></p></td>
     </tr>
     <tr>
-      <td><code>stream.collect(reducing(...))</code></td>
-      <td><code>stream.reduce(...)</code></td>
+      <td><p><code>stream.collect(reducing(...))</code></p></td>
+      <td><p><code>stream.reduce(...)</code></p></td>
     </tr>
     <tr>
-      <td><code>stream.collect(summingInt(mapper))</code></td>
-      <td><code>stream.mapToInt(mapper).sum()</code></td>
+      <td><p><code>stream.collect(summingInt(mapper))</code></p></td>
+      <td><p><code>stream.mapToInt(mapper).sum()</code></p></td>
     </tr>
     <tr>
-      <td><code>stream.collect(summingLong(mapper))</code></td>
-      <td><code>stream.mapToLong(mapper).sum()</code></td>
+      <td><p><code>stream.collect(summingLong(mapper))</code></p></td>
+      <td><p><code>stream.mapToLong(mapper).sum()</code></p></td>
     </tr>
     <tr>
-      <td><code>stream.collect(summingDouble(mapper))</code></td>
-      <td><code>stream.mapToDouble(mapper).sum()</code></td>
+      <td><p><code>stream.collect(summingDouble(mapper))</code></p></td>
+      <td><p><code>stream.mapToDouble(mapper).sum()</code></p></td>
     </tr>
   </tbody>
 </table>

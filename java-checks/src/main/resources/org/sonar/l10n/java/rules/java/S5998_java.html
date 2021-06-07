@@ -8,7 +8,7 @@ characters because such consecutive characters will be matched by the regex engi
 <p>For example, on a JVM with a stack size of 1MB, the regex <code>(?:a|b)*</code> will overflow the stack after matching around 6000 characters
 (actual numbers may differ between JVM versions and even across multiple runs on the same JVM) whereas <code>(?:abc|def)*</code> can handle around
 15000 characters.</p>
-<p>Since often times stack growth can't easily be avoided, this rule will only report issues on regular expressions if they can cause a stack overflow
+<p>Since often times stack growth can’t easily be avoided, this rule will only report issues on regular expressions if they can cause a stack overflow
 on realistically sized inputs. You can adjust the <code>maxStackConsumptionFactor</code> parameter to adjust this.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>

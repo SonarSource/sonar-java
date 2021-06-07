@@ -1,5 +1,5 @@
-<p>When the call to a function doesn't have any side effects, what is the point of making the call if the results are ignored? In such case, either
-the function call is useless and should be dropped or the source code doesn't behave as expected.</p>
+<p>When the call to a function doesn’t have any side effects, what is the point of making the call if the results are ignored? In such case, either
+the function call is useless and should be dropped or the source code doesn’t behave as expected.</p>
 <p>To prevent generating any false-positives, this rule triggers an issue only on the following predefined list of immutable classes in the Java API
 :</p>
 <ul>
@@ -40,7 +40,7 @@ the function call is useless and should be dropped or the source code doesn't be
       <li> <code>containsAll(...)</code> </li>
       <li> <code>iterator()</code> </li>
       <li> <code>toArray()</code> </li>
-    </ul> </li>
+    </ul>  </li>
   <li> <code>java.util.Map</code>:
     <ul>
       <li> <code>size()</code> </li>
@@ -52,7 +52,7 @@ the function call is useless and should be dropped or the source code doesn't be
       <li> <code>keySet()</code> </li>
       <li> <code>entrySet()</code> </li>
       <li> <code>values()</code> </li>
-    </ul> </li>
+    </ul>  </li>
 </ul>
 <h2>Noncompliant Code Example</h2>
 <pre>

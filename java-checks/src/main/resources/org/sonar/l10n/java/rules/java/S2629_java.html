@@ -1,5 +1,5 @@
 <p>Passing message arguments that require further evaluation into a Guava <code>com.google.common.base.Preconditions</code> check can result in a
-performance penalty. That's because whether or not they're needed, each argument must be resolved before the method is actually called.</p>
+performance penalty. That’s because whether or not they’re needed, each argument must be resolved before the method is actually called.</p>
 <p>Similarly, passing concatenated strings into a logging method can also incur a needless performance hit because the concatenation will be performed
 every time the method is called, whether or not the log level is low enough to show the message.</p>
 <p>Instead, you should structure your code to pass static or pre-computed values into <code>Preconditions</code> conditions check and logging

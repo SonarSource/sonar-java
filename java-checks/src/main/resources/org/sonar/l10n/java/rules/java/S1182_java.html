@@ -1,7 +1,7 @@
 <p><code>Cloneable</code> is the marker <code>Interface</code> that indicates that <code>clone()</code> may be called on an object. Overriding
 <code>clone()</code> without implementing <code>Cloneable</code> can be useful if you want to control how subclasses clone themselves, but otherwise,
-it's probably a mistake.</p>
-<p>The usual convention for <code>Object.clone()</code> according to Oracle's Javadoc is:</p>
+it’s probably a mistake.</p>
+<p>The usual convention for <code>Object.clone()</code> according to Oracle’s Javadoc is:</p>
 <ol>
   <li> <code>x.clone() != x</code> </li>
   <li> <code>x.clone().getClass() == x.getClass()</code> </li>
@@ -11,7 +11,7 @@ it's probably a mistake.</p>
 <ol>
   <li> <code>super.clone()</code> returns a new object instance </li>
   <li> <code>super.clone()</code> returns an object of the same type as the one <code>clone()</code> was called on </li>
-  <li> <code>Object.clone()</code> performs a shallow copy of the object's state </li>
+  <li> <code>Object.clone()</code> performs a shallow copy of the object’s state </li>
 </ol>
 <h2>Noncompliant Code Example</h2>
 <pre>

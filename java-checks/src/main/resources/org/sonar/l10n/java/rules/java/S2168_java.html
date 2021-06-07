@@ -1,4 +1,4 @@
-<p>Double-checked locking is the practice of checking a lazy-initialized object's state both before and after a <code>synchronized</code> block is
+<p>Double-checked locking is the practice of checking a lazy-initialized object’s state both before and after a <code>synchronized</code> block is
 entered to determine whether or not to initialize the object.</p>
 <p>It does not work reliably in a platform-independent manner without additional synchronization for mutable instances of anything other than
 <code>float</code> or <code>int</code>. Using double-checked locking for the lazy initialization of any other type of primitive or mutable object

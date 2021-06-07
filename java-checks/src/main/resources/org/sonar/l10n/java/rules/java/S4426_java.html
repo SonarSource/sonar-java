@@ -1,18 +1,18 @@
 <p>Most of cryptographic systems require a sufficient key size to be robust against brute-force attacks.</p>
 <p><a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-131Ar2.pdf">NIST recommendations</a> will be checked for these
 use-cases:</p>
-<p><strong>Digital Signature Generation</strong> and <strong>Verification:</strong> </p>
+<p><strong>Digital Signature Generation</strong> and <strong>Verification:</strong></p>
 <ul>
   <li> p ≥ 2048 AND q ≥ 224 for DSA (<code>p</code> is key length and <code>q</code> the modulus length) </li>
   <li> n ≥ 2048 for RSA (<code>n</code> is the key length) </li>
 </ul>
-<p><strong>Key Agreement</strong>: </p>
+<p><strong>Key Agreement</strong>:</p>
 <ul>
   <li> p ≥ 2048 AND q ≥ 224 for DH and MQV </li>
   <li> n ≥ 224 for ECDH and ECMQV (Examples: <code>secp192r1</code> is a non-compliant curve (<code>n</code> &lt; 224) but <code>secp224k1</code> is
   compliant (<code>n</code> &gt;= 224)) </li>
 </ul>
-<p><strong>Symmetric keys</strong>: </p>
+<p><strong>Symmetric keys</strong>:</p>
 <ul>
   <li> key length ≥ 128 bits </li>
 </ul>

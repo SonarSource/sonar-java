@@ -1,49 +1,54 @@
 <p>When using Spring proxies, calling a method in the same class (e.g. <code>this.aMethod()</code>) with an incompatible <code>@Transactional</code>
-requirement will result in runtime exceptions because Spring only "sees" the caller and makes no provisions for properly invoking the callee. </p>
+requirement will result in runtime exceptions because Spring only "sees" the caller and makes no provisions for properly invoking the callee.</p>
 <p>Therefore, certain calls should never be made within the same class:</p>
 <table>
-  <tbody>
+  <colgroup>
+    <col style="width: 50%;">
+    <col style="width: 50%;">
+  </colgroup>
+  <thead>
     <tr>
       <th>From</th>
       <th>To</th>
     </tr>
+  </thead>
+  <tbody>
     <tr>
-      <td> non-<code>@Transactional</code> </td>
-      <td> MANDATORY, NESTED, REQUIRED, REQUIRES_NEW </td>
+      <td><p>non-<code>@Transactional</code></p></td>
+      <td><p>MANDATORY, NESTED, REQUIRED, REQUIRES_NEW</p></td>
     </tr>
     <tr>
-      <td> MANDATORY </td>
-      <td> NESTED, NEVER, NOT_SUPPORTED, REQUIRES_NEW </td>
+      <td><p>MANDATORY</p></td>
+      <td><p>NESTED, NEVER, NOT_SUPPORTED, REQUIRES_NEW</p></td>
     </tr>
     <tr>
-      <td> NESTED </td>
-      <td> NESTED, NEVER, NOT_SUPPORTED, REQUIRES_NEW </td>
+      <td><p>NESTED</p></td>
+      <td><p>NESTED, NEVER, NOT_SUPPORTED, REQUIRES_NEW</p></td>
     </tr>
     <tr>
-      <td> NEVER </td>
-      <td> MANDATORY, NESTED, REQUIRED, REQUIRES_NEW </td>
+      <td><p>NEVER</p></td>
+      <td><p>MANDATORY, NESTED, REQUIRED, REQUIRES_NEW</p></td>
     </tr>
     <tr>
-      <td> NOT_SUPPORTED </td>
-      <td> MANDATORY, NESTED, REQUIRED, REQUIRES_NEW </td>
+      <td><p>NOT_SUPPORTED</p></td>
+      <td><p>MANDATORY, NESTED, REQUIRED, REQUIRES_NEW</p></td>
     </tr>
     <tr>
-      <td> REQUIRED or <code>@Transactional</code> </td>
-      <td> NESTED, NEVER, NOT_SUPPORTED, REQUIRES_NEW </td>
+      <td><p>REQUIRED or <code>@Transactional</code></p></td>
+      <td><p>NESTED, NEVER, NOT_SUPPORTED, REQUIRES_NEW</p></td>
     </tr>
     <tr>
-      <td> REQUIRES_NEW </td>
-      <td> NESTED, NEVER, NOT_SUPPORTED, REQUIRES_NEW </td>
+      <td><p>REQUIRES_NEW</p></td>
+      <td><p>NESTED, NEVER, NOT_SUPPORTED, REQUIRES_NEW</p></td>
     </tr>
     <tr>
-      <td> SUPPORTS </td>
-      <td> MANDATORY, NESTED, NEVER, NOT_SUPPORTED, REQUIRED, REQUIRES_NEW </td>
+      <td><p>SUPPORTS</p></td>
+      <td><p>MANDATORY, NESTED, NEVER, NOT_SUPPORTED, REQUIRED, REQUIRES_NEW</p></td>
     </tr>
   </tbody>
 </table>
 <h2>Noncompliant Code Example</h2>
 <pre>
-
 @Override
 public void doTheThing() {
   // ...

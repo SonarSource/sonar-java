@@ -1,6 +1,6 @@
 <p>Making a <code>public</code> constant just <code>final</code> as opposed to <code>static final</code> leads to duplicating its value for every
 instance of the class, uselessly increasing the amount of memory required to execute the application.</p>
-<p>Further, when a non-<code>public</code>, <code>final</code> field isn't also <code>static</code>, it implies that different instances can have
+<p>Further, when a non-<code>public</code>, <code>final</code> field isn’t also <code>static</code>, it implies that different instances can have
 different values. However, initializing a non-<code>static final</code> field in its declaration forces every instance to have the same value. So such
 fields should either be made <code>static</code> or initialized in the constructor.</p>
 <h2>Noncompliant Code Example</h2>

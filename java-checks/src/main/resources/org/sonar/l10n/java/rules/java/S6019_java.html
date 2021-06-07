@@ -1,7 +1,7 @@
 <p>When a reluctant quantifier (such as <code>*?</code> or <code>+?</code>) is followed by a pattern that can match the empty string or directly by
 the end of the regex, it will always match the empty string when used with methods that find partial matches (such as <code>find</code>,
 <code>replaceAll</code>, <code>split</code> etc.).</p>
-<p>Similarly, when used with methods that find full matches, a reluctant quantifier that's followed directly by the end of the regex (or a pattern
+<p>Similarly, when used with methods that find full matches, a reluctant quantifier that’s followed directly by the end of the regex (or a pattern
 that always matches the empty string, such as <code>()</code>) behaves indistinguishably from a greedy quantifier while being less efficient.</p>
 <p>This is likely a sign that the regex does not work as intended.</p>
 <h2>Noncompliant Code Example</h2>

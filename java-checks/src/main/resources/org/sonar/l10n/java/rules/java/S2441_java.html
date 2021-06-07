@@ -3,7 +3,7 @@ seem like a big deal. But whether or not you explicitly serialize the session, i
 in a process called "passivation". Further, some servers automatically write their active sessions out to file at shutdown &amp; deserialize any such
 sessions at startup.</p>
 <p>The point is, that even though <code>HttpSession</code> does not <code>extend Serializable</code>, you must nonetheless assume that it will be
-serialized, and understand that if you've stored non-serializable objects in the session, errors will result. </p>
+serialized, and understand that if you’ve stored non-serializable objects in the session, errors will result.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public class Address {

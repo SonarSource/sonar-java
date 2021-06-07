@@ -1,13 +1,13 @@
 <p>User enumeration refers to the ability to guess existing usernames in a web application database. This can happen, for example, when using
 "sign-in/sign-on/forgot password" functionalities of a website.</p>
-<p>When an user tries to "sign-in" to a website with an incorrect username/login, the web application should not disclose that the username doesn't
-exist with a message similar to "this username is incorrect", instead a generic message should be used like "bad credentials", this way it's not
+<p>When an user tries to "sign-in" to a website with an incorrect username/login, the web application should not disclose that the username doesn’t
+exist with a message similar to "this username is incorrect", instead a generic message should be used like "bad credentials", this way it’s not
 possible to guess whether the username or password was incorrect during the authentication.</p>
 <p>If a user-management feature discloses information about the existence of a username, attackers can use brute force attacks to retrieve a large
-amount of valid usernames that will impact the privacy of corresponding users and facilitate other attacks (phishing, password guessing etc ...).</p>
+amount of valid usernames that will impact the privacy of corresponding users and facilitate other attacks (phishing, password guessing etc …​).</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
-  <li> The application discloses that a username exists in its database: most of the time it's possible to avoid this kind of leak except for the
+  <li> The application discloses that a username exists in its database: most of the time it’s possible to avoid this kind of leak except for the
   "registration/sign-on" part of a website because in this case the user must choose a valid username (not already taken by another user). </li>
   <li> There is no rate limiting and CAPTCHA protection in place for requests involving a username. </li>
 </ul>

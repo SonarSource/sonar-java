@@ -1,33 +1,39 @@
 <p>Whether the valid value ranges for <code>Date</code> fields start with 0 or 1 varies by field. For instance, month starts at 0, and day of month
 starts at 1. Enter a date value that goes past the end of the valid range, and the date will roll without error or exception. For instance, enter 12
-for month, and you'll get January of the following year.</p>
+for month, and you’ll get January of the following year.</p>
 <p>This rule checks for bad values used in conjunction with <code>java.util.Date</code>, <code>java.sql.Date</code>, and
 <code>java.util.Calendar</code>. Specifically, values outside of the valid ranges:</p>
 <table>
-  <tbody>
+  <colgroup>
+    <col style="width: 50%;">
+    <col style="width: 50%;">
+  </colgroup>
+  <thead>
     <tr>
       <th>Field</th>
       <th>Valid</th>
     </tr>
+  </thead>
+  <tbody>
     <tr>
-      <td>month</td>
-      <td>0-11</td>
+      <td><p>month</p></td>
+      <td><p>0-11</p></td>
     </tr>
     <tr>
-      <td>date (day)</td>
-      <td>0-31</td>
+      <td><p>date (day)</p></td>
+      <td><p>0-31</p></td>
     </tr>
     <tr>
-      <td>hour</td>
-      <td>0-23</td>
+      <td><p>hour</p></td>
+      <td><p>0-23</p></td>
     </tr>
     <tr>
-      <td>minute</td>
-      <td>0-60</td>
+      <td><p>minute</p></td>
+      <td><p>0-60</p></td>
     </tr>
     <tr>
-      <td>second</td>
-      <td>0-61</td>
+      <td><p>second</p></td>
+      <td><p>0-61</p></td>
     </tr>
   </tbody>
 </table>

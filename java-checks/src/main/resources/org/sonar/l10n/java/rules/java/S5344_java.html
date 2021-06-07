@@ -6,7 +6,7 @@
 </ul>
 <p>This rule raises an issue when a password is stored in clear-text or with a hash algorithm vulnerable to <code>bruce force attacks</code>. These
 algorithms, like <code>md5</code> or <code>SHA-family</code> functions are fast to compute the hash and therefore brute force attacks are possible
-(it's easier to exhaust the entire space of all possible passwords) especially with hardware like GPU, FPGA or ASIC. Modern password hashing
+(it’s easier to exhaust the entire space of all possible passwords) especially with hardware like GPU, FPGA or ASIC. Modern password hashing
 algorithms such as <code>bcrypt</code>, <code>PBKDF2</code> or <code>argon2</code> are recommended.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>

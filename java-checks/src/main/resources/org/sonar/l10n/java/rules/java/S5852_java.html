@@ -5,7 +5,7 @@ of the regular expression is exponential in the size of the input, this means th
 with, in this case, a large carefully-crafted input (thousands chars).</p>
 <p>This rule determines the runtime complexity of a regular expression and informs you of the complexity if it is not linear.</p>
 <p>Note that, due to improvements to the matching algorithm, some cases of exponential runtime complexity have become impossible when run using JDK 9
-or later. In such cases, an issue will only be reported if the project's target Java version is 8 or earlier.</p>
+or later. In such cases, an issue will only be reported if the project’s target Java version is 8 or earlier.</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
   <li> The input is user-controlled. </li>
@@ -21,21 +21,21 @@ regex counts as a pattern that can fail because it will only succeed when the en
 <ul>
   <li> If you have a non-possessive repetition <code>r*</code> or <code>r*?</code>, such that the regex <code>r</code> could produce different
   possible matches (of possibly different lengths) on the same input, the worst case matching time can be exponential. This can be the case if
-  <code>r</code> contains optional parts, alternations or additional repetitions (but not if the repetition is written in such a way that there's only
+  <code>r</code> contains optional parts, alternations or additional repetitions (but not if the repetition is written in such a way that there’s only
   one way to match it).
     <ul>
       <li> When using JDK 9 or later an optimization applies when the repetition is greedy and the entire regex does not contain any back references.
       In that case the runtime will only be polynomial (in case of nested repetitions) or even linear (in case of alternations or optional parts).
       </li>
-    </ul> </li>
+    </ul>  </li>
   <li> If you have multiple non-possessive repetitions that can match the same contents and are consecutive or are only separated by an optional
   separator or a separator that can be matched by both of the repetitions, the worst case matching time can be polynomial (O(n^c) where c is the
   number of problematic repetitions). For example <code>a*b*</code> is not a problem because <code>a*</code> and <code>b*</code> match different
-  things and <code>a*_a*</code> is not a problem because the repetitions are separated by a '_' and can't match that '_'. However, <code>a*a*</code>
-  and <code>.*_.*</code> have quadratic runtime. </li>
-  <li> If you're performing a partial match (such as by using <code>Matcher.find</code>, <code>String.split</code>, <code>String.replaceAll</code>
+  things and <code>a*_a*</code> is not a problem because the repetitions are separated by a <code>'_'</code> and can’t match that <code>'_'</code>.
+  However, <code>a*a*</code> and <code>.*_.*</code> have quadratic runtime. </li>
+  <li> If you’re performing a partial match (such as by using <code>Matcher.find</code>, <code>String.split</code>, <code>String.replaceAll</code>
   etc.) and the regex is not anchored to the beginning of the string, quadratic runtime is especially hard to avoid because whenever a match fails,
-  the regex engine will try again starting at the next index. This means that any unbounded repetition (even a possessive one), if it's followed by a
+  the regex engine will try again starting at the next index. This means that any unbounded repetition (even a possessive one), if it’s followed by a
   pattern that can fail, can cause quadratic runtime on some inputs. For example <code>str.split("\\s*,")</code> will run in quadratic time on strings
   that consist entirely of spaces (or at least contain large sequences of spaces, not followed by a comma). </li>
 </ul>
@@ -44,24 +44,24 @@ regex counts as a pattern that can fail because it will only succeed when the en
   <li> If applicable, define a maximum number of expected repetitions using the bounded quantifiers, like <code>{1,5}</code> instead of <code>+</code>
   for instance. </li>
   <li> Refactor <code>nested quantifiers</code> to limit the number of way the inner group can be matched by the outer quantifier, for instance this
-  nested quantifier situation <code>(ba+)+</code> doesn't cause performance issues, indeed, the inner group can be matched only if there exists
+  nested quantifier situation <code>(ba+)+</code> doesn’t cause performance issues, indeed, the inner group can be matched only if there exists
   exactly one <code>b</code> char per repetition of the group. </li>
   <li> Optimize regular expressions with <code>possessive quantifiers</code> and <code>atomic grouping</code>. </li>
   <li> Use negated character classes instead of <code>.</code> to exclude separators where applicable. For example the quadratic regex
   <code>.*_.*</code> can be made linear by changing it to <code>[^_]*_.*</code> </li>
 </ul>
-<p>Sometimes it's not possible to rewrite the regex to be linear while still matching what you want it to match. Especially when using partial
+<p>Sometimes it’s not possible to rewrite the regex to be linear while still matching what you want it to match. Especially when using partial
 matches, for which it is quite hard to avoid quadratic runtimes. In those cases consider the following approaches:</p>
 <ul>
   <li> Solve the problem without regular expressions </li>
-  <li> Use an alternative non-backtracking regex implementations such as Google's <a href="https://github.com/google/re2">RE2</a> or <a
+  <li> Use an alternative non-backtracking regex implementations such as Google’s <a href="https://github.com/google/re2">RE2</a> or <a
   href="https://github.com/google/re2j">RE2/J</a>. </li>
   <li> Use multiple passes. This could mean pre- and/or post-processing the string manually before/after applying the regular expression to it or
   using multiple regular expressions. One example of this would be to replace <code>str.split("\\s*,\\s*")</code> with <code>str.split(",")</code> and
   then trimming the spaces from the strings as a second step. </li>
   <li> When using <code>Matcher.find()</code>, it is often possible to make the regex infallible by making all the parts that could fail optional,
-  which will prevent backtracking. Of course this means that you'll accept more strings than intended, but this can be handled by using capturing
-  groups to check whether the optional parts were matched or not and then ignoring the match if they weren't. For example the regex <code>x*y</code>
+  which will prevent backtracking. Of course this means that you’ll accept more strings than intended, but this can be handled by using capturing
+  groups to check whether the optional parts were matched or not and then ignoring the match if they weren’t. For example the regex <code>x*y</code>
   could be replaced with <code>x*(y)?</code> and then the call to <code>matcher.find()</code> could be replaced with <code>matcher.find() &amp;&amp;
   matcher.group(1) != null</code>. </li>
 </ul>

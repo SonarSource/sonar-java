@@ -1,6 +1,6 @@
 <p>AssertJ assertions <code>allMatch</code> and <code>doesNotContains</code> on an empty list always&nbsp;returns true whatever the content of the
 predicate. Despite being correct, you should make explicit if you expect an empty list or not, by adding
-<code>isEmpty()</code>/<code>isNotEmpty()</code> in addition to calling the assertion, or by testing the list's content further. It will justify the
+<code>isEmpty()</code>/<code>isNotEmpty()</code> in addition to calling the assertion, or by testing the list’s content further. It will justify the
 useless predicate to improve clarity or increase the reliability of the test.</p>
 <p>This rule raises an issue when any of the methods listed are used without asserting that the list is empty or not and without testing the
 content.</p>

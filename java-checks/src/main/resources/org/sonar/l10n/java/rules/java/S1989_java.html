@@ -1,7 +1,7 @@
-<p>Even though the signatures for methods in a servlet include <code>throws IOException, ServletException</code>, it's a bad idea to let such
+<p>Even though the signatures for methods in a servlet include <code>throws IOException, ServletException</code>, it’s a bad idea to let such
 exceptions be thrown. Failure to catch exceptions in a servlet could leave a system in a vulnerable state, possibly resulting in denial-of-service
 attacks, or the exposure of sensitive information because when a servlet throws an exception, the servlet container typically sends debugging
-information back to the user. And that information could be very valuable to an attacker. </p>
+information back to the user. And that information could be very valuable to an attacker.</p>
 <p>This rule checks all exceptions in methods named "do*" are explicitly handled in servlet classes.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>

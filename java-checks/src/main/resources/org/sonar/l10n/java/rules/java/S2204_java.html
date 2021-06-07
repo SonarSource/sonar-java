@@ -1,4 +1,4 @@
-<p><code>AtomicInteger</code>, and <code>AtomicLong</code> extend <code>Number</code>, but they're distinct from <code>Integer</code> and
+<p><code>AtomicInteger</code>, and <code>AtomicLong</code> extend <code>Number</code>, but they’re distinct from <code>Integer</code> and
 <code>Long</code> and should be handled differently. <code>AtomicInteger</code> and <code>AtomicLong</code> are designed to support lock-free,
 thread-safe programming on single variables. As such, an <code>AtomicInteger</code> will only ever be "equal" to itself. Instead, you should
 <code>.get()</code> the value and make comparisons on it.</p>

@@ -1,10 +1,10 @@
 <p>On one side, Spring MVC automatically bind request parameters to beans declared as arguments of methods annotated with
-<code>@RequestMapping</code>. Because of this automatic binding feature, it's possible to feed some unexpected fields on the arguments of the
-<code>@RequestMapping</code> annotated methods. </p>
+<code>@RequestMapping</code>. Because of this automatic binding feature, it’s possible to feed some unexpected fields on the arguments of the
+<code>@RequestMapping</code> annotated methods.</p>
 <p>On the other end, persistent objects (<code>@Entity</code> or <code>@Document</code>) are linked to the underlying database and updated
 automatically by a persistence framework, such as Hibernate, JPA or Spring Data MongoDB.</p>
 <p>These two facts combined together can lead to malicious attack: if a persistent object is used as an argument of a method annotated with
-<code>@RequestMapping</code>, it's possible from a specially crafted user input, to change the content of unexpected fields into the database.</p>
+<code>@RequestMapping</code>, it’s possible from a specially crafted user input, to change the content of unexpected fields into the database.</p>
 <p>For this reason, using <code>@Entity</code> or <code>@Document</code> objects as arguments of methods annotated with <code>@RequestMapping</code>
 should be avoided.</p>
 <p>In addition to <code>@RequestMapping</code>, this rule also considers the annotations introduced in Spring Framework 4.3: <code>@GetMapping</code>,

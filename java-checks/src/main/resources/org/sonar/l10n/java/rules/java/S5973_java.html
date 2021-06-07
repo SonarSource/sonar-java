@@ -1,6 +1,6 @@
 <p>Unstable / flaky tests are tests which sometimes pass and sometimes fail, without any code change. Obviously, they slow down developments when
-engineers have to rerun failed tests. However the real problem is that you can't completely trust these tests, they might fail for many different
-reasons and you don't know if any of them will happen in production.</p>
+engineers have to rerun failed tests. However the real problem is that you can’t completely trust these tests, they might fail for many different
+reasons and you don’t know if any of them will happen in production.</p>
 <p>Some tools, such as TestNG, enable developers to automatically retry flaky tests. This might be ok as a temporary solution, but it should
 definitely be fixed. The more flaky tests you add, the more chances there are for a bug to arrive in production.</p>
 <p>This rule raises an issue when the annotation <code>org.testng.annotations.Test</code> is given a <code>successPercentage</code> argument with a

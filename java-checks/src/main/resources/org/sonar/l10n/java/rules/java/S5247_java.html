@@ -16,7 +16,7 @@ escaped and thus an attack as below is possible:</p>
     <ul>
       <li> dynamic variables in templates come from untrusted locations or are user-controlled inputs </li>
       <li> there is no local mechanism in place to sanitize or validate the inputs. </li>
-    </ul> </li>
+    </ul>  </li>
 </ul>
 <p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
@@ -41,7 +41,7 @@ Mustache.compiler().escapeHTML(true).compile(template).execute(context); // Comp
 </pre>
 <p>With <a href="https://freemarker.apache.org/">Freemarker</a>. See <a
 href="https://freemarker.apache.org/docs/api/freemarker/template/Configuration.html#setAutoEscapingPolicy-int-">"setAutoEscapingPolicy"
-documentation</a> for more details. </p>
+documentation</a> for more details.</p>
 <pre>
 freemarker.template.Configuration configuration = new freemarker.template.Configuration();
 configuration.setAutoEscapingPolicy(ENABLE_IF_DEFAULT_AUTO_ESCAPING_POLICY); // Compliant

@@ -1,6 +1,6 @@
 <p><a href="https://www.w3.org/TR/xml/">XML specification</a> allows the use of entities that can be <a
 href="https://www.w3.org/TR/xml/#sec-internal-ent">internal</a> or <a href="https://www.w3.org/TR/xml/#sec-external-ent">external</a> (file system /
-network access ...) which could lead to vulnerabilities such as confidential file disclosures or <a
+network access …​) which could lead to vulnerabilities such as confidential file disclosures or <a
 href="https://www.owasp.org/index.php/Server_Side_Request_Forgery">SSRFs</a>.</p>
 <p>Example in this XML document, an external entity read the /etc/passwd file:</p>
 <pre>
@@ -41,11 +41,11 @@ properties</a> have been defined since JAXP 1.5:</p>
 <ul>
   <li> it has <a
   href="https://docs.oracle.com/en/java/javase/13/security/java-api-xml-processing-jaxp-security-guide.html#GUID-88B04BE2-35EF-4F61-B4FA-57A0E9102342">no effect</a> to protect the parser from XXE attacks but helps guard against excessive memory consumption from XML processing. </li>
-  <li> or it's just an obscur shortcut (it could set ACCESS_EXTERNAL_DTD and ACCESS_EXTERNAL_SCHEMA to "" but without guarantee). </li>
+  <li> or it’s just an obscur shortcut (it could set ACCESS_EXTERNAL_DTD and ACCESS_EXTERNAL_SCHEMA to "" but without guarantee). </li>
 </ul>
 <p>When setting <a href="https://docs.oracle.com/javase/7/docs/api/org/xml/sax/XMLReader.html#setEntityResolver(org.xml.sax.EntityResolver)">an entity
 resolver</a> to <code>null</code> (eg: <code>setEntityResolver(null)</code>) the parser will use its own resolution, which is unsafe.</p>
-<h2>Noncompliant Code Examples</h2>
+<h2>Noncompliant Code Example</h2>
 <p><a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilderFactory</a> library:</p>
 <pre>
 String xml = "xxe.xml";

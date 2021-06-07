@@ -2,8 +2,8 @@
 because all classes in Java extend <code>Object</code> and therefore automatically inherit those methods. But there are two very good reasons for not
 calling them on a <code>Thread</code>:</p>
 <ul>
-  <li> Internally, the JVM relies on these methods to change the state of the Thread (<code>BLOCKED</code>, <code>WAITING</code>, ...), so calling
-  them will corrupt the behavior of the JVM. </li>
+  <li> Internally, the JVM relies on these methods to change the state of the Thread (<code>BLOCKED</code>, <code>WAITING</code>, …​), so calling them
+  will corrupt the behavior of the JVM. </li>
   <li> It is not clear (perhaps even to the original coder) what is really expected. For instance, it is waiting for the execution of the Thread to
   suspended, or is it the acquisition of the object monitor that is waited for? </li>
 </ul>

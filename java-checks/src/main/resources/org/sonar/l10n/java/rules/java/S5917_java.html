@@ -1,5 +1,5 @@
 <p>When creating a <code>DateTimeFormatter</code> using the <code>WeekFields.weekBasedYear()</code> temporal field, the resulting year number may be
-off by 1 at the beginning of a new year (when the date to format is in a week that is shared by two consecutive years). </p>
+off by 1 at the beginning of a new year (when the date to format is in a week that is shared by two consecutive years).</p>
 <p>Using this year number in combination with an incompatible week temporal field yields a result that may be confused with the first week of the
 previous year.</p>
 <p>Instead, when paired with a week temporal field, the week-based year should only be used with the week of week-based year temporal field

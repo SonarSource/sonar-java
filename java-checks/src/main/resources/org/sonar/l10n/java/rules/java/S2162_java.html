@@ -1,5 +1,5 @@
 <p>A key facet of the <code>equals</code> contract is that if <code>a.equals(b)</code> then <code>b.equals(a)</code>, i.e. that the relationship is
-symmetric. </p>
+symmetric.</p>
 <p>Using <code>instanceof</code> breaks the contract when there are subclasses, because while the child is an <code>instanceof</code> the parent, the
 parent is not an <code>instanceof</code> the child. For instance, assume that <code>Raspberry extends Fruit</code> and adds some fields (requiring a
 new implementation of <code>equals</code>):</p>
@@ -15,7 +15,7 @@ if (fruit instanceof Raspberry) { ... } // false
 raspberry.equals(fruit); // false
 fruit.equals(raspberry); //true
 </pre>
-<p>Additionally, non <code>final</code> classes shouldn't use a hardcoded class name in the <code>equals</code> method because doing so breaks the
+<p>Additionally, non <code>final</code> classes shouldn’t use a hardcoded class name in the <code>equals</code> method because doing so breaks the
 method for subclasses. Instead, make the comparison dynamic.</p>
 <p>Further, comparing to an unrelated class type breaks the contract for that unrelated type, because while
 <code>thisClass.equals(unrelatedClass)</code> can return true, <code>unrelatedClass.equals(thisClass)</code> will not.</p>

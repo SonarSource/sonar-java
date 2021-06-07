@@ -23,8 +23,8 @@ void bar() throws Throwable {}
   <li> in overridable methods (non-final, or not member of a final class, non-static, non-private), if the exception is documented with a proper
   JavaDoc </li>
 </ul>
-<p>Also, the rule won't raise issues on <code>RuntimeException</code>, or one of its descendants, because explicating runtime exceptions which could
-be thrown can ultimately help the method's users, and can even be considered as good practice.</p>
+<p>Also, the rule won’t raise issues on <code>RuntimeException</code>, or one of its descendants, because explicating runtime exceptions which could
+be thrown can ultimately help the method’s users, and can even be considered as good practice.</p>
 <pre>
 class A extends B {
   @Override
