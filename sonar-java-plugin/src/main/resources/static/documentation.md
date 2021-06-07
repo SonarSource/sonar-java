@@ -47,7 +47,7 @@ When setting `sonar.java.jdkHome`, you need to provide the path to the JDK direc
 
 The best way to deactivate an individual issue you don't intend to fix is to mark it "Won't Fix" or "False Positive" through the {instance} UI.
 
-If you need to deactivate a rule (or all rules) for an entire file, then [issue exclusions](/project-administration/narrowing-the-focus/) are the way to go. But if you only want to deactivate a rule across a subset of a file - all the lines of a method or a class - you can use `@SuppressWarnings("all")` or `@SuppressWarnings` with rule keys: `@SuppressWarnings("squid:S2078")` or `@SuppressWarnings({"squid:S2078", "squid:S2076"})`. 
+If you need to deactivate a rule (or all rules) for an entire file, then [issue exclusions](/project-administration/narrowing-the-focus/) are the way to go. But if you only want to deactivate a rule across a subset of a file - all the lines of a method or a class - you can use `@SuppressWarnings("all")` or `@SuppressWarnings` with rule keys: `@SuppressWarnings("java:S2077")` or `@SuppressWarnings({"java:S1118", "java:S3546"})`.
 
 ## Handling Java Source Version
 
