@@ -1,5 +1,5 @@
 {
-  "title": "Classes that don't define \"hashCode()\" should not be used in hashes",
+  "title": "Classes that don\u0027t define \"hashCode()\" should not be used in hashes",
   "type": "BUG",
   "status": "ready",
   "remediation": {

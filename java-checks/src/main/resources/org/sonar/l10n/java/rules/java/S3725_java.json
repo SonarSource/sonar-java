@@ -1,5 +1,5 @@
 {
-  "title": "Java 8's \"Files.exists\" should not be used",
+  "title": "Java 8\u0027s \"Files.exists\" should not be used",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

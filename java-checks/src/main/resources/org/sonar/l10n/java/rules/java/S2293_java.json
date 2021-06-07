@@ -1,5 +1,5 @@
 {
-  "title": "The diamond operator (\"<>\") should be used",
+  "title": "The diamond operator (\"\u003c\u003e\") should be used",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

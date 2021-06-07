@@ -1,5 +1,5 @@
 {
-  "title": "Derived exceptions should not hide their parents' catch blocks",
+  "title": "Derived exceptions should not hide their parents\u0027 catch blocks",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

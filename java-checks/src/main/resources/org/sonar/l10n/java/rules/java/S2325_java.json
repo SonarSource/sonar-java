@@ -1,5 +1,5 @@
 {
-  "title": "\"private\" and \"final\" methods that don't access instance data should be \"static\"",
+  "title": "\"private\" and \"final\" methods that don\u0027t access instance data should be \"static\"",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

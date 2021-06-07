@@ -1,5 +1,5 @@
 {
-  "title": "Method parameters, caught exceptions and foreach variables' initial values should not be ignored",
+  "title": "Method parameters, caught exceptions and foreach variables\u0027 initial values should not be ignored",
   "type": "BUG",
   "status": "ready",
   "remediation": {
