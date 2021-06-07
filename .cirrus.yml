@@ -61,6 +61,30 @@ build_task:
     - ./check-license-compliance.sh
   cleanup_before_cache_script: cleanup_maven_repository
 
+ws_scan_task:
+  depends_on:
+    - build
+  <<: *ONLY_SONARSOURCE_QA
+  gke_container:
+    <<: *CONTAINER_DEFINITION
+    cpu: 4
+    memory: 8G
+  # run only on master and long-term branches
+  only_if: $CIRRUS_USER_COLLABORATOR == 'true' && ($CIRRUS_BRANCH == "master" || $CIRRUS_BRANCH =~ "branch-.*")
+  env:
+    WS_APIKEY: ENCRYPTED[cda363e6bcac3edd4c259dc05b3570e00152ad50f9ad3ec3cab72d57cda318a0d5472e37c656c3566c2cb8c752d2f5a0]
+  maven_cache:
+    folder: ${CIRRUS_WORKING_DIR}/.m2/repository
+  whitesource_script:
+    - source cirrus-env QA
+    - source set_maven_build_version $BUILD_NUMBER
+    - mvn clean install -DskipTests -pl '!java-checks-test-sources'
+    - source ws_scan.sh
+  allow_failures: "true"
+  always:
+    ws_artifacts:
+      path: "whitesource/**/*"
+
 qa_os_win_task:
   depends_on:
     - build
@@ -164,6 +188,7 @@ promote_task:
     - ruling
     - ruling_win
     - plugin_qa
+    - ws_scan
   <<: *ONLY_SONARSOURCE_QA
   gke_container:
     <<: *CONTAINER_DEFINITION
