@@ -1,25 +1,25 @@
 <p>According to the documentation,</p>
 <blockquote>
-  A program may produce unpredictable results if it attempts to distinguish two references to equal values of a value-based class, whether directly
-  via reference equality or indirectly via an appeal to synchronization...
+  <p>A program may produce unpredictable results if it attempts to distinguish two references to equal values of a value-based class, whether directly
+  via reference equality or indirectly via an appeal to synchronization…​</p>
 </blockquote>
 <p>This is because value-based classes are intended to be wrappers for value types, which will be primitive-like collections of data (similar to
 <code>struct</code>s in other languages) that will come in future versions of Java.</p>
 <blockquote>
-  <p>Instances of a value-based class ... </p>
+  <p>Instances of a value-based class …​</p>
   <ul>
     <li> do not have accessible constructors, but are instead instantiated through factory methods which make no commitment as to the identity of
     returned instances; </li>
   </ul>
 </blockquote>
-<p>This means that you can't be sure you're the only one trying to lock on any given instance of a value-based class, opening your code up to
+<p>This means that you can’t be sure you’re the only one trying to lock on any given instance of a value-based class, opening your code up to
 contention and deadlock issues.</p>
 <p>Under Java 8 breaking this rule may not actually break your code, but there are no guarantees of the behavior beyond that.</p>
 <p>This rule raises an issue when a known value-based class is used for synchronization. That includes all the classes in the <code>java.time</code>
 package except <code>Clock</code>; the date classes for alternate calendars, <code>HijrahDate</code>, <code>JapaneseDate</code>,
 <code>MinguoDate</code>, <code>ThaiBuddhistDate</code>; and the optional classes: <code>Optional</code>, <code>OptionalDouble</code>,
 <code>OptionalLong</code>, <code>OptionalInt</code>.</p>
-<p><strong>Note</strong> that this rule is automatically disabled when the project's <code>sonar.java.source</code> is lower than <code>8</code>.</p>
+<p><strong>Note</strong> that this rule is automatically disabled when the project’s <code>sonar.java.source</code> is lower than <code>8</code>.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 Optional&lt;Foo&gt; fOpt = doSomething();

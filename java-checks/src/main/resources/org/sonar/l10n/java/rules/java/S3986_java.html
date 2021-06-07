@@ -1,5 +1,5 @@
 <p>Few developers are aware of the difference between <code>Y</code> for "Week year" and <code>y</code> for Year when formatting and parsing a date
-with <code>SimpleDateFormat</code> or <code>DateTimeFormatter</code>. That's likely because for most dates, Week year and Year are the same, so
+with <code>SimpleDateFormat</code> or <code>DateTimeFormatter</code>. That’s likely because for most dates, Week year and Year are the same, so
 testing at any time other than the first or last week of the year will yield the same value for both <code>y</code> and <code>Y</code>. But in the
 last week of December and the first week of January, you may get unexpected results.</p>
 <p>According to the <a href="http://docs.oracle.com/javase/8/docs/api/java/util/GregorianCalendar.html#week_year">Javadoc</a>:</p>

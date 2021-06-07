@@ -1,14 +1,14 @@
-<p>To establish a SSL/TLS connection not vulnerable to man-in-the-middle attacks, it's essential to make sure the server presents the right
+<p>To establish a SSL/TLS connection not vulnerable to man-in-the-middle attacks, it’s essential to make sure the server presents the right
 certificate.</p>
-<p>The certificate's hostname-specific data should match the server hostname.</p>
-<p>It's not recommended to re-invent the wheel by implementing custom hostname verification.</p>
+<p>The certificate’s hostname-specific data should match the server hostname.</p>
+<p>It’s not recommended to re-invent the wheel by implementing custom hostname verification.</p>
 <p>TLS/SSL libraries provide built-in hostname verification functions that should be used.</p>
 <p>This rule raises an issue when:</p>
 <ul>
   <li> <code>HostnameVerifier.verify()</code> method always returns <code>true</code> </li>
-  <li> a JavaMail's <code>javax.mail.Session</code> is created with a <code>Properties</code> object having no
+  <li> a JavaMail’s <code>javax.mail.Session</code> is created with a <code>Properties</code> object having no
   <code>mail.smtp.ssl.checkserveridentity</code> or <code>mail.smtps.ssl.checkserveridentity</code> not configured to <code>true</code> </li>
-  <li> a Apache Common Emails's <code>org.apache.commons.mail.SimpleEmail</code> is used with <code>setSSLOnConnect(true)</code> or
+  <li> a Apache Common Emails’s <code>org.apache.commons.mail.SimpleEmail</code> is used with <code>setSSLOnConnect(true)</code> or
   <code>setStartTLSEnabled(true)</code> or <code>setStartTLSRequired(true)</code> without a call to <code>setSSLCheckServerIdentity(true)</code> </li>
 </ul>
 <h2>Noncompliant Code Example</h2>
@@ -31,7 +31,7 @@ email.setAuthenticator(new DefaultAuthenticator(username, password));
 email.setSSLOnConnect(true); // Noncompliant; setSSLCheckServerIdentity(true) should also be called before sending the email
 email.send();
 </pre>
-<p>JavaMail's example:</p>
+<p>JavaMail’s example:</p>
 <pre>
 Properties props = new Properties();
 props.put("mail.smtp.host", "smtp.gmail.com");
@@ -61,7 +61,7 @@ email.setSSLOnConnect(true);
 email.setSSLCheckServerIdentity(true); // Compliant
 email.send();
 </pre>
-<p>JavaMail's example:</p>
+<p>JavaMail’s example:</p>
 <pre>
 Properties props = new Properties();
 props.put("mail.smtp.host", "smtp.gmail.com");

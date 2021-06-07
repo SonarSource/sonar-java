@@ -1,8 +1,8 @@
-<p>Session fixation attacks occur when an attacker can force a legitimate user to use a session ID that he knows. To avoid fixation attacks, it's a
+<p>Session fixation attacks occur when an attacker can force a legitimate user to use a session ID that he knows. To avoid fixation attacks, it’s a
 good practice to generate a new session each time a user authenticates and delete/invalidate the existing session (the one possibly known by the
 attacker).</p>
 <h2>Noncompliant Code Example</h2>
-<p>In a Spring Security's context, session fixation protection is enabled by default but can be disabled with <code>sessionFixation().none()</code>
+<p>In a Spring Security’s context, session fixation protection is enabled by default but can be disabled with <code>sessionFixation().none()</code>
 method:</p>
 <pre>
 @Override
@@ -12,7 +12,7 @@ protected void configure(HttpSecurity http) throws Exception {
 }
 </pre>
 <h2>Compliant Solution</h2>
-<p>In a Spring Security's context, session fixation protection can be enabled as follows:</p>
+<p>In a Spring Security’s context, session fixation protection can be enabled as follows:</p>
 <pre>
 @Override
 protected void configure(HttpSecurity http) throws Exception {

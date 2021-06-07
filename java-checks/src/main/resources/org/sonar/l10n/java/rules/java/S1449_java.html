@@ -3,7 +3,7 @@
 representations. For instance with the Turkish language, when converting the small letter 'i' to upper case, the result is capital letter 'I' with a
 dot over it.</p>
 <p>Case conversion without a locale may work fine in its "home" environment, but break in ways that are extremely difficult to diagnose for customers
-who use different encodings. Such bugs can be nearly, if not completely, impossible to reproduce when it's time to fix them. For locale-sensitive
+who use different encodings. Such bugs can be nearly, if not completely, impossible to reproduce when it’s time to fix them. For locale-sensitive
 strings, the correct locale should always be used, but <code>Locale.ROOT</code> can be used for case-insensitive ones.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>

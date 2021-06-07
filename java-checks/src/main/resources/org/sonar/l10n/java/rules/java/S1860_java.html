@@ -3,7 +3,7 @@ with unhelpful stacktraces. Specifically, <code>String</code> literals, and boxe
 because they are pooled and reused. The story is even worse for <code>Boolean</code> objects, because there could possibly be only two instances of
 <code>Boolean</code>, <code>Boolean.TRUE</code> and <code>Boolean.FALSE</code> and every class that uses a Boolean will be referring to one of the
 two.</p>
-<p>Here is the list of types which shouldn't be used for synchronization:</p>
+<p>Here is the list of types which shouldn’t be used for synchronization:</p>
 <ul>
   <li> The primitive wrapper classes in java.lang; </li>
   <li> The class java.lang.Runtime.Version; </li>

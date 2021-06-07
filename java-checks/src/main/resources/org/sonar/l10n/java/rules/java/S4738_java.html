@@ -1,74 +1,90 @@
 <p>Some Guava features were really useful for Java 7 application because Guava was bringing APIs missing in the JDK. Java 8 fixed some of these
-limitations. When migrating an application to Java 8 or even when starting a new one, it's recommended to prefer Java 8 APIs over Guava ones to ease
-its maintenance: developers don't need to learn how to use two APIs and can stick to the standard one.</p>
+limitations. When migrating an application to Java 8 or even when starting a new one, it’s recommended to prefer Java 8 APIs over Guava ones to ease
+its maintenance: developers don’t need to learn how to use two APIs and can stick to the standard one.</p>
 <p>Java 9 brought even more useful methods to the standard Java library and if Java version is equal to or higher than 9, these standard methods
 should be used.</p>
 <p>This rule raises an issue when the following Guava APIs are used:</p>
 <table>
+  <colgroup>
+    <col style="width: 50%;">
+    <col style="width: 50%;">
+  </colgroup>
+  <thead>
+    <tr>
+      <th>Guava API</th>
+      <th>Java 8 API</th>
+    </tr>
+  </thead>
   <tbody>
     <tr>
-      <th> Guava API </th>
-      <th> Java 8 API </th>
+      <td><p>com.google.common.io.BaseEncoding#base64()</p></td>
+      <td><p>java.util.Base64</p></td>
     </tr>
     <tr>
-      <td> com.google.common.io.BaseEncoding#base64() </td>
-      <td> java.util.Base64 </td>
+      <td><p>com.google.common.io.BaseEncoding#base64Url()</p></td>
+      <td><p>java.util.Base64</p></td>
     </tr>
     <tr>
-      <td> com.google.common.io.BaseEncoding#base64Url() </td>
-      <td> java.util.Base64 </td>
+      <td><p>com.google.common.base.Joiner.on()</p></td>
+      <td><p>java.lang.String#join() or java.util.stream.Collectors#joining()</p></td>
     </tr>
     <tr>
-      <td> com.google.common.base.Joiner.on() </td>
-      <td> java.lang.String#join() or java.util.stream.Collectors#joining() </td>
+      <td><p>com.google.common.base.Optional#of()</p></td>
+      <td><p>java.util.Optional#of()</p></td>
     </tr>
     <tr>
-      <td> com.google.common.base.Optional#of() </td>
-      <td> java.util.Optional#of() </td>
+      <td><p>com.google.common.base.Optional#absent()</p></td>
+      <td><p>java.util.Optional#empty()</p></td>
     </tr>
     <tr>
-      <td> com.google.common.base.Optional#absent() </td>
-      <td> java.util.Optional#empty() </td>
+      <td><p>com.google.common.base.Optional#fromNullable()</p></td>
+      <td><p>java.util.Optional#ofNullable()</p></td>
     </tr>
     <tr>
-      <td> com.google.common.base.Optional#fromNullable() </td>
-      <td> java.util.Optional#ofNullable() </td>
+      <td><p>com.google.common.base.Optional</p></td>
+      <td><p>java.util.Optional</p></td>
     </tr>
     <tr>
-      <td> com.google.common.base.Optional </td>
-      <td> java.util.Optional </td>
+      <td><p>com.google.common.base.Predicate</p></td>
+      <td><p>java.util.function.Predicate</p></td>
     </tr>
     <tr>
-      <td> com.google.common.base.Predicate </td>
-      <td> java.util.function.Predicate </td>
+      <td><p>com.google.common.base.Function</p></td>
+      <td><p>java.util.function.Function</p></td>
     </tr>
     <tr>
-      <td> com.google.common.base.Function </td>
-      <td> java.util.function.Function </td>
+      <td><p>com.google.common.base.Supplier</p></td>
+      <td><p>java.util.function.Supplier</p></td>
     </tr>
     <tr>
-      <td> com.google.common.base.Supplier </td>
-      <td> java.util.function.Supplier </td>
+      <td><p>com.google.common.io.Files.createTempDir</p></td>
+      <td><p>java.nio.file.Files.createTempDirectory</p></td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <colgroup>
+    <col style="width: 50%;">
+    <col style="width: 50%;">
+  </colgroup>
+  <thead>
+    <tr>
+      <th>Guava API</th>
+      <th>Java 9 API</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><p>com.google.common.collect.ImmutableSet#of()</p></td>
+      <td><p>java.util.Set#of()</p></td>
     </tr>
     <tr>
-      <td> com.google.common.io.Files.createTempDir </td>
-      <td> java.nio.file.Files.createTempDirectory </td>
+      <td><p>com.google.common.collect.ImmutableList#of()</p></td>
+      <td><p>java.util.List#of()</p></td>
     </tr>
     <tr>
-      <th> Guava API </th>
-      <th> Java 9 API </th>
-    </tr>
-    <tr>
-      <td> com.google.common.collect.ImmutableSet#of() </td>
-      <td> java.util.Set#of() </td>
-    </tr>
-    <tr>
-      <td> com.google.common.collect.ImmutableList#of() </td>
-      <td> java.util.List#of() </td>
-    </tr>
-    <tr>
-      <td> com.google.common.collect.ImmutableMap#of() </td>
-      <td> java.util.Map#of() or java.util.Map#ofEntries()</td>
+      <td><p>com.google.common.collect.ImmutableMap#of()</p></td>
+      <td><p>java.util.Map#of() or java.util.Map#ofEntries()</p></td>
     </tr>
   </tbody>
 </table>

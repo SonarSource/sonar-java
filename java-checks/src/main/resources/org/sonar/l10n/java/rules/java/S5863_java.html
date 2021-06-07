@@ -1,4 +1,4 @@
-<p>Assertions comparing an object to itself are more likely to be bugs due to developer's carelessness.</p>
+<p>Assertions comparing an object to itself are more likely to be bugs due to developer’s carelessness.</p>
 <p>This rule raises an issue when the actual expression matches the expected expression.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
@@ -9,7 +9,7 @@ assertThat(actual).isEqualTo(actual); // Noncompliant
 assertThat(actual).isEqualTo(expected);
 </pre>
 <h2>Exceptions</h2>
-<p>In a unit test validating the <code>equals(...)</code> and <code>hashCode()</code> methods, it's legitimate to compare an object to itself. This
+<p>In a unit test validating the <code>equals(...)</code> and <code>hashCode()</code> methods, it’s legitimate to compare an object to itself. This
 rule does not raise an issue for <code>isEqualTo</code>, <code>assertEquals</code> or <code>hasSameHashCodeAs</code> when the unit test name contains
 (case insensitive): <code>equal</code>, <code>hash_?code</code>, <code>object_?method</code>. For example, in tests with the following names:
 <code>test_equals</code>, <code>testEqual</code>, <code>test_hashCode</code>, <code>test_hash_code</code>, <code>test_object_methods</code>.</p>

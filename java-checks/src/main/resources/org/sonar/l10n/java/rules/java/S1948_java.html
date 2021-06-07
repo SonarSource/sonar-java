@@ -1,7 +1,7 @@
 <p>Fields in a <code>Serializable</code> class must themselves be either <code>Serializable</code> or <code>transient</code> even if the class is
 never explicitly serialized or deserialized. For instance, under load, most J2EE application frameworks flush objects to disk, and an allegedly
 <code>Serializable</code> object with non-transient, non-serializable data members could cause program crashes, and open the door to attackers. In
-general a <code>Serializable</code> class is expected to fulfil its contract and not have an unexpected behaviour when an instance is serialized. </p>
+general a <code>Serializable</code> class is expected to fulfil its contract and not have an unexpected behaviour when an instance is serialized.</p>
 <p>This rule raises an issue on non-<code>Serializable</code> fields, and on collection fields when they are not <code>private</code> (because they
 could be assigned non-<code>Serializable</code> values externally), and when they are assigned non-<code>Serializable</code> types within the
 class.</p>

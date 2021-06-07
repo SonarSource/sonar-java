@@ -1,6 +1,6 @@
 <p><code>DefaultMessageListenerContainer</code> is implemented as a JMS poller. While the Spring container is shutting itself down, as each
 in-progress JMS <code>Consumer.receive()</code> call completes, any non-<code>null</code> return value will be a JMS message that the DMLC will
-<em>discard</em> due to the shutdown in progress. That will result in the received message never being processed. </p>
+<em>discard</em> due to the shutdown in progress. That will result in the received message never being processed.</p>
 <p>To prevent message loss during restart operations, set <code>acceptMessagesWhileStopping</code> to <code>true</code> so that such messages will be
 processed before shut down.</p>
 <h2>Noncompliant Code Example</h2>

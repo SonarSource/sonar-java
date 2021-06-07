@@ -1,5 +1,5 @@
-<p>When a back reference in a regex refers to a capturing group that hasn't been defined yet (or at all), it can never be matched. Named back
-references throw a <code>PatternSyntaxException</code> in that case; numeric back references fail silently when they can't match, simply making the
+<p>When a back reference in a regex refers to a capturing group that hasn’t been defined yet (or at all), it can never be matched. Named back
+references throw a <code>PatternSyntaxException</code> in that case; numeric back references fail silently when they can’t match, simply making the
 match fail.</p>
 <p>When the group is defined before the back reference but on a different control path (like in <code>(.)|\1</code> for example), this also leads to a
 situation where the back reference can never match.</p>

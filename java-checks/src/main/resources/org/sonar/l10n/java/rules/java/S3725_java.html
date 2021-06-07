@@ -1,8 +1,8 @@
 <p>The <code>Files.exists</code> method has noticeably poor performance in JDK 8, and can slow an application significantly when used to check files
-that don't actually exist. </p>
+that don’t actually exist.</p>
 <p>The same goes for <code>Files.notExists</code>, <code>Files.isDirectory</code> and <code>Files.isRegularFile</code> from <code>java.nio.file</code>
 package.</p>
-<p><strong>Note</strong> that this rule is automatically disabled when the project's <code>sonar.java.source</code> is not 8.</p>
+<p><strong>Note</strong> that this rule is automatically disabled when the project’s <code>sonar.java.source</code> is not 8.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 Path myPath;

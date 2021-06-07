@@ -1,11 +1,11 @@
-<p>Because of floating point imprecision, you're unlikely to get the value you expect from the <code>BigDecimal(double)</code> constructor. </p>
+<p>Because of floating point imprecision, you’re unlikely to get the value you expect from the <code>BigDecimal(double)</code> constructor.</p>
 <p>From <a href="http://docs.oracle.com/javase/7/docs/api/java/math/BigDecimal.html#BigDecimal(double)">the JavaDocs</a>:</p>
 <blockquote>
-  The results of this constructor can be somewhat unpredictable. One might assume that writing new BigDecimal(0.1) in Java creates a BigDecimal which
-  is exactly equal to 0.1 (an unscaled value of 1, with a scale of 1), but it is actually equal to
+  <p>The results of this constructor can be somewhat unpredictable. One might assume that writing new BigDecimal(0.1) in Java creates a BigDecimal
+  which is exactly equal to 0.1 (an unscaled value of 1, with a scale of 1), but it is actually equal to
   0.1000000000000000055511151231257827021181583404541015625. This is because 0.1 cannot be represented exactly as a double (or, for that matter, as a
   binary fraction of any finite length). Thus, the value that is being passed in to the constructor is not exactly equal to 0.1, appearances
-  notwithstanding.
+  notwithstanding.</p>
 </blockquote>
 <p>Instead, you should use <code>BigDecimal.valueOf</code>, which uses a string under the covers to eliminate floating point rounding errors, or the
 constructor that takes a <code>String</code> argument.</p>

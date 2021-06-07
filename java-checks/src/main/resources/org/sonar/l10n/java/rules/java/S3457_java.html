@@ -2,7 +2,7 @@
 result in the wrong strings being created. This rule statically validates the correlation of <code>printf</code>-style format strings to their
 arguments when calling the <code>format(...)</code> methods of <code>java.util.Formatter</code>, <code>java.lang.String</code>,
 <code>java.io.PrintStream</code>, <code>MessageFormat</code>, and <code>java.io.PrintWriter</code> classes and the <code>printf(...)</code> methods of
-<code>java.io.PrintStream</code> or <code>java.io.PrintWriter</code> classes. </p>
+<code>java.io.PrintStream</code> or <code>java.io.PrintWriter</code> classes.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 String.format("First {0} and then {1}", "foo", "bar");  //Noncompliant. Looks like there is a confusion with the use of {{java.text.MessageFormat}}, parameters "foo" and "bar" will be simply ignored here

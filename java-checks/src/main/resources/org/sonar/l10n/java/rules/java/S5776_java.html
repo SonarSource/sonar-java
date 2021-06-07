@@ -1,8 +1,8 @@
 <p>When testing exception via <code>org.junit.rules.ExpectedException</code> any code after the raised exception will not be executed, so adding
-subsequent assertions is wrong and misleading. This rule raises an issue when an assertion is done after the "expect(...)" invocation, only the code
-throwing the expected exception should be after "expect(...)".</p>
+subsequent assertions is wrong and misleading. This rule raises an issue when an assertion is done after the "expect(…​)" invocation, only the code
+throwing the expected exception should be after "expect(…​)".</p>
 <p>You should consider using <a
-href="https://github.com/junit-team/junit4/wiki/Exception-testing#using-assertthrows-method">org.junit.Assert.assertThrows</a> instead, it's available
+href="https://github.com/junit-team/junit4/wiki/Exception-testing#using-assertthrows-method">org.junit.Assert.assertThrows</a> instead, it’s available
 since JUnit 4.13 and it allows additional subsequent assertions.</p>
 <p>Alternatively, you could use <a href="https://github.com/junit-team/junit4/wiki/Exception-testing#trycatch-idiom">try-catch idiom</a> for JUnit
 version &lt; 4.13 or if your project does not support lambdas.</p>

@@ -1,7 +1,7 @@
 <p>Using <code>return</code>, <code>break</code>, <code>throw</code>, and so on from a <code>finally</code> block suppresses the propagation of any
 unhandled <code>Throwable</code> which was thrown in the <code>try</code> or <code>catch</code> block.</p>
 <p>This rule raises an issue when a jump statement (<code>break</code>, <code>continue</code>, <code>return</code>, <code>throw</code>, and
-<code>goto</code>) would force control flow to leave a <code>finally</code> block. </p>
+<code>goto</code>) would force control flow to leave a <code>finally</code> block.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public static void main(String[] args) {

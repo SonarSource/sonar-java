@@ -1,4 +1,4 @@
-<p>Marking a non-public method <code>@Transactional</code> is both useless and misleading because Spring doesn't "see" non-<code>public</code>
+<p>Marking a non-public method <code>@Transactional</code> is both useless and misleading because Spring doesn’t "see" non-<code>public</code>
 methods, and so makes no provision for their proper invocation. Nor does Spring make provision for the methods invoked by the method it called.</p>
 <p>Therefore marking a <code>private</code> method, for instance, <code>@Transactional</code> can only result in a runtime error or exception if the
 method is actually written to be <code>@Transactional</code>.</p>

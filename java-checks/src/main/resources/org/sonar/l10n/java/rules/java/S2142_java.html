@@ -1,7 +1,7 @@
 <p><code>InterruptedExceptions</code> should never be ignored in the code, and simply logging the exception counts in this case as "ignoring". The
-throwing of the <code>InterruptedException</code> clears the interrupted state of the Thread, so if the exception is not handled properly the fact
-that the thread was interrupted will be lost. Instead, <code>InterruptedExceptions</code> should either be rethrown - immediately or after cleaning up
-the method's state - or the thread should be re-interrupted by calling <code>Thread.interrupt()</code> even if this is supposed to be a
+throwing of the <code>InterruptedException</code> clears the interrupted state of the Thread, so if the exception is not handled properly the
+information that the thread was interrupted will be lost. Instead, <code>InterruptedExceptions</code> should either be rethrown - immediately or after
+cleaning up the method’s state - or the thread should be re-interrupted by calling <code>Thread.interrupt()</code> even if this is supposed to be a
 single-threaded application. Any other course of action risks delaying thread shutdown and loses the information that the thread was interrupted -
 probably without finishing its task.</p>
 <p>Similarly, the <code>ThreadDeath</code> exception should also be propagated. According to its JavaDoc:</p>
@@ -37,6 +37,5 @@ public void run () {
 <h2>See</h2>
 <ul>
   <li> <a href="http://cwe.mitre.org/data/definitions/391.html">MITRE, CWE-391</a> - Unchecked Error Condition </li>
-  <li> <a href="https://www.ibm.com/developerworks/java/library/j-jtp05236/index.html?ca=drs-#2.1">Dealing with InterruptedException</a> </li>
 </ul>
 

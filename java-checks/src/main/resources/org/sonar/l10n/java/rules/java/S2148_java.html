@@ -2,31 +2,37 @@
 manner has no semantic meaning, but makes it easier for maintainers to understand the code.</p>
 <p>The number of digits to the left of a decimal point needed to trigger this rule varies by base.</p>
 <table>
-  <tbody>
+  <colgroup>
+    <col style="width: 50%;">
+    <col style="width: 50%;">
+  </colgroup>
+  <thead>
     <tr>
       <th>Base</th>
-      <th> Minimum digits</th>
+      <th>Minimum digits</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><p>binary</p></td>
+      <td><p>9</p></td>
     </tr>
     <tr>
-      <td>binary</td>
-      <td> 9 </td>
+      <td><p>octal</p></td>
+      <td><p>9</p></td>
     </tr>
     <tr>
-      <td>octal</td>
-      <td> 9 </td>
+      <td><p>decimal</p></td>
+      <td><p>6</p></td>
     </tr>
     <tr>
-      <td>decimal</td>
-      <td> 6 </td>
-    </tr>
-    <tr>
-      <td>hexadecimal</td>
-      <td> 9 </td>
+      <td><p>hexadecimal</p></td>
+      <td><p>9</p></td>
     </tr>
   </tbody>
 </table>
 <p>It is only the presence of underscores, not their spacing that is scrutinized by this rule.</p>
-<p><strong>Note</strong> that this rule is automatically disabled when the project's <code>sonar.java.source</code> is lower than <code>7</code>.</p>
+<p><strong>Note</strong> that this rule is automatically disabled when the project’s <code>sonar.java.source</code> is lower than <code>7</code>.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 int i = 10000000;  // Noncompliant; is this 10 million or 100 million?

@@ -1,11 +1,11 @@
 <p>Running finalizers on JVM exit is disabled by default. It can be enabled with <code>System.runFinalizersOnExit</code> and
-<code>Runtime.runFinalizersOnExit</code>, but both methods are deprecated because they are are inherently unsafe. </p>
+<code>Runtime.runFinalizersOnExit</code>, but both methods are deprecated because they are are inherently unsafe.</p>
 <p>According to the Oracle Javadoc:</p>
 <blockquote>
   <p>It may result in finalizers being called on live objects while other threads are concurrently manipulating those objects, resulting in erratic
   behavior or deadlock.</p>
 </blockquote>
-<p>If you really want to be execute something when the virtual machine begins its shutdown sequence, you should attach a shutdown hook. </p>
+<p>If you really want to be execute something when the virtual machine begins its shutdown sequence, you should attach a shutdown hook.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public static void main(String [] args) {

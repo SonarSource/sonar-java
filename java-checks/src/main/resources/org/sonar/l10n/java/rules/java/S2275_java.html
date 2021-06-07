@@ -2,7 +2,7 @@
 that lead to unexpected behavior or runtime errors. This rule statically validates the good behavior of <code>printf</code>-style formats when calling
 the <code>format(...)</code> methods of <code>java.util.Formatter</code>, <code>java.lang.String</code>, <code>java.io.PrintStream</code>,
 <code>MessageFormat</code>, and <code>java.io.PrintWriter</code> classes and the <code>printf(...)</code> methods of <code>java.io.PrintStream</code>
-or <code>java.io.PrintWriter</code> classes. </p>
+or <code>java.io.PrintWriter</code> classes.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 String.format("The value of my integer is %d", "Hello World");  // Noncompliant; an 'int' is expected rather than a String

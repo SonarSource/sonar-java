@@ -8,60 +8,72 @@
 JUnit5, hence helping migration of a project.</p>
 <p>Here is the list of JUnit4 annotations tracked by the rule, with their corresponding annotations in JUnit5:</p>
 <table>
-  <tbody>
+  <colgroup>
+    <col style="width: 50%;">
+    <col style="width: 50%;">
+  </colgroup>
+  <thead>
     <tr>
       <th>JUnit4</th>
       <th>JUnit5</th>
     </tr>
+  </thead>
+  <tbody>
     <tr>
-      <td><code>org.junit.Test</code></td>
-      <td><code>org.junit.jupiter.api.Test</code></td>
+      <td><p><code>org.junit.Test</code></p></td>
+      <td><p><code>org.junit.jupiter.api.Test</code></p></td>
     </tr>
     <tr>
-      <td><code>org.junit.Before</code></td>
-      <td><code>org.junit.jupiter.api.BeforeEach</code></td>
+      <td><p><code>org.junit.Before</code></p></td>
+      <td><p><code>org.junit.jupiter.api.BeforeEach</code></p></td>
     </tr>
     <tr>
-      <td><code>org.junit.After</code></td>
-      <td><code>org.junit.jupiter.api.AfterEach</code></td>
+      <td><p><code>org.junit.After</code></p></td>
+      <td><p><code>org.junit.jupiter.api.AfterEach</code></p></td>
     </tr>
     <tr>
-      <td><code>org.junit.BeforeClass</code></td>
-      <td><code>org.junit.jupiter.api.BeforeAll</code></td>
+      <td><p><code>org.junit.BeforeClass</code></p></td>
+      <td><p><code>org.junit.jupiter.api.BeforeAll</code></p></td>
     </tr>
     <tr>
-      <td><code>org.junit.AfterClass</code></td>
-      <td><code>org.junit.jupiter.api.AfterAll</code></td>
+      <td><p><code>org.junit.AfterClass</code></p></td>
+      <td><p><code>org.junit.jupiter.api.AfterAll</code></p></td>
     </tr>
     <tr>
-      <td><code>org.junit.Ignore</code></td>
-      <td><code>org.junit.jupiter.api.Disabled</code></td>
+      <td><p><code>org.junit.Ignore</code></p></td>
+      <td><p><code>org.junit.jupiter.api.Disabled</code></p></td>
     </tr>
   </tbody>
 </table>
 <p>Note that the following annotations might requires some rework of the tests to have JUnit5 equivalent behavior. A simple replacement of the
-annotation won't work immediately:</p>
+annotation won’t work immediately:</p>
 <table>
-  <tbody>
+  <colgroup>
+    <col style="width: 50%;">
+    <col style="width: 50%;">
+  </colgroup>
+  <thead>
     <tr>
       <th>JUnit4</th>
       <th>JUnit5</th>
     </tr>
+  </thead>
+  <tbody>
     <tr>
-      <td><code>org.junit.experimental.categories.Category</code></td>
-      <td><code>org.junit.jupiter.api.Tag</code></td>
+      <td><p><code>org.junit.experimental.categories.Category</code></p></td>
+      <td><p><code>org.junit.jupiter.api.Tag</code></p></td>
     </tr>
     <tr>
-      <td><code>org.junit.Rule</code></td>
-      <td><code>org.junit.jupiter.api.extension.ExtendWith</code></td>
+      <td><p><code>org.junit.Rule</code></p></td>
+      <td><p><code>org.junit.jupiter.api.extension.ExtendWith</code></p></td>
     </tr>
     <tr>
-      <td><code>org.junit.ClassRule</code></td>
-      <td><code>org.junit.jupiter.api.extension.RegisterExtension</code></td>
+      <td><p><code>org.junit.ClassRule</code></p></td>
+      <td><p><code>org.junit.jupiter.api.extension.RegisterExtension</code></p></td>
     </tr>
     <tr>
-      <td><code>org.junit.runner.RunWith</code></td>
-      <td><code>org.junit.jupiter.api.extension.ExtendWith</code></td>
+      <td><p><code>org.junit.runner.RunWith</code></p></td>
+      <td><p><code>org.junit.jupiter.api.extension.ExtendWith</code></p></td>
     </tr>
   </tbody>
 </table>

@@ -1,5 +1,5 @@
 <p>Using such generic exceptions as <code>Error</code>, <code>RuntimeException</code>, <code>Throwable</code>, and <code>Exception</code> prevents
-calling methods from handling true, system-generated exceptions differently than application-generated errors. </p>
+calling methods from handling true, system-generated exceptions differently than application-generated errors.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public void foo(String bar) throws Throwable {  // Noncompliant
@@ -14,7 +14,7 @@ public void foo(String bar) {
 </pre>
 <h2>Exceptions</h2>
 <p>Generic exceptions in the signatures of overriding methods are ignored, because overriding method has to follow signature of the throw declaration
-in the superclass. The issue will be raised on superclass declaration of the method (or won't be raised at all if superclass is not part of the
+in the superclass. The issue will be raised on superclass declaration of the method (or won’t be raised at all if superclass is not part of the
 analysis).</p>
 <pre>
 @Override

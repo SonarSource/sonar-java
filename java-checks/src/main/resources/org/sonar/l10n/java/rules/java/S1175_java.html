@@ -4,7 +4,7 @@
   <li> The overload may not be called by the Garbage Collector. </li>
   <li> Users are not expected to call <code>Object.finalize()</code> and will get confused. </li>
 </ul>
-<p>But beyond that it's a terrible idea to name a method "finalize" if it doesn't actually override <code>Object.finalize()</code>.</p>
+<p>But beyond that it’s a terrible idea to name a method "finalize" if it doesn’t actually override <code>Object.finalize()</code>.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public int finalize(int someParameter) {        // Noncompliant

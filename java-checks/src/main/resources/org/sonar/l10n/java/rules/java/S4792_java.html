@@ -28,7 +28,7 @@ logged and how they are logged.</p>
 <p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
 <ul>
-  <li> Check that your production deployment doesn't have its loggers in "debug" mode as it might write sensitive information in logs. </li>
+  <li> Check that your production deployment doesn’t have its loggers in "debug" mode as it might write sensitive information in logs. </li>
   <li> Production logs should be stored in a secure location which is only accessible to system administrators. </li>
   <li> Configure the loggers to display all warnings, info and error messages. Write relevant information such as the precise time of events and the
   hostname. </li>
@@ -39,12 +39,12 @@ logged and how they are logged.</p>
   <li> Add limits to the size of the logs and make sure that no user can fill the disk with logs. This can happen even when the user does not control
   the logged information. An attacker could just repeat a logged action many times. </li>
 </ul>
-<p>Remember that configuring loggers properly doesn't make them bullet-proof. Here is a list of recommendations explaining on how to use your
+<p>Remember that configuring loggers properly doesn’t make them bullet-proof. Here is a list of recommendations explaining on how to use your
 logs:</p>
 <ul>
-  <li> Don't log any sensitive information. This obviously includes passwords and credit card numbers but also any personal information such as user
-  names, locations, etc... Usually any information which is protected by law is good candidate for removal. </li>
-  <li> Sanitize all user inputs before writing them in the logs. This includes checking its size, content, encoding, syntax, etc... As for any user
+  <li> Don’t log any sensitive information. This obviously includes passwords and credit card numbers but also any personal information such as user
+  names, locations, etc…​ Usually any information which is protected by law is good candidate for removal. </li>
+  <li> Sanitize all user inputs before writing them in the logs. This includes checking its size, content, encoding, syntax, etc…​ As for any user
   input, validate using whitelists whenever possible. Enabling users to write what they want in your logs can have many impacts. It could for example
   use all your storage space or compromise your log indexing service. </li>
   <li> Log enough information to monitor suspicious activities and evaluate the impact an attacker might have on your systems. Register events such as

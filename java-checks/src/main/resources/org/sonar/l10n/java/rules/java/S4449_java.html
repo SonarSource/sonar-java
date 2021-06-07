@@ -21,7 +21,7 @@ class A {
 }
 </pre>
 <h2>Compliant Solution</h2>
-<p>Two solutions are possible: </p>
+<p>Two solutions are possible:</p>
 <ul>
   <li> The signature of the method is correct, and null check should be done prior to the call. </li>
   <li> The signature of the method is not coherent and should be annotated to allow null values being passed as parameter </li>
@@ -45,7 +45,7 @@ abstract class A {
   abstract Object getValue();
 }
 </pre>
-<p>or </p>
+<p>or</p>
 <pre>
 @javax.annotation.ParametersAreNonnullByDefault
 abstract class A {

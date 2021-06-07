@@ -1,8 +1,8 @@
-<p>Exceptions are meant to represent the application's state at the point at which an error occurred.</p>
+<p>Exceptions are meant to represent the application’s state at the point at which an error occurred.</p>
 <p>Making all fields in an <code>Exception</code> class <code>final</code> ensures that this state:</p>
 <ul>
   <li> Will be fully defined at the same time the <code>Exception</code> is instantiated. </li>
-  <li> Won't be updated or corrupted by a questionable error handler. </li>
+  <li> Won’t be updated or corrupted by a questionable error handler. </li>
 </ul>
 <p>This will enable developers to quickly understand what went wrong.</p>
 <h2>Noncompliant Code Example</h2>

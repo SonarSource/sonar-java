@@ -9,7 +9,7 @@ double d = 0.1; // 0.1000000000000000055511151231257827021181583404541015625
 <p>(Results will vary based on compiler and compiler settings);</p>
 <p>Therefore, the use of the equality (<code>==</code>) and inequality (<code>!=</code>) operators on <code>float</code> or <code>double</code> values
 is almost always an error. Instead the best course is to avoid floating point comparisons altogether. When that is not possible, you should consider
-using one of Java's float-handling <code>Numbers</code> such as <code>BigDecimal</code> which can properly handle floating point comparisons. A third
+using one of Java’s float-handling <code>Numbers</code> such as <code>BigDecimal</code> which can properly handle floating point comparisons. A third
 option is to look not for equality but for whether the value is close enough. I.e. compare the absolute value of the difference between the stored
 value and the expected value against a margin of acceptable error. Note that this does not cover all cases (<code>NaN</code> and <code>Infinity</code>
 for instance).</p>

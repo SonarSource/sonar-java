@@ -1,63 +1,69 @@
 <p>The old, much-derided <code>Date</code> and <code>Calendar</code> classes have always been confusing and difficult to use properly, particularly in
-a multi-threaded context. <code>JodaTime</code> has long been a popular alternative, but now an even better option is built-in. Java 8's JSR 310
+a multi-threaded context. <code>JodaTime</code> has long been a popular alternative, but now an even better option is built-in. Java 8’s JSR 310
 implementation offers specific classes for:</p>
 <table>
-  <tbody>
+  <colgroup>
+    <col style="width: 50%;">
+    <col style="width: 50%;">
+  </colgroup>
+  <thead>
     <tr>
       <th>Class</th>
       <th>Use for</th>
     </tr>
+  </thead>
+  <tbody>
     <tr>
-      <td>LocalDate</td>
-      <td>a date, without time of day, offset, or zone</td>
+      <td><p>LocalDate</p></td>
+      <td><p>a date, without time of day, offset, or zone</p></td>
     </tr>
     <tr>
-      <td>LocalTime</td>
-      <td>the time of day, without date, offset, or zone</td>
+      <td><p>LocalTime</p></td>
+      <td><p>the time of day, without date, offset, or zone</p></td>
     </tr>
     <tr>
-      <td>LocalDateTime</td>
-      <td>the date and time, without offset, or zone</td>
+      <td><p>LocalDateTime</p></td>
+      <td><p>the date and time, without offset, or zone</p></td>
     </tr>
     <tr>
-      <td>OffsetDate</td>
-      <td>a date with an offset such as +02:00, without time of day, or zone</td>
+      <td><p>OffsetDate</p></td>
+      <td><p>a date with an offset such as +02:00, without time of day, or zone</p></td>
     </tr>
     <tr>
-      <td>OffsetTime</td>
-      <td>the time of day with an offset such as +02:00, without date, or zone</td>
+      <td><p>OffsetTime</p></td>
+      <td><p>the time of day with an offset such as +02:00, without date, or zone</p></td>
     </tr>
     <tr>
-      <td>OffsetDateTime</td>
-      <td>the date and time with an offset such as +02:00, without a zone</td>
+      <td><p>OffsetDateTime</p></td>
+      <td><p>the date and time with an offset such as +02:00, without a zone</p></td>
     </tr>
     <tr>
-      <td>ZonedDateTime</td>
-      <td>the date and time with a time zone and offset</td>
+      <td><p>ZonedDateTime</p></td>
+      <td><p>the date and time with a time zone and offset</p></td>
     </tr>
     <tr>
-      <td>YearMonth</td>
-      <td>a year and month</td>
+      <td><p>YearMonth</p></td>
+      <td><p>a year and month</p></td>
     </tr>
     <tr>
-      <td>MonthDay</td>
-      <td>month and day</td>
+      <td><p>MonthDay</p></td>
+      <td><p>month and day</p></td>
     </tr>
     <tr>
-      <td>Year/MonthOfDay/DayOfWeek/...</td>
-      <td>classes for the important fields</td>
+      <td><p>Year/MonthOfDay/DayOfWeek/…​</p></td>
+      <td><p>classes for the important fields</p></td>
     </tr>
     <tr>
-      <td>DateTimeFields</td>
-      <td>stores a map of field-value pairs which may be invalid</td>
+      <td><p>DateTimeFields</p></td>
+      <td><p>stores a map of field-value pairs which may be invalid</p></td>
     </tr>
     <tr>
-      <td>Calendrical</td>
-      <td>access to the low-level API</td>
+      <td><p>Calendrical</p></td>
+      <td><p>access to the low-level API</p></td>
     </tr>
     <tr>
-      <td>Period</td>
-      <td>a descriptive amount of time, such as "2 months and 3 days"</td>
+      <td><p>Period</p></td>
+      <td><p>a descriptive amount of time, such as "2 months and 3 days"</p></td>
     </tr>
   </tbody>
 </table>

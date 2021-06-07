@@ -7,7 +7,7 @@ href="https://ldapwiki.com/wiki/Simple%20Authentication">simple authentication m
   <li> <em>Name/Password Authentication Mechanism</em> by performing a bind request with a password value of non-zero length. </li>
 </ul>
 <p>Anonymous binds and unauthenticated binds allow access to information in the LDAP directory without providing a password, their use is therefore
-strongly discouraged. </p>
+strongly discouraged.</p>
 <h2>Noncompliant Code Example</h2>
 <p>This rule raises an issue when an LDAP connection is created with <code>Context.SECURITY_AUTHENTICATION</code> set to <code>"none"</code>.</p>
 <pre>

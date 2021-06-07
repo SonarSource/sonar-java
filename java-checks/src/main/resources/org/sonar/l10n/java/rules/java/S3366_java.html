@@ -1,8 +1,8 @@
 <p>In single-threaded environments, the use of <code>this</code> in constructors is normal, and expected. But in multi-threaded environments, it could
 expose partially-constructed objects to other threads, and should be used with caution.</p>
 <p>The classic example is a class with a <code>static</code> list of its instances. If the constructor stores <code>this</code> in the list, another
-thread could access the object before it's fully-formed. Even when the storage of <code>this</code> is the last instruction in the constructor,
-there's still a danger if the class is not <code>final</code>. In that case, the initialization of subclasses won't be complete before
+thread could access the object before it’s fully-formed. Even when the storage of <code>this</code> is the last instruction in the constructor,
+there’s still a danger if the class is not <code>final</code>. In that case, the initialization of subclasses won’t be complete before
 <code>this</code> is exposed.</p>
 <p>This rule raises an issue when <code>this</code> is assigned to any globally-visible object in a constructor, and when it is passed to the method
 of another object in a constructor</p>

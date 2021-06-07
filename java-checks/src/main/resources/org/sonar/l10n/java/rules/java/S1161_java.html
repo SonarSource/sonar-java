@@ -1,6 +1,6 @@
 <p>Using the <code>@Override</code> annotation is useful for two reasons :</p>
 <ul>
-  <li> It elicits a warning from the compiler if the annotated method doesn't actually override anything, as in the case of a misspelling. </li>
+  <li> It elicits a warning from the compiler if the annotated method doesn’t actually override anything, as in the case of a misspelling. </li>
   <li> It improves the readability of the source code by making it obvious that methods are overridden. </li>
 </ul>
 <h2>Noncompliant Code Example</h2>
@@ -23,5 +23,5 @@ class FirstChildClass extends ParentClass {
 }
 </pre>
 <h2>Exceptions</h2>
-<p>This rule is relaxed when overriding a method from the <code>Object</code> class like <code>toString()</code>, <code>hashCode()</code>, ...</p>
+<p>This rule is relaxed when overriding a method from the <code>Object</code> class like <code>toString()</code>, <code>hashCode()</code>, …​</p>
 

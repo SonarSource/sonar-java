@@ -2,7 +2,7 @@
 <blockquote>
   <p>It is strongly recommended, but not strictly required that <code>(x.compareTo(y)==0) == (x.equals(y))</code>.</p>
   <p>Generally speaking, any class that implements the Comparable interface and violates this condition should clearly indicate this fact.</p>
-  <p>The recommended language is "Note: this class has a natural ordering that is inconsistent with equals." </p>
+  <p>The recommended language is "Note: this class has a natural ordering that is inconsistent with equals."</p>
 </blockquote>
 <p>If this rule is violated, weird and unpredictable failures can occur.</p>
 <p>For example, in Java 5 the <code>PriorityQueue.remove()</code> method relied on <code>compareTo()</code>, but since Java 6 it has relied on

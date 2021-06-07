@@ -7,12 +7,12 @@ JavaBean malicious data that can compromise the software integrity. A typical at
 malicious code.</p>
 <p>This rule raises an issue when:</p>
 <ul>
-  <li> BeanUtils.populate(...) or BeanUtilsBean.populate(...) from <a href="http://commons.apache.org/proper/commons-beanutils/">Apache Commons
+  <li> BeanUtils.populate(…​) or BeanUtilsBean.populate(…​) from <a href="http://commons.apache.org/proper/commons-beanutils/">Apache Commons
   BeanUtils</a> are called </li>
-  <li> BeanUtils.setProperty(...) or BeanUtilsBean.setProperty(...) from <a href="http://commons.apache.org/proper/commons-beanutils/">Apache Commons
+  <li> BeanUtils.setProperty(…​) or BeanUtilsBean.setProperty(…​) from <a href="http://commons.apache.org/proper/commons-beanutils/">Apache Commons
   BeanUtils</a> are called </li>
-  <li> org.springframework.beans.BeanWrapper.setPropertyValue(...) or org.springframework.beans.BeanWrapper.setPropertyValues(...) from Spring is
-  called </li>
+  <li> org.springframework.beans.BeanWrapper.setPropertyValue(…​) or org.springframework.beans.BeanWrapper.setPropertyValues(…​) from Spring is called
+  </li>
 </ul>
 <h2>Ask Yourself Whether</h2>
 <ul>
@@ -22,7 +22,7 @@ malicious code.</p>
 <p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
 <p>Sanitize all values used as JavaBean properties.</p>
-<p>Don't set any sensitive properties. Keep full control over which properties are set. If the property names are provided by an unstrusted source,
+<p>Don’t set any sensitive properties. Keep full control over which properties are set. If the property names are provided by an unstrusted source,
 filter them with a whitelist.</p>
 <h2>Sensitive Code Example</h2>
 <pre>

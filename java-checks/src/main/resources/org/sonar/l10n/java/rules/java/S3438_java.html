@@ -1,7 +1,7 @@
 <p>Use of a Spring <code>SingleConnectionFactory</code> without enabling the <code>reconnectOnException</code> setting will prevent automatic
-connection recovery when the connection goes bad. </p>
-<p>That's because the <code>reconnectOnException</code> property defaults to <code>false</code>. As a result, even if the code that uses this
-connection factory (Spring's <code>DefaultMessageListenerContainer</code> or your own code) has reconnect logic, that code won't work because the
+connection recovery when the connection goes bad.</p>
+<p>That’s because the <code>reconnectOnException</code> property defaults to <code>false</code>. As a result, even if the code that uses this
+connection factory (Spring’s <code>DefaultMessageListenerContainer</code> or your own code) has reconnect logic, that code won’t work because the
 <code>SingleConnectionFactory</code> will act like a single-connection pool by preventing connection <code>close</code> calls from actually closing
 anything. As a result, subsequent factory <code>create</code> operations will just hand back the original broken <code>Connection</code>.</p>
 <h2>Noncompliant Code Example</h2>

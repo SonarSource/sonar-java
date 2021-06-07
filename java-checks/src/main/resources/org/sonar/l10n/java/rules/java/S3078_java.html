@@ -1,5 +1,5 @@
 <p>Using compound operators as well as increments and decrements (and toggling, in the case of <code>boolean</code>s) on primitive fields are not
-atomic operations. That is, they don't happen in a single step. For instance, when a <code>volatile</code> primitive field is incremented or
+atomic operations. That is, they don’t happen in a single step. For instance, when a <code>volatile</code> primitive field is incremented or
 decremented you run the risk of data loss if threads interleave in the steps of the update. Instead, use a guaranteed-atomic class such as
 <code>AtomicInteger</code>, or synchronize the access.</p>
 <h2>Noncompliant Code Example</h2>

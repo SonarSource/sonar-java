@@ -35,9 +35,9 @@ public void doingSomething(String stringToMatch) {
 }
 </pre>
 <h2>Exceptions</h2>
-<p><code>String.split</code> doesn't create a regex when the string passed as argument meets either of these 2 conditions:</p>
+<p><code>String.split</code> doesn’t create a regex when the string passed as argument meets either of these 2 conditions:</p>
 <ul>
-  <li> It is a one-char String and this character is not one of the RegEx's meta characters ".$|()[{^?*+\" </li>
+  <li> It is a one-char String and this character is not one of the RegEx’s meta characters ".$|()[{^?*+\" </li>
   <li> It is a two-char String and the first char is the backslash and the second is not the ascii digit or ascii letter. </li>
 </ul>
 <p>In which case no issue will be raised.</p>
