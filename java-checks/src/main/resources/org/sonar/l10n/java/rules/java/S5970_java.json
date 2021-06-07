@@ -1,5 +1,5 @@
 {
-  "title": "Spring's ModelAndViewAssert assertions should be used instead of other assertions",
+  "title": "Spring\u0027s ModelAndViewAssert assertions should be used instead of other assertions",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
