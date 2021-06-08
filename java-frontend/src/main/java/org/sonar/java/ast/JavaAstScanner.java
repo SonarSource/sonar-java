@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
@@ -69,13 +70,17 @@ public class JavaAstScanner {
           visitor.getClasspath(),
           inputFiles,
           this::analysisCancelled,
-          this::simpleScan);
+          (i, r) -> simpleScan(i, r, ast -> {
+            // Do nothing. In batch mode, can not clean the ast as it will be used in later processing.
+          })
+        );
       } else {
         JParser.parseFileByFile(version,
           visitor.getClasspath(),
           inputFiles,
           this::analysisCancelled,
-          this::simpleScan);
+          (i, r) -> simpleScan(i, r, JavaAstScanner::cleanUpAst)
+        );
       }
     } finally {
       visitor.endOfAnalysis();
@@ -97,15 +102,14 @@ public class JavaAstScanner {
     return sonarComponents != null && sonarComponents.analysisCancelled();
   }
 
-  private void simpleScan(InputFile inputFile, JParser.Result result) {
+  private void simpleScan(InputFile inputFile, JParser.Result result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp) {
     visitor.setCurrentFile(inputFile);
     try {
       JavaTree.CompilationUnitTreeImpl ast = result.get();
 
       visitor.visitFile(ast);
       collectUndefinedTypes(ast.sema.undefinedTypes());
-      // release environment used for semantic resolution
-//      ast.sema.cleanupEnvironment(); // FIXME: We should not do it for batch (causes NPE)
+      cleanUp.accept(ast);
     } catch (RecognitionException e) {
       checkInterrupted(e);
       LOG.error(String.format(LOG_ERROR_UNABLE_TO_PARSE_FILE, inputFile));
@@ -121,6 +125,11 @@ public class JavaAstScanner {
       LOG.error(String.format(LOG_ERROR_STACKOVERFLOW, inputFile), error);
       throw error;
     }
+  }
+
+  private static void cleanUpAst(JavaTree.CompilationUnitTreeImpl ast) {
+    // release environment used for semantic resolution
+    ast.sema.cleanupEnvironment();
   }
 
   private String getJavaVersion(List<String> filesNames) {
