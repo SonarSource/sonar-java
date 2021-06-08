@@ -173,6 +173,16 @@ class ExecutionTimeReportTest {
   }
 
   @Test
+  void log_as_batch() throws IOException {
+    simulateAnalysis("f1", 50_000);
+    report.reportAsBatch();
+    assertThat(logTester.logs(LoggerLevel.TRACE)).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.INFO)).contains("Slowest analyzed files (batch mode enabled):" + NL +
+      "    f1 (50000ms, 52B)");
+  }
+
+  @Test
   void log_debug_level() {
     logTester.setLevel(LoggerLevel.DEBUG);
     simulateAnalysis("f1", 50);

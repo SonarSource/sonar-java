@@ -353,7 +353,6 @@ public class JParser {
     BiConsumer<InputFile, Result> action
   ) {
 
-    // TODO: Performance monitoring (ExecutionTimeReport)
     // TODO: progressReport update
     // TODO: dealing with interruption
 
@@ -374,31 +373,49 @@ public class JParser {
       encodings.add(inputFile.charset().name());
     }
 
+    PerformanceMeasure.Duration parseAsBatch = PerformanceMeasure.start("ParseAsBatch");
+    ExecutionTimeReport executionTimeReport = new ExecutionTimeReport(Clock.systemUTC());
+
     // TODO: catch somehow the exception that this method could throw
-    astParser.createASTs(
-      sourceFilePaths.toArray(new String[0]),
-      encodings.toArray(new String[0]),
-      new String[0],
-      new FileASTRequestor() {
-        @Override
-        public void acceptAST(String sourceFilePath, CompilationUnit ast) {
-          InputFile inputFile = inputs.get(new File(sourceFilePath));
-          Result result;
-          try {
-            result = new Result(convert(
-              version,
-              inputFile.filename(),
-              inputFile.contents(),
-              ast
-            ));
-          } catch (Exception e) {
-            result = new Result(e);
+    try {
+      astParser.createASTs(
+        sourceFilePaths.toArray(new String[0]),
+        encodings.toArray(new String[0]),
+        new String[0],
+        new FileASTRequestor() {
+          @Override
+          public void acceptAST(String sourceFilePath, CompilationUnit ast) {
+            PerformanceMeasure.Duration convertDuration = PerformanceMeasure.start("Convert");
+
+            InputFile inputFile = inputs.get(new File(sourceFilePath));
+            executionTimeReport.start(inputFile);
+            Result result;
+            try {
+              result = new Result(convert(
+                version,
+                inputFile.filename(),
+                inputFile.contents(),
+                ast
+              ));
+            } catch (Exception e) {
+              result = new Result(e);
+            }
+            convertDuration.stop();
+            PerformanceMeasure.Duration analyzeDuration = PerformanceMeasure.start("Analyze");
+            action.accept(inputFile, result);
+
+            executionTimeReport.end();
+            analyzeDuration.stop();
           }
-          action.accept(inputFile, result);
-        }
-      },
-      null
-    );
+        },
+        null
+      );
+    } finally {
+      // ExecutionTimeReport will not include the parsing time by file when using batch mode.
+      executionTimeReport.reportAsBatch();
+    }
+
+    parseAsBatch.stop();
   }
 
   /**
