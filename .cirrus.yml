@@ -59,6 +59,31 @@ build_task:
     - ./check-license-compliance.sh
   cleanup_before_cache_script: cleanup_maven_repository
 
+ws_scan_task:
+  gke_container:
+    <<: *CONTAINER_DEFINITION
+    image: gcr.io/language-team/base-jdk16:latest
+    cpu: 2
+    memory: 2G
+  depends_on:
+    - build
+  env:
+    WS_APIKEY: ENCRYPTED[cda363e6bcac3edd4c259dc05b3570e00152ad50f9ad3ec3cab72d57cda318a0d5472e37c656c3566c2cb8c752d2f5a0]
+    WS_WSS_URL: https://saas-eu.whitesourcesoftware.com/agent
+    WS_PRODUCTNAME: SonarJava
+    WS_PROJECTNAME: SonarJava
+    WS_RESOLVEALLDEPENDENCIES: false
+    WS_MAVEN_RESOLVEDEPENDENCIES: true
+    WS_FILESYSTEMSCAN: false
+    WS_MAVEN_AGGREGATEMODULES: true
+    WS_EXCLUDES: "**/*sources.jar **/*javadoc.jar"
+  maven_cache:
+    folder: ${CIRRUS_WORKING_DIR}/.m2/repository
+  whitesource_script:
+    - source cirrus-env QA
+    - source set_maven_build_version $BUILD_NUMBER
+    - ./ws_scan.sh
+
 qa_os_win_task:
   depends_on:
     - build
