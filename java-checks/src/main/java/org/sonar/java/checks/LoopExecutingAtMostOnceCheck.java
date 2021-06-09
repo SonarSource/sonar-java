@@ -224,17 +224,14 @@ public class LoopExecutingAtMostOnceCheck extends IssuableSubscriptionVisitor {
       currentTree = currentTree.parent();
     } while (!currentTree.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR, Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.INITIALIZER, Tree.Kind.STATIC_INITIALIZER));
 
-    if (currentTree.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR)) {
-      return CFG.build((MethodTree) currentTree);
+    switch(currentTree.kind()) {
+      case METHOD:
+      case CONSTRUCTOR:
+        return (CFG) ((MethodTree) currentTree).cfg();
+      case LAMBDA_EXPRESSION:
+        return (CFG) ((LambdaExpressionTree) currentTree).cfg();
+      default:
+        return CFG.buildCFG(((BlockTree) currentTree).body());
     }
-    if (currentTree.is(Tree.Kind.LAMBDA_EXPRESSION)) {
-      currentTree = ((LambdaExpressionTree) currentTree).body();
-      if (!currentTree.is(Tree.Kind.BLOCK)) {
-        throw new IllegalStateException("Block statement was expected");
-      }
-    }
-
-    return CFG.buildCFG(((BlockTree) currentTree).body());
   }
-
 }

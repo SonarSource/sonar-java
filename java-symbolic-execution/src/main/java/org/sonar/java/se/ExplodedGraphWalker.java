@@ -222,7 +222,7 @@ public class ExplodedGraphWalker {
 
   private void execute(MethodTree tree) {
     PerformanceMeasure.Duration cfgDuration = PerformanceMeasure.start("cfg");
-    CFG cfg = CFG.build(tree);
+    CFG cfg = (CFG) tree.cfg();
     exitBlock = cfg.exitBlock();
     cfgDuration.stop();
 

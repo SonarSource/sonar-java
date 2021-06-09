@@ -43,7 +43,7 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
     if (methodTree.block() != null) {
-      CFG cfg = CFG.build(methodTree);
+      CFG cfg = (CFG) methodTree.cfg();
       cfg.blocks().forEach(this::checkBlock);
     }
   }

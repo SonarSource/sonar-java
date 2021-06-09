@@ -35,7 +35,7 @@ class LiveVariablesTest {
   private static CFG buildCFG(String methodCode) {
     CompilationUnitTree cut = JParserTestUtils.parse("class A { int field1; int field2; static int staticField; " + methodCode + " }");
     MethodTree tree = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(3));
-    return CFG.build(tree);
+    return (CFG) tree.cfg();
   }
 
   @Test

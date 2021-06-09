@@ -62,7 +62,7 @@ public class ParameterReassignedToCheck extends BaseTreeVisitor implements JavaF
     if(block == null) {
       return;
     }
-    CFG cfg = CFG.build(tree);
+    CFG cfg = (CFG) tree.cfg();
     LiveVariables analyze = LiveVariables.analyze(cfg);
     Set<Symbol> live = analyze.getIn(cfg.entryBlock());
     for (VariableTree parameterTree : tree.parameters()) {
