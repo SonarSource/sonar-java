@@ -60,15 +60,22 @@ public class JavaAstScanner {
   }
 
   public void scan(Iterable<? extends InputFile> inputFiles) {
-    List<String> filesNames = StreamSupport.stream(inputFiles.spliterator(), false).map(InputFile::filename).collect(Collectors.toList());
-    // FIXME: We now compute the version only once for the whole project. What if a user has a forgotten module-info.java in his project with Java < 9?
-    // We will force the analysis to run with java 16, with no way to change this...
-    String version = getJavaVersion(filesNames);
+    JavaVersion javaVersion = visitor.getJavaVersion();
+    List<InputFile> filesNames = StreamSupport.stream(inputFiles.spliterator(), false)
+      .filter(file -> {
+        if (("module-info.java".equals(file.filename())) && javaVersion.asInt() <= 8) {
+          logMisconfiguredVersion("module-info.java", javaVersion);
+          return false;
+        }
+        return true;
+      }).collect(Collectors.toList());
+
+    String version = getJavaVersion(javaVersion);
     try {
       if (isBatchModeEnabled()) {
         JParser.parseAsBatch(version,
           visitor.getClasspath(),
-          inputFiles,
+          filesNames,
           this::analysisCancelled,
           (i, r) -> simpleScan(i, r, ast -> {
             // Do nothing. In batch mode, can not clean the ast as it will be used in later processing.
@@ -77,7 +84,7 @@ public class JavaAstScanner {
       } else {
         JParser.parseFileByFile(version,
           visitor.getClasspath(),
-          inputFiles,
+          filesNames,
           this::analysisCancelled,
           (i, r) -> simpleScan(i, r, JavaAstScanner::cleanUpAst)
         );
@@ -132,12 +139,8 @@ public class JavaAstScanner {
     ast.sema.cleanupEnvironment();
   }
 
-  private String getJavaVersion(List<String> filesNames) {
-    JavaVersion javaVersion = visitor.getJavaVersion();
+  private String getJavaVersion(JavaVersion javaVersion) {
     if (javaVersion == null || javaVersion.asInt() < 0) {
-      return JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    } else if (filesNames.stream().anyMatch(name -> name.equals("module-info.java")) && javaVersion.asInt() <= 8) {
-      logMisconfiguredVersion("module-info.java", javaVersion);
       return JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
     }
     return Integer.toString(javaVersion.asInt());
