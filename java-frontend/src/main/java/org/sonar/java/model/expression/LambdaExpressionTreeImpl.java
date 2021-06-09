@@ -20,8 +20,11 @@
 package org.sonar.java.model.expression;
 
 import java.util.Arrays;
+import org.sonar.java.cfg.CFG;
 import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -41,6 +44,7 @@ public class LambdaExpressionTreeImpl extends AssessableExpressionTree implement
   private final InternalSyntaxToken closeParenToken;
   private final InternalSyntaxToken arrowToken;
   private final Tree body;
+  private CFG cfg;
 
   public LambdaExpressionTreeImpl(@Nullable InternalSyntaxToken openParenToken, List<VariableTree> parameters, @Nullable InternalSyntaxToken closeParenToken,
     InternalSyntaxToken arrowToken, Tree body) {
@@ -81,6 +85,14 @@ public class LambdaExpressionTreeImpl extends AssessableExpressionTree implement
   @Override
   public Tree body() {
     return body;
+  }
+
+  @Override
+  public ControlFlowGraph cfg() {
+    if (cfg == null) {
+      cfg = CFG.buildCFG(body.is(Tree.Kind.BLOCK) ? ((BlockTree) body).body() : Collections.singletonList(body));
+    }
+    return cfg;
   }
 
   @Override

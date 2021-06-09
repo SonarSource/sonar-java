@@ -19,11 +19,10 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import org.sonar.java.annotations.Beta;
-
-import javax.annotation.Nullable;
-
 import java.util.List;
+import javax.annotation.Nullable;
+import org.sonar.java.annotations.Beta;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
 
 /**
  * Lambda expression.
@@ -53,4 +52,10 @@ public interface LambdaExpressionTree extends ExpressionTree {
 
   Tree body();
 
+  /**
+   * Compute a CFG for the body of the lambda.
+   *
+   * @return the CFG corresponding to the expression or the body of the lambda.
+   */
+  ControlFlowGraph cfg();
 }
