@@ -78,7 +78,7 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
     UNRESOLVED_IDENTIFIERS_VISITOR.check(methodTree);
 
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
-    CFG cfg = CFG.build(methodTree);
+    CFG cfg = (CFG) methodTree.cfg();
     LiveVariables liveVariables = LiveVariables.analyze(cfg);
     // Liveness analysis provides information only for block boundaries, so we should do analysis between elements within blocks
     for (CFG.Block block : cfg.blocks()) {

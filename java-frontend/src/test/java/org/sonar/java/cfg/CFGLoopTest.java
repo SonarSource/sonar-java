@@ -58,7 +58,7 @@ class CFGLoopTest {
   }
 
   private CFG buildCFG(String methodName) {
-    return CFG.build(loader.getMethod("CFGLoopTest", methodName));
+    return (CFG) loader.getMethod("CFGLoopTest", methodName).cfg();
   }
 
   @Test

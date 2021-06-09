@@ -37,7 +37,7 @@ public class CFGTestUtils {
 
   private static CFG buildCFGFromCUT(CompilationUnitTree cut) {
     MethodTree tree = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(0));
-    return CFG.build(tree);
+    return (CFG) tree.cfg();
   }
 
 }

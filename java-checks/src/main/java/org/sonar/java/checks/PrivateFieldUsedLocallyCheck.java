@@ -86,7 +86,7 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isLiveInMethodEntry(Symbol privateFieldSymbol, MethodTree methodTree) {
-    CFG cfg = CFG.build(methodTree);
+    CFG cfg = (CFG) methodTree.cfg();
     LiveVariables liveVariables = LiveVariables.analyzeWithFields(cfg);
     return liveVariables.getIn(cfg.entryBlock()).contains(privateFieldSymbol);
   }
