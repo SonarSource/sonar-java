@@ -376,7 +376,6 @@ public class JParser {
     PerformanceMeasure.Duration parseAsBatch = PerformanceMeasure.start("ParseAsBatch");
     ExecutionTimeReport executionTimeReport = new ExecutionTimeReport(Clock.systemUTC());
 
-    // TODO: catch somehow the exception that this method could throw
     try {
       astParser.createASTs(
         sourceFilePaths.toArray(new String[0]),

@@ -187,6 +187,22 @@ class JParserTest {
   }
 
   @Test
+  void should_propagate_exception_raised_by_batch_parsing() {
+    NullPointerException expected = new NullPointerException("");
+    BiConsumer<InputFile, JParser.Result> consumerThrowing = (inputFile, result) -> {
+      throw expected;
+    };
+    List<InputFile> inputFiles = Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/Classes.java"));
+    NullPointerException actual = assertThrows(NullPointerException.class, () ->
+      JParser.parseAsBatch(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
+        DEFAULT_CLASSPATH,
+        inputFiles,
+        () -> false, consumerThrowing)
+    );
+    assertSame(expected, actual);
+  }
+
+  @Test
   void eof() {
     {
       CompilationUnitTree t = test("");

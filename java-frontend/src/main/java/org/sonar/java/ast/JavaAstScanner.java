@@ -73,14 +73,7 @@ public class JavaAstScanner {
     String version = getJavaVersion(javaVersion);
     try {
       if (isBatchModeEnabled()) {
-        JParser.parseAsBatch(version,
-          visitor.getClasspath(),
-          filesNames,
-          this::analysisCancelled,
-          (i, r) -> simpleScan(i, r, ast -> {
-            // Do nothing. In batch mode, can not clean the ast as it will be used in later processing.
-          })
-        );
+        parseAsBatch(filesNames, version);
       } else {
         JParser.parseFileByFile(version,
           visitor.getClasspath(),
@@ -92,6 +85,24 @@ public class JavaAstScanner {
     } finally {
       visitor.endOfAnalysis();
       logUndefinedTypes();
+    }
+  }
+
+  private void parseAsBatch(List<InputFile> filesNames, String version) {
+    try {
+      JParser.parseAsBatch(version,
+        visitor.getClasspath(),
+        filesNames,
+        this::analysisCancelled,
+        (i, r) -> simpleScan(i, r, ast -> {
+          // Do nothing. In batch mode, can not clean the ast as it will be used in later processing.
+        })
+      );
+    } catch (Exception e) {
+      LOG.error("Batch Mode failed, analysis of Java Files stopped.", e);
+      if (shouldFailAnalysis()) {
+        throw new AnalysisException("Batch Mode failed, analysis of Java Files stopped.", e);
+      }
     }
   }
 
@@ -160,9 +171,13 @@ public class JavaAstScanner {
   }
 
   private void interruptIfFailFast(Exception e, InputFile inputFile) {
-    if (sonarComponents != null && sonarComponents.shouldFailAnalysisOnException()) {
+    if (shouldFailAnalysis()) {
       throw new AnalysisException(getAnalysisExceptionMessage(inputFile), e);
     }
+  }
+
+  private boolean shouldFailAnalysis() {
+    return sonarComponents != null && sonarComponents.shouldFailAnalysisOnException();
   }
 
   private void checkInterrupted(Exception e) {
