@@ -43,6 +43,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
@@ -353,7 +354,6 @@ public class JParser {
     BiConsumer<InputFile, Result> action
   ) {
 
-    // TODO: progressReport update
     // TODO: dealing with interruption
 
     LOG.info("Using ECJ batch to parse source files.");
@@ -373,8 +373,9 @@ public class JParser {
       encodings.add(inputFile.charset().name());
     }
 
-    PerformanceMeasure.Duration parseAsBatch = PerformanceMeasure.start("ParseAsBatch");
+    PerformanceMeasure.Duration batchPerformance = PerformanceMeasure.start("ParseAsBatch");
     ExecutionTimeReport executionTimeReport = new ExecutionTimeReport(Clock.systemUTC());
+    JProgressMonitor monitor = new JProgressMonitor();
 
     try {
       astParser.createASTs(
@@ -407,14 +408,115 @@ public class JParser {
             analyzeDuration.stop();
           }
         },
-        null
+        monitor
       );
     } finally {
       // ExecutionTimeReport will not include the parsing time by file when using batch mode.
       executionTimeReport.reportAsBatch();
+      batchPerformance.stop();
+      monitor.done();
+    }
+  }
+
+  private static class JProgressMonitor implements IProgressMonitor, Runnable {
+
+    private static final Logger LOG = Loggers.get(JProgressMonitor.class);
+    private static final long PERIOD = TimeUnit.SECONDS.toMillis(1);
+    private final Thread thread;
+
+    private boolean cancelled = false;
+    private boolean success = false;
+    private int totalWork = 0;
+    private int processedWork = 0;
+
+    public JProgressMonitor() {
+      thread = new Thread(this);
+      thread.setName("Report about progress of Java AST analyzer");
+      thread.setDaemon(true);
     }
 
-    parseAsBatch.stop();
+    @Override
+    public void run() {
+      while (!Thread.interrupted()) {
+        try {
+          Thread.sleep(PERIOD);
+          double percentage = processedWork / (double) totalWork;
+          log(String.format("%d%% analyzed", (int) (percentage * 100)));
+        } catch (InterruptedException e) {
+          thread.interrupt();
+          break;
+        }
+      }
+    }
+
+    @Override
+    public void beginTask(String name, int totalWork) {
+      this.totalWork = totalWork;
+      log("Starting batch processing.");
+      thread.start();
+    }
+
+    @Override
+    public void done() {
+      if (success) {
+        log("100% analyzed");
+        log("Batch processing: Done!");
+      }
+      thread.interrupt();
+      join();
+    }
+
+    @Override
+    public boolean isCanceled() {
+      return cancelled;
+    }
+
+    @Override
+    public void setCanceled(boolean value) {
+      cancelled = value;
+      if (cancelled) {
+        log("Batch processing: Cancelled!");
+        done();
+      }
+    }
+
+    private void join() {
+      try {
+        thread.join();
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+      }
+    }
+
+    @Override
+    public void worked(int work) {
+      processedWork += work;
+      if (processedWork == totalWork) {
+        success = true;
+      }
+    }
+
+    @Override
+    public void internalWorked(double work) {
+      // do nothing
+    }
+
+    @Override
+    public void setTaskName(String name) {
+      // do nothing
+    }
+
+    @Override
+    public void subTask(String name) {
+      // do nothing
+    }
+
+    private static void log(String message) {
+      synchronized (LOG) {
+        LOG.info(message);
+        LOG.notifyAll();
+      }
+    }
   }
 
   /**

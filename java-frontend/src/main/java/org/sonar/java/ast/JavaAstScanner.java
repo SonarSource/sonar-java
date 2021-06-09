@@ -63,7 +63,7 @@ public class JavaAstScanner {
     JavaVersion javaVersion = visitor.getJavaVersion();
     List<InputFile> filesNames = StreamSupport.stream(inputFiles.spliterator(), false)
       .filter(file -> {
-        if (("module-info.java".equals(file.filename())) && javaVersion.asInt() <= 8) {
+        if (("module-info.java".equals(file.filename())) && !javaVersion.isNotSet() && javaVersion.asInt() <= 8) {
           logMisconfiguredVersion("module-info.java", javaVersion);
           return false;
         }
@@ -151,7 +151,7 @@ public class JavaAstScanner {
   }
 
   private String getJavaVersion(JavaVersion javaVersion) {
-    if (javaVersion == null || javaVersion.asInt() < 0) {
+    if (javaVersion == null || javaVersion.isNotSet()) {
       return JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
     }
     return Integer.toString(javaVersion.asInt());
