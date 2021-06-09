@@ -422,6 +422,7 @@ public class CFG implements ControlFlowGraph {
     blocks.add(result);
     return result;
   }
+
   public static CFG buildCFG(List<? extends Tree> trees, boolean ignoreBreak) {
     return new CFG(trees, null, ignoreBreak);
   }
@@ -429,6 +430,7 @@ public class CFG implements ControlFlowGraph {
   public static CFG buildCFG(List<? extends Tree> trees) {
     return new CFG(trees, null, false);
   }
+
   public static CFG build(MethodTree tree) {
     BlockTree block = tree.block();
     Preconditions.checkArgument(block != null, "Cannot build CFG for method with no body.");
@@ -438,6 +440,7 @@ public class CFG implements ControlFlowGraph {
   private void build(ListTree<? extends Tree> trees) {
     build((List<? extends Tree>) trees);
   }
+
   private void build(List<? extends Tree> trees) {
     ListUtils.reverse(trees).forEach(this::build);
   }
