@@ -35,6 +35,7 @@ import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
+import org.sonar.java.collections.CollectionUtils;
 import org.sonar.java.collections.ListUtils;
 import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.java.model.VisitorsBridge;
@@ -54,7 +55,7 @@ public class JavaSquid {
                    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
                    JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
     this(javaVersion, sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, null, visitors);
-    
+
   }
   public JavaSquid(JavaVersion javaVersion,
                    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
@@ -112,17 +113,29 @@ public class JavaSquid {
   }
 
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
-    Duration mainDuration = PerformanceMeasure.start("Main");
-    scanSources(sourceFiles);
-    mainDuration.stop();
+    if (CollectionUtils.size(sourceFiles) > 0) {
+      Duration mainDuration = PerformanceMeasure.start("Main");
+      scanSources(sourceFiles);
+      mainDuration.stop();
+    } else {
+      LOG.info("No source files to scan.");
+    }
 
-    Duration testDuration = PerformanceMeasure.start("Test");
-    scanTests(testFiles);
-    testDuration.stop();
+    if (CollectionUtils.size(testFiles) > 0) {
+      Duration testDuration = PerformanceMeasure.start("Test");
+      scanTests(testFiles);
+      testDuration.stop();
+    } else {
+      LOG.info("No test files to scan.");
+    }
 
-    Duration generatedDuration = PerformanceMeasure.start("Generated");
-    scanGeneratedFiles(generatedFiles);
-    generatedDuration.stop();
+    if (CollectionUtils.size(generatedFiles) > 0) {
+      Duration generatedDuration = PerformanceMeasure.start("Generated");
+      scanGeneratedFiles(generatedFiles);
+      generatedDuration.stop();
+    } else {
+      LOG.info("No generated files to scan.");
+    }
   }
 
   private void scanSources(Iterable<InputFile> sourceFiles) {

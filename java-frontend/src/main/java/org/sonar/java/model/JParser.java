@@ -421,7 +421,7 @@ public class JParser {
   private static class JProgressMonitor implements IProgressMonitor, Runnable {
 
     private static final Logger LOG = Loggers.get(JProgressMonitor.class);
-    private static final long PERIOD = TimeUnit.SECONDS.toMillis(1);
+    private static final long PERIOD = TimeUnit.SECONDS.toMillis(10);
     private final Thread thread;
 
     private boolean cancelled = false;
