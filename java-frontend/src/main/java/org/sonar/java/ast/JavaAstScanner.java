@@ -98,7 +98,10 @@ public class JavaAstScanner {
           // Do nothing. In batch mode, can not clean the ast as it will be used in later processing.
         })
       );
+    } catch (AnalysisException e) {
+      throw e;
     } catch (Exception e) {
+      checkInterrupted(e);
       LOG.error("Batch Mode failed, analysis of Java Files stopped.", e);
       if (shouldFailAnalysis()) {
         throw new AnalysisException("Batch Mode failed, analysis of Java Files stopped.", e);

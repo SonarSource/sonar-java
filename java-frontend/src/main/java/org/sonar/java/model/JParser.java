@@ -329,7 +329,7 @@ public class JParser {
         } finally {
           parseDuration.stop();
         }
-        
+
         action.accept(inputFile, result);
 
         executionTimeReport.end();
@@ -354,8 +354,6 @@ public class JParser {
     BiConsumer<InputFile, Result> action
   ) {
 
-    // TODO: dealing with interruption
-
     LOG.info("Using ECJ batch to parse source files.");
 
     ASTParser astParser = createASTParser(version, classpath);
@@ -375,7 +373,7 @@ public class JParser {
 
     PerformanceMeasure.Duration batchPerformance = PerformanceMeasure.start("ParseAsBatch");
     ExecutionTimeReport executionTimeReport = new ExecutionTimeReport(Clock.systemUTC());
-    JProgressMonitor monitor = new JProgressMonitor();
+    JProgressMonitor monitor = new JProgressMonitor(isCanceled);
 
     try {
       astParser.createASTs(
@@ -424,12 +422,15 @@ public class JParser {
     private static final long PERIOD = TimeUnit.SECONDS.toMillis(10);
     private final Thread thread;
 
-    private boolean cancelled = false;
+    private final BooleanSupplier isCanceled;
+
     private boolean success = false;
     private int totalWork = 0;
     private int processedWork = 0;
 
-    public JProgressMonitor() {
+    public JProgressMonitor(BooleanSupplier isCanceled) {
+      this.isCanceled = isCanceled;
+
       thread = new Thread(this);
       thread.setName("Report about progress of Java AST analyzer");
       thread.setDaemon(true);
@@ -468,16 +469,16 @@ public class JParser {
 
     @Override
     public boolean isCanceled() {
-      return cancelled;
+      if (isCanceled.getAsBoolean()) {
+        log("Batch processing: Cancelled!");
+        return true;
+      }
+      return false;
     }
 
     @Override
     public void setCanceled(boolean value) {
-      cancelled = value;
-      if (cancelled) {
-        log("Batch processing: Cancelled!");
-        done();
-      }
+      // do nothing
     }
 
     private void join() {
