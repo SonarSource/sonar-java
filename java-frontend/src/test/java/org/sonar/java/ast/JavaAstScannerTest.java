@@ -200,6 +200,34 @@ class JavaAstScannerTest {
   }
 
   @Test
+  void exceptions_outside_rules_as_batch_should_be_logged() {
+    List<InputFile> brokenInputFiles = new ArrayList<>();
+    InputFile brokenFile = mock(InputFile.class);
+    when(brokenFile.charset()).thenThrow(new NullPointerException());
+    brokenInputFiles.add(brokenFile);
+
+    scanFilesWithVisitors(brokenInputFiles, Collections.emptyList(), -1, false, true);
+
+    assertThat(logTester.logs(LoggerLevel.ERROR)).
+      containsExactly("Batch Mode failed, analysis of Java Files stopped.");
+  }
+
+  @Test
+  void exceptions_outside_rules_as_batch_should_fail_fast() {
+    List<InputFile> brokenInputFiles = new ArrayList<>();
+    InputFile brokenFile = mock(InputFile.class);
+    when(brokenFile.charset()).thenThrow(new NullPointerException());
+    brokenInputFiles.add(brokenFile);
+    List<JavaFileScanner> emptyList = Collections.emptyList();
+    AnalysisException e = assertThrows(AnalysisException.class, () -> {
+      scanFilesWithVisitors(brokenInputFiles, emptyList, -1, true, true);
+    });
+    assertThat(e)
+      .hasMessage("Batch Mode failed, analysis of Java Files stopped.")
+      .hasCauseInstanceOf(NullPointerException.class);
+  }
+
+  @Test
   void test_should_use_java_version() {
     scanWithJavaVersion(16, Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/Java15SwitchExpression.java")));
     assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
