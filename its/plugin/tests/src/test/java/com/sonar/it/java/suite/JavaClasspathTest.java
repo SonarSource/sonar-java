@@ -201,12 +201,24 @@ public class JavaClasspathTest {
 
   @Test
   public void analyze_java11_plus_project_using_a_java8_runtime_placing_jar_in_libraries() {
-    testModularJdkProjectWithJdk8(false);
+    // only valid till SQ 8.9 LTS, since SQ 9.0 requires java 11
+    if (isBeforeSonarQube9()) {
+      testModularJdkProjectWithJdk8(false);
+    }
   }
 
   @Test
   public void analyze_java11_plus_project_using_a_java8_runtime_and_dedicated_jdkHome_property() {
-    testModularJdkProjectWithJdk8(true);
+    // only valid till SQ 8.9 LTS, since SQ 9.0 requires java 11
+    if (isBeforeSonarQube9()) {
+      testModularJdkProjectWithJdk8(true);
+    }
+  }
+
+  private static boolean isBeforeSonarQube9() {
+    return !ORCHESTRATOR.getServer()
+      .version()
+      .isGreaterThanOrEquals(9, 0);
   }
 
   private static void testJdk8ProjectWithModularJdk(boolean useJdkHomeProperty) {
