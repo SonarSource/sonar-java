@@ -27,6 +27,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CancellationException;
+import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -179,6 +181,25 @@ class JavaAstScannerTest {
   }
 
   @Test
+  void should_handle_analysis_cancellation_batch_mode() {
+    JavaFileScanner visitor = spy(new JavaFileScanner() {
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+        JavaAstScannerTest.this.context.setCancelled(true);
+      }
+    });
+
+    AnalysisException e = assertThrows(AnalysisException.class, () -> scanTwoFilesWithVisitor(visitor, false, true));
+    assertThat(e)
+      .hasMessage("Analysis cancelled")
+      .hasCauseInstanceOf(OperationCanceledException.class);
+
+    verify(visitor, Mockito.times(1))
+      .scanFile(any());
+    verifyNoMoreInteractions(visitor);
+  }
+
+  @Test
   void test_should_use_java_version() {
     scanWithJavaVersion(16, Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/Java15SwitchExpression.java")));
     assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
@@ -211,6 +232,24 @@ class JavaAstScannerTest {
       .hasCauseInstanceOf(RecognitionException.class);
   }
 
+  @ParameterizedTest
+  @ValueSource(classes = {
+    InterruptedException.class,
+    InterruptedIOException.class,
+    CancellationException.class})
+  void should_interrupt_analysis_when_specific_exception_are_thrown_as_batch(Class<? extends Exception> exceptionClass) throws Exception {
+    List<InputFile> inputFiles = Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/NoSonar.java"));
+    List<JavaFileScanner> visitors = Collections.singletonList(new CheckThrowingException(
+      new RecognitionException(42, "interrupted", exceptionClass.newInstance())));
+
+    AnalysisException e = assertThrows(AnalysisException.class, () ->
+      scanFilesWithVisitors(inputFiles, visitors, -1, false, true));
+
+    assertThat(e)
+      .hasMessage("Analysis cancelled")
+      .hasCauseInstanceOf(RecognitionException.class);
+  }
+
   @Test
   void should_interrupt_analysis_when_is_cancelled() throws Exception {
     List<InputFile> inputFiles = Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/NoSonar.java"));
@@ -222,6 +261,19 @@ class JavaAstScannerTest {
     assertThat(e)
       .hasMessage("Analysis cancelled")
       .hasCauseInstanceOf(MyCancelException.class);
+  }
+
+  @Test
+  void should_interrupt_analysis_when_is_cancelled_batch_mode() throws Exception {
+    List<InputFile> inputFiles = Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/NoSonar.java"));
+    List<JavaFileScanner> visitors = Collections.singletonList(new CheckCancellingAnalysis(context));
+
+    AnalysisException e = assertThrows(AnalysisException.class,
+      () -> scanFilesWithVisitors(inputFiles, visitors, -1, false, true));
+
+    assertThat(e)
+      .hasMessage("Analysis cancelled")
+      .hasCauseInstanceOf(AbortCompilation.class);
   }
 
   @Test
