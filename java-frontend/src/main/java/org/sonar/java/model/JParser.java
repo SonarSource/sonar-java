@@ -43,7 +43,6 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
@@ -167,6 +166,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.ExecutionTimeReport;
+import org.sonar.java.JProgressMonitor;
 import org.sonar.java.PerformanceMeasure;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
@@ -413,110 +413,6 @@ public class JParser {
       executionTimeReport.reportAsBatch();
       batchPerformance.stop();
       monitor.done();
-    }
-  }
-
-  private static class JProgressMonitor implements IProgressMonitor, Runnable {
-
-    private static final Logger LOG = Loggers.get(JProgressMonitor.class);
-    private static final long PERIOD = TimeUnit.SECONDS.toMillis(10);
-    private final Thread thread;
-
-    private final BooleanSupplier isCanceled;
-
-    private boolean success = false;
-    private int totalWork = 0;
-    private int processedWork = 0;
-
-    public JProgressMonitor(BooleanSupplier isCanceled) {
-      this.isCanceled = isCanceled;
-
-      thread = new Thread(this);
-      thread.setName("Report about progress of Java AST analyzer");
-      thread.setDaemon(true);
-    }
-
-    @Override
-    public void run() {
-      while (!Thread.interrupted()) {
-        try {
-          Thread.sleep(PERIOD);
-          double percentage = processedWork / (double) totalWork;
-          log(String.format("%d%% analyzed", (int) (percentage * 100)));
-        } catch (InterruptedException e) {
-          thread.interrupt();
-          break;
-        }
-      }
-    }
-
-    @Override
-    public void beginTask(String name, int totalWork) {
-      this.totalWork = totalWork;
-      log("Starting batch processing.");
-      thread.start();
-    }
-
-    @Override
-    public void done() {
-      if (success) {
-        log("100% analyzed");
-        log("Batch processing: Done!");
-      }
-      thread.interrupt();
-      join();
-    }
-
-    @Override
-    public boolean isCanceled() {
-      if (isCanceled.getAsBoolean()) {
-        log("Batch processing: Cancelled!");
-        return true;
-      }
-      return false;
-    }
-
-    @Override
-    public void setCanceled(boolean value) {
-      // do nothing
-    }
-
-    private void join() {
-      try {
-        thread.join();
-      } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-      }
-    }
-
-    @Override
-    public void worked(int work) {
-      processedWork += work;
-      if (processedWork == totalWork) {
-        success = true;
-      }
-    }
-
-    @Override
-    public void internalWorked(double work) {
-      // do nothing
-    }
-
-    @Override
-    public void setTaskName(String name) {
-      // do nothing
-    }
-
-    @Override
-    public void subTask(String name) {
-      // do nothing
-    }
-
-    private static void log(String message) {
-      synchronized (LOG) {
-        LOG.info(message);
-        LOG.notifyAll();
-      }
     }
   }
 
