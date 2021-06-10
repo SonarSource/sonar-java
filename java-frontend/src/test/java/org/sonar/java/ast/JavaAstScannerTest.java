@@ -78,7 +78,7 @@ class JavaAstScannerTest {
   @Test
   void test_file_by_file_scan() {
     CollectorScanner collector = new CollectorScanner();
-    scanTwoFilesWithVisitor(collector);
+    scanTwoFilesWithVisitor(collector, false, false);
 
     assertThat(collector.fileNames).containsExactly("Classes.java", "Methods.java");
     assertThat(logTester.logs(LoggerLevel.INFO)).doesNotContain("Using ECJ batch to parse source files.");
@@ -86,10 +86,8 @@ class JavaAstScannerTest {
 
   @Test
   void test_as_batch_scan() {
-    enableBatchMode();
-
     CollectorScanner collector = spy(new CollectorScanner());
-    scanTwoFilesWithVisitor(collector);
+    scanTwoFilesWithVisitor(collector, false, true);
 
     assertThat(collector.fileNames).containsExactly("Classes.java", "Methods.java");
     assertThat(logTester.logs(LoggerLevel.INFO)).contains("Using ECJ batch to parse source files.");
@@ -98,7 +96,7 @@ class JavaAstScannerTest {
   @Test
   void test_end_of_analysis_should_be_called_once() {
     EndOfAnalysisScanner endOfAnalysisScanner = spy(new EndOfAnalysisScanner());
-    scanTwoFilesWithVisitor(endOfAnalysisScanner);
+    scanTwoFilesWithVisitor(endOfAnalysisScanner, false, false);
 
     verify(endOfAnalysisScanner, Mockito.times(2)).scanFile(any());
     verify(endOfAnalysisScanner, Mockito.times(1)).endOfAnalysis();
@@ -106,10 +104,8 @@ class JavaAstScannerTest {
 
   @Test
   void test_end_of_analysis_should_be_called_once_with_batch() {
-    enableBatchMode();
-
     EndOfAnalysisScanner endOfAnalysisScanner = spy(new EndOfAnalysisScanner());
-    scanTwoFilesWithVisitor(endOfAnalysisScanner);
+    scanTwoFilesWithVisitor(endOfAnalysisScanner, false, true);
 
     verify(endOfAnalysisScanner, Mockito.times(2)).scanFile(any());
     verify(endOfAnalysisScanner, Mockito.times(1)).endOfAnalysis();
@@ -175,7 +171,7 @@ class JavaAstScannerTest {
       }
     });
 
-    scanTwoFilesWithVisitor(visitor);
+    scanTwoFilesWithVisitor(visitor, false, false);
 
     verify(visitor, Mockito.times(1))
       .scanFile(any());
@@ -203,10 +199,13 @@ class JavaAstScannerTest {
     InterruptedIOException.class,
     CancellationException.class})
   void should_interrupt_analysis_when_specific_exception_are_thrown(Class<? extends Exception> exceptionClass) throws Exception {
-    InputFile inputFile = TestUtils.inputFile("src/test/files/metrics/NoSonar.java");
-    VisitorsBridge visitorsBridge = new VisitorsBridge(new CheckThrowingException(new RecognitionException(42, "interrupted", exceptionClass.newInstance())));
+    List<InputFile> inputFiles = Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/NoSonar.java"));
+    List<JavaFileScanner> visitors = Collections.singletonList(new CheckThrowingException(
+      new RecognitionException(42, "interrupted", exceptionClass.newInstance())));
 
-    AnalysisException e = assertThrows(AnalysisException.class, () -> JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge));
+    AnalysisException e = assertThrows(AnalysisException.class, () ->
+      scanFilesWithVisitors(inputFiles, visitors, -1, false, false));
+
     assertThat(e)
       .hasMessage("Analysis cancelled")
       .hasCauseInstanceOf(RecognitionException.class);
@@ -214,16 +213,12 @@ class JavaAstScannerTest {
 
   @Test
   void should_interrupt_analysis_when_is_cancelled() throws Exception {
-    InputFile inputFile = TestUtils.inputFile("src/test/files/metrics/NoSonar.java");
-    SonarComponents sonarComponent = new SonarComponents(null, context.fileSystem(), null, null, null);
-    sonarComponent.setSensorContext(context);
-    VisitorsBridge visitorsBridge = new VisitorsBridge(Collections.singletonList(new CheckCancellingAnalysis(context)),
-      new ArrayList<>(),
-      sonarComponent);
+    List<InputFile> inputFiles = Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/NoSonar.java"));
+    List<JavaFileScanner> visitors = Collections.singletonList(new CheckCancellingAnalysis(context));
 
-    final JavaVersionImpl javaVersion = new JavaVersionImpl();
     AnalysisException e = assertThrows(AnalysisException.class,
-      () -> JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge, javaVersion, sonarComponent));
+      () -> scanFilesWithVisitors(inputFiles, visitors, -1, false, false));
+
     assertThat(e)
       .hasMessage("Analysis cancelled")
       .hasCauseInstanceOf(MyCancelException.class);
@@ -313,29 +308,18 @@ class JavaAstScannerTest {
     verifyZeroInteractions(listener);
   }
 
-  private final void scanSingleFile(InputFile file, boolean failOnException) {
-    SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
-    sensorContextTester.setSettings(new MapSettings().setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, failOnException));
-
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
-    sonarComponents.setSensorContext(sensorContextTester);
-
-    VisitorsBridge visitorsBridge = new VisitorsBridge(new ArrayList<>(), new ArrayList<>(), sonarComponents);
-
-    JavaAstScanner.scanSingleFileForTests(file, visitorsBridge, new JavaVersionImpl(), sonarComponents);
+  private void scanSingleFile(InputFile file, boolean failOnException) {
+    scanFilesWithVisitors(Collections.singletonList(file), Collections.emptyList(), -1, failOnException, false);
   }
 
-  private void enableBatchMode() {
-    MapSettings settings = mock(MapSettings.class);
-    when(settings.getString(SonarComponents.SONAR_BATCH_MODE_KEY)).thenReturn("true");
-    context.setSettings(settings);
-  }
-
-  private void scanTwoFilesWithVisitor(JavaFileScanner visitor) {
-    scanWithJavaVersion(-1, Arrays.asList(
+  private void scanTwoFilesWithVisitor(JavaFileScanner visitor, boolean failOnException, boolean batchMode) {
+    scanFilesWithVisitors(Arrays.asList(
       TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java")
-    ), Collections.singletonList(visitor));
+    ), Collections.singletonList(visitor),
+      -1,
+      failOnException,
+      batchMode);
   }
 
   private void scanWithJavaVersion(int version, List<InputFile> inputFiles) {
@@ -343,6 +327,16 @@ class JavaAstScannerTest {
   }
 
   private void scanWithJavaVersion(int version, List<InputFile> inputFiles, List<JavaFileScanner> visitors) {
+    scanFilesWithVisitors(inputFiles, visitors, version, false, false);
+  }
+
+  private void scanFilesWithVisitors(List<InputFile> inputFiles, List<JavaFileScanner> visitors,
+                                     int javaVersion, boolean failOnException, boolean batchMode) {
+    context.setSettings(new MapSettings()
+      .setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, failOnException)
+      .setProperty(SonarComponents.SONAR_BATCH_MODE_KEY, batchMode)
+    );
+
     DefaultFileSystem fileSystem = context.fileSystem();
     ClasspathForMain classpathForMain = new ClasspathForMain(context.config(), fileSystem);
     ClasspathForTest classpathForTest = new ClasspathForTest(context.config(), fileSystem);
@@ -350,7 +344,7 @@ class JavaAstScannerTest {
     sonarComponents.setSensorContext(context);
     JavaAstScanner scanner = new JavaAstScanner(sonarComponents);
     VisitorsBridge visitorBridge = new VisitorsBridge(visitors, new ArrayList<>(), sonarComponents);
-    visitorBridge.setJavaVersion(new JavaVersionImpl(version));
+    visitorBridge.setJavaVersion(new JavaVersionImpl(javaVersion));
     scanner.setVisitorBridge(visitorBridge);
     scanner.scan(inputFiles);
   }
