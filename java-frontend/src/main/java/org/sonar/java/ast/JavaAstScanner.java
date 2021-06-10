@@ -153,7 +153,7 @@ public class JavaAstScanner {
     ast.sema.cleanupEnvironment();
   }
 
-  private String getJavaVersion(JavaVersion javaVersion) {
+  private static String getJavaVersion(JavaVersion javaVersion) {
     if (javaVersion == null || javaVersion.isNotSet()) {
       return JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
     }
