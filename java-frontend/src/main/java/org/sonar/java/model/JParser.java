@@ -33,13 +33,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
-import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.eclipse.jdt.core.JavaCore;
@@ -52,13 +48,8 @@ import org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
 import org.eclipse.jdt.internal.formatter.DefaultCodeFormatterOptions;
 import org.eclipse.jdt.internal.formatter.Token;
 import org.eclipse.jdt.internal.formatter.TokenManager;
-import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
-import org.sonar.java.ExecutionTimeReport;
-import org.sonar.java.ProgressMonitor;
-import org.sonar.java.PerformanceMeasure;
-import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.ast.parser.BlockStatementListTreeImpl;
 import org.sonar.java.ast.parser.BoundListTreeImpl;
@@ -145,7 +136,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonarsource.analyzer.commons.ProgressReport;
 
 @ParametersAreNonnullByDefault
 public class JParser {
@@ -161,167 +151,13 @@ public class JParser {
   private static final Predicate<IProblem> IS_SYNTAX_ERROR = error -> (error.getID() & IProblem.Syntax) != 0;
   private static final Predicate<IProblem> IS_UNDEFINED_TYPE_ERROR = error -> (error.getID() & IProblem.UndefinedType) != 0;
 
-  public static class Result {
-    private final Exception e;
-    private final JavaTree.CompilationUnitTreeImpl t;
-
-    Result(Exception e) {
-      this.e = e;
-      this.t = null;
-    }
-
-    Result(JavaTree.CompilationUnitTreeImpl t) {
-      this.e = null;
-      this.t = t;
-    }
-
-    public JavaTree.CompilationUnitTreeImpl get() throws Exception {
-      if (e != null) {
-        throw e;
-      }
-      return t;
-    }
-  }
-
-  public static void parseFileByFile(
-    String version,
-    List<File> classpath,
-    Iterable<? extends InputFile> inputFiles,
-    BooleanSupplier isCanceled,
-    BiConsumer<InputFile, Result> action) {
-
-    boolean successfullyCompleted = false;
-    boolean cancelled = false;
-
-    ExecutionTimeReport executionTimeReport = new ExecutionTimeReport();
-    ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
-    List<String> filesNames = StreamSupport.stream(inputFiles.spliterator(), false).map(InputFile::toString).collect(Collectors.toList());
-    progressReport.start(filesNames);
-    try {
-      for (InputFile inputFile : inputFiles) {
-        if (isCanceled.getAsBoolean()) {
-          cancelled = true;
-          break;
-        }
-        executionTimeReport.start(inputFile);
-
-        Result result;
-        PerformanceMeasure.Duration parseDuration = PerformanceMeasure.start("JParser");
-        try {
-          result = new Result(parse(
-            version,
-            inputFile.filename(),
-            inputFile.contents(),
-            classpath
-          ));
-        } catch (Exception e) {
-          result = new Result(e);
-        } finally {
-          parseDuration.stop();
-        }
-
-        action.accept(inputFile, result);
-
-        executionTimeReport.end();
-        progressReport.nextFile();
-      }
-      successfullyCompleted = !cancelled;
-    } finally {
-      if (successfullyCompleted) {
-        progressReport.stop();
-      } else {
-        progressReport.cancel();
-      }
-      executionTimeReport.report();
-    }
-  }
-
-  public static void parseAsBatch(
-    String version,
-    List<File> classpath,
-    Iterable<? extends InputFile> inputFiles,
-    BooleanSupplier isCanceled,
-    BiConsumer<InputFile, Result> action
-  ) {
-
-    LOG.info("Using ECJ batch to parse source files.");
-
-    ASTParser astParser = createASTParser(version, classpath);
-
-    List<String> sourceFilePaths = new ArrayList<>();
-    List<String> encodings = new ArrayList<>();
-    Map<File, InputFile> inputs = new HashMap<>();
-    for (InputFile inputFile : inputFiles) {
-      String sourceFilePath = inputFile.absolutePath();
-      inputs.put(
-        new File(sourceFilePath),
-        inputFile
-      );
-      sourceFilePaths.add(sourceFilePath);
-      encodings.add(inputFile.charset().name());
-    }
-
-    PerformanceMeasure.Duration batchPerformance = PerformanceMeasure.start("ParseAsBatch");
-    ExecutionTimeReport executionTimeReport = new ExecutionTimeReport();
-    ProgressMonitor monitor = new ProgressMonitor(isCanceled);
-
-    try {
-      astParser.createASTs(
-        sourceFilePaths.toArray(new String[0]),
-        encodings.toArray(new String[0]),
-        new String[0],
-        new FileASTRequestor() {
-          @Override
-          public void acceptAST(String sourceFilePath, CompilationUnit ast) {
-            PerformanceMeasure.Duration convertDuration = PerformanceMeasure.start("Convert");
-
-            InputFile inputFile = inputs.get(new File(sourceFilePath));
-            executionTimeReport.start(inputFile);
-            Result result;
-            try {
-              result = new Result(convert(
-                version,
-                inputFile.filename(),
-                inputFile.contents(),
-                ast
-              ));
-            } catch (Exception e) {
-              result = new Result(e);
-            }
-            convertDuration.stop();
-            PerformanceMeasure.Duration analyzeDuration = PerformanceMeasure.start("Analyze");
-            action.accept(inputFile, result);
-
-            executionTimeReport.end();
-            analyzeDuration.stop();
-          }
-        },
-        monitor
-      );
-    } finally {
-      // ExecutionTimeReport will not include the parsing time by file when using batch mode.
-      executionTimeReport.reportAsBatch();
-      batchPerformance.stop();
-      monitor.done();
-    }
-  }
-
   /**
    * @param unitName see {@link ASTParser#setUnitName(String)}
    * @throws RecognitionException in case of syntax errors
    */
-  @VisibleForTesting
-  public static JavaTree.CompilationUnitTreeImpl parse(
-    String version,
-    String unitName,
-    String source,
-    List<File> classpath
-  ) {
-    ASTParser astParser = createASTParser(version, classpath);
-
+  public static JavaTree.CompilationUnitTreeImpl parse(ASTParser astParser, String version, String unitName, String source) {
     astParser.setUnitName(unitName);
-    char[] sourceChars = source.toCharArray();
-    astParser.setSource(sourceChars);
+    astParser.setSource(source.toCharArray());
 
     CompilationUnit astNode;
     try {
@@ -334,7 +170,7 @@ public class JParser {
     return convert(version, unitName, source, astNode);
   }
 
-  private static ASTParser createASTParser(String version, List<File> classpath) {
+  public static ASTParser createASTParser(String version, List<File> classpath) {
     ASTParser astParser = ASTParser.newParser(AST.JLS15);
     Map<String, String> options = new HashMap<>();
     options.put(JavaCore.COMPILER_COMPLIANCE, version);
@@ -363,12 +199,7 @@ public class JParser {
     return astParser;
   }
 
-  private static JavaTree.CompilationUnitTreeImpl convert(
-    String version,
-    String unitName,
-    String source,
-    CompilationUnit astNode
-  ) {
+  static JavaTree.CompilationUnitTreeImpl convert(String version, String unitName, String source, CompilationUnit astNode) {
     List<IProblem> errors = Stream.of(astNode.getProblems()).filter(IProblem::isError).collect(Collectors.toList());
     Optional<IProblem> possibleSyntaxError = errors.stream().filter(IS_SYNTAX_ERROR).findFirst();
     if (possibleSyntaxError.isPresent()) {

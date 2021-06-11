@@ -37,6 +37,7 @@ import org.sonar.java.AnalysisException;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.JParser;
+import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
@@ -75,9 +76,9 @@ public class JavaAstScanner {
       if (isBatchModeEnabled()) {
         parseAsBatch(filesNames, version);
       } else {
-        JParser.parseFileByFile(version,
-          visitor.getClasspath(),
-          filesNames,
+        JParserConfig
+          .create(version, visitor.getClasspath(), JParserConfig.Mode.FILE_BY_FILE)
+          .parse(filesNames,
           this::analysisCancelled,
           (i, r) -> simpleScan(i, r, JavaAstScanner::cleanUpAst)
         );
@@ -90,9 +91,9 @@ public class JavaAstScanner {
 
   private void parseAsBatch(List<InputFile> filesNames, String version) {
     try {
-      JParser.parseAsBatch(version,
-        visitor.getClasspath(),
-        filesNames,
+      JParserConfig
+        .create(version, visitor.getClasspath(), JParserConfig.Mode.BATCH)
+        .parse(filesNames,
         this::analysisCancelled,
         (i, r) -> simpleScan(i, r, ast -> {
           // Do nothing. In batch mode, can not clean the ast as it will be used in later processing.
@@ -123,7 +124,7 @@ public class JavaAstScanner {
     return sonarComponents != null && sonarComponents.analysisCancelled();
   }
 
-  private void simpleScan(InputFile inputFile, JParser.Result result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp) {
+  private void simpleScan(InputFile inputFile, JParserConfig.Result result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp) {
     visitor.setCurrentFile(inputFile);
     try {
       JavaTree.CompilationUnitTreeImpl ast = result.get();
