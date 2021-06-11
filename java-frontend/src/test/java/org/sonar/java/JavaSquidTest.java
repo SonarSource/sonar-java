@@ -126,12 +126,11 @@ class JavaSquidTest {
     javaSquid.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
 
     assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly(
-      "No source files to scan.",
-      "No test files to scan.",
-      "No generated files to scan."
+      "No \"Main\" source files to scan.",
+      "No \"Test\" source files to scan.",
+      "No \"Generated\" source files to scan."
     );
   }
-
 
   private InputFile scan(String code) throws IOException {
     File baseDir = temp.getRoot().getAbsoluteFile();

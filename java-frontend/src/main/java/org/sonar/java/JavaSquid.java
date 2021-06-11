@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
@@ -55,8 +56,8 @@ public class JavaSquid {
                    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
                    JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
     this(javaVersion, sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, null, visitors);
-
   }
+
   public JavaSquid(JavaVersion javaVersion,
                    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
                    JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter,
@@ -113,47 +114,22 @@ public class JavaSquid {
   }
 
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
-    if (CollectionUtils.size(sourceFiles) > 0) {
-      Duration mainDuration = PerformanceMeasure.start("Main");
-      scanSources(sourceFiles);
+    scanAndMeasureTask(sourceFiles, astScanner::scan, "Main");
+    scanAndMeasureTask(testFiles, astScannerForTests::scan, "Test");
+    scanAndMeasureTask(generatedFiles, astScannerForGeneratedFiles::scan, "Generated");
+  }
+
+  private static <T> void scanAndMeasureTask(Iterable<T> files, Consumer<Iterable<T>> action, String descriptor) {
+    if (CollectionUtils.size(files) > 0) {
+      Duration mainDuration = PerformanceMeasure.start(descriptor);
+      Profiler profiler = Profiler.create(LOG).startInfo(String.format("Java \"%s\" source files AST scan", descriptor));
+
+      action.accept(files);
+
+      profiler.stopInfo();
       mainDuration.stop();
     } else {
-      LOG.info("No source files to scan.");
-    }
-
-    if (CollectionUtils.size(testFiles) > 0) {
-      Duration testDuration = PerformanceMeasure.start("Test");
-      scanTests(testFiles);
-      testDuration.stop();
-    } else {
-      LOG.info("No test files to scan.");
-    }
-
-    if (CollectionUtils.size(generatedFiles) > 0) {
-      Duration generatedDuration = PerformanceMeasure.start("Generated");
-      scanGeneratedFiles(generatedFiles);
-      generatedDuration.stop();
-    } else {
-      LOG.info("No generated files to scan.");
+      LOG.info(String.format("No \"%s\" source files to scan.", descriptor));
     }
   }
-
-  private void scanSources(Iterable<InputFile> sourceFiles) {
-    Profiler profiler = Profiler.create(LOG).startInfo("Java Main Files AST scan");
-    astScanner.scan(sourceFiles);
-    profiler.stopInfo();
-  }
-
-  private void scanTests(Iterable<InputFile> testFiles) {
-    Profiler profiler = Profiler.create(LOG).startInfo("Java Test Files AST scan");
-    astScannerForTests.scan(testFiles);
-    profiler.stopInfo();
-  }
-
-  private void scanGeneratedFiles(Iterable<? extends InputFile> generatedFiles) {
-    Profiler profiler = Profiler.create(LOG).startInfo("Java Generated Files AST scan");
-    astScannerForGeneratedFiles.scan(generatedFiles);
-    profiler.stopInfo();
-  }
-
 }
