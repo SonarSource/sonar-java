@@ -19,9 +19,11 @@
  */
 package org.sonar.plugins.java;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.DependsUpon;
@@ -46,6 +48,8 @@ import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.se.SymbolicExecutionVisitor;
+import org.sonar.java.se.checks.SECheck;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
 
@@ -99,12 +103,29 @@ public class JavaSquidSensor implements Sensor {
     Measurer measurer = new Measurer(context, noSonarFilter);
 
     JavaSquid squid = new JavaSquid(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter,
-      // FIXME Find a better way to inject the Symbolic Execution engine
-      new SymbolicExecutionVisitor(Arrays.asList(sonarComponents.checkClasses())),
-      sonarComponents.checkClasses());
+      addSymbolicExecutionVisitorIfNeeded(sonarComponents.checkClasses()));
     squid.scan(getSourceFiles(), getTestFiles(), runJasper(context));
 
     sensorDuration.stopAndLog(context.fileSystem().workDir(), true);
+  }
+
+  private JavaCheck[] addSymbolicExecutionVisitorIfNeeded(JavaCheck... javaChecks) {
+    int firstSECheckIndex = -1;
+    List<SECheck> seChecks = new ArrayList<>();
+    for (int i = 0; i < javaChecks.length; i++) {
+      if (javaChecks[i] instanceof SECheck) {
+        seChecks.add((SECheck) javaChecks[i]);
+        if (firstSECheckIndex == -1) {
+          firstSECheckIndex = i;
+        }
+      }
+    }
+    if (firstSECheckIndex != -1) {
+      List<JavaCheck> checks = new ArrayList<>(Arrays.asList(javaChecks));
+      checks.add(firstSECheckIndex, new SymbolicExecutionVisitor(seChecks));
+      return checks.toArray(new JavaCheck[0]);
+    }
+    return javaChecks;
   }
 
   private Collection<GeneratedFile> runJasper(SensorContext context) {

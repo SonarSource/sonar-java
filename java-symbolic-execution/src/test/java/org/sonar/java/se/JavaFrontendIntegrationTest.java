@@ -176,7 +176,7 @@ class JavaFrontendIntegrationTest {
   }
 
   private VisitorsBridge visitorsBridgeWithSymbolicExecution(SECheck... seChecks) {
-    List<JavaCheck> seChecksList = Arrays.asList(seChecks);
+    List<SECheck> seChecksList = Arrays.asList(seChecks);
 
     List<JavaCheck> visitors = new ArrayList<>();
     visitors.add(new SymbolicExecutionVisitor(seChecksList));

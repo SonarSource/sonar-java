@@ -29,9 +29,9 @@ import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.Sema;
+import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
-import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -43,11 +43,9 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   @VisibleForTesting
   public final BehaviorCache behaviorCache;
   private final ExplodedGraphWalker.ExplodedGraphWalkerFactory egwFactory;
-  private final SymbolicExecutionMode mode;
 
-  public SymbolicExecutionVisitor(List<JavaCheck> executableScanners) {
-    mode = SymbolicExecutionMode.getMode(executableScanners);
-    egwFactory = new ExplodedGraphWalker.ExplodedGraphWalkerFactory(executableScanners);
+  public SymbolicExecutionVisitor(List<SECheck> seChecks) {
+    egwFactory = new ExplodedGraphWalker.ExplodedGraphWalkerFactory(seChecks);
     this.behaviorCache = new BehaviorCache();
   }
 
@@ -55,9 +53,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   public void scanFile(JavaFileScannerContext context) {
     behaviorCache.cleanup();
     behaviorCache.setFileContext(this);
-    if (mode.isEnabled()) {
-      super.scanFile(context);
-    }
+    super.scanFile(context);
   }
 
   @Override

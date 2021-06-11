@@ -33,7 +33,6 @@ import org.sonar.api.utils.log.Profiler;
 import org.sonar.java.PerformanceMeasure.Duration;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
-import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.collections.ListUtils;
 import org.sonar.java.filters.SonarJavaIssueFilter;
@@ -53,13 +52,6 @@ public class JavaSquid {
   public JavaSquid(JavaVersion javaVersion,
                    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
                    JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
-    this(javaVersion, sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, null, visitors);
-    
-  }
-  public JavaSquid(JavaVersion javaVersion,
-                   @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
-                   JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter,
-                   @Nullable SubscriptionVisitor symbolicExecutionEngine, JavaCheck... visitors) {
 
     List<JavaCheck> commonVisitors = new ArrayList<>();
     commonVisitors.add(javaResourceLocator);
@@ -67,8 +59,7 @@ public class JavaSquid {
       commonVisitors.add(postAnalysisIssueFilter);
     }
 
-    List<SubscriptionVisitor> seVisitor = symbolicExecutionEngine == null ? Collections.emptyList() : Collections.singletonList(symbolicExecutionEngine);
-    Iterable<JavaCheck> codeVisitors = ListUtils.concat(seVisitor, commonVisitors, Arrays.asList(visitors));
+    Iterable<JavaCheck> codeVisitors = ListUtils.concat(commonVisitors, Arrays.asList(visitors));
     Collection<JavaCheck> testCodeVisitors = new ArrayList<>(commonVisitors);
     if (measurer != null) {
       Iterable<JavaCheck> measurers = Collections.singletonList(measurer);
