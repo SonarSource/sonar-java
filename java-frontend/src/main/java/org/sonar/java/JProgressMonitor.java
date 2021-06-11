@@ -27,31 +27,42 @@ import org.sonar.api.utils.log.Loggers;
 
 public class JProgressMonitor implements IProgressMonitor, Runnable {
 
-  private static final Logger LOG = Loggers.get(JProgressMonitor.class);
-  private static final long PERIOD = TimeUnit.SECONDS.toMillis(10);
+  private final Logger logger;
+  private final long period;
   private final Thread thread;
 
   private final BooleanSupplier isCanceled;
 
   private boolean success = false;
   private int totalWork = 0;
+  private boolean unknownTotalWork = false;
   private int processedWork = 0;
 
-  public JProgressMonitor(BooleanSupplier isCanceled) {
+  public JProgressMonitor(BooleanSupplier isCanceled, Logger logger, long period) {
     this.isCanceled = isCanceled;
+    this.logger = logger;
+    this.period = period;
 
     thread = new Thread(this);
     thread.setName("Report about progress of Java AST analyzer");
     thread.setDaemon(true);
   }
 
+  public JProgressMonitor(BooleanSupplier isCanceled) {
+    this(isCanceled, Loggers.get(JProgressMonitor.class), TimeUnit.SECONDS.toMillis(10));
+  }
+
   @Override
   public void run() {
     while (!Thread.interrupted()) {
       try {
-        Thread.sleep(PERIOD);
-        double percentage = processedWork / (double) totalWork;
-        log(String.format("%d%% analyzed", (int) (percentage * 100)));
+        Thread.sleep(period);
+        if (unknownTotalWork) {
+          log(String.format("%d/UNKNOWN %% analyzed", processedWork));
+        } else {
+          double percentage = processedWork / (double) totalWork;
+          log(String.format("%d%% analyzed", (int) (percentage * 100)));
+        }
       } catch (InterruptedException e) {
         thread.interrupt();
         break;
@@ -61,6 +72,9 @@ public class JProgressMonitor implements IProgressMonitor, Runnable {
 
   @Override
   public void beginTask(String name, int totalWork) {
+    if (totalWork <= 0) {
+      unknownTotalWork = true;
+    }
     this.totalWork = totalWork;
     log("Starting batch processing.");
     thread.start();
@@ -121,10 +135,10 @@ public class JProgressMonitor implements IProgressMonitor, Runnable {
     // do nothing
   }
 
-  private static void log(String message) {
-    synchronized (LOG) {
-      LOG.info(message);
-      LOG.notifyAll();
+  private void log(String message) {
+    synchronized (logger) {
+      logger.info(message);
+      logger.notifyAll();
     }
   }
 }
