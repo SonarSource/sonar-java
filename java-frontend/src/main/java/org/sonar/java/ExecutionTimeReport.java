@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonar.java.annotations.VisibleForTesting;
 
 public class ExecutionTimeReport {
   private static final Logger LOG = Loggers.get(ExecutionTimeReport.class);
@@ -60,7 +61,12 @@ public class ExecutionTimeReport {
   private InputFile currentFile;
   private long currentFileStartTimeMS;
 
-  public ExecutionTimeReport(Clock clock) {
+  public ExecutionTimeReport() {
+    this(Clock.systemUTC());
+  }
+
+  @VisibleForTesting
+  ExecutionTimeReport(Clock clock) {
     this.clock = clock;
     analysisStartTimeMS = clock.millis();
   }
