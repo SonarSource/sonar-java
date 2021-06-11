@@ -67,7 +67,7 @@ public class JParserTestUtils {
 
   public static CompilationUnitTree parse(String unitName, String source, List<File> classpath) {
     String version = JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    return JParser.parse(JParser.createASTParser(version, classpath), version, unitName, source);
+    return JParser.parse(JParserConfig.Mode.FILE_BY_FILE.create(version, classpath).astParser(), version, unitName, source);
   }
 
 }

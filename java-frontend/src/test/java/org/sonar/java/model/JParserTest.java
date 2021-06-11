@@ -66,6 +66,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.sonar.java.model.JParserConfig.Mode.BATCH;
+import static org.sonar.java.model.JParserConfig.Mode.FILE_BY_FILE;
 import static org.sonar.java.model.JParserTestUtils.DEFAULT_CLASSPATH;
 
 class JParserTest {
@@ -91,14 +93,9 @@ class JParserTest {
   @Test
   void should_recover_if_parser_fails() {
     String version = "12";
-    ASTParser astParser = JParser.createASTParser(version, Collections.singletonList(new File("unknownFile")));
-    assertThrows(
-      RecognitionException.class,
-      () -> JParser.parse(
-        astParser,
-        version,
-        "A",
-        "class A { }"));
+    List<File> classpath = Collections.singletonList(new File("unknownFile"));
+    ASTParser astParser = FILE_BY_FILE.create(version, classpath).astParser();
+    assertThrows(RecognitionException.class, () -> JParser.parse(astParser, version, "A", "class A { }"));
   }
 
   @Test
@@ -138,7 +135,7 @@ class JParserTest {
       .when(inputFile).absolutePath();
 
     Set<InputFile> inputFiles = Collections.singleton(inputFile);
-    JParserConfig config = JParserConfig.create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList(), JParserConfig.Mode.FILE_BY_FILE);
+    JParserConfig config = JParserConfig.Mode.FILE_BY_FILE.create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList());
 
     RuntimeException actual = assertThrows(RuntimeException.class, () -> config.parse(inputFiles, () -> false, consumer));
     assertSame(expected, actual);
@@ -157,8 +154,8 @@ class JParserTest {
       .doThrow(IOException.class)
       .when(inputFile).contents();
 
-    JParserConfig
-      .create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList(), JParserConfig.Mode.FILE_BY_FILE)
+    FILE_BY_FILE
+      .create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList())
       .parse(Collections.singleton(inputFile), () -> false, consumer);
 
     JParserConfig.Result result = results.get(0);
@@ -172,8 +169,8 @@ class JParserTest {
     InputFile inputFile = spy(TestUtils.inputFile("src/test/files/metrics/Classes.java"));
     when(inputFile.contents()).thenThrow(IOException.class);
 
-    JParserConfig
-      .create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList(), JParserConfig.Mode.BATCH)
+    BATCH
+      .create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList())
       .parse(Collections.singleton(inputFile), () -> false, consumer);
 
     JParserConfig.Result result = results.get(0);
@@ -187,7 +184,7 @@ class JParserTest {
       throw expected;
     };
     List<InputFile> inputFiles = Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/Classes.java"));
-    JParserConfig config = JParserConfig.create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH, JParserConfig.Mode.BATCH);
+    JParserConfig config = BATCH.create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH);
     NullPointerException actual = assertThrows(NullPointerException.class, () -> config.parse(inputFiles, () -> false, consumerThrowing));
 
     assertSame(expected, actual);
@@ -287,8 +284,8 @@ class JParserTest {
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
     List<JParserConfig.Result> results = new ArrayList<>();
     List<InputFile> inputFilesProcessed = new ArrayList<>();
-    JParserConfig
-      .create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH, JParserConfig.Mode.FILE_BY_FILE)
+    FILE_BY_FILE
+      .create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
       .parse(inputFiles, () -> false, (inputFile, result) -> {
         results.add(result);
         inputFilesProcessed.add(inputFile);
@@ -303,8 +300,8 @@ class JParserTest {
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
     List<JParserConfig.Result> results = new ArrayList<>();
     List<InputFile> inputFilesProcessed = new ArrayList<>();
-    JParserConfig
-      .create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH, JParserConfig.Mode.BATCH)
+    BATCH
+      .create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
       .parse(inputFiles, () -> false, (inputFile, result) -> {
         results.add(result);
         inputFilesProcessed.add(inputFile);
@@ -329,7 +326,7 @@ class JParserTest {
   }
 
   @Test
-  void test_is_cancelled_is_called_before_each_action_file_by_file() throws Exception {
+  void test_is_canceled_is_called_before_each_action_file_by_file() throws Exception {
     List<InputFile> inputFiles = Arrays.asList(TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
     BiConsumer<InputFile, JParserConfig.Result> action = spy(new BiConsumer<InputFile, JParserConfig.Result>() {
@@ -338,31 +335,31 @@ class JParserTest {
         // Do nothing
       }
     });
-    BooleanSupplier isCancelled = spy(new BooleanSupplier() {
+    BooleanSupplier isCanceled = spy(new BooleanSupplier() {
       @Override
       public boolean getAsBoolean() {
         return false;
       }
     });
 
-    JParserConfig
-      .create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH, JParserConfig.Mode.FILE_BY_FILE)
-      .parse(inputFiles, isCancelled, action);
+    FILE_BY_FILE
+      .create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
+      .parse(inputFiles, isCanceled, action);
 
-    InOrder inOrder = Mockito.inOrder(action, isCancelled);
-    inOrder.verify(isCancelled).getAsBoolean();
+    InOrder inOrder = Mockito.inOrder(action, isCanceled);
+    inOrder.verify(isCanceled).getAsBoolean();
     inOrder.verify(action).accept(any(), any());
-    inOrder.verify(isCancelled).getAsBoolean();
+    inOrder.verify(isCanceled).getAsBoolean();
     inOrder.verify(action).accept(any(), any());
   }
 
   @Test
-  void test_is_cancelled_is_called_file_by_file() {
+  void test_is_canceled_is_called_file_by_file() {
     List<InputFile> inputFiles = Arrays.asList(TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
     List<JParserConfig.Result> results = new ArrayList<>();
-    JParserConfig
-      .create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH, JParserConfig.Mode.FILE_BY_FILE)
+    FILE_BY_FILE
+      .create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
       .parse(inputFiles, () -> true, (inputFile, result) -> results.add(result));
 
     assertThat(results).isEmpty();

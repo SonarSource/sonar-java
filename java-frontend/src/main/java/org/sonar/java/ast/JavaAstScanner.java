@@ -77,8 +77,8 @@ public class JavaAstScanner {
       if (isBatchModeEnabled()) {
         parseAsBatch(filesNames, version);
       } else {
-        JParserConfig
-          .create(version, visitor.getClasspath(), JParserConfig.Mode.FILE_BY_FILE)
+        JParserConfig.Mode.FILE_BY_FILE
+          .create(version, visitor.getClasspath())
           .parse(filesNames,
           this::analysisCancelled,
           (i, r) -> simpleScan(i, r, JavaAstScanner::cleanUpAst)
@@ -92,8 +92,8 @@ public class JavaAstScanner {
 
   private void parseAsBatch(List<InputFile> filesNames, String version) {
     try {
-      JParserConfig
-        .create(version, visitor.getClasspath(), JParserConfig.Mode.BATCH)
+      JParserConfig.Mode.BATCH
+        .create(version, visitor.getClasspath())
         .parse(filesNames,
         this::analysisCancelled,
         (i, r) -> simpleScan(i, r, ast -> {

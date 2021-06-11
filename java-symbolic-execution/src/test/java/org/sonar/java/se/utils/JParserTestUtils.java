@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.java.model.JParser;
+import org.sonar.java.model.JParserConfig;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 public class JParserTestUtils {
@@ -68,7 +69,7 @@ public class JParserTestUtils {
 
   public static CompilationUnitTree parse(String unitName, String source, List<File> classpath) {
     String version = JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    return JParser.parse(JParser.createASTParser(version, classpath), version, unitName, source);
+    return JParser.parse(JParserConfig.Mode.FILE_BY_FILE.create(version, classpath).astParser(), version, unitName, source);
   }
 
 }

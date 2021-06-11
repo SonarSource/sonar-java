@@ -21,14 +21,20 @@ package org.sonar.java.model;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FileASTRequestor;
@@ -40,32 +46,48 @@ import org.sonar.java.PerformanceMeasure;
 import org.sonar.java.ProgressMonitor;
 import org.sonarsource.analyzer.commons.ProgressReport;
 
-public interface JParserConfig {
+public abstract class JParserConfig {
 
-  static JParserConfig create(String javaVersion, List<File> classpath, Mode mode) {
-    if (mode == Mode.BATCH) {
-      return new Batch(javaVersion, classpath);
+  private static final Logger LOG = Loggers.get(JParserConfig.class);
+
+  private static final String MAXIMUM_ECJ_WARNINGS = "42000";
+  private static final Set<String> JRE_JARS = new HashSet<>(Arrays.asList("rt.jar", "jrt-fs.jar", "android.jar"));
+
+  final String javaVersion;
+  final List<File> classpath;
+
+  private JParserConfig(String javaVersion, List<File> classpath) {
+    this.javaVersion = javaVersion;
+    this.classpath = classpath;
+  }
+
+  public abstract void parse(Iterable<? extends InputFile> inputFiles, BooleanSupplier isCanceled, BiConsumer<InputFile, Result> action);
+
+  public enum Mode {
+    BATCH(Batch::new),
+    FILE_BY_FILE(FileByFile::new);
+
+    private final BiFunction<String, List<File>, JParserConfig> supplier;
+
+    Mode(BiFunction<String, List<File>, JParserConfig> supplier) {
+      this.supplier = supplier;
     }
-    // default is "File by File"
-    return new FileByFile(javaVersion, classpath);
+
+    public JParserConfig create(String javaVersion, List<File> classpath) {
+      return supplier.apply(javaVersion, classpath);
+    }
   }
 
-  void parse(Iterable<? extends InputFile> inputFiles, BooleanSupplier isCanceled, BiConsumer<InputFile, Result> action);
-
-  enum Mode {
-    BATCH, FILE_BY_FILE
-  }
-
-  class Result {
+  public static class Result {
     private final Exception e;
     private final JavaTree.CompilationUnitTreeImpl t;
 
-    Result(Exception e) {
+    private Result(Exception e) {
       this.e = e;
       this.t = null;
     }
 
-    Result(JavaTree.CompilationUnitTreeImpl t) {
+    private Result(JavaTree.CompilationUnitTreeImpl t) {
       this.e = null;
       this.t = t;
     }
@@ -78,16 +100,38 @@ public interface JParserConfig {
     }
   }
 
+  public ASTParser astParser() {
+    ASTParser astParser = ASTParser.newParser(AST.JLS15);
+    Map<String, String> options = new HashMap<>();
+    options.put(JavaCore.COMPILER_COMPLIANCE, javaVersion);
+    options.put(JavaCore.COMPILER_SOURCE, javaVersion);
+    options.put(JavaCore.COMPILER_PB_MAX_PER_UNIT, MAXIMUM_ECJ_WARNINGS);
+    if (JParser.MAXIMUM_SUPPORTED_JAVA_VERSION.equals(javaVersion)) {
+      options.put(JavaCore.COMPILER_PB_ENABLE_PREVIEW_FEATURES, "enabled");
+    }
+    // enabling all supported compiler warnings
+    JWarning.Type.compilerOptions()
+      .forEach(option -> options.put(option, "warning"));
 
-  class Batch implements JParserConfig {
+    astParser.setCompilerOptions(options);
 
-    private static final Logger LOG = Loggers.get(JParserConfig.Batch.class);
-    private final ASTParser astParser;
-    private final String javaVersion;
+    boolean includeRunningVMBootclasspath = classpath.stream()
+      .noneMatch(f -> JRE_JARS.contains(f.getName()));
+
+    astParser.setEnvironment(classpath.stream()
+      .map(File::getAbsolutePath)
+      .toArray(String[]::new), new String[] {}, new String[] {}, includeRunningVMBootclasspath);
+
+    astParser.setResolveBindings(true);
+    astParser.setBindingsRecovery(true);
+
+    return astParser;
+  }
+
+  private static class Batch extends JParserConfig {
 
     private Batch(String javaVersion, List<File> classpath) {
-      this.javaVersion = javaVersion;
-      astParser = JParser.createASTParser(javaVersion, classpath);
+      super(javaVersion, classpath);
     }
 
     @Override
@@ -109,7 +153,7 @@ public interface JParserConfig {
       ProgressMonitor monitor = new ProgressMonitor(isCanceled);
 
       try {
-        astParser.createASTs(sourceFilePaths.toArray(new String[0]), encodings.toArray(new String[0]), new String[0], new FileASTRequestor() {
+        astParser().createASTs(sourceFilePaths.toArray(new String[0]), encodings.toArray(new String[0]), new String[0], new FileASTRequestor() {
           @Override
           public void acceptAST(String sourceFilePath, CompilationUnit ast) {
             PerformanceMeasure.Duration convertDuration = PerformanceMeasure.start("Convert");
@@ -139,14 +183,10 @@ public interface JParserConfig {
     }
   }
 
-  class FileByFile implements JParserConfig {
-
-    private final List<File> classpath;
-    private final String javaVersion;
+  private static class FileByFile extends JParserConfig {
 
     private FileByFile(String javaVersion, List<File> classpath) {
-      this.classpath = classpath;
-      this.javaVersion = javaVersion;
+      super(javaVersion, classpath);
     }
 
     @Override
@@ -170,9 +210,8 @@ public interface JParserConfig {
 
           Result result;
           PerformanceMeasure.Duration parseDuration = PerformanceMeasure.start("JParser");
-          ASTParser astParser = JParser.createASTParser(javaVersion, classpath);
           try {
-            result = new Result(JParser.parse(astParser, javaVersion, inputFile.filename(), inputFile.contents()));
+            result = new Result(JParser.parse(astParser(), javaVersion, inputFile.filename(), inputFile.contents()));
           } catch (Exception e) {
             result = new Result(e);
           } finally {
