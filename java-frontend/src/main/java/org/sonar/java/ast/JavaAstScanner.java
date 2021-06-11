@@ -65,6 +65,7 @@ public class JavaAstScanner {
     List<InputFile> filesNames = StreamSupport.stream(inputFiles.spliterator(), false)
       .filter(file -> {
         if (("module-info.java".equals(file.filename())) && !javaVersion.isNotSet() && javaVersion.asInt() <= 8) {
+          // When the java version is not set, we use the maximum version supported, able to parse module info.
           logMisconfiguredVersion("module-info.java", javaVersion);
           return false;
         }

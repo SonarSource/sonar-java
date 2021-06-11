@@ -377,6 +377,18 @@ class JavaAstScannerTest {
   }
 
   @Test
+  void test_module_info_no_warning_with_no_version_set() {
+    scanWithJavaVersion(-1,
+      Arrays.asList(
+        TestUtils.inputFile("src/test/files/metrics/Java15SwitchExpression.java"),
+        TestUtils.inputFile("src/test/resources/module-info.java")
+      ));
+    // When the java version is not set, we use the maximum version supported, able to parse module info.
+    assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.WARN)).isEmpty();
+  }
+
+  @Test
   void should_report_analysis_error_in_sonarLint_context_withSQ_6_0() {
     JavaAstScanner scanner = new JavaAstScanner(null);
     FakeAuditListener listener = spy(new FakeAuditListener());

@@ -60,7 +60,7 @@ public class ProgressMonitor implements IProgressMonitor, Runnable {
       try {
         Thread.sleep(period);
         if (unknownTotalWork) {
-          log(String.format("%d/UNKNOWN %% analyzed", processedWork));
+          log(String.format("%d/UNKNOWN unit(s) analyzed", processedWork));
         } else {
           double percentage = processedWork / (double) totalWork;
           log(String.format("%d%% analyzed", (int) (percentage * 100)));

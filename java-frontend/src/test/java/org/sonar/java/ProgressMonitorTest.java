@@ -46,20 +46,21 @@ class ProgressMonitorTest {
   }
 
   @Test
-  void task_related_methods_do_nothing() {
+  void methods_do_nothing() {
     Logger logger = mock(Logger.class);
 
     ProgressMonitor report = new ProgressMonitor(() -> false, logger, TimeUnit.MILLISECONDS.toMillis(500));
 
     report.setTaskName("task");
     report.subTask("task");
+    report.internalWorked(2.0);
 
     report.done();
 
     verifyNoInteractions(logger);
   }
 
-  @Timeout(value = 3)
+  @Timeout(3)
   @Test
   void test_simple_report_progress() throws Exception {
     Logger logger = mock(Logger.class);
@@ -84,7 +85,7 @@ class ProgressMonitorTest {
     );
   }
 
-  @Timeout(value = 3)
+  @Timeout(3)
   @Test
   void test_report_progress() throws Exception {
     Logger logger = mock(Logger.class);
@@ -120,7 +121,7 @@ class ProgressMonitorTest {
     );
   }
 
-  @Timeout(value = 3)
+  @Timeout(3)
   @Test
   void test_unknown_total_work() throws Exception {
     Logger logger = mock(Logger.class);
@@ -140,12 +141,12 @@ class ProgressMonitorTest {
     List<String> messages = captor.getAllValues();
     assertThat(messages).hasSizeGreaterThanOrEqualTo(3).contains(
       "Starting batch processing.",
-      "0/UNKNOWN % analyzed",
-      "250/UNKNOWN % analyzed"
+      "0/UNKNOWN unit(s) analyzed",
+      "250/UNKNOWN unit(s) analyzed"
     );
   }
 
-  @Timeout(value = 3)
+  @Timeout(3)
   @Test
   void test_is_cancelled() throws Exception {
     Logger logger = mock(Logger.class);
@@ -171,7 +172,7 @@ class ProgressMonitorTest {
     );
   }
 
-  @Timeout(value = 3)
+  @Timeout(3)
   @Test
   void test_done_without_success() throws Exception {
     Logger logger = mock(Logger.class);
