@@ -134,24 +134,31 @@ class JavaAstScannerTest {
   }
 
   @Test
-  void scan_single_file_with_dumb_file_should_not_fail() throws Exception {
-    String filename = "!!dummy";
-    JavaAstScanner.scanSingleFileForTests(TestUtils.emptyInputFile(filename), new VisitorsBridge(null));
+  void scan_single_file_with_dumb_file_should_not_fail() {
+    InputFile inputFile = TestUtils.emptyInputFile("!!dummy");
+    VisitorsBridge visitorsBridge = new VisitorsBridge(null);
+    try {
+      JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge);
+    } catch (Exception e) {
+      fail("Should not have failed", e);
+    }
   }
 
   @Test
   void scan_single_file_with_dumb_file_should_not_fail_when_not_fail_fast() {
-    String filename = "!!dummy";
-    scanSingleFile(TestUtils.emptyInputFile(filename), false);
+    InputFile inputFile = TestUtils.emptyInputFile("!!dummy");
+    try {
+      scanSingleFile(inputFile, false);
+    } catch (Exception e) {
+      fail("Should not have failed", e);
+    }
   }
 
   @Test
   void scan_single_file_with_dumb_file_should_fail_when_fail_fast() throws Exception {
-    String filename = "!!dummy";
-    InputFile inputFile = TestUtils.emptyInputFile(filename);
-    AnalysisException e = assertThrows(AnalysisException.class,
-      () -> scanSingleFile(inputFile, true));
-    assertThat(e.getMessage()).isEqualTo("Unable to analyze file : '!!dummy'");
+    InputFile inputFile = TestUtils.emptyInputFile("!!dummy");
+    AnalysisException e = assertThrows(AnalysisException.class, () -> scanSingleFile(inputFile, true));
+    assertThat(e).hasMessage("Unable to analyze file : '!!dummy'");
   }
 
   @Test
@@ -334,8 +341,9 @@ class JavaAstScannerTest {
       scanner.scan(files);
       fail("Should have triggered a StackOverflowError and not reach this point.");
     } catch (Error e) {
-      assertThat(e).isInstanceOf(StackOverflowError.class);
-      assertThat(e.getMessage()).isEqualTo("boom");
+      assertThat(e)
+        .isInstanceOf(StackOverflowError.class)
+        .hasMessage("boom");
       List<String> errorLogs = logTester.logs(LoggerLevel.ERROR);
       assertThat(errorLogs).hasSize(1);
       assertThat(errorLogs.get(0)).startsWith("A stack overflow error occurred while analyzing file");
