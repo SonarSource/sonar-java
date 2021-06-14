@@ -42,6 +42,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.ExecutionTimeReport;
+import org.sonar.java.JavaSquid;
 import org.sonar.java.PerformanceMeasure;
 import org.sonar.java.ProgressMonitor;
 import org.sonarsource.analyzer.commons.ProgressReport;
@@ -202,6 +203,8 @@ public abstract class JParserConfig {
       progressReport.start(filesNames);
       try {
         for (InputFile inputFile : inputFiles) {
+          JavaSquid.startMeasureLatencyBeforeAFile();
+
           if (isCanceled.getAsBoolean()) {
             cancelled = true;
             break;
@@ -222,6 +225,8 @@ public abstract class JParserConfig {
 
           executionTimeReport.end();
           progressReport.nextFile();
+
+          JavaSquid.endMeasureLatencyAfterAFile();
         }
         successfullyCompleted = !cancelled;
       } finally {

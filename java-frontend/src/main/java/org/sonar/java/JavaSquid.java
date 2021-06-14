@@ -20,12 +20,18 @@
 package org.sonar.java;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.LongUnaryOperator;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
@@ -44,9 +50,15 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public class JavaSquid {
 
   private static final Logger LOG = Loggers.get(JavaSquid.class);
+
+  public static long startTime = System.nanoTime();
+  public static List<Long> issueLatency = new ArrayList<>();
+  public static long[] issuesPerPercentOfFileAnalysisTime = new long[101];
 
   private final JavaAstScanner astScanner;
   private final JavaAstScanner astScannerForTests;
@@ -114,9 +126,52 @@ public class JavaSquid {
   }
 
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
+    startMeasureLatencyBeforeAllFiles();
     scanAndMeasureTask(sourceFiles, astScanner::scan, "Main");
     scanAndMeasureTask(testFiles, astScannerForTests::scan, "Test");
     scanAndMeasureTask(generatedFiles, astScannerForGeneratedFiles::scan, "Generated");
+    endMeasureLatencyAfterAllFiles();
+  }
+
+  public static void startMeasureLatencyBeforeAllFiles() {
+    issuesPerPercentOfFileAnalysisTime = new long[101];
+  }
+
+  public static void endMeasureLatencyAfterAllFiles() {
+    try {
+      Path rulingLatencyFile = Paths.get("/tmp/ruling-latency.txt");
+      if (Files.exists(rulingLatencyFile)) {
+        List<String> lines = Files.readAllLines(rulingLatencyFile, UTF_8);
+        Preconditions.checkArgument(lines.size() == 101);
+        for (int i = 0; i < lines.size(); i++) {
+          issuesPerPercentOfFileAnalysisTime[i] += Long.parseLong(lines.get(i));
+        }
+      }
+      Files.write(rulingLatencyFile, Arrays.stream(issuesPerPercentOfFileAnalysisTime)
+        .mapToObj(String::valueOf)
+        .collect(Collectors.joining("\n")).getBytes(UTF_8));
+    } catch (IOException e) {
+      throw new IllegalStateException(e);
+    }
+  }
+
+  public static void startMeasureLatencyBeforeAFile() {
+    startTime = System.nanoTime();
+    issueLatency = new ArrayList<>();
+  }
+
+  public static void endMeasureLatencyAfterAFile() {
+    long fileDuration = System.nanoTime() - JavaSquid.startTime;
+    LongUnaryOperator numberOfIssueBeforeAGivenTime = time -> JavaSquid.issueLatency.stream()
+      .filter(duration -> duration < time)
+      .count();
+    for (int i = 0; i <= 100; i++) {
+      issuesPerPercentOfFileAnalysisTime[i] += numberOfIssueBeforeAGivenTime.applyAsLong(fileDuration * i / 100);
+    }
+  }
+
+  public static void addOneIssueLatency() {
+    issueLatency.add(System.nanoTime() - JavaSquid.startTime);
   }
 
   private static <T> void scanAndMeasureTask(Iterable<T> files, Consumer<Iterable<T>> action, String descriptor) {
