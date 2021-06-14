@@ -33,7 +33,7 @@ public class JParserTestUtils {
     // Utility class
   }
 
-  private static final List<File> DEFAULT_CLASSPATH = Arrays.asList(new File("target/test-classes"), new File("target/classes"));
+  public static final List<File> DEFAULT_CLASSPATH = Arrays.asList(new File("target/test-classes"), new File("target/classes"));
 
   public static CompilationUnitTree parse(File file) {
     return parse(file, DEFAULT_CLASSPATH);
@@ -66,7 +66,8 @@ public class JParserTestUtils {
   }
 
   public static CompilationUnitTree parse(String unitName, String source, List<File> classpath) {
-    return JParser.parse(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, unitName, source, classpath);
+    String version = JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
+    return JParser.parse(JParserConfig.Mode.FILE_BY_FILE.create(version, classpath).astParser(), version, unitName, source);
   }
 
 }

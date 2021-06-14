@@ -21,11 +21,11 @@ package org.sonar.java.ast;
 
 import com.sonar.sslr.api.RecognitionException;
 import java.io.InterruptedIOException;
-import java.time.Clock;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
@@ -34,16 +34,14 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.AnalysisException;
-import org.sonar.java.ExecutionTimeReport;
-import org.sonar.java.PerformanceMeasure;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.JParser;
+import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaVersion;
-import org.sonarsource.analyzer.commons.ProgressReport;
 
 public class JavaAstScanner {
   private static final Logger LOG = Loggers.get(JavaAstScanner.class);
@@ -63,34 +61,58 @@ public class JavaAstScanner {
   }
 
   public void scan(Iterable<? extends InputFile> inputFiles) {
-    ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
-    progressReport.start(StreamSupport.stream(inputFiles.spliterator(), false).map(InputFile::toString).collect(Collectors.toList()));
-
-    boolean successfullyCompleted = false;
-    boolean cancelled = false;
-    ExecutionTimeReport executionTimeReport = new ExecutionTimeReport(Clock.systemUTC());
-    try {
-      for (InputFile inputFile : inputFiles) {
-        if (analysisCancelled()) {
-          cancelled = true;
-          break;
+    JavaVersion javaVersion = visitor.getJavaVersion();
+    List<InputFile> filesNames = StreamSupport.stream(inputFiles.spliterator(), false)
+      .filter(file -> {
+        if (("module-info.java".equals(file.filename())) && !javaVersion.isNotSet() && javaVersion.asInt() <= 8) {
+          // When the java version is not set, we use the maximum version supported, able to parse module info.
+          logMisconfiguredVersion("module-info.java", javaVersion);
+          return false;
         }
-        executionTimeReport.start(inputFile);
-        simpleScan(inputFile);
-        executionTimeReport.end();
-        progressReport.nextFile();
-      }
-      successfullyCompleted = !cancelled;
-    } finally {
-      if (successfullyCompleted) {
-        progressReport.stop();
+        return true;
+      }).collect(Collectors.toList());
+
+    String version = getJavaVersion(javaVersion);
+    try {
+      if (isBatchModeEnabled()) {
+        parseAsBatch(filesNames, version);
       } else {
-        progressReport.cancel();
+        JParserConfig.Mode.FILE_BY_FILE
+          .create(version, visitor.getClasspath())
+          .parse(filesNames,
+          this::analysisCancelled,
+          (i, r) -> simpleScan(i, r, JavaAstScanner::cleanUpAst)
+        );
       }
-      executionTimeReport.report();
+    } finally {
       visitor.endOfAnalysis();
       logUndefinedTypes();
     }
+  }
+
+  private void parseAsBatch(List<InputFile> filesNames, String version) {
+    try {
+      JParserConfig.Mode.BATCH
+        .create(version, visitor.getClasspath())
+        .parse(filesNames,
+        this::analysisCancelled,
+        (i, r) -> simpleScan(i, r, ast -> {
+          // Do nothing. In batch mode, can not clean the ast as it will be used in later processing.
+        })
+      );
+    } catch (AnalysisException e) {
+      throw e;
+    } catch (Exception e) {
+      checkInterrupted(e);
+      LOG.error("Batch Mode failed, analysis of Java Files stopped.", e);
+      if (shouldFailAnalysis()) {
+        throw new AnalysisException("Batch Mode failed, analysis of Java Files stopped.", e);
+      }
+    }
+  }
+
+  private boolean isBatchModeEnabled() {
+    return sonarComponents != null && sonarComponents.isBatchModeEnabled();
   }
 
   private void logUndefinedTypes() {
@@ -103,31 +125,14 @@ public class JavaAstScanner {
     return sonarComponents != null && sonarComponents.analysisCancelled();
   }
 
-  private void simpleScan(InputFile inputFile) {
+  private void simpleScan(InputFile inputFile, JParserConfig.Result result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp) {
     visitor.setCurrentFile(inputFile);
-    PerformanceMeasure.Duration parseDuration = PerformanceMeasure.start("JParser");
     try {
-      String version;
-      JavaVersion javaVersion = visitor.getJavaVersion();
-      if (javaVersion == null || javaVersion.asInt() < 0) {
-        version = /* default */ JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
-      } else if ("module-info.java".equals(inputFile.filename()) && javaVersion.asInt() <= 8) {
-        logMisconfiguredVersion(inputFile, javaVersion);
-        version = /* default */ JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
-      } else {
-        version = Integer.toString(javaVersion.asInt());
-      }
-      JavaTree.CompilationUnitTreeImpl ast = (JavaTree.CompilationUnitTreeImpl) JParser.parse(
-        version,
-        inputFile.filename(),
-        inputFile.contents(),
-        visitor.getClasspath()
-      );
-      parseDuration.stop();
+      JavaTree.CompilationUnitTreeImpl ast = result.get();
+
       visitor.visitFile(ast);
       collectUndefinedTypes(ast.sema.undefinedTypes());
-      // release environment used for semantic resolution
-      ast.sema.cleanupEnvironment();
+      cleanUp.accept(ast);
     } catch (RecognitionException e) {
       checkInterrupted(e);
       LOG.error(String.format(LOG_ERROR_UNABLE_TO_PARSE_FILE, inputFile));
@@ -142,10 +147,19 @@ public class JavaAstScanner {
     } catch (StackOverflowError error) {
       LOG.error(String.format(LOG_ERROR_STACKOVERFLOW, inputFile), error);
       throw error;
-    } finally {
-      // redundant stop in case of exception
-      parseDuration.stop();
     }
+  }
+
+  private static void cleanUpAst(JavaTree.CompilationUnitTreeImpl ast) {
+    // release environment used for semantic resolution
+    ast.sema.cleanupEnvironment();
+  }
+
+  private static String getJavaVersion(@Nullable JavaVersion javaVersion) {
+    if (javaVersion == null || javaVersion.isNotSet()) {
+      return JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
+    }
+    return Integer.toString(javaVersion.asInt());
   }
 
   private void collectUndefinedTypes(Set<String> undefinedTypes) {
@@ -154,7 +168,7 @@ public class JavaAstScanner {
     }
   }
 
-  void logMisconfiguredVersion(InputFile inputFile, JavaVersion javaVersion) {
+  void logMisconfiguredVersion(String inputFile, JavaVersion javaVersion) {
     if (!reportedMisconfiguredVersion) {
       LOG.warn(String.format(LOG_WARN_MISCONFIGURED_JAVA_VERSION, inputFile, JavaVersion.SOURCE_VERSION, javaVersion.asInt()));
       reportedMisconfiguredVersion = true;
@@ -162,9 +176,13 @@ public class JavaAstScanner {
   }
 
   private void interruptIfFailFast(Exception e, InputFile inputFile) {
-    if (sonarComponents != null && sonarComponents.shouldFailAnalysisOnException()) {
+    if (shouldFailAnalysis()) {
       throw new AnalysisException(getAnalysisExceptionMessage(inputFile), e);
     }
+  }
+
+  private boolean shouldFailAnalysis() {
+    return sonarComponents != null && sonarComponents.shouldFailAnalysisOnException();
   }
 
   private void checkInterrupted(Exception e) {

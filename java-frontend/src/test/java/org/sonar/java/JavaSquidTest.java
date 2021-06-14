@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.fs.InputFile;
@@ -38,6 +39,8 @@ import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.scan.issue.filter.IssueFilterChain;
 import org.sonar.api.utils.Version;
+import org.sonar.api.utils.log.LogTesterJUnit5;
+import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.filters.SonarJavaIssueFilter;
@@ -60,6 +63,9 @@ class JavaSquidTest {
 
   @Rule
   public TemporaryFolder temp = new TemporaryFolder();
+
+  @RegisterExtension
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
 
   private FileLinesContext fileLinesContext;
   private ClasspathForMain javaClasspath;
@@ -114,6 +120,17 @@ class JavaSquidTest {
     assertThat(context.allAnalysisErrors().iterator().next().message()).isEqualTo("Registering class 2 times : A");
   }
 
+  @Test
+  void scanning_empty_project_should_be_logged() throws Exception {
+    JavaSquid javaSquid = new JavaSquid(new JavaVersionImpl(), sonarComponents, new Measurer(context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), testIssueFilter);
+    javaSquid.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+
+    assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly(
+      "No \"Main\" source files to scan.",
+      "No \"Test\" source files to scan.",
+      "No \"Generated\" source files to scan."
+    );
+  }
 
   private InputFile scan(String code) throws IOException {
     File baseDir = temp.getRoot().getAbsoluteFile();

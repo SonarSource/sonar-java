@@ -20,13 +20,10 @@
 package org.sonar.java.model;
 
 import com.sonar.sslr.api.RecognitionException;
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,7 +35,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.eclipse.jdt.core.dom.*;
@@ -121,7 +117,6 @@ import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
@@ -141,13 +136,9 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @ParametersAreNonnullByDefault
 public class JParser {
 
-  private static final Set<String> JRE_JARS = new HashSet<>(Arrays.asList("rt.jar", "jrt-fs.jar", "android.jar"));
-
   private static final Logger LOG = Loggers.get(JParser.class);
 
   public static final String MAXIMUM_SUPPORTED_JAVA_VERSION = "15";
-
-  private static final String MAXIMUM_ECJ_WARNINGS = "42000";
 
   private static final Predicate<IProblem> IS_SYNTAX_ERROR = error -> (error.getID() & IProblem.Syntax) != 0;
   private static final Predicate<IProblem> IS_UNDEFINED_TYPE_ERROR = error -> (error.getID() & IProblem.UndefinedType) != 0;
@@ -156,40 +147,9 @@ public class JParser {
    * @param unitName see {@link ASTParser#setUnitName(String)}
    * @throws RecognitionException in case of syntax errors
    */
-  public static CompilationUnitTree parse(
-    String version,
-    String unitName,
-    String source,
-    List<File> classpath
-  ) {
-    ASTParser astParser = ASTParser.newParser(AST.JLS15);
-    Map<String, String> options = new HashMap<>();
-    options.put(JavaCore.COMPILER_COMPLIANCE, version);
-    options.put(JavaCore.COMPILER_SOURCE, version);
-    options.put(JavaCore.COMPILER_PB_MAX_PER_UNIT, MAXIMUM_ECJ_WARNINGS);
-    if (MAXIMUM_SUPPORTED_JAVA_VERSION.equals(version)) {
-      options.put(JavaCore.COMPILER_PB_ENABLE_PREVIEW_FEATURES, "enabled");
-    }
-    // enabling all supported compiler warnings
-    JWarning.Type.compilerOptions().forEach(option -> options.put(option, "warning"));
-
-    astParser.setCompilerOptions(options);
-
-    boolean includeRunningVMBootclasspath = classpath.stream().noneMatch(f -> JRE_JARS.contains(f.getName()));
-
-    astParser.setEnvironment(
-      classpath.stream().map(File::getAbsolutePath).toArray(String[]::new),
-      new String[]{},
-      new String[]{},
-      includeRunningVMBootclasspath
-    );
+  public static JavaTree.CompilationUnitTreeImpl parse(ASTParser astParser, String version, String unitName, String source) {
     astParser.setUnitName(unitName);
-
-    astParser.setResolveBindings(true);
-    astParser.setBindingsRecovery(true);
-
-    char[] sourceChars = source.toCharArray();
-    astParser.setSource(sourceChars);
+    astParser.setSource(source.toCharArray());
 
     CompilationUnit astNode;
     try {
@@ -199,6 +159,10 @@ public class JParser {
       throw new RecognitionException(-1, "ECJ: Unable to parse file.", e);
     }
 
+    return convert(version, unitName, source, astNode);
+  }
+
+  static JavaTree.CompilationUnitTreeImpl convert(String version, String unitName, String source, CompilationUnit astNode) {
     List<IProblem> errors = Stream.of(astNode.getProblems()).filter(IProblem::isError).collect(Collectors.toList());
     Optional<IProblem> possibleSyntaxError = errors.stream().filter(IS_SYNTAX_ERROR).findFirst();
     if (possibleSyntaxError.isPresent()) {
@@ -219,7 +183,7 @@ public class JParser {
     converter.sema = new JSema(astNode.getAST());
     converter.sema.undefinedTypes.addAll(undefinedTypes);
     converter.compilationUnit = astNode;
-    converter.tokenManager = new TokenManager(lex(version, unitName, sourceChars), source, new DefaultCodeFormatterOptions(new HashMap<>()));
+    converter.tokenManager = new TokenManager(lex(version, unitName, source.toCharArray()), source, new DefaultCodeFormatterOptions(new HashMap<>()));
 
     JavaTree.CompilationUnitTreeImpl tree = converter.convertCompilationUnit(astNode);
     tree.sema = converter.sema;

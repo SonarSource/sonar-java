@@ -67,6 +67,7 @@ public class SonarComponents {
   private static final int LOGGED_MAX_NUMBER_UNDEFINED_TYPES = 50;
 
   public static final String FAIL_ON_EXCEPTION_KEY = "sonar.internal.analysis.failFast";
+  public static final String SONAR_BATCH_MODE_KEY = "sonar.java.internal.batchMode";
 
   private final FileLinesContextFactory fileLinesContextFactory;
 
@@ -319,6 +320,10 @@ public class SonarComponents {
 
   public boolean shouldFailAnalysisOnException() {
     return context.config().getBoolean(FAIL_ON_EXCEPTION_KEY).orElse(false);
+  }
+
+  public boolean isBatchModeEnabled() {
+    return context.config().getBoolean(SONAR_BATCH_MODE_KEY).orElse(false);
   }
 
   public File workDir() {

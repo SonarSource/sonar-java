@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
@@ -35,6 +36,7 @@ import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
+import org.sonar.java.collections.CollectionUtils;
 import org.sonar.java.collections.ListUtils;
 import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.java.model.VisitorsBridge;
@@ -54,8 +56,8 @@ public class JavaSquid {
                    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
                    JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
     this(javaVersion, sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, null, visitors);
-    
   }
+
   public JavaSquid(JavaVersion javaVersion,
                    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
                    JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter,
@@ -112,35 +114,22 @@ public class JavaSquid {
   }
 
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
-    Duration mainDuration = PerformanceMeasure.start("Main");
-    scanSources(sourceFiles);
-    mainDuration.stop();
-
-    Duration testDuration = PerformanceMeasure.start("Test");
-    scanTests(testFiles);
-    testDuration.stop();
-
-    Duration generatedDuration = PerformanceMeasure.start("Generated");
-    scanGeneratedFiles(generatedFiles);
-    generatedDuration.stop();
+    scanAndMeasureTask(sourceFiles, astScanner::scan, "Main");
+    scanAndMeasureTask(testFiles, astScannerForTests::scan, "Test");
+    scanAndMeasureTask(generatedFiles, astScannerForGeneratedFiles::scan, "Generated");
   }
 
-  private void scanSources(Iterable<InputFile> sourceFiles) {
-    Profiler profiler = Profiler.create(LOG).startInfo("Java Main Files AST scan");
-    astScanner.scan(sourceFiles);
-    profiler.stopInfo();
-  }
+  private static <T> void scanAndMeasureTask(Iterable<T> files, Consumer<Iterable<T>> action, String descriptor) {
+    if (CollectionUtils.size(files) > 0) {
+      Duration mainDuration = PerformanceMeasure.start(descriptor);
+      Profiler profiler = Profiler.create(LOG).startInfo(String.format("Java \"%s\" source files AST scan", descriptor));
 
-  private void scanTests(Iterable<InputFile> testFiles) {
-    Profiler profiler = Profiler.create(LOG).startInfo("Java Test Files AST scan");
-    astScannerForTests.scan(testFiles);
-    profiler.stopInfo();
-  }
+      action.accept(files);
 
-  private void scanGeneratedFiles(Iterable<? extends InputFile> generatedFiles) {
-    Profiler profiler = Profiler.create(LOG).startInfo("Java Generated Files AST scan");
-    astScannerForGeneratedFiles.scan(generatedFiles);
-    profiler.stopInfo();
+      profiler.stopInfo();
+      mainDuration.stop();
+    } else {
+      LOG.info(String.format("No \"%s\" source files to scan.", descriptor));
+    }
   }
-
 }

@@ -37,10 +37,28 @@ public class JavaTutorialTest {
   @Test
   public void test() {
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("java-tutorial")).setCleanPackageSonarGoals();
-    TestUtils.provisionProject(orchestrator, "org.sonarsource.it.projects:java-tutorial", "java-tutorial", "java", "java-tutorial");
+    String projectKey = "org.sonarsource.it.projects:java-tutorial";
+    TestUtils.provisionProject(orchestrator, projectKey, "java-tutorial", "java", "java-tutorial");
+    executeAndAssertBuild(build, projectKey);
+  }
+
+  @Test
+  public void test_as_batch_mode() {
+    String projectKey = "org.sonarsource.it.projects:java-tutorial-batch";
+    String projectName = "java-tutorial-batch";
+    MavenBuild build = MavenBuild.create(TestUtils.projectPom("java-tutorial"))
+      .setCleanPackageSonarGoals()
+      .setProperty("sonar.projectKey", projectKey)
+      .setProperty("sonar.projectName", projectName)
+      .setProperty("sonar.java.internal.batchMode", "true");
+    TestUtils.provisionProject(orchestrator, projectKey, projectName, "java", "java-tutorial");
+    executeAndAssertBuild(build, projectKey);
+  }
+
+  private void executeAndAssertBuild(MavenBuild build, String projectKey) {
     orchestrator.executeBuild(build);
 
-    List<Issue> issues = TestUtils.issuesForComponent(orchestrator, "org.sonarsource.it.projects:java-tutorial");
+    List<Issue> issues = TestUtils.issuesForComponent(orchestrator, projectKey);
     assertThat(issues).hasSize(31);
 
     assertThat(issuesForRule(issues, "mycompany-java:AvoidTreeList")).hasSize(2);
