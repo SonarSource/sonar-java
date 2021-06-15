@@ -43,12 +43,14 @@ import org.sonar.java.Measurer;
 import org.sonar.java.PerformanceMeasure;
 import org.sonar.java.PerformanceMeasure.DurationReport;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.CheckList;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.se.SymbolicExecutionVisitor;
+import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -102,17 +104,26 @@ public class JavaSquidSensor implements Sensor {
 
     Measurer measurer = new Measurer(context, noSonarFilter);
 
-    List<JavaCheck> javaChecksOrderedLikeInCheckList = Arrays.stream(sonarComponents.checkClasses())
-      .sorted(Comparator.comparing(CheckList::rankOf))
-      .collect(Collectors.toList());
-
     JavaSquid squid = new JavaSquid(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter,
-      // FIXME Find a better way to inject the Symbolic Execution engine
-      new SymbolicExecutionVisitor(javaChecksOrderedLikeInCheckList),
-      javaChecksOrderedLikeInCheckList.toArray(new JavaCheck[0]));
+      // sonarComponents.checkClasses() return a list of checks shuffled using a HashMap
+      restoreJavaChecksOrderAndAddSymbolicExecutionVisitor(sonarComponents.checkClasses()));
     squid.scan(getSourceFiles(), getTestFiles(), runJasper(context));
 
     sensorDuration.stopAndLog(context.fileSystem().workDir(), true);
+  }
+
+  @VisibleForTesting
+  static JavaCheck[] restoreJavaChecksOrderAndAddSymbolicExecutionVisitor(JavaCheck[] javaChecks) {
+    List<JavaCheck> orderedList = Arrays.stream(javaChecks)
+      .sorted(Comparator.comparing(CheckList::rankOf))
+      .collect(Collectors.toList());
+    for (int i = 0; i < orderedList.size(); i++) {
+      if (orderedList.get(i) instanceof SECheck) {
+        orderedList.add(i, new SymbolicExecutionVisitor(orderedList));
+        break;
+      }
+    }
+    return orderedList.toArray(new JavaCheck[0]);
   }
 
   private Collection<GeneratedFile> runJasper(SensorContext context) {

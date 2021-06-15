@@ -94,7 +94,7 @@ class JavaSquidSensorTest {
 
   @Test
   void test_issues_creation_on_main_file() throws IOException {
-    testIssueCreation(InputFile.Type.MAIN, 4);
+    testIssueCreation(InputFile.Type.MAIN, 6);
   }
 
   @Test
@@ -183,6 +183,37 @@ class JavaSquidSensorTest {
 
     // normal visitors are not invoked on generated files
     verify(javaFileScanner, never()).scanFile(any());
+  }
+
+  @Test
+  void restore_checks_order_amd_inject_SymbolicExecutionVisitor() throws IOException {
+    JavaCheck[] javaChecks = {
+      new org.sonar.java.se.checks.DivisionByZeroCheck(),
+      new org.sonar.java.checks.MagicNumberCheck(),
+      new org.sonar.java.se.checks.NullDereferenceCheck()
+    };
+    JavaCheck[] ordered = JavaSquidSensor.restoreJavaChecksOrderAndAddSymbolicExecutionVisitor(javaChecks);
+    assertThat(ordered).extracting(JavaCheck::getClass).extracting(Class::getSimpleName)
+      .containsExactly(
+        "MagicNumberCheck",
+        "SymbolicExecutionVisitor",
+        "NullDereferenceCheck",
+        "DivisionByZeroCheck"
+      );
+  }
+
+  @Test
+  void no_SymbolicExecutionVisitor_when_no_SEChecks() throws IOException {
+    JavaCheck[] javaChecks = {
+      new org.sonar.java.checks.ParameterReassignedToCheck(),
+      new org.sonar.java.checks.MagicNumberCheck()
+    };
+    JavaCheck[] ordered = JavaSquidSensor.restoreJavaChecksOrderAndAddSymbolicExecutionVisitor(javaChecks);
+    assertThat(ordered).extracting(JavaCheck::getClass).extracting(Class::getSimpleName)
+      .containsExactly(
+        "MagicNumberCheck",
+        "ParameterReassignedToCheck"
+      );
   }
 
   interface JspCodeScanner extends JavaFileScanner, JspCodeVisitor {
