@@ -20,16 +20,17 @@
 package org.sonar.java.se;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import org.sonar.java.AnalyzerMessage;
-import org.sonar.java.collections.ListUtils;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
+import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 
 public class SECheckVerifier implements CheckVerifier {
@@ -46,16 +47,21 @@ public class SECheckVerifier implements CheckVerifier {
 
   @Override
   public CheckVerifier withCheck(JavaFileScanner check) {
-    checkVerifier.withChecks(new SymbolicExecutionVisitor(Collections.singletonList(check)), check);
-    return this;
+    return withChecks(check);
   }
 
   @Override
   public CheckVerifier withChecks(JavaFileScanner... checks) {
-    List<SymbolicExecutionVisitor> symbolicExecutionVisitor = 
-      Collections.singletonList(new SymbolicExecutionVisitor(Arrays.asList(checks)));
-    checkVerifier.withChecks(ListUtils.concat(symbolicExecutionVisitor, Arrays.asList(checks))
-      .toArray(new JavaFileScanner[0]));
+    List<SECheck> seChecks = Arrays.stream(checks)
+      .filter(SECheck.class::isInstance)
+      .map(SECheck.class::cast)
+      .collect(Collectors.toList());
+    List<JavaFileScanner> newCheckList = new ArrayList<>();
+    if (!seChecks.isEmpty()) {
+      newCheckList.add(new SymbolicExecutionVisitor(seChecks));
+    }
+    newCheckList.addAll(Arrays.asList(checks));
+    checkVerifier.withChecks(newCheckList.toArray(new JavaFileScanner[0]));
     return this;
   }
 

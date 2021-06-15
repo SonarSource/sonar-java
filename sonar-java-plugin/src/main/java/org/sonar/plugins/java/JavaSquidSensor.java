@@ -117,11 +117,13 @@ public class JavaSquidSensor implements Sensor {
     List<JavaCheck> orderedList = Arrays.stream(javaChecks)
       .sorted(Comparator.comparing(CheckList::rankOf))
       .collect(Collectors.toList());
-    for (int i = 0; i < orderedList.size(); i++) {
-      if (orderedList.get(i) instanceof SECheck) {
-        orderedList.add(i, new SymbolicExecutionVisitor(orderedList));
-        break;
-      }
+    List<SECheck> seChecks = orderedList.stream()
+      .filter(SECheck.class::isInstance)
+      .map(SECheck.class::cast)
+      .collect(Collectors.toList());
+    if (!seChecks.isEmpty()) {
+      int firstSECheckIndex = orderedList.indexOf(seChecks.get(0));
+      orderedList.add(firstSECheckIndex, new SymbolicExecutionVisitor(seChecks));
     }
     return orderedList.toArray(new JavaCheck[0]);
   }

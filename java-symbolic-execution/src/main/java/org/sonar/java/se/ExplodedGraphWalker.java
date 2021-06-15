@@ -63,7 +63,6 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
-import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -1228,11 +1227,8 @@ public class ExplodedGraphWalker {
     @VisibleForTesting
     final List<SECheck> seChecks = new ArrayList<>();
 
-    public ExplodedGraphWalkerFactory(List<JavaCheck> scanners) {
-      List<SECheck> checks = scanners.stream()
-        .filter(SECheck.class::isInstance)
-        .map(SECheck.class::cast)
-        .collect(Collectors.toList());
+    public ExplodedGraphWalkerFactory(List<SECheck> activeSEChecks) {
+      List<SECheck> checks = new ArrayList<>(activeSEChecks);
 
       // This order of the mandatory SE checks is required by the ExplodedGraphWalker
       seChecks.add(removeOrDefault(checks, new NullDereferenceCheck()));
