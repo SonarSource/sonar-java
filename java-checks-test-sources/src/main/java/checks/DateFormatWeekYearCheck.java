@@ -63,4 +63,22 @@ class DateFormatWeekYearCheck {
     DateTimeFormatter.ofPattern("Y", Locale.ENGLISH); // Noncompliant [[sc=33;ec=36]] {{Make sure that week Year "Y" is expected here instead of Year "y".}}
     DateTimeFormatter.ofPattern(NON_COMPLIANT_PATTERN, Locale.ENGLISH); // Noncompliant [[sc=33;ec=54]] {{Make sure that week Year "YYYY" is expected here instead of Year "yyyy".}}
   }
+
+  class CompliantChildOfSimpleDateFormat extends SimpleDateFormat {
+    public CompliantChildOfSimpleDateFormat() {
+      super(); // Compliant
+    }
+  }
+
+  class GrandChildOfSimpleDateFormat extends SimpleDateFormat {
+    public GrandChildOfSimpleDateFormat() {
+      super(); // Compliant
+    }
+  }
+
+  class NonCompliantChildOfSimpleDateFormat extends SimpleDateFormat {
+    public NonCompliantChildOfSimpleDateFormat() {
+      super("YYYY"); // Noncompliant {{Make sure that week Year "YYYY" is expected here instead of Year "yyyy".}}
+    }
+  }
 }
