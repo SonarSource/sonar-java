@@ -64,6 +64,9 @@ public class DateFormatWeekYearCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree invocation) {
     Arguments arguments = invocation.arguments();
+    if (arguments.isEmpty()) {
+      return;
+    }
     ExpressionTree argument = arguments.get(0);
     inspectPattern(argument);
   }
