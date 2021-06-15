@@ -1,15 +1,12 @@
 {
   "title": "\"@EnableAutoConfiguration\" should be fine-tuned",
   "type": "CODE_SMELL",
-  "status": "ready",
+  "status": "deprecated",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "30min"
   },
-  "tags": [
-    "spring",
-    "performance"
-  ],
+  "tags": [],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-4604",
   "sqKey": "S4604",
