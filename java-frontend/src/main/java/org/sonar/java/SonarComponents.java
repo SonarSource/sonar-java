@@ -276,7 +276,6 @@ public class SonarComponents {
       issue.addFlow((InputFile) analyzerMessage.getInputComponent(), analyzerMessage.flows);
     }
     issue.save();
-    JavaSquid.addOneIssueLatency();
   }
 
   public boolean reportAnalysisError(RecognitionException re, InputFile inputFile) {
