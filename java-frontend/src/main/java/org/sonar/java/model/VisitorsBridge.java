@@ -29,8 +29,6 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.AnnotationUtils;
@@ -63,15 +61,12 @@ public class VisitorsBridge {
 
   private static final Logger LOG = Loggers.get(VisitorsBridge.class);
 
-  private final List<JavaFileScanner> allScanners;
-  private List<JavaFileScanner> executableScanners;
+  private final Iterable<? extends JavaCheck> visitors;
+  private final List<JavaFileScanner> scanners;
   private final SonarComponents sonarComponents;
   protected InputFile currentFile;
   protected JavaVersion javaVersion;
   private final List<File> classpath;
-  private IssuableSubsciptionVisitorsRunner issuableSubscriptionVisitorsRunner;
-
-  private static final Predicate<JavaFileScanner> IS_ISSUABLE_SUBSCRIPTION_VISITOR = IssuableSubscriptionVisitor.class::isInstance;
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
@@ -79,16 +74,29 @@ public class VisitorsBridge {
   }
 
   public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
-    this.allScanners = new ArrayList<>();
+    this.visitors = visitors;
+    this.scanners = new ArrayList<>();
+    this.classpath = projectClasspath;
+    this.sonarComponents = sonarComponents;
+    updateScanners();
+  }
+
+  private void updateScanners() {
+    scanners.clear();
+    IssuableSubscriptionVisitorsRunner subscriptionVisitorsRunner = null;
     for (Object visitor : visitors) {
-      if (visitor instanceof JavaFileScanner) {
-        allScanners.add((JavaFileScanner) visitor);
+      if (javaVersion != null && visitor instanceof JavaVersionAwareVisitor && !((JavaVersionAwareVisitor) visitor).isCompatibleWithJavaVersion(javaVersion)) {
+        // ignore visitors not compatible with java version
+      } else if (visitor instanceof IssuableSubscriptionVisitor) {
+        if (subscriptionVisitorsRunner == null) {
+          subscriptionVisitorsRunner = new IssuableSubscriptionVisitorsRunner();
+          scanners.add(subscriptionVisitorsRunner);
+        }
+        subscriptionVisitorsRunner.add((IssuableSubscriptionVisitor) visitor);
+      } else if (visitor instanceof JavaFileScanner) {
+        scanners.add((JavaFileScanner) visitor);
       }
     }
-    this.classpath = projectClasspath;
-    this.executableScanners = allScanners.stream().filter(IS_ISSUABLE_SUBSCRIPTION_VISITOR.negate()).collect(Collectors.toList());
-    this.issuableSubscriptionVisitorsRunner = new IssuableSubsciptionVisitorsRunner(allScanners);
-    this.sonarComponents = sonarComponents;
   }
 
   public JavaVersion getJavaVersion() {
@@ -101,9 +109,7 @@ public class VisitorsBridge {
 
   public void setJavaVersion(JavaVersion javaVersion) {
     this.javaVersion = javaVersion;
-    List<JavaFileScanner> scannersForJavaVersion = executableScanners(allScanners, javaVersion);
-    this.executableScanners = scannersForJavaVersion.stream().filter(IS_ISSUABLE_SUBSCRIPTION_VISITOR.negate()).collect(Collectors.toList());
-    this.issuableSubscriptionVisitorsRunner = new IssuableSubsciptionVisitorsRunner(scannersForJavaVersion);
+    updateScanners();
   }
 
   public void visitFile(@Nullable Tree parsedTree) {
@@ -122,7 +128,7 @@ public class VisitorsBridge {
     JavaFileScannerContext javaFileScannerContext = createScannerContext(tree, tree.sema, sonarComponents, fileParsed);
 
     PerformanceMeasure.Duration scannersDuration = PerformanceMeasure.start("Scanners");
-    for (JavaFileScanner scanner : executableScanners) {
+    for (JavaFileScanner scanner : scanners) {
       PerformanceMeasure.Duration scannerDuration = PerformanceMeasure.start(scanner);
       try {
         runScanner(javaFileScannerContext, scanner);
@@ -133,15 +139,6 @@ public class VisitorsBridge {
       }
     }
     scannersDuration.stop();
-
-    PerformanceMeasure.Duration issuableSubscriptionVisitorsDuration = PerformanceMeasure.start("IssuableSubscriptionVisitors");
-    try {
-      issuableSubscriptionVisitorsRunner.run(javaFileScannerContext);
-    } catch (CheckFailureException e) {
-      interruptIfFailFast(e);
-    } finally {
-      issuableSubscriptionVisitorsDuration.stop();
-    }
   }
 
   private void interruptIfFailFast(CheckFailureException e) {
@@ -191,16 +188,6 @@ public class VisitorsBridge {
     return "";
   }
 
-  private static List<JavaFileScanner> executableScanners(List<JavaFileScanner> scanners, JavaVersion javaVersion) {
-    List<JavaFileScanner> results = new ArrayList<>();
-    for (JavaFileScanner scanner : scanners) {
-      if (!(scanner instanceof JavaVersionAwareVisitor) || ((JavaVersionAwareVisitor) scanner).isCompatibleWithJavaVersion(javaVersion)) {
-        results.add(scanner);
-      }
-    }
-    return Collections.unmodifiableList(results);
-  }
-
   protected JavaFileScannerContext createScannerContext(
     CompilationUnitTree tree, @Nullable Sema semanticModel, SonarComponents sonarComponents, boolean fileParsed) {
     return new DefaultJavaFileScannerContext(
@@ -225,11 +212,10 @@ public class VisitorsBridge {
   public void processRecognitionException(RecognitionException e, InputFile inputFile) {
     if(sonarComponents == null || !sonarComponents.reportAnalysisError(e, inputFile)) {
       this.visitFile(null);
-      executableScanners.stream()
+      scanners.stream()
         .filter(ExceptionHandler.class::isInstance)
         .forEach(scanner -> ((ExceptionHandler) scanner).processRecognitionException(e));
     }
-
   }
 
   public void setCurrentFile(InputFile inputFile) {
@@ -237,32 +223,47 @@ public class VisitorsBridge {
   }
 
   public void endOfAnalysis() {
-    allScanners.stream()
+    scanners.stream()
       .filter(EndOfAnalysisCheck.class::isInstance)
       .map(EndOfAnalysisCheck.class::cast)
       .forEach(EndOfAnalysisCheck::endOfAnalysis);
   }
 
-  private class IssuableSubsciptionVisitorsRunner {
+  private class IssuableSubscriptionVisitorsRunner implements JavaFileScanner, EndOfAnalysisCheck {
     private EnumMap<Tree.Kind, List<SubscriptionVisitor>> checks;
     private List<SubscriptionVisitor> subscriptionVisitors;
 
-    IssuableSubsciptionVisitorsRunner(List<JavaFileScanner> executableScanners) {
+    IssuableSubscriptionVisitorsRunner() {
       checks = new EnumMap<>(Tree.Kind.class);
-      subscriptionVisitors = executableScanners.stream()
-        .filter(IS_ISSUABLE_SUBSCRIPTION_VISITOR)
-        .map(SubscriptionVisitor.class::cast)
-        .collect(Collectors.toList());
-
-      subscriptionVisitors
-        .forEach(s -> s.nodesToVisit()
-          .forEach(k -> checks.computeIfAbsent(k, key -> new ArrayList<>()).add(s)));
+      this.subscriptionVisitors = new ArrayList<>();
     }
 
-    public void run(JavaFileScannerContext javaFileScannerContext) throws CheckFailureException {
-      forEach(subscriptionVisitors, s -> s.setContext(javaFileScannerContext));
-      visit(javaFileScannerContext.getTree());
-      forEach(subscriptionVisitors, s -> s.leaveFile(javaFileScannerContext));
+    private void add(SubscriptionVisitor subscriptionVisitor) {
+      this.subscriptionVisitors.add(subscriptionVisitor);
+      subscriptionVisitor.nodesToVisit()
+        .forEach(k -> checks.computeIfAbsent(k, key -> new ArrayList<>()).add(subscriptionVisitor));
+    }
+
+    @Override
+    public void scanFile(JavaFileScannerContext javaFileScannerContext) {
+      PerformanceMeasure.Duration issuableSubscriptionVisitorsDuration = PerformanceMeasure.start("IssuableSubscriptionVisitors");
+      try {
+        forEach(subscriptionVisitors, s -> s.setContext(javaFileScannerContext));
+        visit(javaFileScannerContext.getTree());
+        forEach(subscriptionVisitors, s -> s.leaveFile(javaFileScannerContext));
+      } catch (CheckFailureException e) {
+        interruptIfFailFast(e);
+      } finally {
+        issuableSubscriptionVisitorsDuration.stop();
+      }
+    }
+
+    @Override
+    public void endOfAnalysis() {
+      subscriptionVisitors.stream()
+        .filter(EndOfAnalysisCheck.class::isInstance)
+        .map(EndOfAnalysisCheck.class::cast)
+        .forEach(EndOfAnalysisCheck::endOfAnalysis);
     }
 
     private void visitChildren(Tree tree) throws CheckFailureException {

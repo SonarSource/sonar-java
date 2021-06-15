@@ -39,6 +39,8 @@ import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
+import org.sonar.java.checks.tests.AssertionArgumentOrderCheck;
+import org.sonar.java.checks.unused.UnusedTestRuleCheck;
 import org.sonar.java.collections.SetUtils;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -180,6 +182,12 @@ class CheckListTest {
         }
       }
     }
+  }
+
+  @Test
+  void rank_of_should_reflect_check_order() {
+    assertThat(CheckList.rankOf(new AssertionArgumentOrderCheck()))
+      .isLessThan(CheckList.rankOf(new UnusedTestRuleCheck()));
   }
 
   @Test

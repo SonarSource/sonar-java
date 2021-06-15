@@ -36,12 +36,15 @@ import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.CheckFailureException;
+import org.sonar.java.EndOfAnalysisCheck;
+import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
@@ -74,11 +77,11 @@ class VisitorsBridgeTest {
       assertThat(context.getSemanticModel()).isNull();
       assertThat(context.fileParsed()).isTrue();
     }), new ArrayList<>(), null);
-    checkFile(contstructFileName("java", "lang", "someFile.java"), "package java.lang; class A {}", visitorsBridgeWithoutSemantic);
-    checkFile(contstructFileName("src", "java", "lang", "someFile.java"), "package java.lang; class A {}", visitorsBridgeWithoutSemantic);
-    checkFile(contstructFileName("home", "user", "oracleSdk", "java", "lang", "someFile.java"), "package java.lang; class A {}", visitorsBridgeWithoutSemantic);
-    checkFile(contstructFileName("java", "io", "Serializable.java"), "package java.io; class A {}", visitorsBridgeWithoutSemantic);
-    checkFile(contstructFileName("java", "lang", "annotation", "Annotation.java"), "package java.lang.annotation; class Annotation {}", visitorsBridgeWithoutSemantic);
+    checkFile(constructFileName("java", "lang", "someFile.java"), "package java.lang; class A {}", visitorsBridgeWithoutSemantic);
+    checkFile(constructFileName("src", "java", "lang", "someFile.java"), "package java.lang; class A {}", visitorsBridgeWithoutSemantic);
+    checkFile(constructFileName("home", "user", "oracleSdk", "java", "lang", "someFile.java"), "package java.lang; class A {}", visitorsBridgeWithoutSemantic);
+    checkFile(constructFileName("java", "io", "Serializable.java"), "package java.io; class A {}", visitorsBridgeWithoutSemantic);
+    checkFile(constructFileName("java", "lang", "annotation", "Annotation.java"), "package java.lang.annotation; class Annotation {}", visitorsBridgeWithoutSemantic);
 
     VisitorsBridge visitorsBridgeWithParsingIssue = new VisitorsBridge(Collections.singletonList(new IssuableSubscriptionVisitor() {
       @Override
@@ -91,7 +94,7 @@ class VisitorsBridgeTest {
         return Collections.singletonList(Tree.Kind.METHOD);
       }
     }), new ArrayList<>(), null);
-    checkFile(contstructFileName("org", "foo", "bar", "Foo.java"), "class Foo { arrrrrrgh", visitorsBridgeWithParsingIssue);
+    checkFile(constructFileName("org", "foo", "bar", "Foo.java"), "class Foo { arrrrrrgh", visitorsBridgeWithParsingIssue);
   }
 
   private static void checkFile(String filename, String code, VisitorsBridge visitorsBridge) {
@@ -100,7 +103,7 @@ class VisitorsBridgeTest {
   }
 
 
-  private static String contstructFileName(String... path) {
+  private static String constructFileName(String... path) {
     String result = "";
     for (String s : path) {
       result += s + File.separator;
@@ -237,6 +240,74 @@ class VisitorsBridgeTest {
     Tree tree = new JavaTree.CompilationUnitTreeImpl(null, new ArrayList<>(), new ArrayList<>(), null, null);
     bridge.visitFile(tree);
     verify(sonarComponents, never()).symbolizableFor(any());
+  }
+
+  @Test
+  void filter_scanner_by_java_version() {
+    List<String> trace = new ArrayList<>();
+    class RuleForAllJavaVersion implements JavaFileScanner, EndOfAnalysisCheck {
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+      }
+
+      @Override
+      public void endOfAnalysis() {
+        trace.add(this.getClass().getSimpleName());
+      }
+    }
+    class RuleForJava15 implements JavaFileScanner, JavaVersionAwareVisitor, EndOfAnalysisCheck {
+      @Override
+      public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+        return version.isJava15Compatible();
+      }
+
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+      }
+
+      @Override
+      public void endOfAnalysis() {
+        trace.add(this.getClass().getSimpleName());
+      }
+    }
+    class SubscriptionVisitorForJava10 extends IssuableSubscriptionVisitor implements JavaFileScanner, JavaVersionAwareVisitor, EndOfAnalysisCheck {
+      @Override
+      public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+        return version.isJava10Compatible();
+      }
+
+      @Override
+      public List<Kind> nodesToVisit() {
+        return Collections.singletonList(Tree.Kind.TOKEN);
+      }
+
+      @Override
+      public void endOfAnalysis() {
+        trace.add(this.getClass().getSimpleName());
+      }
+    }
+    List<JavaFileScanner> visitors = Arrays.asList(
+      new RuleForAllJavaVersion(),
+      new RuleForJava15(),
+      new SubscriptionVisitorForJava10());
+    VisitorsBridge visitorsBridge = new VisitorsBridge(visitors, Collections.emptyList(), null);
+    visitorsBridge.endOfAnalysis();
+    assertThat(trace).containsExactly("RuleForAllJavaVersion", "RuleForJava15", "SubscriptionVisitorForJava10");
+
+    trace.clear();
+    visitorsBridge.setJavaVersion(new JavaVersionImpl(8));
+    visitorsBridge.endOfAnalysis();
+    assertThat(trace).containsExactly("RuleForAllJavaVersion");
+
+    trace.clear();
+    visitorsBridge.setJavaVersion(new JavaVersionImpl(11));
+    visitorsBridge.endOfAnalysis();
+    assertThat(trace).containsExactly("RuleForAllJavaVersion", "SubscriptionVisitorForJava10");
+
+    trace.clear();
+    visitorsBridge.setJavaVersion(new JavaVersionImpl(16));
+    visitorsBridge.endOfAnalysis();
+    assertThat(trace).containsExactly("RuleForAllJavaVersion", "RuleForJava15", "SubscriptionVisitorForJava10");
   }
 
   private static String ruleKeyFromErrorLog(String errorLog) {
