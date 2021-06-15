@@ -43,10 +43,8 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   @VisibleForTesting
   public final BehaviorCache behaviorCache;
   private final ExplodedGraphWalker.ExplodedGraphWalkerFactory egwFactory;
-  private final SymbolicExecutionMode mode;
 
   public SymbolicExecutionVisitor(List<JavaCheck> executableScanners) {
-    mode = SymbolicExecutionMode.getMode(executableScanners);
     egwFactory = new ExplodedGraphWalker.ExplodedGraphWalkerFactory(executableScanners);
     this.behaviorCache = new BehaviorCache();
   }
@@ -55,9 +53,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   public void scanFile(JavaFileScannerContext context) {
     behaviorCache.cleanup();
     behaviorCache.setFileContext(this);
-    if (mode.isEnabled()) {
-      super.scanFile(context);
-    }
+    super.scanFile(context);
   }
 
   @Override
