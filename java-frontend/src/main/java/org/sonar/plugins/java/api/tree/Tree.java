@@ -77,10 +77,8 @@ public interface Tree {
     /**
      * {@link ClassTree}
      *
-     * @since Java 14
-     * @deprecated Preview Feature
+     * @since Java 16
      */
-    @Deprecated
     RECORD(ClassTree.class),
 
     /**

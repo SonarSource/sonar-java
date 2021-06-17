@@ -32,6 +32,12 @@ import javax.annotation.Nullable;
  *   {@link #expression()} instanceof {@link #type()}
  * </pre>
  *
+ * Since Java 16, with pattern-matching:
+ *
+ * <pre>
+ *   {@link #expression()} instanceof {@link #type()} {@link #patternVariable()}
+ * </pre>
+ *
  * @since Java 1.3
  */
 @Beta
@@ -44,10 +50,8 @@ public interface InstanceOfTree extends ExpressionTree {
   TypeTree type();
 
   /**
-   * @since Java 14
-   * @deprecated Preview Feature
+   * @since Java 16
    */
-  @Deprecated
   @Nullable
   IdentifierTree patternVariable();
 

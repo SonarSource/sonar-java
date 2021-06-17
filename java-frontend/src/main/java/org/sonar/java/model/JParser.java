@@ -138,8 +138,6 @@ public class JParser {
 
   private static final Logger LOG = Loggers.get(JParser.class);
 
-  public static final String MAXIMUM_SUPPORTED_JAVA_VERSION = "15";
-
   private static final Predicate<IProblem> IS_SYNTAX_ERROR = error -> (error.getID() & IProblem.Syntax) != 0;
   private static final Predicate<IProblem> IS_UNDEFINED_TYPE_ERROR = error -> (error.getID() & IProblem.UndefinedType) != 0;
 
@@ -655,7 +653,7 @@ public class JParser {
         t.completeIdentifier(convertSimpleName(e.getName()));
         break;
       case RECORD:
-        t.completeDeclarationKeyword(firstTokenBefore(e.getName(), TerminalTokens.TokenNameIdentifier));
+        t.completeDeclarationKeyword(firstTokenBefore(e.getName(), TerminalTokens.TokenNameRestrictedIdentifierrecord));
         t.completeIdentifier(convertSimpleName(e.getName()));
         break;
       case ANNOTATION_TYPE:
@@ -889,7 +887,8 @@ public class JParser {
         MethodDeclaration e = (MethodDeclaration) node;
 
         final FormalParametersListTreeImpl parameters;
-        if (e.getAST().isPreviewEnabled() && e.isCompactConstructor()) {
+        if (e.isCompactConstructor()) {
+          // only used for records
           parameters = new FormalParametersListTreeImpl(null, null);
         } else {
           parameters = new FormalParametersListTreeImpl(
@@ -2082,8 +2081,18 @@ public class JParser {
         InstanceofExpression e = (InstanceofExpression) node;
         return new InstanceOfTreeImpl(
           firstTokenAfter(e.getLeftOperand(), TerminalTokens.TokenNameinstanceof),
-          convertType(e.getRightOperand()),
-          e.getAST().isPreviewEnabled() && e.getPatternVariable() != null ? convertSimpleName(e.getPatternVariable()) : null
+          convertType(e.getRightOperand())
+        ).complete(
+          convertExpression(e.getLeftOperand())
+        );
+      }
+      case ASTNode.PATTERN_INSTANCEOF_EXPRESSION: {
+        PatternInstanceofExpression e = (PatternInstanceofExpression) node;
+        SingleVariableDeclaration v = e.getRightOperand();
+        return new InstanceOfTreeImpl(
+          firstTokenAfter(e.getLeftOperand(), TerminalTokens.TokenNameinstanceof),
+          convertType(v.getType()),
+          convertSimpleName(v.getName())
         ).complete(
           convertExpression(e.getLeftOperand())
         );

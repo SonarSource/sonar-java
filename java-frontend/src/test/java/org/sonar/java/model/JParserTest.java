@@ -66,6 +66,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.sonar.java.model.JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
 import static org.sonar.java.model.JParserConfig.Mode.BATCH;
 import static org.sonar.java.model.JParserConfig.Mode.FILE_BY_FILE;
 import static org.sonar.java.model.JParserTestUtils.DEFAULT_CLASSPATH;
@@ -135,7 +136,7 @@ class JParserTest {
       .when(inputFile).absolutePath();
 
     Set<InputFile> inputFiles = Collections.singleton(inputFile);
-    JParserConfig config = JParserConfig.Mode.FILE_BY_FILE.create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList());
+    JParserConfig config = JParserConfig.Mode.FILE_BY_FILE.create(MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList());
 
     RuntimeException actual = assertThrows(RuntimeException.class, () -> config.parse(inputFiles, () -> false, consumer));
     assertSame(expected, actual);
@@ -155,7 +156,7 @@ class JParserTest {
       .when(inputFile).contents();
 
     FILE_BY_FILE
-      .create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList())
+      .create(MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList())
       .parse(Collections.singleton(inputFile), () -> false, consumer);
 
     JParserConfig.Result result = results.get(0);
@@ -170,7 +171,7 @@ class JParserTest {
     when(inputFile.contents()).thenThrow(IOException.class);
 
     BATCH
-      .create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList())
+      .create(MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList())
       .parse(Collections.singleton(inputFile), () -> false, consumer);
 
     JParserConfig.Result result = results.get(0);
@@ -184,7 +185,7 @@ class JParserTest {
       throw expected;
     };
     List<InputFile> inputFiles = Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/Classes.java"));
-    JParserConfig config = BATCH.create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH);
+    JParserConfig config = BATCH.create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH);
     NullPointerException actual = assertThrows(NullPointerException.class, () -> config.parse(inputFiles, () -> false, consumerThrowing));
 
     assertSame(expected, actual);
@@ -285,7 +286,7 @@ class JParserTest {
     List<JParserConfig.Result> results = new ArrayList<>();
     List<InputFile> inputFilesProcessed = new ArrayList<>();
     FILE_BY_FILE
-      .create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
+      .create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
       .parse(inputFiles, () -> false, (inputFile, result) -> {
         results.add(result);
         inputFilesProcessed.add(inputFile);
@@ -301,7 +302,7 @@ class JParserTest {
     List<JParserConfig.Result> results = new ArrayList<>();
     List<InputFile> inputFilesProcessed = new ArrayList<>();
     BATCH
-      .create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
+      .create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
       .parse(inputFiles, () -> false, (inputFile, result) -> {
         results.add(result);
         inputFilesProcessed.add(inputFile);
@@ -343,7 +344,7 @@ class JParserTest {
     });
 
     FILE_BY_FILE
-      .create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
+      .create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
       .parse(inputFiles, isCanceled, action);
 
     InOrder inOrder = Mockito.inOrder(action, isCanceled);
@@ -359,7 +360,7 @@ class JParserTest {
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
     List<JParserConfig.Result> results = new ArrayList<>();
     FILE_BY_FILE
-      .create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
+      .create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
       .parse(inputFiles, () -> true, (inputFile, result) -> results.add(result));
 
     assertThat(results).isEmpty();

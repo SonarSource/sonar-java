@@ -41,6 +41,12 @@ import java.util.List;
  *     {@link #members()}
  *   }
  * </pre>
+ * JLS 8.10 Record declaration ({@link Tree.Kind#RECORD}):
+ * <pre>
+ *   {@link #modifiers()} record {@link #simpleName()} {@link #typeParameters()} ({@link #recordComponents()}) implements {@link #superInterfaces()} {
+ *     {@link #members()}
+ *   }
+ * </pre>
  * JLS 9.1. Interface declaration ({@link Tree.Kind#INTERFACE}):
  * <pre>
  *   {@link #modifiers()} interface {@link #simpleName()} {@link #typeParameters()} extends {@link #superInterfaces()} {
@@ -69,10 +75,8 @@ public interface ClassTree extends StatementTree {
   TypeParameters typeParameters();
 
   /**
-   * @since Java 14
-   * @deprecated Preview Feature
+   * @since Java 16
    */
-  @Deprecated
   List<VariableTree> recordComponents();
 
   ModifiersTree modifiers();

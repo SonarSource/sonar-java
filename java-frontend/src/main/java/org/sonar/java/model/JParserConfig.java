@@ -48,6 +48,8 @@ import org.sonarsource.analyzer.commons.ProgressReport;
 
 public abstract class JParserConfig {
 
+  public static final String MAXIMUM_SUPPORTED_JAVA_VERSION = "16";
+
   private static final Logger LOG = Loggers.get(JParserConfig.class);
 
   private static final String MAXIMUM_ECJ_WARNINGS = "42000";
@@ -101,12 +103,12 @@ public abstract class JParserConfig {
   }
 
   public ASTParser astParser() {
-    ASTParser astParser = ASTParser.newParser(AST.JLS15);
+    ASTParser astParser = ASTParser.newParser(AST.JLS_Latest);
     Map<String, String> options = new HashMap<>();
     options.put(JavaCore.COMPILER_COMPLIANCE, javaVersion);
     options.put(JavaCore.COMPILER_SOURCE, javaVersion);
     options.put(JavaCore.COMPILER_PB_MAX_PER_UNIT, MAXIMUM_ECJ_WARNINGS);
-    if (JParser.MAXIMUM_SUPPORTED_JAVA_VERSION.equals(javaVersion)) {
+    if (MAXIMUM_SUPPORTED_JAVA_VERSION.equals(javaVersion)) {
       options.put(JavaCore.COMPILER_PB_ENABLE_PREVIEW_FEATURES, "enabled");
     }
     // enabling all supported compiler warnings

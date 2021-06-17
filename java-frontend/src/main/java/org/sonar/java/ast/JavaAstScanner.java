@@ -36,7 +36,6 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.model.JParser;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
@@ -157,7 +156,7 @@ public class JavaAstScanner {
 
   private static String getJavaVersion(@Nullable JavaVersion javaVersion) {
     if (javaVersion == null || javaVersion.isNotSet()) {
-      return JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
+      return JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
     }
     return Integer.toString(javaVersion.asInt());
   }

@@ -20,42 +20,30 @@
 package org.sonar.java.ast.parser;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 
 public class FormalParametersListTreeImpl extends ListTreeImpl<VariableTreeImpl> {
 
+  @Nullable
   private InternalSyntaxToken openParenToken;
+  @Nullable
   private InternalSyntaxToken closeParenToken;
 
-  public FormalParametersListTreeImpl(InternalSyntaxToken openParenToken, InternalSyntaxToken closeParenToken) {
+  public FormalParametersListTreeImpl(@Nullable InternalSyntaxToken openParenToken, @Nullable InternalSyntaxToken closeParenToken) {
     super(new ArrayList<>());
-
+    // parenthesis will be null for record's compact constructor
     this.openParenToken = openParenToken;
     this.closeParenToken = closeParenToken;
   }
 
-  public FormalParametersListTreeImpl(VariableTreeImpl variable) {
-    super(Collections.singletonList(variable));
-  }
-
-  public FormalParametersListTreeImpl(List<AnnotationTreeImpl> annotations, InternalSyntaxToken ellipsisToken, VariableTreeImpl variable) {
-    super(Collections.singletonList(variable));
-  }
-
-  public FormalParametersListTreeImpl complete(InternalSyntaxToken openParenToken, InternalSyntaxToken closeParenToken) {
-    this.openParenToken = openParenToken;
-    this.closeParenToken = closeParenToken;
-    return this;
-  }
-
+  @Nullable
   public InternalSyntaxToken openParenToken() {
     return openParenToken;
   }
 
+  @Nullable
   public InternalSyntaxToken closeParenToken() {
     return closeParenToken;
   }

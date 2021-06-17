@@ -511,13 +511,20 @@ class JParserSemanticTest {
    * Pattern Matching for instanceof
    * (Preview in Java 14) https://openjdk.java.net/jeps/305
    * (Second Preview in Java 15) https://openjdk.java.net/jeps/375
+   * (Final in Java 16) https://openjdk.java.net/jeps/394
    *
    * @see org.eclipse.jdt.core.dom.InstanceofExpression
    */
   @Test
   void expression_instanceof() {
     InstanceOfTree e = (InstanceOfTree) expression("o instanceof String s");
-    assertThat(e.patternVariable()).isNotNull();
+    IdentifierTreeImpl i = (IdentifierTreeImpl) e.patternVariable();
+
+    assertThat(i).isNotNull();
+    assertThat(i.binding).isNotNull();
+    assertThat(e.type().symbolType())
+      .is("java.lang.String")
+      .is(i.symbolType());
   }
 
   /**
@@ -934,6 +941,7 @@ class JParserSemanticTest {
    * Records
    * (Preview in Java 14) https://openjdk.java.net/jeps/359
    * (Second Preview in Java 15) https://openjdk.java.net/jeps/384
+   * (Final in Java 16) https://openjdk.java.net/jeps/395
    *
    * @see org.eclipse.jdt.core.dom.RecordDeclaration
    */
@@ -957,6 +965,7 @@ class JParserSemanticTest {
   /**
    * Sealed Classes
    * (Preview in Java 15) https://openjdk.java.net/jeps/360
+   * (Second Preview in Java 16) https://openjdk.java.net/jeps/397
    *
    * @see org.eclipse.jdt.core.dom.TypeDeclaration
    */
@@ -1549,7 +1558,7 @@ class JParserSemanticTest {
   }
 
   private CompilationUnit createAST(String source) {
-    String version = JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
+    String version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
     ASTParser astParser = ASTParser.newParser(AST.JLS14);
     Map<String, String> options = new HashMap<>();
     options.put(JavaCore.COMPILER_COMPLIANCE, version);
