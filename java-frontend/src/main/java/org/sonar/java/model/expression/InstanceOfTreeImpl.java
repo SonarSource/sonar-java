@@ -20,45 +20,48 @@
 package org.sonar.java.model.expression;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
-import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
+import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
-public class InstanceOfTreeImpl extends AssessableExpressionTree implements InstanceOfTree {
+public class InstanceOfTreeImpl extends AssessableExpressionTree implements InstanceOfTree, PatternInstanceOfTree {
 
-  private ExpressionTree expression;
+  private final Tree.Kind kind;
+  private final ExpressionTree expression;
   private final InternalSyntaxToken instanceofToken;
+
+  @Nullable
   private final TypeTree type;
   @Nullable
-  private final IdentifierTree patternVariable;
+  private final VariableTree variable;
 
-  public InstanceOfTreeImpl(InternalSyntaxToken instanceofToken, TypeTree type) {
-    this(instanceofToken, type, null);
-  }
-
-  public InstanceOfTreeImpl(InternalSyntaxToken instanceofToken, TypeTree type, @Nullable IdentifierTree patternVariable) {
+  private InstanceOfTreeImpl(Tree.Kind kind, ExpressionTree expression, InternalSyntaxToken instanceofToken, @Nullable TypeTree type, @Nullable VariableTree variable) {
+    this.kind = kind;
+    this.expression = expression;
     this.instanceofToken = instanceofToken;
     this.type = type;
-    this.patternVariable = patternVariable;
+    this.variable = variable;
   }
 
-  public InstanceOfTreeImpl complete(ExpressionTree expression) {
-    this.expression = expression;
-    return this;
+  public InstanceOfTreeImpl(ExpressionTree expression, InternalSyntaxToken instanceofToken, TypeTree type) {
+    this(Tree.Kind.INSTANCE_OF, expression, instanceofToken, type, null);
+  }
+
+  public InstanceOfTreeImpl(ExpressionTree expression, InternalSyntaxToken instanceofToken, VariableTree variable) {
+    this(Tree.Kind.PATTERN_INSTANCE_OF, expression, instanceofToken, null, variable);
   }
 
   @Override
-  public Kind kind() {
-    return Kind.INSTANCE_OF;
+  public Tree.Kind kind() {
+    return kind;
   }
 
   @Override
@@ -71,27 +74,34 @@ public class InstanceOfTreeImpl extends AssessableExpressionTree implements Inst
     return instanceofToken;
   }
 
+  /**
+   * Only works for INSTANCE_OF, mutually exclusive with {@link #variable()}
+   */
   @Override
   public TypeTree type() {
     return type;
   }
 
-  @Nullable
+  /**
+   * Only works for PATTERN_INSTANCE_OF, mutually exclusive with {@link #type()}
+   */
   @Override
-  public IdentifierTree patternVariable() {
-    return patternVariable;
+  public VariableTree variable() {
+    return variable;
   }
 
   @Override
   public void accept(TreeVisitor visitor) {
-    visitor.visitInstanceOf(this);
+    if (kind == Tree.Kind.INSTANCE_OF) {
+      visitor.visitInstanceOf(this);
+    } else {
+      visitor.visitPatternInstanceOf(this);
+    }
   }
 
   @Override
   public List<Tree> children() {
-    return ListUtils.concat(
-      Arrays.asList(expression, instanceofToken, type),
-      patternVariable != null ? Collections.singletonList(patternVariable) : Collections.emptyList());
+    return Arrays.asList(expression, instanceofToken, (kind == Tree.Kind.INSTANCE_OF ? type : variable));
   }
 
 }

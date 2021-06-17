@@ -424,8 +424,17 @@ public interface Tree {
 
     /**
      * {@link InstanceOfTree}
+     * {@code variable instanceof Type}
      */
     INSTANCE_OF(InstanceOfTree.class),
+
+    /**
+     * {@link PatternInstanceOfTree}
+     * {@code variable instanceof Type t}
+     *
+     * @since Java 16
+     */
+    PATTERN_INSTANCE_OF(PatternInstanceOfTree.class),
 
     /**
      * {@link ParenthesizedTree}

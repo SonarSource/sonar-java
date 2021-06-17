@@ -22,23 +22,23 @@ package org.sonar.plugins.java.api.tree;
 import org.sonar.java.annotations.Beta;
 
 /**
- * 'instanceof' expression.
+ * 'instanceof' expression with pattern-matching.
  *
  * JLS 15.20.2
  *
  * <pre>
- *   {@link #expression()} instanceof {@link #type()}
+ *   {@link #expression()} instanceof {@link #variable()}
  * </pre>
  *
- * @since Java 1.3
+ * @since Java 16
  */
 @Beta
-public interface InstanceOfTree extends ExpressionTree {
+public interface PatternInstanceOfTree extends ExpressionTree {
 
   ExpressionTree expression();
 
   SyntaxToken instanceofKeyword();
 
-  TypeTree type();
+  VariableTree variable();
 
 }

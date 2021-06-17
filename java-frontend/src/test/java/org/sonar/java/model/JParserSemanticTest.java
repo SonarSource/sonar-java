@@ -70,13 +70,13 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
+import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -516,15 +516,18 @@ class JParserSemanticTest {
    * @see org.eclipse.jdt.core.dom.InstanceofExpression
    */
   @Test
-  void expression_instanceof() {
-    InstanceOfTree e = (InstanceOfTree) expression("o instanceof String s");
-    IdentifierTreeImpl i = (IdentifierTreeImpl) e.patternVariable();
+  void expression_pattern_instanceof() {
+    PatternInstanceOfTree e = (PatternInstanceOfTree) expression("o instanceof String s");
+    VariableTreeImpl v = (VariableTreeImpl) e.variable();
+    IdentifierTreeImpl i = (IdentifierTreeImpl) v.simpleName();
 
-    assertThat(i).isNotNull();
-    assertThat(i.binding).isNotNull();
-    assertThat(e.type().symbolType())
+    assertThat(v).isNotNull();
+    assertThat(v.symbol().type())
       .is("java.lang.String")
       .is(i.symbolType());
+
+    assertThat(i.binding).isNotNull();
+    assertThat(i.symbol().declaration()).isEqualTo(v);
   }
 
   /**
