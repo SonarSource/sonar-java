@@ -2078,23 +2078,15 @@ public class JParser {
       }
       case ASTNode.INSTANCEOF_EXPRESSION: {
         InstanceofExpression e = (InstanceofExpression) node;
-        return new InstanceOfTreeImpl(
-          firstTokenAfter(e.getLeftOperand(), TerminalTokens.TokenNameinstanceof),
-          convertType(e.getRightOperand())
-        ).complete(
-          convertExpression(e.getLeftOperand())
-        );
+        Expression leftOperand = e.getLeftOperand();
+        InternalSyntaxToken instanceofToken = firstTokenAfter(leftOperand, TerminalTokens.TokenNameinstanceof);
+        return new InstanceOfTreeImpl(convertExpression(leftOperand), instanceofToken, convertType(e.getRightOperand()));
       }
       case ASTNode.PATTERN_INSTANCEOF_EXPRESSION: {
         PatternInstanceofExpression e = (PatternInstanceofExpression) node;
-        SingleVariableDeclaration v = e.getRightOperand();
-        return new InstanceOfTreeImpl(
-          firstTokenAfter(e.getLeftOperand(), TerminalTokens.TokenNameinstanceof),
-          convertType(v.getType()),
-          convertSimpleName(v.getName())
-        ).complete(
-          convertExpression(e.getLeftOperand())
-        );
+        Expression leftOperand = e.getLeftOperand();
+        InternalSyntaxToken instanceofToken = firstTokenAfter(leftOperand, TerminalTokens.TokenNameinstanceof);
+        return new InstanceOfTreeImpl(convertExpression(leftOperand), instanceofToken, createVariable(e.getRightOperand()));
       }
       case ASTNode.LAMBDA_EXPRESSION: {
         LambdaExpression e = (LambdaExpression) node;

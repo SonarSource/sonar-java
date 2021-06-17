@@ -275,7 +275,12 @@ public class BaseTreeVisitor implements TreeVisitor {
   public void visitInstanceOf(InstanceOfTree tree) {
     scan(tree.expression());
     scan(tree.type());
-    scan(tree.patternVariable());
+  }
+
+  @Override
+  public void visitPatternInstanceOf(PatternInstanceOfTree tree) {
+    scan(tree.expression());
+    scan(tree.variable());
   }
 
   @Override

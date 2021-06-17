@@ -99,6 +99,8 @@ public interface TreeVisitor {
 
   void visitInstanceOf(InstanceOfTree tree);
 
+  void visitPatternInstanceOf(PatternInstanceOfTree tree);
+
   void visitParenthesized(ParenthesizedTree tree);
 
   void visitAssignmentExpression(AssignmentExpressionTree tree);
