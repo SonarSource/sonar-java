@@ -24,10 +24,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.Set;
@@ -50,9 +52,9 @@ import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
-import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
@@ -79,8 +81,9 @@ public class SonarComponents {
   @Nullable
   private final ProjectDefinition projectDefinition;
   private final FileSystem fs;
-  private final List<Checks<JavaCheck>> checks;
-  private final List<Checks<JavaCheck>> testChecks;
+  private final List<JavaCheck> mainChecks;
+  private final List<JavaCheck> testChecks;
+  private final List<JavaCheck> jspChecks;
   private final List<Checks<JavaCheck>> allChecks;
   private SensorContext context;
 
@@ -120,8 +123,9 @@ public class SonarComponents {
     this.javaTestClasspath = javaTestClasspath;
     this.checkFactory = checkFactory;
     this.projectDefinition = projectDefinition;
-    this.checks = new ArrayList<>();
+    this.mainChecks = new ArrayList<>();
     this.testChecks = new ArrayList<>();
+    this.jspChecks = new ArrayList<>();
     this.allChecks = new ArrayList<>();
     if (checkRegistrars != null) {
       CheckRegistrar.RegistrarContext registrarContext = new CheckRegistrar.RegistrarContext();
@@ -129,7 +133,7 @@ public class SonarComponents {
         checkClassesRegister.register(registrarContext);
         List<Class<? extends JavaCheck>> checkClasses = getChecks(registrarContext.checkClasses());
         List<Class<? extends JavaCheck>> testCheckClasses = getChecks(registrarContext.testCheckClasses());
-        registerCheckClasses(registrarContext.repositoryKey(), checkClasses);
+        registerMainCheckClasses(registrarContext.repositoryKey(), checkClasses);
         registerTestCheckClasses(registrarContext.repositoryKey(), testCheckClasses);
       }
     }
@@ -190,46 +194,44 @@ public class SonarComponents {
     }
   }
 
-  public void registerCheckClasses(String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses) {
-    Checks<JavaCheck> createdChecks = checkFactory.<JavaCheck>create(repositoryKey).addAnnotatedChecks(checkClasses);
-    checks.add(createdChecks);
-    allChecks.add(createdChecks);
-  }
-
-  public JavaCheck[] checkClasses() {
-    return checks.stream().flatMap(ce -> ce.all().stream()).toArray(JavaCheck[]::new);
-  }
-
-  public Iterable<Checks<JavaCheck>> checks() {
-    return allChecks;
+  public void registerMainCheckClasses(String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses) {
+    registerCheckClasses(mainChecks, repositoryKey, checkClasses);
   }
 
   public void registerTestCheckClasses(String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses) {
+    registerCheckClasses(testChecks, repositoryKey, checkClasses);
+  }
+
+  private void registerCheckClasses(List<JavaCheck> destinationList, String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses) {
     Checks<JavaCheck> createdChecks = checkFactory.<JavaCheck>create(repositoryKey).addAnnotatedChecks(checkClasses);
-    testChecks.add(createdChecks);
     allChecks.add(createdChecks);
-  }
-
-  public Collection<JavaCheck> testCheckClasses() {
-    List<JavaCheck> visitors = new ArrayList<>();
-    for (Checks<JavaCheck> checksElement : testChecks) {
-      Collection<JavaCheck> checksCollection = checksElement.all();
-      if (!checksCollection.isEmpty()) {
-        visitors.addAll(checksCollection);
-      }
+    Map<Class<? extends JavaCheck>, Integer> classIndexes = new HashMap<>();
+    int i = 0;
+    for (Class<? extends JavaCheck> checkClass : checkClasses) {
+      classIndexes.put(checkClass, i);
+      i++;
     }
-    return visitors;
+    List<? extends JavaCheck> orderedChecks = createdChecks.all().stream()
+      .sorted(Comparator.comparing(check -> classIndexes.getOrDefault(check.getClass(), Integer.MAX_VALUE)))
+      .collect(Collectors.toList());
+    destinationList.addAll(orderedChecks);
+    jspChecks.addAll(orderedChecks.stream().filter(JspCodeVisitor.class::isInstance).collect(Collectors.toList()));
   }
 
-  public List<JavaCheck> jspCodeVisitors() {
-    return allChecks.stream()
-      .flatMap(javaChecks -> javaChecks.all().stream())
-      .filter(JspCodeVisitor.class::isInstance)
-      .collect(Collectors.toList());
+  public List<JavaCheck> mainChecks() {
+    return mainChecks;
+  }
+
+  public List<JavaCheck> testChecks() {
+    return testChecks;
+  }
+
+  public List<JavaCheck> jspChecks() {
+    return jspChecks;
   }
 
   public RuleKey getRuleKey(JavaCheck check) {
-    for (Checks<JavaCheck> sonarChecks : checks()) {
+    for (Checks<JavaCheck> sonarChecks : allChecks) {
       RuleKey ruleKey = sonarChecks.ruleKey(check);
       if (ruleKey != null) {
         return ruleKey;

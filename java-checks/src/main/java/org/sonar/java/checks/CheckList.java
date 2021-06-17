@@ -20,9 +20,7 @@
 package org.sonar.java.checks;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.java.checks.naming.BadAbstractClassNameCheck;
@@ -131,6 +129,7 @@ import org.sonar.java.checks.synchronization.TwoLocksWaitCheck;
 import org.sonar.java.checks.synchronization.ValueBasedObjectUsedForLockCheck;
 import org.sonar.java.checks.synchronization.WriteObjectTheOnlySynchronizedMethodCheck;
 import org.sonar.java.checks.tests.AssertJApplyConfigurationCheck;
+import org.sonar.java.checks.tests.AssertJAssertionsInConsumerCheck;
 import org.sonar.java.checks.tests.AssertJChainSimplificationCheck;
 import org.sonar.java.checks.tests.AssertJConsecutiveAssertionCheck;
 import org.sonar.java.checks.tests.AssertJContextBeforeAssertionCheck;
@@ -144,7 +143,6 @@ import org.sonar.java.checks.tests.AssertionInThreadRunCheck;
 import org.sonar.java.checks.tests.AssertionInTryCatchCheck;
 import org.sonar.java.checks.tests.AssertionTypesCheck;
 import org.sonar.java.checks.tests.AssertionsCompletenessCheck;
-import org.sonar.java.checks.tests.AssertJAssertionsInConsumerCheck;
 import org.sonar.java.checks.tests.AssertionsInTestsCheck;
 import org.sonar.java.checks.tests.AssertionsWithoutMessageCheck;
 import org.sonar.java.checks.tests.BooleanOrNullLiteralInAssertionsCheck;
@@ -220,21 +218,6 @@ import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
 public final class CheckList {
 
   public static final String REPOSITORY_KEY = "java";
-
-  private static final Map<Class<?>, Integer> CHECK_RANK = initCheckRank();
-
-  private static Map<Class<?>, Integer> initCheckRank() {
-    Map<Class<?>, Integer> map = new HashMap<>();
-    List<Class<?>> checks = getChecks();
-    for (int i = 0; i < checks.size(); i++) {
-      map.put(checks.get(i), i);
-    }
-    return map;
-  }
-
-  public static int rankOf(JavaCheck check) {
-    return CHECK_RANK.getOrDefault(check.getClass(), Integer.MAX_VALUE);
-  }
 
   private CheckList() {
   }

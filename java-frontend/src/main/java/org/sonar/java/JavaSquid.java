@@ -79,8 +79,8 @@ public class JavaSquid {
       classpath = sonarComponents.getJavaClasspath();
       testClasspath = sonarComponents.getJavaTestClasspath();
       jspClasspath = sonarComponents.getJspClasspath();
-      testCodeVisitors.addAll(sonarComponents.testCheckClasses());
-      jspCodeVisitors = sonarComponents.jspCodeVisitors();
+      testCodeVisitors.addAll(sonarComponents.testChecks());
+      jspCodeVisitors = sonarComponents.jspChecks();
     }
 
     //AstScanner for main files

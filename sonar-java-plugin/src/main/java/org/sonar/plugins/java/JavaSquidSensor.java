@@ -19,10 +19,9 @@
  */
 package org.sonar.plugins.java;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -99,33 +98,31 @@ public class JavaSquidSensor implements Sensor {
 
     sonarComponents.setSensorContext(context);
 
-    sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaChecks());
+    sonarComponents.registerMainCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaChecks());
     sonarComponents.registerTestCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
 
     Measurer measurer = new Measurer(context, noSonarFilter);
 
     JavaSquid squid = new JavaSquid(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter,
-      // sonarComponents.checkClasses() return a list of checks shuffled using a HashMap
-      restoreJavaChecksOrderAndAddSymbolicExecutionVisitor(sonarComponents.checkClasses()));
+      insertSymbolicExecutionVisitor(sonarComponents.mainChecks()));
     squid.scan(getSourceFiles(), getTestFiles(), runJasper(context));
 
     sensorDuration.stopAndLog(context.fileSystem().workDir(), true);
   }
 
   @VisibleForTesting
-  static JavaCheck[] restoreJavaChecksOrderAndAddSymbolicExecutionVisitor(JavaCheck[] javaChecks) {
-    List<JavaCheck> orderedList = Arrays.stream(javaChecks)
-      .sorted(Comparator.comparing(CheckList::rankOf))
-      .collect(Collectors.toList());
-    List<SECheck> seChecks = orderedList.stream()
+  static JavaCheck[] insertSymbolicExecutionVisitor(List<JavaCheck> checks) {
+    List<SECheck> seChecks = checks.stream()
       .filter(SECheck.class::isInstance)
       .map(SECheck.class::cast)
       .collect(Collectors.toList());
-    if (!seChecks.isEmpty()) {
-      int firstSECheckIndex = orderedList.indexOf(seChecks.get(0));
-      orderedList.add(firstSECheckIndex, new SymbolicExecutionVisitor(seChecks));
+    if (seChecks.isEmpty()) {
+      return checks.toArray(new JavaCheck[0]);
     }
-    return orderedList.toArray(new JavaCheck[0]);
+    List<JavaCheck> newList = new ArrayList<>(checks);
+    // insert an instance of SymbolicExecutionVisitor before the first SECheck
+    newList.add(newList.indexOf(seChecks.get(0)), new SymbolicExecutionVisitor(seChecks));
+    return newList.toArray(new JavaCheck[0]);
   }
 
   private Collection<GeneratedFile> runJasper(SensorContext context) {
