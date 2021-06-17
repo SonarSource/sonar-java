@@ -835,147 +835,146 @@ public class JParser {
       case ASTNode.ANNOTATION_TYPE_DECLARATION:
       case ASTNode.ENUM_DECLARATION:
       case ASTNode.RECORD_DECLARATION:
-      case ASTNode.TYPE_DECLARATION: {
-        members.add(convertTypeDeclaration((AbstractTypeDeclaration) node));
-        lastTokenIndex = tokenManager.lastIndexIn(node, TerminalTokens.TokenNameRBRACE);
+      case ASTNode.TYPE_DECLARATION:
+        lastTokenIndex = processTypeDeclaration((AbstractTypeDeclaration) node, members);
         break;
-      }
-      case ASTNode.ANNOTATION_TYPE_MEMBER_DECLARATION: {
-        AnnotationTypeMemberDeclaration e = (AnnotationTypeMemberDeclaration) node;
-        MethodTreeImpl t = new MethodTreeImpl(
-          new FormalParametersListTreeImpl(
-            firstTokenAfter(e.getName(), TerminalTokens.TokenNameLPAREN),
-            firstTokenAfter(e.getName(), TerminalTokens.TokenNameRPAREN)
-          ),
-          e.getDefault() == null ? null : firstTokenBefore(e.getDefault(), TerminalTokens.TokenNamedefault),
-          e.getDefault() == null ? null : convertExpression(e.getDefault())
-        ).complete(
-          convertType(e.getType()),
-          convertSimpleName(e.getName()),
-          lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
-        ).completeWithModifiers(
-          convertModifiers(e.modifiers())
-        );
-        t.methodBinding = e.resolveBinding();
-        declaration(t.methodBinding, t);
-        members.add(t);
-        lastTokenIndex = tokenManager.lastIndexIn(node, TerminalTokens.TokenNameSEMICOLON);
+      case ASTNode.ANNOTATION_TYPE_MEMBER_DECLARATION:
+        lastTokenIndex = processAnnotationTypeMemberDeclaration((AnnotationTypeMemberDeclaration) node, members);
         break;
-      }
-      case ASTNode.INITIALIZER: {
-        Initializer e = (Initializer) node;
-        BlockTreeImpl blockTree = convertBlock(e.getBody());
-        if (org.eclipse.jdt.core.dom.Modifier.isStatic(e.getModifiers())) {
-          members.add(new StaticInitializerTreeImpl(
-            firstTokenIn(e, TerminalTokens.TokenNamestatic),
-            (InternalSyntaxToken) blockTree.openBraceToken(),
-            blockTree.body(),
-            (InternalSyntaxToken) blockTree.closeBraceToken()
-          ));
-        } else {
-          members.add(new BlockTreeImpl(
-            Tree.Kind.INITIALIZER,
-            (InternalSyntaxToken) blockTree.openBraceToken(),
-            blockTree.body(),
-            (InternalSyntaxToken) blockTree.closeBraceToken()
-          ));
-        }
-        lastTokenIndex = tokenManager.lastIndexIn(node, TerminalTokens.TokenNameRBRACE);
+      case ASTNode.INITIALIZER:
+        lastTokenIndex = processInitializerDeclaration((Initializer) node, members);
         break;
-      }
-      case ASTNode.METHOD_DECLARATION: {
-        MethodDeclaration e = (MethodDeclaration) node;
-
-        final FormalParametersListTreeImpl parameters;
-        if (e.isCompactConstructor()) {
-          // only used for records
-          parameters = new FormalParametersListTreeImpl(null, null);
-        } else {
-          parameters = new FormalParametersListTreeImpl(
-            firstTokenAfter(e.getName(), TerminalTokens.TokenNameLPAREN),
-            firstTokenAfter(
-              e.parameters().isEmpty() ? e.getName() : (ASTNode) e.parameters().get(e.parameters().size() - 1),
-              TerminalTokens.TokenNameRPAREN
-            ));
-        }
-
-        for (int i = 0; i < e.parameters().size(); i++) {
-          SingleVariableDeclaration o = (SingleVariableDeclaration) e.parameters().get(i);
-          VariableTreeImpl parameter = createVariable(o);
-          if (i < e.parameters().size() - 1) {
-            parameter.setEndToken(firstTokenAfter(o, TerminalTokens.TokenNameCOMMA));
-          }
-          parameters.add(parameter);
-        }
-
-        QualifiedIdentifierListTreeImpl thrownExceptionTypes = new QualifiedIdentifierListTreeImpl(new ArrayList<>(), new ArrayList<>());
-        for (int i = 0; i < e.thrownExceptionTypes().size(); i++) {
-          Type o = (Type) e.thrownExceptionTypes().get(i);
-          if (i > 0) {
-            thrownExceptionTypes.separators().add(firstTokenBefore(o, TerminalTokens.TokenNameCOMMA));
-          }
-          thrownExceptionTypes.add(convertType(o));
-        }
-
-        Block body = e.getBody();
-        Type returnType = e.getReturnType2();
-        MethodTreeImpl t = new MethodTreeImpl(
-          returnType == null ? null : applyExtraDimensions(convertType(returnType), e.extraDimensions()),
-          convertSimpleName(e.getName()),
-          parameters,
-          e.thrownExceptionTypes().isEmpty() ? null : firstTokenBefore((Type) e.thrownExceptionTypes().get(0), TerminalTokens.TokenNamethrows),
-          thrownExceptionTypes,
-          body == null ? null : convertBlock(body),
-          body == null ? lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON) : null
-        ).completeWithModifiers(
-          convertModifiers(e.modifiers())
-        ).completeWithTypeParameters(
-          convertTypeParameters(e.typeParameters())
-        );
-        t.methodBinding = e.resolveBinding();
-        declaration(t.methodBinding, t);
-
-        members.add(t);
-        lastTokenIndex = tokenManager.lastIndexIn(node, body == null ? TerminalTokens.TokenNameSEMICOLON : TerminalTokens.TokenNameRBRACE);
+      case ASTNode.METHOD_DECLARATION:
+        lastTokenIndex = processMethodDeclaration((MethodDeclaration) node, members);
         break;
-      }
-      case ASTNode.FIELD_DECLARATION: {
-        FieldDeclaration fieldDeclaration = (FieldDeclaration) node;
-        ModifiersTreeImpl modifiers = convertModifiers(fieldDeclaration.modifiers());
-        TypeTree type = convertType(fieldDeclaration.getType());
-
-        for (int i = 0; i < fieldDeclaration.fragments().size(); i++) {
-          VariableDeclarationFragment fragment = (VariableDeclarationFragment) fieldDeclaration.fragments().get(i);
-          VariableTreeImpl t = new VariableTreeImpl(
-            convertSimpleName(fragment.getName())
-          ).completeModifiersAndType(
-            modifiers,
-            applyExtraDimensions(type, fragment.extraDimensions())
-          );
-          if (fragment.getInitializer() != null) {
-            t.completeTypeAndInitializer(
-              t.type(),
-              firstTokenAfter(fragment.getName(), TerminalTokens.TokenNameEQUAL),
-              convertExpression(fragment.getInitializer())
-            );
-          }
-
-          t.setEndToken(
-            firstTokenAfter(fragment, i + 1 < fieldDeclaration.fragments().size() ? TerminalTokens.TokenNameCOMMA : TerminalTokens.TokenNameSEMICOLON)
-          );
-          t.variableBinding = fragment.resolveBinding();
-          declaration(t.variableBinding, t);
-
-          members.add(t);
-        }
-        lastTokenIndex = tokenManager.lastIndexIn(node, TerminalTokens.TokenNameSEMICOLON);
+      case ASTNode.FIELD_DECLARATION:
+        lastTokenIndex = processFieldDeclaration((FieldDeclaration) node, members);
         break;
-      }
       default:
         throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
     }
 
     addEmptyDeclarationsToList(lastTokenIndex, members);
+  }
+
+  private int processTypeDeclaration(AbstractTypeDeclaration node, List<Tree> members) {
+    members.add(convertTypeDeclaration(node));
+    return tokenManager.lastIndexIn(node, TerminalTokens.TokenNameRBRACE);
+  }
+
+  private int processAnnotationTypeMemberDeclaration(AnnotationTypeMemberDeclaration e, List<Tree> members) {
+    FormalParametersListTreeImpl parameters = new FormalParametersListTreeImpl(
+      firstTokenAfter(e.getName(), TerminalTokens.TokenNameLPAREN),
+      firstTokenAfter(e.getName(), TerminalTokens.TokenNameRPAREN));
+
+    Expression defaultExpression = e.getDefault();
+    InternalSyntaxToken defaultToken = defaultExpression == null ? null : firstTokenBefore(defaultExpression, TerminalTokens.TokenNamedefault);
+    ExpressionTree defaultValue = defaultExpression == null ? null : convertExpression(defaultExpression);
+
+    MethodTreeImpl t = new MethodTreeImpl(parameters, defaultToken, defaultValue)
+      .complete(convertType(e.getType()), convertSimpleName(e.getName()), lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON))
+      .completeWithModifiers(convertModifiers(e.modifiers()));
+
+    t.methodBinding = e.resolveBinding();
+    declaration(t.methodBinding, t);
+
+    members.add(t);
+    return tokenManager.lastIndexIn(e, TerminalTokens.TokenNameSEMICOLON);
+  }
+
+  private int processInitializerDeclaration(Initializer e, List<Tree> members) {
+    BlockTreeImpl blockTree = convertBlock(e.getBody());
+    if (org.eclipse.jdt.core.dom.Modifier.isStatic(e.getModifiers())) {
+      members.add(new StaticInitializerTreeImpl(
+        firstTokenIn(e, TerminalTokens.TokenNamestatic),
+        (InternalSyntaxToken) blockTree.openBraceToken(),
+        blockTree.body(),
+        (InternalSyntaxToken) blockTree.closeBraceToken()));
+    } else {
+      members.add(new BlockTreeImpl(
+        Tree.Kind.INITIALIZER,
+        (InternalSyntaxToken) blockTree.openBraceToken(),
+        blockTree.body(),
+        (InternalSyntaxToken) blockTree.closeBraceToken()));
+    }
+    return tokenManager.lastIndexIn(e, TerminalTokens.TokenNameRBRACE);
+  }
+
+  private int processMethodDeclaration(MethodDeclaration e, List<Tree> members) {
+    List p = e.parameters();
+    final FormalParametersListTreeImpl formalParameters;
+    if (e.isCompactConstructor()) {
+      // only used for records
+      formalParameters = new FormalParametersListTreeImpl(null, null);
+    } else {
+      InternalSyntaxToken openParen = firstTokenAfter(e.getName(), TerminalTokens.TokenNameLPAREN);
+      InternalSyntaxToken closeParen = firstTokenAfter(p.isEmpty() ? e.getName() : (ASTNode) p.get(p.size() - 1), TerminalTokens.TokenNameRPAREN);
+      formalParameters = new FormalParametersListTreeImpl(openParen, closeParen);
+    }
+
+    for (int i = 0; i < p.size(); i++) {
+      SingleVariableDeclaration o = (SingleVariableDeclaration) p.get(i);
+      VariableTreeImpl parameter = createVariable(o);
+      if (i < p.size() - 1) {
+        parameter.setEndToken(firstTokenAfter(o, TerminalTokens.TokenNameCOMMA));
+      }
+      formalParameters.add(parameter);
+    }
+
+    QualifiedIdentifierListTreeImpl thrownExceptionTypes = new QualifiedIdentifierListTreeImpl(new ArrayList<>(), new ArrayList<>());
+    List tt = e.thrownExceptionTypes();
+    for (int i = 0; i < tt.size(); i++) {
+      Type o = (Type) tt.get(i);
+      if (i > 0) {
+        thrownExceptionTypes.separators().add(firstTokenBefore(o, TerminalTokens.TokenNameCOMMA));
+      }
+      thrownExceptionTypes.add(convertType(o));
+    }
+
+    Block body = e.getBody();
+    Type returnType = e.getReturnType2();
+    InternalSyntaxToken throwsToken = tt.isEmpty() ? null : firstTokenBefore((Type) tt.get(0), TerminalTokens.TokenNamethrows);
+    InternalSyntaxToken semcolonToken = body == null ? lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON) : null;
+    MethodTreeImpl t = new MethodTreeImpl(
+      returnType == null ? null : applyExtraDimensions(convertType(returnType), e.extraDimensions()),
+      convertSimpleName(e.getName()),
+      formalParameters,
+      throwsToken,
+      thrownExceptionTypes,
+      body == null ? null : convertBlock(body),
+      semcolonToken
+    ).completeWithModifiers(
+      convertModifiers(e.modifiers())
+    ).completeWithTypeParameters(
+      convertTypeParameters(e.typeParameters())
+    );
+    t.methodBinding = e.resolveBinding();
+    declaration(t.methodBinding, t);
+
+    members.add(t);
+    return tokenManager.lastIndexIn(e, body == null ? TerminalTokens.TokenNameSEMICOLON : TerminalTokens.TokenNameRBRACE);
+  }
+
+  private int processFieldDeclaration(FieldDeclaration fieldDeclaration, List<Tree> members) {
+    ModifiersTreeImpl modifiers = convertModifiers(fieldDeclaration.modifiers());
+    TypeTree type = convertType(fieldDeclaration.getType());
+
+    for (int i = 0; i < fieldDeclaration.fragments().size(); i++) {
+      VariableDeclarationFragment fragment = (VariableDeclarationFragment) fieldDeclaration.fragments().get(i);
+      VariableTreeImpl t = new VariableTreeImpl(convertSimpleName(fragment.getName()))
+        .completeModifiersAndType(modifiers, applyExtraDimensions(type, fragment.extraDimensions()));
+
+      if (fragment.getInitializer() != null) {
+        t.completeTypeAndInitializer(t.type(), firstTokenAfter(fragment.getName(), TerminalTokens.TokenNameEQUAL), convertExpression(fragment.getInitializer()));
+      }
+
+      t.setEndToken(firstTokenAfter(fragment, i + 1 < fieldDeclaration.fragments().size() ? TerminalTokens.TokenNameCOMMA : TerminalTokens.TokenNameSEMICOLON));
+      t.variableBinding = fragment.resolveBinding();
+      declaration(t.variableBinding, t);
+
+      members.add(t);
+    }
+    return tokenManager.lastIndexIn(fieldDeclaration, TerminalTokens.TokenNameSEMICOLON);
   }
 
   private ArgumentListTreeImpl convertArguments(
