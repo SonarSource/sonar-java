@@ -20,8 +20,10 @@
 package org.sonar.java.model.expression;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -36,13 +38,14 @@ public class InstanceOfTreeImpl extends AssessableExpressionTree implements Inst
   private ExpressionTree expression;
   private final InternalSyntaxToken instanceofToken;
   private final TypeTree type;
+  @Nullable
   private final IdentifierTree patternVariable;
 
-  public InstanceOfTreeImpl(
-    InternalSyntaxToken instanceofToken,
-    TypeTree type,
-    @Nullable IdentifierTree patternVariable
-  ) {
+  public InstanceOfTreeImpl(InternalSyntaxToken instanceofToken, TypeTree type) {
+    this(instanceofToken, type, null);
+  }
+
+  public InstanceOfTreeImpl(InternalSyntaxToken instanceofToken, TypeTree type, @Nullable IdentifierTree patternVariable) {
     this.instanceofToken = instanceofToken;
     this.type = type;
     this.patternVariable = patternVariable;
@@ -86,12 +89,9 @@ public class InstanceOfTreeImpl extends AssessableExpressionTree implements Inst
 
   @Override
   public List<Tree> children() {
-    return Arrays.asList(
-      expression,
-      instanceofToken,
-      type,
-      patternVariable
-    );
+    return ListUtils.concat(
+      Arrays.asList(expression, instanceofToken, type),
+      patternVariable != null ? Collections.singletonList(patternVariable) : Collections.emptyList());
   }
 
 }

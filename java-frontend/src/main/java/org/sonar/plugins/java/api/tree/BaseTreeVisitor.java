@@ -63,8 +63,10 @@ public class BaseTreeVisitor implements TreeVisitor {
     scan(tree.modifiers());
     scan(tree.simpleName());
     scan(tree.typeParameters());
+    scan(tree.recordComponents());
     scan(tree.superClass());
     scan(tree.superInterfaces());
+    scan(tree.permittedTypes());
     scan(tree.members());
   }
 
@@ -273,6 +275,7 @@ public class BaseTreeVisitor implements TreeVisitor {
   public void visitInstanceOf(InstanceOfTree tree) {
     scan(tree.expression());
     scan(tree.type());
+    scan(tree.patternVariable());
   }
 
   @Override
