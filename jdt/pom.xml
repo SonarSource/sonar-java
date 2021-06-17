@@ -16,7 +16,7 @@
       <dependency>
         <groupId>org.eclipse.jdt</groupId>
         <artifactId>org.eclipse.jdt.core</artifactId>
-        <version>3.25.0</version>
+        <version>3.26.0</version>
         <exclusions>
           <exclusion>
             <groupId>org.eclipse.platform</groupId>
@@ -44,12 +44,12 @@
       <dependency>
         <groupId>org.eclipse.platform</groupId>
         <artifactId>org.eclipse.core.runtime</artifactId>
-        <version>3.20.100</version>
+        <version>3.22.0</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.platform</groupId>
         <artifactId>org.eclipse.osgi</artifactId>
-        <version>3.16.200</version>
+        <version>3.16.300</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.platform</groupId>
@@ -59,7 +59,7 @@
       <dependency>
         <groupId>org.eclipse.platform</groupId>
         <artifactId>org.eclipse.core.jobs</artifactId>
-        <version>3.10.1100</version>
+        <version>3.11.0</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.platform</groupId>
@@ -69,7 +69,7 @@
       <dependency>
         <groupId>org.eclipse.platform</groupId>
         <artifactId>org.eclipse.core.contenttype</artifactId>
-        <version>3.7.900</version>
+        <version>3.7.1000</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.platform</groupId>
