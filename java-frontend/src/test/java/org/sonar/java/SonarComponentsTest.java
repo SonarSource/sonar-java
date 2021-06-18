@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.NoSuchFileException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -161,9 +162,9 @@ class SonarComponentsTest {
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, null, javaTestClasspath, checkFactory);
     sonarComponents.setSensorContext(sensorContextTester);
 
-    JavaCheck[] visitors = sonarComponents.checkClasses();
+    List<JavaCheck> visitors = sonarComponents.mainChecks();
     assertThat(visitors).isEmpty();
-    Collection<JavaCheck> testChecks = sonarComponents.testCheckClasses();
+    Collection<JavaCheck> testChecks = sonarComponents.testChecks();
     assertThat(testChecks).isEmpty();
     assertThat(sonarComponents.getJavaClasspath()).isEmpty();
     assertThat(sonarComponents.getJavaTestClasspath()).isEqualTo(javaTestClasspathList);
@@ -192,10 +193,10 @@ class SonarComponentsTest {
       null, this.checkFactory, new CheckRegistrar[] {expectedRegistrar});
     sonarComponents.setSensorContext(context);
 
-    JavaCheck[] visitors = sonarComponents.checkClasses();
+    List<JavaCheck> visitors = sonarComponents.mainChecks();
     assertThat(visitors).hasSize(1);
-    assertThat(visitors[0]).isEqualTo(expectedCheck);
-    Collection<JavaCheck> testChecks = sonarComponents.testCheckClasses();
+    assertThat(visitors.get(0)).isEqualTo(expectedCheck);
+    Collection<JavaCheck> testChecks = sonarComponents.testChecks();
     assertThat(testChecks).isEmpty();
 
     postTestExecutionChecks();
@@ -211,13 +212,40 @@ class SonarComponentsTest {
       null, checkFactory, new CheckRegistrar[] {expectedRegistrar});
     sonarComponents.setSensorContext(context);
 
-    JavaCheck[] visitors = sonarComponents.checkClasses();
+    List<JavaCheck> visitors = sonarComponents.mainChecks();
     assertThat(visitors).isEmpty();
-    Collection<JavaCheck> testChecks = sonarComponents.testCheckClasses();
+    List<JavaCheck> testChecks = sonarComponents.testChecks();
     assertThat(testChecks).hasSize(1);
-    assertThat(testChecks.iterator().next()).isEqualTo(expectedCheck);
+    assertThat(testChecks.get(0)).isEqualTo(expectedCheck);
 
     postTestExecutionChecks();
+  }
+
+  @Test
+  void order_of_checks_is_kept() {
+    class CheckA implements JavaCheck {
+    }
+    class CheckB implements JavaCheck {
+    }
+    class CheckC implements JavaCheck {
+    }
+    CheckRegistrar expectedRegistrar = registrarContext -> registrarContext.registerClassesForRepository(
+      REPOSITORY_NAME,
+      Arrays.asList(CheckB.class, CheckC.class, CheckA.class),
+      Arrays.asList(CheckC.class, CheckA.class, CheckB.class));
+    when(this.checks.all())
+      .thenReturn(Arrays.asList(new CheckA(), new CheckB(), new CheckC()))
+      .thenReturn(Arrays.asList(new CheckA(), new CheckB(), new CheckC()));
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
+      null, checkFactory, new CheckRegistrar[] {expectedRegistrar});
+    sonarComponents.setSensorContext(context);
+
+    List<JavaCheck> mainChecks = sonarComponents.mainChecks();
+    assertThat(mainChecks).extracting(JavaCheck::getClass).extracting(Class::getSimpleName)
+      .containsExactly("CheckB", "CheckC", "CheckA");
+    List<JavaCheck> testChecks = sonarComponents.testChecks();
+    assertThat(testChecks).extracting(JavaCheck::getClass).extracting(Class::getSimpleName)
+      .containsExactly("CheckC", "CheckA", "CheckB");
   }
 
   @Test
@@ -234,13 +262,12 @@ class SonarComponentsTest {
       null, checkFactory, new CheckRegistrar[] {expectedRegistrar});
     sonarComponents.setSensorContext(context);
 
-    JavaCheck[] visitors = sonarComponents.checkClasses();
+    List<JavaCheck> visitors = sonarComponents.mainChecks();
     assertThat(visitors).hasSize(1);
-    assertThat(visitors[0]).isEqualTo(expectedCheck);
-    Collection<JavaCheck> testChecks = sonarComponents.testCheckClasses();
+    assertThat(visitors.get(0)).isEqualTo(expectedCheck);
+    List<JavaCheck> testChecks = sonarComponents.testChecks();
     assertThat(testChecks).hasSize(1);
-    assertThat(testChecks.iterator().next()).isEqualTo(expectedTestCheck);
-    assertThat(sonarComponents.checks()).hasSize(2);
+    assertThat(testChecks.get(0)).isEqualTo(expectedTestCheck);
 
     postTestExecutionChecks();
   }
@@ -523,13 +550,13 @@ class SonarComponentsTest {
 
     JspCodeCheck check = new JspCodeCheck();
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, checkFactory, new CheckRegistrar[]{getRegistrar(check)});
-    List<JavaCheck> checks = sonarComponents.jspCodeVisitors();
+    List<JavaCheck> checks = sonarComponents.jspChecks();
     assertThat(checks)
       .isNotEmpty()
       .allMatch(JspCodeCheck.class::isInstance);
 
     sonarComponents = new SonarComponents(null, null, null, null, checkFactory);
-    assertThat(sonarComponents.jspCodeVisitors()).isEmpty();
+    assertThat(sonarComponents.jspChecks()).isEmpty();
   }
 
   @Rule(key = "jsp")

@@ -24,7 +24,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
@@ -94,7 +96,7 @@ class JavaSquidSensorTest {
 
   @Test
   void test_issues_creation_on_main_file() throws IOException {
-    testIssueCreation(InputFile.Type.MAIN, 4);
+    testIssueCreation(InputFile.Type.MAIN, 6);
   }
 
   @Test
@@ -113,8 +115,8 @@ class JavaSquidSensorTest {
     JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, null);
 
     jss.execute(context);
-    // argument 101 refers to the comment on line #101 in this file
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(101));
+    // argument 103 refers to the comment on line #103 in this file
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(103));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     settings.setProperty(JavaVersion.SOURCE_VERSION, "wrongFormat");
@@ -152,7 +154,7 @@ class JavaSquidSensorTest {
     sonarComponents.setSensorContext(contextTester);
 
     BadMethodNameCheck check = new BadMethodNameCheck();
-    when(sonarComponents.checkClasses()).thenReturn(new JavaCheck[] {check});
+    when(sonarComponents.mainChecks()).thenReturn(Collections.singletonList(check));
     return sonarComponents;
   }
 
@@ -168,8 +170,8 @@ class JavaSquidSensorTest {
     SonarComponents sonarComponents = createSonarComponentsMock(context);
     JavaFileScanner javaFileScanner = mock(JavaFileScanner.class);
     JspCodeScanner testCodeVisitor = mock(JspCodeScanner.class);
-    when(sonarComponents.jspCodeVisitors()).thenReturn(asList(testCodeVisitor));
-    when(sonarComponents.checkClasses()).thenReturn(new JavaCheck[]{javaFileScanner});
+    when(sonarComponents.jspChecks()).thenReturn(Collections.singletonList(testCodeVisitor));
+    when(sonarComponents.mainChecks()).thenReturn(Collections.singletonList(javaFileScanner));
 
     Jasper jasper = mock(Jasper.class);
     when(jasper.generateFiles(any(), any())).thenReturn(asList(generatedFile));
@@ -183,6 +185,37 @@ class JavaSquidSensorTest {
 
     // normal visitors are not invoked on generated files
     verify(javaFileScanner, never()).scanFile(any());
+  }
+
+  @Test
+  void insert_SymbolicExecutionVisitor_before_first_SECheck() throws IOException {
+    List<JavaCheck> javaChecks = Arrays.asList(
+      new org.sonar.java.checks.MagicNumberCheck(),
+      new org.sonar.java.se.checks.NullDereferenceCheck(),
+      new org.sonar.java.se.checks.DivisionByZeroCheck()
+    );
+    JavaCheck[] ordered = JavaSquidSensor.insertSymbolicExecutionVisitor(javaChecks);
+    assertThat(ordered).extracting(JavaCheck::getClass).extracting(Class::getSimpleName)
+      .containsExactly(
+        "MagicNumberCheck",
+        "SymbolicExecutionVisitor",
+        "NullDereferenceCheck",
+        "DivisionByZeroCheck"
+      );
+  }
+
+  @Test
+  void does_not_insert_SymbolicExecutionVisitor() throws IOException {
+    List<JavaCheck> javaChecks = Arrays.asList(
+      new org.sonar.java.checks.MagicNumberCheck(),
+    new org.sonar.java.checks.ParameterReassignedToCheck()
+    );
+    JavaCheck[] ordered = JavaSquidSensor.insertSymbolicExecutionVisitor(javaChecks);
+    assertThat(ordered).extracting(JavaCheck::getClass).extracting(Class::getSimpleName)
+      .containsExactly(
+        "MagicNumberCheck",
+        "ParameterReassignedToCheck"
+      );
   }
 
   interface JspCodeScanner extends JavaFileScanner, JspCodeVisitor {

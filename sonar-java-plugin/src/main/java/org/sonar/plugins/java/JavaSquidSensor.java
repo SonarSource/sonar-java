@@ -19,9 +19,11 @@
  */
 package org.sonar.plugins.java;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.DependsUpon;
@@ -40,12 +42,15 @@ import org.sonar.java.Measurer;
 import org.sonar.java.PerformanceMeasure;
 import org.sonar.java.PerformanceMeasure.DurationReport;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.CheckList;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.se.SymbolicExecutionVisitor;
+import org.sonar.java.se.checks.SECheck;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
 
@@ -93,18 +98,31 @@ public class JavaSquidSensor implements Sensor {
 
     sonarComponents.setSensorContext(context);
 
-    sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaChecks());
+    sonarComponents.registerMainCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaChecks());
     sonarComponents.registerTestCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
 
     Measurer measurer = new Measurer(context, noSonarFilter);
 
     JavaSquid squid = new JavaSquid(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter,
-      // FIXME Find a better way to inject the Symbolic Execution engine
-      new SymbolicExecutionVisitor(Arrays.asList(sonarComponents.checkClasses())),
-      sonarComponents.checkClasses());
+      insertSymbolicExecutionVisitor(sonarComponents.mainChecks()));
     squid.scan(getSourceFiles(), getTestFiles(), runJasper(context));
 
     sensorDuration.stopAndLog(context.fileSystem().workDir(), true);
+  }
+
+  @VisibleForTesting
+  static JavaCheck[] insertSymbolicExecutionVisitor(List<JavaCheck> checks) {
+    List<SECheck> seChecks = checks.stream()
+      .filter(SECheck.class::isInstance)
+      .map(SECheck.class::cast)
+      .collect(Collectors.toList());
+    if (seChecks.isEmpty()) {
+      return checks.toArray(new JavaCheck[0]);
+    }
+    List<JavaCheck> newList = new ArrayList<>(checks);
+    // insert an instance of SymbolicExecutionVisitor before the first SECheck
+    newList.add(newList.indexOf(seChecks.get(0)), new SymbolicExecutionVisitor(seChecks));
+    return newList.toArray(new JavaCheck[0]);
   }
 
   private Collection<GeneratedFile> runJasper(SensorContext context) {
