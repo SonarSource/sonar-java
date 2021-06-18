@@ -59,7 +59,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @EnableRuleMigrationSupport
-class JavaSquidTest {
+class JavaFrontendTest {
 
   @Rule
   public TemporaryFolder temp = new TemporaryFolder();
@@ -104,7 +104,7 @@ class JavaSquidTest {
   }
 
   @Test
-  void should_add_issue_filter_to_JavaSquid_scanners() throws IOException {
+  void should_add_issue_filter_to_JavaFrontend_scanners() throws IOException {
     testIssueFilter = new TestIssueFilter();
     scan("class A { }");
     assertThat(context.allAnalysisErrors()).isEmpty();
@@ -122,8 +122,8 @@ class JavaSquidTest {
 
   @Test
   void scanning_empty_project_should_be_logged() throws Exception {
-    JavaSquid javaSquid = new JavaSquid(new JavaVersionImpl(), sonarComponents, new Measurer(context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), testIssueFilter);
-    javaSquid.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, new Measurer(context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), testIssueFilter);
+    frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
 
     assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly(
       "No \"Main\" source files to scan.",
@@ -150,8 +150,8 @@ class JavaSquidTest {
     javaTestClasspath = mock(ClasspathForTest.class);
     sonarComponents = new SonarComponents(fileLinesContextFactory, context.fileSystem(), javaClasspath, javaTestClasspath, mock(CheckFactory.class));
     sonarComponents.setSensorContext(context);
-    JavaSquid javaSquid = new JavaSquid(new JavaVersionImpl(), sonarComponents, new Measurer(context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), testIssueFilter);
-    javaSquid.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, new Measurer(context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), testIssueFilter);
+    frontend.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
 
     return inputFile;
   }

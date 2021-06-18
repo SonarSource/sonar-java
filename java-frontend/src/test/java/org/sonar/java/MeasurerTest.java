@@ -95,9 +95,9 @@ class MeasurerTest {
     context.fileSystem().add(inputFile);
 
     Measurer measurer = new Measurer(context, mock(NoSonarFilter.class));
-    JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, measurer, null, null, new JavaCheck[0]);
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), null, measurer, null, null, new JavaCheck[0]);
 
-    squid.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
+    frontend.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
 
     assertThat(context.measures(inputFile.key())).hasSize(NB_OF_METRICS);
     assertThat(context.measure(inputFile.key(), metric).value()).isEqualTo(expectedValue);

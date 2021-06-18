@@ -43,7 +43,6 @@ import org.sonar.plugins.surefire.SurefireExtensions;
 
 public class JavaPlugin implements Plugin {
 
-
   @SuppressWarnings("unchecked")
   @Override
   public void define(Context context) {
@@ -78,7 +77,7 @@ public class JavaPlugin implements Plugin {
       JavaRulesDefinition.class,
       SonarComponents.class,
       DefaultJavaResourceLocator.class,
-      JavaSquidSensor.class,
+      JavaSensor.class,
       PostAnalysisIssueFilter.class,
       XmlFileSensor.class
       ));

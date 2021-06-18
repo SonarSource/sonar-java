@@ -52,9 +52,9 @@ public abstract class MeasurerTester {
     FileUtils.listFiles(sourceDir(), new String[] {"java"}, true).stream().map(TestUtils::inputFile).forEach(fs::add);
 
     Measurer measurer = new Measurer(context, mock(NoSonarFilter.class));
-    JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, measurer, mock(JavaResourceLocator.class), null, new JavaCheck[0]);
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), null, measurer, mock(JavaResourceLocator.class), null, new JavaCheck[0]);
     List<InputFile> files = StreamSupport.stream(fs.inputFiles().spliterator(), false).collect(Collectors.toList());
-    squid.scan(files, Collections.emptyList(), Collections.emptyList());
+    frontend.scan(files, Collections.emptyList(), Collections.emptyList());
   }
 
   public abstract File projectDir();
