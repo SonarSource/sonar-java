@@ -36,7 +36,7 @@ import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.measures.FileLinesContextFactory;
-import org.sonar.java.JavaSquid;
+import org.sonar.java.JavaFrontend;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.classpath.ClasspathForMain;
@@ -193,8 +193,8 @@ class SyntaxHighlighterVisitorTest {
   }
 
   private void scan(InputFile inputFile) {
-    JavaSquid squid = new JavaSquid(new JavaVersionImpl(10), null, null, null, null, new JavaCheck[] {syntaxHighlighterVisitor});
-    squid.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(10), null, null, null, null, new JavaCheck[] {syntaxHighlighterVisitor});
+    frontend.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
   }
 
   private InputFile generateDefaultTestFile() throws IOException {

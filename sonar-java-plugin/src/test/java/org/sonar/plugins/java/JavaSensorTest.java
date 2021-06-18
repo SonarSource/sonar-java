@@ -75,7 +75,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @EnableRuleMigrationSupport
-class JavaSquidSensorTest {
+class JavaSensorTest {
 
   private static final CheckFactory checkFactory = mock(CheckFactory.class);
   private static final Checks<Object> checks = mock(Checks.class);
@@ -91,7 +91,7 @@ class JavaSquidSensorTest {
 
   @Test
   void test_toString() {
-    assertThat(new JavaSquidSensor(null, null, null, null, null, null)).hasToString("JavaSquidSensor");
+    assertThat(new JavaSensor(null, null, null, null, null, null)).hasToString("JavaSensor");
   }
 
   @Test
@@ -112,7 +112,7 @@ class JavaSquidSensorTest {
     fs.setWorkDir(tmp.newFolder().toPath());
     SonarComponents sonarComponents = createSonarComponentsMock(context);
     DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(new ClasspathForMain(settings.asConfig(), fs));
-    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, null);
+    JavaSensor jss = new JavaSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, null);
 
     jss.execute(context);
     // argument 103 refers to the comment on line #103 in this file
@@ -130,7 +130,7 @@ class JavaSquidSensorTest {
     SensorContextTester context = SensorContextTester.create(new File("src/test/java/").getAbsoluteFile());
     DefaultFileSystem fs = context.fileSystem();
 
-    String effectiveKey = "org/sonar/plugins/java/JavaSquidSensorTest.java";
+    String effectiveKey = "org/sonar/plugins/java/JavaSensorTest.java";
     File file = new File(fs.baseDir(), effectiveKey);
     DefaultInputFile inputFile = new TestInputFileBuilder("", effectiveKey).setLanguage("java").setModuleBaseDir(fs.baseDirPath())
       .setType(onType)
@@ -175,7 +175,7 @@ class JavaSquidSensorTest {
 
     Jasper jasper = mock(Jasper.class);
     when(jasper.generateFiles(any(), any())).thenReturn(asList(generatedFile));
-    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, context.fileSystem(), mock(JavaResourceLocator.class),
+    JavaSensor jss = new JavaSensor(sonarComponents, context.fileSystem(), mock(JavaResourceLocator.class),
       new MapSettings().asConfig(), mock(NoSonarFilter.class), null, jasper);
     jss.execute(context);
 
@@ -194,7 +194,7 @@ class JavaSquidSensorTest {
       new org.sonar.java.se.checks.NullDereferenceCheck(),
       new org.sonar.java.se.checks.DivisionByZeroCheck()
     );
-    JavaCheck[] ordered = JavaSquidSensor.insertSymbolicExecutionVisitor(javaChecks);
+    JavaCheck[] ordered = JavaSensor.insertSymbolicExecutionVisitor(javaChecks);
     assertThat(ordered).extracting(JavaCheck::getClass).extracting(Class::getSimpleName)
       .containsExactly(
         "MagicNumberCheck",
@@ -210,7 +210,7 @@ class JavaSquidSensorTest {
       new org.sonar.java.checks.MagicNumberCheck(),
     new org.sonar.java.checks.ParameterReassignedToCheck()
     );
-    JavaCheck[] ordered = JavaSquidSensor.insertSymbolicExecutionVisitor(javaChecks);
+    JavaCheck[] ordered = JavaSensor.insertSymbolicExecutionVisitor(javaChecks);
     assertThat(ordered).extracting(JavaCheck::getClass).extracting(Class::getSimpleName)
       .containsExactly(
         "MagicNumberCheck",

@@ -35,7 +35,7 @@ import org.sonar.api.config.Configuration;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
-import org.sonar.java.JavaSquid;
+import org.sonar.java.JavaFrontend;
 import org.sonar.java.Measurer;
 import org.sonar.java.PerformanceMeasure;
 import org.sonar.java.PerformanceMeasure.DurationReport;
@@ -53,9 +53,9 @@ import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
 
 @Phase(name = Phase.Name.PRE)
-public class JavaSquidSensor implements Sensor {
+public class JavaSensor implements Sensor {
 
-  private static final Logger LOG = Loggers.get(JavaSquidSensor.class);
+  private static final Logger LOG = Loggers.get(JavaSensor.class);
 
   private final SonarComponents sonarComponents;
   private final FileSystem fs;
@@ -66,14 +66,14 @@ public class JavaSquidSensor implements Sensor {
   private final Jasper jasper;
   private final PostAnalysisIssueFilter postAnalysisIssueFilter;
 
-  public JavaSquidSensor(SonarComponents sonarComponents, FileSystem fs, JavaResourceLocator javaResourceLocator,
-                         Configuration settings, NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter) {
+  public JavaSensor(SonarComponents sonarComponents, FileSystem fs, JavaResourceLocator javaResourceLocator,
+                    Configuration settings, NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter) {
     this(sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, postAnalysisIssueFilter, null);
   }
 
-  public JavaSquidSensor(SonarComponents sonarComponents, FileSystem fs, JavaResourceLocator javaResourceLocator,
-                         Configuration settings, NoSonarFilter noSonarFilter,
-                         PostAnalysisIssueFilter postAnalysisIssueFilter, @Nullable Jasper jasper) {
+  public JavaSensor(SonarComponents sonarComponents, FileSystem fs, JavaResourceLocator javaResourceLocator,
+                    Configuration settings, NoSonarFilter noSonarFilter,
+                    PostAnalysisIssueFilter postAnalysisIssueFilter, @Nullable Jasper jasper) {
     this.noSonarFilter = noSonarFilter;
     this.sonarComponents = sonarComponents;
     this.fs = fs;
@@ -85,12 +85,12 @@ public class JavaSquidSensor implements Sensor {
 
   @Override
   public void describe(SensorDescriptor descriptor) {
-    descriptor.onlyOnLanguage(Java.KEY).name("JavaSquidSensor");
+    descriptor.onlyOnLanguage(Java.KEY).name("JavaSensor");
   }
 
   @Override
   public void execute(SensorContext context) {
-    DurationReport sensorDuration = PerformanceMeasure.start(context.config(), "JavaSquidSensor", System::nanoTime);
+    DurationReport sensorDuration = PerformanceMeasure.start(context.config(), "JavaSensor", System::nanoTime);
 
     sonarComponents.setSensorContext(context);
 
@@ -99,9 +99,9 @@ public class JavaSquidSensor implements Sensor {
 
     Measurer measurer = new Measurer(context, noSonarFilter);
 
-    JavaSquid squid = new JavaSquid(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter,
+    JavaFrontend frontend = new JavaFrontend(getJavaVersion(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter,
       insertSymbolicExecutionVisitor(sonarComponents.mainChecks()));
-    squid.scan(getSourceFiles(), getTestFiles(), runJasper(context));
+    frontend.scan(getSourceFiles(), getTestFiles(), runJasper(context));
 
     sensorDuration.stopAndLog(context.fileSystem().workDir(), true);
   }
