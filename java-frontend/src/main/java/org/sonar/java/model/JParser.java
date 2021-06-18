@@ -1607,7 +1607,8 @@ public class JParser {
       case ASTNode.YIELD_STATEMENT: {
         YieldStatement e = (YieldStatement) node;
         return new YieldStatementTreeImpl(
-          e.isImplicit() ? null : firstTokenIn(e, ANY_TOKEN),
+          // FIXME ECJ bug? should be "TerminalTokens.TokenNameRestrictedIdentifierYield" instead
+          e.isImplicit() ? null : firstTokenIn(e, TerminalTokens.TokenNameIdentifier),
           convertExpression(e.getExpression()),
           lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
         );
@@ -2575,18 +2576,9 @@ public class JParser {
       case "default":
         return new ModifierKeywordTreeImpl(Modifier.DEFAULT, firstTokenIn(node, TerminalTokens.TokenNamedefault));
       case "sealed":
-        return new ModifierKeywordTreeImpl(Modifier.SEALED, firstTokenIn(node, ANY_TOKEN));
+        return new ModifierKeywordTreeImpl(Modifier.SEALED, firstTokenIn(node, TerminalTokens.TokenNameRestrictedIdentifiersealed));
       case "non-sealed": {
-        // in ECJ 3.24.0 "non-sealed" are three separate tokens
-        int tokenIndex = tokenManager.firstIndexIn(node, ANY_TOKEN);
-        Token t = tokenManager.get(tokenIndex);
-        return new ModifierKeywordTreeImpl(Modifier.NON_SEALED, new InternalSyntaxToken(
-          compilationUnit.getLineNumber(t.originalStart),
-          compilationUnit.getColumnNumber(t.originalStart),
-          "non-sealed",
-          collectComments(tokenIndex),
-          false
-        ));
+        return new ModifierKeywordTreeImpl(Modifier.NON_SEALED, firstTokenIn(node, TerminalTokens.TokenNamenon_sealed));
       }
       default:
         throw new IllegalStateException(node.getKeyword().toString());
