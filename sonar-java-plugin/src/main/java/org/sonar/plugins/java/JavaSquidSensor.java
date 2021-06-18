@@ -25,8 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import org.sonar.api.batch.DependedUpon;
-import org.sonar.api.batch.DependsUpon;
 import org.sonar.api.batch.Phase;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
@@ -55,8 +53,6 @@ import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
 
 @Phase(name = Phase.Name.PRE)
-@DependsUpon("BEFORE_SQUID")
-@DependedUpon("squid")
 public class JavaSquidSensor implements Sensor {
 
   private static final Logger LOG = Loggers.get(JavaSquidSensor.class);
