@@ -21,7 +21,6 @@ package org.sonar.plugins.surefire;
 
 import java.io.File;
 import java.util.List;
-import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -32,7 +31,6 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.plugins.surefire.api.SurefireUtils;
 
-@DependedUpon("surefire-java")
 public class SurefireSensor implements Sensor {
 
   private static final Logger LOGGER = Loggers.get(SurefireSensor.class);
