@@ -19,10 +19,12 @@
  */
 package org.sonar.java.model.declaration;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -30,16 +32,13 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.model.assertions.TreeAssert.assertThat;
 
 class ClassTreeImplTest {
 
-  private static CompilationUnitTree createTree(String code) {
-    return JParserTestUtils.parse(code);
-  }
-
   @Test
   void getLine() {
-    CompilationUnitTree tree = createTree("class A {\n" +
+    CompilationUnitTree tree = JParserTestUtils.parse("class A {\n" +
         "A a = new A() {};" +
         "\n}");
     ClassTree classTree = (ClassTree) tree.types().get(0);
@@ -51,10 +50,35 @@ class ClassTreeImplTest {
 
   @Test
   void at_token() {
-    List<Tree> types = createTree("interface A {}\n @interface B {}").types();
+    List<Tree> types = JParserTestUtils.parse("interface A {}\n @interface B {}").types();
     ClassTreeImpl interfaceType = (ClassTreeImpl) types.get(0);
     assertThat(interfaceType.atToken()).isNull();
     ClassTreeImpl annotationType = (ClassTreeImpl) types.get(1);
     assertThat(annotationType.atToken()).isNotNull();
+  }
+
+  @Test
+  void records_baseVisitor() {
+    ClassTree classTree = (ClassTree) JParserTestUtils.parse(
+      // header
+      "record A "
+        // components
+        + "(Object o, String s) {\n"
+        // compact constructor
+        + "  A { }\n"
+        + "}").types().get(0);
+
+    assertThat(classTree.declarationKeyword()).is("record");
+
+    List<String> componentsVariableNames = new ArrayList<>();
+    BaseTreeVisitor baseTreeVisitor = new BaseTreeVisitor() {
+      @Override
+      public void visitVariable(VariableTree tree) {
+        componentsVariableNames.add(tree.simpleName().name());
+      }
+    };
+    classTree.accept(baseTreeVisitor);
+
+    assertThat(componentsVariableNames).containsExactly("o", "s");
   }
 }
