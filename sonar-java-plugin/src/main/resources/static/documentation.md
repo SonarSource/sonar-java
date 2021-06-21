@@ -97,6 +97,20 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 ### API changes
 
+#### **7.1**
+
+* **Method `TypeCastTree.bounds()` changed its return type from `ListTree<Tree>` to `ListTree<TypeTree>`.**
+  Having any kind of tree is not possible. Only "Typed" Trees are possible as bound of a cast. The change fixes the inconsistency.
+
+* **Method `TypeParameterTree.bounds()` changed its return type from `ListTree<Tree>` to `ListTree<TypeTree>`.**
+  Having any kind of tree is not possible. Only "Typed" Trees are possible as bound of a type parameter. The change fixes the inconsistency.
+
+* **A new Tree Kind `PATTERN_INSTANCE_OF` has been formalized, with its new corresponding API class `PatternInstanceOfTree`.**
+  The change follows Java 16 introduction of Pattern Matching for `instanceof` ([JEP-394](https://openjdk.java.net/jeps/394)).
+
+* **A new Tree Kind `RECORD` has been formalized, adding a flavor to `ClassTree`.**
+  The change follows Java 16 introduction of `record`s ([JEP-395](https://openjdk.java.net/jeps/395)).
+
 #### **7.0**
 
 * **Method `MethodTree.isOverriding()` now correctly match the contract in case of unknowns in the hierarchy.**

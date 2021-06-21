@@ -27,36 +27,28 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class ArgumentListTreeImpl extends ListTreeImpl<ExpressionTree> implements Arguments {
 
+  @Nullable
   private InternalSyntaxToken openParenToken;
+  @Nullable
   private InternalSyntaxToken closeParenToken;
 
-  public ArgumentListTreeImpl(InternalSyntaxToken openParenToken, InternalSyntaxToken closeParenToken) {
-    super(Collections.emptyList(), Collections.emptyList());
-
-    this.openParenToken = openParenToken;
-    this.closeParenToken = closeParenToken;
-  }
-
-  public ArgumentListTreeImpl(InternalSyntaxToken openParenToken, ExpressionTree expression, InternalSyntaxToken closeParenToken) {
-    super(Collections.singletonList(expression), Collections.emptyList());
-
-    this.openParenToken = openParenToken;
-    this.closeParenToken = closeParenToken;
-  }
-
-  public ArgumentListTreeImpl(List<ExpressionTree> expressions, List<SyntaxToken> separators) {
+  private ArgumentListTreeImpl(List<ExpressionTree> expressions, List<SyntaxToken> separators) {
     super(expressions, separators);
   }
 
-  public ArgumentListTreeImpl complete(InternalSyntaxToken openParenToken, InternalSyntaxToken closeParenToken) {
+  public static ArgumentListTreeImpl emptyList() {
+    return new ArgumentListTreeImpl(new ArrayList<>(), new ArrayList<>());
+  }
+
+  public ArgumentListTreeImpl complete(@Nullable InternalSyntaxToken openParenToken, @Nullable InternalSyntaxToken closeParenToken) {
     this.openParenToken = openParenToken;
     this.closeParenToken = closeParenToken;
-
     return this;
   }
 
@@ -80,8 +72,8 @@ public class ArgumentListTreeImpl extends ListTreeImpl<ExpressionTree> implement
   @Override
   public List<Tree> children() {
     return ListUtils.concat(
-      openParenToken != null ? Collections.singletonList(openParenToken) : Collections.<Tree>emptyList(),
+      openParenToken != null ? Collections.singletonList(openParenToken) : Collections.emptyList(),
       super.children(),
-      closeParenToken != null ? Collections.singletonList(closeParenToken) : Collections.<Tree>emptyList());
+      closeParenToken != null ? Collections.singletonList(closeParenToken) : Collections.emptyList());
   }
 }

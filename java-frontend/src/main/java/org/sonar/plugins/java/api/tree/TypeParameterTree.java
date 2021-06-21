@@ -43,6 +43,6 @@ public interface TypeParameterTree extends Tree {
   @Nullable
   SyntaxToken extendToken();
 
-  ListTree<Tree> bounds();
+  ListTree<TypeTree> bounds();
 
 }

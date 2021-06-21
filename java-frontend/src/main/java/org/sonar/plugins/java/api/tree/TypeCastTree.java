@@ -44,7 +44,7 @@ public interface TypeCastTree extends ExpressionTree {
   @Nullable
   SyntaxToken andToken();
 
-  ListTree<Tree> bounds();
+  ListTree<TypeTree> bounds();
 
   SyntaxToken closeParenToken();
 

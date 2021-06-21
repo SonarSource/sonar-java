@@ -20,7 +20,9 @@
 package org.sonar.java.model.statement;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -30,38 +32,27 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.Objects;
-
 public class AssertStatementTreeImpl extends JavaTree implements AssertStatementTree {
 
-  private InternalSyntaxToken assertToken;
-  private ExpressionTree condition;
+  private final InternalSyntaxToken assertToken;
+  private final ExpressionTree condition;
   @Nullable
-  private final InternalSyntaxToken colonToken;
+  private InternalSyntaxToken colonToken;
   @Nullable
-  private final ExpressionTree detail;
-  private InternalSyntaxToken semicolonToken;
+  private ExpressionTree detail;
+  private final InternalSyntaxToken semicolonToken;
 
   public AssertStatementTreeImpl(InternalSyntaxToken assertToken, ExpressionTree condition, InternalSyntaxToken semicolonToken) {
     this.assertToken = assertToken;
-    this.condition = Objects.requireNonNull(condition);
+    this.condition = condition;
     this.colonToken = null;
     this.detail = null;
     this.semicolonToken = semicolonToken;
   }
 
-  public AssertStatementTreeImpl(InternalSyntaxToken colonToken, ExpressionTree detail) {
+  public AssertStatementTreeImpl complete(InternalSyntaxToken colonToken, ExpressionTree detail) {
     this.colonToken = colonToken;
-    this.detail = Objects.requireNonNull(detail);
-  }
-
-  public AssertStatementTreeImpl complete(InternalSyntaxToken assertToken, ExpressionTree condition, InternalSyntaxToken semicolonToken) {
-    this.assertToken = assertToken;
-    this.condition = Objects.requireNonNull(condition);
-    this.semicolonToken = semicolonToken;
-
+    this.detail = detail;
     return this;
   }
 

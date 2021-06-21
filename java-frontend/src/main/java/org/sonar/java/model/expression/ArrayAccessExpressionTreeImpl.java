@@ -29,16 +29,12 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 public class ArrayAccessExpressionTreeImpl extends AssessableExpressionTree implements ArrayAccessExpressionTree {
 
-  private ExpressionTree expression;
+  private final ExpressionTree expression;
   private final ArrayDimensionTree dimension;
 
-  public ArrayAccessExpressionTreeImpl(ArrayDimensionTree dimension) {
-    this.dimension = dimension;
-  }
-
-  public ArrayAccessExpressionTreeImpl complete(ExpressionTree expression) {
+  public ArrayAccessExpressionTreeImpl(ExpressionTree expression, ArrayDimensionTree dimension) {
     this.expression = expression;
-    return this;
+    this.dimension = dimension;
   }
 
   @Override

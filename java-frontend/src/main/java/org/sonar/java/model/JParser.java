@@ -28,13 +28,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.eclipse.jdt.core.dom.*;
@@ -47,16 +47,14 @@ import org.eclipse.jdt.internal.formatter.TokenManager;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
-import org.sonar.java.ast.parser.BlockStatementListTreeImpl;
-import org.sonar.java.ast.parser.BoundListTreeImpl;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.InitializerListTreeImpl;
+import org.sonar.java.ast.parser.ModuleNameListTreeImpl;
 import org.sonar.java.ast.parser.ModuleNameTreeImpl;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.ResourceListTreeImpl;
-import org.sonar.java.ast.parser.StatementExpressionListTreeImpl;
+import org.sonar.java.ast.parser.StatementListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
-import org.sonar.java.ast.parser.TypeUnionListTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.EnumConstantTreeImpl;
@@ -65,7 +63,6 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.ModifierKeywordTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
 import org.sonar.java.model.declaration.ModuleDeclarationTreeImpl;
-import org.sonar.java.model.declaration.ModuleNameListTreeImpl;
 import org.sonar.java.model.declaration.OpensDirectiveTreeImpl;
 import org.sonar.java.model.declaration.ProvidesDirectiveTreeImpl;
 import org.sonar.java.model.declaration.RequiresDirectiveTreeImpl;
@@ -121,19 +118,21 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.InferedTypeTree;
+import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.ModuleDeclarationTree;
 import org.sonar.plugins.java.api.tree.ModuleDirectiveTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-@ParametersAreNonnullByDefault
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class JParser {
 
   private static final Logger LOG = Loggers.get(JParser.class);
@@ -258,8 +257,7 @@ public class JParser {
       return;
     }
     binding = JSema.declarationBinding(binding);
-    sema.usages.computeIfAbsent(binding, k -> new ArrayList<>())
-      .add(node);
+    sema.usages.computeIfAbsent(binding, k -> new ArrayList<>()).add(node);
   }
 
   private void usageLabel(@Nullable IdentifierTreeImpl node) {
@@ -380,21 +378,18 @@ public class JParser {
     return comments;
   }
 
-  @SuppressWarnings({"unchecked", "rawtypes"})
-  private void addEmptyDeclarationsToList(int tokenIndex, List list) {
+  private void addEmptyStatementsToList(int tokenIndex, List list) {
     while (true) {
       Token token;
       do {
         tokenIndex++;
         token = tokenManager.get(tokenIndex);
       } while (token.isComment());
-      if (token.tokenType == TerminalTokens.TokenNameSEMICOLON) {
-        list.add(
-          new EmptyStatementTreeImpl(createSyntaxToken(tokenIndex))
-        );
-      } else {
+
+      if (token.tokenType != TerminalTokens.TokenNameSEMICOLON) {
         break;
       }
+      list.add(new EmptyStatementTreeImpl(createSyntaxToken(tokenIndex)));
     }
   }
 
@@ -412,7 +407,7 @@ public class JParser {
     List<ImportClauseTree> imports = new ArrayList<>();
     for (int i = 0; i < e.imports().size(); i++) {
       ImportDeclaration e2 = (ImportDeclaration) e.imports().get(i);
-      ExpressionTree name = convertName(e2.getName());
+      ExpressionTree name = convertImportName(e2.getName());
       if (e2.isOnDemand()) {
         name = new MemberSelectExpressionTreeImpl(
           name,
@@ -429,10 +424,8 @@ public class JParser {
       t.binding = e2.resolveBinding();
       imports.add(t);
 
-      addEmptyDeclarationsToList(
-        tokenManager.lastIndexIn(e2, TerminalTokens.TokenNameSEMICOLON),
-        imports
-      );
+      int tokenIndex = tokenManager.lastIndexIn(e2, TerminalTokens.TokenNameSEMICOLON);
+      addEmptyStatementsToList(tokenIndex, imports);
     }
 
     List<Tree> types = new ArrayList<>();
@@ -441,7 +434,7 @@ public class JParser {
     }
 
     if (e.imports().isEmpty() && e.types().isEmpty()) {
-      addEmptyDeclarationsToList(-1, imports);
+      addEmptyStatementsToList(-1, imports);
     }
 
     return new JavaTree.CompilationUnitTreeImpl(
@@ -451,6 +444,23 @@ public class JParser {
       convertModuleDeclaration(compilationUnit.getModule()),
       firstTokenAfter(e, TerminalTokens.TokenNameEOF)
     );
+  }
+
+  private ExpressionTree convertImportName(Name node) {
+    switch (node.getNodeType()) {
+      case ASTNode.SIMPLE_NAME: {
+        return new IdentifierTreeImpl(firstTokenIn(node, TerminalTokens.TokenNameIdentifier));
+      }
+      case ASTNode.QUALIFIED_NAME: {
+        QualifiedName e = (QualifiedName) node;
+        return new MemberSelectExpressionTreeImpl(
+          convertImportName(e.getQualifier()),
+          firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
+          (IdentifierTreeImpl) convertImportName(e.getName()));
+      }
+      default:
+        throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
+    }
   }
 
   @Nullable
@@ -480,17 +490,12 @@ public class JParser {
       case ASTNode.QUALIFIED_NAME: {
         QualifiedName e = (QualifiedName) node;
         ModuleNameTreeImpl t = convertModuleName(e.getQualifier());
-        t.add(
-          new IdentifierTreeImpl(firstTokenIn(e.getName(), TerminalTokens.TokenNameIdentifier))
-        );
+        t.add(new IdentifierTreeImpl(firstTokenIn(e.getName(), TerminalTokens.TokenNameIdentifier)));
         return t;
       }
       case ASTNode.SIMPLE_NAME: {
-        SimpleName e = (SimpleName) node;
-        ModuleNameTreeImpl t = new ModuleNameTreeImpl(new ArrayList<>(), Collections.emptyList());
-        t.add(
-          new IdentifierTreeImpl(firstTokenIn(e, TerminalTokens.TokenNameIdentifier))
-        );
+        ModuleNameTreeImpl t = ModuleNameTreeImpl.emptyList();
+        t.add(new IdentifierTreeImpl(firstTokenIn(node, TerminalTokens.TokenNameIdentifier)));
         return t;
       }
       default:
@@ -499,7 +504,7 @@ public class JParser {
   }
 
   private ModuleNameListTreeImpl convertModuleNames(List<?> list) {
-    ModuleNameListTreeImpl t = new ModuleNameListTreeImpl(new ArrayList<>(), new ArrayList<>());
+    ModuleNameListTreeImpl t = ModuleNameListTreeImpl.emptyList();
     for (int i = 0; i < list.size(); i++) {
       Name o = (Name) list.get(i);
       if (i > 0) {
@@ -564,7 +569,7 @@ public class JParser {
       }
       case ASTNode.PROVIDES_DIRECTIVE: {
         ProvidesDirective e = (ProvidesDirective) node;
-        QualifiedIdentifierListTreeImpl typeNames = new QualifiedIdentifierListTreeImpl(new ArrayList<>(), new ArrayList<>());
+        QualifiedIdentifierListTreeImpl typeNames = QualifiedIdentifierListTreeImpl.emptyList();
         for (int i = 0; i < e.implementations().size(); i++) {
           Name o = (Name) e.implementations().get(i);
           if (i > 0) {
@@ -587,163 +592,139 @@ public class JParser {
 
   private ClassTreeImpl convertTypeDeclaration(AbstractTypeDeclaration e) {
     List<Tree> members = new ArrayList<>();
-    if (e.getNodeType() == ASTNode.ENUM_DECLARATION) {
-      for (Object o : ((EnumDeclaration) e).enumConstants()) {
-        members.add(processEnumConstantDeclaration((EnumConstantDeclaration) o));
-      }
-    }
 
-    // TODO try to simplify, note that type annotations can contain LBRACE
-    final int leftBraceTokenIndex;
-    if (e.getNodeType() == ASTNode.ENUM_DECLARATION) {
-      EnumDeclaration enumDeclaration = (EnumDeclaration) e;
-      if (!enumDeclaration.enumConstants().isEmpty()) {
-        leftBraceTokenIndex = tokenManager.firstIndexBefore((ASTNode) enumDeclaration.enumConstants().get(0), TerminalTokens.TokenNameLBRACE);
-      } else if (!enumDeclaration.bodyDeclarations().isEmpty()) {
-        leftBraceTokenIndex = tokenManager.firstIndexBefore((ASTNode) e.bodyDeclarations().get(0), TerminalTokens.TokenNameLBRACE);
-      } else {
-        leftBraceTokenIndex = tokenManager.lastIndexIn(e, TerminalTokens.TokenNameLBRACE);
-      }
-    } else if (!e.bodyDeclarations().isEmpty()) {
-      leftBraceTokenIndex = tokenManager.firstIndexBefore((ASTNode) e.bodyDeclarations().get(0), TerminalTokens.TokenNameLBRACE);
-    } else {
-      leftBraceTokenIndex = tokenManager.lastIndexIn(e, TerminalTokens.TokenNameLBRACE);
-    }
-    addEmptyDeclarationsToList(leftBraceTokenIndex, members);
+    int leftBraceTokenIndex = findLeftBraceTokenIndex(e);
+    addEmptyStatementsToList(leftBraceTokenIndex, members);
+
     for (Object o : e.bodyDeclarations()) {
       processBodyDeclaration((BodyDeclaration) o, members);
     }
 
-    Tree.Kind kind;
+    ModifiersTreeImpl modifiers = convertModifiers(e.modifiers());
+    IdentifierTreeImpl name = createSimpleName(e.getName());
+
+    InternalSyntaxToken openBraceToken = createSyntaxToken(leftBraceTokenIndex);
+    InternalSyntaxToken closeBraceToken = lastTokenIn(e, TerminalTokens.TokenNameRBRACE);
+
+    final ClassTreeImpl t;
     switch (e.getNodeType()) {
-      case ASTNode.ENUM_DECLARATION:
-        kind = Tree.Kind.ENUM;
-        break;
-      case ASTNode.ANNOTATION_TYPE_DECLARATION:
-        kind = Tree.Kind.ANNOTATION_TYPE;
-        break;
       case ASTNode.TYPE_DECLARATION:
-        kind = ((TypeDeclaration) e).isInterface() ? Tree.Kind.INTERFACE : Tree.Kind.CLASS;
+        t = convertTypeDeclaration((TypeDeclaration) e, modifiers, name, openBraceToken, members, closeBraceToken);
+        break;
+      case ASTNode.ENUM_DECLARATION:
+        t = convertEnumDeclaration((EnumDeclaration) e, modifiers, name, openBraceToken, members, closeBraceToken);
         break;
       case ASTNode.RECORD_DECLARATION:
-        kind = Tree.Kind.RECORD;
+        t = convertRecordDeclaration((RecordDeclaration) e, modifiers, name, openBraceToken, members, closeBraceToken);
+        break;
+      case ASTNode.ANNOTATION_TYPE_DECLARATION:
+        t = convertAnnotationTypeDeclaration((AnnotationTypeDeclaration) e, modifiers, name, openBraceToken, members, closeBraceToken);
         break;
       default:
-        throw new IllegalStateException();
-    }
-    ClassTreeImpl t = new ClassTreeImpl(
-      kind,
-      createSyntaxToken(leftBraceTokenIndex),
-      members,
-      lastTokenIn(e, TerminalTokens.TokenNameRBRACE)
-    ).completeModifiers(
-      convertModifiers(e.modifiers())
-    );
-    switch (kind) {
-      case ENUM:
-        t.completeDeclarationKeyword(firstTokenBefore(e.getName(), TerminalTokens.TokenNameenum));
-        t.completeIdentifier(convertSimpleName(e.getName()));
-        break;
-      case CLASS:
-        t.completeDeclarationKeyword(firstTokenBefore(e.getName(), TerminalTokens.TokenNameclass));
-        t.completeIdentifier(convertSimpleName(e.getName()));
-        break;
-      case INTERFACE:
-        t.completeDeclarationKeyword(firstTokenBefore(e.getName(), TerminalTokens.TokenNameinterface));
-        t.completeIdentifier(convertSimpleName(e.getName()));
-        break;
-      case RECORD:
-        t.completeDeclarationKeyword(firstTokenBefore(e.getName(), TerminalTokens.TokenNameRestrictedIdentifierrecord));
-        t.completeIdentifier(convertSimpleName(e.getName()));
-        break;
-      case ANNOTATION_TYPE:
-        t.complete(
-          firstTokenBefore(e.getName(), TerminalTokens.TokenNameAT),
-          firstTokenBefore(e.getName(), TerminalTokens.TokenNameinterface),
-          convertSimpleName(e.getName())
-        );
-        break;
-      default:
-        break;
+        throw new IllegalStateException(ASTNode.nodeClassForType(e.getNodeType()).toString());
     }
 
-    if (kind == Tree.Kind.CLASS || kind == Tree.Kind.INTERFACE) {
-      TypeDeclaration ee = (TypeDeclaration) e;
-      t.completeTypeParameters(
-        convertTypeParameters(ee.typeParameters())
-      );
-
-      if (e.getAST().isPreviewEnabled()) {
-        List<?> permittedTypesToConvert = ((TypeDeclaration) e).permittedTypes();
-        for (int i = 0; i < permittedTypesToConvert.size(); i++) {
-          Type o = (Type) permittedTypesToConvert.get(i);
-          if (i > 0) {
-            t.permittedTypes().separators().add(firstTokenBefore(o, TerminalTokens.TokenNameCOMMA));
-          }
-          t.permittedTypes().add(convertType(o));
-        }
-      }
-    } else if (kind == Tree.Kind.RECORD) {
-      RecordDeclaration ee = (RecordDeclaration) e;
-      t.completeTypeParameters(
-        convertTypeParameters(ee.typeParameters())
-      );
-
-      List<VariableTree> recordComponents = new ArrayList<>();
-      for (int i = 0; i < ee.recordComponents().size(); i++) {
-        SingleVariableDeclaration o = (SingleVariableDeclaration) ee.recordComponents().get(i);
-        VariableTreeImpl recordComponent = createVariable(o);
-        if (i < ee.recordComponents().size() - 1) {
-          recordComponent.setEndToken(firstTokenAfter(o, TerminalTokens.TokenNameCOMMA));
-        }
-        recordComponents.add(recordComponent);
-      }
-      t.completeRecordComponents(recordComponents);
-    }
-
-    switch (kind) {
-      case CLASS: {
-        TypeDeclaration ee = (TypeDeclaration) e;
-        Type superclassType = ee.getSuperclassType();
-        if (superclassType != null) {
-          t.completeSuperclass(
-            firstTokenBefore(superclassType, TerminalTokens.TokenNameextends),
-            convertType(superclassType)
-          );
-        }
-        // fall through
-      }
-      case INTERFACE:
-      case RECORD:
-      case ENUM: {
-        List<?> superInterfaceTypes = superInterfaceTypes(e);
-        if (!superInterfaceTypes.isEmpty()) {
-          QualifiedIdentifierListTreeImpl superInterfaces = new QualifiedIdentifierListTreeImpl(
-            new ArrayList<>(),
-            new ArrayList<>()
-          );
-          for (int i = 0; i < superInterfaceTypes.size(); i++) {
-            Type o = (Type) superInterfaceTypes.get(i);
-            if (i > 0) {
-              superInterfaces.separators().add(firstTokenBefore(o, TerminalTokens.TokenNameCOMMA));
-            }
-            superInterfaces.add(convertType(o));
-          }
-          t.completeInterfaces(
-            firstTokenBefore((ASTNode) superInterfaceTypes.get(0), kind == Tree.Kind.INTERFACE ? TerminalTokens.TokenNameextends : TerminalTokens.TokenNameimplements),
-            superInterfaces
-          );
-        }
-        break;
-      }
-      default:
-        break;
-    }
+    // no-op for annotation-types
+    completeSuperInterfaces(e, t);
 
     t.typeBinding = e.resolveBinding();
     declaration(t.typeBinding, t);
 
     return t;
+  }
+
+  private ClassTreeImpl convertTypeDeclaration(TypeDeclaration e, ModifiersTreeImpl modifiers, IdentifierTreeImpl name,
+                                               InternalSyntaxToken openBraceToken, List<Tree> members, InternalSyntaxToken closeBraceToken) {
+    InternalSyntaxToken declarationKeyword = firstTokenBefore(e.getName(), e.isInterface() ? TerminalTokens.TokenNameinterface : TerminalTokens.TokenNameclass);
+    ClassTreeImpl t = new ClassTreeImpl(e.isInterface() ? Tree.Kind.INTERFACE : Tree.Kind.CLASS, openBraceToken, members, closeBraceToken)
+      .complete(modifiers, declarationKeyword, name)
+      .completeTypeParameters(convertTypeParameters(e.typeParameters()));
+
+    if (e.getAST().isPreviewEnabled()) {
+      // TODO final in Java 17? relates to sealed classes
+      convertSeparatedTypeList(e.permittedTypes(), t.permittedTypes());
+    }
+
+    if (!e.isInterface() && e.getSuperclassType() != null) {
+      Type superclassType = e.getSuperclassType();
+      t.completeSuperclass(firstTokenBefore(superclassType, TerminalTokens.TokenNameextends), convertType(superclassType));
+    }
+    return t;
+  }
+
+  private ClassTreeImpl convertEnumDeclaration(EnumDeclaration e, ModifiersTreeImpl modifiers, IdentifierTreeImpl name,
+                                               InternalSyntaxToken openBraceToken, List<Tree> members, InternalSyntaxToken closeBraceToken) {
+    List<Tree> enumConstants = new ArrayList<>();
+    for (Object o : e.enumConstants()) {
+      // introduced as first members
+      enumConstants.add(processEnumConstantDeclaration((EnumConstantDeclaration) o));
+    }
+    members.addAll(0, enumConstants);
+
+    InternalSyntaxToken declarationKeyword = firstTokenBefore(e.getName(), TerminalTokens.TokenNameenum);
+    return new ClassTreeImpl(Tree.Kind.ENUM, openBraceToken, members, closeBraceToken)
+      .complete(modifiers, declarationKeyword, name);
+  }
+
+  private ClassTreeImpl convertAnnotationTypeDeclaration(AnnotationTypeDeclaration e, ModifiersTreeImpl modifiers, IdentifierTreeImpl name,
+    InternalSyntaxToken openBraceToken, List<Tree> members, InternalSyntaxToken closeBraceToken) {
+    InternalSyntaxToken declarationKeyword = firstTokenBefore(e.getName(), TerminalTokens.TokenNameinterface);
+    return new ClassTreeImpl(Tree.Kind.ANNOTATION_TYPE, openBraceToken, members, closeBraceToken)
+      .complete(modifiers, declarationKeyword, name)
+      .completeAtToken(firstTokenBefore(e.getName(), TerminalTokens.TokenNameAT));
+  }
+
+  private ClassTreeImpl convertRecordDeclaration(RecordDeclaration e, ModifiersTreeImpl modifiers, IdentifierTreeImpl name,
+                                                 InternalSyntaxToken openBraceToken, List<Tree> members, InternalSyntaxToken closeBraceToken) {
+    InternalSyntaxToken declarationKeyword = firstTokenBefore(e.getName(), TerminalTokens.TokenNameRestrictedIdentifierrecord);
+    return new ClassTreeImpl(Tree.Kind.RECORD, openBraceToken, members, closeBraceToken)
+      .complete(modifiers, declarationKeyword, name)
+      .completeTypeParameters(convertTypeParameters(e.typeParameters()))
+      .completeRecordComponents(convertRecordComponents(e));
+  }
+
+  private List<VariableTree> convertRecordComponents(RecordDeclaration e) {
+    List<VariableTree> recordComponents = new ArrayList<>();
+
+    for (int i = 0; i < e.recordComponents().size(); i++) {
+      SingleVariableDeclaration o = (SingleVariableDeclaration) e.recordComponents().get(i);
+      VariableTreeImpl recordComponent = convertVariable(o);
+      if (i < e.recordComponents().size() - 1) {
+        recordComponent.setEndToken(firstTokenAfter(o, TerminalTokens.TokenNameCOMMA));
+      }
+      recordComponents.add(recordComponent);
+    }
+    return recordComponents;
+  }
+
+  private int findLeftBraceTokenIndex(AbstractTypeDeclaration e) {
+    // TODO try to simplify, note that type annotations can contain LBRACE
+    if (e.getNodeType() == ASTNode.ENUM_DECLARATION) {
+      EnumDeclaration enumDeclaration = (EnumDeclaration) e;
+      if (!enumDeclaration.enumConstants().isEmpty()) {
+        return tokenManager.firstIndexBefore((ASTNode) enumDeclaration.enumConstants().get(0), TerminalTokens.TokenNameLBRACE);
+      }
+      if (!enumDeclaration.bodyDeclarations().isEmpty()) {
+        return tokenManager.firstIndexBefore((ASTNode) e.bodyDeclarations().get(0), TerminalTokens.TokenNameLBRACE);
+      }
+      return tokenManager.lastIndexIn(e, TerminalTokens.TokenNameLBRACE);
+    }
+    if (!e.bodyDeclarations().isEmpty()) {
+      return tokenManager.firstIndexBefore((ASTNode) e.bodyDeclarations().get(0), TerminalTokens.TokenNameLBRACE);
+    }
+    return tokenManager.lastIndexIn(e, TerminalTokens.TokenNameLBRACE);
+  }
+
+  private void completeSuperInterfaces(AbstractTypeDeclaration e, ClassTreeImpl t) {
+    List superInterfaces = superInterfaceTypes(e);
+    if (!superInterfaces.isEmpty()) {
+      QualifiedIdentifierListTreeImpl interfaces = QualifiedIdentifierListTreeImpl.emptyList();
+      convertSeparatedTypeList(superInterfaces, interfaces);
+
+      ASTNode firstInterface = (ASTNode) superInterfaces.get(0);
+      InternalSyntaxToken keyword = firstTokenBefore(firstInterface, t.is(Tree.Kind.INTERFACE) ? TerminalTokens.TokenNameextends : TerminalTokens.TokenNameimplements);
+      t.completeInterfaces(keyword, interfaces);
+    }
   }
 
   private static List<?> superInterfaceTypes(AbstractTypeDeclaration e) {
@@ -754,8 +735,21 @@ public class JParser {
         return ((EnumDeclaration) e).superInterfaceTypes();
       case ASTNode.RECORD_DECLARATION:
         return ((RecordDeclaration) e).superInterfaceTypes();
+      case ASTNode.ANNOTATION_TYPE_DECLARATION:
+        return Collections.emptyList();
       default:
-        throw new IllegalStateException();
+        throw new IllegalStateException(ASTNode.nodeClassForType(e.getNodeType()).toString());
+    }
+  }
+
+  private <T extends Tree> void convertSeparatedTypeList(List<? extends Type> source, ListTree<T> target) {
+    for (int i = 0; i < source.size(); i++) {
+      Type o = source.get(i);
+      T tree = (T) convertType(o);
+      if (i > 0) {
+        target.separators().add(firstTokenBefore(o, TerminalTokens.TokenNameCOMMA));
+      }
+      target.add(tree);
     }
   }
 
@@ -804,7 +798,7 @@ public class JParser {
         throw new IllegalStateException();
     }
 
-    IdentifierTreeImpl identifier = convertSimpleName(e.getName());
+    IdentifierTreeImpl identifier = createSimpleName(e.getName());
     if (e.getAnonymousClassDeclaration() == null) {
       identifier.binding = excludeRecovery(e.resolveConstructorBinding(), arguments.size());
     } else {
@@ -815,12 +809,7 @@ public class JParser {
     EnumConstantTreeImpl t = new EnumConstantTreeImpl(
       convertModifiers(e.modifiers()),
       identifier,
-      new NewClassTreeImpl(
-        arguments,
-        classBody
-      ).completeWithIdentifier(
-        identifier
-      ),
+      new NewClassTreeImpl(identifier, arguments, classBody),
       separatorToken
     );
     t.variableBinding = e.resolveVariable();
@@ -828,7 +817,7 @@ public class JParser {
     return t;
   }
 
-  private void processBodyDeclaration(ASTNode node, List<Tree> members) {
+  private void processBodyDeclaration(BodyDeclaration node, List<Tree> members) {
     final int lastTokenIndex;
 
     switch (node.getNodeType()) {
@@ -854,7 +843,7 @@ public class JParser {
         throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
     }
 
-    addEmptyDeclarationsToList(lastTokenIndex, members);
+    addEmptyStatementsToList(lastTokenIndex, members);
   }
 
   private int processTypeDeclaration(AbstractTypeDeclaration node, List<Tree> members) {
@@ -872,7 +861,7 @@ public class JParser {
     ExpressionTree defaultValue = defaultExpression == null ? null : convertExpression(defaultExpression);
 
     MethodTreeImpl t = new MethodTreeImpl(parameters, defaultToken, defaultValue)
-      .complete(convertType(e.getType()), convertSimpleName(e.getName()), lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON))
+      .complete(convertType(e.getType()), createSimpleName(e.getName()), lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON))
       .completeWithModifiers(convertModifiers(e.modifiers()));
 
     t.methodBinding = e.resolveBinding();
@@ -914,22 +903,16 @@ public class JParser {
 
     for (int i = 0; i < p.size(); i++) {
       SingleVariableDeclaration o = (SingleVariableDeclaration) p.get(i);
-      VariableTreeImpl parameter = createVariable(o);
+      VariableTreeImpl parameter = convertVariable(o);
       if (i < p.size() - 1) {
         parameter.setEndToken(firstTokenAfter(o, TerminalTokens.TokenNameCOMMA));
       }
       formalParameters.add(parameter);
     }
 
-    QualifiedIdentifierListTreeImpl thrownExceptionTypes = new QualifiedIdentifierListTreeImpl(new ArrayList<>(), new ArrayList<>());
+    QualifiedIdentifierListTreeImpl thrownExceptionTypes = QualifiedIdentifierListTreeImpl.emptyList();
     List tt = e.thrownExceptionTypes();
-    for (int i = 0; i < tt.size(); i++) {
-      Type o = (Type) tt.get(i);
-      if (i > 0) {
-        thrownExceptionTypes.separators().add(firstTokenBefore(o, TerminalTokens.TokenNameCOMMA));
-      }
-      thrownExceptionTypes.add(convertType(o));
-    }
+    convertSeparatedTypeList(tt, thrownExceptionTypes);
 
     Block body = e.getBody();
     Type returnType = e.getReturnType2();
@@ -937,7 +920,7 @@ public class JParser {
     InternalSyntaxToken semcolonToken = body == null ? lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON) : null;
     MethodTreeImpl t = new MethodTreeImpl(
       returnType == null ? null : applyExtraDimensions(convertType(returnType), e.extraDimensions()),
-      convertSimpleName(e.getName()),
+      createSimpleName(e.getName()),
       formalParameters,
       throwsToken,
       thrownExceptionTypes,
@@ -961,7 +944,7 @@ public class JParser {
 
     for (int i = 0; i < fieldDeclaration.fragments().size(); i++) {
       VariableDeclarationFragment fragment = (VariableDeclarationFragment) fieldDeclaration.fragments().get(i);
-      VariableTreeImpl t = new VariableTreeImpl(convertSimpleName(fragment.getName()))
+      VariableTreeImpl t = new VariableTreeImpl(createSimpleName(fragment.getName()))
         .completeModifiersAndType(modifiers, applyExtraDimensions(type, fragment.extraDimensions()));
 
       if (fragment.getInitializer() != null) {
@@ -977,12 +960,8 @@ public class JParser {
     return tokenManager.lastIndexIn(fieldDeclaration, TerminalTokens.TokenNameSEMICOLON);
   }
 
-  private ArgumentListTreeImpl convertArguments(
-    InternalSyntaxToken openParen,
-    List<?> list,
-    InternalSyntaxToken closeParen
-  ) {
-    ArgumentListTreeImpl arguments = new ArgumentListTreeImpl(new ArrayList<>(), new ArrayList<>()).complete(openParen, closeParen);
+  private ArgumentListTreeImpl convertArguments(@Nullable InternalSyntaxToken openParen, List<?> list, @Nullable InternalSyntaxToken closeParen) {
+    ArgumentListTreeImpl arguments = ArgumentListTreeImpl.emptyList().complete(openParen, closeParen);
     for (int i = 0; i < list.size(); i++) {
       Expression o = (Expression) list.get(i);
       arguments.add(convertExpression(o));
@@ -1011,12 +990,8 @@ public class JParser {
     );
   }
 
-  private TypeArgumentListTreeImpl convertTypeArguments(
-    InternalSyntaxToken l,
-    List<?> list,
-    InternalSyntaxToken g
-  ) {
-    TypeArgumentListTreeImpl typeArguments = new TypeArgumentListTreeImpl(l, new ArrayList<>(), new ArrayList<>(), g);
+  private TypeArgumentListTreeImpl convertTypeArguments(InternalSyntaxToken l, List<?> list, InternalSyntaxToken g) {
+    TypeArgumentListTreeImpl typeArguments = new TypeArgumentListTreeImpl(l, g);
     for (int i = 0; i < list.size(); i++) {
       Type o = (Type) list.get(i);
       if (i > 0) {
@@ -1038,7 +1013,6 @@ public class JParser {
     }
     TypeParameterListTreeImpl t = new TypeParameterListTreeImpl(
       firstTokenBefore((ASTNode) list.get(0), TerminalTokens.TokenNameLESS),
-      new ArrayList<>(), new ArrayList<>(),
       // TerminalTokens.TokenNameUNSIGNED_RIGHT_SHIFT vs TerminalTokens.TokenNameGREATER
       createSpecialToken(tokenIndex)
     );
@@ -1053,7 +1027,7 @@ public class JParser {
   }
 
   private TypeParameterTree convertTypeParameter(TypeParameter e) {
-    IdentifierTreeImpl i = convertSimpleName(e.getName());
+    IdentifierTreeImpl i = createSimpleName(e.getName());
     // TODO why ECJ uses IExtendedModifier here instead of Annotation ?
     i.complete(convertAnnotations(e.modifiers()));
     TypeParameterTreeImpl t;
@@ -1061,7 +1035,7 @@ public class JParser {
     if (typeBounds.isEmpty()) {
       t = new TypeParameterTreeImpl(i);
     } else {
-      BoundListTreeImpl bounds = new BoundListTreeImpl(new ArrayList<>(), new ArrayList<>());
+      QualifiedIdentifierListTreeImpl bounds = QualifiedIdentifierListTreeImpl.emptyList();
       for (int j = 0; j < typeBounds.size(); j++) {
         Object o = typeBounds.get(j);
         bounds.add(convertType((Type) o));
@@ -1070,10 +1044,9 @@ public class JParser {
         }
       }
       t = new TypeParameterTreeImpl(
+        i,
         firstTokenAfter(e.getName(), TerminalTokens.TokenNameextends),
         bounds
-      ).complete(
-        i
       );
     }
     t.typeBinding = e.resolveBinding();
@@ -1100,7 +1073,7 @@ public class JParser {
     return type;
   }
 
-  private VariableTreeImpl createVariable(SingleVariableDeclaration e) {
+  private VariableTreeImpl convertVariable(SingleVariableDeclaration e) {
     // TODO are extraDimensions and varargs mutually exclusive?
     TypeTree type = convertType(e.getType());
     type = applyExtraDimensions(type, e.extraDimensions());
@@ -1119,7 +1092,7 @@ public class JParser {
     VariableTreeImpl t = new VariableTreeImpl(
       convertModifiers(e.modifiers()),
       type,
-      convertSimpleName(e.getName())
+      createSimpleName(e.getName())
     );
     if (e.getInitializer() != null) {
       t.completeTypeAndInitializer(
@@ -1133,14 +1106,13 @@ public class JParser {
     return t;
   }
 
-  @SuppressWarnings({"unchecked", "rawtypes"})
   private void addVariableToList(VariableDeclarationExpression e2, List list) {
     ModifiersTreeImpl modifiers = convertModifiers(e2.modifiers());
     TypeTree type = convertType(e2.getType());
 
     for (int i = 0; i < e2.fragments().size(); i++) {
       VariableDeclarationFragment fragment = (VariableDeclarationFragment) e2.fragments().get(i);
-      VariableTreeImpl t = new VariableTreeImpl(convertSimpleName(fragment.getName()));
+      VariableTreeImpl t = new VariableTreeImpl(createSimpleName(fragment.getName()));
       t.completeModifiers(modifiers);
       if (fragment.getInitializer() == null) {
         t.completeType(type);
@@ -1166,35 +1138,11 @@ public class JParser {
     return varTree;
   }
 
-  private IdentifierTreeImpl convertSimpleName(SimpleName e) {
-    IdentifierTreeImpl t = new IdentifierTreeImpl(
-      firstTokenIn(e, TerminalTokens.TokenNameIdentifier)
-    );
+  private IdentifierTreeImpl createSimpleName(SimpleName e) {
+    IdentifierTreeImpl t = new IdentifierTreeImpl(firstTokenIn(e, TerminalTokens.TokenNameIdentifier));
     t.typeBinding = e.resolveTypeBinding();
     t.binding = e.resolveBinding();
     return t;
-  }
-
-  private ExpressionTree convertName(Name node) {
-    switch (node.getNodeType()) {
-      case ASTNode.SIMPLE_NAME: {
-        SimpleName e = (SimpleName) node;
-        return new IdentifierTreeImpl(
-          firstTokenIn(e, TerminalTokens.TokenNameIdentifier)
-        );
-      }
-      case ASTNode.QUALIFIED_NAME: {
-        QualifiedName e = (QualifiedName) node;
-        IdentifierTreeImpl rhs = (IdentifierTreeImpl) convertName(e.getName());
-        return new MemberSelectExpressionTreeImpl(
-          convertName(e.getQualifier()),
-          firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
-          rhs
-        );
-      }
-      default:
-        throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
-    }
   }
 
   private BlockTreeImpl convertBlock(Block e) {
@@ -1216,24 +1164,17 @@ public class JParser {
       ModifiersTreeImpl modifiers = convertModifiers(e.modifiers());
       for (int i = 0; i < e.fragments().size(); i++) {
         VariableDeclarationFragment fragment = (VariableDeclarationFragment) e.fragments().get(i);
-        VariableTreeImpl t = new VariableTreeImpl(
-          convertSimpleName(fragment.getName())
-        ).completeType(
-          applyExtraDimensions(tType, fragment.extraDimensions())
-        ).completeModifiers(
-          modifiers
-        );
+        VariableTreeImpl t = new VariableTreeImpl(createSimpleName(fragment.getName()))
+          .completeType(applyExtraDimensions(tType, fragment.extraDimensions()))
+          .completeModifiers(modifiers);
         Expression initalizer = fragment.getInitializer();
         if (initalizer != null) {
-          t.completeTypeAndInitializer(
-            t.type(),
-            firstTokenAfter(fragment.getName(), TerminalTokens.TokenNameEQUAL),
-            convertExpression(initalizer)
-          );
+          InternalSyntaxToken equalToken = firstTokenAfter(fragment.getName(), TerminalTokens.TokenNameEQUAL);
+          t.completeTypeAndInitializer(t.type(), equalToken, convertExpression(initalizer));
         }
-        t.setEndToken(
-          firstTokenAfter(fragment, i < e.fragments().size() - 1 ? TerminalTokens.TokenNameCOMMA : TerminalTokens.TokenNameSEMICOLON)
-        );
+        int endTokenType = i < e.fragments().size() - 1 ? TerminalTokens.TokenNameCOMMA : TerminalTokens.TokenNameSEMICOLON;
+        t.setEndToken(firstTokenAfter(fragment, endTokenType));
+
         t.variableBinding = fragment.resolveBinding();
         declaration(t.variableBinding, t);
         statements.add(t);
@@ -1241,401 +1182,207 @@ public class JParser {
     } else if (node.getNodeType() == ASTNode.BREAK_STATEMENT && node.getLength() < "break".length()) {
       // skip implicit break-statement
     } else {
-      statements.add(convertStatement(node));
+      statements.add(createStatement(node));
     }
   }
 
-  private StatementTree convertStatement(Statement node) {
+  private StatementTree createStatement(Statement node) {
     switch (node.getNodeType()) {
       case ASTNode.BLOCK:
         return convertBlock((Block) node);
-      case ASTNode.EMPTY_STATEMENT: {
-        EmptyStatement e = (EmptyStatement) node;
-        return new EmptyStatementTreeImpl(
-          lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
-        );
-      }
-      case ASTNode.RETURN_STATEMENT: {
-        ReturnStatement e = (ReturnStatement) node;
-        Expression expression = e.getExpression();
-        return new ReturnStatementTreeImpl(
-          firstTokenIn(e, TerminalTokens.TokenNamereturn),
-          expression == null ? null : convertExpression(expression),
-          lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
-        );
-      }
-      case ASTNode.FOR_STATEMENT: {
-        ForStatement e = (ForStatement) node;
-
-        StatementExpressionListTreeImpl forInitStatement = new StatementExpressionListTreeImpl(new ArrayList<>(), new ArrayList<>());
-        for (int i = 0; i < e.initializers().size(); i++) {
-          Expression o = (Expression) e.initializers().get(i);
-          if (i > 0) {
-            forInitStatement.separators().add(firstTokenBefore(o, TerminalTokens.TokenNameCOMMA));
-          }
-          if (ASTNode.VARIABLE_DECLARATION_EXPRESSION == o.getNodeType()) {
-            addVariableToList(
-              (VariableDeclarationExpression) o,
-              forInitStatement
-            );
-          } else {
-            forInitStatement.add(new ExpressionStatementTreeImpl(
-              convertExpression(o),
-              null
-            ));
-          }
-        }
-
-        StatementExpressionListTreeImpl forUpdateStatement = new StatementExpressionListTreeImpl(new ArrayList<>(), new ArrayList<>());
-        for (int i = 0; i < e.updaters().size(); i++) {
-          Expression o = (Expression) e.updaters().get(i);
-          if (i > 0) {
-            forUpdateStatement.separators().add(firstTokenBefore(o, TerminalTokens.TokenNameCOMMA));
-          }
-          forUpdateStatement.add(new ExpressionStatementTreeImpl(
-            convertExpression(o),
-            null
-          ));
-        }
-
-        final int firstSemicolonTokenIndex = e.initializers().isEmpty()
-          ? tokenManager.firstIndexIn(e, TerminalTokens.TokenNameSEMICOLON)
-          : tokenManager.firstIndexAfter((ASTNode) e.initializers().get(e.initializers().size() - 1), TerminalTokens.TokenNameSEMICOLON);
-        Expression expression = e.getExpression();
-        final int secondSemicolonTokenIndex = expression == null
-          ? nextTokenIndex(firstSemicolonTokenIndex, TerminalTokens.TokenNameSEMICOLON)
-          : tokenManager.firstIndexAfter(expression, TerminalTokens.TokenNameSEMICOLON);
-
-        return new ForStatementTreeImpl(
-          firstTokenIn(e, TerminalTokens.TokenNamefor),
-          firstTokenIn(e, TerminalTokens.TokenNameLPAREN),
-          forInitStatement,
-          createSyntaxToken(firstSemicolonTokenIndex),
-          expression == null ? null : convertExpression(expression),
-          createSyntaxToken(secondSemicolonTokenIndex),
-          forUpdateStatement,
-          firstTokenBefore(e.getBody(), TerminalTokens.TokenNameRPAREN),
-          convertStatement(e.getBody())
-        );
-      }
-      case ASTNode.WHILE_STATEMENT: {
-        WhileStatement e = (WhileStatement) node;
-        return new WhileStatementTreeImpl(
-          firstTokenIn(e, TerminalTokens.TokenNamewhile),
-          firstTokenBefore(e.getExpression(), TerminalTokens.TokenNameLPAREN),
-          convertExpression(e.getExpression()),
-          firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameRPAREN),
-          convertStatement(e.getBody())
-        );
-      }
-      case ASTNode.IF_STATEMENT: {
-        IfStatement e = (IfStatement) node;
-        Expression expression = e.getExpression();
-        Statement elseStatement = e.getElseStatement();
-        if (elseStatement != null) {
-          ExpressionTree condition = convertExpression(expression);
-          StatementTree thenStatement = convertStatement(e.getThenStatement());
-          return new IfStatementTreeImpl(
-            firstTokenAfter(e.getThenStatement(), TerminalTokens.TokenNameelse),
-            convertStatement(elseStatement)
-          ).complete(
-            firstTokenIn(e, TerminalTokens.TokenNameif),
-            firstTokenBefore(expression, TerminalTokens.TokenNameLPAREN),
-            condition,
-            firstTokenAfter(expression, TerminalTokens.TokenNameRPAREN),
-            thenStatement
-          );
-        } else {
-          return new IfStatementTreeImpl(
-            firstTokenIn(e, TerminalTokens.TokenNameif),
-            firstTokenBefore(expression, TerminalTokens.TokenNameLPAREN),
-            convertExpression(expression),
-            firstTokenAfter(expression, TerminalTokens.TokenNameRPAREN),
-            convertStatement(e.getThenStatement())
-          );
-        }
-      }
-      case ASTNode.BREAK_STATEMENT: {
-        BreakStatement e = (BreakStatement) node;
-        IdentifierTreeImpl identifier = e.getLabel() == null ? null : convertSimpleName(e.getLabel());
-        usageLabel(identifier);
-        return new BreakStatementTreeImpl(
-          firstTokenIn(e, TerminalTokens.TokenNamebreak),
-          identifier,
-          lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
-        );
-      }
-      case ASTNode.DO_STATEMENT: {
-        DoStatement e = (DoStatement) node;
-        return new DoWhileStatementTreeImpl(
-          firstTokenIn(e, TerminalTokens.TokenNamedo),
-          convertStatement(e.getBody()),
-          firstTokenAfter(e.getBody(), TerminalTokens.TokenNamewhile),
-          firstTokenBefore(e.getExpression(), TerminalTokens.TokenNameLPAREN),
-          convertExpression(e.getExpression()),
-          firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameRPAREN),
-          lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
-        );
-      }
-      case ASTNode.ASSERT_STATEMENT: {
-        AssertStatement e = (AssertStatement) node;
-        if (e.getMessage() != null) {
-          return new AssertStatementTreeImpl(
-            firstTokenBefore(e.getMessage(), TerminalTokens.TokenNameCOLON),
-            convertExpression(e.getMessage())
-          ).complete(
-            firstTokenIn(e, TerminalTokens.TokenNameassert),
-            convertExpression(e.getExpression()),
-            lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
-          );
-        } else {
-          return new AssertStatementTreeImpl(
-            firstTokenIn(e, TerminalTokens.TokenNameassert),
-            convertExpression(e.getExpression()),
-            lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
-          );
-        }
-      }
-      case ASTNode.SWITCH_STATEMENT: {
-        SwitchStatement e = (SwitchStatement) node;
-        return new SwitchStatementTreeImpl(
-          firstTokenIn(e, TerminalTokens.TokenNameswitch),
-          firstTokenBefore(e.getExpression(), TerminalTokens.TokenNameLPAREN),
-          convertExpression(e.getExpression()),
-          firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameRPAREN),
-          firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameLBRACE),
-          convertSwitchStatements(e.statements()),
-          lastTokenIn(e, TerminalTokens.TokenNameRBRACE)
-        );
-      }
-      case ASTNode.SYNCHRONIZED_STATEMENT: {
-        SynchronizedStatement e = (SynchronizedStatement) node;
-        return new SynchronizedStatementTreeImpl(
-          firstTokenIn(e, TerminalTokens.TokenNamesynchronized),
-          firstTokenBefore(e.getExpression(), TerminalTokens.TokenNameLPAREN),
-          convertExpression(e.getExpression()),
-          firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameRPAREN),
-          convertBlock(e.getBody())
-        );
-      }
-      case ASTNode.EXPRESSION_STATEMENT: {
-        ExpressionStatement e = (ExpressionStatement) node;
-        return new ExpressionStatementTreeImpl(
-          convertExpression(e.getExpression()),
-          lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
-        );
-      }
-      case ASTNode.CONTINUE_STATEMENT: {
-        ContinueStatement e = (ContinueStatement) node;
-        SimpleName label = e.getLabel();
-        IdentifierTreeImpl i = label == null ? null : convertSimpleName(label);
-        usageLabel(i);
-        return new ContinueStatementTreeImpl(
-          firstTokenIn(e, TerminalTokens.TokenNamecontinue),
-          i,
-          lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
-        );
-      }
-      case ASTNode.LABELED_STATEMENT: {
-        LabeledStatement e = (LabeledStatement) node;
-        IdentifierTreeImpl i = convertSimpleName(e.getLabel());
-
-        JLabelSymbol symbol = new JLabelSymbol(i.name());
-        labels.push(symbol);
-
-        LabeledStatementTreeImpl t = new LabeledStatementTreeImpl(
-          i,
-          firstTokenAfter(e.getLabel(), TerminalTokens.TokenNameCOLON),
-          convertStatement(e.getBody())
-        );
-
-        labels.pop();
-        symbol.declaration = t;
-        t.labelSymbol = symbol;
-        return t;
-      }
-      case ASTNode.ENHANCED_FOR_STATEMENT: {
-        EnhancedForStatement e = (EnhancedForStatement) node;
-        return new ForEachStatementImpl(
-          firstTokenIn(e, TerminalTokens.TokenNamefor),
-          firstTokenBefore(e.getParameter(), TerminalTokens.TokenNameLPAREN),
-          createVariable(e.getParameter()),
-          firstTokenAfter(e.getParameter(), TerminalTokens.TokenNameCOLON),
-          convertExpression(e.getExpression()),
-          firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameRPAREN),
-          convertStatement(e.getBody())
-        );
-      }
-      case ASTNode.THROW_STATEMENT: {
-        ThrowStatement e = (ThrowStatement) node;
-        return new ThrowStatementTreeImpl(
-          firstTokenIn(e, TerminalTokens.TokenNamethrow),
-          convertExpression(e.getExpression()),
-          firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameSEMICOLON)
-        );
-      }
-      case ASTNode.TRY_STATEMENT: {
-        TryStatement e = (TryStatement) node;
-
-        List<CatchTree> catches = new ArrayList<>();
-        for (Object o : e.catchClauses()) {
-          CatchClause e2 = (CatchClause) o;
-          catches.add(new CatchTreeImpl(
-            firstTokenIn(e2, TerminalTokens.TokenNamecatch),
-            firstTokenBefore(e2.getException(), TerminalTokens.TokenNameLPAREN),
-            createVariable(e2.getException()),
-            firstTokenAfter(e2.getException(), TerminalTokens.TokenNameRPAREN),
-            convertBlock(e2.getBody())
-          ));
-        }
-
-        ResourceListTreeImpl resources = new ResourceListTreeImpl(
-          new ArrayList<>(), new ArrayList<>()
-        );
-        for (int i = 0; i < e.resources().size(); i++) {
-          Expression o = (Expression) e.resources().get(i);
-          if (ASTNode.VARIABLE_DECLARATION_EXPRESSION == o.getNodeType()) {
-            addVariableToList(
-              (VariableDeclarationExpression) o,
-              resources
-            );
-          } else {
-            resources.add(convertExpression(o));
-          }
-          if (i < e.resources().size() - 1) {
-            resources.separators().add(firstTokenAfter(o, TerminalTokens.TokenNameSEMICOLON));
-          } else {
-            int tokenIndex = tokenManager.firstIndexBefore(e.getBody(), TerminalTokens.TokenNameRPAREN);
-            while (true) {
-              Token token;
-              do {
-                tokenIndex--;
-                token = tokenManager.get(tokenIndex);
-              } while (token.isComment());
-              if (token.tokenType == TerminalTokens.TokenNameSEMICOLON) {
-                resources.separators().add(
-                  createSyntaxToken(tokenIndex)
-                );
-              } else {
-                break;
-              }
-            }
-          }
-        }
-
-        Block f = e.getFinally();
-        return new TryStatementTreeImpl(
-          firstTokenIn(e, TerminalTokens.TokenNametry),
-          e.resources().isEmpty() ? null : firstTokenIn(e, TerminalTokens.TokenNameLPAREN),
-          resources,
-          e.resources().isEmpty() ? null : firstTokenBefore(e.getBody(), TerminalTokens.TokenNameRPAREN),
-          convertBlock(e.getBody()),
-          catches,
-          f == null ? null : firstTokenBefore(f, TerminalTokens.TokenNamefinally),
-          f == null ? null : convertBlock(f)
-        );
-      }
-      case ASTNode.TYPE_DECLARATION_STATEMENT: {
-        TypeDeclarationStatement e = (TypeDeclarationStatement) node;
-        return convertTypeDeclaration(e.getDeclaration());
-      }
-      case ASTNode.CONSTRUCTOR_INVOCATION: {
-        ConstructorInvocation e = (ConstructorInvocation) node;
-
-        ArgumentListTreeImpl arguments = convertArguments(
-          e.arguments().isEmpty() ? lastTokenIn(e, TerminalTokens.TokenNameLPAREN) : firstTokenBefore((ASTNode) e.arguments().get(0), TerminalTokens.TokenNameLPAREN),
-          e.arguments(),
-          lastTokenIn(e, TerminalTokens.TokenNameRPAREN)
-        );
-
-        IdentifierTreeImpl i = new IdentifierTreeImpl(e.arguments().isEmpty()
-          ? lastTokenIn(e, TerminalTokens.TokenNamethis)
-          : firstTokenBefore((ASTNode) e.arguments().get(0), TerminalTokens.TokenNamethis));
-        MethodInvocationTreeImpl t = new MethodInvocationTreeImpl(
-          i,
-          convertTypeArguments(e.typeArguments()),
-          arguments
-        );
-        t.methodBinding = e.resolveConstructorBinding();
-        if (t.methodBinding != null) {
-          t.typeBinding = t.methodBinding.getDeclaringClass();
-          t.methodBinding = excludeRecovery(t.methodBinding, arguments.size());
-        }
-        i.binding = t.methodBinding;
-        usage(i.binding, i);
-        return new ExpressionStatementTreeImpl(
-          t,
-          lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
-        );
-      }
-      case ASTNode.SUPER_CONSTRUCTOR_INVOCATION: {
-        SuperConstructorInvocation e = (SuperConstructorInvocation) node;
-
-        IdentifierTreeImpl i = new IdentifierTreeImpl(firstTokenIn(e, TerminalTokens.TokenNamesuper));
-        ExpressionTree methodSelect = i;
-        if (e.getExpression() != null) {
-          methodSelect = new MemberSelectExpressionTreeImpl(
-            convertExpression(e.getExpression()),
-            firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameDOT),
-            i
-          );
-        }
-
-        ArgumentListTreeImpl arguments = convertArguments(
-          firstTokenIn(e, TerminalTokens.TokenNameLPAREN),
-          e.arguments(),
-          lastTokenIn(e, TerminalTokens.TokenNameRPAREN)
-        );
-
-        MethodInvocationTreeImpl t = new MethodInvocationTreeImpl(
-          methodSelect,
-          convertTypeArguments(e.typeArguments()),
-          arguments
-        );
-        t.methodBinding = e.resolveConstructorBinding();
-        if (t.methodBinding != null) {
-          t.typeBinding = t.methodBinding.getDeclaringClass();
-          t.methodBinding = excludeRecovery(t.methodBinding, arguments.size());
-        }
-        i.binding = t.methodBinding;
-        usage(i.binding, i);
-        return new ExpressionStatementTreeImpl(
-          t,
-          lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
-        );
-      }
-      case ASTNode.YIELD_STATEMENT: {
-        YieldStatement e = (YieldStatement) node;
-        return new YieldStatementTreeImpl(
-          // FIXME ECJ bug? should be "TerminalTokens.TokenNameRestrictedIdentifierYield" instead
-          e.isImplicit() ? null : firstTokenIn(e, TerminalTokens.TokenNameIdentifier),
-          convertExpression(e.getExpression()),
-          lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
-        );
-      }
+      case ASTNode.EMPTY_STATEMENT:
+        return convertEmptyStatement((EmptyStatement) node);
+      case ASTNode.RETURN_STATEMENT:
+        return convertReturn((ReturnStatement) node);
+      case ASTNode.FOR_STATEMENT:
+        return convertFor((ForStatement) node);
+      case ASTNode.WHILE_STATEMENT:
+        return convertWhile((WhileStatement) node);
+      case ASTNode.IF_STATEMENT:
+        return convertIf((IfStatement) node);
+      case ASTNode.BREAK_STATEMENT:
+        return convertBreak((BreakStatement) node);
+      case ASTNode.DO_STATEMENT:
+        return convertDoWhile((DoStatement) node);
+      case ASTNode.ASSERT_STATEMENT:
+        return convertAssert((AssertStatement) node);
+      case ASTNode.SWITCH_STATEMENT:
+        return convertSwitchStatement((SwitchStatement) node);
+      case ASTNode.SYNCHRONIZED_STATEMENT:
+        return convertSynchronized((SynchronizedStatement) node);
+      case ASTNode.EXPRESSION_STATEMENT:
+        return convertExpressionStatement((ExpressionStatement) node);
+      case ASTNode.CONTINUE_STATEMENT:
+        return convertContinue((ContinueStatement) node);
+      case ASTNode.LABELED_STATEMENT:
+        return convertLabel((LabeledStatement) node);
+      case ASTNode.ENHANCED_FOR_STATEMENT:
+        return convertForeach((EnhancedForStatement) node);
+      case ASTNode.THROW_STATEMENT:
+        return convertThrow((ThrowStatement) node);
+      case ASTNode.TRY_STATEMENT:
+        return convertTry((TryStatement) node);
+      case ASTNode.TYPE_DECLARATION_STATEMENT:
+        return convertTypeDeclaration(((TypeDeclarationStatement) node).getDeclaration());
+      case ASTNode.CONSTRUCTOR_INVOCATION:
+        return convertConstructorInvocation((ConstructorInvocation) node);
+      case ASTNode.SUPER_CONSTRUCTOR_INVOCATION:
+        return convertSuperConstructorInvocation((SuperConstructorInvocation) node);
+      case ASTNode.YIELD_STATEMENT:
+        return convertYield((YieldStatement) node);
       default:
         throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
     }
   }
 
+  private EmptyStatementTreeImpl convertEmptyStatement(EmptyStatement e) {
+    return new EmptyStatementTreeImpl(lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON));
+  }
+
+  private ReturnStatementTreeImpl convertReturn(ReturnStatement e) {
+    Expression expression = e.getExpression();
+    return new ReturnStatementTreeImpl(
+      firstTokenIn(e, TerminalTokens.TokenNamereturn),
+      expression == null ? null : convertExpression(expression),
+      lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
+    );
+  }
+
+  private ForStatementTreeImpl convertFor(ForStatement e) {
+    StatementListTreeImpl forInitStatement = StatementListTreeImpl.emptyList();
+    for (int i = 0; i < e.initializers().size(); i++) {
+      Expression o = (Expression) e.initializers().get(i);
+      if (i > 0) {
+        forInitStatement.separators().add(firstTokenBefore(o, TerminalTokens.TokenNameCOMMA));
+      }
+      if (ASTNode.VARIABLE_DECLARATION_EXPRESSION == o.getNodeType()) {
+        addVariableToList((VariableDeclarationExpression) o, forInitStatement);
+      } else {
+        forInitStatement.add(new ExpressionStatementTreeImpl(convertExpression(o), null));
+      }
+    }
+
+    StatementListTreeImpl forUpdateStatement = StatementListTreeImpl.emptyList();
+    for (int i = 0; i < e.updaters().size(); i++) {
+      Expression o = (Expression) e.updaters().get(i);
+      if (i > 0) {
+        forUpdateStatement.separators().add(firstTokenBefore(o, TerminalTokens.TokenNameCOMMA));
+      }
+      forUpdateStatement.add(new ExpressionStatementTreeImpl(convertExpression(o), null));
+    }
+
+    final int firstSemicolonTokenIndex = e.initializers().isEmpty()
+      ? tokenManager.firstIndexIn(e, TerminalTokens.TokenNameSEMICOLON)
+      : tokenManager.firstIndexAfter((ASTNode) e.initializers().get(e.initializers().size() - 1), TerminalTokens.TokenNameSEMICOLON);
+    Expression expression = e.getExpression();
+    final int secondSemicolonTokenIndex = expression == null
+      ? nextTokenIndex(firstSemicolonTokenIndex, TerminalTokens.TokenNameSEMICOLON)
+      : tokenManager.firstIndexAfter(expression, TerminalTokens.TokenNameSEMICOLON);
+
+    return new ForStatementTreeImpl(
+      firstTokenIn(e, TerminalTokens.TokenNamefor),
+      firstTokenIn(e, TerminalTokens.TokenNameLPAREN),
+      forInitStatement,
+      createSyntaxToken(firstSemicolonTokenIndex),
+      expression == null ? null : convertExpression(expression),
+      createSyntaxToken(secondSemicolonTokenIndex),
+      forUpdateStatement,
+      firstTokenBefore(e.getBody(), TerminalTokens.TokenNameRPAREN),
+      createStatement(e.getBody())
+    );
+  }
+
+  private WhileStatementTreeImpl convertWhile(WhileStatement e) {
+    Expression expression = e.getExpression();
+    return new WhileStatementTreeImpl(
+      firstTokenIn(e, TerminalTokens.TokenNamewhile),
+      firstTokenBefore(expression, TerminalTokens.TokenNameLPAREN),
+      convertExpression(expression),
+      firstTokenAfter(expression, TerminalTokens.TokenNameRPAREN),
+      createStatement(e.getBody())
+    );
+  }
+
+  private IfStatementTreeImpl convertIf(IfStatement e) {
+    Expression expression = e.getExpression();
+    Statement thenStatement = e.getThenStatement();
+    Statement elseStatement = e.getElseStatement();
+    return new IfStatementTreeImpl(
+      firstTokenIn(e, TerminalTokens.TokenNameif),
+      firstTokenBefore(expression, TerminalTokens.TokenNameLPAREN),
+      convertExpression(expression),
+      firstTokenAfter(expression, TerminalTokens.TokenNameRPAREN),
+      createStatement(thenStatement),
+      elseStatement == null ? null : firstTokenAfter(thenStatement, TerminalTokens.TokenNameelse),
+      elseStatement == null ? null : createStatement(elseStatement)
+    );
+  }
+
+  private BreakStatementTreeImpl convertBreak(BreakStatement e) {
+    IdentifierTreeImpl identifier = e.getLabel() == null ? null : createSimpleName(e.getLabel());
+    usageLabel(identifier);
+    return new BreakStatementTreeImpl(
+      firstTokenIn(e, TerminalTokens.TokenNamebreak),
+      identifier,
+      lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
+    );
+  }
+
+  private DoWhileStatementTreeImpl convertDoWhile(DoStatement e) {
+    Statement body = e.getBody();
+    Expression expression = e.getExpression();
+    return new DoWhileStatementTreeImpl(
+      firstTokenIn(e, TerminalTokens.TokenNamedo),
+      createStatement(body),
+      firstTokenAfter(body, TerminalTokens.TokenNamewhile),
+      firstTokenBefore(expression, TerminalTokens.TokenNameLPAREN),
+      convertExpression(expression),
+      firstTokenAfter(expression, TerminalTokens.TokenNameRPAREN),
+      lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
+    );
+  }
+
+  private AssertStatementTreeImpl convertAssert(AssertStatement e) {
+    Expression message = e.getMessage();
+    AssertStatementTreeImpl t = new AssertStatementTreeImpl(
+      firstTokenIn(e, TerminalTokens.TokenNameassert),
+      convertExpression(e.getExpression()),
+      lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
+    );
+    if (message != null) {
+      t.complete(firstTokenBefore(message, TerminalTokens.TokenNameCOLON), convertExpression(message));
+    }
+    return t;
+  }
+
+  private SwitchStatementTreeImpl convertSwitchStatement(SwitchStatement e) {
+    Expression expression = e.getExpression();
+    return new SwitchStatementTreeImpl(
+      firstTokenIn(e, TerminalTokens.TokenNameswitch),
+      firstTokenBefore(expression, TerminalTokens.TokenNameLPAREN),
+      convertExpression(expression),
+      firstTokenAfter(expression, TerminalTokens.TokenNameRPAREN),
+      firstTokenAfter(expression, TerminalTokens.TokenNameLBRACE),
+      convertSwitchStatements(e.statements()),
+      lastTokenIn(e, TerminalTokens.TokenNameRBRACE)
+    );
+  }
+
   private List<CaseGroupTreeImpl> convertSwitchStatements(List<?> list) {
     List<CaseGroupTreeImpl> groups = new ArrayList<>();
     List<CaseLabelTreeImpl> caselabels = null;
-    BlockStatementListTreeImpl body = null;
+    StatementListTreeImpl body = null;
     for (Object o : list) {
       if (o instanceof SwitchCase) {
         if (caselabels == null) {
           caselabels = new ArrayList<>();
-          body = new BlockStatementListTreeImpl(new ArrayList<>());
+          body = StatementListTreeImpl.emptyList();
         }
 
         SwitchCase c = (SwitchCase) o;
-
         List<ExpressionTree> expressions = new ArrayList<>();
         for (Object oo : c.expressions()) {
-          expressions.add(
-            convertExpression((Expression) oo)
-          );
+          expressions.add(convertExpression((Expression) oo));
         }
 
         caselabels.add(new CaseLabelTreeImpl(
@@ -1645,22 +1392,224 @@ public class JParser {
         ));
       } else {
         if (caselabels != null) {
-          groups.add(new CaseGroupTreeImpl(
-            caselabels,
-            body
-          ));
+          groups.add(new CaseGroupTreeImpl(caselabels, body));
         }
         caselabels = null;
-        addStatementToList((Statement) o, body);
+        addStatementToList((Statement) o, Objects.requireNonNull(body));
       }
     }
     if (caselabels != null) {
-      groups.add(new CaseGroupTreeImpl(
-        caselabels,
-        body
-      ));
+      groups.add(new CaseGroupTreeImpl(caselabels, body));
     }
     return groups;
+  }
+
+  private SynchronizedStatementTreeImpl convertSynchronized(SynchronizedStatement e) {
+    Expression expression = e.getExpression();
+    return new SynchronizedStatementTreeImpl(
+      firstTokenIn(e, TerminalTokens.TokenNamesynchronized),
+      firstTokenBefore(expression, TerminalTokens.TokenNameLPAREN),
+      convertExpression(expression),
+      firstTokenAfter(expression, TerminalTokens.TokenNameRPAREN),
+      convertBlock(e.getBody())
+    );
+  }
+
+  private ExpressionStatementTreeImpl convertExpressionStatement(ExpressionStatement e) {
+    return new ExpressionStatementTreeImpl(
+      convertExpression(e.getExpression()),
+      lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
+    );
+  }
+
+  private ContinueStatementTreeImpl convertContinue(ContinueStatement e) {
+    SimpleName label = e.getLabel();
+    IdentifierTreeImpl i = label == null ? null : createSimpleName(label);
+    usageLabel(i);
+    return new ContinueStatementTreeImpl(
+      firstTokenIn(e, TerminalTokens.TokenNamecontinue),
+      i,
+      lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
+    );
+  }
+
+  private LabeledStatementTreeImpl convertLabel(LabeledStatement e) {
+    IdentifierTreeImpl i = createSimpleName(e.getLabel());
+
+    JLabelSymbol symbol = new JLabelSymbol(i.name());
+    labels.push(symbol);
+
+    LabeledStatementTreeImpl t = new LabeledStatementTreeImpl(
+      i,
+      firstTokenAfter(e.getLabel(), TerminalTokens.TokenNameCOLON),
+      createStatement(e.getBody())
+    );
+
+    labels.pop();
+    symbol.declaration = t;
+    t.labelSymbol = symbol;
+    return t;
+  }
+
+  private ForEachStatementImpl convertForeach(EnhancedForStatement e) {
+    SingleVariableDeclaration parameter = e.getParameter();
+    Expression expression = e.getExpression();
+    return new ForEachStatementImpl(
+      firstTokenIn(e, TerminalTokens.TokenNamefor),
+      firstTokenBefore(parameter, TerminalTokens.TokenNameLPAREN),
+      convertVariable(parameter),
+      firstTokenAfter(parameter, TerminalTokens.TokenNameCOLON),
+      convertExpression(expression),
+      firstTokenAfter(expression, TerminalTokens.TokenNameRPAREN),
+      createStatement(e.getBody())
+    );
+  }
+
+  private ThrowStatementTreeImpl convertThrow(ThrowStatement e) {
+    return new ThrowStatementTreeImpl(
+      firstTokenIn(e, TerminalTokens.TokenNamethrow),
+      convertExpression(e.getExpression()),
+      firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameSEMICOLON)
+    );
+  }
+
+  private TryStatementTreeImpl convertTry(TryStatement e) {
+    ResourceListTreeImpl resources = convertResources(e);
+    List<CatchTree> catches = convertCatchClauses(e);
+
+    Block f = e.getFinally();
+    return new TryStatementTreeImpl(
+      firstTokenIn(e, TerminalTokens.TokenNametry),
+      resources.isEmpty() ? null : firstTokenIn(e, TerminalTokens.TokenNameLPAREN),
+      resources,
+      resources.isEmpty() ? null : firstTokenBefore(e.getBody(), TerminalTokens.TokenNameRPAREN),
+      convertBlock(e.getBody()),
+      catches,
+      f == null ? null : firstTokenBefore(f, TerminalTokens.TokenNamefinally),
+      f == null ? null : convertBlock(f)
+    );
+  }
+
+  private ResourceListTreeImpl convertResources(TryStatement e) {
+    List r = e.resources();
+    ResourceListTreeImpl resources = ResourceListTreeImpl.emptyList();
+    for (int i = 0; i < r.size(); i++) {
+      Expression o = (Expression) r.get(i);
+      if (ASTNode.VARIABLE_DECLARATION_EXPRESSION == o.getNodeType()) {
+        addVariableToList((VariableDeclarationExpression) o, resources);
+      } else {
+        resources.add(convertExpression(o));
+      }
+      addSeparatorToList(e, o, resources.separators(), i < e.resources().size() - 1);
+    }
+    return resources;
+  }
+
+  private void addSeparatorToList(TryStatement tryStatement, Expression resource, List<SyntaxToken> separators, boolean isLast) {
+    if (isLast) {
+      separators.add(firstTokenAfter(resource, TerminalTokens.TokenNameSEMICOLON));
+    } else {
+      int tokenIndex = tokenManager.firstIndexBefore(tryStatement.getBody(), TerminalTokens.TokenNameRPAREN);
+      while (true) {
+        Token token;
+        do {
+          tokenIndex--;
+          token = tokenManager.get(tokenIndex);
+        } while (token.isComment());
+
+        if (token.tokenType != TerminalTokens.TokenNameSEMICOLON) {
+          break;
+        }
+        separators.add(createSyntaxToken(tokenIndex));
+      }
+    }
+  }
+
+  private List<CatchTree> convertCatchClauses(TryStatement e) {
+    List<CatchTree> catches = new ArrayList<>();
+    for (Object o : e.catchClauses()) {
+      CatchClause c = (CatchClause) o;
+      catches.add(new CatchTreeImpl(
+        firstTokenIn(c, TerminalTokens.TokenNamecatch),
+        firstTokenBefore(c.getException(), TerminalTokens.TokenNameLPAREN),
+        convertVariable(c.getException()),
+        firstTokenAfter(c.getException(), TerminalTokens.TokenNameRPAREN),
+        convertBlock(c.getBody())
+      ));
+    }
+    return catches;
+  }
+
+  private ExpressionStatementTreeImpl convertConstructorInvocation(ConstructorInvocation e) {
+    ArgumentListTreeImpl arguments = convertArguments(
+      e.arguments().isEmpty() ? lastTokenIn(e, TerminalTokens.TokenNameLPAREN) : firstTokenBefore((ASTNode) e.arguments().get(0), TerminalTokens.TokenNameLPAREN),
+      e.arguments(),
+      lastTokenIn(e, TerminalTokens.TokenNameRPAREN)
+    );
+
+    IdentifierTreeImpl i = new IdentifierTreeImpl(e.arguments().isEmpty()
+      ? lastTokenIn(e, TerminalTokens.TokenNamethis)
+      : firstTokenBefore((ASTNode) e.arguments().get(0), TerminalTokens.TokenNamethis));
+    MethodInvocationTreeImpl t = new MethodInvocationTreeImpl(
+      i,
+      convertTypeArguments(e.typeArguments()),
+      arguments
+    );
+    t.methodBinding = e.resolveConstructorBinding();
+    if (t.methodBinding != null) {
+      t.typeBinding = t.methodBinding.getDeclaringClass();
+      t.methodBinding = excludeRecovery(t.methodBinding, arguments.size());
+    }
+    i.binding = t.methodBinding;
+    usage(i.binding, i);
+    return new ExpressionStatementTreeImpl(
+      t,
+      lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
+    );
+  }
+
+  private ExpressionStatementTreeImpl convertSuperConstructorInvocation(SuperConstructorInvocation e) {
+    IdentifierTreeImpl i = new IdentifierTreeImpl(firstTokenIn(e, TerminalTokens.TokenNamesuper));
+    ExpressionTree methodSelect = i;
+    if (e.getExpression() != null) {
+      methodSelect = new MemberSelectExpressionTreeImpl(
+        convertExpression(e.getExpression()),
+        firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameDOT),
+        i
+      );
+    }
+
+    ArgumentListTreeImpl arguments = convertArguments(
+      firstTokenIn(e, TerminalTokens.TokenNameLPAREN),
+      e.arguments(),
+      lastTokenIn(e, TerminalTokens.TokenNameRPAREN)
+    );
+
+    MethodInvocationTreeImpl t = new MethodInvocationTreeImpl(
+      methodSelect,
+      convertTypeArguments(e.typeArguments()),
+      arguments
+    );
+    t.methodBinding = e.resolveConstructorBinding();
+    if (t.methodBinding != null) {
+      t.typeBinding = t.methodBinding.getDeclaringClass();
+      t.methodBinding = excludeRecovery(t.methodBinding, arguments.size());
+    }
+    i.binding = t.methodBinding;
+    usage(i.binding, i);
+    return new ExpressionStatementTreeImpl(
+      t,
+      lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
+    );
+  }
+
+  private YieldStatementTreeImpl convertYield(YieldStatement e) {
+    return new YieldStatementTreeImpl(
+      // TODO ECJ bug? should be "TerminalTokens.TokenNameRestrictedIdentifierYield" instead
+      e.isImplicit() ? null : firstTokenIn(e, TerminalTokens.TokenNameIdentifier),
+      convertExpression(e.getExpression()),
+      lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
+    );
   }
 
   private ExpressionTree convertExpression(Expression node) {
@@ -1671,637 +1620,655 @@ public class JParser {
 
   private ExpressionTree createExpression(Expression node) {
     switch (node.getNodeType()) {
-      case ASTNode.SIMPLE_NAME: {
-        SimpleName e = (SimpleName) node;
-        IdentifierTreeImpl t = convertSimpleName(e);
-        usage(t.binding, t);
-        return t;
-      }
-      case ASTNode.QUALIFIED_NAME: {
-        QualifiedName e = (QualifiedName) node;
-        IdentifierTreeImpl rhs = convertSimpleName(e.getName());
-        usage(rhs.binding, rhs);
-        return new MemberSelectExpressionTreeImpl(
-          convertExpression(e.getQualifier()),
-          firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
-          rhs
-        );
-      }
-      case ASTNode.FIELD_ACCESS: {
-        FieldAccess e = (FieldAccess) node;
-        IdentifierTreeImpl rhs = convertSimpleName(e.getName());
-        usage(rhs.binding, rhs);
-        return new MemberSelectExpressionTreeImpl(
-          convertExpression(e.getExpression()),
-          firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameDOT),
-          rhs
-        );
-      }
-      case ASTNode.SUPER_FIELD_ACCESS: {
-        SuperFieldAccess e = (SuperFieldAccess) node;
-        IdentifierTreeImpl rhs = convertSimpleName(e.getName());
-        usage(rhs.binding, rhs);
-        if (e.getQualifier() == null) {
-          // super.name
-          return new MemberSelectExpressionTreeImpl(
-            unqualifiedKeywordSuper(e),
-            firstTokenIn(e, TerminalTokens.TokenNameDOT),
-            rhs
-          );
-        } else {
-          // qualifier.super.name
-          AbstractTypedTree qualifier = (AbstractTypedTree) convertExpression(e.getQualifier());
-          KeywordSuper keywordSuper = new KeywordSuper(firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamesuper), null);
-          MemberSelectExpressionTreeImpl qualifiedSuper = new MemberSelectExpressionTreeImpl(
-            (ExpressionTree) qualifier,
-            firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
-            keywordSuper
-          );
-          if (qualifier.typeBinding != null) {
-            keywordSuper.typeBinding = qualifier.typeBinding;
-            qualifiedSuper.typeBinding = keywordSuper.typeBinding.getSuperclass();
-          }
-          return new MemberSelectExpressionTreeImpl(
-            qualifiedSuper,
-            firstTokenBefore(e.getName(), TerminalTokens.TokenNameDOT),
-            rhs
-          );
-        }
-      }
-      case ASTNode.THIS_EXPRESSION: {
-        ThisExpression e = (ThisExpression) node;
-        if (e.getQualifier() == null) {
-          return new KeywordThis(
-            firstTokenIn(e, TerminalTokens.TokenNamethis),
-            null
-          );
-        } else {
-          KeywordThis keywordThis = new KeywordThis(
-            firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamethis),
-            e.resolveTypeBinding()
-          );
-          return new MemberSelectExpressionTreeImpl(
-            convertExpression(e.getQualifier()),
-            firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
-            keywordThis
-          );
-        }
-      }
-      case ASTNode.TYPE_LITERAL: {
-        TypeLiteral e = (TypeLiteral) node;
-        return new MemberSelectExpressionTreeImpl(
-          (ExpressionTree) convertType(e.getType()),
-          lastTokenIn(e, TerminalTokens.TokenNameDOT),
-          new IdentifierTreeImpl(
-            lastTokenIn(e, TerminalTokens.TokenNameclass)
-          )
-        );
-      }
-      case ASTNode.ARRAY_ACCESS: {
-        ArrayAccess e = (ArrayAccess) node;
-        return new ArrayAccessExpressionTreeImpl(
-          new ArrayDimensionTreeImpl(
-            firstTokenBefore(e.getIndex(), TerminalTokens.TokenNameLBRACKET),
-            convertExpression(e.getIndex()),
-            firstTokenAfter(e.getIndex(), TerminalTokens.TokenNameRBRACKET)
-          )
-        ).complete(
-          convertExpression(e.getArray())
-        );
-      }
-      case ASTNode.ARRAY_CREATION: {
-        ArrayCreation e = (ArrayCreation) node;
-
-        List<ArrayDimensionTree> dimensions = new ArrayList<>();
-        for (Object o : e.dimensions()) {
-          dimensions.add(new ArrayDimensionTreeImpl(
-            firstTokenBefore((Expression) o, TerminalTokens.TokenNameLBRACKET),
-            convertExpression((Expression) o),
-            firstTokenAfter((Expression) o, TerminalTokens.TokenNameRBRACKET)
-          ));
-        }
-        InitializerListTreeImpl initializers = new InitializerListTreeImpl(new ArrayList<>(), new ArrayList<>());
-        if (e.getInitializer() != null) {
-          assert dimensions.isEmpty();
-
-          TypeTree type = convertType(e.getType());
-          while (type.is(Tree.Kind.ARRAY_TYPE)) {
-            ArrayTypeTree arrayType = (ArrayTypeTree) type;
-            ArrayDimensionTreeImpl dimension = new ArrayDimensionTreeImpl(
-              arrayType.openBracketToken(),
-              null,
-              arrayType.closeBracketToken()
-            ).completeAnnotations(arrayType.annotations());
-            dimensions.add(/* TODO suboptimal */ 0, dimension);
-            type = arrayType.type();
-          }
-
-          return ((NewArrayTreeImpl) convertExpression(e.getInitializer()))
-            .completeWithNewKeyword(firstTokenIn(e, TerminalTokens.TokenNamenew))
-            .complete(type)
-            .completeDimensions(dimensions);
-        } else {
-          TypeTree type = convertType(e.getType());
-          int index = dimensions.size() - 1;
-          while (type.is(Tree.Kind.ARRAY_TYPE)) {
-            if (!type.annotations().isEmpty()) {
-              ((ArrayDimensionTreeImpl) dimensions.get(index))
-                .completeAnnotations(type.annotations());
-            }
-            index--;
-            type = ((ArrayTypeTree) type).type();
-          }
-
-          return new NewArrayTreeImpl(
-            dimensions,
-            initializers
-          ).complete(
-            type
-          ).completeWithNewKeyword(
-            firstTokenIn(e, TerminalTokens.TokenNamenew)
-          );
-        }
-      }
-      case ASTNode.ARRAY_INITIALIZER: {
-        ArrayInitializer e = (ArrayInitializer) node;
-
-        InitializerListTreeImpl initializers = new InitializerListTreeImpl(new ArrayList<>(), new ArrayList<>());
-        for (int i = 0; i < e.expressions().size(); i++) {
-          Expression o = (Expression) e.expressions().get(i);
-          initializers.add(convertExpression(o));
-          final int commaTokenIndex = firstTokenIndexAfter(o);
-          if (tokenManager.get(commaTokenIndex).tokenType == TerminalTokens.TokenNameCOMMA) {
-            initializers.separators().add(firstTokenAfter(o, TerminalTokens.TokenNameCOMMA));
-          }
-        }
-        return new NewArrayTreeImpl(
-          Collections.emptyList(),
-          initializers
-        ).completeWithCurlyBraces(
-          firstTokenIn(e, TerminalTokens.TokenNameLBRACE),
-          lastTokenIn(e, TerminalTokens.TokenNameRBRACE)
-        );
-      }
-      case ASTNode.ASSIGNMENT: {
-        Assignment e = (Assignment) node;
-        Op op = operators.get(e.getOperator());
-        return new AssignmentExpressionTreeImpl(
-          op.kind,
-          convertExpression(e.getLeftHandSide()),
-          firstTokenAfter(e.getLeftHandSide(), op.tokenType),
-          convertExpression(e.getRightHandSide())
-        );
-      }
-      case ASTNode.CAST_EXPRESSION: {
-        CastExpression e = (CastExpression) node;
-        if (e.getType().getNodeType() == ASTNode.INTERSECTION_TYPE) {
-          IntersectionType intersectionType = (IntersectionType) e.getType();
-          TypeTree type = convertType((Type) intersectionType.types().get(0));
-          BoundListTreeImpl bounds = new BoundListTreeImpl(
-            new ArrayList<>(), new ArrayList<>()
-          );
-          for (int i = 1; i < intersectionType.types().size(); i++) {
-            Type o = (Type) intersectionType.types().get(i);
-            bounds.add(
-              convertType(o)
-            );
-            if (i < intersectionType.types().size() - 1) {
-              bounds.separators().add(
-                firstTokenAfter(o, TerminalTokens.TokenNameAND)
-              );
-            }
-          }
-          return new TypeCastExpressionTreeImpl(
-            type,
-            firstTokenAfter((Type) intersectionType.types().get(0), TerminalTokens.TokenNameAND),
-            bounds,
-            firstTokenAfter(e.getType(), TerminalTokens.TokenNameRPAREN),
-            convertExpression(e.getExpression())
-          ).complete(
-            firstTokenBefore(e.getType(), TerminalTokens.TokenNameLPAREN)
-          );
-        } else {
-          return new TypeCastExpressionTreeImpl(
-            convertType(e.getType()),
-            firstTokenAfter(e.getType(), TerminalTokens.TokenNameRPAREN),
-            convertExpression(e.getExpression())
-          ).complete(
-            firstTokenIn(e, TerminalTokens.TokenNameLPAREN)
-          );
-        }
-      }
-      case ASTNode.CLASS_INSTANCE_CREATION: {
-        ClassInstanceCreation e = (ClassInstanceCreation) node;
-
-        ArgumentListTreeImpl arguments = convertArguments(
-          firstTokenAfter(e.getType(), TerminalTokens.TokenNameLPAREN),
-          e.arguments(),
-          firstTokenAfter(e.arguments().isEmpty() ? e.getType() : (ASTNode) e.arguments().get(e.arguments().size() - 1), TerminalTokens.TokenNameRPAREN)
-        );
-
-        ClassTreeImpl classBody = null;
-        if (e.getAnonymousClassDeclaration() != null) {
-          List<Tree> members = new ArrayList<>();
-          for (Object o : e.getAnonymousClassDeclaration().bodyDeclarations()) {
-            processBodyDeclaration((BodyDeclaration) o, members);
-          }
-          classBody = new ClassTreeImpl(
-            Tree.Kind.CLASS,
-            firstTokenIn(e.getAnonymousClassDeclaration(), TerminalTokens.TokenNameLBRACE),
-            members,
-            lastTokenIn(e.getAnonymousClassDeclaration(), TerminalTokens.TokenNameRBRACE)
-          );
-          classBody.typeBinding = e.getAnonymousClassDeclaration().resolveBinding();
-          declaration(classBody.typeBinding, classBody);
-        }
-
-        NewClassTreeImpl t = new NewClassTreeImpl(
-          arguments,
-          classBody
-        ).completeWithNewKeyword(
-          e.getExpression() == null ? firstTokenIn(e, TerminalTokens.TokenNamenew) : firstTokenAfter(e.getExpression(), TerminalTokens.TokenNamenew)
-        ).completeWithIdentifier(
-          convertType(e.getType())
-        ).completeWithTypeArguments(
-          convertTypeArguments(e.typeArguments())
-        );
-        if (e.getExpression() != null) {
-          t.completeWithEnclosingExpression(convertExpression(e.getExpression()));
-          t.completeWithDotToken(firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameDOT));
-        }
-
-        IdentifierTreeImpl i = (IdentifierTreeImpl) t.getConstructorIdentifier();
-        int nbArguments = arguments.size();
-        if (e.getAnonymousClassDeclaration() == null) {
-          i.binding = excludeRecovery(e.resolveConstructorBinding(), nbArguments);
-        } else {
-          i.binding = excludeRecovery(findConstructorForAnonymousClass(e.getAST(), i.typeBinding, e.resolveConstructorBinding()), nbArguments);
-        }
-        usage(i.binding, i);
-
-        return t;
-      }
-      case ASTNode.CONDITIONAL_EXPRESSION: {
-        ConditionalExpression e = (ConditionalExpression) node;
-        return new ConditionalExpressionTreeImpl(
-          firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameQUESTION),
-          convertExpression(e.getThenExpression()),
-          firstTokenAfter(e.getThenExpression(), TerminalTokens.TokenNameCOLON),
-          convertExpression(e.getElseExpression())
-        ).complete(
-          convertExpression(e.getExpression())
-        );
-      }
-      case ASTNode.INFIX_EXPRESSION: {
-        InfixExpression e = (InfixExpression) node;
-        Op op = operators.get(e.getOperator());
-        BinaryExpressionTreeImpl t = new BinaryExpressionTreeImpl(
-          op.kind,
-          convertExpression(e.getLeftOperand()),
-          firstTokenAfter(e.getLeftOperand(), op.tokenType),
-          convertExpression(e.getRightOperand())
-        );
-        for (Object o : e.extendedOperands()) {
-          Expression e2 = (Expression) o;
-          t.typeBinding = e.resolveTypeBinding();
-          t = new BinaryExpressionTreeImpl(
-            op.kind,
-            t,
-            firstTokenBefore(e2, op.tokenType),
-            convertExpression(e2)
-          );
-        }
-        return t;
-      }
-      case ASTNode.METHOD_INVOCATION: {
-        MethodInvocation e = (MethodInvocation) node;
-
-        ArgumentListTreeImpl arguments = convertArguments(
-          firstTokenAfter(e.getName(), TerminalTokens.TokenNameLPAREN),
-          e.arguments(),
-          lastTokenIn(e, TerminalTokens.TokenNameRPAREN)
-        );
-
-        IdentifierTreeImpl rhs = convertSimpleName(e.getName());
-        ExpressionTree memberSelect;
-        if (e.getExpression() == null) {
-          memberSelect = rhs;
-        } else {
-          memberSelect = new MemberSelectExpressionTreeImpl(
-            convertExpression(e.getExpression()),
-            firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameDOT),
-            rhs
-          );
-        }
-        MethodInvocationTreeImpl t = new MethodInvocationTreeImpl(
-          memberSelect,
-          convertTypeArguments(e.typeArguments()),
-          arguments
-        );
-        t.methodBinding = excludeRecovery(e.resolveMethodBinding(), arguments.size());
-        rhs.binding = t.methodBinding;
-        usage(rhs.binding, rhs);
-        return t;
-      }
-      case ASTNode.SUPER_METHOD_INVOCATION: {
-        SuperMethodInvocation e = (SuperMethodInvocation) node;
-
-        ArgumentListTreeImpl arguments = convertArguments(
-          firstTokenIn(e, TerminalTokens.TokenNameLPAREN),
-          e.arguments(),
-          lastTokenIn(e, TerminalTokens.TokenNameRPAREN)
-        );
-
-        IdentifierTreeImpl rhs = convertSimpleName(e.getName());
-
-        ExpressionTree outermostSelect;
-        if (e.getQualifier() == null) {
-          outermostSelect = new MemberSelectExpressionTreeImpl(
-            unqualifiedKeywordSuper(e),
-            firstTokenIn(e, TerminalTokens.TokenNameDOT),
-            rhs
-          );
-        } else {
-          final int firstDotTokenIndex = tokenManager.firstIndexAfter(e.getQualifier(), TerminalTokens.TokenNameDOT);
-          AbstractTypedTree qualifier = (AbstractTypedTree) convertExpression(e.getQualifier());
-          KeywordSuper keywordSuper = new KeywordSuper(firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamesuper), null);
-          MemberSelectExpressionTreeImpl qualifiedSuper = new MemberSelectExpressionTreeImpl(
-            (ExpressionTree) qualifier,
-            createSyntaxToken(firstDotTokenIndex),
-            keywordSuper
-          );
-          if (qualifier.typeBinding != null) {
-            keywordSuper.typeBinding = qualifier.typeBinding;
-            qualifiedSuper.typeBinding = keywordSuper.typeBinding.getSuperclass();
-          }
-          outermostSelect = new MemberSelectExpressionTreeImpl(
-            qualifiedSuper,
-            createSyntaxToken(nextTokenIndex(firstDotTokenIndex, TerminalTokens.TokenNameDOT)),
-            rhs
-          );
-        }
-
-        MethodInvocationTreeImpl t = new MethodInvocationTreeImpl(
-          outermostSelect,
-          null,
-          arguments
-        );
-        t.methodBinding = excludeRecovery(e.resolveMethodBinding(), arguments.size());
-        rhs.binding = t.methodBinding;
-        usage(rhs.binding, rhs);
-        return t;
-      }
-      case ASTNode.PARENTHESIZED_EXPRESSION: {
-        ParenthesizedExpression e = (ParenthesizedExpression) node;
-        return new ParenthesizedTreeImpl(
-          firstTokenIn(e, TerminalTokens.TokenNameLPAREN),
-          convertExpression(e.getExpression()),
-          firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameRPAREN)
-        );
-      }
-      case ASTNode.POSTFIX_EXPRESSION: {
-        PostfixExpression e = (PostfixExpression) node;
-        Op op = operators.get(e.getOperator());
-        return new InternalPostfixUnaryExpression(
-          op.kind,
-          convertExpression(e.getOperand()),
-          firstTokenAfter(e.getOperand(), op.tokenType)
-        );
-      }
-      case ASTNode.PREFIX_EXPRESSION: {
-        PrefixExpression e = (PrefixExpression) node;
-        Op op = operators.get(e.getOperator());
-        return new InternalPrefixUnaryExpression(
-          op.kind,
-          firstTokenIn(e, op.tokenType),
-          convertExpression(e.getOperand())
-        );
-      }
-      case ASTNode.INSTANCEOF_EXPRESSION: {
-        InstanceofExpression e = (InstanceofExpression) node;
-        Expression leftOperand = e.getLeftOperand();
-        InternalSyntaxToken instanceofToken = firstTokenAfter(leftOperand, TerminalTokens.TokenNameinstanceof);
-        return new InstanceOfTreeImpl(convertExpression(leftOperand), instanceofToken, convertType(e.getRightOperand()));
-      }
-      case ASTNode.PATTERN_INSTANCEOF_EXPRESSION: {
-        PatternInstanceofExpression e = (PatternInstanceofExpression) node;
-        Expression leftOperand = e.getLeftOperand();
-        InternalSyntaxToken instanceofToken = firstTokenAfter(leftOperand, TerminalTokens.TokenNameinstanceof);
-        return new InstanceOfTreeImpl(convertExpression(leftOperand), instanceofToken, createVariable(e.getRightOperand()));
-      }
-      case ASTNode.LAMBDA_EXPRESSION: {
-        LambdaExpression e = (LambdaExpression) node;
-        List<VariableTree> parameters = new ArrayList<>();
-        for (int i = 0; i < e.parameters().size(); i++) {
-          VariableDeclaration o = (VariableDeclaration) e.parameters().get(i);
-          VariableTreeImpl t;
-          if (o.getNodeType() == ASTNode.VARIABLE_DECLARATION_FRAGMENT) {
-            t = new VariableTreeImpl(convertSimpleName(o.getName()));
-            IVariableBinding variableBinding = o.resolveBinding();
-            if (variableBinding != null) {
-              t.variableBinding = variableBinding;
-              ((InferedTypeTree) t.type()).typeBinding = variableBinding.getType();
-              declaration(t.variableBinding, t);
-            }
-          } else {
-            t = createVariable((SingleVariableDeclaration) o);
-          }
-          parameters.add(t);
-          if (i < e.parameters().size() - 1) {
-            t.setEndToken(
-              firstTokenAfter(o, TerminalTokens.TokenNameCOMMA)
-            );
-          }
-        }
-        ASTNode body = e.getBody();
-        return new LambdaExpressionTreeImpl(
-          e.hasParentheses() ? firstTokenIn(e, TerminalTokens.TokenNameLPAREN) : null,
-          parameters,
-          e.hasParentheses() ? firstTokenBefore(body, TerminalTokens.TokenNameRPAREN) : null,
-          firstTokenBefore(body, TerminalTokens.TokenNameARROW),
-          body.getNodeType() == ASTNode.BLOCK ? convertBlock((Block) body) : convertExpression((Expression) body)
-        );
-      }
-      case ASTNode.CREATION_REFERENCE: {
-        CreationReference e = (CreationReference) node;
-        MethodReferenceTreeImpl t = new MethodReferenceTreeImpl(
-          convertType(e.getType()),
-          lastTokenIn(e, TerminalTokens.TokenNameCOLON_COLON)
-        );
-        IdentifierTreeImpl i = new IdentifierTreeImpl(lastTokenIn(e, TerminalTokens.TokenNamenew));
-        i.binding = e.resolveMethodBinding();
-        usage(i.binding, i);
-        t.complete(convertTypeArguments(e.typeArguments()), i);
-        return t;
-      }
-      case ASTNode.EXPRESSION_METHOD_REFERENCE: {
-        ExpressionMethodReference e = (ExpressionMethodReference) node;
-        MethodReferenceTreeImpl t = new MethodReferenceTreeImpl(
-          convertExpression(e.getExpression()),
-          firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameCOLON_COLON)
-        );
-        IdentifierTreeImpl i = convertSimpleName(e.getName());
-        usage(i.binding, i);
-        t.complete(convertTypeArguments(e.typeArguments()), i);
-        return t;
-      }
-      case ASTNode.TYPE_METHOD_REFERENCE: {
-        TypeMethodReference e = (TypeMethodReference) node;
-        MethodReferenceTreeImpl t = new MethodReferenceTreeImpl(
-          convertType(e.getType()),
-          firstTokenAfter(e.getType(), TerminalTokens.TokenNameCOLON_COLON)
-        );
-        IdentifierTreeImpl i = convertSimpleName(e.getName());
-        usage(i.binding, i);
-        t.complete(convertTypeArguments(e.typeArguments()), i);
-        return t;
-      }
-      case ASTNode.SUPER_METHOD_REFERENCE: {
-        SuperMethodReference e = (SuperMethodReference) node;
-        MethodReferenceTreeImpl t;
-        if (e.getQualifier() != null) {
-          t = new MethodReferenceTreeImpl(
-            new MemberSelectExpressionTreeImpl(
-              convertExpression(e.getQualifier()),
-              firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
-              new IdentifierTreeImpl(firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamesuper))
-            ),
-            firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameCOLON_COLON)
-          );
-        } else {
-          t = new MethodReferenceTreeImpl(
-            unqualifiedKeywordSuper(e),
-            firstTokenIn(e, TerminalTokens.TokenNameCOLON_COLON)
-          );
-        }
-        IdentifierTreeImpl i = convertSimpleName(e.getName());
-        usage(i.binding, i);
-        t.complete(convertTypeArguments(e.typeArguments()), i);
-        return t;
-      }
-      case ASTNode.SWITCH_EXPRESSION: {
-        SwitchExpression e = (SwitchExpression) node;
-        return new SwitchExpressionTreeImpl(
-          firstTokenIn(e, TerminalTokens.TokenNameswitch),
-          firstTokenIn(e, TerminalTokens.TokenNameLPAREN),
-          convertExpression(e.getExpression()),
-          firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameRPAREN),
-          firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameLBRACE),
-          convertSwitchStatements(e.statements()),
-          lastTokenIn(e, TerminalTokens.TokenNameRBRACE)
-        );
-      }
-      case ASTNode.NULL_LITERAL: {
-        NullLiteral e = (NullLiteral) node;
-        return new LiteralTreeImpl(
-          Tree.Kind.NULL_LITERAL,
-          firstTokenIn(e, TerminalTokens.TokenNamenull)
-        );
-      }
-      case ASTNode.NUMBER_LITERAL: {
-        NumberLiteral e = (NumberLiteral) node;
-        int tokenIndex = tokenManager.findIndex(e.getStartPosition(), ANY_TOKEN, true);
-        int tokenType = tokenManager.get(tokenIndex).tokenType;
-        boolean unaryMinus = tokenType == TerminalTokens.TokenNameMINUS;
-        if (unaryMinus) {
-          tokenIndex++;
-          tokenType = tokenManager.get(tokenIndex).tokenType;
-        }
-        ExpressionTree result;
-        switch (tokenType) {
-          case TerminalTokens.TokenNameIntegerLiteral:
-            result = new LiteralTreeImpl(Tree.Kind.INT_LITERAL, createSyntaxToken(tokenIndex));
-            break;
-          case TerminalTokens.TokenNameLongLiteral:
-            result = new LiteralTreeImpl(Tree.Kind.LONG_LITERAL, createSyntaxToken(tokenIndex));
-            break;
-          case TerminalTokens.TokenNameFloatingPointLiteral:
-            result = new LiteralTreeImpl(Tree.Kind.FLOAT_LITERAL, createSyntaxToken(tokenIndex));
-            break;
-          case TerminalTokens.TokenNameDoubleLiteral:
-            result = new LiteralTreeImpl(Tree.Kind.DOUBLE_LITERAL, createSyntaxToken(tokenIndex));
-            break;
-          default:
-            throw new IllegalStateException();
-        }
-        ((LiteralTreeImpl) result).typeBinding = e.resolveTypeBinding();
-        if (unaryMinus) {
-          result = new InternalPrefixUnaryExpression(Tree.Kind.UNARY_MINUS, createSyntaxToken(tokenIndex - 1), result);
-        }
-        return result;
-      }
-      case ASTNode.CHARACTER_LITERAL: {
-        CharacterLiteral e = (CharacterLiteral) node;
-        return new LiteralTreeImpl(
-          Tree.Kind.CHAR_LITERAL,
-          firstTokenIn(e, TerminalTokens.TokenNameCharacterLiteral)
-        );
-      }
-      case ASTNode.BOOLEAN_LITERAL: {
-        BooleanLiteral e = (BooleanLiteral) node;
-        return new LiteralTreeImpl(
-          Tree.Kind.BOOLEAN_LITERAL,
-          firstTokenIn(e, e.booleanValue() ? TerminalTokens.TokenNametrue : TerminalTokens.TokenNamefalse)
-        );
-      }
-      case ASTNode.STRING_LITERAL: {
-        StringLiteral e = (StringLiteral) node;
-        return new LiteralTreeImpl(
-          Tree.Kind.STRING_LITERAL,
-          firstTokenIn(e, TerminalTokens.TokenNameStringLiteral)
-        );
-      }
-      case ASTNode.TEXT_BLOCK: {
-        TextBlock e = (TextBlock) node;
-        return new LiteralTreeImpl(
-          Tree.Kind.TEXT_BLOCK,
-          firstTokenIn(e, TerminalTokens.TokenNameTextBlock)
-        );
-      }
+      case ASTNode.SIMPLE_NAME:
+        return convertSimpleName((SimpleName) node);
+      case ASTNode.QUALIFIED_NAME:
+        return convertQualifiedName((QualifiedName) node);
+      case ASTNode.FIELD_ACCESS:
+        return convertFieldAccess((FieldAccess) node);
+      case ASTNode.SUPER_FIELD_ACCESS:
+        return convertFieldAccess((SuperFieldAccess) node);
+      case ASTNode.THIS_EXPRESSION:
+        return convertThisExpression((ThisExpression) node);
+      case ASTNode.ARRAY_ACCESS:
+        return convertArrayAccess((ArrayAccess) node);
+      case ASTNode.ARRAY_CREATION:
+        return convertArrayCreation((ArrayCreation) node);
+      case ASTNode.ARRAY_INITIALIZER:
+        return convertArrayInitializer((ArrayInitializer) node);
+      case ASTNode.ASSIGNMENT:
+        return convertAssignment((Assignment) node);
+      case ASTNode.CAST_EXPRESSION:
+        return convertTypeCastExpression((CastExpression) node);
+      case ASTNode.CLASS_INSTANCE_CREATION:
+        return convertClassInstanceCreation((ClassInstanceCreation) node);
+      case ASTNode.CONDITIONAL_EXPRESSION:
+        return convertConditionalExpression((ConditionalExpression) node);
+      case ASTNode.INFIX_EXPRESSION:
+        return convertInfixExpression((InfixExpression) node);
+      case ASTNode.METHOD_INVOCATION:
+        return convertMethodInvocation((MethodInvocation) node);
+      case ASTNode.SUPER_METHOD_INVOCATION:
+        return convertMethodInvocation((SuperMethodInvocation) node);
+      case ASTNode.PARENTHESIZED_EXPRESSION:
+        return convertParenthesizedExpression((ParenthesizedExpression) node);
+      case ASTNode.POSTFIX_EXPRESSION:
+        return convertPostfixExpression((PostfixExpression) node);
+      case ASTNode.PREFIX_EXPRESSION:
+        return convertPrefixExpression((PrefixExpression) node);
+      case ASTNode.INSTANCEOF_EXPRESSION:
+        return convertInstanceOf((InstanceofExpression) node);
+      case ASTNode.PATTERN_INSTANCEOF_EXPRESSION:
+        return convertInstanceOf((PatternInstanceofExpression) node);
+      case ASTNode.LAMBDA_EXPRESSION:
+        return convertLambdaExpression((LambdaExpression) node);
+      case ASTNode.CREATION_REFERENCE:
+        return convertMethodReference((CreationReference) node);
+      case ASTNode.EXPRESSION_METHOD_REFERENCE:
+        return convertMethodReference((ExpressionMethodReference) node);
+      case ASTNode.TYPE_METHOD_REFERENCE:
+        return convertMethodReference((TypeMethodReference) node);
+      case ASTNode.SUPER_METHOD_REFERENCE:
+        return convertMethodReference((SuperMethodReference) node);
+      case ASTNode.SWITCH_EXPRESSION:
+        return convertSwitchExpression((SwitchExpression) node);
+      case ASTNode.TYPE_LITERAL:
+        return convertTypeLiteral((TypeLiteral) node);
+      case ASTNode.NULL_LITERAL:
+        return convertLiteral((NullLiteral) node);
+      case ASTNode.NUMBER_LITERAL:
+        return convertLiteral((NumberLiteral) node);
+      case ASTNode.CHARACTER_LITERAL:
+        return convertLiteral((CharacterLiteral) node);
+      case ASTNode.BOOLEAN_LITERAL:
+        return convertLiteral((BooleanLiteral) node);
+      case ASTNode.STRING_LITERAL:
+        return convertLiteral((StringLiteral) node);
+      case ASTNode.TEXT_BLOCK:
+        return convertTextBlock((TextBlock) node);
       case ASTNode.NORMAL_ANNOTATION:
       case ASTNode.MARKER_ANNOTATION:
-      case ASTNode.SINGLE_MEMBER_ANNOTATION: {
-        Annotation e = (Annotation) node;
-        ArgumentListTreeImpl arguments = new ArgumentListTreeImpl(
-          new ArrayList<>(), new ArrayList<>()
-        );
-        if (e.getNodeType() == ASTNode.SINGLE_MEMBER_ANNOTATION) {
-          arguments.add(
-            convertExpression(((SingleMemberAnnotation) e).getValue())
-          );
-          arguments.complete(
-            firstTokenIn(e, TerminalTokens.TokenNameLPAREN),
-            lastTokenIn(e, TerminalTokens.TokenNameRPAREN)
-          );
-        } else if (e.getNodeType() == ASTNode.NORMAL_ANNOTATION) {
-          for (int i = 0; i < ((NormalAnnotation) e).values().size(); i++) {
-            MemberValuePair o = (MemberValuePair) ((NormalAnnotation) e).values().get(i);
-            arguments.add(new AssignmentExpressionTreeImpl(
-              Tree.Kind.ASSIGNMENT,
-              convertSimpleName(o.getName()),
-              firstTokenAfter(o.getName(), TerminalTokens.TokenNameEQUAL),
-              convertExpression(o.getValue())
-            ));
-            if (i < ((NormalAnnotation) e).values().size() - 1) {
-              arguments.separators().add(
-                firstTokenAfter(o, TerminalTokens.TokenNameCOMMA)
-              );
-            }
-          }
-          arguments.complete(
-            firstTokenIn(e, TerminalTokens.TokenNameLPAREN),
-            lastTokenIn(e, TerminalTokens.TokenNameRPAREN)
-          );
-        }
-        return new AnnotationTreeImpl(
-          firstTokenIn(e, TerminalTokens.TokenNameAT),
-          (TypeTree) convertExpression(e.getTypeName()),
-          arguments
-        );
-      }
+      case ASTNode.SINGLE_MEMBER_ANNOTATION:
+        return convertAnnotation((Annotation) node);
       default:
         throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
     }
+  }
+
+  private IdentifierTreeImpl convertSimpleName(SimpleName e) {
+    IdentifierTreeImpl t = createSimpleName(e);
+    usage(t.binding, t);
+    return t;
+  }
+
+  private MemberSelectExpressionTreeImpl convertQualifiedName(QualifiedName e) {
+    IdentifierTreeImpl rhs = createSimpleName(e.getName());
+    usage(rhs.binding, rhs);
+    return new MemberSelectExpressionTreeImpl(
+      convertExpression(e.getQualifier()),
+      firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
+      rhs
+    );
+  }
+
+  private MemberSelectExpressionTreeImpl convertFieldAccess(FieldAccess e) {
+    IdentifierTreeImpl rhs = createSimpleName(e.getName());
+    usage(rhs.binding, rhs);
+    return new MemberSelectExpressionTreeImpl(
+      convertExpression(e.getExpression()),
+      firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameDOT),
+      rhs
+    );
+  }
+
+  private MemberSelectExpressionTreeImpl convertFieldAccess(SuperFieldAccess e) {
+    IdentifierTreeImpl rhs = createSimpleName(e.getName());
+    usage(rhs.binding, rhs);
+    if (e.getQualifier() == null) {
+      // super.name
+      return new MemberSelectExpressionTreeImpl(
+        unqualifiedKeywordSuper(e),
+        firstTokenIn(e, TerminalTokens.TokenNameDOT),
+        rhs
+      );
+    }
+    // qualifier.super.name
+    AbstractTypedTree qualifier = (AbstractTypedTree) convertExpression(e.getQualifier());
+    KeywordSuper keywordSuper = new KeywordSuper(firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamesuper), null);
+    MemberSelectExpressionTreeImpl qualifiedSuper = new MemberSelectExpressionTreeImpl(
+      (ExpressionTree) qualifier,
+      firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
+      keywordSuper
+    );
+    if (qualifier.typeBinding != null) {
+      keywordSuper.typeBinding = qualifier.typeBinding;
+      qualifiedSuper.typeBinding = keywordSuper.typeBinding.getSuperclass();
+    }
+    return new MemberSelectExpressionTreeImpl(
+      qualifiedSuper,
+      firstTokenBefore(e.getName(), TerminalTokens.TokenNameDOT),
+      rhs
+    );
+  }
+
+  private ExpressionTree convertThisExpression(ThisExpression e) {
+    if (e.getQualifier() == null) {
+      return new KeywordThis(firstTokenIn(e, TerminalTokens.TokenNamethis), null);
+    }
+    KeywordThis keywordThis = new KeywordThis(
+      firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamethis),
+      e.resolveTypeBinding()
+    );
+    return new MemberSelectExpressionTreeImpl(
+      convertExpression(e.getQualifier()),
+      firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
+      keywordThis
+    );
+  }
+
+  private MemberSelectExpressionTreeImpl convertTypeLiteral(TypeLiteral e) {
+    return new MemberSelectExpressionTreeImpl(
+      (ExpressionTree) convertType(e.getType()),
+      lastTokenIn(e, TerminalTokens.TokenNameDOT),
+      new IdentifierTreeImpl(
+        lastTokenIn(e, TerminalTokens.TokenNameclass)
+      )
+    );
+  }
+
+  private ArrayAccessExpressionTreeImpl convertArrayAccess(ArrayAccess e) {
+    Expression index = e.getIndex();
+    return new ArrayAccessExpressionTreeImpl(
+      convertExpression(e.getArray()),
+      new ArrayDimensionTreeImpl(
+        firstTokenBefore(index, TerminalTokens.TokenNameLBRACKET),
+        convertExpression(index),
+        firstTokenAfter(index, TerminalTokens.TokenNameRBRACKET)
+      )
+    );
+  }
+
+  private NewArrayTreeImpl convertArrayCreation(ArrayCreation e) {
+    List<ArrayDimensionTree> dimensions = new ArrayList<>();
+    for (Object o : e.dimensions()) {
+      dimensions.add(new ArrayDimensionTreeImpl(
+        firstTokenBefore((Expression) o, TerminalTokens.TokenNameLBRACKET),
+        convertExpression((Expression) o),
+        firstTokenAfter((Expression) o, TerminalTokens.TokenNameRBRACKET)
+      ));
+    }
+    InitializerListTreeImpl initializers = InitializerListTreeImpl.emptyList();
+    if (e.getInitializer() != null) {
+      assert dimensions.isEmpty();
+
+      TypeTree type = convertType(e.getType());
+      while (type.is(Tree.Kind.ARRAY_TYPE)) {
+        ArrayTypeTree arrayType = (ArrayTypeTree) type;
+        ArrayDimensionTreeImpl dimension = new ArrayDimensionTreeImpl(
+          arrayType.openBracketToken(),
+          null,
+          arrayType.closeBracketToken()
+        ).completeAnnotations(arrayType.annotations());
+        dimensions.add(/* TODO suboptimal */ 0, dimension);
+        type = arrayType.type();
+      }
+
+      return ((NewArrayTreeImpl) convertExpression(e.getInitializer()))
+        .completeWithNewKeyword(firstTokenIn(e, TerminalTokens.TokenNamenew))
+        .complete(type)
+        .completeDimensions(dimensions);
+    }
+    TypeTree type = convertType(e.getType());
+    int index = dimensions.size() - 1;
+    while (type.is(Tree.Kind.ARRAY_TYPE)) {
+      if (!type.annotations().isEmpty()) {
+        ((ArrayDimensionTreeImpl) dimensions.get(index))
+          .completeAnnotations(type.annotations());
+      }
+      index--;
+      type = ((ArrayTypeTree) type).type();
+    }
+
+    return new NewArrayTreeImpl(dimensions, initializers)
+      .complete(type)
+      .completeWithNewKeyword(firstTokenIn(e, TerminalTokens.TokenNamenew));
+  }
+
+  private NewArrayTreeImpl convertArrayInitializer(ArrayInitializer e) {
+    InitializerListTreeImpl initializers = InitializerListTreeImpl.emptyList();
+    for (int i = 0; i < e.expressions().size(); i++) {
+      Expression o = (Expression) e.expressions().get(i);
+      initializers.add(convertExpression(o));
+      final int commaTokenIndex = firstTokenIndexAfter(o);
+      if (tokenManager.get(commaTokenIndex).tokenType == TerminalTokens.TokenNameCOMMA) {
+        initializers.separators().add(firstTokenAfter(o, TerminalTokens.TokenNameCOMMA));
+      }
+    }
+    return new NewArrayTreeImpl(Collections.emptyList(),initializers)
+      .completeWithCurlyBraces(
+      firstTokenIn(e, TerminalTokens.TokenNameLBRACE),
+      lastTokenIn(e, TerminalTokens.TokenNameRBRACE)
+      );
+  }
+
+  private AssignmentExpressionTreeImpl convertAssignment(Assignment e) {
+    Op op = operators.get(e.getOperator());
+    return new AssignmentExpressionTreeImpl(
+      op.kind,
+      convertExpression(e.getLeftHandSide()),
+      firstTokenAfter(e.getLeftHandSide(), op.tokenType),
+      convertExpression(e.getRightHandSide())
+    );
+  }
+
+  private TypeCastExpressionTreeImpl convertTypeCastExpression(CastExpression e) {
+    Type type = e.getType();
+    if (type.getNodeType() == ASTNode.INTERSECTION_TYPE) {
+      List intersectionTypes = ((IntersectionType) type).types();
+      QualifiedIdentifierListTreeImpl bounds = QualifiedIdentifierListTreeImpl.emptyList();
+      for (int i = 1; i < intersectionTypes.size(); i++) {
+        Type o = (Type) intersectionTypes.get(i);
+        bounds.add(convertType(o));
+        if (i < intersectionTypes.size() - 1) {
+          bounds.separators().add(firstTokenAfter(o, TerminalTokens.TokenNameAND));
+        }
+      }
+      return new TypeCastExpressionTreeImpl(
+        firstTokenBefore(type, TerminalTokens.TokenNameLPAREN),
+        convertType((Type) intersectionTypes.get(0)),
+        firstTokenAfter((Type) intersectionTypes.get(0), TerminalTokens.TokenNameAND),
+        bounds,
+        firstTokenAfter(type, TerminalTokens.TokenNameRPAREN),
+        convertExpression(e.getExpression())
+      );
+    }
+    return new TypeCastExpressionTreeImpl(
+      firstTokenBefore(type, TerminalTokens.TokenNameLPAREN),
+      convertType(type),
+      firstTokenAfter(type, TerminalTokens.TokenNameRPAREN),
+      convertExpression(e.getExpression())
+    );
+  }
+
+  private NewClassTreeImpl convertClassInstanceCreation(ClassInstanceCreation e) {
+    ArgumentListTreeImpl arguments = convertArguments(
+      firstTokenAfter(e.getType(), TerminalTokens.TokenNameLPAREN),
+      e.arguments(),
+      firstTokenAfter(e.arguments().isEmpty() ? e.getType() : (ASTNode) e.arguments().get(e.arguments().size() - 1), TerminalTokens.TokenNameRPAREN)
+    );
+
+    ClassTreeImpl classBody = null;
+    if (e.getAnonymousClassDeclaration() != null) {
+      List<Tree> members = new ArrayList<>();
+      for (Object o : e.getAnonymousClassDeclaration().bodyDeclarations()) {
+        processBodyDeclaration((BodyDeclaration) o, members);
+      }
+      classBody = new ClassTreeImpl(
+        Tree.Kind.CLASS,
+        firstTokenIn(e.getAnonymousClassDeclaration(), TerminalTokens.TokenNameLBRACE),
+        members,
+        lastTokenIn(e.getAnonymousClassDeclaration(), TerminalTokens.TokenNameRBRACE)
+      );
+      classBody.typeBinding = e.getAnonymousClassDeclaration().resolveBinding();
+      declaration(classBody.typeBinding, classBody);
+    }
+
+    NewClassTreeImpl t = new NewClassTreeImpl(
+      convertType(e.getType()),
+      arguments,
+      classBody
+    ).completeWithNewKeyword(
+      e.getExpression() == null ? firstTokenIn(e, TerminalTokens.TokenNamenew) : firstTokenAfter(e.getExpression(), TerminalTokens.TokenNamenew)
+    ).completeWithTypeArguments(
+      convertTypeArguments(e.typeArguments())
+    );
+    if (e.getExpression() != null) {
+      t.completeWithEnclosingExpression(convertExpression(e.getExpression()));
+      t.completeWithDotToken(firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameDOT));
+    }
+
+    IdentifierTreeImpl i = (IdentifierTreeImpl) t.getConstructorIdentifier();
+    int nbArguments = arguments.size();
+    if (e.getAnonymousClassDeclaration() == null) {
+      i.binding = excludeRecovery(e.resolveConstructorBinding(), nbArguments);
+    } else {
+      i.binding = excludeRecovery(findConstructorForAnonymousClass(e.getAST(), i.typeBinding, e.resolveConstructorBinding()), nbArguments);
+    }
+    usage(i.binding, i);
+
+    return t;
+  }
+
+  private ConditionalExpressionTreeImpl convertConditionalExpression(ConditionalExpression e) {
+    return new ConditionalExpressionTreeImpl(
+      convertExpression(e.getExpression()),
+      firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameQUESTION),
+      convertExpression(e.getThenExpression()),
+      firstTokenAfter(e.getThenExpression(), TerminalTokens.TokenNameCOLON),
+      convertExpression(e.getElseExpression())
+    );
+  }
+
+  private BinaryExpressionTreeImpl convertInfixExpression(InfixExpression e) {
+    Op op = operators.get(e.getOperator());
+    BinaryExpressionTreeImpl t = new BinaryExpressionTreeImpl(
+      op.kind,
+      convertExpression(e.getLeftOperand()),
+      firstTokenAfter(e.getLeftOperand(), op.tokenType),
+      convertExpression(e.getRightOperand())
+    );
+    for (Object o : e.extendedOperands()) {
+      Expression e2 = (Expression) o;
+      t.typeBinding = e.resolveTypeBinding();
+      t = new BinaryExpressionTreeImpl(
+        op.kind,
+        t,
+        firstTokenBefore(e2, op.tokenType),
+        convertExpression(e2)
+      );
+    }
+    return t;
+  }
+
+  private MethodInvocationTreeImpl convertMethodInvocation(MethodInvocation e) {
+    ArgumentListTreeImpl arguments = convertArguments(
+      firstTokenAfter(e.getName(), TerminalTokens.TokenNameLPAREN),
+      e.arguments(),
+      lastTokenIn(e, TerminalTokens.TokenNameRPAREN)
+    );
+
+    IdentifierTreeImpl rhs = createSimpleName(e.getName());
+    ExpressionTree memberSelect;
+    if (e.getExpression() == null) {
+      memberSelect = rhs;
+    } else {
+      memberSelect = new MemberSelectExpressionTreeImpl(
+        convertExpression(e.getExpression()),
+        firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameDOT),
+        rhs
+      );
+    }
+    MethodInvocationTreeImpl t = new MethodInvocationTreeImpl(
+      memberSelect,
+      convertTypeArguments(e.typeArguments()),
+      arguments
+    );
+    t.methodBinding = excludeRecovery(e.resolveMethodBinding(), arguments.size());
+    rhs.binding = t.methodBinding;
+    usage(rhs.binding, rhs);
+    return t;
+  }
+
+  private MethodInvocationTreeImpl convertMethodInvocation(SuperMethodInvocation e) {
+    ArgumentListTreeImpl arguments = convertArguments(
+      firstTokenIn(e, TerminalTokens.TokenNameLPAREN),
+      e.arguments(),
+      lastTokenIn(e, TerminalTokens.TokenNameRPAREN)
+    );
+
+    IdentifierTreeImpl rhs = createSimpleName(e.getName());
+
+    ExpressionTree outermostSelect;
+    if (e.getQualifier() == null) {
+      outermostSelect = new MemberSelectExpressionTreeImpl(
+        unqualifiedKeywordSuper(e),
+        firstTokenIn(e, TerminalTokens.TokenNameDOT),
+        rhs
+      );
+    } else {
+      final int firstDotTokenIndex = tokenManager.firstIndexAfter(e.getQualifier(), TerminalTokens.TokenNameDOT);
+      AbstractTypedTree qualifier = (AbstractTypedTree) convertExpression(e.getQualifier());
+      KeywordSuper keywordSuper = new KeywordSuper(firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamesuper), null);
+      MemberSelectExpressionTreeImpl qualifiedSuper = new MemberSelectExpressionTreeImpl(
+        (ExpressionTree) qualifier,
+        createSyntaxToken(firstDotTokenIndex),
+        keywordSuper
+      );
+      if (qualifier.typeBinding != null) {
+        keywordSuper.typeBinding = qualifier.typeBinding;
+        qualifiedSuper.typeBinding = keywordSuper.typeBinding.getSuperclass();
+      }
+      outermostSelect = new MemberSelectExpressionTreeImpl(
+        qualifiedSuper,
+        createSyntaxToken(nextTokenIndex(firstDotTokenIndex, TerminalTokens.TokenNameDOT)),
+        rhs
+      );
+    }
+
+    MethodInvocationTreeImpl t = new MethodInvocationTreeImpl(
+      outermostSelect,
+      null,
+      arguments
+    );
+    t.methodBinding = excludeRecovery(e.resolveMethodBinding(), arguments.size());
+    rhs.binding = t.methodBinding;
+    usage(rhs.binding, rhs);
+    return t;
+  }
+
+  private ParenthesizedTreeImpl convertParenthesizedExpression(ParenthesizedExpression e) {
+    return new ParenthesizedTreeImpl(
+      firstTokenIn(e, TerminalTokens.TokenNameLPAREN),
+      convertExpression(e.getExpression()),
+      firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameRPAREN)
+    );
+  }
+
+  private InternalPostfixUnaryExpression convertPostfixExpression(PostfixExpression e) {
+    Op op = operators.get(e.getOperator());
+    return new InternalPostfixUnaryExpression(
+      op.kind,
+      convertExpression(e.getOperand()),
+      firstTokenAfter(e.getOperand(), op.tokenType)
+    );
+  }
+
+  private InternalPrefixUnaryExpression convertPrefixExpression(PrefixExpression e) {
+    Op op = operators.get(e.getOperator());
+    return new InternalPrefixUnaryExpression(
+      op.kind,
+      firstTokenIn(e, op.tokenType),
+      convertExpression(e.getOperand())
+    );
+  }
+
+  private InstanceOfTreeImpl convertInstanceOf(InstanceofExpression e) {
+    Expression leftOperand = e.getLeftOperand();
+    InternalSyntaxToken instanceofToken = firstTokenAfter(leftOperand, TerminalTokens.TokenNameinstanceof);
+    return new InstanceOfTreeImpl(convertExpression(leftOperand), instanceofToken, convertType(e.getRightOperand()));
+  }
+
+  private InstanceOfTreeImpl convertInstanceOf(PatternInstanceofExpression e) {
+    Expression leftOperand = e.getLeftOperand();
+    InternalSyntaxToken instanceofToken = firstTokenAfter(leftOperand, TerminalTokens.TokenNameinstanceof);
+    return new InstanceOfTreeImpl(convertExpression(leftOperand), instanceofToken, convertVariable(e.getRightOperand()));
+  }
+
+  private LambdaExpressionTreeImpl convertLambdaExpression(LambdaExpression e) {
+    List<VariableTree> parameters = new ArrayList<>();
+    for (int i = 0; i < e.parameters().size(); i++) {
+      VariableDeclaration o = (VariableDeclaration) e.parameters().get(i);
+      VariableTreeImpl t;
+      if (o.getNodeType() == ASTNode.VARIABLE_DECLARATION_FRAGMENT) {
+        t = new VariableTreeImpl(createSimpleName(o.getName()));
+        IVariableBinding variableBinding = o.resolveBinding();
+        if (variableBinding != null) {
+          t.variableBinding = variableBinding;
+          ((InferedTypeTree) t.type()).typeBinding = variableBinding.getType();
+          declaration(t.variableBinding, t);
+        }
+      } else {
+        t = convertVariable((SingleVariableDeclaration) o);
+      }
+      parameters.add(t);
+      if (i < e.parameters().size() - 1) {
+        t.setEndToken(firstTokenAfter(o, TerminalTokens.TokenNameCOMMA));
+      }
+    }
+    ASTNode body = e.getBody();
+    return new LambdaExpressionTreeImpl(
+      e.hasParentheses() ? firstTokenIn(e, TerminalTokens.TokenNameLPAREN) : null,
+      parameters,
+      e.hasParentheses() ? firstTokenBefore(body, TerminalTokens.TokenNameRPAREN) : null,
+      firstTokenBefore(body, TerminalTokens.TokenNameARROW),
+      body.getNodeType() == ASTNode.BLOCK ? convertBlock((Block) body) : convertExpression((Expression) body)
+    );
+  }
+
+  private MethodReferenceTreeImpl convertMethodReference(CreationReference e) {
+    MethodReferenceTreeImpl t = new MethodReferenceTreeImpl(
+      convertType(e.getType()),
+      lastTokenIn(e, TerminalTokens.TokenNameCOLON_COLON)
+    );
+    IdentifierTreeImpl i = new IdentifierTreeImpl(lastTokenIn(e, TerminalTokens.TokenNamenew));
+    i.binding = e.resolveMethodBinding();
+    usage(i.binding, i);
+    t.complete(convertTypeArguments(e.typeArguments()), i);
+    return t;
+  }
+
+  private MethodReferenceTreeImpl convertMethodReference(ExpressionMethodReference e) {
+    MethodReferenceTreeImpl t = new MethodReferenceTreeImpl(
+      convertExpression(e.getExpression()),
+      firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameCOLON_COLON)
+    );
+    IdentifierTreeImpl i = createSimpleName(e.getName());
+    usage(i.binding, i);
+    t.complete(convertTypeArguments(e.typeArguments()), i);
+    return t;
+  }
+
+  private MethodReferenceTreeImpl convertMethodReference(TypeMethodReference e) {
+    MethodReferenceTreeImpl t = new MethodReferenceTreeImpl(
+      convertType(e.getType()),
+      firstTokenAfter(e.getType(), TerminalTokens.TokenNameCOLON_COLON)
+    );
+    IdentifierTreeImpl i = createSimpleName(e.getName());
+    usage(i.binding, i);
+    t.complete(convertTypeArguments(e.typeArguments()), i);
+    return t;
+  }
+
+  private MethodReferenceTreeImpl convertMethodReference(SuperMethodReference e) {
+    MethodReferenceTreeImpl t;
+    if (e.getQualifier() != null) {
+      t = new MethodReferenceTreeImpl(
+        new MemberSelectExpressionTreeImpl(
+          convertExpression(e.getQualifier()),
+          firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
+          unqualifiedKeywordSuper(e)
+        ),
+        firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameCOLON_COLON)
+      );
+    } else {
+      t = new MethodReferenceTreeImpl(
+        unqualifiedKeywordSuper(e),
+        firstTokenIn(e, TerminalTokens.TokenNameCOLON_COLON)
+      );
+    }
+    IdentifierTreeImpl i = createSimpleName(e.getName());
+    usage(i.binding, i);
+    t.complete(convertTypeArguments(e.typeArguments()), i);
+    return t;
+  }
+
+  private SwitchExpressionTreeImpl convertSwitchExpression(SwitchExpression e) {
+    Expression expr = e.getExpression();
+    return new SwitchExpressionTreeImpl(
+      firstTokenIn(e, TerminalTokens.TokenNameswitch),
+      firstTokenIn(e, TerminalTokens.TokenNameLPAREN),
+      convertExpression(expr),
+      firstTokenAfter(expr, TerminalTokens.TokenNameRPAREN),
+      firstTokenAfter(expr, TerminalTokens.TokenNameLBRACE),
+      convertSwitchStatements(e.statements()),
+      lastTokenIn(e, TerminalTokens.TokenNameRBRACE)
+    );
+  }
+
+  private LiteralTreeImpl convertLiteral(NullLiteral e) {
+    return new LiteralTreeImpl(Tree.Kind.NULL_LITERAL, firstTokenIn(e, TerminalTokens.TokenNamenull));
+  }
+
+  private ExpressionTree convertLiteral(NumberLiteral e) {
+    int tokenIndex = tokenManager.findIndex(e.getStartPosition(), ANY_TOKEN, true);
+    int tokenType = tokenManager.get(tokenIndex).tokenType;
+    boolean unaryMinus = tokenType == TerminalTokens.TokenNameMINUS;
+    if (unaryMinus) {
+      tokenIndex++;
+      tokenType = tokenManager.get(tokenIndex).tokenType;
+    }
+    ExpressionTree result;
+    switch (tokenType) {
+      case TerminalTokens.TokenNameIntegerLiteral:
+        result = new LiteralTreeImpl(Tree.Kind.INT_LITERAL, createSyntaxToken(tokenIndex));
+        break;
+      case TerminalTokens.TokenNameLongLiteral:
+        result = new LiteralTreeImpl(Tree.Kind.LONG_LITERAL, createSyntaxToken(tokenIndex));
+        break;
+      case TerminalTokens.TokenNameFloatingPointLiteral:
+        result = new LiteralTreeImpl(Tree.Kind.FLOAT_LITERAL, createSyntaxToken(tokenIndex));
+        break;
+      case TerminalTokens.TokenNameDoubleLiteral:
+        result = new LiteralTreeImpl(Tree.Kind.DOUBLE_LITERAL, createSyntaxToken(tokenIndex));
+        break;
+      default:
+        throw new IllegalStateException();
+    }
+    ((LiteralTreeImpl) result).typeBinding = e.resolveTypeBinding();
+    if (unaryMinus) {
+      return new InternalPrefixUnaryExpression(Tree.Kind.UNARY_MINUS, createSyntaxToken(tokenIndex - 1), result);
+    }
+    return result;
+  }
+
+  private LiteralTreeImpl convertLiteral(CharacterLiteral e) {
+    return new LiteralTreeImpl(Tree.Kind.CHAR_LITERAL, firstTokenIn(e, TerminalTokens.TokenNameCharacterLiteral));
+  }
+
+  private LiteralTreeImpl convertLiteral(BooleanLiteral e) {
+    InternalSyntaxToken value = firstTokenIn(e, e.booleanValue() ? TerminalTokens.TokenNametrue : TerminalTokens.TokenNamefalse);
+    return new LiteralTreeImpl(Tree.Kind.BOOLEAN_LITERAL, value);
+  }
+
+  private LiteralTreeImpl convertLiteral(StringLiteral e) {
+    return new LiteralTreeImpl(Tree.Kind.STRING_LITERAL, firstTokenIn(e, TerminalTokens.TokenNameStringLiteral));
+  }
+
+  private LiteralTreeImpl convertTextBlock(TextBlock e) {
+    return new LiteralTreeImpl(Tree.Kind.TEXT_BLOCK, firstTokenIn(e, TerminalTokens.TokenNameTextBlock));
+  }
+
+  private AnnotationTreeImpl convertAnnotation(Annotation e) {
+    ArgumentListTreeImpl arguments = ArgumentListTreeImpl.emptyList();
+    if (e.getNodeType() == ASTNode.SINGLE_MEMBER_ANNOTATION) {
+      arguments.add(convertExpression(((SingleMemberAnnotation) e).getValue()));
+      arguments.complete(
+        firstTokenIn(e, TerminalTokens.TokenNameLPAREN),
+        lastTokenIn(e, TerminalTokens.TokenNameRPAREN)
+      );
+    } else if (e.getNodeType() == ASTNode.NORMAL_ANNOTATION) {
+      for (int i = 0; i < ((NormalAnnotation) e).values().size(); i++) {
+        MemberValuePair o = (MemberValuePair) ((NormalAnnotation) e).values().get(i);
+        arguments.add(new AssignmentExpressionTreeImpl(
+          Tree.Kind.ASSIGNMENT,
+          createSimpleName(o.getName()),
+          firstTokenAfter(o.getName(), TerminalTokens.TokenNameEQUAL),
+          convertExpression(o.getValue())
+        ));
+        if (i < ((NormalAnnotation) e).values().size() - 1) {
+          arguments.separators().add(firstTokenAfter(o, TerminalTokens.TokenNameCOMMA));
+        }
+      }
+      arguments.complete(
+        firstTokenIn(e, TerminalTokens.TokenNameLPAREN),
+        lastTokenIn(e, TerminalTokens.TokenNameRPAREN)
+      );
+    }
+    return new AnnotationTreeImpl(
+      firstTokenIn(e, TerminalTokens.TokenNameAT),
+      (TypeTree) convertExpression(e.getTypeName()),
+      arguments
+    );
   }
 
   private KeywordSuper unqualifiedKeywordSuper(ASTNode node) {
@@ -2309,7 +2276,8 @@ public class JParser {
     do {
       if (node instanceof AbstractTypeDeclaration) {
         return new KeywordSuper(token, ((AbstractTypeDeclaration) node).resolveBinding());
-      } else if (node instanceof AnonymousClassDeclaration) {
+      }
+      if (node instanceof AnonymousClassDeclaration) {
         return new KeywordSuper(token, ((AnonymousClassDeclaration) node).resolveBinding());
       }
       node = node.getParent();
@@ -2318,171 +2286,171 @@ public class JParser {
 
   private TypeTree convertType(Type node) {
     switch (node.getNodeType()) {
-      case ASTNode.PRIMITIVE_TYPE: {
-        PrimitiveType e = (PrimitiveType) node;
-        final JavaTree.PrimitiveTypeTreeImpl t;
-        switch (e.getPrimitiveTypeCode().toString()) {
-          case "byte":
-            t = new JavaTree.PrimitiveTypeTreeImpl(lastTokenIn(e, TerminalTokens.TokenNamebyte));
-            break;
-          case "short":
-            t = new JavaTree.PrimitiveTypeTreeImpl(lastTokenIn(e, TerminalTokens.TokenNameshort));
-            break;
-          case "char":
-            t = new JavaTree.PrimitiveTypeTreeImpl(lastTokenIn(e, TerminalTokens.TokenNamechar));
-            break;
-          case "int":
-            t = new JavaTree.PrimitiveTypeTreeImpl(lastTokenIn(e, TerminalTokens.TokenNameint));
-            break;
-          case "long":
-            t = new JavaTree.PrimitiveTypeTreeImpl(lastTokenIn(e, TerminalTokens.TokenNamelong));
-            break;
-          case "float":
-            t = new JavaTree.PrimitiveTypeTreeImpl(lastTokenIn(e, TerminalTokens.TokenNamefloat));
-            break;
-          case "double":
-            t = new JavaTree.PrimitiveTypeTreeImpl(lastTokenIn(e, TerminalTokens.TokenNamedouble));
-            break;
-          case "boolean":
-            t = new JavaTree.PrimitiveTypeTreeImpl(lastTokenIn(e, TerminalTokens.TokenNameboolean));
-            break;
-          case "void":
-            t = new JavaTree.PrimitiveTypeTreeImpl(lastTokenIn(e, TerminalTokens.TokenNamevoid));
-            break;
-          default:
-            throw new IllegalStateException(e.getPrimitiveTypeCode().toString());
-        }
-        t.complete(
-          convertAnnotations(e.annotations())
-        );
-        t.typeBinding = e.resolveBinding();
-        return t;
-      }
-      case ASTNode.SIMPLE_TYPE: {
-        SimpleType e = (SimpleType) node;
-        List<AnnotationTree> annotations = new ArrayList<>();
-        for (Object o : e.annotations()) {
-          annotations.add((AnnotationTree) convertExpression(
-            ((Annotation) o)
-          ));
-        }
-        JavaTree.AnnotatedTypeTree t = e.isVar() ? convertVarType(e) : (JavaTree.AnnotatedTypeTree) convertExpression(e.getName());
-        t.complete(annotations);
-        // typeBinding is assigned by convertVarType or convertExpression
-        return t;
-      }
-      case ASTNode.UNION_TYPE: {
-        UnionType e = (UnionType) node;
-        TypeUnionListTreeImpl alternatives = new TypeUnionListTreeImpl(
-          new ArrayList<>(), new ArrayList<>()
-        );
-        for (int i = 0; i < e.types().size(); i++) {
-          Type o = (Type) e.types().get(i);
-          alternatives.add(convertType(o));
-          if (i < e.types().size() - 1) {
-            alternatives.separators().add(firstTokenAfter(o, TerminalTokens.TokenNameOR));
-          }
-        }
-        JavaTree.UnionTypeTreeImpl t = new JavaTree.UnionTypeTreeImpl(alternatives);
-        t.typeBinding = e.resolveBinding();
-        return t;
-      }
-      case ASTNode.ARRAY_TYPE: {
-        ArrayType e = (ArrayType) node;
-        @Nullable ITypeBinding elementTypeBinding = e.getElementType().resolveBinding();
-        TypeTree t = convertType(e.getElementType());
-        int tokenIndex = tokenManager.firstIndexAfter(e.getElementType(), TerminalTokens.TokenNameLBRACKET);
-        for (int i = 0; i < e.dimensions().size(); i++) {
-          if (i > 0) {
-            tokenIndex = nextTokenIndex(tokenIndex, TerminalTokens.TokenNameLBRACKET);
-          }
-          t = new JavaTree.ArrayTypeTreeImpl(
-            t,
-            (List) convertAnnotations(((Dimension) e.dimensions().get(i)).annotations()),
-            createSyntaxToken(tokenIndex),
-            createSyntaxToken(nextTokenIndex(tokenIndex, TerminalTokens.TokenNameRBRACKET))
-          );
-          if (elementTypeBinding != null) {
-            ((JavaTree.ArrayTypeTreeImpl) t).typeBinding = elementTypeBinding.createArrayType(i + 1);
-          }
-        }
-        return t;
-      }
-      case ASTNode.PARAMETERIZED_TYPE: {
-        ParameterizedType e = (ParameterizedType) node;
-        int pos = e.getStartPosition() + e.getLength() - 1;
-        JavaTree.ParameterizedTypeTreeImpl t = new JavaTree.ParameterizedTypeTreeImpl(
-          convertType(e.getType()),
-          convertTypeArguments(
-            firstTokenAfter(e.getType(), TerminalTokens.TokenNameLESS),
-            e.typeArguments(),
-            new InternalSyntaxToken(
-              compilationUnit.getLineNumber(pos),
-              compilationUnit.getColumnNumber(pos),
-              ">",
-              /* TODO */ Collections.emptyList(),
-              false
-            )
-          )
-        );
-        t.typeBinding = e.resolveBinding();
-        return t;
-      }
-      case ASTNode.QUALIFIED_TYPE: {
-        QualifiedType e = (QualifiedType) node;
-        MemberSelectExpressionTreeImpl t = new MemberSelectExpressionTreeImpl(
-          (ExpressionTree) convertType(e.getQualifier()),
-          firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
-          convertSimpleName(e.getName())
-        );
-        ((IdentifierTreeImpl) t.identifier()).complete(
-          convertAnnotations(e.annotations())
-        );
-        t.typeBinding = e.resolveBinding();
-        return t;
-      }
-      case ASTNode.NAME_QUALIFIED_TYPE: {
-        NameQualifiedType e = (NameQualifiedType) node;
-        MemberSelectExpressionTreeImpl t = new MemberSelectExpressionTreeImpl(
-          convertExpression(e.getQualifier()),
-          firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
-          convertSimpleName(e.getName())
-        );
-        ((IdentifierTreeImpl) t.identifier()).complete(
-          convertAnnotations(e.annotations())
-        );
-        t.typeBinding = e.resolveBinding();
-        return t;
-      }
-      case ASTNode.WILDCARD_TYPE: {
-        WildcardType e = (WildcardType) node;
-        final InternalSyntaxToken questionToken = e.annotations().isEmpty()
-          ? firstTokenIn(e, TerminalTokens.TokenNameQUESTION)
-          : firstTokenAfter((ASTNode) e.annotations().get(e.annotations().size() - 1), TerminalTokens.TokenNameQUESTION);
-        JavaTree.WildcardTreeImpl t;
-        Type bound = e.getBound();
-        if (bound == null) {
-          t = new JavaTree.WildcardTreeImpl(
-            questionToken
-          );
-        } else {
-          t = new JavaTree.WildcardTreeImpl(
-            e.isUpperBound() ? Tree.Kind.EXTENDS_WILDCARD : Tree.Kind.SUPER_WILDCARD,
-            e.isUpperBound() ? firstTokenBefore(bound, TerminalTokens.TokenNameextends) : firstTokenBefore(bound, TerminalTokens.TokenNamesuper),
-            convertType(bound)
-          ).complete(
-            questionToken
-          );
-        }
-        t.complete(
-          convertAnnotations(e.annotations())
-        );
-        t.typeBinding = e.resolveBinding();
-        return t;
-      }
+      case ASTNode.PRIMITIVE_TYPE:
+        return convertPrimitiveType((PrimitiveType) node);
+      case ASTNode.SIMPLE_TYPE:
+        return convertSimpleType((SimpleType) node);
+      case ASTNode.UNION_TYPE:
+        return convertUnionType((UnionType) node);
+      case ASTNode.ARRAY_TYPE:
+        return convertArrayType((ArrayType) node);
+      case ASTNode.PARAMETERIZED_TYPE:
+        return convertParameterizedType((ParameterizedType) node);
+      case ASTNode.QUALIFIED_TYPE:
+        return convertQualifiedType((QualifiedType) node);
+      case ASTNode.NAME_QUALIFIED_TYPE:
+        return convertNamedQualifiedType((NameQualifiedType) node);
+      case ASTNode.WILDCARD_TYPE:
+        return convertWildcardType((WildcardType) node);
       default:
         throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
     }
+  }
+
+  private JavaTree.PrimitiveTypeTreeImpl convertPrimitiveType(PrimitiveType e) {
+    final JavaTree.PrimitiveTypeTreeImpl t;
+    switch (e.getPrimitiveTypeCode().toString()) {
+      case "byte":
+        t = new JavaTree.PrimitiveTypeTreeImpl(lastTokenIn(e, TerminalTokens.TokenNamebyte));
+        break;
+      case "short":
+        t = new JavaTree.PrimitiveTypeTreeImpl(lastTokenIn(e, TerminalTokens.TokenNameshort));
+        break;
+      case "char":
+        t = new JavaTree.PrimitiveTypeTreeImpl(lastTokenIn(e, TerminalTokens.TokenNamechar));
+        break;
+      case "int":
+        t = new JavaTree.PrimitiveTypeTreeImpl(lastTokenIn(e, TerminalTokens.TokenNameint));
+        break;
+      case "long":
+        t = new JavaTree.PrimitiveTypeTreeImpl(lastTokenIn(e, TerminalTokens.TokenNamelong));
+        break;
+      case "float":
+        t = new JavaTree.PrimitiveTypeTreeImpl(lastTokenIn(e, TerminalTokens.TokenNamefloat));
+        break;
+      case "double":
+        t = new JavaTree.PrimitiveTypeTreeImpl(lastTokenIn(e, TerminalTokens.TokenNamedouble));
+        break;
+      case "boolean":
+        t = new JavaTree.PrimitiveTypeTreeImpl(lastTokenIn(e, TerminalTokens.TokenNameboolean));
+        break;
+      case "void":
+        t = new JavaTree.PrimitiveTypeTreeImpl(lastTokenIn(e, TerminalTokens.TokenNamevoid));
+        break;
+      default:
+        throw new IllegalStateException(e.getPrimitiveTypeCode().toString());
+    }
+    t.complete(convertAnnotations(e.annotations()));
+    t.typeBinding = e.resolveBinding();
+    return t;
+  }
+
+  private JavaTree.AnnotatedTypeTree convertSimpleType(SimpleType e) {
+    List<AnnotationTree> annotations = new ArrayList<>();
+    for (Object o : e.annotations()) {
+      annotations.add((AnnotationTree) convertExpression(((Annotation) o)));
+    }
+    JavaTree.AnnotatedTypeTree t = e.isVar() ? convertVarType(e) : (JavaTree.AnnotatedTypeTree) convertExpression(e.getName());
+    t.complete(annotations);
+    // typeBinding is assigned by convertVarType or convertExpression
+    return t;
+  }
+
+  private JavaTree.UnionTypeTreeImpl convertUnionType(UnionType e) {
+    QualifiedIdentifierListTreeImpl alternatives = QualifiedIdentifierListTreeImpl.emptyList();
+    for (int i = 0; i < e.types().size(); i++) {
+      Type o = (Type) e.types().get(i);
+      alternatives.add(convertType(o));
+      if (i < e.types().size() - 1) {
+        alternatives.separators().add(firstTokenAfter(o, TerminalTokens.TokenNameOR));
+      }
+    }
+    JavaTree.UnionTypeTreeImpl t = new JavaTree.UnionTypeTreeImpl(alternatives);
+    t.typeBinding = e.resolveBinding();
+    return t;
+  }
+
+  private TypeTree convertArrayType(ArrayType e) {
+    @Nullable ITypeBinding elementTypeBinding = e.getElementType().resolveBinding();
+    TypeTree t = convertType(e.getElementType());
+    int tokenIndex = tokenManager.firstIndexAfter(e.getElementType(), TerminalTokens.TokenNameLBRACKET);
+    for (int i = 0; i < e.dimensions().size(); i++) {
+      if (i > 0) {
+        tokenIndex = nextTokenIndex(tokenIndex, TerminalTokens.TokenNameLBRACKET);
+      }
+      t = new JavaTree.ArrayTypeTreeImpl(
+        t,
+        (List) convertAnnotations(((Dimension) e.dimensions().get(i)).annotations()),
+        createSyntaxToken(tokenIndex),
+        createSyntaxToken(nextTokenIndex(tokenIndex, TerminalTokens.TokenNameRBRACKET))
+      );
+      if (elementTypeBinding != null) {
+        ((JavaTree.ArrayTypeTreeImpl) t).typeBinding = elementTypeBinding.createArrayType(i + 1);
+      }
+    }
+    return t;
+  }
+
+  private JavaTree.ParameterizedTypeTreeImpl convertParameterizedType(ParameterizedType e) {
+    int pos = e.getStartPosition() + e.getLength() - 1;
+    JavaTree.ParameterizedTypeTreeImpl t = new JavaTree.ParameterizedTypeTreeImpl(
+      convertType(e.getType()),
+      convertTypeArguments(
+        firstTokenAfter(e.getType(), TerminalTokens.TokenNameLESS),
+        e.typeArguments(),
+        new InternalSyntaxToken(
+          compilationUnit.getLineNumber(pos),
+          compilationUnit.getColumnNumber(pos),
+          ">",
+          /* TODO */ Collections.emptyList(),
+          false
+        )
+      )
+    );
+    t.typeBinding = e.resolveBinding();
+    return t;
+  }
+
+  private MemberSelectExpressionTreeImpl convertQualifiedType(QualifiedType e) {
+    MemberSelectExpressionTreeImpl t = new MemberSelectExpressionTreeImpl(
+      (ExpressionTree) convertType(e.getQualifier()),
+      firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
+      createSimpleName(e.getName())
+    );
+    ((IdentifierTreeImpl) t.identifier()).complete(convertAnnotations(e.annotations()));
+    t.typeBinding = e.resolveBinding();
+    return t;
+  }
+
+  private MemberSelectExpressionTreeImpl convertNamedQualifiedType(NameQualifiedType e) {
+    MemberSelectExpressionTreeImpl t = new MemberSelectExpressionTreeImpl(
+      convertExpression(e.getQualifier()),
+      firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
+      createSimpleName(e.getName())
+    );
+    ((IdentifierTreeImpl) t.identifier()).complete(convertAnnotations(e.annotations()));
+    t.typeBinding = e.resolveBinding();
+    return t;
+  }
+
+  private JavaTree.WildcardTreeImpl convertWildcardType(WildcardType e) {
+    final InternalSyntaxToken questionToken = e.annotations().isEmpty()
+      ? firstTokenIn(e, TerminalTokens.TokenNameQUESTION)
+      : firstTokenAfter((ASTNode) e.annotations().get(e.annotations().size() - 1), TerminalTokens.TokenNameQUESTION);
+    JavaTree.WildcardTreeImpl t;
+    Type bound = e.getBound();
+    if (bound == null) {
+      t = new JavaTree.WildcardTreeImpl(questionToken);
+    } else {
+      t = new JavaTree.WildcardTreeImpl(
+        e.isUpperBound() ? Tree.Kind.EXTENDS_WILDCARD : Tree.Kind.SUPER_WILDCARD,
+        e.isUpperBound() ? firstTokenBefore(bound, TerminalTokens.TokenNameextends) : firstTokenBefore(bound, TerminalTokens.TokenNamesuper),
+        convertType(bound)
+      ).complete(questionToken);
+    }
+    t.complete(convertAnnotations(e.annotations()));
+    t.typeBinding = e.resolveBinding();
+    return t;
   }
 
   @Nullable
@@ -2545,7 +2513,7 @@ public class JParser {
       case ASTNode.MODIFIER:
         return convertModifier((org.eclipse.jdt.core.dom.Modifier) node);
       default:
-        throw new IllegalStateException();
+        throw new IllegalStateException(ASTNode.nodeClassForType(((ASTNode) node).getNodeType()).toString());
     }
   }
 

@@ -30,22 +30,19 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 public class ConditionalExpressionTreeImpl extends AssessableExpressionTree implements ConditionalExpressionTree {
 
-  private ExpressionTree condition;
+  private final ExpressionTree condition;
   private final InternalSyntaxToken queryToken;
   private final ExpressionTree trueExpression;
   private final InternalSyntaxToken colonToken;
   private final ExpressionTree falseExpression;
 
-  public ConditionalExpressionTreeImpl(InternalSyntaxToken queryToken, ExpressionTree trueExpression, InternalSyntaxToken colonToken, ExpressionTree falseExpression) {
+  public ConditionalExpressionTreeImpl(ExpressionTree condition, InternalSyntaxToken queryToken, ExpressionTree trueExpression, InternalSyntaxToken colonToken,
+    ExpressionTree falseExpression) {
+    this.condition = condition;
     this.queryToken = queryToken;
     this.trueExpression = trueExpression;
     this.colonToken = colonToken;
     this.falseExpression = falseExpression;
-  }
-
-  public ConditionalExpressionTreeImpl complete(ExpressionTree condition) {
-    this.condition = condition;
-    return this;
   }
 
   @Override

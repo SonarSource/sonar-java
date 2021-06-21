@@ -21,14 +21,18 @@ package org.sonar.java.ast.parser;
 
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ModuleNameTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
-
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ModuleNameTreeImpl extends ListTreeImpl<IdentifierTree> implements ModuleNameTree {
 
-  public ModuleNameTreeImpl(List<IdentifierTree> identifiers, List<SyntaxToken> separators) {
-    super(identifiers, separators);
+  private ModuleNameTreeImpl(List<IdentifierTree> identifiers) {
+    super(identifiers, Collections.emptyList());
+  }
+
+  public static ModuleNameTreeImpl emptyList() {
+    return new ModuleNameTreeImpl(new ArrayList<>());
   }
 
 }

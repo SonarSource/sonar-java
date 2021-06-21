@@ -27,7 +27,7 @@ import java.util.List;
 
 public class QualifiedIdentifierListTreeImpl extends ListTreeImpl<TypeTree> {
 
-  public QualifiedIdentifierListTreeImpl(List<TypeTree> qualifiedIdentifiers, List<SyntaxToken> separators) {
+  private QualifiedIdentifierListTreeImpl(List<TypeTree> qualifiedIdentifiers, List<SyntaxToken> separators) {
     super(qualifiedIdentifiers, separators);
   }
 

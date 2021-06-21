@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.declaration;
 
-import org.sonar.java.Preconditions;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
@@ -43,7 +42,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 public class ClassTreeImpl extends JavaTree implements ClassTree {
 
@@ -78,24 +76,10 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     this.superInterfaces = QualifiedIdentifierListTreeImpl.emptyList();
   }
 
-  public ClassTreeImpl(ModifiersTree modifiers, SyntaxToken openBraceToken, List<Tree> members, SyntaxToken closeBraceToken) {
-    this.kind = Objects.requireNonNull(Kind.ANNOTATION_TYPE);
+  public ClassTreeImpl complete(ModifiersTreeImpl modifiers, SyntaxToken declarationKeyword, IdentifierTree name) {
     this.modifiers = modifiers;
-    this.typeParameters = new TypeParameterListTreeImpl();
-    this.superClass = null;
-    this.superInterfaces = QualifiedIdentifierListTreeImpl.emptyList();
-    this.openBraceToken = openBraceToken;
-    this.members = Objects.requireNonNull(members);
-    this.closeBraceToken = closeBraceToken;
-  }
-
-  public ClassTreeImpl completeModifiers(ModifiersTreeImpl modifiers) {
-    this.modifiers = modifiers;
-    return this;
-  }
-
-  public ClassTreeImpl completeIdentifier(IdentifierTree identifier) {
-    this.simpleName = identifier;
+    this.declarationKeyword = declarationKeyword;
+    this.simpleName = name;
     return this;
   }
 
@@ -120,21 +104,14 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     return this;
   }
 
-  public ClassTreeImpl complete(InternalSyntaxToken atToken, InternalSyntaxToken interfaceToken, IdentifierTree simpleName) {
-    Preconditions.checkState(this.simpleName == null);
-    completeIdentifier(simpleName);
+  public ClassTreeImpl completeAtToken(InternalSyntaxToken atToken) {
     this.atToken = atToken;
-    completeDeclarationKeyword(interfaceToken);
     return this;
   }
 
-  public ClassTreeImpl completeDeclarationKeyword(SyntaxToken declarationKeyword) {
-    this.declarationKeyword = declarationKeyword;
-    return this;
-  }
-
-  public void completeRecordComponents(List<VariableTree> recordComponents) {
+  public ClassTreeImpl completeRecordComponents(List<VariableTree> recordComponents) {
     this.recordComponents = recordComponents;
+    return this;
   }
 
   @Override

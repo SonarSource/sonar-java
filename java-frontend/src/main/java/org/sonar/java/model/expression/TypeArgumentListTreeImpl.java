@@ -26,7 +26,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeArguments;
-
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,8 +35,8 @@ public class TypeArgumentListTreeImpl extends ListTreeImpl<Tree> implements Type
   private final InternalSyntaxToken openBracketToken;
   private final InternalSyntaxToken closeBracketToken;
 
-  public TypeArgumentListTreeImpl(InternalSyntaxToken openBracketToken, List<Tree> expressions, List<SyntaxToken> separators, InternalSyntaxToken closeBracketToken) {
-    super(expressions, separators);
+  public TypeArgumentListTreeImpl(InternalSyntaxToken openBracketToken, InternalSyntaxToken closeBracketToken) {
+    super(new ArrayList<>(), new ArrayList<>());
 
     this.openBracketToken = openBracketToken;
     this.closeBracketToken = closeBracketToken;

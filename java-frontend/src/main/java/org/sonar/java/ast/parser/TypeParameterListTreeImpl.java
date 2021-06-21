@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeParameters;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,9 +39,8 @@ public class TypeParameterListTreeImpl extends ListTreeImpl<TypeParameterTree> i
   @Nullable
   private final InternalSyntaxToken closeBracketToken;
 
-  public TypeParameterListTreeImpl(InternalSyntaxToken openBracketToken, List<TypeParameterTree> typeParameters,
-    List<SyntaxToken> separators, InternalSyntaxToken closeBracketToken) {
-    super(typeParameters, separators);
+  public TypeParameterListTreeImpl(InternalSyntaxToken openBracketToken, InternalSyntaxToken closeBracketToken) {
+    super(new ArrayList<>(), new ArrayList<>());
 
     this.openBracketToken = openBracketToken;
     this.closeBracketToken = closeBracketToken;

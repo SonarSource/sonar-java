@@ -19,20 +19,18 @@
  */
 package org.sonar.java.ast.parser;
 
-import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ResourceListTreeImpl extends ListTreeImpl<Tree> {
 
-  public ResourceListTreeImpl(List<Tree> resources, List<SyntaxToken> tokens) {
+  private ResourceListTreeImpl(List<Tree> resources, List<SyntaxToken> tokens) {
     super(resources, tokens);
   }
 
-  public static ListTree<Tree> emptyList() {
-    return new ResourceListTreeImpl(Collections.emptyList(), Collections.emptyList());
+  public static ResourceListTreeImpl emptyList() {
+    return new ResourceListTreeImpl(new ArrayList<>(), new ArrayList<>());
   }
 }
