@@ -226,13 +226,12 @@ abstract class JSymbol implements Symbol {
   @Override
   public final Type type() {
     switch (binding.getKind()) {
-      case IBinding.PACKAGE:
-        return null;
       case IBinding.TYPE:
         return sema.type((ITypeBinding) binding);
       case IBinding.VARIABLE:
         ITypeBinding variableType = ((IVariableBinding) binding).getType();
         return variableType != null ? sema.type(variableType) : Symbols.unknownType;
+      case IBinding.PACKAGE:
       case IBinding.METHOD:
         return Symbols.unknownType;
       default:

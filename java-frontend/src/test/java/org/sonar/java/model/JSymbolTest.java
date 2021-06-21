@@ -27,7 +27,10 @@ import org.sonar.java.model.declaration.EnumConstantTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -148,7 +151,7 @@ class JSymbolTest {
 
     assertThat(cu.sema.typeSymbol(c.typeBinding).owner())
       .isOfSameTypeAs(c.symbol().owner())
-      .isHavingNullType();
+      .isOfUnknownType();
 
     assertThat(cu.sema.typeSymbol(c.typeBinding))
       .isOfType(cu.sema.type(c.typeBinding));
@@ -157,6 +160,20 @@ class JSymbolTest {
       .isOfType(cu.sema.type(field.variableBinding.getType()));
 
     assertThat(cu.sema.methodSymbol(method.methodBinding)).isOfUnknownType();
+  }
+
+  @Test
+  void package_has_an_unknown_type() {
+    JavaTree.CompilationUnitTreeImpl cu = test("package p; class C { p.C f; }");
+    VariableTree field = (VariableTree) ((ClassTree) cu.types().get(0)).members().get(0);
+    MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) field.type();
+
+    IdentifierTree p = (IdentifierTree) memberSelect.expression();
+    assertThat(p.symbolType().isUnknown()).isTrue();
+    assertThat(p.symbol().type().isUnknown()).isTrue();
+
+    IdentifierTree c = memberSelect.identifier();
+    assertThat(c.symbol().type().fullyQualifiedName()).isEqualTo("p.C");
   }
 
   @Test
