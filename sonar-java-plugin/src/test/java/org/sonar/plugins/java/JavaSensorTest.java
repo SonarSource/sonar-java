@@ -21,7 +21,6 @@ package org.sonar.plugins.java;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -29,9 +28,12 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.ArgumentCaptor;
+import org.sonar.api.SonarEdition;
+import org.sonar.api.SonarQubeSide;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
@@ -48,6 +50,9 @@ import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleAnnotationUtils;
 import org.sonar.api.utils.Version;
+import org.sonar.api.utils.log.LogTesterJUnit5;
+import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.SonarComponents;
@@ -62,7 +67,9 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JspCodeVisitor;
+import org.sonarsource.performance.measure.PerformanceMeasure;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -89,6 +96,9 @@ class JavaSensorTest {
   @Rule
   public final TemporaryFolder tmp = new TemporaryFolder();
 
+  @RegisterExtension
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
+
   @Test
   void test_toString() {
     assertThat(new JavaSensor(null, null, null, null, null, null)).hasToString("JavaSensor");
@@ -96,7 +106,7 @@ class JavaSensorTest {
 
   @Test
   void test_issues_creation_on_main_file() throws IOException {
-    testIssueCreation(InputFile.Type.MAIN, 6);
+    testIssueCreation(InputFile.Type.MAIN, 10);
   }
 
   @Test
@@ -116,7 +126,7 @@ class JavaSensorTest {
 
     jss.execute(context);
     // argument 103 refers to the comment on line #103 in this file
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(103));
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(113));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     settings.setProperty(JavaVersion.SOURCE_VERSION, "wrongFormat");
@@ -134,8 +144,8 @@ class JavaSensorTest {
     File file = new File(fs.baseDir(), effectiveKey);
     DefaultInputFile inputFile = new TestInputFileBuilder("", effectiveKey).setLanguage("java").setModuleBaseDir(fs.baseDirPath())
       .setType(onType)
-      .initMetadata(new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8))
-      .setCharset(StandardCharsets.UTF_8)
+      .initMetadata(new String(Files.readAllBytes(file.toPath()), UTF_8))
+      .setCharset(UTF_8)
       .build();
     fs.add(inputFile);
     return context;
@@ -216,6 +226,77 @@ class JavaSensorTest {
         "MagicNumberCheck",
         "ParameterReassignedToCheck"
       );
+  }
+
+  @Test
+  void performance_measure_should_not_be_activated_by_default() throws IOException {
+    Loggers.get(PerformanceMeasure.class).setLevel(LoggerLevel.DEBUG);
+    MapSettings settings = new MapSettings();
+    Path workDir = tmp.newFolder().toPath();
+    executeJavaSensorForPerformanceMeasure(settings, workDir);
+    String debugLogs = String.join("\n", logTester.logs(LoggerLevel.DEBUG));
+    assertThat(debugLogs).doesNotContain("Performance Measures:");
+    Path performanceFile = workDir.resolve("sonar.java.performance.measure.json");
+    assertThat(performanceFile).doesNotExist();
+  }
+
+  @Test
+  void performance_measure_should_log_in_debug_mode() throws IOException {
+    Loggers.get(PerformanceMeasure.class).setLevel(LoggerLevel.DEBUG);
+    MapSettings settings = new MapSettings();
+    settings.setProperty("sonar.java.performance.measure", "true");
+    Path workDir = tmp.newFolder().toPath();
+    executeJavaSensorForPerformanceMeasure(settings, workDir);
+    String debugLogs = String.join("\n", logTester.logs(LoggerLevel.DEBUG));
+    assertThat(debugLogs).contains("Performance Measures:\n{ \"name\": \"JavaSensor\"");
+    Path performanceFile = workDir.resolve("sonar.java.performance.measure.json");
+    assertThat(performanceFile).exists();
+    assertThat(new String(Files.readAllBytes(performanceFile), UTF_8)).contains("\"JavaSensor\"");
+  }
+
+  @Test
+  void custom_performance_measure_file_path_can_be_provided() throws IOException {
+    Loggers.get(PerformanceMeasure.class).setLevel(LoggerLevel.DEBUG);
+    MapSettings settings = new MapSettings();
+    Path workDir = tmp.newFolder().toPath();
+    Path customPerformanceFile = workDir.resolve("custom.performance.measure.json");
+    settings.setProperty("sonar.java.performance.measure", "true");
+    settings.setProperty("sonar.java.performance.measure.path", customPerformanceFile.toString());
+    executeJavaSensorForPerformanceMeasure(settings, workDir);
+    String debugLogs = String.join("\n", logTester.logs(LoggerLevel.DEBUG));
+    assertThat(debugLogs).contains("{ \"name\": \"JavaSensor\"");
+    Path defaultPerformanceFile = workDir.resolve("sonar.java.performance.measure.json");
+    assertThat(defaultPerformanceFile).doesNotExist();
+    assertThat(customPerformanceFile).exists();
+    assertThat(new String(Files.readAllBytes(customPerformanceFile), UTF_8)).contains("\"JavaSensor\"");
+  }
+
+  @Test
+  void custom_performance_measure_file_path_can_be_empty() throws IOException {
+    Loggers.get(PerformanceMeasure.class).setLevel(LoggerLevel.DEBUG);
+    MapSettings settings = new MapSettings();
+    settings.setProperty("sonar.java.performance.measure", "true");
+    settings.setProperty("sonar.java.performance.measure.path", "");
+    Path workDir = tmp.newFolder().toPath();
+    executeJavaSensorForPerformanceMeasure(settings, workDir);
+    String debugLogs = String.join("\n", logTester.logs(LoggerLevel.DEBUG));
+    assertThat(debugLogs).contains("{ \"name\": \"JavaSensor\"");
+    Path defaultPerformanceFile = workDir.resolve("sonar.java.performance.measure.json");
+    assertThat(defaultPerformanceFile).exists();
+    assertThat(new String(Files.readAllBytes(defaultPerformanceFile), UTF_8)).contains("\"JavaSensor\"");
+  }
+
+  private void executeJavaSensorForPerformanceMeasure(MapSettings settings, Path workDir) throws IOException {
+    Configuration configuration = settings.asConfig();
+    SensorContextTester context = createContext(InputFile.Type.MAIN)
+      .setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(8, 7), SonarQubeSide.SCANNER, SonarEdition.COMMUNITY));
+    context.setSettings(settings);
+    DefaultFileSystem fs = context.fileSystem();
+    fs.setWorkDir(workDir);
+    SonarComponents components = createSonarComponentsMock(context);
+    DefaultJavaResourceLocator resourceLocator = new DefaultJavaResourceLocator(new ClasspathForMain(configuration, fs));
+    JavaSensor jss = new JavaSensor(components, fs, resourceLocator, configuration, mock(NoSonarFilter.class), null);
+    jss.execute(context);
   }
 
   interface JspCodeScanner extends JavaFileScanner, JspCodeVisitor {

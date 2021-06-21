@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import org.sonar.java.PerformanceMeasure;
 import org.sonar.java.Preconditions;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.cfg.CFG;
@@ -93,6 +92,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
+import org.sonarsource.performance.measure.PerformanceMeasure;
 
 import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNonNull;
 import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNullable;

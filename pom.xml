@@ -87,7 +87,7 @@
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
     <sonar.version>8.9.0.43852</sonar.version>
-    <analyzer.commons.version>1.14.1.690</analyzer.commons.version>
+    <analyzer.commons.version>1.15.0.699</analyzer.commons.version>
     <orchestrator.version>3.35.1.2719</orchestrator.version>
     <sslr.version>1.24.0.633</sslr.version>
     <argLine>-Xmx512m</argLine>
@@ -150,6 +150,11 @@
       <dependency>
         <groupId>org.sonarsource.analyzer-commons</groupId>
         <artifactId>sonar-regex-parsing</artifactId>
+        <version>${analyzer.commons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonarsource.analyzer-commons</groupId>
+        <artifactId>sonar-performance-measure</artifactId>
         <version>${analyzer.commons.version}</version>
       </dependency>
       <dependency>

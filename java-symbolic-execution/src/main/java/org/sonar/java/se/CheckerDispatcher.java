@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import org.sonar.java.PerformanceMeasure;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.ConstraintManager;
@@ -34,6 +33,7 @@ import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.performance.measure.PerformanceMeasure;
 
 public class CheckerDispatcher implements CheckerContext {
   private final ExplodedGraphWalker explodedGraphWalker;

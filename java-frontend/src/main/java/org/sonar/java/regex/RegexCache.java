@@ -23,11 +23,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.sonar.java.PerformanceMeasure;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonarsource.analyzer.commons.regex.RegexParseResult;
 import org.sonarsource.analyzer.commons.regex.RegexParser;
 import org.sonarsource.analyzer.commons.regex.ast.FlagSet;
+import org.sonarsource.performance.measure.PerformanceMeasure;
 
 public final class RegexCache {
   private final Map<List<LiteralTree>, RegexParseResult> cache = new HashMap<>();

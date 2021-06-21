@@ -29,6 +29,10 @@
     <scope>test</scope>
   </dependency>
   <dependency>
+    <groupId>org.sonarsource.analyzer-commons</groupId>
+    <artifactId>sonar-performance-measure</artifactId>
+  </dependency>
+  <dependency>
     <groupId>${project.groupId}</groupId>
     <artifactId>java-checks-testkit</artifactId>
     <version>${project.version}</version>
