@@ -19,14 +19,18 @@
  */
 package org.sonar.java.ast.parser;
 
-import org.sonar.plugins.java.api.tree.StatementTree;
-
+import org.sonar.plugins.java.api.tree.ModuleNameTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import java.util.ArrayList;
 import java.util.List;
 
-public class BlockStatementListTreeImpl extends ListTreeImpl<StatementTree> {
+public class ModuleNameListTreeImpl extends ListTreeImpl<ModuleNameTree> {
 
-  public BlockStatementListTreeImpl(List<? extends StatementTree> statements) {
-    super((List<StatementTree>) statements);
+  private ModuleNameListTreeImpl(List<ModuleNameTree> moduleNames, List<SyntaxToken> separators) {
+    super(moduleNames, separators);
   }
 
+  public static ModuleNameListTreeImpl emptyList() {
+    return new ModuleNameListTreeImpl(new ArrayList<>(), new ArrayList<>());
+  }
 }

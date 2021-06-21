@@ -455,7 +455,12 @@ class JParserSemanticTest {
    */
   @Test
   void expression_super_method_reference() {
-    JavaTree.CompilationUnitTreeImpl cu = test("class C extends S { java.util.function.Supplier m() { return super::m; } } class S { Object m() { } }");
+    JavaTree.CompilationUnitTreeImpl cu = test("class C extends S {\n"
+      + "  java.util.function.Supplier m() { return super::m; }\n"
+      + "}\n"
+      + "class S {\n"
+      + "  Object m() { return null; }\n"
+      + "}");
     ClassTreeImpl superClass = (ClassTreeImpl) cu.types().get(1);
     MethodTreeImpl superClassMethod = (MethodTreeImpl) superClass.members().get(0);
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
@@ -464,6 +469,42 @@ class JParserSemanticTest {
     MethodReferenceTreeImpl creationReference = Objects.requireNonNull((MethodReferenceTreeImpl) s.expression());
 
     KeywordSuper keywordSuper = (KeywordSuper) creationReference.expression();
+    assertThat(keywordSuper.symbolType().symbol().declaration())
+      .isSameAs(superClass.symbol().declaration());
+    assertThat(keywordSuper.symbol())
+      .isSameAs(cu.sema.typeSymbol(c.typeBinding).superSymbol);
+
+    IdentifierTreeImpl identifier = (IdentifierTreeImpl) creationReference.method();
+    assertThat(identifier.binding)
+      .isNotNull()
+      .isSameAs(Objects.requireNonNull((MethodTreeImpl) creationReference.method().symbol().declaration()).methodBinding)
+      .isSameAs(superClassMethod.methodBinding);
+    assertThat(cu.sema.usages.get(superClassMethod.methodBinding))
+      .containsExactlyElementsOf(superClassMethod.symbol().usages())
+      .containsOnly(identifier);
+  }
+
+  /**
+   * @see org.eclipse.jdt.core.dom.SuperMethodReference
+   */
+  @Test
+  void expression_super_method_reference_qualified() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C extends S {\n"
+      + "  java.util.function.Supplier m() { return C.super::m; }\n"
+      + "}\n"
+      + "class S {\n"
+      + "  Object m() { return null; }\n"
+      + "}");
+    ClassTreeImpl superClass = (ClassTreeImpl) cu.types().get(1);
+    MethodTreeImpl superClassMethod = (MethodTreeImpl) superClass.members().get(0);
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl method = (MethodTreeImpl) c.members().get(0);
+    ReturnStatementTreeImpl s = (ReturnStatementTreeImpl) method.block().body().get(0);
+    MethodReferenceTreeImpl creationReference = Objects.requireNonNull((MethodReferenceTreeImpl) s.expression());
+
+    MemberSelectExpressionTreeImpl mseti = (MemberSelectExpressionTreeImpl) creationReference.expression();
+
+    KeywordSuper keywordSuper = (KeywordSuper) mseti.identifier();
     assertThat(keywordSuper.symbolType().symbol().declaration())
       .isSameAs(superClass.symbol().declaration());
     assertThat(keywordSuper.symbol())

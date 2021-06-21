@@ -19,15 +19,17 @@
  */
 package org.sonar.java.ast.parser;
 
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
-import org.sonar.plugins.java.api.tree.TypeTree;
-
+import java.util.ArrayList;
 import java.util.List;
 
-public class TypeUnionListTreeImpl extends ListTreeImpl<TypeTree> {
-
-  public TypeUnionListTreeImpl(List<TypeTree> types, List<SyntaxToken> separatorsList) {
-    super(types, separatorsList);
+public class StatementListTreeImpl extends ListTreeImpl<StatementTree> {
+  private StatementListTreeImpl(List<StatementTree> statementTrees, List<SyntaxToken> separators) {
+    super(statementTrees, separators);
   }
 
+  public static StatementListTreeImpl emptyList() {
+    return new StatementListTreeImpl(new ArrayList<>(), new ArrayList<>());
+  }
 }

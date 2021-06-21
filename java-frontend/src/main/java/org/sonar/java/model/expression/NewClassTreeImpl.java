@@ -55,16 +55,13 @@ public class NewClassTreeImpl extends AssessableExpressionTree implements NewCla
   @Nullable
   private final ClassTree classBody;
 
-  public NewClassTreeImpl(Arguments arguments, @Nullable ClassTreeImpl classBody) {
+  public NewClassTreeImpl(TypeTree identifier, Arguments arguments, @Nullable ClassTreeImpl classBody) {
     this.enclosingExpression = null;
+    this.identifier = identifier;
     this.arguments = arguments;
     this.classBody = classBody;
   }
 
-  public NewClassTreeImpl completeWithIdentifier(TypeTree identifier) {
-    this.identifier = identifier;
-    return this;
-  }
 
   public NewClassTreeImpl completeWithEnclosingExpression(ExpressionTree enclosingExpression) {
     this.enclosingExpression = enclosingExpression;
@@ -76,7 +73,7 @@ public class NewClassTreeImpl extends AssessableExpressionTree implements NewCla
     return this;
   }
 
-  public NewClassTreeImpl completeWithTypeArguments(TypeArgumentListTreeImpl typeArguments) {
+  public NewClassTreeImpl completeWithTypeArguments(@Nullable TypeArgumentListTreeImpl typeArguments) {
     this.typeArguments = typeArguments;
     return this;
   }

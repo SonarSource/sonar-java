@@ -20,8 +20,9 @@
 package org.sonar.java.model.statement;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import org.sonar.java.Preconditions;
+import javax.annotation.Nullable;
 import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -31,10 +32,6 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
-
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.Objects;
 
 public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
 
@@ -48,32 +45,15 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
   @Nullable
   private final StatementTree elseStatement;
 
-  public IfStatementTreeImpl(InternalSyntaxToken elseKeyword, StatementTree elseStatement) {
-    this.elseKeyword = elseKeyword;
-    this.elseStatement = Objects.requireNonNull(elseStatement);
-  }
-
   public IfStatementTreeImpl(InternalSyntaxToken ifKeyword, InternalSyntaxToken openParenToken, ExpressionTree condition, InternalSyntaxToken closeParenToken,
-    StatementTree thenStatement) {
+    StatementTree thenStatement, @Nullable InternalSyntaxToken elseKeyword, @Nullable StatementTree elseStatement) {
     this.ifKeyword = ifKeyword;
     this.openParenToken = openParenToken;
-    this.condition = Objects.requireNonNull(condition);
+    this.condition = condition;
     this.closeParenToken = closeParenToken;
-    this.thenStatement = Objects.requireNonNull(thenStatement);
-    this.elseStatement = null;
-    this.elseKeyword = null;
-  }
-
-  public IfStatementTreeImpl complete(InternalSyntaxToken ifKeyword, InternalSyntaxToken openParenToken, ExpressionTree condition, InternalSyntaxToken closeParenToken,
-    StatementTree thenStatement) {
-    Preconditions.checkState(this.condition == null, "Already completed");
-    this.ifKeyword = ifKeyword;
-    this.openParenToken = openParenToken;
-    this.condition = Objects.requireNonNull(condition);
-    this.closeParenToken = closeParenToken;
-    this.thenStatement = Objects.requireNonNull(thenStatement);
-
-    return this;
+    this.thenStatement = thenStatement;
+    this.elseKeyword = elseKeyword;
+    this.elseStatement = elseStatement;
   }
 
   @Override

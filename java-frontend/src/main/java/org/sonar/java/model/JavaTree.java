@@ -37,7 +37,7 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.java.Preconditions;
 import org.sonar.java.annotations.Beta;
-import org.sonar.java.ast.parser.TypeUnionListTreeImpl;
+import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.expression.AssessableExpressionTree;
@@ -470,7 +470,7 @@ public abstract class JavaTree implements Tree {
   public static class UnionTypeTreeImpl extends AbstractTypedTree implements UnionTypeTree {
     private final ListTree<TypeTree> typeAlternatives;
 
-    public UnionTypeTreeImpl(TypeUnionListTreeImpl typeAlternatives) {
+    public UnionTypeTreeImpl(QualifiedIdentifierListTreeImpl typeAlternatives) {
       this.typeAlternatives = Objects.requireNonNull(typeAlternatives);
     }
 

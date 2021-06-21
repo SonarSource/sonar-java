@@ -20,9 +20,10 @@
 package org.sonar.java.model.expression;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import org.sonar.java.Preconditions;
-import org.sonar.java.ast.parser.BoundListTreeImpl;
+import javax.annotation.Nullable;
+import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -33,41 +34,28 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.Objects;
-
 public class TypeCastExpressionTreeImpl extends AssessableExpressionTree implements TypeCastTree {
 
-  private InternalSyntaxToken openParenToken;
+  private final InternalSyntaxToken openParenToken;
   private final TypeTree type;
   @Nullable
   private final InternalSyntaxToken andToken;
-  private final ListTree<Tree> bounds;
+  private final ListTree<TypeTree> bounds;
   private final InternalSyntaxToken closeParenToken;
   private final ExpressionTree expression;
 
-  public TypeCastExpressionTreeImpl(TypeTree type, InternalSyntaxToken closeParenToken, ExpressionTree expression) {
-    this.type = Objects.requireNonNull(type);
-    this.bounds = BoundListTreeImpl.emptyList();
-    this.closeParenToken = closeParenToken;
-    this.expression = Objects.requireNonNull(expression);
-    andToken = null;
+  public TypeCastExpressionTreeImpl(InternalSyntaxToken openParen, TypeTree type, InternalSyntaxToken closeParen, ExpressionTree expression) {
+    this(openParen, type, null, QualifiedIdentifierListTreeImpl.emptyList(), closeParen, expression);
   }
 
-  public TypeCastExpressionTreeImpl(TypeTree type, InternalSyntaxToken andToken, ListTree<Tree> bounds, InternalSyntaxToken closeParenToken, ExpressionTree expression) {
-    this.type = Objects.requireNonNull(type);
+  public TypeCastExpressionTreeImpl(InternalSyntaxToken openParen, TypeTree type, @Nullable InternalSyntaxToken andToken, ListTree<TypeTree> bounds, InternalSyntaxToken closeParen,
+    ExpressionTree expression) {
+    this.openParenToken = openParen;
+    this.type = type;
     this.bounds = bounds;
-    this.closeParenToken = closeParenToken;
-    this.expression = Objects.requireNonNull(expression);
+    this.closeParenToken = closeParen;
+    this.expression = expression;
     this.andToken = andToken;
-  }
-
-  public TypeCastExpressionTreeImpl complete(InternalSyntaxToken openParenToken) {
-    Preconditions.checkState(this.openParenToken == null && closeParenToken != null);
-    this.openParenToken = openParenToken;
-
-    return this;
   }
 
   @Override
@@ -92,7 +80,7 @@ public class TypeCastExpressionTreeImpl extends AssessableExpressionTree impleme
   }
 
   @Override
-  public ListTree<Tree> bounds() {
+  public ListTree<TypeTree> bounds() {
     return bounds;
   }
 
