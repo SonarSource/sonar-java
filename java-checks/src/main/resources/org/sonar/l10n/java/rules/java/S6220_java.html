@@ -1,0 +1,23 @@
+<p>Java 15 introduced feature of <code>sealed</code> classes. With <code>sealed</code> classes and interfaces you can specify a strict hierarchy of
+types and restrict possible inheritance.</p>
+<p>Although this feature can help to make code safer, it is not applicable everywhere. Functional interfaces can not be sealed. This means that if an
+interface with a single abstract method is declared with a <code>sealed</code> keyword, its implementation can’t be replaced with a lambda.</p>
+<p>This rule reports an issue when an interface with a single abstract method is marked <code>sealed</code>.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+public sealed interface F permits ... { // Noncompliant
+  void f();
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+public interface F { // Compliant
+  void f();
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/specs/jls/se16/preview/specs/sealed-classes-jls.html#jls-8.1.1.2">Sealed classes specification</a>
+  </li>
+</ul>
+

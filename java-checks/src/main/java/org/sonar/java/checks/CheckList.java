@@ -533,6 +533,7 @@ public final class CheckList {
       RunFinalizersCheck.class,
       SQLInjectionCheck.class,
       ScheduledThreadPoolExecutorZeroCheck.class,
+      SealedFunctionalInterfaceCheck.class,
       SecureCookieCheck.class,
       SelectorMethodArgumentCheck.class,
       SelfAssignementCheck.class,
