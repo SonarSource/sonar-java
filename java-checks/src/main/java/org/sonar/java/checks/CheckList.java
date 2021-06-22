@@ -412,6 +412,7 @@ public final class CheckList {
       InnerClassTooManyLinesCheck.class,
       InputStreamOverrideReadCheck.class,
       InputStreamReadCheck.class,
+      InstanceOfPatternMatchingCheck.class,
       InstanceofUsedOnExceptionCheck.class,
       IntegerToHexStringCheck.class,
       InterfaceAsConstantContainerCheck.class,
