@@ -8,7 +8,25 @@ class UnusedLocalVariableCheck {
 
   int unusedField;
 
-  public void f(int unusedParameter) {
+  {
+    int unused = 42; // Noncompliant
+    int used = 23; // Compliant
+    System.out.println(used);
+  }
+
+  static {
+    int unused = 42; // Noncompliant
+    int used = 23; // Compliant
+    System.out.println(used);
+  }
+
+  private UnusedLocalVariableCheck(int unusedParameter) { // Compliant
+    int unused = 42; // Noncompliant
+    int used = 23; // Compliant
+    System.out.println(used);
+  }
+
+  public void f(int unusedParameter, Object o) {
     int unusedLocalVariable; // Noncompliant [[sc=9;=ec=28]] {{Remove this unused "unusedLocalVariable" local variable.}}
 
     int usedLocalVariable = 42;
@@ -31,6 +49,7 @@ class UnusedLocalVariableCheck {
     }
 
     try (Stream foo2 = Stream.of()) {
+      int x = 42; // Noncompliant
       foo2.findFirst();
     }
 
@@ -50,6 +69,14 @@ class UnusedLocalVariableCheck {
     }
     try (Stream foo3 = Stream.of()) {
       foo3.findFirst();
+    }
+
+    if (o instanceof String usedPatternVar) {
+      System.out.println(usedPatternVar);
+    }
+
+    if (o instanceof String unusedPatternVar) { // Noncompliant [[sc=29;=ec=45]]
+
     }
   }
 

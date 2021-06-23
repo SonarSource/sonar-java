@@ -19,46 +19,24 @@
  */
 package org.sonar.java.checks.unused;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.UnresolvedIdentifiersVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.BlockTree;
-import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.ForEachStatement;
-import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import static org.sonar.java.model.JUtils.isLocalVariable;
 
 @Rule(key = "S1481")
 public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
-
-  private static final Tree.Kind[] ASSIGNMENT_KINDS = {
-    Tree.Kind.ASSIGNMENT,
-    Tree.Kind.MULTIPLY_ASSIGNMENT,
-    Tree.Kind.DIVIDE_ASSIGNMENT,
-    Tree.Kind.REMAINDER_ASSIGNMENT,
-    Tree.Kind.PLUS_ASSIGNMENT,
-    Tree.Kind.MINUS_ASSIGNMENT,
-    Tree.Kind.LEFT_SHIFT_ASSIGNMENT,
-    Tree.Kind.RIGHT_SHIFT_ASSIGNMENT,
-    Tree.Kind.UNSIGNED_RIGHT_SHIFT_ASSIGNMENT,
-    Tree.Kind.AND_ASSIGNMENT,
-    Tree.Kind.XOR_ASSIGNMENT,
-    Tree.Kind.OR_ASSIGNMENT
-  };
 
   private static final Tree.Kind[] INCREMENT_KINDS = {
     Tree.Kind.POSTFIX_DECREMENT,
@@ -67,80 +45,73 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
     Tree.Kind.PREFIX_INCREMENT
   };
 
-  private final List<VariableTree> variables = new ArrayList<>();
-  private final Map<Symbol, List<IdentifierTree>> assignments = new HashMap<>();
+  private final Map<Symbol, VariableTree> unusedVariables = new HashMap<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(
-      Tree.Kind.BLOCK, Tree.Kind.STATIC_INITIALIZER,
-      Tree.Kind.FOR_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT,
-      Tree.Kind.EXPRESSION_STATEMENT, Tree.Kind.COMPILATION_UNIT);
+    return Arrays.asList(Tree.Kind.COMPILATION_UNIT, Tree.Kind.VARIABLE, Tree.Kind.PATTERN_INSTANCE_OF, Tree.Kind.IDENTIFIER);
   }
 
   private static final UnresolvedIdentifiersVisitor UNRESOLVED_IDENTIFIERS_VISITOR = new UnresolvedIdentifiersVisitor();
 
   @Override
+  public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
+      UNRESOLVED_IDENTIFIERS_VISITOR.check(tree);
+      unusedVariables.clear();
+    }
+  }
+
+  @Override
   public void leaveNode(Tree tree) {
-    if (tree.is(Tree.Kind.BLOCK, Tree.Kind.STATIC_INITIALIZER)) {
-      BlockTree blockTree = (BlockTree) tree;
-      addVariables(blockTree.body());
-    } else if (tree.is(Tree.Kind.FOR_STATEMENT)) {
-      ForStatementTree forStatementTree = (ForStatementTree) tree;
-      addVariables(forStatementTree.initializer());
-    } else if (tree.is(Tree.Kind.FOR_EACH_STATEMENT)) {
-      ForEachStatement forEachStatement = (ForEachStatement) tree;
-      addVariables(Collections.singletonList(forEachStatement.variable()));
-    } else if (tree.is(Tree.Kind.EXPRESSION_STATEMENT)) {
-      leaveExpressionStatement((ExpressionStatementTree) tree);
-    } else {
-      checkVariableUsages();
-      variables.clear();
-      assignments.clear();
-    }
-  }
-
-  private void leaveExpressionStatement(ExpressionStatementTree expressionStatement) {
-    ExpressionTree expression = expressionStatement.expression();
-    if (expression.is(ASSIGNMENT_KINDS)) {
-      addAssignment(((AssignmentExpressionTree) expression).variable());
-    } else if (expression.is(INCREMENT_KINDS)) {
-      addAssignment(((UnaryExpressionTree) expression).expression());
-    }
-  }
-
-  private void checkVariableUsages() {
-    for (VariableTree variableTree : variables) {
-      Symbol symbol = variableTree.symbol();
-      if (symbol.usages().size() == assignments.getOrDefault(symbol, Collections.emptyList()).size()) {
-        reportIssue(variableTree.simpleName(), "Remove this unused \"" + symbol.name() + "\" local variable.");
-      }
-    }
-  }
-
-  public void addVariables(List<StatementTree> statementTrees) {
-    UNRESOLVED_IDENTIFIERS_VISITOR.check(statementTrees);
-    for (StatementTree statementTree : statementTrees) {
-      if (statementTree.is(Tree.Kind.VARIABLE)) {
-        VariableTree variableTree = (VariableTree) statementTree;
-        if (!UNRESOLVED_IDENTIFIERS_VISITOR.isUnresolved(variableTree.simpleName().name())) {
-          variables.add(variableTree);
+    switch (tree.kind()) {
+      case IDENTIFIER:
+        IdentifierTree ident = (IdentifierTree) tree;
+        if (isRValue(ident)) {
+          unusedVariables.remove(ident.symbol());
         }
-      }
+        break;
+      case VARIABLE:
+        addVariable((VariableTree) tree);
+        break;
+      case PATTERN_INSTANCE_OF:
+        addVariable(((PatternInstanceOfTree) tree).variable());
+        break;
+      default: // COMPILATION_UNIT
+        for (Map.Entry<Symbol, VariableTree> entry : unusedVariables.entrySet()) {
+          VariableTree variable = entry.getValue();
+          reportIssue(variable.simpleName(), "Remove this unused \"" + variable.symbol().name() + "\" local variable.");
+        }
+        break;
     }
   }
 
-  private void addAssignment(ExpressionTree variable) {
-    if (variable.is(Tree.Kind.IDENTIFIER)) {
-      addAssignment((IdentifierTree) variable);
+  /**
+   * An identifier is being used as an r-value if it is not used as the left operand of an assignment nor as the
+   * operand of a stand-alone increment
+   */
+  private static boolean isRValue(IdentifierTree tree) {
+    if (tree.parent() instanceof AssignmentExpressionTree) {
+      AssignmentExpressionTree assignment = (AssignmentExpressionTree) tree.parent();
+      return assignment.variable() != tree;
+    }
+    return !(tree.parent().is(INCREMENT_KINDS) && tree.parent().parent().is(Tree.Kind.EXPRESSION_STATEMENT));
+  }
+
+  private void addVariable(VariableTree variable) {
+    if (isProperLocalVariable(variable) && !UNRESOLVED_IDENTIFIERS_VISITOR.isUnresolved(variable.simpleName().name())) {
+      unusedVariables.put(variable.symbol(), variable);
     }
   }
 
-  private void addAssignment(IdentifierTree identifier) {
-    Symbol reference = identifier.symbol();
-    if (!reference.isUnknown()) {
-      assignments.computeIfAbsent(reference, k -> new ArrayList<>()).add(identifier);
-    }
+  private boolean isProperLocalVariable(VariableTree variable) {
+    return isLocalVariable(variable.symbol())
+      && !variable.parent().is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR, Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.CATCH)
+      && !isTryResource(variable);
+  }
+
+  private static boolean isTryResource(VariableTree variable) {
+    return variable.parent().is(Tree.Kind.LIST) && variable.parent().parent().is(Tree.Kind.TRY_STATEMENT);
   }
 
 }
