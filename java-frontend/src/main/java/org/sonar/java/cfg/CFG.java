@@ -68,6 +68,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
+import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
@@ -576,6 +577,9 @@ public class CFG implements ControlFlowGraph {
         break;
       case INSTANCE_OF:
         buildInstanceOf((InstanceOfTree) tree);
+        break;
+      case PATTERN_INSTANCE_OF:
+        buildInstanceOf((PatternInstanceOfTree) tree);
         break;
       case NEW_ARRAY:
         buildNewArray((NewArrayTree) tree);
@@ -1095,6 +1099,11 @@ public class CFG implements ControlFlowGraph {
   }
 
   private void buildInstanceOf(InstanceOfTree instanceOfTree) {
+    currentBlock.elements.add(instanceOfTree);
+    build(instanceOfTree.expression());
+  }
+
+  private void buildInstanceOf(PatternInstanceOfTree instanceOfTree) {
     currentBlock.elements.add(instanceOfTree);
     build(instanceOfTree.expression());
   }

@@ -26,6 +26,9 @@ import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -124,6 +127,76 @@ class SyntacticEquivalenceTest {
     assertThat(SyntacticEquivalence.areSemanticallyEquivalent(f2Body, f3Body)).isTrue();
 
     assertThat(SyntacticEquivalence.areSemanticallyEquivalent(f1Body, f4Body)).isFalse();
+  }
+
+  private ExpressionTree getMethodArg(StatementTree tree) {
+    return ((MethodInvocationTree) ((ExpressionStatementTree) tree).expression()).arguments().get(0);
+  }
+
+  @Test
+  void test_equivalence_with_variables() {
+    CompilationUnitTree compilationUnitTree = compilationUnitTree(
+      "class A{" +
+        "  Object o;" +
+        "  void m() {" +
+        "    System.out.println(o);" +
+        "    System.out.println(o);" +
+        "    String o = \"hello\";" +
+        "    System.out.println(o);" +
+        "  }" +
+        "}");
+    List<Tree> members = ((ClassTree) compilationUnitTree.types().get(0)).members();
+    List<StatementTree> mBody = ((MethodTree) members.get(1)).block().body();
+
+    StatementTree print1 = mBody.get(0);
+    StatementTree print2 = mBody.get(1);
+    StatementTree print3 = mBody.get(3);
+
+    ExpressionTree o1 = getMethodArg(print1);
+    ExpressionTree o2 = getMethodArg(print2);
+    ExpressionTree o3 = getMethodArg(print3);
+
+    assertThat(SyntacticEquivalence.areEquivalent(o1, o2)).isTrue();
+    assertThat(SyntacticEquivalence.areEquivalent(o2, o3)).isTrue();
+    assertThat(SyntacticEquivalence.areEquivalent(o1, o3)).isTrue();
+    assertThat(SyntacticEquivalence.areEquivalent(print1, print2)).isTrue();
+    assertThat(SyntacticEquivalence.areEquivalent(print2, print3)).isTrue();
+    assertThat(SyntacticEquivalence.areEquivalent(print1, print3)).isTrue();
+
+    assertThat(SyntacticEquivalence.areEquivalentIncludingSameVariables(o1, o2)).isTrue();
+    assertThat(SyntacticEquivalence.areEquivalentIncludingSameVariables(o1, o3)).isFalse();
+    assertThat(SyntacticEquivalence.areEquivalentIncludingSameVariables(o2, o3)).isFalse();
+
+    assertThat(SyntacticEquivalence.areEquivalentIncludingSameVariables(print1, print2)).isTrue();
+    assertThat(SyntacticEquivalence.areEquivalentIncludingSameVariables(print1, print3)).isFalse();
+    assertThat(SyntacticEquivalence.areEquivalentIncludingSameVariables(print2, print3)).isFalse();
+
+    assertThat(SyntacticEquivalence.areEquivalentIncludingSameVariables(o1, print1)).isFalse();
+    assertThat(SyntacticEquivalence.areEquivalentIncludingSameVariables(print1, o1)).isFalse();
+  }
+
+  @Test
+  void test_equivalence_with_variables_with_unknown_symbols() {
+    CompilationUnitTree compilationUnitTree = compilationUnitTree(
+      "class A{" +
+        "  void m() {" +
+        "    System.out.println(o);" +
+        "    System.out.println(o);" +
+        "    String o = \"hello\";" +
+        "    System.out.println(o);" +
+        "  }" +
+        "}");
+    List<Tree> members = ((ClassTree) compilationUnitTree.types().get(0)).members();
+    List<StatementTree> mBody = ((MethodTree) members.get(0)).block().body();
+
+    ExpressionTree o1 = getMethodArg(mBody.get(0));
+    ExpressionTree o2 = getMethodArg(mBody.get(1));
+    ExpressionTree o3 = getMethodArg(mBody.get(3));
+
+    assertThat(SyntacticEquivalence.areEquivalentIncludingSameVariables(o1, o2)).isFalse();
+    assertThat(SyntacticEquivalence.areEquivalentIncludingSameVariables(o1, o3)).isFalse();
+    assertThat(SyntacticEquivalence.areEquivalentIncludingSameVariables(o2, o3)).isFalse();
+    assertThat(SyntacticEquivalence.areEquivalentIncludingSameVariables(o3, o1)).isFalse();
   }
 
   @Test

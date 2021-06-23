@@ -25,9 +25,10 @@ import java.util.Objects;
 import java.util.function.BiPredicate;
 import javax.annotation.Nullable;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -66,6 +67,16 @@ public final class SyntacticEquivalence {
    */
   public static boolean areSemanticallyEquivalent(List<? extends Tree> leftList, List<? extends Tree> rightList) {
     return areEquivalent(leftList, rightList, SyntacticEquivalence::areNotSameMethodCalls, false);
+  }
+
+  /**
+   * Syntactic equivalence with additional semantic equivalence for identifiers.
+   * Two identifiers are equivalent only if they refer to the same known symbol.
+   *
+   * @return true, if nodes are syntactically equivalent and their variables refer to the same symbols.
+   */
+  public static boolean areEquivalentIncludingSameVariables(Tree left, Tree right) {
+    return areEquivalent(left, right, SyntacticEquivalence::areDifferentVariables, false);
   }
 
   private static boolean areEquivalent(List<? extends Tree> leftList,
@@ -130,13 +141,26 @@ public final class SyntacticEquivalence {
     }
   }
 
+  private static boolean areDifferentVariables(JavaTree leftNode, JavaTree rightNode) {
+    if (!leftNode.is(Tree.Kind.IDENTIFIER) || !rightNode.is(Tree.Kind.IDENTIFIER)) {
+      return false;
+    }
+
+    Symbol leftSymbol = ((IdentifierTree) leftNode).symbol();
+    Symbol rightSymbol = ((IdentifierTree) rightNode).symbol();
+
+    if (leftSymbol.isUnknown() || rightSymbol.isUnknown()) return true;
+
+    return !leftSymbol.equals(rightSymbol);
+  }
+
   private static boolean areNotSameMethodCalls(JavaTree leftNode, JavaTree rightNode) {
     if (!leftNode.is(Tree.Kind.METHOD_INVOCATION) || !rightNode.is(Tree.Kind.METHOD_INVOCATION)) {
       return false;
     }
 
-    Symbol leftSymbol = ((MethodInvocationTreeImpl) leftNode).symbol();
-    Symbol rightSymbol = ((MethodInvocationTreeImpl) rightNode).symbol();
+    Symbol leftSymbol = ((MethodInvocationTree) leftNode).symbol();
+    Symbol rightSymbol = ((MethodInvocationTree) rightNode).symbol();
 
     if (!leftSymbol.isMethodSymbol() || !rightSymbol.isMethodSymbol()) {
       // This can happen when the symbol is unknown. If it is the case, we consider them as not the same to avoid FP.

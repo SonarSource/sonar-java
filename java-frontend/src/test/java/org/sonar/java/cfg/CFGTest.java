@@ -348,6 +348,7 @@ class CFGTest {
         case NEW_CLASS:
         case NEW_ARRAY:
         case INSTANCE_OF:
+        case PATTERN_INSTANCE_OF:
         case SWITCH_EXPRESSION:
         case LAMBDA_EXPRESSION:
         case TYPE_CAST:
@@ -1762,11 +1763,11 @@ class CFGTest {
 
   @Test
   void multiple_constructions() {
-    final CFG cfg = buildCFG("void fun(Object a) {if(a instanceof String) { Supplier<String> s = a::toString;foo(y -> y+1); a += (String) a;  } }");
+    final CFG cfg = buildCFG("void fun(Object a) {if(a instanceof String str) { Supplier<String> s = a::toString;foo(y -> y+1); a += (String) a;  } }");
     final CFGChecker cfgChecker = checker(
       block(
         element(Tree.Kind.IDENTIFIER, "a"),
-        element(Tree.Kind.INSTANCE_OF)
+        element(Tree.Kind.PATTERN_INSTANCE_OF)
         ).terminator(Tree.Kind.IF_STATEMENT).successors(0, 1),
       block(
         element(Kind.METHOD_REFERENCE),
