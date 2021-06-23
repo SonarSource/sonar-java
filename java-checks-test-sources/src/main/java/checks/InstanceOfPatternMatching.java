@@ -2,7 +2,7 @@ package checks;
 
 import java.util.Map;
 
-public class InstanceOfPatternMatching {
+public abstract class InstanceOfPatternMatching {
 
   int if1(Object o) {
     if (o instanceof String) {  // Noncompliant {{Replace this instanceof check and cast with 'instanceof String str'}} [[secondary=+1]]
@@ -99,6 +99,79 @@ public class InstanceOfPatternMatching {
     return 0;
   }
 
+  int if9(Object o) {
+    if (1 > 2 || o instanceof String || 3 > 4) {  // Compliant because the instanceof doesn't dominate the cast (would be nice to have an invalid cast SE rule to catch this as a bug)
+      System.out.println("holla");
+      String str = (String) o;
+      return str.length();
+    }
+    return 0;
+  }
+
+  int if10(Object o) {
+    if (!(o instanceof String)) {  // Compliant because the instanceof doesn't dominate the cast (would be nice to have an invalid cast SE rule to catch this as a bug)
+      System.out.println("holla");
+      String str = (String) o;
+      return str.length();
+    }
+    return 0;
+  }
+
+
+  int ifElse1(Object o) {
+    if (!(o instanceof String)) {  // Noncompliant {{Replace this instanceof check and cast with 'instanceof String str'}} [[secondary=+2]]
+    } else {
+      String str = (String) o;
+      return str.length();
+    }
+    return 0;
+  }
+
+  int ifElse2(Object o) {
+    if (o instanceof String) {  // Compliant because the condition isn't active in the else clause (would be nice to have an invalid cast SE rule to catch this as a bug)
+    } else {
+      String str = (String) o;
+      return str.length();
+    }
+    return 0;
+  }
+
+  int ifElse3(Object o) {
+    if (!(o instanceof String || 1 < 2)) {  // Noncompliant {{Replace this instanceof check and cast with 'instanceof String str'}} [[secondary=+2]]
+    } else {
+      String str = (String) o;
+      return str.length();
+    }
+    return 0;
+  }
+
+  int ifElse4(Object o) {
+    if (!(o instanceof String && 1 < 2)) {  // Compliant because the instanceof doesn't dominate the else
+    } else {
+      String str = (String) o;
+      return str.length();
+    }
+    return 0;
+  }
+
+  int ifElse5(Object o) {
+    if (!!(o instanceof String)) {  // Compliant because the condition isn't active in the else clause (would be nice to have an invalid cast SE rule to catch this as a bug)
+    } else {
+      String str = (String) o;
+      return str.length();
+    }
+    return 0;
+  }
+
+  int ifElse6(Object o) {
+    if (!!!(o instanceof String)) {  // Noncompliant {{Replace this instanceof check and cast with 'instanceof String str'}} [[secondary=+2]]
+    } else {
+      String str = (String) o;
+      return str.length();
+    }
+    return 0;
+  }
+
   boolean and1(Object o) {
     return (o instanceof String && ((String) o).length() > 0); // Noncompliant {{Replace this instanceof check and cast with 'instanceof String string'}} [[secondary=+0]]
   }
@@ -111,6 +184,19 @@ public class InstanceOfPatternMatching {
     return (1 < 4 && o instanceof String && ((String) o).length() > 0 && 23 < 42); // Noncompliant {{Replace this instanceof check and cast with 'instanceof String string'}} [[secondary=+0]]
   }
 
+  boolean and3(Object o) {
+    return (!(o instanceof String) && ((String) o).length() > 0); // Compliant because the instanceof isn't in effect for the right operand
+  }
+
+  boolean or1(Object o) {
+    return (!(o instanceof String) || ((String) o).length() > 0); // Noncompliant {{Replace this instanceof check and cast with 'instanceof String string'}} [[secondary=+0]]
+  }
+
+  boolean or2(Object o) {
+    return (o instanceof String || ((String) o).length() > 0); // Compliant because the instanceof isn't in effect for the right operand
+  }
+
+
   int ternary(Object o) {
     return (o instanceof String) ? ((String) o).length() : 0; // Noncompliant {{Replace this instanceof check and cast with 'instanceof String string'}} [[secondary=+0]]
   }
@@ -118,5 +204,50 @@ public class InstanceOfPatternMatching {
   int ternaryCompliant(Object o) {
     return (o instanceof String s) ? s.length() : 0; // Compliant
   }
+
+  abstract Object getNext();
+
+  void whileLoop1() {
+    Object o = getNext();
+    while (o instanceof String) { // Noncompliant {{Replace this instanceof check and cast with 'instanceof String str'}} [[secondary=+1]]
+      String str = (String) o;
+      o = getNext();
+    }
+  }
+
+  void whileLoop2() {
+    Object o = getNext();
+    while (!(o instanceof String)) { // Compliant because instanceof not active inside loop
+      String str = (String) o;
+      o = getNext();
+    }
+  }
+
+  void whileLoop3() {
+    Object o = getNext();
+    while (!(o instanceof String)) { // FN because we don't detect casts that come after the loop
+      o = getNext();
+    }
+    String str = (String) o;
+  }
+
+  void forLoop1() {
+    for (Object o = getNext(); o instanceof String; o = getNext()) { // Noncompliant {{Replace this instanceof check and cast with 'instanceof String str'}} [[secondary=+1]]
+      String str = (String) o;
+    }
+  }
+
+  void forLoop2() {
+    for (Object o = getNext(); !(o instanceof String); o = getNext()) { // Compliant because instanceof not active inside loop
+      String str = (String) getNext();
+    }
+  }
+
+  void forLoop3() {
+    for (Object o = getNext(); ; o = getNext()) { // Test that we don't throw for empty conditions
+      String str = (String) getNext();
+    }
+  }
+
 
 }
