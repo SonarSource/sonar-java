@@ -40,6 +40,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -68,6 +69,12 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
     .withAnyParameters()
     .build();
 
+  protected static final MethodMatchers STRING_FORMATTED = MethodMatchers.create()
+    .ofTypes(JAVA_LANG_STRING)
+    .names("formatted")
+    .withAnyParameters()
+    .build();
+
   protected static final Pattern MESSAGE_FORMAT_PATTERN = Pattern.compile("\\{(?<index>\\d+)(?<type>,\\w+)?(?<style>,[^}]*)?\\}");
 
   @Override
@@ -75,6 +82,7 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
     return MethodMatchers.or(
       MethodMatchers.create()
         .ofTypes(JAVA_LANG_STRING).names(FORMAT_METHOD_NAME).withAnyParameters().build(),
+      STRING_FORMATTED,
       MethodMatchers.create()
         .ofTypes("java.util.Formatter").names(FORMAT_METHOD_NAME).withAnyParameters().build(),
       MethodMatchers.create()
@@ -90,21 +98,24 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
       // method resolved but not all the parameters are
       return;
     }
-    ExpressionTree formatTree;
-    List<ExpressionTree> args;
-    // Check type of first argument:
-    if (arguments.get(0).symbolType().is(JAVA_LANG_STRING)) {
-      formatTree = arguments.get(0);
-      args = arguments.subList(1, arguments.size());
+    if (STRING_FORMATTED.matches(mit)) {
+      if (!(mit.methodSelect().is(Tree.Kind.MEMBER_SELECT))) {
+        return;
+      }
+      ExpressionTree formatTree = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
+      checkFormatting(mit, isMessageFormat, formatTree, arguments);
+    } else if (arguments.get(0).symbolType().is(JAVA_LANG_STRING)) {
+      checkFormatting(mit, isMessageFormat, arguments.get(0), arguments.subList(1, arguments.size()));
     } else {
       if (arguments.size() < 2) {
         // probably use a lambda or any other supplier form to get a message
         return;
       }
-      // format method with "Locale" or "Level" as first argument, skip that one.
-      formatTree = arguments.get(1);
-      args = arguments.subList(2, arguments.size());
+      checkFormatting(mit, isMessageFormat, arguments.get(1), arguments.subList(2, arguments.size()));
     }
+  }
+
+  private void checkFormatting(MethodInvocationTree mit, boolean isMessageFormat, ExpressionTree formatTree, List<ExpressionTree> args) {
     if (formatTree.is(Tree.Kind.STRING_LITERAL)) {
       String formatString = LiteralUtils.trimQuotes(((LiteralTree) formatTree).value());
       if (isMessageFormat && isProbablyLog4jFormatterLogger(mit, formatString)) {

@@ -70,6 +70,20 @@ public class PrintfFailCheck {
     String.format("value is %d", value); // Compliant
     String.format("%0$s", "tmp"); // Compliant, reported by S3457
 
+    // String.formatted ================================================================================================
+    "The value of my integer is %d".formatted("Hello World");  // Noncompliant {{An 'int' is expected rather than a String.}}
+    "First {0} and then {1}".formatted("foo", "bar");
+    "Duke's Birthday year is %tX".formatted(12l);  // Noncompliant {{X is not a supported time conversion character}}
+    "Display %3$d and then %d".formatted(1, 2, 3);
+    "Too many arguments %d and %d".formatted(1, 2, 3);
+    "Not enough arguments %d and %d".formatted(1);  // Noncompliant {{Not enough arguments.}}
+    "%1$d %2$d %9$-3.3s".formatted(1, 2, "hello");  // Noncompliant {{Not enough arguments to feed formater at index 9: '%9$'.}}
+    "%12$s".formatted(1, 2, "hello");  // Noncompliant {{Not enough arguments to feed formater at index 12: '%12$'.}}
+    "First Line\n %d".formatted(1);
+    "First Line".formatted();
+    "First Line%%".formatted();
+    "First Line%n".formatted(); // Compliant
+
     // Print Writer / Stream / Formatter ===============================================================================
     PrintWriter pr = new PrintWriter("file");
     PrintStream ps = new PrintStream("file");

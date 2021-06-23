@@ -83,6 +83,21 @@ public class PrintfMisuseCheck {
     String.format("Dude's Birthday: %1$tm %1$te,%1$tY", c); // Compliant
     String.format("log/protocol_%tY_%<tm_%<td_%<tH_%<tM_%<tS.zip", new java.util.Date());
 
+    // String.formatted ================================================================================================
+    "The value of my integer is %d".formatted("Hello World");
+    "First {0} and then {1}".formatted("foo", "bar");  // Noncompliant  {{Looks like there is a confusion with the use of java.text.MessageFormat, parameters will be simply ignored here}}
+    "{1}".formatted("foo", "bar");  // Noncompliant
+    "Duke's Birthday year is %tX".formatted(12l);
+    "Display %3$d and then %d".formatted(1, 2, 3);   // Noncompliant {{2nd argument is not used.}}
+    "Display %2$d and then %2$d".formatted(1, 2);   // Noncompliant {{first argument is not used.}}
+    "Too many arguments %d and %d".formatted(1, 2, 3);  // Noncompliant {{3rd argument is not used.}}
+    "Not enough arguments %d and %d".formatted(1);
+    "%1$d %2$d %9$-3.3s".formatted(1, 2, "hello");  // Compliant - not enough arguments but this will be caught by S2275
+    "%12$s".formatted(1, 2, "hello");  // Compliant - not enough arguments but this will be caught by S2275
+    "First Line\n %d".formatted(1); // Noncompliant {{%n should be used in place of \n to produce the platform-specific line separator.}}
+    "First Line".formatted();   // Noncompliant {{String contains no format specifiers.}}
+
+
     // Print Writer / Stream / Formatter ===============================================================================
     PrintWriter pr = new PrintWriter("file");
     PrintStream ps = new PrintStream("file");
