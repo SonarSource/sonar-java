@@ -23,10 +23,8 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.collections.SetUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -46,48 +44,9 @@ import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNullable;
 @Rule(key = "S1168")
 public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
 
-  private static final Set<String> COLLECTION_TYPES = SetUtils.immutableSetOf(
-    "java.beans.BeanContext",
-    "java.beans.beancontext.BeanContextServices",
-    "java.beans.beancontext.BeanContextServicesSupport",
-    "javax.management.AttributeList",
-    "javax.management.relation.RoleList",
-    "javax.management.relation.RoleUnresolvedList",
-    "javax.print.attribute.standard.JobStateReason",
-    "java.util.AbstractCollection",
-    "java.util.AbstractList",
-    "java.util.AbstractQueue",
-    "java.util.AbstractSequentialList",
-    "java.util.AbstractSet",
-    "java.util.ArrayDeque",
-    "java.util.ArrayList",
+  private static final List<String> COLLECTION_TYPES = Arrays.asList(
     "java.util.Collection",
-    "java.util.Deque",
-    "java.util.EnumSet",
-    "java.util.HashSet",
-    "java.util.LinkedHashSet",
-    "java.util.LinkedList",
-    "java.util.List",
-    "java.util.NavigableSet",
-    "java.util.PriorityQueue",
-    "java.util.Queue",
-    "java.util.Set",
-    "java.util.SortedSet",
-    "java.util.Stack",
-    "java.util.TreeSet",
-    "java.util.Vector",
-    "java.util.concurrent.ArrayBlockingQueue",
-    "java.util.concurrent.BlockingDeque",
-    "java.util.concurrent.BlockingQueue",
-    "java.util.concurrent.ConcurrentLinkedQueue",
-    "java.util.concurrent.ConcurrentSkipListSet",
-    "java.util.concurrent.CopyOnWriteArrayList",
-    "java.util.concurrent.CopyOnWriteArraySet",
-    "java.util.concurrent.DelayQueue",
-    "java.util.concurrent.LinkedBlockingDeque",
-    "java.util.concurrent.LinkedBlockingQueue",
-    "java.util.concurrent.PriorityBlockingQueue",
-    "java.util.concurrent.SynchronousQueue"
+    "javax.print.attribute.standard.JobStateReason"
   );
 
   private static final MethodMatchers ITEM_PROCESSOR_PROCESS_METHOD = MethodMatchers.create()
@@ -121,7 +80,11 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
       } else if (methodReturnType.is(Tree.Kind.MEMBER_SELECT)) {
         identifierTree = ((MemberSelectExpressionTree) methodReturnType).identifier();
       }
-      return identifierTree != null && COLLECTION_TYPES.contains(identifierTree.symbol().type().fullyQualifiedName());
+      if (identifierTree == null) {
+        return false;
+      }
+      Type type = identifierTree.symbol().type();
+      return COLLECTION_TYPES.stream().anyMatch(type::isSubtypeOf);
     }
   }
 
