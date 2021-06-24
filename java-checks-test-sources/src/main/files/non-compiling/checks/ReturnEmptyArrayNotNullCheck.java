@@ -2,14 +2,16 @@ package checks;
 
 import java.util.List;
 
+import org.eclipse.draw2d.geometry.Vector;
+
 class ReturnEmptyArrayNotNullCheck {
 
   public ReturnEmptyArrayNotNullCheck() {
-    return null;        
+    return null;
   }
 
   public int f11() {
-    return null;        
+    return null;
   }
 }
 
@@ -43,6 +45,20 @@ class ReturnEmptyArrayNotNullCheckD implements ItemProcessor<Integer, List<Strin
   }
 
   public List<String> process2(Integer i) {
+    return null; // Noncompliant
+  }
+}
+
+class ReturnUnknownVector {
+  public Vector returnNull() {
+    return null; // Compliant
+  }
+
+  public unknown.origin.Vector returnNull2() {
+    return null; // Compliant
+  }
+
+  public java.util.Vector<Object> returnNull3() {
     return null; // Noncompliant
   }
 }

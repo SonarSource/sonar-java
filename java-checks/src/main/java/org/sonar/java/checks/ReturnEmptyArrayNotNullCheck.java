@@ -23,10 +23,8 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.collections.SetUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -45,50 +43,6 @@ import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNullable;
 
 @Rule(key = "S1168")
 public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
-
-  private static final Set<String> COLLECTION_TYPES = SetUtils.immutableSetOf(
-    "Collection",
-    "BeanContext",
-    "BeanContextServices",
-    "BlockingDeque",
-    "BlockingQueue",
-    "Deque",
-    "List",
-    "NavigableSet",
-    "Queue",
-    "Set",
-    "SortedSet",
-    "AbstractCollection",
-    "AbstractList",
-    "AbstractQueue",
-    "AbstractSequentialList",
-    "AbstractSet",
-    "ArrayBlockingQueue",
-    "ArrayDeque",
-    "ArrayList",
-    "AttributeList",
-    "BeanContextServicesSupport",
-    "BeanContextSupport",
-    "ConcurrentLinkedQueue",
-    "ConcurrentSkipListSet",
-    "CopyOnWriteArrayList",
-    "CopyOnWriteArraySet",
-    "DelayQueue",
-    "EnumSet",
-    "HashSet",
-    "JobStateReasons",
-    "LinkedBlockingDeque",
-    "LinkedBlockingQueue",
-    "LinkedHashSet",
-    "LinkedList",
-    "PriorityBlockingQueue",
-    "PriorityQueue",
-    "RoleList",
-    "RoleUnresolvedList",
-    "Stack",
-    "SynchronousQueue",
-    "TreeSet",
-    "Vector");
 
   private static final MethodMatchers ITEM_PROCESSOR_PROCESS_METHOD = MethodMatchers.create()
     .ofSubTypes("org.springframework.batch.item.ItemProcessor").names("process").withAnyParameters().build();
@@ -121,7 +75,7 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
       } else if (methodReturnType.is(Tree.Kind.MEMBER_SELECT)) {
         identifierTree = ((MemberSelectExpressionTree) methodReturnType).identifier();
       }
-      return identifierTree != null && COLLECTION_TYPES.contains(identifierTree.name());
+      return identifierTree != null && identifierTree.symbol().type().isSubtypeOf("java.util.Collection");
     }
   }
 

@@ -64,6 +64,9 @@
 1663,
 1687,
 ],
+'org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java':[
+638,
+],
 'org.eclipse.jetty:jetty-project:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/HttpTester.java':[
 361,
 ],
