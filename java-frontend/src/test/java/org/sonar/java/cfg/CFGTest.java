@@ -300,6 +300,11 @@ class CFGTest {
       this.name = name;
       switch (kind) {
         case VARIABLE:
+        case CLASS:
+        case ENUM:
+        case INTERFACE:
+        case RECORD:
+        case ANNOTATION_TYPE:
         case IDENTIFIER:
         case CHAR_LITERAL:
         case STRING_LITERAL:
@@ -394,6 +399,12 @@ class CFGTest {
             assertThat(select.identifier()).as("Method").hasToString(name);
           }
           break;
+        case CLASS:
+        case ENUM:
+        case INTERFACE:
+        case RECORD:
+        case ANNOTATION_TYPE:
+          assertThat(((ClassTree) element).simpleName().name()).as("Type name").isEqualTo(name);
         default:
           // No need to test any associated symbol for the other cases
           break;
@@ -450,6 +461,22 @@ class CFGTest {
     final CFG cfg = buildCFG("void fun() { bar();}");
     final CFGChecker cfgChecker = checker(
       block(
+        element(Tree.Kind.IDENTIFIER, "bar"),
+        element(Tree.Kind.METHOD_INVOCATION)).successors(0));
+    cfgChecker.check(cfg);
+    CFG.Block entry = cfg.entryBlock();
+    assertThat(entry.isMethodExitBlock()).as("1st block is not an exit").isFalse();
+    assertThat(entry.successors()).as("number of successors").hasSize(1);
+    CFG.Block exit = entry.successors().iterator().next();
+    assertThat(exit.isMethodExitBlock()).as("2nd block is an exit").isTrue();
+  }
+
+  @Test
+  void cfg_with_record() {
+    final CFG cfg = buildCFG("void fun() { record R(int x) {} bar();}");
+    final CFGChecker cfgChecker = checker(
+      block(
+        element(Tree.Kind.RECORD, "R"),
         element(Tree.Kind.IDENTIFIER, "bar"),
         element(Tree.Kind.METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
