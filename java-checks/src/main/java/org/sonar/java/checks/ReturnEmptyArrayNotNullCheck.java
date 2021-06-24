@@ -44,11 +44,6 @@ import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNullable;
 @Rule(key = "S1168")
 public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
 
-  private static final List<String> COLLECTION_TYPES = Arrays.asList(
-    "java.util.Collection",
-    "javax.print.attribute.standard.JobStateReason"
-  );
-
   private static final MethodMatchers ITEM_PROCESSOR_PROCESS_METHOD = MethodMatchers.create()
     .ofSubTypes("org.springframework.batch.item.ItemProcessor").names("process").withAnyParameters().build();
 
@@ -80,11 +75,7 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
       } else if (methodReturnType.is(Tree.Kind.MEMBER_SELECT)) {
         identifierTree = ((MemberSelectExpressionTree) methodReturnType).identifier();
       }
-      if (identifierTree == null) {
-        return false;
-      }
-      Type type = identifierTree.symbol().type();
-      return COLLECTION_TYPES.stream().anyMatch(type::isSubtypeOf);
+      return identifierTree != null && identifierTree.symbol().type().isSubtypeOf("java.util.Collection");
     }
   }
 
