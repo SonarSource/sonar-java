@@ -60,7 +60,7 @@ public class StreamConsumedCheck extends SECheck {
   private static final MethodMatchers TERMINAL_OPERATIONS = MethodMatchers.or(
     MethodMatchers.create()
       .ofTypes(STREAM_TYPES.toArray(new String[0]))
-      .names("forEach", "forEachOrdered", "toArray", "collect", "reduce", "findAny", "findFirst", "count", "min", "max", "anyMatch",
+      .names("forEach", "forEachOrdered", "toArray", "toList", "collect", "reduce", "findAny", "findFirst", "count", "min", "max", "anyMatch",
         "allMatch", "noneMatch", "average", "summaryStatistics", "sum")
       .withAnyParameters()
       .build(),
@@ -140,9 +140,8 @@ public class StreamConsumedCheck extends SECheck {
         if (isPipelineConsumed(programState, ownerSV)) {
           reportIssue(mrt, "Refactor this code so that this consumed stream pipeline is not reused.", flow(ownerSV, context.getNode()));
           return null;
-        } else {
-          return ListUtils.getOnlyElement(ownerSV.setConstraint(programState, StreamPipelineConstraint.CONSUMED));
         }
+        return ListUtils.getOnlyElement(ownerSV.setConstraint(programState, StreamPipelineConstraint.CONSUMED));
       }
     }
     return programState;
