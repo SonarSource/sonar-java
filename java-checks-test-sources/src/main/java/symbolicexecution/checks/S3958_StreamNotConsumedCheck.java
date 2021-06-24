@@ -22,6 +22,11 @@ abstract class S3958_StreamNotConsumedCheck {
     stream = stream.limit(1);
   }
 
+  public List<String> java16(List<String> collection) {
+    return collection.stream()
+      .map(String::toUpperCase)
+      .toList();
+  }
 
   void compliant() {
     Stream<Integer> stream = Stream.of(1, 2, 3);
