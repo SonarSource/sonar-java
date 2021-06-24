@@ -34,6 +34,14 @@ class LeftCurlyBraceStartLineCheckTest {
   }
 
   @Test
+  void java_16() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.testSourcesPath("checks/LeftCurlyBraceStartLineCheck_java16.java"))
+      .withCheck(new LeftCurlyBraceStartLineCheck())
+      .verifyIssues();
+  }
+
+  @Test
   void detected_switch_expressions() {
     CheckVerifier.newVerifier()
       .onFile(TestUtils.nonCompilingTestSourcesPath("checks/LeftCurlyBraceStartLineCheck.java"))

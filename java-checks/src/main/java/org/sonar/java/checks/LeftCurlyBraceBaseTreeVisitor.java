@@ -103,7 +103,8 @@ public abstract class LeftCurlyBraceBaseTreeVisitor extends BaseTreeVisitor impl
   private static SyntaxToken getIdentifierToken(TypeTree typeTree) {
     if (typeTree.is(Tree.Kind.IDENTIFIER)) {
       return ((IdentifierTree) typeTree).identifierToken();
-    } else if (typeTree.is(Tree.Kind.MEMBER_SELECT)) {
+    }
+    if (typeTree.is(Tree.Kind.MEMBER_SELECT)) {
       return ((MemberSelectExpressionTree) typeTree).identifier().identifierToken();
     } else {
       return ((ParameterizedTypeTree) typeTree).typeArguments().closeBracketToken();
@@ -208,10 +209,16 @@ public abstract class LeftCurlyBraceBaseTreeVisitor extends BaseTreeVisitor impl
 
   private static SyntaxToken getLastTokenFromSignature(MethodTree methodTree) {
     if (methodTree.throwsClauses().isEmpty()) {
+      if (isCompactConstructor(methodTree)) {
+        return methodTree.simpleName().identifierToken();
+      }
       return methodTree.closeParenToken();
-    } else {
-      return getIdentifierToken(ListUtils.getLast(methodTree.throwsClauses()));
     }
+    return getIdentifierToken(ListUtils.getLast(methodTree.throwsClauses()));
+  }
+
+  private static boolean isCompactConstructor(MethodTree methodTree) {
+    return methodTree.is(Tree.Kind.CONSTRUCTOR) && methodTree.closeParenToken() == null;
   }
 
   @Override
