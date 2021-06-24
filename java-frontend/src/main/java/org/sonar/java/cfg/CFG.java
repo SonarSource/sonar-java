@@ -591,6 +591,7 @@ public class CFG implements ControlFlowGraph {
       // store declarations as complete blocks.
       case EMPTY_STATEMENT:
       case CLASS:
+      case RECORD:
       case ENUM:
       case ANNOTATION_TYPE:
       case INTERFACE:
