@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class UndocumentedApiCheckTest {
 
@@ -33,6 +34,17 @@ class UndocumentedApiCheckTest {
     assertThat(check.exclusion).isEqualTo("**.internal.**");
     CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApi.java")
+      .withCheck(check)
+      .verifyIssues();
+  }
+
+  @Test
+  void java_16() {
+    UndocumentedApiCheck check = new UndocumentedApiCheck();
+    assertThat(check.forClasses).isEqualTo("**.api.**");
+    assertThat(check.exclusion).isEqualTo("**.internal.**");
+    CheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/api/undocumentedAPI/UndocumentedAPI_java16.java"))
       .withCheck(check)
       .verifyIssues();
   }
