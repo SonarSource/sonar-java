@@ -19,6 +19,13 @@
  */
 package org.sonar.java.ast.visitors;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.Objects;
+import javax.annotation.Nullable;
+import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -38,18 +45,14 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import javax.annotation.Nullable;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.Objects;
-
 public class PublicApiChecker extends BaseTreeVisitor {
 
   private static final Tree.Kind[] CLASS_KINDS = {
       Tree.Kind.CLASS,
       Tree.Kind.INTERFACE,
       Tree.Kind.ENUM,
-      Tree.Kind.ANNOTATION_TYPE
+      Tree.Kind.ANNOTATION_TYPE,
+      Tree.Kind.RECORD
   };
 
   private static final Tree.Kind[] METHOD_KINDS = {
@@ -57,15 +60,10 @@ public class PublicApiChecker extends BaseTreeVisitor {
       Tree.Kind.CONSTRUCTOR
   };
 
-  private static final Tree.Kind[] API_KINDS = {
-      Tree.Kind.CLASS,
-      Tree.Kind.INTERFACE,
-      Tree.Kind.ENUM,
-      Tree.Kind.ANNOTATION_TYPE,
-      Tree.Kind.METHOD,
-      Tree.Kind.CONSTRUCTOR,
-      Tree.Kind.VARIABLE
-  };
+  private static final Tree.Kind[] API_KINDS = ListUtils.concat(
+    Arrays.asList(CLASS_KINDS),
+    Arrays.asList(METHOD_KINDS),
+    Collections.singletonList(Tree.Kind.VARIABLE)).toArray(new Tree.Kind[0]);
 
   private final Deque<ClassTree> classTrees = new LinkedList<>();
   private final Deque<Tree> currentParents = new LinkedList<>();
