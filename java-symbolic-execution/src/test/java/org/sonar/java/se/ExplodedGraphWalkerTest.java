@@ -134,6 +134,15 @@ class ExplodedGraphWalkerTest {
   }
 
   @Test
+  void record_constructor_parameters() throws Exception {
+    SECheckVerifier.newVerifier()
+      .onFile("src/test/files/se/RecordConstructorParameters.java")
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
+  }
+
+  @Test
   void constraints_on_fields() throws Exception {
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/ConstraintsOnFields.java")
