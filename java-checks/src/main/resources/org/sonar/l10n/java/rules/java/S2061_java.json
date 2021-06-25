@@ -12,5 +12,10 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2061",
   "sqKey": "S2061",
-  "scope": "All"
+  "scope": "All",
+  "securityStandards": {
+    "CERT": [
+      "SER01-J."
+    ]
+  }
 }

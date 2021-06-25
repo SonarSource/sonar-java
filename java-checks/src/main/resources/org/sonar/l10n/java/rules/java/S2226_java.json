@@ -14,5 +14,10 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2226",
   "sqKey": "S2226",
-  "scope": "Main"
+  "scope": "Main",
+  "securityStandards": {
+    "CERT": [
+      "MSC11-J."
+    ]
+  }
 }

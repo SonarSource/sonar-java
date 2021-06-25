@@ -8,7 +8,8 @@
   },
   "tags": [
     "cwe",
-    "owasp-a6"
+    "owasp-a6",
+    "owasp-m5"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-3329",
@@ -17,10 +18,17 @@
   "securityStandards": {
     "CWE": [
       330,
-      329
+      329,
+      340
     ],
     "OWASP": [
       "A6"
+    ],
+    "OWASP Mobile": [
+      "M5"
+    ],
+    "MASVS": [
+      "MSTG-CRYPTO-6"
     ]
   }
 }

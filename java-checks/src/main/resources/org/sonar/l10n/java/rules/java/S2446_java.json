@@ -13,5 +13,10 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2446",
   "sqKey": "S2446",
-  "scope": "All"
+  "scope": "All",
+  "securityStandards": {
+    "CERT": [
+      "THI02-J."
+    ]
+  }
 }

@@ -5,7 +5,7 @@
   "tags": [
     "cwe",
     "android",
-    "owasp-a3"
+    "owasp-m1"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5320",
@@ -15,8 +15,11 @@
     "CWE": [
       927
     ],
-    "OWASP": [
-      "A3"
+    "OWASP Mobile": [
+      "M1"
+    ],
+    "MASVS": [
+      "MSTG-PLATFORM-4"
     ]
   }
 }

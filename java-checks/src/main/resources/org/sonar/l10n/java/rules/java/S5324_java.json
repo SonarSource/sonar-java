@@ -4,11 +4,10 @@
   "status": "ready",
   "tags": [
     "cwe",
-    "owasp-a1",
     "sans-top25-risky",
     "android",
     "sans-top25-porous",
-    "owasp-a3"
+    "owasp-m2"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5324",
@@ -16,12 +15,13 @@
   "scope": "Main",
   "securityStandards": {
     "CWE": [
-      312,
-      20
+      312
     ],
-    "OWASP": [
-      "A1",
-      "A3"
+    "OWASP Mobile": [
+      "M2"
+    ],
+    "MASVS": [
+      "MSTG-STORAGE-1"
     ]
   }
 }

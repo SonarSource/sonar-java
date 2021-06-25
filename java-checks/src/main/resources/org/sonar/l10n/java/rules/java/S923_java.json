@@ -13,5 +13,10 @@
   "defaultSeverity": "Info",
   "ruleSpecification": "RSPEC-923",
   "sqKey": "S923",
-  "scope": "All"
+  "scope": "All",
+  "securityStandards": {
+    "CERT": [
+      "DCL50-CPP."
+    ]
+  }
 }

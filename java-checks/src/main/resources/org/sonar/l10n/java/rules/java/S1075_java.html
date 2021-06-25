@@ -8,7 +8,7 @@ customizable parameter.</p>
 <pre>
 public class Foo {
   public Collection&lt;User&gt; listUsers() {
-    File userList = new File("/home/mylogin/Dev/users.txt"); // Non-Compliant
+    File userList = new File("/home/mylogin/Dev/users.txt"); // Noncompliant
     Collection&lt;User&gt; users = parse(userList);
     return users;
   }

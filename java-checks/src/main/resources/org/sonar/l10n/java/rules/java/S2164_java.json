@@ -12,5 +12,10 @@
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-2164",
   "sqKey": "S2164",
-  "scope": "All"
+  "scope": "All",
+  "securityStandards": {
+    "CERT": [
+      "FLP02-C."
+    ]
+  }
 }

@@ -19,6 +19,10 @@
   "securityStandards": {
     "CWE": [
       190
+    ],
+    "CERT": [
+      "NUM50-J.",
+      "INT18-C."
     ]
   }
 }

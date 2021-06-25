@@ -12,5 +12,11 @@
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-126",
   "sqKey": "S126",
-  "scope": "All"
+  "scope": "All",
+  "securityStandards": {
+    "CERT": [
+      "MSC01-C.",
+      "MSC57-J."
+    ]
+  }
 }

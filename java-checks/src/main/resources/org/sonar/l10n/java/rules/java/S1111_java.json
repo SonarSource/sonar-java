@@ -17,6 +17,9 @@
   "securityStandards": {
     "CWE": [
       586
+    ],
+    "CERT": [
+      "MET12-J."
     ]
   }
 }

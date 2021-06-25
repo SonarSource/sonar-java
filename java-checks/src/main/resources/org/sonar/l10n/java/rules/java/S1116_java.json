@@ -13,5 +13,12 @@
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-1116",
   "sqKey": "S1116",
-  "scope": "All"
+  "scope": "All",
+  "securityStandards": {
+    "CERT": [
+      "MSC12-C.",
+      "MSC51-J.",
+      "EXP15-C."
+    ]
+  }
 }

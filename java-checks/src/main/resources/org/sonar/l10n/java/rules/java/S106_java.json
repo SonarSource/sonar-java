@@ -18,6 +18,9 @@
   "securityStandards": {
     "OWASP": [
       "A3"
+    ],
+    "CERT": [
+      "ERR02-J."
     ]
   }
 }

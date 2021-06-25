@@ -12,5 +12,12 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-881",
   "sqKey": "S881",
-  "scope": "All"
+  "scope": "All",
+  "securityStandards": {
+    "CERT": [
+      "EXP30-C.",
+      "EXP50-CPP.",
+      "EXP05-J."
+    ]
+  }
 }
