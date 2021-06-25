@@ -13,5 +13,10 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-3067",
   "sqKey": "S3067",
-  "scope": "All"
+  "scope": "All",
+  "securityStandards": {
+    "CERT": [
+      "LCK02-J."
+    ]
+  }
 }

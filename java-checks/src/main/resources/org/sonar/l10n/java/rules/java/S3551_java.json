@@ -13,5 +13,10 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-3551",
   "sqKey": "S3551",
-  "scope": "Main"
+  "scope": "Main",
+  "securityStandards": {
+    "CERT": [
+      "TSM00-J."
+    ]
+  }
 }

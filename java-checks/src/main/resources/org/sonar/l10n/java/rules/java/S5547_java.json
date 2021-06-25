@@ -9,10 +9,10 @@
   "tags": [
     "cwe",
     "privacy",
-    "cert",
     "owasp-a6",
     "sans-top25-porous",
-    "owasp-a3"
+    "owasp-a3",
+    "owasp-m5"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5547",
@@ -26,6 +26,15 @@
     "OWASP": [
       "A3",
       "A6"
+    ],
+    "OWASP Mobile": [
+      "M5"
+    ],
+    "MASVS": [
+      "MSTG-CRYPTO-3"
+    ],
+    "CERT": [
+      "MSC61-J."
     ]
   }
 }

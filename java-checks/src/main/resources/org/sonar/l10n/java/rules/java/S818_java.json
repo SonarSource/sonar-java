@@ -14,5 +14,11 @@
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-818",
   "sqKey": "S818",
-  "scope": "All"
+  "scope": "All",
+  "securityStandards": {
+    "CERT": [
+      "DCL16-C.",
+      "DCL50-J."
+    ]
+  }
 }

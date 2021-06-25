@@ -56,12 +56,20 @@ env.get("TMP"); // Sensitive
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-new File("/myDirectory/myfile.txt");
+new File("/myDirectory/myfile.txt");  // Compliant
 
-File.createTempFile("prefix", "suffix", new File("/mySecureDirectory"));
+File.createTempFile("prefix", "suffix", new File("/mySecureDirectory"));  // Compliant
 
-FileAttribute&lt;Set&lt;PosixFilePermission&gt;&gt; attr = PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("w+"));
-Files.createTempFile("prefix", "suffix", attr); // Compliant, created with explicit attributes.
+if(SystemUtils.IS_OS_UNIX) {
+  FileAttribute&lt;Set&lt;PosixFilePermission&gt;&gt; attr = PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwx------"));
+  Files.createTempFile("prefix", "suffix", attr); // Compliant
+}
+else {
+  File f = Files.createTempFile("prefix", "suffix").toFile();  // Compliant
+  f.setReadable(true, true);
+  f.setWritable(true, true);
+  f.setExecutable(true, true);
+}
 </pre>
 <h2>See</h2>
 <ul>

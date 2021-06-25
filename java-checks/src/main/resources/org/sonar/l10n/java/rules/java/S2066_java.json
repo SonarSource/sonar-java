@@ -13,5 +13,10 @@
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-2066",
   "sqKey": "S2066",
-  "scope": "All"
+  "scope": "All",
+  "securityStandards": {
+    "CERT": [
+      "SER05-J."
+    ]
+  }
 }

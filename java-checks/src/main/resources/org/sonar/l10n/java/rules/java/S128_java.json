@@ -18,6 +18,10 @@
   "securityStandards": {
     "CWE": [
       484
+    ],
+    "CERT": [
+      "MSC17-C.",
+      "MSC52-J."
     ]
   }
 }

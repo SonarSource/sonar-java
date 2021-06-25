@@ -13,5 +13,10 @@
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-3077",
   "sqKey": "S3077",
-  "scope": "Main"
+  "scope": "Main",
+  "securityStandards": {
+    "CERT": [
+      "CON50-J."
+    ]
+  }
 }

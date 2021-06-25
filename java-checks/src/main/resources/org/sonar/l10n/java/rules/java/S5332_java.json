@@ -4,7 +4,8 @@
   "status": "ready",
   "tags": [
     "cwe",
-    "owasp-a3"
+    "owasp-a3",
+    "owasp-m3"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5332",
@@ -17,6 +18,12 @@
     ],
     "OWASP": [
       "A3"
+    ],
+    "OWASP Mobile": [
+      "M3"
+    ],
+    "MASVS": [
+      "MSTG-NETWORK-1"
     ]
   }
 }

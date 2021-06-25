@@ -17,6 +17,9 @@
   "securityStandards": {
     "OWASP": [
       "A3"
+    ],
+    "CERT": [
+      "MSC03-J."
     ]
   }
 }

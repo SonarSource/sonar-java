@@ -14,5 +14,10 @@
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-1163",
   "sqKey": "S1163",
-  "scope": "Main"
+  "scope": "Main",
+  "securityStandards": {
+    "CERT": [
+      "ERR05-J."
+    ]
+  }
 }

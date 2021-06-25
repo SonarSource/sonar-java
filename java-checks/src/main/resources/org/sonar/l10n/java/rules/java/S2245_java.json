@@ -8,8 +8,8 @@
   },
   "tags": [
     "cwe",
-    "cert",
-    "owasp-a3"
+    "owasp-a3",
+    "owasp-m5"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2245",
@@ -19,10 +19,22 @@
     "CWE": [
       338,
       330,
-      326
+      326,
+      1241
     ],
     "OWASP": [
       "A3"
+    ],
+    "OWASP Mobile": [
+      "M5"
+    ],
+    "MASVS": [
+      "MSTG-CRYPTO-6"
+    ],
+    "CERT": [
+      "MSC02-J.",
+      "MSC30-C.",
+      "MSC50-CPP."
     ]
   }
 }

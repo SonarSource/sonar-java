@@ -10,13 +10,14 @@ This works well, but it creates a new <code>String</code> for each call to the <
   <li> <code>startsWith(String prefix)</code> </li>
 </ul>
 <p>For each of these methods, another method with an additional parameter is available to specify an offset.</p>
-<p>Using these methods gives the same result while avoiding the creation of additional <code>String</code> instances.</p>
+<p>Using these methods will avoid the creation of additional <code>String</code> instances. For indexOf methods, adjust the returned value by
+subtracting the substring index parameter to obtain the same result.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 str.substring(beginIndex).indexOf(char1); // Noncompliant; a new String is going to be created by "substring"
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-str.indexOf(char1, beginIndex);
+str.indexOf(char1, beginIndex) - beginIndex; // index for char1 not found is (-1-beginIndex)
 </pre>
 

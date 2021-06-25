@@ -13,5 +13,10 @@
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-1113",
   "sqKey": "ObjectFinalizeOverridenCheck",
-  "scope": "Main"
+  "scope": "Main",
+  "securityStandards": {
+    "CERT": [
+      "MET12-J."
+    ]
+  }
 }

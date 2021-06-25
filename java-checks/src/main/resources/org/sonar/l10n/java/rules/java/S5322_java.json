@@ -4,7 +4,7 @@
   "status": "ready",
   "tags": [
     "cwe",
-    "owasp-a1",
+    "owasp-m1",
     "sans-top25-insecure",
     "android"
   ],
@@ -16,8 +16,11 @@
     "CWE": [
       925
     ],
-    "OWASP": [
-      "A1"
+    "OWASP Mobile": [
+      "M1"
+    ],
+    "MASVS": [
+      "MSTG-PLATFORM-2"
     ]
   }
 }

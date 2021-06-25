@@ -13,5 +13,10 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2326",
   "sqKey": "S2326",
-  "scope": "All"
+  "scope": "All",
+  "securityStandards": {
+    "CERT": [
+      "MSC12-CPP."
+    ]
+  }
 }
