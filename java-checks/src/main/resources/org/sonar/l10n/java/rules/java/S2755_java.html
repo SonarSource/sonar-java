@@ -1,4 +1,31 @@
-<h2>Noncompliant Code Example</h2>
+<p>XML standard allows the use of entities, declared in the DOCTYPE of the document, which can be <a
+href="https://www.w3.org/TR/xml/#sec-internal-ent">internal</a> or <a href="https://www.w3.org/TR/xml/#sec-external-ent">external</a>.</p>
+<p>When parsing the XML file, the content of the external entities is retrieved from an external storage such as the file system or network, which may
+lead, if no restrictions are put in place, to arbitrary file disclosures or <a
+href="https://www.owasp.org/index.php/Server_Side_Request_Forgery">server-side request forgery (SSRF)</a> vulnerabilities.</p>
+<pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;!DOCTYPE person [
+  &lt;!ENTITY file SYSTEM "file:///etc/passwd"&gt;
+  &lt;!ENTITY ssrf SYSTEM "https://internal.network/sensitive_information"&gt;
+]&gt;
+
+&lt;person&gt;
+  &lt;name&gt;&amp;file;&lt;/name&gt;
+  &lt;city&gt;&amp;ssrf;&lt;/city&gt;
+  &lt;age&gt;18&lt;/age&gt;
+&lt;/person&gt;
+</pre>
+<p>It’s recommended to limit resolution of external entities by using one of these solutions:</p>
+<ul>
+  <li> If DOCTYPE is not necessary, completely disable all DOCTYPE declarations. </li>
+  <li> If external entities are not necessary, completely disable their declarations. </li>
+  <li> If external entities are necessary then:
+    <ul>
+      <li> Use XML processor features, if available, to authorize only required protocols (eg: https). </li>
+      <li> And use an entity resolver (and optionally an XML Catalog) to resolve only trusted entities. == Noncompliant Code Example </li>
+    </ul>  </li>
+</ul>
 <p>For <a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilder</a>, <a
 href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/SAXParserFactory.html">SAXParser</a>, <a
 href="https://docs.oracle.com/javase/9/docs/api/javax/xml/stream/XMLInputFactory.html">XMLInput</a>, <a
