@@ -72,6 +72,7 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -361,7 +362,7 @@ public class ExplodedGraphWalker {
     boolean nullableParameters = isGloballyAnnotatedParameterNullable(methodTree.symbol());
     boolean hasMethodBehavior = methodBehavior != null;
 
-    for (final VariableTree variableTree : tree.parameters()) {
+    for (final VariableTree variableTree : methodOrRecordConstructorParameters(tree)) {
       final SymbolicValue sv = constraintManager.createSymbolicValue(variableTree);
       Symbol variableSymbol = variableTree.symbol();
       if (hasMethodBehavior) {
@@ -384,6 +385,14 @@ public class ExplodedGraphWalker {
       }
     }
     return stateStream.collect(Collectors.toList());
+  }
+
+  private static List<VariableTree> methodOrRecordConstructorParameters(MethodTree methodTree) {
+    Tree parent = methodTree.parent();
+    if (parent.kind() == Tree.Kind.RECORD && methodTree.openParenToken() == null) {
+      return ((ClassTree) parent).recordComponents();
+    }
+    return methodTree.parameters();
   }
 
   private static void throwMaximumStartingStates(MethodTree tree) {

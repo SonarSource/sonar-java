@@ -127,6 +127,23 @@ class JSymbolTest {
   }
 
   @Test
+  void record_enclosingClass() {
+    JavaTree.CompilationUnitTreeImpl cu = test("record C1(int f) { record C2(int p) { } }");
+    ClassTreeImpl c1 = (ClassTreeImpl) cu.types().get(0);
+    VariableTreeImpl f = (VariableTreeImpl) c1.recordComponents().get(0);
+    ClassTreeImpl c2 = (ClassTreeImpl) c1.members().get(0);
+    VariableTreeImpl p = (VariableTreeImpl) c2.recordComponents().get(0);
+
+    assertThat(cu.sema.variableSymbol(f.variableBinding))
+      .as("of field")
+      .hasEnclosingClass(cu.sema.typeSymbol(c1.typeBinding));
+
+    assertThat(cu.sema.variableSymbol(p.variableBinding))
+      .as("of method parameter")
+      .hasEnclosingClass(cu.sema.typeSymbol(c2.typeBinding));
+  }
+
+  @Test
   void variable_in_class_initializer() {
     JavaTree.CompilationUnitTreeImpl cu = test("enum E { C; { int i; } }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);

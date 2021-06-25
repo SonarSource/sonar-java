@@ -411,6 +411,7 @@ abstract class JSymbol implements Symbol {
       node = node.parent();
       switch (node.kind()) {
         case CLASS:
+        case RECORD:
         case ENUM:
           // variable declaration in a static or instance initializer
           // or local variable declaration in recovered method
