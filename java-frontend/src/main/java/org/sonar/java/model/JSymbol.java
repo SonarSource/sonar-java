@@ -203,14 +203,29 @@ abstract class JSymbol implements Symbol {
       // array.length
       return Symbols.unknownSymbol;
     }
-    do {
+    boolean initializerBlock = false;
+    boolean staticInitializerBlock = false;
+    while (true) {
       node = node.parent();
       switch (node.kind()) {
         case CLASS:
         case RECORD:
         case ENUM:
-          // variable declaration in a static or instance initializer
-          return sema.typeSymbol(((ClassTreeImpl) node).typeBinding);
+          JTypeSymbol typeSymbol = sema.typeSymbol(((ClassTreeImpl) node).typeBinding);
+          if (initializerBlock) {
+            return sema.initializerBlockSymbol(typeSymbol);
+          }
+          if (staticInitializerBlock) {
+            return sema.staticInitializerBlockSymbol(typeSymbol);
+          }
+          // Record parameters
+          return typeSymbol;
+        case INITIALIZER:
+          initializerBlock = true;
+          break;
+        case STATIC_INITIALIZER:
+          staticInitializerBlock = true;
+          break;
         case METHOD:
         case CONSTRUCTOR:
           // local variable declaration in recovered method
@@ -220,7 +235,7 @@ abstract class JSymbol implements Symbol {
           // continue exploring parent
           break;
       }
-    } while (true);
+    }
   }
 
   @Override

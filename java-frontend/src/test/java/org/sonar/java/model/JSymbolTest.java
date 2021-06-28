@@ -27,6 +27,7 @@ import org.sonar.java.model.declaration.EnumConstantTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
@@ -143,20 +144,64 @@ class JSymbolTest {
       .hasEnclosingClass(cu.sema.typeSymbol(c2.typeBinding));
   }
 
-  @Test
-  void variable_in_class_initializer() {
-    JavaTree.CompilationUnitTreeImpl cu = test("enum E { C; { int i; } }");
+  private void variable_in_class_initializer(boolean isStatic) {
+    String src = "enum E { C; " + (isStatic ? "static " : "") + "{ int i; } }";
+    JavaTree.CompilationUnitTreeImpl cu = test(src);
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     BlockTreeImpl b = (BlockTreeImpl) c.members().get(1);
     VariableTreeImpl v = (VariableTreeImpl) b.body().get(0);
+    Symbol.TypeSymbol t = cu.sema.typeSymbol(c.typeBinding);
 
-    assertThat(cu.sema.variableSymbol(v.variableBinding))
-      .hasOwner(cu.sema.typeSymbol(((ClassTreeImpl) v.symbol().owner().declaration()).typeBinding))
-      .hasOwner(cu.sema.typeSymbol(c.typeBinding));
+    JVariableSymbol variableSymbol = cu.sema.variableSymbol(v.variableBinding);
+    assertThat(variableSymbol).isSameAs(v.symbol());
+    JInitializerBlockSymbol initializerBlock = (JInitializerBlockSymbol) variableSymbol.owner();
 
-    assertThat(cu.sema.variableSymbol(v.variableBinding))
-      .hasEnclosingClass(cu.sema.typeSymbol(((ClassTreeImpl) v.symbol().owner().declaration()).typeBinding))
-      .hasEnclosingClass(cu.sema.typeSymbol(c.typeBinding));
+    if (isStatic) {
+      assertThat(initializerBlock).isSameAs(cu.sema.staticInitializerBlockSymbol((JTypeSymbol) c.symbol()));
+    } else {
+      assertThat(initializerBlock).isSameAs(cu.sema.initializerBlockSymbol((JTypeSymbol) c.symbol()));
+    }
+
+    assertThat(variableSymbol).hasEnclosingClass(t);
+    assertThat(initializerBlock).hasEnclosingClass(t).hasOwner(t);
+    assertThat(initializerBlock.isStatic()).isEqualTo(isStatic);
+    assertThat(initializerBlock).hasName(isStatic ? "<clinit>" : "<init>");
+    assertThat(initializerBlock.signature()).isEqualTo(isStatic ? "E.<clinit>" : "E.<init>");
+
+    assertThat(initializerBlock.isMethodSymbol()).isTrue();
+    assertThat(initializerBlock.isVariableSymbol()).isFalse();
+    assertThat(initializerBlock.isTypeSymbol()).isFalse();
+    assertThat(initializerBlock.isEnum()).isFalse();
+    assertThat(initializerBlock.isInterface()).isFalse();
+    assertThat(initializerBlock.isPackageSymbol()).isFalse();
+    assertThat(initializerBlock.isFinal()).isFalse();
+    assertThat(initializerBlock.isAbstract()).isFalse();
+    assertThat(initializerBlock.isPrivate()).isFalse();
+    assertThat(initializerBlock.isProtected()).isFalse();
+    assertThat(initializerBlock.isPublic()).isFalse();
+    assertThat(initializerBlock.isPackageVisibility()).isFalse();
+    assertThat(initializerBlock.isDeprecated()).isFalse();
+    assertThat(initializerBlock.isVolatile()).isFalse();
+    assertThat(initializerBlock.isUnknown()).isFalse();
+
+    assertThat(initializerBlock.declaration()).isNull();
+    assertThat(initializerBlock.returnType()).isUnknown();
+    assertThat(initializerBlock).isOfUnknownType();
+    assertThat(initializerBlock.overriddenSymbol()).isNull();
+    assertThat(initializerBlock.overriddenSymbols()).isEmpty();
+    assertThat(initializerBlock.usages()).isEmpty();
+    assertThat(initializerBlock.parameterTypes()).isEmpty();
+    assertThat(initializerBlock.thrownTypes()).isEmpty();
+  }
+
+  @Test
+  void variable_in_class_initializer() {
+    variable_in_class_initializer(false);
+  }
+
+  @Test
+  void variable_in_static_class_initializer() {
+    variable_in_class_initializer(true);
   }
 
   @Test
