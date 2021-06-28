@@ -1,5 +1,7 @@
 package checks;
 
+import java.lang.reflect.Field;
+
 class AccessibilityChangeCheck {
   void makeItPublic(String methodName, java.lang.reflect.AccessibleObject[] arr, boolean someBool) throws NoSuchMethodException {
     this.getClass().getMethod(methodName).setAccessible(true); // Noncompliant {{This accessibility update should be removed.}}
@@ -10,5 +12,15 @@ class AccessibilityChangeCheck {
 
   void setItAnyway(String fieldName, int value) throws NoSuchFieldException, IllegalAccessException {
     this.getClass().getDeclaredField(fieldName).setInt(this, value); // Noncompliant {{This accessibility bypass should be removed.}}
+  }
+
+  record Person(String name, int age) {
+  }
+
+  void changeAccessibilityOfFieldRecord() throws NoSuchFieldException, IllegalAccessException {
+    Person person = new Person("A", 26);
+    Field field = Person.class.getDeclaredField("name");
+    field.setAccessible(true);
+    field.set(person, "B"); // Compliant because reported by S6216
   }
 }
