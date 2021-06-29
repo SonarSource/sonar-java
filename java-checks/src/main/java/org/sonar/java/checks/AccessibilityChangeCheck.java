@@ -25,6 +25,7 @@ import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -87,6 +88,10 @@ public class AccessibilityChangeCheck extends AbstractMethodDetection {
     }
     MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) fieldModificationExpression;
     ExpressionTree expression = memberSelect.expression();
+    if (expression.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
+      ArrayAccessExpressionTree arrayAccess = (ArrayAccessExpressionTree) expression;
+      expression = arrayAccess.expression();
+    }
     MethodInvocationTree fieldInitializer = null;
     if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
       fieldInitializer = (MethodInvocationTree) expression;
