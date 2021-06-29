@@ -18,14 +18,28 @@ class AccessibilityChangeCheck {
   record Person(String name, int age) {
   }
 
-  void changeAccessibilityOfFieldRecord() throws NoSuchFieldException, IllegalAccessException {
+  void fieldModificationIsAlwaysCompliantForRecords() throws NoSuchFieldException, IllegalAccessException {
     Person person = new Person("A", 26);
+
     Field field = Person.class.getDeclaredField("name");
     field.setAccessible(true); // Compliant because reported by S6216
     field.set(person, "B"); // Compliant because reported by S6216
+
     Person.class.getField("name").setAccessible(true); // Compliant because reported by S6216
     Person.class.getField("name").set(person, "B"); // Compliant because reported by S6216
-    Person.class.getField("name").setAccessible(true); // Compliant because reported by S6216
-    Person.class.getField("name").set(person, "B"); // Compliant because reported by S6216
+
+
+    Field[] fields = Person.class.getDeclaredFields();
+    fields[0].setAccessible(true); // Compliant because reported by S6216
+    fields[0].set(person, "B"); // Compliant because reported by S6216
+    fields[0].setAccessible(true); // Compliant because reported by S6216
+    fields[0].set(person, "B"); // Compliant because reported by S6216
+
+    Person.class.getFields()[0].setAccessible(true); // Compliant because reported by S6216
+    Person.class.getFields()[0].set(person, "B"); // Compliant because reported by S6216
+    Person.class.getDeclaredFields()[0].setAccessible(true); // Compliant because reported by S6216
+    Person.class.getDeclaredFields()[0].set(person, "B"); // Compliant because reported by S6216
+
+
   }
 }
