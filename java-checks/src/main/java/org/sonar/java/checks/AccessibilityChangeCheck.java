@@ -19,13 +19,18 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S3011")
 public class AccessibilityChangeCheck extends AbstractMethodDetection {
@@ -44,6 +49,17 @@ public class AccessibilityChangeCheck extends AbstractMethodDetection {
     MethodMatchers.create().ofTypes(JAVA_LANG_REFLECT_FIELD).names("setShort").withAnyParameters().build()
   );
 
+  private static final MethodMatchers FIELD_FETCHING_METHODS = MethodMatchers.or(
+    MethodMatchers.create().ofTypes("java.lang.Class")
+      .names("getField", "getDeclaredField")
+      .addParametersMatcher("java.lang.String")
+      .build(),
+    MethodMatchers.create().ofTypes("java.lang.Class")
+      .names("getFields", "getDeclaredFields")
+      .addWithoutParametersMatcher()
+      .build()
+  );
+
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
     return METHOD_MATCHERS;
@@ -51,11 +67,66 @@ public class AccessibilityChangeCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    if(mit.symbol().name().equals("setAccessible")) {
+    if (isModifyingFieldFromRecord(mit)) {
+      return;
+    }
+    if (mit.symbol().name().equals("setAccessible")) {
       checkAccessibilityUpdate(mit);
     } else {
       reportIssue(mit, "This accessibility bypass should be removed.");
     }
+  }
+
+  private static boolean isModifyingFieldFromRecord(MethodInvocationTree mit) {
+    if (!mit.symbol().owner().type().is(JAVA_LANG_REFLECT_FIELD)) {
+      return false;
+    }
+    ExpressionTree expressionTree = mit.methodSelect();
+    if (!expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
+      return false;
+    }
+    MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) expressionTree;
+    ExpressionTree expression = memberSelect.expression();
+    if (!expression.is(Tree.Kind.IDENTIFIER)) {
+      return false;
+    }
+    Optional<MethodInvocationTree> fieldGettingInvocation = getFieldInitialization((IdentifierTree) expression);
+    if (!fieldGettingInvocation.isPresent()) {
+      return false;
+    }
+    ExpressionTree expressionTree1 = fieldGettingInvocation.get().methodSelect();
+    if (!expressionTree1.is(Tree.Kind.MEMBER_SELECT)) {
+      return false;
+    }
+    ExpressionTree classOfOrigin = unravel((MemberSelectExpressionTree) expressionTree1);
+
+    return ((IdentifierTree) classOfOrigin).symbol().type().isSubtypeOf("java.lang.Record");
+  }
+
+  private static Optional<MethodInvocationTree> getFieldInitialization(IdentifierTree identifier) {
+    Tree declaration = identifier.symbol().declaration();
+    if (declaration == null || !declaration.is(Tree.Kind.VARIABLE)) {
+      return Optional.empty();
+    }
+    VariableTree variable = (VariableTree) declaration;
+    ExpressionTree initializer = variable.initializer();
+    if (initializer == null || !initializer.is(Tree.Kind.METHOD_INVOCATION)) {
+      return Optional.empty();
+    }
+    MethodInvocationTree fieldGettingInvocation = (MethodInvocationTree) initializer;
+    if (!FIELD_FETCHING_METHODS.matches(fieldGettingInvocation)) {
+      return Optional.empty();
+    }
+    return Optional.of(fieldGettingInvocation);
+  }
+
+  private static ExpressionTree unravel(MemberSelectExpressionTree memberSelect) {
+    ExpressionTree expression = memberSelect.expression();
+    while (expression.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree currentMemberSelect = (MemberSelectExpressionTree) expression;
+      expression = currentMemberSelect.expression();
+    }
+    return expression;
   }
 
   private void checkAccessibilityUpdate(MethodInvocationTree mit) {

@@ -1,5 +1,6 @@
 package checks;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 
 class AccessibilityChangeCheck {
@@ -20,7 +21,7 @@ class AccessibilityChangeCheck {
   void changeAccessibilityOfFieldRecord() throws NoSuchFieldException, IllegalAccessException {
     Person person = new Person("A", 26);
     Field field = Person.class.getDeclaredField("name");
-    field.setAccessible(true);
+    field.setAccessible(true); // Compliant because reported by S6216
     field.set(person, "B"); // Compliant because reported by S6216
   }
 }
