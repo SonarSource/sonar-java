@@ -81,25 +81,36 @@ public class AccessibilityChangeCheck extends AbstractMethodDetection {
     if (!mit.symbol().owner().type().is(JAVA_LANG_REFLECT_FIELD)) {
       return false;
     }
-    ExpressionTree expressionTree = mit.methodSelect();
-    if (!expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
+    ExpressionTree fieldModificationExpression = mit.methodSelect();
+    if (!fieldModificationExpression.is(Tree.Kind.MEMBER_SELECT)) {
       return false;
     }
-    MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) expressionTree;
+    MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) fieldModificationExpression;
     ExpressionTree expression = memberSelect.expression();
-    if (!expression.is(Tree.Kind.IDENTIFIER)) {
+    MethodInvocationTree fieldInitializer = null;
+    if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
+      fieldInitializer = (MethodInvocationTree) expression;
+    } else if (expression.is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree identifier = (IdentifierTree) expression;
+      Optional<MethodInvocationTree> fieldGettingInvocation = getFieldInitialization(identifier);
+      if (!fieldGettingInvocation.isPresent()) {
+        return false;
+      }
+      fieldInitializer = fieldGettingInvocation.get();
+    } else {
       return false;
     }
-    Optional<MethodInvocationTree> fieldGettingInvocation = getFieldInitialization((IdentifierTree) expression);
-    if (!fieldGettingInvocation.isPresent()) {
+    if (!FIELD_FETCHING_METHODS.matches(fieldInitializer)) {
       return false;
     }
-    ExpressionTree expressionTree1 = fieldGettingInvocation.get().methodSelect();
-    if (!expressionTree1.is(Tree.Kind.MEMBER_SELECT)) {
+    ExpressionTree initializerExpression = fieldInitializer.methodSelect();
+    if (!initializerExpression.is(Tree.Kind.MEMBER_SELECT)) {
       return false;
     }
-    ExpressionTree classOfOrigin = unravel((MemberSelectExpressionTree) expressionTree1);
-
+    ExpressionTree classOfOrigin = getToClass((MemberSelectExpressionTree) initializerExpression);
+    if (!classOfOrigin.is(Tree.Kind.IDENTIFIER)) {
+      return false;
+    }
     return ((IdentifierTree) classOfOrigin).symbol().type().isSubtypeOf("java.lang.Record");
   }
 
@@ -113,18 +124,21 @@ public class AccessibilityChangeCheck extends AbstractMethodDetection {
     if (initializer == null || !initializer.is(Tree.Kind.METHOD_INVOCATION)) {
       return Optional.empty();
     }
-    MethodInvocationTree fieldGettingInvocation = (MethodInvocationTree) initializer;
-    if (!FIELD_FETCHING_METHODS.matches(fieldGettingInvocation)) {
-      return Optional.empty();
-    }
-    return Optional.of(fieldGettingInvocation);
+    return Optional.of((MethodInvocationTree) initializer);
   }
 
-  private static ExpressionTree unravel(MemberSelectExpressionTree memberSelect) {
+  private static ExpressionTree getToClass(MemberSelectExpressionTree memberSelect) {
     ExpressionTree expression = memberSelect.expression();
-    while (expression.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree currentMemberSelect = (MemberSelectExpressionTree) expression;
-      expression = currentMemberSelect.expression();
+    while (true) {
+      if (expression.is(Tree.Kind.MEMBER_SELECT)) {
+        MemberSelectExpressionTree currentMemberSelect = (MemberSelectExpressionTree) expression;
+        expression = currentMemberSelect.expression();
+      } else if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
+        MethodInvocationTree currentMethodInvocation = (MethodInvocationTree) expression;
+        expression = currentMethodInvocation.methodSelect();
+      } else {
+        break;
+      }
     }
     return expression;
   }

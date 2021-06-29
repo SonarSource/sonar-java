@@ -23,5 +23,9 @@ class AccessibilityChangeCheck {
     Field field = Person.class.getDeclaredField("name");
     field.setAccessible(true); // Compliant because reported by S6216
     field.set(person, "B"); // Compliant because reported by S6216
+    Person.class.getField("name").setAccessible(true); // Compliant because reported by S6216
+    Person.class.getField("name").set(person, "B"); // Compliant because reported by S6216
+    Person.class.getField("name").setAccessible(true); // Compliant because reported by S6216
+    Person.class.getField("name").set(person, "B"); // Compliant because reported by S6216
   }
 }
