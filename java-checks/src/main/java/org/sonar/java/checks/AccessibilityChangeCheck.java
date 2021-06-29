@@ -139,7 +139,7 @@ public class AccessibilityChangeCheck extends AbstractMethodDetection {
         break;
       }
     }
-    if (!expression.is(Tree.Kind.IDENTIFIER)) {
+    if (expression.symbolType().isUnknown() || !expression.is(Tree.Kind.IDENTIFIER)) {
       return Optional.empty();
     }
     return Optional.of((IdentifierTree) expression);

@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class AccessibilityChangeCheckTest {
@@ -30,6 +31,14 @@ class AccessibilityChangeCheckTest {
   void test() {
     CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/AccessibilityChangeCheck.java"))
+      .withCheck(new AccessibilityChangeCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/AccessibilityChangeCheck.java"))
       .withCheck(new AccessibilityChangeCheck())
       .verifyIssues();
   }
