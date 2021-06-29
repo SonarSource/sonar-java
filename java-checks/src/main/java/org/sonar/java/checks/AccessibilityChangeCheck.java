@@ -23,6 +23,7 @@ import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
@@ -61,6 +62,14 @@ public class AccessibilityChangeCheck extends AbstractMethodDetection {
       .build()
   );
 
+  private boolean isJava16OrGreater;
+
+  @Override
+  public void setContext(JavaFileScannerContext context) {
+    isJava16OrGreater = context.getJavaVersion().asInt() >= 16;
+    super.setContext(context);
+  }
+
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
     return METHOD_MATCHERS;
@@ -68,7 +77,7 @@ public class AccessibilityChangeCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    if (isModifyingFieldFromRecord(mit)) {
+    if (isJava16OrGreater && isModifyingFieldFromRecord(mit)) {
       return;
     }
     if (mit.symbol().name().equals("setAccessible")) {

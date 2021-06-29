@@ -32,6 +32,16 @@ class AccessibilityChangeCheckTest {
     CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/AccessibilityChangeCheck.java"))
       .withCheck(new AccessibilityChangeCheck())
+      .withJavaVersion(15)
+      .verifyIssues();
+  }
+
+  @Test
+  void test_with_record_support() {
+    CheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/AccessibilityChangeCheckRecord.java"))
+      .withCheck(new AccessibilityChangeCheck())
+      .withJavaVersion(16)
       .verifyIssues();
   }
 
@@ -40,6 +50,7 @@ class AccessibilityChangeCheckTest {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/AccessibilityChangeCheck.java"))
       .withCheck(new AccessibilityChangeCheck())
+      .withJavaVersion(16)
       .verifyIssues();
   }
 
