@@ -83,9 +83,6 @@ public class AccessibilityChangeCheck extends AbstractMethodDetection {
       return false;
     }
     ExpressionTree fieldModificationExpression = mit.methodSelect();
-    if (!fieldModificationExpression.is(Tree.Kind.MEMBER_SELECT)) {
-      return false;
-    }
     MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) fieldModificationExpression;
     ExpressionTree expression = memberSelect.expression();
     if (expression.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
@@ -97,7 +94,7 @@ public class AccessibilityChangeCheck extends AbstractMethodDetection {
       fieldInitializer = (MethodInvocationTree) expression;
     } else if (expression.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifier = (IdentifierTree) expression;
-      Optional<MethodInvocationTree> fieldGettingInvocation = getFieldInitialization(identifier);
+      Optional<MethodInvocationTree> fieldGettingInvocation = getInitializingMethodInvocation(identifier);
       if (!fieldGettingInvocation.isPresent()) {
         return false;
       }
@@ -109,17 +106,14 @@ public class AccessibilityChangeCheck extends AbstractMethodDetection {
       return false;
     }
     ExpressionTree initializerExpression = fieldInitializer.methodSelect();
-    if (!initializerExpression.is(Tree.Kind.MEMBER_SELECT)) {
+    Optional<IdentifierTree> classIdentifier = getClassIdentifier((MemberSelectExpressionTree) initializerExpression);
+    if (!classIdentifier.isPresent()) {
       return false;
     }
-    ExpressionTree classOfOrigin = getToClass((MemberSelectExpressionTree) initializerExpression);
-    if (!classOfOrigin.is(Tree.Kind.IDENTIFIER)) {
-      return false;
-    }
-    return ((IdentifierTree) classOfOrigin).symbol().type().isSubtypeOf("java.lang.Record");
+    return classIdentifier.get().symbol().type().isSubtypeOf("java.lang.Record");
   }
 
-  private static Optional<MethodInvocationTree> getFieldInitialization(IdentifierTree identifier) {
+  private static Optional<MethodInvocationTree> getInitializingMethodInvocation(IdentifierTree identifier) {
     Tree declaration = identifier.symbol().declaration();
     if (declaration == null || !declaration.is(Tree.Kind.VARIABLE)) {
       return Optional.empty();
@@ -132,7 +126,7 @@ public class AccessibilityChangeCheck extends AbstractMethodDetection {
     return Optional.of((MethodInvocationTree) initializer);
   }
 
-  private static ExpressionTree getToClass(MemberSelectExpressionTree memberSelect) {
+  private static Optional<IdentifierTree> getClassIdentifier(MemberSelectExpressionTree memberSelect) {
     ExpressionTree expression = memberSelect.expression();
     while (true) {
       if (expression.is(Tree.Kind.MEMBER_SELECT)) {
@@ -145,7 +139,10 @@ public class AccessibilityChangeCheck extends AbstractMethodDetection {
         break;
       }
     }
-    return expression;
+    if (!expression.is(Tree.Kind.IDENTIFIER)) {
+      return Optional.empty();
+    }
+    return Optional.of((IdentifierTree) expression);
   }
 
   private void checkAccessibilityUpdate(MethodInvocationTree mit) {
