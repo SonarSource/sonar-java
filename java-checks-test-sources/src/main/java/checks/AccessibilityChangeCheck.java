@@ -17,27 +17,27 @@ class AccessibilityChangeCheck {
   record Person(String name, int age) {
   }
 
-  void fieldModificationIsAlwaysCompliantForRecords() throws NoSuchFieldException, IllegalAccessException, ClassNotFoundException {
+  void accessibilityChangeOnRecordFields() throws NoSuchFieldException, IllegalAccessException, ClassNotFoundException {
     Person person = new Person("A", 26);
 
     Field field = Person.class.getDeclaredField("name");
-    field.setAccessible(true); // Compliant because reported by S6216
-    field.set(person, "B"); // Compliant because reported by S6216
+    field.setAccessible(true); // Noncompliant before Java 16
+    field.set(person, "B"); // Noncompliant before Java 16
 
-    Person.class.getField("name").setAccessible(true); // Compliant because reported by S6216
-    Person.class.getField("name").set(person, "B"); // Compliant because reported by S6216
+    Person.class.getField("name").setAccessible(true); // Noncompliant before Java 16
+    Person.class.getField("name").set(person, "B"); // Noncompliant before Java 16
 
 
     Field[] fields = Person.class.getDeclaredFields();
-    fields[0].setAccessible(true); // Compliant because reported by S6216
-    fields[0].set(person, "B"); // Compliant because reported by S6216
-    fields[0].setAccessible(true); // Compliant because reported by S6216
-    fields[0].set(person, "B"); // Compliant because reported by S6216
+    fields[0].setAccessible(true); // Noncompliant before Java 16
+    fields[0].set(person, "B"); // Noncompliant before Java 16
+    fields[0].setAccessible(true); // Noncompliant before Java 16
+    fields[0].set(person, "B"); // Noncompliant before Java 16
 
-    Person.class.getFields()[0].setAccessible(true); // Compliant because reported by S6216
-    Person.class.getFields()[0].set(person, "B"); // Compliant because reported by S6216
-    Person.class.getDeclaredFields()[0].setAccessible(true); // Compliant because reported by S6216
-    Person.class.getDeclaredFields()[0].set(person, "B"); // Compliant because reported by S6216
+    Person.class.getFields()[0].setAccessible(true); // Noncompliant before Java 16
+    Person.class.getFields()[0].set(person, "B"); // Noncompliant before Java 16
+    Person.class.getDeclaredFields()[0].setAccessible(true); // Noncompliant before Java 16
+    Person.class.getDeclaredFields()[0].set(person, "B"); // Noncompliant before Java 16
 
     Field someMagicField = getAField();
     someMagicField.setAccessible(true); // Noncompliant FP Not exploring fields retrieved from non standard methods
