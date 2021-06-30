@@ -1,5 +1,6 @@
 package checks;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 
 public class AccessibilityChangeCheckRecord {
@@ -10,7 +11,20 @@ public class AccessibilityChangeCheckRecord {
     this.getClass().getMethod("doSomeWorkPrivately").setAccessible(true); // Noncompliant
   }
 
+
+  private class SomeChildOfAccessibleObjects extends AccessibleObject {
+
+    void modifyAccessibilityOfField() {
+      setAccessible(true); // Noncompliant
+      this.setAccessible(true); // Noncompliant
+    }
+  }
+
   record Person(String name, int age) {
+    void doSomething() throws NoSuchFieldException, IllegalAccessException {
+      this.getClass().getField("name").setAccessible(true); // Compliant because reported by S6216
+      this.getClass().getField("name").set(this, "B"); // Compliant because reported by S6216
+    }
   }
 
   void accessibilityChangeOnRecordFields() throws NoSuchFieldException, IllegalAccessException, ClassNotFoundException {
