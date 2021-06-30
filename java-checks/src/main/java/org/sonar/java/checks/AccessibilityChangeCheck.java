@@ -23,7 +23,6 @@ import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
@@ -62,14 +61,6 @@ public class AccessibilityChangeCheck extends AbstractMethodDetection {
       .build()
   );
 
-  private boolean isJava16OrGreater;
-
-  @Override
-  public void setContext(JavaFileScannerContext context) {
-    isJava16OrGreater = context.getJavaVersion().asInt() >= 16;
-    super.setContext(context);
-  }
-
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
     return METHOD_MATCHERS;
@@ -77,7 +68,7 @@ public class AccessibilityChangeCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    if (isJava16OrGreater && isModifyingFieldFromRecord(mit)) {
+    if (isModifyingFieldFromRecord(mit)) {
       return;
     }
     if (mit.symbol().name().equals("setAccessible")) {
@@ -88,10 +79,10 @@ public class AccessibilityChangeCheck extends AbstractMethodDetection {
   }
 
   private static boolean isModifyingFieldFromRecord(MethodInvocationTree mit) {
-    if (!mit.symbol().owner().type().is(JAVA_LANG_REFLECT_FIELD)) {
+    ExpressionTree fieldModificationExpression = mit.methodSelect();
+    if (!fieldModificationExpression.is(Tree.Kind.MEMBER_SELECT)) {
       return false;
     }
-    ExpressionTree fieldModificationExpression = mit.methodSelect();
     MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) fieldModificationExpression;
     ExpressionTree expression = memberSelect.expression();
     if (expression.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
