@@ -1,0 +1,25 @@
+<p>In Java 8 <code>Streams</code> were introduced to support chaining of operations over collections in a functional style. The most common way to
+save a result of such chains is to save them to some collection (usually <code>List</code>). To do so there is a terminal method <code>collect</code>
+that can be used with a library of <code>Collectors</code>. The key problem is that <code>.collect(Collectors.toList())</code> actually returns a
+mutable kind of <code>List</code> while in the majority of cases unmodifiable lists are preferred. In Java 10 a new collector appeared to return an
+unmodifiable list: <code>toUnmodifiableList()</code>. This does the trick but results in verbose code. Since Java 16 there is now a better variant to
+produce an unmodifiable list directly from a stream: <code>Stream.toList()</code>.</p>
+<p>This rule raises an issue when "collect" is used to create a list from a stream.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+List&lt;String&gt; list1 = Stream.of("A", "B", "C")
+                           .collect(Collectors.toList()); // Noncompliant
+
+List&lt;String&gt; list2 = Stream.of("A", "B", "C")
+                           .collect(Collectors.toUnmodifiableList()); // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+List&lt;String&gt; list1 = Stream.of("A", "B", "C").toList(); // Compliant
+
+List&lt;String&gt; list2 = Stream.of("A", "B", "C")
+                           .collect(Collectors.toList()); // Compliant, the list2 needs to be mutable
+
+list2.add("X");
+</pre>
+

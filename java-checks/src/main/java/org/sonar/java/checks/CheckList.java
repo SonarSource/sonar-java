@@ -305,6 +305,7 @@ public final class CheckList {
       CollectionInappropriateCallsCheck.class,
       CollectionMethodsWithLinearComplexityCheck.class,
       CollectionSizeAndArrayLengthCheck.class,
+      CollectorsToListCheck.class,
       CombineCatchCheck.class,
       CommentRegularExpressionCheck.class,
       CommentedOutCodeLineCheck.class,
