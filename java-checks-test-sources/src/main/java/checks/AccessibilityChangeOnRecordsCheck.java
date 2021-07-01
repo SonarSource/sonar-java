@@ -13,8 +13,14 @@ public class AccessibilityChangeOnRecordsCheck {
     field.setAccessible(true);
     field.set(person, "B"); // Noncompliant {Remove this private field update which will never succeed}[[secondary=-1]]
 
+
+    Field nameField = Person.class.getDeclaredField("name");
+    nameField.setAccessible(false);
+    nameField.set(person, "B"); // Noncompliant {Remove this private field update which will never succeed}
+
     Field ageField = Person.class.getDeclaredField("age");
     ageField.setInt(person, 42); // Noncompliant {Remove this private field update which will never succeed}
+
 
     Person.class.getField("age").setInt(person, 42);// Noncompliant {Remove this private field update which will never succeed}
     Person.class.getDeclaredField("age").setInt(person, 42);// Noncompliant {Remove this private field update which will never succeed}
@@ -28,7 +34,7 @@ public class AccessibilityChangeOnRecordsCheck {
       setAccessible(true); // Compliant are out of scope
     }
   }
-  
+
   class Individual {
     private String name;
     private int age;

@@ -40,15 +40,15 @@ public class AccessibilityChangeOnRecordsCheck extends AbstractAccessibilityChan
   private static final String MESSAGE = "Remove this private field update which will never succeed";
   private static final String SECONDARY_MESSAGE = "Remove this accessibility bypass which will never succeed";
 
-  private Map<Symbol, MethodInvocationTree> primaryLocations = new HashMap<>();
-  private Map<Symbol, List<MethodInvocationTree>> secondaryLocations = new HashMap<>();
+  private Map<Symbol, MethodInvocationTree> primaryTargets = new HashMap<>();
+  private Map<Symbol, List<MethodInvocationTree>> secondaryTargets = new HashMap<>();
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {
-    for (Map.Entry<Symbol, MethodInvocationTree> entry : primaryLocations.entrySet()) {
+    for (Map.Entry<Symbol, MethodInvocationTree> entry : primaryTargets.entrySet()) {
       Symbol symbol = entry.getKey();
       MethodInvocationTree setInvocation = entry.getValue();
-      List<JavaFileScannerContext.Location> secondaries = secondaryLocations.getOrDefault(symbol, Collections.emptyList())
+      List<JavaFileScannerContext.Location> secondaries = secondaryTargets.getOrDefault(symbol, Collections.emptyList())
         .stream()
         .map(mit -> new JavaFileScannerContext.Location(SECONDARY_MESSAGE, mit))
         .collect(Collectors.toList());
@@ -58,8 +58,8 @@ public class AccessibilityChangeOnRecordsCheck extends AbstractAccessibilityChan
         reportIssue(setInvocation, MESSAGE, secondaries, null);
       }
     }
-    primaryLocations.clear();
-    secondaryLocations.clear();
+    primaryTargets.clear();
+    secondaryTargets.clear();
     super.leaveFile(context);
   }
 
@@ -71,7 +71,7 @@ public class AccessibilityChangeOnRecordsCheck extends AbstractAccessibilityChan
     if (SET_MATCHERS.matches(mit)) {
       Optional<Symbol> symbol = getIdentifierSymbol(mit);
       if (symbol.isPresent()) {
-        primaryLocations.put(symbol.get(), mit);
+        primaryTargets.put(symbol.get(), mit);
       } else {
         reportIssue(mit, MESSAGE);
       }
@@ -79,9 +79,9 @@ public class AccessibilityChangeOnRecordsCheck extends AbstractAccessibilityChan
       Optional<Symbol> symbol = getIdentifierSymbol(mit);
       if (symbol.isPresent()) {
         Symbol key = symbol.get();
-        List<MethodInvocationTree> secondaries = secondaryLocations.getOrDefault(key, new ArrayList<>());
+        List<MethodInvocationTree> secondaries = secondaryTargets.getOrDefault(key, new ArrayList<>());
         secondaries.add(mit);
-        secondaryLocations.put(key, secondaries);
+        secondaryTargets.put(key, secondaries);
       }
     }
   }
