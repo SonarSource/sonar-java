@@ -17,11 +17,14 @@ import java.time.Year;
 import java.time.YearMonth;
 import java.time.ZonedDateTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 class S2201_IgnoredReturnValueCheck {
@@ -120,5 +123,21 @@ class S2201_IgnoredReturnValueCheck {
   private void putIfAbsentTest() {
     final java.util.concurrent.ConcurrentMap<String, String> map1 = new java.util.concurrent.ConcurrentHashMap<>();
     map1.putIfAbsent("val", "val"); // Compliant, 'putIfAbsent' does have a side-effect
+  }
+
+  void streamTerminals() {
+    Stream.of("a", "b", "c").toArray(); // Noncompliant
+    Stream.of("a", "b", "c").reduce((a,b) -> a+b); // Noncompliant
+    Stream.of("a", "b", "c").collect(Collectors.joining()); // Noncompliant
+    Stream.of("a", "b", "c").collect(Collectors.toList()); // Noncompliant
+    Stream.of("a", "b", "c").min(Comparator.naturalOrder()); // Noncompliant
+    Stream.of("a", "b", "c").max(Comparator.naturalOrder()); // Noncompliant
+    Stream.of("a", "b", "c").count(); // Noncompliant
+    Stream.of("a", "b", "c").anyMatch(s -> s.length() > 1); // Noncompliant
+    Stream.of("a", "b", "c").allMatch(String::isEmpty); // Noncompliant
+    Stream.of("a", "b", "c").noneMatch(String::isBlank); // Noncompliant
+    Stream.of("a", "b", "c").findFirst(); // Noncompliant
+    Stream.of("a", "b", "c").findAny(); // Noncompliant
+    Stream.of("a", "b", "c").toList(); // Noncompliant
   }
 }

@@ -92,6 +92,11 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
       .ofSubTypes("java.util.Map")
       .names("get", "getOrDefault", "size", "isEmpty", "containsKey", "containsValue", "keySet", "entrySet", "values")
       .withAnyParameters()
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes("java.util.stream.Stream")
+      .names("toArray", "reduce", "collect", "min", "max", "count", "anyMatch", "allMatch", "noneMatch", "findFirst", "findAny", "toList")
+      .withAnyParameters()
       .build());
 
   @Override
