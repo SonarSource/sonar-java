@@ -1,5 +1,6 @@
 package checks;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 
 public class AccessibilityChangeOnRecordsCheck {
@@ -20,5 +21,32 @@ public class AccessibilityChangeOnRecordsCheck {
 
     Person.class.getFields()[0].set(person, null);// Noncompliant {Remove this private field update which will never succeed}
     Person.class.getDeclaredFields()[0].set(person, null);// Noncompliant {Remove this private field update which will never succeed}
+  }
+
+  class ChildOfAccessibleObject extends AccessibleObject {
+    private void selfModify() {
+      setAccessible(true); // Compliant are out of scope
+    }
+  }
+  
+  class Individual {
+    private String name;
+    private int age;
+
+    Individual(String name, int age) {
+      this.name = name;
+      this.age = age;
+    }
+
+    private int getZero() {
+      return 0;
+    }
+  }
+
+  void irrelevantModifications() throws NoSuchFieldException, IllegalAccessException {
+    Individual individual = new Individual("A", 26);
+    Field field = Individual.class.getField("name");
+    field.setAccessible(true);
+    field.set(individual, "B"); // Compliant as S6216 only checks Records
   }
 }

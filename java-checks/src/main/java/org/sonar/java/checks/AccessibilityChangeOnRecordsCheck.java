@@ -75,7 +75,7 @@ public class AccessibilityChangeOnRecordsCheck extends AbstractAccessibilityChan
       } else {
         reportIssue(mit, MESSAGE);
       }
-    } else if (SET_ACCESSIBLE_MATCHER.matches(mit) && setsToPubliclyAccessible(mit)) {
+    } else if (setsToPubliclyAccessible(mit)) {
       Optional<Symbol> symbol = getIdentifierSymbol(mit);
       if (symbol.isPresent()) {
         Symbol key = symbol.get();
