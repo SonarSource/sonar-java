@@ -27,7 +27,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -36,12 +38,17 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6216")
-public class AccessibilityChangeOnRecordsCheck extends AbstractAccessibilityChangeChecker {
+public class AccessibilityChangeOnRecordsCheck extends AbstractAccessibilityChangeChecker implements JavaVersionAwareVisitor {
   private static final String MESSAGE = "Remove this private field update which will never succeed";
   private static final String SECONDARY_MESSAGE = "Remove this accessibility bypass which will never succeed";
 
   private Map<Symbol, MethodInvocationTree> primaryTargets = new HashMap<>();
   private Map<Symbol, List<MethodInvocationTree>> secondaryTargets = new HashMap<>();
+
+  @Override
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return version.isJava16Compatible();
+  }
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {
