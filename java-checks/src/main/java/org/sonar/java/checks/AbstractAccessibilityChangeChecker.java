@@ -39,8 +39,7 @@ abstract class AbstractAccessibilityChangeChecker extends AbstractMethodDetectio
     .addParametersMatcher("boolean")
     .addParametersMatcher("java.lang.reflect.AccessibleObject[]", "boolean")
     .build();
-  protected static final MethodMatchers METHOD_MATCHERS = MethodMatchers.or(
-    SET_ACCESSIBLE_MATCHER,
+  protected static final MethodMatchers SET_MATCHERS = MethodMatchers.or(
     MethodMatchers.create().ofTypes(JAVA_LANG_REFLECT_FIELD).names("set").withAnyParameters().build(),
     MethodMatchers.create().ofTypes(JAVA_LANG_REFLECT_FIELD).names("setBoolean").withAnyParameters().build(),
     MethodMatchers.create().ofTypes(JAVA_LANG_REFLECT_FIELD).names("setByte").withAnyParameters().build(),
@@ -65,7 +64,10 @@ abstract class AbstractAccessibilityChangeChecker extends AbstractMethodDetectio
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
-    return METHOD_MATCHERS;
+    return MethodMatchers.or(
+      SET_MATCHERS,
+      SET_ACCESSIBLE_MATCHER
+    );
   }
 
   protected static boolean setsToPubliclyAccessible(MethodInvocationTree mit) {

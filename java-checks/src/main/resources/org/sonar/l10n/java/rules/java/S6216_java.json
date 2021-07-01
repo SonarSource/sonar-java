@@ -1,0 +1,16 @@
+{
+  "title": "Reflection should not be used to increase accessibility of records\u0027 fields",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "tags": [
+    "java16"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6216",
+  "sqKey": "S6216",
+  "scope": "Main"
+}

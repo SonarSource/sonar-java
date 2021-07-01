@@ -246,6 +246,7 @@ public final class CheckList {
       AbstractClassNoFieldShouldBeInterfaceCheck.class,
       AbstractClassWithoutAbstractMethodCheck.class,
       AccessibilityChangeCheck.class,
+      AccessibilityChangeOnRecordsCheck.class,
       AllBranchesAreIdenticalCheck.class,
       AnchorPrecedenceCheck.class,
       AndroidBroadcastingCheck.class,
