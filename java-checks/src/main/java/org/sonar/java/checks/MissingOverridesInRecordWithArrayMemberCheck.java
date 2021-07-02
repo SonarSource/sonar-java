@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
@@ -52,10 +52,10 @@ public class MissingOverridesInRecordWithArrayMemberCheck extends IssuableSubscr
 
   private static final String MESSAGE_TEMPLATE = "Override %s to consider array's content in the method";
 
-
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.RECORD);
+    return
+      Collections.singletonList(Tree.Kind.RECORD);
   }
 
   @Override
@@ -75,23 +75,23 @@ public class MissingOverridesInRecordWithArrayMemberCheck extends IssuableSubscr
   }
 
   public static Optional<String> inspectRecord(ClassTree tree) {
-    boolean equals = false;
-    boolean hashCode = false;
-    boolean toString = false;
+    boolean equalsIsOverridden = false;
+    boolean hashCodeIsOverridden = false;
+    boolean toStringIsOverridden = false;
     for (Tree member : tree.members()) {
       if (!member.is(Tree.Kind.METHOD)) {
         continue;
       }
       MethodTree method = (MethodTree) member;
       if (EQUALS_MATCHER.matches(method)) {
-        equals = true;
+        equalsIsOverridden = true;
       } else if (HASH_CODE_MATCHER.matches(method)) {
-        hashCode = true;
+        hashCodeIsOverridden = true;
       } else if (TO_STRING_MATCHER.matches(method)) {
-        toString = true;
+        toStringIsOverridden = true;
       }
     }
-    return Optional.ofNullable(computeMessage(equals, hashCode, toString));
+    return Optional.ofNullable(computeMessage(equalsIsOverridden, hashCodeIsOverridden, toStringIsOverridden));
   }
 
   private static String computeMessage(boolean equalsIsOverridden, boolean hashCodeIsOverridden, boolean toStringIsOverridden) {
@@ -106,17 +106,20 @@ public class MissingOverridesInRecordWithArrayMemberCheck extends IssuableSubscr
       missingOverrides.add("toString");
     }
 
-    if (missingOverrides.isEmpty()) {
-      return null;
+    String filler = null;
+    switch (missingOverrides.size()) {
+      case 0:
+        return null;
+      case 1:
+        filler = missingOverrides.get(0);
+        break;
+      case 2:
+        filler = missingOverrides.get(0) + " and " + missingOverrides.get(1);
+        break;
+      default:
+        filler = missingOverrides.get(0) + ", " + missingOverrides.get(1) + " and " + missingOverrides.get(2);
+
     }
-    if (missingOverrides.size() == 1) {
-      return String.format(MESSAGE_TEMPLATE, missingOverrides.get(0));
-    }
-    StringBuilder sequence = new StringBuilder(missingOverrides.get(0));
-    if (missingOverrides.size() == 3) {
-      sequence.append(", " + missingOverrides.get(1));
-    }
-    sequence.append(" and " + missingOverrides.get(missingOverrides.size() - 1));
-    return String.format(MESSAGE_TEMPLATE, sequence);
+    return String.format(MESSAGE_TEMPLATE, filler);
   }
 }
