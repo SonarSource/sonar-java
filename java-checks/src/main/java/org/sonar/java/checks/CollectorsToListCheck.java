@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -148,7 +149,7 @@ public class CollectorsToListCheck extends AbstractMethodDetection implements Ja
   @CheckForNull
   private static Symbol findAssignedVariable(MethodInvocationTree mit) {
     if (mit.parent().is(Tree.Kind.ASSIGNMENT)) {
-      Tree variable = ((AssignmentExpressionTree) mit.parent()).variable();
+      ExpressionTree variable = ((AssignmentExpressionTree) mit.parent()).variable();
       if (variable.is(Tree.Kind.IDENTIFIER)) {
         return ((IdentifierTree) variable).symbol();
       }
