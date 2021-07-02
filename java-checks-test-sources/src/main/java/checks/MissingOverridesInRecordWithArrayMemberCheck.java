@@ -3,7 +3,8 @@ package checks;
 import java.util.Arrays;
 
 public class MissingOverridesInRecordWithArrayMemberCheck {
-  record IrrelevantRecord() { // Compliant
+  record IrrelevantRecord(int value) { // Compliant
+
   }
 
   record Compliant(Object[] objects) { // Compliant
@@ -24,6 +25,8 @@ public class MissingOverridesInRecordWithArrayMemberCheck {
   }
 
   record MissingEverything(Object[] objects) { // Noncompliant {{Override equals, hashCode and toString to consider array's content in the method}}
+    static Object defaultValue = null;
+    void doNothing(){}
   }
 
   record MissingHashCodeAndToString(Object[] objects) { // Noncompliant {{Override hashCode and toString to consider array's content in the method}}
