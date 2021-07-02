@@ -1,0 +1,16 @@
+{
+  "title": "Equals method should be overridden in records containing array fields",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java16"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6218",
+  "sqKey": "S6218",
+  "scope": "Main"
+}
