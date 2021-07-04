@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -27,9 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -38,7 +37,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6216")
-public class AccessibilityChangeOnRecordsCheck extends AbstractAccessibilityChangeChecker implements JavaVersionAwareVisitor {
+public class AccessibilityChangeOnRecordsCheck extends AbstractAccessibilityChangeChecker {
   private static final String MESSAGE = "Remove this private field update which will never succeed";
   private static final String SECONDARY_MESSAGE = "Remove this accessibility bypass which will never succeed";
 
@@ -46,28 +45,37 @@ public class AccessibilityChangeOnRecordsCheck extends AbstractAccessibilityChan
   private Map<Symbol, List<MethodInvocationTree>> secondaryTargets = new HashMap<>();
 
   @Override
-  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
-    return version.isJava16Compatible();
+  public List<Tree.Kind> nodesToVisit() {
+    return Arrays.asList(Tree.Kind.COMPILATION_UNIT, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
-  public void leaveFile(JavaFileScannerContext context) {
-    for (Map.Entry<Symbol, MethodInvocationTree> entry : primaryTargets.entrySet()) {
-      Symbol symbol = entry.getKey();
-      MethodInvocationTree setInvocation = entry.getValue();
-      List<JavaFileScannerContext.Location> secondaries = secondaryTargets.getOrDefault(symbol, Collections.emptyList())
-        .stream()
-        .map(mit -> new JavaFileScannerContext.Location(SECONDARY_MESSAGE, mit))
-        .collect(Collectors.toList());
-      if (secondaries.isEmpty()) {
-        reportIssue(setInvocation, MESSAGE);
-      } else {
-        reportIssue(setInvocation, MESSAGE, secondaries, null);
+  public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
+      primaryTargets.clear();
+      secondaryTargets.clear();
+    }
+    super.visitNode(tree);
+  }
+
+  @Override
+  public void leaveNode(Tree tree) {
+    if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
+      for (Map.Entry<Symbol, MethodInvocationTree> entry : primaryTargets.entrySet()) {
+        Symbol symbol = entry.getKey();
+        MethodInvocationTree setInvocation = entry.getValue();
+        List<JavaFileScannerContext.Location> secondaries = secondaryTargets.getOrDefault(symbol, Collections.emptyList())
+          .stream()
+          .map(mit -> new JavaFileScannerContext.Location(SECONDARY_MESSAGE, mit))
+          .collect(Collectors.toList());
+        if (secondaries.isEmpty()) {
+          reportIssue(setInvocation, MESSAGE);
+        } else {
+          reportIssue(setInvocation, MESSAGE, secondaries, null);
+        }
       }
     }
-    primaryTargets.clear();
-    secondaryTargets.clear();
-    super.leaveFile(context);
+    super.leaveNode(tree);
   }
 
   @Override
@@ -84,12 +92,11 @@ public class AccessibilityChangeOnRecordsCheck extends AbstractAccessibilityChan
       }
     } else if (setsToPubliclyAccessible(mit)) {
       Optional<Symbol> symbol = getIdentifierSymbol(mit);
-      if (symbol.isPresent()) {
-        Symbol key = symbol.get();
+      symbol.ifPresent(key -> {
         List<MethodInvocationTree> secondaries = secondaryTargets.getOrDefault(key, new ArrayList<>());
         secondaries.add(mit);
         secondaryTargets.put(key, secondaries);
-      }
+      });
     }
   }
 

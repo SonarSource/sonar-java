@@ -39,7 +39,7 @@ class AccessibilityChangeCheckTest {
   @Test
   void test_with_record_support() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/AccessibilityChangeCheckRecord.java"))
+      .onFile(testSourcesPath("checks/AccessibilityChangeCheckWithRecordSupport.java"))
       .withCheck(new AccessibilityChangeCheck())
       .withJavaVersion(16)
       .verifyIssues();

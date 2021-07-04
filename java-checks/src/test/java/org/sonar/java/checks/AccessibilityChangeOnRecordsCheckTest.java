@@ -32,7 +32,6 @@ class AccessibilityChangeOnRecordsCheckTest {
     CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/AccessibilityChangeOnRecordsCheck.java"))
       .withChecks(new AccessibilityChangeOnRecordsCheck())
-      .withJavaVersion(16)
       .verifyIssues();
   }
 
@@ -41,17 +40,7 @@ class AccessibilityChangeOnRecordsCheckTest {
     CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/AccessibilityChangeOnRecordsCheck.java"))
       .withChecks(new AccessibilityChangeOnRecordsCheck())
-      .withJavaVersion(16)
       .withoutSemantic()
       .verifyIssues();
-  }
-
-  @Test
-  void test_without_record_support() {
-    CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/AccessibilityChangeOnRecordsCheck.java"))
-      .withChecks(new AccessibilityChangeOnRecordsCheck())
-      .withJavaVersion(15)
-      .verifyNoIssues();
   }
 }

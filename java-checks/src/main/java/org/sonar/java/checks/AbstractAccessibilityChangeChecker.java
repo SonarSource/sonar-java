@@ -51,6 +51,12 @@ abstract class AbstractAccessibilityChangeChecker extends AbstractMethodDetectio
     MethodMatchers.create().ofTypes(JAVA_LANG_REFLECT_FIELD).names("setShort").withAnyParameters().build()
   );
 
+  protected static final MethodMatchers GET_CLASS_MATCHER = MethodMatchers.create()
+    .ofAnyType()
+    .names("getClass")
+    .addWithoutParametersMatcher()
+    .build();
+
   private static final MethodMatchers FIELD_FETCHING_METHODS = MethodMatchers.or(
     MethodMatchers.create().ofTypes("java.lang.Class")
       .names("getField", "getDeclaredField")
@@ -111,7 +117,7 @@ abstract class AbstractAccessibilityChangeChecker extends AbstractMethodDetectio
     if (!classIdentifier.isPresent()) {
       return false;
     }
-    return classIdentifier.get().symbol().type().isSubtypeOf("java.lang.Record");
+    return identifierPointsToRecord(classIdentifier.get());
   }
 
   private static Optional<MethodInvocationTree> getInitializingMethodInvocation(IdentifierTree identifier) {
@@ -144,5 +150,18 @@ abstract class AbstractAccessibilityChangeChecker extends AbstractMethodDetectio
       return Optional.empty();
     }
     return Optional.of((IdentifierTree) expression);
+  }
+
+  private static boolean identifierPointsToRecord(IdentifierTree classIdentifier) {
+    if (classIdentifier.name().equals("getClass") &&
+      classIdentifier.parent().is(Tree.Kind.METHOD_INVOCATION) &&
+      GET_CLASS_MATCHER.matches((MethodInvocationTree) classIdentifier.parent())) {
+      Tree walker = classIdentifier;
+      while (!walker.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR)) {
+        walker = walker.parent();
+      }
+      return walker.parent().is(Tree.Kind.RECORD);
+    }
+    return classIdentifier.symbol().type().isSubtypeOf("java.lang.Record");
   }
 }

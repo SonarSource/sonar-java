@@ -3,27 +3,24 @@ package checks;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 
-public class AccessibilityChangeCheckRecord {
-  private void doSomeWorkPrivately() {
-  }
-
-  void methodModification() throws NoSuchMethodException {
-    this.getClass().getMethod("doSomeWorkPrivately").setAccessible(true); // Noncompliant
-  }
-
-
-  private class SomeChildOfAccessibleObjects extends AccessibleObject {
-
-    void modifyAccessibilityOfField() {
-      setAccessible(true); // Noncompliant
-      this.setAccessible(true); // Noncompliant
-    }
-  }
-
+public class AccessibilityChangeCheckWithRecordSupport {
   record Person(String name, int age) {
+    Class getClass(Class received) {
+      return received;
+    }
     void doSomething() throws NoSuchFieldException, IllegalAccessException {
+      getClass().getField("age").setAccessible(true); // Compliant because reported by S6216
+      getClass().getField("age").set(this, 42); // Compliant because reported by S6216
       this.getClass().getField("name").setAccessible(true); // Compliant because reported by S6216
       this.getClass().getField("name").set(this, "B"); // Compliant because reported by S6216
+
+      // Wrong getClass
+      getClass(null).getField("name").setAccessible(true); // Noncompliant because not recognized as a Record
+      getClass(null).getField("name").set(this, "B"); // Noncompliant because not recognized as a Record
+
+      Class getClass = null;
+      getClass.getField("name").setAccessible(true); // Noncompliant because not recognized as a Record
+      getClass.getField("name").set(this, "B"); // Noncompliant because not recognized as a Record
     }
   }
 
