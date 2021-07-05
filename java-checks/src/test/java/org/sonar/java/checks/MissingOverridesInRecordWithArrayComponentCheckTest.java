@@ -23,12 +23,12 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
-class MissingOverridesInRecordWithArrayMemberCheckTest {
+class MissingOverridesInRecordWithArrayComponentCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("checks/MissingOverridesInRecordWithArrayMemberCheck.java"))
-      .withChecks(new MissingOverridesInRecordWithArrayMemberCheck())
+      .onFile(TestUtils.testSourcesPath("checks/MissingOverridesInRecordWithArrayComponentCheck.java"))
+      .withChecks(new MissingOverridesInRecordWithArrayComponentCheck())
       .verifyIssues();
   }
 }

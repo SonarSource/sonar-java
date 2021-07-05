@@ -31,7 +31,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6218")
-public class MissingOverridesInRecordWithArrayMemberCheck extends IssuableSubscriptionVisitor {
+public class MissingOverridesInRecordWithArrayComponentCheck extends IssuableSubscriptionVisitor {
   private static final MethodMatchers EQUALS_MATCHER = MethodMatchers.create()
     .ofAnyType()
     .names("equals")
