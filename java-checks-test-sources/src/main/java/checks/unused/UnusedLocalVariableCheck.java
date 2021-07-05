@@ -57,9 +57,14 @@ class UnusedLocalVariableCheck {
     notReadLocalVariable = 1;
     notReadLocalVariable += 1;
     notReadLocalVariable++;
+    (notReadLocalVariable)++;
 
     int readLocalVariable = 0;
     notReadLocalVariable = readLocalVariable++;
+
+    int readLocalVariable2 = 0;
+    int unreadLocalVariable2 = 1; // Noncompliant
+    unreadLocalVariable2 = readLocalVariable2;
 
     java.util.stream.Stream<Object> s = Stream.of();
     s.map(v -> "");

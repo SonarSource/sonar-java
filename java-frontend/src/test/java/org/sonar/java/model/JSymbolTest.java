@@ -165,8 +165,8 @@ class JSymbolTest {
     assertThat(variableSymbol).hasEnclosingClass(t);
     assertThat(initializerBlock).hasEnclosingClass(t).hasOwner(t);
     assertThat(initializerBlock.isStatic()).isEqualTo(isStatic);
-    assertThat(initializerBlock).hasName(isStatic ? "<clinit>" : "<init>");
-    assertThat(initializerBlock.signature()).isEqualTo(isStatic ? "E.<clinit>" : "E.<init>");
+    assertThat(initializerBlock).hasName(isStatic ? "<clinit> (initializer block)" : "<init> (initializer block)");
+    assertThat(initializerBlock.signature()).isEqualTo(isStatic ? "E.<clinit> (initializer block)" : "E.<init> (initializer block)");
 
     assertThat(initializerBlock.isMethodSymbol()).isTrue();
     assertThat(initializerBlock.isVariableSymbol()).isFalse();

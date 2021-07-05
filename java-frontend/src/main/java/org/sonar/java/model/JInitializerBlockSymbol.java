@@ -21,14 +21,18 @@ package org.sonar.java.model;
 
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 
-public class JInitializerBlockSymbol implements Symbol.MethodSymbol {
+/**
+ * Symbol type to represent initializer blocks. It's a type of method symbol and was introduced, so that variables
+ * defined inside an initializer block can have an owner other than the containing class. This is necessary to properly
+ * detect them as local variables.
+ */
+final class JInitializerBlockSymbol implements Symbol.MethodSymbol {
   private final TypeSymbol owner;
   private final boolean isStatic;
 
@@ -162,7 +166,6 @@ public class JInitializerBlockSymbol implements Symbol.MethodSymbol {
     return Symbols.EMPTY_METADATA;
   }
 
-  @Nullable
   @Override
   public TypeSymbol enclosingClass() {
     return owner;
@@ -175,7 +178,7 @@ public class JInitializerBlockSymbol implements Symbol.MethodSymbol {
 
   @Override
   public String name() {
-    return isStatic ? "<clinit>" : "<init>";
+    return isStatic ? "<clinit> (initializer block)" : "<init> (initializer block)";
   }
 
   @Override
