@@ -54,8 +54,7 @@ public class MissingOverridesInRecordWithArrayComponentCheck extends IssuableSub
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return
-      Collections.singletonList(Tree.Kind.RECORD);
+    return Collections.singletonList(Tree.Kind.RECORD);
   }
 
   @Override
@@ -69,9 +68,7 @@ public class MissingOverridesInRecordWithArrayComponentCheck extends IssuableSub
     }
 
     Optional<String> message = inspectRecord(targetRecord);
-    if (message.isPresent()) {
-      reportIssue(targetRecord, message.get());
-    }
+    message.ifPresent(composedMessage -> reportIssue(targetRecord, composedMessage));
   }
 
   public static Optional<String> inspectRecord(ClassTree tree) {
@@ -91,10 +88,10 @@ public class MissingOverridesInRecordWithArrayComponentCheck extends IssuableSub
         toStringIsOverridden = true;
       }
     }
-    return Optional.ofNullable(computeMessage(equalsIsOverridden, hashCodeIsOverridden, toStringIsOverridden));
+    return computeMessage(equalsIsOverridden, hashCodeIsOverridden, toStringIsOverridden);
   }
 
-  private static String computeMessage(boolean equalsIsOverridden, boolean hashCodeIsOverridden, boolean toStringIsOverridden) {
+  private static Optional<String> computeMessage(boolean equalsIsOverridden, boolean hashCodeIsOverridden, boolean toStringIsOverridden) {
     List<String> missingOverrides = new ArrayList<>(3);
     if (!equalsIsOverridden) {
       missingOverrides.add("equals");
@@ -109,7 +106,7 @@ public class MissingOverridesInRecordWithArrayComponentCheck extends IssuableSub
     String filler = null;
     switch (missingOverrides.size()) {
       case 0:
-        return null;
+        return Optional.empty();
       case 1:
         filler = missingOverrides.get(0);
         break;
@@ -118,8 +115,7 @@ public class MissingOverridesInRecordWithArrayComponentCheck extends IssuableSub
         break;
       default:
         filler = missingOverrides.get(0) + ", " + missingOverrides.get(1) + " and " + missingOverrides.get(2);
-
     }
-    return String.format(MESSAGE_TEMPLATE, filler);
+    return Optional.of(String.format(MESSAGE_TEMPLATE, filler));
   }
 }
