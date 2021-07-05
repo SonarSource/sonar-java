@@ -1,3 +1,5 @@
+package checks.emptyclass;
+
 class A {
   int field;
 }
@@ -18,7 +20,7 @@ class L { // Noncompliant {{Remove this empty class, write its code or make it a
   ;
 }
 
-@SpringAnnotation
+@annotation
 class markerType { // compliant because of annotation
 
 }
