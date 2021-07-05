@@ -1,0 +1,42 @@
+<p>In records, the default behavior of the <code>equals()</code> method is to check the equality by field values. This works well for primitive fields
+or fields, whose type overrides <code>equals()</code>, but this behavior doesn’t work as expected for array fields.</p>
+<p>By default, array fields are compared by their reference, and overriding <code>equals()</code> is highly appreciated to achieve the deep equality
+check. The same strategy applies to <code>hashcode()</code> and <code>toString()</code> methods.</p>
+<p>This rule reports an issue if a record class has an array field and is not overriding <code>equals()</code>, <code>hashcode()</code> or
+<code>toString()</code> methods.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+record Person(String[] names, int age) {} // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+record Person(String[] names, int age) {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Person person = (Person) o;
+        return age == person.age &amp;&amp; Arrays.equals(names, person.names);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(age);
+        result = 31 * result + Arrays.hashCode(names);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "names=" + Arrays.toString(names) +
+                ", age=" + age +
+                '}';
+    }
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/specs/jls/se15/preview/specs/records-jls.html#jls-8.10">Records specification</a> </li>
+</ul>
+

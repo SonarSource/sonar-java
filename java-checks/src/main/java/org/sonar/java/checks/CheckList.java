@@ -454,6 +454,7 @@ public final class CheckList {
       MissingBeanValidationCheck.class,
       MissingCurlyBracesCheck.class,
       MissingDeprecatedCheck.class,
+      MissingOverridesInRecordWithArrayComponentCheck.class,
       ModifiersOrderCheck.class,
       ModulusEqualityCheck.class,
       NPEThrowCheck.class,
