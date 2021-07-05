@@ -42,3 +42,10 @@ enum SerialVersionUidCheckMyEnum {
   BAR;
   void fun(){}
 }
+
+record RecordWithoutSerializationField(Object unused) implements Serializable { // Compliant
+}
+
+record RecordWithSerializationField(Object unused) implements Serializable { // Compliant
+  static final long serialVersionUID = 2L;
+}
