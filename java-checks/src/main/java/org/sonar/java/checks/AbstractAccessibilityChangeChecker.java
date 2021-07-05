@@ -19,10 +19,12 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
 import java.util.Optional;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -112,12 +114,12 @@ abstract class AbstractAccessibilityChangeChecker extends AbstractMethodDetectio
     if (!FIELD_FETCHING_METHODS.matches(fieldInitializer)) {
       return false;
     }
-    ExpressionTree initializerExpression = fieldInitializer.methodSelect();
-    Optional<IdentifierTree> classIdentifier = getClassIdentifier((MemberSelectExpressionTree) initializerExpression);
-    if (!classIdentifier.isPresent()) {
+    ExpressionTree object = ((MemberSelectExpressionTree) fieldInitializer.methodSelect()).expression();
+    List<Type> classTypeArguments = object.symbolType().typeArguments();
+    if (classTypeArguments.isEmpty()) {
       return false;
     }
-    return identifierPointsToRecord(classIdentifier.get());
+    return classTypeArguments.get(0).isSubtypeOf("java.lang.Record");
   }
 
   private static Optional<MethodInvocationTree> getInitializingMethodInvocation(IdentifierTree identifier) {
@@ -131,37 +133,5 @@ abstract class AbstractAccessibilityChangeChecker extends AbstractMethodDetectio
       return Optional.empty();
     }
     return Optional.of((MethodInvocationTree) initializer);
-  }
-
-  private static Optional<IdentifierTree> getClassIdentifier(MemberSelectExpressionTree memberSelect) {
-    ExpressionTree expression = memberSelect.expression();
-    while (true) {
-      if (expression.is(Tree.Kind.MEMBER_SELECT)) {
-        MemberSelectExpressionTree currentMemberSelect = (MemberSelectExpressionTree) expression;
-        expression = currentMemberSelect.expression();
-      } else if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
-        MethodInvocationTree currentMethodInvocation = (MethodInvocationTree) expression;
-        expression = currentMethodInvocation.methodSelect();
-      } else {
-        break;
-      }
-    }
-    if (expression.symbolType().isUnknown() || !expression.is(Tree.Kind.IDENTIFIER)) {
-      return Optional.empty();
-    }
-    return Optional.of((IdentifierTree) expression);
-  }
-
-  private static boolean identifierPointsToRecord(IdentifierTree classIdentifier) {
-    if (classIdentifier.name().equals("getClass") &&
-      classIdentifier.parent().is(Tree.Kind.METHOD_INVOCATION) &&
-      GET_CLASS_MATCHER.matches((MethodInvocationTree) classIdentifier.parent())) {
-      Tree walker = classIdentifier;
-      while (!walker.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR)) {
-        walker = walker.parent();
-      }
-      return walker.parent().is(Tree.Kind.RECORD);
-    }
-    return classIdentifier.symbol().type().isSubtypeOf("java.lang.Record");
   }
 }

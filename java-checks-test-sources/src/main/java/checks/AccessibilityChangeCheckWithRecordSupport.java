@@ -60,6 +60,10 @@ public class AccessibilityChangeCheckWithRecordSupport {
     Field fieldFromDynamicallyLoadedClass = Class.forName("org.sonar.some.package.SomeClass").getDeclaredField("");
     fieldFromDynamicallyLoadedClass.setAccessible(true); // Noncompliant FP Not exploring fields retrieved from non standard methods
     fieldFromDynamicallyLoadedClass.set(person, "B"); // Noncompliant FP Not exploring fields retrieved from non standard methods
+
+    Class<? extends Record> someType = Person.class;
+    someType.getFields()[0].setAccessible(true); // Compliant
+    someType.getFields()[0].set(person, "B"); // Compliant
   }
 
   Field getAField() {

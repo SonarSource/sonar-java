@@ -68,11 +68,7 @@ public class AccessibilityChangeOnRecordsCheck extends AbstractAccessibilityChan
           .stream()
           .map(mit -> new JavaFileScannerContext.Location(SECONDARY_MESSAGE, mit))
           .collect(Collectors.toList());
-        if (secondaries.isEmpty()) {
-          reportIssue(setInvocation, MESSAGE);
-        } else {
-          reportIssue(setInvocation, MESSAGE, secondaries, null);
-        }
+        reportIssue(setInvocation, MESSAGE, secondaries, null);
       }
     }
     super.leaveNode(tree);
