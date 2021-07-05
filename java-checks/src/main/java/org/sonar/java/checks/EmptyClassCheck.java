@@ -25,14 +25,14 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "S2094")
 public class EmptyClassCheck extends IssuableSubscriptionVisitor {
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.CLASS);
+    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.RECORD);
   }
 
   @Override
@@ -49,6 +49,8 @@ public class EmptyClassCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isEmpty(ClassTree tree) {
-    return tree.modifiers().annotations().isEmpty() && tree.members().stream().allMatch(member -> member.is(Tree.Kind.EMPTY_STATEMENT));
+    return tree.modifiers().annotations().isEmpty()
+      && tree.recordComponents().isEmpty()
+      && tree.members().stream().allMatch(member -> member.is(Tree.Kind.EMPTY_STATEMENT));
   }
 }
