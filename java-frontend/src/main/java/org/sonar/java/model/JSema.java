@@ -35,6 +35,7 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -47,6 +48,8 @@ public final class JSema implements Sema {
   final Map<IBinding, List<IdentifierTree>> usages = new HashMap<>();
   private final Map<ITypeBinding, JType> types = new HashMap<>();
   private final Map<IBinding, JSymbol> symbols = new HashMap<>();
+  private final Map<Symbol.TypeSymbol, JInitializerBlockSymbol> initializerBlockSymbols = new HashMap<>();
+  private final Map<Symbol.TypeSymbol, JInitializerBlockSymbol> staticInitializerBlockSymbols = new HashMap<>();
   private final Map<IAnnotationBinding, JSymbolMetadata.JAnnotationInstance> annotations = new HashMap<>();
   private final Map<String, Type> nameToTypeCache = new HashMap<>();
 
@@ -80,6 +83,15 @@ public final class JSema implements Sema {
   public JMethodSymbol methodSymbol(IMethodBinding methodBinding) {
     return (JMethodSymbol) symbols.computeIfAbsent(methodBinding, k -> new JMethodSymbol(this, (IMethodBinding) k));
   }
+
+  public JInitializerBlockSymbol initializerBlockSymbol(JTypeSymbol owner) {
+    return initializerBlockSymbols.computeIfAbsent(owner, k -> new JInitializerBlockSymbol(owner, false));
+  }
+
+  public JInitializerBlockSymbol staticInitializerBlockSymbol(JTypeSymbol owner) {
+    return staticInitializerBlockSymbols.computeIfAbsent(owner, k -> new JInitializerBlockSymbol(owner, true));
+  }
+
 
   public JVariableSymbol variableSymbol(IVariableBinding variableBinding) {
     return (JVariableSymbol) symbols.computeIfAbsent(variableBinding, k -> new JVariableSymbol(this, (IVariableBinding) k));
