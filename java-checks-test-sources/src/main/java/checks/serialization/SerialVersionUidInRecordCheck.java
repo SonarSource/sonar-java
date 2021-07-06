@@ -27,15 +27,15 @@ public class SerialVersionUidInRecordCheck {
   }
 
   record UnexpectedFieldName(String name, int age) implements Serializable {
-    @Serial private static long somethingElseUID = 0L; // Compliant
+    @Serial private static final long somethingElseUID = 0L; // Compliant
   }
 
   record UnexpectedFieldType(String name, int age) implements Serializable {
-    @Serial private static int serialVersionUID = 0; // Compliant
+    @Serial private static final int serialVersionUID = 0; // Compliant
   }
 
   record FieldWithValueFromStaticMethod(String name, int age) implements Serializable {
-    @Serial private static long serialVersionUID = getConstantValue(); // Compliant as this is derived from a method call
+    @Serial private static final long serialVersionUID = getConstantValue(); // Compliant as this is derived from a method call
 
     private static long getConstantValue() {
       return 0L;
@@ -44,6 +44,6 @@ public class SerialVersionUidInRecordCheck {
 
   record FieldWithValueFromStaticVariable(String name, int age) implements Serializable {
     static long DEFAULT_VALUE = 0L;
-    @Serial private static long serialVersionUID = DEFAULT_VALUE; // Compliant as this is derived from a static variable
+    @Serial private static final long serialVersionUID = DEFAULT_VALUE; // Compliant as this is derived from a static variable
   }
 }
