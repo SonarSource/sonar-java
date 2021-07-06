@@ -21,14 +21,25 @@ package org.sonar.java.checks.serialization;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.TestUtils;
+
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class SerialVersionUidInRecordCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("checks/serialization/SerialVersionUidInRecordCheck.java"))
+      .onFile(testSourcesPath("checks/serialization/SerialVersionUidInRecordCheck.java"))
       .withCheck(new SerialVersionUidInRecordCheck())
       .verifyIssues();
+  }
+
+
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/serialization/SerialVersionUidInRecordCheck.java"))
+      .withCheck(new SerialVersionUidInRecordCheck())
+      .verifyNoIssues();
   }
 }

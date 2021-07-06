@@ -18,10 +18,6 @@ public class SerialVersionUidInRecordCheck {
     @Serial private static final long serialVersionUID = 42L; // Compliant
   }
 
-  record NoValue(String name, int age) implements Serializable {
-    @Serial private static final long serialVersionUID; // Compliant
-  }
-
   record NonFinal(String name, int age) implements Serializable {
     @Serial private static long serialVersionUID = 0L; // Compliant
   }
@@ -35,10 +31,15 @@ public class SerialVersionUidInRecordCheck {
   }
 
   record FieldWithValueFromStaticMethod(String name, int age) implements Serializable {
-    @Serial private static long serialVersionUID = getConstantValue(); // Compliant as this is not set explicitly
+    @Serial private static long serialVersionUID = getConstantValue(); // Compliant as this is derived from a method call
 
     private static long getConstantValue() {
       return 0L;
     }
+  }
+
+  record FieldWithValueFromStaticVariable(String name, int age) implements Serializable {
+    static long DEFAULT_VALUE = 0L;
+    @Serial private static long serialVersionUID = DEFAULT_VALUE; // Compliant as this is derived from a static variable
   }
 }
