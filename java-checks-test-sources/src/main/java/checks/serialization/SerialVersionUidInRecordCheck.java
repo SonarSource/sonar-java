@@ -3,7 +3,7 @@ package checks.serialization;
 import java.io.Serial;
 import java.io.Serializable;
 
-public class SerialVersionUIDInRecordCheck {
+public class SerialVersionUidInRecordCheck {
   record Person(String name, int age) implements Serializable {
     @Serial private static final long serialVersionUID = 0L; // Noncompliant {{Remove this redundant "serialVersionUID" field}}
   }

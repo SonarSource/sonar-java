@@ -31,7 +31,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6219")
-public class SerialVersionUIDInRecordCheck extends IssuableSubscriptionVisitor {
+public class SerialVersionUidInRecordCheck extends IssuableSubscriptionVisitor {
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.RECORD);
