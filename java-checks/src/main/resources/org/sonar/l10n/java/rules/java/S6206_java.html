@@ -1,0 +1,45 @@
+<p>In Java 16 <code>records</code> are finalized and can be safely used in production code. <code>Records</code> represent immutable read-only data
+structure and should be used instead of creating immutable classes. Immutability of records is guaranteed by the Java language itself, while
+implementing immutable classes on your own might lead to some bugs.</p>
+<p>One of the important aspects of <code>records</code> is that final fields can’t be overwritten using reflection.</p>
+<p>This rule reports an issue on classes for which all these statements are true:</p>
+<ul>
+  <li> all instance fields are private and final </li>
+  <li> has only one constructor with a parameter for all fields </li>
+  <li> has getters for all fields </li>
+  <li> has no setters </li>
+</ul>
+<h2>Noncompliant Code Example</h2>
+<pre>
+final class Person { // Noncompliant
+  private final String name;
+  private final int age;
+
+  public Person(String name, int age) {
+    this.name = name;
+    this.age = age;
+  }
+
+  public String getName() {...}
+
+  public int getAge() {...}
+
+  @Override
+  public boolean equals(Object o) {...}
+
+  @Override
+  public int hashCode() {...}
+
+  @Override
+  public String toString() {...}
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+record Person(String name, int age) { }
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/specs/jls/se16/html/jls-8.html#jls-8.10">Records specification</a> </li>
+</ul>
+

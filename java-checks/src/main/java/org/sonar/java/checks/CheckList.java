@@ -508,6 +508,7 @@ public final class CheckList {
       RandomFloatToIntCheck.class,
       ReadObjectSynchronizedCheck.class,
       ReceivingIntentsCheck.class,
+      RecordInsteadOfClassCheck.class,
       RedosCheck.class,
       RedundantAbstractMethodCheck.class,
       RedundantCloseCheck.class,
