@@ -2,15 +2,23 @@ package checks;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CollectorsToList {
+  static class ListWrapper {
+    List<String> strings;
+  }
+
+  ListWrapper listWrapper = new ListWrapper();
+
   void noncompliant() {
     List<String> list1 = Stream.of("A", "B", "C")
       .collect(Collectors.toList()); // Noncompliant [[sc=16;ec=35]] {{Replace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()'}}
+
+    // Not modifying the list
+    list1.contains("B");
 
     List<String> list2 = Stream.of("A", "B", "C")
       .collect(Collectors.toUnmodifiableList()); // Noncompliant [[sc=16;ec=47]] {{Replace this usage of 'Stream.collect(Collectors.toUnmodifiableList())' with 'Stream.toList()'}}
@@ -20,10 +28,22 @@ public class CollectorsToList {
 
     Stream.of("A", "B", "C")
       .collect(Collectors.toUnmodifiableList()); // Noncompliant [[sc=16;ec=47]] {{Replace this usage of 'Stream.collect(Collectors.toUnmodifiableList())' with 'Stream.toList()'}}
+
+    List<List<String>> listOfLists = new ArrayList<>();
+    // list1 appears in a call to List.add, but it is not the receiver, so it should not be interpreted as mutable:
+    listOfLists.add(list1);
+
+    listWrapper.strings = Stream.of("A", "B", "C").collect(Collectors.toList());
+    // listWrapper.strings appears in a call to List.add, but it is not the receiver, so it should not be interpreted as mutable:
+    listOfLists.add(listWrapper.strings);
   }
 
 
   private List<String> memberList;
+  private List<String> memberListAccessedWithThis;
+  List<String>[] arr;
+  ListWrapper listWrapper2 = new ListWrapper();
+
 
   void compliant() {
     List<String> list1 = Stream.of("A", "B", "C").toList(); // Compliant
@@ -36,12 +56,22 @@ public class CollectorsToList {
     memberList = Stream.of("A", "B", "C")
       .collect(Collectors.toList()); // Compliant, memberList needs to be mutable as its modified in addX
 
+    this.memberListAccessedWithThis = Stream.of("A", "B", "C")
+      .collect(Collectors.toList()); // Compliant, memberListAccessedWithThis needs to be mutable as its modified in addX
+
+    arr[0] = Stream.of("A", "B", "C").collect(Collectors.toList()); // Compliant, list is modified in addX
+
+    listWrapper2.strings = Stream.of("A", "B", "C").collect(Collectors.toList()); // Compliant, list is modified in addX
+
     List<String> list3 = Stream.of("A", "B", "C")
       .collect(Collectors.toCollection(ArrayList::new)); // Compliant because it's creating a specific list type instead of using toList
   }
 
   void addX() {
     memberList.add("X");
+    this.memberListAccessedWithThis.add("X");
+    arr[0].add("X");
+    listWrapper2.strings.add("X");
   }
 
   void FNs() {
@@ -50,16 +80,11 @@ public class CollectorsToList {
   }
 
   private List<String> memberList2;
-  List<String>[] arr;
 
   List<String> FPs() {
     List<String> list1 = Stream.of("A", "B", "C")
       .collect(Collectors.toList()); // Noncompliant - FP because we don't track lists across methods
     addX(list1);
-
-     arr[0] = Stream.of("A", "B", "C")
-       .collect(Collectors.toList()); // Noncompliant - FP we don't detect the modification through the array
-    arr[0].add("X");
 
     addX(Stream.of("A", "B", "C").collect(Collectors.toList())); // Noncompliant - same reason
 
