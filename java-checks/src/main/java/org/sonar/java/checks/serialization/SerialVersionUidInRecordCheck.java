@@ -64,13 +64,14 @@ public class SerialVersionUidInRecordCheck extends IssuableSubscriptionVisitor {
 
   private static boolean setsTheValueToZero(VariableTree variable) {
     ExpressionTree initializer = variable.initializer();
-    if (initializer == null || !initializer.is(Tree.Kind.LONG_LITERAL)) {
+    if (initializer == null) {
       return false;
     }
-    Optional<Long> aLong = initializer.asConstant(Long.class);
-    if (!aLong.isPresent()) {
-      return false;
+    Optional<Long> longValue = initializer.asConstant(Long.class);
+    if (longValue.isPresent()) {
+      return longValue.get() == 0L;
     }
-    return aLong.get() == 0L;
+    Optional<Integer> integerValue = initializer.asConstant(Integer.class);
+    return integerValue.isPresent() && integerValue.get() == 0;
   }
 }
