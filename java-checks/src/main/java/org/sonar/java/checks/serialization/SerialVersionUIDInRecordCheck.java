@@ -55,7 +55,6 @@ public class SerialVersionUIDInRecordCheck extends IssuableSubscriptionVisitor {
   private static boolean isSerialVersionUIDField(VariableTree variable) {
     Symbol symbol = variable.symbol();
     return symbol.isFinal() &&
-      symbol.isStatic() &&
       symbol.type().is("long") &&
       symbol.name().equals("serialVersionUID");
   }
