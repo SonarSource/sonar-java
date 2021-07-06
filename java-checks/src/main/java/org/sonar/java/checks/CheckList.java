@@ -103,6 +103,7 @@ import org.sonar.java.checks.serialization.ExternalizableClassConstructorCheck;
 import org.sonar.java.checks.serialization.NonSerializableWriteCheck;
 import org.sonar.java.checks.serialization.PrivateReadResolveCheck;
 import org.sonar.java.checks.serialization.SerialVersionUidCheck;
+import org.sonar.java.checks.serialization.SerialVersionUidInRecordCheck;
 import org.sonar.java.checks.serialization.SerializableComparatorCheck;
 import org.sonar.java.checks.serialization.SerializableFieldInSerializableClassCheck;
 import org.sonar.java.checks.serialization.SerializableObjectInSessionCheck;
@@ -545,6 +546,7 @@ public final class CheckList {
       SerializableFieldInSerializableClassCheck.class,
       SerializableObjectInSessionCheck.class,
       SerializableSuperConstructorCheck.class,
+      SerialVersionUidInRecordCheck.class,
       ServerCertificatesCheck.class,
       ServletInstanceFieldCheck.class,
       ServletMethodsExceptionsThrownCheck.class,
