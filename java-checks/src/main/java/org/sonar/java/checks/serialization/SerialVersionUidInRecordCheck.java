@@ -40,6 +40,9 @@ public class SerialVersionUidInRecordCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     ClassTree targetRecord = (ClassTree) tree;
+    if (!targetRecord.symbol().type().isSubtypeOf("java.io.Serializable")) {
+      return;
+    }
     for (Tree member : targetRecord.members()) {
       if (!member.is(Tree.Kind.VARIABLE)) {
         continue;

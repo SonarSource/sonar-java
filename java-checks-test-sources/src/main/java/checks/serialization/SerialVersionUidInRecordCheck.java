@@ -8,13 +8,17 @@ public class SerialVersionUidInRecordCheck {
     @Serial private static final long serialVersionUID = 0L; // Noncompliant {{Remove this redundant "serialVersionUID" field}}
   }
 
-  record Individual(String name, int age) implements Serializable {
+  record NotSerializable(String name, int age) {
+    @Serial private static final long serialVersionUID = 0L; // Compliant as the Record is not serializable
+  }
+
+  record NoExplicitField(String name, int age) implements Serializable {
     void print() {
       System.out.println("{name:" + name + ", age:" + age + "}");
     }
   } // Compliant
 
-  record Human(String name, int age) implements Serializable {
+  record FieldSetToAcceptableValue(String name, int age) implements Serializable {
     @Serial private static final long serialVersionUID = 42L; // Compliant
   }
 
