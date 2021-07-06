@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
-public class SerialVersionUIDInRecordCheckTest {
+class SerialVersionUIDInRecordCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()

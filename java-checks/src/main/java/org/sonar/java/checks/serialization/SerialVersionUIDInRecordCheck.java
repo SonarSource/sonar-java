@@ -21,14 +21,54 @@ package org.sonar.java.checks.serialization;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6219")
 public class SerialVersionUIDInRecordCheck extends IssuableSubscriptionVisitor {
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.emptyList();
+    return Collections.singletonList(Tree.Kind.RECORD);
+  }
+
+  @Override
+  public void visitNode(Tree tree) {
+    ClassTree targetRecord = (ClassTree) tree;
+    for (Tree member : targetRecord.members()) {
+      if (!member.is(Tree.Kind.VARIABLE)) {
+        continue;
+      }
+      VariableTree variable = (VariableTree) member;
+      if (isSerialVersionUIDField(variable) && setsTheValueToZero(variable)) {
+        reportIssue(variable, "Remove this redundant \"serialVersionUID\" field");
+        return;
+      }
+    }
+  }
+
+  private static boolean isSerialVersionUIDField(VariableTree variable) {
+    Symbol symbol = variable.symbol();
+    return symbol.isFinal() &&
+      symbol.isStatic() &&
+      symbol.type().is("long") &&
+      symbol.name().equals("serialVersionUID");
+  }
+
+  private static boolean setsTheValueToZero(VariableTree variable) {
+    ExpressionTree initializer = variable.initializer();
+    if (initializer == null || !initializer.is(Tree.Kind.LONG_LITERAL)) {
+      return false;
+    }
+    Optional<Long> aLong = initializer.asConstant(Long.class);
+    if (!aLong.isPresent()) {
+      return false;
+    }
+    return aLong.get() == 0L;
   }
 }
