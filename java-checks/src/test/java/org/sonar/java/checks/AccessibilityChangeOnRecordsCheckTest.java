@@ -19,22 +19,28 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import java.util.Collections;
+import org.junit.jupiter.api.Test;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
-@Rule(key = "S3011")
-public class AccessibilityChangeCheck extends AbstractAccessibilityChangeChecker {
-  @Override
-  protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    if (isModifyingFieldFromRecord(mit)) {
-      return;
-    }
-    if (SET_ACCESSIBLE_MATCHER.matches(mit)) {
-      if (setsToPubliclyAccessible(mit)) {
-        reportIssue(mit, "This accessibility update should be removed.");
-      }
-    } else {
-      reportIssue(mit, "This accessibility bypass should be removed.");
-    }
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+
+class AccessibilityChangeOnRecordsCheckTest {
+  @Test
+  void test() {
+    CheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/AccessibilityChangeOnRecordsCheck.java"))
+      .withChecks(new AccessibilityChangeOnRecordsCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/AccessibilityChangeOnRecordsCheck.java"))
+      .withChecks(new AccessibilityChangeOnRecordsCheck())
+      .withoutSemantic()
+      .verifyIssues();
   }
 }

@@ -1,0 +1,19 @@
+<p>In general, altering or bypassing the accessibility of classes, methods, or fields violates the encapsulation principle and could lead to run-time
+errors. For records the case is even trickier: you cannot change the visibility of records’s fields and trying to update the existing value will lead
+to <code>IllegalAccessException</code> in runtime.</p>
+<p>This rule raises an issue when reflection is used to change the visibility of a record’s field, and when it is used to directly update a record’s
+field value.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+record Person(String name, int age) {}
+
+Person person = new Person("A", 26);
+Field field = Person.class.getDeclaredField("name");
+field.setAccessible(true); // secondary
+field.set(person, "B"); // Noncompliant
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/specs/jls/se15/preview/specs/records-jls.html#jls-8.10">Records specification</a> </li>
+</ul>
+

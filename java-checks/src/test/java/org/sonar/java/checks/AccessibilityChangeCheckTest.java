@@ -22,13 +22,35 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+
 class AccessibilityChangeCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/AccessibilityChangeCheck.java")
+      .onFile(testSourcesPath("checks/AccessibilityChangeCheck.java"))
       .withCheck(new AccessibilityChangeCheck())
+      .withJavaVersion(15)
+      .verifyIssues();
+  }
+
+  @Test
+  void test_with_record_support() {
+    CheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/AccessibilityChangeCheckWithRecordSupport.java"))
+      .withCheck(new AccessibilityChangeCheck())
+      .withJavaVersion(16)
+      .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/AccessibilityChangeCheck.java"))
+      .withCheck(new AccessibilityChangeCheck())
+      .withJavaVersion(16)
       .verifyIssues();
   }
 
