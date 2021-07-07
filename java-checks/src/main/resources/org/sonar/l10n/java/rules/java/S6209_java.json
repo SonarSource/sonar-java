@@ -1,0 +1,16 @@
+{
+  "title": "Members ignored during record serialization should not be used",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
+  "tags": [
+    "java16"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-6209",
+  "sqKey": "S6209",
+  "scope": "Main"
+}
