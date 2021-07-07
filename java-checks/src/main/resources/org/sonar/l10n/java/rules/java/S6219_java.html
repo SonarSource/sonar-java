@@ -1,0 +1,29 @@
+<p>In Records serialization is not done the same way as for ordinary serializable or externalizable classes. Records serialization does not rely on
+the <code>serialVersionUID</code> field, because the requirement to have this field equal is waived for record classes. By default, all records will
+have this field equal to <code>0L</code> and there is no need to specify this field with <code>0L</code> value and it is possible to specify it with
+some custom value to support serialization/deserialization involving ordinary classes.</p>
+<p>This rule raises an issue when there is a <code>private static final long serialVersionUID</code> field which is set to <code>0L</code> in a Record
+class.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+record Person(String name, int age) implements Serializable {
+@Serial
+  private static final long serialVersionUID = 0L; // Noncompliant
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+record Person(String name, int age) implements Serializable {} // Compliant
+
+record Person(String name, int age) implements Serializable {
+@Serial
+  private static final long serialVersionUID = 42L; // Compliant
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/specs/jls/se15/preview/specs/records-jls.html#jls-8.10">Records specification</a> </li>
+  <li> <a href="https://docs.oracle.com/en/java/javase/15/docs/specs/records-serialization.html#serialization-of-records">Serialization of records</a>
+  </li>
+</ul>
+
