@@ -1,6 +1,7 @@
 package checks;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -53,6 +54,11 @@ public class CollectorsToList {
 
     list2.add("X");
 
+    List<String> list3 = Stream.of("A", "B", "C")
+      .collect(Collectors.toList()); // Compliant, list3 needs to be mutable
+
+    list3.retainAll(Arrays.asList("C", "D"));
+
     memberList = Stream.of("A", "B", "C")
       .collect(Collectors.toList()); // Compliant, memberList needs to be mutable as its modified in addX
 
@@ -63,7 +69,7 @@ public class CollectorsToList {
 
     listWrapper2.strings = Stream.of("A", "B", "C").collect(Collectors.toList()); // Compliant, list is modified in addX
 
-    List<String> list3 = Stream.of("A", "B", "C")
+    List<String> list4 = Stream.of("A", "B", "C")
       .collect(Collectors.toCollection(ArrayList::new)); // Compliant because it's creating a specific list type instead of using toList
   }
 

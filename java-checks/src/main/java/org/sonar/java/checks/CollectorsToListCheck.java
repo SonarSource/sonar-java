@@ -42,7 +42,7 @@ public class CollectorsToListCheck extends AbstractMethodDetection implements Ja
   private static final MethodMatchers COLLECT = MethodMatchers.create()
     .ofSubTypes("java.util.stream.Stream")
     .names("collect")
-    .withAnyParameters()
+    .addParametersMatcher("java.util.stream.Collector")
     .build();
 
   private static final MethodMatchers COLLECTORS_TO_LIST = MethodMatchers.create()
@@ -59,7 +59,7 @@ public class CollectorsToListCheck extends AbstractMethodDetection implements Ja
 
   private static final MethodMatchers LIST_MODIFICATION_METHODS = MethodMatchers.create()
     .ofSubTypes("java.util.List")
-    .names("add", "addAll", "remove", "removeAll", "replaceAll", "set", "sort", "clear")
+    .names("add", "addAll", "remove", "removeAll", "retainAll", "replaceAll", "set", "sort", "clear")
     .withAnyParameters()
     .build();
 
@@ -70,7 +70,7 @@ public class CollectorsToListCheck extends AbstractMethodDetection implements Ja
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
-    return MethodMatchers.or(COLLECT);
+    return COLLECT;
   }
 
   @Override
