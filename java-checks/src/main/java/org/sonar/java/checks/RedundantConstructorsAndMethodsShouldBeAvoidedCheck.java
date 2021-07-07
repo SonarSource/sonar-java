@@ -20,15 +20,35 @@
 package org.sonar.java.checks;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6207")
 public class RedundantConstructorsAndMethodsShouldBeAvoidedCheck extends IssuableSubscriptionVisitor {
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.emptyList();
+    return Collections.singletonList(Tree.Kind.RECORD);
+  }
+
+  @Override
+  public void visitNode(Tree tree) {
+    ClassTree targetRecord = (ClassTree) tree;
+    for (Tree member : targetRecord.members()) {
+      if (member.is(Tree.Kind.CONSTRUCTOR)) {
+        MethodTree constructor = (MethodTree) member;
+        // Report if the constructor is empty
+        if (constructor.block().body().isEmpty()) {
+          reportIssue(member, "BOOM");
+        }
+      }
+    }
   }
 }
