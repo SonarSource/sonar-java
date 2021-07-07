@@ -1,5 +1,6 @@
 package checks.serialization;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 class SerialVersionUidCheckA implements Cloneable {}
@@ -41,4 +42,16 @@ enum SerialVersionUidCheckMyEnum {
   },
   BAR;
   void fun(){}
+}
+
+record RecordWithoutSerializationField(Object unused) implements Serializable { // Compliant
+}
+
+record RecordWithSerializationField(Object unused) implements Serializable { // Compliant
+  static final long serialVersionUID = 2L;
+}
+
+record RecordWithSerializationFieldAndAnnotation(Object unused) implements Serializable { // Compliant
+  @Serial
+  static final long serialVersionUID = 2L;
 }
