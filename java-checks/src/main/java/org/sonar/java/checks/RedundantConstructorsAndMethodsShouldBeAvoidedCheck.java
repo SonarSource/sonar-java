@@ -23,9 +23,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -41,12 +41,29 @@ public class RedundantConstructorsAndMethodsShouldBeAvoidedCheck extends Issuabl
   @Override
   public void visitNode(Tree tree) {
     ClassTree targetRecord = (ClassTree) tree;
+
+    Map<String, VariableTree> componentsByName = new HashMap<>();
+    for (VariableTree component : targetRecord.recordComponents()) {
+      componentsByName.put(component.symbol().name(), component);
+    }
+
     for (Tree member : targetRecord.members()) {
       if (member.is(Tree.Kind.CONSTRUCTOR)) {
         MethodTree constructor = (MethodTree) member;
         // Report if the constructor is empty
         if (constructor.block().body().isEmpty()) {
           reportIssue(member, "BOOM");
+        }
+      } else if (member.is(Tree.Kind.METHOD)) {
+        MethodTree method = (MethodTree) member;
+        String methodName = method.symbol().name();
+        if (componentsByName.containsKey(methodName)) {
+          VariableTree component = componentsByName.get(methodName);
+          Type methodType = method.returnType().symbolType();
+          Type componentType = component.symbol().type();
+          if (methodType.equals(componentType)) {
+            reportIssue(member, "BOOM");
+          }
         }
       }
     }
