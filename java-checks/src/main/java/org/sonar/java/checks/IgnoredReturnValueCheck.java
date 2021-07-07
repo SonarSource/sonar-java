@@ -31,7 +31,9 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 
@@ -39,6 +41,9 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
+  private static final String JAVA_UTIL_FUNCTION_SUPPLIER = "java.util.function.Supplier";
+  private static final String JAVA_UTIL_STREAM_STREAM = "java.util.stream.Stream";
+  private static final String COLLECT = "collect";
   private static final List<String> CHECKED_TYPES = Arrays.asList(
     JAVA_LANG_STRING,
     "java.lang.Boolean",
@@ -94,10 +99,35 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
       .withAnyParameters()
       .build(),
     MethodMatchers.create()
-      .ofSubTypes("java.util.stream.Stream")
-      .names("toArray", "reduce", "collect", "min", "max", "count", "anyMatch", "allMatch", "noneMatch", "findFirst", "findAny", "toList")
+      .ofSubTypes(JAVA_UTIL_STREAM_STREAM)
+      .names(COLLECT, "toArray", "reduce", "min", "max", "count", "anyMatch", "allMatch", "noneMatch", "findFirst", "findAny", "toList")
       .withAnyParameters()
       .build());
+
+  private static final MethodMatchers COLLECT_WITH_COLLECTOR = MethodMatchers.create()
+    .ofSubTypes(JAVA_UTIL_STREAM_STREAM)
+    .names(COLLECT)
+    .addParametersMatcher("java.util.stream.Collector")
+    .build();
+
+  private static final MethodMatchers COLLECT_WITH_FUNCTIONS = MethodMatchers.create()
+    .ofSubTypes(JAVA_UTIL_STREAM_STREAM)
+    .names(COLLECT)
+    .addParametersMatcher(JAVA_UTIL_FUNCTION_SUPPLIER, "java.util.function.BiConsumer", "java.util.function.BiConsumer")
+    .build();
+
+  private static final MethodMatchers TO_COLLECTION = MethodMatchers.create()
+    .ofSubTypes("java.util.stream.Collectors")
+    .names("toCollection")
+    .addParametersMatcher(JAVA_UTIL_FUNCTION_SUPPLIER)
+    .build();
+
+  private static final MethodMatchers TO_MAP_WITH_SUPPLIER = MethodMatchers.create()
+    .ofSubTypes("java.util.stream.Collectors")
+    .names("toMap")
+    .addParametersMatcher("java.util.function.Function", "java.util.function.Function", "java.util.function.BinaryOperator",
+      JAVA_UTIL_FUNCTION_SUPPLIER)
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -129,8 +159,41 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isExcluded(MethodInvocationTree mit) {
     String methodName = mit.symbol().name();
-    return mit.symbol().isUnknown() || EXCLUDED.matches(mit) ||
+    return mit.symbol().isUnknown() || EXCLUDED.matches(mit) || mayBeCollectingIntoVariable(mit) ||
       (isInTryCatch(mit) && (EXCLUDED_PREFIX.stream().anyMatch(methodName::startsWith) || STRING_GET_BYTES.matches(mit)));
+  }
+
+  /**
+   * Returns true if Stream.collect is invoked with a supplier that's not a constructor. This is meant to exclude cases
+   * like `stream.collect(Collectors.toCollection(() -> var))`, which write their results into a variable and thus don't
+   * have to have their return values used.
+   */
+  private static boolean mayBeCollectingIntoVariable(MethodInvocationTree mit) {
+    if (COLLECT_WITH_FUNCTIONS.matches(mit)) {
+      return !isConstructor(mit.arguments().get(0));
+    }
+    if (COLLECT_WITH_COLLECTOR.matches(mit)) {
+      ExpressionTree arg = mit.arguments().get(0);
+      if (!arg.is(Tree.Kind.METHOD_INVOCATION)) {
+        return false;
+      }
+      MethodInvocationTree collector = (MethodInvocationTree) arg;
+      if (TO_COLLECTION.matches(collector)) {
+        return !isConstructor(collector.arguments().get(0));
+      }
+      if (TO_MAP_WITH_SUPPLIER.matches(collector)) {
+        return !isConstructor(collector.arguments().get(3));
+      }
+    }
+    return false;
+  }
+
+  private static boolean isConstructor(ExpressionTree tree) {
+    if (tree.is(Tree.Kind.METHOD_REFERENCE)) {
+      return ((MethodReferenceTree) tree).method().name().equals("new");
+    }
+    return (tree.is(Tree.Kind.LAMBDA_EXPRESSION))
+      && ((LambdaExpressionTree) tree).body().is(Tree.Kind.NEW_CLASS, Tree.Kind.NEW_ARRAY);
   }
 
   private static boolean isInTryCatch(MethodInvocationTree mit) {

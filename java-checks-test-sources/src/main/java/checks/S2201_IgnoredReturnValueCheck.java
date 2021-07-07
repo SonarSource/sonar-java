@@ -16,6 +16,8 @@ import java.time.Period;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -23,6 +25,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -130,6 +134,10 @@ class S2201_IgnoredReturnValueCheck {
     Stream.of("a", "b", "c").reduce((a,b) -> a+b); // Noncompliant
     Stream.of("a", "b", "c").collect(Collectors.joining()); // Noncompliant
     Stream.of("a", "b", "c").collect(Collectors.toList()); // Noncompliant
+    Stream.of("a", "b", "c").collect(Collectors.toCollection(ArrayList::new)); // Noncompliant
+    Stream.of("a", "b", "c").collect(Collectors.toCollection(() -> new ArrayList<>())); // Noncompliant
+    Stream.of("a", "b", "c").collect(Collectors.toMap(s -> s, s -> s, (s1,s2) -> s1+s2, HashMap::new)); // Noncompliant
+    Stream.of("a", "b", "c").collect(ArrayList::new, List::add, List::addAll); // Noncompliant
     Stream.of("a", "b", "c").min(Comparator.naturalOrder()); // Noncompliant
     Stream.of("a", "b", "c").max(Comparator.naturalOrder()); // Noncompliant
     Stream.of("a", "b", "c").count(); // Noncompliant
@@ -139,5 +147,32 @@ class S2201_IgnoredReturnValueCheck {
     Stream.of("a", "b", "c").findFirst(); // Noncompliant
     Stream.of("a", "b", "c").findAny(); // Noncompliant
     Stream.of("a", "b", "c").toList(); // Noncompliant
+
+    // We don't look inside anonymous classes or lambdas with a block body because getting the return value out of them
+    // would be annoying and I don't expect this usage to come up much
+    Stream.of("a", "b", "c").collect(Collectors.toCollection(() -> { return new ArrayList<>(); })); // FN
+    Stream.of("a", "b", "c").collect(Collectors.toCollection(new Supplier<>() { // FN
+      @Override
+      public Collection<String> get() {
+        return new ArrayList<>();
+      }
+    }));
+
+    List < String > myList = new ArrayList<>();
+    Stream.of("a", "b", "c").collect(Collectors.toCollection(() -> myList)); // Compliant because we're writing to a variable via the supplier
+
+    Map<String, String> myMap = new HashMap<>();
+    Stream.of("a", "b", "c").collect(Collectors.toMap(s -> s, s -> s, (s1, s2) -> s1+s2, () -> myMap)); // Compliant because we're writing to a variable via the supplier
+
+    Stream.of("a", "b", "c").collect(() -> myList, List::add, List::addAll); // Compliant because we're writing to a variable via the supplier
+
+    Stream.of("a", "b", "c").collect(this::makeList, List::add, List::addAll); // FN because we don't follow methods to check whether they return a new or existing collection
+
+    Collector collector = Collectors.toCollection(() -> myList);
+    Stream.of("a", "b", "c").collect(collector); // Noncompliant FP because we don't check collectors for exclusion if they aren't created directly as a method argument
+  }
+
+  List<String> makeList() {
+    return new ArrayList<>();
   }
 }
