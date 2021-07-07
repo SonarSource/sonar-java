@@ -10,7 +10,18 @@ public class RecordInsteadOfClassCheck {
     @Override public void foo() { }
   }
 
-  class ComplexClass { // Noncompliant {{Refactor this class declaration to use 'record ComplexClass(int sum, List<...> list, boolean[][] tests, boolea...)'.}}
+  class SimpleClass2 { // Noncompliant [[sc=9;ec=21]] {{Refactor this class declaration to use 'record SimpleClass2(boolean boom, int a)'.}}
+    private final boolean boom;
+    private final int a;
+
+    SimpleClass2(boolean boom, int a) { this.boom = boom; this.a = a; }
+    boolean boom() { return boom; }
+    int getA() { return a; }
+    void get() { }
+    void is() { }
+  }
+
+  class ComplexClass { // Noncompliant {{Refactor this class declaration to use 'record ComplexClass(int sum, List<...> list, boolean[][] tests, boo...)'.}}
     private final int sum;
     private final java.util.List<String> list;
     private final boolean[][] tests;
@@ -58,15 +69,6 @@ public class RecordInsteadOfClassCheck {
     int getBase() { return base; }
   }
 
-
-  class ClassWithSetter {
-    private final int sum;
-
-    ClassWithSetter(int sum) { this.sum = sum; }
-    int getSum() { return sum; }
-    void setSum(int value) { }
-  }
-
   class ClassWithNoRealSetter { // Noncompliant {{Refactor this class declaration to use 'record ClassWithNoRealSetter(int sum)'.}}
     private final int sum;
 
@@ -91,11 +93,17 @@ public class RecordInsteadOfClassCheck {
   }
 
   class ClassExtendingClass extends SimpleClass { ClassExtendingClass() { super(0); } }
-  class ClassWithStaticField  { private static int base; }
+  class ClassWithStaticField { private static int base; }
   class ClassWithPrivateNonFinalField { private int base; }
   class ClassWithPublicFinalField { public final int base = 0; }
   class ClassWithoutFields { }
   class ClassWithoutFinalFields { private int sum; }
   abstract class AbstractClass { abstract void foo(); }
   interface NotAClass { void foo(); }
+
+  record SimpleRecord(int sum, int base) {
+    SimpleRecord(int sum, int base) { this.sum = sum; this.base = base; }
+    int getSum() { return sum; }
+    int getBase() { return base; }
+  }
 }

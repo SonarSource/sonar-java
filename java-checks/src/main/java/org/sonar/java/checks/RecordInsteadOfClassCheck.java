@@ -73,7 +73,7 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
       .map(Symbol::name)
       .collect(Collectors.toSet());
 
-    if (hasSetter(methods, fieldNames) || !hasGetterForEveryField(methods, fieldNames)) {
+    if (!hasGetterForEveryField(methods, fieldNames)) {
       return;
     }
     List<Symbol.MethodSymbol> constructors = classConstructors(methods);
@@ -127,17 +127,6 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
     return symbol.isPrivate() && symbol.isFinal();
   }
 
-  private static boolean hasSetter(List<Symbol.MethodSymbol> methods, Set<String> fieldNames) {
-    return methods.stream().anyMatch(m -> isSetter(m, fieldNames));
-  }
-
-  private static boolean isSetter(Symbol.MethodSymbol method, Set<String> fieldNames) {
-    String methodName = method.name();
-    return methodName.startsWith("set")
-      && fieldNames.contains(toFieldName(methodName))
-      && method.parameterTypes().size() == 1;
-  }
-
   private static boolean hasGetterForEveryField(List<Symbol.MethodSymbol> methods, Set<String> fieldNames) {
     Set<String> gettersForField = methods.stream()
       .filter(m -> isGetter(m, fieldNames))
@@ -149,14 +138,28 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
 
   private static boolean isGetter(Symbol.MethodSymbol method, Set<String> fieldNames) {
     String methodName = method.name();
-    return (methodName.startsWith("get") || methodName.startsWith("is"))
-      && fieldNames.contains(toFieldName(methodName))
-      && method.parameterTypes().isEmpty();
+    if (!method.parameterTypes().isEmpty()) {
+      return false;
+    }
+    if (fieldNames.contains(methodName)) {
+      // simple more recent 'myField()' form for getters
+      return true;
+    }
+    if ("get".equals(methodName) || "is".equals(methodName)) {
+      return false;
+    }
+    // traditional getters: 'getMyField()' or 'isMyBooleanField()'
+    return (methodName.startsWith("get") || methodName.startsWith("is")) && fieldNames.contains(toFieldName(methodName));
   }
 
   private static String toFieldName(String methodName) {
-    int index = methodName.startsWith("is") ? 2 : /* get/set...() */ 3;
-    return lowerCaseFirstLetter(methodName.substring(index));
+    if (methodName.startsWith("is")) {
+      return lowerCaseFirstLetter(methodName.substring(2));
+    }
+    if (methodName.startsWith("get")) {
+      return lowerCaseFirstLetter(methodName.substring(3));
+    }
+    return methodName;
   }
 
   private static String lowerCaseFirstLetter(String methodName) {
@@ -170,7 +173,7 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
       .map(VariableTree::simpleName)
       .map(IdentifierTree::name)
       .collect(Collectors.toSet());
-    return parameterNames.size() == fieldNames.size() && parameterNames.containsAll(fieldNames);
+    return parameterNames.equals(fieldNames);
   }
 
   private static String recordName(ClassTree classTree, Symbol.MethodSymbol constructor) {
@@ -183,7 +186,7 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
       .map(p -> String.format("%s %s", typeAsString(p.type()), p.simpleName().name()))
       .collect(Collectors.joining(", "));
     if (parametersAsString.length() > 50) {
-      return parametersAsString.substring(0, 50) + "...";
+      return parametersAsString.substring(0, 47) + "...";
     }
     return parametersAsString;
   }
