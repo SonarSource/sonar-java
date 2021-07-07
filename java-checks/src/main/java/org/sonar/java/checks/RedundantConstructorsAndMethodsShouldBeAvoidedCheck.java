@@ -19,15 +19,21 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -61,11 +67,35 @@ public class RedundantConstructorsAndMethodsShouldBeAvoidedCheck extends Issuabl
           VariableTree component = componentsByName.get(methodName);
           Type methodType = method.returnType().symbolType();
           Type componentType = component.symbol().type();
-          if (methodType.equals(componentType)) {
+          if (methodType.equals(componentType) && onlyReturnsRawValue(method, componentsByName.values())) {
             reportIssue(member, "BOOM");
           }
         }
       }
     }
+  }
+
+  public static boolean onlyReturnsRawValue(MethodTree method, Collection<VariableTree> components) {
+    List<ReturnStatementTree> returnStatements = method.block().body().stream()
+      .filter(statement -> statement.is(Tree.Kind.RETURN_STATEMENT))
+      .map(ReturnStatementTree.class::cast)
+      .collect(Collectors.toList());
+    boolean onlyReturnsComponents = false;
+    for (ReturnStatementTree returnStatement : returnStatements) {
+      ExpressionTree expression = returnStatement.expression();
+      if (expression.is(Tree.Kind.IDENTIFIER)) {
+        IdentifierTree identifier = (IdentifierTree) expression;
+        Symbol symbolIdentifier = identifier.symbol();
+        boolean identifierMatchesComponent = false;
+        for (VariableTree component : components) {
+          if (symbolIdentifier.equals(component.symbol())) {
+            identifierMatchesComponent = true;
+            break;
+          }
+        }
+        onlyReturnsComponents |= identifierMatchesComponent;
+      }
+    }
+    return onlyReturnsComponents;
   }
 }
