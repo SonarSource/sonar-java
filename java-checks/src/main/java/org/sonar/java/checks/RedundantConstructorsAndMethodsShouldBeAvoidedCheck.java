@@ -22,18 +22,24 @@ package org.sonar.java.checks;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -57,7 +63,7 @@ public class RedundantConstructorsAndMethodsShouldBeAvoidedCheck extends Issuabl
       if (member.is(Tree.Kind.CONSTRUCTOR)) {
         MethodTree constructor = (MethodTree) member;
         // Report if the constructor is empty
-        if (constructor.block().body().isEmpty()) {
+        if (constructor.block().body().isEmpty() || onlyDoesSimpleAssignments(constructor, targetRecord.recordComponents())) {
           reportIssue(member, "BOOM");
         }
       } else if (member.is(Tree.Kind.METHOD)) {
@@ -67,7 +73,7 @@ public class RedundantConstructorsAndMethodsShouldBeAvoidedCheck extends Issuabl
           VariableTree component = componentsByName.get(methodName);
           Type methodType = method.returnType().symbolType();
           Type componentType = component.symbol().type();
-          if (methodType.equals(componentType) && onlyReturnsRawValue(method, componentsByName.values())) {
+          if (methodType.equals(componentType) && onlyReturnsRawValue(method, targetRecord.recordComponents())) {
             reportIssue(member, "BOOM");
           }
         }
@@ -97,5 +103,38 @@ public class RedundantConstructorsAndMethodsShouldBeAvoidedCheck extends Issuabl
       }
     }
     return onlyReturnsComponents;
+  }
+
+  public static boolean onlyDoesSimpleAssignments(MethodTree constructor, List<VariableTree> components) {
+    List<VariableTree> parameters = constructor.parameters();
+    List<StatementTree> statements = constructor.block().body();
+    Set<Symbol> componentsAssignedInConstructor = new HashSet<>();
+    for (StatementTree statement : statements) {
+      if (statement.is(Tree.Kind.EXPRESSION_STATEMENT)) {
+        ExpressionStatementTree initialStatement = (ExpressionStatementTree) statement;
+        if (initialStatement.expression().is(Tree.Kind.ASSIGNMENT)) {
+          AssignmentExpressionTree assignment = (AssignmentExpressionTree) initialStatement.expression();
+          ExpressionTree leftHandSide = assignment.variable();
+          if (!leftHandSide.is(Tree.Kind.MEMBER_SELECT)) {
+            continue;
+          }
+          Symbol variableSymbol = ((MemberSelectExpressionTree) leftHandSide).identifier().symbol();
+          boolean variableIsAComponent = components.stream().anyMatch(component -> component.symbol().equals(variableSymbol));
+          if (!variableIsAComponent) {
+            continue;
+          }
+          ExpressionTree rightHandSide = assignment.expression();
+          if (!rightHandSide.is(Tree.Kind.IDENTIFIER)) {
+            continue;
+          }
+          Symbol valueSymbol = ((IdentifierTree) rightHandSide).symbol();
+          boolean valueIsAParameter = parameters.stream().anyMatch(parameter -> parameter.symbol().equals(valueSymbol));
+          if (valueIsAParameter && variableSymbol.name().equals(valueSymbol.name()) && variableSymbol.type().equals(valueSymbol.type())) {
+            componentsAssignedInConstructor.add(variableSymbol);
+          }
+        }
+      }
+    }
+    return componentsAssignedInConstructor.size() == components.size();
   }
 }
