@@ -1,0 +1,16 @@
+{
+  "title": "Records should be used instead of ordinary classes when representing immutable data structure",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
+  "tags": [
+    "java16"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6206",
+  "sqKey": "S6206",
+  "scope": "Main"
+}
