@@ -102,6 +102,7 @@ import org.sonar.java.checks.serialization.CustomSerializationMethodCheck;
 import org.sonar.java.checks.serialization.ExternalizableClassConstructorCheck;
 import org.sonar.java.checks.serialization.NonSerializableWriteCheck;
 import org.sonar.java.checks.serialization.PrivateReadResolveCheck;
+import org.sonar.java.checks.serialization.RecordSerializationIgnoredMembersCheck;
 import org.sonar.java.checks.serialization.SerialVersionUidCheck;
 import org.sonar.java.checks.serialization.SerialVersionUidInRecordCheck;
 import org.sonar.java.checks.serialization.SerializableComparatorCheck;
@@ -509,6 +510,7 @@ public final class CheckList {
       ReadObjectSynchronizedCheck.class,
       ReceivingIntentsCheck.class,
       RecordInsteadOfClassCheck.class,
+      RecordSerializationIgnoredMembersCheck.class,
       RedosCheck.class,
       RedundantAbstractMethodCheck.class,
       RedundantCloseCheck.class,
