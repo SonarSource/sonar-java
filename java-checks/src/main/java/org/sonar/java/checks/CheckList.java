@@ -515,6 +515,7 @@ public final class CheckList {
       RedosCheck.class,
       RedundantAbstractMethodCheck.class,
       RedundantCloseCheck.class,
+      RedundantConstructorsAndMethodsShouldBeAvoidedCheck.class,
       RedundantJumpCheck.class,
       RedundantModifierCheck.class,
       RedundantRegexAlternativesCheck.class,
