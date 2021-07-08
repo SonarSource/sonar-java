@@ -8,7 +8,7 @@ public class RedundantConstructorsAndMethodsShouldBeAvoidedCheck {
     static Object variable = null;
     static Object someOtherVariable = null;
 
-    RedundantConstructorAndGetters(String name, int age) { // Noncompliant {{Remove this redundant constructor which is the same as a default one.}}
+    RedundantConstructorAndGetters(String name, int age) { // Noncompliant [[sc=5;ec=35]] {{Remove this redundant constructor which is the same as a default one.}}
       System.out.println("Just printing something...");
       this.name = name;
       int x = 42;
@@ -17,11 +17,11 @@ public class RedundantConstructorsAndMethodsShouldBeAvoidedCheck {
       this.age = age;
     }
 
-    public String name() { // Noncompliant {{Remove this redundant method which is the same as a default one.}}
+    public String name() { // Noncompliant [[sc=19;ec=23]] {{Remove this redundant method which is the same as a default one.}}
       return this.name;
     }
 
-    public int age() { // Noncompliant {{Remove this redundant method which is the same as a default one.}}
+    public int age() { // Noncompliant [[sc=16;ec=19]] {{Remove this redundant method which is the same as a default one.}}
       return age;
     }
   }
@@ -32,11 +32,11 @@ public class RedundantConstructorsAndMethodsShouldBeAvoidedCheck {
       this.age = age;
     }
 
-    public String name() { // Noncompliant {{Remove this redundant method which is the same as a default one.}}
+    public String name() { // Noncompliant [[sc=19;ec=23]] {{Remove this redundant method which is the same as a default one.}}
       return this.name;
     }
 
-    public int age() { // Noncompliant {{Remove this redundant method which is the same as a default one.}}
+    public int age() { // Noncompliant [[sc=16;ec=19]] {{Remove this redundant method which is the same as a default one.}}
       return age;
     }
   }
@@ -76,10 +76,10 @@ public class RedundantConstructorsAndMethodsShouldBeAvoidedCheck {
   }
 
   record EmptyConstructorAndRedundantGetter(String name, int age) {
-    EmptyConstructorAndRedundantGetter { // Noncompliant {{Remove this redundant constructor which is the same as a default one.}}
+    EmptyConstructorAndRedundantGetter { // Noncompliant [[sc=5;ec=39]] {{Remove this redundant constructor which is the same as a default one.}}
     }
 
-    public String name() { // Noncompliant {{Remove this redundant method which is the same as a default one.}}
+    public String name() { // Noncompliant [[sc=19;ec=23]] {{Remove this redundant method which is the same as a default one.}}
       return name;
     }
   }

@@ -62,7 +62,7 @@ public class RedundantConstructorsAndMethodsShouldBeAvoidedCheck extends Issuabl
         MethodTree constructor = (MethodTree) member;
         // Report if the constructor is empty
         if (constructor.block().body().isEmpty() || onlyDoesSimpleAssignments(constructor, components)) {
-          reportIssue(member, "Remove this redundant constructor which is the same as a default one.");
+          reportIssue(constructor.simpleName(), "Remove this redundant constructor which is the same as a default one.");
         }
       } else if (member.is(Tree.Kind.METHOD)) {
         MethodTree method = (MethodTree) member;
@@ -71,7 +71,7 @@ public class RedundantConstructorsAndMethodsShouldBeAvoidedCheck extends Issuabl
           continue;
         }
         if (onlyReturnsRawValue(method, components)) {
-          reportIssue(member, "Remove this redundant method which is the same as a default one.");
+          reportIssue(method.simpleName(), "Remove this redundant method which is the same as a default one.");
         }
       }
     }
