@@ -509,6 +509,7 @@ public final class CheckList {
       RandomFloatToIntCheck.class,
       ReadObjectSynchronizedCheck.class,
       ReceivingIntentsCheck.class,
+      RecordDuplicatedGetterCheck.class,
       RecordInsteadOfClassCheck.class,
       RecordSerializationIgnoredMembersCheck.class,
       RedosCheck.class,
