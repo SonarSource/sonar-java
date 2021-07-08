@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -54,28 +53,28 @@ public class RedundantConstructorsAndMethodsShouldBeAvoidedCheck extends Issuabl
   public void visitNode(Tree tree) {
     ClassTree targetRecord = (ClassTree) tree;
 
-    Map<String, VariableTree> componentsByName = new HashMap<>();
-    for (VariableTree component : targetRecord.recordComponents()) {
-      componentsByName.put(component.symbol().name(), component);
-    }
+    List<VariableTree> components = targetRecord.recordComponents();
+    Map<String, VariableTree> componentsByName = components.stream()
+      .collect(Collectors.toMap(component -> component.symbol().name(), component -> component));
 
     for (Tree member : targetRecord.members()) {
       if (member.is(Tree.Kind.CONSTRUCTOR)) {
         MethodTree constructor = (MethodTree) member;
         // Report if the constructor is empty
-        if (constructor.block().body().isEmpty() || onlyDoesSimpleAssignments(constructor, targetRecord.recordComponents())) {
+        if (constructor.block().body().isEmpty() || onlyDoesSimpleAssignments(constructor, components)) {
           reportIssue(member, "BOOM");
         }
       } else if (member.is(Tree.Kind.METHOD)) {
         MethodTree method = (MethodTree) member;
         String methodName = method.symbol().name();
-        if (componentsByName.containsKey(methodName)) {
-          VariableTree component = componentsByName.get(methodName);
-          Type methodType = method.returnType().symbolType();
-          Type componentType = component.symbol().type();
-          if (methodType.equals(componentType) && onlyReturnsRawValue(method, targetRecord.recordComponents())) {
-            reportIssue(member, "BOOM");
-          }
+        if (!componentsByName.containsKey(methodName)) {
+          continue;
+        }
+        VariableTree component = componentsByName.get(methodName);
+        Type methodType = method.returnType().symbolType();
+        Type componentType = component.symbol().type();
+        if (methodType.equals(componentType) && onlyReturnsRawValue(method, components)) {
+          reportIssue(member, "BOOM");
         }
       }
     }
@@ -109,29 +108,31 @@ public class RedundantConstructorsAndMethodsShouldBeAvoidedCheck extends Issuabl
     List<StatementTree> statements = constructor.block().body();
     Set<Symbol> componentsAssignedInConstructor = new HashSet<>();
     for (StatementTree statement : statements) {
-      if (statement.is(Tree.Kind.EXPRESSION_STATEMENT)) {
-        ExpressionStatementTree initialStatement = (ExpressionStatementTree) statement;
-        if (initialStatement.expression().is(Tree.Kind.ASSIGNMENT)) {
-          AssignmentExpressionTree assignment = (AssignmentExpressionTree) initialStatement.expression();
-          ExpressionTree leftHandSide = assignment.variable();
-          if (!leftHandSide.is(Tree.Kind.MEMBER_SELECT)) {
-            continue;
-          }
-          Symbol variableSymbol = ((MemberSelectExpressionTree) leftHandSide).identifier().symbol();
-          boolean variableIsAComponent = components.stream().anyMatch(component -> component.symbol().equals(variableSymbol));
-          if (!variableIsAComponent) {
-            continue;
-          }
-          ExpressionTree rightHandSide = assignment.expression();
-          if (!rightHandSide.is(Tree.Kind.IDENTIFIER)) {
-            continue;
-          }
-          Symbol valueSymbol = ((IdentifierTree) rightHandSide).symbol();
-          boolean valueIsAParameter = parameters.stream().anyMatch(parameter -> parameter.symbol().equals(valueSymbol));
-          if (valueIsAParameter && variableSymbol.name().equals(valueSymbol.name()) && variableSymbol.type().equals(valueSymbol.type())) {
-            componentsAssignedInConstructor.add(variableSymbol);
-          }
-        }
+      if (!statement.is(Tree.Kind.EXPRESSION_STATEMENT)) {
+        continue;
+      }
+      ExpressionStatementTree initialStatement = (ExpressionStatementTree) statement;
+      if (!initialStatement.expression().is(Tree.Kind.ASSIGNMENT)) {
+        continue;
+      }
+      AssignmentExpressionTree assignment = (AssignmentExpressionTree) initialStatement.expression();
+      ExpressionTree leftHandSide = assignment.variable();
+      if (!leftHandSide.is(Tree.Kind.MEMBER_SELECT)) {
+        continue;
+      }
+      Symbol variableSymbol = ((MemberSelectExpressionTree) leftHandSide).identifier().symbol();
+      boolean variableIsAComponent = components.stream().anyMatch(component -> component.symbol().equals(variableSymbol));
+      if (!variableIsAComponent) {
+        continue;
+      }
+      ExpressionTree rightHandSide = assignment.expression();
+      if (!rightHandSide.is(Tree.Kind.IDENTIFIER)) {
+        continue;
+      }
+      Symbol valueSymbol = ((IdentifierTree) rightHandSide).symbol();
+      boolean valueIsAParameter = parameters.stream().anyMatch(parameter -> parameter.symbol().equals(valueSymbol));
+      if (valueIsAParameter && variableSymbol.name().equals(valueSymbol.name()) && variableSymbol.type().equals(valueSymbol.type())) {
+        componentsAssignedInConstructor.add(variableSymbol);
       }
     }
     return componentsAssignedInConstructor.size() == components.size();
