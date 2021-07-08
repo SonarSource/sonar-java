@@ -10,6 +10,10 @@ public class RedundantConstructorsAndMethodsShouldBeAvoidedCheck {
       int x = 42;
       this.age = age;
     }
+
+    public String name() { // Noncompliant
+      return this.name;
+    }
   }
 
   record CompliantConstructorIgnoringParameter(String name, int age) {
@@ -53,6 +57,7 @@ public class RedundantConstructorsAndMethodsShouldBeAvoidedCheck {
         throw new IllegalArgumentException("Negative age");
       }
     }
+
     public String name() { // Compliant
       return name.toUpperCase(Locale.ROOT);
     }

@@ -89,18 +89,17 @@ public class RedundantConstructorsAndMethodsShouldBeAvoidedCheck extends Issuabl
     boolean onlyReturnsComponents = false;
     for (ReturnStatementTree returnStatement : returnStatements) {
       ExpressionTree expression = returnStatement.expression();
+      IdentifierTree identifier;
       if (expression.is(Tree.Kind.IDENTIFIER)) {
-        IdentifierTree identifier = (IdentifierTree) expression;
-        Symbol symbolIdentifier = identifier.symbol();
-        boolean identifierMatchesComponent = false;
-        for (VariableTree component : components) {
-          if (symbolIdentifier.equals(component.symbol())) {
-            identifierMatchesComponent = true;
-            break;
-          }
-        }
-        onlyReturnsComponents |= identifierMatchesComponent;
+        identifier = (IdentifierTree) expression;
+      } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
+        identifier = ((MemberSelectExpressionTree) expression).identifier();
+      } else {
+        continue;
       }
+      Symbol identifierSymbol = identifier.symbol();
+      boolean identifierMatchesComponent = components.stream().anyMatch(component -> component.symbol().equals(identifierSymbol));
+      onlyReturnsComponents |= identifierMatchesComponent;
     }
     return onlyReturnsComponents;
   }
