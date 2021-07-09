@@ -62,8 +62,8 @@ public class AccessibilityChangeCheckWithRecordSupport {
     fieldFromDynamicallyLoadedClass.set(person, "B"); // Noncompliant FP Not exploring fields retrieved from non standard methods
 
     Class<? extends Record> someType = Person.class;
-    someType.getFields()[0].setAccessible(true); // Compliant
-    someType.getFields()[0].set(person, "B"); // Compliant
+    someType.getFields()[0].setAccessible(true); // Compliant because reported by S6216
+    someType.getFields()[0].set(person, "B"); // Compliant because reported by S6216
   }
 
   Field getAField() {
