@@ -70,7 +70,7 @@ public class RecordDuplicatedGetterCheck extends IssuableSubscriptionVisitor {
       reportIssue(getter.simpleName(), issueMessage(getter, component));
     } else {
       MethodTree accessorMethod = accessor.get();
-      if (!SyntacticEquivalence.areEquivalent(accessorMethod.block(), getter.block())) {
+      if (!SyntacticEquivalence.areEquivalent(accessorMethod.block(), getter.block()) && !isDirectCallToGetter(accessorMethod, getter)) {
         reportIssue(getter.simpleName(), issueMessage(getter, component));
       }
     }
@@ -82,6 +82,11 @@ public class RecordDuplicatedGetterCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isDirectCallToAccessor(MethodTree getter, Symbol.VariableSymbol component) {
     return singleReturnStatementExpression(getter).filter(expr -> isAccessorInvocation(expr, component)).isPresent();
+  }
+
+  private static boolean isDirectCallToGetter(MethodTree accessor, MethodTree getter) {
+    return singleReturnStatementExpression(accessor).filter(expr -> isGetterInvocation(expr, getter.symbol()))
+      .isPresent();
   }
 
   private static Optional<ExpressionTree> singleReturnStatementExpression(MethodTree method) {
@@ -117,6 +122,10 @@ public class RecordDuplicatedGetterCheck extends IssuableSubscriptionVisitor {
       && component.owner().equals(methodSymbol.owner());
   }
 
+  private static boolean isGetterInvocation(ExpressionTree expression, Symbol.MethodSymbol getter) {
+    return expression.is(Tree.Kind.METHOD_INVOCATION) && getter.equals(((MethodInvocationTree) expression).symbol());
+  }
+
   private static String issueMessage(MethodTree getter, Symbol.VariableSymbol component) {
     return String.format("Remove this getter '%s()' from record and override an existing one '%s()'.", getter.simpleName().name(), component.name());
   }
@@ -127,7 +136,6 @@ public class RecordDuplicatedGetterCheck extends IssuableSubscriptionVisitor {
       .stream()
       .filter(Symbol::isVariableSymbol)
       .map(Symbol.VariableSymbol.class::cast)
-      .filter(component -> !"this".equals(component.name()))
       .collect(Collectors.toList());
   }
 

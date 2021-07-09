@@ -21,7 +21,7 @@ public class RecordDuplicatedGetterCheck {
     public int getAge() {        return age + 42; } // Noncompliant [[sc=16;ec=22]] {{Remove this getter 'getAge()' from record and override an existing one 'age()'.}}
   }
 
-  record Person(String name, int age, double size, int friends, boolean alive, Color color) {
+  record Person(String name, int age, double size, int friends, boolean alive, Color color, float power, int tentacles) {
     @Override public String name() { return name.toUpperCase(Locale.ROOT); }
     public String getName() {        return name.toUpperCase(Locale.ROOT); }
 
@@ -35,6 +35,12 @@ public class RecordDuplicatedGetterCheck {
     public boolean isAlive() { return Being.CTHULU.alive(); } // Noncompliant
 
     public Color getColor() { return this.color(); }
+
+    @Override public float power() { return getPower(); }
+    public float getPower() {        return power * 10; }
+
+    @Override public int tentacles() { return getAge(); }
+    public int getTentacles() {        return tentacles * 10; } // Noncompliant
   }
 
   enum Color { GREEN, RAINBOW; }
