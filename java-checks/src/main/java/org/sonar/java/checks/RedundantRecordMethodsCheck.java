@@ -117,10 +117,7 @@ public class RedundantRecordMethodsCheck extends IssuableSubscriptionVisitor {
     List<AssignmentExpressionTree> assignments = extractAssignments(constructor.block().body());
     Set<Symbol> componentsAssignedInConstructor = new HashSet<>();
     for (AssignmentExpressionTree assignment : assignments) {
-      Optional<Symbol.VariableSymbol> variableSymbol = assignsParameterToComponent(assignment, components, parameters);
-      if (variableSymbol.isPresent()) {
-        componentsAssignedInConstructor.add(variableSymbol.get());
-      }
+      assignsParameterToComponent(assignment, components, parameters).ifPresent(componentsAssignedInConstructor::add);
     }
     return componentsAssignedInConstructor.containsAll(components);
   }
