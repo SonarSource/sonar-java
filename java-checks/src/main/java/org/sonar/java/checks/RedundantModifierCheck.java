@@ -30,20 +30,22 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S2333")
 public class RedundantModifierCheck extends IssuableSubscriptionVisitor {
 
   @Override
-  public List<Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.CLASS, Kind.ENUM);
+  public List<Tree.Kind> nodesToVisit() {
+    return Arrays.asList(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.RECORD);
   }
 
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
+    if (classTree.is(Tree.Kind.RECORD)) {
+      checkRedundantModifiers(classTree.modifiers(), Modifier.FINAL);
+    }
     for (Tree member : classTree.members()) {
       switch (member.kind()) {
         case METHOD:
@@ -53,7 +55,7 @@ public class RedundantModifierCheck extends IssuableSubscriptionVisitor {
           checkVariable((VariableTree) member, classTree);
           break;
         case CONSTRUCTOR:
-          if (tree.is(Kind.ENUM)) {
+          if (tree.is(Tree.Kind.ENUM)) {
             checkRedundantModifiers(((MethodTree) member).modifiers(), Modifier.PRIVATE);
           }
           break;
@@ -75,7 +77,7 @@ public class RedundantModifierCheck extends IssuableSubscriptionVisitor {
     ModifiersTree modifiers = methodTree.modifiers();
     if (isInterfaceOrAnnotation(classTree)) {
       checkRedundantModifiers(modifiers, Modifier.ABSTRACT, Modifier.PUBLIC);
-    } else if (ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.FINAL)) {
+    } else if (classTree.is(Tree.Kind.RECORD) || ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.FINAL)) {
       checkRedundantModifiers(modifiers, Modifier.FINAL);
     }
   }
@@ -95,7 +97,7 @@ public class RedundantModifierCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkNestedInterface(ClassTree nested, ClassTree classTree) {
-    if (classTree.is(Kind.CLASS, Kind.ENUM)) {
+    if (classTree.is(Tree.Kind.CLASS, Tree.Kind.ENUM)) {
       checkRedundantModifiers(nested.modifiers(), Modifier.STATIC);
     }
   }
