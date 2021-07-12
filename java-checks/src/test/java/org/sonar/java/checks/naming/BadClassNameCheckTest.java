@@ -26,16 +26,26 @@ import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class BadClassNameCheckTest {
 
+  private static final BadClassNameCheck CHECK = new BadClassNameCheck();
+
   @Test
-  void test() {
+  void classes() {
     CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/naming/BadClassNameNoncompliant.java"))
-      .withCheck(new BadClassNameCheck())
+      .withCheck(CHECK)
       .verifyIssues();
   }
 
   @Test
-  void test2() {
+  void records() {
+    CheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/naming/BadRecordNameNoncompliant.java"))
+      .withCheck(CHECK)
+      .verifyIssues();
+  }
+
+  @Test
+  void customized() {
     BadClassNameCheck check = new BadClassNameCheck();
     check.format = "^[a-zA-Z0-9]*$";
     CheckVerifier.newVerifier()

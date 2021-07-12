@@ -7,4 +7,8 @@ class BadClassNameNoncompliant {
   interface should_not_be_checked_interface { }
   enum should_not_be_checked_enum { }
   @interface should_not_be_checked_annotation { }
+
+  Object o = new Object() {
+    // anonymous class
+  };
 }
