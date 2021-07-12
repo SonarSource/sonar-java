@@ -22,12 +22,23 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+
 class UselessExtendsCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/UselessExtendsCheck.java")
+      .onFile(testSourcesPath("checks/UselessExtendsCheck.java"))
+      .withCheck(new UselessExtendsCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/UselessExtendsCheck.java"))
       .withCheck(new UselessExtendsCheck())
       .verifyIssues();
   }
