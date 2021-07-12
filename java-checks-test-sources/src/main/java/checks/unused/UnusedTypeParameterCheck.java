@@ -19,3 +19,7 @@ class UnusedTypeParameterCheckC {
     }
   }
 }
+
+record UnusedRecordTypeParameter<T, U> (T t, String s) { // Noncompliant [[sc=37;ec=38]] {{U is not used in the record.}}
+  void foo() { }
+}
