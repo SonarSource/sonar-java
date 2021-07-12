@@ -60,3 +60,11 @@ enum RedundantModifierFoo2 {
   public static interface InnerInterface {} // Noncompliant {{"static" is redundant in this context.}}
   public static final class NestedClass {}
 }
+
+final record RedundantModifierRecord() { // Noncompliant {{"final" is redundant in this context.}}
+  void foo() { }
+}
+
+record RedundantModifierRecord2() {
+  final void foo() { } // Noncompliant {{"final" is redundant in this context.}}
+}
