@@ -23,12 +23,12 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
-class RedundantConstructorsAndMethodsShouldBeAvoidedCheckTest {
+class RedundantRecordMethodsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("checks/RedundantConstructorsAndMethodsShouldBeAvoidedCheck.java"))
-      .withCheck(new RedundantConstructorsAndMethodsShouldBeAvoidedCheck())
+      .onFile(TestUtils.testSourcesPath("checks/RedundantRecordMethodsCheck.java"))
+      .withCheck(new RedundantRecordMethodsCheck())
       .verifyIssues();
   }
 }

@@ -1,8 +1,9 @@
 package checks;
 
 import java.util.Locale;
+import java.util.Random;
 
-public class RedundantConstructorsAndMethodsShouldBeAvoidedCheck {
+public class RedundantRecordMethodsCheck {
   record RedundantConstructorAndGetters(String name, int age) {
 
     static Object variable = null;
@@ -121,6 +122,16 @@ public class RedundantConstructorsAndMethodsShouldBeAvoidedCheck {
   record PoorlyNamedGetter(String name, int age) {
     public String something() { // Compliant
       return name;
+    }
+  }
+
+  record GetterWithBranches(String name, int age) {
+    public String name() {
+      if ((new Random()).nextBoolean()) {
+        return this.name;
+      } else {
+        return this.name;
+      }
     }
   }
 }
