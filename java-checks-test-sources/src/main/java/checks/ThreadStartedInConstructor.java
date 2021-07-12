@@ -35,7 +35,7 @@ class ThreadStartedInConstructor {
     }
   }
 
-  final static class TestClass2 {
+  static final class TestClass2 {
     TestClass2() {
       new Thread((Runnable) null).start(); // Compliant
       new ExtendsThread().start(); // Compliant
@@ -43,6 +43,12 @@ class ThreadStartedInConstructor {
 
     public void method() {
       new Thread((Runnable) null).start(); // Compliant
+    }
+  }
+
+  record MyRecord() {
+    MyRecord {
+      new Thread((Runnable) null).start(); // Compliant - records can not be extended, they are implicitly final
     }
   }
 }
