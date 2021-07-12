@@ -45,7 +45,7 @@ public class UselessExtendsCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM);
+    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM, Tree.Kind.RECORD);
   }
 
   @Override
@@ -121,9 +121,8 @@ public class UselessExtendsCheck extends IssuableSubscriptionVisitor {
     if (interfaceTree.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mset = (MemberSelectExpressionTree) interfaceTree;
       return extractInterfaceName(mset.expression()) + "." + mset.identifier().name();
-    } else {
-      return extractInterfaceName(((ParameterizedTypeTree) interfaceTree).type());
     }
+    return extractInterfaceName(((ParameterizedTypeTree) interfaceTree).type());
   }
 
   /**

@@ -18,6 +18,8 @@ class UselessExtendsCheck {
   interface I6 extends I4, I5 {} // Noncompliant {{"I4" is already extended by "I5"; there is no need to implement it here.}}
   class F implements I1, I5 {} // Noncompliant {{"I1" is implemented by a super class; there is no need to implement it here.}}
 
+  record myRecord() implements I1, I5 {} // Noncompliant {{"I1" is implemented by a super class; there is no need to implement it here.}}
+
   class G1 implements I4, I1 {} // Noncompliant {{"I1" is already extended by "I4"; there is no need to implement it here.}}
   class G2 implements I1, I4 {} // Noncompliant {{"I1" is already extended by "I4"; there is no need to implement it here.}}
 
