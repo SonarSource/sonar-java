@@ -1,0 +1,55 @@
+<p>Before records appeared in Java 16, there was a common way to represent getters for private fields of a class:&nbsp; a method named "get" with a
+capitalized field name. For example, for a&nbsp;<code>String</code> field named "myField" the signature of the getter method will be: <code>public
+String getMyField()</code></p>
+<p>In records, getters are named differently. Getters created by default do not contain the "get" prefix. So for a record’s <code>String</code> field
+"myField" the getter method will be: <code>public String myField()</code></p>
+<p>This means that if you want to override the default getter behavior it is better to use the method provided by records instead of creating a new
+one. Otherwise, this will bring confusion to the users of the record as two getters will be available and even leads to bugs if the behavior is
+different from the default one.</p>
+<p>This rule raises an issue when a record contains a getter named "get" with a capitalized field name that is not behaving the same as the default
+one.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+record Person(String name, int age) {
+    public String getName() { // Noncompliant
+        return name.toUpperCase(Locale.ROOT);
+    }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+record Person(String name, int age) {
+    @Override
+    public String name() { // Compliant
+        return name.toUpperCase(Locale.ROOT);
+    }
+}
+
+record Person(String name, int age) {
+    public String getNameUpperCase() { // Compliant
+        return name.toUpperCase(Locale.ROOT);
+    }
+}
+record Person(String name, int age) {
+    public String getName() { // Compliant, is equivalent to 'name()'
+        return name;
+    }
+}
+record Person(String name, int age) {
+    @Override
+    public String name() { // Compliant
+        return name.toUpperCase(Locale.ROOT);
+    }
+    public String getName() { // Compliant, equal to 'name()'
+        return name.toUpperCase(Locale.ROOT);
+    }
+}
+</pre>
+<h2>Exceptions</h2>
+<p>If the implementations of <code>getMyField()</code> and <code>myField()</code> methods are equivalent, the issue should not be raised as this was
+probably done to support compatibility with the previous convention.</p>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/specs/jls/se16/html/jls-8.html#jls-8.10">Records specification</a> </li>
+</ul>
+
