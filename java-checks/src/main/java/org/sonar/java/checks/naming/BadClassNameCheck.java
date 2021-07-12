@@ -19,6 +19,8 @@
  */
 package org.sonar.java.checks.naming;
 
+import java.util.Locale;
+import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -26,14 +28,13 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.regex.Pattern;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "S00101", repositoryKey = "squid")
 @Rule(key = "S101")
 public class BadClassNameCheck extends BaseTreeVisitor implements JavaFileScanner {
 
+  private static final String ISSUE_MESSAGE = "Rename this %s name to match the regular expression '%s'.";
   private static final String DEFAULT_FORMAT = "^[A-Z][a-zA-Z0-9]*$";
 
   @RuleProperty(
@@ -56,11 +57,9 @@ public class BadClassNameCheck extends BaseTreeVisitor implements JavaFileScanne
 
   @Override
   public void visitClass(ClassTree tree) {
-    if (tree.is(Tree.Kind.CLASS) && tree.simpleName() != null && !pattern.matcher(tree.simpleName().name()).matches()) {
-      context.reportIssue(this, tree.simpleName(), "Rename this class name to match the regular expression '" + format + "'.");
+    if (tree.is(Tree.Kind.CLASS, Tree.Kind.RECORD) && tree.simpleName() != null && !pattern.matcher(tree.simpleName().name()).matches()) {
+      context.reportIssue(this, tree.simpleName(), String.format(ISSUE_MESSAGE, tree.kind().name().toLowerCase(Locale.ROOT), format));
     }
-
     super.visitClass(tree);
   }
-
 }
