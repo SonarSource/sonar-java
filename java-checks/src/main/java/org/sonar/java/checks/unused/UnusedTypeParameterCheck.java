@@ -19,6 +19,9 @@
  */
 package org.sonar.java.checks.unused;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -29,37 +32,23 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeParameters;
 
-import java.util.Arrays;
-import java.util.List;
-
 @Rule(key = "S2326")
 public class UnusedTypeParameterCheck extends IssuableSubscriptionVisitor {
 
+  private static final String ISSUE_MESSAGE = "%s is not used in the %s.";
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.METHOD);
+    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.RECORD, Tree.Kind.METHOD);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    TypeParameters typeParameters;
-    String messageEnd;
-    if (tree.is(Tree.Kind.METHOD)) {
-      typeParameters = ((MethodTree) tree).typeParameters();
-      messageEnd = "method.";
-    } else {
-      typeParameters = ((ClassTree) tree).typeParameters();
-      messageEnd = "class.";
-      if (tree.is(Tree.Kind.INTERFACE)) {
-        messageEnd = "interface.";
-      }
-    }
+    TypeParameters typeParameters = tree.is(Tree.Kind.METHOD) ? ((MethodTree) tree).typeParameters() : ((ClassTree) tree).typeParameters();
     for (TypeParameterTree typeParameter : typeParameters) {
       Symbol symbol = JUtils.typeParameterTreeSymbol(typeParameter);
       if (!symbol.isUnknown() && symbol.usages().isEmpty()) {
-        String message = new StringBuilder(typeParameter.identifier().name())
-          .append(" is not used in the ")
-          .append(messageEnd).toString();
+        String message = String.format(ISSUE_MESSAGE, symbol.name(), tree.kind().name().toLowerCase(Locale.ROOT));
         reportIssue(typeParameter.identifier(), message);
       }
     }
