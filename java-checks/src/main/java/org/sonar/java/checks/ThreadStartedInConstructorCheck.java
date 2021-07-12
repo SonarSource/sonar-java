@@ -45,12 +45,12 @@ public class ThreadStartedInConstructorCheck extends IssuableSubscriptionVisitor
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.METHOD, Tree.Kind.METHOD_INVOCATION, Tree.Kind.STATIC_INITIALIZER);
+    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.RECORD, Tree.Kind.METHOD, Tree.Kind.METHOD_INVOCATION, Tree.Kind.STATIC_INITIALIZER);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.CLASS)) {
+    if (tree.is(Tree.Kind.CLASS, Tree.Kind.RECORD)) {
       inMethodOrStaticInitializerOrFinalClass.push(((ClassTree) tree).symbol().isFinal());
     } else if (tree.is(Tree.Kind.METHOD, Tree.Kind.STATIC_INITIALIZER)) {
       inMethodOrStaticInitializerOrFinalClass.push(Boolean.TRUE);
