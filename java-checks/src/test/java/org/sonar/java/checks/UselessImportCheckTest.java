@@ -41,6 +41,15 @@ class UselessImportCheckTest {
   }
 
   @Test
+  void records() {
+    CheckVerifier.newVerifier()
+      .withClassPath(getClassPath())
+      .onFile(testSourcesPath("checks/UselessImportCheck/records.java"))
+      .withCheck(new UselessImportCheck())
+      .verifyIssues();
+  }
+
+  @Test
   void detected_within_package_info() {
     CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/UselessImportCheck/package-info.java"))
