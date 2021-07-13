@@ -33,6 +33,7 @@ import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import javax.annotation.Nullable;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -43,6 +44,7 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.ExecutionTimeReport;
 import org.sonar.java.ProgressMonitor;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonarsource.analyzer.commons.ProgressReport;
 import org.sonarsource.performance.measure.PerformanceMeasure;
 
@@ -236,4 +238,12 @@ public abstract class JParserConfig {
       }
     }
   }
+
+  public static String effectiveJavaVersion(@Nullable JavaVersion javaVersion) {
+    if (javaVersion == null || javaVersion.isNotSet()) {
+      return JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
+    }
+    return Integer.toString(javaVersion.asInt());
+  }
+
 }

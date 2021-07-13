@@ -84,11 +84,16 @@ public class TestUtils {
   }
 
   public static InputFile inputFile(String moduleKey, File file) {
+    return inputFile(moduleKey, file, InputFile.Type.MAIN);
+  }
+
+  public static InputFile inputFile(String moduleKey, File file, InputFile.Type type) {
     try {
       return new TestInputFileBuilder(moduleKey, file.getPath())
         .setContents(new String(Files.readAllBytes(file.toPath()), UTF_8))
         .setCharset(UTF_8)
         .setLanguage("java")
+        .setType(type)
         .build();
     } catch (Exception e) {
       throw new IllegalStateException(String.format("Unable to read file '%s", file.getAbsolutePath()));

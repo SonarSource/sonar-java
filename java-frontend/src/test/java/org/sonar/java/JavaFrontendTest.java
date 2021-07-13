@@ -23,7 +23,12 @@ import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -32,6 +37,7 @@ import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.FileLinesContext;
@@ -51,6 +57,7 @@ import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -70,26 +77,27 @@ class JavaFrontendTest {
   private FileLinesContext fileLinesContext;
   private ClasspathForMain javaClasspath;
   private ClasspathForTest javaTestClasspath;
-  private TestIssueFilter testIssueFilter;
+  private TestIssueFilter mainCodeIssueScannerAndFilter = new TestIssueFilter();;
+  private TestIssueFilter testCodeIssueScannerAndFilter = new TestIssueFilter();;
 
   private SonarComponents sonarComponents;
-  private SensorContextTester context;
+  private SensorContextTester sensorContext;
 
   @Test
   void number_of_visitors_in_sonarLint_context_LTS() throws Exception {
 
     String code = "/***/\nclass A {\n String foo() {\n  return foo();\n }\n}";
 
-    InputFile defaultFile = scan(code);
+    InputFile defaultFile = scan(code).get(0);
 
     // No symbol table : check reference to foo is empty.
-    assertThat(context.referencesForSymbolAt(defaultFile.key(), 3, 8)).isNull();
+    assertThat(sensorContext.referencesForSymbolAt(defaultFile.key(), 3, 8)).isNull();
     // No metrics on lines
     verify(fileLinesContext, never()).save();
     // No highlighting
-    assertThat(context.highlightingTypeAt(defaultFile.key(), 1, 0)).isEmpty();
+    assertThat(sensorContext.highlightingTypeAt(defaultFile.key(), 1, 0)).isEmpty();
     // No measures
-    assertThat(context.measures(defaultFile.key())).isEmpty();
+    assertThat(sensorContext.measures(defaultFile.key())).isEmpty();
 
     verify(javaClasspath, times(2)).getElements();
     verify(javaTestClasspath, times(1)).getElements();
@@ -99,16 +107,15 @@ class JavaFrontendTest {
   void parsing_errors_should_be_reported_to_sonarlint() throws Exception {
     scan("class A {");
 
-    assertThat(context.allAnalysisErrors()).hasSize(1);
-    assertThat(context.allAnalysisErrors().iterator().next().message()).startsWith("Parse error at line 1 column 8");
+    assertThat(sensorContext.allAnalysisErrors()).hasSize(1);
+    assertThat(sensorContext.allAnalysisErrors().iterator().next().message()).startsWith("Parse error at line 1 column 8");
   }
 
   @Test
   void should_add_issue_filter_to_JavaFrontend_scanners() throws IOException {
-    testIssueFilter = new TestIssueFilter();
     scan("class A { }");
-    assertThat(context.allAnalysisErrors()).isEmpty();
-    assertThat(testIssueFilter.lastScannedTree).isInstanceOf(CompilationUnitTree.class);
+    assertThat(sensorContext.allAnalysisErrors()).isEmpty();
+    assertThat(mainCodeIssueScannerAndFilter.lastScannedTree).isInstanceOf(CompilationUnitTree.class);
   }
 
   @org.junit.jupiter.api.Disabled("new semantic analysis does not throw exception in this case")
@@ -116,13 +123,13 @@ class JavaFrontendTest {
   void semantic_errors_should_be_reported_to_sonarlint() throws Exception {
     scan("class A {} class A {}");
 
-    assertThat(context.allAnalysisErrors()).hasSize(1);
-    assertThat(context.allAnalysisErrors().iterator().next().message()).isEqualTo("Registering class 2 times : A");
+    assertThat(sensorContext.allAnalysisErrors()).hasSize(1);
+    assertThat(sensorContext.allAnalysisErrors().iterator().next().message()).isEqualTo("Registering class 2 times : A");
   }
 
   @Test
   void scanning_empty_project_should_be_logged() throws Exception {
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, new Measurer(context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), testIssueFilter);
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), mainCodeIssueScannerAndFilter);
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
 
     assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly(
@@ -132,14 +139,160 @@ class JavaFrontendTest {
     );
   }
 
-  private InputFile scan(String code) throws IOException {
-    File baseDir = temp.getRoot().getAbsoluteFile();
-    context = SensorContextTester.create(baseDir);
+  @Test
+  void test_analysisCancelled_with_null_sonarComponents() {
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), null, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), mainCodeIssueScannerAndFilter);
+    assertThat(frontend.analysisCancelled()).isFalse();
+  }
+
+  @Test
+  void test_file_by_file_scan() throws IOException {
+    scan("class A {}", "class B { A a; }");
+    assertThat(sensorContext.allAnalysisErrors()).isEmpty();
+    String allLogs = String.join("\n", logTester.logs());
+    assertThat(allLogs)
+      .contains("Unresolved imports/types have been detected during analysis.")
+      .contains("A cannot be resolved to a type");
+    assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(2);
+    assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
+  }
+
+  @Test
+  void test_as_batch_scan() throws IOException {
+    MapSettings settings = new MapSettings();
+    settings.setProperty("sonar.java.internal.batchMode", "true");
+    scan(settings, "class A {}", "class B { A a; }");
+    assertThat(sensorContext.allAnalysisErrors()).isEmpty();
+    String allLogs = String.join("\n", logTester.logs());
+    assertThat(allLogs)
+      .doesNotContain("Unresolved imports/types have been detected during analysis.")
+      .doesNotContain("A cannot be resolved to a type");
+    assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(2);
+    assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
+  }
+
+  @Test
+  void test_as_batch_scan_main_and_test() throws IOException {
+    MapSettings settings = new MapSettings();
+    settings.setProperty("sonar.java.internal.batchMode", "true");
+    scan(settings, "class A {}", "class ATest { A a; }");
+    assertThat(sensorContext.allAnalysisErrors()).isEmpty();
+    String allLogs = String.join("\n", logTester.logs());
+    assertThat(allLogs)
+      .doesNotContain("Unresolved imports/types have been detected during analysis.")
+      .doesNotContain("A cannot be resolved to a type");
+    assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(1);
+    assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(1);
+  }
+
+  @Test
+  void test_end_of_analysis_should_be_called_once() throws IOException {
+    scan("class A {}", "class B {}");
+    assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(2);
+    assertThat(mainCodeIssueScannerAndFilter.endOfAnalysisInvocationCount).isEqualTo(1);
+  }
+
+  @Test
+  void test_end_of_analysis_should_be_called_once_with_batch() throws IOException {
+    MapSettings settings = new MapSettings();
+    settings.setProperty("sonar.java.internal.batchMode", "true");
+    scan(settings, "class A {}", "class B { A a; }");
+    assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(2);
+    assertThat(mainCodeIssueScannerAndFilter.endOfAnalysisInvocationCount).isEqualTo(1);
+  }
+
+  @Test
+  void should_handle_analysis_cancellation() throws IOException {
+    mainCodeIssueScannerAndFilter.isCancelled = true;
+    scan("class A {}", "class B { A a; }");
+    assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(1);
+    assertThat(mainCodeIssueScannerAndFilter.endOfAnalysisInvocationCount).isEqualTo(1);
+  }
+
+  @Test
+  void should_handle_analysis_cancellation_batch_mode() throws IOException {
+    mainCodeIssueScannerAndFilter.isCancelled = true;
+    MapSettings settings = new MapSettings();
+    settings.setProperty("sonar.java.internal.batchMode", "true");
+    assertThatThrownBy(() -> scan(settings, "class A {}", "class B { A a; }"))
+      .isInstanceOf(AnalysisException.class)
+      .hasMessage("Analysis cancelled")
+      .hasCauseInstanceOf(OperationCanceledException.class);
+    assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(1);
+    assertThat(mainCodeIssueScannerAndFilter.endOfAnalysisInvocationCount).isEqualTo(1);
+  }
+
+ @Test
+  void should_handle_compilation_error_in_batch_mode() throws IOException {
+    MapSettings settings = new MapSettings();
+    settings.setProperty("sonar.java.internal.batchMode", "true");
+    scan(settings, "class A {}", "class B {", "class C {}");
+    String allLogs = String.join("\n", logTester.logs());
+    assertThat(allLogs).contains("Unable to parse source file : 'B.java'");
+    assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(2);
+    assertThat(mainCodeIssueScannerAndFilter.endOfAnalysisInvocationCount).isEqualTo(1);
+  }
+
+  @Test
+  void analysis_exception_should_interrupt_analysis_in_batch_mode() throws IOException {
+    MapSettings settings = new MapSettings();
+    settings.setProperty("sonar.java.internal.batchMode", "true");
+    mainCodeIssueScannerAndFilter.exceptionDuringScan = new IllegalRuleParameterException("Test AnalysisException", new NullPointerException());
+    assertThatThrownBy(() -> scan(settings, "class A {}", "class B {}", "class C {}"))
+      .isInstanceOf(AnalysisException.class)
+      .hasMessage("Bad configuration of rule parameter");
+  }
+
+  @Test
+  void exceptions_outside_rules_as_batch_should_be_logged() throws IOException {
+    MapSettings settings = new MapSettings();
+    settings.setProperty("sonar.java.internal.batchMode", "true");
+    InputFile brokenFile = mock(InputFile.class);
+    when(brokenFile.charset()).thenThrow(new NullPointerException());
+    scan(settings, Collections.singletonList(brokenFile));
+    assertThat(logTester.logs(LoggerLevel.ERROR)).
+      containsExactly("Batch Mode failed, analysis of Java Files stopped.");
+  }
+
+  @Test
+  void exceptions_outside_rules_as_batch_should_interrupt_analysis_if_fail_fast() throws IOException {
+    MapSettings settings = new MapSettings();
+    settings.setProperty("sonar.java.internal.batchMode", "true");
+    settings.setProperty("sonar.internal.analysis.failFast", "true");
+    InputFile brokenFile = mock(InputFile.class);
+    when(brokenFile.charset()).thenThrow(new NullPointerException());
+    List<InputFile> inputFiles = Collections.singletonList(brokenFile);
+    assertThatThrownBy(() -> scan(settings, inputFiles))
+      .isInstanceOf(AnalysisException.class)
+      .hasMessage("Batch Mode failed, analysis of Java Files stopped.");
+  }
+
+  private List<InputFile> scan(String... codeList) throws IOException {
+    return scan(new MapSettings(), codeList);
+  }
+
+  private List<InputFile> scan(MapSettings settings, String... codeList) throws IOException {
+    if (sensorContext == null) {
+      File baseDir = temp.getRoot().getAbsoluteFile();
+      sensorContext = SensorContextTester.create(baseDir);
+      sensorContext.setSettings(settings);
+    }
+    List<InputFile> inputFiles = new ArrayList<>();
+    for (String code : codeList) {
+      inputFiles.add(addFile(code, sensorContext));
+    }
+    return scan(settings, inputFiles);
+  }
+
+  private List<InputFile> scan(MapSettings settings, List<InputFile> inputFiles) throws IOException {
+    if (sensorContext == null) {
+      File baseDir = temp.getRoot().getAbsoluteFile();
+      sensorContext = SensorContextTester.create(baseDir);
+      sensorContext.setSettings(settings);
+    }
 
     // Set sonarLint runtime
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
-
-    InputFile inputFile = addFile(code, context);
+    sensorContext.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
 
     // Mock visitor for metrics.
     fileLinesContext = mock(FileLinesContext.class);
@@ -148,31 +301,61 @@ class JavaFrontendTest {
 
     javaClasspath = mock(ClasspathForMain.class);
     javaTestClasspath = mock(ClasspathForTest.class);
-    sonarComponents = new SonarComponents(fileLinesContextFactory, context.fileSystem(), javaClasspath, javaTestClasspath, mock(CheckFactory.class));
-    sonarComponents.setSensorContext(context);
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, new Measurer(context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), testIssueFilter);
-    frontend.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
+    sonarComponents = new SonarComponents(fileLinesContextFactory, sensorContext.fileSystem(), javaClasspath, javaTestClasspath, mock(CheckFactory.class));
+    sonarComponents.setSensorContext(sensorContext);
+    sonarComponents.mainChecks().add(mainCodeIssueScannerAndFilter);
+    sonarComponents.testChecks().add(testCodeIssueScannerAndFilter);
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class),
+      null, mainCodeIssueScannerAndFilter);
+    frontend.scan(inputFiles, Collections.emptyList(), Collections.emptyList());
 
-    return inputFile;
+    return inputFiles;
   }
 
   private InputFile addFile(String code, SensorContextTester context) throws IOException {
-    File file = temp.newFile("test.java").getAbsoluteFile();
+    Matcher matcher = Pattern.compile("(?:^|\\s)(?:class|interface|enum|record)\\s++(\\w++)").matcher(code);
+    if (!matcher.find()) {
+      throw new IllegalStateException("Failed to extract filename from: " + code);
+    }
+    String className = matcher.group(1);
+    InputFile.Type type = className.endsWith("Test") ? InputFile.Type.TEST : InputFile.Type.MAIN;
+    File file = temp.newFile(className + ".java").getAbsoluteFile();
     Files.asCharSink(file, StandardCharsets.UTF_8).write(code);
-    InputFile defaultFile = TestUtils.inputFile(context.fileSystem().baseDir().getAbsolutePath(), file);
+    InputFile defaultFile = TestUtils.inputFile(context.fileSystem().baseDir().getAbsolutePath(), file, type);
     context.fileSystem().add(defaultFile);
     return defaultFile;
   }
 
-  private static class TestIssueFilter implements JavaFileScanner, SonarJavaIssueFilter {
+  private class TestIssueFilter implements JavaFileScanner, SonarJavaIssueFilter, EndOfAnalysisCheck {
     CompilationUnitTree lastScannedTree = null;
+    int scanFileInvocationCount = 0;
+    int endOfAnalysisInvocationCount = 0;
+    JavaFileScannerContext scannerContext;
+    boolean isCancelled = false;
+    RuntimeException exceptionDuringScan = null;
+
     @Override
-    public void scanFile(JavaFileScannerContext context) {
-      lastScannedTree = context.getTree();
+    public void scanFile(JavaFileScannerContext scannerContext) {
+      this.scannerContext = scannerContext;
+      scanFileInvocationCount++;
+      lastScannedTree = scannerContext.getTree();
+      if (isCancelled) {
+        sensorContext.setCancelled(true);
+      }
+      if (exceptionDuringScan != null) {
+        RuntimeException ex = exceptionDuringScan;
+        exceptionDuringScan = null;
+        throw ex;
+      }
     }
+
     @Override
     public boolean accept(FilterableIssue issue, IssueFilterChain chain) {
       return true;
+    }
+    @Override
+    public void endOfAnalysis() {
+      endOfAnalysisInvocationCount++;
     }
   }
 }
