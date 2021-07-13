@@ -517,6 +517,7 @@ public final class CheckList {
       RedundantCloseCheck.class,
       RedundantJumpCheck.class,
       RedundantModifierCheck.class,
+      RedundantRecordMethodsCheck.class,
       RedundantRegexAlternativesCheck.class,
       RedundantStreamCollectCheck.class,
       RedundantThrowsDeclarationCheck.class,
