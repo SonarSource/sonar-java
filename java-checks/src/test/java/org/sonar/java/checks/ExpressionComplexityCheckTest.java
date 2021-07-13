@@ -22,12 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+
 class ExpressionComplexityCheckTest {
 
   @Test
   void detected() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ExpressionComplexityCheck.java")
+      .onFile(testSourcesPath("checks/ExpressionComplexityCheck.java"))
       .withCheck(new ExpressionComplexityCheck())
       .verifyIssues();
   }
@@ -37,7 +39,7 @@ class ExpressionComplexityCheckTest {
     ExpressionComplexityCheck check = new ExpressionComplexityCheck();
     check.max = 4;
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ExpressionComplexityCheckCustom.java")
+      .onFile(testSourcesPath("checks/ExpressionComplexityCheckCustom.java"))
       .withCheck(check)
       .verifyIssues();
   }
