@@ -73,45 +73,19 @@ public class JavaAstScanner {
 
     String version = getJavaVersion(javaVersion);
     try {
-      if (isBatchModeEnabled()) {
-        parseAsBatch(filesNames, version);
-      } else {
-        JParserConfig.Mode.FILE_BY_FILE
-          .create(version, visitor.getClasspath())
-          .parse(filesNames,
-          this::analysisCancelled,
-          (i, r) -> simpleScan(i, r, JavaAstScanner::cleanUpAst)
-        );
-      }
-    } finally {
-      visitor.endOfAnalysis();
-      logUndefinedTypes();
-    }
-  }
-
-  private void parseAsBatch(List<InputFile> filesNames, String version) {
-    try {
-      JParserConfig.Mode.BATCH
+      JParserConfig.Mode.FILE_BY_FILE
         .create(version, visitor.getClasspath())
         .parse(filesNames,
-        this::analysisCancelled,
-        (i, r) -> simpleScan(i, r, ast -> {
-          // Do nothing. In batch mode, can not clean the ast as it will be used in later processing.
-        })
-      );
-    } catch (AnalysisException e) {
-      throw e;
-    } catch (Exception e) {
-      checkInterrupted(e);
-      LOG.error("Batch Mode failed, analysis of Java Files stopped.", e);
-      if (shouldFailAnalysis()) {
-        throw new AnalysisException("Batch Mode failed, analysis of Java Files stopped.", e);
-      }
+          this::analysisCancelled,
+          (i, r) -> simpleScan(i, r, JavaAstScanner::cleanUpAst));
+    } finally {
+      endOfAnalysis();
     }
   }
 
-  private boolean isBatchModeEnabled() {
-    return sonarComponents != null && sonarComponents.isBatchModeEnabled();
+  public void endOfAnalysis() {
+    visitor.endOfAnalysis();
+    logUndefinedTypes();
   }
 
   private void logUndefinedTypes() {
@@ -124,11 +98,10 @@ public class JavaAstScanner {
     return sonarComponents != null && sonarComponents.analysisCancelled();
   }
 
-  private void simpleScan(InputFile inputFile, JParserConfig.Result result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp) {
+  public void simpleScan(InputFile inputFile, JParserConfig.Result result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp) {
     visitor.setCurrentFile(inputFile);
     try {
       JavaTree.CompilationUnitTreeImpl ast = result.get();
-
       visitor.visitFile(ast);
       collectUndefinedTypes(ast.sema.undefinedTypes());
       cleanUp.accept(ast);
@@ -180,11 +153,11 @@ public class JavaAstScanner {
     }
   }
 
-  private boolean shouldFailAnalysis() {
+  public boolean shouldFailAnalysis() {
     return sonarComponents != null && sonarComponents.shouldFailAnalysisOnException();
   }
 
-  private void checkInterrupted(Exception e) {
+  public void checkInterrupted(Exception e) {
     Throwable cause = ExceptionUtils.getRootCause(e);
     if (cause instanceof InterruptedException
       || cause instanceof InterruptedIOException

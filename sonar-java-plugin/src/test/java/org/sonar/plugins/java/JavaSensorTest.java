@@ -106,7 +106,7 @@ class JavaSensorTest {
 
   @Test
   void test_issues_creation_on_main_file() throws IOException {
-    testIssueCreation(InputFile.Type.MAIN, 10);
+    testIssueCreation(InputFile.Type.MAIN, 11);
   }
 
   @Test
@@ -152,10 +152,9 @@ class JavaSensorTest {
   }
 
   private static SonarComponents createSonarComponentsMock(SensorContextTester contextTester) {
-    Configuration settings = new MapSettings().asConfig();
     DefaultFileSystem fs = contextTester.fileSystem();
-    ClasspathForTest javaTestClasspath = new ClasspathForTest(settings, fs);
-    ClasspathForMain javaClasspath = new ClasspathForMain(settings, fs);
+    ClasspathForTest javaTestClasspath = new ClasspathForTest(contextTester.config(), fs);
+    ClasspathForMain javaClasspath = new ClasspathForMain(contextTester.config(), fs);
 
     FileLinesContext fileLinesContext = mock(FileLinesContext.class);
     FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
@@ -195,6 +194,30 @@ class JavaSensorTest {
 
     // normal visitors are not invoked on generated files
     verify(javaFileScanner, never()).scanFile(any());
+  }
+
+  @Test
+  void should_not_invoke_jasper_jsp_compilation_in_batch_mode_for_security_reasons() throws Exception {
+    Path base = tmp.newFolder().toPath();
+    MapSettings settings = new MapSettings();
+    settings.setProperty("sonar.java.internal.batchMode", "true");
+
+    SensorContextTester context = SensorContextTester.create(base);
+    context.setSettings(settings);
+    context.fileSystem().setWorkDir(tmp.newFolder().toPath());
+    SonarComponents sonarComponents = createSonarComponentsMock(context);
+    JspCodeScanner jspCodeVisitor = mock(JspCodeScanner.class);
+    when(sonarComponents.mainChecks()).thenReturn(Collections.emptyList());
+    when(sonarComponents.testChecks()).thenReturn(Collections.emptyList());
+    when(sonarComponents.jspChecks()).thenReturn(Collections.singletonList(jspCodeVisitor));
+
+    Jasper jasper = mock(Jasper.class);
+    JavaSensor jss = new JavaSensor(sonarComponents, context.fileSystem(), mock(JavaResourceLocator.class),
+      context.config(), mock(NoSonarFilter.class), null, jasper);
+    jss.execute(context);
+
+    verify(jasper, never()).generateFiles(any(), any());
+    verify(jspCodeVisitor, never()).scanFile(any());
   }
 
   @Test
