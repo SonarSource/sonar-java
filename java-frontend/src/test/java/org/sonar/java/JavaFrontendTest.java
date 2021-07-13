@@ -140,6 +140,12 @@ class JavaFrontendTest {
   }
 
   @Test
+  void test_analysisCancelled_with_null_sonarComponents() {
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), null, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), mainCodeIssueScannerAndFilter);
+    assertThat(frontend.analysisCancelled()).isFalse();
+  }
+
+  @Test
   void test_file_by_file_scan() throws IOException {
     scan("class A {}", "class B { A a; }");
     assertThat(sensorContext.allAnalysisErrors()).isEmpty();
@@ -148,7 +154,7 @@ class JavaFrontendTest {
       .contains("Unresolved imports/types have been detected during analysis.")
       .contains("A cannot be resolved to a type");
     assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(2);
-    assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(0);
+    assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
   }
 
   @Test
@@ -162,7 +168,7 @@ class JavaFrontendTest {
       .doesNotContain("Unresolved imports/types have been detected during analysis.")
       .doesNotContain("A cannot be resolved to a type");
     assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(2);
-    assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(0);
+    assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
   }
 
   @Test

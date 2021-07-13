@@ -33,6 +33,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.api.utils.log.Profiler;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
@@ -113,7 +114,8 @@ public class JavaFrontend {
     return visitorsBridge;
   }
 
-  private boolean analysisCancelled() {
+  @VisibleForTesting
+  boolean analysisCancelled() {
     return sonarComponents != null && sonarComponents.analysisCancelled();
   }
 
