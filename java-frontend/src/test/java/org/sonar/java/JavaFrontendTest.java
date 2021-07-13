@@ -20,7 +20,6 @@
 package org.sonar.java;
 
 import com.google.common.io.Files;
-import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -229,17 +228,37 @@ class JavaFrontendTest {
   }
 
   @Test
-  void exception_in_rules_should_not_interrupt_analysis_in_batch_mode() throws IOException {
+  void analysis_exception_should_interrupt_analysis_in_batch_mode() throws IOException {
     MapSettings settings = new MapSettings();
     settings.setProperty("sonar.java.internal.batchMode", "true");
-    mainCodeIssueScannerAndFilter.exceptionDuringScan = new RecognitionException(42, "interrupted", new NullPointerException());
-    scan(settings, "class A {}", "class B {}", "class C {}");
-    String allLogs = String.join("\n", logTester.logs());
-    assertThat(allLogs)
-      .contains("Using ECJ batch to parse source files.")
-      .contains("Unable to run check");
-    assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(3);
-    assertThat(mainCodeIssueScannerAndFilter.endOfAnalysisInvocationCount).isEqualTo(1);
+    mainCodeIssueScannerAndFilter.exceptionDuringScan = new IllegalRuleParameterException("Test AnalysisException", new NullPointerException());
+    assertThatThrownBy(() -> scan(settings, "class A {}", "class B {}", "class C {}"))
+      .isInstanceOf(AnalysisException.class)
+      .hasMessage("Bad configuration of rule parameter");
+  }
+
+  @Test
+  void exceptions_outside_rules_as_batch_should_be_logged() throws IOException {
+    MapSettings settings = new MapSettings();
+    settings.setProperty("sonar.java.internal.batchMode", "true");
+    InputFile brokenFile = mock(InputFile.class);
+    when(brokenFile.charset()).thenThrow(new NullPointerException());
+    scan(settings, Collections.singletonList(brokenFile));
+    assertThat(logTester.logs(LoggerLevel.ERROR)).
+      containsExactly("Batch Mode failed, analysis of Java Files stopped.");
+  }
+
+  @Test
+  void exceptions_outside_rules_as_batch_should_interrupt_analysis_if_fail_fast() throws IOException {
+    MapSettings settings = new MapSettings();
+    settings.setProperty("sonar.java.internal.batchMode", "true");
+    settings.setProperty("sonar.internal.analysis.failFast", "true");
+    InputFile brokenFile = mock(InputFile.class);
+    when(brokenFile.charset()).thenThrow(new NullPointerException());
+    List<InputFile> inputFiles = Collections.singletonList(brokenFile);
+    assertThatThrownBy(() -> scan(settings, inputFiles))
+      .isInstanceOf(AnalysisException.class)
+      .hasMessage("Batch Mode failed, analysis of Java Files stopped.");
   }
 
   private List<InputFile> scan(String... codeList) throws IOException {
@@ -247,17 +266,27 @@ class JavaFrontendTest {
   }
 
   private List<InputFile> scan(MapSettings settings, String... codeList) throws IOException {
-    File baseDir = temp.getRoot().getAbsoluteFile();
-    sensorContext = SensorContextTester.create(baseDir);
-    sensorContext.setSettings(settings);
-
-    // Set sonarLint runtime
-    sensorContext.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
-
+    if (sensorContext == null) {
+      File baseDir = temp.getRoot().getAbsoluteFile();
+      sensorContext = SensorContextTester.create(baseDir);
+      sensorContext.setSettings(settings);
+    }
     List<InputFile> inputFiles = new ArrayList<>();
     for (String code : codeList) {
       inputFiles.add(addFile(code, sensorContext));
     }
+    return scan(settings, inputFiles);
+  }
+
+  private List<InputFile> scan(MapSettings settings, List<InputFile> inputFiles) throws IOException {
+    if (sensorContext == null) {
+      File baseDir = temp.getRoot().getAbsoluteFile();
+      sensorContext = SensorContextTester.create(baseDir);
+      sensorContext.setSettings(settings);
+    }
+
+    // Set sonarLint runtime
+    sensorContext.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
 
     // Mock visitor for metrics.
     fileLinesContext = mock(FileLinesContext.class);
