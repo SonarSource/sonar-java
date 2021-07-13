@@ -20,6 +20,7 @@
 package org.sonar.java;
 
 import com.google.common.io.Files;
+import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -227,6 +228,20 @@ class JavaFrontendTest {
     assertThat(mainCodeIssueScannerAndFilter.endOfAnalysisInvocationCount).isEqualTo(1);
   }
 
+  @Test
+  void exception_in_rules_should_not_interrupt_analysis_in_batch_mode() throws IOException {
+    MapSettings settings = new MapSettings();
+    settings.setProperty("sonar.java.internal.batchMode", "true");
+    mainCodeIssueScannerAndFilter.exceptionDuringScan = new RecognitionException(42, "interrupted", new NullPointerException());
+    scan(settings, "class A {}", "class B {}", "class C {}");
+    String allLogs = String.join("\n", logTester.logs());
+    assertThat(allLogs)
+      .contains("Using ECJ batch to parse source files.")
+      .contains("Unable to run check");
+    assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(3);
+    assertThat(mainCodeIssueScannerAndFilter.endOfAnalysisInvocationCount).isEqualTo(1);
+  }
+
   private List<InputFile> scan(String... codeList) throws IOException {
     return scan(new MapSettings(), codeList);
   }
@@ -282,6 +297,7 @@ class JavaFrontendTest {
     int endOfAnalysisInvocationCount = 0;
     JavaFileScannerContext scannerContext;
     boolean isCancelled = false;
+    RuntimeException exceptionDuringScan = null;
 
     @Override
     public void scanFile(JavaFileScannerContext scannerContext) {
@@ -291,7 +307,13 @@ class JavaFrontendTest {
       if (isCancelled) {
         sensorContext.setCancelled(true);
       }
+      if (exceptionDuringScan != null) {
+        RuntimeException ex = exceptionDuringScan;
+        exceptionDuringScan = null;
+        throw ex;
+      }
     }
+
     @Override
     public boolean accept(FilterableIssue issue, IssueFilterChain chain) {
       return true;

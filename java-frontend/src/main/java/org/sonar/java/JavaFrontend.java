@@ -134,7 +134,7 @@ public class JavaFrontend {
       Arrays.stream(sourceFiles).forEach(files -> files.forEach(allFiles::add));
       try {
         JParserConfig.Mode.BATCH
-          .create(getJavaVersion(javaVersion), globalClasspath)
+          .create(JParserConfig.effectiveJavaVersion(javaVersion), globalClasspath)
           .parse(allFiles, this::analysisCancelled, this::scanAsBatchCallback);
       } finally {
         astScanner.endOfAnalysis();
@@ -163,13 +163,6 @@ public class JavaFrontend {
 
   private boolean isBatchModeEnabled() {
     return sonarComponents != null && sonarComponents.isBatchModeEnabled();
-  }
-
-  private static String getJavaVersion(@Nullable JavaVersion javaVersion) {
-    if (javaVersion == null || javaVersion.isNotSet()) {
-      return JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    }
-    return Integer.toString(javaVersion.asInt());
   }
 
   private static <T> void scanAndMeasureTask(Iterable<T> files, Consumer<Iterable<T>> action, String descriptor) {

@@ -71,10 +71,9 @@ public class JavaAstScanner {
         return true;
       }).collect(Collectors.toList());
 
-    String version = getJavaVersion(javaVersion);
     try {
       JParserConfig.Mode.FILE_BY_FILE
-        .create(version, visitor.getClasspath())
+        .create(JParserConfig.effectiveJavaVersion(javaVersion), visitor.getClasspath())
         .parse(filesNames,
           this::analysisCancelled,
           (i, r) -> simpleScan(i, r, JavaAstScanner::cleanUpAst));
@@ -125,13 +124,6 @@ public class JavaAstScanner {
   private static void cleanUpAst(JavaTree.CompilationUnitTreeImpl ast) {
     // release environment used for semantic resolution
     ast.sema.cleanupEnvironment();
-  }
-
-  private static String getJavaVersion(@Nullable JavaVersion javaVersion) {
-    if (javaVersion == null || javaVersion.isNotSet()) {
-      return JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    }
-    return Integer.toString(javaVersion.asInt());
   }
 
   private void collectUndefinedTypes(Set<String> undefinedTypes) {
