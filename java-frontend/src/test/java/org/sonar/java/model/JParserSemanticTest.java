@@ -86,6 +86,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.model.assertions.TypeAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class JParserSemanticTest {
 
@@ -1205,6 +1206,30 @@ class JParserSemanticTest {
     SymbolMetadata metadata = recovered.metadata();
     assertThat(metadata).isNotNull();
     assertThat(metadata.annotations()).isEmpty();
+  }
+
+  @Test
+  void ecj_exception_when_computing_metadata_should_be_caught() {
+    String source = "" +
+      " public class C {\n" +
+      "  interface I1 {}\n" +
+      "  interface I2 {\n" +
+      "    @I1(\"\")\n" +
+      "    String m();\n" +
+      "  }\n" +
+      "  void foo(I2 i2) {\n" +
+      // ECJ throws a NPE when trying to get the metadata of the method m().
+      "    i2.m();\n" +
+      "  }\n" +
+      "}";
+
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(2);
+    ExpressionStatementTree expression = (ExpressionStatementTree) m.block().body().get(0);
+
+    SymbolMetadata metadata = assertDoesNotThrow(() -> ((MethodInvocationTreeImpl) expression.expression()).symbol().metadata());
+    assertThat(metadata).isEqualTo(Symbols.EMPTY_METADATA);
   }
 
   @Test
