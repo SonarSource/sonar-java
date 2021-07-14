@@ -61,6 +61,7 @@ public class ExpressionComplexityCheck extends IssuableSubscriptionVisitor {
   public List<Tree.Kind> nodesToVisit() {
     return Arrays.asList(
       Tree.Kind.CLASS,
+      Tree.Kind.RECORD,
       Tree.Kind.POSTFIX_INCREMENT,
       Tree.Kind.POSTFIX_DECREMENT,
       Tree.Kind.PREFIX_INCREMENT,
@@ -125,7 +126,7 @@ public class ExpressionComplexityCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.CLASS, Tree.Kind.NEW_ARRAY) || isLambdaWithBlock(tree)) {
+    if (tree.is(Tree.Kind.CLASS, Tree.Kind.RECORD, Tree.Kind.NEW_ARRAY) || isLambdaWithBlock(tree)) {
       count.push(0);
       level.push(0);
     } else {
@@ -138,7 +139,7 @@ public class ExpressionComplexityCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
-    if (tree.is(Tree.Kind.CLASS, Tree.Kind.NEW_ARRAY) || isLambdaWithBlock(tree)) {
+    if (tree.is(Tree.Kind.CLASS, Tree.Kind.RECORD, Tree.Kind.NEW_ARRAY) || isLambdaWithBlock(tree)) {
       count.pop();
       level.pop();
     } else {
@@ -146,8 +147,8 @@ public class ExpressionComplexityCheck extends IssuableSubscriptionVisitor {
       if (currentLevel == 1) {
         int opCount = count.pop();
         if (opCount > max && !isInsideEquals(tree)) {
-          reportIssue(tree, "Reduce the number of conditional operators (" + opCount + ") used in the expression (maximum allowed " + max + ").",
-            Collections.<JavaFileScannerContext.Location>emptyList(), opCount - max);
+          reportIssue(tree, String.format("Reduce the number of conditional operators (%d) used in the expression (maximum allowed %d).", opCount, max),
+            Collections.emptyList(), opCount - max);
         }
         count.push(0);
       }
@@ -157,7 +158,7 @@ public class ExpressionComplexityCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isInsideEquals(Tree tree) {
     Tree parent = tree.parent();
-    while (parent != null && !parent.is(Tree.Kind.CLASS)) {
+    while (parent != null && !parent.is(Tree.Kind.CLASS, Tree.Kind.RECORD)) {
       if (parent.is(Tree.Kind.METHOD) && MethodTreeUtils.isEqualsMethod((MethodTree) parent)) {
         return true;
       }
