@@ -22,14 +22,24 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+
 class InterfaceOrSuperclassShadowingCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/InterfaceOrSuperclassShadowingCheck.java")
+      .onFile(testSourcesPath("checks/InterfaceOrSuperclassShadowingCheck.java"))
       .withCheck(new InterfaceOrSuperclassShadowingCheck())
       .verifyIssues();
   }
 
+  @Test
+  void non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/InterfaceOrSuperclassShadowingCheck.java"))
+      .withCheck(new InterfaceOrSuperclassShadowingCheck())
+      .verifyIssues();
+  }
 }
