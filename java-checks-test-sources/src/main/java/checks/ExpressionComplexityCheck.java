@@ -108,3 +108,7 @@ enum AbbreviationOfDays{
     return true || false || true || false || false; // Noncompliant [[effortToFix=1]]
   }
 }
+
+record ExpressionComplexityRecord() {
+  static boolean b = true || false || true || false || false; // Noncompliant [[effortToFix=1]] {{Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).}}
+}
