@@ -12,15 +12,15 @@ abstract class A implements MyInterface {
   public void myMethod() {}
 
   public Object stuff;
-  public void stuff() {} // Noncompliant {{Rename method "stuff" to prevent any misunderstanding/clash with field "stuff" defined on line 14.}}
-  public void stuff(int i) {} // Noncompliant {{Rename method "stuff" to prevent any misunderstanding/clash with field "stuff" defined on line 14.}}
+  public void stuff() {} // Noncompliant [[secondary=14]] {{Rename method "stuff" to prevent any misunderstanding/clash with field "stuff".}}
+  public void stuff(int i) {} // Noncompliant [[secondary=14]] {{Rename method "stuff" to prevent any misunderstanding/clash with field "stuff".}}
 
   public void foo(int i) {} // Compliant
   public void foo(boolean i) {} // Compliant
 
-  public void myOtherMethoD() {} // Noncompliant {{Rename method "myOtherMethoD" to prevent any misunderstanding/clash with method "myOtherMethod" defined in interface "checks.MembersDifferOnlyByCapitalizationCheck$MyInterface".}}
+  public void myOtherMethoD() {} // Noncompliant [[secondary=41]] {{Rename method "myOtherMethoD" to prevent any misunderstanding/clash with method "myOtherMethod" defined in interface "checks.MembersDifferOnlyByCapitalizationCheck$MyInterface".}}
 
-  private static void gUl() {} // Noncompliant {{Rename method "gUl" to prevent any misunderstanding/clash with method "gul" defined on line 24.}}
+  private static void gUl() {} // Noncompliant [[secondary=24]] {{Rename method "gUl" to prevent any misunderstanding/clash with method "gul".}}
   public void gul() {} // Compliant
 
   private boolean qix;
@@ -45,20 +45,20 @@ interface MyInterface {
 
 abstract class B extends A {
   private static final long var1 = -9215047833775013803L; // Compliant
-  public void var2() {}; // Noncompliant
-  public void vAr2() {}; // Noncompliant
+  public void var2() {}; // Noncompliant [[secondary=7]]
+  public void vAr2() {}; // Noncompliant [[secondary=48]]
 
-  public void myMethoD() {} // Noncompliant {{Rename method "myMethoD" to prevent any misunderstanding/clash with method "myMethod" defined in superclass "checks.MembersDifferOnlyByCapitalizationCheck$A".}}
+  public void myMethoD() {} // Noncompliant [[secondary=12]] {{Rename method "myMethoD" to prevent any misunderstanding/clash with method "myMethod" defined in superclass "checks.MembersDifferOnlyByCapitalizationCheck$A".}}
 
   public Object qix;  // Compliant
 
-  public void fOo(int i) {} // Noncompliant
+  public void fOo(int i) {} // Noncompliant [[secondary=18]]
 }
 
 class Visibility {
   public int tmp0;
   private void tmp0() {}
-  public void tmp0(int i) {} // Noncompliant {{Rename method "tmp0" to prevent any misunderstanding/clash with field "tmp0" defined on line 59.}}
+  public void tmp0(int i) {} // Noncompliant [[secondary=59]] {{Rename method "tmp0" to prevent any misunderstanding/clash with field "tmp0".}}
   protected void tmp0(long l) {}
   void tmp0(short s) {}
 
@@ -72,12 +72,12 @@ class Visibility {
   private void tmp2() {}
   public void tmp2(int i) {}
   protected void tmp2(long l) {}
-  void tmp2(short s) {}  // Noncompliant {{Rename method "tmp2" to prevent any misunderstanding/clash with field "tmp2" defined on line 71.}}
+  void tmp2(short s) {}  // Noncompliant [[secondary=71]] {{Rename method "tmp2" to prevent any misunderstanding/clash with field "tmp2".}}
 
   protected int tmp3;
   private void tmp3() {}
   public void tmp3(int i) {}
-  protected void tmp3(long l) {} // Noncompliant {{Rename method "tmp3" to prevent any misunderstanding/clash with field "tmp3" defined on line 77.}}
+  protected void tmp3(long l) {} // Noncompliant [[secondary=77]] {{Rename method "tmp3" to prevent any misunderstanding/clash with field "tmp3".}}
   void tmp3(short s) {} 
 }
 
@@ -98,7 +98,7 @@ class ABuilder {
     return this;
   }
 
-  ABuilder WRONG(String wrong) { // Noncompliant
+  ABuilder WRONG(String wrong) { // Noncompliant [[secondary=93]]
     this.wrong = value;
     return this;
   }
@@ -176,5 +176,8 @@ class SameName {
       return intComponent;
     }
   }
+
+  Object subClass; // Compliant
+  class subClass { }
 
 }
