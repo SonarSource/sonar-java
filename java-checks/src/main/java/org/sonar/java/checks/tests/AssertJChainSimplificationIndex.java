@@ -165,7 +165,8 @@ public class AssertJChainSimplificationIndex {
         subjectArg -> subjectArg.symbolType().is(JAVA_UTIL_OPTIONAL), OPTIONAL_EMPTY_REPLACEMENT),
       methodCallInSubject(Matchers.GET, msgWithActualExpected(CONTAINS))))
     .put(IS_FALSE, Arrays.asList(
-      methodCallInSubject(Matchers.EQUALS_METHOD, msgWithActualExpected(IS_NOT_EQUAL_TO)),
+      withSubjectArgumentCondition(arg ->
+        hasMethodCallAsArg(arg, Matchers.EQUALS_METHOD) && !UnitTestUtils.isInUnitTestRelatedToObjectMethods(arg), msgWithActualExpected(IS_NOT_EQUAL_TO)),
       methodCallInSubject(Matchers.CONTENT_EQUALS, msgWithActualExpected(IS_NOT_EQUAL_TO)),
       methodCallInSubject(Matchers.EQUALS_IGNORE_CASE, msgWithActualExpected(IS_NOT_EQUAL_TO_IGNORING_CASE)),
       methodCallInSubject(Matchers.CONTAINS, msgWithActualExpected(DOES_NOT_CONTAIN)),
@@ -227,7 +228,8 @@ public class AssertJChainSimplificationIndex {
     .put(IS_SAME_AS, Collections.singletonList(
       methodCallInSubject(Matchers.GET, msgWithActualExpected("containsSame"))))
     .put(IS_TRUE, Arrays.asList(
-      methodCallInSubject(Matchers.EQUALS_METHOD, msgWithActualExpected(IS_EQUAL_TO)),
+      withSubjectArgumentCondition(arg ->
+        hasMethodCallAsArg(arg, Matchers.EQUALS_METHOD) && !UnitTestUtils.isInUnitTestRelatedToObjectMethods(arg), msgWithActualExpected(IS_EQUAL_TO)),
       methodCallInSubject(Matchers.CONTENT_EQUALS, msgWithActualExpected(IS_EQUAL_TO)),
       methodCallInSubject(Matchers.EQUALS_IGNORE_CASE, msgWithActualExpected(IS_EQUAL_TO_IGNORING_CASE)),
       methodCallInSubject(Matchers.CONTAINS, msgWithActualExpected(CONTAINS)),
