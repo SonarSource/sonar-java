@@ -164,4 +164,17 @@ class SameName {
   }
 }
 
+  record MyRecord(int intComponent, boolean bool) {
+
+    public static final boolean BooL = false;  // Noncompliant {{Rename field "BooL" to prevent any misunderstanding/clash with field "bool".}}
+
+    @Override public boolean bool() {
+      return bool;
+    }
+
+    public int intCOMPONENT() { // Noncompliant {{Rename method "intCOMPONENT" to prevent any misunderstanding/clash with method "intComponent".}}
+      return intComponent;
+    }
+  }
+
 }

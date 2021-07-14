@@ -44,7 +44,7 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM);
+    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM, Tree.Kind.RECORD);
   }
 
   @Override
@@ -183,7 +183,7 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
   private static String getSymbolKindName(Symbol symbol) {
     return symbol.isMethodSymbol() ? "method" : "field";
   }
-  
+
   private static List<Symbol> retrieveMembers(Symbol.TypeSymbol classSymbol) {
     List<Symbol> results = new LinkedList<>();
     results.addAll(extractMembers(classSymbol, false));
