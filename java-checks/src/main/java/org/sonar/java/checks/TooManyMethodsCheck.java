@@ -29,8 +29,8 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 @Rule(key = "S1448")
 public class TooManyMethodsCheck extends IssuableSubscriptionVisitor {
@@ -53,14 +53,17 @@ public class TooManyMethodsCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE);
+    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.RECORD);
   }
 
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    List<Tree> methods = classTree.members().stream()
-        .filter(member -> member.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR) && (countNonPublic || ((MethodTree) member).symbol().isPublic()))
+    List<MethodTree> methods = classTree.members()
+      .stream()
+        .filter(member -> member.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR))
+        .map(MethodTree.class::cast)
+        .filter(method ->  countNonPublic || method.symbol().isPublic())
         .collect(Collectors.toList());
 
     if(shouldNotReportIssue(classTree, methods)) {
@@ -68,26 +71,34 @@ public class TooManyMethodsCheck extends IssuableSubscriptionVisitor {
     }
 
     List<JavaFileScannerContext.Location> secondary = methods.stream()
-      .map(element -> new JavaFileScannerContext.Location("Method + 1", element))
+      .map(method -> new JavaFileScannerContext.Location("Method + 1", method.simpleName()))
       .collect(Collectors.toList());
 
-    String classDescription;
-    if (classTree.simpleName() == null) {
-      classDescription = "Anonymous class \"" + ((NewClassTree) classTree.parent()).identifier().symbolType().name() + "\"";
+    TypeTree reportTree = ExpressionsHelper.reportOnClassTree(classTree);
+    String classType;
+    String newTypes;
+    if (isAnonnymousClass(classTree)) {
+      classType = "Anonymous class";
+      newTypes = "classes";
     } else {
-      classDescription = classTree.declarationKeyword().text() + " \"" + classTree.simpleName() + "\"";
+      classType = classTree.declarationKeyword().text();
+      newTypes = classType + (tree.is(Tree.Kind.CLASS) ? "es" : "s");
     }
     reportIssue(
-      ExpressionsHelper.reportOnClassTree(classTree),
-      String.format("%s has %d%s methods, which is greater than the %d authorized. Split it into smaller classes.",
-        classDescription, methods.size(), countNonPublic ? "" : " public", maximumMethodThreshold),
+      reportTree,
+      String.format("%s \"%s\" has %d%s methods, which is greater than the %d authorized. Split it into smaller %s.",
+        classType, reportTree.symbolType().name(), methods.size(), countNonPublic ? "" : " public", maximumMethodThreshold, newTypes),
       secondary,
       null);
   }
 
-  private boolean shouldNotReportIssue(ClassTree classTree, List<Tree> methods) {
-    return (classTree.simpleName() == null && methods.stream().allMatch(member -> isOverriding((MethodTree) member)))
-      ||  methods.size() <= maximumMethodThreshold;
+  private boolean shouldNotReportIssue(ClassTree classTree, List<MethodTree> methods) {
+    return methods.size() <= maximumMethodThreshold
+      || (isAnonnymousClass(classTree) && methods.stream().allMatch(TooManyMethodsCheck::isOverriding));
+  }
+
+  private static boolean isAnonnymousClass(ClassTree classTree) {
+    return classTree.simpleName() == null;
   }
 
   private static boolean isOverriding(MethodTree methodTree) {
