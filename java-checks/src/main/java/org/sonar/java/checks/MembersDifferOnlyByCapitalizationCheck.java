@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -67,16 +68,20 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
     String name = symbol.name();
     for (Map.Entry<String, List<Symbol>> knownMemberName : membersByName.entrySet()) {
       if (name.equalsIgnoreCase(knownMemberName.getKey())) {
-        knownMemberName.getValue().stream()
+        Optional<Symbol> firstConflict = knownMemberName.getValue().stream()
           .filter(knownMemberSymbol -> !symbol.equals(knownMemberSymbol) && isValidIssueLocation(symbol, knownMemberSymbol) && isInvalidMember(symbol, knownMemberSymbol))
-          .findFirst()
-          .ifPresent(conflictingSymbol ->
-            reportIssue(reportTree,
-              "Rename "
-                + getSymbolKindName(symbol) + " \"" + name + "\" "
-                + "to prevent any misunderstanding/clash with "
-                + getSymbolKindName(conflictingSymbol) + " \"" + knownMemberName.getKey() + "\""
-                + getDefinitionPlace(symbol, conflictingSymbol) + "."));
+          .findFirst();
+        if (firstConflict.isPresent()) {
+          Symbol conflictingSymbol = firstConflict.get();
+          reportIssue(reportTree,
+            "Rename "
+              + getSymbolKindName(symbol) + " \"" + name + "\" "
+              + "to prevent any misunderstanding/clash with "
+              + getSymbolKindName(conflictingSymbol) + " \"" + knownMemberName.getKey() + "\""
+              + getDefinitionPlace(symbol, conflictingSymbol) + ".");
+          // We report only one issue per conflict.
+          break;
+        }
       }
     }
   }

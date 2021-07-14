@@ -97,3 +97,11 @@ class MembersDifferOnlyByCapitalizationCheckBuilder {
     return this;
   }
 }
+
+class MembersDifferOnlyByCapitalizationCheckNoDuplications {
+  void Abcde(){ }
+  void aBcde(){ } // Noncompliant {{Rename method "aBcde" to prevent any misunderstanding/clash with method "Abcde" defined on line 102.}}
+  void abCde(){ } // Noncompliant {{Rename method "abCde" to prevent any misunderstanding/clash with method "Abcde" defined on line 102.}}
+  void abcDe(){ } // Noncompliant {{Rename method "abcDe" to prevent any misunderstanding/clash with method "Abcde" defined on line 102.}}
+  void abcdE(){ } // Noncompliant {{Rename method "abcdE" to prevent any misunderstanding/clash with method "Abcde" defined on line 102.}}
+}
