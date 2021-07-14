@@ -2,7 +2,7 @@ import com.sun.imageio.plugins; // Compliant
 import com.sun.jersey.api.client.ClientHandlerException; // Compliant
 import java.util.ArrayList;
 
-class A {
+class SunPackagesUsedCheck {
   private void f() {
     com.sun.imageio.plugins.bmp d =  // Compliant
       new com.sun.imageio.plugins.bmp(); // Compliant

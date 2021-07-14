@@ -2,7 +2,7 @@ import com.sun.imageio.plugins; // Noncompliant [[sc=8;ec=31;secondary=2,7,8,10,
 import com.sun.jersey.api.client.ClientHandlerException; // secondary
 import java.util.ArrayList;
 
-class A {
+class SunPackagesUsedCheck {
   private void f() {
     com.sun.imageio.plugins.bmp d = // secondary
       new com.sun.imageio.plugins.bmp(); // secondary
