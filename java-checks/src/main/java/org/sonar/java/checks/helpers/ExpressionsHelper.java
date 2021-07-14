@@ -45,6 +45,7 @@ import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 import static org.sonar.java.checks.helpers.ReassignmentFinder.getInitializerOrExpression;
 import static org.sonar.java.checks.helpers.ReassignmentFinder.getReassignments;
@@ -83,10 +84,10 @@ public class ExpressionsHelper {
    * @param classTree class tree raising an issue.
    * @return simple name of class tree or identifier in parent expression for anonymous class.
    */
-  public static Tree reportOnClassTree(ClassTree classTree) {
-    Tree reportTree = classTree.simpleName();
+  public static TypeTree reportOnClassTree(ClassTree classTree) {
+    TypeTree reportTree = classTree.simpleName();
     if(reportTree == null) {
-      reportTree = ((NewClassTree) classTree.parent()).identifier();
+      return ((NewClassTree) classTree.parent()).identifier();
     }
     return reportTree;
   }
