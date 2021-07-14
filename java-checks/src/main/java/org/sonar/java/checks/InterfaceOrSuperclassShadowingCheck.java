@@ -29,13 +29,14 @@ import javax.annotation.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 @Rule(key = "S2176")
 public class InterfaceOrSuperclassShadowingCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.INTERFACE);
+    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.RECORD);
   }
 
   @Override
@@ -50,8 +51,7 @@ public class InterfaceOrSuperclassShadowingCheck extends IssuableSubscriptionVis
 
   private void checkSuperType(ClassTree tree, @Nullable Type superType) {
     if (superType != null && hasSameName(tree, superType) && !isInnerClass(tree)) {
-      String classOrInterface = tree.is(Tree.Kind.CLASS) ? "class" : "interface";
-      reportIssue(tree.simpleName(), "Rename this " + classOrInterface + ".");
+      reportIssue(tree.simpleName(), "Rename this " + tree.kind().name().toLowerCase(Locale.ROOT) + ".");
     }
   }
 

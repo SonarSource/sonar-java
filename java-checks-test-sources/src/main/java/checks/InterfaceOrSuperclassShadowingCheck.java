@@ -20,3 +20,7 @@ abstract class Serializable implements java.io.Serializable {} // Noncompliant [
 
 abstract class MyFlushable implements java.io.Flushable {}
 abstract class Flushable extends MyFlushable {}
+
+record Function<T, R> () implements java.util.function.Function { // Noncompliant [[sc=8;ec=16]] {{Rename this record.}}
+  @Override public Object apply(Object t) { return null; }
+}
