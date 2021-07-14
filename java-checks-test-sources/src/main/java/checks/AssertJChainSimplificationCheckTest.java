@@ -147,7 +147,13 @@ public class AssertJChainSimplificationCheckTest {
 
   void test_equals_method() {
     Object obj = getObject();
+    Object obj2 = getObject();
     assertThat(obj).isNotEqualTo(null); // Compliant, because the name of the test is related to "equals" and ".isNotNull()" does not call "obj.equals(null)"
+
+    assertThat(obj.equals(obj2)).isFalse(); // Compliant, explicitly testing equals is acceptable in a method called equals.
+    assertThat(obj.equals(obj)).isTrue(); // Compliant
+    assertThat(obj.equals(Integer.valueOf(1))).isFalse(); // Compliant
+    assertThat(obj.equals(null)).isFalse(); // Compliant
   }
 
   void stringRelatedAssertionChains() {
