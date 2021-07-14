@@ -37,7 +37,7 @@ public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileSca
 
   private List<Tree> reportedTrees = new ArrayList<>();
 
-  private static final String DEFAULT_EXCLUDE = "";
+  private static final String DEFAULT_EXCLUDE = "com.sun.jersey,com.sun.faces";
 
   @RuleProperty(
       key = "Exclude",
