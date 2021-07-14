@@ -20,12 +20,14 @@
 package org.sonar.java.checks;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -41,6 +43,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S1845")
 public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscriptionVisitor {
+
+  private static final String ISSUE_MESSAGE = "Rename %s \"%s\" to prevent any misunderstanding/clash with %s \"%s\"%s.";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -70,15 +74,37 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
         knownMemberName.getValue().stream()
           .filter(knownMemberSymbol -> !symbol.equals(knownMemberSymbol) && isValidIssueLocation(symbol, knownMemberSymbol) && isInvalidMember(symbol, knownMemberSymbol))
           .findFirst()
-          .ifPresent(conflictingSymbol ->
-            reportIssue(reportTree,
-              "Rename "
-                + getSymbolKindName(symbol) + " \"" + name + "\" "
-                + "to prevent any misunderstanding/clash with "
-                + getSymbolKindName(conflictingSymbol) + " \"" + knownMemberName.getKey() + "\""
-                + getDefinitionPlace(symbol, conflictingSymbol) + "."));
+          .ifPresent(conflictingSymbol -> reportIssue(reportTree, issueMessage(symbol, knownMemberName, conflictingSymbol), declarationTree(conflictingSymbol), null));
       }
     }
+  }
+
+  private static String issueMessage(Symbol symbol, Map.Entry<String, List<Symbol>> knownMemberName, Symbol conflictingSymbol) {
+    return String.format(ISSUE_MESSAGE,
+      getSymbolKindName(symbol),
+      symbol.name(),
+      getSymbolKindName(conflictingSymbol),
+      knownMemberName.getKey(),
+      getDefinitionPlace(symbol, conflictingSymbol));
+  }
+
+  private static List<JavaFileScannerContext.Location> declarationTree(Symbol symbol) {
+    Tree reportTree = null;
+    if (symbol.isMethodSymbol()) {
+      MethodTree declaration = ((Symbol.MethodSymbol) symbol).declaration();
+      if (declaration != null) {
+        reportTree = declaration.simpleName();
+      }
+    } else if (symbol.isVariableSymbol()) {
+      VariableTree declaration = ((Symbol.VariableSymbol) symbol).declaration();
+      if (declaration != null) {
+        reportTree = declaration.simpleName();
+      }
+    }
+    if (reportTree == null) {
+      return Collections.emptyList();
+    }
+    return Collections.singletonList(new JavaFileScannerContext.Location("Conflicting identifier", reportTree));
   }
 
   private static boolean isOverriding(Symbol symbol) {
@@ -161,13 +187,10 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
 
   private static String getDefinitionPlace(Symbol symbol, Symbol knownMemberSymbol) {
     if (sameOwner(symbol, knownMemberSymbol)) {
-      int declarationLine = getDeclarationLine(knownMemberSymbol);
-      if (declarationLine == -1) {
-        return "";
-      }
-      return " defined on line " + declarationLine;
+      return "";
     }
-    return " defined in " + (knownMemberSymbol.owner().isInterface() ? "interface" : "superclass") + " \"" + knownMemberSymbol.owner().type().fullyQualifiedName() + "\"";
+    Symbol owner = knownMemberSymbol.owner();
+    return " defined in " + (owner.isInterface() ? "interface" : "superclass") + " \"" + owner.type().fullyQualifiedName() + "\"";
   }
 
   private static int getDeclarationLine(Symbol symbol) {
