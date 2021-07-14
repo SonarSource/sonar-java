@@ -39,7 +39,7 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.ENUM);
+    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.RECORD);
   }
 
   @Override
