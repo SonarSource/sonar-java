@@ -21,13 +21,22 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.TestUtils;
 
 class MembersDifferOnlyByCapitalizationCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/MembersDifferOnlyByCapitalizationCheck.java")
+      .onFile(TestUtils.testSourcesPath("checks/MembersDifferOnlyByCapitalizationCheck.java"))
+      .withCheck(new MembersDifferOnlyByCapitalizationCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/MembersDifferOnlyByCapitalizationCheck.java"))
       .withCheck(new MembersDifferOnlyByCapitalizationCheck())
       .verifyIssues();
   }
