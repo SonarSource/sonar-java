@@ -153,3 +153,8 @@ class Constructors {
     public F(int i) { }
   }
 }
+
+record MyRecord() {
+  // Noncompliant@+1
+  void foo() { }
+}
