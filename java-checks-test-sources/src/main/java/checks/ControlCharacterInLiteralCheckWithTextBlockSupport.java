@@ -1,6 +1,6 @@
 package checks;
 
-public class ControlCharacterInLiteralCheck {
+public class ControlCharacterInLiteralCheckWithTextBlockSupport {
 
   String[] data = {
     """
@@ -30,9 +30,7 @@ public class ControlCharacterInLiteralCheck {
   };
 
   public String template() {
-    if (this == null) {
-      return "U+0009 Hello, World!";
-    }
+    // Noncompliant@+1 {{Remove the non-escaped \u0009 character from this literal.}}
     return """
       <html>
   \t 	<head>
@@ -40,8 +38,7 @@ public class ControlCharacterInLiteralCheck {
       \t</head>
       \t<body>
       \t</body>
-      </html>	
+      </html>
       """;
   }
-
 }

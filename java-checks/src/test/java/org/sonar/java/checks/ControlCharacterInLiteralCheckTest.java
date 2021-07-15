@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class ControlCharacterInLiteralCheckTest {
@@ -38,8 +37,9 @@ class ControlCharacterInLiteralCheckTest {
   @Test
   void test_java13_text_blocks() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/ControlCharacterInLiteralCheck.java"))
+      .onFile(testSourcesPath("checks/ControlCharacterInLiteralCheckWithTextBlockSupport.java"))
       .withCheck(new ControlCharacterInLiteralCheck())
+      .withJavaVersion(13)
       .verifyIssues();
   }
 
