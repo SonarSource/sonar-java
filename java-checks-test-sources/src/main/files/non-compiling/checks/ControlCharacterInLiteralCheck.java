@@ -29,4 +29,19 @@ public class ControlCharacterInLiteralCheck {
     
   };
 
+  public String template() {
+    if (this == null) {
+      return "U+0009 Hello, World!";
+    }
+    return """
+      <html>
+  \t 	<head>
+      \t\t<title>Main</title>
+      \t</head>
+      \t<body>
+      \t</body>
+      </html>	
+      """;
+  }
+
 }
