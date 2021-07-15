@@ -29,7 +29,7 @@ public class UnicodeAwareCharClassesCheckTest {
   @Email(regexp = "[a-z]") // Noncompliant [[sc=21;ec=24]] {{Replace this character range with a Unicode-aware character class.}}
   String email;
 
-  @URL(regexp = "\\p{Lower}", flags = Flag.DOTALL) // Noncompliant [[sc=4;ec=7;secondary=32]] {{Enable the "(?U)" flag or use a Unicode-aware alternative.}}
+  @URL(regexp = "\\p{Lower}", flags = jakarta.validation.constraints.Pattern.Flag.DOTALL) // Noncompliant [[sc=4;ec=7;secondary=32]] {{Enable the "(?U)" flag or use a Unicode-aware alternative.}}
   String url1;
 
   @URL(regexp = "(?U)\\p{Lower}") // Compliant

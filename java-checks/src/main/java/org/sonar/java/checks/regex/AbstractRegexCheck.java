@@ -204,7 +204,8 @@ public abstract class AbstractRegexCheck extends IssuableSubscriptionVisitor imp
 
     @Override
     public void visitIdentifier(IdentifierTree tree) {
-      if (tree.symbolType().is("javax.validation.constraints.Pattern$Flag")) {
+      Type symbolType = tree.symbolType();
+      if (symbolType.is("javax.validation.constraints.Pattern$Flag") || symbolType.is("jakarta.validation.constraints.Pattern$Flag")) {
         mask |= FLAG_MASK.getOrDefault(tree.name(), 0);
       }
     }
