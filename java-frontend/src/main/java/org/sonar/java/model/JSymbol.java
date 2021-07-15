@@ -345,7 +345,12 @@ abstract class JSymbol implements Symbol {
   @Override
   public final SymbolMetadata metadata() {
     if (metadata == null) {
-      metadata = convertMetadata();
+      try {
+        metadata = convertMetadata();
+      } catch (RuntimeException e) {
+        // ECJ raises exception in rare occasions, when it is the case, we don't want to prevent the whole analysis of the file
+        metadata = Symbols.EMPTY_METADATA;
+      }
     }
     return metadata;
   }
