@@ -180,4 +180,12 @@ class SameName {
   Object subClass; // Compliant
   class subClass { }
 
+  class NoDuplications {
+    void Abcde(){ }
+    void aBcde(){ } // Noncompliant [[secondary=-1]] {{Rename method "aBcde" to prevent any misunderstanding/clash with method "Abcde".}}
+    void abCde(){ } // Noncompliant [[secondary=-2]] {{Rename method "abCde" to prevent any misunderstanding/clash with method "Abcde".}}
+    void abcDe(){ } // Noncompliant [[secondary=-3]] {{Rename method "abcDe" to prevent any misunderstanding/clash with method "Abcde".}}
+    void abcdE(){ } // Noncompliant [[secondary=-4]] {{Rename method "abcdE" to prevent any misunderstanding/clash with method "Abcde".}}
+  }
+
 }

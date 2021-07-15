@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -71,10 +72,16 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
     String name = symbol.name();
     for (Map.Entry<String, List<Symbol>> knownMemberName : membersByName.entrySet()) {
       if (name.equalsIgnoreCase(knownMemberName.getKey())) {
-        knownMemberName.getValue().stream()
+        Optional<Symbol> firstConflict = knownMemberName.getValue().stream()
           .filter(knownMemberSymbol -> !symbol.equals(knownMemberSymbol) && isValidIssueLocation(symbol, knownMemberSymbol) && isInvalidMember(symbol, knownMemberSymbol))
-          .findFirst()
-          .ifPresent(conflictingSymbol -> reportIssue(reportTree, issueMessage(symbol, knownMemberName, conflictingSymbol), declarationTree(conflictingSymbol), null));
+          .findFirst();
+
+        if (firstConflict.isPresent()) {
+          Symbol conflictingSymbol = firstConflict.get();
+          reportIssue(reportTree, issueMessage(symbol, knownMemberName, conflictingSymbol), declarationTree(conflictingSymbol), null);
+          // We report one issue per problematic member, with a single secondary location.
+          break;
+        }
       }
     }
   }
