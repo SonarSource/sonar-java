@@ -37,15 +37,15 @@ public abstract class AbstractRegexCheck {
   @org.hibernate.validator.constraints.URL(regexp = "[^@]+@[^@]+") // Noncompliant {{[^@]+@[^@]+}}
   private String field9;
 
-  @org.hibernate.validator.constraints.URL(regexp = "a+", flags = Flag.CASE_INSENSITIVE) // Noncompliant {{a+,initialFlags=2}}
+  @org.hibernate.validator.constraints.URL(regexp = "a+", flags = jakarta.validation.constraints.Pattern.Flag.CASE_INSENSITIVE) // Noncompliant {{a+,initialFlags=2}}
   @Nullable
   private String field10;
 
-  @org.hibernate.validator.constraints.URL(regexp = "a+", flags = { Flag.CASE_INSENSITIVE, Flag.DOTALL }) // Noncompliant {{a+,initialFlags=34}}
+  @org.hibernate.validator.constraints.URL(regexp = "a+", flags = { jakarta.validation.constraints.Pattern.Flag.CASE_INSENSITIVE, jakarta.validation.constraints.Pattern.Flag.DOTALL }) // Noncompliant {{a+,initialFlags=34}}
   @SuppressWarnings("coverage")
   private String field11;
 
-  @org.hibernate.validator.constraints.Email(regexp = "a+", flags = { Flag.UNICODE_CASE, Flag.CANON_EQ }) // Noncompliant {{a+,initialFlags=192}}
+  @org.hibernate.validator.constraints.Email(regexp = "a+", flags = { jakarta.validation.constraints.Pattern.Flag.UNICODE_CASE, jakarta.validation.constraints.Pattern.Flag.CANON_EQ }) // Noncompliant {{a+,initialFlags=192}}
   @SuppressWarnings(value = "coverage")
   private String field12;
 
