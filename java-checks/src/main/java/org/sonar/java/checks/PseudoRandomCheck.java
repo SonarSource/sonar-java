@@ -27,9 +27,7 @@ import org.sonar.java.collections.SetUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -38,16 +36,25 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Make sure that using this pseudorandom number generator is safe here.";
-  private static final MethodMatchers MATH_RANDOM_MATCHER = MethodMatchers.create()
-    .ofTypes("java.lang.Math").names("random").addWithoutParametersMatcher().build();
 
-  private static final Set<String> RANDOM_STATIC_TYPES = SetUtils.immutableSetOf(
-    "java.util.concurrent.ThreadLocalRandom",
-    "org.apache.commons.lang.math.RandomUtils",
-    "org.apache.commons.lang3.RandomUtils",
-    "org.apache.commons.lang.RandomStringUtils",
-    "org.apache.commons.lang3.RandomStringUtils"
+  private static final MethodMatchers STATIC_RANDOM_METHODS = MethodMatchers.or(
+    MethodMatchers.create().ofTypes("java.lang.Math").names("random").addWithoutParametersMatcher().build(),
+    MethodMatchers.create()
+      .ofSubTypes("java.util.concurrent.ThreadLocalRandom",
+        "org.apache.commons.lang.math.RandomUtils",
+        "org.apache.commons.lang3.RandomUtils",
+        "org.apache.commons.lang.RandomStringUtils",
+        "org.apache.commons.lang3.RandomStringUtils")
+      .anyName()
+      .withAnyParameters()
+      .build()
   );
+
+  private static final MethodMatchers RANDOM_STRING_UTILS_RANDOM_WITH_RANDOM_SOURCE = MethodMatchers.create()
+    .ofSubTypes("org.apache.commons.lang.RandomStringUtils", "org.apache.commons.lang3.RandomStringUtils")
+    .names("random")
+    .addParametersMatcher("int", "int", "int", "boolean", "boolean", "char[]", "java.util.Random")
+    .build();
 
   private static final Set<String> RANDOM_CONSTRUCTOR_TYPES = SetUtils.immutableSetOf(
     "java.util.Random",
@@ -65,13 +72,8 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
       IdentifierTree reportLocation = ExpressionUtils.methodName(mit);
 
-      if (MATH_RANDOM_MATCHER.matches(mit)) {
+      if (isStaticCallToInsecureRandomMethod(mit)) {
         reportIssue(reportLocation, MESSAGE);
-      } else if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT) && !isChainedMethodInvocation(mit)) {
-        Type expressionType = ((MemberSelectExpressionTree) mit.methodSelect()).expression().symbolType();
-        if (RANDOM_STATIC_TYPES.contains(expressionType.fullyQualifiedName())) {
-          reportIssue(reportLocation, MESSAGE);
-        }
       }
     } else {
       NewClassTree newClass = (NewClassTree) tree;
@@ -81,9 +83,10 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static boolean isChainedMethodInvocation(MethodInvocationTree mit) {
-    Tree parent = mit.parent();
-    return parent != null && parent.is(Tree.Kind.MEMBER_SELECT);
+  private static boolean isStaticCallToInsecureRandomMethod(MethodInvocationTree mit) {
+    return STATIC_RANDOM_METHODS.matches(mit)
+      && !RANDOM_STRING_UTILS_RANDOM_WITH_RANDOM_SOURCE.matches(mit)
+      && mit.symbol().isStatic();
   }
 
 }
