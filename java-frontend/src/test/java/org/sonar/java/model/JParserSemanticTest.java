@@ -1214,6 +1214,7 @@ class JParserSemanticTest {
       " public class C {\n" +
       "  interface I1 {}\n" +
       "  interface I2 {\n" +
+      // Does not compile, I1 can not be used as an annotation
       "    @I1(\"\")\n" +
       "    String m();\n" +
       "  }\n" +
