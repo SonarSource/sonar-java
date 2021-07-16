@@ -23,7 +23,7 @@ hidden web request and as web browsers automatically include cookies, the action
   used only for information retrieval. </li>
 </ul>
 <h2>Sensitive Code Example</h2>
-<p><a href="https://docs.spring.io/spring-security/site/docs/3.2.0.CI-SNAPSHOT/reference/html/csrf.html">Spring Security</a> provides by default a
+<p><a href="https://docs.spring.io/spring-security/site/docs/current/reference/html5/#servlet-csrf">Spring Security</a> provides by default a
 protection against CSRF attacks which can be disabled:</p>
 <pre>
 @EnableWebSecurity
@@ -38,8 +38,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 }
 </pre>
 <h2>Compliant Solution</h2>
-<p><a href="https://docs.spring.io/spring-security/site/docs/3.2.0.CI-SNAPSHOT/reference/html/csrf.html">Spring Security</a> CSRF protection is
-enabled by default, do not disable it:</p>
+<p><a href="https://docs.spring.io/spring-security/site/docs/current/reference/html5/#servlet-csrf">Spring Security</a> CSRF protection is enabled by
+default, do not disable it:</p>
 <pre>
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {

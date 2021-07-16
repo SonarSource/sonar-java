@@ -7,7 +7,6 @@
     "constantCost": "20min"
   },
   "tags": [
-    "cppcoreguidelines",
     "cwe",
     "error-handling",
     "bad-practice",

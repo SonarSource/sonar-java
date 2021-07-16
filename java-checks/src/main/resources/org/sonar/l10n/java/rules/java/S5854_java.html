@@ -4,7 +4,7 @@ accent mark. Without the <code>CANON_EQ</code> flag, a regex will only match a s
 <pre>
 String s = "e\u0300";
 Pattern p = Pattern.compile("é|ë|è"); // Noncompliant
-System.out.println(p.matcher(s).replaceAll("e")); // print 'é'
+System.out.println(p.matcher(s).replaceAll("e")); // print 'è'
 </pre>
 <h2>Compliant Solution</h2>
 <pre>

@@ -1,7 +1,7 @@
 <p>Possessive quantifiers in Regex patterns like below improve performance by eliminating needless backtracking:</p>
-<p>{noformat}</p>
-<p>?+ , *+ , ++ , {n}+ , {n,}+ , {n,m}+</p>
-<p>{noformat}</p>
+<pre>
+?+ , *+ , ++ , {n}+ , {n,}+ , {n,m}+
+</pre>
 <p>But because possessive quantifiers do not keep backtracking positions and never give back, the following sub-patterns should not match only similar
 characters. Otherwise, possessive quantifiers consume all characters that could have matched the following sub-patterns and nothing remains for the
 following sub-patterns.</p>
