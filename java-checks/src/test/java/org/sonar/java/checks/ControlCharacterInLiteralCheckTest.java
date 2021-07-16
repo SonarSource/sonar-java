@@ -31,15 +31,27 @@ class ControlCharacterInLiteralCheckTest {
     CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/ControlCharacterInLiteralCheck.java"))
       .withCheck(new ControlCharacterInLiteralCheck())
+      .withJavaVersion(14)
       .verifyIssues();
   }
 
   @Test
-  void test_java13_text_blocks() {
+  void test_java15_text_blocks() {
     CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/ControlCharacterInLiteralCheckWithTextBlockSupport.java"))
       .withCheck(new ControlCharacterInLiteralCheck())
-      .withJavaVersion(13)
+      .withJavaVersion(15)
+      .verifyIssues();
+  }
+
+  @Test
+  void test_tabs_allowed() {
+    ControlCharacterInLiteralCheck check = new ControlCharacterInLiteralCheck();
+    check.allowTabs = true;
+    CheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/ControlCharacterInLiteralCheckTabsAllowed.java"))
+      .withCheck(check)
+      .withJavaVersion(15)
       .verifyIssues();
   }
 
