@@ -42,8 +42,6 @@ import org.sonar.java.TestUtils;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.JavaVersionImpl;
-import org.sonar.plugins.java.api.JavaCheck;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -85,7 +83,7 @@ class SyntaxHighlighterVisitorTest {
   @ValueSource(strings = {"\n", "\r\n", "\r"})
   void test_different_end_of_line(String eol) throws IOException {
     this.eol = eol;
-    InputFile inputFile = generateDefaultTestFile();
+    InputFile inputFile = generateTestFile("src/test/files/highlighter/Example.java");
     scan(inputFile);
     verifyHighlighting(inputFile);
   }
@@ -192,13 +190,51 @@ class SyntaxHighlighterVisitorTest {
     assertThatHasBeenHighlighted(componentKey, 8, 12, 10, 8, TypeOfText.STRING);
   }
 
-  private void scan(InputFile inputFile) {
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(10), null, null, null, null, new JavaCheck[] {syntaxHighlighterVisitor});
-    frontend.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
+  /**
+   * Java 15
+   */
+  @Test
+  void switch_expression() throws Exception {
+    this.eol = "\n";
+    InputFile inputFile = generateTestFile("src/test/files/highlighter/SwitchExpression.java");
+    scan(inputFile);
+
+    String componentKey = inputFile.key();
+    assertThatHasBeenHighlighted(componentKey, 8, 12, 8, 14, TypeOfText.KEYWORD); // yield true;
+    assertThatHasBeenHighlighted(componentKey, 12, 12, 12, 14, TypeOfText.KEYWORD); // yield false;
   }
 
-  private InputFile generateDefaultTestFile() throws IOException {
-    return generateTestFile("src/test/files/highlighter/Example.java");
+  /**
+   * Java 16
+   */
+  @Test
+  void records() throws Exception {
+    this.eol = "\n";
+    InputFile inputFile = generateTestFile("src/test/files/highlighter/Records.java");
+    scan(inputFile);
+
+    String componentKey = inputFile.key();
+    assertThatHasBeenHighlighted(componentKey, 3, 1, 3, 7, TypeOfText.KEYWORD); // record
+  }
+
+  /**
+   * Java 16 (second preview)
+   */
+  @Test
+  void sealed_classes() throws Exception {
+    this.eol = "\n";
+    InputFile inputFile = generateTestFile("src/test/files/highlighter/SealedClass.java");
+    scan(inputFile);
+
+    String componentKey = inputFile.key();
+    assertThatHasBeenHighlighted(componentKey, 4, 19, 4, 25, TypeOfText.KEYWORD); // sealed
+    assertThatHasBeenHighlighted(componentKey, 4, 38, 4, 45, TypeOfText.KEYWORD); // permits
+    assertThatHasBeenHighlighted(componentKey, 9, 10, 9, 20, TypeOfText.KEYWORD); // non-sealed
+  }
+
+  private void scan(InputFile inputFile) {
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(10), null, null, null, null, syntaxHighlighterVisitor);
+    frontend.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
   }
 
   private InputFile generateTestFile(String sourceFile) throws IOException {
