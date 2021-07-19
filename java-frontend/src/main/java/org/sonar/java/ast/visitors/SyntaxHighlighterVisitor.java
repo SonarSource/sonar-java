@@ -70,23 +70,26 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
     typesByKindMap.put(Tree.Kind.LONG_LITERAL, TypeOfText.CONSTANT);
     typesByKindMap.put(Tree.Kind.INT_LITERAL, TypeOfText.CONSTANT);
     typesByKindMap.put(Tree.Kind.ANNOTATION, TypeOfText.ANNOTATION);
-    // 'record', 'yield' and 'var' are restricted identifiers
     typesByKindMap.put(Tree.Kind.VAR_TYPE, TypeOfText.KEYWORD);
-    typesByKindMap.put(Tree.Kind.RECORD, TypeOfText.KEYWORD);
-    typesByKindMap.put(Tree.Kind.YIELD_STATEMENT, TypeOfText.KEYWORD);
-    // sealed classes
-    typesByKindMap.put(Tree.Kind.MODIFIERS, TypeOfText.KEYWORD);
-    typesByKindMap.put(Tree.Kind.CLASS, TypeOfText.KEYWORD);
-    typesByKindMap.put(Tree.Kind.INTERFACE, TypeOfText.KEYWORD);
     this.typesByKind = Collections.unmodifiableMap(typesByKindMap);
   }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
     List<Tree.Kind> list = new ArrayList<>(typesByKind.keySet());
-    list.add(Tree.Kind.MODULE);
     list.add(Tree.Kind.TOKEN);
     list.add(Tree.Kind.TRIVIA);
+    // modules have their own set of restricted keywords
+    list.add(Tree.Kind.MODULE);
+    // 'yield' is a restricted keyword
+    list.add(Tree.Kind.YIELD_STATEMENT);
+    // 'record' is a restricted keyword
+    list.add(Tree.Kind.RECORD);
+    // sealed classes comes with restricted keyword 'permits', applying on classes and interfaces
+    list.add(Tree.Kind.CLASS);
+    list.add(Tree.Kind.INTERFACE);
+    // sealed classes comes with restricted modifiers 'sealed' and 'non-sealed', applying on classes and interfaces
+    list.add(Tree.Kind.MODIFIERS);
     return Collections.unmodifiableList(list);
   }
 
