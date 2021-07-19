@@ -640,9 +640,14 @@ public class JParser {
       .complete(modifiers, declarationKeyword, name)
       .completeTypeParameters(convertTypeParameters(e.typeParameters()));
 
-    if (e.getAST().isPreviewEnabled()) {
+    if (e.getAST().isPreviewEnabled() && !e.permittedTypes().isEmpty()) {
       // TODO final in Java 17? relates to sealed classes
-      convertSeparatedTypeList(e.permittedTypes(), t.permittedTypes());
+      List permittedTypes = e.permittedTypes();
+      InternalSyntaxToken permitsKeyword = firstTokenBefore((Type) permittedTypes.get(0), TerminalTokens.TokenNameRestrictedIdentifierpermits);
+      QualifiedIdentifierListTreeImpl classPermittedTypes = QualifiedIdentifierListTreeImpl.emptyList();
+
+      convertSeparatedTypeList(permittedTypes, classPermittedTypes);
+      t.completePermittedTypes(permitsKeyword, classPermittedTypes);
     }
 
     if (!e.isInterface() && e.getSuperclassType() != null) {

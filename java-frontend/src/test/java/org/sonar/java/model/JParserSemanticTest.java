@@ -85,6 +85,7 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.model.assertions.TreeAssert.assertThat;
 import static org.sonar.java.model.assertions.TypeAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
@@ -1021,7 +1022,9 @@ class JParserSemanticTest {
     assertThat(c.modifiers()).hasSize(1);
     ModifierKeywordTree m = (ModifierKeywordTree) c.modifiers().get(0);
     assertThat(m.modifier()).isEqualTo(Modifier.SEALED);
-    assertThat(m.firstToken().text()).isEqualTo("sealed");
+    assertThat(m.firstToken()).is("sealed");
+
+    assertThat(c.permitsKeyword()).is("permits");
     assertThat(c.permittedTypes()).hasSize(2);
 
     cu = test("non-sealed class Square extends Shape { }");
@@ -1029,7 +1032,7 @@ class JParserSemanticTest {
     assertThat(c.modifiers()).hasSize(1);
     m = (ModifierKeywordTree) c.modifiers().get(0);
     assertThat(m.modifier()).isEqualTo(Modifier.NON_SEALED);
-    assertThat(c.modifiers().get(0).firstToken().text()).isEqualTo("non-sealed");
+    assertThat(c.modifiers().get(0).firstToken()).is("non-sealed");
   }
 
   /**

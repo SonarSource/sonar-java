@@ -42,7 +42,6 @@ import org.sonar.java.TestUtils;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.JavaVersionImpl;
-import org.sonar.plugins.java.api.JavaCheck;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -85,7 +84,7 @@ class SyntaxHighlighterVisitorTest {
   @ValueSource(strings = {"\n", "\r\n", "\r"})
   void test_different_end_of_line(String eol) throws IOException {
     this.eol = eol;
-    InputFile inputFile = generateDefaultTestFile();
+    InputFile inputFile = generateTestFile("src/test/files/highlighter/Example.java");
     scan(inputFile);
     verifyHighlighting(inputFile);
   }
@@ -192,13 +191,62 @@ class SyntaxHighlighterVisitorTest {
     assertThatHasBeenHighlighted(componentKey, 8, 12, 10, 8, TypeOfText.STRING);
   }
 
-  private void scan(InputFile inputFile) {
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(10), null, null, null, null, new JavaCheck[] {syntaxHighlighterVisitor});
-    frontend.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
+  /**
+   * Java 15
+   */
+  @Test
+  void switch_expression() throws Exception {
+    this.eol = "\n";
+    InputFile inputFile = generateTestFile("src/test/files/highlighter/SwitchExpression.java");
+    scan(inputFile);
+
+    String componentKey = inputFile.key();
+    assertThatHasBeenHighlighted(componentKey, 9, 9, 9, 14, TypeOfText.KEYWORD); // yield true
+    assertThatHasBeenHighlighted(componentKey, 13, 9, 13, 14, TypeOfText.KEYWORD); // yield false
+    assertThatHasBeenHighlighted(componentKey, 19, 7, 19, 14, TypeOfText.KEYWORD); // default
+    assertThatHasNotBeenHighlighted(componentKey, 19, 18, 19, 23); // yield as identifier
   }
 
-  private InputFile generateDefaultTestFile() throws IOException {
-    return generateTestFile("src/test/files/highlighter/Example.java");
+  /**
+   * Java 16
+   */
+  @Test
+  void records() throws Exception {
+    this.eol = "\n";
+    InputFile inputFile = generateTestFile("src/test/files/highlighter/Records.java");
+    scan(inputFile);
+
+    String componentKey = inputFile.key();
+    assertThatHasBeenHighlighted(componentKey, 3, 1, 3, 7, TypeOfText.KEYWORD); // record
+    assertThatHasNotBeenHighlighted(componentKey, 4, 14, 4, 20); // record as identifier
+  }
+
+  /**
+   * Java 16 (second preview)
+   */
+  @Test
+  void sealed_classes() throws Exception {
+    this.eol = "\n";
+    InputFile inputFile = generateTestFile("src/test/files/highlighter/SealedClass.java");
+    scan(inputFile);
+
+    String componentKey = inputFile.key();
+    assertThatHasBeenHighlighted(componentKey, 4, 19, 4, 25, TypeOfText.KEYWORD); // sealed
+    assertThatHasNotBeenHighlighted(componentKey, 5, 35, 5, 41); // sealed as variable name
+
+    assertThatHasBeenHighlighted(componentKey, 4, 33, 4, 40, TypeOfText.KEYWORD); // permits
+    assertThatHasNotBeenHighlighted(componentKey, 7, 11, 7, 18); // permits as variable name
+
+    assertThatHasBeenHighlighted(componentKey, 14, 10, 14, 20, TypeOfText.KEYWORD); // non-sealed
+    // TODO fixme ECJ bug? should not require spaces
+    assertThatHasNotBeenHighlighted(componentKey, 7, 21, 7, 23); // non-sealed as expression
+
+    assertThatHasBeenHighlighted(componentKey, 16, 10, 16, 16, TypeOfText.KEYWORD); // record
+  }
+
+  private void scan(InputFile inputFile) {
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), null, null, null, null, syntaxHighlighterVisitor);
+    frontend.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
   }
 
   private InputFile generateTestFile(String sourceFile) throws IOException {

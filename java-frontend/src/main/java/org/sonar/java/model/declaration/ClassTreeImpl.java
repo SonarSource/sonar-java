@@ -62,7 +62,9 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   @Nullable
   private SyntaxToken implementsKeyword;
   private ListTree<TypeTree> superInterfaces;
-  private final ListTree<TypeTree> permittedTypes = QualifiedIdentifierListTreeImpl.emptyList();
+  @Nullable
+  private SyntaxToken permitsKeyword;
+  private ListTree<TypeTree> permittedTypes;
   @Nullable
   public ITypeBinding typeBinding;
 
@@ -74,6 +76,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     this.modifiers = ModifiersTreeImpl.emptyModifiers();
     this.typeParameters = new TypeParameterListTreeImpl();
     this.superInterfaces = QualifiedIdentifierListTreeImpl.emptyList();
+    this.permittedTypes = QualifiedIdentifierListTreeImpl.emptyList();
   }
 
   public ClassTreeImpl complete(ModifiersTreeImpl modifiers, SyntaxToken declarationKeyword, IdentifierTree name) {
@@ -101,6 +104,12 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
       implementsKeyword = keyword;
     }
     this.superInterfaces = interfaces;
+    return this;
+  }
+
+  public ClassTreeImpl completePermittedTypes(SyntaxToken permitsKeyword, QualifiedIdentifierListTreeImpl permittedTypes) {
+    this.permitsKeyword = permitsKeyword;
+    this.permittedTypes = permittedTypes;
     return this;
   }
 
@@ -149,6 +158,11 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   @Override
   public ListTree<TypeTree> superInterfaces() {
     return superInterfaces;
+  }
+
+  @Override
+  public SyntaxToken permitsKeyword() {
+    return permitsKeyword;
   }
 
   @Override
