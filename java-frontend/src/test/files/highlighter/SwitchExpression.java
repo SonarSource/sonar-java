@@ -2,6 +2,7 @@ package org.foo;
 
 public class A {
   public boolean block() {
+    boolean yield = false;
     return switch (Bool.random()) {
       case TRUE -> {
         System.out.println("Bool true");
@@ -15,7 +16,7 @@ public class A {
         var ex = new IllegalStateException("Ridiculous");
         throw ex;
       }
-      default -> false;
+      default -> yield;
     };
   }
 

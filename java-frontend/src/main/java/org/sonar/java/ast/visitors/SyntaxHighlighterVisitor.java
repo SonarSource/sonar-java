@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
@@ -32,12 +33,17 @@ import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaRestrictedKeyword;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.YieldStatementTree;
 
 public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
 
@@ -51,7 +57,7 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
 
   public SyntaxHighlighterVisitor(SonarComponents sonarComponents) {
     this.sonarComponents = sonarComponents;
-    
+
     keywords = Collections.unmodifiableSet(Arrays.stream(JavaKeyword.keywordValues()).collect(Collectors.toSet()));
     restrictedKeywords = Collections.unmodifiableSet(Arrays.stream(JavaRestrictedKeyword.restrictedKeywordValues()).collect(Collectors.toSet()));
 
@@ -64,7 +70,14 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
     typesByKindMap.put(Tree.Kind.LONG_LITERAL, TypeOfText.CONSTANT);
     typesByKindMap.put(Tree.Kind.INT_LITERAL, TypeOfText.CONSTANT);
     typesByKindMap.put(Tree.Kind.ANNOTATION, TypeOfText.ANNOTATION);
+    // 'record', 'yield' and 'var' are restricted identifiers
     typesByKindMap.put(Tree.Kind.VAR_TYPE, TypeOfText.KEYWORD);
+    typesByKindMap.put(Tree.Kind.RECORD, TypeOfText.KEYWORD);
+    typesByKindMap.put(Tree.Kind.YIELD_STATEMENT, TypeOfText.KEYWORD);
+    // sealed classes
+    typesByKindMap.put(Tree.Kind.MODIFIERS, TypeOfText.KEYWORD);
+    typesByKindMap.put(Tree.Kind.CLASS, TypeOfText.KEYWORD);
+    typesByKindMap.put(Tree.Kind.INTERFACE, TypeOfText.KEYWORD);
     this.typesByKind = Collections.unmodifiableMap(typesByKindMap);
   }
 
@@ -88,15 +101,36 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.MODULE)) {
-      withinModule = true;
-      return;
-    }
-    if (tree.is(Tree.Kind.ANNOTATION)) {
-      AnnotationTree annotationTree = (AnnotationTree) tree;
-      highlight(annotationTree.atToken(), annotationTree.annotationType(), typesByKind.get(Tree.Kind.ANNOTATION));
-    } else {
-      highlight(tree, typesByKind.get(tree.kind()));
+    switch (tree.kind()) {
+      case MODULE:
+        withinModule = true;
+        return;
+      case ANNOTATION:
+        AnnotationTree annotationTree = (AnnotationTree) tree;
+        highlight(annotationTree.atToken(), annotationTree.annotationType(), typesByKind.get(Tree.Kind.ANNOTATION));
+        return;
+      case YIELD_STATEMENT:
+        // 'yield' is a 'restricted identifier' (JSL16, $3.9) only acting as keyword in a yield statement
+        Optional.ofNullable(((YieldStatementTree) tree).yieldKeyword()).ifPresent(yieldKeyword -> highlight(yieldKeyword, TypeOfText.KEYWORD));
+        return;
+      case RECORD:
+        // 'record' is a 'restricted identifier' (JSL16, $3.9) only acting as keyword in a record declaration
+        highlight(((ClassTree) tree).declarationKeyword(), TypeOfText.KEYWORD);
+        return;
+      case CLASS:
+      case INTERFACE:
+        // 'permits' is a 'restricted identifier' (JSL16, $3.9) only acting as keyword in a class/interface declaration
+        Optional.ofNullable(((ClassTree) tree).permitsKeyword()).ifPresent(permitsKeyword -> highlight(permitsKeyword, TypeOfText.KEYWORD));
+        return;
+      case MODIFIERS:
+        // 'sealed' and 'non-sealed' are 'restricted identifier' (JSL16, $3.9) only acting as keyword in a class declaration
+        ModifiersTree modifiers = (ModifiersTree) tree;
+        ModifiersUtils.findModifier(modifiers, Modifier.SEALED).ifPresent(modifier -> highlight(modifier, TypeOfText.KEYWORD));
+        ModifiersUtils.findModifier(modifiers, Modifier.NON_SEALED).ifPresent(modifier -> highlight(modifier, TypeOfText.KEYWORD));
+        return;
+      default:
+        highlight(tree, typesByKind.get(tree.kind()));
+        return;
     }
   }
 

@@ -91,6 +91,14 @@ public interface ClassTree extends StatementTree {
    * @deprecated Preview Feature
    */
   @Deprecated
+  @Nullable
+  SyntaxToken permitsKeyword();
+
+  /**
+   * @since Java 15
+   * @deprecated Preview Feature
+   */
+  @Deprecated
   ListTree<TypeTree> permittedTypes();
 
   SyntaxToken openBraceToken();

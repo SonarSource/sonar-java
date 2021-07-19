@@ -42,6 +42,7 @@ import org.sonar.java.TestUtils;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.JavaVersionImpl;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -200,8 +201,9 @@ class SyntaxHighlighterVisitorTest {
     scan(inputFile);
 
     String componentKey = inputFile.key();
-    assertThatHasBeenHighlighted(componentKey, 8, 12, 8, 14, TypeOfText.KEYWORD); // yield true;
-    assertThatHasBeenHighlighted(componentKey, 12, 12, 12, 14, TypeOfText.KEYWORD); // yield false;
+    assertThatHasBeenHighlighted(componentKey, 9, 12, 9, 14, TypeOfText.KEYWORD); // yield true;
+    assertThatHasBeenHighlighted(componentKey, 13, 12, 13, 14, TypeOfText.KEYWORD); // yield false;
+    assertThatHasNotBeenHighlighted(componentKey, 19, 18, 19, 23); // yield as identifier;
   }
 
   /**
@@ -215,6 +217,7 @@ class SyntaxHighlighterVisitorTest {
 
     String componentKey = inputFile.key();
     assertThatHasBeenHighlighted(componentKey, 3, 1, 3, 7, TypeOfText.KEYWORD); // record
+    assertThatHasNotBeenHighlighted(componentKey, 4, 14, 4, 20); // record as identifier
   }
 
   /**
@@ -228,12 +231,16 @@ class SyntaxHighlighterVisitorTest {
 
     String componentKey = inputFile.key();
     assertThatHasBeenHighlighted(componentKey, 4, 19, 4, 25, TypeOfText.KEYWORD); // sealed
+    assertThatHasNotBeenHighlighted(componentKey, 5, 27, 5, 33); // sealed as variable name
     assertThatHasBeenHighlighted(componentKey, 4, 38, 4, 45, TypeOfText.KEYWORD); // permits
-    assertThatHasBeenHighlighted(componentKey, 9, 10, 9, 20, TypeOfText.KEYWORD); // non-sealed
+    assertThatHasNotBeenHighlighted(componentKey, 7, 11, 7, 18); // permits as variable name
+    assertThatHasBeenHighlighted(componentKey, 14, 10, 14, 20, TypeOfText.KEYWORD); // non-sealed
+    // TODO fixme ECJ bug? should not require spaces
+    assertThatHasNotBeenHighlighted(componentKey, 7, 21, 7, 23); // non-sealed as expression
   }
 
   private void scan(InputFile inputFile) {
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(10), null, null, null, null, syntaxHighlighterVisitor);
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), null, null, null, null, syntaxHighlighterVisitor);
     frontend.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
   }
 
