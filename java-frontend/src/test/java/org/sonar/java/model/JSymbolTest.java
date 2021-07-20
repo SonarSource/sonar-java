@@ -59,13 +59,14 @@ class JSymbolTest {
 
   @Test
   void owner() {
-    JavaTree.CompilationUnitTreeImpl cu = test("class C1 { int f; class C2 { } void m(int p) { class C3 { } } }");
+    JavaTree.CompilationUnitTreeImpl cu = test("class C1 { int f; class C2 { } void m(int p) { class C3 { Unknown u; } } }");
     ClassTreeImpl c1 = (ClassTreeImpl) cu.types().get(0);
     VariableTreeImpl f = (VariableTreeImpl) c1.members().get(0);
     ClassTreeImpl c2 = (ClassTreeImpl) c1.members().get(1);
     MethodTreeImpl m = (MethodTreeImpl) c1.members().get(2);
     VariableTreeImpl p = (VariableTreeImpl) m.parameters().get(0);
     ClassTreeImpl c3 = (ClassTreeImpl) m.block().body().get(0);
+    VariableTreeImpl u = (VariableTreeImpl) c3.members().get(0);
 
     assertThat(cu.sema.typeSymbol(c1.typeBinding))
       .as("of top-level class")
@@ -90,6 +91,12 @@ class JSymbolTest {
     assertThat(cu.sema.variableSymbol(p.variableBinding))
       .as("of method parameter")
       .hasOwner(cu.sema.methodSymbol(m.methodBinding));
+
+    JType uType = cu.sema.type(u.variableBinding.getType());
+    Symbol.TypeSymbol uTypeSymbol = uType.symbol();
+    assertThat(uType.isUnknown()).isTrue();
+    assertThat(uTypeSymbol.isUnknown()).isTrue();
+    assertThat(uTypeSymbol.owner().isUnknown()).isTrue();
   }
 
   @Test

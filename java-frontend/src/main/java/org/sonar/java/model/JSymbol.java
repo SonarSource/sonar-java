@@ -143,6 +143,9 @@ abstract class JSymbol implements Symbol {
    */
   @Override
   public final Symbol owner() {
+    if (isUnknown()) {
+      return Symbols.unknownSymbol;
+    }
     if (owner == null) {
       owner = convertOwner();
     }

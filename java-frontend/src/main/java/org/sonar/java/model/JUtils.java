@@ -54,7 +54,7 @@ public final class JUtils {
     .put("java.lang.Double", "double")
     .put("java.lang.Boolean", "boolean")
     .build();
-  
+
   private static final Map<String, String> PRIMITIVE_TO_WRAPPER = MapBuilder.<String, String>newMap()
     .put("byte", "java.lang.Byte")
     .put("char", "java.lang.Character")
@@ -65,7 +65,7 @@ public final class JUtils {
     .put("double", "java.lang.Double")
     .put("boolean", "java.lang.Boolean")
     .build();
-    
+
   public static boolean isPrimitiveWrapper(Type type) {
     return type.isClass() && WRAPPER_TO_PRIMITIVE.containsKey(type.fullyQualifiedName());
   }
@@ -123,9 +123,6 @@ public final class JUtils {
 
   public static Optional<Object> constantValue(Symbol.VariableSymbol symbol) {
     if (!symbol.isFinal() || !symbol.isStatic()) {
-      return Optional.empty();
-    }
-    if (symbol instanceof JTypeSymbol.SpecialField) {
       return Optional.empty();
     }
     Object c = ((IVariableBinding) ((JVariableSymbol) symbol).binding).getConstantValue();
@@ -250,7 +247,8 @@ public final class JUtils {
     do {
       if (t == null) {
         return null;
-      } else if (t.is(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE)) {
+      }
+      if (t.is(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE)) {
         return ((ClassTree) t).symbol();
       }
       t = t.parent();
