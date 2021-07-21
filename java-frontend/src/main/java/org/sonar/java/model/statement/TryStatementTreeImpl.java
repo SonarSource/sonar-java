@@ -73,60 +73,6 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
     this.finallyBlock = finallyBlock;
   }
 
-  public TryStatementTreeImpl(List<CatchTreeImpl> catches, @Nullable InternalSyntaxToken finallyKeyword, @Nullable BlockTreeImpl finallyBlock) {
-    this.openParenToken = null;
-    this.resources = ResourceListTreeImpl.emptyList();
-    this.closeParenToken = null;
-
-    this.catches = getCatches(catches);
-    this.finallyKeyword = finallyKeyword;
-    this.finallyBlock = finallyBlock;
-  }
-
-  public TryStatementTreeImpl(InternalSyntaxToken finallyKeyword, BlockTreeImpl finallyBlock) {
-    this(Collections.emptyList(), finallyKeyword, finallyBlock);
-  }
-
-  public TryStatementTreeImpl(
-    InternalSyntaxToken tryToken,
-    InternalSyntaxToken openParenToken, ResourceListTreeImpl resources, InternalSyntaxToken closeParenToken,
-    BlockTreeImpl block,
-    List<CatchTreeImpl> catches) {
-    this.tryToken = tryToken;
-    this.openParenToken = openParenToken;
-    this.resources = resources;
-    this.closeParenToken = closeParenToken;
-    this.block = block;
-    this.catches = getCatches(catches);
-    this.finallyKeyword = null;
-    this.finallyBlock = null;
-  }
-
-  public TryStatementTreeImpl completeWithCatches(List<CatchTreeImpl> catches) {
-    this.catches = getCatches(catches);
-
-    return this;
-  }
-
-  public TryStatementTreeImpl completeStandardTry(InternalSyntaxToken tryToken, BlockTreeImpl block) {
-    this.tryToken = tryToken;
-    this.block = block;
-
-    return this;
-  }
-
-  public TryStatementTreeImpl completeTryWithResources(InternalSyntaxToken tryToken, InternalSyntaxToken openParenToken, ResourceListTreeImpl resources,
-    InternalSyntaxToken closeParenToken, BlockTreeImpl block, List<CatchTreeImpl> catches) {
-    this.tryToken = tryToken;
-    this.openParenToken = openParenToken;
-    this.resources = resources;
-    this.closeParenToken = closeParenToken;
-    this.block = block;
-    this.catches = getCatches(catches);
-
-    return this;
-  }
-
   @Override
   public Kind kind() {
     return Kind.TRY_STATEMENT;
