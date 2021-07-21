@@ -19,6 +19,9 @@
  */
 package org.sonar.java.model.statement;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.java.ast.parser.ResourceListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -29,11 +32,6 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
-import javax.annotation.Nullable;
-
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
 
@@ -133,7 +131,7 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
 
   @Override
   public List<Tree> children() {
-    List<Tree> list = new LinkedList<>();
+    List<Tree> list = new ArrayList<>();
     list.add(tryToken);
     if (openParenToken != null) {
       list.add(openParenToken);
@@ -147,13 +145,5 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
       list.add(finallyBlock);
     }
     return list;
-  }
-
-  private static List<CatchTree> getCatches(List<CatchTreeImpl> catches) {
-    return TryStatementTreeImpl.<CatchTree>getList(catches);
-  }
-
-  private static <T> List<T> getList(List<? extends T> list) {
-    return Collections.unmodifiableList(list);
   }
 }
