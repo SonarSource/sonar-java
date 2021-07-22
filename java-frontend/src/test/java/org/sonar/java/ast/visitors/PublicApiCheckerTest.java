@@ -19,8 +19,16 @@
  */
 package org.sonar.java.ast.visitors;
 
+import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -29,11 +37,6 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,6 +47,93 @@ class PublicApiCheckerTest {
   @BeforeEach
   public void setUp() {
     cut = JParserTestUtils.parse(new File("src/test/files/ast/PublicApi.java"));
+  }
+
+  @Test
+  void private_constructor() throws Exception {
+    Constructor<PublicApiChecker> constructor = PublicApiChecker.class.getDeclaredConstructor();
+    assertThat(Modifier.isPrivate(constructor.getModifiers())).isTrue();
+    constructor.setAccessible(true);
+    constructor.newInstance();
+  }
+
+  @Test
+  void targeted_kinds() {
+    assertThat(PublicApiChecker.classKinds())
+      .hasSize(5)
+      .containsExactlyInAnyOrder(Tree.Kind.ANNOTATION_TYPE, Tree.Kind.ENUM, Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.RECORD);
+
+    assertThat(PublicApiChecker.methodKinds())
+      .hasSize(2)
+      .containsExactlyInAnyOrder(Tree.Kind.CONSTRUCTOR, Tree.Kind.METHOD);
+
+    assertThat(PublicApiChecker.apiKinds())
+      .hasSize(8)
+      .contains(PublicApiChecker.classKinds())
+      .contains(PublicApiChecker.methodKinds())
+      .contains(Tree.Kind.VARIABLE);
+  }
+
+  @Nested
+  class SpecialCases {
+    @Test
+    void getApiJavadoc_parametrized_method() {
+      CompilationUnitTree cut = JParserTestUtils.parse("interface A {\n"
+        + "  /**\n   * documented\n   */\n"
+        + "  <T> void foo(T t);\n"
+        + "}");
+      Optional<String> apiJavadoc = PublicApiChecker.getApiJavadoc(((ClassTree)(cut.types().get(0))).members().get(0));
+      assertThat(apiJavadoc)
+        .isPresent()
+        .contains("/**\n   * documented\n   */");
+    }
+
+    @Test
+    void getApiJavadoc_constructor() {
+      CompilationUnitTree cut = JParserTestUtils.parse("public class A { public A() {} }");
+      Optional<String> apiJavadoc = PublicApiChecker.getApiJavadoc(((ClassTree) cut.types().get(0)).members().get(0));
+      assertThat(apiJavadoc).isNotPresent();
+    }
+
+    @Test
+    void empty_default_constructors_is_not_public_api() {
+      ClassTree a = (ClassTree) JParserTestUtils.parse("public class A { public A() { } }").types().get(0);
+      assertThat(PublicApiChecker.isPublicApi(a, a.members().get(0))).isFalse();
+
+      ClassTree b = (ClassTree) JParserTestUtils.parse("public class B { public B() { foo(); } }").types().get(0);
+      assertThat(PublicApiChecker.isPublicApi(b, b.members().get(0))).isTrue();
+    }
+
+    @Test
+    void public_class_is_public_api() {
+      CompilationUnitTree cut = JParserTestUtils.parse("package org.foo; public class A { }");
+      Tree a = cut.types().get(0);
+      assertThat(PublicApiChecker.isPublicApi(cut, a)).isTrue();
+      assertThat(PublicApiChecker.isPublicApi(null, a)).isTrue();
+      assertThat(PublicApiChecker.isPublicApi(a, a)).isTrue();
+    }
+
+    @Test
+    void inner_class_of_public_method_is_not_public_api() {
+      CompilationUnitTree cut = JParserTestUtils.parse("public class A { public void m() { class B {} } }");
+      ClassTree a = (ClassTree) cut.types().get(0);
+      MethodTree m = (MethodTree) a.members().get(0);
+      ClassTree b = (ClassTree) m.block().body().get(0);
+
+      assertThat(PublicApiChecker.isPublicApi(null, a)).isTrue();
+      assertThat(PublicApiChecker.isPublicApi(a, m)).isTrue();
+      assertThat(PublicApiChecker.isPublicApi(m, b)).isFalse();
+    }
+
+    @Test
+    void inner_class_of_interface_is_public_api() {
+      CompilationUnitTree cut = JParserTestUtils.parse("public interface A { class B {} }");
+      ClassTree a = (ClassTree) cut.types().get(0);
+      ClassTree b = (ClassTree) a.members().get(0);
+
+      assertThat(PublicApiChecker.isPublicApi(null, a)).isTrue();
+      assertThat(PublicApiChecker.isPublicApi(a, b)).isTrue();
+    }
   }
 
   @Test
@@ -133,9 +223,9 @@ class PublicApiCheckerTest {
 
   private void checkApi(Tree tree, String name) {
     if (name.startsWith("documented")) {
-      assertThat(PublicApiChecker.getApiJavadoc(tree)).as(name).isNotNull();
+      assertThat(PublicApiChecker.getApiJavadoc(tree)).as(name).isPresent();
     } else {
-      assertThat(PublicApiChecker.getApiJavadoc(tree)).isNull();
+      assertThat(PublicApiChecker.getApiJavadoc(tree)).isNotPresent();
     }
   }
 

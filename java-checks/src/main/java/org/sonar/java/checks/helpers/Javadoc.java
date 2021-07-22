@@ -132,7 +132,7 @@ public final class Javadoc {
       elementExceptionNames = Collections.emptyList();
     }
 
-    List<String> javadocLines = cleanLines(PublicApiChecker.getApiJavadoc(tree));
+    List<String> javadocLines = cleanLines(PublicApiChecker.getApiJavadoc(tree).orElse(""));
     mainDescription = getDescription(javadocLines, -1, "");
     blockTagDescriptions = extractBlockTags(javadocLines, Arrays.asList(BlockTag.values()));
     undocumentedNamedTags = new EnumMap<>(BlockTag.class);

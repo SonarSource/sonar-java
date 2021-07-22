@@ -45,11 +45,7 @@ public class AbstractDeprecatedChecker extends IssuableSubscriptionVisitor {
   }
 
   public static boolean hasJavadocDeprecatedTag(Tree tree) {
-    return hasJavadocDeprecatedTag(PublicApiChecker.getApiJavadoc(tree));
-  }
-
-  public static boolean hasJavadocDeprecatedTag(@Nullable String comment) {
-    return comment != null && comment.startsWith("/**") && comment.contains("@deprecated");
+    return PublicApiChecker.getApiJavadoc(tree).filter(comment -> comment.contains("@deprecated")).isPresent();
   }
 
   public static boolean hasDeprecatedAnnotation(Tree tree) {
