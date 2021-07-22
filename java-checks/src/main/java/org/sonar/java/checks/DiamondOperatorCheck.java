@@ -19,12 +19,17 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.apache.commons.lang.ArrayUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.JavaTree;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.java.reporting.FluentReporting;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -48,13 +53,8 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
-
 @Rule(key = "S2293")
-public class DiamondOperatorCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
+public class DiamondOperatorCheck extends SubscriptionVisitor implements JavaVersionAwareVisitor, FluentReporting {
 
   private static final Tree.Kind[] JAVA_7_KINDS = new Tree.Kind[] {
     Tree.Kind.VARIABLE,
@@ -88,10 +88,11 @@ public class DiamondOperatorCheck extends IssuableSubscriptionVisitor implements
     TypeTree type = getTypeFromExpression(tree.parent(), expressionKindsToCheck);
     if ((type != null && isParameterizedType(type))
       || usedAsArgumentWithoutDiamond(newClassTree)) {
-      reportIssue(
-        ((ParameterizedTypeTree) newTypeTree).typeArguments(),
-        "Replace the type specification in this constructor call with the diamond operator (\"<>\")." +
-          context.getJavaVersion().java7CompatibilityMessage());
+      newIssue(context)
+        .forRule(this)
+        .onTree(((ParameterizedTypeTree) newTypeTree).typeArguments())
+        .withMessage("Replace the type specification in this constructor call with the diamond operator (\"<>\").%s", context.getJavaVersion().java7CompatibilityMessage())
+        .build();
     }
   }
 

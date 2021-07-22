@@ -375,4 +375,8 @@ public class SonarComponents {
       .limit(maxLines)
       .collect(Collectors.joining(delimiter, prefix, suffix)));
   }
+
+  public SensorContext context() {
+    return context;
+  }
 }
