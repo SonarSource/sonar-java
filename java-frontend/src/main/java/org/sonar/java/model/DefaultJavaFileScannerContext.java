@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.SonarComponents;
@@ -263,7 +262,8 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
     return Optional.empty();
   }
 
-  public SensorContext sensorContext() {
-    return sonarComponents.context();
+  @Nullable
+  public SonarComponents sonarComponents() {
+    return sonarComponents;
   }
 }

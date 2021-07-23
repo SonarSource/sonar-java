@@ -20,7 +20,6 @@
 package org.sonar.java.reporting;
 
 import java.util.List;
-import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.annotations.Beta;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -39,8 +38,6 @@ public interface FluentReporting {
     JavaIssueBuilder onTree(Tree tree);
 
     JavaIssueBuilder onRange(Tree from, Tree to);
-
-    JavaIssueBuilder onRange(AnalyzerMessage.TextSpan range);
 
     JavaIssueBuilder withMessage(String message);
 
