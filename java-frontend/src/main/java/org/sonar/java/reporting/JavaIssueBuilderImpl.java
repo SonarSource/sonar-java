@@ -1,10 +1,28 @@
+/*
+ * SonarQube Java
+ * Copyright (C) 2012-2021 SonarSource SA
+ * mailto:info AT sonarsource DOT com
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package org.sonar.java.reporting;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
@@ -24,16 +42,16 @@ public class JavaIssueBuilderImpl implements FluentReporting.JavaIssueBuilder {
 
   private static final Logger LOG = Loggers.get(JavaIssueBuilderImpl.class);
 
-  private final InputFile inputFile;
+  protected final InputFile inputFile;
   @Nullable
   private final SonarComponents sonarComponents;
 
-  private JavaCheck rule;
-  private AnalyzerMessage.TextSpan textSpan;
-  private String message;
+  protected JavaCheck rule;
+  protected AnalyzerMessage.TextSpan textSpan;
+  protected String message;
   private List<JavaFileScannerContext.Location> secondaries;
   private List<List<JavaFileScannerContext.Location>> flows;
-  private Integer cost;
+  protected Integer cost;
 
   public JavaIssueBuilderImpl(InputFile inputFile, @Nullable SonarComponents sonarComponents) {
     this.inputFile = inputFile;
@@ -164,22 +182,6 @@ public class JavaIssueBuilderImpl implements FluentReporting.JavaIssueBuilder {
       return file.selectLine(textSpan.startLine);
     }
     return file.newRange(textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
-  }
-
-  public static class JavaIssueBuilderForTest extends JavaIssueBuilderImpl {
-
-    private final Set<AnalyzerMessage> issues;
-
-    public JavaIssueBuilderForTest(InputFile inputFile, Set<AnalyzerMessage> issues) {
-      super(inputFile, null);
-      this.issues = issues;
-    }
-
-    @Override
-    public void build() {
-      // create a new AnalyzerMessage
-      issues.add(/* TODO */ null);
-    }
   }
 
 }

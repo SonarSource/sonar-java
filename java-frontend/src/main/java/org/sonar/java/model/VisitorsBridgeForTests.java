@@ -31,7 +31,6 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.reporting.JavaIssueBuilderImpl;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -137,7 +136,7 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
 
     @Override
     public JavaIssueBuilder newIssue() {
-      return new JavaIssueBuilderImpl.JavaIssueBuilderForTest(getInputFile(), issues);
+      return new JavaIssueBuilderForTest(getInputFile(), issues);
     }
   }
 }
