@@ -56,6 +56,8 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.JavaIssue;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
@@ -64,7 +66,6 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
 @ScannerSide
 @SonarLintSide
 public class SonarComponents {
-
 
   private static final Logger LOG = Loggers.get(SonarComponents.class);
   private static final int LOGGED_MAX_NUMBER_UNDEFINED_TYPES = 50;

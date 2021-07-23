@@ -29,15 +29,15 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.regex.RegexCache;
 import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.RegexCheck.RegexIssueLocation;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.FluentReporting;
-import org.sonar.java.reporting.JavaIssueBuilderImpl;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.regex.RegexScannerContext;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -266,6 +266,6 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
 
   @Override
   public JavaIssueBuilder newIssue() {
-    return new JavaIssueBuilderImpl(inputFile, sonarComponents);
+    return new InternalJavaIssueBuilder(inputFile, sonarComponents);
   }
 }

@@ -17,18 +17,16 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.model;
+package org.sonar.java.reporting;
 
 import java.util.Set;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.java.AnalyzerMessage;
-import org.sonar.java.reporting.JavaIssueBuilderImpl;
 
-public class JavaIssueBuilderForTest extends JavaIssueBuilderImpl {
+public class TestingJavaIssueBuilder extends InternalJavaIssueBuilder {
 
   private final Set<AnalyzerMessage> issues;
 
-  public JavaIssueBuilderForTest(InputFile inputFile, Set<AnalyzerMessage> issues) {
+  public TestingJavaIssueBuilder(InputFile inputFile, Set<AnalyzerMessage> issues) {
     super(inputFile, null);
     this.issues = issues;
   }
@@ -36,6 +34,7 @@ public class JavaIssueBuilderForTest extends JavaIssueBuilderImpl {
   @Override
   public void build() {
     // TODO: Add secondaries
-    issues.add(new AnalyzerMessage(rule, inputFile, textSpan, message, cost != null ? cost : 0));
+    Integer cost = cost();
+    issues.add(new AnalyzerMessage(rule(), inputFile(), textSpan(), message(), cost != null ? cost : 0));
   }
 }

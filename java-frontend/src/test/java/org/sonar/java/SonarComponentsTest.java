@@ -67,6 +67,7 @@ import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;

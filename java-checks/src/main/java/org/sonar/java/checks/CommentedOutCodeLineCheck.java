@@ -25,9 +25,8 @@ import java.util.List;
 import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
-import org.sonar.java.AnalyzerMessage;
-import org.sonar.java.AnalyzerMessage.TextSpan;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
@@ -97,7 +96,7 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
     int prefixSize = line.length() - lineWithoutCommentPrefix.length();
     String lineWithoutCommentPrefixAndSuffix = lineWithoutCommentPrefix.replaceFirst("[ \t]+(\\*/)?$", "");
 
-    TextSpan textSpan = new TextSpan(
+    AnalyzerMessage.TextSpan textSpan = new AnalyzerMessage.TextSpan(
       startLine,
       startColumn + prefixSize,
       startLine,

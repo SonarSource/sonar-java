@@ -21,8 +21,8 @@ package org.sonar.java.regex;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.AnalyzerMessage;
-import org.sonar.java.AnalyzerMessage.TextSpan;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
 import org.sonarsource.analyzer.commons.regex.RegexParseResult;
 import org.sonarsource.analyzer.commons.regex.RegexParser;
 import org.sonarsource.analyzer.commons.regex.RegexSource;

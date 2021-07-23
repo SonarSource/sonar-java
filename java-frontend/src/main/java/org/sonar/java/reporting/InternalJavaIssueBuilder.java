@@ -31,111 +31,130 @@ import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
-import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.Preconditions;
 import org.sonar.java.SonarComponents;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
-public class JavaIssueBuilderImpl implements FluentReporting.JavaIssueBuilder {
+public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilder {
 
-  private static final Logger LOG = Loggers.get(JavaIssueBuilderImpl.class);
+  private static final String MESSAGE_NAME = "message";
+  private static final String TEXT_SPAN_NAME = "position";
+  private static final String RULE_NAME = "rule";
 
-  protected final InputFile inputFile;
+  private static final Logger LOG = Loggers.get(InternalJavaIssueBuilder.class);
+
+  private final InputFile inputFile;
   @Nullable
   private final SonarComponents sonarComponents;
 
-  protected JavaCheck rule;
-  protected AnalyzerMessage.TextSpan textSpan;
-  protected String message;
+  private JavaCheck rule;
+  private AnalyzerMessage.TextSpan textSpan;
+  private String message;
   private List<JavaFileScannerContext.Location> secondaries;
   private List<List<JavaFileScannerContext.Location>> flows;
-  protected Integer cost;
+  private Integer cost;
 
-  public JavaIssueBuilderImpl(InputFile inputFile, @Nullable SonarComponents sonarComponents) {
+  public InternalJavaIssueBuilder(InputFile inputFile, @Nullable SonarComponents sonarComponents) {
     this.inputFile = inputFile;
     this.sonarComponents = sonarComponents;
   }
 
+  private static void requiresExistence(Object field, String name) {
+    Preconditions.checkState(field != null, String.format("A %s must be set first.", name));
+  }
+
+  private static void requiresUniquess(Object field, String name) {
+    Preconditions.checkState(field == null, String.format("Cannot set %s multiple times.", name));
+  }
+
   @Override
-  public JavaIssueBuilderImpl forRule(JavaCheck rule) {
-    Preconditions.checkState(this.rule == null, "Cannot set rule multiple times.");
+  public InternalJavaIssueBuilder forRule(JavaCheck rule) {
+    requiresUniquess(this.rule, RULE_NAME);
+
     this.rule = rule;
     return this;
   }
 
   @Override
-  public JavaIssueBuilderImpl onTree(Tree tree) {
-    Preconditions.checkState(this.rule != null, "A rule must be set first.");
-    Preconditions.checkState(this.textSpan == null, "Cannot set position multiple times.");
-    textSpan = AnalyzerMessage.textSpanFor(tree);
+  public InternalJavaIssueBuilder onTree(Tree tree) {
+    return onRange(AnalyzerMessage.textSpanFor(tree));
+  }
+
+  @Override
+  public InternalJavaIssueBuilder onRange(Tree from, Tree to) {
+    return onRange(AnalyzerMessage.textSpanBetween(from, to));
+  }
+
+  private InternalJavaIssueBuilder onRange(AnalyzerMessage.TextSpan range) {
+    requiresExistence(this.rule, RULE_NAME);
+    requiresUniquess(this.textSpan, TEXT_SPAN_NAME);
+
+    this.textSpan = range;
     return this;
   }
 
   @Override
-  public JavaIssueBuilderImpl onRange(Tree from, Tree to) {
-    Preconditions.checkState(this.rule != null, "A rule must be set first.");
-    Preconditions.checkState(this.textSpan == null, "Cannot set position multiple times.");
-    textSpan = AnalyzerMessage.textSpanBetween(from, to);
-    return this;
-  }
-
-  @Override
-  public JavaIssueBuilderImpl withMessage(String message) {
+  public InternalJavaIssueBuilder withMessage(String message) {
     return withMessage(message, new Object[0]);
   }
 
   @Override
-  public JavaIssueBuilderImpl withMessage(String message, Object... args) {
-    Preconditions.checkState(this.textSpan != null, "A position must be set first.");
-    Preconditions.checkState(this.message == null, "Cannot set message multiple times.");
+  public InternalJavaIssueBuilder withMessage(String message, Object... args) {
+    requiresExistence(this.textSpan, TEXT_SPAN_NAME);
+    requiresUniquess(this.message, MESSAGE_NAME);
+
     this.message = String.format(message, args);
     return this;
   }
 
   @Override
-  public JavaIssueBuilderImpl withSecondaries(JavaFileScannerContext.Location... secondaries) {
+  public InternalJavaIssueBuilder withSecondaries(JavaFileScannerContext.Location... secondaries) {
     return withSecondaries(Arrays.asList(secondaries));
   }
 
   @Override
-  public JavaIssueBuilderImpl withSecondaries(List<JavaFileScannerContext.Location> secondaries) {
-    Preconditions.checkState(this.message != null, "A message must be set first.");
-    Preconditions.checkState(this.secondaries == null, "Cannot set secondaries multiple times.");
+  public InternalJavaIssueBuilder withSecondaries(List<JavaFileScannerContext.Location> secondaries) {
+    requiresExistence(this.message, MESSAGE_NAME);
+    requiresUniquess(this.secondaries, "secondaries");
     Preconditions.checkState(this.flows == null, "Cannot set flows and secondaries at the same time.");
+
     this.secondaries = Collections.unmodifiableList(secondaries);
     return this;
   }
 
   @Override
-  public JavaIssueBuilderImpl withFlows(List<List<JavaFileScannerContext.Location>> flows) {
-    Preconditions.checkState(this.message != null, "A message must be set first.");
-    Preconditions.checkState(this.flows == null, "Cannot set flows multiple times.");
+  public InternalJavaIssueBuilder withFlows(List<List<JavaFileScannerContext.Location>> flows) {
+    requiresExistence(this.message, MESSAGE_NAME);
+    requiresUniquess(this.flows, "flows");
     Preconditions.checkState(this.secondaries == null, "Cannot set flows and secondaries at the same time.");
+
     this.flows = Collections.unmodifiableList(flows);
     return this;
   }
 
   @Override
-  public JavaIssueBuilderImpl withCost(int cost) {
-    Preconditions.checkState(this.message != null, "A message must be set first.");
-    Preconditions.checkState(this.cost == null, "Cannot set cost multiple times.");
+  public InternalJavaIssueBuilder withCost(int cost) {
+    requiresExistence(this.message, MESSAGE_NAME);
+    requiresUniquess(this.cost, "cost");
+
     this.cost = cost;
     return this;
   }
 
   @Override
-  public JavaIssueBuilderImpl withQuickFix() {
+  public InternalJavaIssueBuilder withQuickFix() {
     // TODO
     return this;
   }
 
   @Override
   public void build() {
-    Preconditions.checkState(this.rule != null, "A rule must be set first.");
-    Preconditions.checkState(this.textSpan != null, "A position must be set first.");
-    Preconditions.checkState(this.message != null, "A message must be set first.");
+    requiresExistence(this.rule, RULE_NAME);
+    requiresExistence(this.textSpan, TEXT_SPAN_NAME);
+    requiresExistence(this.message, MESSAGE_NAME);
+
     if (sonarComponents == null) {
       LOG.debug("SonarComponents is not set");
       return;
@@ -184,4 +203,23 @@ public class JavaIssueBuilderImpl implements FluentReporting.JavaIssueBuilder {
     return file.newRange(textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
   }
 
+  JavaCheck rule() {
+    return rule;
+  }
+
+  InputFile inputFile() {
+    return inputFile;
+  }
+
+  String message() {
+    return message;
+  }
+
+  AnalyzerMessage.TextSpan textSpan() {
+    return textSpan;
+  }
+
+  Integer cost() {
+    return cost;
+  }
 }

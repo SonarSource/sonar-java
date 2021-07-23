@@ -17,13 +17,14 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java;
+package org.sonar.java.reporting;
 
 import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.java.AnalyzerMessage.TextSpan;
+import org.sonar.java.TestUtils;
 import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
