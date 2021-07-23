@@ -36,6 +36,8 @@ import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.regex.RegexCache;
 import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.RegexCheck.RegexIssueLocation;
+import org.sonar.java.reporting.FluentReporting;
+import org.sonar.java.reporting.JavaIssueBuilderImpl;
 import org.sonar.java.regex.RegexScannerContext;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -48,7 +50,7 @@ import org.sonarsource.analyzer.commons.regex.RegexParseResult;
 import org.sonarsource.analyzer.commons.regex.ast.FlagSet;
 import org.sonarsource.analyzer.commons.regex.ast.RegexSyntaxElement;
 
-public class DefaultJavaFileScannerContext implements JavaFileScannerContext, RegexScannerContext {
+public class DefaultJavaFileScannerContext implements JavaFileScannerContext, RegexScannerContext, FluentReporting {
   private final JavaTree.CompilationUnitTreeImpl tree;
   private final boolean semanticEnabled;
   private final SonarComponents sonarComponents;
@@ -262,8 +264,8 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
     return Optional.empty();
   }
 
-  @Nullable
-  public SonarComponents sonarComponents() {
-    return sonarComponents;
+  @Override
+  public JavaIssueBuilder newIssue() {
+    return new JavaIssueBuilderImpl(inputFile, sonarComponents);
   }
 }

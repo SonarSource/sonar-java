@@ -31,6 +31,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.java.reporting.JavaIssueBuilderImpl;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -132,6 +133,11 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
     private AnalyzerMessage createAnalyzerMessage(JavaCheck javaCheck, Tree startTree, @Nullable Tree endTree, String message, List<Location> secondary, @Nullable Integer cost) {
       List<List<Location>> flows = secondary.stream().map(Collections::singletonList).collect(Collectors.toList());
       return createAnalyzerMessage(getInputFile(), javaCheck, startTree, endTree, message, flows, cost);
+    }
+
+    @Override
+    public JavaIssueBuilder newIssue() {
+      return new JavaIssueBuilderImpl.JavaIssueBuilderForTest(getInputFile(), issues);
     }
   }
 }

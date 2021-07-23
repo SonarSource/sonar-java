@@ -4,25 +4,30 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextRange;
 import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.Preconditions;
 import org.sonar.java.SonarComponents;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
 public class JavaIssueBuilderImpl implements FluentReporting.JavaIssueBuilder {
 
+  private static final Logger LOG = Loggers.get(JavaIssueBuilderImpl.class);
+
   private final InputFile inputFile;
   @Nullable
   private final SonarComponents sonarComponents;
+
   private JavaCheck rule;
   private AnalyzerMessage.TextSpan textSpan;
   private String message;
@@ -30,9 +35,9 @@ public class JavaIssueBuilderImpl implements FluentReporting.JavaIssueBuilder {
   private List<List<JavaFileScannerContext.Location>> flows;
   private Integer cost;
 
-  public JavaIssueBuilderImpl(JavaFileScannerContext context) {
-    this.inputFile = context.getInputFile();
-    this.sonarComponents = ((DefaultJavaFileScannerContext) context).sonarComponents();
+  public JavaIssueBuilderImpl(InputFile inputFile, @Nullable SonarComponents sonarComponents) {
+    this.inputFile = inputFile;
+    this.sonarComponents = sonarComponents;
   }
 
   @Override
@@ -114,10 +119,12 @@ public class JavaIssueBuilderImpl implements FluentReporting.JavaIssueBuilder {
     Preconditions.checkState(this.textSpan != null, "A position must be set first.");
     Preconditions.checkState(this.message != null, "A message must be set first.");
     if (sonarComponents == null) {
+      LOG.debug("SonarComponents is not set");
       return;
     }
     Optional<RuleKey> ruleKey = sonarComponents.getRuleKey(rule);
     if (!ruleKey.isPresent()) {
+      LOG.debug("Rule not enabled");
       return;
     }
 
@@ -157,6 +164,22 @@ public class JavaIssueBuilderImpl implements FluentReporting.JavaIssueBuilder {
       return file.selectLine(textSpan.startLine);
     }
     return file.newRange(textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
+  }
+
+  public static class JavaIssueBuilderForTest extends JavaIssueBuilderImpl {
+
+    private final Set<AnalyzerMessage> issues;
+
+    public JavaIssueBuilderForTest(InputFile inputFile, Set<AnalyzerMessage> issues) {
+      super(inputFile, null);
+      this.issues = issues;
+    }
+
+    @Override
+    public void build() {
+      // create a new AnalyzerMessage
+      issues.add(/* TODO */ null);
+    }
   }
 
 }

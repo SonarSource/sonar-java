@@ -27,9 +27,9 @@ import org.apache.commons.lang.ArrayUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.reporting.FluentReporting;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -54,7 +54,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S2293")
-public class DiamondOperatorCheck extends SubscriptionVisitor implements JavaVersionAwareVisitor, FluentReporting {
+public class DiamondOperatorCheck extends SubscriptionVisitor implements JavaVersionAwareVisitor {
 
   private static final Tree.Kind[] JAVA_7_KINDS = new Tree.Kind[] {
     Tree.Kind.VARIABLE,
@@ -88,7 +88,7 @@ public class DiamondOperatorCheck extends SubscriptionVisitor implements JavaVer
     TypeTree type = getTypeFromExpression(tree.parent(), expressionKindsToCheck);
     if ((type != null && isParameterizedType(type))
       || usedAsArgumentWithoutDiamond(newClassTree)) {
-      newIssue(context)
+      ((DefaultJavaFileScannerContext) context).newIssue()
         .forRule(this)
         .onTree(((ParameterizedTypeTree) newTypeTree).typeArguments())
         .withMessage("Replace the type specification in this constructor call with the diamond operator (\"<>\").%s", context.getJavaVersion().java7CompatibilityMessage())

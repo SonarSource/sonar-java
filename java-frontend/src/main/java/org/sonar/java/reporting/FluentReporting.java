@@ -28,9 +28,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Beta
 public interface FluentReporting {
 
-  default JavaIssueBuilder newIssue(JavaFileScannerContext context) {
-    return new JavaIssueBuilderImpl(context);
-  }
+  JavaIssueBuilder newIssue();
 
   interface JavaIssueBuilder {
     JavaIssueBuilder forRule(JavaCheck rule);
