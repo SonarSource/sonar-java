@@ -52,11 +52,6 @@ public interface FluentReporting {
 
     JavaIssueBuilder withCost(int cost);
 
-    /**
-     * Only in SonarLint context
-     */
-    JavaIssueBuilder withQuickFix(/* FIXME TBD */);
-
     void build();
   }
 }

@@ -147,12 +147,6 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
   }
 
   @Override
-  public InternalJavaIssueBuilder withQuickFix() {
-    // TODO
-    return this;
-  }
-
-  @Override
   public void build() {
     requiresExistence(this.rule, RULE_NAME);
     requiresExistence(this.textSpan, TEXT_SPAN_NAME);

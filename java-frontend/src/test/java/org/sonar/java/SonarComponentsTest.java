@@ -176,6 +176,7 @@ class SonarComponentsTest {
     assertThat(newSymbolTable ).isNotNull();
     verify(sensorContextTester, times(1)).newSymbolTable();
     assertThat(sonarComponents.fileLinesContextFor(inputFile)).isEqualTo(fileLinesContext);
+    assertThat(sonarComponents.context()).isSameAs(sensorContextTester);
 
     ClasspathForMain javaClasspath = mock(ClasspathForMain.class);
     List<File> list = mock(List.class);
