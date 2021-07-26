@@ -109,6 +109,30 @@ class InternalJavaIssueBuilderTest {
   }
 
   @Test
+  void test_build_issue_with_formated_message() {
+    ClassTree tree = (ClassTree) compilationUnitTree.types().get(0);
+
+    builder.forRule(CHECK)
+      .onTree(tree.simpleName())
+      .withMessage("msg %d %s %d", 42, "yolo", -1)
+      .withCost(COST)
+      .build();
+
+    Collection<Issue> issues = sensorContextTester.allIssues();
+    assertThat(issues).hasSize(1);
+    DefaultIssue issue = (DefaultIssue) issues.iterator().next();
+
+    assertThat(issue.ruleKey()).isSameAs(RULE_KEY);
+    assertThat(issue.gap()).isEqualTo(COST);
+    assertThat(issue.flows()).isEmpty();
+
+    IssueLocation primaryLocation = issue.primaryLocation();
+    assertThat(primaryLocation.message()).isEqualTo("msg 42 yolo -1");
+    assertThat(primaryLocation.inputComponent()).isEqualTo(inputFile);
+    assertPosition(primaryLocation.textRange(), 3, 6, 3, 7);
+  }
+
+  @Test
   void test_build_issue_with_secondary() {
     ClassTree tree = (ClassTree) compilationUnitTree.types().get(0);
     Tree firstMember = tree.members().get(0);
@@ -207,11 +231,11 @@ class InternalJavaIssueBuilderTest {
 
   @Test
   void test_must_set_a_rule_first() {
-    assertThatThrownBy(() -> builder.onTree(compilationUnitTree.types().get(0)))
+    Tree tree = compilationUnitTree.types().get(0);
+    assertThatThrownBy(() -> builder.onTree(tree))
       .hasMessage("A rule must be set first.")
       .isOfAnyClassIn(IllegalStateException.class);
   }
-
 
   @Test
   void test_must_set_a_position_first() {
