@@ -326,7 +326,7 @@ public class SonarComponents {
 
   public File workDir() {
     ProjectDefinition current = projectDefinition;
-    if (current == null) {
+    if(current == null) {
       return fs.workDir();
     }
     while (current.getParent() != null) {

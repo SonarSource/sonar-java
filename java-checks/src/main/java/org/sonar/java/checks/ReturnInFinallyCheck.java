@@ -166,12 +166,13 @@ public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileSca
   private boolean handleControlFlowInFinally(Tree.Kind jumpKind) {
     if (jumpKind == Tree.Kind.BREAK_STATEMENT || jumpKind == Tree.Kind.CONTINUE_STATEMENT) {
       return false;
+    } else {
+      Tree.Kind parentOfControlFlowStatement = treeKindStack.stream()
+        .filter(t -> t == Tree.Kind.BLOCK || t == Tree.Kind.METHOD)
+        .findFirst()
+        .orElse(Tree.Kind.METHOD);
+      return parentOfControlFlowStatement == Tree.Kind.BLOCK;
     }
-    Tree.Kind parentOfControlFlowStatement = treeKindStack.stream()
-      .filter(t -> t == Tree.Kind.BLOCK || t == Tree.Kind.METHOD)
-      .findFirst()
-      .orElse(Tree.Kind.METHOD);
-    return parentOfControlFlowStatement == Tree.Kind.BLOCK;
   }
 
 }
