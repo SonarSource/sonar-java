@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class LongBitsToDoubleOnIntCheckTest {
@@ -32,5 +33,13 @@ class LongBitsToDoubleOnIntCheckTest {
       .onFile(testSourcesPath("checks/LongBitsToDoubleOnIntCheck.java"))
       .withCheck(new LongBitsToDoubleOnIntCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/LongBitsToDoubleOnIntCheck.java"))
+      .withCheck(new LongBitsToDoubleOnIntCheck())
+      .verifyNoIssues();
   }
 }

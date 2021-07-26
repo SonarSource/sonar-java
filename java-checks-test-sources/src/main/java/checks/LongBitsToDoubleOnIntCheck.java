@@ -11,4 +11,23 @@ class LongBitsToDoubleOnIntCheck {
     Double.longBitsToDouble(1L);
     Double.longBitsToDouble(Long.valueOf(1l));
   }
+
+  static class callOther {
+    public static double getDouble() {
+      return Double.longBitsToDouble(Other.getLong()); // Compliant
+    }
+    public static double getByte() {
+      return Double.longBitsToDouble(Other.getByte()); // Noncompliant
+    }
+  }
+
+  static class Other {
+    public static long getLong() {
+      return Long.MAX_VALUE;
+    }
+
+    public static byte getByte() {
+      return 1;
+    }
+  }
 }
