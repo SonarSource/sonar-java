@@ -41,6 +41,10 @@ public class LongBitsToDoubleOnIntCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     Type symbolType = mit.arguments().get(0).symbolType();
+    if (symbolType.isUnknown()) {
+      return;
+    }
+
     if (!(symbolType.is("long") || symbolType.is("java.lang.Long"))) {
       reportIssue(ExpressionUtils.methodName(mit), "Remove this \"Double.longBitsToDouble\" call.");
     }
