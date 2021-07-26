@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
 import org.sonar.java.ast.visitors.PublicApiChecker;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
