@@ -517,7 +517,7 @@ class CheckVerifierTest {
     }
 
     private FakeVisitor issueWithFlow(int line) {
-      return issueWithFlow(null, new AnalyzerMessage.TextSpan(line));
+      return issueWithFlow("default-message", new AnalyzerMessage.TextSpan(line));
     }
 
     private FakeVisitor issueWithFlow(int line, @Nullable String message, int startColumn, int endLine, int endColumn) {

@@ -172,8 +172,22 @@ class AnalyzerMessageTest {
       AnalyzerMessage.textSpanFor(cut.eofToken());
       Fail.fail("Should have failed on empty issue location");
     } catch (Exception e) {
-      assertThat(e).isInstanceOf(IllegalStateException.class);
-      assertThat(e.getMessage()).isEqualTo("Invalid issue location: Text span is empty when trying reporting on (l:3, c:0).");
+      assertThat(e)
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessage("Invalid issue location: Text span is empty when trying reporting on (l:3, c:0).");
+    }
+  }
+
+  @Test
+  void shouldFailOnTreeWithoutParents() {
+    InferedTypeTree itt = new InferedTypeTree();
+    try {
+      AnalyzerMessage.textSpanFor(itt);
+      Fail.fail("Should have failed on empty issue location");
+    } catch (Exception e) {
+      assertThat(e)
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessage("Trying to report on an empty tree with no parent");
     }
   }
 

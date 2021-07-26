@@ -19,12 +19,12 @@
  */
 package org.sonar.java.testing;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.SonarComponents;
@@ -33,8 +33,8 @@ import org.sonar.java.model.Sema;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.FluentReporting;
 import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -64,30 +64,59 @@ public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContex
   }
 
   @Override
+  public void reportIssue(JavaCheck javaCheck, Tree tree, String message) {
+    throwIfEndOfAnalysisCheck(javaCheck);
+    newIssue()
+      .forRule(javaCheck)
+      .onTree(tree)
+      .withMessage(message)
+      .build();
+  }
+
+  @Override
   public void reportIssue(JavaCheck javaCheck, Tree syntaxNode, String message, List<JavaFileScannerContext.Location> secondary, @Nullable Integer cost) {
     throwIfEndOfAnalysisCheck(javaCheck);
-    List<List<JavaFileScannerContext.Location>> flows = secondary.stream()
-      .map(Collections::singletonList)
-      .collect(Collectors.toList());
-    issues.add(createAnalyzerMessage(getInputFile(), javaCheck, syntaxNode, null, message, flows, cost));
+    newIssue()
+      .forRule(javaCheck)
+      .onTree(syntaxNode)
+      .withMessage(message)
+      .withSecondaries(secondary)
+      .withCost(cost == null ? 0 : cost)
+      .build();
   }
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message) {
     throwIfEndOfAnalysisCheck(javaCheck);
-    issues.add(createAnalyzerMessage(javaCheck, startTree, endTree, message, Collections.emptyList(), null));
+    newIssue()
+      .forRule(javaCheck)
+      .onRange(startTree, endTree)
+      .withMessage(message)
+      .build();
   }
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message, List<JavaFileScannerContext.Location> secondary, @Nullable Integer cost) {
     throwIfEndOfAnalysisCheck(javaCheck);
-    issues.add(createAnalyzerMessage(javaCheck, startTree, endTree, message, secondary, cost));
+    newIssue()
+      .forRule(javaCheck)
+      .onRange(startTree, endTree)
+      .withMessage(message)
+      .withSecondaries(secondary)
+      .withCost(cost == null ? 0 : cost)
+      .build();
   }
 
   @Override
   public void reportIssueWithFlow(JavaCheck javaCheck, Tree syntaxNode, String message, Iterable<List<JavaFileScannerContext.Location>> flows, @Nullable Integer cost) {
     throwIfEndOfAnalysisCheck(javaCheck);
-    issues.add(createAnalyzerMessage(getInputFile(), javaCheck, syntaxNode, null, message, flows, cost));
+    newIssue()
+      .forRule(javaCheck)
+      .onTree(syntaxNode)
+      .withMessage(message)
+      .withFlows(StreamSupport.stream(flows.spliterator(), false).collect(Collectors.toList()))
+      .withCost(cost == null ? 0 : cost)
+      .build();
   }
 
   @Override
@@ -97,15 +126,7 @@ public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContex
 
   @Override
   public AnalyzerMessage createAnalyzerMessage(JavaCheck javaCheck, Tree startTree, String message) {
-    return createAnalyzerMessage(getInputFile(), javaCheck, startTree, null, message, Arrays.asList(), null);
-  }
-
-  private AnalyzerMessage createAnalyzerMessage(JavaCheck javaCheck, Tree startTree, @Nullable Tree endTree, String message,
-                                                List<JavaFileScannerContext.Location> secondary, @Nullable Integer cost) {
-    List<List<JavaFileScannerContext.Location>> flows = secondary.stream()
-      .map(Collections::singletonList)
-      .collect(Collectors.toList());
-    return createAnalyzerMessage(getInputFile(), javaCheck, startTree, endTree, message, flows, cost);
+    return createAnalyzerMessage(getInputFile(), javaCheck, startTree, null, message, Collections.emptyList(), null);
   }
 
   @Override

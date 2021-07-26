@@ -100,7 +100,11 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
 
   @Override
   public InternalJavaIssueBuilder withMessage(String message) {
-    return withMessage(message, new Object[0]);
+    requiresExistence(this.textSpan, TEXT_SPAN_NAME);
+    requiresUniquess(this.message, MESSAGE_NAME);
+
+    this.message = message;
+    return this;
   }
 
   @Override
