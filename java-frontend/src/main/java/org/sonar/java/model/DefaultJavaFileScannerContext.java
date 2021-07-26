@@ -34,11 +34,10 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.regex.RegexCache;
 import org.sonar.java.regex.RegexCheck;
-import org.sonar.java.regex.RegexCheck.RegexIssueLocation;
+import org.sonar.java.regex.RegexScannerContext;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.FluentReporting;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
-import org.sonar.java.regex.RegexScannerContext;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -138,11 +137,11 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
   }
 
   @Override
-  public void reportIssue(RegexCheck regexCheck, Tree javaSyntaxElement, String message, @Nullable Integer cost, List<RegexIssueLocation> secondaries) {
+  public void reportIssue(RegexCheck regexCheck, Tree javaSyntaxElement, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries) {
     reportIssue(regexCheck, AnalyzerMessage.textSpanFor(javaSyntaxElement), message, cost, secondaries);
   }
 
-  private void reportIssue(RegexCheck regexCheck, AnalyzerMessage.TextSpan mainLocation, String message, @Nullable Integer cost, List<RegexIssueLocation> secondaries) {
+  private void reportIssue(RegexCheck regexCheck, AnalyzerMessage.TextSpan mainLocation, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries) {
     List<List<RegexCheck.RegexIssueLocation>> secondariesAsFlows = new ArrayList<>();
 
     secondaries.stream()
