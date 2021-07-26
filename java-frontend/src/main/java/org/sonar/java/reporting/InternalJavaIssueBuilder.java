@@ -52,8 +52,11 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
   private JavaCheck rule;
   private AnalyzerMessage.TextSpan textSpan;
   private String message;
+  @Nullable
   private List<JavaFileScannerContext.Location> secondaries;
+  @Nullable
   private List<List<JavaFileScannerContext.Location>> flows;
+  @Nullable
   private Integer cost;
 
   public InternalJavaIssueBuilder(InputFile inputFile, @Nullable SonarComponents sonarComponents) {
@@ -156,12 +159,14 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
     requiresExistence(this.message, MESSAGE_NAME);
 
     if (sonarComponents == null) {
-      LOG.debug("SonarComponents is not set");
+      // can be noisy , so using trace only.
+      LOG.trace("SonarComponents is not set - discarding issue");
       return;
     }
     Optional<RuleKey> ruleKey = sonarComponents.getRuleKey(rule);
     if (!ruleKey.isPresent()) {
-      LOG.debug("Rule not enabled");
+      // can be noisy , so using trace only.
+      LOG.trace("Rule not enabled - discarding issue");
       return;
     }
 
@@ -219,7 +224,15 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
     return textSpan;
   }
 
-  Integer cost() {
-    return cost;
+  Optional<Integer> cost() {
+    return Optional.ofNullable(cost);
+  }
+
+  Optional<List<JavaFileScannerContext.Location>> secondaries() {
+    return Optional.ofNullable(secondaries);
+  }
+
+  Optional<List<List<JavaFileScannerContext.Location>>> flows() {
+    return Optional.ofNullable(flows);
   }
 }
