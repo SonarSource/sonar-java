@@ -17,21 +17,23 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.reporting;
+package org.sonar.java.testing;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 
-public class TestingJavaIssueBuilder extends InternalJavaIssueBuilder {
+public class JavaIssueBuilderForTests extends InternalJavaIssueBuilder {
 
   private final Set<AnalyzerMessage> issues;
 
-  public TestingJavaIssueBuilder(InputFile inputFile, Set<AnalyzerMessage> issues) {
+  public JavaIssueBuilderForTests(InputFile inputFile, Set<AnalyzerMessage> issues) {
     super(inputFile, null);
     this.issues = issues;
   }
@@ -43,7 +45,7 @@ public class TestingJavaIssueBuilder extends InternalJavaIssueBuilder {
     AnalyzerMessage issue = new AnalyzerMessage(rule, inputFile, textSpan(), message(), cost().orElse(0));
 
     secondaries()
-      .map(TestingJavaIssueBuilder::toSingletonList)
+      .map(JavaIssueBuilderForTests::toSingletonList)
       .map(secondaries -> listOfLocationsToListOfAnalyzerMessages(secondaries, rule, inputFile))
       .ifPresent(issue.flows::addAll);
 

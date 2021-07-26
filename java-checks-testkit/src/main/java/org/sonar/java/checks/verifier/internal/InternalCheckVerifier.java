@@ -52,8 +52,9 @@ import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.JavaVersionImpl;
-import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.testing.JavaFileScannerContextForTests;
+import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaVersion;
 
@@ -219,7 +220,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     astScanner.setVisitorBridge(visitorsBridge);
     astScanner.scan(files);
 
-    VisitorsBridgeForTests.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
+    JavaFileScannerContextForTests testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
     checkIssues(testJavaFileScannerContext.getIssues());
   }
 

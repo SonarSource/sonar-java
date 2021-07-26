@@ -24,8 +24,8 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.verifier.TestUtils;
-import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.testing.VisitorsBridgeForTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;

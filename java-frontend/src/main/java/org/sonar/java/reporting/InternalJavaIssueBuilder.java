@@ -202,31 +202,31 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
     return file.newRange(textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
   }
 
-  JavaCheck rule() {
+  public JavaCheck rule() {
     return rule;
   }
 
-  InputFile inputFile() {
+  public InputFile inputFile() {
     return inputFile;
   }
 
-  String message() {
+  public String message() {
     return message;
   }
 
-  AnalyzerMessage.TextSpan textSpan() {
+  public AnalyzerMessage.TextSpan textSpan() {
     return textSpan;
   }
 
-  Optional<Integer> cost() {
+  public Optional<Integer> cost() {
     return Optional.ofNullable(cost);
   }
 
-  Optional<List<JavaFileScannerContext.Location>> secondaries() {
+  public Optional<List<JavaFileScannerContext.Location>> secondaries() {
     return Optional.ofNullable(secondaries);
   }
 
-  Optional<List<List<JavaFileScannerContext.Location>>> flows() {
+  public Optional<List<List<JavaFileScannerContext.Location>>> flows() {
     return Optional.ofNullable(flows);
   }
 }
