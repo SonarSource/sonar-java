@@ -36,6 +36,7 @@ import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.RegexParserTestUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
+import org.sonar.java.reporting.FluentReporting;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
@@ -309,6 +310,11 @@ class DefaultJavaFileScannerContextTest {
 
     ctx = new DefaultJavaFileScannerContext(compilationUnitTree, JAVA_INPUT_FILE, null, sonarComponents, new JavaVersionImpl(), true);
     assertThat(ctx.sourceMap()).isEmpty();
+  }
+
+  @Test
+  void test_new_issue_return_a_builder() {
+    assertThat(context.newIssue()).isInstanceOf(FluentReporting.JavaIssueBuilder.class);
   }
 
   private static void assertMessagePosition(AnalyzerMessage message, int startLine, int startColumn, int endLine, int endColumn) {
