@@ -255,7 +255,7 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
     SonarRuntime runtime = sonarComponents.context().runtime();
     return runtime.getProduct() == SonarProduct.SONARLINT
       // POC version introducing quickfix
-      && ((SonarLintRuntime) runtime).getSonarLintPluginApiVersion().equals(Version.parse("6.3.0.34934"));
+      && ((SonarLintRuntime) runtime).getSonarLintPluginApiVersion().equals(Version.parse("6.3.0.35094"));
   }
 
   public JavaCheck rule() {
