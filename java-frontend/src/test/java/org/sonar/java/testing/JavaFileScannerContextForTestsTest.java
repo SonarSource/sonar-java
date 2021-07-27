@@ -38,24 +38,31 @@ import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.java.reporting.FluentReporting;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class JavaFileScannerContextForTestsTest {
 
+  private static final JavaCheck CHECK = new DummyRule();
   private static JavaFileScannerContextForTests context;
-  private static JavaTree.CompilationUnitTreeImpl cut;
+  private static ClassTree classA;
+  private static ClassTree classB;
   private static InputFile inputFile;
 
   @BeforeAll
   static void setup() {
-    cut = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(
+    JavaTree.CompilationUnitTreeImpl cut = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(
       "package orf.foo;\n"
       + "class A {}\n"
       + "class B {}\n");
+    classA = (ClassTree) cut.types().get(0);
+    classB = (ClassTree) cut.types().get(1);
+
     inputFile = TestUtils.emptyInputFile("");
     JavaVersionImpl javaVersion = new JavaVersionImpl();
     SensorContextTester sensorContext = SensorContextTester.create(new File("."));
@@ -78,54 +85,50 @@ class JavaFileScannerContextForTestsTest {
   }
 
   @Test
+  void test_issue_can_be_reported_only_once() {
+    FluentReporting.JavaIssueBuilder builder = context.newIssue()
+      .forRule(CHECK)
+      .onTree(classA)
+      .withMessage("msg");
+    builder.report();
+
+    IllegalStateException exception = assertThrows(IllegalStateException.class, () -> builder.report());
+    assertThat(exception).hasMessage("Can only be reported once.");
+  }
+
+  @Test
   void reportIssue_on_tree() {
-    ClassTree classA = (ClassTree) cut.types().get(0);
-
-    DummyVisitor javaCheck = new DummyVisitor();
-    String message = "issue on A";
-
-    context.reportIssue(javaCheck, classA, message);
+    context.reportIssue(CHECK, classA, "issue on A");
 
     Set<AnalyzerMessage> issues = context.getIssues();
     assertThat(issues).hasSize(1);
     AnalyzerMessage issue = issues.iterator().next();
 
-    assertThat(issue.getCheck()).isInstanceOf(DummyVisitor.class);
-    assertThat(issue.getMessage()).isEqualTo(message);
+    assertThat(issue.getCheck()).isInstanceOf(DummyRule.class);
+    assertThat(issue.getMessage()).isEqualTo("issue on A");
     assertThat(issue.getInputComponent()).isEqualTo(inputFile);
     assertThat(issue.getLine()).isEqualTo(2);
     assertThat(issue.getCost()).isNull();
     assertThat(issue.flows).isEmpty();
-
-    AnalyzerMessage.TextSpan primaryLocation = issue.primaryLocation();
-    assertThat(primaryLocation).isNotNull();
-    assertThat(primaryLocation.startLine).isEqualTo(2);
-    assertThat(primaryLocation.startCharacter).isZero();
-    assertThat(primaryLocation.endLine).isEqualTo(2);
-    assertThat(primaryLocation.endCharacter).isEqualTo(10);
+    assertPosition(issue.primaryLocation(), 2, 0, 2, 10);
   }
 
   @ParameterizedTest
   @ValueSource(booleans = {true, false})
   void reportIssue_on_tree_with_secondaries(boolean withSecondariesAndCost) {
-    ClassTree classA = (ClassTree) cut.types().get(0);
-
-    DummyVisitor javaCheck = new DummyVisitor();
-    String message = "issue on A";
-
     JavaFileScannerContext.Location location1 = new JavaFileScannerContext.Location("secondary message on }", classA.closeBraceToken());
     JavaFileScannerContext.Location location2 = new JavaFileScannerContext.Location("secondary message on {", classA.openBraceToken());
     List<JavaFileScannerContext.Location> secondaries = withSecondariesAndCost ? Arrays.asList(location1, location2) : Collections.emptyList();
     Integer cost = withSecondariesAndCost ? 42 : null;
 
-    context.reportIssue(javaCheck, classA, message, secondaries, cost);
+    context.reportIssue(CHECK, classA, "issue on A", secondaries, cost);
 
     Set<AnalyzerMessage> issues = context.getIssues();
     assertThat(issues).hasSize(1);
     AnalyzerMessage issue = issues.iterator().next();
 
-    assertThat(issue.getCheck()).isInstanceOf(DummyVisitor.class);
-    assertThat(issue.getMessage()).isEqualTo(message);
+    assertThat(issue.getCheck()).isInstanceOf(DummyRule.class);
+    assertThat(issue.getMessage()).isEqualTo("issue on A");
     assertThat(issue.getInputComponent()).isEqualTo(inputFile);
     assertThat(issue.getLine()).isEqualTo(2);
 
@@ -140,66 +143,42 @@ class JavaFileScannerContextForTestsTest {
        assertThat(issue.getCost()).isNull();
        assertThat(issue.flows).isEmpty();
      }
-
-     AnalyzerMessage.TextSpan primaryLocation = issue.primaryLocation();
-     assertThat(primaryLocation).isNotNull();
-     assertThat(primaryLocation.startLine).isEqualTo(2);
-     assertThat(primaryLocation.startCharacter).isZero();
-     assertThat(primaryLocation.endLine).isEqualTo(2);
-     assertThat(primaryLocation.endCharacter).isEqualTo(10);
+     assertPosition(issue.primaryLocation(), 2, 0, 2, 10);
   }
 
   @Test
   void reportIssue_between_trees() {
-    ClassTree classA = (ClassTree) cut.types().get(0);
-    ClassTree classB = (ClassTree) cut.types().get(1);
-
-    DummyVisitor javaCheck = new DummyVisitor();
-    String message = "issue on A and B";
-
-    context.reportIssue(javaCheck, classA, classB, message);
+    context.reportIssue(CHECK, classA, classB, "issue on A and B");
 
     Set<AnalyzerMessage> issues = context.getIssues();
     assertThat(issues).hasSize(1);
     AnalyzerMessage issue = issues.iterator().next();
 
-    assertThat(issue.getCheck()).isInstanceOf(DummyVisitor.class);
-    assertThat(issue.getMessage()).isEqualTo(message);
+    assertThat(issue.getCheck()).isInstanceOf(DummyRule.class);
+    assertThat(issue.getMessage()).isEqualTo("issue on A and B");
     assertThat(issue.getInputComponent()).isEqualTo(inputFile);
     assertThat(issue.getLine()).isEqualTo(2);
     assertThat(issue.getCost()).isNull();
     assertThat(issue.flows).isEmpty();
-
-    AnalyzerMessage.TextSpan primaryLocation = issue.primaryLocation();
-    assertThat(primaryLocation).isNotNull();
-    assertThat(primaryLocation.startLine).isEqualTo(2);
-    assertThat(primaryLocation.startCharacter).isZero();
-    assertThat(primaryLocation.endLine).isEqualTo(3);
-    assertThat(primaryLocation.endCharacter).isEqualTo(10);
+    assertPosition(issue.primaryLocation(), 2, 0, 3, 10);
   }
 
   @ParameterizedTest
   @ValueSource(booleans = {true, false})
   void reportIssue_between_trees_with_secondaries(boolean withSecondariesAndCost) {
-    ClassTree classA = (ClassTree) cut.types().get(0);
-    ClassTree classB = (ClassTree) cut.types().get(1);
-
-    DummyVisitor javaCheck = new DummyVisitor();
-    String message = "issue on A and B";
-
     JavaFileScannerContext.Location location1 = new JavaFileScannerContext.Location("secondary message on }", classA.closeBraceToken());
     JavaFileScannerContext.Location location2 = new JavaFileScannerContext.Location("secondary message on {", classA.openBraceToken());
     List<JavaFileScannerContext.Location> secondaries = withSecondariesAndCost ? Arrays.asList(location1, location2) : Collections.emptyList();
     Integer cost = withSecondariesAndCost ? 42 : null;
 
-    context.reportIssue(javaCheck, classA, classB, message, secondaries, cost);
+    context.reportIssue(CHECK, classA, classB, "issue on A and B", secondaries, cost);
 
     Set<AnalyzerMessage> issues = context.getIssues();
     assertThat(issues).hasSize(1);
     AnalyzerMessage issue = issues.iterator().next();
 
-    assertThat(issue.getCheck()).isInstanceOf(DummyVisitor.class);
-    assertThat(issue.getMessage()).isEqualTo(message);
+    assertThat(issue.getCheck()).isInstanceOf(DummyRule.class);
+    assertThat(issue.getMessage()).isEqualTo("issue on A and B");
     assertThat(issue.getInputComponent()).isEqualTo(inputFile);
     assertThat(issue.getLine()).isEqualTo(2);
 
@@ -214,36 +193,25 @@ class JavaFileScannerContextForTestsTest {
       assertThat(issue.getCost()).isNull();
       assertThat(issue.flows).isEmpty();
     }
-
-    AnalyzerMessage.TextSpan primaryLocation = issue.primaryLocation();
-    assertThat(primaryLocation).isNotNull();
-    assertThat(primaryLocation.startLine).isEqualTo(2);
-    assertThat(primaryLocation.startCharacter).isZero();
-    assertThat(primaryLocation.endLine).isEqualTo(3);
-    assertThat(primaryLocation.endCharacter).isEqualTo(10);
+    assertPosition(issue.primaryLocation(), 2, 0, 3, 10);
   }
 
   @ParameterizedTest
   @ValueSource(booleans = {true, false})
   void reportIssue_between_trees_with_flows(boolean withFlowsAndCost) {
-    ClassTree classA = (ClassTree) cut.types().get(0);
-
-    DummyVisitor javaCheck = new DummyVisitor();
-    String message = "issue on A";
-
     JavaFileScannerContext.Location location1 = new JavaFileScannerContext.Location("secondary message on }", classA.closeBraceToken());
     JavaFileScannerContext.Location location2 = new JavaFileScannerContext.Location("secondary message on {", classA.openBraceToken());
     Iterable<List<JavaFileScannerContext.Location>> flows = withFlowsAndCost ? Collections.singletonList(Arrays.asList(location1, location2)) : Collections.emptyList();
     Integer cost = withFlowsAndCost ? 42 : null;
 
-    context.reportIssueWithFlow(javaCheck, classA, message, flows, cost);
+    context.reportIssueWithFlow(CHECK, classA, "issue on A", flows, cost);
 
     Set<AnalyzerMessage> issues = context.getIssues();
     assertThat(issues).hasSize(1);
     AnalyzerMessage issue = issues.iterator().next();
 
-    assertThat(issue.getCheck()).isInstanceOf(DummyVisitor.class);
-    assertThat(issue.getMessage()).isEqualTo(message);
+    assertThat(issue.getCheck()).isInstanceOf(DummyRule.class);
+    assertThat(issue.getMessage()).isEqualTo("issue on A");
     assertThat(issue.getInputComponent()).isEqualTo(inputFile);
     assertThat(issue.getLine()).isEqualTo(2);
 
@@ -258,18 +226,16 @@ class JavaFileScannerContextForTestsTest {
       assertThat(issue.getCost()).isNull();
       assertThat(issue.flows).isEmpty();
     }
-
-    AnalyzerMessage.TextSpan primaryLocation = issue.primaryLocation();
-    assertThat(primaryLocation).isNotNull();
-    assertThat(primaryLocation.startLine).isEqualTo(2);
-    assertThat(primaryLocation.startCharacter).isZero();
-    assertThat(primaryLocation.endLine).isEqualTo(2);
-    assertThat(primaryLocation.endCharacter).isEqualTo(10);
+    assertPosition(issue.primaryLocation(), 2, 0, 2, 10);
   }
 
-  private static class DummyVisitor implements JavaFileScanner {
-    @Override
-    public void scanFile(JavaFileScannerContext context) { }
+  private static void assertPosition(AnalyzerMessage.TextSpan location, int startLine, int startColumn, int endLine, int endColumn) {
+    assertThat(location).isNotNull();
+    assertThat(location.startLine).isEqualTo(startLine);
+    assertThat(location.startCharacter).isEqualTo(startColumn);
+    assertThat(location.endLine).isEqualTo(endLine);
+    assertThat(location.endCharacter).isEqualTo(endColumn);
   }
 
+  private static class DummyRule implements JavaCheck { }
 }

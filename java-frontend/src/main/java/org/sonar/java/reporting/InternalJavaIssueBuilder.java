@@ -60,10 +60,12 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
   private List<List<JavaFileScannerContext.Location>> flows;
   @Nullable
   private Integer cost;
+  private boolean reported;
 
   public InternalJavaIssueBuilder(InputFile inputFile, @Nullable SonarComponents sonarComponents) {
     this.inputFile = inputFile;
     this.sonarComponents = sonarComponents;
+    this.reported = false;
   }
 
   private static void requiresValueToBeSet(Object target, String targetName) {
@@ -79,7 +81,7 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
   }
 
   @Override
-  public InternalJavaIssueBuilder forRule(JavaCheck rule) {
+  public final InternalJavaIssueBuilder forRule(JavaCheck rule) {
     requiresSetOnlyOnce(this.rule, RULE_NAME);
 
     this.rule = rule;
@@ -87,12 +89,12 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
   }
 
   @Override
-  public InternalJavaIssueBuilder onTree(Tree tree) {
+  public final InternalJavaIssueBuilder onTree(Tree tree) {
     return onRange(AnalyzerMessage.textSpanFor(tree));
   }
 
   @Override
-  public InternalJavaIssueBuilder onRange(Tree from, Tree to) {
+  public final InternalJavaIssueBuilder onRange(Tree from, Tree to) {
     return onRange(AnalyzerMessage.textSpanBetween(from, to));
   }
 
@@ -105,7 +107,7 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
   }
 
   @Override
-  public InternalJavaIssueBuilder withMessage(String message) {
+  public final InternalJavaIssueBuilder withMessage(String message) {
     requiresValueToBeSet(this.textSpan, TEXT_SPAN_NAME);
     requiresSetOnlyOnce(this.message, MESSAGE_NAME);
 
@@ -114,7 +116,7 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
   }
 
   @Override
-  public InternalJavaIssueBuilder withMessage(String message, Object... args) {
+  public final InternalJavaIssueBuilder withMessage(String message, Object... args) {
     requiresValueToBeSet(this.textSpan, TEXT_SPAN_NAME);
     requiresSetOnlyOnce(this.message, MESSAGE_NAME);
 
@@ -123,12 +125,12 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
   }
 
   @Override
-  public InternalJavaIssueBuilder withSecondaries(JavaFileScannerContext.Location... secondaries) {
+  public final InternalJavaIssueBuilder withSecondaries(JavaFileScannerContext.Location... secondaries) {
     return withSecondaries(Arrays.asList(secondaries));
   }
 
   @Override
-  public InternalJavaIssueBuilder withSecondaries(List<JavaFileScannerContext.Location> secondaries) {
+  public final InternalJavaIssueBuilder withSecondaries(List<JavaFileScannerContext.Location> secondaries) {
     requiresValueToBeSet(this.message, MESSAGE_NAME);
     requiresValueNotToBeSet(this.flows, FLOWS_NAME, SECONDARIES_NAME);
     requiresSetOnlyOnce(this.secondaries, SECONDARIES_NAME);
@@ -138,7 +140,7 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
   }
 
   @Override
-  public InternalJavaIssueBuilder withFlows(List<List<JavaFileScannerContext.Location>> flows) {
+  public final InternalJavaIssueBuilder withFlows(List<List<JavaFileScannerContext.Location>> flows) {
     requiresValueToBeSet(this.message, MESSAGE_NAME);
     requiresValueNotToBeSet(this.secondaries, SECONDARIES_NAME, FLOWS_NAME);
     requiresSetOnlyOnce(this.flows, FLOWS_NAME);
@@ -148,7 +150,7 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
   }
 
   @Override
-  public InternalJavaIssueBuilder withCost(int cost) {
+  public final InternalJavaIssueBuilder withCost(int cost) {
     requiresValueToBeSet(this.message, MESSAGE_NAME);
     requiresSetOnlyOnce(this.cost, "cost");
 
@@ -157,7 +159,8 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
   }
 
   @Override
-  public void build() {
+  public void report() {
+    Preconditions.checkState(!reported, "Can only be reported once.");
     requiresValueToBeSet(rule, RULE_NAME);
     requiresValueToBeSet(textSpan, TEXT_SPAN_NAME);
     requiresValueToBeSet(message, MESSAGE_NAME);
@@ -203,6 +206,7 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
     }
 
     newIssue.save();
+    reported = true;
   }
 
   private static TextRange range(InputFile file, JavaFileScannerContext.Location location) {

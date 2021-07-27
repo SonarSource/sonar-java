@@ -71,7 +71,7 @@ public class SwitchCasesShouldBeCommaSeparatedCheck extends SubscriptionVisitor 
           .onTree(lastLabel)
           .withMessage(MESSAGE)
           .withSecondaries(caseLabels.stream().map(label -> new JavaFileScannerContext.Location("", label)).collect(Collectors.toList()))
-          .build();
+          .report();
       }
 
     }

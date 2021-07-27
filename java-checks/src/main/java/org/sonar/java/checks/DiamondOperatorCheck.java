@@ -92,7 +92,7 @@ public class DiamondOperatorCheck extends SubscriptionVisitor implements JavaVer
         .forRule(this)
         .onTree(((ParameterizedTypeTree) newTypeTree).typeArguments())
         .withMessage("Replace the type specification in this constructor call with the diamond operator (\"<>\").%s", context.getJavaVersion().java7CompatibilityMessage())
-        .build();
+        .report();
     }
   }
 

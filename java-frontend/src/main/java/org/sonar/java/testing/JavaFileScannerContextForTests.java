@@ -70,7 +70,7 @@ public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContex
       .forRule(javaCheck)
       .onTree(tree)
       .withMessage(message)
-      .build();
+      .report();
   }
 
   @Override
@@ -82,7 +82,7 @@ public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContex
       .withMessage(message)
       .withSecondaries(secondary)
       .withCost(cost == null ? 0 : cost)
-      .build();
+      .report();
   }
 
   @Override
@@ -92,7 +92,7 @@ public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContex
       .forRule(javaCheck)
       .onRange(startTree, endTree)
       .withMessage(message)
-      .build();
+      .report();
   }
 
   @Override
@@ -104,7 +104,7 @@ public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContex
       .withMessage(message)
       .withSecondaries(secondary)
       .withCost(cost == null ? 0 : cost)
-      .build();
+      .report();
   }
 
   @Override
@@ -116,7 +116,7 @@ public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContex
       .withMessage(message)
       .withFlows(StreamSupport.stream(flows.spliterator(), false).collect(Collectors.toList()))
       .withCost(cost == null ? 0 : cost)
-      .build();
+      .report();
   }
 
   @Override

@@ -139,7 +139,7 @@ public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileSca
         .forRule(this)
         .onTree(syntaxToken)
         .withMessage("Remove this %s statement from this finally block.", syntaxToken.text())
-        .build();
+        .report();
     }
   }
 

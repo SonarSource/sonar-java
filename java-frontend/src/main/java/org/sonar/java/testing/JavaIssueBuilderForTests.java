@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.java.Preconditions;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -32,14 +33,17 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 public class JavaIssueBuilderForTests extends InternalJavaIssueBuilder {
 
   private final Set<AnalyzerMessage> issues;
+  private boolean reported;
 
   public JavaIssueBuilderForTests(InputFile inputFile, Set<AnalyzerMessage> issues) {
     super(inputFile, null);
     this.issues = issues;
+    this.reported = false;
   }
 
   @Override
-  public void build() {
+  public void report() {
+    Preconditions.checkState(!reported, "Can only be reported once.");
     JavaCheck rule = rule();
     InputFile inputFile = inputFile();
     AnalyzerMessage issue = new AnalyzerMessage(rule, inputFile, textSpan(), message(), cost().orElse(0));
@@ -54,6 +58,7 @@ public class JavaIssueBuilderForTests extends InternalJavaIssueBuilder {
       .ifPresent(issue.flows::addAll);
 
     issues.add(issue);
+    reported = true;
   }
 
   private static List<List<JavaFileScannerContext.Location>> toSingletonList(List<JavaFileScannerContext.Location> secondaries) {

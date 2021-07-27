@@ -50,6 +50,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -85,14 +86,25 @@ class InternalJavaIssueBuilderTest {
   }
 
   @Test
-  void test_build_issue_with_cost() {
+  void test_issue_can_be_reported_only_once() {
+    builder.forRule(CHECK)
+      .onTree(compilationUnitTree)
+      .withMessage("msg")
+      .report();
+
+    IllegalStateException exception = assertThrows(IllegalStateException.class, () -> builder.report());
+    assertThat(exception).hasMessage("Can only be reported once.");
+  }
+
+  @Test
+  void test_report_issue_with_cost() {
     ClassTree tree = (ClassTree) compilationUnitTree.types().get(0);
 
     builder.forRule(CHECK)
       .onTree(tree.simpleName())
       .withMessage("msg")
       .withCost(COST)
-      .build();
+      .report();
 
     Collection<Issue> issues = sensorContextTester.allIssues();
     assertThat(issues).hasSize(1);
@@ -109,14 +121,14 @@ class InternalJavaIssueBuilderTest {
   }
 
   @Test
-  void test_build_issue_with_formated_message() {
+  void test_report_issue_with_formated_message() {
     ClassTree tree = (ClassTree) compilationUnitTree.types().get(0);
 
     builder.forRule(CHECK)
       .onTree(tree.simpleName())
       .withMessage("msg %d %s %d", 42, "yolo", -1)
       .withCost(COST)
-      .build();
+      .report();
 
     Collection<Issue> issues = sensorContextTester.allIssues();
     assertThat(issues).hasSize(1);
@@ -133,7 +145,7 @@ class InternalJavaIssueBuilderTest {
   }
 
   @Test
-  void test_build_issue_with_secondary() {
+  void test_report_issue_with_secondary() {
     ClassTree tree = (ClassTree) compilationUnitTree.types().get(0);
     Tree firstMember = tree.members().get(0);
     Tree secondMember = tree.members().get(1);
@@ -143,7 +155,7 @@ class InternalJavaIssueBuilderTest {
       .withMessage("msg")
       .withSecondaries(new JavaFileScannerContext.Location("secondary1", firstMember),
         new JavaFileScannerContext.Location("secondary2", secondMember))
-      .build();
+      .report();
 
     Collection<Issue> issues = sensorContextTester.allIssues();
     assertThat(issues).hasSize(1);
@@ -164,7 +176,7 @@ class InternalJavaIssueBuilderTest {
   }
 
   @Test
-  void test_build_issue_with_flows() {
+  void test_report_issue_with_flows() {
     ClassTree tree = (ClassTree) compilationUnitTree.types().get(0);
     Tree firstMember = tree.members().get(0);
     Tree secondMember = tree.members().get(1);
@@ -179,7 +191,7 @@ class InternalJavaIssueBuilderTest {
             new JavaFileScannerContext.Location("location2", secondMember)
           )
         )
-      ).build();
+      ).report();
 
     Collection<Issue> issues = sensorContextTester.allIssues();
     assertThat(issues).hasSize(1);
@@ -202,13 +214,13 @@ class InternalJavaIssueBuilderTest {
   }
 
   @Test
-  void test_build_issue_on_range() {
+  void test_report_issue_on_range() {
     ClassTree tree = (ClassTree) compilationUnitTree.types().get(0);
     Tree member = tree.members().get(0);
     builder.forRule(CHECK)
       .onRange(member.firstToken(), member.lastToken())
       .withMessage("msg")
-      .build();
+      .report();
 
     Collection<Issue> issues = sensorContextTester.allIssues();
     assertThat(issues).hasSize(1);
@@ -268,7 +280,7 @@ class InternalJavaIssueBuilderTest {
     builder.forRule(CHECK)
       .onTree(compilationUnitTree.types().get(0))
       .withMessage("msg")
-      .build();
+      .report();
 
     assertThat(logTester.logs(LoggerLevel.TRACE)).containsExactly("SonarComponents is not set - discarding issue");
   }
@@ -281,7 +293,7 @@ class InternalJavaIssueBuilderTest {
     builder.forRule(CHECK)
       .onTree(compilationUnitTree.types().get(0))
       .withMessage("msg")
-      .build();
+      .report();
 
     assertThat(logTester.logs(LoggerLevel.TRACE)).containsExactly("Rule not enabled - discarding issue");
   }
@@ -311,9 +323,7 @@ class InternalJavaIssueBuilderTest {
     builder = builder.forRule(CHECK)
       .onTree(tree.simpleName())
       .withMessage("msg")
-      .withFlows(
-        Collections.singletonList(Collections.singletonList(location))
-      );
+      .withFlows(Collections.singletonList(Collections.singletonList(location)));
 
     assertThatThrownBy(() -> builder.withSecondaries(location))
       .hasMessage("Cannot set flows when secondaries is already set.")

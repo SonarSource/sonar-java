@@ -52,6 +52,6 @@ public interface FluentReporting {
 
     JavaIssueBuilder withCost(int cost);
 
-    void build();
+    void report();
   }
 }
