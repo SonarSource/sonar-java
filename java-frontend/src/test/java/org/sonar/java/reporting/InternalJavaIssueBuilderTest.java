@@ -298,7 +298,7 @@ class InternalJavaIssueBuilderTest {
       .withSecondaries(location);
     List<List<JavaFileScannerContext.Location>> flows = Collections.singletonList(Collections.singletonList(location));
     assertThatThrownBy(() -> builder.withFlows(flows))
-      .hasMessage("Cannot set flows and secondaries at the same time.")
+      .hasMessage("Cannot set secondaries when flows is already set.")
       .isOfAnyClassIn(IllegalStateException.class);
   }
 
@@ -316,7 +316,7 @@ class InternalJavaIssueBuilderTest {
       );
 
     assertThatThrownBy(() -> builder.withSecondaries(location))
-      .hasMessage("Cannot set flows and secondaries at the same time.")
+      .hasMessage("Cannot set flows when secondaries is already set.")
       .isOfAnyClassIn(IllegalStateException.class);
   }
 

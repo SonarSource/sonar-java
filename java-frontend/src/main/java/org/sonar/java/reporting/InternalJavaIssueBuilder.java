@@ -39,9 +39,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilder {
 
-  private static final String MESSAGE_NAME = "message";
-  private static final String TEXT_SPAN_NAME = "position";
   private static final String RULE_NAME = "rule";
+  private static final String TEXT_SPAN_NAME = "position";
+  private static final String MESSAGE_NAME = "message";
+  private static final String FLOWS_NAME = "flows";
+  private static final String SECONDARIES_NAME = "secondaries";
 
   private static final Logger LOG = Loggers.get(InternalJavaIssueBuilder.class);
 
@@ -64,17 +66,21 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
     this.sonarComponents = sonarComponents;
   }
 
-  private static void requiresExistence(Object field, String name) {
-    Preconditions.checkState(field != null, String.format("A %s must be set first.", name));
+  private static void requiresValueToBeSet(Object target, String targetName) {
+    Preconditions.checkState(target != null, String.format("A %s must be set first.", targetName));
   }
 
-  private static void requiresUniquess(Object field, String name) {
-    Preconditions.checkState(field == null, String.format("Cannot set %s multiple times.", name));
+  private static void requiresValueNotToBeSet(Object target, String targetName, String otherName) {
+    Preconditions.checkState(target == null, String.format("Cannot set %s when %s is already set.", targetName, otherName));
+  }
+
+  private static void requiresSetOnlyOnce(Object target, String targetName) {
+    Preconditions.checkState(target == null, String.format("Cannot set %s multiple times.", targetName));
   }
 
   @Override
   public InternalJavaIssueBuilder forRule(JavaCheck rule) {
-    requiresUniquess(this.rule, RULE_NAME);
+    requiresSetOnlyOnce(this.rule, RULE_NAME);
 
     this.rule = rule;
     return this;
@@ -91,8 +97,8 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
   }
 
   private InternalJavaIssueBuilder onRange(AnalyzerMessage.TextSpan range) {
-    requiresExistence(this.rule, RULE_NAME);
-    requiresUniquess(this.textSpan, TEXT_SPAN_NAME);
+    requiresValueToBeSet(this.rule, RULE_NAME);
+    requiresSetOnlyOnce(this.textSpan, TEXT_SPAN_NAME);
 
     this.textSpan = range;
     return this;
@@ -100,8 +106,8 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
 
   @Override
   public InternalJavaIssueBuilder withMessage(String message) {
-    requiresExistence(this.textSpan, TEXT_SPAN_NAME);
-    requiresUniquess(this.message, MESSAGE_NAME);
+    requiresValueToBeSet(this.textSpan, TEXT_SPAN_NAME);
+    requiresSetOnlyOnce(this.message, MESSAGE_NAME);
 
     this.message = message;
     return this;
@@ -109,8 +115,8 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
 
   @Override
   public InternalJavaIssueBuilder withMessage(String message, Object... args) {
-    requiresExistence(this.textSpan, TEXT_SPAN_NAME);
-    requiresUniquess(this.message, MESSAGE_NAME);
+    requiresValueToBeSet(this.textSpan, TEXT_SPAN_NAME);
+    requiresSetOnlyOnce(this.message, MESSAGE_NAME);
 
     this.message = String.format(message, args);
     return this;
@@ -123,9 +129,9 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
 
   @Override
   public InternalJavaIssueBuilder withSecondaries(List<JavaFileScannerContext.Location> secondaries) {
-    requiresExistence(this.message, MESSAGE_NAME);
-    requiresUniquess(this.secondaries, "secondaries");
-    Preconditions.checkState(this.flows == null, "Cannot set flows and secondaries at the same time.");
+    requiresValueToBeSet(this.message, MESSAGE_NAME);
+    requiresValueNotToBeSet(this.flows, FLOWS_NAME, SECONDARIES_NAME);
+    requiresSetOnlyOnce(this.secondaries, SECONDARIES_NAME);
 
     this.secondaries = Collections.unmodifiableList(secondaries);
     return this;
@@ -133,9 +139,9 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
 
   @Override
   public InternalJavaIssueBuilder withFlows(List<List<JavaFileScannerContext.Location>> flows) {
-    requiresExistence(this.message, MESSAGE_NAME);
-    requiresUniquess(this.flows, "flows");
-    Preconditions.checkState(this.secondaries == null, "Cannot set flows and secondaries at the same time.");
+    requiresValueToBeSet(this.message, MESSAGE_NAME);
+    requiresValueNotToBeSet(this.secondaries, SECONDARIES_NAME, FLOWS_NAME);
+    requiresSetOnlyOnce(this.flows, FLOWS_NAME);
 
     this.flows = Collections.unmodifiableList(flows);
     return this;
@@ -143,8 +149,8 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
 
   @Override
   public InternalJavaIssueBuilder withCost(int cost) {
-    requiresExistence(this.message, MESSAGE_NAME);
-    requiresUniquess(this.cost, "cost");
+    requiresValueToBeSet(this.message, MESSAGE_NAME);
+    requiresSetOnlyOnce(this.cost, "cost");
 
     this.cost = cost;
     return this;
@@ -152,9 +158,9 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
 
   @Override
   public void build() {
-    requiresExistence(this.rule, RULE_NAME);
-    requiresExistence(this.textSpan, TEXT_SPAN_NAME);
-    requiresExistence(this.message, MESSAGE_NAME);
+    requiresValueToBeSet(rule, RULE_NAME);
+    requiresValueToBeSet(textSpan, TEXT_SPAN_NAME);
+    requiresValueToBeSet(message, MESSAGE_NAME);
 
     if (sonarComponents == null) {
       // can be noisy , so using trace only.
@@ -179,6 +185,7 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
         .message(message));
 
     if (secondaries != null) {
+      // Transform secondaries into flows: List(size:N)<Location> -> List(size:N)<List(size:1)<Location>>"
       flows = secondaries.stream().map(Collections::singletonList).collect(Collectors.toList());
       // Keep secondaries and flows mutually exclusive.
       secondaries = null;
