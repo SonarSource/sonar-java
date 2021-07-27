@@ -200,9 +200,6 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
 
   private static TextRange range(InputFile file, JavaFileScannerContext.Location location) {
     AnalyzerMessage.TextSpan textSpan = AnalyzerMessage.textSpanFor(location.syntaxNode);
-    if (textSpan.onLine()) {
-      return file.selectLine(textSpan.startLine);
-    }
     return file.newRange(textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
   }
 
