@@ -19,7 +19,10 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Deque;
+import java.util.LinkedList;
 import org.sonar.check.Rule;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -38,18 +41,15 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
-import java.util.Deque;
-import java.util.LinkedList;
-
 @Rule(key = "S1143")
 public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private final Deque<Tree.Kind> treeKindStack = new LinkedList<>();
-  private JavaFileScannerContext context;
+  private DefaultJavaFileScannerContext context;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
+    this.context = (DefaultJavaFileScannerContext) context;
     treeKindStack.clear();
     scan(context.getTree());
   }
@@ -135,7 +135,11 @@ public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileSca
 
   private void reportIssue(SyntaxToken syntaxToken, Tree.Kind jumpKind) {
     if (isAbruptFinallyBlock(jumpKind)) {
-      context.reportIssue(this, syntaxToken, "Remove this " + syntaxToken.text() + " statement from this finally block.");
+      context.newIssue()
+        .forRule(this)
+        .onTree(syntaxToken)
+        .withMessage("Remove this %s statement from this finally block.", syntaxToken.text())
+        .report();
     }
   }
 

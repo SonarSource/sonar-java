@@ -25,10 +25,10 @@ import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.TestUtils;
 import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridgeForTests;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 

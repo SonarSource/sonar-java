@@ -67,6 +67,7 @@ import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
@@ -175,6 +176,7 @@ class SonarComponentsTest {
     assertThat(newSymbolTable ).isNotNull();
     verify(sensorContextTester, times(1)).newSymbolTable();
     assertThat(sonarComponents.fileLinesContextFor(inputFile)).isEqualTo(fileLinesContext);
+    assertThat(sonarComponents.context()).isSameAs(sensorContextTester);
 
     ClasspathForMain javaClasspath = mock(ClasspathForMain.class);
     List<File> list = mock(List.class);

@@ -24,6 +24,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -80,7 +81,7 @@ class DefaultJavaFileScannerContextWithSensorContextTest {
 
     // spy getRuleKey call, to avoid mocking CheckFactory and Checks
     sonarComponents = spy(sonarComponents);
-    when(sonarComponents.getRuleKey(any())).thenReturn(RuleKey.of("repository", "rule"));
+    when(sonarComponents.getRuleKey(any())).thenReturn(Optional.of(RuleKey.of("repository", "rule")));
 
     InputFile inputFile = TestUtils.inputFile("src/test/files/api/JavaFileScannerContext.java");
     CompilationUnitTree cut = JParserTestUtils.parse(inputFile.contents());

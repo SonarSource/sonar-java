@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -55,6 +56,8 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.JavaIssue;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
@@ -63,7 +66,6 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
 @ScannerSide
 @SonarLintSide
 public class SonarComponents {
-
 
   private static final Logger LOG = Loggers.get(SonarComponents.class);
   private static final int LOGGED_MAX_NUMBER_UNDEFINED_TYPES = 50;
@@ -182,7 +184,6 @@ public class SonarComponents {
   }
 
   /**
-   *
    * @return the jar of sonar-java plugin
    */
   private static File findPluginJar() {
@@ -230,14 +231,11 @@ public class SonarComponents {
     return jspChecks;
   }
 
-  public RuleKey getRuleKey(JavaCheck check) {
-    for (Checks<JavaCheck> sonarChecks : allChecks) {
-      RuleKey ruleKey = sonarChecks.ruleKey(check);
-      if (ruleKey != null) {
-        return ruleKey;
-      }
-    }
-    return null;
+  public Optional<RuleKey> getRuleKey(JavaCheck check) {
+    return allChecks.stream()
+      .map(sonarChecks -> sonarChecks.ruleKey(check))
+      .filter(Objects::nonNull)
+      .findFirst();
   }
 
   public void addIssue(InputComponent inputComponent, JavaCheck check, int line, String message, @Nullable Integer cost) {
@@ -248,16 +246,14 @@ public class SonarComponents {
     JavaCheck check = analyzerMessage.getCheck();
     Objects.requireNonNull(check);
     Objects.requireNonNull(analyzerMessage.getMessage());
-    RuleKey key = getRuleKey(check);
-    if (key == null) {
-      return;
-    }
-    InputComponent inputComponent = analyzerMessage.getInputComponent();
-    if (inputComponent == null) {
-      return;
-    }
-    Double cost = analyzerMessage.getCost();
-    reportIssue(analyzerMessage, key, inputComponent, cost);
+    getRuleKey(check).ifPresent(key -> {
+      InputComponent inputComponent = analyzerMessage.getInputComponent();
+      if (inputComponent == null) {
+        return;
+      }
+      Double cost = analyzerMessage.getCost();
+      reportIssue(analyzerMessage, key, inputComponent, cost);
+    });
   }
 
   @VisibleForTesting
@@ -374,5 +370,9 @@ public class SonarComponents {
       .sorted()
       .limit(maxLines)
       .collect(Collectors.joining(delimiter, prefix, suffix)));
+  }
+
+  public SensorContext context() {
+    return context;
   }
 }

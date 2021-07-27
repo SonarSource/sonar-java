@@ -41,12 +41,13 @@ import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.Version;
 import org.sonar.check.Rule;
-import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.checks.verifier.TestUtils;
-import org.sonar.java.model.VisitorsBridgeForTests;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.testing.JavaFileScannerContextForTests;
+import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.java.checks.verifier.FilesUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
@@ -76,7 +77,7 @@ public class FilterVerifier {
     InputFile inputFile = TestUtils.inputFile(filename);
     VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(visitors, projectClasspath, sonarComponents(inputFile));
     JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge);
-    VisitorsBridgeForTests.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
+    JavaFileScannerContextForTests testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
 
     Map<Integer, Set<String>> issuesByLines = new HashMap<>();
     Set<AnalyzerMessage> issues = testJavaFileScannerContext.getIssues();

@@ -29,14 +29,15 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.regex.RegexCache;
 import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.RegexScannerContext;
-import org.sonar.java.regex.RegexCheck.RegexIssueLocation;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.FluentReporting;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -48,7 +49,7 @@ import org.sonarsource.analyzer.commons.regex.RegexParseResult;
 import org.sonarsource.analyzer.commons.regex.ast.FlagSet;
 import org.sonarsource.analyzer.commons.regex.ast.RegexSyntaxElement;
 
-public class DefaultJavaFileScannerContext implements JavaFileScannerContext, RegexScannerContext {
+public class DefaultJavaFileScannerContext implements JavaFileScannerContext, RegexScannerContext, FluentReporting {
   private final JavaTree.CompilationUnitTreeImpl tree;
   private final boolean semanticEnabled;
   private final SonarComponents sonarComponents;
@@ -136,11 +137,11 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
   }
 
   @Override
-  public void reportIssue(RegexCheck regexCheck, Tree javaSyntaxElement, String message, @Nullable Integer cost, List<RegexIssueLocation> secondaries) {
+  public void reportIssue(RegexCheck regexCheck, Tree javaSyntaxElement, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries) {
     reportIssue(regexCheck, AnalyzerMessage.textSpanFor(javaSyntaxElement), message, cost, secondaries);
   }
 
-  private void reportIssue(RegexCheck regexCheck, AnalyzerMessage.TextSpan mainLocation, String message, @Nullable Integer cost, List<RegexIssueLocation> secondaries) {
+  private void reportIssue(RegexCheck regexCheck, AnalyzerMessage.TextSpan mainLocation, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries) {
     List<List<RegexCheck.RegexIssueLocation>> secondariesAsFlows = new ArrayList<>();
 
     secondaries.stream()
@@ -260,5 +261,10 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
       return Optional.of(((GeneratedFile) inputFile).sourceMap());
     }
     return Optional.empty();
+  }
+
+  @Override
+  public JavaIssueBuilder newIssue() {
+    return new InternalJavaIssueBuilder(inputFile, sonarComponents);
   }
 }

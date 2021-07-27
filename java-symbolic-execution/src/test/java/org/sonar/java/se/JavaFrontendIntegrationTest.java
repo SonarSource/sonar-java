@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.BeforeEach;
@@ -106,7 +107,7 @@ class JavaFrontendIntegrationTest {
 
     // spy getRuleKey call, to avoid mocking CheckFactory and Checks
     sonarComponents = Mockito.spy(sonarComponents);
-    Mockito.when(sonarComponents.getRuleKey(Mockito.any())).thenReturn(RuleKey.of("repository", "rule"));
+    Mockito.when(sonarComponents.getRuleKey(Mockito.any())).thenReturn(Optional.of(RuleKey.of("repository", "rule")));
 
     JavaFileScannerContext scannerContext = new DefaultJavaFileScannerContext(tree, inputFile, tree.sema, sonarComponents, null, true);
     scannerContext.reportIssueWithFlow(new SE0_DoesNothing(), tree, "msg", flows, null);

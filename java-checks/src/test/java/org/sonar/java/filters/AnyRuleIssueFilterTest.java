@@ -29,7 +29,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.verifier.TestUtils;
-import org.sonar.java.model.VisitorsBridgeForTests;
+import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;

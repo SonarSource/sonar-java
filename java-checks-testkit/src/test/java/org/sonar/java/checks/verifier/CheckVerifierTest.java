@@ -33,9 +33,9 @@ import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.check.Rule;
-import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -517,7 +517,7 @@ class CheckVerifierTest {
     }
 
     private FakeVisitor issueWithFlow(int line) {
-      return issueWithFlow(null, new AnalyzerMessage.TextSpan(line));
+      return issueWithFlow("default-message", new AnalyzerMessage.TextSpan(line));
     }
 
     private FakeVisitor issueWithFlow(int line, @Nullable String message, int startColumn, int endLine, int endColumn) {

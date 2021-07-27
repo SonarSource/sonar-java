@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.model;
+package org.sonar.java.testing;
 
 import java.io.File;
 import java.util.Collections;
@@ -25,9 +25,10 @@ import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.utils.Version;
-import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
+import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -66,7 +67,7 @@ class VisitorsBridgeForTestsTest {
     VisitorsBridgeForTests visitorsBridgeForTests = new VisitorsBridgeForTests(Collections.singletonList(javaCheck), sonarComponents);
     visitorsBridgeForTests.setCurrentFile(TestUtils.emptyInputFile("dummy.java"));
     visitorsBridgeForTests.visitFile(parse);
-    VisitorsBridgeForTests.TestJavaFileScannerContext lastContext = visitorsBridgeForTests.lastCreatedTestContext();
+    JavaFileScannerContextForTests lastContext = visitorsBridgeForTests.lastCreatedTestContext();
     assertThat(lastContext.getIssues()).isEmpty();
 
     AnalyzerMessage message = lastContext.createAnalyzerMessage(javaCheck, parse, "test");
