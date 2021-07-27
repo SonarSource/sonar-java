@@ -39,10 +39,10 @@ import org.sonar.java.SonarComponents;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.sonarlint.plugin.api.SonarLintRuntime;
 import org.sonarsource.sonarlint.plugin.api.issue.NewFileEdit;
 import org.sonarsource.sonarlint.plugin.api.issue.NewQuickFix;
 import org.sonarsource.sonarlint.plugin.api.issue.NewSonarLintIssue;
-import org.sonarsource.sonarlint.plugin.api.issue.NewTextEdit;
 
 public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
 
@@ -230,14 +230,11 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
 
       NewFileEdit edit = newQuickFix.newEdit().on(inputFile);
 
-      edit.addTextEdits(
-        quickFix.getTextEdits().stream()
-          .map(javaTextEdit ->
-            edit.newTextEdit().at(rangeFromTextSpan(inputFile, javaTextEdit.getTextSpan()))
-              .withNewText(javaTextEdit.getReplacement()))
-          .toArray(NewTextEdit[]::new)
-      );
-
+      quickFix.getTextEdits().stream()
+        .map(javaTextEdit ->
+          edit.newTextEdit().at(rangeFromTextSpan(inputFile, javaTextEdit.getTextSpan()))
+            .withNewText(javaTextEdit.getReplacement()))
+        .forEach(edit::addTextEdit);
       newQuickFix.addEdit(edit);
       sonarLintIssue.addQuickFix(newQuickFix);
     }
@@ -258,7 +255,7 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
     SonarRuntime runtime = sonarComponents.context().runtime();
     return runtime.getProduct() == SonarProduct.SONARLINT
       // POC version introducing quickfix
-      && runtime.getApiVersion().equals(Version.parse("6.3.0.34934"));
+      && ((SonarLintRuntime) runtime).getSonarLintPluginApiVersion().equals(Version.parse("6.3.0.34934"));
   }
 
   public JavaCheck rule() {
