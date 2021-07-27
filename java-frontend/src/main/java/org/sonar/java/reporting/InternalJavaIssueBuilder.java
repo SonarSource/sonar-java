@@ -25,10 +25,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import org.sonar.api.SonarProduct;
+import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextRange;
 import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.Preconditions;
@@ -220,7 +223,7 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
       }
     }
 
-    if (quickFix != null && isQuickFixSupported(newIssue)) {
+    if (quickFix != null && isQuickFixSupported()) {
       NewSonarLintIssue sonarLintIssue = (NewSonarLintIssue) newIssue;
       NewQuickFix newQuickFix = sonarLintIssue.newQuickFix()
         .message(quickFix.getDescription());
@@ -251,9 +254,11 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
     return file.newRange(textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
   }
 
-  private static boolean isQuickFixSupported(NewIssue newIssue) {
-    // TODO: temporary solution, change it once SonarLint provides a clear way to test it (or rely on version).
-    return newIssue instanceof NewSonarLintIssue;
+  private boolean isQuickFixSupported() {
+    SonarRuntime runtime = sonarComponents.context().runtime();
+    return runtime.getProduct() == SonarProduct.SONARLINT
+      // POC version introducing quickfix
+      && runtime.getApiVersion().equals(Version.parse("6.3.0.34934"));
   }
 
   public JavaCheck rule() {
