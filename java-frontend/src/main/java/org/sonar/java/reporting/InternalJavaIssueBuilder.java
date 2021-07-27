@@ -36,8 +36,12 @@ import org.sonar.java.SonarComponents;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.sonarlint.plugin.api.issue.NewFileEdit;
+import org.sonarsource.sonarlint.plugin.api.issue.NewQuickFix;
+import org.sonarsource.sonarlint.plugin.api.issue.NewSonarLintIssue;
+import org.sonarsource.sonarlint.plugin.api.issue.NewTextEdit;
 
-public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilder {
+public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
 
   private static final String RULE_NAME = "rule";
   private static final String TEXT_SPAN_NAME = "position";
@@ -60,6 +64,8 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
   private List<List<JavaFileScannerContext.Location>> flows;
   @Nullable
   private Integer cost;
+  @Nullable
+  private JavaQuickFix quickFix;
   private boolean reported;
 
   public InternalJavaIssueBuilder(InputFile inputFile, @Nullable SonarComponents sonarComponents) {
@@ -159,6 +165,15 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
   }
 
   @Override
+  public final InternalJavaIssueBuilder withQuickFix(JavaQuickFix quickFix) {
+    requiresValueToBeSet(this.message, MESSAGE_NAME);
+    requiresSetOnlyOnce(this.quickFix, "quick fix");
+
+    this.quickFix = quickFix;
+    return this;
+  }
+
+  @Override
   public void report() {
     Preconditions.checkState(!reported, "Can only be reported once.");
     requiresValueToBeSet(rule, RULE_NAME);
@@ -205,13 +220,40 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
       }
     }
 
+    if (quickFix != null && isQuickFixSupported(newIssue)) {
+      NewSonarLintIssue sonarLintIssue = (NewSonarLintIssue) newIssue;
+      NewQuickFix newQuickFix = sonarLintIssue.newQuickFix()
+        .message(quickFix.getDescription());
+
+      NewFileEdit edit = newQuickFix.newEdit().on(inputFile);
+
+      edit.addTextEdits(
+        quickFix.getTextEdits().stream()
+          .map(javaTextEdit ->
+            edit.newTextEdit().at(rangeFromTextSpan(inputFile, javaTextEdit.getTextSpan()))
+              .withNewText(javaTextEdit.getReplacement()))
+          .toArray(NewTextEdit[]::new)
+      );
+
+      newQuickFix.addEdit(edit);
+      sonarLintIssue.addQuickFix(newQuickFix);
+    }
+
     newIssue.save();
     reported = true;
   }
 
   private static TextRange range(InputFile file, JavaFileScannerContext.Location location) {
-    AnalyzerMessage.TextSpan textSpan = AnalyzerMessage.textSpanFor(location.syntaxNode);
+    return rangeFromTextSpan(file, AnalyzerMessage.textSpanFor(location.syntaxNode));
+  }
+
+  private static TextRange rangeFromTextSpan(InputFile file, AnalyzerMessage.TextSpan textSpan) {
     return file.newRange(textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
+  }
+
+  private static boolean isQuickFixSupported(NewIssue newIssue) {
+    // TODO: temporary solution, change it once SonarLint provides a clear way to test it (or rely on version).
+    return newIssue instanceof NewSonarLintIssue;
   }
 
   public JavaCheck rule() {
@@ -241,4 +283,9 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
   public Optional<List<List<JavaFileScannerContext.Location>>> flows() {
     return Optional.ofNullable(flows);
   }
+
+  public JavaQuickFix quickFix() {
+    return quickFix;
+  }
+
 }

@@ -109,6 +109,12 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>org.sonarsource.sonarlint.core</groupId>
+        <artifactId>sonarlint-plugin-api</artifactId>
+        <version>6.3.0.34934</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
         <groupId>org.sonarsource.sonarqube</groupId>
         <artifactId>sonar-plugin-api-impl</artifactId>
         <version>${sonar.version}</version>
