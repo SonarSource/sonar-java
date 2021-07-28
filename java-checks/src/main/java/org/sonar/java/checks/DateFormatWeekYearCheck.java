@@ -102,7 +102,6 @@ public class DateFormatWeekYearCheck extends AbstractMethodDetection {
           .addTextEdit(JavaTextEdit.replaceTree(argument, String.format("\"%s\"", datePattern.replaceFirst(firstYseq, firstYseqExpected))))
           .build())
         .report();
-      reportIssue(argument, message);
     }
   }
 }
