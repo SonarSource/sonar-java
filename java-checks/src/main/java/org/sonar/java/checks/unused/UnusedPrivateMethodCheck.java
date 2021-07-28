@@ -26,7 +26,11 @@ import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.serialization.SerializableContract;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -71,7 +75,14 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
       .filter(methodTree -> !unresolvedMethodNames.contains(methodTree.simpleName().name()))
       .forEach(methodTree -> {
         IdentifierTree simpleName = methodTree.simpleName();
-        reportIssue(simpleName, String.format("Remove this unused private \"%s\" %s.", simpleName.name(), methodTree.is(Tree.Kind.CONSTRUCTOR) ? "constructor" : "method"));
+        ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+          .forRule(this)
+          .onTree(simpleName)
+          .withMessage("Remove this unused private \"%s\" %s.", simpleName.name(), methodTree.is(Tree.Kind.CONSTRUCTOR) ? "constructor" : "method")
+          .withQuickFix(JavaQuickFix.newQuickFix("Remove the method")
+            .addTextEdit(JavaTextEdit.removeTree(methodTree))
+            .build())
+          .report();
       });
   }
 
