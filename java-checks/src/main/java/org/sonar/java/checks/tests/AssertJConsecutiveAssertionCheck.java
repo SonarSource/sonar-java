@@ -28,8 +28,12 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -144,10 +148,18 @@ public class AssertJConsecutiveAssertionCheck extends IssuableSubscriptionVisito
 
   private void reportIssueIfMultipleCalls(@Nullable AssertSubject assertSubject, List<AssertSubject> equivalentAssertions) {
     if (assertSubject != null && !equivalentAssertions.isEmpty()) {
-      reportIssue(assertSubject.methodName(),
-        "Join these multiple assertions subject to one assertion chain.",
-        equivalentAssertions.stream().map(AssertSubject::toSecondaryLocation).collect(Collectors.toList()),
-        null);
+      ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+        .forRule(this)
+        .onTree(assertSubject.methodName())
+        .withMessage("Join these multiple assertions subject to one assertion chain.")
+        .withSecondaries(equivalentAssertions.stream().map(AssertSubject::toSecondaryLocation).collect(Collectors.toList()))
+        .withQuickFix(JavaQuickFix.newQuickFix("Chain the assertions")
+          // TODO: Remove the ";" at the end of the line of each assertions, except the last one.
+          .addTextEdits(equivalentAssertions.stream()
+            .map(e -> JavaTextEdit.removeTree(e.mit))
+            .collect(Collectors.toList()))
+          .build())
+        .report();
     }
   }
 

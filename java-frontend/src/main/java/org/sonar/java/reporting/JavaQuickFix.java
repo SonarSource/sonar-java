@@ -57,6 +57,11 @@ public class JavaQuickFix {
       return this;
     }
 
+    public Builder addTextEdits(List<JavaTextEdit> textEdits) {
+      this.textEdits.addAll(textEdits);
+      return this;
+    }
+
     public JavaQuickFix build() {
       return new JavaQuickFix(description, textEdits);
     }
