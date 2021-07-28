@@ -237,7 +237,9 @@ class InternalJavaIssueBuilderTest {
     builder.forRule(CHECK)
       .onRange(member.firstToken(), member.lastToken())
       .withMessage("msg")
-      .withQuickFix(new JavaQuickFix("description", new JavaTextEdit(tree.members().get(0), "replacement")))
+      .withQuickFix(JavaQuickFix.newQuickFix("description")
+        .addTextEdit(JavaTextEdit.replaceTree(tree.members().get(0), "replacement"))
+        .build())
       .report();
 
     Collection<Issue> issues = sensorContextTester.allIssues();
@@ -246,7 +248,6 @@ class InternalJavaIssueBuilderTest {
 
     IssueLocation primaryLocation = issue.primaryLocation();
     assertPosition(primaryLocation.textRange(), 4, 2, 4, 13);
-
     // TODO: Complete this test
   }
 
@@ -286,7 +287,7 @@ class InternalJavaIssueBuilderTest {
 
   @Test
   void test_cannot_set_quick_fix_multiple_times() {
-    JavaQuickFix quickFix = new JavaQuickFix("description", Collections.emptyList());
+    JavaQuickFix quickFix = JavaQuickFix.newQuickFix("description").addTextEdit(null).build();
     builder = builder
       .forRule(CHECK)
       .onTree(compilationUnitTree)

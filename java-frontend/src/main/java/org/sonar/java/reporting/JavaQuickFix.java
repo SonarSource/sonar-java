@@ -19,18 +19,15 @@
  */
 package org.sonar.java.reporting;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class JavaQuickFix {
   private final String description;
   private final List<JavaTextEdit> textEdits;
 
-  public JavaQuickFix(String description, JavaTextEdit textEdit) {
-    this(description, Collections.singletonList(textEdit));
-  }
-
-  public JavaQuickFix(String description, List<JavaTextEdit> textEdits) {
+  private JavaQuickFix(String description, List<JavaTextEdit> textEdits) {
     this.description = description;
     this.textEdits = textEdits;
   }
@@ -41,6 +38,28 @@ public class JavaQuickFix {
 
   public List<JavaTextEdit> getTextEdits() {
     return textEdits;
+  }
+
+  public static Builder newQuickFix(String description) {
+    return new Builder(description);
+  }
+
+  public static class Builder {
+    private final String description;
+    private final List<JavaTextEdit> textEdits = new ArrayList<>();
+
+    Builder(String description) {
+      this.description = description;
+    }
+
+    public Builder addTextEdit(JavaTextEdit... textEdit) {
+      textEdits.addAll(Arrays.asList(textEdit));
+      return this;
+    }
+
+    public JavaQuickFix build() {
+      return new JavaQuickFix(description, textEdits);
+    }
   }
 
 }
