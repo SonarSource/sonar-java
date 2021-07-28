@@ -120,13 +120,13 @@ public class AssertJConsecutiveAssertionCheck extends IssuableSubscriptionVisito
       ExpressionTree expression = ((ExpressionStatementTree) statement).expression();
       if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
         // First method invocation should be an assertion predicate, if not (incomplete assertion), we will not find anything
-        return getSimpleAssertSubject(((MethodInvocationTree) expression).methodSelect());
+        return getSimpleAssertSubject(((MethodInvocationTree) expression).methodSelect(), statement);
       }
     }
     return Optional.empty();
   }
 
-  private static Optional<AssertSubject> getSimpleAssertSubject(ExpressionTree expressionTree) {
+  private static Optional<AssertSubject> getSimpleAssertSubject(ExpressionTree expressionTree, StatementTree statement) {
     if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
       ExpressionTree memberSelectExpression = ((MemberSelectExpressionTree) expressionTree).expression();
       if (memberSelectExpression.is(Tree.Kind.METHOD_INVOCATION)) {
@@ -134,12 +134,12 @@ public class AssertJConsecutiveAssertionCheck extends IssuableSubscriptionVisito
         if (ASSERT_THAT_MATCHER.matches(mit)) {
           ExpressionTree arg = mit.arguments().get(0);
           if (ExpressionsHelper.alwaysReturnSameValue(arg)) {
-            return Optional.of(new AssertSubject(mit, arg));
+            return Optional.of(new AssertSubject(mit, arg, statement));
           }
         } else if (ASSERTJ_SET_CONTEXT_METHODS.matches(mit)) {
           return Optional.empty();
         } else {
-          return getSimpleAssertSubject(mit.methodSelect());
+          return getSimpleAssertSubject(mit.methodSelect(), statement);
         }
       }
     }
@@ -155,23 +155,39 @@ public class AssertJConsecutiveAssertionCheck extends IssuableSubscriptionVisito
         .withSecondaries(equivalentAssertions.stream().map(AssertSubject::toSecondaryLocation).collect(Collectors.toList()))
         .withQuickFix(JavaQuickFix.newQuickFix("Chain the assertions")
           // TODO: Remove the ";" at the end of the line of each assertions, except the last one.
-          .addTextEdits(equivalentAssertions.stream()
-            .map(e -> JavaTextEdit.removeTree(e.mit))
-            .collect(Collectors.toList()))
+          .addTextEdits(getTextEdits(equivalentAssertions))
+          // Remove ";" of the first assertion
+          .addTextEdit(JavaTextEdit.removeTree(assertSubject.statement.lastToken()))
           .build())
         .report();
     }
+  }
+
+  private static List<JavaTextEdit> getTextEdits(List<AssertSubject> equivalentAssertions) {
+    List<JavaTextEdit> textEdits = new ArrayList<>();
+    int size = equivalentAssertions.size();
+    for (int i = 0; i < size; i++) {
+      AssertSubject subject = equivalentAssertions.get(i);
+      textEdits.add(JavaTextEdit.replaceTree(subject.mit, "  "));
+      if (i != size - 1) {
+        // Remove ";"
+        textEdits.add(JavaTextEdit.removeTree(subject.statement.lastToken()));
+      }
+    }
+    return textEdits;
   }
 
   private static class AssertSubject {
     final MethodInvocationTree mit;
     final Type assertionType;
     final ExpressionTree arg;
+    final StatementTree statement;
 
-    AssertSubject(MethodInvocationTree mit, ExpressionTree arg) {
+    AssertSubject(MethodInvocationTree mit, ExpressionTree arg, StatementTree statement) {
       this.mit = mit;
       this.assertionType = mit.symbolType().erasure();
       this.arg = arg;
+      this.statement = statement;
     }
 
     boolean hasEquivalentArgument(AssertSubject other) {
