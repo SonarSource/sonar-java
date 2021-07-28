@@ -19,7 +19,6 @@
  */
 package org.sonar.java.reporting;
 
-import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -60,20 +59,23 @@ public class JavaTextEdit {
   }
 
   public static JavaTextEdit insertAfterTree(Tree tree, String addition) {
-    return new JavaTextEdit(textSpanForToken(tree.lastToken()), addition);
+    SyntaxToken lastToken = tree.lastToken();
+    if (lastToken == null) {
+      throw new IllegalStateException("Trying to insert a quick fix after a Tree without token.");
+    }
+    int line = lastToken.line();
+    int column = lastToken.column() + lastToken.text().length();
+    return new JavaTextEdit(new AnalyzerMessage.TextSpan(line, column, line, column), addition);
   }
 
   public static JavaTextEdit insertBeforeTree(Tree tree, String addition) {
-    return new JavaTextEdit(textSpanForToken(tree.firstToken()), addition);
-  }
-
-  private static AnalyzerMessage.TextSpan textSpanForToken(@Nullable SyntaxToken token) {
-    if (token == null) {
-      throw new IllegalStateException("Trying to insert a quick fix after a Tree without token.");
+    SyntaxToken firstToken = tree.firstToken();
+    if (firstToken == null) {
+      throw new IllegalStateException("Trying to insert a quick fix before a Tree without token.");
     }
-    int line = token.line();
-    int column = token.column();
-    return new AnalyzerMessage.TextSpan(line, column, line, column);
+    int line = firstToken.line();
+    int column = firstToken.column();
+    return new JavaTextEdit(new AnalyzerMessage.TextSpan(line, column, line, column), addition);
   }
 
 }
