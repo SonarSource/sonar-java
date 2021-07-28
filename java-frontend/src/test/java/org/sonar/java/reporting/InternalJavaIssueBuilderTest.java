@@ -287,7 +287,7 @@ class InternalJavaIssueBuilderTest {
 
   @Test
   void test_cannot_set_quick_fix_multiple_times() {
-    JavaQuickFix quickFix = JavaQuickFix.newQuickFix("description").addTextEdit(null).build();
+    JavaQuickFix quickFix = JavaQuickFix.newQuickFix("description").addTextEdit().build();
     builder = builder
       .forRule(CHECK)
       .onTree(compilationUnitTree)
