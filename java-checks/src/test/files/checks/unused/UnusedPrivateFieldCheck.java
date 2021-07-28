@@ -103,3 +103,7 @@ class usageOfUnkownField {
     Object value = stuff.field4; // unknown field4
   }
 }
+
+class quickFix {
+  private Object field1; // Noncompliant {{Remove this unused "field1" private field.}}
+}

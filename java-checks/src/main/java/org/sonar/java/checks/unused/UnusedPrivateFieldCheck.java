@@ -28,8 +28,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -145,7 +149,14 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
         && onlyUsedInVariableAssignment(symbol)
         && !"serialVersionUID".equals(name)
         && !unknownIdentifiers.contains(name)) {
-        reportIssue(tree.simpleName(), "Remove this unused \"" + name + "\" private field.");
+        ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+          .forRule(this)
+          .onTree(tree.simpleName())
+          .withMessage("Remove this unused \"%s\" private field.", name)
+          .withQuickFix(JavaQuickFix.newQuickFix(String.format("Remove \"%s\".", name))
+            .addTextEdit(JavaTextEdit.removeTree(tree))
+            .build())
+          .report();
       }
     }
   }
