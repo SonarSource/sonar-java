@@ -52,6 +52,13 @@ public class JavaTextEdit {
     return new JavaTextEdit(tree, replacement);
   }
 
+  /**
+   * From startTree first token to endTree last token.
+   */
+  public static JavaTextEdit replaceBetweenTree(Tree startTree, Tree endTree, String replacement) {
+    return new JavaTextEdit(AnalyzerMessage.textSpanBetween(startTree, endTree), replacement);
+  }
+
   public static JavaTextEdit insertAfterTree(Tree tree, String addition) {
     return new JavaTextEdit(textSpanForToken(tree.lastToken()), addition);
   }
