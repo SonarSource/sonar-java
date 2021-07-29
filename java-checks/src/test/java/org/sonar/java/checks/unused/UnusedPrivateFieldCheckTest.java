@@ -34,8 +34,16 @@ class UnusedPrivateFieldCheckTest {
 
   @Test
   void test() {
-    InternalCheckVerifier.newInstance()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/unused/UnusedPrivateFieldCheck.java")
+      .withCheck(new UnusedPrivateFieldCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void testQuickFixes() {
+    InternalCheckVerifier.newInstance()
+      .onFile(testSourcesPath("checks/unused/UnusedPrivateFieldCheckWithQuickFixes.java"))
       .withCheck(new UnusedPrivateFieldCheck())
       .withQuickFixes(quickFixes())
       .verifyIssues();
@@ -52,21 +60,29 @@ class UnusedPrivateFieldCheckTest {
   private static Map<AnalyzerMessage.TextSpan, JavaQuickFix> quickFixes() {
     Map<AnalyzerMessage.TextSpan, JavaQuickFix> quickFixes = new HashMap<>();
 
-    AnalyzerMessage.TextSpan simpleField = JavaTextEdit
-      .textSpan(108, 18, 108, 24);
-    JavaQuickFix simpleFieldQuickFix = JavaQuickFix
-      .newQuickFix("Remove \"field1\".")
-      .addTextEdit(JavaTextEdit.removeTextSpan(JavaTextEdit.textSpan(108, 3, 108, 25)))
+    AnalyzerMessage.TextSpan aField = JavaTextEdit
+      .textSpan(4, 15, 4, 16);
+    JavaQuickFix aFieldQuickFix = JavaQuickFix
+      .newQuickFix("Remove \"a\".")
+      .addTextEdit(JavaTextEdit.removeTextSpan(JavaTextEdit.textSpan(4, 15, 4, 17)))
       .build();
-    quickFixes.put(simpleField, simpleFieldQuickFix);
+    quickFixes.put(aField, aFieldQuickFix);
 
-    AnalyzerMessage.TextSpan fieldWithJavadoc = JavaTextEdit
-      .textSpan(113, 24, 113, 42);
-    JavaQuickFix fieldWithJavadocQuickFix = JavaQuickFix
-      .newQuickFix("Remove \"mySuperUnusedField\".")
-      .addTextEdit(JavaTextEdit.removeTextSpan(JavaTextEdit.textSpan(113 /* FIXME 110 */, 3, 113, 50)))
+    AnalyzerMessage.TextSpan field = JavaTextEdit
+      .textSpan(10, 18, 10, 23);
+    JavaQuickFix fieldQuickFix = JavaQuickFix
+      .newQuickFix("Remove \"field\".")
+      .addTextEdit(JavaTextEdit.removeTextSpan(JavaTextEdit.textSpan(10, 3, 10, 24)))
       .build();
-    quickFixes.put(fieldWithJavadoc, fieldWithJavadocQuickFix);
+    quickFixes.put(field, fieldQuickFix);
+
+    AnalyzerMessage.TextSpan javadocField = JavaTextEdit
+      .textSpan(15, 24, 15, 36);
+    JavaQuickFix javadocFieldQuickFix = JavaQuickFix
+      .newQuickFix("Remove \"javadocField\".")
+      .addTextEdit(JavaTextEdit.removeTextSpan(JavaTextEdit.textSpan(12, 3, 15, 44)))
+      .build();
+    quickFixes.put(javadocField, javadocFieldQuickFix);
 
     return quickFixes;
   }
