@@ -35,10 +35,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import org.apache.commons.lang3.StringUtils;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -86,6 +88,8 @@ public class InternalCheckVerifier implements CheckVerifier {
   private Consumer<Set<AnalyzerMessage>> customIssueVerifier = null;
 
   private Expectations expectations = new Expectations();
+  private List<QuickFixExpectation> quickFixes;
+  private BiFunction<JavaQuickFix, String, String> quickFixApplicator;
 
   private InternalCheckVerifier() {
   }
@@ -127,6 +131,13 @@ public class InternalCheckVerifier implements CheckVerifier {
   @Beta
   public InternalCheckVerifier withQuickFixes(Map<AnalyzerMessage.TextSpan, JavaQuickFix> quickFixes) {
     return withCustomIssueVerifier(new QuickFixesVerifier(quickFixes));
+  }
+
+  @Beta
+  public InternalCheckVerifier withQuickFixes(List<QuickFixExpectation> quickFixes, BiFunction<JavaQuickFix, String, String> quickFixApplicator) {
+    this.quickFixes = quickFixes;
+    this.quickFixApplicator = quickFixApplicator;
+    return this;
   }
 
   @Override
@@ -224,6 +235,9 @@ public class InternalCheckVerifier implements CheckVerifier {
     JavaAstScanner astScanner = new JavaAstScanner(sonarComponents);
     visitorsBridge.setJavaVersion(javaVersion == null ? DEFAULT_JAVA_VERSION : javaVersion);
     astScanner.setVisitorBridge(visitorsBridge);
+
+    verifyQuickFixes(astScanner, visitorsBridge);
+
     astScanner.scan(files);
 
     JavaFileScannerContextForTests testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
@@ -231,6 +245,32 @@ public class InternalCheckVerifier implements CheckVerifier {
       ((QuickFixesVerifier) customIssueVerifier).actualQuickFixes.putAll(testJavaFileScannerContext.getQuickFixes());
     }
     checkIssues(testJavaFileScannerContext.getIssues());
+  }
+
+  private void verifyQuickFixes(JavaAstScanner astScanner, VisitorsBridgeForTests visitorsBridge) {
+    if (quickFixes != null) {
+      for (QuickFixExpectation quickFix : quickFixes) {
+        verifyQuickFix(astScanner, visitorsBridge, quickFix.getBefore(), quickFix.getAfter());
+      }
+    }
+  }
+
+  private void verifyQuickFix(JavaAstScanner astScanner, VisitorsBridgeForTests visitorsBridge, String before, String after) {
+    InputFile inputFile = InternalInputFile.inputFileWithContent("test.java", before);
+
+    astScanner.scan(Collections.singletonList(inputFile));
+    JavaFileScannerContextForTests testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
+    Collection<JavaQuickFix> quickFixes = testJavaFileScannerContext.getQuickFixes().values();
+
+    if (quickFixes.size() != 1) {
+      throw new AssertionError("One and only one quick fix should be reported.");
+    }
+
+    String quickFixed = quickFixApplicator.apply(quickFixes.iterator().next(), before);
+    if (!quickFixed.equals(after)) {
+      throw new AssertionError(String.format("Before with applied fixes is not equal to after, difference: %s",
+        StringUtils.difference(quickFixed, after)));
+    }
   }
 
   private void checkIssues(Set<AnalyzerMessage> issues) {

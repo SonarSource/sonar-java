@@ -87,6 +87,7 @@
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
     <sonar.version>8.9.0.43852</sonar.version>
+    <sonarlint.core.version>6.3.0.35094</sonarlint.core.version>
     <analyzer.commons.version>1.15.0.699</analyzer.commons.version>
     <orchestrator.version>3.35.1.2719</orchestrator.version>
     <sslr.version>1.24.0.633</sslr.version>
@@ -111,8 +112,14 @@
       <dependency>
         <groupId>org.sonarsource.sonarlint.core</groupId>
         <artifactId>sonarlint-plugin-api</artifactId>
-        <version>6.3.0.35094</version>
+        <version>${sonarlint.core.version}</version>
         <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.sonarsource.sonarlint.core</groupId>
+        <artifactId>sonarlint-core</artifactId>
+        <version>${sonarlint.core.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.sonarsource.sonarqube</groupId>

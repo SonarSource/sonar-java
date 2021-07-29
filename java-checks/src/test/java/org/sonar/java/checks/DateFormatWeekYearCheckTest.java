@@ -19,18 +19,37 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
+import org.sonar.java.checks.verifier.internal.QuickFixExpectation;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class DateFormatWeekYearCheckTest {
 
+  private final String prefix = "import java.text.SimpleDateFormat;\n"
+                              + "class A {\n";
+  private final String suffix = "\n}";
+
+  List<QuickFixExpectation> quickFixes = Arrays.asList(
+    new QuickFixExpectation(prefix, suffix)
+      .setBefore("String result = new SimpleDateFormat(\"YYYY/MM/dd\").format(\"42\");")
+       .setAfter("String result = new SimpleDateFormat(\"yyyy/MM/dd\").format(\"42\");"),
+    new QuickFixExpectation(prefix, suffix)
+      .setBefore("String result = new SimpleDateFormat(\"YYYYYYY/MM/dd\").format(\"42\");")
+       .setAfter("String result = new SimpleDateFormat(\"yyyyyyy/MM/dd\").format(\"42\");")
+  );
+
   @Test
   void test() {
-    CheckVerifier.newVerifier()
+    ((InternalCheckVerifier) CheckVerifier.newVerifier())
       .onFile(testSourcesPath("/checks/DateFormatWeekYearCheck.java"))
       .withCheck(new DateFormatWeekYearCheck())
+      .withQuickFixes(quickFixes, QuickFixHelper::quickFixApplicator)
       .verifyIssues();
   }
 }

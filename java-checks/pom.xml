@@ -28,6 +28,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.sonarsource.sonarlint.core</groupId>
+      <artifactId>sonarlint-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>java-frontend</artifactId>
       <version>${project.version}</version>
