@@ -31,10 +31,6 @@ public class JavaTextEdit {
     this.replacement = replacement;
   }
 
-  private JavaTextEdit(Tree tree, String replacement) {
-    this(AnalyzerMessage.textSpanFor(tree), replacement);
-  }
-
   public AnalyzerMessage.TextSpan getTextSpan() {
     return textSpan;
   }
@@ -44,18 +40,26 @@ public class JavaTextEdit {
   }
 
   public static JavaTextEdit removeTree(Tree tree) {
-    return new JavaTextEdit(tree, "");
+    return removeTextSpan(AnalyzerMessage.textSpanFor(tree));
+  }
+
+  public static JavaTextEdit removeTextSpan(AnalyzerMessage.TextSpan textSpan) {
+    return new JavaTextEdit(textSpan, "");
   }
 
   public static JavaTextEdit replaceTree(Tree tree, String replacement) {
-    return new JavaTextEdit(tree, replacement);
+    return replaceTextSpan(AnalyzerMessage.textSpanFor(tree), replacement);
   }
 
   /**
    * From startTree first token to endTree last token.
    */
   public static JavaTextEdit replaceBetweenTree(Tree startTree, Tree endTree, String replacement) {
-    return new JavaTextEdit(AnalyzerMessage.textSpanBetween(startTree, endTree), replacement);
+    return replaceTextSpan(AnalyzerMessage.textSpanBetween(startTree, endTree), replacement);
+  }
+
+  public static JavaTextEdit replaceTextSpan(AnalyzerMessage.TextSpan textSpan, String replacement) {
+    return new JavaTextEdit(textSpan, replacement);
   }
 
   public static JavaTextEdit insertAfterTree(Tree tree, String addition) {
@@ -63,9 +67,7 @@ public class JavaTextEdit {
     if (lastToken == null) {
       throw new IllegalStateException("Trying to insert a quick fix after a Tree without token.");
     }
-    int line = lastToken.line();
-    int column = lastToken.column() + lastToken.text().length();
-    return new JavaTextEdit(new AnalyzerMessage.TextSpan(line, column, line, column), addition);
+    return insertAtPosition(lastToken.line(), lastToken.column() + lastToken.text().length(), addition);
   }
 
   public static JavaTextEdit insertBeforeTree(Tree tree, String addition) {
@@ -73,9 +75,18 @@ public class JavaTextEdit {
     if (firstToken == null) {
       throw new IllegalStateException("Trying to insert a quick fix before a Tree without token.");
     }
-    int line = firstToken.line();
-    int column = firstToken.column();
-    return new JavaTextEdit(new AnalyzerMessage.TextSpan(line, column, line, column), addition);
+    return insertAtPosition(firstToken.line(), firstToken.column(), addition);
   }
 
+  public static JavaTextEdit insertAtPosition(int line, int column, String addition) {
+    return new JavaTextEdit(position(line, column), addition);
+  }
+
+  public static AnalyzerMessage.TextSpan position(int line, int column) {
+    return textSpan(line, column, line, column);
+  }
+
+  public static AnalyzerMessage.TextSpan textSpan(int startLine, int startColumn, int endLine, int endColumn) {
+    return new AnalyzerMessage.TextSpan(startLine, startColumn, endLine, endColumn);
+  }
 }

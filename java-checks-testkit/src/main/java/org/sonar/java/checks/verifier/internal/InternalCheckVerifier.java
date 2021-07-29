@@ -53,6 +53,8 @@ import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.java.testing.JavaFileScannerContextForTests;
 import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -81,7 +83,6 @@ public class InternalCheckVerifier implements CheckVerifier {
   private List<InputFile> files = null;
   private JavaVersion javaVersion = null;
   private List<File> classpath = null;
-
   private Consumer<Set<AnalyzerMessage>> customIssueVerifier = null;
 
   private Expectations expectations = new Expectations();
@@ -121,6 +122,11 @@ public class InternalCheckVerifier implements CheckVerifier {
     requiresNull(this.customIssueVerifier, "custom issue verifier");
     this.customIssueVerifier = customIssueVerifier;
     return this;
+  }
+
+  @Beta
+  public InternalCheckVerifier withQuickFixes(Map<AnalyzerMessage.TextSpan, JavaQuickFix> quickFixes) {
+    return withCustomIssueVerifier(new QuickFixesVerifier(quickFixes));
   }
 
   @Override
@@ -221,6 +227,9 @@ public class InternalCheckVerifier implements CheckVerifier {
     astScanner.scan(files);
 
     JavaFileScannerContextForTests testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
+    if (customIssueVerifier instanceof QuickFixesVerifier) {
+      ((QuickFixesVerifier) customIssueVerifier).actualQuickFixes.putAll(testJavaFileScannerContext.getQuickFixes());
+    }
     checkIssues(testJavaFileScannerContext.getIssues());
   }
 
@@ -554,5 +563,76 @@ public class InternalCheckVerifier implements CheckVerifier {
     };
     sonarComponents.setSensorContext(context);
     return sonarComponents;
+  }
+
+  private static class QuickFixesVerifier implements Consumer<Set<AnalyzerMessage>> {
+
+    private final Map<AnalyzerMessage.TextSpan, JavaQuickFix> expectedQuickFixes;
+    private final Map<AnalyzerMessage.TextSpan, JavaQuickFix> actualQuickFixes;
+
+    public QuickFixesVerifier(Map<AnalyzerMessage.TextSpan, JavaQuickFix> expectedQuickFixes) {
+      this.expectedQuickFixes = expectedQuickFixes;
+      this.actualQuickFixes = new HashMap<>();
+    }
+
+    @Override
+    public void accept(Set<AnalyzerMessage> issues) {
+      for (AnalyzerMessage issue : issues) {
+        AnalyzerMessage.TextSpan primaryLocation = issue.primaryLocation();
+        AnalyzerMessage.TextSpan normalizedLocation = normalizedTextSpan(primaryLocation);
+        JavaQuickFix expected = expectedQuickFixes.get(normalizedLocation);
+        if (expected == null) {
+          continue;
+        }
+        JavaQuickFix actual = actualQuickFixes.get(primaryLocation);
+        if (actual == null) {
+          throw new AssertionError(String.format("[Quick Fix] Missing quick fix for issue on line %d", primaryLocation.startLine));
+        }
+        validate(issue, actual, expected);
+      }
+    }
+
+    private static void validate(AnalyzerMessage actualIssue, JavaQuickFix actual, JavaQuickFix expected) {
+      String actualDescription = actual.getDescription();
+      String expectedDescription = expected.getDescription();
+      if (!actualDescription.equals(expectedDescription)) {
+        throw new AssertionError(String.format("[Quick Fix] Wrong description for issue on line %d.%nExpected: {{%s}}%nbut was:     {{%s}}",
+            actualIssue.getLine(),
+            expectedDescription,
+            actualDescription));
+      }
+      List<JavaTextEdit> actualTextEdits = actual.getTextEdits();
+      List<JavaTextEdit> expectedTextEdits = expected.getTextEdits();
+      if (actualTextEdits.size() != expectedTextEdits.size()) {
+        throw new AssertionError(String.format("[Quick Fix] Wrong number of steps for issue on line %d.%nExpected: {{%d}}%nbut was:     {{%d}}",
+          actualIssue.getLine(),
+          expectedTextEdits.size(),
+          actualTextEdits.size()));
+      }
+      for (int i = 0; i < actualTextEdits.size(); i++) {
+        JavaTextEdit actualTextEdit = actualTextEdits.get(i);
+        JavaTextEdit expectedTextEdit = expectedTextEdits.get(i);
+
+        if (!actualTextEdit.getReplacement().equals(expectedTextEdit.getReplacement())) {
+          throw new AssertionError(String.format("[Quick Fix] Wrong text replacement of step %d for issue on line %d.%nExpected: {{%s}}%nbut was:     {{%s}}",
+            (i + 1),
+            actualIssue.getLine(),
+            expectedTextEdit.getReplacement(),
+            actualTextEdit.getReplacement()));
+        }
+        AnalyzerMessage.TextSpan actualNormalizedTextSpan = normalizedTextSpan(actualTextEdit.getTextSpan());
+        if (!actualNormalizedTextSpan.equals(expectedTextEdit.getTextSpan())) {
+          throw new AssertionError(String.format("[Quick Fix] Wrong change location of step %d for issue on line %d.%nExpected: {{%s}}%nbut was:     {{%s}}",
+            (i + 1),
+            actualIssue.getLine(),
+            expectedTextEdit.getTextSpan(),
+            actualNormalizedTextSpan));
+        }
+      }
+    }
+
+    private static AnalyzerMessage.TextSpan normalizedTextSpan(AnalyzerMessage.TextSpan textSpan) {
+      return new AnalyzerMessage.TextSpan(textSpan.startLine, normalizeColumn(textSpan.startCharacter), textSpan.endLine, normalizeColumn(textSpan.endCharacter));
+    }
   }
 }

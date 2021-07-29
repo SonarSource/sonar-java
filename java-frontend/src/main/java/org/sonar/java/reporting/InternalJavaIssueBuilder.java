@@ -286,8 +286,8 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
     return Optional.ofNullable(flows);
   }
 
-  public JavaQuickFix quickFix() {
-    return quickFix;
+  public Optional<JavaQuickFix> quickFix() {
+    return Optional.ofNullable(quickFix);
   }
 
 }

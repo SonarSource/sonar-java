@@ -19,8 +19,14 @@
  */
 package org.sonar.java.checks.unused;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -28,9 +34,10 @@ class UnusedPrivateFieldCheckTest {
 
   @Test
   void test() {
-    CheckVerifier.newVerifier()
+    InternalCheckVerifier.newInstance()
       .onFile("src/test/files/checks/unused/UnusedPrivateFieldCheck.java")
       .withCheck(new UnusedPrivateFieldCheck())
+      .withQuickFixes(quickFixes())
       .verifyIssues();
   }
 
@@ -40,5 +47,27 @@ class UnusedPrivateFieldCheckTest {
       .onFile(testSourcesPath("checks/unused/UnusedPrivateFieldCheckWithNative.java"))
       .withCheck(new UnusedPrivateFieldCheck())
       .verifyNoIssues();
+  }
+
+  private static Map<AnalyzerMessage.TextSpan, JavaQuickFix> quickFixes() {
+    Map<AnalyzerMessage.TextSpan, JavaQuickFix> quickFixes = new HashMap<>();
+
+    AnalyzerMessage.TextSpan simpleField = JavaTextEdit
+      .textSpan(108, 18, 108, 24);
+    JavaQuickFix simpleFieldQuickFix = JavaQuickFix
+      .newQuickFix("Remove \"field1\".")
+      .addTextEdit(JavaTextEdit.removeTextSpan(JavaTextEdit.textSpan(108, 3, 108, 25)))
+      .build();
+    quickFixes.put(simpleField, simpleFieldQuickFix);
+
+    AnalyzerMessage.TextSpan fieldWithJavadoc = JavaTextEdit
+      .textSpan(113, 24, 113, 42);
+    JavaQuickFix fieldWithJavadocQuickFix = JavaQuickFix
+      .newQuickFix("Remove \"mySuperUnusedField\".")
+      .addTextEdit(JavaTextEdit.removeTextSpan(JavaTextEdit.textSpan(113 /* FIXME 110 */, 3, 113, 50)))
+      .build();
+    quickFixes.put(fieldWithJavadoc, fieldWithJavadocQuickFix);
+
+    return quickFixes;
   }
 }

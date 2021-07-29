@@ -106,4 +106,10 @@ class usageOfUnkownField {
 
 class quickFix {
   private Object field1; // Noncompliant {{Remove this unused "field1" private field.}}
+
+  /**
+   * Some javadoc
+   */
+  private final Object mySuperUnusedField = null; // Noncompliant {{Remove this unused "mySuperUnusedField" private field.}}
+
 }

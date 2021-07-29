@@ -260,7 +260,7 @@ class InternalJavaIssueBuilderTest {
     assertThat(builder.cost()).isEmpty();
     assertThat(builder.secondaries()).isEmpty();
     assertThat(builder.flows()).isEmpty();
-    assertThat(builder.quickFix()).isNull();
+    assertThat(builder.quickFix()).isEmpty();
   }
 
   @Test
