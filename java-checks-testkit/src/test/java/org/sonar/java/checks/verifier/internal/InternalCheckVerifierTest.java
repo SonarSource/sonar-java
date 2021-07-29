@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Test;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.RspecKey;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 
@@ -542,6 +541,24 @@ class InternalCheckVerifierTest {
       InternalCheckVerifier.newInstance()
         .onFile(TEST_FILE_NONCOMPLIANT)
         .withChecks(FILE_LINE_ISSUE_CHECK)
+        .verifyIssues();
+    }
+
+    @Test
+    void multi_variable_declaration_should_create_only_one_expected_issue() {
+
+      @Rule(key = "check")
+      class Check implements JavaFileScanner {
+
+        @Override
+        public void scanFile(JavaFileScannerContext context) {
+          context.addIssue(1, this, "issue");
+        }
+      }
+
+      InternalCheckVerifier.newInstance()
+        .onFile("src/test/files/testing/MultiVariableDeclaration.java")
+        .withChecks(new Check())
         .verifyIssues();
     }
 
