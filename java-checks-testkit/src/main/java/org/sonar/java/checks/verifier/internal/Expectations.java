@@ -60,6 +60,7 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -279,6 +280,7 @@ class Expectations {
   @VisibleForTesting
   static class Parser extends IssuableSubscriptionVisitor {
     private static final String NONCOMPLIANT_FLAG = "Noncompliant";
+    private final Set<SyntaxTrivia> visitedComments = new HashSet<>();
 
     private Pattern nonCompliantComment = Pattern.compile("//\\s+" + NONCOMPLIANT_FLAG);
     private Pattern shift = Pattern.compile(NONCOMPLIANT_FLAG + "@(\\S+)");
@@ -301,7 +303,16 @@ class Expectations {
 
     @Override
     public void visitTrivia(SyntaxTrivia syntaxTrivia) {
+      if (!visitedComments.add(syntaxTrivia)) {
+        // already visited
+        return;
+      }
       collectExpectedIssues(syntaxTrivia.comment(), syntaxTrivia.startLine());
+    }
+
+    @Override
+    public void leaveFile(JavaFileScannerContext context) {
+      visitedComments.clear();
     }
 
     @VisibleForTesting
