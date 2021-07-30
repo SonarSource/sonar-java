@@ -260,7 +260,7 @@ class InternalJavaIssueBuilderTest {
     assertThat(builder.cost()).isEmpty();
     assertThat(builder.secondaries()).isEmpty();
     assertThat(builder.flows()).isEmpty();
-    assertThat(builder.quickFix()).isEmpty();
+    assertThat(builder.quickFixes()).isEmpty();
   }
 
   @Test
@@ -286,7 +286,7 @@ class InternalJavaIssueBuilderTest {
   }
 
   @Test
-  void test_cannot_set_quick_fix_multiple_times() {
+  void test_can_set_quick_fix_multiple_times() {
     JavaQuickFix quickFix = JavaQuickFix.newQuickFix("description").addTextEdit().build();
     builder = builder
       .forRule(CHECK)
@@ -294,9 +294,9 @@ class InternalJavaIssueBuilderTest {
       .withMessage("msg")
       .withQuickFix(quickFix);
 
-    assertThatThrownBy(() -> builder.withQuickFix(quickFix))
-      .hasMessage("Cannot set quick fix multiple times.")
-      .isOfAnyClassIn(IllegalStateException.class);
+    builder.withQuickFix(quickFix);
+
+    assertThat(builder.quickFixes()).hasSize(2);
   }
 
   @Test

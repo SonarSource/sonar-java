@@ -67,8 +67,7 @@ public class JavaIssueBuilderForTests extends InternalJavaIssueBuilder {
       .map(flows -> listOfLocationsToListOfAnalyzerMessages(flows, rule, inputFile))
       .ifPresent(issue.flows::addAll);
 
-    quickFix()
-      .ifPresent(quickfix -> quickFixes.put(textSpan, quickfix));
+    quickFixes().forEach(quickfix -> quickFixes.put(textSpan, quickfix));
 
     issues.add(issue);
     reported = true;

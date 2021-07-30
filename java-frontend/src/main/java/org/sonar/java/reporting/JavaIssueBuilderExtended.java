@@ -21,6 +21,6 @@ package org.sonar.java.reporting;
 
 public interface JavaIssueBuilderExtended extends FluentReporting.JavaIssueBuilder {
 
-  JavaIssueBuilderExtended withQuickFix(JavaQuickFix quickFix);
+  JavaIssueBuilderExtended withQuickFix(JavaQuickFix... quickFixes);
 
 }

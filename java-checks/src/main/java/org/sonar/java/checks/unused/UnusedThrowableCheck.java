@@ -47,8 +47,11 @@ public class UnusedThrowableCheck extends IssuableSubscriptionVisitor {
         .onTree(newClassTree)
         .withMessage("Throw this exception or remove this useless statement")
         .withQuickFix(JavaQuickFix.newQuickFix("Add \"throw\"")
-          .addTextEdit(JavaTextEdit.insertBeforeTree(newClassTree, "throw "))
-          .build())
+            .addTextEdit(JavaTextEdit.insertBeforeTree(newClassTree, "throw "))
+            .build(),
+          JavaQuickFix.newQuickFix("Remove the statement")
+            .addTextEdit(JavaTextEdit.removeTree(newClassTree))
+            .build())
         .report();
     }
   }

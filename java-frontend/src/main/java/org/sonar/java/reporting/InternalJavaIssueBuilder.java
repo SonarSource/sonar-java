@@ -19,6 +19,7 @@
  */
 package org.sonar.java.reporting;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -68,7 +69,7 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
   @Nullable
   private Integer cost;
   @Nullable
-  private JavaQuickFix quickFix;
+  private final List<JavaQuickFix> quickFixes = new ArrayList<>();
   private boolean reported;
 
   public InternalJavaIssueBuilder(InputFile inputFile, @Nullable SonarComponents sonarComponents) {
@@ -168,11 +169,10 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
   }
 
   @Override
-  public final InternalJavaIssueBuilder withQuickFix(JavaQuickFix quickFix) {
+  public final InternalJavaIssueBuilder withQuickFix(JavaQuickFix... quickFixes) {
     requiresValueToBeSet(this.message, MESSAGE_NAME);
-    requiresSetOnlyOnce(this.quickFix, "quick fix");
 
-    this.quickFix = quickFix;
+    this.quickFixes.addAll(Arrays.asList(quickFixes));
     return this;
   }
 
@@ -223,20 +223,22 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
       }
     }
 
-    if (quickFix != null && isQuickFixSupported()) {
-      NewSonarLintIssue sonarLintIssue = (NewSonarLintIssue) newIssue;
-      NewQuickFix newQuickFix = sonarLintIssue.newQuickFix()
-        .message(quickFix.getDescription());
+    if (!quickFixes.isEmpty() && isQuickFixSupported()) {
+      for (JavaQuickFix quickFix: quickFixes) {
+        NewSonarLintIssue sonarLintIssue = (NewSonarLintIssue) newIssue;
+        NewQuickFix newQuickFix = sonarLintIssue.newQuickFix()
+          .message(quickFix.getDescription());
 
-      NewFileEdit edit = newQuickFix.newEdit().on(inputFile);
+        NewFileEdit edit = newQuickFix.newEdit().on(inputFile);
 
-      quickFix.getTextEdits().stream()
-        .map(javaTextEdit ->
-          edit.newTextEdit().at(rangeFromTextSpan(inputFile, javaTextEdit.getTextSpan()))
-            .withNewText(javaTextEdit.getReplacement()))
-        .forEach(edit::addTextEdit);
-      newQuickFix.addEdit(edit);
-      sonarLintIssue.addQuickFix(newQuickFix);
+        quickFix.getTextEdits().stream()
+          .map(javaTextEdit ->
+            edit.newTextEdit().at(rangeFromTextSpan(inputFile, javaTextEdit.getTextSpan()))
+              .withNewText(javaTextEdit.getReplacement()))
+          .forEach(edit::addTextEdit);
+        newQuickFix.addEdit(edit);
+        sonarLintIssue.addQuickFix(newQuickFix);
+      }
     }
 
     newIssue.save();
@@ -286,8 +288,8 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
     return Optional.ofNullable(flows);
   }
 
-  public Optional<JavaQuickFix> quickFix() {
-    return Optional.ofNullable(quickFix);
+  public List<JavaQuickFix> quickFixes() {
+    return quickFixes;
   }
 
 }
