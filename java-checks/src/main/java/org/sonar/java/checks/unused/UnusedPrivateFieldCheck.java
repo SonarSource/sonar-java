@@ -28,8 +28,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -43,6 +48,8 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -145,9 +152,46 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
         && onlyUsedInVariableAssignment(symbol)
         && !"serialVersionUID".equals(name)
         && !unknownIdentifiers.contains(name)) {
-        reportIssue(tree.simpleName(), "Remove this unused \"" + name + "\" private field.");
+        ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+          .forRule(this)
+          .onTree(tree.simpleName())
+          .withMessage("Remove this unused \"%s\" private field.", name)
+          .withQuickFix(quickFix(tree))
+          .report();
       }
     }
+  }
+
+  private static JavaQuickFix quickFix(VariableTree tree) {
+    List<SyntaxTrivia> trivias = tree.firstToken().trivias();
+    JavaTextEdit textEdit = JavaTextEdit.removeTree(tree);
+    if (",".equals(tree.endToken().text())) {
+      // multi-variable declaration
+      SyntaxToken nameToken = tree.simpleName().identifierToken();
+      SyntaxToken commaToken = tree.endToken();
+      AnalyzerMessage.TextSpan textSpan = JavaTextEdit.textSpan(
+        nameToken.line(),
+        nameToken.column(),
+        commaToken.line(),
+        commaToken.column() + commaToken.text().length());
+      textEdit = JavaTextEdit.removeTextSpan(textSpan);
+    }
+    if (!trivias.isEmpty()) {
+      SyntaxTrivia lastTrivia = trivias.get(trivias.size() - 1);
+      if (lastTrivia.comment().startsWith("/**")) {
+        // include javadoc in supression
+        SyntaxToken lastToken = tree.lastToken();
+        AnalyzerMessage.TextSpan textSpan = JavaTextEdit.textSpan(
+          lastTrivia.startLine(),
+          lastTrivia.column(),
+          lastToken.line(),
+          lastToken.column() + lastToken.text().length());
+        textEdit = JavaTextEdit.removeTextSpan(textSpan);
+      }
+    }
+    return JavaQuickFix.newQuickFix(String.format("Remove \"%s\".", tree.simpleName().name()))
+      .addTextEdit(textEdit)
+      .build();
   }
 
   private boolean onlyUsedInVariableAssignment(Symbol symbol) {

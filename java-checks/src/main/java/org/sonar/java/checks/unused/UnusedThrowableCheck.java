@@ -19,13 +19,16 @@
  */
 package org.sonar.java.checks.unused;
 
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Collections;
-import java.util.List;
 
 @Rule(key = "S3984")
 public class UnusedThrowableCheck extends IssuableSubscriptionVisitor {
@@ -39,7 +42,17 @@ public class UnusedThrowableCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     NewClassTree newClassTree = (NewClassTree) tree;
     if (newClassTree.symbolType().isSubtypeOf("java.lang.Throwable") && newClassTree.parent().is(Tree.Kind.EXPRESSION_STATEMENT)) {
-      reportIssue(newClassTree, "Throw this exception or remove this useless statement");
+      ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+        .forRule(this)
+        .onTree(newClassTree)
+        .withMessage("Throw this exception or remove this useless statement")
+        .withQuickFix(JavaQuickFix.newQuickFix("Add \"throw\"")
+            .addTextEdit(JavaTextEdit.insertBeforeTree(newClassTree, "throw "))
+            .build(),
+          JavaQuickFix.newQuickFix("Remove the statement")
+            .addTextEdit(JavaTextEdit.removeTree(newClassTree))
+            .build())
+        .report();
     }
   }
 }

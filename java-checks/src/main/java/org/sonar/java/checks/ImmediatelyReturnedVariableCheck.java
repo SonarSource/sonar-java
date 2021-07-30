@@ -19,9 +19,16 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
+import java.util.Map;
+import javax.annotation.CheckForNull;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.collections.MapBuilder;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -33,10 +40,6 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.CheckForNull;
-import java.util.List;
-import java.util.Map;
 
 @Rule(key = "S1488")
 public class ImmediatelyReturnedVariableCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -74,8 +77,15 @@ public class ImmediatelyReturnedVariableCheck extends BaseTreeVisitor implements
       if (lastStatementIdentifier != null) {
         String identifier = variableTree.simpleName().name();
         if (StringUtils.equals(lastStatementIdentifier, identifier)) {
-          context.reportIssue(
-            this, variableTree.initializer(), "Immediately " + lastTypeForMessage + " this expression instead of assigning it to the temporary variable \"" + identifier + "\".");
+          ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+            .forRule(this)
+            .onTree(variableTree.initializer())
+            .withMessage("Immediately " + lastTypeForMessage + " this expression instead of assigning it to the temporary variable \"" + identifier + "\".")
+            .withQuickFix(JavaQuickFix.newQuickFix("Inline variable")
+              .addTextEdit(JavaTextEdit.replaceBetweenTree(variableTree.modifiers(), variableTree.equalToken(), "return"),
+                JavaTextEdit.removeTree(lastStatement))
+              .build())
+            .report();
         }
       }
     }

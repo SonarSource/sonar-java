@@ -24,6 +24,10 @@ import java.util.Optional;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -87,8 +91,17 @@ public class DateFormatWeekYearCheck extends AbstractMethodDetection {
         end++;
       }
       String firstYseq = datePattern.substring(start, end);
-      String message = String.format(RECOMMENDATION_YEAR_MESSAGE, firstYseq, firstYseq.toLowerCase(Locale.ENGLISH));
-      reportIssue(argument, message);
+      String firstYseqExpected = firstYseq.toLowerCase(Locale.ENGLISH);
+
+      String message = String.format(RECOMMENDATION_YEAR_MESSAGE, firstYseq, firstYseqExpected);
+      ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+        .forRule(this)
+        .onTree(argument)
+        .withMessage(message)
+        .withQuickFix(JavaQuickFix.newQuickFix(String.format("Replace %s by %s", firstYseq, firstYseqExpected))
+          .addTextEdit(JavaTextEdit.replaceTree(argument, String.format("\"%s\"", datePattern.replaceFirst(firstYseq, firstYseqExpected))))
+          .build())
+        .report();
     }
   }
 }
