@@ -19,16 +19,34 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
+import org.sonar.java.checks.verifier.internal.QuickFixExpectation;
 
 class ImmediatelyReturnedVariableCheckTest {
 
+  private final String prefix = "import java.text.SimpleDateFormat;\n"
+    + "class A {\n" +
+    "void m() {\n";
+  private final String suffix = "\n}\n}";
+
+  List<QuickFixExpectation> quickFixes = Collections.singletonList(
+    new QuickFixExpectation(prefix, suffix)
+      .setBefore("long duration = (((hours * 60) + minutes) * 60 + seconds ) * 1000;\n" +
+        "return duration;")
+      .setAfter("return (((hours * 60) + minutes) * 60 + seconds ) * 1000;\n")
+  );
+
   @Test
   void test() {
-    CheckVerifier.newVerifier()
+    ((InternalCheckVerifier) CheckVerifier.newVerifier())
       .onFile("src/test/files/checks/ImmediatelyReturnedVariableCheck.java")
       .withCheck(new ImmediatelyReturnedVariableCheck())
+      .withQuickFixes(quickFixes, QuickFixHelper::quickFixApplicator)
       .verifyIssues();
   }
 
