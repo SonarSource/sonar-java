@@ -57,6 +57,14 @@ public final class InternalInputFile extends InternalMockedSonarAPI implements I
     this.type = InputFile.Type.MAIN;
   }
 
+  public InternalInputFile(String filename, String contents) {
+    this.file = new File(filename);
+    this.moduleKey = "";
+    this.contents = contents;
+    this.numberLines = -1;
+    this.type = InputFile.Type.MAIN;
+  }
+
   private static String readFile(File file) {
     try {
       return new String(Files.readAllBytes(file.toPath()), UTF_8);
@@ -67,6 +75,10 @@ public final class InternalInputFile extends InternalMockedSonarAPI implements I
 
   public static InputFile inputFile(String moduleKey, File file) {
     return new InternalInputFile(moduleKey, file);
+  }
+
+  public static InputFile inputFileWithContent(String filename, String contents) {
+    return new InternalInputFile(filename, contents);
   }
 
   public static InputFile emptyInputFile(String filename, InputFile.Type type) {
