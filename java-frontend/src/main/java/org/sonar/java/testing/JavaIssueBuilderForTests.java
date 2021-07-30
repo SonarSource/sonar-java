@@ -21,24 +21,33 @@ package org.sonar.java.testing;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.Preconditions;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 
 public class JavaIssueBuilderForTests extends InternalJavaIssueBuilder {
 
   private final Set<AnalyzerMessage> issues;
+  private final Map<AnalyzerMessage.TextSpan, JavaQuickFix> quickFixes;
   private boolean reported;
 
-  public JavaIssueBuilderForTests(InputFile inputFile, Set<AnalyzerMessage> issues) {
+  public JavaIssueBuilderForTests(InputFile inputFile, Set<AnalyzerMessage> issues, Map<AnalyzerMessage.TextSpan, JavaQuickFix> quickFixes) {
     super(inputFile, null);
     this.issues = issues;
     this.reported = false;
+    this.quickFixes = quickFixes;
+  }
+
+  public Optional<JavaQuickFix> quickfixForTextSpan(AnalyzerMessage.TextSpan issueLocation) {
+    return Optional.ofNullable(quickFixes.get(issueLocation));
   }
 
   @Override
@@ -46,7 +55,8 @@ public class JavaIssueBuilderForTests extends InternalJavaIssueBuilder {
     Preconditions.checkState(!reported, "Can only be reported once.");
     JavaCheck rule = rule();
     InputFile inputFile = inputFile();
-    AnalyzerMessage issue = new AnalyzerMessage(rule, inputFile, textSpan(), message(), cost().orElse(0));
+    AnalyzerMessage.TextSpan textSpan = textSpan();
+    AnalyzerMessage issue = new AnalyzerMessage(rule, inputFile, textSpan, message(), cost().orElse(0));
 
     secondaries()
       .map(JavaIssueBuilderForTests::toSingletonList)
@@ -56,6 +66,8 @@ public class JavaIssueBuilderForTests extends InternalJavaIssueBuilder {
     flows()
       .map(flows -> listOfLocationsToListOfAnalyzerMessages(flows, rule, inputFile))
       .ifPresent(issue.flows::addAll);
+
+    quickFixes().forEach(quickfix -> quickFixes.put(textSpan, quickfix));
 
     issues.add(issue);
     reported = true;

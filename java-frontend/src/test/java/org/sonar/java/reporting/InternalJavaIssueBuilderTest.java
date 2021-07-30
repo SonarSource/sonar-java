@@ -231,6 +231,27 @@ class InternalJavaIssueBuilderTest {
   }
 
   @Test
+  void test_report_issue_with_quick_fix() {
+    ClassTree tree = (ClassTree) compilationUnitTree.types().get(0);
+    Tree member = tree.members().get(0);
+    builder.forRule(CHECK)
+      .onRange(member.firstToken(), member.lastToken())
+      .withMessage("msg")
+      .withQuickFix(JavaQuickFix.newQuickFix("description")
+        .addTextEdit(JavaTextEdit.replaceTree(tree.members().get(0), "replacement"))
+        .build())
+      .report();
+
+    Collection<Issue> issues = sensorContextTester.allIssues();
+    assertThat(issues).hasSize(1);
+    DefaultIssue issue = (DefaultIssue) issues.iterator().next();
+
+    IssueLocation primaryLocation = issue.primaryLocation();
+    assertPosition(primaryLocation.textRange(), 4, 2, 4, 13);
+    // TODO: Complete this test
+  }
+
+  @Test
   void test_fields_default_values() {
     assertThat(builder.rule()).isNull();
     assertThat(builder.inputFile()).isEqualTo(inputFile);
@@ -239,6 +260,7 @@ class InternalJavaIssueBuilderTest {
     assertThat(builder.cost()).isEmpty();
     assertThat(builder.secondaries()).isEmpty();
     assertThat(builder.flows()).isEmpty();
+    assertThat(builder.quickFixes()).isEmpty();
   }
 
   @Test
@@ -261,6 +283,20 @@ class InternalJavaIssueBuilderTest {
     assertThatThrownBy(() -> builder.withCost(COST))
       .hasMessage("A message must be set first.")
       .isOfAnyClassIn(IllegalStateException.class);
+  }
+
+  @Test
+  void test_can_set_quick_fix_multiple_times() {
+    JavaQuickFix quickFix = JavaQuickFix.newQuickFix("description").addTextEdit().build();
+    builder = builder
+      .forRule(CHECK)
+      .onTree(compilationUnitTree)
+      .withMessage("msg")
+      .withQuickFix(quickFix);
+
+    builder.withQuickFix(quickFix);
+
+    assertThat(builder.quickFixes()).hasSize(2);
   }
 
   @Test

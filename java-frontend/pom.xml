@@ -25,6 +25,10 @@
       <artifactId>sonar-plugin-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.sonarsource.sonarlint.core</groupId>
+      <artifactId>sonarlint-plugin-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.sonarsource.sonarqube</groupId>
       <artifactId>sonar-plugin-api-impl</artifactId>
       <scope>test</scope>

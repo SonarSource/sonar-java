@@ -19,16 +19,20 @@
  */
 package org.sonar.java.reporting;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import org.sonar.api.SonarProduct;
+import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextRange;
 import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.Preconditions;
@@ -36,8 +40,12 @@ import org.sonar.java.SonarComponents;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.sonarlint.plugin.api.SonarLintRuntime;
+import org.sonarsource.sonarlint.plugin.api.issue.NewFileEdit;
+import org.sonarsource.sonarlint.plugin.api.issue.NewQuickFix;
+import org.sonarsource.sonarlint.plugin.api.issue.NewSonarLintIssue;
 
-public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilder {
+public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
 
   private static final String RULE_NAME = "rule";
   private static final String TEXT_SPAN_NAME = "position";
@@ -60,6 +68,8 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
   private List<List<JavaFileScannerContext.Location>> flows;
   @Nullable
   private Integer cost;
+  @Nullable
+  private final List<JavaQuickFix> quickFixes = new ArrayList<>();
   private boolean reported;
 
   public InternalJavaIssueBuilder(InputFile inputFile, @Nullable SonarComponents sonarComponents) {
@@ -159,6 +169,14 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
   }
 
   @Override
+  public final InternalJavaIssueBuilder withQuickFix(JavaQuickFix... quickFixes) {
+    requiresValueToBeSet(this.message, MESSAGE_NAME);
+
+    this.quickFixes.addAll(Arrays.asList(quickFixes));
+    return this;
+  }
+
+  @Override
   public void report() {
     Preconditions.checkState(!reported, "Can only be reported once.");
     requiresValueToBeSet(rule, RULE_NAME);
@@ -205,13 +223,41 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
       }
     }
 
+    if (!quickFixes.isEmpty() && isQuickFixSupported()) {
+      for (JavaQuickFix quickFix: quickFixes) {
+        NewSonarLintIssue sonarLintIssue = (NewSonarLintIssue) newIssue;
+        NewQuickFix newQuickFix = sonarLintIssue.newQuickFix()
+          .message(quickFix.getDescription());
+
+        NewFileEdit edit = newQuickFix.newEdit().on(inputFile);
+
+        quickFix.getTextEdits().stream()
+          .map(javaTextEdit ->
+            edit.newTextEdit().at(rangeFromTextSpan(inputFile, javaTextEdit.getTextSpan()))
+              .withNewText(javaTextEdit.getReplacement()))
+          .forEach(edit::addTextEdit);
+        newQuickFix.addEdit(edit);
+        sonarLintIssue.addQuickFix(newQuickFix);
+      }
+    }
+
     newIssue.save();
     reported = true;
   }
 
   private static TextRange range(InputFile file, JavaFileScannerContext.Location location) {
-    AnalyzerMessage.TextSpan textSpan = AnalyzerMessage.textSpanFor(location.syntaxNode);
+    return rangeFromTextSpan(file, AnalyzerMessage.textSpanFor(location.syntaxNode));
+  }
+
+  private static TextRange rangeFromTextSpan(InputFile file, AnalyzerMessage.TextSpan textSpan) {
     return file.newRange(textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
+  }
+
+  private boolean isQuickFixSupported() {
+    SonarRuntime runtime = sonarComponents.context().runtime();
+    return runtime.getProduct() == SonarProduct.SONARLINT
+      // POC version introducing quickfix
+      && ((SonarLintRuntime) runtime).getSonarLintPluginApiVersion().equals(Version.parse("6.3.0.35109"));
   }
 
   public JavaCheck rule() {
@@ -241,4 +287,9 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
   public Optional<List<List<JavaFileScannerContext.Location>>> flows() {
     return Optional.ofNullable(flows);
   }
+
+  public List<JavaQuickFix> quickFixes() {
+    return quickFixes;
+  }
+
 }
