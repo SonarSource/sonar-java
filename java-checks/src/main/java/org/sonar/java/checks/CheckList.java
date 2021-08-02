@@ -190,7 +190,6 @@ import org.sonar.java.checks.xml.maven.GroupIdNamingConventionCheck;
 import org.sonar.java.checks.xml.maven.PomElementOrderCheck;
 import org.sonar.java.checks.xml.spring.DefaultMessageListenerContainerCheck;
 import org.sonar.java.checks.xml.spring.SingleConnectionFactoryCheck;
-import org.sonar.java.checks.xml.struts.ActionNumberCheck;
 import org.sonar.java.checks.xml.struts.FormNameDuplicationCheck;
 import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
 import org.sonar.java.se.checks.ConditionalUnreachableCodeCheck;
@@ -838,7 +837,6 @@ public final class CheckList {
   // Rule classes are listed alphabetically
   public static List<Class<? extends SonarXmlCheck>> getXmlChecks() {
     return Arrays.asList(
-      ActionNumberCheck.class,
       ArtifactIdNamingConventionCheck.class,
       DefaultMessageListenerContainerCheck.class,
       DependencyWithSystemScopeCheck.class,
