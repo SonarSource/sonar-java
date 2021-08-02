@@ -185,7 +185,6 @@ import org.sonar.java.checks.xml.ejb.InterceptorExclusionsCheck;
 import org.sonar.java.checks.xml.maven.ArtifactIdNamingConventionCheck;
 import org.sonar.java.checks.xml.maven.DependencyWithSystemScopeCheck;
 import org.sonar.java.checks.xml.maven.DeprecatedPomPropertiesCheck;
-import org.sonar.java.checks.xml.maven.DisallowedDependenciesCheck;
 import org.sonar.java.checks.xml.maven.GroupIdNamingConventionCheck;
 import org.sonar.java.checks.xml.maven.PomElementOrderCheck;
 import org.sonar.java.checks.xml.spring.DefaultMessageListenerContainerCheck;
@@ -843,7 +842,6 @@ public final class CheckList {
       DefaultMessageListenerContainerCheck.class,
       DependencyWithSystemScopeCheck.class,
       DeprecatedPomPropertiesCheck.class,
-      DisallowedDependenciesCheck.class,
       FormNameDuplicationCheck.class,
       GroupIdNamingConventionCheck.class,
       InterceptorExclusionsCheck.class,

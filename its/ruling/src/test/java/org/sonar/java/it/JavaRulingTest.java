@@ -113,8 +113,6 @@ public class JavaRulingTest {
     instantiateTemplateRule("S2253", "stringToCharArray", "className=\"java.lang.String\";methodName=\"toCharArray\"", activatedRuleKeys);
     instantiateTemplateRule("S4011", "longDate", "className=\"java.util.Date\";argumentTypes=\"long\"", activatedRuleKeys);
     instantiateTemplateRule("S124", "commentRegexTest", "regularExpression=\"(?i).*TODO\\(user\\).*\";message=\"bad user\"", activatedRuleKeys);
-    instantiateTemplateRule("S3417", "doNotUseCommonsCollections", "dependencyName=\"commons-collections:*\";", activatedRuleKeys);
-    instantiateTemplateRule("S3417", "doNotUseJunitBefore4", "dependencyName=\"junit:junit\";version=\"*-3.9.9\"", activatedRuleKeys);
     instantiateTemplateRule("S3546", "InstancesOfNewControllerClosedWithDone",
       "factoryMethod=\"org.sonar.api.server.ws.WebService$Context#createController\";closingMethod=\"org.sonar.api.server.ws.WebService$NewController#done\"", activatedRuleKeys);
     instantiateTemplateRule("S3546", "JsonWriterNotClosed",
