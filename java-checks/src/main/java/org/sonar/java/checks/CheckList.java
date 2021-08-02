@@ -181,7 +181,6 @@ import org.sonar.java.checks.unused.UnusedReturnedDataCheck;
 import org.sonar.java.checks.unused.UnusedTestRuleCheck;
 import org.sonar.java.checks.unused.UnusedThrowableCheck;
 import org.sonar.java.checks.unused.UnusedTypeParameterCheck;
-import org.sonar.java.checks.xml.ejb.InterceptorExclusionsCheck;
 import org.sonar.java.checks.xml.maven.ArtifactIdNamingConventionCheck;
 import org.sonar.java.checks.xml.maven.DependencyWithSystemScopeCheck;
 import org.sonar.java.checks.xml.maven.DeprecatedPomPropertiesCheck;
@@ -842,7 +841,6 @@ public final class CheckList {
       DisallowedDependenciesCheck.class,
       FormNameDuplicationCheck.class,
       GroupIdNamingConventionCheck.class,
-      InterceptorExclusionsCheck.class,
       PomElementOrderCheck.class,
       SingleConnectionFactoryCheck.class);
   }
