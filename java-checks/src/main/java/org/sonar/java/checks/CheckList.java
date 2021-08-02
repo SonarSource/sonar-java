@@ -181,7 +181,6 @@ import org.sonar.java.checks.unused.UnusedReturnedDataCheck;
 import org.sonar.java.checks.unused.UnusedTestRuleCheck;
 import org.sonar.java.checks.unused.UnusedThrowableCheck;
 import org.sonar.java.checks.unused.UnusedTypeParameterCheck;
-import org.sonar.java.checks.xml.ejb.DefaultInterceptorsLocationCheck;
 import org.sonar.java.checks.xml.ejb.InterceptorExclusionsCheck;
 import org.sonar.java.checks.xml.hibernate.DatabaseSchemaUpdateCheck;
 import org.sonar.java.checks.xml.maven.ArtifactIdNamingConventionCheck;
@@ -844,7 +843,6 @@ public final class CheckList {
       ActionNumberCheck.class,
       ArtifactIdNamingConventionCheck.class,
       DatabaseSchemaUpdateCheck.class,
-      DefaultInterceptorsLocationCheck.class,
       DefaultMessageListenerContainerCheck.class,
       DependencyWithSystemScopeCheck.class,
       DeprecatedPomPropertiesCheck.class,
