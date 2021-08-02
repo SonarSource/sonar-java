@@ -192,7 +192,6 @@ import org.sonar.java.checks.xml.spring.DefaultMessageListenerContainerCheck;
 import org.sonar.java.checks.xml.spring.SingleConnectionFactoryCheck;
 import org.sonar.java.checks.xml.struts.ActionNumberCheck;
 import org.sonar.java.checks.xml.struts.FormNameDuplicationCheck;
-import org.sonar.java.checks.xml.web.ValidationFiltersCheck;
 import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
 import org.sonar.java.se.checks.ConditionalUnreachableCodeCheck;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
@@ -849,7 +848,6 @@ public final class CheckList {
       GroupIdNamingConventionCheck.class,
       InterceptorExclusionsCheck.class,
       PomElementOrderCheck.class,
-      SingleConnectionFactoryCheck.class,
-      ValidationFiltersCheck.class);
+      SingleConnectionFactoryCheck.class);
   }
 }
