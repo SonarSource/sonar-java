@@ -188,20 +188,15 @@ import org.sonar.java.checks.unused.UnusedReturnedDataCheck;
 import org.sonar.java.checks.unused.UnusedTestRuleCheck;
 import org.sonar.java.checks.unused.UnusedThrowableCheck;
 import org.sonar.java.checks.unused.UnusedTypeParameterCheck;
-import org.sonar.java.checks.xml.ejb.DefaultInterceptorsLocationCheck;
 import org.sonar.java.checks.xml.ejb.InterceptorExclusionsCheck;
-import org.sonar.java.checks.xml.hibernate.DatabaseSchemaUpdateCheck;
 import org.sonar.java.checks.xml.maven.ArtifactIdNamingConventionCheck;
 import org.sonar.java.checks.xml.maven.DependencyWithSystemScopeCheck;
 import org.sonar.java.checks.xml.maven.DeprecatedPomPropertiesCheck;
 import org.sonar.java.checks.xml.maven.DisallowedDependenciesCheck;
 import org.sonar.java.checks.xml.maven.GroupIdNamingConventionCheck;
 import org.sonar.java.checks.xml.maven.PomElementOrderCheck;
-import org.sonar.java.checks.xml.spring.DefaultMessageListenerContainerCheck;
 import org.sonar.java.checks.xml.spring.SingleConnectionFactoryCheck;
-import org.sonar.java.checks.xml.struts.ActionNumberCheck;
 import org.sonar.java.checks.xml.struts.FormNameDuplicationCheck;
-import org.sonar.java.checks.xml.web.ValidationFiltersCheck;
 import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
 import org.sonar.java.se.checks.ConditionalUnreachableCodeCheck;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
@@ -857,11 +852,7 @@ public final class CheckList {
   // Rule classes are listed alphabetically
   public static List<Class<? extends SonarXmlCheck>> getXmlChecks() {
     return Arrays.asList(
-      ActionNumberCheck.class,
       ArtifactIdNamingConventionCheck.class,
-      DatabaseSchemaUpdateCheck.class,
-      DefaultInterceptorsLocationCheck.class,
-      DefaultMessageListenerContainerCheck.class,
       DependencyWithSystemScopeCheck.class,
       DeprecatedPomPropertiesCheck.class,
       DisallowedDependenciesCheck.class,
@@ -869,7 +860,6 @@ public final class CheckList {
       GroupIdNamingConventionCheck.class,
       InterceptorExclusionsCheck.class,
       PomElementOrderCheck.class,
-      SingleConnectionFactoryCheck.class,
-      ValidationFiltersCheck.class);
+      SingleConnectionFactoryCheck.class);
   }
 }
