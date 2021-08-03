@@ -130,33 +130,6 @@ public class SonarLintTest {
   }
 
   @Test
-  public void simplePom() throws Exception {
-    ClientInputFile inputFile = prepareInputFile("pom.xml",
-      "<project xmlns=\"http://maven.apache.org/POM/4.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
-        + " xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd\">\n"
-        + "  <modelVersion>4.0.0</modelVersion>\n"
-        + "  <groupId>org.sonarsource.java</groupId>\n"
-        + "  <artifactId>simple-project</artifactId>\n"
-        + "  <version>1.0-SNAPSHOT</version>\n"
-        + "  <packaging>jar</packaging>\n"
-        + "  <properties>"
-        + "    <deprecated>${pom.artifactId}</deprecated>\n" // S3421 line 7
-        + "  </properties>\n"
-        + "</project>",
-      false);
-
-    final List<Issue> issues = new ArrayList<>();
-    StandaloneAnalysisConfiguration standaloneAnalysisConfiguration = StandaloneAnalysisConfiguration.builder()
-      .setBaseDir(baseDir.toPath())
-      .addInputFile(inputFile)
-      .build();
-    sonarlintEngine.analyze(standaloneAnalysisConfiguration, issues::add, null, null);
-
-    assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
-      tuple("java:S3421", 7, inputFile.getPath(), "MINOR"));
-  }
-
-  @Test
   public void supportJavaSuppressWarning() throws Exception {
     ClientInputFile inputFile = prepareInputFile("Foo.java",
       "public class Foo {\n"
