@@ -1,0 +1,27 @@
+<p>Every filter defined in <code>web.xml</code> file should be used in a <code>&lt;filter-mapping&gt;</code> element. Otherwise such filters are not
+invoked.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+  &lt;filter&gt;
+     &lt;filter-name&gt;DefinedNotUsed&lt;/filter-name&gt;
+     &lt;filter-class&gt;com.myco.servlet.ValidationFilter&lt;/filter-class&gt;
+  &lt;/filter&gt;
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+  &lt;filter&gt;
+     &lt;filter-name&gt;ValidationFilter&lt;/filter-name&gt;
+     &lt;filter-class&gt;com.myco.servlet.ValidationFilter&lt;/filter-class&gt;
+  &lt;/filter&gt;
+
+  &lt;filter-mapping&gt;
+     &lt;filter-name&gt;ValidationFilter&lt;/filter-name&gt;
+     &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+  &lt;/filter-mapping&gt;
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A6-Security_Misconfiguration">OWASP Top 10 2017 Category A6</a> - Security
+  Misconfiguration </li>
+</ul>
+

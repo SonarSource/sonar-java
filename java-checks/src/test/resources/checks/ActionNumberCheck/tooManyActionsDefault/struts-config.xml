@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts-config PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 1.0//EN"
+"http://jakarta.apache.org/struts/dtds/struts-config_1_0.dtd">
+
+<struts-config>
+
+  <action-mappings>
+    <action path='/editor' type='myapp.EditorDispatchAction' name='form' parameter='method'> <!-- Compliant -->
+      <forward name='create' path='/WEB-INF/jsp/EditorCreate.jspx' redirect='false' />
+      <forward name='read' path='/WEB-INF/jsp/EditorDetails' redirect='false' />
+      <forward name='update' path='/WEB-INF/jsp/EditorUpdate.jspx' redirect='false' />
+    </action>
+  
+    <action path='/book' type='myapp.BookDispatchAction' name='form' parameter='method'> <!-- Noncompliant {{Reduce the number of forwards in this action from 5 to at most 4.}} -->
+    <!--^[sc=5;el=+8;ec=13] -->
+      <forward name='create' path='/WEB-INF/jsp/BookCreate.jspx' redirect='false' />
+      <forward name='read' path='/WEB-INF/jsp/BookDetails' redirect='false' />
+      <forward name='update' path='/WEB-INF/jsp/BookUpdate.jspx' redirect='false' />
+      <forward name='delete' path='/WEB-INF/jsp/BookDelete.jspx' redirect='false' />
+      <forward name='authorRead' path='WEB-INF/jsp/AuthorDetails' redirect='false' />
+  <!--^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^< {{Move this forward to another action.}}-->
+    </action>
+  </action-mappings>
+
+</struts-config>

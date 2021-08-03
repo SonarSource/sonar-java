@@ -1,0 +1,31 @@
+<p><code>DefaultMessageListenerContainer</code> is implemented as a JMS poller. While the Spring container is shutting itself down, as each
+in-progress JMS <code>Consumer.receive()</code> call completes, any non-<code>null</code> return value will be a JMS message that the DMLC will
+<em>discard</em> due to the shutdown in progress. That will result in the received message never being processed.</p>
+<p>To prevent message loss during restart operations, set <code>acceptMessagesWhileStopping</code> to <code>true</code> so that such messages will be
+processed before shut down.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+&lt;bean id="listenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer"&gt;  &lt;!-- Noncompliant --&gt;
+   &lt;property name="connectionFactory" ref="connFactory" /&gt;
+   &lt;property name="destination" ref="dest" /&gt;
+   &lt;property name="messageListener" ref="serviceAdapter" /&gt;
+   &lt;property name="autoStartup" value="true" /&gt;
+   &lt;property name="concurrentConsumers" value="10" /&gt;
+   &lt;property name="maxConcurrentConsumers" value="10" /&gt;
+   &lt;property name="clientId" value="myClientID" /&gt;
+&lt;/bean&gt;
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+&lt;bean id="listenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer"&gt;
+   &lt;property name="connectionFactory" ref="connFactory" /&gt;
+   &lt;property name="destination" ref="dest" /&gt;
+   &lt;property name="messageListener" ref="serviceAdapter" /&gt;
+   &lt;property name="autoStartup" value="true" /&gt;
+   &lt;property name="concurrentConsumers" value="10" /&gt;
+   &lt;property name="maxConcurrentConsumers" value="10" /&gt;
+   &lt;property name="clientId" value="myClientID" /&gt;
+   &lt;property name="acceptMessagesWhileStopping" value="true" /&gt;
+&lt;/bean&gt;
+</pre>
+

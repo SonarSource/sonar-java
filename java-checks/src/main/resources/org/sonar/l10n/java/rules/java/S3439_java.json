@@ -1,0 +1,16 @@
+{
+  "title": "\"DefaultMessageListenerContainer\" instances should not drop messages during restarts",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "spring"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-3439",
+  "sqKey": "S3439",
+  "scope": "Main"
+}

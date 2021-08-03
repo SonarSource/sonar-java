@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+  "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+  "http://hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+  <session-factory>
+    <property name="hibernate.hbm2ddl.auto">create</property>       <!-- Noncompliant {{Use "validate" or remove this property.}} -->
+    <property name="hibernate.hbm2ddl.auto">create-drop</property>  <!-- Noncompliant -->
+    <property name="hibernate.hbm2ddl.auto">create-only</property>  <!-- Noncompliant -->
+    <property name="hibernate.hbm2ddl.auto">drop</property>         <!-- Noncompliant -->
+    <property name="hibernate.hbm2ddl.auto">none</property>         <!-- Compliant: default value, equivalent to not setting anything -->
+    <property name="hibernate.hbm2ddl.auto">update</property>       <!-- Noncompliant -->
+    <property name="hibernate.hbm2ddl.auto">validate</property>     <!-- Compliant -->
+    <property name="hibernate.hbm2ddl.auto"></property>             <!-- Compliant -->
+
+    <property name="hibernate.hbm2ddl.auto">foo-bar</property>     <!-- Noncompliant {{Use "validate" or remove this property.}} -->
+    <!-- Noncompliant@+1 {{Use "validate" or remove this property.}} -->
+    <property name="hibernate.hbm2ddl.auto">
+      qix
+    </property>
+    <!-- ^[sc=5;el=+2;ec=15]@-2 -->
+
+    <property name="hibernate.hbm2ddl.auto" />                     <!-- Compliant -->
+    <property name="hibernate.hbm2ddl.auto">                       <!-- Compliant -->
+      validate
+    </property>
+  </session-factory>
+</hibernate-configuration>

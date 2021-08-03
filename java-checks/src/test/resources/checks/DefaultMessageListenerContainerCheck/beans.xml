@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+  xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:p="http://www.springframework.org/schema/p"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="dmlc1" class="org.springframework.jms.listener.DefaultMessageListenerContainer">   </bean> <!-- Noncompliant {{Enable "acceptMessagesWhileStopping".}} -->
+<!--^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-->
+
+
+  <bean id="dmlc2" class="org.springframework.jms.listener.DefaultMessageListenerContainer"> <!-- Noncompliant {{Enable "acceptMessagesWhileStopping".}} -->
+     <property name="connectionFactory" ref="connFactory" />
+     <property name="destination" ref="dest" />
+     <property name="messageListener" ref="serviceAdapter" />
+     <property name="autoStartup" value="true" />
+     <property name="concurrentConsumers" value="10" />
+     <property name="maxConcurrentConsumers" value="10" />
+     <property name="clientId" value="myClientID" />
+  </bean>
+
+  <bean id="dmlc3" class="org.springframework.jms.listener.DefaultMessageListenerContainer" p:acceptMessagesWhileStopping="true"> <!-- Compliant -->
+  </bean>
+
+   <bean id="dmlc4" class="org.springframework.jms.listener.DefaultMessageListenerContainer"> <!-- Compliant -->
+    <property name="acceptMessagesWhileStopping"><value>true</value></property>
+  </bean>
+
+  <bean id="dmlc5" class="org.springframework.jms.listener.DefaultMessageListenerContainer"> <!-- Compliant -->
+    <property name="acceptMessagesWhileStopping" value="true" />
+  </bean>
+
+  <bean id="dmlc6" class="org.springframework.jms.listener.DefaultMessageListenerContainer" p:sessionTransacted="false"> <!-- Noncompliant {{Enable "acceptMessagesWhileStopping".}} -->
+    <property name="acceptMessagesWhileStopping" value="false" />
+  </bean>
+
+  <bean id="dmlc7" class="org.springframework.jms.listener.DefaultMessageListenerContainer"> <!-- Compliant -->
+    <property name="sessionTransacted" value="true" />
+    <property name="acceptMessagesWhileStopping" value="false" />
+  </bean>
+
+  <bean id="dmlc8" class="org.springframework.jms.listener.DefaultMessageListenerContainer" p:acceptMessagesWhileStopping="false">  <!-- Noncompliant {{Enable "acceptMessagesWhileStopping".}} -->
+  </bean>
+
+  <bean id="dmlc9" class="org.springframework.jms.listener.DefaultMessageListenerContainer" p:sessionTransacted="true"> <!-- Compliant -->
+  </bean>
+
+  <bean id="dmlc10" class="not.a.DefaultMessageListenerContainer" p:acceptMessagesWhileStopping="false"> <!-- Compliant -->
+  </bean>
+
+</beans>
