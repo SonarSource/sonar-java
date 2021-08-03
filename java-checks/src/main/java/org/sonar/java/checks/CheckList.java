@@ -186,7 +186,6 @@ import org.sonar.java.checks.xml.maven.ArtifactIdNamingConventionCheck;
 import org.sonar.java.checks.xml.maven.DependencyWithSystemScopeCheck;
 import org.sonar.java.checks.xml.maven.DeprecatedPomPropertiesCheck;
 import org.sonar.java.checks.xml.maven.DisallowedDependenciesCheck;
-import org.sonar.java.checks.xml.maven.GroupIdNamingConventionCheck;
 import org.sonar.java.checks.xml.maven.PomElementOrderCheck;
 import org.sonar.java.checks.xml.spring.SingleConnectionFactoryCheck;
 import org.sonar.java.checks.xml.struts.FormNameDuplicationCheck;
@@ -841,7 +840,6 @@ public final class CheckList {
       DeprecatedPomPropertiesCheck.class,
       DisallowedDependenciesCheck.class,
       FormNameDuplicationCheck.class,
-      GroupIdNamingConventionCheck.class,
       InterceptorExclusionsCheck.class,
       PomElementOrderCheck.class,
       SingleConnectionFactoryCheck.class);
