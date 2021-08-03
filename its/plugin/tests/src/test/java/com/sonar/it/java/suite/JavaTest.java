@@ -23,7 +23,6 @@ import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
-import com.sonar.orchestrator.locator.FileLocation;
 import com.sonar.orchestrator.locator.MavenLocation;
 import java.io.File;
 import java.util.List;
@@ -71,23 +70,6 @@ public class JavaTest {
 
     BuildResult buildResult = orchestrator.executeBuildQuietly(build);
     assertThat(buildResult.getLastStatus()).isZero();
-  }
-
-  @Test
-  public void should_create_issue_pom_xml() {
-    orchestrator.getServer().restoreProfile(FileLocation.ofClasspath("/profile-pom-xml.xml"));
-    orchestrator.getServer().provisionProject("org.sonarsource.java:test-project", "Test Project");
-    orchestrator.getServer().associateProjectToQualityProfile("org.sonarsource.java:test-project", "java", "java-pom-xml");
-
-    MavenBuild build = MavenBuild.create()
-      .setPom(TestUtils.projectPom("pom-xml"))
-      .setCleanPackageSonarGoals();
-    orchestrator.executeBuild(build);
-
-    List<Issue> issues = TestUtils.issuesForComponent(orchestrator, "org.sonarsource.java:test-project:pom.xml");
-
-    assertThat(issues).hasSize(1);
-    assertThat(issues.iterator().next().getRule()).isEqualTo("java:S3423");
   }
 
   @Test
