@@ -20,6 +20,7 @@
 package org.sonar.plugins.java;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.ActiveRules;
@@ -35,6 +37,7 @@ import org.sonar.api.batch.rule.internal.ActiveRulesBuilder;
 import org.sonar.api.batch.rule.internal.NewActiveRule;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.batch.sensor.issue.Issue;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.LogTesterJUnit5;
@@ -61,12 +64,66 @@ class XmlFileSensorTest {
     context = SensorContextTester.create(temporaryFolder.newFolder());
   }
 
+  @Test
+  void test() throws Exception {
+    CheckFactory checkFactory = new CheckFactory(activeRules());
+    XmlFileSensor sensor = new XmlFileSensor(checkFactory);
+
+    DefaultInputFile xml = (DefaultInputFile) addFileWithIssue("xml");
+    sensor.execute(context);
+    assertThat(xml.isPublished()).isTrue();
+
+    Collection<Issue> issues = context.allIssues();
+    assertThat(issues).hasSize(1);
+    Issue issue = issues.iterator().next();
+
+    assertThat(issue.ruleKey()).isEqualTo(XML_RULE_KEY);
+    assertThat(issue.primaryLocation().message()).isEqualTo("Move this default interceptor to \"ejb-jar.xml\"");
+    assertThat(issue.primaryLocation().textRange().start().line()).isEqualTo(5);
+  }
+
   private ActiveRules activeRules() {
     ActiveRulesBuilder activeRulesBuilder = new ActiveRulesBuilder();
     activeRulesBuilder.addRule(new NewActiveRule.Builder().setRuleKey(XML_RULE_KEY).build());
     return activeRulesBuilder.build();
   }
 
+  @Test
+  void testDoNothingIfNoXmlFile() throws Exception {
+    CheckFactory checkFactory = new CheckFactory(activeRules());
+    XmlFileSensor sensor = new XmlFileSensor(checkFactory);
+
+    addFileWithIssue("foo");
+    sensor.execute(context);
+
+    assertThat(context.allIssues()).isEmpty();
+  }
+
+  @Test
+  void testDoNothingIfNoXmlRule() throws Exception {
+    CheckFactory checkFactory = new CheckFactory(new ActiveRulesBuilder().build());
+    XmlFileSensor sensor = new XmlFileSensor(checkFactory);
+
+    DefaultInputFile xml = (DefaultInputFile) addFileWithIssue("xml");
+    sensor.execute(context);
+    assertThat(xml.isPublished()).isTrue();
+
+    assertThat(context.allIssues()).isEmpty();
+  }
+
+  @Test
+  void testHandleAnalysisCancellation() throws Exception {
+    CheckFactory checkFactory = new CheckFactory(new ActiveRulesBuilder().build());
+    XmlFileSensor sensor = new XmlFileSensor(checkFactory);
+
+    context.setCancelled(true);
+
+    DefaultInputFile xml = (DefaultInputFile) addFileWithIssue("xml");
+    sensor.execute(context);
+    assertThat(xml.isPublished()).isTrue();
+
+    assertThat(context.allIssues()).isEmpty();
+  }
 
   @Test
   void testDoNothingIfParsingError() throws Exception {
@@ -121,14 +178,41 @@ class XmlFileSensorTest {
     assertThat(descriptor.isGlobal()).isFalse();
     assertThat(descriptor.configurationPredicate().test(new MapSettings().asConfig())).isFalse();
 
-    // FIXME was checking activation as soon as there is an XML rule. TO BE DROPPED, like the rest of the class
-    // sensor = new XmlFileSensor(new CheckFactory(activeRules()));
-    // descriptor = new DefaultSensorDescriptor();
-    // sensor.describe(descriptor);
-    // assertThat(descriptor.languages()).isEmpty();
-    // assertThat(descriptor.isGlobal()).isFalse();
-    // assertThat(descriptor.configurationPredicate().test(new MapSettings().asConfig())).isTrue();
+    sensor = new XmlFileSensor(new CheckFactory(activeRules()));
+    descriptor = new DefaultSensorDescriptor();
+    sensor.describe(descriptor);
+    assertThat(descriptor.languages()).isEmpty();
+    assertThat(descriptor.isGlobal()).isFalse();
+    assertThat(descriptor.configurationPredicate().test(new MapSettings().asConfig())).isTrue();
 
+  }
+
+  @Test
+  void testCheckFailure() throws Exception {
+    XmlFileSensor sensor = new XmlFileSensor(new CheckFactory(new ActiveRulesBuilder().build()));
+    InputFile inputFile = addFileWithIssue("xml");
+    XmlFile xmlFile = XmlFile.create(inputFile);
+    sensor.scanFile(context, xmlFile, new TestCheck(), XML_RULE_KEY);
+
+    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
+    assertThat(logTester.logs(LoggerLevel.ERROR).get(0)).isEqualTo("Failed to analyze 'test.xml' with rule java:S3281");
+  }
+
+  private InputFile addFileWithIssue(String extension) {
+    DefaultInputFile inputFile = TestInputFileBuilder.create("moduleKey", "test." + extension)
+      .setCharset(StandardCharsets.UTF_8)
+      .setContents("<ejb-jar>\n" +
+        "  <assembly-descriptor>\n" +
+        "    <interceptor-binding>\n" +
+        "      <ejb-name>*</ejb-name>\n" +
+        "      <interceptor-class>com.myco.ImportantInterceptor1</interceptor-class>" +
+        "    </interceptor-binding>\n" +
+        "  </assembly-descriptor>\n" +
+        "</ejb-jar>")
+      .setPublish(false)
+      .build();
+    context.fileSystem().add(inputFile);
+    return inputFile;
   }
 
   private static class TestCheck extends SonarXmlCheck {

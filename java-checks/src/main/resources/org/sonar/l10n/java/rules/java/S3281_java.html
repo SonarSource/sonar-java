@@ -1,0 +1,30 @@
+<p>Default interceptors, such as application security interceptors, must be listed in the <code>ejb-jar.xml</code> file, or they will not be treated
+as default.</p>
+<p>This rule applies to projects that contain JEE Beans (any one of <code>javax.ejb.Singleton</code>, <code>MessageDriven</code>,
+<code>Stateless</code> or <code>Stateful</code>).</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+// file: ejb-interceptors.xml
+&lt;assembly-descriptor&gt;
+ &lt;interceptor-binding&gt; &lt;!-- should be declared in ejb-jar.xml --&gt;
+      &lt;ejb-name&gt;*&lt;/ejb-name&gt;
+      &lt;interceptor-class&gt;com.myco.ImportantInterceptor&lt;/interceptor-class&gt; &lt;!-- Noncompliant; will NOT be treated as default --&gt;
+   &lt;/interceptor-binding&gt;
+&lt;/assembly-descriptor&gt;
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+// file: ejb-jar.xml
+&lt;assembly-descriptor&gt;
+ &lt;interceptor-binding&gt;
+      &lt;ejb-name&gt;*&lt;/ejb-name&gt;
+      &lt;interceptor-class&gt;com.myco.ImportantInterceptor&lt;/interceptor-class&gt;
+   &lt;/interceptor-binding&gt;
+&lt;/assembly-descriptor&gt;
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A6-Security_Misconfiguration">OWASP Top 10 2017 Category A6</a> - Security
+  Misconfiguration </li>
+</ul>
+

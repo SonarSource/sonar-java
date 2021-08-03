@@ -1,0 +1,26 @@
+<ejb-jar xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_0.xsd"
+  version="3.0">
+  <assembly-descriptor>
+  
+    <interceptor-binding>
+      <ejb-name>*</ejb-name>
+      <interceptor-class>com.myco.ImportantInterceptor1</interceptor-class> <!-- Noncompliant {{Move this default interceptor to "ejb-jar.xml"}} -->
+<!--  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
+      <interceptor-class>com.myco.ImportantInterceptor2</interceptor-class> <!-- Noncompliant {{Move this default interceptor to "ejb-jar.xml"}} -->
+    </interceptor-binding>
+    
+    <interceptor-binding>
+      <ejb-name>test</ejb-name> <!-- different name -->
+    </interceptor-binding>
+    
+    <interceptor-binding>
+      <ejb-name></ejb-name> <!-- invalid ejb-name -->
+    </interceptor-binding>
+    
+     <interceptor-binding>
+      <ejb-name><value>*</value></ejb-name> <!-- invalid ejb-name -->
+    </interceptor-binding>
+    
+  </assembly-descriptor>
+</ejb-jar>
