@@ -53,10 +53,6 @@
       <groupId>org.sonarsource.analyzer-commons</groupId>
       <artifactId>sonar-analyzer-recognizers</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.sonarsource.analyzer-commons</groupId>
-      <artifactId>sonar-xml-parsing</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -86,11 +82,6 @@
     <dependency>
       <groupId>org.sonarsource.analyzer-commons</groupId>
       <artifactId>sonar-analyzer-test-commons</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.sonarsource.analyzer-commons</groupId>
-      <artifactId>test-sonar-xml-parsing</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
