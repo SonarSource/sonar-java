@@ -77,7 +77,7 @@ class ChangeMethodContractCheck_C extends ChangeMethodContractCheck {
   @javax.annotation.Nullable // Noncompliant [[sc=3;ec=29]] {{Remove this "Nullable" annotation to honor the overridden method's contract.}}
   String annotatedNonNull(Object a) { return null; }
 
-  public boolean equals(@javax.annotation.Nonnull Object o) { return false; } // Noncompliant {{Equals method should accept null parameters and return false.}}
+  public boolean equals(@javax.annotation.Nonnull Object o) { return false; } // Compliant, handled by by S4454.
 }
 
 /**
