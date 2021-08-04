@@ -77,8 +77,7 @@ public class JavaPlugin implements Plugin {
       SonarComponents.class,
       DefaultJavaResourceLocator.class,
       JavaSensor.class,
-      PostAnalysisIssueFilter.class,
-      XmlFileSensor.class
+      PostAnalysisIssueFilter.class
     ));
 
     list.add(AnalysisWarningsWrapper.class);

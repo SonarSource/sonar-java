@@ -158,12 +158,6 @@
       </dependency>
       <dependency>
         <groupId>org.sonarsource.analyzer-commons</groupId>
-        <artifactId>test-sonar-xml-parsing</artifactId>
-        <version>${analyzer.commons.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.sonarsource.analyzer-commons</groupId>
         <artifactId>sonar-regex-parsing</artifactId>
         <version>${analyzer.commons.version}</version>
       </dependency>

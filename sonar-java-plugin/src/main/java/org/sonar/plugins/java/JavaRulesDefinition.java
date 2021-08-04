@@ -56,7 +56,6 @@ public class JavaRulesDefinition implements RulesDefinition {
   private static final Set<String> TEMPLATE_RULE_KEY = SetUtils.immutableSetOf(
     "S124",
     "S2253",
-    "S3417",
     "S3688",
     "S3546",
     "S4011");
@@ -117,9 +116,8 @@ public class JavaRulesDefinition implements RulesDefinition {
       String rspecKey = rspecKeyAnnotation.value();
       rule.setInternalKey(rspecKey);
       return rspecKey;
-    } else {
-      return rule.key();
     }
+    return rule.key();
   }
 
   @Nullable

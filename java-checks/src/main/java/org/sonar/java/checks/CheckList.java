@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -209,7 +208,6 @@ import org.sonar.java.se.checks.StreamNotConsumedCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.java.se.checks.XxeProcessingCheck;
 import org.sonar.plugins.java.api.JavaCheck;
-import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
 
 public final class CheckList {
 
@@ -219,7 +217,7 @@ public final class CheckList {
   }
 
   public static List<Class<?>> getChecks() {
-    return Stream.of(getJavaChecks(), getJavaTestChecks(), getXmlChecks())
+    return Stream.of(getJavaChecks(), getJavaTestChecks())
       .flatMap(List::stream).collect(Collectors.toList());
   }
 
@@ -839,10 +837,5 @@ public final class CheckList {
       ThreadSleepInTestsCheck.class,
       TooManyAssertionsCheck.class,
       UnusedTestRuleCheck.class);
-  }
-
-  // Rule classes are listed alphabetically
-  public static List<Class<? extends SonarXmlCheck>> getXmlChecks() {
-    return Collections.emptyList();
   }
 }
