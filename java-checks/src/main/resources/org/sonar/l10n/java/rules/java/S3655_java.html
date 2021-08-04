@@ -12,6 +12,12 @@ Optional&lt;String&gt; value = this.getOptionalValue();
 
 String stringValue = value.get(); // Noncompliant
 </pre>
+<h2>Noncompliant Code Example<h2>
+<pre>
+if (data.getOptionalValue().isPresent()) { ...
+    data.getOptionalValue().get(); // Also Noncompliant because of indirect access
+}
+</pre>
 <h2>Compliant Solution</h2>
 <pre>
 Optional&lt;String&gt; value = this.getOptionalValue();
