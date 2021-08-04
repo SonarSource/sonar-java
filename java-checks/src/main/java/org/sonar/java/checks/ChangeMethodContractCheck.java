@@ -56,8 +56,7 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
 
   private void checkContractChange(MethodTree methodTree, Symbol.MethodSymbol overridee) {
     if (MethodTreeUtils.isEqualsMethod(methodTree)) {
-      NullableAnnotationUtils.nonNullAnnotation(methodTree.parameters().get(0).modifiers())
-        .ifPresent(annotation -> reportIssue(annotation, "Equals method should accept null parameters and return false."));
+      // Handled by S4454.
       return;
     }
     for (int i = 0; i < methodTree.parameters().size(); i++) {
