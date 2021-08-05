@@ -34,6 +34,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
@@ -72,6 +73,8 @@ public class SonarComponents {
 
   public static final String FAIL_ON_EXCEPTION_KEY = "sonar.internal.analysis.failFast";
   public static final String SONAR_BATCH_MODE_KEY = "sonar.java.internal.batchMode";
+
+  private static final Pattern LINE_BREAK_PATTERN = Pattern.compile("(\r\n|[\n\r])");
 
   private final FileLinesContextFactory fileLinesContextFactory;
 
@@ -295,8 +298,9 @@ public class SonarComponents {
   public List<String> fileLines(InputFile inputFile) {
     List<String> lines = new ArrayList<>();
     try (Scanner scanner = new Scanner(inputFile.inputStream(), inputFile.charset().name())) {
-      while (scanner.hasNextLine()) {
-        lines.add(scanner.nextLine());
+      scanner.useDelimiter(LINE_BREAK_PATTERN);
+      while (scanner.hasNext()) {
+        lines.add(scanner.next());
       }
     } catch (IOException e) {
       throw new AnalysisException(String.format("Unable to read file '%s'", inputFile), e);
