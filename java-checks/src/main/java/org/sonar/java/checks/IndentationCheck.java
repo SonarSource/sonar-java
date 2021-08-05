@@ -179,7 +179,7 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
     SyntaxToken firstSyntaxToken = tree.firstToken();
     String line = fileLines.get(firstSyntaxToken.line() - 1);
     int level = firstSyntaxToken.column();
-    for (int i = 0; i < firstSyntaxToken.column(); i++) {
+    for (int i = 0; i < firstSyntaxToken.column() && i < line.length(); i++) {
       if (line.charAt(i) == '\t') {
         level += indentationLevel - 1;
       }
