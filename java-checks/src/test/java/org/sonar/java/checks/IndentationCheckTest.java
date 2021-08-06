@@ -51,4 +51,12 @@ class IndentationCheckTest {
       .withCheck(new IndentationCheck())
       .verifyIssues();
   }
+
+  @Test
+  void tolerates_line_breaking_control_characters() {
+    CheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/IndentationCheckWithControlCharacters.java"))
+      .withCheck(new IndentationCheck())
+      .verifyNoIssues();
+  }
 }
