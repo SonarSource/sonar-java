@@ -305,6 +305,7 @@ public final class CheckList {
       CognitiveComplexityMethodCheck.class,
       CollectInsteadOfForeachCheck.class,
       CollectionCallingItselfCheck.class,
+      CollectionConstructorReferenceCheck.class,
       CollectionInappropriateCallsCheck.class,
       CollectionMethodsWithLinearComplexityCheck.class,
       CollectionSizeAndArrayLengthCheck.class,
