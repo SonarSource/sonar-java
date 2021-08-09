@@ -24,7 +24,6 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -59,11 +58,11 @@ public class CollectionConstructorReferenceCheck extends AbstractMethodDetection
   @Override
   protected void onMethodReferenceFound(MethodReferenceTree methodReference) {
     if ("java.util.function.Function".equals(methodReference.symbolType().fullyQualifiedName())) {
-      Type methodOwnerType = ((ExpressionTree) methodReference.expression()).symbolType();
+      String methodOwnerTypeName = ((ExpressionTree) methodReference.expression()).symbolType().name();
       reportIssue(methodReference, String.format(
         "Replace this method reference by a lambda to explicitly show the usage of %1$s(int %2$s) or %1$s().",
-        methodOwnerType.name(),
-        "IdentityHashMap".equals(methodOwnerType.name()) ? "expectedMaxSize" : "initialCapacity"));
+        methodOwnerTypeName,
+        "IdentityHashMap".equals(methodOwnerTypeName) ? "expectedMaxSize" : "initialCapacity"));
     }
   }
 
