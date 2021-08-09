@@ -21,36 +21,35 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import org.sonar.check.Rule;
-import org.sonar.java.collections.MapBuilder;
-import org.sonar.java.model.ExpressionUtils;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S5329")
-public class CollectionConstructorReferenceCheck extends IssuableSubscriptionVisitor {
+public class CollectionConstructorReferenceCheck extends AbstractMethodDetection {
 
-  private static final String INITIAL_CAPACITY = "initialCapacity";
-  private static final String EXPECTED_MAX_SIZE = "expectedMaxSize";
-
-  private static final Map<String, String> COLLECTION_CONSTRUCTOR_WITH_INT_ARGUMENT = MapBuilder.<String, String>newMap()
-    .put("java.util.ArrayList", INITIAL_CAPACITY)
-    .put("java.util.HashMap", INITIAL_CAPACITY)
-    .put("java.util.HashSet", INITIAL_CAPACITY)
-    .put("java.util.Hashtable", INITIAL_CAPACITY)
-    .put("java.util.IdentityHashMap", EXPECTED_MAX_SIZE)
-    .put("java.util.LinkedHashMap", INITIAL_CAPACITY)
-    .put("java.util.LinkedHashSet", INITIAL_CAPACITY)
-    .put("java.util.PriorityQueue", INITIAL_CAPACITY)
-    .put("java.util.Vector", INITIAL_CAPACITY)
-    .put("java.util.WeakHashMap", INITIAL_CAPACITY)
-    .build();
+  @Override
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.create()
+      .ofTypes(
+        "java.util.ArrayList",
+        "java.util.HashMap",
+        "java.util.HashSet",
+        "java.util.Hashtable",
+        "java.util.IdentityHashMap",
+        "java.util.LinkedHashMap",
+        "java.util.LinkedHashSet",
+        "java.util.PriorityQueue",
+        "java.util.Vector",
+        "java.util.WeakHashMap")
+      .constructor()
+      .addParametersMatcher("int")
+      .build();
+  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -58,40 +57,14 @@ public class CollectionConstructorReferenceCheck extends IssuableSubscriptionVis
   }
 
   @Override
-  public void visitNode(Tree tree) {
-    MethodReferenceTree methodReference = (MethodReferenceTree) tree;
-    if (!isConstructorWithSingleIntArgument(methodReference) ||
-      !"java.util.function.Function".equals(methodReference.symbolType().fullyQualifiedName())) {
-      return;
+  protected void onMethodReferenceFound(MethodReferenceTree methodReference) {
+    if ("java.util.function.Function".equals(methodReference.symbolType().fullyQualifiedName())) {
+      Type methodOwnerType = ((ExpressionTree) methodReference.expression()).symbolType();
+      reportIssue(methodReference, String.format(
+        "Replace this method reference by a lambda to explicitly show the usage of %1$s(int %2$s) or %1$s().",
+        methodOwnerType.name(),
+        "IdentityHashMap".equals(methodOwnerType.name()) ? "expectedMaxSize" : "initialCapacity"));
     }
-    methodOwnerType(methodReference).ifPresent(constructorType -> {
-      String intArgumentName = COLLECTION_CONSTRUCTOR_WITH_INT_ARGUMENT.get(constructorType.fullyQualifiedName());
-      if (intArgumentName != null) {
-        reportIssue(methodReference, String.format(
-          "Replace this method reference by a lambda to explicitly show the usage of %1$s(int %2$s) or %1$s().",
-          constructorType.name(),
-          intArgumentName));
-      }
-    });
-  }
-
-  private static boolean isConstructorWithSingleIntArgument(MethodReferenceTree methodReference) {
-    Symbol symbol = methodReference.method().symbol();
-    if (!symbol.isMethodSymbol() || !"<init>".equals(symbol.name())) {
-      return false;
-    }
-    Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
-    List<Type> parameters = methodSymbol.parameterTypes();
-    return parameters.size() == 1 && "int".equals(parameters.get(0).fullyQualifiedName());
-  }
-
-  private static Optional<Type> methodOwnerType(MethodReferenceTree methodReference) {
-    return Optional.of(methodReference.expression())
-      .filter(ExpressionTree.class::isInstance)
-      .map(ExpressionTree.class::cast)
-      .flatMap(ExpressionUtils::extractIdentifierSymbol)
-      .filter(Symbol::isTypeSymbol)
-      .map(Symbol::type);
   }
 
 }
