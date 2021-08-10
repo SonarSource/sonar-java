@@ -54,13 +54,13 @@ public class ControlCharacterInLiteralCheck extends IssuableSubscriptionVisitor 
   private static final Pattern CONTROL_CHARACTERS_WITHOUT_TABS_PATTERN = Pattern.compile("[" + CONTROL_CHARACTERS + "]");
 
   @RuleProperty(
-    key = "allowTabs",
-    description = "Allow tabs in string literals",
+    key = "allowTabsInTextBlocks",
+    description = "Allow tabs in text blocks",
     defaultValue = "false")
-  public boolean allowTabs;
+  public boolean allowTabsInTextBlocks;
 
   public ControlCharacterInLiteralCheck() {
-    this.allowTabs = false;
+    this.allowTabsInTextBlocks = false;
   }
 
 
@@ -74,7 +74,7 @@ public class ControlCharacterInLiteralCheck extends IssuableSubscriptionVisitor 
     LiteralTree literal = (LiteralTree) tree;
     String literalValue = LiteralUtils.getAsStringValue(literal);
     Matcher matcher = null;
-    if (allowTabs) {
+    if (allowTabsInTextBlocks && tree.is(Tree.Kind.TEXT_BLOCK)) {
       matcher = CONTROL_CHARACTERS_WITHOUT_TABS_PATTERN.matcher(literalValue);
     } else {
       matcher = CONTROL_CHARACTERS_PATTERN.matcher(literalValue);

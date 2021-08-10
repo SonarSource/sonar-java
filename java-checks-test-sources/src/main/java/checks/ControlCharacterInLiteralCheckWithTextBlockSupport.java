@@ -29,7 +29,7 @@ public class ControlCharacterInLiteralCheckWithTextBlockSupport {
     
   };
 
-  public String template() {
+  public String returnWithU0009() {
     // Noncompliant@+1 {{Remove the non-escaped \u0009 character from this literal.}}
     return """
       <html>

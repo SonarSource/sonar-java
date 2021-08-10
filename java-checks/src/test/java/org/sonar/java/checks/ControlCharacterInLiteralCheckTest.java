@@ -47,7 +47,7 @@ class ControlCharacterInLiteralCheckTest {
   @Test
   void test_tabs_allowed() {
     ControlCharacterInLiteralCheck check = new ControlCharacterInLiteralCheck();
-    check.allowTabs = true;
+    check.allowTabsInTextBlocks = true;
     CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/ControlCharacterInLiteralCheckTabsAllowed.java"))
       .withCheck(check)
