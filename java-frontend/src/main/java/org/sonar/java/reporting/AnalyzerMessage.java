@@ -117,6 +117,33 @@ public class AnalyzerMessage {
     public boolean isEmpty() {
       return startLine == endLine && startCharacter == endCharacter;
     }
+
+    @Override
+    public int hashCode() {
+      int prime = 27;
+      int result = 1;
+      result = prime * result + startLine;
+      result = prime * result + startCharacter;
+      result = prime * result + endLine;
+      result = prime * result + endCharacter;
+      return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (!(obj instanceof TextSpan)) {
+        return false;
+      }
+      TextSpan other = (TextSpan) obj;
+      return startLine == other.startLine
+        && startCharacter == other.startCharacter
+        && endLine == other.endLine
+        && endCharacter == other.endCharacter;
+    }
+
   }
 
   public static AnalyzerMessage.TextSpan textSpanFor(Tree syntaxNode) {
