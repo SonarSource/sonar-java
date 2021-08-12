@@ -1,12 +1,14 @@
-class A {
-  void foo(int x) {
+package checks.unused;
+
+class UnusedThrowableCheck {
+  void foo(int x) throws Throwable {
     if (x < 0) {
       new IllegalArgumentException("x must be nonnegative"); // Noncompliant {{Throw this exception or remove this useless statement.}} [[sc=7;ec=60]]
     }
     if (x < 0) {
       throw new IllegalArgumentException("x must be nonnegative");
     }
-    new A();
+    new UnusedThrowableCheck();
     Throwable t = new IllegalArgumentException("x must be nonnegative");
     if (x < 0) {
       throw t;

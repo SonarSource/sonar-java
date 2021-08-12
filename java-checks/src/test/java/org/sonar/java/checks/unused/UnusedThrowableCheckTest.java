@@ -21,6 +21,7 @@ package org.sonar.java.checks.unused;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 class UnusedThrowableCheckTest {
@@ -28,7 +29,7 @@ class UnusedThrowableCheckTest {
   @Test
   void test() {
     ((InternalCheckVerifier) CheckVerifier.newVerifier())
-      .onFile("src/test/files/checks/unused/UnusedThrowableCheck.java")
+      .onFile(TestUtils.testSourcesPath("checks/unused/UnusedThrowableCheck.java"))
       .withCheck(new UnusedThrowableCheck())
       .withQuickFixes()
       .verifyIssues();
