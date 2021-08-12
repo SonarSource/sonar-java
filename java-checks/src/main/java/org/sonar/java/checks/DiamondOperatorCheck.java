@@ -30,6 +30,9 @@ import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -49,6 +52,7 @@ import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeArguments;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -88,10 +92,14 @@ public class DiamondOperatorCheck extends SubscriptionVisitor implements JavaVer
     TypeTree type = getTypeFromExpression(tree.parent(), expressionKindsToCheck);
     if ((type != null && isParameterizedType(type))
       || usedAsArgumentWithoutDiamond(newClassTree)) {
-      ((DefaultJavaFileScannerContext) context).newIssue()
+      TypeArguments typeArguments = ((ParameterizedTypeTree) newTypeTree).typeArguments();
+      ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
         .forRule(this)
-        .onTree(((ParameterizedTypeTree) newTypeTree).typeArguments())
+        .onTree(typeArguments)
         .withMessage("Replace the type specification in this constructor call with the diamond operator (\"<>\").%s", context.getJavaVersion().java7CompatibilityMessage())
+        .withQuickFix(() -> JavaQuickFix.newQuickFix("Replace with <>")
+          .addTextEdit(JavaTextEdit.replaceTree(typeArguments, "<>"))
+          .build())
         .report();
     }
   }
