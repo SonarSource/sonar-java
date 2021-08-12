@@ -25,15 +25,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.assertj.core.api.Fail;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.collections.MapBuilder;
+import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.END_COLUMN;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.END_LINE;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.FLOWS;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.LINE;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.MESSAGE;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.QUICK_FIXES;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.SECONDARY_LOCATIONS;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.START_COLUMN;
 
@@ -236,5 +243,211 @@ class ExpectationsTest {
       .put("id2", "flow msg12")
       .put("id3", "flow msg3")
       .build());
+  }
+
+  @Nested
+  class QuickFixes {
+    private Expectations.Parser parser;
+    private Expectations expectations;
+
+    @BeforeEach
+    void setup() {
+      expectations = new Expectations();
+      expectations.setCollectQuickFixes();
+      parser = expectations.parser();
+    }
+
+    @Test
+    void quickFix_id_is_part_of_usual_atributes() {
+      Expectations.Parser.ParsedComment parsedComment = parser.parseIssue("// Noncompliant [[sc=2;ec=4;quickfixes=qf1]]", TEST_LINE);
+      assertThat(parsedComment.issue).containsEntry(QUICK_FIXES, Collections.singletonList("qf1"));
+    }
+
+    @Test
+    void there_can_be_multiple_quickfixes() {
+      Expectations.Parser.ParsedComment parsedComment = parser.parseIssue("// Noncompliant [[sc=2;ec=4;quickfixes=qf1,abc,myFix]]", TEST_LINE);
+      assertThat(parsedComment.issue).containsEntry(QUICK_FIXES, Arrays.asList("qf1", "abc", "myFix"));
+    }
+
+    @Test
+    void quick_fix_simple() {
+      parser.parseIssue("// Noncompliant [[sc=5;ec=10;quickfixes=qf1]]", TEST_LINE);
+      // Actual line of the comment does not matter, the final value will be computed from the issue line.
+      parser.parseQuickFix("// fix@qf1 {{message}}", TEST_LINE + 1);
+      parser.parseQuickFix("// edit@qf1 [[sc=2;ec=4]] {{Do something}}", TEST_LINE + 2);
+      parser.consolidateQuickFixes();
+      Map<TextSpan, List<JavaQuickFix>> quickFixes = expectations.quickFixes();
+
+      TextSpan expectedTextSpanIssue = new TextSpan(42,4, 42,9);
+
+      assertThat(quickFixes).hasSize(1);
+      JavaQuickFix quickFix = quickFixes.get(expectedTextSpanIssue).get(0);
+      assertJavaQuickFix(quickFix, "(42:1)-(42:3)");
+    }
+
+
+    @Test
+    void quick_fix_relative_lines() {
+      parser.parseIssue("// Noncompliant@+1 [[sc=5;ec=10;quickfixes=qf1]]", TEST_LINE);
+      parser.parseQuickFix("// fix@qf1 {{message}}", TEST_LINE + 1);
+      parser.parseQuickFix("// edit@qf1 [[sl=+1;sc=2;ec=4]] {{Do something}}", TEST_LINE + 2);
+      parser.consolidateQuickFixes();
+      Map<TextSpan, List<JavaQuickFix>> quickFixes = expectations.quickFixes();
+
+      TextSpan expectedTextSpanIssue = new TextSpan(43,4, 43,9);
+
+      assertThat(quickFixes).hasSize(1);
+      JavaQuickFix quickFix = quickFixes.get(expectedTextSpanIssue).get(0);
+      assertJavaQuickFix(quickFix, "(44:1)-(43:3)");
+    }
+
+    @Test
+    void quick_fix_edit_with_absolute_lines() {
+      parser.parseIssue("// Noncompliant@ [[sc=5;ec=10;quickfixes=qf1]]", TEST_LINE);
+      parser.parseQuickFix("// fix@qf1 {{message}}", TEST_LINE + 1);
+      parser.parseQuickFix("// edit@qf1 [[sl=10;el=13;sc=2;ec=4]] {{Do something}}", TEST_LINE + 2);
+      parser.consolidateQuickFixes();
+      Map<TextSpan, List<JavaQuickFix>> quickFixes = expectations.quickFixes();
+
+      TextSpan expectedTextSpanIssue = new TextSpan(42,4, 42,9);
+
+      assertThat(quickFixes).hasSize(1);
+      JavaQuickFix quickFix = quickFixes.get(expectedTextSpanIssue).get(0);
+      assertJavaQuickFix(quickFix, "(10:1)-(13:3)");
+    }
+
+    @Test
+    void quick_fix_edit_with_relative_end_lines() {
+      parser.parseIssue("// Noncompliant@ [[sc=5;ec=10;quickfixes=qf1]]", TEST_LINE);
+      parser.parseQuickFix("// fix@qf1 {{message}}", TEST_LINE + 1);
+      parser.parseQuickFix("// edit@qf1 [[el=+2;sc=2;ec=4]] {{Do something}}", TEST_LINE + 2);
+      parser.consolidateQuickFixes();
+      Map<TextSpan, List<JavaQuickFix>> quickFixes = expectations.quickFixes();
+
+      TextSpan expectedTextSpanIssue = new TextSpan(42,4, 42,9);
+
+      assertThat(quickFixes).hasSize(1);
+      JavaQuickFix quickFix = quickFixes.get(expectedTextSpanIssue).get(0);
+      assertJavaQuickFix(quickFix, "(42:1)-(44:3)");
+    }
+
+    @Test
+    void quick_fix_edit_with_relative_start_lines() {
+      parser.parseIssue("// Noncompliant [[sc=5;ec=10;quickfixes=qf1]]", TEST_LINE);
+      parser.parseQuickFix("// fix@qf1 {{message}}", TEST_LINE + 1);
+      parser.parseQuickFix("// edit@qf1 [[sl=+2;sc=2;ec=4]] {{Do something}}", TEST_LINE + 2);
+      parser.consolidateQuickFixes();
+      Map<TextSpan, List<JavaQuickFix>> quickFixes = expectations.quickFixes();
+
+      TextSpan expectedTextSpanIssue = new TextSpan(42,4, 42,9);
+
+      assertThat(quickFixes).hasSize(1);
+      JavaQuickFix quickFix = quickFixes.get(expectedTextSpanIssue).get(0);
+      assertJavaQuickFix(quickFix, "(44:1)-(42:3)");
+    }
+
+    @Test
+    void quick_fix_edit_with_relative_end_line_in_both() {
+      parser.parseIssue("// Noncompliant@ [[sc=5;ec=10;el=+5;quickfixes=qf1]]", TEST_LINE);
+      parser.parseQuickFix("// fix@qf1 {{message}}", TEST_LINE + 1);
+      parser.parseQuickFix("// edit@qf1 [[el=+2;sc=2;ec=4]] {{Do something}}", TEST_LINE + 2);
+      parser.consolidateQuickFixes();
+      Map<TextSpan, List<JavaQuickFix>> quickFixes = expectations.quickFixes();
+
+      TextSpan expectedTextSpanIssue = new TextSpan(42,4, 47,9);
+
+      assertThat(quickFixes).hasSize(1);
+      JavaQuickFix quickFix = quickFixes.get(expectedTextSpanIssue).get(0);
+      assertJavaQuickFix(quickFix, "(42:1)-(44:3)");
+    }
+
+    private void assertJavaQuickFix(JavaQuickFix quickFix, String editTextSpan) {
+      assertThat(quickFix.getDescription()).isEqualTo("message");
+      List<JavaTextEdit> textEdits = quickFix.getTextEdits();
+      assertThat(textEdits).hasSize(1);
+      JavaTextEdit javaTextEdit = textEdits.get(0);
+
+      assertThat(javaTextEdit.getReplacement()).isEqualTo("Do something");
+      TextSpan textSpan = javaTextEdit.getTextSpan();
+
+      // Issue is on line 43, then edit is on next line: 44.
+      assertThat(textSpan).hasToString(editTextSpan);
+    }
+
+    @Test
+    void quick_fix_without_message() {
+      parser.parseIssue("// Noncompliant@+1 [[sc=5;ec=10;quickfixes=qf1]]", TEST_LINE);
+      assertThatThrownBy(() -> parser.consolidateQuickFixes()).isInstanceOf(AssertionError.class)
+        .hasMessage("Missing message for quick fix: qf1");
+    }
+
+    @Test
+    void quick_fix_without_edits() {
+      parser.parseIssue("// Noncompliant@+1 [[sc=5;ec=10;quickfixes=qf1]]", TEST_LINE);
+      parser.parseQuickFix("// fix@qf1 {{message}}", TEST_LINE);
+      assertThatThrownBy(() -> parser.consolidateQuickFixes()).isInstanceOf(AssertionError.class)
+        .hasMessage("Missing edits for quick fix: qf1");
+    }
+
+    @Test
+    void quick_fix_edit_without_start_column() {
+      parser.parseIssue("// Noncompliant@ [[sc=5;ec=10;quickfixes=qf1]]", TEST_LINE);
+      parser.parseQuickFix("// fix@qf1 {{message}}", TEST_LINE + 1);
+      parser.parseQuickFix("// edit@qf1 [[ec=4]] {{Do something}}", TEST_LINE + 2);
+      assertThatThrownBy(() -> parser.consolidateQuickFixes()).isInstanceOf(AssertionError.class)
+        .hasMessage("start column not specified for quick fix edit at line 44.");
+    }
+
+    @Test
+    void quick_fix_edit_without_end_column() {
+      parser.parseIssue("// Noncompliant@ [[sc=5;ec=10;quickfixes=qf1]]", TEST_LINE);
+      parser.parseQuickFix("// fix@qf1 {{message}}", TEST_LINE + 1);
+      parser.parseQuickFix("// edit@qf1 [[sc=4]] {{Do something}}", TEST_LINE + 2);
+      assertThatThrownBy(() -> parser.consolidateQuickFixes()).isInstanceOf(AssertionError.class)
+        .hasMessage("end column not specified for quick fix edit at line 44.");
+    }
+
+    @Test
+    void quick_fix_message_without_issue() {
+      parser.parseQuickFix("// fix@qf1 {{message}}", TEST_LINE);
+      assertThatThrownBy(() -> parser.consolidateQuickFixes()).isInstanceOf(AssertionError.class)
+        .hasMessage("Missing issue for quick fix id: qf1");
+    }
+
+    @Test
+    void quick_fix_edit_without_issue() {
+      parser.parseQuickFix("// edit@qf1 [[sc=2;ec=4]] {{Do something}}", TEST_LINE);
+      assertThatThrownBy(() -> parser.consolidateQuickFixes()).isInstanceOf(AssertionError.class)
+        .hasMessage("Missing issue for quick fix id: qf1");
+    }
+
+    @Test
+    void quick_fix_edit_without_replacement() {
+      parser.parseIssue("// Noncompliant@ [[sc=5;ec=10;quickfixes=qf1]]", TEST_LINE);
+      parser.parseQuickFix("// fix@qf1 {{message}}", TEST_LINE + 1);
+      parser.parseQuickFix("// edit@qf1 [[sc=2;ec=4]]", TEST_LINE);
+      assertThatThrownBy(() -> parser.consolidateQuickFixes()).isInstanceOf(AssertionError.class)
+        .hasMessage("Quickfix edit should contain a replacement.");
+    }
+
+    @Test
+    void quick_fix_without_start_column() {
+      assertThatThrownBy(() -> parser.parseIssue("// Noncompliant@ [[ec=10;quickfixes=qf1]]", TEST_LINE)).isInstanceOf(AssertionError.class)
+        .hasMessage("An issue with quick fixes must set the start column ([Line 42]).");
+    }
+
+    @Test
+    void quick_fix_without_end_column() {
+      assertThatThrownBy(() -> parser.parseIssue("// Noncompliant@ [[sc=10;quickfixes=qf1]]", TEST_LINE)).isInstanceOf(AssertionError.class)
+        .hasMessage("An issue with quick fixes must set the end column ([Line 42]).");
+    }
+
+    @Test
+    void unrelated_comment() {
+      parser.parseQuickFix("// myMail@abc.com {{message}}", TEST_LINE);
+      parser.consolidateQuickFixes();
+      Map<TextSpan, List<JavaQuickFix>> quickFixes = expectations.quickFixes();
+      assertThat(quickFixes).isEmpty();
+    }
   }
 }
