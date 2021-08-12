@@ -165,6 +165,17 @@ public class AnalyzerMessage {
       textSpanBetween(firstSyntaxToken, lastSyntaxToken);
   }
 
+  public static AnalyzerMessage.TextSpan textSpanBetween(Tree startTree, boolean includeStart, Tree endTree, boolean includeEnd) {
+    AnalyzerMessage.TextSpan start = AnalyzerMessage.textSpanFor(startTree);
+    AnalyzerMessage.TextSpan end = AnalyzerMessage.textSpanFor(endTree);
+    return new AnalyzerMessage.TextSpan(
+      includeStart ? start.startLine : start.endLine,
+      includeStart ? start.startCharacter : start.endCharacter,
+      includeEnd ? end.endLine : end.startLine,
+      includeEnd ? end.endCharacter : end.startCharacter
+    );
+  }
+
   private static AnalyzerMessage.TextSpan textSpanBetween(SyntaxToken firstSyntaxToken, SyntaxToken lastSyntaxToken) {
     AnalyzerMessage.TextSpan location = new AnalyzerMessage.TextSpan(
       firstSyntaxToken.line(),
