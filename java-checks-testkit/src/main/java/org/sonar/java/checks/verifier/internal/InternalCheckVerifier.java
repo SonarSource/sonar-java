@@ -642,10 +642,14 @@ public class InternalCheckVerifier implements CheckVerifier {
           throw new AssertionError(String.format("[Quick Fix] Wrong change location of edit %d for issue on line %d.%nExpected: {{%s}}%nbut was:     {{%s}}",
             (i + 1),
             actualIssue.getLine(),
-            expectedTextEdit.getTextSpan(),
-            actualNormalizedTextSpan));
+            editorTextSpan(expectedTextEdit.getTextSpan()),
+            editorTextSpan(actualNormalizedTextSpan)));
         }
       }
+    }
+
+    private static TextSpan editorTextSpan(TextSpan textSpan) {
+      return new TextSpan(textSpan.startLine, textSpan.startCharacter + 1, textSpan.endLine, textSpan.endCharacter + 1);
     }
   }
 }
