@@ -40,6 +40,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
+import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.bootstrap.ProjectDefinition;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
@@ -71,6 +72,7 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
+import org.sonarsource.sonarlint.core.container.global.SonarLintRuntimeImpl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -89,7 +91,7 @@ import static org.sonar.java.TestUtils.computeLineEndOffsets;
 @ExtendWith(MockitoExtension.class)
 class SonarComponentsTest {
 
-  private static final Version V6_7 = Version.create(6, 7);
+  private static final Version V8_9 = Version.create(8, 9);
 
   private static final String REPOSITORY_NAME = "custom";
 
@@ -325,10 +327,10 @@ class SonarComponentsTest {
 
     RecognitionException parseError = new RecognitionException(-1, "invalid code", new Exception("parse error"));
 
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_7));
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(V8_9));
     assertThat(sonarComponents.reportAnalysisError(parseError, inputFile)).isTrue();
 
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(V6_7, SonarQubeSide.SCANNER, SonarEdition.COMMUNITY));
+    context.setRuntime(SonarRuntimeImpl.forSonarQube(V8_9, SonarQubeSide.SCANNER, SonarEdition.COMMUNITY));
     assertThat(sonarComponents.reportAnalysisError(parseError, inputFile)).isFalse();
 
   }
@@ -365,18 +367,37 @@ class SonarComponentsTest {
 
   @Test
   void cancellation() {
-    SonarComponents sonarComponents = new SonarComponents(null, null, null,
-      null, null, (ProjectDefinition)null);
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
     SensorContextTester context = SensorContextTester.create(new File(""));
     sonarComponents.setSensorContext(context);
 
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_7));
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(V8_9));
     assertThat(sonarComponents.analysisCancelled()).isFalse();
 
     // cancellation only handled from SQ 6.0
     context.setCancelled(true);
 
     assertThat(sonarComponents.analysisCancelled()).isTrue();
+  }
+
+  @Test
+  void knows_if_quickfixes_are_supported() {
+    SensorContextTester context = SensorContextTester.create(new File(""));
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    sonarComponents.setSensorContext(context);
+
+    SonarRuntime sonarQube = SonarRuntimeImpl.forSonarQube(V8_9, SonarQubeSide.SCANNER, SonarEdition.COMMUNITY);
+    context.setRuntime(sonarQube);
+    assertThat(sonarComponents.isQuickFixCompatible()).isFalse();
+
+    SonarRuntime sonarLintWithoutQuickFix = new SonarLintRuntimeImpl(V8_9, Version.create(5, 3), -1L);
+    context.setRuntime(sonarLintWithoutQuickFix);
+    assertThat(sonarComponents.isQuickFixCompatible()).isFalse();
+
+    // support of quickfixes introduced in 6.3
+    SonarRuntime sonarLintWithQuickFix = new SonarLintRuntimeImpl(V8_9, Version.create(6, 4), -1L);
+    context.setRuntime(sonarLintWithQuickFix);
+    assertThat(sonarComponents.isQuickFixCompatible()).isTrue();
   }
 
   @Test
@@ -390,7 +411,7 @@ class SonarComponentsTest {
     fileSystem.setEncoding(StandardCharsets.ISO_8859_1);
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null);
 
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_7));
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(V8_9));
     sonarComponents.setSensorContext(context);
 
     String fileContent = sonarComponents.inputFileContents(inputFile);
@@ -409,7 +430,7 @@ class SonarComponentsTest {
     DefaultFileSystem fileSystem = context.fileSystem();
     InputFile unknownInputFile = TestUtils.emptyInputFile("unknown_file.java");
     fileSystem.add(unknownInputFile);
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_7));
+    context.setRuntime(SonarRuntimeImpl.forSonarLint(V8_9));
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null);
     sonarComponents.setSensorContext(context);
 

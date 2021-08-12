@@ -260,4 +260,26 @@ class AnalyzerMessageTest {
     analyzerMessage = new AnalyzerMessage(javaCheck, null, null, null, cost);
     assertThat(analyzerMessage).hasToString("'null' in null:null");
   }
+
+  @Test
+  void test_text_span_equals_hashcode() {
+    TextSpan textSpan1 = new TextSpan(1, 2, 3, 4);
+    TextSpan textSpanSameAs1 = new TextSpan(1, 2, 3, 4);
+    TextSpan textSpan2 = new TextSpan(2, 3, 4, 5);
+
+    assertThat(textSpan1.equals(null)).isFalse();
+    assertThat(textSpan1.equals(new Object())).isFalse();
+    assertThat(textSpan1.equals(textSpan2)).isFalse();
+
+    assertThat(textSpan1.equals(textSpan1)).isTrue();
+    assertThat(textSpan1.equals(textSpanSameAs1)).isTrue();
+
+    assertThat(textSpan1.hashCode()).isNotEqualTo(textSpan2.hashCode());
+    assertThat(textSpan1.hashCode()).hasSameHashCodeAs(textSpan1.hashCode());
+    assertThat(textSpan1.hashCode()).hasSameHashCodeAs(textSpanSameAs1.hashCode());
+
+    assertThat(new TextSpan(1, 2, 3, 4).equals(new TextSpan(1, 99, 3, 4))).isFalse();
+    assertThat(new TextSpan(1, 2, 3, 4).equals(new TextSpan(1, 2, 99, 4))).isFalse();
+    assertThat(new TextSpan(1, 2, 3, 4).equals(new TextSpan(1, 2, 3, 99))).isFalse();
+  }
 }

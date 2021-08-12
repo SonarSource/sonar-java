@@ -52,6 +52,7 @@ import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.annotations.VisibleForTesting;
@@ -63,6 +64,7 @@ import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
 import org.sonarsource.api.sonarlint.SonarLintSide;
+import org.sonarsource.sonarlint.plugin.api.SonarLintRuntime;
 
 @ScannerSide
 @SonarLintSide
@@ -75,6 +77,7 @@ public class SonarComponents {
   public static final String SONAR_BATCH_MODE_KEY = "sonar.java.internal.batchMode";
 
   private static final Pattern LINE_BREAK_PATTERN = Pattern.compile("(\r\n|[\n\r])");
+  private static final Version SONARLINT_6_3 = Version.parse("6.3");
 
   private final FileLinesContextFactory fileLinesContextFactory;
 
@@ -293,6 +296,10 @@ public class SonarComponents {
 
   public boolean isSonarLintContext() {
     return context.runtime().getProduct() == SonarProduct.SONARLINT;
+  }
+
+  public boolean isQuickFixCompatible() {
+    return isSonarLintContext() && ((SonarLintRuntime) context.runtime()).getSonarLintPluginApiVersion().isGreaterThanOrEqual(SONARLINT_6_3);
   }
 
   public List<String> fileLines(InputFile inputFile) {

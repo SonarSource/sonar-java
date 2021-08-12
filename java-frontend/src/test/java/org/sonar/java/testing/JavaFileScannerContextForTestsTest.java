@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,6 +40,7 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.FluentReporting;
+import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -227,6 +229,26 @@ class JavaFileScannerContextForTestsTest {
       assertThat(issue.flows).isEmpty();
     }
     assertPosition(issue.primaryLocation(), 2, 0, 2, 10);
+  }
+
+  @Test
+  void test_quick_fixes_collected_in_context() {
+    JavaQuickFix quickFix = JavaQuickFix
+      .newQuickFix("desc")
+      .build();
+
+    ((JavaIssueBuilderForTests) context.newIssue())
+      .forRule(CHECK)
+      .onTree(classA)
+      .withMessage("message")
+      .withQuickFix(() -> quickFix)
+      .report();
+
+    Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> quickFixes = context.getQuickFixes();
+    assertThat(quickFixes).hasSize(1);
+
+    assertThat(quickFixes.values().iterator().next()).containsExactly(quickFix);
+    assertThat(quickFixes.keySet().iterator().next()).hasToString("(2:0)-(2:10)");
   }
 
   private static void assertPosition(AnalyzerMessage.TextSpan location, int startLine, int startColumn, int endLine, int endColumn) {

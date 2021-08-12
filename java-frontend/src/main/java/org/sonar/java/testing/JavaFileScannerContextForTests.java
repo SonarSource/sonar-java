@@ -20,8 +20,10 @@
 package org.sonar.java.testing;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -32,6 +34,7 @@ import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.Sema;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.FluentReporting;
+import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -41,6 +44,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContext {
 
   private final Set<AnalyzerMessage> issues = new LinkedHashSet<>();
+  private final Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> quickFixes = new HashMap<>();
   private final SonarComponents sonarComponents;
 
   public JavaFileScannerContextForTests(CompilationUnitTree tree, InputFile inputFile, Sema semanticModel,
@@ -51,6 +55,10 @@ public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContex
 
   public Set<AnalyzerMessage> getIssues() {
     return issues;
+  }
+
+  public Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> getQuickFixes() {
+    return quickFixes;
   }
 
   @Override
@@ -131,6 +139,6 @@ public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContex
 
   @Override
   public FluentReporting.JavaIssueBuilder newIssue() {
-    return new JavaIssueBuilderForTests(getInputFile(), issues);
+    return new JavaIssueBuilderForTests(getInputFile(), issues, quickFixes);
   }
 }
