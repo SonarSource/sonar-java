@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -59,6 +60,8 @@ import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
@@ -73,8 +76,10 @@ import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribut
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.LINE;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.MESSAGE;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.ORDER;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.QUICK_FIXES;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.SECONDARY_LOCATIONS;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.START_COLUMN;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.START_LINE;
 
 class Expectations {
 
@@ -85,11 +90,13 @@ class Expectations {
     .put("startColumn", START_COLUMN)
     .put("el", END_LINE)
     .put("endLine", END_LINE)
+    .put("sl", START_LINE)
     .put("ec", END_COLUMN)
     .put("endColumn", END_COLUMN)
     .put("secondary", SECONDARY_LOCATIONS)
     .put("flows", FLOWS)
     .put("order", ORDER)
+    .put("quickfixes", QUICK_FIXES)
     .build();
 
   enum IssueAttribute {
@@ -99,9 +106,11 @@ class Expectations {
     START_COLUMN(Integer::valueOf),
     END_COLUMN(Integer::valueOf),
     END_LINE(Parser.LineRef::fromString, Parser.LineRef::toLine),
+    START_LINE(Parser.LineRef::fromString, Parser.LineRef::toLine),
     EFFORT_TO_FIX(Double::valueOf),
     SECONDARY_LOCATIONS(multiValueAttribute(Function.identity())),
-    FLOWS(multiValueAttribute(Function.identity()));
+    FLOWS(multiValueAttribute(Function.identity())),
+    QUICK_FIXES(multiValueAttribute(Function.identity()));
 
     private Function<String, ?> setter;
     private Function<Object, Object> getter = Function.identity();
@@ -180,15 +189,78 @@ class Expectations {
     }
   }
 
+  private static class QuickFixEditComment {
+    final Map<IssueAttribute, Object> attributes;
+    @Nullable
+    final String replacement;
+    // Line of the original comment, used mainly for error reporting
+    final int commentLine;
+
+    public QuickFixEditComment(Map<IssueAttribute, Object> attributes, @Nullable String replacement, int commentLine) {
+      this.attributes = attributes;
+      this.replacement = replacement;
+      this.commentLine = commentLine;
+    }
+
+    String replacement() {
+      if (replacement == null) {
+        throw new AssertionError("Quickfix edit should contain a replacement.");
+      }
+      return replacement;
+    }
+
+    AnalyzerMessage.TextSpan getTextSpan(int issueLine) {
+      int startLine = getAbsoluteLine(attributes.get(START_LINE), issueLine);
+      int startColumn = getColumnOffset(START_COLUMN.get(attributes), "start", commentLine);
+      int endColumn = getColumnOffset(END_COLUMN.get(attributes), "end", commentLine);
+      Object endLineAttribute = attributes.get(END_LINE);
+      int endLine;
+      if (endLineAttribute == null) {
+        endLine = issueLine;
+      } else {
+        endLine = getAbsoluteLine(endLineAttribute, issueLine);
+      }
+      return new AnalyzerMessage.TextSpan(startLine, startColumn, endLine, endColumn);
+    }
+
+    private static int getAbsoluteLine(@Nullable Object o, int issueLine) {
+      if (o == null) {
+        // When the line is not specified in the attributes, return the line of the issue
+        return issueLine;
+      }
+      // If the LineRef is relative, it is relative to the line of the issue
+      return ((Parser.LineRef) o).getLine(issueLine);
+    }
+
+    private static int getColumnOffset(@Nullable Object o, String position, int line) {
+      if (o instanceof Integer) {
+        // Column are 1 based in the Noncompliant comments but 0 based when reporting on tree
+        return ((int) o) - 1;
+      }
+      throw new AssertionError(String.format("%s column not specified for quick fix edit at line %d.", position, line));
+    }
+  }
+
   final Map<Integer, List<Expectations.Issue>> issues = new HashMap<>();
   final Map<String, SortedSet<FlowComment>> flows = new HashMap<>();
   private boolean expectNoIssues = false;
   private String expectedProjectIssue = null;
   private String expectedFileIssue = null;
 
+  private boolean collectQuickFixes = false;
+  private final Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> quickFixes = new HashMap<>();
+
   private Set<String> seenFlowIds = new HashSet<>();
 
   Expectations() {
+  }
+
+  public void setCollectQuickFixes() {
+    this.collectQuickFixes = true;
+  }
+
+  public Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> quickFixes() {
+    return Collections.unmodifiableMap(quickFixes);
   }
 
   void setExpectNoIssues() {
@@ -267,13 +339,18 @@ class Expectations {
   }
 
   Parser parser() {
-    return new Parser(issues, flows);
+    Parser parser = new Parser(issues, flows, quickFixes);
+    if (collectQuickFixes) {
+      parser.collectQuickFixes = true;
+    }
+    return parser;
   }
 
   Parser noEffectParser() {
-    Parser parser = new Parser(issues, flows);
+    Parser parser = new Parser(issues, flows, quickFixes);
     parser.nonCompliantComment = Pattern.compile("NO_ISSUES_WILL_BE_COLLECTED");
     parser.shift = Pattern.compile("NO_ISSUES_WILL_BE_COLLECTED");
+    parser.collectQuickFixes = false;
     return parser;
   }
 
@@ -288,12 +365,23 @@ class Expectations {
     private static final Pattern FLOW_COMMENT = Pattern.compile("//\\s+flow");
     private static final Pattern FLOW = Pattern.compile("flow@(?<ids>\\S+).*?(?=flow@)?");
 
+    private static final Pattern QUICK_FIX_MESSAGE = Pattern.compile("//\\s*fix@(?<id>\\S+)\\s+\\{\\{(?<message>.*)\\}\\}");
+    private static final Pattern QUICK_FIX_EDIT = Pattern.compile("//\\s*edit@(?<id>\\S+).+");
+
     private final Map<Integer, List<Issue>> issues;
     private final Map<String, SortedSet<FlowComment>> flows;
 
-    private Parser(Map<Integer, List<Issue>> issues, Map<String, SortedSet<FlowComment>> flows) {
+    private final Map<AnalyzerMessage.TextSpan, List<String>> quickFixesForTextSpan = new LinkedHashMap<>();
+    private final Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> quickFixes;
+    private final Map<String, String> quickfixesMessages = new LinkedHashMap<>();
+    private final Map<String, List<QuickFixEditComment>> quickfixesEdits = new LinkedHashMap<>();
+
+    private boolean collectQuickFixes = false;
+
+    private Parser(Map<Integer, List<Issue>> issues, Map<String, SortedSet<FlowComment>> flows, Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> quickFixes) {
       this.issues = issues;
       this.flows = flows;
+      this.quickFixes = quickFixes;
     }
 
     @Override
@@ -312,19 +400,81 @@ class Expectations {
 
     @Override
     public void leaveFile(JavaFileScannerContext context) {
+      consolidateQuickFixes();
       visitedComments.clear();
     }
 
-    @VisibleForTesting
-    void collectExpectedIssues(String comment, int line) {
+    private void collectExpectedIssues(String comment, int line) {
       if (nonCompliantComment.matcher(comment).find()) {
         ParsedComment parsedComment = parseIssue(comment, line);
+        if (parsedComment.issue.get(QUICK_FIXES) != null && !collectQuickFixes) {
+          throw new AssertionError("Add \".withQuickFixes()\" to the verifier. Quick fixes are expected but the verifier is not configured to test them.");
+        }
         issues.computeIfAbsent(LINE.get(parsedComment.issue), k -> new ArrayList<>()).add(parsedComment.issue);
         parsedComment.flows.forEach(f -> flows.computeIfAbsent(f.id, k -> newFlowSet()).add(f));
       }
       if (FLOW_COMMENT.matcher(comment).find()) {
         parseFlows(comment, line).forEach(f -> flows.computeIfAbsent(f.id, k -> newFlowSet()).add(f));
       }
+      if (collectQuickFixes) {
+        parseQuickFix(comment, line);
+      }
+    }
+
+    @VisibleForTesting
+    void parseQuickFix(String comment, int line) {
+      Matcher messageMatcher = QUICK_FIX_MESSAGE.matcher(comment);
+      if (messageMatcher.find()) {
+        String quickFixId = messageMatcher.group("id");
+        String quickFixMessage = messageMatcher.group("message");
+        quickfixesMessages.put(quickFixId, quickFixMessage);
+        return;
+      }
+      Matcher editMatcher = QUICK_FIX_EDIT.matcher(comment);
+      if (editMatcher.find()) {
+        String quickFixId = editMatcher.group("id");
+        Map<IssueAttribute, Object> issue = parseAttributes(comment);
+        String message = parseMessage(comment, comment.length());
+        QuickFixEditComment quickFixEdit = new QuickFixEditComment(issue, message, line);
+        quickfixesEdits.computeIfAbsent(quickFixId, k -> new ArrayList<>()).add(quickFixEdit);
+      }
+    }
+
+    @VisibleForTesting
+    void consolidateQuickFixes() {
+      Set<String> allQuickFixIds = new HashSet<>();
+
+      for (Map.Entry<AnalyzerMessage.TextSpan, List<String>> entry : quickFixesForTextSpan.entrySet()) {
+        AnalyzerMessage.TextSpan issueTextSpan = entry.getKey();
+        List<JavaQuickFix> quickFixesForIssue = new ArrayList<>();
+
+        for (String quickFixId : entry.getValue()) {
+          allQuickFixIds.add(quickFixId);
+          String message = quickfixesMessages.get(quickFixId);
+          if (message == null) {
+            throw new AssertionError("Missing message for quick fix: " + quickFixId);
+          }
+          List<QuickFixEditComment> edits = quickfixesEdits.get(quickFixId);
+          if (edits == null) {
+            throw new AssertionError("Missing edits for quick fix: " + quickFixId);
+          }
+
+          JavaQuickFix javaQuickFix = JavaQuickFix.newQuickFix(message).addTextEdits(
+            edits.stream()
+              .map(edit ->
+                JavaTextEdit.replaceTextSpan(edit.getTextSpan(issueTextSpan.startLine), edit.replacement()))
+              .collect(toList())
+          ).build();
+          quickFixesForIssue.add(javaQuickFix);
+        }
+        quickFixes.put(issueTextSpan, quickFixesForIssue);
+      }
+      // Validate that all ids have a corresponding issue
+      Stream.of(quickfixesMessages, quickfixesEdits).map(Map::keySet).flatMap(Collection::stream)
+        .filter(id -> !allQuickFixIds.contains(id))
+        .forEach(id -> {
+          throw new AssertionError("Missing issue for quick fix id: " + id);
+        });
     }
 
     private static TreeSet<FlowComment> newFlowSet() {
@@ -365,11 +515,37 @@ class Expectations {
     ParsedComment parseIssue(String comment, int line) {
       Matcher shiftMatcher = shift.matcher(comment);
       Matcher flowMatcher = FLOW.matcher(comment);
-      return createIssue(line,
+      ParsedComment parsedComment = createIssue(line,
         shiftMatcher.find() ? shiftMatcher.group(1) : null,
         comment,
         parseMessage(comment, flowMatcher.find() ? flowMatcher.start() : comment.length()),
         comment);
+
+      Issue attr = parsedComment.issue;
+      List<String> quickfixes = QUICK_FIXES.get(attr);
+      if (quickfixes != null) {
+        Integer startLine = LINE.get(attr);
+        Integer endLine = END_LINE.get(attr);
+        Objects.requireNonNull(startLine);
+        Integer startColumn = validateColumnPresence(START_COLUMN.get(attr), "start", startLine);
+        Integer endColumn = validateColumnPresence(END_COLUMN.get(attr), "end", startLine);
+
+        AnalyzerMessage.TextSpan textSpan = new AnalyzerMessage.TextSpan(
+          startLine,
+          // Column are 1 based in the Noncompliant comments but 0 based when reporting on tree
+          startColumn - 1,
+          endLine == null ? startLine : endLine,
+          endColumn - 1);
+        quickFixesForTextSpan.put(textSpan, quickfixes);
+      }
+      return parsedComment;
+    }
+
+    private static Integer validateColumnPresence(@Nullable Object o, String position, Integer line) {
+      if (o == null) {
+        throw new AssertionError(String.format("An issue with quick fixes must set the %s column ([Line %d]).", position, line));
+      }
+      return (Integer) o;
     }
 
     private static ParsedComment createIssue(int line, @Nullable String shift, @Nullable String attributes, @Nullable String message, @Nullable String flow) {

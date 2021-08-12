@@ -19,14 +19,26 @@
  */
 package org.sonar.java.checks.verifier.internal;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.RspecKey;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
+import org.sonar.java.testing.JavaFileScannerContextForTests;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -36,6 +48,8 @@ class InternalCheckVerifierTest {
   private static final String TEST_FILE = "src/test/files/testing/Compliant.java";
   private static final String TEST_FILE_PARSE_ERROR = "src/test/files/testing/ParsingError.java";
   private static final String TEST_FILE_NONCOMPLIANT = "src/test/files/testing/Noncompliant.java";
+  private static final String TEST_FILE_WITH_QUICK_FIX = "src/test/files/testing/IssueWithQuickFix.java";
+  private static final String TEST_FILE_WITH_TWO_QUICK_FIX = "src/test/files/testing/IssueWithTwoQuickFixes.java";
   private static final JavaFileScanner FAILING_CHECK = new FailingCheck();
   private static final JavaFileScanner NO_EFFECT_CHECK = new NoEffectCheck();
   private static final JavaFileScanner FILE_LINE_ISSUE_CHECK = new FileLineIssueCheck();
@@ -190,7 +204,8 @@ class InternalCheckVerifierTest {
         .onFile(TEST_FILE)
         .withCheck(FILE_ISSUE_CHECK)
         .withCustomIssueVerifier(issues -> {
-          /* do nothing */ })
+          /* do nothing */
+        })
         .verifyIssueOnFile("issueOnFile");
     }
   }
@@ -481,7 +496,7 @@ class InternalCheckVerifierTest {
     }
 
     @Test
-    void raissing_a_different_message_should_fail() {
+    void raising_a_different_message_should_fail() {
       Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
         .onFile(TEST_FILE)
         .withChecks(FILE_ISSUE_CHECK)
@@ -598,6 +613,208 @@ class InternalCheckVerifierTest {
     }
   }
 
+  @Nested
+  class TestingQuickFix {
+
+    @Test
+    void test_one_quick_fix() {
+      Supplier<JavaQuickFix> quickFix = () -> JavaQuickFix.newQuickFix("Description")
+        .addTextEdit(JavaTextEdit.replaceTextSpan(
+          new AnalyzerMessage.TextSpan(1, 6, 1, 7), "Replacement"))
+        .build();
+      InternalCheckVerifier.newInstance()
+        .onFile(TEST_FILE_WITH_QUICK_FIX)
+        .withCheck(IssueWithQuickFix.of(quickFix))
+        .withQuickFixes()
+        .verifyIssues();
+    }
+
+    @Test
+    void test_one_quick_fix_wrong_description() {
+      Supplier<JavaQuickFix> quickFix = () -> JavaQuickFix.newQuickFix("wrong")
+        .addTextEdit(JavaTextEdit.replaceTextSpan(
+          new AnalyzerMessage.TextSpan(1, 6, 1, 7), "Replacement"))
+        .build();
+
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFile(TEST_FILE_WITH_QUICK_FIX)
+        .withCheck(IssueWithQuickFix.of(quickFix))
+        .withQuickFixes()
+        .verifyIssues());
+
+      assertThat(e)
+        .isInstanceOf(AssertionError.class)
+        .hasMessageContaining("[Quick Fix] Wrong description for issue on line 1.",
+          "Expected: {{Description}}",
+          "but was:     {{wrong}}");
+    }
+
+    @Test
+    void test_one_quick_fix_wrong_number_of_edits() {
+      JavaTextEdit edit = JavaTextEdit.replaceTextSpan(
+        new AnalyzerMessage.TextSpan(1, 6, 1, 7), "Replacement");
+      Supplier<JavaQuickFix> quickFix = () -> JavaQuickFix.newQuickFix("Description")
+        .addTextEdit(edit, edit)
+        .build();
+
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFile(TEST_FILE_WITH_QUICK_FIX)
+        .withCheck(IssueWithQuickFix.of(quickFix))
+        .withQuickFixes()
+        .verifyIssues());
+
+      assertThat(e)
+        .isInstanceOf(AssertionError.class)
+        .hasMessageContaining("[Quick Fix] Wrong number of edits for issue on line 1.",
+          "Expected: {{1}}",
+          "but was:     {{2}}");
+    }
+
+    @Test
+    void test_one_quick_fix_wrong_text_replacement() {
+      JavaTextEdit edit = JavaTextEdit.replaceTextSpan(
+        new AnalyzerMessage.TextSpan(1, 6, 1, 7), "Wrong");
+      Supplier<JavaQuickFix> quickFix = () -> JavaQuickFix.newQuickFix("Description")
+        .addTextEdit(edit)
+        .build();
+
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFile(TEST_FILE_WITH_QUICK_FIX)
+        .withCheck(IssueWithQuickFix.of(quickFix))
+        .withQuickFixes()
+        .verifyIssues());
+
+      assertThat(e)
+        .isInstanceOf(AssertionError.class)
+        .hasMessageContaining("[Quick Fix] Wrong text replacement of edit 1 for issue on line 1.",
+          "Expected: {{Replacement}}",
+          "but was:     {{Wrong}}");
+    }
+
+    @Test
+    void test_one_quick_fix_wrong_edit_position() {
+      JavaTextEdit edit = JavaTextEdit.replaceTextSpan(
+        new AnalyzerMessage.TextSpan(4, 2, 6, 5), "Replacement");
+      Supplier<JavaQuickFix> quickFix = () -> JavaQuickFix.newQuickFix("Description")
+        .addTextEdit(edit)
+        .build();
+
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFile(TEST_FILE_WITH_QUICK_FIX)
+        .withCheck(IssueWithQuickFix.of(quickFix))
+        .withQuickFixes()
+        .verifyIssues());
+
+      assertThat(e)
+        .isInstanceOf(AssertionError.class)
+        .hasMessageContaining("[Quick Fix] Wrong change location of edit 1 for issue on line 1.",
+          "Expected: {{(1:6)-(1:7)}}",
+          "but was:     {{(4:2)-(6:5)}}");
+    }
+
+    @Test
+    void test_one_quick_fix_missing_from_actual() {
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFile(TEST_FILE_WITH_QUICK_FIX)
+        .withCheck(new IssueWithQuickFix(Collections::emptyList))
+        .withQuickFixes()
+        .verifyIssues());
+
+      assertThat(e)
+        .isInstanceOf(AssertionError.class)
+        .hasMessage("[Quick Fix] Missing quick fix for issue on line 1");
+    }
+
+    @Test
+    void test_one_quick_fix_not_tested_is_accepted() {
+      // One file with one Noncompliant comment but no QF specified in the comment is fine, we don't have to always test quick fixes
+      Supplier<JavaQuickFix> quickFix = () -> JavaQuickFix.newQuickFix("Description")
+        .addTextEdit(JavaTextEdit.replaceTextSpan(
+          new AnalyzerMessage.TextSpan(1, 6, 1, 7), "Replacement"))
+        .build();
+
+      InternalCheckVerifier.newInstance()
+        .onFile(TEST_FILE_NONCOMPLIANT)
+        .withCheck(IssueWithQuickFix.of(quickFix))
+        .withQuickFixes()
+        .verifyIssues();
+    }
+
+    @Test
+    void test_two_quick_fix_for_one_issue() {
+      Supplier<List<JavaQuickFix>> quickFixes = () -> Arrays.asList(
+        JavaQuickFix.newQuickFix("Description")
+          .addTextEdit(JavaTextEdit.replaceTextSpan(
+            new AnalyzerMessage.TextSpan(1, 6, 1, 7), "Replacement"))
+          .build(),
+        JavaQuickFix.newQuickFix("Description2")
+          .addTextEdit(JavaTextEdit.replaceTextSpan(
+            new AnalyzerMessage.TextSpan(1, 1, 1, 2), "Replacement2"))
+          .build()
+      );
+
+      InternalCheckVerifier.newInstance()
+        .onFile(TEST_FILE_WITH_TWO_QUICK_FIX)
+        .withCheck(new IssueWithQuickFix(quickFixes))
+        .withQuickFixes()
+        .verifyIssues();
+    }
+
+    @Test
+    void test_two_quick_fix_for_one_issue_1_actual_missing() {
+      Supplier<JavaQuickFix> quickFix1 = () -> JavaQuickFix.newQuickFix("Description")
+        .addTextEdit(JavaTextEdit.replaceTextSpan(
+          new AnalyzerMessage.TextSpan(1, 6, 1, 7), "Replacement"))
+        .build();
+
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFile(TEST_FILE_WITH_TWO_QUICK_FIX)
+        .withCheck(IssueWithQuickFix.of(quickFix1))
+        .withQuickFixes()
+        .verifyIssues());
+
+      assertThat(e)
+        .isInstanceOf(AssertionError.class)
+        .hasMessageContaining("[Quick Fix] Number of quickfixes expected is not equal to the number of expected on line 1: expected: 2 , actual: 1");
+    }
+
+    @Test
+    void test_one_quick_fix_two_reported() {
+      Supplier<List<JavaQuickFix>> quickFixes = () -> Arrays.asList(
+        JavaQuickFix.newQuickFix("Description")
+          .addTextEdit(JavaTextEdit.replaceTextSpan(
+            new AnalyzerMessage.TextSpan(1, 6, 1, 7), "Replacement"))
+          .build(),
+        JavaQuickFix.newQuickFix("Description2")
+          .addTextEdit(JavaTextEdit.replaceTextSpan(
+            new AnalyzerMessage.TextSpan(1, 1, 1, 2), "Replacement2"))
+          .build());
+
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFile(TEST_FILE_WITH_QUICK_FIX)
+        .withCheck(new IssueWithQuickFix(quickFixes))
+        .withQuickFixes()
+        .verifyIssues());
+
+      assertThat(e)
+        .isInstanceOf(AssertionError.class)
+        .hasMessageContaining("[Quick Fix] Number of quickfixes expected is not equal to the number of expected on line 1: expected: 1 , actual: 2");
+    }
+
+    @Test
+    void test_warn_when_quick_fix_in_file_not_expected() {
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFile(TEST_FILE_WITH_QUICK_FIX)
+        .withCheck(NO_EFFECT_CHECK)
+        .verifyIssues());
+
+      assertThat(e)
+        .isInstanceOf(AssertionError.class)
+        .hasMessage("Add \".withQuickFixes()\" to the verifier. Quick fixes are expected but the verifier is not configured to test them.");
+    }
+
+  }
+
   @Rule(key = "FailingCheck")
   private static final class FailingCheck implements JavaFileScanner {
     @Override
@@ -664,7 +881,7 @@ class InternalCheckVerifierTest {
       report(context, 4, msgs);
 
       if (flipOrder) {
-        msgs = new String[] {msg2, msg1};
+        msgs = new String[]{msg2, msg1};
       }
       report(context, 7, msgs);
     }
@@ -673,4 +890,34 @@ class InternalCheckVerifierTest {
       Stream.of(messages).forEach(msg -> context.addIssue(line, this, msg));
     }
   }
+
+  @Rule(key = "IssueWithQuickFix")
+  private static final class IssueWithQuickFix extends IssuableSubscriptionVisitor {
+    Supplier<List<JavaQuickFix>> quickFixes;
+
+    IssueWithQuickFix(Supplier<List<JavaQuickFix>> quickFixes) {
+      this.quickFixes = quickFixes;
+    }
+
+    static IssueWithQuickFix of(Supplier<JavaQuickFix> quickFixes) {
+      return new IssueWithQuickFix(() -> Collections.singletonList(quickFixes.get()));
+    }
+
+    @Override
+    public List<Tree.Kind> nodesToVisit() {
+      return Collections.singletonList(Tree.Kind.CLASS);
+    }
+
+    @Override
+    public void visitNode(Tree tree) {
+      ClassTree classTree = (ClassTree) tree;
+      ((InternalJavaIssueBuilder) ((JavaFileScannerContextForTests) context).newIssue())
+        .forRule(this)
+        .onTree(classTree.declarationKeyword())
+        .withMessage("message")
+        .withQuickFixes(quickFixes)
+        .report();
+    }
+  }
+
 }
