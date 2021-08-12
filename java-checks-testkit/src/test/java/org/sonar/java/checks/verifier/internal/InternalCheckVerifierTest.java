@@ -644,9 +644,9 @@ class InternalCheckVerifierTest {
 
       assertThat(e)
         .isInstanceOf(AssertionError.class)
-        .hasMessageContaining("[Quick Fix] Wrong description for issue on line 1.",
-          "Expected: {{Description}}",
-          "but was:     {{wrong}}");
+        .hasMessageContaining("[Quick Fix] Wrong description for issue on line 1.")
+        .hasMessageContaining(  "Expected: {{Description}}")
+        .hasMessageContaining(    "but was:     {{wrong}}");
     }
 
     @Test
@@ -665,9 +665,9 @@ class InternalCheckVerifierTest {
 
       assertThat(e)
         .isInstanceOf(AssertionError.class)
-        .hasMessageContaining("[Quick Fix] Wrong number of edits for issue on line 1.",
-          "Expected: {{1}}",
-          "but was:     {{2}}");
+        .hasMessageContaining("[Quick Fix] Wrong number of edits for issue on line 1.")
+        .hasMessageContaining("Expected: {{1}}")
+        .hasMessageContaining(    "but was:     {{2}}");
     }
 
     @Test
@@ -686,9 +686,9 @@ class InternalCheckVerifierTest {
 
       assertThat(e)
         .isInstanceOf(AssertionError.class)
-        .hasMessageContaining("[Quick Fix] Wrong text replacement of edit 1 for issue on line 1.",
-          "Expected: {{Replacement}}",
-          "but was:     {{Wrong}}");
+        .hasMessageContaining("[Quick Fix] Wrong text replacement of edit 1 for issue on line 1.")
+        .hasMessageContaining("Expected: {{Replacement}}")
+        .hasMessageContaining( "but was:     {{Wrong}}");
     }
 
     @Test
@@ -707,9 +707,9 @@ class InternalCheckVerifierTest {
 
       assertThat(e)
         .isInstanceOf(AssertionError.class)
-        .hasMessageContaining("[Quick Fix] Wrong change location of edit 1 for issue on line 1.",
-          "Expected: {{(1:6)-(1:7)}}",
-          "but was:     {{(4:2)-(6:5)}}");
+        .hasMessageContaining("[Quick Fix] Wrong change location of edit 1 for issue on line 1.")
+        .hasMessageContaining("Expected: {{(1:7)-(1:8)}}")
+        .hasMessageContaining("but was:     {{(4:3)-(6:6)}}");
     }
 
     @Test
