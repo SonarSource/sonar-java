@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class ControlCharacterInLiteralCheckTest {
@@ -32,14 +31,27 @@ class ControlCharacterInLiteralCheckTest {
     CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/ControlCharacterInLiteralCheck.java"))
       .withCheck(new ControlCharacterInLiteralCheck())
+      .withJavaVersion(14)
       .verifyIssues();
   }
 
   @Test
-  void test_java13_text_blocks() {
+  void test_java15_text_blocks() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/ControlCharacterInLiteralCheck.java"))
+      .onFile(testSourcesPath("checks/ControlCharacterInLiteralCheckWithTextBlockSupport.java"))
       .withCheck(new ControlCharacterInLiteralCheck())
+      .withJavaVersion(15)
+      .verifyIssues();
+  }
+
+  @Test
+  void test_tabs_allowed() {
+    ControlCharacterInLiteralCheck check = new ControlCharacterInLiteralCheck();
+    check.allowTabsInTextBlocks = true;
+    CheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/ControlCharacterInLiteralCheckTabsAllowed.java"))
+      .withCheck(check)
+      .withJavaVersion(15)
       .verifyIssues();
   }
 
