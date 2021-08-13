@@ -31,9 +31,14 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.Javadoc;
 import org.sonar.java.checks.serialization.SerializableContract;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -90,16 +95,54 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
       if (!reported.contains(fullyQualifiedName)) {
         String superTypeName = isSubclassOfAny(exceptionType, thrownList);
         if (superTypeName != null && !exceptionType.isSubtypeOf("java.lang.RuntimeException")) {
-          reportIssue(typeTree, String.format("Remove the declaration of thrown exception '%s' which is a subclass of '%s'.", fullyQualifiedName, superTypeName));
+          reportIssueWithQuickfix(methodTree, typeTree, String.format(
+            "Remove the declaration of thrown exception '%s' which is a subclass of '%s'.", fullyQualifiedName, superTypeName));
         } else if (declaredMoreThanOnce(fullyQualifiedName, thrownList)) {
-          reportIssue(typeTree, String.format("Remove the redundant '%s' thrown exception declaration(s).", fullyQualifiedName));
+          reportIssueWithQuickfix(methodTree, typeTree, String.format(
+            "Remove the redundant '%s' thrown exception declaration(s).", fullyQualifiedName));
         } else if (canNotBeThrown(methodTree, exceptionType, thrownExceptions) && (!isOverridableMethod || undocumentedExceptionNames.contains(exceptionType.name()))) {
-          reportIssue(typeTree, String.format("Remove the declaration of thrown exception '%s', as it cannot be thrown from %s's body.", fullyQualifiedName,
+          reportIssueWithQuickfix(methodTree, typeTree, String.format(
+            "Remove the declaration of thrown exception '%s', as it cannot be thrown from %s's body.", fullyQualifiedName,
             methodTreeType(methodTree)));
         }
         reported.add(fullyQualifiedName);
       }
     }
+  }
+
+  private void reportIssueWithQuickfix(MethodTree methodTree, TypeTree clauseToRemove, String message) {
+    ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+      .forRule(this)
+      .onTree(clauseToRemove)
+      .withMessage(message)
+      .withQuickFix(() -> createQuickFix(methodTree, clauseToRemove))
+      .report();
+  }
+
+  private static JavaQuickFix createQuickFix(MethodTree methodTree, TypeTree clauseToRemove) {
+    ListTree<TypeTree> throwsClauses = methodTree.throwsClauses();
+    int clauseToRemoveIndex = throwsClauses.indexOf(clauseToRemove);
+    boolean isFirst = clauseToRemoveIndex == 0;
+    boolean isLast = clauseToRemoveIndex == throwsClauses.size() - 1;
+    AnalyzerMessage.TextSpan textSpanToRemove;
+    if (isFirst && isLast) {
+      // also remove the "throws" token
+      Tree treeBeforeThrows = methodTree.closeParenToken() != null ? methodTree.closeParenToken() : methodTree.simpleName();
+      textSpanToRemove = AnalyzerMessage.textSpanBetween(treeBeforeThrows, false, clauseToRemove, true);
+    } else if (isLast) {
+      // also remove the previous coma
+      TypeTree previousClause = throwsClauses.get(clauseToRemoveIndex - 1);
+      textSpanToRemove = AnalyzerMessage.textSpanBetween(previousClause, false, clauseToRemove, true);
+    } else {
+      // also remove the next coma
+      TypeTree nextClause = throwsClauses.get(clauseToRemoveIndex + 1);
+      textSpanToRemove = AnalyzerMessage.textSpanBetween(clauseToRemove, true, nextClause, false);
+    }
+    return JavaQuickFix.newQuickFix(String.format("Remove %s", clauseToRemove.symbolType().name()))
+      .addTextEdit(JavaTextEdit.replaceTextSpan(
+        textSpanToRemove,
+        ""))
+      .build();
   }
 
   private static String methodTreeType(MethodTree tree) {

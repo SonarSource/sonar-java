@@ -117,6 +117,30 @@ class AnalyzerMessageTest {
     assertThat(textSpan.startCharacter).isZero();
     assertThat(textSpan.endLine).isEqualTo(1);
     assertThat(textSpan.endCharacter).isEqualTo(9);
+
+    textSpan = AnalyzerMessage.textSpanBetween(classTree.declarationKeyword(), true, classTree.openBraceToken(), true);
+    assertThat(textSpan.startLine).isEqualTo(1);
+    assertThat(textSpan.startCharacter).isZero();
+    assertThat(textSpan.endLine).isEqualTo(1);
+    assertThat(textSpan.endCharacter).isEqualTo(9);
+
+    textSpan = AnalyzerMessage.textSpanBetween(classTree.declarationKeyword(), true, classTree.openBraceToken(), false);
+    assertThat(textSpan.startLine).isEqualTo(1);
+    assertThat(textSpan.startCharacter).isZero();
+    assertThat(textSpan.endLine).isEqualTo(1);
+    assertThat(textSpan.endCharacter).isEqualTo(8);
+
+    textSpan = AnalyzerMessage.textSpanBetween(classTree.declarationKeyword(), false, classTree.openBraceToken(), true);
+    assertThat(textSpan.startLine).isEqualTo(1);
+    assertThat(textSpan.startCharacter).isEqualTo(5);
+    assertThat(textSpan.endLine).isEqualTo(1);
+    assertThat(textSpan.endCharacter).isEqualTo(9);
+
+    textSpan = AnalyzerMessage.textSpanBetween(classTree.declarationKeyword(), false, classTree.openBraceToken(), false);
+    assertThat(textSpan.startLine).isEqualTo(1);
+    assertThat(textSpan.startCharacter).isEqualTo(5);
+    assertThat(textSpan.endLine).isEqualTo(1);
+    assertThat(textSpan.endCharacter).isEqualTo(8);
   }
 
   @Test
