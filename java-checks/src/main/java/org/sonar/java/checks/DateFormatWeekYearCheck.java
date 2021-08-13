@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import org.apache.commons.lang.StringUtils;
@@ -36,6 +37,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S3986")
 public class DateFormatWeekYearCheck extends AbstractMethodDetection {
@@ -101,20 +103,27 @@ public class DateFormatWeekYearCheck extends AbstractMethodDetection {
         .forRule(this)
         .onTree(argument)
         .withMessage(message)
-        .withQuickFixes(() -> Collections.singletonList(computeQuickFix(argument.firstToken(), start, end, replacement)))
+        .withQuickFixes(() -> computeQuickFix(argument, start, end, replacement))
         .report();
     }
   }
 
-  private static JavaQuickFix computeQuickFix(SyntaxToken firstToken, int startColumn, int endColumn, String replacement) {
+  private static List<JavaQuickFix> computeQuickFix(ExpressionTree argument, int startColumn, int endColumn, String replacement) {
+    if (!argument.is(Tree.Kind.STRING_LITERAL)) {
+      return Collections.emptyList();
+    }
+    SyntaxToken firstToken = argument.firstToken();
     AnalyzerMessage.TextSpan textSpan = computeTextSpan(firstToken, startColumn, endColumn);
-    return JavaQuickFix.newQuickFix("Replace year format")
-      .addTextEdit(JavaTextEdit.replaceTextSpan(textSpan, replacement))
-      .build();
+    return Collections.singletonList(
+      JavaQuickFix.newQuickFix("Replace year format")
+        .addTextEdit(JavaTextEdit.replaceTextSpan(textSpan, replacement))
+        .build()
+    );
   }
 
   private static AnalyzerMessage.TextSpan computeTextSpan(SyntaxToken firstToken, int startCharacter, int endCharacter) {
     int line = firstToken.line();
+    // Columns are 0-based in the AST and need to be adjusted by 1 to suggest a proper quick fix
     int column = firstToken.column() + 1;
     return new AnalyzerMessage.TextSpan(line, column + startCharacter, line, column + endCharacter);
   }
