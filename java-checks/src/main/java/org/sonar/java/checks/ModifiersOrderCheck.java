@@ -19,28 +19,35 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.Modifier;
-import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
-import org.sonar.plugins.java.api.tree.ModifierTree;
-import org.sonar.plugins.java.api.tree.ModifiersTree;
-import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
-
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import org.sonar.check.Rule;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.model.JavaTree;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
+import org.sonar.plugins.java.api.tree.ModifierTree;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "ModifiersOrderCheck", repositoryKey = "squid")
 @Rule(key = "S1124")
 public class ModifiersOrderCheck extends IssuableSubscriptionVisitor {
-
-
   private Set<Tree> alreadyReported = new HashSet<>();
 
   @Override
@@ -50,29 +57,33 @@ public class ModifiersOrderCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public List<Kind> nodesToVisit() {
-    return Collections.singletonList(Kind.MODIFIERS);
+  public List<Tree.Kind> nodesToVisit() {
+    return Collections.singletonList(Tree.Kind.MODIFIERS);
   }
 
   @Override
   public void visitNode(Tree tree) {
     if (!alreadyReported.contains(tree)) {
-      alreadyReported.add(tree);
-      ModifierTree badlyOrderedModifier = getFirstBadlyOrdered((ModifiersTree) tree);
-      if (badlyOrderedModifier != null) {
-        reportIssue(badlyOrderedModifier, "Reorder the modifiers to comply with the Java Language Specification.");
-      }
+      ModifiersTree modifiers = (ModifiersTree) tree;
+      alreadyReported.add(modifiers);
+      getFirstBadlyOrdered(modifiers)
+        .ifPresent(wrongModifier -> ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+          .forRule(this)
+          .onTree(wrongModifier)
+          .withMessage("Reorder the modifiers to comply with the Java Language Specification.")
+          .withQuickFix(() -> reorderedFix(modifiers))
+          .report());
     }
   }
 
-  private static ModifierTree getFirstBadlyOrdered(ModifiersTree modifiersTree) {
+  private static Optional<ModifierTree> getFirstBadlyOrdered(ModifiersTree modifiersTree) {
     ListIterator<ModifierTree> modifiersIterator = modifiersTree.listIterator();
     skipAnnotations(modifiersIterator);
     Modifier[] modifiers = Modifier.values();
     int modifierIndex = 0;
     while (modifiersIterator.hasNext()){
       ModifierTree modifier = modifiersIterator.next();
-      if (modifier.is(Kind.ANNOTATION)) {
+      if (modifier.is(Tree.Kind.ANNOTATION)) {
         break;
       }
       ModifierKeywordTree mkt = (ModifierKeywordTree) modifier;
@@ -80,7 +91,7 @@ public class ModifiersOrderCheck extends IssuableSubscriptionVisitor {
         // We're just interested in the final value of modifierIndex
       }
       if (modifierIndex == modifiers.length) {
-        return modifier;
+        return Optional.of(modifier);
       }
     }
     return testOnlyAnnotationsAreLeft(modifiersIterator);
@@ -90,7 +101,7 @@ public class ModifiersOrderCheck extends IssuableSubscriptionVisitor {
    * Move iterator on the first element which is not an annotation
    */
   private static void skipAnnotations(ListIterator<ModifierTree> modifiersIterator) {
-    while (modifiersIterator.hasNext() && modifiersIterator.next().is(Kind.ANNOTATION)) {
+    while (modifiersIterator.hasNext() && modifiersIterator.next().is(Tree.Kind.ANNOTATION)) {
       // skip modifiers which are annotations
     }
     if (modifiersIterator.hasNext()) {
@@ -98,16 +109,85 @@ public class ModifiersOrderCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static ModifierTree testOnlyAnnotationsAreLeft(ListIterator<ModifierTree> modifiersIterator) {
+  private static Optional<ModifierTree> testOnlyAnnotationsAreLeft(ListIterator<ModifierTree> modifiersIterator) {
     while (modifiersIterator.hasNext()) {
       ModifierTree modifier = modifiersIterator.next();
-      if (!modifier.is(Kind.ANNOTATION)) {
+      if (!modifier.is(Tree.Kind.ANNOTATION)) {
         modifiersIterator.previous();
         if (modifiersIterator.hasPrevious()) {
-          return modifiersIterator.previous();
+          return Optional.of(modifiersIterator.previous());
         }
       }
     }
-    return null;
+    return Optional.empty();
+  }
+
+  private static JavaQuickFix reorderedFix(ModifiersTree modifiersTree) {
+    JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix("Reorder modifiers");
+    List<AnnotationTree> annotations = new ArrayList<>(modifiersTree.annotations());
+
+    if (annotations.isEmpty()) {
+      // EASY: there is no annotations...
+      // 1) remove all modifiers
+      builder.addTextEdit(JavaTextEdit.removeTree(modifiersTree));
+      // 2) add it at the beginning of modifiers
+      builder.addTextEdit(reorderedModifiers(modifiersTree, false));
+    } else {
+      // HARD: there is annotations, and they might be anywhere, and spread on multiple lines
+      // 1) Remove all modifiers individually
+      removalOfAllModifiers(modifiersTree).stream()
+        .map(JavaTextEdit::removeTextSpan)
+        .forEach(builder::addTextEdit);
+
+      // 2) reintroduce them right before the next token
+      builder.addTextEdit(reorderedModifiers(modifiersTree, true));
+    }
+
+    return builder.build();
+  }
+
+  private static List<AnalyzerMessage.TextSpan> removalOfAllModifiers(ModifiersTree modifiersTree) {
+    List<AnalyzerMessage.TextSpan> removals = new ArrayList<>();
+    int numberModifiers = modifiersTree.size();
+    for (int i = 0; i < numberModifiers; i++) {
+      ModifierTree current = modifiersTree.get(i);
+      if (current.is(Tree.Kind.ANNOTATION)) {
+        continue;
+      }
+      if (i == (numberModifiers - 1)) {
+        // Last: remove last token and potential space
+        removals.add(AnalyzerMessage.textSpanBetween(current, true, nextToken(modifiersTree), false));
+      } else {
+        // Take into account neighboring modifiers (can be on different lines)
+        removals.add(AnalyzerMessage.textSpanBetween(current, true, modifiersTree.get(i + 1), false));
+      }
+    }
+    return removals;
+  }
+
+  private static JavaTextEdit reorderedModifiers(ModifiersTree modifiersTree, boolean useParent) {
+    String replacement = modifiersTree.modifiers()
+      .stream()
+      .sorted((m1, m2) -> m1.modifier().compareTo(m2.modifier()))
+      .map(ModifierKeywordTree::keyword)
+      .map(SyntaxToken::text)
+      .collect(Collectors.joining(" "));
+    if (!useParent) {
+      return JavaTextEdit.insertBeforeTree(modifiersTree.get(0), replacement);
+    }
+    return JavaTextEdit.insertBeforeTree(nextToken(modifiersTree), replacement + " ");
+  }
+
+  private static Tree nextToken(ModifiersTree modifiersTree) {
+    List<Tree> children = ((JavaTree) modifiersTree.parent()).getChildren();
+    Tree nextToken = modifiersTree.get(0);
+    for (int i = children.indexOf(modifiersTree) + 1; i < children.size(); i++) {
+      Tree child = children.get(i);
+      if (child.firstToken() != null) {
+        nextToken = child;
+        break;
+      }
+    }
+    return nextToken;
   }
 }
