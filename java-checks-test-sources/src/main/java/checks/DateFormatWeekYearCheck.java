@@ -24,12 +24,15 @@ class DateFormatWeekYearCheck {
     SimpleDateFormat sdf = new SimpleDateFormat();
     sdf = new SimpleDateFormat(COMPLIANT_DATE_FORMAT);
     Date date = new SimpleDateFormat("yyyy/MM/dd").parse("2015/12/31");
-    String result = new SimpleDateFormat("YYYY/MM/dd").format(date);   // Noncompliant {{Make sure that week Year "YYYY" is expected here instead of Year "yyyy".}}
+    String result = new SimpleDateFormat("YYYY/MM/dd").format(date);   // Noncompliant [[sc=42;ec=54;quickfixes=qf1]] {{Make sure that week Year "YYYY" is expected here instead of Year "yyyy".}}
     result = new SimpleDateFormat("YYYY").format(date);   // Noncompliant {{Make sure that week Year "YYYY" is expected here instead of Year "yyyy".}}
     result = new SimpleDateFormat("  Y/MM/dd").format(date);   // Noncompliant {{Make sure that week Year "Y" is expected here instead of Year "y".}}
     result = new SimpleDateFormat("yyyy/MM/dd").format(date);   //Yields '2015/12/31' as expected
     result = new SimpleDateFormat("YYYY-ww").format(date); //compliant, 'Week year' is used along with 'Week of year'. result = '2016-01'
     result = new SimpleDateFormat("ww-YYYY").format(date); //compliant, 'Week year' is used along with 'Week of year'. result = '2016-01'
+
+    // fix@qf1 {{Replace year format}}
+    // edit@qf1 [[sc=43;ec=47]] {{yyyy}}
   }
 
   public void useDateTimeFormatter() {

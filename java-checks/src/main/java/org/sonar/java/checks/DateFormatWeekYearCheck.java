@@ -19,16 +19,23 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Optional;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 
 @Rule(key = "S3986")
 public class DateFormatWeekYearCheck extends AbstractMethodDetection {
@@ -82,13 +89,33 @@ public class DateFormatWeekYearCheck extends AbstractMethodDetection {
     }
     int start = datePattern.indexOf('Y');
     if (start > -1) {
-      int end = start;
-      while (end < datePattern.length() && datePattern.charAt(end) == 'Y') {
-        end++;
+      int count = start;
+      while (count < datePattern.length() && datePattern.charAt(count) == 'Y') {
+        count++;
       }
-      String firstYseq = datePattern.substring(start, end);
-      String message = String.format(RECOMMENDATION_YEAR_MESSAGE, firstYseq, firstYseq.toLowerCase(Locale.ENGLISH));
-      reportIssue(argument, message);
+      int end = count;
+      String firstYSeq = datePattern.substring(start, count);
+      String replacement = firstYSeq.toLowerCase(Locale.ENGLISH);
+      String message = String.format(RECOMMENDATION_YEAR_MESSAGE, firstYSeq, replacement);
+      ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+        .forRule(this)
+        .onTree(argument)
+        .withMessage(message)
+        .withQuickFixes(() -> Collections.singletonList(computeQuickFix(argument.firstToken(), start, end, replacement)))
+        .report();
     }
+  }
+
+  private static JavaQuickFix computeQuickFix(SyntaxToken firstToken, int startColumn, int endColumn, String replacement) {
+    AnalyzerMessage.TextSpan textSpan = computeTextSpan(firstToken, startColumn, endColumn);
+    return JavaQuickFix.newQuickFix("Replace year format")
+      .addTextEdit(JavaTextEdit.replaceTextSpan(textSpan, replacement))
+      .build();
+  }
+
+  private static AnalyzerMessage.TextSpan computeTextSpan(SyntaxToken firstToken, int startCharacter, int endCharacter) {
+    int line = firstToken.line();
+    int column = firstToken.column() + 1;
+    return new AnalyzerMessage.TextSpan(line, column + startCharacter, line, column + endCharacter);
   }
 }
