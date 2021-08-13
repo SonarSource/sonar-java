@@ -22,14 +22,16 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 class ImmediatelyReturnedVariableCheckTest {
 
   @Test
   void test() {
-    CheckVerifier.newVerifier()
+    ((InternalCheckVerifier) CheckVerifier.newVerifier())
       .onFile(TestUtils.testSourcesPath("checks/ImmediatelyReturnedVariableCheck.java"))
       .withCheck(new ImmediatelyReturnedVariableCheck())
+      .withQuickFixes()
       .verifyIssues();
   }
 

@@ -64,6 +64,32 @@ class ImmediatelyReturnedVariableCheck {
     return a;
   }
 
+  public long testQuickFixes(long hours, long minutes, long seconds) {
+    long duration = (((hours * 60) + minutes) * 60 + seconds ) * 1000; // Noncompliant [[sc=21;ec=70;quickfixes=qf1]]
+    return duration;
+    // fix@qf1 {{Inline expression}}
+    // edit@qf1 [[sc=5;ec=20]] {{return}}
+    // edit@qf1 [[sc=71;el=+1;ec=21]] {{}}
+  }
+
+  public long testQuickFixesWithSpaces(long hours, long minutes, long seconds) {
+    long duration = (((hours * 60) + minutes) * 60 + seconds ) * 1000; // Noncompliant [[sc=21;ec=70;quickfixes=qf2]]
+
+
+    return duration;
+    // fix@qf2 {{Inline expression}}
+    // edit@qf2 [[sc=5;ec=20]] {{return}}
+    // edit@qf2 [[sc=71;el=+3;ec=21]] {{}}
+  }
+
+  public long testQuickFixesThrow() {
+    RuntimeException myException = new RuntimeException(); // Noncompliant [[sc=36;ec=58;quickfixes=qf3]]
+    throw myException;
+    // fix@qf3 {{Inline expression}}
+    // edit@qf3 [[sc=5;ec=35]] {{throw}}
+    // edit@qf3 [[sc=59;el=+1;ec=23]] {{}}
+  }
+
   private Object myMethod() {
     return null;
   }
