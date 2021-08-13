@@ -127,7 +127,8 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
     AnalyzerMessage.TextSpan textSpanToRemove;
     if (isFirst && isLast) {
       // also remove the "throws" token
-      textSpanToRemove = AnalyzerMessage.textSpanBetween(methodTree.throwsToken(), true, clauseToRemove, true);
+      Tree treeBeforeThrows = methodTree.closeParenToken() != null ? methodTree.closeParenToken() : methodTree.simpleName();
+      textSpanToRemove = AnalyzerMessage.textSpanBetween(treeBeforeThrows, false, clauseToRemove, true);
     } else if (isLast) {
       // also remove the previous coma
       TypeTree previousClause = throwsClauses.get(clauseToRemoveIndex - 1);

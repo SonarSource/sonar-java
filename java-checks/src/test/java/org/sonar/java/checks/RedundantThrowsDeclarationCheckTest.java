@@ -35,11 +35,15 @@ class RedundantThrowsDeclarationCheckTest {
       .withCheck(new RedundantThrowsDeclarationCheck())
       .withQuickFixes()
       .verifyIssues();
+  }
 
-    CheckVerifier.newVerifier()
+  @Test
+  void test_non_compiling_code() {
+    ((InternalCheckVerifier) CheckVerifier.newVerifier())
       .onFile(nonCompilingTestSourcesPath("checks/RedundantThrowsDeclarationCheck.java"))
       .withCheck(new RedundantThrowsDeclarationCheck())
-      .verifyNoIssues();
+      .withQuickFixes()
+      .verifyIssues();
   }
 
 }

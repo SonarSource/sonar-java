@@ -74,7 +74,7 @@ abstract class MySuperClass {
 abstract class ThrownCheckedExceptions extends MySuperClass {
   public ThrownCheckedExceptions(String s) throws MyException { // Noncompliant [[sc=51;ec=62;quickfixes=qf_all_throws]] {{Remove the declaration of thrown exception 'checks.MyException', as it cannot be thrown from constructor's body.}}
     // fix@qf_all_throws {{Remove MyException}}
-    // edit@qf_all_throws [[sc=44;ec=62]] {{}}
+    // edit@qf_all_throws [[sc=43;ec=62]] {{}}
     bar();
   }
 
