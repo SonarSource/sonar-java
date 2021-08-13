@@ -33,4 +33,12 @@ class ImmediatelyReturnedVariableCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/ImmediatelyReturnedVariableCheck.java"))
+      .withCheck(new ImmediatelyReturnedVariableCheck())
+      .verifyNoIssues();
+  }
+
 }

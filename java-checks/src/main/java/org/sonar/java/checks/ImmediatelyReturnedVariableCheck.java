@@ -74,8 +74,13 @@ public class ImmediatelyReturnedVariableCheck extends BaseTreeVisitor implements
       if (lastStatementIdentifier != null) {
         String identifier = variableTree.simpleName().name();
         if (StringUtils.equals(lastStatementIdentifier, identifier)) {
+          ExpressionTree initializer = variableTree.initializer();
+          if (initializer == null) {
+            // Can only happen for non-compilable code, still, we should not report anything.
+            return;
+          }
           context.reportIssue(
-            this, variableTree.initializer(), "Immediately " + lastTypeForMessage + " this expression instead of assigning it to the temporary variable \"" + identifier + "\".");
+            this, initializer, "Immediately " + lastTypeForMessage + " this expression instead of assigning it to the temporary variable \"" + identifier + "\".");
         }
       }
     }
