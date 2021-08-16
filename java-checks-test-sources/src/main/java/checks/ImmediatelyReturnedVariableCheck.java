@@ -68,7 +68,7 @@ class ImmediatelyReturnedVariableCheck {
     long duration = (((hours * 60) + minutes) * 60 + seconds ) * 1000; // Noncompliant [[sc=21;ec=70;quickfixes=qf1]]
     return duration;
     // fix@qf1 {{Inline expression}}
-    // edit@qf1 [[sc=5;ec=20]] {{return}}
+    // edit@qf1 [[sc=5;ec=21]] {{return }}
     // edit@qf1 [[sc=71;el=+1;ec=21]] {{}}
   }
 
@@ -78,7 +78,7 @@ class ImmediatelyReturnedVariableCheck {
 
     return duration;
     // fix@qf2 {{Inline expression}}
-    // edit@qf2 [[sc=5;ec=20]] {{return}}
+    // edit@qf2 [[sc=5;ec=21]] {{return }}
     // edit@qf2 [[sc=71;el=+3;ec=21]] {{}}
   }
 
@@ -86,8 +86,25 @@ class ImmediatelyReturnedVariableCheck {
     RuntimeException myException = new RuntimeException(); // Noncompliant [[sc=36;ec=58;quickfixes=qf3]]
     throw myException;
     // fix@qf3 {{Inline expression}}
-    // edit@qf3 [[sc=5;ec=35]] {{throw}}
+    // edit@qf3 [[sc=5;ec=36]] {{throw }}
     // edit@qf3 [[sc=59;el=+1;ec=23]] {{}}
+  }
+
+  public long testQuickFixesWithFinalVariable(long hours) {
+    final long duration = hours * 60; // Noncompliant [[sc=27;ec=37;quickfixes=qf4]]
+    return duration;
+    // fix@qf4 {{Inline expression}}
+    // edit@qf4 [[sc=5;ec=27]] {{return }}
+    // edit@qf4 [[sc=38;el=+1;ec=21]] {{}}
+  }
+
+  public long testQuickFixesInitOnNextLine(long hours) {
+    final long duration =
+      hours * 60; // Noncompliant [[sc=7;ec=17;quickfixes=qf5]]
+    return duration;
+    // fix@qf5 {{Inline expression}}
+    // edit@qf5 [[sl=-1;sc=5;ec=7]] {{return }}
+    // edit@qf5 [[sc=18;el=+1;ec=21]] {{}}
   }
 
   private Object myMethod() {

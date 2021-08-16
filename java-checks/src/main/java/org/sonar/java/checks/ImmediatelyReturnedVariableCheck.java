@@ -87,7 +87,7 @@ public class ImmediatelyReturnedVariableCheck extends BaseTreeVisitor implements
           ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
             .forRule(this)
             .onTree(initializer)
-            .withMessage(String.format("Immediately %s this expression instead of assigning it to the temporary variable \"%s\".", lastTypeForMessage, identifier))
+            .withMessage("Immediately %s this expression instead of assigning it to the temporary variable \"%s\".", lastTypeForMessage, identifier)
             .withQuickFix(() -> quickFix(butLastStatement, lastStatement, variableTree, lastTypeForMessage))
             .report();
         }
@@ -98,7 +98,8 @@ public class ImmediatelyReturnedVariableCheck extends BaseTreeVisitor implements
   private static JavaQuickFix quickFix(StatementTree butLastStatement, StatementTree lastStatement, VariableTree variableTree, String lastTypeForMessage) {
     // Equal token can not be null at this point, we checked before the presence of the initializer
     return JavaQuickFix.newQuickFix("Inline expression")
-      .addTextEdit(JavaTextEdit.replaceBetweenTree(variableTree.modifiers(), variableTree.equalToken(), lastTypeForMessage),
+      .addTextEdit(JavaTextEdit.replaceTextSpan(textSpanBetween(variableTree.modifiers(), true, variableTree.initializer(), false),
+        lastTypeForMessage + " "),
         JavaTextEdit.replaceTextSpan(textSpanBetween(butLastStatement, false, lastStatement, true), ""))
       .build();
   }

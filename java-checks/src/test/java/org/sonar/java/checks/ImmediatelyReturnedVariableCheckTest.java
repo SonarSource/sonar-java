@@ -28,7 +28,7 @@ class ImmediatelyReturnedVariableCheckTest {
 
   @Test
   void test() {
-    ((InternalCheckVerifier) CheckVerifier.newVerifier())
+    InternalCheckVerifier.newInstance()
       .onFile(TestUtils.testSourcesPath("checks/ImmediatelyReturnedVariableCheck.java"))
       .withCheck(new ImmediatelyReturnedVariableCheck())
       .withQuickFixes()
