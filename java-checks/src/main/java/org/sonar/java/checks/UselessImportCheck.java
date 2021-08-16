@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,9 +32,15 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JWarning;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
@@ -50,7 +57,7 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
   private static final Pattern JAVADOC_REFERENCE = Pattern.compile("\\{@link[^\\}]*\\}|(@see|@throws)[^\n]*\n");
 
   private String currentPackage = "";
-
+  private final List<ImportTree> imports = new ArrayList<>();
   private final Map<String, String> importsNames = new HashMap<>();
   private final Set<String> duplicatedImports = new HashSet<>();
   private final Set<String> usedInJavaDoc = new HashSet<>();
@@ -63,6 +70,11 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
+      ((CompilationUnitTree) tree).imports()
+        .stream()
+        .filter(importTree -> importTree.is(Tree.Kind.IMPORT))
+        .map(ImportTree.class::cast)
+        .forEach(imports::add);
       importsNames.clear();
       duplicatedImports.clear();
       usedInJavaDoc.clear();
@@ -78,6 +90,7 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
   public void leaveNode(Tree tree) {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
       handleWarnings(((CompilationUnitTreeImpl) tree).warnings(JWarning.Type.UNUSED_IMPORT));
+      imports.clear();
     }
   }
 
@@ -95,7 +108,13 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
           } else {
             message = "Remove this unused import '" + importName + "'.";
           }
-          reportIssue(((ImportTree) warning.syntaxTree()).qualifiedIdentifier(), message);
+          ImportTree reportTree = (ImportTree) warning.syntaxTree();
+          ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) this.context).newIssue())
+            .forRule(this)
+            .onTree(reportTree.qualifiedIdentifier())
+            .withMessage(message)
+            .withQuickFix(() -> quickFix(reportTree, imports))
+            .report();
         }
       });
     }
@@ -109,7 +128,12 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
       importsNames.put(importName, extractLastClassName(importName));
     }
     if (isJavaLangImport(importName)) {
-      reportIssue(importTree.qualifiedIdentifier(), "Remove this unnecessary import: java.lang classes are always implicitly imported.");
+      ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) this.context).newIssue())
+        .forRule(this)
+        .onTree(importTree.qualifiedIdentifier())
+        .withMessage("Remove this unnecessary import: java.lang classes are always implicitly imported.")
+        .withQuickFix(() -> quickFix(importTree, imports))
+        .report();
     }
   }
 
@@ -143,5 +167,23 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
         });
       }
     }
+  }
+
+  private static JavaQuickFix quickFix(ImportTree importTree, List<ImportTree> imports) {
+    int indexOfImport = imports.indexOf(importTree);
+    boolean isLastImport = indexOfImport == imports.size() - 1;
+    JavaQuickFix.Builder quickFix = JavaQuickFix.newQuickFix(String.format("Remove the %simport", importTree.isStatic() ? "static " : ""));
+    if (imports.size() == 1) {
+      // single import not used...
+      quickFix.addTextEdit(JavaTextEdit.removeTree(importTree));
+    } else if (!isLastImport) {
+      ImportTree nextImport = imports.get(indexOfImport + 1);
+      quickFix.addTextEdit(JavaTextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(importTree, true, nextImport, false)));
+    } else {
+      // last import
+      ImportTree previousImport = imports.get(indexOfImport - 1);
+      quickFix.addTextEdit(JavaTextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(previousImport, false, importTree, true)));
+    }
+    return quickFix.build();
   }
 }
