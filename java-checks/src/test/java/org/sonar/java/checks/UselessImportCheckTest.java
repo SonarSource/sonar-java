@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.FilesUtils;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import java.io.File;
@@ -37,6 +38,23 @@ class UselessImportCheckTest {
       .withClassPath(getClassPath())
       .onFile(testSourcesPath("checks/UselessImportCheck/WithinPackage.java"))
       .withCheck(new UselessImportCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void quickFixes() {
+    InternalCheckVerifier.newInstance()
+      .withClassPath(getClassPath())
+      .onFile(testSourcesPath("checks/UselessImportCheck/WithQuickFixes.java"))
+      .withCheck(new UselessImportCheck())
+      .withQuickFixes()
+      .verifyIssues();
+
+    InternalCheckVerifier.newInstance()
+      .withClassPath(getClassPath())
+      .onFile(testSourcesPath("checks/UselessImportCheck/WithQuickFixesSingleImport.java"))
+      .withCheck(new UselessImportCheck())
+      .withQuickFixes()
       .verifyIssues();
   }
 
