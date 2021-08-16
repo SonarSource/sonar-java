@@ -17,7 +17,9 @@ class Outer {
   List list;
   List<String> foo() {
     Object obj = null;
-    Object o1 = (List<String>) foo(); // Noncompliant [[sc=18;ec=30]] {{Remove this unnecessary cast to "List".}}
+    Object o1 = (List<String>) foo(); // Noncompliant [[sc=18;ec=30;quickfixes=qf1]] {{Remove this unnecessary cast to "List".}}
+                                      // fix@qf1 {{Remove the cast to "List"}}
+                                      // edit@qf1 [[sc=17;ec=32]] {{}}
     Object o2 = (List<? extends String>) foo(); // Noncompliant {{Remove this unnecessary cast to "List".}}
     Object o3 = (List<? super String>) foo(); // Noncompliant {{Remove this unnecessary cast to "List".}}
     String s1 = (String) obj; // Compliant
