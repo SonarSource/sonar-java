@@ -1,3 +1,6 @@
+package checks.unused;
+
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.enterprise.event.Observes;
 import java.io.IOException;
@@ -12,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.struts.action.Action;
 import org.apache.struts.actions.BaseAction;
 
-class A extends B{
+class UnusedMethodParameterCheck extends B {
   void doSomething() { }
 
   void doSomething(int a, int b) { // Noncompliant {{Remove this unused method parameter "b".}} [[sc=31;ec=32]]
@@ -50,7 +53,7 @@ class C extends B {
 }
 
 class D extends C {
-  void foo(int b, // Noncompliant {{Remove these unused method parameters.}} [[sc=16;ec=17;secondary=53,54]]
+  void foo(int b, // Noncompliant {{Remove these unused method parameters.}} [[sc=16;ec=17;secondary=+0,+1]]
            int a) {
     System.out.println("");
   }
@@ -62,16 +65,16 @@ class E extends C {
 }
 interface inter {
   default void foo(int a) {
-    compute(a);
+    System.out.println(a);
   }
   default void bar(int a) { System.out.println("");} // Compliant - designed for extension
   void qix(int a);
 }
 class F {
   public static void main(String[] args) { }
-  public static int main(String[] args) { System.out.println("");} // Noncompliant
+  public static int main(boolean[] args) { System.out.println(""); return 0; } // Noncompliant
   public static void main(int[] args) { System.out.println("");} // Noncompliant
-  public static Object main(String[] args) { System.out.println("");} // Noncompliant
+  public static Object main(long arg) { System.out.println(""); return null; } // Noncompliant
   public static void main(String args) { System.out.println("");} // Noncompliant
   public static void main(Double[] args) { System.out.println("");} // Noncompliant
 }
@@ -90,25 +93,28 @@ class G implements inter {
       throws IOException, ClassNotFoundException {
     throw new NotSerializableException(getClass().getName());
   }
+
+  @Override
+  public void qix(int a) {}
 }
 
 class OpenForExtension {
-  public foo(int arg) {
+  public void foo(int arg) {
     //no-op
   }
-  protected bar(int arg) {
+  protected void bar(int arg) {
     //no-op
   }
   public void qix(int arg) {
     throw new UnsupportedOperationException("not implemented");
   }
 
-  private baz(int arg) { // Noncompliant
+  private void baz(int arg) { // Noncompliant
     //no-op
   }
 
   // Noncompliant@+1
-  private qiz(int arg1, int arg2) {
+  private void qiz(int arg1, int arg2) {
 
   }
 
@@ -140,7 +146,7 @@ class Annotations {
 
   @MyAnnotation
   void qix(int a, int b) { // Compliant
-    compute(a);
+    System.out.println(a);
   }
 
   @SuppressWarnings("proprietary")
@@ -165,41 +171,41 @@ class Annotations {
 
 class StrutsAction extends Action {
   void foo(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response, String s) { // Compliant
-    System.out.println(s); 
+    System.out.println(s);
   }
-  
+
   void bar(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response, String unused) { // Noncompliant {{Remove this unused method parameter "unused".}}
-    System.out.println(""); 
+    System.out.println("");
   }
-  
+
   void qix(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) { // Compliant
-    System.out.println(""); 
+    System.out.println("");
   }
-  
+
   void qiz(ActionMapping mapping, ActionForm form) { // Compliant
-    System.out.println(""); 
+    System.out.println("");
   }
 }
 
 class StrutsAction2 extends BaseAction {
   void foo(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response, String unused) { // Noncompliant {{Remove this unused method parameter "unused".}}
-    System.out.println(""); 
+    System.out.println("");
   }
 
   void bar(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) { // Compliant
     System.out.println("");
   }
 
-  void qiz(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpFakeResponse unusedResponse) { // Noncompliant {{Remove this unused method parameter "unusedResponse".}}
+  void qiz(ActionMapping mapping, ActionForm form, HttpServletRequest request, Object unusedResponse) { // Noncompliant {{Remove this unused method parameter "unusedResponse".}}
     System.out.println("");
   }
 }
 
 class NotStrutsAction {
   void bar(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) { // Noncompliant {{Remove this unused method parameter "response".}}
-    doSomething(mapping);
-    doSomething(form);
-    doSomething(request);
+    System.out.println(mapping);
+    System.out.println(form);
+    System.out.println(request);
     System.out.println("");
   }
 }
@@ -211,14 +217,14 @@ class DocumentedMethod {
    * @param fourthArg proper javadoc description
    */
   void foo(String firstArg, int secondArg, double thirdArg, float fourthArg) { // Noncompliant {{Remove this unused method parameter "thirdArg".}}
-    doSomething();
+    System.out.println();
   }
 
   /**
    * @param firstArg proper javadoc description
    */
   protected void bar(String firstArg) { // Compliant - parameter has proper javadoc
-    doSomething();
+    System.out.println();
   }
 
   /**
@@ -226,28 +232,28 @@ class DocumentedMethod {
    * @param firstArg
    */
   public void foobar(String firstArg) { // Noncompliant
-    doSomething();
+    System.out.println();
   }
 
   /**
    * @param firstArg proper javadoc description
    */
   private void nonOverrideableMethod(String firstArg) { // Noncompliant  {{Remove this unused method parameter "firstArg".}}
-    doSomething();
+    System.out.println();
   }
 
   /**
    * @param firstArg proper javadoc description
    */
   static void nonOverrideableMethod(int firstArg) { // Noncompliant  {{Remove this unused method parameter "firstArg".}}
-    doSomething();
+    System.out.println();
   }
 
   /**
    * @param firstArg proper javadoc description
    */
   final void nonOverrideableMethod(Object firstArg) { // Noncompliant  {{Remove this unused method parameter "firstArg".}}
-    doSomething();
+    System.out.println();
   }
 }
 
@@ -256,13 +262,13 @@ final class FinalDocumentedMethod {
    * @param firstArg proper javadoc description
    */
   void nonOverrideableMethod(int firstArg) { // Noncompliant  {{Remove this unused method parameter "firstArg".}}
-    doSomething();
+    System.out.println();
   }
 }
 
 class Parent {
   public void foo(Object param) {
-    throw new Exception();
+    throw new RuntimeException();
   }
 }
 final class FinalClass extends Parent {
