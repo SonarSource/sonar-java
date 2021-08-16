@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import org.apache.commons.lang.StringUtils;
@@ -95,12 +93,14 @@ public class DateFormatWeekYearCheck extends AbstractMethodDetection {
       String firstYSeq = datePattern.substring(start, end);
       String replacement = firstYSeq.toLowerCase(Locale.ENGLISH);
       String message = String.format(RECOMMENDATION_YEAR_MESSAGE, firstYSeq, replacement);
-      ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+      InternalJavaIssueBuilder issueBuilder = ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
         .forRule(this)
         .onTree(argument)
-        .withMessage(message)
-        .withQuickFixes(() -> computeQuickFix(argument, start, end, replacement))
-        .report();
+        .withMessage(message);
+      if (argument.is(Tree.Kind.STRING_LITERAL)) {
+        issueBuilder.withQuickFix(() -> computeQuickFix(argument, start, end, replacement));
+      }
+      issueBuilder.report();
     }
   }
 
@@ -112,17 +112,12 @@ public class DateFormatWeekYearCheck extends AbstractMethodDetection {
     return count;
   }
 
-  private static List<JavaQuickFix> computeQuickFix(ExpressionTree argument, int startColumn, int endColumn, String replacement) {
-    if (!argument.is(Tree.Kind.STRING_LITERAL)) {
-      return Collections.emptyList();
-    }
+  private static JavaQuickFix computeQuickFix(ExpressionTree argument, int startColumn, int endColumn, String replacement) {
     SyntaxToken firstToken = argument.firstToken();
     AnalyzerMessage.TextSpan textSpan = computeTextSpan(firstToken, startColumn, endColumn);
-    return Collections.singletonList(
-      JavaQuickFix.newQuickFix("Replace year format")
-        .addTextEdit(JavaTextEdit.replaceTextSpan(textSpan, replacement))
-        .build()
-    );
+    return JavaQuickFix.newQuickFix("Replace year format")
+      .addTextEdit(JavaTextEdit.replaceTextSpan(textSpan, replacement))
+      .build();
   }
 
   private static AnalyzerMessage.TextSpan computeTextSpan(SyntaxToken firstToken, int startCharacter, int endCharacter) {
