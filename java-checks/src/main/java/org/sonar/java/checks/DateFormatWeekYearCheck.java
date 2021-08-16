@@ -91,12 +91,8 @@ public class DateFormatWeekYearCheck extends AbstractMethodDetection {
     }
     int start = datePattern.indexOf('Y');
     if (start > -1) {
-      int count = start;
-      while (count < datePattern.length() && datePattern.charAt(count) == 'Y') {
-        count++;
-      }
-      int end = count;
-      String firstYSeq = datePattern.substring(start, count);
+      int end = getEndIndexOfYearSequence(datePattern, start);
+      String firstYSeq = datePattern.substring(start, end);
       String replacement = firstYSeq.toLowerCase(Locale.ENGLISH);
       String message = String.format(RECOMMENDATION_YEAR_MESSAGE, firstYSeq, replacement);
       ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
@@ -106,6 +102,14 @@ public class DateFormatWeekYearCheck extends AbstractMethodDetection {
         .withQuickFixes(() -> computeQuickFix(argument, start, end, replacement))
         .report();
     }
+  }
+
+  private static int getEndIndexOfYearSequence(String sequence, int start) {
+    int count = start;
+    while (count < sequence.length() && sequence.charAt(count) == 'Y') {
+      count++;
+    }
+    return count;
   }
 
   private static List<JavaQuickFix> computeQuickFix(ExpressionTree argument, int startColumn, int endColumn, String replacement) {
