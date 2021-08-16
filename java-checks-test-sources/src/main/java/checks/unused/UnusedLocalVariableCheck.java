@@ -96,4 +96,78 @@ class UnusedLocalVariableCheck {
       return o;
     };
   }
+
+  class QuickFixes {
+    private void doSomething(Object parameter) {
+      int unusedAndAlone; // Noncompliant [[sc=11;ec=25;quickfixes=qfzero]]
+      // fix@qfzero {{Remove unused local variable}}
+      // edit@qfzero [[sc=7;ec=26]]{{}}
+      int unusedFirst = 42, used = 1; // Noncompliant [[sc=11;ec=22;quickfixes=qf0]]
+      // fix@qf0 {{Remove unused local variable}}
+      // edit@qf0 [[sc=11;ec=28]]{{}}
+
+      int first = 0, unusedSecond, third = 1; // Noncompliant [[sc=22;ec=34;quickfixes=qf1]]
+      // fix@qf1 {{Remove unused local variable}}
+      // edit@qf1 [[sc=22;ec=35]]{{}}
+
+      int alpha = 0, beta = 1, unusedThird; // Noncompliant [[sc=32;ec=43;quickfixes=qf2]]
+      // fix@qf2 {{Remove unused local variable}}
+      // edit@qf2 [[sc=30;ec=43]]{{}}
+
+      int initializedButNotRead = used + first + third + alpha + beta; // Noncompliant [[sc=11;ec=32;quickfixes=qf3]]
+      // fix@qf3 {{Remove unused local variable}}
+      // edit@qf3 [[sc=7;ec=71]]{{}}
+
+      String unitializedAndUnused; // Noncompliant [[sc=14;ec=34;quickfixes=qf4]]
+      // fix@qf4 {{Remove unused local variable}}
+      // edit@qf4 [[sc=7;ec=35]]{{}}
+
+      if (parameter instanceof String unusedMatch) { // Noncompliant [[sc=39;ec=50;quickfixes=qf5]]
+        // fix@qf5 {{Remove unused local variable}}
+        // edit@qf5 [[sc=39;ec=50]]{{}}
+      }
+
+      for (int i, j = 0; j < 10; j++) { // Noncompliant [[sc=16;ec=17;quickfixes=qf6]]
+        // fix@qf6 {{Remove unused local variable}}
+        // edit@qf6 [[sc=16;ec=18]] {{}}
+        System.out.println(j);
+      }
+      for (int i = 0, j; i < 10; i++) { // Noncompliant [[sc=23;ec=24;quickfixes=qf7]]
+        // fix@qf7 {{Remove unused local variable}}
+        // edit@qf7 [[sc=21;ec=24]] {{}}
+        System.out.println(i);
+      }
+
+      for (int i = 0; condition();) { // Noncompliant [[sc=16;ec=17;quickfixes=qf8]]
+        // fix@qf8 {{Remove unused local variable}}
+        // edit@qf8 [[sc=12;ec=21]] {{}}
+      }
+    }
+
+    {
+      int unusedAndAlone; // Noncompliant [[sc=11;ec=25;quickfixes=qfzero]]
+      int unusedFirst = 42, used = 1; // Noncompliant [[sc=11;ec=22;quickfixes=qf0]]
+      int first = 0, unusedSecond, third = 1; // Noncompliant [[sc=22;ec=34;quickfixes=qf1]]
+      int alpha = 0, beta = 1, unusedThird; // Noncompliant [[sc=32;ec=43;quickfixes=qf2]]
+      int initializedButNotRead = used + first + third + alpha + beta; // Noncompliant [[sc=11;ec=32;quickfixes=qf3]]
+      String unitializedAndUnused; // Noncompliant [[sc=14;ec=34;quickfixes=qf4]]
+    }
+
+    static {
+      int unusedAndAlone; // Noncompliant [[sc=11;ec=25;quickfixes=qfzero]]
+      int unusedFirst = 42, used = 1; // Noncompliant [[sc=11;ec=22;quickfixes=qf0]]
+      int first = 0, unusedSecond, third = 1; // Noncompliant [[sc=22;ec=34;quickfixes=qf1]]
+      int alpha = 0, beta = 1, unusedThird; // Noncompliant [[sc=32;ec=43;quickfixes=qf2]]
+      int initializedButNotRead = used + first + third + alpha + beta; // Noncompliant [[sc=11;ec=32;quickfixes=qf3]]
+      String unitializedAndUnused; // Noncompliant [[sc=14;ec=34;quickfixes=qf4]]
+    }
+
+    private void doNotOfferQuickFixes() {
+      int unusedButIncremented = 0; // Noncompliant [[sc=11;ec=31;quickfixes=!]]
+      unusedButIncremented++;
+
+      for (int counter = 0; condition(); counter++) { // Noncompliant [[sc=16;ec=23;quickfixes=!]]
+      }
+    }
+  }
 }

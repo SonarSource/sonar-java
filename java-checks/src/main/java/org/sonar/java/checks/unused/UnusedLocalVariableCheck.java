@@ -21,12 +21,22 @@ package org.sonar.java.checks.unused;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.UnresolvedIdentifiersVisitor;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.model.statement.BlockTreeImpl;
+import org.sonar.java.model.statement.StaticInitializerTreeImpl;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ListTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -66,9 +76,21 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
       String name = variable.simpleName().name();
       boolean unresolved = UNRESOLVED_IDENTIFIERS_VISITOR.isUnresolved(name);
       if (!unresolved && isProperLocalVariable(variable) && isUnused(variable.symbol())) {
-        reportIssue(variable.simpleName(), String.format(MESSAGE, name));
+        InternalJavaIssueBuilder issueBuilder = ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+          .forRule(this)
+          .onTree(variable.simpleName())
+          .withMessage(String.format(MESSAGE, name));
+        getQuickFixTextSpan(variable).ifPresent(textSpan ->
+          issueBuilder.withQuickFix(() ->
+            JavaQuickFix.newQuickFix("Remove unused local variable")
+              .addTextEdit(JavaTextEdit.removeTextSpan(textSpan))
+              .build()
+          )
+        );
+        issueBuilder.report();
       }
     }
+
   }
 
   private static boolean isUnused(Symbol symbol) {
@@ -112,4 +134,74 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
     return variable.parent().is(Tree.Kind.LIST) && variable.parent().parent().is(Tree.Kind.TRY_STATEMENT);
   }
 
+  private static Optional<AnalyzerMessage.TextSpan> getQuickFixTextSpan(VariableTree variable) {
+    if (!variable.symbol().usages().isEmpty()) {
+      return Optional.empty();
+    }
+    Tree parent = variable.parent();
+    SyntaxToken lastToken = variable.lastToken();
+    if (parent.is(Tree.Kind.BLOCK, Tree.Kind.INITIALIZER, Tree.Kind.STATIC_INITIALIZER)) {
+      // If the variable is in the declaration list but is not the last one, we also need to include the following comma
+      if (lastToken.text().equals(",")) {
+        return Optional.of(AnalyzerMessage.textSpanBetween(variable.simpleName(), lastToken));
+      }
+      // If the variable is last in the declaration, we need to retrieve the preceding comma
+      Optional<SyntaxToken> precedingComma = getPrecedingComma(variable);
+      if (precedingComma.isPresent()) {
+        AnalyzerMessage.TextSpan value = AnalyzerMessage.textSpanBetween(precedingComma.get(), true, lastToken, false);
+        return Optional.of(value);
+      }
+      return Optional.of(AnalyzerMessage.textSpanBetween(variable.firstToken(), lastToken));
+    } else if (parent.is(Tree.Kind.LIST)) {
+      ListTree<VariableTree> variables = (ListTree<VariableTree>) parent;
+      // If the variable is the only one in the list we can include the entire list
+      if (variables.size() == 1) {
+        return Optional.of(AnalyzerMessage.textSpanFor(variable));
+      }
+      // If the variable is the only one in the list we can include the entire list
+      if (lastToken.text().equals(",")) {
+        return Optional.of(AnalyzerMessage.textSpanBetween(variable.simpleName(), lastToken));
+      }
+      // If the variable is last in the list, we need to retrieve the preceding comma
+      SyntaxToken precedingComma = variables.get(variables.indexOf(variable) - 1).lastToken();
+      return Optional.of(AnalyzerMessage.textSpanBetween(precedingComma, lastToken));
+    } else if (parent.is(Tree.Kind.PATTERN_INSTANCE_OF)) {
+      return Optional.of(AnalyzerMessage.textSpanFor(lastToken));
+    }
+    return Optional.empty();
+  }
+
+  private static Optional<SyntaxToken> getPrecedingComma(VariableTree variable) {
+    Optional<VariableTree> precedingVariable = getPrecedingVariable(variable);
+    if (!precedingVariable.isPresent()) {
+      return Optional.empty();
+    }
+    return Optional.of(precedingVariable.get().lastToken());
+  }
+
+  private static Optional<VariableTree> getPrecedingVariable(VariableTree current) {
+    Tree parent = current.parent();
+    List<Tree> children;
+    if (parent.is(Tree.Kind.BLOCK, Tree.Kind.INITIALIZER)) {
+      children = ((BlockTreeImpl) parent).children();
+    } else {
+      children = ((StaticInitializerTreeImpl) parent).children();
+    }
+    int currentIndex = children.indexOf(current);
+    // If the variable is the first element that follows the opening token, there is no predecessor to return
+    if (currentIndex == 1) {
+      return Optional.empty();
+    }
+    // If there is a predecessor, we check that it is a variable
+    Tree child = children.get(currentIndex - 1);
+    if (!child.is(Tree.Kind.VARIABLE)) {
+      return Optional.empty();
+    }
+    // If the preceding element is a variable, we check if that it is part of the same declaration
+    VariableTree preceding = (VariableTree) child;
+    if (preceding.firstToken().equals(current.firstToken())) {
+      return Optional.of(preceding);
+    }
+    return Optional.empty();
+  }
 }
