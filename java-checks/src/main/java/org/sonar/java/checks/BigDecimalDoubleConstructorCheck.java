@@ -22,6 +22,10 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -46,8 +50,22 @@ public class BigDecimalDoubleConstructorCheck extends IssuableSubscriptionVisito
 
   @Override
   public void visitNode(Tree tree) {
-    if (BIG_DECIMAL_DOUBLE_FLOAT.matches((NewClassTree) tree)) {
-      reportIssue(tree, "Use \"BigDecimal.valueOf\" instead.");
+    NewClassTree newClassTree = (NewClassTree) tree;
+    if (BIG_DECIMAL_DOUBLE_FLOAT.matches(newClassTree)) {
+      InternalJavaIssueBuilder builder = ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+        .forRule(this)
+        .onTree(tree)
+        .withMessage("Use \"BigDecimal.valueOf\" instead.");
+      if (newClassTree.arguments().size() == 1) {
+        builder.withQuickFix(() -> quickFix(newClassTree));
+      }
+      builder.report();
     }
+  }
+
+  private static JavaQuickFix quickFix(NewClassTree newClassTree) {
+    return JavaQuickFix.newQuickFix("Replace with BigDecimal.valueOf")
+      .addTextEdit(JavaTextEdit.replaceBetweenTree(newClassTree.newKeyword(), newClassTree.identifier(), "BigDecimal.valueOf"))
+      .build();
   }
 }
