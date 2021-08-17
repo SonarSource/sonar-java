@@ -21,6 +21,7 @@ package org.sonar.java.checks.unused;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -28,9 +29,10 @@ class UnusedMethodParameterCheckTest {
 
   @Test
   void test() {
-    CheckVerifier.newVerifier()
+    ((InternalCheckVerifier) CheckVerifier.newVerifier())
       .onFile(testSourcesPath("checks/unused/UnusedMethodParameterCheck.java"))
       .withCheck(new UnusedMethodParameterCheck())
+      .withQuickFixes()
       .verifyIssues();
   }
 }

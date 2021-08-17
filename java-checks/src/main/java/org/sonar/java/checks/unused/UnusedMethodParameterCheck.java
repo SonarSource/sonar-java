@@ -30,8 +30,13 @@ import org.sonar.java.checks.helpers.Javadoc;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.checks.helpers.UnresolvedIdentifiersVisitor;
 import org.sonar.java.collections.SetUtils;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -50,6 +55,10 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S1172")
 public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
+  private static final String PRIMARY_SINGULAR_MESSAGE_FORMAT = "Remove this unused method parameter %s.";
+  private static final String PRIMARY_PLURAL_MESSAGE_FORMAT = "Remove these unused method parameters %s.";
+  private static final String SECONDARY_MESSAGE_FORMAT = "Parameter \"%s\"";
+  private static final String QUICK_FIX_MESSAGE = "Remove \"%s\"";
 
   private static final String AUTHORIZED_ANNOTATION = "javax.enterprise.event.Observes";
   private static final String SUPPRESS_WARNINGS_ANNOTATION = "java.lang.SuppressWarnings";
@@ -95,23 +104,53 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
       .filter(id -> !unresolvedIdentifierNames.contains(id.name()))
       .collect(Collectors.toList());
     if (!unused.isEmpty()) {
-      reportUnusedParameters(unused);
+      reportUnusedParameters(methodTree, unused);
     }
   }
 
-  private void reportUnusedParameters(List<IdentifierTree> unused) {
-    List<JavaFileScannerContext.Location> locations = new ArrayList<>();
-    for (IdentifierTree identifier : unused) {
-      locations.add(new JavaFileScannerContext.Location("Remove this unused method parameter " + identifier.name() + "\".", identifier));
-    }
+  private void reportUnusedParameters(MethodTree methodTree, List<IdentifierTree> unused) {
     IdentifierTree firstUnused = unused.get(0);
-    String msg;
-    if (unused.size() > 1) {
-      msg = "Remove these unused method parameters.";
-    } else {
-      msg = "Remove this unused method parameter \"" + firstUnused.name() + "\".";
+    List<JavaFileScannerContext.Location> secondaryLocations = unused.stream()
+      .skip(1)
+      .map(identifier -> new JavaFileScannerContext.Location(String.format(SECONDARY_MESSAGE_FORMAT, identifier.name()), identifier))
+      .collect(Collectors.toList());
+    String parameterNames = unused.stream().map(identifier -> "\"" + identifier.name() + "\"").collect(Collectors.joining(", "));
+    ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+      .forRule(this)
+      .onTree(firstUnused)
+      .withMessage(unused.size() > 1 ?  PRIMARY_PLURAL_MESSAGE_FORMAT : PRIMARY_SINGULAR_MESSAGE_FORMAT, parameterNames)
+      .withSecondaries(secondaryLocations)
+      .withQuickFixes(() -> createQuickFixes(methodTree, unused))
+      .report();
+  }
+
+  private List<JavaQuickFix> createQuickFixes(MethodTree methodTree, List<IdentifierTree> unused) {
+    List<JavaQuickFix> quickFixes = new ArrayList<>();
+    List<VariableTree> parameters = methodTree.parameters();
+    for (int i = 0; i < parameters.size(); i++) {
+      VariableTree parameter = parameters.get(i);
+      if (unused.contains(parameter.simpleName())) {
+        boolean isFirst = i == 0;
+        boolean isLast = i == parameters.size() - 1;
+        AnalyzerMessage.TextSpan textSpanToRemove;
+        if (isFirst && isLast) {
+          // no need to remove any comma
+          textSpanToRemove = AnalyzerMessage.textSpanBetween(methodTree.openParenToken(), false, methodTree.closeParenToken(), false);
+        } else if (isLast) {
+          // also remove the previous comma and spaces between previousParameter and parameter
+          VariableTree previousParameter = parameters.get(i - 1);
+          textSpanToRemove = AnalyzerMessage.textSpanBetween(previousParameter.endToken(), true, methodTree.closeParenToken(), false);
+        } else {
+          // also remove the next comma and spaces between parameter and nextParameter
+          VariableTree nextParameter = parameters.get(i + 1);
+          textSpanToRemove = AnalyzerMessage.textSpanBetween(parameter, true, nextParameter, false);
+        }
+        quickFixes.add(JavaQuickFix.newQuickFix(String.format(QUICK_FIX_MESSAGE, parameter.simpleName().name()))
+          .addTextEdit(JavaTextEdit.replaceTextSpan(textSpanToRemove, ""))
+          .build());
+      }
     }
-    reportIssue(firstUnused, msg, locations, null);
+    return quickFixes;
   }
 
   private static boolean isExcluded(MethodTree tree) {
