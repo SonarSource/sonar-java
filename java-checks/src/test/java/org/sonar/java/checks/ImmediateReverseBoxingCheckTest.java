@@ -21,13 +21,22 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.TestUtils;
 
 class ImmediateReverseBoxingCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ImmediateReverseBoxingCheck.java")
+      .onFile(TestUtils.testSourcesPath("checks/ImmediateReverseBoxingCheck.java"))
+      .withCheck(new ImmediateReverseBoxingCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_non_compilable() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/ImmediateReverseBoxingCheck.java"))
       .withCheck(new ImmediateReverseBoxingCheck())
       .verifyIssues();
   }

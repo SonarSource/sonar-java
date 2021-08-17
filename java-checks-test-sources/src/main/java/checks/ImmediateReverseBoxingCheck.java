@@ -1,4 +1,6 @@
-abstract class A {
+package checks;
+
+abstract class ImmediateReverseBoxingCheck {
 
   public void processInt(String s, int a) {}
   public void processInteger(String s, Integer... a) {}
@@ -13,15 +15,12 @@ abstract class A {
     integer1.intValue();
     Integer.valueOf(integer1); // Noncompliant [[sc=5;ec=20]] {{Remove the boxing to "Integer"; The argument is already of the same type.}}
     Double.valueOf(double1); // Noncompliant {{Remove the boxing to "Double"; The argument is already of the same type.}}
-    Integer.valueOf(double1); // Compliant
     Long.valueOf(integer1); // Compliant
-    int int2 = new Integer(1); // Noncompliant
+    int int2 = new Integer(1); // Noncompliant {{Remove the boxing to "Integer".}}
     int2 = new Integer(1); // Noncompliant
     int2 = new Integer(string);
     Integer integer2 = new Integer(1);
     integer2 = new Integer(1);
-    int2 = new Unknown();
-    int2 = unknownMethod(1);
   }
 
   void intUnboxingAndBoxing(int int1, Integer integer1, String string, Number number) {
@@ -61,6 +60,5 @@ abstract class A {
     int i1 = new Double(d).intValue(); // Noncompliant
     Character.valueOf(c).charValue(); // Noncompliant
     new Character(c).charValue(); // Noncompliant
-    Character c1 = new Character(); // Compliant - Assuming that there is an Character class in the same package, which is not "java.lang.Character".
   }
 }
