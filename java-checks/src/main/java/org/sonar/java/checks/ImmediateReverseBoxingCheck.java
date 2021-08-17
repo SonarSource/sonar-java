@@ -27,6 +27,11 @@ import java.util.Map.Entry;
 import java.util.function.Predicate;
 import org.sonar.check.Rule;
 import org.sonar.java.collections.MapBuilder;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -81,14 +86,14 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
       if (classSymbol != null) {
         ExpressionTree arg0 = newClassTree.arguments().get(0);
         checkForUnboxing(arg0);
-        checkForUselessUnboxing(newClassTree.symbolType(), newClassTree.identifier(), arg0);
+        checkForUselessUnboxing(newClassTree.symbolType(), newClassTree.identifier(), arg0, newClassTree);
       }
     }
   }
 
   private void checkExpression(ExpressionTree expression, Type implicitType) {
     if (implicitType.isPrimitive()) {
-      checkForBoxing(expression);
+      checkForBoxing(expression, expression);
     } else {
       checkForUnboxing(expression);
     }
@@ -99,10 +104,10 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
     if (isValueOfInvocation(mit)) {
       ExpressionTree arg0 = mit.arguments().get(0);
       checkForUnboxing(arg0);
-      checkForUselessUnboxing(mit.symbolType(), methodSelect, arg0);
+      checkForUselessUnboxing(mit.symbolType(), methodSelect, arg0, mit);
     } else if (isUnboxingMethodInvocation(mit)) {
       if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-        checkForBoxing(((MemberSelectExpressionTree) methodSelect).expression());
+        checkForBoxing(((MemberSelectExpressionTree) methodSelect).expression(), mit);
       }
     } else {
       Symbol symbol = mit.symbol();
@@ -112,10 +117,19 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private void checkForUselessUnboxing(Type targetType, Tree reportTree, ExpressionTree arg0) {
+  private void checkForUselessUnboxing(Type targetType, Tree reportTree, ExpressionTree arg0, Tree originalTree) {
     Type argType = arg0.symbolType();
     if (argType.is(targetType.fullyQualifiedName())) {
-      reportIssue(reportTree, String.format("Remove the boxing to \"%s\"; The argument is already of the same type.", argType.name()));
+      ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+        .forRule(this)
+        .onTree(reportTree)
+        .withMessage(String.format("Remove the boxing to \"%s\"; The argument is already of the same type.", argType.name()))
+        .withQuickFix(() -> JavaQuickFix.newQuickFix("Remove the boxing")
+          .addTextEdit(
+            JavaTextEdit.replaceTextSpan(AnalyzerMessage.textSpanBetween(originalTree, true, arg0, false), ""),
+            JavaTextEdit.replaceTextSpan(AnalyzerMessage.textSpanBetween(arg0, false, originalTree, true), ""))
+          .build())
+        .report();
     }
   }
 
@@ -130,21 +144,21 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private void checkForBoxing(ExpressionTree expression) {
+  private void checkForBoxing(ExpressionTree expression, Tree originalTree) {
     if (expression.is(Tree.Kind.NEW_CLASS)) {
       NewClassTree newClassTree = (NewClassTree) expression;
       Symbol.TypeSymbol classSymbol = wrapperClassSymbol(newClassTree);
       if (classSymbol != null) {
         ExpressionTree boxingArg = newClassTree.arguments().get(0);
         if (boxingArg.symbolType().isPrimitive()) {
-          addBoxingIssue(newClassTree, classSymbol, boxingArg);
+          addBoxingIssue(newClassTree, classSymbol, boxingArg, originalTree);
         }
       }
     } else if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree methodInvocationTree = (MethodInvocationTree) expression;
       if (isValueOfInvocation(methodInvocationTree)) {
         ExpressionTree boxingArg = methodInvocationTree.arguments().get(0);
-        addBoxingIssue(expression, methodInvocationTree.symbol().owner(), boxingArg);
+        addBoxingIssue(expression, methodInvocationTree.symbol().owner(), boxingArg, originalTree);
       }
     }
   }
@@ -157,13 +171,25 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
     return null;
   }
 
-  private void addBoxingIssue(Tree tree, Symbol classSymbol, Tree boxingArg) {
+  private void addBoxingIssue(Tree tree, Symbol classSymbol, Tree boxingArg, Tree originalTree) {
+    String message;
     if (boxingArg.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifier = (IdentifierTree) boxingArg;
-      reportIssue(tree, "Remove the boxing of \"" + identifier.name() + "\".");
+      message = String.format("Remove the boxing of \"%s\".", identifier.name());
     } else {
-      reportIssue(tree, "Remove the boxing to \"" + classSymbol.name() + "\".");
+      message = String.format("Remove the boxing to \"%s\".", classSymbol.name());
     }
+
+    ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+      .forRule(this)
+      .onTree(tree)
+      .withMessage(message)
+      .withQuickFix(() -> JavaQuickFix.newQuickFix("Remove the boxing")
+        .addTextEdit(
+          JavaTextEdit.replaceTextSpan(AnalyzerMessage.textSpanBetween(originalTree, true, boxingArg, false), ""),
+          JavaTextEdit.replaceTextSpan(AnalyzerMessage.textSpanBetween(boxingArg, false, originalTree, true), ""))
+        .build())
+      .report();
   }
 
   private void checkForUnboxing(ExpressionTree expressionTree) {
@@ -184,14 +210,25 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private void addUnboxingIssue(ExpressionTree expressionTree, ExpressionTree expression) {
-    if (expression.is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree identifier = (IdentifierTree) expression;
-      reportIssue(expressionTree, "Remove the unboxing of \"" + identifier.name() + "\".");
+  private void addUnboxingIssue(ExpressionTree expressionTree, ExpressionTree unboxedExpression) {
+    String message;
+    if (unboxedExpression.is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree identifier = (IdentifierTree) unboxedExpression;
+      message = String.format("Remove the unboxing of \"%s\".", identifier.name());
     } else {
-      String name = expression.symbolType().name();
-      reportIssue(expressionTree, "Remove the unboxing from \"" + name + "\".");
+      String name = unboxedExpression.symbolType().name();
+      message = String.format("Remove the unboxing from \"%s\".", name);
     }
+
+    ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+      .forRule(this)
+      .onTree(expressionTree)
+      .withMessage(message)
+      .withQuickFix(() -> JavaQuickFix.newQuickFix("Remove the unboxing")
+        .addTextEdit(JavaTextEdit.replaceTextSpan(
+          AnalyzerMessage.textSpanBetween(unboxedExpression, false, expressionTree, true), ""))
+        .build())
+      .report();
   }
 
   private static MethodMatchers unboxingInvocationMatchers() {

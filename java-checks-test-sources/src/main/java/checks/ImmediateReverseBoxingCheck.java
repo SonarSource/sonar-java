@@ -61,4 +61,73 @@ abstract class ImmediateReverseBoxingCheck {
     Character.valueOf(c).charValue(); // Noncompliant
     new Character(c).charValue(); // Noncompliant
   }
+
+  void quickFixes(int int1, Integer integer1, Double double1, double doublePrimitive) {
+    // Visit METHOD_INVOCATION
+    // valueOf - checkForUnboxing
+    Double.valueOf(double1.doubleValue()); // Noncompliant [[sc=20;ec=41;quickfixes=qf1]] {{Remove the unboxing of "double1".}}
+    // fix@qf1 {{Remove the unboxing}}
+    // edit@qf1 [[sc=27;ec=41]] {{}}
+
+    // valueOf - checkForUselessUnboxing
+    Double.valueOf(double1); // Noncompliant [[sc=5;ec=19;quickfixes=qf2]]
+    // fix@qf2 {{Remove the boxing}}
+    // edit@qf2 [[sc=5;ec=20]] {{}}
+    // edit@qf2 [[sc=27;ec=28]] {{}}
+
+    // isUnboxingMethodInvocation - checkForBoxing
+    new Integer(int1).intValue(); // Noncompliant [[sc=5;ec=22;quickfixes=qf3]]
+    // fix@qf3 {{Remove the boxing}}
+    // edit@qf3 [[sc=5;ec=17]] {{}}
+    // edit@qf3 [[sc=21;ec=33]] {{}}
+    Integer.valueOf(int1).intValue(); // Noncompliant [[sc=5;ec=26;quickfixes=qf4]]
+    // fix@qf4 {{Remove the boxing}}
+    // edit@qf4 [[sc=5;ec=21]] {{}}
+    // edit@qf4 [[sc=25;ec=37]] {{}}
+
+    // else, checkMethodInvocationArguments
+    examineInt(Integer.valueOf(int1)); // Noncompliant [[sc=16;ec=37;quickfixes=qf5]]
+    // fix@qf5 {{Remove the boxing}}
+    // edit@qf5 [[sc=16;ec=32]] {{}}
+    // edit@qf5 [[sc=36;ec=37]] {{}}
+    examineInteger(integer1.intValue()); // Noncompliant [[sc=20;ec=39;quickfixes=qf6]]
+    // fix@qf6 {{Remove the unboxing}}
+    // edit@qf6 [[sc=28;ec=39]] {{}}
+
+    // Visit VARIABLE
+    double d1 = Double.valueOf(doublePrimitive); // Noncompliant [[sc=17;ec=48;quickfixes=qf7]]
+    // fix@qf7 {{Remove the boxing}}
+    // edit@qf7 [[sc=17;ec=32]] {{}}
+    // edit@qf7 [[sc=47;ec=48]] {{}}
+    Double d2 = double1.doubleValue(); // Noncompliant [[sc=17;ec=38;quickfixes=qf8]]
+    // fix@qf8 {{Remove the unboxing}}
+    // edit@qf8 [[sc=24;ec=38]] {{}}
+
+    // Visit ASSIGNMENT
+    d1 = Double.valueOf(doublePrimitive); // Noncompliant [[sc=10;ec=41;quickfixes=qf9]]
+    // fix@qf9 {{Remove the boxing}}
+    // edit@qf9 [[sc=10;ec=25]] {{}}
+    // edit@qf9 [[sc=40;ec=41]] {{}}
+    d2 = double1.doubleValue(); // Noncompliant [[sc=10;ec=31;quickfixes=qf10]]
+    // fix@qf10 {{Remove the unboxing}}
+    // edit@qf10 [[sc=17;ec=31]] {{}}
+
+    // Visit NEW_CLASS
+    new Integer(integer1.intValue()); // Noncompliant [[sc=17;ec=36;quickfixes=qf11]]
+    // fix@qf11 {{Remove the unboxing}}
+    // edit@qf11 [[sc=25;ec=36]] {{}}
+    new Integer(integer1); // Noncompliant [[sc=9;ec=16;quickfixes=qf12]]
+    // fix@qf12 {{Remove the boxing}}
+    // edit@qf12 [[sc=5;ec=17]] {{}}
+    // edit@qf12 [[sc=25;ec=26]] {{}}
+  }
+
+  public void examineInt(int a) {
+    //...
+  }
+
+  public void examineInteger(Integer a) {
+    // ...
+  }
+
 }

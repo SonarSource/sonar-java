@@ -22,14 +22,16 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 class ImmediateReverseBoxingCheckTest {
 
   @Test
   void test() {
-    CheckVerifier.newVerifier()
+    InternalCheckVerifier.newInstance()
       .onFile(TestUtils.testSourcesPath("checks/ImmediateReverseBoxingCheck.java"))
       .withCheck(new ImmediateReverseBoxingCheck())
+      .withQuickFixes()
       .verifyIssues();
   }
 
