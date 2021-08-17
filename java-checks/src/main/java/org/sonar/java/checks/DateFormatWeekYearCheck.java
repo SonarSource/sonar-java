@@ -24,11 +24,18 @@ import java.util.Optional;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S3986")
 public class DateFormatWeekYearCheck extends AbstractMethodDetection {
@@ -82,13 +89,41 @@ public class DateFormatWeekYearCheck extends AbstractMethodDetection {
     }
     int start = datePattern.indexOf('Y');
     if (start > -1) {
-      int end = start;
-      while (end < datePattern.length() && datePattern.charAt(end) == 'Y') {
-        end++;
+      int end = getEndIndexOfYearSequence(datePattern, start);
+      String firstYSeq = datePattern.substring(start, end);
+      String replacement = firstYSeq.toLowerCase(Locale.ENGLISH);
+      String message = String.format(RECOMMENDATION_YEAR_MESSAGE, firstYSeq, replacement);
+      InternalJavaIssueBuilder issueBuilder = ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+        .forRule(this)
+        .onTree(argument)
+        .withMessage(message);
+      if (argument.is(Tree.Kind.STRING_LITERAL)) {
+        issueBuilder.withQuickFix(() -> computeQuickFix(argument, start, end, replacement));
       }
-      String firstYseq = datePattern.substring(start, end);
-      String message = String.format(RECOMMENDATION_YEAR_MESSAGE, firstYseq, firstYseq.toLowerCase(Locale.ENGLISH));
-      reportIssue(argument, message);
+      issueBuilder.report();
     }
+  }
+
+  private static int getEndIndexOfYearSequence(String sequence, int start) {
+    int count = start;
+    while (count < sequence.length() && sequence.charAt(count) == 'Y') {
+      count++;
+    }
+    return count;
+  }
+
+  private static JavaQuickFix computeQuickFix(ExpressionTree argument, int startColumn, int endColumn, String replacement) {
+    SyntaxToken firstToken = argument.firstToken();
+    AnalyzerMessage.TextSpan textSpan = computeTextSpan(firstToken, startColumn, endColumn);
+    return JavaQuickFix.newQuickFix("Replace year format")
+      .addTextEdit(JavaTextEdit.replaceTextSpan(textSpan, replacement))
+      .build();
+  }
+
+  private static AnalyzerMessage.TextSpan computeTextSpan(SyntaxToken firstToken, int startCharacter, int endCharacter) {
+    int line = firstToken.line();
+    // Columns are 0-based in the AST and need to be adjusted by 1 to suggest a proper quick fix
+    int column = firstToken.column() + 1;
+    return new AnalyzerMessage.TextSpan(line, column + startCharacter, line, column + endCharacter);
   }
 }

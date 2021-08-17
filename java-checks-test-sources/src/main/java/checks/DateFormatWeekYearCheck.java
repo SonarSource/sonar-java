@@ -20,6 +20,28 @@ class DateFormatWeekYearCheck {
   private String compliantAndNonFinalPattern = "Y-ww";
   private String nonCompliantAndNonFinalPattern = "y-ww";
 
+  void quickFixes() throws ParseException {
+    Date date = new SimpleDateFormat("yyyy/MM/dd").parse("2015/12/31");
+    String result = new SimpleDateFormat("YYYY/MM/dd").format(date);   // Noncompliant [[sc=42;ec=54;quickfixes=qf1]]
+    // fix@qf1 {{Replace year format}}
+    // edit@qf1 [[sc=43;ec=47]] {{yyyy}}
+    result = new SimpleDateFormat("YYYY").format(date);   // Noncompliant [[sc=35;ec=41;quickfixes=qf2]]
+    // fix@qf2 {{Replace year format}}
+    // edit@qf2 [[sc=36;ec=40]] {{yyyy}}
+    result = new SimpleDateFormat("  Y/MM/dd").format(date);   // Noncompliant [[sc=35;ec=46;quickfixes=qf3]]
+    // fix@qf3 {{Replace year format}}
+    // edit@qf3 [[sc=38;ec=39]] {{y}}
+    DateTimeFormatter.ofPattern("YYYY"); // Noncompliant [[sc=33;ec=39;quickfixes=qf4]]
+    // fix@qf4 {{Replace year format}}
+    // edit@qf4 [[sc=34;ec=38]] {{yyyy}}
+    DateTimeFormatter.ofPattern("  Y/MM/dd"); // Noncompliant [[sc=33;ec=44;quickfixes=qf5]]
+    // fix@qf5 {{Replace year format}}
+    // edit@qf5 [[sc=36;ec=37]] {{y}}
+    DateTimeFormatter.ofPattern("YY"); // Noncompliant [[sc=33;ec=37;quickfixes=qf6]]
+    // fix@qf6 {{Replace year format}}
+    // edit@qf6 [[sc=34;ec=36]] {{yy}}
+  }
+
   void useSimpleDateFormat() throws ParseException {
     SimpleDateFormat sdf = new SimpleDateFormat();
     sdf = new SimpleDateFormat(COMPLIANT_DATE_FORMAT);
