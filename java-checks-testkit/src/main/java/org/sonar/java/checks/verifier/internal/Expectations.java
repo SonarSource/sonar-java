@@ -368,6 +368,8 @@ class Expectations {
     private static final Pattern QUICK_FIX_MESSAGE = Pattern.compile("//\\s*fix@(?<id>\\S+)\\s+\\{\\{(?<message>.*)\\}\\}");
     private static final Pattern QUICK_FIX_EDIT = Pattern.compile("//\\s*edit@(?<id>\\S+).+");
 
+    private static final String NO_QUICK_FIX_ID = "!";
+
     private final Map<Integer, List<Issue>> issues;
     private final Map<String, SortedSet<FlowComment>> flows;
 
@@ -449,6 +451,10 @@ class Expectations {
         List<JavaQuickFix> quickFixesForIssue = new ArrayList<>();
 
         for (String quickFixId : entry.getValue()) {
+          if (NO_QUICK_FIX_ID.equals(quickFixId)) {
+            // When the id corresponds to the "no quick fix id", it means that we expect no quick fix for this issue.
+            continue;
+          }
           allQuickFixIds.add(quickFixId);
           String message = quickfixesMessages.get(quickFixId);
           if (message == null) {
