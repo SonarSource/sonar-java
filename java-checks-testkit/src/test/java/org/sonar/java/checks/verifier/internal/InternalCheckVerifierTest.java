@@ -50,6 +50,7 @@ class InternalCheckVerifierTest {
   private static final String TEST_FILE_NONCOMPLIANT = "src/test/files/testing/Noncompliant.java";
   private static final String TEST_FILE_WITH_QUICK_FIX = "src/test/files/testing/IssueWithQuickFix.java";
   private static final String TEST_FILE_WITH_TWO_QUICK_FIX = "src/test/files/testing/IssueWithTwoQuickFixes.java";
+  private static final String TEST_FILE_WITH_NO_EXPECTED = "src/test/files/testing/IssueWithNoQuickFixExpected.java";
   private static final JavaFileScanner FAILING_CHECK = new FailingCheck();
   private static final JavaFileScanner NO_EFFECT_CHECK = new NoEffectCheck();
   private static final JavaFileScanner FILE_LINE_ISSUE_CHECK = new FileLineIssueCheck();
@@ -723,6 +724,34 @@ class InternalCheckVerifierTest {
       assertThat(e)
         .isInstanceOf(AssertionError.class)
         .hasMessage("[Quick Fix] Missing quick fix for issue on line 1");
+    }
+
+    @Test
+    void test_no_quick_fix_expected() {
+      JavaTextEdit edit = JavaTextEdit.replaceTextSpan(
+        new AnalyzerMessage.TextSpan(1, 6, 1, 7), "Replacement");
+      Supplier<JavaQuickFix> quickFix = () -> JavaQuickFix.newQuickFix("Description")
+        .addTextEdit(edit)
+        .build();
+
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFile(TEST_FILE_WITH_NO_EXPECTED)
+        .withCheck(IssueWithQuickFix.of(quickFix))
+        .withQuickFixes()
+        .verifyIssues());
+
+      assertThat(e)
+        .isInstanceOf(AssertionError.class)
+        .hasMessage("[Quick Fix] Issue on line 1 contains quick fixes while none where expected");
+    }
+
+    @Test
+    void test_no_quick_fix_expected_no_actual() {
+      InternalCheckVerifier.newInstance()
+        .onFile(TEST_FILE_WITH_NO_EXPECTED)
+        .withCheck(new IssueWithQuickFix(Collections::emptyList))
+        .withQuickFixes()
+        .verifyIssues();
     }
 
     @Test

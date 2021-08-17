@@ -586,26 +586,39 @@ public class InternalCheckVerifier implements CheckVerifier {
       for (AnalyzerMessage issue : issues) {
         AnalyzerMessage.TextSpan primaryLocation = issue.primaryLocation();
         List<JavaQuickFix> expected = expectedQuickFixes.get(primaryLocation);
-        if (expected == null || expected.isEmpty()) {
+        if (expected == null) {
           // We don't have to always test quick fixes, we do nothing if there is no expected quick fix.
           continue;
         }
         List<JavaQuickFix> actual = actualQuickFixes.get(primaryLocation);
-        if (actual == null || actual.isEmpty()) {
-          throw new AssertionError(String.format("[Quick Fix] Missing quick fix for issue on line %d", primaryLocation.startLine));
+        if (expected.isEmpty()) {
+          if (actual != null && !actual.isEmpty()) {
+            throw new AssertionError(String.format("[Quick Fix] Issue on line %d contains quick fixes while none where expected", primaryLocation.startLine));
+          }
+          // Else: no issue in both expected and actual, nothing to do
+        } else {
+          validateIfSameSize(expected, actual, issue);
         }
-        int actualSize = actual.size();
-        int expectedSize = expected.size();
-        if (actualSize != expectedSize) {
-          throw new AssertionError(
-            String.format("[Quick Fix] Number of quickfixes expected is not equal to the number of expected on line %d: expected: %d , actual: %d",
+      }
+    }
+
+    private static void validateIfSameSize(List<JavaQuickFix> expected, @Nullable List<JavaQuickFix> actual, AnalyzerMessage issue) {
+      AnalyzerMessage.TextSpan primaryLocation = issue.primaryLocation();
+      if (actual == null || actual.isEmpty()) {
+        // At this point, we know that expected is not empty
+        throw new AssertionError(String.format("[Quick Fix] Missing quick fix for issue on line %d", primaryLocation.startLine));
+      }
+      int actualSize = actual.size();
+      int expectedSize = expected.size();
+      if (actualSize != expectedSize) {
+        throw new AssertionError(
+          String.format("[Quick Fix] Number of quickfixes expected is not equal to the number of expected on line %d: expected: %d , actual: %d",
             primaryLocation.startLine,
             expectedSize,
             actualSize));
-        }
-        for (int i = 0; i < actualSize; i++) {
-          validate(issue, actual.get(i), expected.get(i));
-        }
+      }
+      for (int i = 0; i < actualSize; i++) {
+        validate(issue, actual.get(i), expected.get(i));
       }
     }
 
