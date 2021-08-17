@@ -90,5 +90,12 @@ class AnonymousSubclass {
 
 class ThreadLocalCleanupExtends extends ThreadLocal {
   private static final ThreadLocal<UserSession> DELEGATE = new ThreadLocal<>(); // Compliant, extends ThreadLocal
+
+  public void quickFixInThreadLocal() {
+    set(null); // Noncompliant [[sc=5;ec=14;quickfixes=qf3]]
+    // fix@qf3 {{Replace with "remove()"}}
+    // edit@qf3 [[sc=5;ec=14]] {{remove()}}
+  }
+
 }
 
