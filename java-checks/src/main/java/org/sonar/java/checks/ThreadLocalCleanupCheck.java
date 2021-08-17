@@ -23,7 +23,11 @@ import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -63,7 +67,14 @@ public class ThreadLocalCleanupCheck extends IssuableSubscriptionVisitor {
     } else {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
       if (THREADLOCAL_SET.matches(mit) && mit.arguments().get(0).is(Tree.Kind.NULL_LITERAL)) {
-        reportIssue(mit, "Use \"remove()\" instead of \"set(null)\".");
+        InternalJavaIssueBuilder builder = ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+          .forRule(this)
+          .onTree(mit)
+          .withMessage("Use \"remove()\" instead of \"set(null)\".");
+        builder.withQuickFix(() -> JavaQuickFix.newQuickFix("Replace with \"remove()\"")
+          .addTextEdit(JavaTextEdit.replaceBetweenTree(ExpressionUtils.methodName(mit), mit.arguments(), "remove()"))
+          .build());
+        builder.report();
       }
     }
   }

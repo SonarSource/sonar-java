@@ -18,7 +18,13 @@ class UserSession {
   }
 
   public void incorrectCleanup() {
-    DELEGATE.set(null); // Noncompliant {{Use "remove()" instead of "set(null)".}}
+    DELEGATE.set(null); // Noncompliant [[sc=5;ec=23;quickfixes=qf1]] {{Use "remove()" instead of "set(null)".}}
+    // fix@qf1 {{Replace with "remove()"}}
+    // edit@qf1 [[sc=14;ec=23]] {{remove()}}
+
+    this.DELEGATE.set(null); // Noncompliant [[sc=5;ec=28;quickfixes=qf2]]
+    // fix@qf2 {{Replace with "remove()"}}
+    // edit@qf2 [[sc=19;ec=28]] {{remove()}}
   }
 
 }
@@ -84,5 +90,12 @@ class AnonymousSubclass {
 
 class ThreadLocalCleanupExtends extends ThreadLocal {
   private static final ThreadLocal<UserSession> DELEGATE = new ThreadLocal<>(); // Compliant, extends ThreadLocal
+
+  public void quickFixInThreadLocal() {
+    set(null); // Noncompliant [[sc=5;ec=14;quickfixes=qf3]]
+    // fix@qf3 {{Replace with "remove()"}}
+    // edit@qf3 [[sc=5;ec=14]] {{remove()}}
+  }
+
 }
 
