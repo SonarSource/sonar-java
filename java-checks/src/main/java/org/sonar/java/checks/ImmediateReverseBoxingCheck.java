@@ -123,11 +123,9 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
       ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
         .forRule(this)
         .onTree(reportTree)
-        .withMessage(String.format("Remove the boxing to \"%s\"; The argument is already of the same type.", argType.name()))
+        .withMessage("Remove the boxing to \"%s\"; The argument is already of the same type.", argType.name())
         .withQuickFix(() -> JavaQuickFix.newQuickFix("Remove the boxing")
-          .addTextEdit(
-            JavaTextEdit.replaceTextSpan(AnalyzerMessage.textSpanBetween(originalTree, true, arg0, false), ""),
-            JavaTextEdit.replaceTextSpan(AnalyzerMessage.textSpanBetween(arg0, false, originalTree, true), ""))
+          .addTextEdits(removeTreeExcept(originalTree, arg0))
           .build())
         .report();
     }
@@ -185,11 +183,14 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
       .onTree(tree)
       .withMessage(message)
       .withQuickFix(() -> JavaQuickFix.newQuickFix("Remove the boxing")
-        .addTextEdit(
-          JavaTextEdit.replaceTextSpan(AnalyzerMessage.textSpanBetween(originalTree, true, boxingArg, false), ""),
-          JavaTextEdit.replaceTextSpan(AnalyzerMessage.textSpanBetween(boxingArg, false, originalTree, true), ""))
+        .addTextEdits(removeTreeExcept(originalTree, boxingArg))
         .build())
       .report();
+  }
+
+  private static List<JavaTextEdit> removeTreeExcept(Tree tree, Tree except) {
+    return Arrays.asList(JavaTextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(tree, true, except, false)),
+      JavaTextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(except, false, tree, true)));
   }
 
   private void checkForUnboxing(ExpressionTree expressionTree) {
