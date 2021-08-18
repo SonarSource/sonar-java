@@ -19,11 +19,20 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JUtils;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
@@ -43,16 +52,34 @@ public class ToArrayCheck extends AbstractMethodDetection {
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     Tree parent = mit.parent();
     if (parent.is(Tree.Kind.TYPE_CAST)) {
-      checkCast(((TypeCastTree) parent).symbolType(), mit);
+      checkCast(((TypeCastTree) parent), mit);
     }
   }
 
-  private void checkCast(Type type, MethodInvocationTree mit) {
+  private void checkCast(TypeCastTree castTree, MethodInvocationTree mit) {
+    Type type = castTree.symbolType();
     if (type.isArray() && !type.is("java.lang.Object[]")) {
       Type elementType = ((Type.ArrayType) type).elementType();
-      if (!JUtils.isTypeVar(elementType)) {
-        reportIssue(mit, "Pass \"new " + elementType.name() + "[0]\" as argument to \"toArray\".");
+      ExpressionTree methodSelect = mit.methodSelect();
+      // Do not report an issue for type variables and call to toArray from the Collection itself
+      if (!JUtils.isTypeVar(elementType) && methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+        String typeName = String.format("new %s[0]", elementType.name());
+        InternalJavaIssueBuilder builder = ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+          .forRule(this)
+          .onTree(mit)
+          .withMessage(String.format("Pass \"%s\" as argument to \"toArray\".", typeName))
+          .withQuickFix(() -> getQuickFix(castTree, mit, (MemberSelectExpressionTree) methodSelect, typeName));
+        builder.report();
       }
     }
+  }
+
+  private static JavaQuickFix getQuickFix(TypeCastTree castTree, MethodInvocationTree mit, MemberSelectExpressionTree methodSelect, String typeName) {
+    List<JavaTextEdit> textEdits = new ArrayList<>();
+    textEdits.add(JavaTextEdit.insertAfterTree(mit.arguments().firstToken(), typeName));
+    if (!JUtils.isRawType(methodSelect.expression().symbolType())) {
+      textEdits.add(JavaTextEdit.replaceTextSpan(AnalyzerMessage.textSpanBetween(castTree, true, mit, false), ""));
+    }
+    return JavaQuickFix.newQuickFix(String.format("Pass \"%s\" as argument", typeName)).addTextEdits(textEdits).build();
   }
 }
