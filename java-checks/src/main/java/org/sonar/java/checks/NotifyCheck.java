@@ -21,8 +21,13 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 @Rule(key = "S2446")
@@ -35,6 +40,14 @@ public class NotifyCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportIssue(ExpressionUtils.methodName(mit), "\"notify\" may not wake up the appropriate thread.");
+    IdentifierTree methodName = ExpressionUtils.methodName(mit);
+    ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+      .forRule(this)
+      .onTree(methodName)
+      .withMessage("\"notify\" may not wake up the appropriate thread.")
+      .withQuickFix(() -> JavaQuickFix.newQuickFix("Replace with \"notifyAll()\"")
+        .addTextEdit(JavaTextEdit.replaceTree(methodName, "notifyAll"))
+        .build())
+      .report();
   }
 }
