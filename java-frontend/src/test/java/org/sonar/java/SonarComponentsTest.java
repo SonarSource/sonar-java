@@ -416,9 +416,18 @@ class SonarComponentsTest {
 
     String fileContent = sonarComponents.inputFileContents(inputFile);
     assertThat(fileContent).hasSize(59);
+
     List<String> fileLines = sonarComponents.fileLines(inputFile);
-    assertThat(fileLines).hasSize(5);
+    assertThat(fileLines)
+      .hasSize(5)
+      .noneMatch(line -> line.endsWith("\n"));
     assertThat(fileLines.get(0)).hasSize(11);
+
+    List<String> fileLinesWithLineEndings = sonarComponents.fileLinesWithLineEndings(inputFile);
+    assertThat(fileLinesWithLineEndings)
+      .hasSize(5)
+      .allMatch(line -> line.endsWith("\n"));
+    assertThat(fileLinesWithLineEndings.get(0)).hasSize(12);
 
     verify(inputFile, times(1)).contents();
     reset(inputFile);

@@ -59,6 +59,10 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
   private final JavaVersion javaVersion;
   private final boolean fileParsed;
 
+  private List<String> lines = null;
+  private List<String> linesWithEnding = null;
+  private String content;
+
   public DefaultJavaFileScannerContext(CompilationUnitTree tree, InputFile inputFile, Sema semanticModel,
                                        @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean fileParsed) {
     this.tree = (JavaTree.CompilationUnitTreeImpl) tree;
@@ -187,12 +191,25 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
 
   @Override
   public List<String> getFileLines() {
-    return sonarComponents.fileLines(inputFile);
+    if (lines == null) {
+      lines = Collections.unmodifiableList(sonarComponents.fileLines(inputFile));
+    }
+    return lines;
+  }
+
+  public List<String> getFileLinesWithLineEndings() {
+    if (linesWithEnding == null) {
+      linesWithEnding = Collections.unmodifiableList(sonarComponents.fileLinesWithLineEndings(inputFile));
+    }
+    return linesWithEnding;
   }
 
   @Override
   public String getFileContent() {
-    return sonarComponents.inputFileContents(inputFile);
+    if (content == null) {
+      content = sonarComponents.inputFileContents(inputFile);
+    }
+    return content;
   }
 
   public void reportIssue(AnalyzerMessage message) {
