@@ -13,14 +13,28 @@ class BigDecimalDoubleConstructorCheck {
   BigDecimal bd2 = new BigDecimal(2.0); // Noncompliant [[sc=20;ec=39;quickfixes=qf1]] {{Use "BigDecimal.valueOf" instead.}}
   // fix@qf1 {{Replace with BigDecimal.valueOf}}
   // edit@qf1 [[sc=20;ec=34]] {{BigDecimal.valueOf}}
-  BigDecimal bd4 = new BigDecimal(2.0, mc); // Noncompliant [[sc=20;ec=43;quickfixes=!]] {{Use "BigDecimal.valueOf" instead.}}
+  BigDecimal bd4 = new BigDecimal(2.0, mc); // Noncompliant [[sc=20;ec=43;quickfixes=qf1_2]] {{Use "BigDecimal.valueOf" instead.}}
+  // fix@qf1_2 {{Replace with BigDecimal("2.0")}}
+  // edit@qf1_2 [[sc=35;ec=38]] {{"2.0"}}
+  BigDecimal bd43 = new BigDecimal(123.0, mc); // Noncompliant [[sc=21;ec=46;quickfixes=qf1_3]] {{Use "BigDecimal.valueOf" instead.}}
+  // fix@qf1_3 {{Replace with BigDecimal("123.0")}}
+  // edit@qf1_3 [[sc=36;ec=41]] {{"123.0"}}
+
   BigDecimal bd5 = new BigDecimal(2.0f); // Noncompliant {{Use "BigDecimal.valueOf" instead.}}
-  BigDecimal bd6 = new BigDecimal(2.0f, mc); // Noncompliant {{Use "BigDecimal.valueOf" instead.}}
+  BigDecimal bd6 = new BigDecimal(2.0f, mc); // Noncompliant [[sc=20;ec=44;quickfixes=qf1_4]] {{Use "BigDecimal.valueOf" instead.}}
+  // fix@qf1_4 {{Replace with BigDecimal("2.0")}}
+  // edit@qf1_4 [[sc=35;ec=39]] {{"2.0"}}
+
+  BigDecimal bd6_2 = new BigDecimal(2.0d, mc); // Noncompliant [[sc=22;ec=46;quickfixes=qf1_5]] {{Use "BigDecimal.valueOf" instead.}}
+  // fix@qf1_5 {{Replace with BigDecimal("2.0")}}
+  // edit@qf1_5 [[sc=37;ec=41]] {{"2.0"}}
+
   BigDecimal bd3 = BigDecimal.valueOf(2.0);
 
   Double d = 0.1;
   BigDecimal bd7 = new BigDecimal(d); // Noncompliant
   BigDecimal bd8 = new BigDecimal((Double) 0.1); // Noncompliant
+  BigDecimal bd8_3 = new BigDecimal(d, mc); // Noncompliant [[sc=22;ec=43;quickfixes=!]]
 
   double d2 = 0.1;
   BigDecimal bd7_2 = new BigDecimal(d2); // Noncompliant

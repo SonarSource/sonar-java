@@ -28,6 +28,9 @@ import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -56,16 +59,34 @@ public class BigDecimalDoubleConstructorCheck extends IssuableSubscriptionVisito
         .forRule(this)
         .onTree(tree)
         .withMessage("Use \"BigDecimal.valueOf\" instead.");
-      if (newClassTree.arguments().size() == 1) {
-        builder.withQuickFix(() -> quickFix(newClassTree));
+
+      Arguments arguments = newClassTree.arguments();
+      if (arguments.size() == 1) {
+        builder.withQuickFix(() -> valueOfQuickFix(newClassTree));
+      } else {
+        ExpressionTree firstArgument = arguments.get(0);
+        if (firstArgument instanceof LiteralTree) {
+          builder.withQuickFix(() -> stringConstructorQuickFix((LiteralTree) firstArgument));
+        }
       }
       builder.report();
     }
   }
 
-  private static JavaQuickFix quickFix(NewClassTree newClassTree) {
+  private static JavaQuickFix valueOfQuickFix(NewClassTree newClassTree) {
     return JavaQuickFix.newQuickFix("Replace with BigDecimal.valueOf")
       .addTextEdit(JavaTextEdit.replaceBetweenTree(newClassTree.newKeyword(), newClassTree.identifier(), "BigDecimal.valueOf"))
+      .build();
+  }
+
+  private static JavaQuickFix stringConstructorQuickFix(LiteralTree argument) {
+    String argumentValue = argument.value();
+    if (argumentValue.endsWith("f") || argumentValue.endsWith("d")) {
+      argumentValue = argumentValue.substring(0, argumentValue.length() - 1);
+    }
+    String newArgument = String.format("\"%s\"", argumentValue);
+    return JavaQuickFix.newQuickFix(String.format("Replace with BigDecimal(%s)", newArgument))
+      .addTextEdit(JavaTextEdit.replaceTree(argument, newArgument))
       .build();
   }
 }
