@@ -22,12 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+
 class OverrideAnnotationCheckTest {
 
   @Test
   void test_java() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/OverrideAnnotationCheck.java")
+      .onFile(nonCompilingTestSourcesPath("checks/OverrideAnnotationCheck.java"))
       .withCheck(new OverrideAnnotationCheck())
       .verifyIssues();
   }
@@ -35,12 +37,12 @@ class OverrideAnnotationCheckTest {
   @Test
   void test_java_8() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/OverrideAnnotationCheck_java8.java")
+      .onFile(nonCompilingTestSourcesPath("checks/OverrideAnnotationCheck_java8.java"))
       .withCheck(new OverrideAnnotationCheck())
       .withJavaVersion(8)
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/OverrideAnnotationCheck.java")
+      .onFile(nonCompilingTestSourcesPath("checks/OverrideAnnotationCheck.java"))
       .withCheck(new OverrideAnnotationCheck())
       .withJavaVersion(8)
       .verifyIssues();
@@ -49,7 +51,7 @@ class OverrideAnnotationCheckTest {
   @Test
   void test_java_6() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/OverrideAnnotationCheck.java")
+      .onFile(nonCompilingTestSourcesPath("checks/OverrideAnnotationCheck.java"))
       .withCheck(new OverrideAnnotationCheck())
       .withJavaVersion(6)
       .verifyIssues();
@@ -58,7 +60,7 @@ class OverrideAnnotationCheckTest {
   @Test
   void test_java_5() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/OverrideAnnotationCheck_java5.java")
+      .onFile(nonCompilingTestSourcesPath("checks/OverrideAnnotationCheck_java5.java"))
       .withCheck(new OverrideAnnotationCheck())
       .withJavaVersion(5)
       .verifyIssues();
@@ -67,7 +69,7 @@ class OverrideAnnotationCheckTest {
   @Test
   void test_java_4() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/OverrideAnnotationCheck_java4.java")
+      .onFile(nonCompilingTestSourcesPath("checks/OverrideAnnotationCheck_java4.java"))
       .withCheck(new OverrideAnnotationCheck())
       .withJavaVersion(4)
       .verifyNoIssues();
