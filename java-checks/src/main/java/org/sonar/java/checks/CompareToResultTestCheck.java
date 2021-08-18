@@ -23,7 +23,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -35,6 +40,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
@@ -59,16 +65,45 @@ public class CompareToResultTestCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     BinaryExpressionTree binaryExpression = (BinaryExpressionTree) tree;
-    if (isInvalidTest(binaryExpression.leftOperand(), binaryExpression.rightOperand())) {
-      reportIssue(binaryExpression.operatorToken(), "Only the sign of the result should be examined.");
+
+    ExpressionTree operand1 = ExpressionUtils.skipParentheses(binaryExpression.leftOperand());
+    ExpressionTree operand2 = ExpressionUtils.skipParentheses(binaryExpression.rightOperand());
+
+    if (isNonZeroInt(operand1) && isCompareToResult(operand2)) {
+      reportIssue(binaryExpression, operand1, false);
+    } else if ((isNonZeroInt(operand2) && isCompareToResult(operand1))) {
+      reportIssue(binaryExpression, operand2, true);
     }
   }
 
-  private static boolean isInvalidTest(ExpressionTree operand1, ExpressionTree operand2) {
-    operand1 = ExpressionUtils.skipParentheses(operand1);
-    operand2 = ExpressionUtils.skipParentheses(operand2);
-    return (isNonZeroInt(operand1) && isCompareToResult(operand2))
-      || (isNonZeroInt(operand2) && isCompareToResult(operand1));
+  private void reportIssue(BinaryExpressionTree binaryExpression, ExpressionTree nonZeroOperandCleaned, boolean compareToIsLeft) {
+    InternalJavaIssueBuilder builder = ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+      .forRule(this)
+      .onTree(binaryExpression.operatorToken())
+      .withMessage("Only the sign of the result should be examined.");
+    if (binaryExpression.is(Kind.EQUAL_TO)) {
+      // For !=, even if we could in theory replace by <=/>= 0, we do not suggest quick fixes and let the user figure out what was his intent
+      builder.withQuickFix(() -> getQuickFix(binaryExpression, nonZeroOperandCleaned, compareToIsLeft));
+    }
+    builder.report();
+  }
+
+  private static JavaQuickFix getQuickFix(BinaryExpressionTree binaryExpression, ExpressionTree nonZeroOperandCleaned, boolean compareToIsLeft) {
+    AnalyzerMessage.TextSpan textSpan;
+    String newComparison;
+
+    SyntaxToken operatorToken = binaryExpression.operatorToken();
+    if (compareToIsLeft) {
+      newComparison = nonZeroOperandCleaned.is(Kind.UNARY_MINUS) ? "< 0" : "> 0";
+      textSpan = AnalyzerMessage.textSpanBetween(operatorToken, true, binaryExpression.rightOperand(), true);
+    } else {
+      newComparison = nonZeroOperandCleaned.is(Kind.UNARY_MINUS) ? "0 >" : "0 <";
+      textSpan = AnalyzerMessage.textSpanBetween(binaryExpression.leftOperand(), true, operatorToken, true);
+    }
+
+    return JavaQuickFix.newQuickFix(String.format("Replace with \"%s\"", newComparison))
+      .addTextEdit(JavaTextEdit.replaceTextSpan(textSpan, newComparison))
+      .build();
   }
 
   private static boolean isCompareToResult(ExpressionTree expression) {
