@@ -21,6 +21,7 @@ package org.sonar.java.model;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,6 +53,7 @@ import org.sonarsource.analyzer.commons.regex.ast.RepetitionTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -104,12 +106,31 @@ class DefaultJavaFileScannerContextTest {
 
   @Test
   void get_file_content() {
-    assertThat(context.getFileContent()).isEqualTo("content");
+    assertThat(context.getFileContent())
+      .isEqualTo("content")
+      .isSameAs(context.getFileContent());
   }
 
   @Test
   void get_file_lines() {
-    assertThat(context.getFileLines()).isEmpty();
+    List<String> lines = context.getFileLines();
+    assertThat(lines)
+      .hasSize(2)
+      .isSameAs(context.getFileLines())
+      .isNotEqualTo(context.getFileLinesWithLineEndings());
+
+    assertThatThrownBy(() -> lines.add("new line")).isInstanceOf(UnsupportedOperationException.class);
+  }
+
+  @Test
+  void get_file_lines_with_endings() {
+    List<String> lines = context.getFileLinesWithLineEndings();
+    assertThat(lines)
+      .hasSize(3)
+      .isSameAs(context.getFileLinesWithLineEndings())
+      .isNotEqualTo(context.getFileLines());
+
+    assertThatThrownBy(() -> lines.add("new line")).isInstanceOf(UnsupportedOperationException.class);
   }
 
   @Test
@@ -342,7 +363,8 @@ class DefaultJavaFileScannerContextTest {
       return null;
     }).when(sonarComponents).addIssue(any(InputComponent.class), any(JavaCheck.class), anyInt(), anyString(), any());
 
-    when(sonarComponents.fileLines(any(InputFile.class))).thenReturn(Collections.emptyList());
+    when(sonarComponents.fileLines(any(InputFile.class))).thenReturn(Arrays.asList("1st line", "2nd line"));
+    when(sonarComponents.fileLinesWithLineEndings(any(InputFile.class))).thenReturn(Arrays.asList("1st line\n", "2nd line\n", "3rd line\n"));
     when(sonarComponents.inputFileContents(any(InputFile.class))).thenReturn("content");
     when(sonarComponents.workDir()).thenReturn(WORK_DIR);
     when(sonarComponents.project()).thenReturn(PROJECT_BASE_DIR);

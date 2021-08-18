@@ -76,7 +76,8 @@ public class SonarComponents {
   public static final String FAIL_ON_EXCEPTION_KEY = "sonar.internal.analysis.failFast";
   public static final String SONAR_BATCH_MODE_KEY = "sonar.java.internal.batchMode";
 
-  private static final Pattern LINE_BREAK_PATTERN = Pattern.compile("(\r\n|[\n\r])");
+  private static final Pattern LINE_BREAK_EXCLUDED_PATTERN = Pattern.compile("\r\n|[\n\r]");
+  private static final Pattern LINE_BREAK_INCLUDED_PATTERN = Pattern.compile("(?<=\r\n|[\n\r])");
   private static final Version SONARLINT_6_3 = Version.parse("6.3");
 
   private final FileLinesContextFactory fileLinesContextFactory;
@@ -303,9 +304,17 @@ public class SonarComponents {
   }
 
   public List<String> fileLines(InputFile inputFile) {
+    return fileLines(inputFile, false);
+  }
+
+  public List<String> fileLinesWithLineEndings(InputFile inputFile) {
+    return fileLines(inputFile, true);
+  }
+
+  private static List<String> fileLines(InputFile inputFile, boolean keepLineEndings) {
     List<String> lines = new ArrayList<>();
     try (Scanner scanner = new Scanner(inputFile.inputStream(), inputFile.charset().name())) {
-      scanner.useDelimiter(LINE_BREAK_PATTERN);
+      scanner.useDelimiter(keepLineEndings ? LINE_BREAK_INCLUDED_PATTERN : LINE_BREAK_EXCLUDED_PATTERN);
       while (scanner.hasNext()) {
         lines.add(scanner.next());
       }
