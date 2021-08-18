@@ -19,12 +19,16 @@
  */
 package org.sonar.java.checks.tests;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.collections.ListUtils;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -34,6 +38,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S3415")
@@ -117,19 +122,79 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
     if (actualArgument.is(LITERAL_KINDS)) {
       // When we have a literal as actual, we are sure to have an issue
       if (expectedArgument.is(LITERAL_KINDS)) {
-        reportIssue(expectedArgument, actualArgument, MESSAGE_TWO_LITERALS);
+        // no quick-fixes when both are literals... the fix is something else
+        newIssue(expectedArgument, actualArgument, MESSAGE_TWO_LITERALS).report();
       } else {
-        reportIssue(expectedArgument, actualArgument, String.format(MESSAGE_SWAP, correctOrder));
+        newIssue(expectedArgument, actualArgument, MESSAGE_SWAP, correctOrder)
+          .withQuickFix(() -> swap(expectedArgument, actualArgument))
+          .report();
       }
     } else if (isExpectedPattern(actualArgument) && !isExpectedPattern(expectedArgument)) {
-      reportIssue(expectedArgument, actualArgument, String.format(MESSAGE_SWAP, correctOrder));
+      newIssue(expectedArgument, actualArgument, MESSAGE_SWAP, correctOrder)
+        .withQuickFix(() -> swap(expectedArgument, actualArgument))
+        .report();
     }
+  }
+
+  private JavaQuickFix swap(Tree x, Tree y) {
+    String newX = contentForTree(y);
+    String newY = contentForTree(x);
+    return JavaQuickFix.newQuickFix("Swap arguments")
+      .addTextEdit(JavaTextEdit.replaceTree(x, newX))
+      .addTextEdit(JavaTextEdit.replaceTree(y, newY))
+      .build();
+  }
+
+  private String contentForTree(Tree tree) {
+    SyntaxToken firstToken = tree.firstToken();
+    SyntaxToken endToken = tree.lastToken();
+
+    int startLine = firstToken.line();
+    int endLine = endToken.line();
+
+    int beginIndex = firstToken.column();
+    int endIndex = endToken.column() + endToken.text().length();
+
+    if (startLine == endLine) {
+      // one-liners
+      return context.getFileLines()
+        .get(startLine - 1)
+        .substring(beginIndex, endIndex);
+    }
+
+    // rely on file content KEEPING line separators
+    List<String> lines = ((DefaultJavaFileScannerContext) context)
+      .getFileLinesWithLineEndings()
+      .subList(startLine - 1, endLine);
+
+    // rebuild content of tree as String
+    StringBuilder sb = new StringBuilder();
+    sb.append(lines.get(0).substring(beginIndex));
+    for (int i = 1; i < lines.size() - 1; i++) {
+      sb.append(lines.get(i));
+    }
+    sb.append(ListUtils.getLast(lines).substring(0, endIndex));
+
+    return sb.toString();
   }
 
   private void checkArgument(ExpressionTree actualArgument) {
     if (actualArgument.is(LITERAL_KINDS)) {
-      reportIssue(actualArgument, MESSAGE_REPLACE);
+      // no quick-fixes
+      newIssue(actualArgument, MESSAGE_REPLACE).report();
     }
+  }
+
+  private InternalJavaIssueBuilder newIssue(ExpressionTree actualArgument, String message, Object... args) {
+    return ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+      .forRule(this)
+      .onTree(actualArgument)
+      .withMessage(message, args);
+  }
+
+  private InternalJavaIssueBuilder newIssue(ExpressionTree expectedArgument, ExpressionTree actualArgument, String message, Object... args) {
+    return newIssue(actualArgument, message, args)
+      .withSecondaries(new JavaFileScannerContext.Location("Other argument to swap.", expectedArgument));
   }
 
   /**
@@ -144,12 +209,6 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
         return parent != null && parent.is(Tree.Kind.EXPRESSION_STATEMENT) && secondInvocation.arguments().size() == 1;
       })
       .map(secondInvocation -> secondInvocation.arguments().get(0));
-  }
-
-  private void reportIssue(ExpressionTree expectedArgument, ExpressionTree actualArgument, String message) {
-    List<JavaFileScannerContext.Location> secondaries = Collections.singletonList(
-      new JavaFileScannerContext.Location("Other argument to swap.", expectedArgument));
-    context.reportIssue(this, actualArgument, message, secondaries, null);
   }
 
   private static boolean isNewArrayWithConstants(ExpressionTree actualArgument) {
