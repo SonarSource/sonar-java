@@ -643,12 +643,18 @@ public class InternalCheckVerifier implements CheckVerifier {
         JavaTextEdit actualTextEdit = actualTextEdits.get(i);
         JavaTextEdit expectedTextEdit = expectedTextEdits.get(i);
 
-        if (!actualTextEdit.getReplacement().equals(expectedTextEdit.getReplacement())) {
+        String expectedReplacement = expectedTextEdit.getReplacement();
+        String actualReplacement = actualTextEdit.getReplacement();
+        if (expectedReplacement.contains("\\n")) {
+          // new lines are expected
+          expectedReplacement = expectedReplacement.replace("\\n", "\n");
+        }
+        if (!actualReplacement.equals(expectedReplacement)) {
           throw new AssertionError(String.format("[Quick Fix] Wrong text replacement of edit %d for issue on line %d.%nExpected: {{%s}}%nbut was:     {{%s}}",
             (i + 1),
             actualIssue.getLine(),
-            expectedTextEdit.getReplacement(),
-            actualTextEdit.getReplacement()));
+            expectedReplacement,
+            actualReplacement));
         }
         AnalyzerMessage.TextSpan actualNormalizedTextSpan = actualTextEdit.getTextSpan();
         if (!actualNormalizedTextSpan.equals(expectedTextEdit.getTextSpan())) {

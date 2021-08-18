@@ -49,6 +49,7 @@ class InternalCheckVerifierTest {
   private static final String TEST_FILE_PARSE_ERROR = "src/test/files/testing/ParsingError.java";
   private static final String TEST_FILE_NONCOMPLIANT = "src/test/files/testing/Noncompliant.java";
   private static final String TEST_FILE_WITH_QUICK_FIX = "src/test/files/testing/IssueWithQuickFix.java";
+  private static final String TEST_FILE_WITH_QUICK_FIX_ON_MULTIPLE_LINE = "src/test/files/testing/IssueWithQuickFixMultipleLine.java";
   private static final String TEST_FILE_WITH_TWO_QUICK_FIX = "src/test/files/testing/IssueWithTwoQuickFixes.java";
   private static final String TEST_FILE_WITH_NO_EXPECTED = "src/test/files/testing/IssueWithNoQuickFixExpected.java";
   private static final JavaFileScanner FAILING_CHECK = new FailingCheck();
@@ -100,7 +101,7 @@ class InternalCheckVerifierTest {
     void setting_checks_is_required() {
       Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
         .withJavaVersion(11)
-        .withChecks(new JavaFileScanner[0])
+        .withChecks()
         .onFile(TEST_FILE)
         .verifyNoIssues());
 
@@ -840,6 +841,47 @@ class InternalCheckVerifierTest {
       assertThat(e)
         .isInstanceOf(AssertionError.class)
         .hasMessage("Add \".withQuickFixes()\" to the verifier. Quick fixes are expected but the verifier is not configured to test them.");
+    }
+
+    @Test
+    void test_quick_fix_supports_new_lines() {
+      Supplier<JavaQuickFix> quickFixMultipleLine = () -> JavaQuickFix.newQuickFix("Description")
+        .addTextEdit(JavaTextEdit.replaceTextSpan(new AnalyzerMessage.TextSpan(1, 6, 1, 7), "line1\n  line2;"))
+        .build();
+      Supplier<JavaQuickFix> quickFixSimple = () -> JavaQuickFix.newQuickFix("Description")
+        .addTextEdit(JavaTextEdit.replaceTextSpan(new AnalyzerMessage.TextSpan(1, 6, 1, 7), "Replacement"))
+        .build();
+
+      Throwable e1 = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFile(TEST_FILE_WITH_QUICK_FIX)
+        .withCheck(IssueWithQuickFix.of(quickFixMultipleLine))
+        .withQuickFixes()
+        .verifyIssues());
+
+      assertThat(e1)
+        .isInstanceOf(AssertionError.class)
+        .hasMessageStartingWith("[Quick Fix] Wrong text replacement of edit 1 for issue on line 1.")
+        .hasMessageContaining("Expected: {{Replacement}}")
+        .hasMessageContaining("but was:     {{line1\n  line2;}}");
+
+      Throwable e2 = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFile(TEST_FILE_WITH_QUICK_FIX_ON_MULTIPLE_LINE)
+        .withCheck(IssueWithQuickFix.of(quickFixSimple))
+        .withQuickFixes()
+        .verifyIssues());
+
+      assertThat(e2)
+        .isInstanceOf(AssertionError.class)
+        .hasMessageStartingWith("[Quick Fix] Wrong text replacement of edit 1 for issue on line 1.")
+        .hasMessageContaining("Expected: {{line1\n  line2;}}")
+        .hasMessageContaining("but was:     {{Replacement}}");
+
+      // passes
+      InternalCheckVerifier.newInstance()
+        .onFile(TEST_FILE_WITH_QUICK_FIX_ON_MULTIPLE_LINE)
+        .withCheck(IssueWithQuickFix.of(quickFixMultipleLine))
+        .withQuickFixes()
+        .verifyIssues();
     }
 
   }
