@@ -13,7 +13,6 @@
 
   <properties>
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
-    <sonarlint-core.version>5.3.1.31327</sonarlint-core.version>
   </properties>
 
   <dependencies>
@@ -38,7 +37,13 @@
     <dependency>
       <groupId>org.sonarsource.sonarlint.core</groupId>
       <artifactId>sonarlint-core</artifactId>
-      <version>${sonarlint-core.version}</version>
+      <version>${sonarlint.plugin.api.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.sonarsource.sonarlint.core</groupId>
+      <artifactId>sonarlint-plugin-api</artifactId>
+      <version>${sonarlint.plugin.api.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
