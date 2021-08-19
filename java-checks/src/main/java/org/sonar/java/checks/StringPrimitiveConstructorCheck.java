@@ -29,6 +29,7 @@ import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -74,7 +75,7 @@ public class StringPrimitiveConstructorCheck extends AbstractMethodDetection {
     ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
       .forRule(this)
       .onTree(newClassTree.identifier())
-      .withMessage("Remove this \"" + newClassTree.symbolType().name() + "\" constructor")
+      .withMessage("Remove this \"%s\" constructor", newClassTree.symbolType().name())
       .withQuickFix(() -> createQuickFix(newClassTree))
       .report();
   }
@@ -82,7 +83,8 @@ public class StringPrimitiveConstructorCheck extends AbstractMethodDetection {
   private static JavaQuickFix createQuickFix(NewClassTree newClassTree) {
     if (newClassTree.symbolType().is(STRING)) {
       return createStringQuickFix(newClassTree);
-    } else if (newClassTree.symbolType().is(BIG_INTEGER)) {
+    }
+    if (newClassTree.symbolType().is(BIG_INTEGER)) {
       return createBigIntegerQuickFix(newClassTree);
     }
     return createDefaultQuickFix(newClassTree);
@@ -91,12 +93,11 @@ public class StringPrimitiveConstructorCheck extends AbstractMethodDetection {
   private static JavaQuickFix createDefaultQuickFix(NewClassTree newClassTree) {
     String typeName = newClassTree.symbolType().name();
     return JavaQuickFix.newQuickFix("Replace with " + typeName + ".valueOf")
-        .addTextEdit(JavaTextEdit.replaceTextSpan(
-          AnalyzerMessage.textSpanBetween(
-            newClassTree.firstToken(), true,
-            newClassTree.arguments().openParenToken(), true),
-          typeName + ".valueOf("))
-        .build();
+      .addTextEdit(JavaTextEdit.replaceBetweenTree(
+        newClassTree.firstToken(),
+        newClassTree.arguments().openParenToken(),
+        typeName + ".valueOf("))
+      .build();
   }
 
   private static JavaQuickFix createBigIntegerQuickFix(NewClassTree newClassTree) {
@@ -115,24 +116,26 @@ public class StringPrimitiveConstructorCheck extends AbstractMethodDetection {
   }
 
   private static JavaQuickFix createStringQuickFix(NewClassTree newClassTree) {
-    if (newClassTree.arguments().isEmpty()) {
+    Arguments arguments = newClassTree.arguments();
+    if (arguments.isEmpty()) {
       return JavaQuickFix.newQuickFix("Replace with \"\"")
-          .addTextEdit(JavaTextEdit.replaceTree(newClassTree, "\"\""))
-          .build();
-    } else if (newClassTree.arguments().get(0).is(Tree.Kind.STRING_LITERAL)) {
-      return JavaQuickFix.newQuickFix("Remove \"new String\"")
-          .addTextEdit(JavaTextEdit.replaceTextSpan(AnalyzerMessage.textSpanBetween(
-            newClassTree.firstToken(), true,
-            newClassTree.arguments().openParenToken(), true), ""))
-          .addTextEdit(JavaTextEdit.replaceTree(newClassTree.arguments().closeParenToken(), ""))
-          .build();
-    } else {
-      return JavaQuickFix.newQuickFix("Remove \"new String\"")
-          .addTextEdit(JavaTextEdit.replaceTextSpan(AnalyzerMessage.textSpanBetween(
-            newClassTree.firstToken(), true,
-            newClassTree.arguments().openParenToken(), false), ""))
-          .build();
+        .addTextEdit(JavaTextEdit.replaceTree(newClassTree, "\"\""))
+        .build();
     }
+    if (arguments.get(0).is(Tree.Kind.STRING_LITERAL)) {
+      return JavaQuickFix.newQuickFix("Remove \"new String\"")
+        .addTextEdit(JavaTextEdit.replaceBetweenTree(
+          newClassTree.firstToken(),
+          arguments.openParenToken(), ""))
+        .addTextEdit(JavaTextEdit.replaceTree(arguments.closeParenToken(), ""))
+        .build();
+    }
+    return JavaQuickFix.newQuickFix("Remove \"new String\"")
+      .addTextEdit(JavaTextEdit.replaceTextSpan(AnalyzerMessage.textSpanBetween(
+        newClassTree.firstToken(), true,
+        arguments.openParenToken(), false), ""))
+      .build();
+
   }
 
   private static boolean isBigIntegerPotentiallyBiggerThanLong(NewClassTree newClassTree) {
