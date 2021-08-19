@@ -158,7 +158,7 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
       if (variables.size() == 1) {
         return Optional.of(AnalyzerMessage.textSpanFor(variable));
       }
-      // If the variable is the only one in the list we can include the entire list
+      // If the variable is not the last one in the list we can include the following comma
       if (lastToken.text().equals(",")) {
         return Optional.of(AnalyzerMessage.textSpanBetween(variable.simpleName(), lastToken));
       }
