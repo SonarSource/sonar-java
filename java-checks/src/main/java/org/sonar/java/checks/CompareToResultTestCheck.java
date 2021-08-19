@@ -37,7 +37,6 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -65,39 +64,47 @@ public class CompareToResultTestCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     BinaryExpressionTree binaryExpression = (BinaryExpressionTree) tree;
-
     ExpressionTree operand1 = ExpressionUtils.skipParentheses(binaryExpression.leftOperand());
     ExpressionTree operand2 = ExpressionUtils.skipParentheses(binaryExpression.rightOperand());
-
-    if (isNonZeroInt(operand1) && isCompareToResult(operand2)) {
-      reportIssue(binaryExpression, operand1, false);
-    } else if ((isNonZeroInt(operand2) && isCompareToResult(operand1))) {
-      reportIssue(binaryExpression, operand2, true);
+    if (isCompareToResult(operand1)) {
+      checkCompareToOperand(binaryExpression, operand2, true);
+    } else if (isCompareToResult(operand2)) {
+      checkCompareToOperand(binaryExpression, operand1, false);
     }
   }
 
-  private void reportIssue(BinaryExpressionTree binaryExpression, ExpressionTree nonZeroOperandCleaned, boolean compareToIsLeft) {
+  public void checkCompareToOperand(BinaryExpressionTree binaryExpression, ExpressionTree operand, boolean compareToIsLeft) {
+    Object resolvedOperandValue = ExpressionUtils.resolveAsConstant(operand);
+    if (resolvedOperandValue instanceof Number) {
+      long operandValue = ((Number)resolvedOperandValue).longValue();
+      if (operandValue != 0) {
+        reportIssue(binaryExpression, operandValue, compareToIsLeft);
+      }
+    }
+  }
+
+  private void reportIssue(BinaryExpressionTree binaryExpression, long operandValue, boolean compareToIsLeft) {
     InternalJavaIssueBuilder builder = ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
       .forRule(this)
       .onTree(binaryExpression.operatorToken())
       .withMessage("Only the sign of the result should be examined.");
     if (binaryExpression.is(Kind.EQUAL_TO)) {
       // For !=, even if we could in theory replace by <=/>= 0, we do not suggest quick fixes and let the user figure out what was his intent
-      builder.withQuickFix(() -> getQuickFix(binaryExpression, nonZeroOperandCleaned, compareToIsLeft));
+      builder.withQuickFix(() -> getQuickFix(binaryExpression, operandValue, compareToIsLeft));
     }
     builder.report();
   }
 
-  private static JavaQuickFix getQuickFix(BinaryExpressionTree binaryExpression, ExpressionTree nonZeroOperandCleaned, boolean compareToIsLeft) {
+  private static JavaQuickFix getQuickFix(BinaryExpressionTree binaryExpression, long operandValue, boolean compareToIsLeft) {
     AnalyzerMessage.TextSpan textSpan;
     String newComparison;
 
     SyntaxToken operatorToken = binaryExpression.operatorToken();
     if (compareToIsLeft) {
-      newComparison = nonZeroOperandCleaned.is(Kind.UNARY_MINUS) ? "< 0" : "> 0";
+      newComparison = operandValue < 0 ? "< 0" : "> 0";
       textSpan = AnalyzerMessage.textSpanBetween(operatorToken, true, binaryExpression.rightOperand(), true);
     } else {
-      newComparison = nonZeroOperandCleaned.is(Kind.UNARY_MINUS) ? "0 >" : "0 <";
+      newComparison = operandValue < 0 ? "0 >" : "0 <";
       textSpan = AnalyzerMessage.textSpanBetween(binaryExpression.leftOperand(), true, operatorToken, true);
     }
 
@@ -130,15 +137,6 @@ public class CompareToResultTestCheck extends IssuableSubscriptionVisitor {
       }
     }
     return false;
-  }
-
-  private static boolean isNonZeroInt(ExpressionTree expression) {
-    return isNonZeroIntLiteral(expression)
-      || (expression.is(Tree.Kind.UNARY_MINUS) && isNonZeroIntLiteral(((UnaryExpressionTree) expression).expression()));
-  }
-
-  private static boolean isNonZeroIntLiteral(ExpressionTree expression) {
-    return expression.is(Tree.Kind.INT_LITERAL) && !"0".equals(((LiteralTree) expression).value());
   }
 
   private static boolean isReassigned(Symbol variableSymbol, Tree method) {

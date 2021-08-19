@@ -2,6 +2,9 @@ package checks;
 
 class CompareToResultTestCheck {
   class MyComparable implements Comparable<MyComparable> {
+    private static final int ZERO = 0;
+    private static final int ONE = 1;
+    private static final int MINUS_ONE = -1;
 
     int compareToField = compareTo(new MyComparable());
 
@@ -18,6 +21,16 @@ class CompareToResultTestCheck {
       if (compareTo(other) == 0) {}
       if (compareTo(other) == 1) {} // Noncompliant
       if (compareTo(other) != 1) {} // Noncompliant
+      if (compareTo(other) == 1L) {} // Noncompliant
+      if (compareTo(other) == 01) {} // Noncompliant
+      if (compareTo(other) == (1 + 2 + 3) * 0) {}
+      if (compareTo(other) == ZERO) {}
+      if (compareTo(other) == ONE) {} // Noncompliant
+      if (compareTo(other) == 0x0) {}
+      if (compareTo(other) == 0b0) {}
+      if (compareTo(other) == 0_0) {}
+      if (compareTo(other) == -0) {}
+
       if (other.compareTo(this) == 1) {} // Noncompliant
       if (-1 == compareTo(other)) {} // Noncompliant
       if ((-1) == compareTo(other)) {} // Noncompliant
@@ -90,6 +103,18 @@ class CompareToResultTestCheck {
       if (compareTo(other) == (-1)) {} // Noncompliant [[sc=28;ec=30;quickfixes=qf5]]
       // fix@qf5 {{Replace with "< 0"}}
       // edit@qf5 [[sc=28;ec=35]] {{< 0}}
+
+      if (compareTo(other) == MINUS_ONE) {} // Noncompliant [[sc=28;ec=30;quickfixes=qf6]]
+      // fix@qf6 {{Replace with "< 0"}}
+      // edit@qf6 [[sc=28;ec=40]] {{< 0}}
+
+      if (compareTo(other) == -MINUS_ONE) {} // Noncompliant [[sc=28;ec=30;quickfixes=qf7]]
+      // fix@qf7 {{Replace with "> 0"}}
+      // edit@qf7 [[sc=28;ec=41]] {{> 0}}
+
+      if (compareTo(other) == -(-1)) {} // Noncompliant [[sc=28;ec=30;quickfixes=qf8]]
+      // fix@qf8 {{Replace with "> 0"}}
+      // edit@qf8 [[sc=28;ec=36]] {{> 0}}
 
       // For !=, even if we could in theory replace by <=/>= 0, we do not suggest quick fixes and let the user figure out what was his intent
       if (1 != compareTo(notComparable)) {} // Noncompliant [[sc=13;ec=15;quickfixes=!]]
