@@ -22,14 +22,20 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S1161")
 public class OverrideAnnotationCheck extends IssuableSubscriptionVisitor {
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.METHOD);
@@ -50,7 +56,12 @@ public class OverrideAnnotationCheck extends IssuableSubscriptionVisitor {
     if (!overriddenSymbol.isAbstract()
       && !isObjectMethod(overriddenSymbol)
       && !isAnnotatedOverride(methodSymbol)) {
-      reportIssue(methodTree.simpleName(), "Add the \"@Override\" annotation above this method signature");
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(methodTree.simpleName())
+        .withMessage("Add the \"@Override\" annotation above this method signature")
+        .withQuickFix(() -> quickFix(methodTree))
+        .report();
     }
   }
 
@@ -66,8 +77,56 @@ public class OverrideAnnotationCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isAnnotatedOverride(Symbol.MethodSymbol method) {
-    return method.metadata()
-      .isAnnotatedWith("java.lang.Override");
+    return method.metadata().isAnnotatedWith("java.lang.Override");
   }
 
+  /**
+   * Place the @Override annotation as first annotation, on top of the signature
+   * @param methodTree the method to annotate
+   * @return the quick-fix adding the @Override annotation one line above the signature
+   */
+  private JavaQuickFix quickFix(MethodTree methodTree) {
+    ModifiersTree modifiersTree = methodTree.modifiers();
+    Tree targetTree = modifiersTree.isEmpty() ? QuickFixHelper.nextToken(modifiersTree) : modifiersTree.get(0);
+    String insertedText;
+    if (somethingBeforeOnSameLine(methodTree)) {
+      // strangely formated code: everythign on the same line?
+      insertedText = "@Override ";
+    } else {
+      insertedText = "@Override" + newLineWithPadding(targetTree);
+    }
+    return JavaQuickFix
+      .newQuickFix("Add \"@Override\" annotation")
+      .addTextEdit(JavaTextEdit.insertBeforeTree(targetTree, insertedText))
+      .build();
+  }
+
+  private static boolean somethingBeforeOnSameLine(Tree tree) {
+    return QuickFixHelper.previousToken(tree).line() == tree.firstToken().line();
+  }
+
+  private String newLineWithPadding(Tree tree) {
+    String endOfLineCharacters = endOfLineCharacters(tree);
+
+    SyntaxToken firstToken = tree.firstToken();
+    String padding = context.getFileLines()
+      .get(firstToken.line() - 1)
+      .substring(0, firstToken.column());
+
+    return endOfLineCharacters + padding;
+  }
+
+  private String endOfLineCharacters(Tree tree) {
+    String treeLine = QuickFixHelper.internalContext(context).getFileLinesWithLineEndings().get(tree.firstToken().line() - 1);
+    StringBuilder sb = new StringBuilder();
+    for (int i = treeLine.length() - 1; i >= 0; i--) {
+      char character = treeLine.charAt(i);
+      if ((character != '\r') && (character != '\n')) {
+        break;
+      }
+      sb.insert(0, character);
+    }
+
+    return sb.toString();
+  }
 }
