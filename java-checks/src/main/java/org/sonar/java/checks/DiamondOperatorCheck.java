@@ -27,10 +27,9 @@ import org.apache.commons.lang.ArrayUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -93,7 +92,7 @@ public class DiamondOperatorCheck extends SubscriptionVisitor implements JavaVer
     if ((type != null && isParameterizedType(type))
       || usedAsArgumentWithoutDiamond(newClassTree)) {
       TypeArguments typeArguments = ((ParameterizedTypeTree) newTypeTree).typeArguments();
-      ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+      QuickFixHelper.newIssue(context)
         .forRule(this)
         .onTree(typeArguments)
         .withMessage("Replace the type specification in this constructor call with the diamond operator (\"<>\").%s", context.getJavaVersion().java7CompatibilityMessage())

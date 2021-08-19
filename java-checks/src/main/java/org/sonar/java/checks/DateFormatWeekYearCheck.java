@@ -23,8 +23,8 @@ import java.util.Locale;
 import java.util.Optional;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
@@ -93,7 +93,7 @@ public class DateFormatWeekYearCheck extends AbstractMethodDetection {
       String firstYSeq = datePattern.substring(start, end);
       String replacement = firstYSeq.toLowerCase(Locale.ENGLISH);
       String message = String.format(RECOMMENDATION_YEAR_MESSAGE, firstYSeq, replacement);
-      InternalJavaIssueBuilder issueBuilder = ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+      InternalJavaIssueBuilder issueBuilder = QuickFixHelper.newIssue(context)
         .forRule(this)
         .onTree(argument)
         .withMessage(message);

@@ -22,12 +22,11 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JWarning;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -56,7 +55,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     TypeCastTree typeCastTree = (TypeCastTree) tree;
     Type cast = typeCastTree.type().symbolType();
     if (isUnnecessaryCast(typeCastTree)) {
-      ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+      QuickFixHelper.newIssue(context)
         .forRule(this)
         .onTree(typeCastTree.type())
         .withMessage("Remove this unnecessary cast to \"" + cast.erasure() + "\".")

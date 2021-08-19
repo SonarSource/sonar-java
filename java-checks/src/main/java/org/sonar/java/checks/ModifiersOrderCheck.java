@@ -28,10 +28,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -67,7 +66,7 @@ public class ModifiersOrderCheck extends IssuableSubscriptionVisitor {
       ModifiersTree modifiers = (ModifiersTree) tree;
       alreadyReported.add(modifiers);
       getFirstBadlyOrdered(modifiers)
-        .ifPresent(wrongModifier -> ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+        .ifPresent(wrongModifier -> QuickFixHelper.newIssue(context)
           .forRule(this)
           .onTree(wrongModifier)
           .withMessage("Reorder the modifiers to comply with the Java Language Specification.")
@@ -156,7 +155,7 @@ public class ModifiersOrderCheck extends IssuableSubscriptionVisitor {
       }
       if (i == (numberModifiers - 1)) {
         // Last: remove last token and potential space
-        removals.add(AnalyzerMessage.textSpanBetween(current, true, nextToken(modifiersTree), false));
+        removals.add(AnalyzerMessage.textSpanBetween(current, true, QuickFixHelper.nextToken(modifiersTree), false));
       } else {
         // Take into account neighboring modifiers (can be on different lines)
         removals.add(AnalyzerMessage.textSpanBetween(current, true, modifiersTree.get(i + 1), false));
@@ -175,19 +174,6 @@ public class ModifiersOrderCheck extends IssuableSubscriptionVisitor {
     if (!useParent) {
       return JavaTextEdit.insertBeforeTree(modifiersTree.get(0), replacement);
     }
-    return JavaTextEdit.insertBeforeTree(nextToken(modifiersTree), replacement + " ");
-  }
-
-  private static Tree nextToken(ModifiersTree modifiersTree) {
-    List<Tree> children = ((JavaTree) modifiersTree.parent()).getChildren();
-    Tree nextToken = modifiersTree.get(0);
-    for (int i = children.indexOf(modifiersTree) + 1; i < children.size(); i++) {
-      Tree child = children.get(i);
-      if (child.firstToken() != null) {
-        nextToken = child;
-        break;
-      }
-    }
-    return nextToken;
+    return JavaTextEdit.insertBeforeTree(QuickFixHelper.nextToken(modifiersTree), replacement + " ");
   }
 }

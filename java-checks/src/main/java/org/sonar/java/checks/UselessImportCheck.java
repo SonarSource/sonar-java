@@ -32,11 +32,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.JWarning;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -109,7 +108,7 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
             message = "Remove this unused import '" + importName + "'.";
           }
           ImportTree reportTree = (ImportTree) warning.syntaxTree();
-          ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) this.context).newIssue())
+          QuickFixHelper.newIssue(context)
             .forRule(this)
             .onTree(reportTree.qualifiedIdentifier())
             .withMessage(message)
@@ -128,7 +127,7 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
       importsNames.put(importName, extractLastClassName(importName));
     }
     if (isJavaLangImport(importName)) {
-      ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) this.context).newIssue())
+      QuickFixHelper.newIssue(context)
         .forRule(this)
         .onTree(importTree.qualifiedIdentifier())
         .withMessage("Remove this unnecessary import: java.lang classes are always implicitly imported.")
@@ -172,7 +171,8 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
   private static JavaQuickFix quickFix(ImportTree importTree, List<ImportTree> imports) {
     int indexOfImport = imports.indexOf(importTree);
     boolean isLastImport = indexOfImport == imports.size() - 1;
-    JavaQuickFix.Builder quickFix = JavaQuickFix.newQuickFix(String.format("Remove the %simport", importTree.isStatic() ? "static " : ""));
+    String description = String.format("Remove the %simport", importTree.isStatic() ? "static " : "");
+    JavaQuickFix.Builder quickFix = JavaQuickFix.newQuickFix(description);
     if (imports.size() == 1) {
       // single import not used...
       quickFix.addTextEdit(JavaTextEdit.removeTree(importTree));

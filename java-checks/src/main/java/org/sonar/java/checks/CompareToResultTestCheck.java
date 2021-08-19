@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
@@ -84,7 +84,7 @@ public class CompareToResultTestCheck extends IssuableSubscriptionVisitor {
   }
 
   private void reportIssue(BinaryExpressionTree binaryExpression, long operandValue, boolean compareToIsLeft) {
-    InternalJavaIssueBuilder builder = ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+    InternalJavaIssueBuilder builder = QuickFixHelper.newIssue(context)
       .forRule(this)
       .onTree(binaryExpression.operatorToken())
       .withMessage("Only the sign of the result should be examined.");

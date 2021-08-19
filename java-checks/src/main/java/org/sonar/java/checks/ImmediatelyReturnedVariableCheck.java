@@ -24,9 +24,8 @@ import java.util.Map;
 import javax.annotation.CheckForNull;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.collections.MapBuilder;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
-import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -84,7 +83,7 @@ public class ImmediatelyReturnedVariableCheck extends BaseTreeVisitor implements
             // Can only happen for non-compilable code, still, we should not report anything.
             return;
           }
-          ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+          QuickFixHelper.newIssue(context)
             .forRule(this)
             .onTree(initializer)
             .withMessage("Immediately %s this expression instead of assigning it to the temporary variable \"%s\".", lastTypeForMessage, identifier)

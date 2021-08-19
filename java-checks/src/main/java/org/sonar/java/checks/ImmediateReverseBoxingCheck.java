@@ -26,10 +26,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.collections.MapBuilder;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -120,7 +119,7 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
   private void checkForUselessUnboxing(Type targetType, Tree reportTree, ExpressionTree arg0, Tree originalTree) {
     Type argType = arg0.symbolType();
     if (argType.is(targetType.fullyQualifiedName())) {
-      ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+      QuickFixHelper.newIssue(context)
         .forRule(this)
         .onTree(reportTree)
         .withMessage("Remove the boxing to \"%s\"; The argument is already of the same type.", argType.name())
@@ -178,7 +177,7 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
       message = String.format("Remove the boxing to \"%s\".", classSymbol.name());
     }
 
-    ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+    QuickFixHelper.newIssue(context)
       .forRule(this)
       .onTree(tree)
       .withMessage(message)
@@ -221,7 +220,7 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
       message = String.format("Remove the unboxing from \"%s\".", name);
     }
 
-    ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+    QuickFixHelper.newIssue(context)
       .forRule(this)
       .onTree(expressionTree)
       .withMessage(message)

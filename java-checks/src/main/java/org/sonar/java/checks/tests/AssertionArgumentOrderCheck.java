@@ -19,13 +19,11 @@
  */
 package org.sonar.java.checks.tests;
 
-import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.collections.ListUtils;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
@@ -38,7 +36,6 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S3415")
@@ -137,45 +134,12 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
   }
 
   private JavaQuickFix swap(Tree x, Tree y) {
-    String newX = contentForTree(y);
-    String newY = contentForTree(x);
+    String newX = QuickFixHelper.contentForTree(y, context);
+    String newY = QuickFixHelper.contentForTree(x, context);
     return JavaQuickFix.newQuickFix("Swap arguments")
       .addTextEdit(JavaTextEdit.replaceTree(x, newX))
       .addTextEdit(JavaTextEdit.replaceTree(y, newY))
       .build();
-  }
-
-  private String contentForTree(Tree tree) {
-    SyntaxToken firstToken = tree.firstToken();
-    SyntaxToken endToken = tree.lastToken();
-
-    int startLine = firstToken.line();
-    int endLine = endToken.line();
-
-    int beginIndex = firstToken.column();
-    int endIndex = endToken.column() + endToken.text().length();
-
-    if (startLine == endLine) {
-      // one-liners
-      return context.getFileLines()
-        .get(startLine - 1)
-        .substring(beginIndex, endIndex);
-    }
-
-    // rely on file content KEEPING line separators
-    List<String> lines = ((DefaultJavaFileScannerContext) context)
-      .getFileLinesWithLineEndings()
-      .subList(startLine - 1, endLine);
-
-    // rebuild content of tree as String
-    StringBuilder sb = new StringBuilder();
-    sb.append(lines.get(0).substring(beginIndex));
-    for (int i = 1; i < lines.size() - 1; i++) {
-      sb.append(lines.get(i));
-    }
-    sb.append(ListUtils.getLast(lines).substring(0, endIndex));
-
-    return sb.toString();
   }
 
   private void checkArgument(ExpressionTree actualArgument) {
@@ -186,7 +150,7 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
   }
 
   private InternalJavaIssueBuilder newIssue(ExpressionTree actualArgument, String message, Object... args) {
-    return ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+    return QuickFixHelper.newIssue(context)
       .forRule(this)
       .onTree(actualArgument)
       .withMessage(message, args);
