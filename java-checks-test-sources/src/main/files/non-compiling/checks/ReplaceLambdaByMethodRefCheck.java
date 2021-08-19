@@ -10,7 +10,7 @@ class A {
   void fun() {
     IntStream.range(1, 5)
         .map((x) -> x * x)
-        .map(x -> square(x)) // Noncompliant [[sc=16;ec=18]] {{Replace this lambda with a method reference.}}
+        .map(x -> square(x)) // Noncompliant [[sc=16;ec=18]] {{Replace this lambda with method reference 'this::square'.}}
         .map(x -> { // Noncompliant
           return square(x);
         })
