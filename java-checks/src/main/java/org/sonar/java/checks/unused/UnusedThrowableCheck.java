@@ -23,8 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
-import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -45,7 +44,7 @@ public class UnusedThrowableCheck extends IssuableSubscriptionVisitor {
     if (newClassTree.symbolType().isSubtypeOf("java.lang.Throwable")) {
       Tree parent = newClassTree.parent();
       if (parent.is(Tree.Kind.EXPRESSION_STATEMENT)) {
-        ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+        QuickFixHelper.newIssue(context)
           .forRule(this)
           .onTree(newClassTree)
           .withMessage("Throw this exception or remove this useless statement.")

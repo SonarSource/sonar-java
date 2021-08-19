@@ -22,11 +22,10 @@ package org.sonar.java.checks;
 import java.util.ArrayList;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -64,12 +63,12 @@ public class ToArrayCheck extends AbstractMethodDetection {
       // Do not report an issue for type variables and call to toArray from the Collection itself
       if (!JUtils.isTypeVar(elementType) && methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
         String typeName = String.format("new %s[0]", elementType.name());
-        InternalJavaIssueBuilder builder = ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+        QuickFixHelper.newIssue(context)
           .forRule(this)
           .onTree(mit)
           .withMessage(String.format("Pass \"%s\" as argument to \"toArray\".", typeName))
-          .withQuickFix(() -> getQuickFix(castTree, mit, (MemberSelectExpressionTree) methodSelect, typeName));
-        builder.report();
+          .withQuickFix(() -> getQuickFix(castTree, mit, (MemberSelectExpressionTree) methodSelect, typeName))
+          .report();
       }
     }
   }

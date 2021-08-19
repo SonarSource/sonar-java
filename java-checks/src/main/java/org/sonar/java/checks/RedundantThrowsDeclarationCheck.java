@@ -30,13 +30,12 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.Javadoc;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.serialization.SerializableContract;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -111,7 +110,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
   }
 
   private void reportIssueWithQuickfix(MethodTree methodTree, TypeTree clauseToRemove, String message) {
-    ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+    QuickFixHelper.newIssue(context)
       .forRule(this)
       .onTree(clauseToRemove)
       .withMessage(message)
@@ -353,10 +352,9 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
             // Constructor is inside this file, in case of nested class, parameterTypes() will include an extra implicit
             // parameter type. We hopefully have access to the declaration that does not include implicit parameter.
             return methodSymbol.declaration().parameters().isEmpty();
-          } else {
-            // The declaration is in another class, we can use parameterTypes() safely since it can not be nested.
-            return  methodSymbol.parameterTypes().isEmpty();
           }
+          // The declaration is in another class, we can use parameterTypes() safely since it can not be nested.
+          return  methodSymbol.parameterTypes().isEmpty();
         }
       }
       return false;
@@ -369,9 +367,8 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
       if (typeTree.symbolType().is(fullyQualifiedName)) {
         if (firstOccurrenceFound) {
           return true;
-        } else {
-          firstOccurrenceFound = true;
         }
+        firstOccurrenceFound = true;
       }
     }
     return false;

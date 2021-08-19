@@ -21,10 +21,9 @@ package org.sonar.java.checks;
 
 import java.util.Optional;
 import org.sonar.check.Rule;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -79,7 +78,7 @@ public class CollectionIsEmptyCheck extends BaseTreeVisitor implements JavaFileS
 
     getCallToSizeInvocation(tree).ifPresent(callToSizeInvocation ->
       getEmptyComparisonType(tree).ifPresent(comparisonType ->
-        ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+        QuickFixHelper.newIssue(context)
           .forRule(this)
           .onTree(tree)
           .withMessage("Use isEmpty() to check whether the collection is empty or not.")
@@ -127,7 +126,8 @@ public class CollectionIsEmptyCheck extends BaseTreeVisitor implements JavaFileS
 
     if (isEmptyComparison(tree, leftIsZero, leftIsOne, rightIsZero, rightIsOne, anyZero)) {
       return Optional.of(EmptyComparisonType.EMPTY);
-    } else if (isNotEmptyComparison(tree, leftIsZero, leftIsOne, rightIsZero, rightIsOne, anyZero)) {
+    }
+    if (isNotEmptyComparison(tree, leftIsZero, leftIsOne, rightIsZero, rightIsOne, anyZero)) {
       return Optional.of(EmptyComparisonType.NOT_EMPTY);
     }
     return Optional.empty();
