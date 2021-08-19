@@ -21,14 +21,25 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.TestUtils;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 class CompareToResultTestCheckTest {
 
   @Test
   void test() {
-    CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/CompareToResultTestCheck.java")
+    InternalCheckVerifier.newInstance()
+      .onFile(TestUtils.testSourcesPath("checks/CompareToResultTestCheck.java"))
       .withCheck(new CompareToResultTestCheck())
+      .withQuickFixes()
       .verifyIssues();
+  }
+
+  @Test
+  void test_non_compilable() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/CompareToResultTestCheck.java"))
+      .withCheck(new CompareToResultTestCheck())
+      .verifyNoIssues();
   }
 }
