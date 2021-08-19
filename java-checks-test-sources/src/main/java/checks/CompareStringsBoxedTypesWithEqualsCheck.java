@@ -1,5 +1,7 @@
 package checks;
 
+import java.util.Locale;
+
 class Boxed {
   String str1 = "blue";
   String str2 = "blue";
@@ -28,7 +30,7 @@ class Boxed {
 
     if (str1.equals(str2)) {}
     if (boxedInt1.equals(boxedInt2)) {}
-    
+
     Boolean b = null;
     Boolean b1 = true;
     Boolean b2 = false;
@@ -44,6 +46,61 @@ class Boxed {
     if (Boolean.TRUE == b4) {} // Compliant
     if (b5 == Boolean.TRUE) {} // FN
     if (b5 == b6) {} // Noncompliant
+  }
+
+  void offerQuickFixes() {
+    if (str1 == str2) {} // Noncompliant [[sc=14;ec=16;quickfixes=qf0]]
+    // fix@qf0 {{Replace with boxed comparison}}
+    // edit@qf0 [[sc=21;ec=21]]{{)}}
+    // edit@qf0 [[sc=13;ec=17]]{{, }}
+    // edit@qf0 [[sc=9;ec=9]]{{java.util.Objects.equals(}}
+    if (str1 == "blue") {} // Noncompliant [[sc=14;ec=16;quickfixes=qf1]]
+    // fix@qf1 {{Replace with boxed comparison}}
+    // edit@qf1 [[sc=23;ec=23]]{{)}}
+    // edit@qf1 [[sc=13;ec=17]]{{, }}
+    // edit@qf1 [[sc=9;ec=9]]{{java.util.Objects.equals(}}
+    if ("blue" == str1) {} // Noncompliant [[sc=16;ec=18;quickfixes=qf2]]
+    // fix@qf2 {{Replace with boxed comparison}}
+    // edit@qf2 [[sc=23;ec=23]]{{)}}
+    // edit@qf2 [[sc=15;ec=19]]{{, }}
+    // edit@qf2 [[sc=9;ec=9]]{{java.util.Objects.equals(}}
+    if (str1 == "BLUE".toLowerCase(Locale.ROOT)) {} // Noncompliant [[sc=14;ec=16;quickfixes=qf3]]
+    // fix@qf3 {{Replace with boxed comparison}}
+    // edit@qf3 [[sc=48;ec=48]]{{)}}
+    // edit@qf3 [[sc=13;ec=17]]{{, }}
+    // edit@qf3 [[sc=9;ec=9]]{{java.util.Objects.equals(}}
+    if ("BLUE".toLowerCase(Locale.ROOT) == str1) {} // Noncompliant [[sc=41;ec=43;quickfixes=qf4]]
+    // fix@qf4 {{Replace with boxed comparison}}
+    // edit@qf4 [[sc=48;ec=48]]{{)}}
+    // edit@qf4 [[sc=40;ec=44]]{{, }}
+    // edit@qf4 [[sc=9;ec=9]]{{java.util.Objects.equals(}}
+
+    /* -- NEGATION --  */
+    if (str1 != str2) {} // Noncompliant [[sc=14;ec=16;quickfixes=qf100]]
+    // fix@qf100 {{Replace with boxed comparison}}
+    // edit@qf100 [[sc=21;ec=21]]{{)}}
+    // edit@qf100 [[sc=13;ec=17]]{{, }}
+    // edit@qf100 [[sc=9;ec=9]]{{!java.util.Objects.equals(}}
+    if (str1 != "blue") {} // Noncompliant [[sc=14;ec=16;quickfixes=qf101]]
+    // fix@qf101 {{Replace with boxed comparison}}
+    // edit@qf101 [[sc=23;ec=23]]{{)}}
+    // edit@qf101 [[sc=13;ec=17]]{{, }}
+    // edit@qf101 [[sc=9;ec=9]]{{!java.util.Objects.equals(}}
+    if ("blue" != str1) {} // Noncompliant [[sc=16;ec=18;quickfixes=qf102]]
+    // fix@qf102 {{Replace with boxed comparison}}
+    // edit@qf102 [[sc=23;ec=23]]{{)}}
+    // edit@qf102 [[sc=15;ec=19]]{{, }}
+    // edit@qf102 [[sc=9;ec=9]]{{!java.util.Objects.equals(}}
+    if (str1 != "BLUE".toLowerCase(Locale.ROOT)) {} // Noncompliant [[sc=14;ec=16;quickfixes=qf103]]
+    // fix@qf103 {{Replace with boxed comparison}}
+    // edit@qf103 [[sc=48;ec=48]]{{)}}
+    // edit@qf103 [[sc=13;ec=17]]{{, }}
+    // edit@qf103 [[sc=9;ec=9]]{{!java.util.Objects.equals(}}
+    if ("BLUE".toLowerCase(Locale.ROOT) != str1) {} // Noncompliant [[sc=41;ec=43;quickfixes=qf104]]
+    // fix@qf104 {{Replace with boxed comparison}}
+    // edit@qf104 [[sc=48;ec=48]]{{)}}
+    // edit@qf104 [[sc=40;ec=44]]{{, }}
+    // edit@qf104 [[sc=9;ec=9]]{{!java.util.Objects.equals(}}
   }
 }
 

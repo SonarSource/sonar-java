@@ -19,11 +19,19 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S4973")
 public class CompareStringsBoxedTypesWithEqualsCheck extends CompareWithEqualsVisitor {
@@ -35,10 +43,33 @@ public class CompareStringsBoxedTypesWithEqualsCheck extends CompareWithEqualsVi
     if (!isNullComparison(leftOpType, rightOpType)
       && !isCompareWithBooleanConstant(tree.leftOperand(), tree.rightOperand())
       && (isStringType(leftOpType, rightOpType) || isBoxedType(leftOpType, rightOpType))) {
-      reportIssue(tree.operatorToken());
+      ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) this.context).newIssue())
+        .forRule(this)
+        .onTree(tree.operatorToken())
+        .withMessage("Strings and Boxed types should be compared using \"equals()\"")
+        .withQuickFixes(() -> computeQuickFix(tree))
+        .report();
     }
   }
-  
+
+  private static List<JavaQuickFix> computeQuickFix(BinaryExpressionTree tree) {
+    String callToEquals = "java.util.Objects.equals(";
+    if (tree.is(Tree.Kind.NOT_EQUAL_TO)) {
+      callToEquals = "!" + callToEquals;
+    }
+    AnalyzerMessage.TextSpan interOperandSpace = AnalyzerMessage.textSpanBetween(
+      tree.leftOperand().lastToken(), false,
+      tree.rightOperand().firstToken(), false
+    );
+    return Collections.singletonList(
+      JavaQuickFix.newQuickFix("Replace with boxed comparison")
+        .addTextEdit(JavaTextEdit.insertAfterTree(tree.rightOperand().lastToken(), ")"))
+        .addTextEdit(JavaTextEdit.replaceTextSpan(interOperandSpace, ", "))
+        .addTextEdit(JavaTextEdit.insertBeforeTree(tree.leftOperand().firstToken(), callToEquals))
+        .build()
+    );
+  }
+
   private static boolean isCompareWithBooleanConstant(ExpressionTree left, ExpressionTree right) {
     return ExpressionsHelper.getConstantValueAsBoolean(left).value() != null ||
       ExpressionsHelper.getConstantValueAsBoolean(right).value() != null;

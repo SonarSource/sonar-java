@@ -33,7 +33,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 public abstract class CompareWithEqualsVisitor extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
-  private JavaFileScannerContext context;
+  protected JavaFileScannerContext context;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
