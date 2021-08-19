@@ -57,13 +57,14 @@ public class BigDecimalDoubleConstructorCheck extends IssuableSubscriptionVisito
     if (BIG_DECIMAL_DOUBLE_FLOAT.matches(newClassTree)) {
       InternalJavaIssueBuilder builder = ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
         .forRule(this)
-        .onTree(tree)
-        .withMessage("Use \"BigDecimal.valueOf\" instead.");
+        .onTree(tree);
 
       Arguments arguments = newClassTree.arguments();
       if (arguments.size() == 1) {
+        builder.withMessage("Use \"BigDecimal.valueOf\" instead.");
         builder.withQuickFix(() -> valueOfQuickFix(newClassTree));
       } else {
+        builder.withMessage("Use \"new BigDecimal(String, MathContext)\" instead.");
         ExpressionTree firstArgument = arguments.get(0);
         if (firstArgument instanceof LiteralTree) {
           builder.withQuickFix(() -> stringConstructorQuickFix((LiteralTree) firstArgument));
@@ -81,11 +82,11 @@ public class BigDecimalDoubleConstructorCheck extends IssuableSubscriptionVisito
 
   private static JavaQuickFix stringConstructorQuickFix(LiteralTree argument) {
     String argumentValue = argument.value();
-    if (argumentValue.endsWith("f") || argumentValue.endsWith("d")) {
+    if (argumentValue.endsWith("f") || argumentValue.endsWith("d") || argumentValue.endsWith("F") || argumentValue.endsWith("D")) {
       argumentValue = argumentValue.substring(0, argumentValue.length() - 1);
     }
     String newArgument = String.format("\"%s\"", argumentValue);
-    return JavaQuickFix.newQuickFix(String.format("Replace with BigDecimal(%s)", newArgument))
+    return JavaQuickFix.newQuickFix(String.format("Replace with BigDecimal(%s,", newArgument))
       .addTextEdit(JavaTextEdit.replaceTree(argument, newArgument))
       .build();
   }
