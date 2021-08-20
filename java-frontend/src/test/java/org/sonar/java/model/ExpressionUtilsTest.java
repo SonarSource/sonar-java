@@ -295,35 +295,53 @@ class ExpressionUtilsTest {
   }
 
   @Test
-  void resolve_as_constant() {
+  void resolve_as_int_constant() {
     assertResolveAsConstant("0", 0);
     assertResolveAsConstant("1", 1);
     assertResolveAsConstant("+1", +1);
-    assertResolveAsConstant("-(0x01 + 2L)", -(0x01 + 2L));
     assertResolveAsConstant("0x01 | 0xF0", 0x01 | 0xF0);
     assertResolveAsConstant("-1", -1);
+    assertResolveAsConstant("(1)", (1));
+    assertResolveAsConstant("~42", ~42);
+  }
+
+  @Test
+  void resolve_as_long_constant() {
+    assertResolveAsConstant("-(0x01 + 2L)", -(0x01 + 2L));
     assertResolveAsConstant("0L", 0L);
     assertResolveAsConstant("1L", 1L);
     assertResolveAsConstant("-1L", -1L);
-    assertResolveAsConstant("true", true);
-    assertResolveAsConstant("!true", !true);
-    assertResolveAsConstant("false", false);
-    assertResolveAsConstant("!false", !false);
-    assertResolveAsConstant("(1)", (1));
     assertResolveAsConstant("-(1L)", -(1L));
     assertResolveAsConstant("-(-1L)", -(-1L));
     assertResolveAsConstant("-(-(1L))", -(-(1L)));
     assertResolveAsConstant("-0x25L", -0x25L);
-    assertResolveAsConstant("~42", ~42);
     assertResolveAsConstant("~42L", ~42L);
-    assertResolveAsConstant("\"abc\"", "abc");
-    assertResolveAsConstant("(\"abc\")", ("abc"));
+  }
+
+  @Test
+  void resolve_as_boolean_constant() {
+    assertResolveAsConstant("true", true);
+    assertResolveAsConstant("!true", !true);
+    assertResolveAsConstant("false", false);
+    assertResolveAsConstant("!false", !false);
     assertResolveAsConstant("Boolean.TRUE", true);
     assertResolveAsConstant("Boolean.FALSE", false);
-    // not yet supported
+  }
+
+  @Test
+  void resolve_as_string_constant() {
+    assertResolveAsConstant("\"abc\"", "abc");
+    assertResolveAsConstant("(\"abc\")", ("abc"));
+  }
+
+  @Test
+  void resolve_as_constant_not_yet_supported() {
     assertResolveAsConstant("true || true", null);
     assertResolveAsConstant("2 * 2", null);
-    // unknown
+  }
+
+  @Test
+  void resolve_as_constant_unknown_symbol() {
     assertResolveAsConstant("x", null);
     assertResolveAsConstant("-x", null);
     assertResolveAsConstant("~x", null);
