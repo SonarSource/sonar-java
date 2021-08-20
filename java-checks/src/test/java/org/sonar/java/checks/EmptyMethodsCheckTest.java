@@ -21,14 +21,15 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.TestUtils;
+
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class EmptyMethodsCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/EmptyMethodsCheck.java"))
+      .onFile(testSourcesPath("checks/EmptyMethodsCheck.java"))
       .withCheck(new EmptyMethodsCheck())
       .verifyIssues();
   }
