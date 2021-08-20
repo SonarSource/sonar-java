@@ -12,21 +12,20 @@ class CompareStringsBoxedTypesWithEqualsCheck {
     int myInt2 = 2;
 
     void offerQuickFixes() {
-      if (str1 == str2) {} // Noncompliant [[sc=16;ec=18;quickfixes=qf0]]
+      if (str1 == str2) {} // Noncompliant [[sc=16;ec=18;quickfixes=qf0]] {{Strings and Boxed types should be compared using "equals()"}}
       // fix@qf0 {{Replace with boxed comparison}}
       // edit@qf0 [[sc=23;ec=23]]{{)}}
       // edit@qf0 [[sc=15;ec=19]]{{, }}
       // edit@qf0 [[sc=11;ec=11]]{{java.util.Objects.equals(}}
       if (str1 == "blue") {} // Noncompliant [[sc=16;ec=18;quickfixes=qf1]]
       // fix@qf1 {{Replace with boxed comparison}}
-      // edit@qf1 [[sc=25;ec=25]]{{)}}
-      // edit@qf1 [[sc=15;ec=19]]{{, }}
-      // edit@qf1 [[sc=11;ec=11]]{{java.util.Objects.equals(}}
+      // edit@qf1 [[sc=15;ec=25]]{{}}
+      // edit@qf1 [[sc=15;ec=15]]{{)}}
+      // edit@qf1 [[sc=11;ec=11]]{{"blue".equals(}}
       if ("blue" == str1) {} // Noncompliant [[sc=18;ec=20;quickfixes=qf2]]
       // fix@qf2 {{Replace with boxed comparison}}
       // edit@qf2 [[sc=25;ec=25]]{{)}}
-      // edit@qf2 [[sc=17;ec=21]]{{, }}
-      // edit@qf2 [[sc=11;ec=11]]{{java.util.Objects.equals(}}
+      // edit@qf2 [[sc=17;ec=21]]{{.equals(}}
       if (str1 == "BLUE".toLowerCase(Locale.ROOT)) {} // Noncompliant [[sc=16;ec=18;quickfixes=qf3]]
       // fix@qf3 {{Replace with boxed comparison}}
       // edit@qf3 [[sc=50;ec=50]]{{)}}
@@ -46,14 +45,14 @@ class CompareStringsBoxedTypesWithEqualsCheck {
       // edit@qf100 [[sc=11;ec=11]]{{!java.util.Objects.equals(}}
       if (str1 != "blue") {} // Noncompliant [[sc=16;ec=18;quickfixes=qf101]]
       // fix@qf101 {{Replace with boxed comparison}}
-      // edit@qf101 [[sc=25;ec=25]]{{)}}
-      // edit@qf101 [[sc=15;ec=19]]{{, }}
-      // edit@qf101 [[sc=11;ec=11]]{{!java.util.Objects.equals(}}
+      // edit@qf101 [[sc=15;ec=25]]{{}}
+      // edit@qf101 [[sc=15;ec=15]]{{)}}
+      // edit@qf101 [[sc=11;ec=11]]{{!"blue".equals(}}
       if ("blue" != str1) {} // Noncompliant [[sc=18;ec=20;quickfixes=qf102]]
       // fix@qf102 {{Replace with boxed comparison}}
       // edit@qf102 [[sc=25;ec=25]]{{)}}
-      // edit@qf102 [[sc=17;ec=21]]{{, }}
-      // edit@qf102 [[sc=11;ec=11]]{{!java.util.Objects.equals(}}
+      // edit@qf102 [[sc=17;ec=21]]{{.equals(}}
+      // edit@qf102 [[sc=11;ec=11]]{{!}}
       if (str1 != "BLUE".toLowerCase(Locale.ROOT)) {} // Noncompliant [[sc=16;ec=18;quickfixes=qf103]]
       // fix@qf103 {{Replace with boxed comparison}}
       // edit@qf103 [[sc=50;ec=50]]{{)}}
