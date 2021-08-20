@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 public final class ExpressionUtils {
@@ -214,17 +215,43 @@ public final class ExpressionUtils {
     if (expression.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK)) {
       return LiteralUtils.getAsStringValue((LiteralTree) expression);
     }
-    if (tree.is(Tree.Kind.INT_LITERAL, Tree.Kind.UNARY_MINUS, Tree.Kind.UNARY_PLUS)) {
-      return LiteralUtils.intLiteralValue(tree);
+    if (expression instanceof UnaryExpressionTree) {
+      return resolveUnaryExpression((UnaryExpressionTree) expression);
     }
-    if (tree.is(Tree.Kind.LONG_LITERAL)) {
-      return LiteralUtils.longLiteralValue(tree);
+    if (expression.is(Tree.Kind.INT_LITERAL)) {
+      return LiteralUtils.intLiteralValue(expression);
+    }
+    if (expression.is(Tree.Kind.LONG_LITERAL)) {
+      return LiteralUtils.longLiteralValue(expression);
     }
     if (expression.is(Tree.Kind.PLUS)) {
       return resolvePlus((BinaryExpressionTree) expression);
     }
     if (expression.is(Tree.Kind.OR)) {
       return resolveOr((BinaryExpressionTree) expression);
+    }
+    return null;
+  }
+
+  @CheckForNull
+  private static Object resolveUnaryExpression(UnaryExpressionTree unaryExpression) {
+    Object value = resolveAsConstant(unaryExpression.expression());
+    if (unaryExpression.is(Tree.Kind.UNARY_PLUS)) {
+      return value;
+    } else if (unaryExpression.is(Tree.Kind.UNARY_MINUS)) {
+      if (value instanceof Long) {
+        return -(Long) value;
+      } else if (value instanceof Integer) {
+        return -(Integer) value;
+      }
+    } else if (unaryExpression.is(Tree.Kind.BITWISE_COMPLEMENT)) {
+      if (value instanceof Long) {
+        return ~(Long) value;
+      } else if (value instanceof Integer) {
+        return ~(Integer) value;
+      }
+    } else if (unaryExpression.is(Tree.Kind.LOGICAL_COMPLEMENT) && value instanceof Boolean) {
+      return !(Boolean) value;
     }
     return null;
   }

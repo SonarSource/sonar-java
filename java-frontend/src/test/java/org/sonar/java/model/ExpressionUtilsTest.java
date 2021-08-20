@@ -24,6 +24,7 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -292,4 +293,74 @@ class ExpressionUtilsTest {
       super.visitAssignmentExpression(tree);
     }
   }
+
+  @Test
+  void resolve_as_int_constant() {
+    assertResolveAsConstant("0", 0);
+    assertResolveAsConstant("1", 1);
+    assertResolveAsConstant("+1", +1);
+    assertResolveAsConstant("0x01 | 0xF0", 0x01 | 0xF0);
+    assertResolveAsConstant("-1", -1);
+    assertResolveAsConstant("(1)", (1));
+    assertResolveAsConstant("~42", ~42);
+  }
+
+  @Test
+  void resolve_as_long_constant() {
+    assertResolveAsConstant("-(0x01 + 2L)", -(0x01 + 2L));
+    assertResolveAsConstant("0L", 0L);
+    assertResolveAsConstant("1L", 1L);
+    assertResolveAsConstant("-1L", -1L);
+    assertResolveAsConstant("-(1L)", -(1L));
+    assertResolveAsConstant("-(-1L)", -(-1L));
+    assertResolveAsConstant("-(-(1L))", -(-(1L)));
+    assertResolveAsConstant("-0x25L", -0x25L);
+    assertResolveAsConstant("~42L", ~42L);
+  }
+
+  @Test
+  void resolve_as_boolean_constant() {
+    assertResolveAsConstant("true", true);
+    assertResolveAsConstant("!true", !true);
+    assertResolveAsConstant("false", false);
+    assertResolveAsConstant("!false", !false);
+    assertResolveAsConstant("Boolean.TRUE", true);
+    assertResolveAsConstant("Boolean.FALSE", false);
+  }
+
+  @Test
+  void resolve_as_string_constant() {
+    assertResolveAsConstant("\"abc\"", "abc");
+    assertResolveAsConstant("(\"abc\")", ("abc"));
+  }
+
+  @Test
+  void resolve_as_constant_not_yet_supported() {
+    assertResolveAsConstant("true || true", null);
+    assertResolveAsConstant("2 * 2", null);
+  }
+
+  @Test
+  void resolve_as_constant_unknown_symbol() {
+    assertResolveAsConstant("x", null);
+    assertResolveAsConstant("-x", null);
+    assertResolveAsConstant("~x", null);
+    assertResolveAsConstant("!x", null);
+    assertResolveAsConstant("++x", null);
+    assertResolveAsConstant("x.y", null);
+  }
+
+  private void assertResolveAsConstant(String code, @Nullable Object expected) {
+    CompilationUnitTree unit = JParserTestUtils.parse("class A { Object f = " + code + "; }");
+    ExpressionTree expression = ((VariableTree)((ClassTree) unit.types().get(0)).members().get(0)).initializer();
+    Object actual = ExpressionUtils.resolveAsConstant(expression);
+    if (expected == null) {
+      assertThat(actual).isNull();
+    } else {
+      assertThat(actual)
+        .hasSameClassAs(expected)
+        .isEqualTo(expected);
+    }
+  }
+
 }
