@@ -20,15 +20,18 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
+
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class ArrayDesignatorOnVariableCheckTest {
 
   @Test
   void test() {
-    CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ArrayDesignatorOnVariableCheck.java")
+    InternalCheckVerifier.newInstance()
+      .onFile(testSourcesPath("checks/ArrayDesignatorOnVariableCheck.java"))
       .withCheck(new ArrayDesignatorOnVariableCheck())
+      .withQuickFixes()
       .verifyIssues();
   }
 
