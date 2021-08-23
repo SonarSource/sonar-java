@@ -24,6 +24,9 @@ import java.util.LinkedList;
 import java.util.Objects;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -34,6 +37,8 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S2325")
@@ -84,8 +89,32 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
       return;
     }
     if ((symbol.isPrivate() || symbol.isFinal() || classTree.symbol().isFinal()) && !symbol.isStatic() && !reference.hasNonStaticReference()) {
-      context.reportIssue(this, tree.simpleName(), "Make \"" + symbol.name() + "\" a \"static\" method.");
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(tree.simpleName())
+        .withMessage("Make \"%s\" a \"static\" method.", symbol.name())
+        .withQuickFix(() -> getQuickFix(tree))
+        .report();
     }
+  }
+
+  private static JavaQuickFix getQuickFix(MethodTree tree) {
+    Tree insertPosition = QuickFixHelper.nextToken(tree.modifiers());
+
+    for (ModifierKeywordTree modifier: tree.modifiers().modifiers()) {
+      if (shouldBePlacedAfterStatic(modifier.modifier())) {
+        insertPosition = modifier;
+        break;
+      }
+    }
+
+    return JavaQuickFix.newQuickFix("Make static")
+      .addTextEdit(JavaTextEdit.insertBeforeTree(insertPosition, "static "))
+      .build();
+  }
+
+  private static boolean shouldBePlacedAfterStatic(Modifier modifier) {
+    return modifier.ordinal() > Modifier.STATIC.ordinal();
   }
 
   private static boolean isExcluded(MethodTree tree) {
