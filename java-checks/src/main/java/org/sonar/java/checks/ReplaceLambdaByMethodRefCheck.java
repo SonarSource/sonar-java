@@ -27,10 +27,9 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
-import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -71,7 +70,7 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
 
   private void visitLambdaExpression(LambdaExpressionTree tree) {
     getPossibleReplacement(tree).ifPresent(replacement ->
-      ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context).newIssue())
+      QuickFixHelper.newIssue(context)
         .forRule(this)
         .onTree(tree.arrowToken())
         .withMessage("Replace this lambda with method reference '%s'.%s", replacement, context.getJavaVersion().java8CompatibilityMessage())
