@@ -9,7 +9,7 @@ class EmptyMethodsCheck {
     public A(int c) {
     }
 
-    // Noncompliant@+1
+    // Noncompliant@+1 [[sc=18;ec=19]] {{Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.}}
     private void f() {
     }
 
@@ -38,6 +38,7 @@ class EmptyMethodsCheck {
     // Compliant
     private <T> AwithGenerics() {
     }
+
     // Noncompliant@+1
     private <T> void f() {
     }
@@ -153,5 +154,19 @@ class EmptyMethodsCheck {
     // Noncompliant@+1
     void foo() {
     }
+  }
+
+  class QuickFixes {
+    // Noncompliant@+1 [[sc=12;ec=22;quickfixes=qf0]]
+    public QuickFixes() {
+    }
+    // fix@qf0 {{Insert placeholder comment}}
+    // edit@qf0 [[sc=26;ec=26]] {{ /* TODO document why this constructor is empty */ }}
+
+    // Noncompliant@+1 [[sc=18;ec=29;quickfixes=qf1]]
+    private void emptyMethod() {
+    }
+    // fix@qf1 {{Insert placeholder comment}}
+    // edit@qf1 [[sc=33;ec=33]] {{ /* TODO document why this method is empty */ }}
   }
 }

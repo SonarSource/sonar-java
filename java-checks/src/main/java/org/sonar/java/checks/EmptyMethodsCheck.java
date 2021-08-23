@@ -19,8 +19,14 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -30,12 +36,11 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Rule(key = "S1186")
 public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
+
+  private static final String CONSTRUCTOR_QUICK_FIX_MESSAGE = " /* TODO document why this constructor is empty */ ";
+  private static final String METHOD_QUICK_FIX_MESSAGE = " /* TODO document why this method is empty */ ";
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -76,7 +81,12 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
   private void checkMethod(MethodTree methodTree) {
     BlockTree block = methodTree.block();
     if (block != null && isEmpty(block) && !containsComment(block)) {
-      reportIssue(methodTree.simpleName(), "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.");
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(methodTree.simpleName())
+        .withMessage("Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.")
+        .withQuickFix(() -> computeQuickFix(methodTree))
+        .report();
     }
   }
 
@@ -89,4 +99,13 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
     return !block.closeBraceToken().trivias().isEmpty();
   }
 
+  private static JavaQuickFix computeQuickFix(MethodTree method) {
+    JavaQuickFix.Builder quickFix = JavaQuickFix.newQuickFix("Insert placeholder comment");
+    if (method.is(Kind.CONSTRUCTOR)) {
+      quickFix.addTextEdit(JavaTextEdit.insertAfterTree(method.block().firstToken(), CONSTRUCTOR_QUICK_FIX_MESSAGE));
+    } else {
+      quickFix.addTextEdit(JavaTextEdit.insertAfterTree(method.block().firstToken(), METHOD_QUICK_FIX_MESSAGE));
+    }
+    return quickFix.build();
+  }
 }
