@@ -28,14 +28,21 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 public abstract class AbstractJUnit5NotCompliantModifierChecker extends IssuableSubscriptionVisitor {
 
-  protected abstract boolean isNotCompliantModifier(Modifier modifier, boolean isMethod);
+  protected static final String WRONG_MODIFIER_ISSUE_MESSAGE = "Remove this '%s' modifier.";
 
-  protected abstract void raiseIssueOnNotCompliantReturnType(MethodTree methodTree);
+  protected abstract boolean isNonCompliantModifier(Modifier modifier, boolean isMethod);
+
+  protected abstract void raiseIssueOnNonCompliantReturnType(MethodTree methodTree);
+
+  protected void raiseIssueOnNonCompliantModifier(ModifierKeywordTree modifier) {
+    reportIssue(modifier, String.format(WRONG_MODIFIER_ISSUE_MESSAGE, modifier.keyword().text()));
+  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -60,7 +67,7 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
 
     for (MethodTree testMethod : testMethods) {
       raiseIssueOnNotCompliantModifiers(testMethod.modifiers(), true);
-      raiseIssueOnNotCompliantReturnType(testMethod);
+      raiseIssueOnNonCompliantReturnType(testMethod);
     }
 
     methods.removeAll(testMethods);
@@ -82,9 +89,9 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
 
   private void raiseIssueOnNotCompliantModifiers(ModifiersTree modifierTree, boolean isMethod) {
     modifierTree.modifiers().stream()
-      .filter(modifier -> isNotCompliantModifier(modifier.modifier(), isMethod))
+      .filter(modifier -> isNonCompliantModifier(modifier.modifier(), isMethod))
       .findFirst()
-      .ifPresent(modifier -> reportIssue(modifier, "Remove this '" + modifier.keyword().text() + "' modifier."));
+      .ifPresent(this::raiseIssueOnNonCompliantModifier);
   }
 
   private static boolean isNotOverriding(MethodTree tree) {

@@ -29,12 +29,12 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 public class JUnit5SilentlyIgnoreClassAndMethodCheck extends AbstractJUnit5NotCompliantModifierChecker {
 
   @Override
-  protected boolean isNotCompliantModifier(Modifier modifier, boolean isMethod) {
+  protected boolean isNonCompliantModifier(Modifier modifier, boolean isMethod) {
     return modifier == Modifier.PRIVATE || (isMethod && modifier == Modifier.STATIC);
   }
 
   @Override
-  protected void raiseIssueOnNotCompliantReturnType(MethodTree methodTree) {
+  protected void raiseIssueOnNonCompliantReturnType(MethodTree methodTree) {
     TypeTree returnType = methodTree.returnType();
     // returnType of METHOD is never null (unlike CONSTRUCTOR)
     Type type = returnType.symbolType();
