@@ -19,16 +19,18 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
-
-import java.util.Collections;
-import java.util.List;
 
 @Rule(key = "S1195")
 public class ArrayDesignatorAfterTypeCheck extends IssuableSubscriptionVisitor {
@@ -47,11 +49,23 @@ public class ArrayDesignatorAfterTypeCheck extends IssuableSubscriptionVisitor {
       ArrayTypeTree arrayTypeTree = (ArrayTypeTree) returnType;
       SyntaxToken openBracketToken = arrayTypeTree.openBracketToken();
       if (isInvalidPosition(openBracketToken, identifierToken)) {
-        reportIssue(openBracketToken, "Move the array designators \"[]\" to the end of the return type.");
+        QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(openBracketToken)
+          .withMessage("Move the array designators \"[]\" to the end of the return type.")
+          .withQuickFix(() -> createQuickFixes(arrayTypeTree))
+          .report();
         break;
       }
       returnType = arrayTypeTree.type();
     }
+  }
+
+  private static JavaQuickFix createQuickFixes(ArrayTypeTree type) {
+    return JavaQuickFix.newQuickFix("Move [] to the return type")
+      .addTextEdit(JavaTextEdit.replaceBetweenTree(type.openBracketToken(), type.closeBracketToken(), ""))
+      .addTextEdit(JavaTextEdit.insertAfterTree(type.type(), "[]"))
+      .build();
   }
 
   private static boolean isInvalidPosition(SyntaxToken openBracketToken, SyntaxToken identifierToken) {
