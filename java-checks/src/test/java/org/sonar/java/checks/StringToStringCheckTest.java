@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class StringToStringCheckTest {
@@ -39,7 +38,7 @@ class StringToStringCheckTest {
   @Test
   void testTextBlocks() {
     InternalCheckVerifier.newInstance()
-      .onFile(nonCompilingTestSourcesPath("checks/TextBlockToString.java"))
+      .onFile(testSourcesPath("checks/TextBlockToString.java"))
       .withCheck(new StringToStringCheck())
       .withQuickFixes()
       .verifyIssues();
