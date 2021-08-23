@@ -1,18 +1,17 @@
+package checks;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collection;; // Noncompliant [[sc=29;ec=30]] {{Remove this empty statement.}}
+; // Noncompliant {{Remove this empty statement.}}
 
-import arg.goo;  // Compliant
-import arg.foo;; // Noncompliant [[sc=16;ec=17]] {{Remove this empty statement.}}
-; // Noncompliant {{Remove this empty statement.}} 
-
-abstract class Foo {
+abstract class EmptyStatementUsageCheck {
   int a; // Compliant
   int b;; // Noncompliant {{Remove this empty statement.}}
   ; // Noncompliant {{Remove this empty statement.}}
   
-  public Foo() {
+  public EmptyStatementUsageCheck() {
     ; // Noncompliant {{Remove this empty statement.}}
   }
 
@@ -61,7 +60,7 @@ abstract class Foo {
   }
 }
 
-static class Bar {
+class EmptyStatementUsageCheckBar {
   public enum MyEnum { APPLICATION, HANDLER }; // Noncompliant {{Remove this empty statement.}}
   
   Closeable c = new Closeable() {
