@@ -26,8 +26,12 @@ import java.util.stream.IntStream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -41,6 +45,7 @@ import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
@@ -64,16 +69,32 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
   }
 
   private void visitLambdaExpression(LambdaExpressionTree tree) {
-    if (isMethodInvocation(tree.body(), tree) || isBodyBlockInvokingMethod(tree)) {
-      reportIssue(tree.arrowToken(), "Replace this lambda with a method reference." + context.getJavaVersion().java8CompatibilityMessage());
-    } else {
-      getTypeCastOrInstanceOf(tree)
-        .ifPresent(methodReference -> reportIssue(tree.arrowToken(),
-          "Replace this lambda with method reference '" + methodReference + "'." + context.getJavaVersion().java8CompatibilityMessage()));
-      getNullCheck(tree)
-        .ifPresent(nullMethod -> reportIssue(tree.arrowToken(),
-          "Replace this lambda with method reference 'Objects::" + nullMethod + "'." + context.getJavaVersion().java8CompatibilityMessage()));
+    getPossibleReplacement(tree).ifPresent(replacement ->
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(tree.arrowToken())
+        .withMessage("Replace this lambda with method reference '%s'.%s", replacement, context.getJavaVersion().java8CompatibilityMessage())
+        .withQuickFix(() -> JavaQuickFix.newQuickFix(String.format("Replace with \"%s\"", replacement))
+          .addTextEdit(JavaTextEdit.replaceTree(tree, replacement))
+          .build())
+        .report()
+    );
+  }
+
+  private static Optional<String> getPossibleReplacement(LambdaExpressionTree tree) {
+    Optional<String> typeCastOrInstanceOf = getTypeCastOrInstanceOf(tree);
+    if (typeCastOrInstanceOf.isPresent()) {
+      return typeCastOrInstanceOf;
     }
+    Optional<String> nullCheck = getNullCheck(tree);
+    if (nullCheck.isPresent()) {
+      return nullCheck;
+    }
+    Optional<String> methodInvocationOrNewClass = getMethodInvocationOrNewClass(tree.body(), tree);
+    if (methodInvocationOrNewClass.isPresent()) {
+      return methodInvocationOrNewClass;
+    }
+    return getBodyBlockInvokingMethodOrNewClass(tree);
   }
 
   private static Optional<String> getNullCheck(LambdaExpressionTree lambda) {
@@ -98,7 +119,7 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
         ExpressionTree leftOperand = ExpressionUtils.skipParentheses(bet.leftOperand());
         ExpressionTree rightOperand = ExpressionUtils.skipParentheses(bet.rightOperand());
         if (nullAgainstParam(leftOperand, rightOperand, paramSymbol) || nullAgainstParam(rightOperand, leftOperand, paramSymbol)) {
-          return Optional.of(expr.is(Tree.Kind.EQUAL_TO) ? "isNull" : "nonNull");
+          return Optional.of(expr.is(Tree.Kind.EQUAL_TO) ? "Objects::isNull" : "Objects::nonNull");
         }
       }
       return Optional.empty();
@@ -178,46 +199,91 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
     return parameters.size() == 1 ? Optional.of(parameters.get(0).symbol()) : Optional.empty();
   }
 
-  private static boolean isBodyBlockInvokingMethod(LambdaExpressionTree lambdaTree) {
+  private static Optional<String> getBodyBlockInvokingMethodOrNewClass(LambdaExpressionTree lambdaTree) {
     Tree lambdaBody = lambdaTree.body();
     if (isBlockWithOneStatement(lambdaBody)) {
       Tree statement = ((BlockTree) lambdaBody).body().get(0);
-      return isExpressionStatementInvokingMethod(statement, lambdaTree) || isReturnStatementInvokingMethod(statement, lambdaTree);
+      return getExpressionOrReturnStatementInvokingMethod(statement, lambdaTree);
     }
-    return false;
+    return Optional.empty();
   }
 
   private static boolean isBlockWithOneStatement(Tree tree) {
     return tree.is(Tree.Kind.BLOCK) && ((BlockTree) tree).body().size() == 1;
   }
 
-  private static boolean isExpressionStatementInvokingMethod(Tree statement, LambdaExpressionTree lambdaTree) {
-    return statement.is(Tree.Kind.EXPRESSION_STATEMENT) && isMethodInvocation(((ExpressionStatementTree) statement).expression(), lambdaTree);
+  private static Optional<String> getExpressionOrReturnStatementInvokingMethod(Tree statement, LambdaExpressionTree lambdaTree) {
+    if (statement.is(Tree.Kind.EXPRESSION_STATEMENT)) {
+      return getMethodInvocationOrNewClass(((ExpressionStatementTree) statement).expression(), lambdaTree);
+    } else if (statement.is(Tree.Kind.RETURN_STATEMENT)) {
+      return getMethodInvocationOrNewClass(((ReturnStatementTree) statement).expression(), lambdaTree);
+    }
+    return Optional.empty();
   }
 
-  private static boolean isReturnStatementInvokingMethod(Tree statement, LambdaExpressionTree lambdaTree) {
-    return statement.is(Tree.Kind.RETURN_STATEMENT) && isMethodInvocation(((ReturnStatementTree) statement).expression(), lambdaTree);
-  }
+  private static Optional<String> getMethodInvocationOrNewClass(@Nullable Tree tree, LambdaExpressionTree lambdaTree) {
+    if (tree != null) {
+      List<VariableTree> parameters = lambdaTree.parameters();
 
-  private static boolean isMethodInvocation(@Nullable Tree tree, LambdaExpressionTree lambdaTree) {
-    if (tree != null && tree.is(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS)) {
-      Arguments arguments;
       if (tree.is(Tree.Kind.NEW_CLASS)) {
-        if (((NewClassTree) tree).classBody() != null) {
-          return false;
-        }
-        arguments = ((NewClassTree) tree).arguments();
-      } else {
+        // x -> new Foo(x) becomes Foo::new
+        return getNewClass(((NewClassTree) tree), parameters);
+      } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
         MethodInvocationTree mit = (MethodInvocationTree) tree;
         if (hasMethodInvocationInMethodSelect(mit) || hasNonFinalFieldInMethodSelect(mit)) {
-          return false;
+          return Optional.empty();
         }
-        arguments = mit.arguments();
+        Arguments arguments = mit.arguments();
+        if (matchingParameters(parameters, arguments)) {
+          // x -> foo(x) becomes x::foo or Owner::foo or this::foo or Owner.this::foo
+          return getReplacementForMethodInvocation(mit);
+        }
+        if (arguments.isEmpty() && isNoArgMethodInvocationFromLambdaParam(tree, parameters)) {
+          // x -> x.foo() becomes Owner::foo
+          return Optional.of(getMethodReferenceFromSymbol(mit.symbol()));
+        }
       }
-      List<VariableTree> parameters = lambdaTree.parameters();
-      return matchingParameters(parameters, arguments) || (arguments.isEmpty() && isNoArgMethodInvocationFromLambdaParam(tree, parameters));
     }
-    return false;
+    return Optional.empty();
+  }
+
+  private static Optional<String> getNewClass(NewClassTree newClassTree, List<VariableTree> parameters) {
+    if (newClassTree.classBody() == null && matchingParameters(parameters, newClassTree.arguments())) {
+      TypeTree identifier = newClassTree.identifier();
+      String className;
+      if (identifier.is(Tree.Kind.MEMBER_SELECT)) {
+        className = ExpressionsHelper.concatenate((MemberSelectExpressionTree) identifier);
+      } else {
+        className = identifier.symbolType().name();
+      }
+      return Optional.of(className + "::new");
+    }
+    return Optional.empty();
+  }
+
+  private static Optional<String> getReplacementForMethodInvocation(MethodInvocationTree mit) {
+    ExpressionTree methodSelect = mit.methodSelect();
+    if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
+      Symbol symbol = mit.symbol();
+      if (symbol.isStatic()) {
+        return Optional.of(getMethodReferenceFromSymbol(symbol));
+      }
+      MethodTree enclosingMethod = ExpressionUtils.getEnclosingMethod(mit);
+      Symbol symbolOwner = symbol.owner();
+      if (enclosingMethod != null) {
+        Symbol expressionOwner = enclosingMethod.symbol().owner();
+        if (symbolOwner.equals(expressionOwner)) {
+          return Optional.of("this::" + symbol.name());
+        }
+      }
+      return Optional.of(symbolOwner.name() + ".this::" + symbol.name());
+    }
+    MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) methodSelect;
+    return Optional.of(ExpressionsHelper.concatenate(memberSelect.expression()) + "::" + memberSelect.identifier().name());
+  }
+
+  private static String getMethodReferenceFromSymbol(Symbol symbol) {
+    return symbol.owner().name() + "::" + symbol.name();
   }
 
   private static boolean hasMethodInvocationInMethodSelect(MethodInvocationTree mit) {

@@ -8,7 +8,7 @@ class ReplaceLambdaByMethodRefCheck_no_version {
 
     IntStream.range(1, 5)
         .map((x) -> x * x)
-        .map(x -> square(x)) // Noncompliant {{Replace this lambda with a method reference. (sonar.java.source not set. Assuming 8 or greater.)}}
+        .map(x -> square(x)) // Noncompliant {{Replace this lambda with method reference 'this::square'. (sonar.java.source not set. Assuming 8 or greater.)}}
         .map(x -> { // Noncompliant
           return square(x);
         })
