@@ -104,11 +104,11 @@ class UnusedLocalVariableCheck {
       // edit@qfzero [[sc=7;ec=26]]{{}}
       int unusedFirst = 42, used = 1; // Noncompliant [[sc=11;ec=22;quickfixes=qf0]]
       // fix@qf0 {{Remove unused local variable}}
-      // edit@qf0 [[sc=11;ec=28]]{{}}
+      // edit@qf0 [[sc=11;ec=29]]{{}}
 
       int first = 0, unusedSecond, third = 1; // Noncompliant [[sc=22;ec=34;quickfixes=qf1]]
       // fix@qf1 {{Remove unused local variable}}
-      // edit@qf1 [[sc=22;ec=35]]{{}}
+      // edit@qf1 [[sc=22;ec=36]]{{}}
 
       int alpha = 0, beta = 1, unusedThird; // Noncompliant [[sc=32;ec=43;quickfixes=qf2]]
       // fix@qf2 {{Remove unused local variable}}
@@ -142,6 +142,24 @@ class UnusedLocalVariableCheck {
         // fix@qf8 {{Remove unused local variable}}
         // edit@qf8 [[sc=12;ec=21]] {{}}
       }
+
+      final String unusedFinalAlone = "Hello"; // Noncompliant [[sc=20;ec=36;quickfixes=qf9]]
+      // fix@qf9 {{Remove unused local variable}}
+      // edit@qf9 [[sc=7;ec=47]] {{}}
+
+      final String unusedFinalFirst, usedFinalLast = "Bye!"; // Noncompliant [[sc=20;ec=36;quickfixes=qf10]]
+      // fix@qf10 {{Remove unused local variable}}
+      // edit@qf10 [[sc=20;ec=38]] {{}}
+      System.out.println(usedFinalLast);
+
+      final String usedFinalFirst = "Hello!", unusedFinalLast; // Noncompliant [[sc=47;ec=62;quickfixes=qf11]]
+      // fix@qf11 {{Remove unused local variable}}
+      // edit@qf11 [[sc=45;ec=62]] {{}}
+      System.out.println(usedFinalFirst);
+
+      var unusedInferredAlone = 42; // Noncompliant [[sc=11;ec=30;quickfixes=qf12]]
+      // fix@qf12 {{Remove unused local variable}}
+      // edit@qf12 [[sc=7;ec=36]] {{}}
     }
 
     {
