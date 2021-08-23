@@ -1,5 +1,7 @@
-class Foo {
-  public void myMethod() {
+package checks;
+
+class RightCurlyBraceSameLineAsNextBlockCheck {
+  public void myMethod(boolean something, boolean somethingElse) {
     if(something) {
       executeTask();
     } else if (somethingElse) {          // Compliant
@@ -37,5 +39,22 @@ class Foo {
     catch (Exception e) {              // Noncompliant {{Move this "catch" on the same line that the previous closing curly brace.}}
       log(e);
     }
+  }
+
+  private void closeConnection() {
+  }
+
+  private void generateError() {
+  }
+
+  private void doSomethingElse() {
+  }
+
+  private void generateOrder() {
+  }
+
+  private void executeTask() {
+  }
+  void log(Exception e) {
   }
 }
