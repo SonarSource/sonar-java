@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
@@ -28,9 +28,19 @@ class EmptyStatementUsageCheckTest {
 
   @Test
   void test() {
-    CheckVerifier.newVerifier()
+    InternalCheckVerifier.newInstance()
       .onFile(testSourcesPath("checks/EmptyStatementUsageCheck.java"))
       .withCheck(new EmptyStatementUsageCheck())
+      .withQuickFixes()
+      .verifyIssues();
+  }
+
+  @Test
+  void test_only_one_empty_statement() {
+    InternalCheckVerifier.newInstance()
+      .onFile(testSourcesPath("checks/EmptyStatementUsageCheckOnyStatement.java"))
+      .withCheck(new EmptyStatementUsageCheck())
+      .withQuickFixes()
       .verifyIssues();
   }
 }
