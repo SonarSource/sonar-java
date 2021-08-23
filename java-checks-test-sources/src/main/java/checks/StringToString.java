@@ -31,9 +31,29 @@ public class StringToString {
     toString(); // Compliant
     foo()[0].toString(); // Noncompliant [[sc=5;ec=10]] {{There's no need to call "toString()" on an array of String.}}
     bar()[0][0].toString(); // Noncompliant {{There's no need to call "toString()" on an array of String.}}
+
+    (object.equals("") ? "a" : "b").toString(); // Compliant, FN, report only clear issues
   }
 
   String[] foo() {return null;}
   String[][] bar() {return null;}
+
+  void quickFixes() {
+    String string = "hello".toString(); // Noncompliant [[sc=21;ec=28;quickfixes=qf1]]
+    // fix@qf1 {{Remove "toString()"}}
+    // edit@qf1 [[sc=28;ec=39]] {{}}
+
+    string.toUpperCase().toString(); // Noncompliant [[sc=12;ec=23;quickfixes=qf2]]
+    // fix@qf2 {{Remove "toString()"}}
+    // edit@qf2 [[sc=25;ec=36]] {{}}
+
+    string = string.toString().toUpperCase(); // Noncompliant [[sc=14;ec=20;quickfixes=qf3]]
+    // fix@qf3 {{Remove "toString()"}}
+    // edit@qf3 [[sc=20;ec=31]] {{}}
+
+    foo()[0].toString(); // Noncompliant [[sc=5;ec=10;quickfixes=qf4]]
+    // fix@qf4 {{Remove "toString()"}}
+    // edit@qf4 [[sc=13;ec=24]] {{}}
+  }
 
 }

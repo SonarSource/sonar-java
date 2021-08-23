@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -29,17 +29,19 @@ class StringToStringCheckTest {
 
   @Test
   void test() {
-    CheckVerifier.newVerifier()
+    InternalCheckVerifier.newInstance()
       .onFile(testSourcesPath("checks/StringToString.java"))
       .withCheck(new StringToStringCheck())
+      .withQuickFixes()
       .verifyIssues();
   }
 
   @Test
   void testTextBlocks() {
-    CheckVerifier.newVerifier()
+    InternalCheckVerifier.newInstance()
       .onFile(nonCompilingTestSourcesPath("checks/TextBlockToString.java"))
       .withCheck(new StringToStringCheck())
+      .withQuickFixes()
       .verifyIssues();
   }
 
