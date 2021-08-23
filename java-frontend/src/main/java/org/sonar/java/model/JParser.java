@@ -1120,10 +1120,10 @@ public class JParser {
       VariableTreeImpl t = new VariableTreeImpl(createSimpleName(fragment.getName()));
       t.completeModifiers(modifiers);
       if (fragment.getInitializer() == null) {
-        t.completeType(type);
+        t.completeType(applyExtraDimensions(type, fragment.extraDimensions()));
       } else {
         t.completeTypeAndInitializer(
-          type,
+          applyExtraDimensions(type, fragment.extraDimensions()),
           firstTokenBefore(fragment.getInitializer(), TerminalTokens.TokenNameEQUAL),
           convertExpression(fragment.getInitializer())
         );

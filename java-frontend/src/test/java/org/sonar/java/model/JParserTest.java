@@ -50,12 +50,15 @@ import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.java.TestUtils;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
+import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -70,6 +73,7 @@ import static org.sonar.java.model.JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
 import static org.sonar.java.model.JParserConfig.Mode.BATCH;
 import static org.sonar.java.model.JParserConfig.Mode.FILE_BY_FILE;
 import static org.sonar.java.model.JParserTestUtils.DEFAULT_CLASSPATH;
+import static org.sonar.java.model.JParserTestUtils.parse;
 
 class JParserTest {
 
@@ -364,6 +368,33 @@ class JParserTest {
       .parse(inputFiles, () -> true, (inputFile, result) -> results.add(result));
 
     assertThat(results).isEmpty();
+  }
+
+  @Test
+  void for_statement_should_support_array_types_from_variable_declaration_fragment() {
+    CompilationUnitTree unit = parse("class A {void foo(){for(int a[];;){}}}");
+    ForStatementTree forStatement = (ForStatementTree) ((MethodTree) ((ClassTree) unit.types().get(0)).members().get(0)).block().body().get(0);
+    VariableTree variableTree = (VariableTree) forStatement.initializer().get(0);
+    assertThat(variableTree.type().kind()).isEqualTo(Tree.Kind.ARRAY_TYPE);
+    assertThat(( (ArrayTypeTree) variableTree.type()).openBracketToken()).isNotNull();
+  }
+
+  @Test
+  void for_statement_should_support_array_types_from_variable_declaration_fragment_with_initializer() {
+    CompilationUnitTree unit = parse("class A {void foo(){for(int a[] = new int[0];;){}}}");
+    ForStatementTree forStatement = (ForStatementTree) ((MethodTree) ((ClassTree) unit.types().get(0)).members().get(0)).block().body().get(0);
+    VariableTree variableTree = (VariableTree) forStatement.initializer().get(0);
+    assertThat(variableTree.type().kind()).isEqualTo(Tree.Kind.ARRAY_TYPE);
+    assertThat(( (ArrayTypeTree) variableTree.type()).openBracketToken()).isNotNull();
+  }
+
+  @Test
+  void try_statement_should_support_array_types_from_variable_declaration_fragment() {
+    CompilationUnitTree unit = parse("class A {void foo(){try(int a[] = new int[0]){}}}");
+    TryStatementTree tryStatementTree = (TryStatementTree) ((MethodTree) ((ClassTree) unit.types().get(0)).members().get(0)).block().body().get(0);
+    VariableTree variableTree = (VariableTree) tryStatementTree.resourceList().get(0);
+    assertThat(variableTree.type().kind()).isEqualTo(Tree.Kind.ARRAY_TYPE);
+    assertThat(( (ArrayTypeTree) variableTree.type()).openBracketToken()).isNotNull();
   }
 
   private Path createFakeJrtFs(Path tempFolder) throws IOException {
