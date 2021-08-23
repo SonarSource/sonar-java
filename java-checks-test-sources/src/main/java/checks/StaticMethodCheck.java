@@ -5,6 +5,7 @@ import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.HashMap;
+import javax.annotation.Nullable;
 
 class Utilities {
   private static String magicWord = "magic";
@@ -277,7 +278,21 @@ final class ChildClass extends ParentClass {
 final class FinalClass {
   static int magicNumber = 42;
 
-  public int getMagicNumber() { // Noncompliant [[sc=14;ec=28]] {{Make "getMagicNumber" a "static" method.}}
+  public int getMagicNumber() { // Noncompliant [[sc=14;ec=28;quickfixes=qf_public_in_final]] {{Make "getMagicNumber" a "static" method.}}
+    // fix@qf_public_in_final {{Make static}}
+    // edit@qf_public_in_final [[sc=10;ec=10]]{{static }}
+    return magicNumber;
+  }
+
+  int getMagicNumber2() { // Noncompliant [[sc=7;ec=22;quickfixes=qf_public_in_final2]]
+    // fix@qf_public_in_final2 {{Make static}}
+    // edit@qf_public_in_final2 [[sc=3;ec=3]]{{static }}
+    return magicNumber;
+  }
+
+  synchronized int getMagicNumber3() { // Noncompliant [[sc=20;ec=35;quickfixes=qf_public_in_final3]]
+    // fix@qf_public_in_final3 {{Make static}}
+    // edit@qf_public_in_final3 [[sc=3;ec=3]]{{static }}
     return magicNumber;
   }
 
@@ -293,5 +308,47 @@ enum SomeEnum {
 
   final SomeEnum getOne() {
     return A;
+  }
+}
+
+class StaticMethodCheckQuickFix {
+  private static String magicWord = "magic";
+
+  private String getMagicWord() { // Noncompliant [[sc=18;ec=30;quickfixes=qf_private]]
+    // fix@qf_private {{Make static}}
+    // edit@qf_private [[sc=11;ec=11]]{{static }}
+    return magicWord;
+  }
+
+  @Nullable
+  private String getMagicWord2() { // Noncompliant [[sc=18;ec=31;quickfixes=qf_private2]]
+    // fix@qf_private2 {{Make static}}
+    // edit@qf_private2 [[sc=11;ec=11]]{{static }}
+    return magicWord;
+  }
+
+  public final String magicWord() { // Noncompliant [[sc=23;ec=32;quickfixes=qf_public_final]]
+    // fix@qf_public_final {{Make static}}
+    // edit@qf_public_final [[sc=10;ec=10]]{{static }}
+    return magicWord;
+  }
+
+  private synchronized String magicWordSynchronized() { // Noncompliant [[sc=31;ec=52;quickfixes=qf_private_synchronized]]
+    // fix@qf_private_synchronized {{Make static}}
+    // edit@qf_private_synchronized [[sc=11;ec=11]]{{static }}
+    return magicWord;
+  }
+
+  // Order is not following the convention: add it before the first modifier that should come after static
+  synchronized private String magicWordSynchronized2() { // Noncompliant [[sc=31;ec=53;quickfixes=qf_private_synchronized2]]
+    // fix@qf_private_synchronized2 {{Make static}}
+    // edit@qf_private_synchronized2 [[sc=3;ec=3]]{{static }}
+    return magicWord;
+  }
+
+  private @Nullable synchronized String magicWordSynchronized3() { // Noncompliant [[sc=41;ec=63;quickfixes=qf_private_synchronized3]]
+    // fix@qf_private_synchronized3 {{Make static}}
+    // edit@qf_private_synchronized3 [[sc=21;ec=21]]{{static }}
+    return magicWord;
   }
 }
