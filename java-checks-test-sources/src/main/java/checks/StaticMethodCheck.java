@@ -339,14 +339,13 @@ class StaticMethodCheckQuickFix {
     return magicWord;
   }
 
-  // Order is not following the convention: add it before the first modifier that is not a visibility modifier or annotation
+  // Order is not following the convention: add it before the first modifier that should come after static
   synchronized private String magicWordSynchronized2() { // Noncompliant [[sc=31;ec=53;quickfixes=qf_private_synchronized2]]
     // fix@qf_private_synchronized2 {{Make static}}
     // edit@qf_private_synchronized2 [[sc=3;ec=3]]{{static }}
     return magicWord;
   }
 
-  // When the order is not following the convention, we add it before the
   private @Nullable synchronized String magicWordSynchronized3() { // Noncompliant [[sc=41;ec=63;quickfixes=qf_private_synchronized3]]
     // fix@qf_private_synchronized3 {{Make static}}
     // edit@qf_private_synchronized3 [[sc=21;ec=21]]{{static }}
