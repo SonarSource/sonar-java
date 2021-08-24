@@ -158,8 +158,7 @@ class EmptyMethodsCheck {
 
   class QuickFixes {
     // Noncompliant@+1 [[sc=12;ec=22;quickfixes=qf0]]
-    public QuickFixes() {
-    }
+    public QuickFixes() {}
     // fix@qf0 {{Insert placeholder comment}}
     // edit@qf0 [[sc=26;ec=26]] {{ /* TODO document why this constructor is empty */ }}
 
@@ -167,6 +166,13 @@ class EmptyMethodsCheck {
     private void emptyMethod() {
     }
     // fix@qf1 {{Insert placeholder comment}}
-    // edit@qf1 [[sc=33;ec=33]] {{ /* TODO document why this method is empty */ }}
+    // edit@qf1 [[sl=+0;el=+1;sc=33;ec=5]] {{\n      // TODO document why this method is empty\n    }}
+
+    // Noncompliant@+1 [[sc=18;ec=30;quickfixes=qf2]]
+    private void emptyMethod2() {
+
+    }
+    // fix@qf2 {{Insert placeholder comment}}
+    // edit@qf2 [[sl=+0;el=+2;sc=34;ec=5]] {{\n      // TODO document why this method is empty\n    }}
   }
 }

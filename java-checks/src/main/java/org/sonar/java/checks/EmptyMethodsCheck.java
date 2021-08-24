@@ -19,12 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -36,11 +34,12 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Rule(key = "S1186")
 public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
-
-  private static final String CONSTRUCTOR_QUICK_FIX_MESSAGE = " /* TODO document why this constructor is empty */ ";
-  private static final String METHOD_QUICK_FIX_MESSAGE = " /* TODO document why this method is empty */ ";
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -100,12 +99,33 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
   }
 
   private static JavaQuickFix computeQuickFix(MethodTree method) {
-    JavaQuickFix.Builder quickFix = JavaQuickFix.newQuickFix("Insert placeholder comment");
-    if (method.is(Kind.CONSTRUCTOR)) {
-      quickFix.addTextEdit(JavaTextEdit.insertAfterTree(method.block().firstToken(), CONSTRUCTOR_QUICK_FIX_MESSAGE));
+    String commentFormat;
+    if (method.block().openBraceToken().line() == method.block().closeBraceToken().line()) {
+      commentFormat = " /* TODO document why this %s is empty */ ";
     } else {
-      quickFix.addTextEdit(JavaTextEdit.insertAfterTree(method.block().firstToken(), METHOD_QUICK_FIX_MESSAGE));
+      String methodPadding = computePadding(method);
+      commentFormat = "\n" + methodPadding + "  // TODO document why this %s is empty\n" + methodPadding;
     }
-    return quickFix.build();
+
+    String comment = String.format(commentFormat, method.is(Kind.CONSTRUCTOR) ? "constructor" : "method");
+
+    AnalyzerMessage.TextSpan textSpan = AnalyzerMessage.textSpanBetween(
+      method.block().openBraceToken(), false,
+      method.block().closeBraceToken(), false
+    );
+
+    return JavaQuickFix.newQuickFix("Insert placeholder comment")
+      .addTextEdit(JavaTextEdit.replaceTextSpan(textSpan, comment))
+      .build();
+  }
+
+  private static String computePadding(MethodTree method) {
+    int spaces = method.firstToken().column();
+    // This loop and return call can be replaced with a call to " ".repeat(spaces) in Java 11
+    StringBuilder padding = new StringBuilder("");
+    for (int i = 0; i < spaces; i++) {
+      padding.append(" ");
+    }
+    return padding.toString();
   }
 }
