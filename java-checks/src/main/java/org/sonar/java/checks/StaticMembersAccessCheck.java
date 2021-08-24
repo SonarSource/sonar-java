@@ -19,15 +19,18 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Collections;
-import java.util.List;
 
 @Rule(key = "S2209")
 public class StaticMembersAccessCheck extends IssuableSubscriptionVisitor {
@@ -40,14 +43,29 @@ public class StaticMembersAccessCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) tree;
-    if (memberSelect.identifier().symbol().isStatic()) {
-      ExpressionTree memberSelectExpression = memberSelect.expression();
-      if (memberSelectExpression.is(Tree.Kind.MEMBER_SELECT)) {
-        memberSelectExpression = ((MemberSelectExpressionTree) memberSelectExpression).identifier();
-      }
-      if (!memberSelectExpression.is(Tree.Kind.IDENTIFIER) || ((IdentifierTree) memberSelectExpression).symbol().isVariableSymbol()) {
-        context.reportIssue(this, memberSelect, "Change this instance-reference to a static reference.");
+    IdentifierTree memberSelectIdentifier = memberSelect.identifier();
+    Symbol memberSelectSymbol = memberSelectIdentifier.symbol();
+    if (memberSelectSymbol.isStatic()) {
+      ExpressionTree leftOperand = memberSelect.expression();
+      ExpressionTree selectExpression = leftOperand.is(Tree.Kind.MEMBER_SELECT)
+        ? ((MemberSelectExpressionTree) leftOperand).identifier()
+        : leftOperand;
+      if (!selectExpression.is(Tree.Kind.IDENTIFIER) || ((IdentifierTree) selectExpression).symbol().isVariableSymbol()) {
+        QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(memberSelect)
+          .withMessage("Change this instance-reference to a static reference.")
+          .withQuickFix(() -> createQuickFixes(leftOperand, memberSelectSymbol.owner().name()))
+          .report();
       }
     }
   }
+
+  private JavaQuickFix createQuickFixes(ExpressionTree leftOperand, String replacement) {
+    String leftOperandAsText = QuickFixHelper.contentForTree(leftOperand, context).replaceAll("\\s+", " ");
+    return JavaQuickFix.newQuickFix(String.format("Replace \"%s\" by \"%s\"", leftOperandAsText, replacement))
+      .addTextEdit(JavaTextEdit.replaceTree(leftOperand, replacement))
+      .build();
+  }
+
 }

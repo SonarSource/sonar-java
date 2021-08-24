@@ -33,18 +33,33 @@ class StaticMembersAccessCheckB {
   }
 
   public void noncompliant() {
-    first.counter ++; // Noncompliant [[sc=5;ec=18]] {{Change this instance-reference to a static reference.}}
+    first.counter ++; // Noncompliant [[sc=5;ec=18;quickfixes=qf1]] {{Change this instance-reference to a static reference.}}
+    // fix@qf1 {{Replace "first" by "StaticMembersAccessCheckA"}}
+    // edit@qf1 [[sc=5;ec=10]] {{StaticMembersAccessCheckA}}
     second.counter ++; // Noncompliant
-    second.method(); // Noncompliant
+    second.method(); // Noncompliant [[sc=5;ec=18;quickfixes=qf2]]
+    // fix@qf2 {{Replace "second" by "StaticMembersAccessCheckA"}}
+    // edit@qf2 [[sc=5;ec=11]] {{StaticMembersAccessCheckA}}
     third.counter ++; // Noncompliant
     first.d.counter++; // Noncompliant
-    first.c.d.counter++; // Noncompliant
-    first.d().counter++; // Noncompliant
+    first.c.d.counter++; // Noncompliant [[sc=5;ec=22;quickfixes=qf3]]
+    // fix@qf3 {{Replace "first.c.d" by "StaticMembersAccessCheckD"}}
+    // edit@qf3 [[sc=5;ec=14]] {{StaticMembersAccessCheckD}}
+    first.d().counter++; // Noncompliant // Noncompliant [[sc=5;ec=22;quickfixes=qf4]]
+    // fix@qf4 {{Replace "first.d()" by "StaticMembersAccessCheckD"}}
+    // edit@qf4 [[sc=5;ec=14]] {{StaticMembersAccessCheckD}}
     d().counter++; // Noncompliant
-    ((StaticMembersAccessCheckA.StaticMembersAccessCheckD) d()).counter++; // Noncompliant [[sc=5;ec=72]]
+    // Noncompliant@+1 [[sc=5;el=+3;ec=14;quickfixes=qf5]]
+    (
+      (StaticMembersAccessCheckA.StaticMembersAccessCheckD) d()
+    ).counter++;
+    // fix@qf5 {{Replace "( (StaticMembersAccessCheckA.StaticMembersAccessCheckD) d() )" by "StaticMembersAccessCheckD"}}
+    // edit@qf5 [[sc=5;el=+2;ec=6]] {{StaticMembersAccessCheckD}}
     (d()).counter++; // Noncompliant
     StaticMembersAccessCheckA.StaticMembersAccessCheckD[] darray = new StaticMembersAccessCheckA.StaticMembersAccessCheckD[1];
-    darray[0].counter++; // Noncompliant
+    darray[0].counter++; // Noncompliant // Noncompliant [[sc=5;ec=22;quickfixes=qf6]]
+    // fix@qf6 {{Replace "darray[0]" by "StaticMembersAccessCheckD"}}
+    // edit@qf6 [[sc=5;ec=14]] {{StaticMembersAccessCheckD}}
   }
 
   public void compliant() {
