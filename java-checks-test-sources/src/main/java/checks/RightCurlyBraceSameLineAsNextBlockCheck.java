@@ -9,7 +9,7 @@ class RightCurlyBraceSameLineAsNextBlockCheck {
     }
     else {                               // Noncompliant [[sc=5;ec=9;quickfixes=qf1]] {{Move this "else" on the same line that the previous closing curly brace.}}
                                          // fix@qf1 {{Move to the same line as the closing curly brace}}
-                                         // edit@qf1 [[sl=-1;sc=6;ec=5]] {{ }}
+                                         // edit@qf1 [[sl=-1;sc=6;el=+0;ec=5]] {{ }}
        generateError();
     }
     
@@ -28,7 +28,7 @@ class RightCurlyBraceSameLineAsNextBlockCheck {
       }
       catch (RuntimeException e) {         // Noncompliant [[sc=7;ec=12;quickfixes=qf2]] {{Move this "catch" on the same line that the previous closing curly brace.}}
                                            // fix@qf2 {{Move to the same line as the closing curly brace}}
-                                           // edit@qf2 [[sl=-1;sc=8;ec=7]] {{ }}
+                                           // edit@qf2 [[sl=-1;sc=8;el=+0;ec=7]] {{ }}
         log(e);
       } catch (Exception e) {              // Compliant
         log(e);
@@ -37,7 +37,7 @@ class RightCurlyBraceSameLineAsNextBlockCheck {
 
     finally {                            // Noncompliant [[sc=5;ec=12;quickfixes=qf3]] {{Move this "finally" on the same line that the previous closing curly brace.}}
                                          // fix@qf3 {{Move to the same line as the closing curly brace}}
-                                         // edit@qf3 [[sl=-3;sc=8;ec=5]] {{ }}
+                                         // edit@qf3 [[sl=-3;sc=8;el=+0;ec=5]] {{ }}
       closeConnection();
     }
 
