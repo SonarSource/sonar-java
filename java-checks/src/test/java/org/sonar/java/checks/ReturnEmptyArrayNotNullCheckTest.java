@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 class ReturnEmptyArrayNotNullCheckTest {
 
@@ -34,10 +35,20 @@ class ReturnEmptyArrayNotNullCheckTest {
   }
 
   @Test
+  void quick_fixes() {
+    InternalCheckVerifier.newInstance()
+      .onFile(TestUtils.testSourcesPath("checks/ReturnEmptyArrayNotNullCheckWithQuickFixes.java"))
+      .withCheck(new ReturnEmptyArrayNotNullCheck())
+      .withQuickFixes()
+      .verifyIssues();
+  }
+
+  @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
       .onFile(TestUtils.nonCompilingTestSourcesPath("checks/ReturnEmptyArrayNotNullCheck.java"))
       .withCheck(new ReturnEmptyArrayNotNullCheck())
       .verifyIssues();
   }
+
 }

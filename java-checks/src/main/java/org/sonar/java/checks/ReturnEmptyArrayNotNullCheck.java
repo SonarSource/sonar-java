@@ -20,11 +20,15 @@
 package org.sonar.java.checks;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -32,10 +36,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -47,41 +48,41 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
   private static final MethodMatchers ITEM_PROCESSOR_PROCESS_METHOD = MethodMatchers.create()
     .ofSubTypes("org.springframework.batch.item.ItemProcessor").names("process").withAnyParameters().build();
 
-  private final Deque<Returns> returnTypes = new LinkedList<>();
+  private final Deque<ReturnKind> returnKinds = new LinkedList<>();
 
   private enum Returns {
-    ARRAY, COLLECTION, OTHERS;
+    ARRAY, COLLECTION, OTHER;
+  }
 
-    public static Returns getReturnType(@Nullable Tree tree) {
-      if (tree != null) {
-        Tree returnType = tree;
-        while (returnType.is(Tree.Kind.PARAMETERIZED_TYPE)) {
-          returnType = ((ParameterizedTypeTree) returnType).type();
-        }
-        if (returnType.is(Tree.Kind.ARRAY_TYPE)) {
-          return ARRAY;
-        }
-        if (isCollection(returnType)) {
-          return COLLECTION;
-        }
-      }
-      return OTHERS;
+  private static class ReturnKind {
+    private static final ReturnKind OTHER = new ReturnKind(Returns.OTHER, null);
+
+    private final Returns kind;
+    @Nullable
+    private final Type type;
+
+    private ReturnKind(Returns kind, @Nullable Type type) {
+      this.kind = kind;
+      this.type = type;
     }
 
-    private static boolean isCollection(Tree methodReturnType) {
-      IdentifierTree identifierTree = null;
-      if (methodReturnType.is(Tree.Kind.IDENTIFIER)) {
-        identifierTree = (IdentifierTree) methodReturnType;
-      } else if (methodReturnType.is(Tree.Kind.MEMBER_SELECT)) {
-        identifierTree = ((MemberSelectExpressionTree) methodReturnType).identifier();
+    public static ReturnKind forType(Type type) {
+      if (type.isUnknown()) {
+        return OTHER;
       }
-      return identifierTree != null && identifierTree.symbol().type().isSubtypeOf("java.util.Collection");
+      if (type.isArray()) {
+        return new ReturnKind(Returns.ARRAY, type);
+      }
+      if (type.isSubtypeOf("java.util.Collection")) {
+        return new ReturnKind(Returns.COLLECTION, type);
+      }
+      return OTHER;
     }
   }
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {
-    returnTypes.clear();
+    returnKinds.clear();
   }
 
   @Override
@@ -95,12 +96,12 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
       MethodTree methodTree = (MethodTree) tree;
       SymbolMetadata metadata = methodTree.symbol().metadata();
       if (hasUnknownAnnotation(metadata) || isAnnotatedNullable(metadata) || requiresReturnNull(methodTree)) {
-        returnTypes.push(Returns.OTHERS);
+        returnKinds.push(ReturnKind.OTHER);
       } else {
-        returnTypes.push(Returns.getReturnType(methodTree.returnType()));
+        returnKinds.push(ReturnKind.forType(methodTree.returnType().symbolType()));
       }
     } else if (tree.is(Tree.Kind.CONSTRUCTOR, Tree.Kind.LAMBDA_EXPRESSION)) {
-      returnTypes.push(Returns.OTHERS);
+      returnKinds.push(ReturnKind.OTHER);
     } else {
       checkForIssue((ReturnStatementTree) tree);
     }
@@ -110,17 +111,22 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
     if (!isReturningNull(returnStatement)) {
       return;
     }
-    Returns returnType = returnTypes.peek();
-    if (returnType == Returns.OTHERS) {
+    ReturnKind returnKind = returnKinds.peek();
+    if (returnKind.kind == Returns.OTHER) {
       return;
     }
-    reportIssue(returnStatement.expression(), String.format("Return an empty %s instead of null.", returnType == Returns.ARRAY ? "array" : "collection"));
+    QuickFixHelper.newIssue(context)
+      .forRule(this)
+      .onTree(returnStatement.expression())
+      .withMessage("Return an empty %s instead of null.", returnKind.kind == Returns.ARRAY ? "array" : "collection")
+      .withQuickFixes(() -> quickFix(returnStatement))
+      .report();
   }
 
   @Override
   public void leaveNode(Tree tree) {
     if (!tree.is(Tree.Kind.RETURN_STATEMENT)) {
-      returnTypes.pop();
+      returnKinds.pop();
     }
   }
 
@@ -147,5 +153,60 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
 
   private static boolean hasUnknownAnnotation(SymbolMetadata symbolMetadata) {
     return symbolMetadata.annotations().stream().anyMatch(annotation -> annotation.symbol().isUnknown());
+  }
+
+  private List<JavaQuickFix> quickFix(ReturnStatementTree returnStatement) {
+    ReturnKind returnKind = returnKinds.peek();
+    // can only be ARRAY or COLLECTION
+    if (returnKind.kind == Returns.ARRAY) {
+      return Collections.singletonList(JavaQuickFix.newQuickFix("Replace \"null\" with an empty array")
+        .addTextEdit(JavaTextEdit.replaceTree(returnStatement.expression(), emptyArrayString((Type.ArrayType) returnKind.type)))
+        .build());
+    }
+    CollectionType collectionType = CollectionType.forType(returnKind.type);
+    if (collectionType == CollectionType.CUSTOM_OR_UNKNOWN) {
+      return Collections.emptyList();
+    }
+    return Collections.singletonList(JavaQuickFix.newQuickFix("Replace \"null\" with an empty %s", collectionType.typeName)
+      .addTextEdit(JavaTextEdit.replaceTree(returnStatement.expression(), collectionType.replacement))
+      .build());
+  }
+
+  private static String emptyArrayString(Type.ArrayType arrayType) {
+    return String.format("new %s", arrayType.name()
+      .replace("[]", "[0]"));
+  }
+
+  private enum CollectionType {
+    COLLECTION("Collection", "Collections.emptyList()"),
+    LIST("List", "Collections.emptyList()"),
+    ARRAY_LIST("ArrayList", "new ArrayList<>()"),
+    LINKED_LIST("LinkedList", "new LinkedList<>()"),
+    SET("Set", "Collections.emptySet()"),
+    HASH_SET("HashSet", "new HashSet<>()"),
+    TREE_SET("TreeSet", "new TreeSet<>()"),
+    SORTED_SET("SortedSet", "Collections.emptySortedSet()"),
+    NAVIGABLE_SET("NavigableSet", "Collections.emptyNavigableSet()"),
+    CUSTOM_OR_UNKNOWN("Object", null);
+
+    private final String fullyQualifiedName;
+    private final String replacement;
+    private final String typeName;
+
+    CollectionType(String typeName, String replacement) {
+      this.typeName = typeName;
+      this.replacement = replacement;
+      this.fullyQualifiedName = "java.util." + typeName;
+    }
+
+    static CollectionType forType(Type type) {
+      Type erasure = type.erasure();
+      for (CollectionType collectionType : CollectionType.values()) {
+        if (erasure.is(collectionType.fullyQualifiedName)) {
+          return collectionType;
+        }
+      }
+      return CUSTOM_OR_UNKNOWN;
+    }
   }
 }
