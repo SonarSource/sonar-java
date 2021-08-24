@@ -97,9 +97,9 @@ public class ImmediatelyReturnedVariableCheck extends BaseTreeVisitor implements
   private static JavaQuickFix quickFix(StatementTree butLastStatement, StatementTree lastStatement, VariableTree variableTree, String lastTypeForMessage) {
     // Equal token can not be null at this point, we checked before the presence of the initializer
     return JavaQuickFix.newQuickFix("Inline expression")
-      .addTextEdit(JavaTextEdit.replaceTextSpan(textSpanBetween(variableTree.modifiers(), true, variableTree.initializer(), false),
-        lastTypeForMessage + " "),
-        JavaTextEdit.replaceTextSpan(textSpanBetween(butLastStatement, false, lastStatement, true), ""))
+      .addTextEdit(
+        JavaTextEdit.replaceTextSpan(textSpanBetween(variableTree.modifiers(), true, variableTree.initializer(), false), lastTypeForMessage + " "),
+        JavaTextEdit.removeTextSpan(textSpanBetween(butLastStatement, false, lastStatement, true)))
       .build();
   }
 

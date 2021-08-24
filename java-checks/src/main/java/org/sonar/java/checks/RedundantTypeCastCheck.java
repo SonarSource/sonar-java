@@ -55,16 +55,17 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     TypeCastTree typeCastTree = (TypeCastTree) tree;
     Type cast = typeCastTree.type().symbolType();
     if (isUnnecessaryCast(typeCastTree)) {
+      String newType = cast.erasure().name();
       QuickFixHelper.newIssue(context)
         .forRule(this)
         .onTree(typeCastTree.type())
-        .withMessage("Remove this unnecessary cast to \"" + cast.erasure() + "\".")
+        .withMessage("Remove this unnecessary cast to \"%s\".", newType)
         .withQuickFix(() ->
-          JavaQuickFix.newQuickFix("Remove the cast to \"" + cast.erasure() + "\"")
-            .addTextEdit(JavaTextEdit.replaceTextSpan(
+          JavaQuickFix.newQuickFix("Remove the cast to \"%s\"", newType)
+            .addTextEdit(JavaTextEdit.removeTextSpan(
               AnalyzerMessage.textSpanBetween(
                 typeCastTree.openParenToken(), true,
-                typeCastTree.expression(), false), ""))
+                typeCastTree.expression(), false)))
             .build())
         .report();
     }

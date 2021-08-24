@@ -144,8 +144,8 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
           VariableTree nextParameter = parameters.get(i + 1);
           textSpanToRemove = AnalyzerMessage.textSpanBetween(parameter, true, nextParameter, false);
         }
-        quickFixes.add(JavaQuickFix.newQuickFix(String.format(QUICK_FIX_MESSAGE, parameter.simpleName().name()))
-          .addTextEdit(JavaTextEdit.replaceTextSpan(textSpanToRemove, ""))
+        quickFixes.add(JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE, parameter.simpleName().name())
+          .addTextEdit(JavaTextEdit.removeTextSpan(textSpanToRemove))
           .build());
       }
     }

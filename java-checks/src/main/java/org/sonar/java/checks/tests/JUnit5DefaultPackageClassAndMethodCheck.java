@@ -53,7 +53,7 @@ public class JUnit5DefaultPackageClassAndMethodCheck extends AbstractJUnit5NotCo
   }
 
   private static JavaQuickFix quickFix(ModifierKeywordTree modifier) {
-    return JavaQuickFix.newQuickFix("Remove \"" +  modifier.keyword().text() + "\" modifier")
+    return JavaQuickFix.newQuickFix("Remove \"%s\" modifier", modifier.keyword().text())
       .addTextEdit(JavaTextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(modifier, true, QuickFixHelper.nextToken(modifier), false)))
       .build();
   }

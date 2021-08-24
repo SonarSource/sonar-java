@@ -74,7 +74,7 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
         .forRule(this)
         .onTree(tree.arrowToken())
         .withMessage("Replace this lambda with method reference '%s'.%s", replacement, context.getJavaVersion().java8CompatibilityMessage())
-        .withQuickFix(() -> JavaQuickFix.newQuickFix(String.format("Replace with \"%s\"", replacement))
+        .withQuickFix(() -> JavaQuickFix.newQuickFix("Replace with \"%s\"", replacement)
           .addTextEdit(JavaTextEdit.replaceTree(tree, replacement))
           .build())
         .report()

@@ -86,7 +86,7 @@ public class BigDecimalDoubleConstructorCheck extends IssuableSubscriptionVisito
       argumentValue = argumentValue.substring(0, argumentValue.length() - 1);
     }
     String newArgument = String.format("\"%s\"", argumentValue);
-    return JavaQuickFix.newQuickFix(String.format("Replace with BigDecimal(%s,", newArgument))
+    return JavaQuickFix.newQuickFix("Replace with BigDecimal(%s,", newArgument)
       .addTextEdit(JavaTextEdit.replaceTree(argument, newArgument))
       .build();
   }

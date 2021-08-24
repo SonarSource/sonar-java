@@ -66,7 +66,7 @@ public class ToArrayCheck extends AbstractMethodDetection {
         QuickFixHelper.newIssue(context)
           .forRule(this)
           .onTree(mit)
-          .withMessage(String.format("Pass \"%s\" as argument to \"toArray\".", typeName))
+          .withMessage("Pass \"%s\" as argument to \"toArray\".", typeName)
           .withQuickFix(() -> getQuickFix(castTree, mit, (MemberSelectExpressionTree) methodSelect, typeName))
           .report();
       }
@@ -77,8 +77,10 @@ public class ToArrayCheck extends AbstractMethodDetection {
     List<JavaTextEdit> textEdits = new ArrayList<>();
     textEdits.add(JavaTextEdit.insertAfterTree(mit.arguments().firstToken(), typeName));
     if (!JUtils.isRawType(methodSelect.expression().symbolType())) {
-      textEdits.add(JavaTextEdit.replaceTextSpan(AnalyzerMessage.textSpanBetween(castTree, true, mit, false), ""));
+      textEdits.add(JavaTextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(castTree, true, mit, false)));
     }
-    return JavaQuickFix.newQuickFix(String.format("Pass \"%s\" as argument", typeName)).addTextEdits(textEdits).build();
+    return JavaQuickFix.newQuickFix("Pass \"%s\" as argument", typeName)
+      .addTextEdits(textEdits)
+      .build();
   }
 }

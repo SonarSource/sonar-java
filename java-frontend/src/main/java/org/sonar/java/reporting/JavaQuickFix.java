@@ -50,6 +50,17 @@ public class JavaQuickFix {
     return new Builder(description);
   }
 
+  /**
+   * See {@link org.sonarsource.sonarlint.plugin.api.issue.NewQuickFix#message(String) } for guidelines on format of the description.
+   *
+   * @param description a description for this quick fix, following the {@link String#format(String, Object...)} formatting
+   * @param args the arguments for the description
+   * @return the builder for this quick fix
+   */
+  public static Builder newQuickFix(String description, Object... args) {
+    return new Builder(String.format(description, args));
+  }
+
   public static class Builder {
     private final String description;
     private final List<JavaTextEdit> textEdits = new ArrayList<>();
