@@ -171,8 +171,7 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
   private static JavaQuickFix quickFix(ImportTree importTree, List<ImportTree> imports) {
     int indexOfImport = imports.indexOf(importTree);
     boolean isLastImport = indexOfImport == imports.size() - 1;
-    String description = String.format("Remove the %simport", importTree.isStatic() ? "static " : "");
-    JavaQuickFix.Builder quickFix = JavaQuickFix.newQuickFix(description);
+    JavaQuickFix.Builder quickFix = JavaQuickFix.newQuickFix("Remove the %simport", importTree.isStatic() ? "static " : "");
     if (imports.size() == 1) {
       // single import not used...
       quickFix.addTextEdit(JavaTextEdit.removeTree(importTree));

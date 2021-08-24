@@ -129,9 +129,9 @@ public class StringPrimitiveConstructorCheck extends AbstractMethodDetection {
         .build();
     }
     return JavaQuickFix.newQuickFix("Remove \"new String\"")
-      .addTextEdit(JavaTextEdit.replaceTextSpan(AnalyzerMessage.textSpanBetween(
+      .addTextEdit(JavaTextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(
         newClassTree.firstToken(), true,
-        arguments.openParenToken(), false), ""))
+        arguments.openParenToken(), false)))
       .build();
 
   }

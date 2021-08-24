@@ -108,7 +108,7 @@ public class CompareToResultTestCheck extends IssuableSubscriptionVisitor {
       textSpan = AnalyzerMessage.textSpanBetween(binaryExpression.leftOperand(), true, operatorToken, true);
     }
 
-    return JavaQuickFix.newQuickFix(String.format("Replace with \"%s\"", newComparison))
+    return JavaQuickFix.newQuickFix("Replace with \"%s\"", newComparison)
       .addTextEdit(JavaTextEdit.replaceTextSpan(textSpan, newComparison))
       .build();
   }

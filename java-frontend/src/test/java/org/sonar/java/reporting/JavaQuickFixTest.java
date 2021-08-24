@@ -28,9 +28,15 @@ class JavaQuickFixTest {
 
   @Test
   void test_build_quick_fix_without_edits() {
-    JavaQuickFix quickFix = JavaQuickFix.newQuickFix("description")
-      .build();
+    JavaQuickFix quickFix = JavaQuickFix.newQuickFix("description").build();
     assertThat(quickFix.getDescription()).isEqualTo("description");
+    assertThat(quickFix.getTextEdits()).isEmpty();
+  }
+
+  @Test
+  void test_build_quick_fix_with_formated_mesasge() {
+    JavaQuickFix quickFix = JavaQuickFix.newQuickFix("description %s %d", "yolo", 42).build();
+    assertThat(quickFix.getDescription()).isEqualTo("description yolo 42");
     assertThat(quickFix.getTextEdits()).isEmpty();
   }
 

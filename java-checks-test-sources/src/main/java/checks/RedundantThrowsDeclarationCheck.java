@@ -27,7 +27,7 @@ public class RedundantThrowsDeclarationCheck {
   }
 
   public void foo8() throws MyException, Exception { // Noncompliant [[sc=29;ec=40;quickfixes=qf_first]] {{Remove the declaration of thrown exception 'checks.RedundantThrowsDeclarationCheck$MyException' which is a subclass of 'java.lang.Exception'.}}
-    // fix@qf_first {{Remove MyException}}
+    // fix@qf_first {{Remove "MyException"}}
     // edit@qf_first [[sc=29;ec=42]] {{}}
   }
 
@@ -73,7 +73,7 @@ abstract class MySuperClass {
 
 abstract class ThrownCheckedExceptions extends MySuperClass {
   public ThrownCheckedExceptions(String s) throws MyException { // Noncompliant [[sc=51;ec=62;quickfixes=qf_all_throws]] {{Remove the declaration of thrown exception 'checks.MyException', as it cannot be thrown from constructor's body.}}
-    // fix@qf_all_throws {{Remove MyException}}
+    // fix@qf_all_throws {{Remove "MyException"}}
     // edit@qf_all_throws [[sc=43;ec=62]] {{}}
     bar();
   }
@@ -174,7 +174,7 @@ abstract class ThrownCheckedExceptions extends MySuperClass {
   }
 
   void foo18(java.io.File file) throws IOException, ParseException { // Noncompliant  [[sc=53;ec=67;quickfixes=qf_last]] {{Remove the declaration of thrown exception 'java.text.ParseException', as it cannot be thrown from method's body.}}
-    // fix@qf_last {{Remove ParseException}}
+    // fix@qf_last {{Remove "ParseException"}}
     // edit@qf_last [[sc=51;ec=67]] {{}}
     try (MyCloseable mac = getMyCloseable(file)) {
       // do something
@@ -321,7 +321,7 @@ abstract class NonThrownExceptionClass {
      * @throws  MyException2 proper javadoc description
      */
     public void missingJavadocForException() throws MyException, java.io.IOException, MyException2 { // Noncompliant [[sc=66;ec=85;quickfixes=qf_middle]] {{Remove the declaration of thrown exception 'java.io.IOException', as it cannot be thrown from method's body.}}
-      // fix@qf_middle {{Remove IOException}}
+      // fix@qf_middle {{Remove "IOException"}}
       // edit@qf_middle [[sc=66;ec=87]] {{}}
       bar();
     }

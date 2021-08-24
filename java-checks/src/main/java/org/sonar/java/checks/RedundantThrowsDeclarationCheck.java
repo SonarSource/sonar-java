@@ -137,10 +137,8 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
       TypeTree nextClause = throwsClauses.get(clauseToRemoveIndex + 1);
       textSpanToRemove = AnalyzerMessage.textSpanBetween(clauseToRemove, true, nextClause, false);
     }
-    return JavaQuickFix.newQuickFix(String.format("Remove %s", clauseToRemove.symbolType().name()))
-      .addTextEdit(JavaTextEdit.replaceTextSpan(
-        textSpanToRemove,
-        ""))
+    return JavaQuickFix.newQuickFix("Remove \"%s\"", clauseToRemove.symbolType().name())
+      .addTextEdit(JavaTextEdit.removeTextSpan(textSpanToRemove))
       .build();
   }
 

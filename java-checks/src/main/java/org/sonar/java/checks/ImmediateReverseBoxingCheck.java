@@ -225,8 +225,7 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
       .onTree(expressionTree)
       .withMessage(message)
       .withQuickFix(() -> JavaQuickFix.newQuickFix("Remove the unboxing")
-        .addTextEdit(JavaTextEdit.replaceTextSpan(
-          AnalyzerMessage.textSpanBetween(unboxedExpression, false, expressionTree, true), ""))
+        .addTextEdit(JavaTextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(unboxedExpression, false, expressionTree, true)))
         .build())
       .report();
   }
