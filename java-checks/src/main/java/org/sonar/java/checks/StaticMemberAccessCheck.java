@@ -22,6 +22,9 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -30,8 +33,6 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import static java.lang.String.format;
 
 @Rule(key = "S3252")
 public class StaticMemberAccessCheck extends IssuableSubscriptionVisitor {
@@ -56,8 +57,12 @@ public class StaticMemberAccessCheck extends IssuableSubscriptionVisitor {
       ExpressionTree expression = mse.expression();
       Type staticType = symbol.owner().type();
       if (!expression.symbolType().erasure().equals(staticType.erasure())) {
-        reportIssue(mse.identifier(),
-          format("Use static access with \"%s\" for \"%s\".", staticType.fullyQualifiedName(), symbol.name()));
+        QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(mse.identifier())
+          .withMessage("Use static access with \"%s\" for \"%s\".", staticType.fullyQualifiedName(), symbol.name())
+          .withQuickFix(() -> quickFix(expression, staticType))
+          .report();
       }
     }
   }
@@ -67,5 +72,13 @@ public class StaticMemberAccessCheck extends IssuableSubscriptionVisitor {
     // see SONARJAVA-3095
     Tree parent = mse.parent();
     return parent.is(Tree.Kind.METHOD_INVOCATION) && LIST_SET_OF.matches((MethodInvocationTree) parent);
+  }
+
+  private static JavaQuickFix quickFix(ExpressionTree expression, Type staticType) {
+    String oldType = expression.symbolType().name();
+    String newType = staticType.name();
+    return JavaQuickFix.newQuickFix(String.format("Use \"%s\" instead of \"%s\"", newType, oldType))
+      .addTextEdit(JavaTextEdit.replaceTree(expression, newType))
+      .build();
   }
 }
