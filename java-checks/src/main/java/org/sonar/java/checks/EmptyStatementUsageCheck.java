@@ -19,14 +19,20 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.check.Rule;
-import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.Tree;
-
 import java.util.Collections;
 import java.util.List;
+import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.EmptyStatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
+
+import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
 @DeprecatedRuleKey(ruleKey = "EmptyStatementUsageCheck", repositoryKey = "squid")
 @Rule(key = "S1116")
@@ -42,7 +48,35 @@ public class EmptyStatementUsageCheck extends IssuableSubscriptionVisitor {
     if (usedForEmptyEnum(tree) || uniqueStatementOfLoop(tree)) {
       return;
     }
-    reportIssue(tree, "Remove this empty statement.");
+    QuickFixHelper.newIssue(context)
+      .forRule(this)
+      .onTree(tree)
+      .withMessage("Remove this empty statement.")
+      .withQuickFix(() -> getQuickFix((EmptyStatementTree) tree))
+      .report();
+  }
+
+  private static JavaQuickFix getQuickFix(EmptyStatementTree emptyStatement) {
+    SyntaxToken previousToken = QuickFixHelper.previousToken(emptyStatement);
+    JavaTextEdit edit;
+    // Remove the statement if it is not the only one on his line, otherwise, remove the line until the previous token
+    if (sameLine(previousToken, emptyStatement)) {
+      edit = JavaTextEdit.removeTree(emptyStatement);
+    } else {
+      SyntaxToken nextToken = QuickFixHelper.nextToken(emptyStatement);
+      if (sameLine(nextToken, emptyStatement)) {
+        edit = JavaTextEdit.removeTree(emptyStatement);
+      } else {
+        edit = JavaTextEdit.removeTextSpan(textSpanBetween(previousToken, false, emptyStatement, true));
+      }
+    }
+    return JavaQuickFix.newQuickFix("Remove this empty statement")
+      .addTextEdit(edit)
+      .build();
+  }
+
+  private static boolean sameLine(SyntaxToken token, EmptyStatementTree emptyStatement) {
+    return token.line() == emptyStatement.semicolonToken().line();
   }
 
   private static boolean usedForEmptyEnum(Tree tree) {
