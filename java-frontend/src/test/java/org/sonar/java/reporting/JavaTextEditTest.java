@@ -94,6 +94,14 @@ class JavaTextEditTest {
     assertTextSpan(javaTextEdit.getTextSpan(), 4, 2, 4, 13);
   }
 
+  @Test
+  void test_remove_between_tree() {
+    Tree firstMember = classTree.members().get(0);
+    JavaTextEdit javaTextEdit = JavaTextEdit.removeBetweenTree(firstMember.firstToken(), firstMember.lastToken());
+    assertThat(javaTextEdit.getReplacement()).isEmpty();
+    assertTextSpan(javaTextEdit.getTextSpan(), 4, 2, 4, 13);
+  }
+
   private static void assertTextSpan(AnalyzerMessage.TextSpan textSpan, int startLine, int startColumn, int endLine, int endColumn) {
       assertThat(textSpan.startLine).as("Start line").isEqualTo(startLine);
       assertThat(textSpan.startCharacter).as("Start character").isEqualTo(startColumn);
