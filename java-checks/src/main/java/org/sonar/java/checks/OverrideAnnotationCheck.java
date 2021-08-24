@@ -30,7 +30,7 @@ import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S1161")
@@ -106,9 +106,9 @@ public class OverrideAnnotationCheck extends IssuableSubscriptionVisitor {
   }
 
   private String padding(Tree tree) {
-    SyntaxToken firstToken = tree.firstToken();
+    Position start = tree.firstToken().range().start();
     return context.getFileLines()
-      .get(firstToken.line() - 1)
-      .substring(0, firstToken.column());
+      .get(start.lineOffset())
+      .substring(0, start.columnOffset());
   }
 }

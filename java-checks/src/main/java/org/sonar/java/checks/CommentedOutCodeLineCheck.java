@@ -79,11 +79,11 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
       String line = lines[lineOffset];
       if (!isJavadocLink(line) && codeRecognizer.isLineOfCode(line)) {
         int startLine = syntaxTrivia.startLine() + lineOffset;
-        int startColumn = (lineOffset == 0 ? syntaxTrivia.column() : 0);
+        int startColumnOffset = (lineOffset == 0 ? syntaxTrivia.range().start().columnOffset() : 0);
         if (issue != null) {
-          issue.flows.add(Collections.singletonList(createAnalyzerMessage(startLine, startColumn, line, "Code")));
+          issue.flows.add(Collections.singletonList(createAnalyzerMessage(startLine, startColumnOffset, line, "Code")));
         } else {
-          issue = createAnalyzerMessage(startLine, startColumn, line, MESSAGE);
+          issue = createAnalyzerMessage(startLine, startColumnOffset, line, MESSAGE);
           issues.add(issue);
         }
       }

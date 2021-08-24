@@ -116,7 +116,7 @@ public class ShiftOnIntOrLongCheck extends IssuableSubscriptionVisitor {
   private static boolean isAlignedWith(SyntaxToken operatorToken, Tree other) {
     SyntaxToken otherOperator = operatorToken(other);
     return otherOperator.text().equals(operatorToken.text())
-      && operatorToken.column() == otherOperator.column()
+      && operatorToken.range().start().column() == otherOperator.range().start().column()
       // less than 2 lines distance
       && Math.abs(operatorToken.line() - otherOperator.line()) < 2;
   }

@@ -40,6 +40,7 @@ import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -149,22 +150,11 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
   }
 
   private void highlight(Tree from, Tree to, TypeOfText typeOfText) {
-    SyntaxToken firstToken = from.firstToken();
-    SyntaxToken lastToken = to.lastToken();
-
-    final int endLine;
-    final int endColumn;
-    if (lastToken.text().startsWith("\"\"\"")) {
-      // slow path for Text Blocks
-      String[] lines = lastToken.text().split("\\r\\n|\\n|\\r");
-      endLine = lastToken.line() + lines.length - 1;
-      endColumn = (lines.length == 1 ? lastToken.column() : 0) + lines[lines.length - 1].length();
-    } else {
-      endLine = lastToken.line();
-      endColumn = lastToken.column() + lastToken.text().length();
-    }
-
-    highlighting.highlight(firstToken.line(), firstToken.column(), endLine, endColumn, typeOfText);
+    Range first = from.firstToken().range();
+    Range last = to.lastToken().range();
+    highlighting.highlight(
+      first.start().line(), first.start().columnOffset(),
+      last.end().line(), last.end().columnOffset(), typeOfText);
   }
 
   @Override
@@ -194,16 +184,11 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
 
   @Override
   public void visitTrivia(SyntaxTrivia syntaxTrivia) {
-    String comment = syntaxTrivia.comment();
-    int startLine = syntaxTrivia.startLine();
-    int startColumn = syntaxTrivia.column();
-
-    String[] lines = comment.split("\\r\\n|\\n|\\r");
-    int numberLines = lines.length;
-
-    int endLine = startLine + numberLines - 1;
-    int endColumn = numberLines == 1 ? (startColumn + comment.length()) : lines[numberLines - 1].length();
-    boolean isJavadoc = lines[0].trim().startsWith("/**");
-    highlighting.highlight(startLine, startColumn, endLine, endColumn, isJavadoc ? TypeOfText.STRUCTURED_COMMENT : TypeOfText.COMMENT);
+    Range range = syntaxTrivia.range();
+    boolean isJavadoc = syntaxTrivia.comment().startsWith("/**");
+    TypeOfText typeOfText = isJavadoc ? TypeOfText.STRUCTURED_COMMENT : TypeOfText.COMMENT;
+    highlighting.highlight(
+      range.start().line(), range.start().columnOffset(),
+      range.end().line(), range.end().columnOffset(), typeOfText);
   }
 }

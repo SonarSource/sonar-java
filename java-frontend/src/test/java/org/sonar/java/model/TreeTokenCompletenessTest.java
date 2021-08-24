@@ -19,114 +19,47 @@
  */
 package org.sonar.java.model;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.TestUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.plugins.java.api.location.Position;
+import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 class TreeTokenCompletenessTest {
 
-  private static final String EOL = System.getProperty("line.separator");
-
   @Test
-  void test() {
-    // test itself
-    File file = new File("src/test/java/org/sonar/java/model/TreeTokenCompletenessTest.java");
-
-    List<String> basedOnSyntaxTree = readFileFromSyntaxTree(TestUtils.inputFile(file));
-    List<String> basedOnFileLine = readFile(file);
-    Map<Integer, String> differences = getDifferences(basedOnSyntaxTree, basedOnFileLine);
-
-    assertThat(basedOnSyntaxTree).isNotEmpty();
-    assertThat(basedOnSyntaxTree.size()).isEqualTo(basedOnFileLine.size());
-
-    // printListString(basedOnSyntaxTree);
-    // printDifferences(differences);
-
-    // the difference is on parsing on generic: "line 117 : 'Lists.<File>newArrayList(), null));'"
-    assertThat(differences).isEmpty();
+  void test() throws IOException {
+    Path pathOfThisFile = Paths.get("src", "test", "java", "org", "sonar", "java", "model", "TreeTokenCompletenessTest.java");
+    String thisFileContent = new String(Files.readAllBytes(pathOfThisFile), UTF_8).replaceAll("\\R", "\n");
+    String thisFileContentFromSyntaxTree = readFileFromSyntaxTree(TestUtils.inputFile(pathOfThisFile.toFile()));
+    assertThat(thisFileContentFromSyntaxTree)
+      .isEqualTo(thisFileContent);
   }
 
-  private static Map<Integer, String> getDifferences(List<String> basedOnSyntaxTree, List<String> basedOnFileLine) {
-    Map<Integer, String> differences = new HashMap<>();
-    for (int i = 0; i < basedOnSyntaxTree.size(); i++) {
-      String lineFromSyntaxTree = basedOnSyntaxTree.get(i);
-      String lineFromFile = basedOnFileLine.get(i);
-      if (!StringUtils.isBlank(lineFromSyntaxTree) && !StringUtils.isBlank(lineFromFile)) {
-        String difference = StringUtils.difference(lineFromSyntaxTree, lineFromFile);
-        if (!difference.isEmpty()) {
-          differences.put(i + 1, difference);
-        }
-      }
-    }
-    return differences;
-  }
-
-  private static void printDifferences(Map<Integer, String> differences) {
-    List<Integer> keys = new ArrayList<>(differences.keySet());
-    Collections.sort(keys);
-
-    List<String> diffsWithLines = new LinkedList<>();
-    for (Integer key : keys) {
-      diffsWithLines.add("line " + String.format("%03d", key) + " : '" + differences.get(key) + "'");
-    }
-
-    printDiffHeader();
-    printListString(diffsWithLines);
-  }
-
-  private static void printDiffHeader() {
-    StringBuilder builder = new StringBuilder();
-    builder.append(EOL);
-    builder.append(EOL);
-    builder.append("----------------------- diff -------------------------------");
-    builder.append(EOL);
-    System.out.println(builder.toString());
-  }
-
-  private static void printListString(List<String> basedOnSyntaxTree) {
-    for (String line : basedOnSyntaxTree) {
-      System.out.println(line);
-    }
-  }
-
-  private static List<String> readFile(File file) {
-    try {
-      return FileUtils.readLines(file);
-    } catch (IOException e) {
-      fail("can not read test file");
-    }
-    return Collections.emptyList();
-  }
-
-  private static List<String> readFileFromSyntaxTree(InputFile inputFile) {
+  private static String readFileFromSyntaxTree(InputFile inputFile) {
     TokenPrinter tokenPrinter = new TokenPrinter();
     JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(Collections.singletonList(tokenPrinter), Collections.emptyList(), null));
-    return tokenPrinter.getPrintedFile();
+    return tokenPrinter.toString();
   }
 
   private static class TokenPrinter extends SubscriptionVisitor {
-    private int lastLine = 1;
-    private int lastColumn = 0;
-    private StringBuilder resultBuilder = new StringBuilder();
+    private Position lastEndPosition = Position.at(Position.FIRST_LINE, Position.FIRST_LINE);
+    private final StringBuilder resultBuilder = new StringBuilder();
 
     @Override
     public List<Tree.Kind> nodesToVisit() {
@@ -136,65 +69,31 @@ class TreeTokenCompletenessTest {
     @Override
     public void visitToken(SyntaxToken syntaxToken) {
       for (SyntaxTrivia trivia : syntaxToken.trivias()) {
-        printTrivia(trivia);
+        print(trivia.range(), trivia.comment());
       }
-      printToken(syntaxToken);
+      print(syntaxToken.range(), syntaxToken.text());
     }
 
-    private void printToken(SyntaxToken token) {
-      int deltaLine = token.line() - lastLine;
-      for (int i = 0; i < deltaLine; i++) {
-        newLine();
+    private void print(Range range, String text) {
+      if (range.start().isBefore(lastEndPosition)) {
+        throw new IllegalStateException("Can't write the range: " + range +
+          " because the last position is already after at " + lastEndPosition + " for token: " + text);
       }
-      int deltaColumn = token.column() - lastColumn;
-      for (int i = 0; i < deltaColumn; i++) {
-        space();
-      }
-      String text = token.text();
-      print(text);
-      lastColumn += text.length();
-    }
+      int numberOfNewLineToAdd = range.start().line() - lastEndPosition.line();
+      resultBuilder.append(StringUtils.repeat("\n", numberOfNewLineToAdd));
 
-    private void printTrivia(SyntaxTrivia trivia) {
-      String comment = trivia.comment();
-      int deltaLine = trivia.startLine() - lastLine;
-      for (int i = 0; i < deltaLine; i++) {
-        newLine();
-      }
-      int numberEOL = StringUtils.countMatches(comment, EOL);
-      if (numberEOL > 0) {
-        lastLine = trivia.startLine() + numberEOL; // recalculate the last line
-      }
-      int deltaColumn = trivia.column() - lastColumn;
-      for (int i = 0; i < deltaColumn; i++) {
-        space();
-      }
-      print(comment);
+      int newLastColumn = (numberOfNewLineToAdd == 0 ? lastEndPosition.column() : Position.FIRST_COLUMN);
+      int numberOfSpaceToAdd = range.start().column() - newLastColumn;
+      resultBuilder.append(StringUtils.repeat(" ", numberOfSpaceToAdd));
 
-      if (numberEOL > 0) {
-        lastColumn = StringUtils.substringAfterLast(comment, EOL).length();
-      } else {
-        lastColumn += comment.length();
-      }
-    }
-
-    private void print(String text) {
       resultBuilder.append(text);
+      lastEndPosition = range.end();
     }
 
-    private void newLine() {
-      lastColumn = 0;
-      lastLine++;
-      resultBuilder.append(System.getProperty("line.separator"));
+    @Override
+    public String toString() {
+      return resultBuilder.toString();
     }
 
-    public void space() {
-      lastColumn++;
-      resultBuilder.append(" ");
-    }
-
-    public List<String> getPrintedFile() {
-      return Arrays.asList(resultBuilder.toString().split(EOL));
-    }
   }
 }

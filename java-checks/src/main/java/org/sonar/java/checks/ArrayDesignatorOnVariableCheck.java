@@ -95,8 +95,7 @@ public class ArrayDesignatorOnVariableCheck extends IssuableSubscriptionVisitor 
   }
 
   private static boolean isInvalidPosition(SyntaxToken arrayDesignatorToken, SyntaxToken identifierToken) {
-    return identifierToken.line() < arrayDesignatorToken.line()
-      || (identifierToken.line() == arrayDesignatorToken.line() && identifierToken.column() < arrayDesignatorToken.column());
+    return identifierToken.range().start().isBefore(arrayDesignatorToken.range().start());
   }
 
 }

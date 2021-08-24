@@ -138,7 +138,7 @@ class JavaTreeModelTest {
         .hasValue("1");
       assertThat(tree.token())
         .isAtLine(1)
-        .startsAtColumn(27);
+        .startsAtColumn(28);
     }
 
     @Test
@@ -150,7 +150,7 @@ class JavaTreeModelTest {
         .hasValue("1L");
       assertThat(tree.token())
         .isAtLine(1)
-        .startsAtColumn(28);
+        .startsAtColumn(29);
     }
 
     @Test
@@ -162,7 +162,7 @@ class JavaTreeModelTest {
         .hasChildrenSize(1);
       assertThat(tree.token())
         .isAtLine(1)
-        .startsAtColumn(29);
+        .startsAtColumn(30);
     }
 
     @Test
@@ -174,7 +174,7 @@ class JavaTreeModelTest {
         .hasChildrenSize(1);
       assertThat(tree.token())
         .isAtLine(1)
-        .startsAtColumn(30);
+        .startsAtColumn(31);
     }
 
     @Test
@@ -186,7 +186,7 @@ class JavaTreeModelTest {
         .hasChildrenSize(1);
       assertThat(tree.token())
         .isAtLine(1)
-        .startsAtColumn(31);
+        .startsAtColumn(32);
     }
 
     @Test
@@ -198,7 +198,7 @@ class JavaTreeModelTest {
         .hasChildrenSize(1);
       assertThat(tree.token())
         .isAtLine(1)
-        .startsAtColumn(31);
+        .startsAtColumn(32);
     }
 
     @Test
@@ -210,7 +210,7 @@ class JavaTreeModelTest {
         .hasChildrenSize(1);
       assertThat(tree.token())
         .isAtLine(1)
-        .startsAtColumn(28);
+        .startsAtColumn(29);
     }
 
     @Test
@@ -222,7 +222,7 @@ class JavaTreeModelTest {
         .hasChildrenSize(1);
       assertThat(tree.token())
         .isAtLine(1)
-        .startsAtColumn(30);
+        .startsAtColumn(31);
     }
 
     @Test
@@ -234,7 +234,7 @@ class JavaTreeModelTest {
         .hasChildrenSize(1);
       assertThat(tree.token())
         .isAtLine(1)
-        .startsAtColumn(30);
+        .startsAtColumn(31);
     }
   }
 
@@ -254,7 +254,7 @@ class JavaTreeModelTest {
       .hasValue("\"\"\"\ntext block\"\"\"");
     assertThat(tree.token())
       .isAtLine(1)
-      .startsAtColumn(30);
+      .startsAtColumn(31);
   }
 
   /**
@@ -2698,7 +2698,8 @@ class JavaTreeModelTest {
         .isDeclaredArrayDimension()
         .hasChildrenSize(3);
       assertThat(childArrayTypeTree.type()).is(Tree.Kind.PRIMITIVE_TYPE);
-      assertThat(childArrayTypeTree.openBracketToken().column() < arrayTypeTree.openBracketToken().column()).isTrue();
+      assertThat(childArrayTypeTree.openBracketToken().range().start())
+        .isLessThan(arrayTypeTree.openBracketToken().range().start());
     }
 
     @Test
@@ -2747,7 +2748,8 @@ class JavaTreeModelTest {
         .isDeclaredArrayDimension()
         .hasChildrenSize(3);
       assertThat(childArrayTypeTree.type()).is(Tree.Kind.PRIMITIVE_TYPE);
-      assertThat(childArrayTypeTree.openBracketToken().column() < arrayTypeTree.openBracketToken().column()).isTrue();
+      assertThat(childArrayTypeTree.openBracketToken().range().start())
+        .isLessThan(arrayTypeTree.openBracketToken().range().start());
     }
 
     @Test
@@ -2767,7 +2769,8 @@ class JavaTreeModelTest {
         .isDeclaredArrayDimension()
         .hasChildrenSize(3);
       assertThat(childArrayTypeTree.type()).is(Tree.Kind.PRIMITIVE_TYPE);
-      assertThat(childArrayTypeTree.openBracketToken().column() < arrayTypeTree.openBracketToken().column()).isTrue();
+      assertThat(childArrayTypeTree.openBracketToken().range().start())
+        .isLessThan(arrayTypeTree.openBracketToken().range().start());
     }
 
     @Test
@@ -2789,7 +2792,8 @@ class JavaTreeModelTest {
         .isDeclaredArrayDimension()
         .hasChildrenSize(3);
       assertThat(childArrayTypeTree.type()).is(Tree.Kind.PRIMITIVE_TYPE);
-      assertThat(childArrayTypeTree.openBracketToken().column() < arrayTypeTree.openBracketToken().column()).isTrue();
+      assertThat(childArrayTypeTree.openBracketToken().range().start())
+        .isLessThan(arrayTypeTree.openBracketToken().range().start());
     }
   }
 
@@ -2850,7 +2854,8 @@ class JavaTreeModelTest {
         .isDeclaredArrayDimension()
         .hasChildrenSize(3);
       assertThat(childArrayTypeTree.type()).is(Tree.Kind.PRIMITIVE_TYPE);
-      assertThat(childArrayTypeTree.openBracketToken().column() < arrayTypeTree.openBracketToken().column()).isTrue();
+      assertThat(childArrayTypeTree.openBracketToken().range().start())
+        .isLessThan(arrayTypeTree.openBracketToken().range().start());
     }
 
     @Test
@@ -2869,7 +2874,8 @@ class JavaTreeModelTest {
         .isDeclaredArrayDimension()
         .hasChildrenSize(3);
       assertThat(childArrayTypeTree.type()).is(Tree.Kind.PRIMITIVE_TYPE);
-      assertThat(childArrayTypeTree.openBracketToken().column() < arrayTypeTree.openBracketToken().column()).isTrue();
+      assertThat(childArrayTypeTree.openBracketToken().range().start())
+        .isLessThan(arrayTypeTree.openBracketToken().range().start());
     }
 
     @Test
@@ -2890,7 +2896,8 @@ class JavaTreeModelTest {
         .isDeclaredArrayDimension()
         .hasChildrenSize(3);
       assertThat(childArrayTypeTree.type()).is(Tree.Kind.PRIMITIVE_TYPE);
-      assertThat(childArrayTypeTree.openBracketToken().column() < arrayTypeTree.openBracketToken().column()).isTrue();
+      assertThat(childArrayTypeTree.openBracketToken().range().start())
+        .isLessThan(arrayTypeTree.openBracketToken().range().start());
     }
   }
 
@@ -2961,7 +2968,8 @@ class JavaTreeModelTest {
         .isDeclaredArrayDimension()
         .hasChildrenSize(3);
       assertThat(arrayTypeTree.type()).is(Tree.Kind.PRIMITIVE_TYPE);
-      assertThat(varArgType.ellipsisToken().column() > arrayTypeTree.openBracketToken().column()).isTrue();
+      assertThat(varArgType.ellipsisToken().range().start())
+        .isGreaterThan(arrayTypeTree.openBracketToken().range().start());
     }
 
     @Test
@@ -3010,7 +3018,8 @@ class JavaTreeModelTest {
         .isDeclaredArrayDimension()
         .hasChildrenSize(3);
       assertThat(childArrayTypeTree.type()).is(Tree.Kind.PRIMITIVE_TYPE);
-      assertThat(childArrayTypeTree.openBracketToken().column() < arrayTypeTree.openBracketToken().column()).isTrue();
+      assertThat(childArrayTypeTree.openBracketToken().range().start())
+        .isLessThan(arrayTypeTree.openBracketToken().range().start());
     }
 
     @Test
@@ -3030,7 +3039,8 @@ class JavaTreeModelTest {
         .isDeclaredArrayDimension()
         .hasChildrenSize(3);
       assertThat(childArrayTypeTree.type()).is(Tree.Kind.PRIMITIVE_TYPE);
-      assertThat(childArrayTypeTree.openBracketToken().column() < arrayTypeTree.openBracketToken().column()).isTrue();
+      assertThat(childArrayTypeTree.openBracketToken().range().start())
+        .isLessThan(arrayTypeTree.openBracketToken().range().start());
     }
 
     @Test
@@ -3052,7 +3062,8 @@ class JavaTreeModelTest {
         .isDeclaredArrayDimension()
         .hasChildrenSize(3);
       assertThat(childArrayTypeTree.type()).is(Tree.Kind.PRIMITIVE_TYPE);
-      assertThat(childArrayTypeTree.openBracketToken().column() < arrayTypeTree.openBracketToken().column()).isTrue();
+      assertThat(childArrayTypeTree.openBracketToken().range().start())
+        .isLessThan(arrayTypeTree.openBracketToken().range().start());
     }
   }
 

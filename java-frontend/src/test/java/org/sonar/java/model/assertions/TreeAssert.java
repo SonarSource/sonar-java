@@ -223,7 +223,7 @@ public class TreeAssert extends AbstractAssert<TreeAssert, Tree> {
     }
 
     public SyntaxTokenAssert startsAtColumn(int column) {
-      Assertions.assertThat(actual.column()).isEqualTo(column);
+      Assertions.assertThat(actual.range().start().column()).isEqualTo(column);
       return this;
     }
   }

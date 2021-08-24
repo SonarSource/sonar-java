@@ -90,7 +90,8 @@ public class IndentationAfterConditionalCheck extends BaseTreeVisitor implements
   }
 
   private void checkForReport(StatementTree statement, Tree startTree, Tree endTree, String name) {
-    if (!(statement.is(Tree.Kind.BLOCK) || statement.firstToken().column() > startTree.firstToken().column())) {
+    if (!(statement.is(Tree.Kind.BLOCK) ||
+      statement.firstToken().range().start().column() > startTree.firstToken().range().start().column())) {
       context.reportIssue(this, startTree, endTree,
         "Use indentation to denote the code conditionally executed by this \"" + name + "\".",
         Collections.singletonList(new JavaFileScannerContext.Location("", statement)), null);

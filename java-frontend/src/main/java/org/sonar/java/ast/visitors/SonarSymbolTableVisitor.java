@@ -19,6 +19,7 @@
  */
 package org.sonar.java.ast.visitors;
 
+import java.util.List;
 import org.sonar.api.batch.sensor.symbol.NewSymbol;
 import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.java.model.JUtils;
@@ -33,12 +34,10 @@ import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.List;
 
 public class SonarSymbolTableVisitor extends BaseTreeVisitor {
 
@@ -120,11 +119,15 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
   }
 
   private void createSymbol(IdentifierTree declaration, List<IdentifierTree> usages) {
-    SyntaxToken syntaxToken = declaration.identifierToken();
-    NewSymbol newSymbol = newSymbolTable.newSymbol(syntaxToken.line(), syntaxToken.column(), syntaxToken.line(), syntaxToken.text().length() + syntaxToken.column());
+    Range range = declaration.identifierToken().range();
+    NewSymbol newSymbol = newSymbolTable.newSymbol(
+      range.start().line(), range.start().columnOffset(),
+      range.end().line(), range.end().columnOffset());
     for (IdentifierTree usage : usages) {
-      syntaxToken = usage.identifierToken();
-      newSymbol.newReference(syntaxToken.line(), syntaxToken.column(), syntaxToken.line(), syntaxToken.text().length() + syntaxToken.column());
+      range = usage.identifierToken().range();
+      newSymbol.newReference(
+        range.start().line(), range.start().columnOffset(),
+        range.end().line(), range.end().columnOffset());
     }
   }
 

@@ -17,34 +17,43 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.java.api.tree;
+package org.sonar.plugins.java.api.location;
 
-import javax.annotation.Nonnull;
-import org.sonar.java.annotations.Beta;
-import org.sonar.plugins.java.api.location.Range;
+import org.sonar.java.model.location.InternalPosition;
 
-/**
- * Represents a Trivia in the SyntaxTree.
- *
- * @since plugin 2.5
- */
-@Beta
-public interface SyntaxTrivia extends Tree {
+public interface Position extends Comparable<Position> {
 
-  String comment();
-
-  int startLine();
+  int FIRST_LINE = 1;
+  int FIRST_COLUMN = 1;
 
   /**
-   * Warning: this is not the column number starting at 1 but the column offset starting at 0
-   * @return column offset starting at 0
-   * @deprecated for removal, since = 7.3, "column()" can be replaced by range().start().columnOffset()
-   * and "column() + 1" can be replaced by range().start().column()
+   * The line number in a file. First line number is 1.
    */
-  @Deprecated
+  int line();
+
+  /**
+   * The line offset in a file. First line offset is 0. (lineOffset() == line() - 1)
+   */
+  int lineOffset();
+
+  /**
+   * The column number at the specified line. First column number is 1. (column() == columnOffset() + 1)
+   */
   int column();
 
-  @Nonnull
-  Range range();
+  /**
+   * The column offset at the specified line. First column offset is 0. (columnOffset() == column() - 1)
+   */
+  int columnOffset();
+
+  static Position at(int line, int column) {
+    return new InternalPosition(line, column);
+  }
+
+  static Position atOffset(int line, int columnOffset) {
+    return at(line, columnOffset + 1);
+  }
+
+  boolean isBefore(Position other);
 
 }

@@ -19,35 +19,58 @@
  */
 package org.sonar.java.model;
 
+import java.util.List;
+import javax.annotation.Nonnull;
+import org.sonar.plugins.java.api.location.Position;
+import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-import java.util.List;
-
 public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
 
   private final List<SyntaxTrivia> trivias;
-  private final int line;
-  private final int column;
+  private final Range range;
   private final String value;
   private final boolean isEOF;
 
   protected InternalSyntaxToken(InternalSyntaxToken internalSyntaxToken) {
     this.value = internalSyntaxToken.value;
-    this.line = internalSyntaxToken.line;
-    this.column = internalSyntaxToken.column;
+    this.range = internalSyntaxToken.range;
     this.trivias = internalSyntaxToken.trivias;
     this.isEOF = internalSyntaxToken.isEOF;
   }
 
-  public InternalSyntaxToken(int line, int column, String value, List<SyntaxTrivia> trivias, boolean isEOF) {
+  public InternalSyntaxToken(int line, int columnOffset, String value, List<SyntaxTrivia> trivias, boolean isEOF) {
     this.value = value;
-    this.line = line;
-    this.column = column;
     this.trivias = trivias;
     this.isEOF = isEOF;
+    range = value.startsWith("\"\"\"")
+      ? createMultiLineRange(line, columnOffset, value)
+      : createSingleLineRange(line, columnOffset, value);
+  }
+
+  static Range createSingleLineRange(int line, int columnOffset, String value) {
+    Position start = Position.atOffset(line, columnOffset);
+    Position end = Position.atOffset(line, columnOffset + value.length());
+    return Range.at(start, end);
+  }
+
+  static Range createMultiLineRange(int line, int columnOffset, String value) {
+    Position start = Position.atOffset(line, columnOffset);
+    String[] lines = value.split("\r\n|\n|\r", -1);
+    String lastLine = lines[lines.length - 1];
+    int endLine = line + lines.length - 1;
+    int endColumn = (lines.length == 1 ? start.column() : Position.FIRST_COLUMN) + lastLine.length();
+    Position end = Position.at(endLine, endColumn);
+    return Range.at(start, end);
+  }
+
+  @Nonnull
+  @Override
+  public Range range() {
+    return range;
   }
 
   @Override
@@ -77,17 +100,17 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
 
   @Override
   public int getLine() {
-    return line;
+    return range.start().line();
   }
 
   @Override
   public int line() {
-    return line;
+    return range.start().line();
   }
 
   @Override
   public int column() {
-    return column;
+    return range.start().columnOffset();
   }
 
   @Override

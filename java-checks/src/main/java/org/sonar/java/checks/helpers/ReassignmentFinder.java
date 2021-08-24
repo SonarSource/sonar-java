@@ -19,6 +19,12 @@
  */
 package org.sonar.java.checks.helpers;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
@@ -27,14 +33,6 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Helper class to be used to find the latest {@link ExpressionTree} used as initializer (for a {@link VariableTree}) 
@@ -110,22 +108,10 @@ public final class ReassignmentFinder {
 
   @CheckForNull
   private static Tree getClosestReassignment(SyntaxToken startToken, List<AssignmentExpressionTree> reassignments) {
-    Tree result = null;
-    List<Tree> assignmentsBeforeStartToken = reassignments.stream()
-      .sorted(ReassignmentFinder::isBefore)
-      .filter(a -> isBefore(startToken, a) > 0)
-      .collect(Collectors.toList());
-
-    if (!assignmentsBeforeStartToken.isEmpty()) {
-      return assignmentsBeforeStartToken.get(assignmentsBeforeStartToken.size() - 1);
-    }
-    return result;
+    return reassignments.stream()
+      .filter(a -> a.firstToken().range().start().isBefore(startToken.range().start()))
+      .max(Comparator.comparing(a -> a.firstToken().range().start()))
+      .orElse(null);
   }
 
-  private static int isBefore(Tree t1, Tree t2) {
-    SyntaxToken firstTokenT1 = t1.firstToken();
-    SyntaxToken firstTokenT2 = t2.firstToken();
-    int line = Integer.compare(firstTokenT1.line(), firstTokenT2.line());
-    return line != 0 ? line : Integer.compare(firstTokenT1.column(), firstTokenT2.column());
-  }
 }

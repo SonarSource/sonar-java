@@ -44,8 +44,7 @@ import org.sonar.plugins.java.api.tree.UnionTypeTree;
 public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
 
   private final List<JWarning> warnings = new ArrayList<>();
-  private static final Comparator<Location> LOCATION_COMAPRATOR = Comparator.<Location>comparingInt(loc -> loc.syntaxNode.firstToken().line())
-    .thenComparing(Comparator.comparingInt(loc -> loc.syntaxNode.firstToken().column()));
+  private static final Comparator<Location> LOCATION_COMPARATOR = Comparator.comparing(loc -> loc.syntaxNode.firstToken().range().start());
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -149,7 +148,7 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
         }
       }
     });
-    secondaries.sort(LOCATION_COMAPRATOR);
+    secondaries.sort(LOCATION_COMPARATOR);
     return secondaries;
   }
 }

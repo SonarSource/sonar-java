@@ -76,14 +76,14 @@ public class MultilineBlocksCurlyBracesCheck extends BaseTreeVisitor implements 
     }
     if (block != null && !block.is(Tree.Kind.BLOCK)) {
       SyntaxToken previousToken = block.firstToken();
-      int previousColumn = previousToken.column();
+      int previousColumn = previousToken.range().start().column();
       int previousLine = previousToken.line();
       SyntaxToken currentToken = current.firstToken();
-      int currentColumn = currentToken.column();
+      int currentColumn = currentToken.range().start().column();
       int currentLine = currentToken.line();
       if ((previousColumn == currentColumn && previousLine + 1 == currentLine) ||
         (previousLine == previous.firstToken().line()
-          && previous.firstToken().column() < currentColumn)) {
+          && previous.firstToken().range().start().column() < currentColumn)) {
         int lines = 1 + currentLine - previousLine;
         context.reportIssue(this, current, getMessage(condition, lines));
       }

@@ -19,9 +19,10 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import org.sonar.java.annotations.Beta;
-
 import java.util.List;
+import javax.annotation.Nonnull;
+import org.sonar.java.annotations.Beta;
+import org.sonar.plugins.java.api.location.Range;
 
 /**
  * Represents a token in the syntax tree.
@@ -37,5 +38,16 @@ public interface SyntaxToken extends Tree {
 
   int line();
 
+  /**
+   * Warning: this is not the column number starting at 1 but the column offset starting at 0
+   * @return column offset starting at 0
+   * @deprecated for removal, since = 7.3, "column()" can be replaced by range().start().columnOffset()
+   * and "column() + 1" can be replaced by range().start().column()
+   */
+  @Deprecated
   int column();
+
+  @Nonnull
+  Range range();
+
 }

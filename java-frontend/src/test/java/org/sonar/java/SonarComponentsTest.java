@@ -86,6 +86,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.sonar.java.SonarComponents.fileLines;
 import static org.sonar.java.TestUtils.computeLineEndOffsets;
 
 @ExtendWith(MockitoExtension.class)
@@ -423,7 +424,7 @@ class SonarComponentsTest {
       .noneMatch(line -> line.endsWith("\n"));
     assertThat(fileLines.get(0)).hasSize(11);
 
-    verify(inputFile, times(1)).contents();
+    verify(inputFile, times(2)).contents();
     reset(inputFile);
   }
 
@@ -583,6 +584,39 @@ class SonarComponentsTest {
 
     sonarComponents = new SonarComponents(null, null, null, null, checkFactory);
     assertThat(sonarComponents.jspChecks()).isEmpty();
+  }
+
+  @Test
+  void file_lines() {
+    assertThat(fileLines(""))
+      .containsExactly("");
+
+    assertThat(fileLines("  foo"))
+      .containsExactly("  foo");
+
+    assertThat(fileLines("\n"))
+      .containsExactly("");
+
+    assertThat(fileLines("foo\n"))
+      .containsExactly("foo");
+
+    assertThat(fileLines("\nfoo\n"))
+      .containsExactly("", "foo");
+
+    assertThat(fileLines("a\nb"))
+      .containsExactly("a", "b");
+
+    assertThat(fileLines("a\nb\n"))
+      .containsExactly("a", "b");
+
+    assertThat(fileLines("a\nb\nc"))
+      .containsExactly("a", "b", "c");
+
+    assertThat(fileLines("a\nb\nc\n"))
+      .containsExactly("a", "b", "c");
+
+    assertThat(fileLines("a\n\nb\r\rc\r\n\r\nd\n\r\n\r"))
+      .containsExactly("a", "", "b", "", "c", "", "d", "", "");
   }
 
   @Rule(key = "jsp")

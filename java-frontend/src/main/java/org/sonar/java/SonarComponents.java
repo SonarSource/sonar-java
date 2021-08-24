@@ -32,8 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Scanner;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -303,14 +303,20 @@ public class SonarComponents {
   }
 
   public List<String> fileLines(InputFile inputFile) {
+    return fileLines(inputFileContents(inputFile));
+  }
+
+  @VisibleForTesting
+  static List<String> fileLines(String content) {
     List<String> lines = new ArrayList<>();
-    try (Scanner scanner = new Scanner(inputFile.inputStream(), inputFile.charset().name())) {
-      scanner.useDelimiter(LINE_BREAK_PATTERN);
-      while (scanner.hasNext()) {
-        lines.add(scanner.next());
-      }
-    } catch (IOException e) {
-      throw new AnalysisException(String.format("Unable to read file '%s'", inputFile), e);
+    Matcher matcher = LINE_BREAK_PATTERN.matcher(content);
+    int pos = 0;
+    while (matcher.find()) {
+      lines.add(content.substring(pos, matcher.start()));
+      pos = matcher.end();
+    }
+    if (pos == 0 || pos < content.length()) {
+      lines.add(content.substring(pos));
     }
     return lines;
   }
