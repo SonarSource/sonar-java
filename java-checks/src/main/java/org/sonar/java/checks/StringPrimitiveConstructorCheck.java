@@ -124,10 +124,8 @@ public class StringPrimitiveConstructorCheck extends AbstractMethodDetection {
     }
     if (arguments.get(0).is(Tree.Kind.STRING_LITERAL)) {
       return JavaQuickFix.newQuickFix("Remove \"new String\"")
-        .addTextEdit(JavaTextEdit.replaceBetweenTree(
-          newClassTree.firstToken(),
-          arguments.openParenToken(), ""))
-        .addTextEdit(JavaTextEdit.replaceTree(arguments.closeParenToken(), ""))
+        .addTextEdit(JavaTextEdit.removeBetweenTree(newClassTree.firstToken(), arguments.openParenToken()))
+        .addTextEdit(JavaTextEdit.removeTree(arguments.closeParenToken()))
         .build();
     }
     return JavaQuickFix.newQuickFix("Remove \"new String\"")

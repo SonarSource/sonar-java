@@ -47,6 +47,10 @@ public class JavaTextEdit {
     return new JavaTextEdit(textSpan, "");
   }
 
+  public static JavaTextEdit removeBetweenTree(Tree startTree, Tree endTree) {
+    return replaceBetweenTree(startTree, endTree, "");
+  }
+
   public static JavaTextEdit replaceTree(Tree tree, String replacement) {
     return replaceTextSpan(AnalyzerMessage.textSpanFor(tree), replacement);
   }

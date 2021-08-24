@@ -63,7 +63,7 @@ public class ArrayDesignatorAfterTypeCheck extends IssuableSubscriptionVisitor {
 
   private static JavaQuickFix createQuickFixes(ArrayTypeTree type) {
     return JavaQuickFix.newQuickFix("Move [] to the return type")
-      .addTextEdit(JavaTextEdit.replaceBetweenTree(type.openBracketToken(), type.closeBracketToken(), ""))
+      .addTextEdit(JavaTextEdit.removeBetweenTree(type.openBracketToken(), type.closeBracketToken()))
       .addTextEdit(JavaTextEdit.insertAfterTree(type.type(), "[]"))
       .build();
   }

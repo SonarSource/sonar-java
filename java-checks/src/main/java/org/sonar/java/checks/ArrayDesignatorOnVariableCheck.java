@@ -70,13 +70,8 @@ public class ArrayDesignatorOnVariableCheck extends IssuableSubscriptionVisitor 
     }
     return Collections.singletonList(
       JavaQuickFix.newQuickFix("Move [] to the variable type")
-        .addTextEdit(JavaTextEdit.replaceBetweenTree(
-          arrayTypeTree.openBracketToken(),
-          arrayTypeTree.closeBracketToken(),
-          ""))
-        .addTextEdit(JavaTextEdit.insertAfterTree(
-          arrayTypeTree.type(),
-          "[]"))
+        .addTextEdit(JavaTextEdit.removeBetweenTree(arrayTypeTree.openBracketToken(), arrayTypeTree.closeBracketToken()))
+        .addTextEdit(JavaTextEdit.insertAfterTree(arrayTypeTree.type(), "[]"))
         .build());
   }
 
