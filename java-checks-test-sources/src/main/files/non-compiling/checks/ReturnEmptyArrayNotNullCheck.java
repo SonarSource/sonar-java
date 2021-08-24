@@ -36,6 +36,14 @@ class ReturnEmptyArrayNotNullCheckC implements SomethingUnknown {
   public int[] f2() {
     return null; // Noncompliant
   }
+
+  public UnknownType[] f3() {
+    return null; // Compliant
+  }
+
+  public UnknownList<Object> f4() {
+    return null; // Compliant
+  }
 }
 
 class ReturnEmptyArrayNotNullCheckD implements ItemProcessor<Integer, List<String>> {
@@ -61,4 +69,5 @@ class ReturnUnknownVector {
   public java.util.Vector<Object> returnNull3() {
     return null; // Noncompliant
   }
+
 }
