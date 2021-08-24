@@ -9,7 +9,7 @@ import java.util.Collection;; // Noncompliant [[sc=29;ec=30;quickfixes=qf1]] {{R
 
 ; // Noncompliant [[sc=1;ec=2;quickfixes=qf2]] {{Remove this empty statement.}}
 // fix@qf2 {{Remove this empty statement}}
-// edit@qf2 [[sl=-4;sc=30;ec=2]] {{}}
+// edit@qf2 [[sl=-4;sc=30;el=+0;ec=2]] {{}}
 
 abstract class EmptyStatementUsageCheck {
   int a; // Compliant
@@ -32,7 +32,7 @@ abstract class EmptyStatementUsageCheck {
     for (;;) { // Compliant
       ; // Noncompliant [[sc=7;ec=8;quickfixes=qf3]] {{Remove this empty statement.}}
         // fix@qf3 {{Remove this empty statement}}
-        // edit@qf3 [[sl=-1;sc=15;ec=8]] {{}}
+        // edit@qf3 [[sl=-1;sc=15;el=+0;ec=8]] {{}}
       break;
     }
 
@@ -106,5 +106,5 @@ enum EmptyEnum {
 }
 // Noncompliant@+3 [[sc=1;ec=2;quickfixes=qf_last_statement]]
 // fix@qf_last_statement {{Remove this empty statement}}
-// edit@qf_last_statement [[sl=-4;sc=2;ec=2]] {{}}
+// edit@qf_last_statement [[sl=-4;sc=2;el=+0;ec=2]] {{}}
 ;
