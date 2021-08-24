@@ -15,9 +15,9 @@ public class StringToString {
   InnerClass inner;
 
   String string = "hello".toString(); // Noncompliant [[sc=19;ec=26]] {{there's no need to call "toString()" on a string literal.}}
+  Object object = new Object();
 
   public void method() {
-    Object object = new Object();
 
     object.toString(); // Compliant
     new Object().toString(); // Compliant
@@ -54,6 +54,14 @@ public class StringToString {
     foo()[0].toString(); // Noncompliant [[sc=5;ec=10;quickfixes=qf4]]
     // fix@qf4 {{Remove "toString()"}}
     // edit@qf4 [[sc=13;ec=24]] {{}}
+
+    ((String) object).toString(); // Noncompliant [[sc=15;ec=21;quickfixes=qf5]]
+    // fix@qf5 {{Remove "toString()"}}
+    // edit@qf5 [[sc=22;ec=33]] {{}}
+
+    string = ((string)).toString(); // Noncompliant [[sc=16;ec=22;quickfixes=qf6]]
+    // fix@qf6 {{Remove "toString()"}}
+    // edit@qf6 [[sc=24;ec=35]] {{}}
   }
 
 }
