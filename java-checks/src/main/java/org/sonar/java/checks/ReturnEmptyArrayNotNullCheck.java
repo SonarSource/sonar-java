@@ -47,7 +47,7 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
   private static final MethodMatchers ITEM_PROCESSOR_PROCESS_METHOD = MethodMatchers.create()
     .ofSubTypes("org.springframework.batch.item.ItemProcessor").names("process").withAnyParameters().build();
 
-  private final Deque<Returns> returnType = new LinkedList<>();
+  private final Deque<Returns> returnTypes = new LinkedList<>();
 
   private enum Returns {
     ARRAY, COLLECTION, OTHERS;
@@ -81,7 +81,7 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {
-    returnType.clear();
+    returnTypes.clear();
   }
 
   @Override
@@ -95,28 +95,32 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
       MethodTree methodTree = (MethodTree) tree;
       SymbolMetadata metadata = methodTree.symbol().metadata();
       if (hasUnknownAnnotation(metadata) || isAnnotatedNullable(metadata) || requiresReturnNull(methodTree)) {
-        returnType.push(Returns.OTHERS);
+        returnTypes.push(Returns.OTHERS);
       } else {
-        returnType.push(Returns.getReturnType(methodTree.returnType()));
+        returnTypes.push(Returns.getReturnType(methodTree.returnType()));
       }
     } else if (tree.is(Tree.Kind.CONSTRUCTOR, Tree.Kind.LAMBDA_EXPRESSION)) {
-      returnType.push(Returns.OTHERS);
+      returnTypes.push(Returns.OTHERS);
     } else {
-      ReturnStatementTree returnStatement = (ReturnStatementTree) tree;
-      if (isReturningNull(returnStatement)) {
-        if (returnType.peek().equals(Returns.ARRAY)) {
-          reportIssue(returnStatement.expression(), "Return an empty array instead of null.");
-        } else if (returnType.peek().equals(Returns.COLLECTION)) {
-          reportIssue(returnStatement.expression(), "Return an empty collection instead of null.");
-        }
-      }
+      checkForIssue((ReturnStatementTree) tree);
     }
+  }
+
+  private void checkForIssue(ReturnStatementTree returnStatement) {
+    if (!isReturningNull(returnStatement)) {
+      return;
+    }
+    Returns returnType = returnTypes.peek();
+    if (returnType == Returns.OTHERS) {
+      return;
+    }
+    reportIssue(returnStatement.expression(), String.format("Return an empty %s instead of null.", returnType == Returns.ARRAY ? "array" : "collection"));
   }
 
   @Override
   public void leaveNode(Tree tree) {
     if (!tree.is(Tree.Kind.RETURN_STATEMENT)) {
-      returnType.pop();
+      returnTypes.pop();
     }
   }
 
