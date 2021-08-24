@@ -20,7 +20,6 @@
 package org.sonar.java.checks.tests;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -28,8 +27,10 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -71,8 +72,7 @@ public class AssertJChainSimplificationCheck extends AbstractMethodDetection {
 
     boolean wasIssueRaised = checkPredicatesForSimplification(
       predicates, CONTEXT_FREE_SIMPLIFIERS, SimplifierWithoutContext::simplify,
-      (predicate, replacement) -> reportIssue(ExpressionUtils.methodName(predicate),
-        String.format(ISSUE_MESSAGE_FORMAT_STRING, replacement)));
+      (predicate, simplification) -> createIssueBuilder(predicate, simplification).report());
 
     // We do not continue when we have already raised an issue to avoid potentially conflicting issue reports. If we
     // have more than one predicate we also avoid continuing to avoid FP on cases such as:
@@ -87,11 +87,19 @@ public class AssertJChainSimplificationCheck extends AbstractMethodDetection {
 
     checkPredicatesForSimplification(
       predicates, SIMPLIFIERS_WITH_CONTEXT, (simplifier, predicate) -> simplifier.simplify(subjectMit, predicate),
-      (predicate, replacement) -> reportIssue(ExpressionUtils.methodName(predicate),
-        String.format(ISSUE_MESSAGE_FORMAT_STRING, replacement),
-        Collections.singletonList(
-          new JavaFileScannerContext.Location("This can be simplified", subjectMit.arguments().get(0))),
-        null));
+      (predicate, simplification) -> createIssueBuilder(predicate, simplification)
+        .withSecondaries(new JavaFileScannerContext.Location("This can be simplified", subjectMit.arguments().get(0)))
+        .report()
+    );
+  }
+
+  private InternalJavaIssueBuilder createIssueBuilder(MethodInvocationTree predicate, AssertJChainSimplificationIndex.Simplification simplification) {
+    InternalJavaIssueBuilder builder = QuickFixHelper.newIssue(context)
+      .forRule(this)
+      .onTree(ExpressionUtils.methodName(predicate))
+      .withMessage(ISSUE_MESSAGE_FORMAT_STRING, simplification.getReplacement());
+    simplification.getQuickFix().ifPresent(builder::withQuickFix);
+    return builder;
   }
 
   /**
@@ -100,8 +108,8 @@ public class AssertJChainSimplificationCheck extends AbstractMethodDetection {
   private static <T> boolean checkPredicatesForSimplification(
     List<MethodInvocationTree> predicates,
     Map<String, List<T>> simplifiers,
-    BiFunction<T, MethodInvocationTree, Optional<String>> simplificationMethod,
-    BiConsumer<MethodInvocationTree, String> reportingMethod) {
+    BiFunction<T, MethodInvocationTree, Optional<AssertJChainSimplificationIndex.Simplification>> simplificationMethod,
+    BiConsumer<MethodInvocationTree, AssertJChainSimplificationIndex.Simplification> reportingMethod) {
 
     AssertJChainSimplificationHelper.BooleanFlag issueRaised = new AssertJChainSimplificationHelper.BooleanFlag();
     predicates.forEach(predicate -> {
@@ -122,10 +130,10 @@ public class AssertJChainSimplificationCheck extends AbstractMethodDetection {
   }
 
   interface SimplifierWithoutContext {
-    Optional<String> simplify(MethodInvocationTree predicate);
+    Optional<AssertJChainSimplificationIndex.Simplification> simplify(MethodInvocationTree predicate);
   }
 
   interface SimplifierWithContext {
-    Optional<String> simplify(MethodInvocationTree subject, MethodInvocationTree predicate);
+    Optional<AssertJChainSimplificationIndex.Simplification> simplify(MethodInvocationTree subject, MethodInvocationTree predicate);
   }
 }

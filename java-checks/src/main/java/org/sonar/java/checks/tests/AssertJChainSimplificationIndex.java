@@ -24,11 +24,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -42,18 +46,24 @@ import static org.sonar.java.checks.tests.AssertJChainSimplificationCheck.Simpli
 import static org.sonar.java.checks.tests.AssertJChainSimplificationCheck.SimplifierWithoutContext;
 import static org.sonar.java.checks.tests.AssertJChainSimplificationHelper.ArgumentHelper;
 import static org.sonar.java.checks.tests.AssertJChainSimplificationHelper.hasMethodCallAsArg;
-import static org.sonar.java.checks.tests.AssertJChainSimplificationHelper.msgWithActual;
-import static org.sonar.java.checks.tests.AssertJChainSimplificationHelper.msgWithActualCustom;
-import static org.sonar.java.checks.tests.AssertJChainSimplificationHelper.msgWithActualExpected;
+import static org.sonar.java.checks.tests.AssertJChainSimplificationIndex.ContextFreeSimplification.getJavaContextFreeQuickFix;
 import static org.sonar.java.checks.tests.AssertJChainSimplificationIndex.PredicateSimplifierWithContext.methodCallInSubject;
 import static org.sonar.java.checks.tests.AssertJChainSimplificationIndex.PredicateSimplifierWithContext.withSubjectArgumentCondition;
+import static org.sonar.java.checks.tests.AssertJChainSimplificationIndex.WithContextSimplification.msgWithActual;
+import static org.sonar.java.checks.tests.AssertJChainSimplificationIndex.WithContextSimplification.msgWithActualCustom;
+import static org.sonar.java.checks.tests.AssertJChainSimplificationIndex.WithContextSimplification.msgWithActualExpected;
+import static org.sonar.java.checks.tests.AssertJChainSimplificationIndex.WithContextSimplification.msgWithActualExpectedInPredicate;
+import static org.sonar.java.checks.tests.AssertJChainSimplificationIndex.WithContextSimplification.msgWithActualExpectedInSubject;
 import static org.sonar.java.model.ExpressionUtils.skipParentheses;
+import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
 public class AssertJChainSimplificationIndex {
 
   private AssertJChainSimplificationIndex() {
     // Hide default constructor
   }
+
+  private static final String QUICK_FIX_MESSAGE_FORMAT_STRING = "Use \"%s\"";
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String JAVA_UTIL_MAP = "java.util.Map";
@@ -98,8 +108,9 @@ public class AssertJChainSimplificationIndex {
   private static final String HAS_SAME_SIZE_AS = "hasSameSizeAs";
   private static final String LENGTH = "length";
 
-  private static final String OPTIONAL_PRESENT_REPLACEMENT = msgWithActual(IS_PRESENT);
-  private static final String OPTIONAL_EMPTY_REPLACEMENT = String.format("%s or %s", msgWithActual(IS_NOT_PRESENT), msgWithActual(IS_EMPTY));
+  private static final WithContextSimplification OPTIONAL_PRESENT_REPLACEMENT = msgWithActual(IS_PRESENT);
+  private static final WithContextSimplification OPTIONAL_EMPTY_REPLACEMENT =
+    new WithContextSimplification(String.format("assertThat(actual).%s() or assertThat(actual).%s()", IS_NOT_PRESENT, IS_EMPTY));
 
   /**
    * Stores multiple lists of simplifiers which are mapped to by a key. The key is the method name of the predicate
@@ -145,34 +156,34 @@ public class AssertJChainSimplificationIndex {
       withSubjectArgumentCondition(AssertJChainSimplificationIndex::isZeroIntOrLong, AssertJChainSimplificationIndex::isNotObject, "isZero()"),
       methodCallInSubject(Matchers.TO_STRING, msgWithActualCustom("hasToString", "expectedString")),
       methodCallInSubject(predicateArg -> hasMethodCallAsArg(predicateArg, Matchers.HASH_CODE), Matchers.HASH_CODE, msgWithActualExpected("hasSameHashCodeAs")),
-      compareToSimplifier(LiteralUtils::isZero, msgWithActualExpected("isEqualByComparingTo")),
-      methodCallInSubject(LiteralUtils::isZero, Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpected(IS_EQUAL_TO_IGNORING_CASE)),
+      compareToSimplifier(LiteralUtils::isZero, "isEqualByComparingTo"),
+      methodCallInSubject(LiteralUtils::isZero, Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpectedInSubject(IS_EQUAL_TO_IGNORING_CASE)),
       indexOfSimplifier(LiteralUtils::isZero, STARTS_WITH),
       indexOfSimplifier(LiteralUtils::isNegOne, DOES_NOT_CONTAIN),
       methodCallInSubject(LiteralUtils::isZero, Matchers.STRING_LENGTH, msgWithActual(IS_EMPTY)),
       methodCallInSubject(predicateArg -> hasMethodCallAsArg(predicateArg, Matchers.STRING_LENGTH), Matchers.STRING_LENGTH, msgWithActualExpected(HAS_SAME_SIZE_AS)),
       methodCallInSubject(predicateArg -> hasMethodCallAsArg(predicateArg, Matchers.COLLECTION_SIZE), Matchers.COLLECTION_SIZE, msgWithActualExpected(HAS_SAME_SIZE_AS)),
       withSubjectArgumentCondition(AssertJChainSimplificationIndex::isArrayLength, AssertJChainSimplificationIndex::isArrayLength, msgWithActualExpected(HAS_SAME_SIZE_AS)),
-      arrayLengthSimplifier(msgWithActualExpected(HAS_SIZE)),
-      methodCallInSubject(MethodMatchers.or(Matchers.STRING_LENGTH, Matchers.COLLECTION_SIZE), msgWithActualExpected(HAS_SIZE)),
-      methodCallInSubject(Matchers.FILE_LENGTH, msgWithActualExpected(HAS_SIZE)),
-      methodCallInSubject(Matchers.FILE_GET_NAME, msgWithActualExpected("hasName")),
-      methodCallInSubject(Matchers.FILE_GET_PARENT_AND_PARENT_FILE, msgWithActualExpected("hasParent")),
-      methodCallInSubject(Matchers.PATH_GET_PARENT_AND_PARENT_FILE, msgWithActualExpected("hasParentRaw")),
+      arrayLengthSimplifier(msgWithActualExpectedInPredicate(HAS_SIZE)),
+      methodCallInSubject(MethodMatchers.or(Matchers.STRING_LENGTH, Matchers.COLLECTION_SIZE), msgWithActualExpectedInPredicate(HAS_SIZE)),
+      methodCallInSubject(Matchers.FILE_LENGTH, msgWithActualExpectedInPredicate(HAS_SIZE)),
+      methodCallInSubject(Matchers.FILE_GET_NAME, msgWithActualExpectedInPredicate("hasName")),
+      methodCallInSubject(Matchers.FILE_GET_PARENT_AND_PARENT_FILE, msgWithActualExpectedInPredicate("hasParent")),
+      methodCallInSubject(Matchers.PATH_GET_PARENT_AND_PARENT_FILE, msgWithActualExpectedInPredicate("hasParentRaw")),
       methodCallInSubject(Matchers.MAP_GET, msgWithActualCustom("containsEntry", "key, value")),
-      methodCallInSubject(Matchers.PATH_GET_PARENT_AND_PARENT_FILE, msgWithActualExpected("hasParentRaw")),
+      methodCallInSubject(Matchers.PATH_GET_PARENT_AND_PARENT_FILE, msgWithActualExpectedInPredicate("hasParentRaw")),
       withSubjectArgumentCondition(predicateArg -> hasMethodCallAsArg(predicateArg, Matchers.EMPTY),
         subjectArg -> subjectArg.symbolType().is(JAVA_UTIL_OPTIONAL), OPTIONAL_EMPTY_REPLACEMENT),
-      methodCallInSubject(Matchers.GET, msgWithActualExpected(CONTAINS))))
+      methodCallInSubject(Matchers.GET, msgWithActualExpectedInPredicate(CONTAINS))))
     .put(IS_FALSE, Arrays.asList(
       withSubjectArgumentCondition(arg ->
-        hasMethodCallAsArg(arg, Matchers.EQUALS_METHOD) && !UnitTestUtils.isInUnitTestRelatedToObjectMethods(arg), msgWithActualExpected(IS_NOT_EQUAL_TO)),
-      methodCallInSubject(Matchers.CONTENT_EQUALS, msgWithActualExpected(IS_NOT_EQUAL_TO)),
-      methodCallInSubject(Matchers.EQUALS_IGNORE_CASE, msgWithActualExpected(IS_NOT_EQUAL_TO_IGNORING_CASE)),
-      methodCallInSubject(Matchers.CONTAINS, msgWithActualExpected(DOES_NOT_CONTAIN)),
-      methodCallInSubject(Matchers.STARTS_WITH, msgWithActualExpected(DOES_NOT_START_WITH)),
-      methodCallInSubject(Matchers.ENDS_WITH, msgWithActualExpected("doesNotEndWith")),
-      methodCallInSubject(Matchers.MATCHES, msgWithActualExpected("doesNotMatch")),
+        hasMethodCallAsArg(arg, Matchers.EQUALS_METHOD) && !UnitTestUtils.isInUnitTestRelatedToObjectMethods(arg), msgWithActualExpectedInSubject(IS_NOT_EQUAL_TO)),
+      methodCallInSubject(Matchers.CONTENT_EQUALS, msgWithActualExpectedInSubject(IS_NOT_EQUAL_TO)),
+      methodCallInSubject(Matchers.EQUALS_IGNORE_CASE, msgWithActualExpectedInSubject(IS_NOT_EQUAL_TO_IGNORING_CASE)),
+      methodCallInSubject(Matchers.CONTAINS, msgWithActualExpectedInSubject(DOES_NOT_CONTAIN)),
+      methodCallInSubject(Matchers.STARTS_WITH, msgWithActualExpectedInSubject(DOES_NOT_START_WITH)),
+      methodCallInSubject(Matchers.ENDS_WITH, msgWithActualExpectedInSubject("doesNotEndWith")),
+      methodCallInSubject(Matchers.MATCHES, msgWithActualExpectedInSubject("doesNotMatch")),
       withSubjectArgumentCondition(arg -> ArgumentHelper.equalsTo(arg, ExpressionUtils::isNullLiteral), msgWithActual(IS_NOT_NULL)),
       withSubjectArgumentCondition(arg -> ArgumentHelper.notEqualsTo(arg, ExpressionUtils::isNullLiteral), msgWithActual(IS_NULL)),
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.EQUAL_TO), msgWithActualExpected("isNotSameAs")),
@@ -185,7 +196,7 @@ public class AssertJChainSimplificationIndex {
       methodCallInSubject(Matchers.IS_PRESENT, OPTIONAL_EMPTY_REPLACEMENT),
       methodCallInSubject(Matchers.IS_EMPTY_OPTIONAL, OPTIONAL_PRESENT_REPLACEMENT)))
     .put(IS_NEGATIVE, Arrays.asList(
-      compareToSimplifier(msgWithActualExpected(IS_LESS_THAN)),
+      compareToSimplifier(IS_LESS_THAN),
       indexOfSimplifier(DOES_NOT_CONTAIN)))
     .put(IS_EMPTY, Collections.singletonList(
       methodCallInSubject(Matchers.FILE_LIST_AND_LIST_FILE, msgWithActual("isEmptyDirectory"))))
@@ -194,8 +205,8 @@ public class AssertJChainSimplificationIndex {
       methodCallInSubject(Matchers.FILE_LIST_AND_LIST_FILE, msgWithActual("isNotEmptyDirectory"))))
     .put(IS_NOT_EQUAL_TO, Arrays.asList(
       withSubjectArgumentCondition(AssertJChainSimplificationIndex::isZeroIntOrLong, AssertJChainSimplificationIndex::isNotObject, "isNotZero()"),
-      compareToSimplifier(LiteralUtils::isZero, msgWithActualExpected("isNotEqualByComparingTo")),
-      methodCallInSubject(LiteralUtils::isZero, Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpected(IS_NOT_EQUAL_TO_IGNORING_CASE)),
+      compareToSimplifier(LiteralUtils::isZero, "isNotEqualByComparingTo"),
+      methodCallInSubject(LiteralUtils::isZero, Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpectedInSubject(IS_NOT_EQUAL_TO_IGNORING_CASE)),
       indexOfSimplifier(LiteralUtils::isZero, DOES_NOT_START_WITH),
       methodCallInSubject(LiteralUtils::isEmptyString, Matchers.TRIM, msgWithActual(IS_NOT_BLANK)),
       methodCallInSubject(Matchers.MAP_GET, msgWithActualCustom("doesNotContainEntry", "key, value")),
@@ -203,7 +214,7 @@ public class AssertJChainSimplificationIndex {
       withSubjectArgumentCondition(predicateArg -> hasMethodCallAsArg(predicateArg, Matchers.EMPTY),
         subjectArg -> subjectArg.symbolType().is(JAVA_UTIL_OPTIONAL), OPTIONAL_PRESENT_REPLACEMENT)))
     .put(IS_NOT_NEGATIVE, Arrays.asList(
-      compareToSimplifier(msgWithActualExpected(IS_GREATER_THAN_OR_EQUAL_TO)),
+      compareToSimplifier(IS_GREATER_THAN_OR_EQUAL_TO),
       indexOfSimplifier(CONTAINS)))
     .put(IS_NOT_NULL, Collections.singletonList(
       withSubjectArgumentCondition(
@@ -211,32 +222,32 @@ public class AssertJChainSimplificationIndex {
           ExpressionUtils.isNullLiteral(((MethodInvocationTree) subjectArg).arguments().get(0)),
         OPTIONAL_PRESENT_REPLACEMENT)))
     .put(IS_NOT_POSITIVE, Arrays.asList(
-      compareToSimplifier(msgWithActualExpected(IS_LESS_THAN_OR_EQUAL_TO)),
+      compareToSimplifier(IS_LESS_THAN_OR_EQUAL_TO),
       methodCallInSubject(Matchers.STRING_LENGTH, msgWithActual(IS_EMPTY))))
     .put(IS_NOT_ZERO, Arrays.asList(
-      compareToSimplifier(msgWithActualExpected("isNotEqualByComparingTo")),
-      methodCallInSubject(Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpected(IS_NOT_EQUAL_TO_IGNORING_CASE)),
+      compareToSimplifier("isNotEqualByComparingTo"),
+      methodCallInSubject(Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpectedInSubject(IS_NOT_EQUAL_TO_IGNORING_CASE)),
       indexOfSimplifier(DOES_NOT_START_WITH),
       methodCallInSubject(Matchers.STRING_LENGTH, msgWithActual(IS_NOT_EMPTY)),
       methodCallInSubject(Matchers.FILE_LENGTH, msgWithActual(IS_NOT_EMPTY)),
       arrayLengthSimplifier(msgWithActual(IS_NOT_EMPTY))))
     .put(IS_POSITIVE, Arrays.asList(
-      compareToSimplifier(msgWithActualExpected(IS_GREATER_THAN)),
+      compareToSimplifier(IS_GREATER_THAN),
       methodCallInSubject(MethodMatchers.or(Matchers.STRING_LENGTH, Matchers.COLLECTION_SIZE), msgWithActual(IS_NOT_EMPTY)),
       methodCallInSubject(Matchers.FILE_LENGTH, msgWithActual(IS_NOT_EMPTY)),
       arrayLengthSimplifier(msgWithActual(IS_NOT_EMPTY))))
     .put(IS_SAME_AS, Collections.singletonList(
-      methodCallInSubject(Matchers.GET, msgWithActualExpected("containsSame"))))
+      methodCallInSubject(Matchers.GET, msgWithActualExpectedInPredicate("containsSame"))))
     .put(IS_TRUE, Arrays.asList(
       withSubjectArgumentCondition(arg ->
-        hasMethodCallAsArg(arg, Matchers.EQUALS_METHOD) && !UnitTestUtils.isInUnitTestRelatedToObjectMethods(arg), msgWithActualExpected(IS_EQUAL_TO)),
-      methodCallInSubject(Matchers.CONTENT_EQUALS, msgWithActualExpected(IS_EQUAL_TO)),
-      methodCallInSubject(Matchers.EQUALS_IGNORE_CASE, msgWithActualExpected(IS_EQUAL_TO_IGNORING_CASE)),
-      methodCallInSubject(Matchers.CONTAINS, msgWithActualExpected(CONTAINS)),
-      methodCallInSubject(Matchers.COLLECTION_CONTAINS_ALL, msgWithActualExpected("containsAll")),
-      methodCallInSubject(Matchers.STARTS_WITH, msgWithActualExpected(STARTS_WITH)),
-      methodCallInSubject(Matchers.ENDS_WITH, msgWithActualExpected(ENDS_WITH)),
-      methodCallInSubject(Matchers.MATCHES, msgWithActualExpected("matches")),
+        hasMethodCallAsArg(arg, Matchers.EQUALS_METHOD) && !UnitTestUtils.isInUnitTestRelatedToObjectMethods(arg), msgWithActualExpectedInSubject(IS_EQUAL_TO)),
+      methodCallInSubject(Matchers.CONTENT_EQUALS, msgWithActualExpectedInSubject(IS_EQUAL_TO)),
+      methodCallInSubject(Matchers.EQUALS_IGNORE_CASE, msgWithActualExpectedInSubject(IS_EQUAL_TO_IGNORING_CASE)),
+      methodCallInSubject(Matchers.CONTAINS, msgWithActualExpectedInSubject(CONTAINS)),
+      methodCallInSubject(Matchers.COLLECTION_CONTAINS_ALL, msgWithActualExpectedInSubject("containsAll")),
+      methodCallInSubject(Matchers.STARTS_WITH, msgWithActualExpectedInSubject(STARTS_WITH)),
+      methodCallInSubject(Matchers.ENDS_WITH, msgWithActualExpectedInSubject(ENDS_WITH)),
+      methodCallInSubject(Matchers.MATCHES, msgWithActualExpectedInSubject("matches")),
       withSubjectArgumentCondition(arg -> ArgumentHelper.equalsTo(arg, ExpressionUtils::isNullLiteral), msgWithActual(IS_NULL)),
       withSubjectArgumentCondition(arg -> ArgumentHelper.notEqualsTo(arg, ExpressionUtils::isNullLiteral), msgWithActual(IS_NOT_NULL)),
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.EQUAL_TO), msgWithActualExpected(IS_SAME_AS)),
@@ -250,16 +261,16 @@ public class AssertJChainSimplificationIndex {
       methodCallInSubject(Matchers.FILE_AND_PATH_IS_ABSOLUTE, msgWithActual("isAbsolute")),
       methodCallInSubject(Matchers.FILE_IS_DIRECTORY, msgWithActual("isDirectory")),
       methodCallInSubject(Matchers.FILE_IS_FILE, msgWithActual("isFile")),
-      methodCallInSubject(Matchers.PATH_STARTS_WITH, msgWithActualExpected("startsWithRaw")),
-      methodCallInSubject(Matchers.PATH_ENDS_WITH, msgWithActualExpected("endsWithRaw")),
+      methodCallInSubject(Matchers.PATH_STARTS_WITH, msgWithActualExpectedInSubject("startsWithRaw")),
+      methodCallInSubject(Matchers.PATH_ENDS_WITH, msgWithActualExpectedInSubject("endsWithRaw")),
       methodCallInSubject(Matchers.IS_EMPTY_GENERIC, msgWithActual(IS_EMPTY)),
-      methodCallInSubject(Matchers.MAP_CONTAINS_KEY, msgWithActualExpected(CONTAINS_KEY)),
-      methodCallInSubject(Matchers.MAP_CONTAINS_VALUE, msgWithActualExpected(CONTAINS_VALUE)),
+      methodCallInSubject(Matchers.MAP_CONTAINS_KEY, msgWithActualExpectedInSubject(CONTAINS_KEY)),
+      methodCallInSubject(Matchers.MAP_CONTAINS_VALUE, msgWithActualExpectedInSubject(CONTAINS_VALUE)),
       methodCallInSubject(Matchers.IS_PRESENT, OPTIONAL_PRESENT_REPLACEMENT),
       methodCallInSubject(Matchers.IS_EMPTY_OPTIONAL, OPTIONAL_EMPTY_REPLACEMENT)))
     .put(IS_ZERO, Arrays.asList(
-      compareToSimplifier(msgWithActualExpected("isEqualByComparingTo")),
-      methodCallInSubject(Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpected(IS_EQUAL_TO_IGNORING_CASE)),
+      compareToSimplifier("isEqualByComparingTo"),
+      methodCallInSubject(Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpectedInSubject(IS_EQUAL_TO_IGNORING_CASE)),
       indexOfSimplifier(STARTS_WITH),
       methodCallInSubject(Matchers.STRING_LENGTH, msgWithActual(IS_EMPTY)),
       methodCallInSubject(MethodMatchers.or(Matchers.STRING_LENGTH, Matchers.COLLECTION_SIZE), msgWithActual(IS_EMPTY)),
@@ -273,22 +284,22 @@ public class AssertJChainSimplificationIndex {
           ExpressionUtils.isNullLiteral(((MethodInvocationTree) subjectArg).arguments().get(0)),
         OPTIONAL_EMPTY_REPLACEMENT)))
     .put(IS_LESS_THAN_OR_EQUAL_TO, Arrays.asList(
-      methodCallInSubject(Matchers.COLLECTION_SIZE, msgWithActualExpected("hasSizeLessThanOrEqualTo")),
-      arrayLengthSimplifier(msgWithActualExpected("hasSizeLessThanOrEqualTo"))))
+      methodCallInSubject(Matchers.COLLECTION_SIZE, msgWithActualExpectedInPredicate("hasSizeLessThanOrEqualTo")),
+      arrayLengthSimplifier(msgWithActualExpectedInPredicate("hasSizeLessThanOrEqualTo"))))
     .put(IS_LESS_THAN, Arrays.asList(
-      methodCallInSubject(Matchers.COLLECTION_SIZE, msgWithActualExpected("hasSizeLessThan")),
-      arrayLengthSimplifier(msgWithActualExpected("hasSizeLessThan"))))
+      methodCallInSubject(Matchers.COLLECTION_SIZE, msgWithActualExpectedInPredicate("hasSizeLessThan")),
+      arrayLengthSimplifier(msgWithActualExpectedInPredicate("hasSizeLessThan"))))
     .put(IS_GREATER_THAN_OR_EQUAL_TO, Arrays.asList(
-      methodCallInSubject(Matchers.COLLECTION_SIZE, msgWithActualExpected("hasSizeGreaterThanOrEqualTo")),
-      arrayLengthSimplifier(msgWithActualExpected("hasSizeGreaterThanOrEqualTo"))))
+      methodCallInSubject(Matchers.COLLECTION_SIZE, msgWithActualExpectedInPredicate("hasSizeGreaterThanOrEqualTo")),
+      arrayLengthSimplifier(msgWithActualExpectedInPredicate("hasSizeGreaterThanOrEqualTo"))))
     .put(IS_GREATER_THAN, Arrays.asList(
-      methodCallInSubject(Matchers.COLLECTION_SIZE, msgWithActualExpected("hasSizeGreaterThan")),
-      arrayLengthSimplifier(msgWithActualExpected("hasSizeGreaterThan"))))
+      methodCallInSubject(Matchers.COLLECTION_SIZE, msgWithActualExpectedInPredicate("hasSizeGreaterThan")),
+      arrayLengthSimplifier(msgWithActualExpectedInPredicate("hasSizeGreaterThan"))))
     .put(CONTAINS, Arrays.asList(
-      methodCallInSubject(Matchers.MAP_KEY_SET, msgWithActualExpected(CONTAINS_KEY)),
-      methodCallInSubject(Matchers.MAP_VALUES, msgWithActualExpected(CONTAINS_VALUE))))
+      methodCallInSubject(Matchers.MAP_KEY_SET, msgWithActualExpectedInPredicate(CONTAINS_KEY)),
+      methodCallInSubject(Matchers.MAP_VALUES, msgWithActualExpectedInPredicate(CONTAINS_VALUE))))
     .put("containsOnly", Collections.singletonList(
-      methodCallInSubject(Matchers.MAP_KEY_SET, msgWithActualExpected("containsOnlyKeys"))))
+      methodCallInSubject(Matchers.MAP_KEY_SET, msgWithActualExpectedInPredicate("containsOnlyKeys"))))
     .build();
 
   private static class Matchers {
@@ -378,22 +389,24 @@ public class AssertJChainSimplificationIndex {
   }
 
   private static PredicateSimplifierWithContext compareToSimplifier(Predicate<ExpressionTree> predicateArgCondition, String simplification) {
-    return PredicateSimplifierWithContext.methodCallInSubject(predicateArgCondition, Matchers.COMPARE_TO, simplification);
+    // Compare to can not be quick fixed easily because assertJ related method requires a Comparable and not any Object.
+    return PredicateSimplifierWithContext.methodCallInSubject(predicateArgCondition, Matchers.COMPARE_TO, msgWithActualExpectedInSubject(simplification));
   }
 
   private static PredicateSimplifierWithContext compareToSimplifier(String simplification) {
-    return PredicateSimplifierWithContext.methodCallInSubject(Matchers.COMPARE_TO, simplification);
+    // Compare to can not be quick fixed easily because assertJ related method requires a Comparable and not any Object.
+    return PredicateSimplifierWithContext.methodCallInSubject(Matchers.COMPARE_TO, msgWithActualExpectedInSubject(simplification));
   }
 
   private static PredicateSimplifierWithContext indexOfSimplifier(Predicate<ExpressionTree> predicateArgCondition, String simplification) {
-    return PredicateSimplifierWithContext.methodCallInSubject(predicateArgCondition, Matchers.INDEX_OF_STRING, msgWithActualExpected(simplification));
+    return PredicateSimplifierWithContext.methodCallInSubject(predicateArgCondition, Matchers.INDEX_OF_STRING, msgWithActualExpectedInSubject(simplification));
   }
 
   private static PredicateSimplifierWithContext indexOfSimplifier(String simplification) {
-    return PredicateSimplifierWithContext.methodCallInSubject(Matchers.INDEX_OF_STRING, msgWithActualExpected(simplification));
+    return PredicateSimplifierWithContext.methodCallInSubject(Matchers.INDEX_OF_STRING, msgWithActualExpectedInSubject(simplification));
   }
 
-  private static PredicateSimplifierWithContext arrayLengthSimplifier(String simplification) {
+  private static PredicateSimplifierWithContext arrayLengthSimplifier(WithContextSimplification simplification) {
     return PredicateSimplifierWithContext.withSubjectArgumentCondition(AssertJChainSimplificationIndex::isArrayLength, simplification);
   }
 
@@ -433,14 +446,14 @@ public class AssertJChainSimplificationIndex {
 
   private static class PredicateSimplifierWithoutContext implements SimplifierWithoutContext {
     private final Predicate<MethodInvocationTree> mitPredicate;
-    private final String simplification;
+    private final ContextFreeSimplification simplification;
 
     public PredicateSimplifierWithoutContext(
       Predicate<MethodInvocationTree> mitPredicate,
       String simplification) {
 
       this.mitPredicate = mitPredicate;
-      this.simplification = simplification;
+      this.simplification = new ContextFreeSimplification(simplification);
     }
 
     public static PredicateSimplifierWithoutContext withSingleArg(Predicate<ExpressionTree> argumentPredicate, String simplified) {
@@ -451,8 +464,9 @@ public class AssertJChainSimplificationIndex {
     }
 
     @Override
-    public Optional<String> simplify(MethodInvocationTree predicate) {
+    public Optional<Simplification> simplify(MethodInvocationTree predicate) {
       if (mitPredicate.test(predicate)) {
+        simplification.buildQuickFix(predicate);
         return Optional.of(simplification);
       } else {
         return Optional.empty();
@@ -463,12 +477,12 @@ public class AssertJChainSimplificationIndex {
   static class PredicateSimplifierWithContext implements SimplifierWithContext {
     private final Predicate<MethodInvocationTree> predicateCondition;
     private final Predicate<MethodInvocationTree> subjectCondition;
-    private final String simplification;
+    private final WithContextSimplification simplification;
 
     public PredicateSimplifierWithContext(
       Predicate<MethodInvocationTree> predicateCondition,
       Predicate<MethodInvocationTree> subjectCondition,
-      String simplification) {
+      WithContextSimplification simplification) {
       this.predicateCondition = predicateCondition;
       this.subjectCondition = subjectCondition;
       this.simplification = simplification;
@@ -477,6 +491,15 @@ public class AssertJChainSimplificationIndex {
     public static PredicateSimplifierWithContext withSubjectArgumentCondition(
       Predicate<ExpressionTree> predicateArgumentCondition, Predicate<ExpressionTree> subjectArgumentCondition,
       String simplification) {
+
+      return withSubjectArgumentCondition(predicateArgumentCondition, subjectArgumentCondition,
+        // Same quick fix as context free
+        new WithContextSimplification(simplification, (subject, predicate) -> getJavaContextFreeQuickFix(predicate, simplification)));
+    }
+
+    public static PredicateSimplifierWithContext withSubjectArgumentCondition(
+      Predicate<ExpressionTree> predicateArgumentCondition, Predicate<ExpressionTree> subjectArgumentCondition,
+      WithContextSimplification simplification) {
       return new PredicateSimplifierWithContext(
         predicateMit -> predicateMit.arguments().size() == 1 && predicateArgumentCondition.test(skipParentheses(predicateMit.arguments().get(0))),
         subjectMit -> subjectMit.arguments().size() == 1 && subjectArgumentCondition.test(skipParentheses(subjectMit.arguments().get(0))),
@@ -484,7 +507,7 @@ public class AssertJChainSimplificationIndex {
     }
 
     public static PredicateSimplifierWithContext withSubjectArgumentCondition(
-      Predicate<ExpressionTree> subjectArgumentCondition, String simplification) {
+      Predicate<ExpressionTree> subjectArgumentCondition, WithContextSimplification simplification) {
       return new PredicateSimplifierWithContext(x -> true, subjectMit -> subjectMit.arguments().size() == 1 &&
         subjectArgumentCondition.test(skipParentheses(subjectMit.arguments().get(0))),
         simplification);
@@ -492,25 +515,163 @@ public class AssertJChainSimplificationIndex {
 
     public static PredicateSimplifierWithContext methodCallInSubject(
       MethodMatchers methodCallMatcher,
-      String simplification) {
+      WithContextSimplification simplification) {
       return withSubjectArgumentCondition(arg -> hasMethodCallAsArg(arg, methodCallMatcher), simplification);
     }
 
     public static PredicateSimplifierWithContext methodCallInSubject(
       Predicate<ExpressionTree> predicateArgumentCondition,
       MethodMatchers methodCallMatcher,
-      String simplification) {
+      WithContextSimplification simplification) {
       return withSubjectArgumentCondition(predicateArgumentCondition, arg -> hasMethodCallAsArg(arg, methodCallMatcher),
         simplification);
     }
 
     @Override
-    public Optional<String> simplify(MethodInvocationTree subject, MethodInvocationTree predicate) {
+    public Optional<Simplification> simplify(MethodInvocationTree subject, MethodInvocationTree predicate) {
       if (predicateCondition.test(predicate) && subjectCondition.test(subject)) {
+        simplification.buildQuickFix(subject, predicate);
         return Optional.of(simplification);
       } else {
         return Optional.empty();
       }
+    }
+  }
+
+  abstract static class Simplification {
+    String replacement;
+    Supplier<JavaQuickFix> quickFix = null;
+
+    Simplification(String replacement) {
+      this.replacement = replacement;
+    }
+
+    Optional<Supplier<JavaQuickFix>> getQuickFix() {
+      return Optional.ofNullable(quickFix);
+    }
+
+    String getReplacement() {
+      return replacement;
+    }
+
+    static Supplier<JavaQuickFix> getJavaContextFreeQuickFix(MethodInvocationTree predicate, String replacement) {
+      return () ->
+        JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE_FORMAT_STRING, replacement)
+          .addTextEdit(JavaTextEdit.replaceBetweenTree(ExpressionUtils.methodName(predicate), predicate, replacement))
+          .build();
+    }
+  }
+
+  static class ContextFreeSimplification extends Simplification {
+    ContextFreeSimplification(String replacement) {
+      super(replacement);
+    }
+
+    void buildQuickFix(MethodInvocationTree predicate) {
+      this.quickFix = getJavaContextFreeQuickFix(predicate, replacement);
+    }
+  }
+
+  static class WithContextSimplification extends Simplification {
+    private static final String MESSAGE_ACTUAL_EXPECTED = "assertThat(actual).%s(expected)";
+    BiFunction<MethodInvocationTree, MethodInvocationTree, Supplier<JavaQuickFix>> buildQuickFix;
+
+    WithContextSimplification(String replacement) {
+      super(replacement);
+      this.buildQuickFix = (s, p) -> null;
+    }
+
+    WithContextSimplification(String replacement, BiFunction<MethodInvocationTree, MethodInvocationTree, Supplier<JavaQuickFix>> buildQuickFix) {
+      super(replacement);
+      this.buildQuickFix = buildQuickFix;
+    }
+
+    public void buildQuickFix(MethodInvocationTree subject, MethodInvocationTree predicate) {
+      this.quickFix = buildQuickFix.apply(subject, predicate);
+    }
+
+    static WithContextSimplification msgWithActual(String predicateName) {
+      String replacement = String.format("assertThat(actual).%s()", predicateName);
+      return new WithContextSimplification(replacement, getQuickFixFunction(predicateName, replacement, false));
+    }
+
+    private static Optional<MethodInvocationTree> getMethodInvocationInArguments(Arguments arguments) {
+      if (arguments.size() == 1) {
+        ExpressionTree argument = skipParentheses(arguments.get(0));
+        if (argument.is(Tree.Kind.METHOD_INVOCATION)) {
+          return Optional.of((MethodInvocationTree) argument);
+        }
+      }
+      return Optional.empty();
+    }
+
+    static WithContextSimplification msgWithActualExpected(String predicateName) {
+      // No quick fix for now, should be done case by case
+      return new WithContextSimplification(String.format(MESSAGE_ACTUAL_EXPECTED, predicateName));
+    }
+
+    static WithContextSimplification msgWithActualExpectedInSubject(String predicateName) {
+      String replacement = String.format(MESSAGE_ACTUAL_EXPECTED, predicateName);
+      return new WithContextSimplification(replacement,
+        (subject, predicate) -> {
+          Optional<MethodInvocationTree> methodInvocationInArguments = getMethodInvocationInArguments(subject.arguments());
+          if (methodInvocationInArguments.isPresent()) {
+            MethodInvocationTree invocationTree = methodInvocationInArguments.get();
+            ExpressionTree methodSelect = invocationTree.methodSelect();
+            if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+              MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) methodSelect;
+              return () -> JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE_FORMAT_STRING, replacement)
+                .addTextEdit(
+                  // assertThat(x.y(a)).z() --> assertThat(x).predicateName(a)).z()
+                  JavaTextEdit.replaceTextSpan(textSpanBetween(memberSelect.expression(), false, invocationTree.arguments().get(0), false),
+                    String.format(").%s(", predicateName)),
+                  // assertThat(x).predicateName(a)).z() --> assertThat(x).predicateName(a)
+                  JavaTextEdit.removeTextSpan(textSpanBetween(invocationTree.arguments(), false, predicate, true))
+                ).build();
+            }
+          }
+          return null;
+        });
+    }
+
+    static WithContextSimplification msgWithActualExpectedInPredicate(String predicateName) {
+      String replacement = String.format(MESSAGE_ACTUAL_EXPECTED, predicateName);
+      return new WithContextSimplification(replacement, getQuickFixFunction(predicateName, replacement, true));
+    }
+
+    static WithContextSimplification msgWithActualCustom(String predicateName, String predicateArg) {
+      // Providing quick fixes for such issues should be done in case by case, it is an important effort for little value, it seems reasonable to not suggest them.
+      return new WithContextSimplification(String.format("assertThat(actual).%s(%s)", predicateName, predicateArg));
+    }
+
+    private static BiFunction<MethodInvocationTree, MethodInvocationTree, Supplier<JavaQuickFix>> getQuickFixFunction(
+      String predicateName,
+      String replacement,
+      boolean keepPredicateArguments) {
+      return (subject, predicate) -> {
+        Optional<MethodInvocationTree> methodInvocationInArguments = getMethodInvocationInArguments(subject.arguments());
+        if (methodInvocationInArguments.isPresent()) {
+          MethodInvocationTree invocationTree = methodInvocationInArguments.get();
+          ExpressionTree methodSelect = invocationTree.methodSelect();
+          if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+            MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) methodSelect;
+            return () -> {
+              JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE_FORMAT_STRING, replacement);
+              // assertThat(x.y()).z() --> assertThat(x).z()
+              builder.addTextEdit(JavaTextEdit.removeTextSpan(textSpanBetween(memberSelect.expression(), false, invocationTree, true)));
+              if (keepPredicateArguments) {
+                // assertThat(x).z(a) --> assertThat(x).predicateName(a)
+                builder.addTextEdit(JavaTextEdit.replaceTree(ExpressionUtils.methodName(predicate), predicateName));
+              } else {
+                // assertThat(x).z(a) --> assertThat(x).predicateName()
+                builder.addTextEdit(JavaTextEdit.replaceBetweenTree(ExpressionUtils.methodName(predicate), predicate, predicateName + "()"));
+              }
+              return builder.build();
+            };
+          }
+        }
+        return null;
+      };
     }
   }
 }
