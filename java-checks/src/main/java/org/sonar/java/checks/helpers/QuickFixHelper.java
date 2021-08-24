@@ -36,6 +36,7 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
@@ -102,15 +103,24 @@ public class QuickFixHelper {
   }
 
   public static String contentForTree(Tree tree, JavaFileScannerContext context) {
-    return contentForRange(tree.firstToken(), tree.lastToken(), context);
+    SyntaxToken firstToken = tree.firstToken();
+    if (firstToken == null) {
+      return "";
+    }
+    return contentForRange(firstToken, tree.lastToken(), context);
   }
 
-  public static String contentForRange(SyntaxToken firstToken, SyntaxToken endToken, JavaFileScannerContext context) {
-    int startLine = firstToken.line();
-    int endLine = endToken.line();
+  public static String contentForRange(SyntaxToken firstToken, SyntaxToken lastToken,
+    JavaFileScannerContext context) {
 
-    int beginIndex = firstToken.column();
-    int endIndex = endToken.column() + endToken.text().length();
+    Range firstRange = firstToken.range();
+    Range lastRange = lastToken.range();
+
+    int startLine = firstRange.start().line();
+    int endLine = lastRange.end().line();
+
+    int beginIndex = firstRange.start().columnOffset();
+    int endIndex = lastRange.end().columnOffset();
 
     if (startLine == endLine) {
       // one-liners
@@ -129,7 +139,7 @@ public class QuickFixHelper {
       sb.append(lines.get(i))
         .append("\n");
     }
-    sb.append(ListUtils.getLast(lines).substring(0, endIndex));
+    sb.append(ListUtils.getLast(lines), 0, endIndex);
 
     return sb.toString();
   }

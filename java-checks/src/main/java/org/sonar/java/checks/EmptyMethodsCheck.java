@@ -120,7 +120,7 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
   }
 
   private static String computePadding(MethodTree method) {
-    int spaces = method.firstToken().column();
+    int spaces = method.firstToken().range().start().columnOffset();
     // This loop and return call can be replaced with a call to " ".repeat(spaces) in Java 11
     StringBuilder padding = new StringBuilder("");
     for (int i = 0; i < spaces; i++) {

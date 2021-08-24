@@ -57,6 +57,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -201,19 +202,19 @@ class JParserTest {
       CompilationUnitTree t = test("");
       assertEquals("", t.eofToken().text());
       assertEquals(1, t.eofToken().line());
-      assertEquals(0, t.eofToken().column());
+      assertEquals(Range.at(1, 1, 1, 1), t.eofToken().range());
     }
     {
       CompilationUnitTree t = test(" ");
       assertEquals("", t.eofToken().text());
       assertEquals(1, t.eofToken().line());
-      assertEquals(1, t.eofToken().column());
+      assertEquals(Range.at(1, 2, 1, 2), t.eofToken().range());
     }
     {
       CompilationUnitTree t = test(" \n");
       assertEquals("", t.eofToken().text());
       assertEquals(2, t.eofToken().line());
-      assertEquals(0, t.eofToken().column());
+      assertEquals(Range.at(2, 1, 2, 1), t.eofToken().range());
     }
   }
 

@@ -19,19 +19,21 @@
  */
 package org.sonar.java.reporting;
 
+import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
+import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
 public class JavaTextEdit {
-  private final AnalyzerMessage.TextSpan textSpan;
+  private final TextSpan textSpan;
   private final String replacement;
 
-  private JavaTextEdit(AnalyzerMessage.TextSpan textSpan, String replacement) {
+  private JavaTextEdit(TextSpan textSpan, String replacement) {
     this.textSpan = textSpan;
     this.replacement = replacement;
   }
 
-  public AnalyzerMessage.TextSpan getTextSpan() {
+  public TextSpan getTextSpan() {
     return textSpan;
   }
 
@@ -43,7 +45,7 @@ public class JavaTextEdit {
     return removeTextSpan(AnalyzerMessage.textSpanFor(tree));
   }
 
-  public static JavaTextEdit removeTextSpan(AnalyzerMessage.TextSpan textSpan) {
+  public static JavaTextEdit removeTextSpan(TextSpan textSpan) {
     return new JavaTextEdit(textSpan, "");
   }
 
@@ -62,7 +64,7 @@ public class JavaTextEdit {
     return replaceTextSpan(AnalyzerMessage.textSpanBetween(startTree, endTree), replacement);
   }
 
-  public static JavaTextEdit replaceTextSpan(AnalyzerMessage.TextSpan textSpan, String replacement) {
+  public static JavaTextEdit replaceTextSpan(TextSpan textSpan, String replacement) {
     return new JavaTextEdit(textSpan, replacement);
   }
 
@@ -71,7 +73,8 @@ public class JavaTextEdit {
     if (lastToken == null) {
       throw new IllegalStateException("Trying to insert a quick fix after a Tree without token.");
     }
-    return insertAtPosition(lastToken.line(), lastToken.column() + lastToken.text().length(), addition);
+    Range lastRange = lastToken.range();
+    return insertAtPosition(lastRange.end().line(), lastRange.end().columnOffset(), addition);
   }
 
   public static JavaTextEdit insertBeforeTree(Tree tree, String addition) {
@@ -79,18 +82,19 @@ public class JavaTextEdit {
     if (firstToken == null) {
       throw new IllegalStateException("Trying to insert a quick fix before a Tree without token.");
     }
-    return insertAtPosition(firstToken.line(), firstToken.column(), addition);
+    Range firstRange = firstToken.range();
+    return insertAtPosition(firstRange.start().line(), firstRange.start().columnOffset(), addition);
   }
 
   public static JavaTextEdit insertAtPosition(int line, int column, String addition) {
     return new JavaTextEdit(position(line, column), addition);
   }
 
-  public static AnalyzerMessage.TextSpan position(int line, int column) {
+  public static TextSpan position(int line, int column) {
     return textSpan(line, column, line, column);
   }
 
-  public static AnalyzerMessage.TextSpan textSpan(int startLine, int startColumn, int endLine, int endColumn) {
-    return new AnalyzerMessage.TextSpan(startLine, startColumn, endLine, endColumn);
+  public static TextSpan textSpan(int startLine, int startColumn, int endLine, int endColumn) {
+    return new TextSpan(startLine, startColumn, endLine, endColumn);
   }
 }

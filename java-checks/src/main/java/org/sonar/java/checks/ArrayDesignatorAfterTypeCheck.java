@@ -69,8 +69,7 @@ public class ArrayDesignatorAfterTypeCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isInvalidPosition(SyntaxToken openBracketToken, SyntaxToken identifierToken) {
-    return identifierToken.line() < openBracketToken.line()
-      || (identifierToken.line() == openBracketToken.line() && identifierToken.column() < openBracketToken.column());
+    return identifierToken.range().start().isBefore(openBracketToken.range().start());
   }
 
 }

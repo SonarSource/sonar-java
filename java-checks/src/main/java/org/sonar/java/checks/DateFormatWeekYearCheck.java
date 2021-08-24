@@ -34,7 +34,7 @@ import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S3986")
@@ -112,18 +112,19 @@ public class DateFormatWeekYearCheck extends AbstractMethodDetection {
     return count;
   }
 
-  private static JavaQuickFix computeQuickFix(ExpressionTree argument, int startColumn, int endColumn, String replacement) {
-    SyntaxToken firstToken = argument.firstToken();
-    AnalyzerMessage.TextSpan textSpan = computeTextSpan(firstToken, startColumn, endColumn);
+  private static JavaQuickFix computeQuickFix(ExpressionTree argument,
+    int literalContentStartIndex, int literalContentEndIndex, String replacement) {
+
+    Position stringLiteralStart = argument.firstToken().range().start();
+    int quoteDelimiterLength = 1;
     return JavaQuickFix.newQuickFix("Replace year format")
-      .addTextEdit(JavaTextEdit.replaceTextSpan(textSpan, replacement))
+      .addTextEdit(JavaTextEdit.replaceTextSpan(new AnalyzerMessage.TextSpan(
+        stringLiteralStart.line(),
+        stringLiteralStart.columnOffset() + quoteDelimiterLength + literalContentStartIndex,
+        stringLiteralStart.line(),
+        stringLiteralStart.columnOffset() + quoteDelimiterLength + literalContentEndIndex),
+        replacement))
       .build();
   }
 
-  private static AnalyzerMessage.TextSpan computeTextSpan(SyntaxToken firstToken, int startCharacter, int endCharacter) {
-    int line = firstToken.line();
-    // Columns are 0-based in the AST and need to be adjusted by 1 to suggest a proper quick fix
-    int column = firstToken.column() + 1;
-    return new AnalyzerMessage.TextSpan(line, column + startCharacter, line, column + endCharacter);
-  }
 }

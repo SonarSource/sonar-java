@@ -64,8 +64,7 @@ public class WrongAssignmentOperatorCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean noSpacingBetween(SyntaxToken firstToken, SyntaxToken secondToken) {
-    return firstToken.line() == secondToken.line()
-      && firstToken.column() + firstToken.text().length() == secondToken.column();
+    return firstToken.range().end().equals(secondToken.range().start());
   }
 
   private static boolean isSuspiciousToken(SyntaxToken firstToken) {

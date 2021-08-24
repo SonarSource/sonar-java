@@ -45,7 +45,7 @@ class ClassesLayoutTest {
   void token() {
     assertAll(
       () -> assertThat(instanceSize(InternalSyntaxToken.class, X86_64)).isEqualTo(72),
-      () -> assertThat(instanceSize(InternalSyntaxToken.class, X86_64_COOPS)).isEqualTo(48)
+      () -> assertThat(instanceSize(InternalSyntaxToken.class, X86_64_COOPS)).isEqualTo(40)
     );
   }
 
@@ -130,9 +130,7 @@ class ClassesLayoutTest {
   }
 
   private static long instanceSize(Class<?> cls, Layouter layouter) {
-    System.out.println("***** " + layouter);
     ClassLayout classLayout = ClassLayout.parseClass(cls, layouter);
-    System.out.println(classLayout.toPrintable());
     return classLayout.instanceSize();
   }
 

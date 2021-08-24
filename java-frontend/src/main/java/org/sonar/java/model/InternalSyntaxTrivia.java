@@ -20,6 +20,8 @@
 package org.sonar.java.model;
 
 import java.util.List;
+import javax.annotation.Nonnull;
+import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
@@ -27,13 +29,15 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
 
   private final String comment;
-  private final int startLine;
-  private final int column;
 
-  public InternalSyntaxTrivia(String comment, int startLine, int column) {
+  @Nonnull
+  private final Range range;
+
+  public InternalSyntaxTrivia(String comment, int line, int columnOffset) {
     this.comment = comment;
-    this.startLine = startLine;
-    this.column = column;
+    range = comment.startsWith("/*")
+      ? InternalSyntaxToken.createMultiLineRange(line, columnOffset, comment)
+      : InternalSyntaxToken.createSingleLineRange(line, columnOffset, comment);
   }
 
   @Override
@@ -43,7 +47,7 @@ public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
 
   @Override
   public int startLine() {
-    return startLine;
+    return range.start().line();
   }
 
   @Override
@@ -72,11 +76,18 @@ public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
 
   @Override
   public int getLine() {
-    return startLine;
+    return range.start().line();
   }
 
   @Override
   public int column() {
-    return column;
+    return range.start().columnOffset();
   }
+
+  @Nonnull
+  @Override
+  public Range range() {
+    return range;
+  }
+
 }

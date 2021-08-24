@@ -198,7 +198,7 @@ class AnalyzerMessageTest {
     } catch (Exception e) {
       assertThat(e)
         .isInstanceOf(IllegalStateException.class)
-        .hasMessage("Invalid issue location: Text span is empty when trying reporting on (l:3, c:0).");
+        .hasMessage("Invalid issue location: Text span is empty when trying reporting on (l:3, c:1).");
     }
   }
 

@@ -40,7 +40,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.collections.SetUtils;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.Tree;
 
 public final class JWarning {
@@ -53,11 +53,11 @@ public final class JWarning {
   private Tree syntaxTree;
 
   @VisibleForTesting
-  JWarning(String message, Type type, int startLine, int startColumn, int endLine, int endColumn) {
+  JWarning(String message, Type type, int startLine, int startColumnOffset, int endLine, int endColumnOffset) {
     this.message = message;
     this.type = type;
-    this.start = Position.exact(startLine, startColumn);
-    this.end = Position.exact(endLine, endColumn);
+    this.start = Position.atOffset(startLine, startColumnOffset);
+    this.end = Position.atOffset(endLine, endColumnOffset);
   }
 
   public Type type() {
@@ -78,48 +78,6 @@ public final class JWarning {
 
   Position end() {
     return end;
-  }
-
-  private static class Position implements Comparable<Position> {
-
-    private static final Comparator<Position> COMPARATOR = Comparator
-      .comparing(Position::line)
-      .thenComparing(Position::column);
-
-    private final int line;
-    private final int column;
-
-    private Position(int line, int column) {
-      this.line = line;
-      this.column = column;
-    }
-
-    private static Position exact(int line, int column) {
-      return new Position(line, column);
-    }
-
-    private static Position startOf(Tree tree) {
-      SyntaxToken token = tree.firstToken();
-      return new Position(token.line(), token.column());
-    }
-
-    private static Position endOf(Tree tree) {
-      SyntaxToken token = tree.lastToken();
-      return new Position(token.line(), token.column() + token.text().length());
-    }
-
-    int line() {
-      return line;
-    }
-
-    int column() {
-      return column;
-    }
-
-    @Override
-    public int compareTo(Position o) {
-      return COMPARATOR.compare(this, o);
-    }
   }
 
   public enum Type {
@@ -232,21 +190,22 @@ public final class JWarning {
         // wrong kind
         return false;
       }
-      return warning.start().compareTo(Position.startOf(tree)) >= 0
-        && warning.end().compareTo(Position.endOf(tree)) <= 0;
+      return warning.start().compareTo(tree.firstToken().range().start()) >= 0
+        && warning.end().compareTo(tree.lastToken().range().end()) <= 0;
     }
 
     @VisibleForTesting
     static boolean isMorePreciseTree(Tree currentTree, Tree newTree) {
-      return Position.startOf(newTree).compareTo( Position.startOf(currentTree)) >= 0
-        && Position.endOf(newTree).compareTo(Position.endOf(currentTree)) <= 0;
+      return newTree.firstToken().range().start().compareTo(currentTree.firstToken().range().start()) >= 0
+        && newTree.lastToken().range().end().compareTo(currentTree.lastToken().range().end()) <= 0;
     }
 
     @VisibleForTesting
     static boolean matchesTreeExactly(JWarning warning) {
       Tree syntaxTree = warning.syntaxTree();
-      return warning.start().compareTo(Position.startOf(syntaxTree)) == 0
-        && warning.end().compareTo(Position.endOf(syntaxTree)) == 0;
+      return warning.start().compareTo(syntaxTree.firstToken().range().start()) == 0
+        && warning.end().compareTo(syntaxTree.lastToken().range().end()) == 0;
     }
   }
+
 }
