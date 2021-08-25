@@ -53,7 +53,8 @@ public class StringToStringCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree tree) {
-    ExpressionTree expressionTree = extractBaseExpression(((MemberSelectExpressionTree) tree.methodSelect()).expression());
+    ExpressionTree expressionRaw = ((MemberSelectExpressionTree) tree.methodSelect()).expression();
+    ExpressionTree expressionTree = extractBaseExpression(expressionRaw);
     Tree reportTree = null;
     String message = null;
     if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
@@ -81,7 +82,7 @@ public class StringToStringCheck extends AbstractMethodDetection {
         message = String.format("\"%s\" is an array of strings, there's no need to call \"toString()\".", name.identifierToken().text());
       }
     }
-    reportIssue(reportTree, message, tree, expressionTree);
+    reportIssue(reportTree, message, tree, expressionRaw);
   }
 
   private void reportIssue(@Nullable Tree reportTree, @Nullable String message, MethodInvocationTree toStringInvocation, ExpressionTree baseExpression) {
