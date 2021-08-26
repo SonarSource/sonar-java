@@ -117,18 +117,7 @@ class DefaultJavaFileScannerContextTest {
     assertThat(lines)
       .hasSize(2)
       .isSameAs(context.getFileLines())
-      .isNotEqualTo(context.getFileLinesWithLineEndings());
-
-    assertThatThrownBy(() -> lines.add("new line")).isInstanceOf(UnsupportedOperationException.class);
-  }
-
-  @Test
-  void get_file_lines_with_endings() {
-    List<String> lines = context.getFileLinesWithLineEndings();
-    assertThat(lines)
-      .hasSize(3)
-      .isSameAs(context.getFileLinesWithLineEndings())
-      .isNotEqualTo(context.getFileLines());
+      .noneMatch(line -> line.endsWith("\n"));
 
     assertThatThrownBy(() -> lines.add("new line")).isInstanceOf(UnsupportedOperationException.class);
   }
@@ -364,7 +353,6 @@ class DefaultJavaFileScannerContextTest {
     }).when(sonarComponents).addIssue(any(InputComponent.class), any(JavaCheck.class), anyInt(), anyString(), any());
 
     when(sonarComponents.fileLines(any(InputFile.class))).thenReturn(Arrays.asList("1st line", "2nd line"));
-    when(sonarComponents.fileLinesWithLineEndings(any(InputFile.class))).thenReturn(Arrays.asList("1st line\n", "2nd line\n", "3rd line\n"));
     when(sonarComponents.inputFileContents(any(InputFile.class))).thenReturn("content");
     when(sonarComponents.workDir()).thenReturn(WORK_DIR);
     when(sonarComponents.project()).thenReturn(PROJECT_BASE_DIR);

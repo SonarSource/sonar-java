@@ -103,13 +103,16 @@ public class QuickFixHelper {
     }
 
     // rely on file content KEEPING line separators
-    List<String> lines = internalContext(context).getFileLinesWithLineEndings().subList(startLine - 1, endLine);
+    List<String> lines = context.getFileLines().subList(startLine - 1, endLine);
 
     // rebuild content of tree as String
     StringBuilder sb = new StringBuilder();
-    sb.append(lines.get(0).substring(beginIndex));
+    sb.append(lines.get(0)
+      .substring(beginIndex))
+      .append("\n");
     for (int i = 1; i < lines.size() - 1; i++) {
-      sb.append(lines.get(i));
+      sb.append(lines.get(i))
+        .append("\n");
     }
     sb.append(ListUtils.getLast(lines).substring(0, endIndex));
 

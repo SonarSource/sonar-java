@@ -90,10 +90,10 @@ public class OverrideAnnotationCheck extends IssuableSubscriptionVisitor {
     Tree targetTree = modifiersTree.isEmpty() ? QuickFixHelper.nextToken(modifiersTree) : modifiersTree.get(0);
     String insertedText;
     if (somethingBeforeOnSameLine(methodTree)) {
-      // strangely formated code: everythign on the same line?
+      // strangely formated code: everything on the same line?
       insertedText = "@Override ";
     } else {
-      insertedText = "@Override" + newLineWithPadding(targetTree);
+      insertedText = "@Override\n" + padding(targetTree);
     }
     return JavaQuickFix
       .newQuickFix("Add \"@Override\" annotation")
@@ -105,28 +105,10 @@ public class OverrideAnnotationCheck extends IssuableSubscriptionVisitor {
     return QuickFixHelper.previousToken(tree).line() == tree.firstToken().line();
   }
 
-  private String newLineWithPadding(Tree tree) {
-    String endOfLineCharacters = endOfLineCharacters(tree);
-
+  private String padding(Tree tree) {
     SyntaxToken firstToken = tree.firstToken();
-    String padding = context.getFileLines()
+    return context.getFileLines()
       .get(firstToken.line() - 1)
       .substring(0, firstToken.column());
-
-    return endOfLineCharacters + padding;
-  }
-
-  private String endOfLineCharacters(Tree tree) {
-    String treeLine = QuickFixHelper.internalContext(context).getFileLinesWithLineEndings().get(tree.firstToken().line() - 1);
-    StringBuilder sb = new StringBuilder();
-    for (int i = treeLine.length() - 1; i >= 0; i--) {
-      char character = treeLine.charAt(i);
-      if ((character != '\r') && (character != '\n')) {
-        break;
-      }
-      sb.insert(0, character);
-    }
-
-    return sb.toString();
   }
 }

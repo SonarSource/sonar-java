@@ -60,7 +60,6 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
   private final boolean fileParsed;
 
   private List<String> lines = null;
-  private List<String> linesWithEnding = null;
   private String content;
 
   public DefaultJavaFileScannerContext(CompilationUnitTree tree, InputFile inputFile, Sema semanticModel,
@@ -195,13 +194,6 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
       lines = Collections.unmodifiableList(sonarComponents.fileLines(inputFile));
     }
     return lines;
-  }
-
-  public List<String> getFileLinesWithLineEndings() {
-    if (linesWithEnding == null) {
-      linesWithEnding = Collections.unmodifiableList(sonarComponents.fileLinesWithLineEndings(inputFile));
-    }
-    return linesWithEnding;
   }
 
   @Override

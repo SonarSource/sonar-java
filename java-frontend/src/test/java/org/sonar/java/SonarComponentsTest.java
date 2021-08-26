@@ -423,12 +423,6 @@ class SonarComponentsTest {
       .noneMatch(line -> line.endsWith("\n"));
     assertThat(fileLines.get(0)).hasSize(11);
 
-    List<String> fileLinesWithLineEndings = sonarComponents.fileLinesWithLineEndings(inputFile);
-    assertThat(fileLinesWithLineEndings)
-      .hasSize(5)
-      .allMatch(line -> line.endsWith("\n"));
-    assertThat(fileLinesWithLineEndings.get(0)).hasSize(12);
-
     verify(inputFile, times(1)).contents();
     reset(inputFile);
   }
