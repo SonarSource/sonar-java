@@ -69,6 +69,28 @@ public class AssertJChainSimplificationCheckTest_QuickFix {
     // edit@qf_context8 [[sc=17;ec=28]] {{).isGreaterThan(}}
     // edit@qf_context8 [[sc=30;ec=44]] {{}}
 
+    assertThat(getArray().length).isPositive(); // Noncompliant [[sc=35;ec=45;quickfixes=qf_context9]] {{Use assertThat(actual).isNotEmpty() instead.}}
+    // fix@qf_context9 {{Use "assertThat(actual).isNotEmpty()"}}
+    // edit@qf_context9 [[sc=26;ec=33]] {{}}
+    // edit@qf_context9 [[sc=35;ec=47]] {{isNotEmpty()}}
+    assertThat(getArray().length).isEqualTo(length); // Noncompliant [[sc=35;ec=44;quickfixes=qf_context10]] {{Use assertThat(actual).hasSize(expected) instead.}}
+    // fix@qf_context10 {{Use "assertThat(actual).hasSize(expected)"}}
+    // edit@qf_context10 [[sc=26;ec=33]] {{}}
+    // edit@qf_context10 [[sc=35;ec=44]] {{hasSize}}
+
+    // Parenthesis in the predicate is not a problem through
+    assertThat(getCollection().size()).isGreaterThan(((length))); // Noncompliant [[sc=40;ec=53;quickfixes=qf_context11]] {{Use assertThat(actual).hasSizeGreaterThan(expected) instead.}}
+    // fix@qf_context11 {{Use "assertThat(actual).hasSizeGreaterThan(expected)"}}
+    // edit@qf_context11 [[sc=31;ec=38]] {{}}
+    // edit@qf_context11 [[sc=40;ec=53]] {{hasSizeGreaterThan}}
+
+    // No quick fix suggested with redundant parenthesis in the subject, it is a non-trivial fix and
+    // the dev should anyway remove the redundant parenthesis, that will make the issue appear
+    assertThat(((getArray().length))).isEqualTo(length); // Noncompliant [[sc=39;ec=48;quickfixes=!]]
+    assertThat((((x.compareTo(y))))).isPositive(); // Noncompliant [[sc=38;ec=48;quickfixes=!]]
+
+
+
     // No quick fix provided (for now), should be done in case by case (non-exhaustive list)
     assertThat(x.hashCode()).isEqualTo(y.hashCode()); // Noncompliant [[sc=30;ec=39;quickfixes=!]] {{Use assertThat(actual).hasSameHashCodeAs(expected) instead.}}
     assertThat(getMap().get(x)).isEqualTo(y); // Noncompliant [[sc=33;ec=42;quickfixes=!]] {{Use assertThat(actual).containsEntry(key, value) instead.}}
@@ -92,5 +114,9 @@ public class AssertJChainSimplificationCheckTest_QuickFix {
 
   private Collection<Object> getCollection() {
     return new ArrayList<>();
+  }
+
+  private Object[] getArray() {
+    return new Object[1];
   }
 }

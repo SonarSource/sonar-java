@@ -32,23 +32,12 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.checks.tests.AssertJChainSimplificationIndex.QUICK_FIX_MESSAGE_FORMAT_STRING;
-import static org.sonar.java.model.ExpressionUtils.skipParentheses;
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
 interface AssertJChainSimplificationQuickFix extends BiFunction<MethodInvocationTree, MethodInvocationTree, Supplier<JavaQuickFix>> {
 
   @Override
   Supplier<JavaQuickFix> apply(MethodInvocationTree subject, MethodInvocationTree predicate);
-
-  default Optional<MethodInvocationTree> getMethodInvocationInArguments(Arguments arguments) {
-    if (arguments.size() == 1) {
-      ExpressionTree argument = skipParentheses(arguments.get(0));
-      if (argument.is(Tree.Kind.METHOD_INVOCATION)) {
-        return Optional.of((MethodInvocationTree) argument);
-      }
-    }
-    return Optional.empty();
-  }
 }
 
 class NoQuickFix implements AssertJChainSimplificationQuickFix {
@@ -59,11 +48,74 @@ class NoQuickFix implements AssertJChainSimplificationQuickFix {
   }
 }
 
-abstract class ActualExpectedQuickFix implements AssertJChainSimplificationQuickFix {
+/**
+ * Replace assertThat(x.y(a)).z(b); or assertThat(x.y).z(b); by:
+ * <p>
+ * - keepPredicateArgument = true
+ * assertThat(x).replacement(b);
+ * <p>
+ * - keepPredicateArgument = false
+ * assertThat(x).replacement();
+ */
+class ActualExpectedInPredicateQuickFix implements AssertJChainSimplificationQuickFix {
+  private final boolean keepPredicateArgument;
   final String replacement;
   final String predicateName;
 
-  ActualExpectedQuickFix(String replacement, String predicateName) {
+  ActualExpectedInPredicateQuickFix(String replacement, String predicateName, boolean keepPredicateArgument) {
+    this.replacement = replacement;
+    this.predicateName = predicateName;
+    this.keepPredicateArgument = keepPredicateArgument;
+  }
+
+  @Override
+  public Supplier<JavaQuickFix> apply(MethodInvocationTree subject, MethodInvocationTree predicate) {
+    Arguments arguments = subject.arguments();
+    if (arguments.size() == 1) {
+      ExpressionTree argument = arguments.get(0);
+      Optional<MemberSelectExpressionTree> memberSelectInSubject = getMemberSelectInSubject(argument);
+      if (memberSelectInSubject.isPresent()) {
+        MemberSelectExpressionTree memberSelect = memberSelectInSubject.get();
+        return getJavaQuick(predicate, argument, memberSelect);
+      }
+    }
+    return null;
+  }
+
+  private Supplier<JavaQuickFix> getJavaQuick(MethodInvocationTree predicate, ExpressionTree argument, MemberSelectExpressionTree memberSelect) {
+    return () -> {
+      JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE_FORMAT_STRING, replacement);
+      // assertThat(x.y()).z() --> assertThat(x).z()
+      builder.addTextEdit(JavaTextEdit.removeTextSpan(textSpanBetween(memberSelect.expression(), false, argument, true)));
+      if (keepPredicateArgument) {
+        // assertThat(x).z(a) --> assertThat(x).predicateName(a)
+        builder.addTextEdit(JavaTextEdit.replaceTree(ExpressionUtils.methodName(predicate), predicateName));
+      } else {
+        // assertThat(x).z(a) --> assertThat(x).predicateName()
+        builder.addTextEdit(JavaTextEdit.replaceBetweenTree(ExpressionUtils.methodName(predicate), predicate, predicateName + "()"));
+      }
+      return builder.build();
+    };
+  }
+
+  private static Optional<MemberSelectExpressionTree> getMemberSelectInSubject(ExpressionTree tree) {
+    if (tree.is(Tree.Kind.MEMBER_SELECT)) {
+      return Optional.of((MemberSelectExpressionTree) tree);
+    } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+      return getMemberSelectInSubject(((MethodInvocationTree) tree).methodSelect());
+    }
+    return Optional.empty();
+  }
+}
+
+/**
+ * Replace assertThat(x.y(a)).y(b); by assertThat(x).replacement(a);
+ */
+class ActualExpectedInSubjectQuickFix implements AssertJChainSimplificationQuickFix {
+  final String replacement;
+  final String predicateName;
+
+  ActualExpectedInSubjectQuickFix(String replacement, String predicateName) {
     this.replacement = replacement;
     this.predicateName = predicateName;
   }
@@ -76,60 +128,23 @@ abstract class ActualExpectedQuickFix implements AssertJChainSimplificationQuick
       ExpressionTree methodSelect = invocationTree.methodSelect();
       if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) methodSelect;
-        return buildQuickFix(predicate, memberSelect, invocationTree);
+        return getJavaQuickFix(predicate, memberSelect, invocationTree);
       }
     }
     return null;
   }
 
-  abstract Supplier<JavaQuickFix> buildQuickFix(MethodInvocationTree predicate, MemberSelectExpressionTree memberSelect, MethodInvocationTree invocationTree);
-}
-
-/**
- * Replace assertThat(x.y(a)).y(b); by:
- *
- * - keepPredicateArgument = true
- * assertThat(x).replacement(b);
- *
- * - keepPredicateArgument = false
- * assertThat(x).replacement();
- */
-class ActualExpectedInPredicateQuickFix extends ActualExpectedQuickFix {
-  private final boolean keepPredicateArgument;
-
-  ActualExpectedInPredicateQuickFix(String replacement, String predicateName, boolean keepPredicateArgument) {
-    super(replacement, predicateName);
-    this.keepPredicateArgument = keepPredicateArgument;
-  }
-
-  Supplier<JavaQuickFix> buildQuickFix(MethodInvocationTree predicate, MemberSelectExpressionTree memberSelect, MethodInvocationTree invocationTree) {
-    return () -> {
-      JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE_FORMAT_STRING, replacement);
-      // assertThat(x.y()).z() --> assertThat(x).z()
-      builder.addTextEdit(JavaTextEdit.removeTextSpan(textSpanBetween(memberSelect.expression(), false, invocationTree, true)));
-      if (keepPredicateArgument) {
-        // assertThat(x).z(a) --> assertThat(x).predicateName(a)
-        builder.addTextEdit(JavaTextEdit.replaceTree(ExpressionUtils.methodName(predicate), predicateName));
-      } else {
-        // assertThat(x).z(a) --> assertThat(x).predicateName()
-        builder.addTextEdit(JavaTextEdit.replaceBetweenTree(ExpressionUtils.methodName(predicate), predicate, predicateName + "()"));
+  private static Optional<MethodInvocationTree> getMethodInvocationInArguments(Arguments arguments) {
+    if (arguments.size() == 1) {
+      ExpressionTree argument = arguments.get(0);
+      if (argument.is(Tree.Kind.METHOD_INVOCATION)) {
+        return Optional.of((MethodInvocationTree) argument);
       }
-      return builder.build();
-    };
-  }
-}
-
-/**
- * Replace assertThat(x.y(a)).y(b); by assertThat(x).replacement(a);
- */
-class ActualExpectedInSubjectQuickFix extends ActualExpectedQuickFix {
-
-  ActualExpectedInSubjectQuickFix(String replacement, String predicateName) {
-    super(replacement, predicateName);
+    }
+    return Optional.empty();
   }
 
-  @Override
-  Supplier<JavaQuickFix> buildQuickFix(MethodInvocationTree predicate, MemberSelectExpressionTree memberSelect, MethodInvocationTree invocationTree) {
+  private Supplier<JavaQuickFix> getJavaQuickFix(MethodInvocationTree predicate, MemberSelectExpressionTree memberSelect, MethodInvocationTree invocationTree) {
     return () -> JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE_FORMAT_STRING, replacement)
       .addTextEdit(
         // assertThat(x.y(a)).z() --> assertThat(x).predicateName(a)).z()
