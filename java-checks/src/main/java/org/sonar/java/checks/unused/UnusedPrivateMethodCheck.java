@@ -25,8 +25,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.serialization.SerializableContract;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -42,6 +45,8 @@ import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
+
+import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
 @DeprecatedRuleKey(ruleKey = "UnusedPrivateMethod", repositoryKey = "squid")
 @Rule(key = "S1144")
@@ -71,7 +76,15 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
       .filter(methodTree -> !unresolvedMethodNames.contains(methodTree.simpleName().name()))
       .forEach(methodTree -> {
         IdentifierTree simpleName = methodTree.simpleName();
-        reportIssue(simpleName, String.format("Remove this unused private \"%s\" %s.", simpleName.name(), methodTree.is(Tree.Kind.CONSTRUCTOR) ? "constructor" : "method"));
+        String methodType = methodTree.is(Tree.Kind.CONSTRUCTOR) ? "constructor" : "method";
+        QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(simpleName)
+          .withMessage("Remove this unused private \"%s\" %s.", simpleName.name(), methodType)
+          .withQuickFix(() -> JavaQuickFix.newQuickFix("Remove the unused %s", methodType)
+            .addTextEdit(JavaTextEdit.removeTextSpan(textSpanBetween(QuickFixHelper.previousToken(methodTree), false, methodTree, true)))
+            .build())
+          .report();
       });
   }
 
