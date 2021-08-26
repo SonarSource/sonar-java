@@ -579,26 +579,45 @@ public class AssertJChainSimplificationIndex {
       this.quickFix = buildQuickFix.apply(subject, predicate);
     }
 
+    /**
+     * Message of the form: assertThat(actual).predicateName()
+     * Quick fix of the form: assertThat(x.y(a)).z(b); or assertThat(x.y).z(b); --> assertThat(x).predicateName();
+     */
     static WithContextSimplification msgWithActual(String predicateName) {
       String replacement = String.format("assertThat(actual).%s()", predicateName);
       return new WithContextSimplification(replacement, new ActualExpectedInPredicateQuickFix(replacement, predicateName, false));
     }
 
+    /**
+     * Message of the form: assertThat(actual).predicateName(expected)
+     * No quick fix for now, should be done case by case
+     */
     static WithContextSimplification msgWithActualExpected(String predicateName) {
-      // No quick fix for now, should be done case by case
       return new WithContextSimplification(String.format(MESSAGE_ACTUAL_EXPECTED, predicateName));
     }
 
+    /**
+     * Message of the form: assertThat(actual).predicateName(expected)
+     * Quick fix of the form: assertThat(x.y(a)).y(); --> by assertThat(x).predicateName(a);
+     */
     static WithContextSimplification msgWithActualExpectedInSubject(String predicateName) {
       String replacement = String.format(MESSAGE_ACTUAL_EXPECTED, predicateName);
       return new WithContextSimplification(replacement, new ActualExpectedInSubjectQuickFix(replacement, predicateName));
     }
 
+    /**
+     * Message of the form: assertThat(actual).predicateName(expected)
+     * Quick fix of the form: assertThat(x.y(a)).z(b); or assertThat(x.y).z(b); --> assertThat(x).predicateName(b);
+     */
     static WithContextSimplification msgWithActualExpectedInPredicate(String predicateName) {
       String replacement = String.format(MESSAGE_ACTUAL_EXPECTED, predicateName);
       return new WithContextSimplification(replacement, new ActualExpectedInPredicateQuickFix(replacement, predicateName, true));
     }
 
+    /**
+     * Message of the form: assertThat(actual).predicateName(predicateArg)
+     * No quick fix.
+     */
     static WithContextSimplification msgWithActualCustom(String predicateName, String predicateArg) {
       // Providing quick fixes for such issues should be done in case by case, it is an important effort for little value, it seems reasonable to not suggest them.
       return new WithContextSimplification(String.format("assertThat(actual).%s(%s)", predicateName, predicateArg));
