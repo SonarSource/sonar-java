@@ -17,7 +17,9 @@ import static java.util.Collections.emptySet;
 class UnusedPrivateMethodCheck {
 
   private UnusedPrivateMethodCheck() {}
-  private UnusedPrivateMethodCheck(int a) {} // Noncompliant
+  private UnusedPrivateMethodCheck(int a) {} // Noncompliant [[sc=11;ec=35;quickfixes=qf_constructor]]
+  // fix@qf_constructor {{Remove the unused constructor}}
+  // edit@qf_constructor [[sl=-1;sc=40;el=+0;ec=45]] {{}}
 
   public UnusedPrivateMethodCheck(String s) {
     init();
@@ -89,6 +91,19 @@ class UnusedPrivateMethodCheck {
     public void bar() {
       foo("");
     }
+  }
+  // This comment will be deleted by the quick fix.
+
+  private void testQuickFix1() { // Noncompliant [[sc=16;ec=29;quickfixes=qf1]]
+    // fix@qf1 {{Remove the unused method}}
+    // edit@qf1 [[sl=-3;sc=4;el=+4;ec=7]] {{}}
+    int i = 12;
+     }
+  private void testQuickFix2() { // Noncompliant [[sc=16;ec=29;quickfixes=qf2]]
+    // fix@qf2 {{Remove the unused method}}
+    // edit@qf2 [[sl=-1;sc=7;el=+5;ec=4]] {{}}
+    int i = 12;
+    int j = 12;
   }
 
 }
