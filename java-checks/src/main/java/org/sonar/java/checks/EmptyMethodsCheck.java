@@ -20,7 +20,11 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -76,7 +80,12 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
   private void checkMethod(MethodTree methodTree) {
     BlockTree block = methodTree.block();
     if (block != null && isEmpty(block) && !containsComment(block)) {
-      reportIssue(methodTree.simpleName(), "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.");
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(methodTree.simpleName())
+        .withMessage("Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.")
+        .withQuickFix(() -> computeQuickFix(methodTree))
+        .report();
     }
   }
 
@@ -89,4 +98,34 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
     return !block.closeBraceToken().trivias().isEmpty();
   }
 
+  private static JavaQuickFix computeQuickFix(MethodTree method) {
+    String commentFormat;
+    if (method.block().openBraceToken().line() == method.block().closeBraceToken().line()) {
+      commentFormat = " /* TODO document why this %s is empty */ ";
+    } else {
+      String methodPadding = computePadding(method);
+      commentFormat = "\n" + methodPadding + "  // TODO document why this %s is empty\n" + methodPadding;
+    }
+
+    String comment = String.format(commentFormat, method.is(Kind.CONSTRUCTOR) ? "constructor" : "method");
+
+    AnalyzerMessage.TextSpan textSpan = AnalyzerMessage.textSpanBetween(
+      method.block().openBraceToken(), false,
+      method.block().closeBraceToken(), false
+    );
+
+    return JavaQuickFix.newQuickFix("Insert placeholder comment")
+      .addTextEdit(JavaTextEdit.replaceTextSpan(textSpan, comment))
+      .build();
+  }
+
+  private static String computePadding(MethodTree method) {
+    int spaces = method.firstToken().column();
+    // This loop and return call can be replaced with a call to " ".repeat(spaces) in Java 11
+    StringBuilder padding = new StringBuilder("");
+    for (int i = 0; i < spaces; i++) {
+      padding.append(" ");
+    }
+    return padding.toString();
+  }
 }
