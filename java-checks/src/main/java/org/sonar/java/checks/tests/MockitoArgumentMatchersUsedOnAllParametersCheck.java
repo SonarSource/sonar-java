@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -31,6 +32,7 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -109,6 +111,7 @@ public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMoc
   /**
    * Test whether an invoked method eventually returns an argument matcher by checking if all its return paths lead to another method invocation.
    * The return method invocations are not checked as they are most likely stored in some testing helper out of the file under analysis.
+   *
    * @param invocation The method invocation to explore
    * @return Whether the method invoked returns something that could be an argument matcher
    */
@@ -137,6 +140,7 @@ public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMoc
 
   /**
    * Pop the chained casts to return an expression.
+   *
    * @param tree Chained casts
    * @return The expression behind the last cast in the chain
    */
@@ -160,7 +164,13 @@ public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMoc
         return;
       }
       cachedResults.put(tree, Boolean.FALSE);
-      onlyReturnsMethodInvocations = tree.block().body().stream()
+      BlockTree block = tree.block();
+      if (block == null) {
+        // If the method is abstract, we assume its potential implementations only return method invocations.
+        cachedResults.put(tree, Boolean.TRUE);
+        return;
+      }
+      onlyReturnsMethodInvocations = block.body().stream()
         .filter(statement -> statement.is(Tree.Kind.RETURN_STATEMENT))
         .map(ReturnStatementTree.class::cast)
         .map(ReturnStatementTree::expression)
