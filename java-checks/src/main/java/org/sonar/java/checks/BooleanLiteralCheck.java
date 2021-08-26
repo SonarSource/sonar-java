@@ -172,7 +172,7 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
     return edits;
   }
 
-  private static List<JavaTextEdit> editsForEquality(BinaryExpressionTree tree, boolean equalToOperand) {
+  private static List<JavaTextEdit> editsForEquality(BinaryExpressionTree tree, boolean equalToOperator) {
     List<JavaTextEdit> edits = new ArrayList<>();
 
     ExpressionTree leftOperand = tree.leftOperand();
@@ -182,37 +182,37 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
 
     if (left != null) {
       if (right != null) {
-        edits.add(editForEqualityWhenBothLiterals(tree, left, right, equalToOperand));
+        edits.add(editForEqualityWhenBothLiterals(tree, left, right, equalToOperator));
       } else {
         // Presence of "!" is deducted from the inverse of the operator value.
         if (!left) {
           // false == expr -> !expr, false != expr --> expr
-          equalToOperand = !equalToOperand;
+          equalToOperator = !equalToOperator;
         }
-        edits.add(JavaTextEdit.replaceTextSpan(textSpanBetween(leftOperand, true, rightOperand, false), equalToOperand ? "" : "!"));
+        edits.add(JavaTextEdit.replaceTextSpan(textSpanBetween(leftOperand, true, rightOperand, false), equalToOperator ? "" : "!"));
       }
     } else if (right != null) {
       // Defensive programming, if we reached this point, right must be a boolean literal
-      edits = editsForEqualityWhenRightIsLiteral(right, leftOperand, rightOperand, equalToOperand);
+      edits = editsForEqualityWhenRightIsLiteral(right, leftOperand, rightOperand, equalToOperator);
     }
 
     return edits;
   }
 
-  private static JavaTextEdit editForEqualityWhenBothLiterals(BinaryExpressionTree tree, Boolean left, Boolean right, boolean equalToOperand) {
+  private static JavaTextEdit editForEqualityWhenBothLiterals(BinaryExpressionTree tree, Boolean left, Boolean right, boolean equalToOperator) {
     if (!left.equals(right)) {
       // left and right are not the same, simplification is the inverse of the operator value.
       // true == false --> false, false == true --> false, true != false --> true, false != true --> true
-      equalToOperand = !equalToOperand;
+      equalToOperator = !equalToOperator;
     }
     // left and right are the same, simplification can be deducted thanks to the operator value.
-    return JavaTextEdit.replaceTree(tree, equalToOperand ? TRUE_LITERAL : FALSE_LITERAL);
+    return JavaTextEdit.replaceTree(tree, equalToOperator ? TRUE_LITERAL : FALSE_LITERAL);
   }
 
-  private static List<JavaTextEdit> editsForEqualityWhenRightIsLiteral(Boolean right, ExpressionTree leftOperand, ExpressionTree rightOperand, boolean equalToOperand) {
+  private static List<JavaTextEdit> editsForEqualityWhenRightIsLiteral(Boolean right, ExpressionTree leftOperand, ExpressionTree rightOperand, boolean equalToOperator) {
     List<JavaTextEdit> edits = new ArrayList<>();
     // Right operand is a literal
-    if (!right.equals(equalToOperand)) {
+    if (!right.equals(equalToOperator)) {
       // expr == false or expr != true --> !expr
       edits.add(JavaTextEdit.insertBeforeTree(leftOperand, "!"));
     }
