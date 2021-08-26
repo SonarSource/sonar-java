@@ -98,7 +98,7 @@ public class AssertJChainSimplificationCheck extends AbstractMethodDetection {
       .forRule(this)
       .onTree(ExpressionUtils.methodName(predicate))
       .withMessage(ISSUE_MESSAGE_FORMAT_STRING, simplification.getReplacement());
-    simplification.getQuickFix().ifPresent(builder::withQuickFix);
+    simplification.getQuickFix().ifPresent(builder::withQuickFixes);
     return builder;
   }
 

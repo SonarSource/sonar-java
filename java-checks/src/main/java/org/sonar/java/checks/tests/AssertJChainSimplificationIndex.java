@@ -536,13 +536,13 @@ public class AssertJChainSimplificationIndex {
 
   abstract static class Simplification {
     String replacement;
-    Supplier<JavaQuickFix> quickFix = null;
+    Supplier<List<JavaQuickFix>> quickFix = null;
 
     Simplification(String replacement) {
       this.replacement = replacement;
     }
 
-    Optional<Supplier<JavaQuickFix>> getQuickFix() {
+    Optional<Supplier<List<JavaQuickFix>>> getQuickFix() {
       return Optional.ofNullable(quickFix);
     }
 
