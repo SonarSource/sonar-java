@@ -5,6 +5,7 @@ import java.util.Random;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import static org.mockito.AdditionalMatchers.gt;
@@ -184,6 +185,22 @@ public class MockitoArgumentMatchersUsedOnAllParameters {
     }
 
     void quux(int a, int b) {
+    }
+  }
+
+  public abstract class SomeAbstractTest {
+    interface SthToMock {
+      String command(String exec);
+    }
+
+    @Mock
+    private SthToMock sthToMock;
+
+    public abstract String getCommand();
+
+    @Test
+    public void shouldReturnSystemDateTime() {
+      when(sthToMock.command(getCommand())).thenReturn("test"); // Compliant as sthToMock is abstract we assume its implementation will be compliant
     }
   }
 }
