@@ -385,12 +385,10 @@ public class AssertJChainSimplificationIndex {
   }
 
   private static PredicateSimplifierWithContext compareToSimplifier(Predicate<ExpressionTree> predicateArgCondition, String simplification) {
-    // Compare to can not be quick fixed easily because assertJ related method requires a Comparable and not any Object.
     return PredicateSimplifierWithContext.methodCallInSubject(predicateArgCondition, Matchers.COMPARE_TO, msgWithActualExpectedInSubject(simplification));
   }
 
   private static PredicateSimplifierWithContext compareToSimplifier(String simplification) {
-    // Compare to can not be quick fixed easily because assertJ related method requires a Comparable and not any Object.
     return PredicateSimplifierWithContext.methodCallInSubject(Matchers.COMPARE_TO, msgWithActualExpectedInSubject(simplification));
   }
 
