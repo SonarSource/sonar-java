@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import org.sonar.java.checks.helpers.UnitTestUtils;
@@ -32,7 +31,6 @@ import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -46,7 +44,6 @@ import static org.sonar.java.checks.tests.AssertJChainSimplificationCheck.Simpli
 import static org.sonar.java.checks.tests.AssertJChainSimplificationCheck.SimplifierWithoutContext;
 import static org.sonar.java.checks.tests.AssertJChainSimplificationHelper.ArgumentHelper;
 import static org.sonar.java.checks.tests.AssertJChainSimplificationHelper.hasMethodCallAsArg;
-import static org.sonar.java.checks.tests.AssertJChainSimplificationIndex.ContextFreeSimplification.getJavaContextFreeQuickFix;
 import static org.sonar.java.checks.tests.AssertJChainSimplificationIndex.PredicateSimplifierWithContext.methodCallInSubject;
 import static org.sonar.java.checks.tests.AssertJChainSimplificationIndex.PredicateSimplifierWithContext.withSubjectArgumentCondition;
 import static org.sonar.java.checks.tests.AssertJChainSimplificationIndex.WithContextSimplification.msgWithActual;
@@ -55,7 +52,6 @@ import static org.sonar.java.checks.tests.AssertJChainSimplificationIndex.WithCo
 import static org.sonar.java.checks.tests.AssertJChainSimplificationIndex.WithContextSimplification.msgWithActualExpectedInPredicate;
 import static org.sonar.java.checks.tests.AssertJChainSimplificationIndex.WithContextSimplification.msgWithActualExpectedInSubject;
 import static org.sonar.java.model.ExpressionUtils.skipParentheses;
-import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
 public class AssertJChainSimplificationIndex {
 
@@ -63,7 +59,7 @@ public class AssertJChainSimplificationIndex {
     // Hide default constructor
   }
 
-  private static final String QUICK_FIX_MESSAGE_FORMAT_STRING = "Use \"%s\"";
+  static final String QUICK_FIX_MESSAGE_FORMAT_STRING = "Use \"%s\"";
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String JAVA_UTIL_MAP = "java.util.Map";
@@ -494,7 +490,7 @@ public class AssertJChainSimplificationIndex {
 
       return withSubjectArgumentCondition(predicateArgumentCondition, subjectArgumentCondition,
         // Same quick fix as context free
-        new WithContextSimplification(simplification, (subject, predicate) -> getJavaContextFreeQuickFix(predicate, simplification)));
+        new WithContextSimplification(simplification, new ContextFreeQuickFix(simplification)));
     }
 
     public static PredicateSimplifierWithContext withSubjectArgumentCondition(
@@ -553,13 +549,6 @@ public class AssertJChainSimplificationIndex {
     String getReplacement() {
       return replacement;
     }
-
-    static Supplier<JavaQuickFix> getJavaContextFreeQuickFix(MethodInvocationTree predicate, String replacement) {
-      return () ->
-        JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE_FORMAT_STRING, replacement)
-          .addTextEdit(JavaTextEdit.replaceBetweenTree(ExpressionUtils.methodName(predicate), predicate, replacement))
-          .build();
-    }
   }
 
   static class ContextFreeSimplification extends Simplification {
@@ -568,20 +557,20 @@ public class AssertJChainSimplificationIndex {
     }
 
     void buildQuickFix(MethodInvocationTree predicate) {
-      this.quickFix = getJavaContextFreeQuickFix(predicate, replacement);
+      this.quickFix = new ContextFreeQuickFix(replacement).apply(predicate);
     }
   }
 
   static class WithContextSimplification extends Simplification {
     private static final String MESSAGE_ACTUAL_EXPECTED = "assertThat(actual).%s(expected)";
-    BiFunction<MethodInvocationTree, MethodInvocationTree, Supplier<JavaQuickFix>> buildQuickFix;
+    AssertJChainSimplificationQuickFix buildQuickFix;
 
     WithContextSimplification(String replacement) {
       super(replacement);
-      this.buildQuickFix = (s, p) -> null;
+      this.buildQuickFix = new NoQuickFix();
     }
 
-    WithContextSimplification(String replacement, BiFunction<MethodInvocationTree, MethodInvocationTree, Supplier<JavaQuickFix>> buildQuickFix) {
+    WithContextSimplification(String replacement, AssertJChainSimplificationQuickFix buildQuickFix) {
       super(replacement);
       this.buildQuickFix = buildQuickFix;
     }
@@ -592,17 +581,7 @@ public class AssertJChainSimplificationIndex {
 
     static WithContextSimplification msgWithActual(String predicateName) {
       String replacement = String.format("assertThat(actual).%s()", predicateName);
-      return new WithContextSimplification(replacement, getQuickFixFunction(predicateName, replacement, false));
-    }
-
-    private static Optional<MethodInvocationTree> getMethodInvocationInArguments(Arguments arguments) {
-      if (arguments.size() == 1) {
-        ExpressionTree argument = skipParentheses(arguments.get(0));
-        if (argument.is(Tree.Kind.METHOD_INVOCATION)) {
-          return Optional.of((MethodInvocationTree) argument);
-        }
-      }
-      return Optional.empty();
+      return new WithContextSimplification(replacement, new ActualExpectedInPredicateQuickFix(replacement, predicateName, false));
     }
 
     static WithContextSimplification msgWithActualExpected(String predicateName) {
@@ -612,66 +591,17 @@ public class AssertJChainSimplificationIndex {
 
     static WithContextSimplification msgWithActualExpectedInSubject(String predicateName) {
       String replacement = String.format(MESSAGE_ACTUAL_EXPECTED, predicateName);
-      return new WithContextSimplification(replacement,
-        (subject, predicate) -> {
-          Optional<MethodInvocationTree> methodInvocationInArguments = getMethodInvocationInArguments(subject.arguments());
-          if (methodInvocationInArguments.isPresent()) {
-            MethodInvocationTree invocationTree = methodInvocationInArguments.get();
-            ExpressionTree methodSelect = invocationTree.methodSelect();
-            if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-              MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) methodSelect;
-              return () -> JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE_FORMAT_STRING, replacement)
-                .addTextEdit(
-                  // assertThat(x.y(a)).z() --> assertThat(x).predicateName(a)).z()
-                  JavaTextEdit.replaceTextSpan(textSpanBetween(memberSelect.expression(), false, invocationTree.arguments().get(0), false),
-                    String.format(").%s(", predicateName)),
-                  // assertThat(x).predicateName(a)).z() --> assertThat(x).predicateName(a)
-                  JavaTextEdit.removeTextSpan(textSpanBetween(invocationTree.arguments(), false, predicate, true))
-                ).build();
-            }
-          }
-          return null;
-        });
+      return new WithContextSimplification(replacement, new ActualExpectedInSubjectQuickFix(replacement, predicateName));
     }
 
     static WithContextSimplification msgWithActualExpectedInPredicate(String predicateName) {
       String replacement = String.format(MESSAGE_ACTUAL_EXPECTED, predicateName);
-      return new WithContextSimplification(replacement, getQuickFixFunction(predicateName, replacement, true));
+      return new WithContextSimplification(replacement, new ActualExpectedInPredicateQuickFix(replacement, predicateName, true));
     }
 
     static WithContextSimplification msgWithActualCustom(String predicateName, String predicateArg) {
       // Providing quick fixes for such issues should be done in case by case, it is an important effort for little value, it seems reasonable to not suggest them.
       return new WithContextSimplification(String.format("assertThat(actual).%s(%s)", predicateName, predicateArg));
-    }
-
-    private static BiFunction<MethodInvocationTree, MethodInvocationTree, Supplier<JavaQuickFix>> getQuickFixFunction(
-      String predicateName,
-      String replacement,
-      boolean keepPredicateArguments) {
-      return (subject, predicate) -> {
-        Optional<MethodInvocationTree> methodInvocationInArguments = getMethodInvocationInArguments(subject.arguments());
-        if (methodInvocationInArguments.isPresent()) {
-          MethodInvocationTree invocationTree = methodInvocationInArguments.get();
-          ExpressionTree methodSelect = invocationTree.methodSelect();
-          if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-            MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) methodSelect;
-            return () -> {
-              JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE_FORMAT_STRING, replacement);
-              // assertThat(x.y()).z() --> assertThat(x).z()
-              builder.addTextEdit(JavaTextEdit.removeTextSpan(textSpanBetween(memberSelect.expression(), false, invocationTree, true)));
-              if (keepPredicateArguments) {
-                // assertThat(x).z(a) --> assertThat(x).predicateName(a)
-                builder.addTextEdit(JavaTextEdit.replaceTree(ExpressionUtils.methodName(predicate), predicateName));
-              } else {
-                // assertThat(x).z(a) --> assertThat(x).predicateName()
-                builder.addTextEdit(JavaTextEdit.replaceBetweenTree(ExpressionUtils.methodName(predicate), predicate, predicateName + "()"));
-              }
-              return builder.build();
-            };
-          }
-        }
-        return null;
-      };
     }
   }
 }
