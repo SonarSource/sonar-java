@@ -59,8 +59,6 @@ public class AssertJChainSimplificationIndex {
     // Hide default constructor
   }
 
-  static final String QUICK_FIX_MESSAGE_FORMAT_STRING = "Use \"%s\"";
-
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String JAVA_UTIL_MAP = "java.util.Map";
   private static final String JAVA_UTIL_COLLECTION = "java.util.Collection";

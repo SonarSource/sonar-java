@@ -33,10 +33,10 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.java.checks.tests.AssertJChainSimplificationIndex.QUICK_FIX_MESSAGE_FORMAT_STRING;
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
 interface AssertJChainSimplificationQuickFix extends BiFunction<MethodInvocationTree, MethodInvocationTree, Supplier<List<JavaQuickFix>>> {
+  String QUICK_FIX_MESSAGE_FORMAT_STRING = "Use \"%s\"";
 
   @Override
   Supplier<List<JavaQuickFix>> apply(MethodInvocationTree subject, MethodInvocationTree predicate);
