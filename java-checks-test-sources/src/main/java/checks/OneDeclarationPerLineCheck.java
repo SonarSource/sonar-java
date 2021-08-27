@@ -24,10 +24,17 @@ class OneDeclarationPerLineCheck {
     int staticC = 1; int staticD; // Noncompliant {{Declare "staticD" on a separate line.}}
   }
 
-  private int i1 = -1, i2, i3 = 1; // Noncompliant
-                                   // Noncompliant@-1
-                                   // Issue order not stable => no message test below
-  
+  int a; int b; int c; int d; // Noncompliant [[sc=14;ec=15;secondary=+0,+0]] {{Declare "b" and all following declarations on a separate line.}}
+  int e;
+
+  private int j1 = -1, j2 // Noncompliant [[sc=24;ec=26;secondary=+2,+4]] {{Declare "j2" and all following declarations on a separate line.}}
+
+    , j3 = 1
+
+    , j4;
+
+  private int i1 = -1, i2, i3 = 1; // Noncompliant [[sc=24;ec=26;secondary=+0]] {{Declare "i2" and all following declarations on a separate line.}}
+
   ;
 
   // For corner case test, please add a space before ;
@@ -68,6 +75,16 @@ class OneDeclarationPerLineCheck {
       case 2:
         break;
     }
+  }
+  class reportedAfterMethod {
+    int i; int j; // Noncompliant
+    void f() {}
+    int k; int l; // Noncompliant
+  }
+
+  void mixedAreReportedTogether() {
+    int k; int l; int m, n; // Noncompliant [[secondary=+0,+0]]
+    int k1; int l1, m1; int n1; // Noncompliant [[secondary=+0,+0]]
   }
 
   // Noncompliant@+1 {{Declare "i8" on a separate line.}}

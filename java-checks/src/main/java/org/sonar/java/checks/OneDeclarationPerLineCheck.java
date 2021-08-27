@@ -19,31 +19,24 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.Arrays;
-import java.util.List;
-
 @Rule(key = "S1659")
 public class OneDeclarationPerLineCheck extends IssuableSubscriptionVisitor {
-
-  private boolean varSameDeclaration;
-  private int lastVarLine;
-
-  @Override
-  public void setContext(JavaFileScannerContext context) {
-    lastVarLine = -1;
-    varSameDeclaration = false;
-    super.setContext(context);
-  }
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -64,19 +57,38 @@ public class OneDeclarationPerLineCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkVariables(List<? extends Tree> trees) {
+    boolean varSameDeclaration = false;
+    int lastVarLine = -1;
+    List<VariableTree> nodesToReport = new ArrayList<>();
+
     for (Tree tree : trees) {
       if (tree.is(Tree.Kind.VARIABLE)) {
-        checkVariable((VariableTree) tree);
+        VariableTree varTree = (VariableTree) tree;
+        int line = varTree.simpleName().identifierToken().line();
+        if (varSameDeclaration || lastVarLine == line) {
+          nodesToReport.add(varTree);
+        } else {
+          reportIfIssue(nodesToReport);
+        }
+        varSameDeclaration = ",".equals(varTree.endToken().text());
+        lastVarLine = line;
       }
     }
+    reportIfIssue(nodesToReport);
   }
 
-  private void checkVariable(VariableTree varTree) {
-    int line = varTree.simpleName().identifierToken().line();
-    if (varSameDeclaration || lastVarLine == line) {
-      reportIssue(varTree.simpleName(), String.format("Declare \"%s\" on a separate line.", varTree.simpleName().name()));
+  private void reportIfIssue(List<VariableTree> nodesToReport) {
+    if (!nodesToReport.isEmpty()) {
+      IdentifierTree firstLocation = nodesToReport.get(0).simpleName();
+      String moreThanOneMessage = nodesToReport.size() > 1 ? " and all following declarations" : "";
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(firstLocation)
+        .withMessage("Declare \"%s\"%s on a separate line.", firstLocation.name(), moreThanOneMessage)
+        .withSecondaries(nodesToReport.stream().skip(1).map(lit -> new JavaFileScannerContext.Location("", lit.simpleName())).collect(Collectors.toList()))
+        .report();
+
+      nodesToReport.clear();
     }
-    varSameDeclaration = ",".equals(varTree.endToken().text());
-    lastVarLine = line;
   }
 }
