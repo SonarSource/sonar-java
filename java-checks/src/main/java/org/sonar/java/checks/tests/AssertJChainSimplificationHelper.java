@@ -69,16 +69,4 @@ class AssertJChainSimplificationHelper {
     }
     return false;
   }
-
-  static String msgWithActual(String predicateName) {
-    return String.format("assertThat(actual).%s()", predicateName);
-  }
-
-  static String msgWithActualExpected(String predicateName) {
-    return String.format("assertThat(actual).%s(expected)", predicateName);
-  }
-
-  static String msgWithActualCustom(String predicateName, String predicateArg) {
-    return String.format("assertThat(actual).%s(%s)", predicateName, predicateArg);
-  }
 }
