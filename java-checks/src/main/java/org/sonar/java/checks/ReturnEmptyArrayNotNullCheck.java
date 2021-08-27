@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
@@ -49,6 +50,7 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
     .ofSubTypes("org.springframework.batch.item.ItemProcessor").names("process").withAnyParameters().build();
 
   private final Deque<ReturnKind> returnKinds = new LinkedList<>();
+  private QuickFixHelper.ImportSupplier importSupplier;
 
   private enum Returns {
     ARRAY, COLLECTION, OTHER;
@@ -81,8 +83,19 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
+  public void setContext(JavaFileScannerContext context) {
+    super.setContext(context);
+    reset();
+  }
+
+  @Override
   public void leaveFile(JavaFileScannerContext context) {
+    reset();
+  }
+
+  private void reset() {
     returnKinds.clear();
+    importSupplier = null;
   }
 
   @Override
@@ -163,50 +176,68 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
         .addTextEdit(JavaTextEdit.replaceTree(returnStatement.expression(), emptyArrayString((Type.ArrayType) returnKind.type)))
         .build());
     }
-    CollectionType collectionType = CollectionType.forType(returnKind.type);
-    if (collectionType == CollectionType.CUSTOM_OR_UNKNOWN) {
+    Optional<CollectionType> candidate = CollectionType.forType(returnKind.type);
+    if (!candidate.isPresent()) {
       return Collections.emptyList();
     }
-    return Collections.singletonList(JavaQuickFix.newQuickFix("Replace \"null\" with an empty %s", collectionType.typeName)
-      .addTextEdit(JavaTextEdit.replaceTree(returnStatement.expression(), collectionType.replacement))
-      .build());
+    CollectionType collectionType = candidate.get();
+
+    JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix("Replace \"null\" with an empty %s", collectionType.typeName)
+      .addTextEdit(JavaTextEdit.replaceTree(returnStatement.expression(), collectionType.replacement));
+
+    if (importSupplier == null) {
+      importSupplier = QuickFixHelper.newImportSupplier(context);
+    }
+    importSupplier.newImportEdit(collectionType.requiredType)
+      .ifPresent(builder::addTextEdit);
+
+    return Collections.singletonList(builder.build());
   }
 
   private static String emptyArrayString(Type.ArrayType arrayType) {
     return String.format("new %s", arrayType.name()
-      .replace("[]", "[0]"));
+      .replace("[]", "[0]")
+      .replaceAll("<.+>", ""));
   }
 
   private enum CollectionType {
     COLLECTION("Collection", "Collections.emptyList()"),
     LIST("List", "Collections.emptyList()"),
-    ARRAY_LIST("ArrayList", "new ArrayList<>()"),
-    LINKED_LIST("LinkedList", "new LinkedList<>()"),
+    ARRAY_LIST("ArrayList"),
+    LINKED_LIST("LinkedList"),
     SET("Set", "Collections.emptySet()"),
-    HASH_SET("HashSet", "new HashSet<>()"),
-    TREE_SET("TreeSet", "new TreeSet<>()"),
+    HASH_SET("HashSet"),
+    TREE_SET("TreeSet"),
     SORTED_SET("SortedSet", "Collections.emptySortedSet()"),
-    NAVIGABLE_SET("NavigableSet", "Collections.emptyNavigableSet()"),
-    CUSTOM_OR_UNKNOWN("Object", null);
+    NAVIGABLE_SET("NavigableSet", "Collections.emptyNavigableSet()");
 
     private final String fullyQualifiedName;
     private final String replacement;
     private final String typeName;
+    private final String requiredType;
+
+    CollectionType(String typeName) {
+      this.typeName = typeName;
+      this.replacement = String.format("new %s<>()", typeName);
+      this.fullyQualifiedName = String.format("java.util.%s", typeName);
+      this.requiredType = fullyQualifiedName;
+    }
 
     CollectionType(String typeName, String replacement) {
       this.typeName = typeName;
       this.replacement = replacement;
-      this.fullyQualifiedName = "java.util." + typeName;
+      this.fullyQualifiedName = String.format("java.util.%s", typeName);
+      this.requiredType = "java.util.Collections";
     }
 
-    static CollectionType forType(Type type) {
+    private static Optional<CollectionType> forType(Type type) {
       Type erasure = type.erasure();
       for (CollectionType collectionType : CollectionType.values()) {
         if (erasure.is(collectionType.fullyQualifiedName)) {
-          return collectionType;
+          return Optional.of(collectionType);
         }
       }
-      return CUSTOM_OR_UNKNOWN;
+      return Optional.empty();
     }
   }
 }

@@ -32,6 +32,20 @@ class ReturnEmptyArrayNotNullCheckWithQuickFixes {
     // edit@multi_dim_array [[sc=12;ec=16]] {{new String[0][0]}}
   }
 
+  List<String>[] array_generics() {
+    List<String>[] result = new List[0];
+    return null; // Noncompliant [[sc=12;ec=16;quickfixes=array_generics]] {{Return an empty array instead of null.}}
+    // fix@array_generics {{Replace "null" with an empty array}}
+    // edit@array_generics [[sc=12;ec=16]] {{new List[0]}}
+  }
+
+  List<Map<String[], Set<Object>>[]>[][] strange_array() {
+    List<Map<String[], Set<Object>>[]>[][] result = new List[0][0];
+    return null; // Noncompliant [[sc=12;ec=16;quickfixes=strange_array]] {{Return an empty array instead of null.}}
+    // fix@strange_array {{Replace "null" with an empty array}}
+    // edit@strange_array [[sc=12;ec=16]] {{new List[0][0]}}
+  }
+
   List<Object> list() {
     List<Object> result = Collections.emptyList();
     return null; // Noncompliant [[sc=12;ec=16;quickfixes=list]] {{Return an empty collection instead of null.}}
