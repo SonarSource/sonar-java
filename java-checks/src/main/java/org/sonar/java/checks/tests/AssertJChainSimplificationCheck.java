@@ -72,7 +72,8 @@ public class AssertJChainSimplificationCheck extends AbstractMethodDetection {
 
     boolean wasIssueRaised = checkPredicatesForSimplification(
       predicates, CONTEXT_FREE_SIMPLIFIERS, SimplifierWithoutContext::simplify,
-      (predicate, simplification) -> createIssueBuilder(predicate, simplification).report());
+      (predicate, simplification) -> createIssueBuilder(predicate, simplification).report()
+    );
 
     // We do not continue when we have already raised an issue to avoid potentially conflicting issue reports. If we
     // have more than one predicate we also avoid continuing to avoid FP on cases such as:
