@@ -41,6 +41,12 @@ class ReturnEmptyArrayNotNullCheckTest {
       .withCheck(new ReturnEmptyArrayNotNullCheck())
       .withQuickFixes()
       .verifyIssues();
+
+    InternalCheckVerifier.newInstance()
+      .onFile(TestUtils.testSourcesPath("checks/ReturnEmptyArrayNotNullCheckWithQuickFixesAndImports.java"))
+      .withCheck(new ReturnEmptyArrayNotNullCheck())
+      .withQuickFixes()
+      .verifyIssues();
   }
 
   @Test
