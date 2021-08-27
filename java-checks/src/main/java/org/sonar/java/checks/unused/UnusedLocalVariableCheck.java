@@ -20,13 +20,22 @@
 package org.sonar.java.checks.unused;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.helpers.UnresolvedIdentifiersVisitor;
+import org.sonar.java.model.statement.BlockTreeImpl;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ListTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -66,9 +75,15 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
       String name = variable.simpleName().name();
       boolean unresolved = UNRESOLVED_IDENTIFIERS_VISITOR.isUnresolved(name);
       if (!unresolved && isProperLocalVariable(variable) && isUnused(variable.symbol())) {
-        reportIssue(variable.simpleName(), String.format(MESSAGE, name));
+        QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(variable.simpleName())
+          .withMessage(String.format(MESSAGE, name))
+          .withQuickFixes(() -> computeQuickFix(variable))
+          .report();
       }
     }
+
   }
 
   private static boolean isUnused(Symbol symbol) {
@@ -112,4 +127,86 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
     return variable.parent().is(Tree.Kind.LIST) && variable.parent().parent().is(Tree.Kind.TRY_STATEMENT);
   }
 
+  private static List<JavaQuickFix> computeQuickFix(VariableTree variable) {
+    return getQuickFixTextSpan(variable).map(textSpan -> Collections.singletonList(
+        JavaQuickFix.newQuickFix("Remove unused local variable")
+          .addTextEdit(JavaTextEdit.removeTextSpan(textSpan))
+          .build()
+      )
+    ).orElseGet(Collections::emptyList);
+  }
+
+  private static Optional<AnalyzerMessage.TextSpan> getQuickFixTextSpan(VariableTree variable) {
+    if (!variable.symbol().usages().isEmpty()) {
+      return Optional.empty();
+    }
+    Tree parent = variable.parent();
+    SyntaxToken lastToken = variable.lastToken();
+    if (parent.is(Tree.Kind.BLOCK, Tree.Kind.INITIALIZER, Tree.Kind.STATIC_INITIALIZER)) {
+      // If the variable is in the declaration list but is not the last one, we also need to include the following comma
+      Optional<VariableTree> followingVariable = getFollowingVariable(variable);
+      if (followingVariable.isPresent()) {
+        return Optional.of(AnalyzerMessage.textSpanBetween(variable.simpleName(), true, followingVariable.get().simpleName(), false));
+      }
+      // If the variable is last in the declaration, we need to retrieve the preceding comma
+      Optional<SyntaxToken> precedingComma = getPrecedingComma(variable);
+      if (precedingComma.isPresent()) {
+        AnalyzerMessage.TextSpan value = AnalyzerMessage.textSpanBetween(precedingComma.get(), true, lastToken, false);
+        return Optional.of(value);
+      }
+      return Optional.of(AnalyzerMessage.textSpanBetween(variable.firstToken(), lastToken));
+    } else if (parent.is(Tree.Kind.LIST)) {
+      ListTree<VariableTree> variables = (ListTree<VariableTree>) parent;
+      // If the variable is the only one in the list we can include the entire list
+      if (variables.size() == 1) {
+        return Optional.of(AnalyzerMessage.textSpanFor(variable));
+      }
+      // If the variable is not the last one in the list we can include the following comma
+      if (lastToken.text().equals(",")) {
+        return Optional.of(AnalyzerMessage.textSpanBetween(variable.simpleName(), lastToken));
+      }
+      // If the variable is last in the list, we need to retrieve the preceding comma
+      SyntaxToken precedingComma = variables.get(variables.indexOf(variable) - 1).lastToken();
+      return Optional.of(AnalyzerMessage.textSpanBetween(precedingComma, lastToken));
+    } else if (parent.is(Tree.Kind.PATTERN_INSTANCE_OF)) {
+      return Optional.of(AnalyzerMessage.textSpanFor(lastToken));
+    }
+    return Optional.empty();
+  }
+
+  private static Optional<SyntaxToken> getPrecedingComma(VariableTree variable) {
+    return getPrecedingVariable(variable).map(VariableTree::lastToken);
+  }
+
+  private static Optional<VariableTree> getPrecedingVariable(VariableTree current) {
+    Tree parent = current.parent();
+    List<Tree> children = ((BlockTreeImpl) parent).children();
+    int currentIndex = children.indexOf(current);
+    // If the variable is the first element that follows the opening token, there is no predecessor to return
+    if (currentIndex <= 1) {
+      return Optional.empty();
+    }
+    // If there is a predecessor, we check that it is a variable and that it is part of the same declaration
+    Tree preceding = children.get(currentIndex - 1);
+    if (preceding.is(Tree.Kind.VARIABLE) && preceding.firstToken().equals(current.firstToken())) {
+      return Optional.of((VariableTree) preceding);
+    }
+    return Optional.empty();
+  }
+
+  private static Optional<VariableTree> getFollowingVariable(VariableTree current) {
+    Tree parent = current.parent();
+    List<Tree> children = ((BlockTreeImpl) parent).children();
+    int currentIndex = children.indexOf(current);
+    // If the variable cannot be found in the parent (a bug) or if the variable is the last one in the block before the closing brace, there is no follower to return.
+    if (currentIndex == -1 || children.size() <= (currentIndex + 2)) {
+      return Optional.empty();
+    }
+    // If there is a following variable, we check that it is a variable and that it is part of the same declaration
+    Tree following = children.get(currentIndex + 1);
+    if (following.is(Tree.Kind.VARIABLE) && following.firstToken().equals(current.firstToken())) {
+      return Optional.of((VariableTree) following);
+    }
+    return Optional.empty();
+  }
 }
