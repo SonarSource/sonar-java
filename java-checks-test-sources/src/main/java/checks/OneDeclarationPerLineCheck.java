@@ -1,17 +1,21 @@
-interface MyInterface {
-  int a = 1, b = 1; // Noncompliant [[sc=14;ec=15]] {{Declare "b" on a separate line.}}
-}
+package checks;
 
-enum MyEnum {
-  ONE, TWO;
-  int a, b; // Noncompliant
-}
-
-@interface annotationType {
-  int a = 0, b = 0; // Noncompliant
-}
+import java.util.Collections;
 
 class OneDeclarationPerLineCheck {
+
+  interface MyInterface {
+    int a = 1, b = 1; // Noncompliant [[sc=16;ec=17]] {{Declare "b" on a separate line.}}
+  }
+
+  enum MyEnum {
+    ONE, TWO;
+    int a, b; // Noncompliant
+  }
+
+  @interface annotationType {
+    int a = 0, b = 0; // Noncompliant
+  }
 
   private static final int STATIC_FINAL_A = 1, STATIC_FINAL_B = 1; // Noncompliant {{Declare "STATIC_FINAL_B" on a separate line.}}
 
@@ -53,13 +57,13 @@ class OneDeclarationPerLineCheck {
     } catch(Exception e) { // NPE verify (variable w/o endToken)
     }
 
-    for (Object o : Lists.newLinkedList()) { // NPE verify (variable w/o endToken)
+    for (Object o : Collections.emptyList()) { // NPE verify (variable w/o endToken)
     }
 
 
     switch (2) {
       case 1:
-        int a, b = 0; // Noncompliant
+        int a1, b1 = 0; // Noncompliant
         break;
       case 2:
         break;
