@@ -20,6 +20,8 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +29,9 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -128,7 +133,12 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
       if (isFirstUsageANullCheck(boxedBoolean)) {
         return true;
       }
-      context.reportIssue(this, boxedBoolean, "Use the primitive boolean expression here.");
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(boxedBoolean)
+        .withMessage("Use the primitive boolean expression here.")
+        .withQuickFixes(() -> getQuickFix(tree))
+        .report();
       return false;
     }
     return true;
@@ -244,5 +254,22 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
       .map(SymbolMetadata.AnnotationInstance::symbol)
       .map(Symbol::name)
       .anyMatch(name -> name.equalsIgnoreCase("nonNull") || name.equalsIgnoreCase("notNull"));
+  }
+
+  private static List<JavaQuickFix> getQuickFix(ExpressionTree tree) {
+    List<JavaTextEdit> edits = new ArrayList<>();
+    if (tree.is(Kind.LOGICAL_COMPLEMENT)) {
+      edits.add(JavaTextEdit.replaceTree(((UnaryExpressionTree) tree).operatorToken(), "Boolean.FALSE.equals("));
+    } else if (tree.is(Kind.METHOD_INVOCATION) && OPTIONAL_ORELSE.matches((MethodInvocationTree) tree)) {
+      // We do not suggest a quick fix when we have an optional
+      return Collections.emptyList();
+    } else {
+      edits.add(JavaTextEdit.insertBeforeTree(tree, "Boolean.TRUE.equals("));
+    }
+    edits.add(JavaTextEdit.insertAfterTree(tree, ")"));
+
+    return Collections.singletonList(JavaQuickFix.newQuickFix("Use the primitive boolean expression")
+      .addTextEdits(edits)
+      .build());
   }
 }
