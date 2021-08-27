@@ -88,9 +88,10 @@ public class QuickFixHelper {
   }
 
   public static String contentForTree(Tree tree, JavaFileScannerContext context) {
-    SyntaxToken firstToken = tree.firstToken();
-    SyntaxToken endToken = tree.lastToken();
+    return contentForRange(tree.firstToken(), tree.lastToken(), context);
+  }
 
+  public static String contentForRange(SyntaxToken firstToken, SyntaxToken endToken, JavaFileScannerContext context) {
     int startLine = firstToken.line();
     int endLine = endToken.line();
 
