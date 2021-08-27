@@ -143,9 +143,9 @@ public class FilterVerifier {
       String[] lines = comment.split("\\r\\n|\\r|\\n");
       for (int i = 0; i < lines.length; i++) {
         if (lines[i].endsWith("NoIssue")) {
-          rejectedIssuesLines.add(syntaxTrivia.startLine() + i);
+          rejectedIssuesLines.add(syntaxTrivia.range().start().line() + i);
         } else if (lines[i].endsWith("WithIssue")) {
-          acceptedIssuesLines.add(syntaxTrivia.startLine() + i);
+          acceptedIssuesLines.add(syntaxTrivia.range().start().line() + i);
         }
       }
     }

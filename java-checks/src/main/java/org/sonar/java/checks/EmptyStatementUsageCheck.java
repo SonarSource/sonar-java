@@ -76,7 +76,7 @@ public class EmptyStatementUsageCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean sameLine(SyntaxToken token, EmptyStatementTree emptyStatement) {
-    return token.line() == emptyStatement.semicolonToken().line();
+    return token.range().start().line() == emptyStatement.semicolonToken().range().start().line();
   }
 
   private static boolean usedForEmptyEnum(Tree tree) {

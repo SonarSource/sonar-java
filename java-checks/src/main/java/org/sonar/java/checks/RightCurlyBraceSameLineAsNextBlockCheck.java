@@ -35,7 +35,7 @@ public class RightCurlyBraceSameLineAsNextBlockCheck extends RightCurlyBraceToNe
 
   @Override
   protected void checkTokenPosition(SyntaxToken syntaxToken, BlockTree previousBlock) {
-    if (syntaxToken.line() != previousBlock.closeBraceToken().line()) {
+    if (syntaxToken.range().start().line() != previousBlock.closeBraceToken().range().start().line()) {
       QuickFixHelper.newIssue(context)
         .forRule(this)
         .onTree(syntaxToken)

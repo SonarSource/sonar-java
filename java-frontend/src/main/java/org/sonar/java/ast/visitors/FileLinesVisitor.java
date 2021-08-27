@@ -127,7 +127,7 @@ public class FileLinesVisitor extends SubscriptionVisitor {
       case FOR_EACH_STATEMENT:
       case WHILE_STATEMENT:
       case DO_STATEMENT:
-        executableLines.add(tree.lastToken().line());
+        executableLines.add(tree.lastToken().range().start().line());
         break;
       default:
         // Do nothing particular
@@ -161,7 +161,7 @@ public class FileLinesVisitor extends SubscriptionVisitor {
       // get the last
       TypeTree returnType = tree.returnType();
       if(returnType == null || "void".equals(returnType.firstToken().text())) {
-        executableLines.add(methodBody.closeBraceToken().line());
+        executableLines.add(methodBody.closeBraceToken().range().start().line());
       }
       return methodBody.body();
     }
@@ -182,12 +182,12 @@ public class FileLinesVisitor extends SubscriptionVisitor {
           if (t.is(NEW_CLASS)) {
             NewClassTree newClassTree = (NewClassTree) t;
             new ExecutableLinesTokenVisitor().scanTree(newClassTree.identifier());
-            executableLines.add(newClassTree.newKeyword().line());
+            executableLines.add(newClassTree.newKeyword().range().start().line());
           } else if (t.is(TRY_STATEMENT)) {
             // add last token of try statements
-            executableLines.add(t.lastToken().line());
+            executableLines.add(t.lastToken().range().start().line());
           } else {
-            executableLines.add(t.firstToken().line());
+            executableLines.add(t.firstToken().range().start().line());
           }
         }
       );
@@ -195,7 +195,7 @@ public class FileLinesVisitor extends SubscriptionVisitor {
 
   @Override
   public void visitToken(SyntaxToken syntaxToken) {
-    linesOfCode.add(syntaxToken.line());
+    linesOfCode.add(syntaxToken.range().start().line());
   }
 
   private static boolean isConstant(VariableTree variableTree) {
@@ -218,7 +218,7 @@ public class FileLinesVisitor extends SubscriptionVisitor {
 
     @Override
     public void visitToken(SyntaxToken syntaxToken) {
-      executableLines.add(syntaxToken.line());
+      executableLines.add(syntaxToken.range().start().line());
     }
   }
 }

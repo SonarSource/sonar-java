@@ -30,6 +30,7 @@ import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.testing.VisitorsBridgeForTests;
+import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -74,7 +75,7 @@ class AnyRuleIssueFilterTest {
   @Test
   void invalid_tree_does_not_exclude_lines() {
 
-    // by default, any issue oin line 7 is accepted
+    // by default, any issue at line 7 is accepted
     assertThatIssueWillBeAccepted(7).isTrue();
 
     Tree mockTree = mock(Tree.class);
@@ -83,14 +84,14 @@ class AnyRuleIssueFilterTest {
     assertThatIssueWillBeAccepted(7).isTrue();
 
     SyntaxToken mockFirstToken = mock(SyntaxToken.class);
-    when(mockFirstToken.line()).thenReturn(7);
+    when(mockFirstToken.range()).thenReturn(Range.at(7,1,7,2));
     when(mockTree.firstToken()).thenReturn(mockFirstToken);
     // without last token, line can not be excluded
     filter.excludeLines(mockTree);
     assertThatIssueWillBeAccepted(7).isTrue();
 
     SyntaxToken mockLastToken = mock(SyntaxToken.class);
-    when(mockLastToken.line()).thenReturn(7);
+    when(mockLastToken.range()).thenReturn(Range.at(7,1,7,2));
     when(mockTree.lastToken()).thenReturn(mockLastToken);
     // with first and last token, line 7 can be excluded
     filter.excludeLines(mockTree);

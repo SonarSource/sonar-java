@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -66,7 +67,9 @@ public class ConditionalOnNewLineCheck extends IssuableSubscriptionVisitor {
 
   private boolean isOnSameLineAsPreviousIf(IfStatementTree ifStatementTree) {
     // check column for nested if on one line case.
-    return previousToken.line() == ifStatementTree.ifKeyword().line() &&
-      previousToken.range().start().column() < ifStatementTree.ifKeyword().range().start().column();
+    Position previousTokenStart = previousToken.range().start();
+    Position ifStatementStart = ifStatementTree.ifKeyword().range().start();
+    return previousTokenStart.line() == ifStatementStart.line() &&
+      previousTokenStart.column() < ifStatementStart.column();
   }
 }

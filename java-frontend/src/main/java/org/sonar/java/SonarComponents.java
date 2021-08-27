@@ -33,8 +33,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
@@ -58,6 +56,7 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
+import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaIssue;
 import org.sonar.plugins.java.api.CheckRegistrar;
@@ -76,7 +75,6 @@ public class SonarComponents {
   public static final String FAIL_ON_EXCEPTION_KEY = "sonar.internal.analysis.failFast";
   public static final String SONAR_BATCH_MODE_KEY = "sonar.java.internal.batchMode";
 
-  private static final Pattern LINE_BREAK_PATTERN = Pattern.compile("\r\n|[\n\r]");
   private static final Version SONARLINT_6_3 = Version.parse("6.3");
 
   private final FileLinesContextFactory fileLinesContextFactory;
@@ -303,22 +301,7 @@ public class SonarComponents {
   }
 
   public List<String> fileLines(InputFile inputFile) {
-    return fileLines(inputFileContents(inputFile));
-  }
-
-  @VisibleForTesting
-  static List<String> fileLines(String content) {
-    List<String> lines = new ArrayList<>();
-    Matcher matcher = LINE_BREAK_PATTERN.matcher(content);
-    int pos = 0;
-    while (matcher.find()) {
-      lines.add(content.substring(pos, matcher.start()));
-      pos = matcher.end();
-    }
-    if (pos == 0 || pos < content.length()) {
-      lines.add(content.substring(pos));
-    }
-    return lines;
+    return LineUtils.splitLines(inputFileContents(inputFile));
   }
 
   public String inputFileContents(InputFile inputFile) {

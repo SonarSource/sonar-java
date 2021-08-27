@@ -171,7 +171,7 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
     }
 
     if (startLine != -1) {
-      int endLine = tree.lastToken().line();
+      int endLine = tree.lastToken().range().start().line();
       Set<Integer> filteredlines = IntStream.rangeClosed(startLine, endLine).boxed().collect(Collectors.toSet());
       for (String rule : rules) {
         excludeLines(filteredlines, rule);
@@ -183,9 +183,9 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
     SyntaxToken firstToken = tree.firstToken();
     // first token can't be null, because tree has @SuppressWarnings annotation
     if (!firstToken.trivias().isEmpty()) {
-      return firstToken.trivias().get(0).startLine();
+      return firstToken.trivias().get(0).range().start().line();
     }
-    return firstToken.line();
+    return firstToken.range().start().line();
   }
 
   private static boolean isSuppressWarningsAnnotation(AnnotationTree annotationTree) {

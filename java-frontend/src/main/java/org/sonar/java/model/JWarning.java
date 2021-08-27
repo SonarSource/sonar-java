@@ -40,6 +40,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.collections.SetUtils;
+import org.sonar.java.model.location.InternalPosition;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -56,8 +57,8 @@ public final class JWarning {
   JWarning(String message, Type type, int startLine, int startColumnOffset, int endLine, int endColumnOffset) {
     this.message = message;
     this.type = type;
-    this.start = Position.atOffset(startLine, startColumnOffset);
-    this.end = Position.atOffset(endLine, endColumnOffset);
+    this.start = InternalPosition.atOffset(startLine, startColumnOffset);
+    this.end = InternalPosition.atOffset(endLine, endColumnOffset);
   }
 
   public Type type() {

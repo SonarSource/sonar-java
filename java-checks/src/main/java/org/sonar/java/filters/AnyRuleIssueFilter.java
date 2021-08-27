@@ -63,13 +63,13 @@ public abstract class AnyRuleIssueFilter extends BaseTreeVisitor implements Java
     SyntaxToken firstSyntaxToken = tree.firstToken();
     SyntaxToken lastSyntaxToken = tree.lastToken();
     if (firstSyntaxToken != null && lastSyntaxToken != null) {
-      int startLine = firstSyntaxToken.line();
-      int endLine = lastSyntaxToken.line();
+      int startLine = firstSyntaxToken.range().start().line();
+      int endLine = lastSyntaxToken.range().start().line();
 
       // includes trivia on top of first syntax token.
       List<SyntaxTrivia> trivias = firstSyntaxToken.trivias();
       if (!trivias.isEmpty()) {
-        startLine = trivias.get(0).startLine();
+        startLine = trivias.get(0).range().start().line();
       }
 
       return IntStream.rangeClosed(startLine, endLine).boxed().collect(Collectors.toSet());

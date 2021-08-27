@@ -60,12 +60,14 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
     AnalyzerMessage previousRelatedIssue = null;
     int previousCommentLine = -1;
     for (SyntaxTrivia syntaxTrivia : syntaxToken.trivias()) {
-      if (syntaxTrivia.startLine() != previousCommentLine + 1 && syntaxTrivia.startLine() != previousCommentLine) {
+      int currentCommentLine = syntaxTrivia.range().start().line();
+      if (currentCommentLine != previousCommentLine + 1 &&
+        currentCommentLine != previousCommentLine) {
         previousRelatedIssue = null;
       }
       if (!isHeader(syntaxTrivia) && !isJavadoc(syntaxTrivia.comment()) && !isJSNI(syntaxTrivia.comment())) {
         previousRelatedIssue = collectIssues(issues, syntaxTrivia, previousRelatedIssue);
-        previousCommentLine = syntaxTrivia.startLine();
+        previousCommentLine = currentCommentLine;
       }
     }
     DefaultJavaFileScannerContext scannerContext = (DefaultJavaFileScannerContext) this.context;
@@ -78,7 +80,7 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
     for (int lineOffset = 0; lineOffset < lines.length; lineOffset++) {
       String line = lines[lineOffset];
       if (!isJavadocLink(line) && codeRecognizer.isLineOfCode(line)) {
-        int startLine = syntaxTrivia.startLine() + lineOffset;
+        int startLine = syntaxTrivia.range().start().line() + lineOffset;
         int startColumnOffset = (lineOffset == 0 ? syntaxTrivia.range().start().columnOffset() : 0);
         if (issue != null) {
           issue.flows.add(Collections.singletonList(createAnalyzerMessage(startLine, startColumnOffset, line, "Code")));
@@ -111,7 +113,7 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
    * But we assume that probability of this is really low.
    */
   private static boolean isHeader(SyntaxTrivia syntaxTrivia) {
-    return syntaxTrivia.startLine() == 1;
+    return syntaxTrivia.range().start().line() == 1;
   }
 
   private static boolean isJavadocLink(String line) {

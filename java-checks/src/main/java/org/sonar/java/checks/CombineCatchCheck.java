@@ -55,7 +55,7 @@ public class CombineCatchCheck extends IssuableSubscriptionVisitor implements Ja
   }
 
   private void reportIssue(CatchTree catchTree, CatchTree catchTreeToBeCompared) {
-    String message = "Combine this catch with the one at line " + catchTreeToBeCompared.catchKeyword().line()
+    String message = "Combine this catch with the one at line " + catchTreeToBeCompared.catchKeyword().range().start().line()
       + ", which has the same body." + context.getJavaVersion().java7CompatibilityMessage();
     List<JavaFileScannerContext.Location> flow = Collections.singletonList(new JavaFileScannerContext.Location("Combine with this catch", catchTreeToBeCompared));
     reportIssue(catchTree.parameter(), message, flow, null);

@@ -754,7 +754,7 @@ class JParserSemanticTest {
 
     // owner of lambda parameter is the method which defines the functional interface
     Symbol newSymbol = cu.sema.variableSymbol(p.variableBinding);
-    assertThat(newSymbol.declaration().firstToken().line()).isEqualTo(3);
+    assertThat(newSymbol.declaration().firstToken().range().start().line()).isEqualTo(3);
     Symbol newOwner = newSymbol.owner();
     assertThat(newOwner).isNotNull();
     assertThat(newOwner.isMethodSymbol()).isTrue();

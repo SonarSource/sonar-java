@@ -72,7 +72,7 @@ public class ProgramPoint {
     if (block instanceof CFG.Block) {
       List<Tree> elements = ((CFG.Block) block).elements();
       if (i < elements.size()) {
-        tree = "" + elements.get(i).kind() + elements.get(i).firstToken().line();
+        tree = "" + elements.get(i).kind() + elements.get(i).firstToken().range().start().line();
       }
     }
     return "B" + block.id() + "." + i + "  " + tree;

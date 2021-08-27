@@ -397,7 +397,7 @@ class Expectations {
         // already visited
         return;
       }
-      collectExpectedIssues(syntaxTrivia.comment(), syntaxTrivia.startLine());
+      collectExpectedIssues(syntaxTrivia.comment(), syntaxTrivia.range().start().line());
     }
 
     @Override

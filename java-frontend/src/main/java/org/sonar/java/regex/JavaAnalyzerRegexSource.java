@@ -104,7 +104,7 @@ public class JavaAnalyzerRegexSource extends JavaRegexSource {
     if (literal == null || !literal.is(Tree.Kind.TEXT_BLOCK)) {
       return false;
     }
-    int lastLine = literal.token().line()
+    int lastLine = literal.token().range().start().line()
       + literal.value().split("\n").length
       - 1;
     // last line will benefit from the closing """
@@ -144,7 +144,7 @@ public class JavaAnalyzerRegexSource extends JavaRegexSource {
       String[] stringLines = getString(literal).split("(?<=\r?\n)");
 
       int indent = LiteralUtils.indentationOfTextBlock(literalTreeLines);
-      int textBlockLine = literal.token().line();
+      int textBlockLine = literal.token().range().start().line();
       for (int i = 0; i < stringLines.length; i++) {
         int line = textBlockLine + i + 1;
         String stringLine = stringLines[i];

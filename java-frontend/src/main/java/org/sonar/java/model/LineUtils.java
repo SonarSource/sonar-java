@@ -17,41 +17,41 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.java.api.location;
+package org.sonar.java.model;
 
-import org.sonar.java.model.location.InternalPosition;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public interface Position extends Comparable<Position> {
+public final class LineUtils {
 
-  int FIRST_LINE = 1;
-  int FIRST_COLUMN = 1;
+  private static final Pattern LINE_BREAK_PATTERN = Pattern.compile("\r\n|[\n\r]");
 
-  /**
-   * The line number in a file. First line number is 1.
-   */
-  int line();
-
-  /**
-   * The line offset in a file. First line offset is 0. (lineOffset() == line() - 1)
-   */
-  int lineOffset();
-
-  /**
-   * The column number at the specified line. First column number is 1. (column() == columnOffset() + 1)
-   */
-  int column();
-
-  /**
-   * The column offset at the specified line. First column offset is 0. (columnOffset() == column() - 1)
-   */
-  int columnOffset();
-
-  static Position at(int line, int column) {
-    return new InternalPosition(line, column);
+  private LineUtils() {
+    // utility class
   }
 
-  boolean isBefore(Position other);
-
-  boolean isAfter(Position other);
+  /**
+   * @return for example:
+   * "" => { "" }
+   * "a" => { "a" }
+   * "a\n" => { "a" }
+   * "a\nb" => { "a", "b" }
+   * "a\nb\n" => { "a", "b" }
+   */
+  public static List<String> splitLines(String content) {
+    List<String> lines = new ArrayList<>();
+    Matcher matcher = LINE_BREAK_PATTERN.matcher(content);
+    int pos = 0;
+    while (matcher.find()) {
+      lines.add(content.substring(pos, matcher.start()));
+      pos = matcher.end();
+    }
+    if (pos == 0 || pos < content.length()) {
+      lines.add(content.substring(pos));
+    }
+    return lines;
+  }
 
 }

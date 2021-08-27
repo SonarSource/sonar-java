@@ -60,7 +60,7 @@ public class CommentLinesVisitor extends SubscriptionVisitor {
 
   private void handleCommentsForTrivia(SyntaxTrivia trivia) {
     String[] commentLines = getContents(trivia.comment()).split("(\r)?\n|\r", -1);
-    int line = trivia.startLine();
+    int line = trivia.range().start().line();
     for (String commentLine : commentLines) {
       if(commentLine.contains("NOSONAR")) {
         noSonarLines.add(line);

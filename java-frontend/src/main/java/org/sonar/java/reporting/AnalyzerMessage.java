@@ -180,7 +180,7 @@ public class AnalyzerMessage {
   private static void checkLocation(SyntaxToken firstSyntaxToken, TextSpan location) {
     Preconditions.checkState(!location.isEmpty(),
       "Invalid issue location: Text span is empty when trying reporting on (l:%s, c:%s).",
-      firstSyntaxToken.line(), firstSyntaxToken.range().start().column());
+      firstSyntaxToken.range().start().line(), firstSyntaxToken.range().start().column());
   }
 
   /**

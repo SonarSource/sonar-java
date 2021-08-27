@@ -138,7 +138,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
     Tree.Kind peek = stack.peek();
     Tree.Kind kind = tree.kind();
     if (requiresParenthesis(peek, kind)) {
-      raiseIssue(tree.operatorToken().line(), tree);
+      raiseIssue(tree.operatorToken().range().start().line(), tree);
     }
     stack.push(kind);
     super.visitBinaryExpression(tree);
@@ -154,7 +154,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
     super.visitIfStatement(tree);
     ExpressionTree condition = tree.condition();
     if (condition.is(Tree.Kind.ASSIGNMENT) && EQUALITY_RELATIONAL_OPERATORS.contains(((AssignmentExpressionTree) condition).expression().kind())) {
-      raiseIssue(((AssignmentExpressionTree) condition).operatorToken().line(), tree);
+      raiseIssue(((AssignmentExpressionTree) condition).operatorToken().range().start().line(), tree);
     }
   }
 
@@ -204,7 +204,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
       || isSimpleLambda(tree)) {
       return;
     }
-    raiseIssue(tree.firstToken().line(), tree);
+    raiseIssue(tree.firstToken().range().start().line(), tree);
   }
 
   private static boolean isSimpleLambda(ExpressionTree tree) {

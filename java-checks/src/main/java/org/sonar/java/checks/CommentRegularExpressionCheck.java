@@ -66,7 +66,7 @@ public class CommentRegularExpressionCheck extends IssuableSubscriptionVisitor {
       }
     }
     if (pattern != null && pattern.matcher(syntaxTrivia.comment()).matches()) {
-      addIssue(syntaxTrivia.startLine(), message);
+      addIssue(syntaxTrivia.range().start().line(), message);
     }
   }
 

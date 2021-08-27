@@ -85,7 +85,7 @@ public class MethodIdenticalImplementationsCheck extends IssuableSubscriptionVis
           MethodTree otherMethod = otherMethodWithVariables.method;
           reportIssue(
             otherMethod.simpleName(),
-            String.format(ISSUE_MSG, methodIdentifier.text(), methodIdentifier.line()),
+            String.format(ISSUE_MSG, methodIdentifier.text(), methodIdentifier.range().start().line()),
             Collections.singletonList(new JavaFileScannerContext.Location("original implementation", methodIdentifier)),
             null);
           reported.add(otherMethod);

@@ -74,7 +74,7 @@ public class OneDeclarationPerLineCheck extends IssuableSubscriptionVisitor {
     for (Tree tree : trees) {
       if (tree.is(Tree.Kind.VARIABLE)) {
         VariableTree varTree = (VariableTree) tree;
-        int line = varTree.simpleName().identifierToken().line();
+        int line = varTree.simpleName().identifierToken().range().start().line();
         if (varSameDeclaration || lastVarLine == line) {
           nodesToReport.add(varTree);
         } else {
@@ -139,7 +139,7 @@ public class OneDeclarationPerLineCheck extends IssuableSubscriptionVisitor {
   private String indentationOfLine(Tree tree) {
     SyntaxToken firstToken = tree.firstToken();
     Matcher matcher = INDENTATION_PATTERN.matcher(context.getFileLines()
-      .get(firstToken.line() - 1));
+      .get(firstToken.range().start().line() - 1));
     if (matcher.find()) {
       return matcher.group();
     }

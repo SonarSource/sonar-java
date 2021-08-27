@@ -77,12 +77,12 @@ public class TooLongLineCheck extends IssuableSubscriptionVisitor {
   private static int getLine(ImportClauseTree importClauseTree, boolean fromStart) {
     if (importClauseTree.is(Tree.Kind.IMPORT)) {
       if (fromStart) {
-        return ((ImportTree) importClauseTree).importKeyword().line();
+        return ((ImportTree) importClauseTree).importKeyword().range().start().line();
       } else {
-        return ((ImportTree) importClauseTree).semicolonToken().line();
+        return ((ImportTree) importClauseTree).semicolonToken().range().start().line();
       }
     }
-    return ((EmptyStatementTree) importClauseTree).semicolonToken().line();
+    return ((EmptyStatementTree) importClauseTree).semicolonToken().range().start().line();
   }
 
   private void visitFile() {

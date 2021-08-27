@@ -82,7 +82,7 @@ public class IndentationAfterConditionalCheck extends BaseTreeVisitor implements
     SyntaxToken elseKeyword = ifStatement.elseKeyword();
     if (thenStatement.is(Tree.Kind.BLOCK)) {
       SyntaxToken closeBrace = ((BlockTree) thenStatement).closeBraceToken();
-      if (closeBrace.line() == elseKeyword.line()) {
+      if (closeBrace.range().start().line() == elseKeyword.range().start().line()) {
         return closeBrace;
       }
     }

@@ -21,6 +21,7 @@ package org.sonar.java.model;
 
 import java.util.List;
 import javax.annotation.Nonnull;
+import org.sonar.java.model.location.InternalPosition;
 import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -36,8 +37,8 @@ public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
   public InternalSyntaxTrivia(String comment, int line, int columnOffset) {
     this.comment = comment;
     range = comment.startsWith("/*")
-      ? InternalSyntaxToken.createMultiLineRange(line, columnOffset, comment)
-      : InternalSyntaxToken.createSingleLineRange(line, columnOffset, comment);
+      ? Range.at(InternalPosition.atOffset(line, columnOffset), comment)
+      : Range.at(InternalPosition.atOffset(line, columnOffset), comment.length());
   }
 
   @Override

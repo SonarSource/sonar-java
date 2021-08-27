@@ -19,6 +19,8 @@
  */
 package org.sonar.java.model.location;
 
+import java.util.List;
+import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.location.Range;
 
@@ -31,6 +33,15 @@ public class InternalRange implements Range {
   public InternalRange(Position start, Position end) {
     this.start = start;
     this.end = end;
+  }
+
+  public InternalRange(Position start, String text) {
+    List<String> lines = LineUtils.splitLines(text);
+    String lastLine = lines.get(lines.size() - 1);
+    int endLine = start.line() + lines.size() - 1;
+    int endColumn = (lines.size() == 1 ? start.column() : Position.FIRST_COLUMN) + lastLine.length();
+    this.start = start;
+    this.end = Position.at(endLine, endColumn);
   }
 
   /**

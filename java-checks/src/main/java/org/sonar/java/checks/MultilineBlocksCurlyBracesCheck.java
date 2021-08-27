@@ -23,6 +23,7 @@ import java.util.Locale;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
@@ -76,13 +77,15 @@ public class MultilineBlocksCurlyBracesCheck extends BaseTreeVisitor implements 
     }
     if (block != null && !block.is(Tree.Kind.BLOCK)) {
       SyntaxToken previousToken = block.firstToken();
-      int previousColumn = previousToken.range().start().column();
-      int previousLine = previousToken.line();
+      Position previousTokenStart = previousToken.range().start();
+      int previousColumn = previousTokenStart.column();
+      int previousLine = previousTokenStart.line();
       SyntaxToken currentToken = current.firstToken();
-      int currentColumn = currentToken.range().start().column();
-      int currentLine = currentToken.line();
+      Position currentTokenStart = currentToken.range().start();
+      int currentColumn = currentTokenStart.column();
+      int currentLine = currentTokenStart.line();
       if ((previousColumn == currentColumn && previousLine + 1 == currentLine) ||
-        (previousLine == previous.firstToken().line()
+        (previousLine == previous.firstToken().range().start().line()
           && previous.firstToken().range().start().column() < currentColumn)) {
         int lines = 1 + currentLine - previousLine;
         context.reportIssue(this, current, getMessage(condition, lines));

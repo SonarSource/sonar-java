@@ -314,7 +314,7 @@ public class ExplodedGraphWalker {
 
   private void throwMaxSteps(MethodTree tree) {
     String message = String.format("reached limit of %d steps for method %s#%d in class %s",
-      maxSteps(), tree.simpleName().name(), tree.simpleName().firstToken().line(), tree.symbol().owner().name());
+      maxSteps(), tree.simpleName().name(), tree.simpleName().firstToken().range().start().line(), tree.symbol().owner().name());
     MaximumStepsReachedException cause = new MaximumStepsReachedException(message);
     interrupted(cause);
     throw cause;

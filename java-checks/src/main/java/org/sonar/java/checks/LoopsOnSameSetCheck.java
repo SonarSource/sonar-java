@@ -75,7 +75,7 @@ public class LoopsOnSameSetCheck extends IssuableSubscriptionVisitor {
 
   private void checkForEachExpression(Tree forEachIterable, ExpressionTree expressionTree) {
     if (SyntacticEquivalence.areEquivalent(expressionTree, forEachIterable)) {
-      addIssue(expressionTree, forEachIterable.firstToken().line());
+      addIssue(expressionTree, forEachIterable.firstToken().range().start().line());
     }
   }
 
