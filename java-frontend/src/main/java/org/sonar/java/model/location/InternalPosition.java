@@ -39,6 +39,10 @@ public class InternalPosition implements Position {
     this.column = column;
   }
 
+  public static Position atOffset(int line, int columnOffset) {
+    return new InternalPosition(line, columnOffset + 1);
+  }
+
   @Override
   public int line() {
     return line;
@@ -67,6 +71,11 @@ public class InternalPosition implements Position {
   @Override
   public boolean isBefore(Position other) {
     return compareTo(other) < 0;
+  }
+
+  @Override
+  public boolean isAfter(Position other) {
+    return compareTo(other) > 0;
   }
 
   @Override

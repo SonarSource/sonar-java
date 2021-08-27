@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import javax.annotation.Nonnull;
 import org.sonar.java.annotations.Beta;
 import org.sonar.plugins.java.api.location.Range;
 
@@ -33,6 +32,10 @@ public interface SyntaxTrivia extends Tree {
 
   String comment();
 
+  /**
+   * @deprecated for removal, since = 7.3, use range().start().line()
+   */
+  @Deprecated
   int startLine();
 
   /**
@@ -44,7 +47,6 @@ public interface SyntaxTrivia extends Tree {
   @Deprecated
   int column();
 
-  @Nonnull
   Range range();
 
 }

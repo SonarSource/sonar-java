@@ -112,7 +112,7 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
       String identifier = variableTree.simpleName().name();
       VariableTree hiddenVariable = variables.get(identifier);
       if (!flattenExcludedVariables.contains(variableTree) && hiddenVariable != null && !isInStaticInnerClass(hiddenVariable, variableTree)) {
-        int line = hiddenVariable.firstToken().line();
+        int line = hiddenVariable.firstToken().range().start().line();
         reportIssue(variableTree.simpleName(), "Rename \"" + identifier + "\" which hides the field declared at line " + line + ".");
         return;
       }

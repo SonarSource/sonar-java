@@ -39,6 +39,17 @@ class InternalRangeTest {
   }
 
   @Test
+  void construction_from_text() {
+    Position start = Position.at(42, 12);
+    assertThat(Range.at(start, "")).isEqualTo(Range.at(42, 12, 42, 12));
+    assertThat(Range.at(start, "a")).isEqualTo(Range.at(42, 12, 42, 13));
+    assertThat(Range.at(start, "a b c")).isEqualTo(Range.at(42, 12, 42, 17));
+    assertThat(Range.at(start, "a\nb\n")).isEqualTo(Range.at(42, 12, 43, 2));
+    assertThat(Range.at(start, "a\nb\nc")).isEqualTo(Range.at(42, 12, 44, 2));
+    assertThat(Range.at(start, "a\r\nb\r\n")).isEqualTo(Range.at(42, 12, 43, 2));
+  }
+
+  @Test
   void to_string() {
     assertThat(Range.at(Position.at(42, 12), Position.at(43, 17)))
       .hasToString("(42:12)-(43:17)");

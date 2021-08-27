@@ -29,7 +29,7 @@ public class LeftCurlyBraceEndLineCheck extends LeftCurlyBraceBaseTreeVisitor {
 
   @Override
   protected void checkTokens(SyntaxToken lastToken, SyntaxToken openBraceToken) {
-    if (lastToken.line() != openBraceToken.line()) {
+    if (lastToken.range().start().line() != openBraceToken.range().start().line()) {
       addIssue(openBraceToken, this, "Move this left curly brace to the end of previous line of code.");
     }
   }

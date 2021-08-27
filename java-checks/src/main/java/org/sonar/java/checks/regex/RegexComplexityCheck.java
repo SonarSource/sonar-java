@@ -84,10 +84,10 @@ public class RegexComplexityCheck extends AbstractRegexCheck {
 
   @Override
   public void visitTrivia(SyntaxTrivia syntaxTrivia) {
-    commentedLines.add(syntaxTrivia.startLine());
+    commentedLines.add(syntaxTrivia.range().start().line());
     int numLines = StringUtils.countMatches(syntaxTrivia.comment(), "\n");
     if (numLines > 0) {
-      commentedLines.add(syntaxTrivia.startLine() + numLines);
+      commentedLines.add(syntaxTrivia.range().start().line() + numLines);
     }
   }
 
@@ -169,7 +169,7 @@ public class RegexComplexityCheck extends AbstractRegexCheck {
     }
 
     private boolean isCommented(LiteralTree regexPart) {
-      int line = regexPart.token().line();
+      int line = regexPart.token().range().start().line();
       return regexContainsComments
         || commentedLines.contains(line)
         || commentedLines.contains(line - 1);

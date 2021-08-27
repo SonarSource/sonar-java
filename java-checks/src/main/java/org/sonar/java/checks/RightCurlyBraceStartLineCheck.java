@@ -59,9 +59,9 @@ public class RightCurlyBraceStartLineCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkBlockBody(SyntaxToken openBraceToken, SyntaxToken closeBraceToken, List<? extends Tree> trees) {
-    if (openBraceToken.line() != closeBraceToken.line() && !trees.isEmpty()) {
+    if (openBraceToken.range().start().line() != closeBraceToken.range().start().line() && !trees.isEmpty()) {
       Tree lastTree = trees.get(trees.size() - 1);
-      if (lastTree.lastToken().line() == closeBraceToken.line()) {
+      if (lastTree.lastToken().range().start().line() == closeBraceToken.range().start().line()) {
         reportIssue(closeBraceToken, "Move this closing curly brace to the next line.");
       }
     }

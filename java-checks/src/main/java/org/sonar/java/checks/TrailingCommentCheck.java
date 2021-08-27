@@ -89,10 +89,10 @@ public class TrailingCommentCheck extends IssuableSubscriptionVisitor {
     if (ignoreMultipleOccurences && !visitedTokens.add(syntaxToken)) {
       return;
     }
-    int tokenLine = syntaxToken.line();
+    int tokenLine = syntaxToken.range().start().line();
     if (tokenLine != previousTokenLine) {
       syntaxToken.trivias().stream()
-        .filter(trivia -> trivia.startLine() == previousTokenLine)
+        .filter(trivia -> trivia.range().start().line() == previousTokenLine)
         .map(SyntaxTrivia::comment)
         .map(comment -> comment.startsWith("//") ? comment.substring(2) : comment.substring(2, comment.length() - 2))
         .map(String::trim)

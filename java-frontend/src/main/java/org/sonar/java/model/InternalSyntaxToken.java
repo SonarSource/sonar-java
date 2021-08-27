@@ -20,8 +20,7 @@
 package org.sonar.java.model;
 
 import java.util.List;
-import javax.annotation.Nonnull;
-import org.sonar.plugins.java.api.location.Position;
+import org.sonar.java.model.location.InternalPosition;
 import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
@@ -47,27 +46,10 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
     this.trivias = trivias;
     this.isEOF = isEOF;
     range = value.startsWith("\"\"\"")
-      ? createMultiLineRange(line, columnOffset, value)
-      : createSingleLineRange(line, columnOffset, value);
+      ? Range.at(InternalPosition.atOffset(line, columnOffset), value)
+      : Range.at(InternalPosition.atOffset(line, columnOffset), value.length());
   }
 
-  static Range createSingleLineRange(int line, int columnOffset, String value) {
-    Position start = Position.atOffset(line, columnOffset);
-    Position end = Position.atOffset(line, columnOffset + value.length());
-    return Range.at(start, end);
-  }
-
-  static Range createMultiLineRange(int line, int columnOffset, String value) {
-    Position start = Position.atOffset(line, columnOffset);
-    String[] lines = value.split("\r\n|\n|\r", -1);
-    String lastLine = lines[lines.length - 1];
-    int endLine = line + lines.length - 1;
-    int endColumn = (lines.length == 1 ? start.column() : Position.FIRST_COLUMN) + lastLine.length();
-    Position end = Position.at(endLine, endColumn);
-    return Range.at(start, end);
-  }
-
-  @Nonnull
   @Override
   public Range range() {
     return range;

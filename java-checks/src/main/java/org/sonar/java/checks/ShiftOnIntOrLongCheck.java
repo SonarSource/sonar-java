@@ -118,7 +118,7 @@ public class ShiftOnIntOrLongCheck extends IssuableSubscriptionVisitor {
     return otherOperator.text().equals(operatorToken.text())
       && operatorToken.range().start().column() == otherOperator.range().start().column()
       // less than 2 lines distance
-      && Math.abs(operatorToken.line() - otherOperator.line()) < 2;
+      && Math.abs(operatorToken.range().start().line() - otherOperator.range().start().line()) < 2;
   }
 
   private static SyntaxToken operatorToken(Tree tree) {

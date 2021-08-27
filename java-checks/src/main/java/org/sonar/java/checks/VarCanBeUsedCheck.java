@@ -130,7 +130,7 @@ public class VarCanBeUsedCheck extends IssuableSubscriptionVisitor implements Ja
     if (firstToken == null) {
       return false;
     }
-    int line = firstToken.line();
+    int line = firstToken.range().start().line();
     if (typeAssignmentLine == line) {
       return true;
     }

@@ -22,6 +22,7 @@ package org.sonar.java.se.checks;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -77,7 +78,8 @@ public class InvariantReturnCheck extends SECheck {
     private static List<ReturnStatementTree> extractReturnStatements(MethodTree methodTree) {
       ReturnExtractor visitor = new ReturnExtractor();
       methodTree.accept(visitor);
-      visitor.returns.sort((r1, r2) -> Integer.compare(r2.returnKeyword().line(), r1.returnKeyword().line()));
+      visitor.returns.sort(Comparator.comparing(
+        (ReturnStatementTree returnStatement) -> returnStatement.returnKeyword().range().start()).reversed());
       return visitor.returns;
     }
   }

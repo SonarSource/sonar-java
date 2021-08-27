@@ -78,7 +78,7 @@ public class JspCodeCheck extends IssuableSubscriptionVisitor implements JspCode
   }
 
   private boolean isInvocation(MethodInvocationTree tree, String inputFile, int line) {
-    return context.getInputFile().filename().equals(inputFile) && tree.firstToken().line() == line;
+    return context.getInputFile().filename().equals(inputFile) && tree.firstToken().range().start().line() == line;
   }
 
   private void writeToFile(SourceMap.Location location) {

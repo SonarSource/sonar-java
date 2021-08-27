@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Optional;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -127,6 +128,9 @@ class GeneratedFileTest {
     assertLocation(sourceMap.getLocation(300, 301), 160, 160);
     assertLocation(sourceMap.getLocation(302, 303), 161, 161);
     assertLocation(sourceMap.getLocation(304, 305), 162, 162);
+
+    InternalSyntaxToken token = new InternalSyntaxToken(116, 0, "something", Collections.emptyList(), false);
+    assertLocation(sourceMap.sourceMapLocationFor(token), 1, 6);
 
     // start is not mapped
     assertThat(sourceMap.getLocation(100, 207)).isEmpty();

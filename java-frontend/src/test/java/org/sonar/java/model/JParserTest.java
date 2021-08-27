@@ -201,19 +201,16 @@ class JParserTest {
     {
       CompilationUnitTree t = test("");
       assertEquals("", t.eofToken().text());
-      assertEquals(1, t.eofToken().line());
       assertEquals(Range.at(1, 1, 1, 1), t.eofToken().range());
     }
     {
       CompilationUnitTree t = test(" ");
       assertEquals("", t.eofToken().text());
-      assertEquals(1, t.eofToken().line());
       assertEquals(Range.at(1, 2, 1, 2), t.eofToken().range());
     }
     {
       CompilationUnitTree t = test(" \n");
       assertEquals("", t.eofToken().text());
-      assertEquals(2, t.eofToken().line());
       assertEquals(Range.at(2, 1, 2, 1), t.eofToken().range());
     }
   }

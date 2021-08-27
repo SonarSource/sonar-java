@@ -77,7 +77,7 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
     }
     int previousLevel = expectedLevel;
     if (isAnonymous) {
-      excludeIssueAtLine = tree.openBraceToken().line();
+      excludeIssueAtLine = tree.openBraceToken().range().start().line();
       expectedLevel = tree.closeBraceToken().range().start().columnOffset();
     }
     newBlock();
@@ -116,7 +116,7 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
     Tree body = lambdaExpressionTree.body();
     if (body.is(Kind.BLOCK)) {
       BlockTree block = (BlockTree) body;
-      excludeIssueAtLine = block.openBraceToken().line();
+      excludeIssueAtLine = block.openBraceToken().range().start().line();
       int previousLevel = expectedLevel;
       expectedLevel = block.closeBraceToken().range().start().columnOffset();
       scan(block);
@@ -134,14 +134,14 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
   private void leaveNode(Tree tree) {
     expectedLevel -= indentationLevel;
     isBlockAlreadyReported = false;
-    excludeIssueAtLine = tree.lastToken().line();
+    excludeIssueAtLine = tree.lastToken().range().start().line();
   }
 
   private void checkCaseGroup(CaseGroupTree tree) {
     List<CaseLabelTree> labels = tree.labels();
     if (labels.size() >= 2) {
       CaseLabelTree previousCaseLabelTree = labels.get(labels.size() - 2);
-      excludeIssueAtLine = previousCaseLabelTree.lastToken().line();
+      excludeIssueAtLine = previousCaseLabelTree.lastToken().range().start().line();
     }
     List<StatementTree> body = tree.body();
     List<StatementTree> newBody = body;
@@ -189,7 +189,7 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
       context.addIssue(((JavaTree) tree).getLine(), this, "Make this line start after "+expectedLevel+" spaces to indent the code consistently.");
       isBlockAlreadyReported = true;
     }
-    excludeIssueAtLine = tree.lastToken().line();
+    excludeIssueAtLine = tree.lastToken().range().start().line();
   }
 
   private boolean isExcluded(Tree node, int nodeLine) {

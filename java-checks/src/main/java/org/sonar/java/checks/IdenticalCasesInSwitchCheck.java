@@ -178,7 +178,8 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
   }
 
   private static String issueMessage(String type, Tree node) {
-    return "This " + type + "'s code block is the same as the block for the " + type + " on line " + node.firstToken().line() + ".";
+    return "This " + type + "'s code block is the same as the block for the " + type +
+      " on line " + node.firstToken().range().start().line() + ".";
   }
 
 }

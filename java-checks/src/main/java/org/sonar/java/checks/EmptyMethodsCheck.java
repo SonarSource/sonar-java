@@ -100,7 +100,7 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
 
   private static JavaQuickFix computeQuickFix(MethodTree method) {
     String commentFormat;
-    if (method.block().openBraceToken().line() == method.block().closeBraceToken().line()) {
+    if (method.block().openBraceToken().range().start().line() == method.block().closeBraceToken().range().start().line()) {
       commentFormat = " /* TODO document why this %s is empty */ ";
     } else {
       String methodPadding = computePadding(method);

@@ -218,7 +218,7 @@ public class TreeAssert extends AbstractAssert<TreeAssert, Tree> {
     }
 
     public SyntaxTokenAssert isAtLine(int line) {
-      Assertions.assertThat(actual.line()).isEqualTo(line);
+      Assertions.assertThat(actual.range().start().line()).isEqualTo(line);
       return this;
     }
 

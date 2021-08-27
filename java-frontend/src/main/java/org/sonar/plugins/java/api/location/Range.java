@@ -51,4 +51,20 @@ public interface Range {
     return new InternalRange(Position.at(startLine,startColumn), Position.at(endLine, endColumn));
   }
 
+  /**
+   * @param start is inclusive.
+   * @param length is used to compute the end of the range
+   */
+  static Range at(Position start, int length) {
+    return new InternalRange(start, Position.at(start.line(), start.column() + length));
+  }
+
+  /**
+   * @param start is inclusive.
+   * @param text to split into lines to compute the end of the range
+   */
+  static Range at(Position start, String text) {
+    return new InternalRange(start, text);
+  }
+
 }

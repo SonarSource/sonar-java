@@ -20,7 +20,6 @@
 package org.sonar.plugins.java.api.tree;
 
 import java.util.List;
-import javax.annotation.Nonnull;
 import org.sonar.java.annotations.Beta;
 import org.sonar.plugins.java.api.location.Range;
 
@@ -36,6 +35,12 @@ public interface SyntaxToken extends Tree {
 
   List<SyntaxTrivia> trivias();
 
+  /**
+   * @return line number starting at 1
+   * @deprecated for removal, since = 7.3, use "range().start().line()". A token is not anymore on a single line
+   * since the text block feature has been introduced in the java language.
+   */
+  @Deprecated
   int line();
 
   /**
@@ -47,7 +52,6 @@ public interface SyntaxToken extends Tree {
   @Deprecated
   int column();
 
-  @Nonnull
   Range range();
 
 }

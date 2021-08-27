@@ -57,6 +57,7 @@ class InternalPositionTest {
       .isLessThanOrEqualTo(second);
 
     assertThat(first.isBefore(second)).isTrue();
+    assertThat(first.isAfter(second)).isFalse();
 
     assertThat(second)
       .isNotEqualTo(first)
@@ -64,6 +65,7 @@ class InternalPositionTest {
       .isGreaterThanOrEqualTo(first);
 
     assertThat(second.isBefore(first)).isFalse();
+    assertThat(second.isAfter(first)).isTrue();
 
     first = Position.at(42, 11);
     second = Position.at(44, 5);
@@ -74,6 +76,7 @@ class InternalPositionTest {
       .isLessThanOrEqualTo(second);
 
     assertThat(first.isBefore(second)).isTrue();
+    assertThat(first.isAfter(second)).isFalse();
   }
 
   @Test

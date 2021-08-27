@@ -74,7 +74,7 @@ public class MissingCurlyBracesCheck extends IssuableSubscriptionVisitor {
     StatementTree thenStatement = ifStmt.thenStatement();
     StatementTree elseStmt = ifStmt.elseStatement();
     boolean haveElse = elseStmt != null;
-    if (!isException(thenStatement, ifStmt.ifKeyword().line(), haveElse)) {
+    if (!isException(thenStatement, ifStmt.ifKeyword().range().start().line(), haveElse)) {
       checkStatement(ifStmt.ifKeyword(), thenStatement);
     }
     if (haveElse && !elseStmt.is(Tree.Kind.IF_STATEMENT)) {
@@ -86,8 +86,7 @@ public class MissingCurlyBracesCheck extends IssuableSubscriptionVisitor {
     if (haveElse || !statementTree.is(Tree.Kind.RETURN_STATEMENT, Tree.Kind.CONTINUE_STATEMENT, Tree.Kind.BREAK_STATEMENT)) {
       return false;
     }
-    SyntaxToken firstToken = statementTree.firstToken();
-    return firstToken != null && firstToken.line() == ifLine;
+    return statementTree.firstToken().range().start().line() == ifLine;
   }
 
   private void checkStatement(SyntaxToken reportToken, StatementTree statement) {

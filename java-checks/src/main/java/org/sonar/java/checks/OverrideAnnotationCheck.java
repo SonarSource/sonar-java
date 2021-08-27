@@ -102,7 +102,7 @@ public class OverrideAnnotationCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean somethingBeforeOnSameLine(Tree tree) {
-    return QuickFixHelper.previousToken(tree).line() == tree.firstToken().line();
+    return QuickFixHelper.previousToken(tree).range().start().line() == tree.firstToken().range().start().line();
   }
 
   private String padding(Tree tree) {

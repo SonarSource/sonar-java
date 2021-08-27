@@ -54,7 +54,7 @@ public class ExpectedExceptionCheck extends AbstractMethodDetection {
       return;
     }
     IdentifierTree methodIdentifier = ExpressionUtils.methodName(mit);
-    int collectAfterLine = methodIdentifier.identifierToken().line();
+    int collectAfterLine = methodIdentifier.identifierToken().range().start().line();
     AssertionCollector assertionCollector = new AssertionCollector(collectAfterLine);
     methodBody.accept(assertionCollector);
     if (!assertionCollector.assertions.isEmpty()) {
@@ -73,7 +73,7 @@ public class ExpectedExceptionCheck extends AbstractMethodDetection {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
-      if (methodInvocation.firstToken().line() > collectAfterLine &&
+      if (methodInvocation.firstToken().range().start().line() > collectAfterLine &&
         ASSERTIONS_METHOD_MATCHER.matches(methodInvocation)) {
         assertions.add(new Location("Other assertion", ExpressionUtils.methodName(methodInvocation)));
       }

@@ -109,7 +109,8 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
     SyntaxToken firstSyntaxToken = tree.firstToken();
     SyntaxToken lastSyntaxToken = tree.lastToken();
     if (firstSyntaxToken != null && lastSyntaxToken != null) {
-      Set<Integer> filteredLines = IntStream.rangeClosed(firstSyntaxToken.line(), lastSyntaxToken.line()).boxed().collect(Collectors.toSet());
+      Set<Integer> filteredLines = IntStream.rangeClosed(firstSyntaxToken.range().start().line(),
+        lastSyntaxToken.range().start().line()).boxed().collect(Collectors.toSet());
       computeFilteredLinesForRule(filteredLines, rulesKeysByRulesClass.get(filteredRule), excludeLine);
     }
   }

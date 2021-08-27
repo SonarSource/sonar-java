@@ -205,9 +205,9 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
       return -1;
     }
     if (symbol.isVariableSymbol()) {
-      return ((Symbol.VariableSymbol) symbol).declaration().simpleName().identifierToken().line();
+      return ((Symbol.VariableSymbol) symbol).declaration().simpleName().identifierToken().range().start().line();
     }
-    return ((Symbol.MethodSymbol) symbol).declaration().simpleName().identifierToken().line();
+    return ((Symbol.MethodSymbol) symbol).declaration().simpleName().identifierToken().range().start().line();
   }
 
   private static String getSymbolKindName(Symbol symbol) {

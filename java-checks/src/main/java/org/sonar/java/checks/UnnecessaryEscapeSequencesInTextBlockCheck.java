@@ -42,7 +42,7 @@ public class UnnecessaryEscapeSequencesInTextBlockCheck extends IssuableSubscrip
   @Override
   public void visitNode(Tree tree) {
     LiteralTree textBlock = (LiteralTree) tree;
-    int startLine = textBlock.token().line();
+    int startLine = textBlock.token().range().start().line();
     String value = textBlock.value();
     String[] lines = value.split("\r?\n|\r");
     
