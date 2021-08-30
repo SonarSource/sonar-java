@@ -257,12 +257,13 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
   }
 
   private static List<JavaQuickFix> getQuickFix(ExpressionTree tree) {
-    List<JavaTextEdit> edits = new ArrayList<>();
-    if (tree.is(Kind.LOGICAL_COMPLEMENT)) {
-      edits.add(JavaTextEdit.replaceTree(((UnaryExpressionTree) tree).operatorToken(), "Boolean.FALSE.equals("));
-    } else if (tree.is(Kind.METHOD_INVOCATION) && OPTIONAL_ORELSE.matches((MethodInvocationTree) tree)) {
+    if (tree.is(Kind.METHOD_INVOCATION) && OPTIONAL_ORELSE.matches((MethodInvocationTree) tree)) {
       // We do not suggest a quick fix when we have an optional
       return Collections.emptyList();
+    }
+    List<JavaTextEdit> edits = new ArrayList<>(2);
+    if (tree.is(Kind.LOGICAL_COMPLEMENT)) {
+      edits.add(JavaTextEdit.replaceTree(((UnaryExpressionTree) tree).operatorToken(), "Boolean.FALSE.equals("));
     } else {
       edits.add(JavaTextEdit.insertBeforeTree(tree, "Boolean.TRUE.equals("));
     }
