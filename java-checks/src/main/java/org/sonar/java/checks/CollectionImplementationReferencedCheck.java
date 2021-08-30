@@ -22,8 +22,11 @@ package org.sonar.java.checks;
 import java.util.Map;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -115,20 +118,38 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
       return;
     }
 
-    String collectionImplementation = tree.symbolType().erasure().fullyQualifiedName();
-    if (!MAPPING.containsKey(collectionImplementation)) {
+    String usedCollection = tree.symbolType()
+      .erasure()
+      .fullyQualifiedName();
+    if (!MAPPING.containsKey(usedCollection)) {
       return;
     }
 
+    TypeTree reportTree;
     if (tree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
-      tree = ((ParameterizedTypeTree) tree).type();
+      reportTree = ((ParameterizedTypeTree) tree).type();
+    } else {
+      reportTree = tree;
     }
 
-    String message = String.format("%s should be an interface such as \"%s\" rather than the implementation \"%s\".",
-      messagePrefix,
-      toSimpleName(MAPPING.get(collectionImplementation)),
-      toSimpleName(collectionImplementation));
-    context.reportIssue(this, tree, message);
+    String targetCollection = MAPPING.get(usedCollection);
+    String usedCollectionSimpleName = toSimpleName(usedCollection);
+    QuickFixHelper.newIssue(context)
+      .forRule(this)
+      .onTree(reportTree)
+      .withMessage("%s should be an interface such as \"%s\" rather than the implementation \"%s\".",
+        messagePrefix,
+        toSimpleName(targetCollection),
+        usedCollectionSimpleName)
+      .withQuickFix(() -> quickFix(reportTree, usedCollectionSimpleName, targetCollection))
+      .report();
+  }
+
+  private static JavaQuickFix quickFix(TypeTree typeTree, String usedCollection, String targetedCollection) {
+    String targetedCollectionSimpleName = toSimpleName(targetedCollection);
+    return JavaQuickFix.newQuickFix("Replace \"%s\" by \"%s\"", usedCollection, targetedCollectionSimpleName)
+      .addTextEdit(JavaTextEdit.replaceTree(typeTree, targetedCollectionSimpleName))
+      .build();
   }
 
   private static String toSimpleName(String fullyQualifiedName) {
