@@ -19,19 +19,26 @@
  */
 package org.sonar.java.checks.helpers;
 
-import java.util.Optional;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.sonar.java.checks.helpers.QuickFixHelper.ImportSupplier;
 import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class QuickFixHelperTest {
 
@@ -74,6 +81,178 @@ class QuickFixHelperTest {
 
     // start of file
     assertThat(QuickFixHelper.previousToken(a.declarationKeyword())).isEqualTo(a.declarationKeyword());
+  }
+
+  @Nested
+  class NextVariable {
+    @Test
+    void throws_an_illegal_argument_exception_when_parent_type_is_not_supported() {
+      Tree parent = mock(Tree.class);
+      VariableTree variable = mock(VariableTree.class);
+      when(variable.parent()).thenReturn(parent);
+
+      assertThatThrownBy(() -> QuickFixHelper.nextVariable(variable))
+        .isInstanceOfAny(IllegalArgumentException.class)
+        .hasMessageContaining("The variable's parent kind is not handled by this method!");
+    }
+
+    @Test
+    void returns_empty_on_single_variable_declaration_in_block() {
+      CompilationUnitTree cut = JParserTestUtils.parse("class A { void f() { int target = 42; } }");
+      ClassTree theClass = (ClassTree) cut.types().get(0);
+      MethodTree method = (MethodTree) theClass.members().get(0);
+      VariableTree target = (VariableTree) ((BlockTreeImpl) method.block()).getChildren().get(1);
+      assertThat(QuickFixHelper.nextVariable(target)).isEmpty();
+    }
+
+    @Test
+    void returns_empty_on_separate_variable_declarations_in_block() {
+      CompilationUnitTree cut = JParserTestUtils.parse("class A { void f() { int target = 42; int notRelevant; } }");
+      ClassTree theClass = (ClassTree) cut.types().get(0);
+      MethodTree method = (MethodTree) theClass.members().get(0);
+      VariableTree target = (VariableTree) ((BlockTreeImpl) method.block()).getChildren().get(2);
+      assertThat(QuickFixHelper.nextVariable(target)).isEmpty();
+    }
+
+    @Test
+    void returns_next_on_2_variable_declaration_in_block() {
+      CompilationUnitTree cut = JParserTestUtils.parse("class A { void f() { int target = 42, next; } }");
+      ClassTree theClass = (ClassTree) cut.types().get(0);
+      MethodTree method = (MethodTree) theClass.members().get(0);
+      VariableTree target = (VariableTree) ((BlockTreeImpl) method.block()).getChildren().get(1);
+      VariableTree next = (VariableTree) ((BlockTreeImpl) method.block()).getChildren().get(2);
+      assertThat(QuickFixHelper.nextVariable(target)).contains(next);
+    }
+
+    @Test
+    void returns_next_on_3_variable_declaration_in_block() {
+      CompilationUnitTree cut = JParserTestUtils.parse("class A { void f() { int first, target = 42, next; } }");
+      ClassTree theClass = (ClassTree) cut.types().get(0);
+      MethodTree method = (MethodTree) theClass.members().get(0);
+      VariableTree target = (VariableTree) ((BlockTreeImpl) method.block()).getChildren().get(2);
+      VariableTree next = (VariableTree) ((BlockTreeImpl) method.block()).getChildren().get(3);
+      assertThat(QuickFixHelper.nextVariable(target)).contains(next);
+    }
+
+    @Test
+    void returns_next_on_single_variable_declaration() {
+      CompilationUnitTree cut = JParserTestUtils.parse("class A { int target = 42; }");
+      ClassTree theClass = (ClassTree) cut.types().get(0);
+      VariableTree target = (VariableTree) theClass.members().get(0);
+      assertThat(QuickFixHelper.nextVariable(target)).isEmpty();
+    }
+
+    @Test
+    void returns_empty_on_separate_variable_declarations() {
+      CompilationUnitTree cut = JParserTestUtils.parse("class A { int target = 42; int notRelevant; }");
+      ClassTree theClass = (ClassTree) cut.types().get(0);
+      VariableTree target = (VariableTree) theClass.members().get(1);
+      assertThat(QuickFixHelper.nextVariable(target)).isEmpty();
+    }
+
+    @Test
+    void returns_next_on_2_variable_declaration() {
+      CompilationUnitTree cut = JParserTestUtils.parse("class A { int target = 42, next; }");
+      ClassTree theClass = (ClassTree) cut.types().get(0);
+      VariableTree target = (VariableTree) theClass.members().get(0);
+      VariableTree next = (VariableTree) theClass.members().get(1);
+      assertThat(QuickFixHelper.nextVariable(target)).contains(next);
+    }
+
+    @Test
+    void returns_next_on_3_variable_declaration() {
+      CompilationUnitTree cut = JParserTestUtils.parse("class A { int first, target, next; }");
+      ClassTree theClass = (ClassTree) cut.types().get(0);
+      VariableTree target = (VariableTree) theClass.members().get(1);
+      VariableTree next = (VariableTree) theClass.members().get(2);
+      assertThat(QuickFixHelper.nextVariable(target)).contains(next);
+    }
+  }
+
+  @Nested
+  class PreviousVariable {
+    @Test
+    void throws_an_illegal_argument_exception_when_parent_type_is_not_supported() {
+      Tree parent = mock(Tree.class);
+      VariableTree variable = mock(VariableTree.class);
+      when(variable.parent()).thenReturn(parent);
+
+      assertThatThrownBy(() -> QuickFixHelper.previousVariable(variable))
+        .isInstanceOfAny(IllegalArgumentException.class)
+        .hasMessageContaining("The variable's parent kind is not handled by this method!");
+    }
+
+    @Test
+    void returns_empty_on_single_variable_declaration_in_block() {
+      CompilationUnitTree cut = JParserTestUtils.parse("class A { void f() { int target = 42; } }");
+      ClassTree theClass = (ClassTree) cut.types().get(0);
+      MethodTree method = (MethodTree) theClass.members().get(0);
+      VariableTree target = (VariableTree) ((BlockTreeImpl) method.block()).getChildren().get(1);
+      assertThat(QuickFixHelper.previousVariable(target)).isEmpty();
+    }
+
+    @Test
+    void returns_empty_on_separate_variable_declarations_in_block() {
+      CompilationUnitTree cut = JParserTestUtils.parse("class A { void f() { int notRelevant; int target = 42; } }");
+      ClassTree theClass = (ClassTree) cut.types().get(0);
+      MethodTree method = (MethodTree) theClass.members().get(0);
+      VariableTree target = (VariableTree) ((BlockTreeImpl) method.block()).getChildren().get(2);
+      assertThat(QuickFixHelper.previousVariable(target)).isEmpty();
+    }
+
+    @Test
+    void returns_previous_on_2_variable_declaration_in_block() {
+      CompilationUnitTree cut = JParserTestUtils.parse("class A { void f() { int first, target = 42; } }");
+      ClassTree theClass = (ClassTree) cut.types().get(0);
+      MethodTree method = (MethodTree) theClass.members().get(0);
+      VariableTree previous = (VariableTree) ((BlockTreeImpl) method.block()).getChildren().get(1);
+      VariableTree target = (VariableTree) ((BlockTreeImpl) method.block()).getChildren().get(2);
+      assertThat(QuickFixHelper.previousVariable(target)).contains(previous);
+    }
+
+    @Test
+    void returns_previous_on_3_variable_declaration_in_block() {
+      CompilationUnitTree cut = JParserTestUtils.parse("class A { void f() { int first, previous, target; } }");
+      ClassTree theClass = (ClassTree) cut.types().get(0);
+      MethodTree method = (MethodTree) theClass.members().get(0);
+      VariableTree previous = (VariableTree) ((BlockTreeImpl) method.block()).getChildren().get(2);
+      VariableTree target = (VariableTree) ((BlockTreeImpl) method.block()).getChildren().get(3);
+      assertThat(QuickFixHelper.previousVariable(target)).contains(previous);
+    }
+
+    @Test
+    void returns_empty_on_single_variable_declaration() {
+      CompilationUnitTree cut = JParserTestUtils.parse("class A { int target = 42; }");
+      ClassTree theClass = (ClassTree) cut.types().get(0);
+      VariableTree target = (VariableTree) theClass.members().get(0);
+      assertThat(QuickFixHelper.previousVariable(target)).isEmpty();
+    }
+
+    @Test
+    void returns_empty_on_separate_variable_declarations() {
+      CompilationUnitTree cut = JParserTestUtils.parse("class A { int notRelevant; int target = 42; }");
+      ClassTree theClass = (ClassTree) cut.types().get(0);
+      VariableTree target = (VariableTree) theClass.members().get(1);
+      assertThat(QuickFixHelper.previousVariable(target)).isEmpty();
+    }
+
+    @Test
+    void returns_previous_on_2_variable_declaration() {
+      CompilationUnitTree cut = JParserTestUtils.parse("class A { int previous, target = 42; }");
+      ClassTree theClass = (ClassTree) cut.types().get(0);
+      VariableTree target = (VariableTree) theClass.members().get(1);
+      VariableTree previous = (VariableTree) theClass.members().get(0);
+      assertThat(QuickFixHelper.previousVariable(target)).contains(previous);
+    }
+
+    @Test
+    void returns_previous_on_3_variable_declaration() {
+      CompilationUnitTree cut = JParserTestUtils.parse("class A { int first, previous, target; }");
+      ClassTree theClass = (ClassTree) cut.types().get(0);
+      VariableTree target = (VariableTree) theClass.members().get(2);
+      VariableTree previous = (VariableTree) theClass.members().get(1);
+      assertThat(QuickFixHelper.previousVariable(target)).contains(previous);
+    }
   }
 
   @Nested

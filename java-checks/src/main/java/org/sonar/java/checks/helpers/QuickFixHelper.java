@@ -19,6 +19,25 @@
  */
 package org.sonar.java.checks.helpers;
 
+import org.sonar.java.annotations.Beta;
+import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.java.collections.ListUtils;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.statement.BlockTreeImpl;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaTextEdit;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.ImportTree;
+import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
+
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -27,27 +46,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import javax.annotation.Nullable;
-import org.sonar.java.annotations.Beta;
-import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.collections.ListUtils;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
-import org.sonar.java.model.JavaTree;
-import org.sonar.java.reporting.InternalJavaIssueBuilder;
-import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.ImportTree;
-import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
-import org.sonar.plugins.java.api.tree.Tree;
 
 /**
  * For internal use only. Can not be used outside SonarJava analyzer.
  */
 @Beta
 public class QuickFixHelper {
+  /**
+   * A block's children list contains opening and closing braces that are not relevant to variables search
+   */
+  private static final int TRIMMING_OFFSET_IN_BLOCK_CHILDREN = 1;
+  /**
+   * A class members list only contains relevant elements
+   */
+  private static final int TRIMMING_OFFSET_IN_CLASS_MEMBERS = 0;
 
   private QuickFixHelper() {
     // Utility class
@@ -101,6 +113,70 @@ public class QuickFixHelper {
     return previousToken(parent);
   }
 
+  /**
+   * Returns the preceding variable in a mutli-variable declaration.
+   * @param current The target variable
+   * @return An Optional with the preceding variable, Optional.empty otherwise.
+   */
+  public static Optional<VariableTree> previousVariable(VariableTree current) {
+    Tree parent = current.parent();
+    if (parent.is(Tree.Kind.BLOCK, Tree.Kind.INITIALIZER, Tree.Kind.STATIC_INITIALIZER)) {
+      List<Tree> children = ((BlockTreeImpl) parent).children();
+      return previousVariable(current, children, TRIMMING_OFFSET_IN_BLOCK_CHILDREN);
+    } else if (parent.is(Tree.Kind.CLASS)) {
+      List<Tree> members = ((ClassTree) parent).members();
+      return previousVariable(current, members, TRIMMING_OFFSET_IN_CLASS_MEMBERS);
+    } else {
+      throw new IllegalArgumentException("The variable's parent kind is not handled by this method!");
+    }
+  }
+
+  private static Optional<VariableTree> previousVariable(VariableTree current, List<Tree> trees, int firstRelevantIndex) {
+    int currentIndex = trees.indexOf(current);
+    // If the variable is the first element that follows the opening token, there is no predecessor to return
+    if (currentIndex <= firstRelevantIndex) {
+      return Optional.empty();
+    }
+    // If there is a predecessor, we check that it is a variable and that it is part of the same declaration
+    Tree preceding = trees.get(currentIndex - 1);
+    if (preceding.is(Tree.Kind.VARIABLE) && preceding.firstToken().equals(current.firstToken())) {
+      return Optional.of((VariableTree) preceding);
+    }
+    return Optional.empty();
+  }
+
+  /**
+   * Returns the following variable in a mutli-variable declaration.
+   * @param current The target variable
+   * @return An Optional with the following variable, Optional.empty otherwise.
+   */
+  public static Optional<VariableTree> nextVariable(VariableTree current) {
+    Tree parent = current.parent();
+    if (parent.is(Tree.Kind.BLOCK, Tree.Kind.INITIALIZER, Tree.Kind.STATIC_INITIALIZER)) {
+      List<Tree> children = ((BlockTreeImpl) parent).children();
+      return nextVariable(current, children);
+    } else if (parent.is(Tree.Kind.CLASS)) {
+      List<Tree> members = ((ClassTree) parent).members();
+      return nextVariable(current, members);
+    } else {
+      throw new IllegalArgumentException("The variable's parent kind is not handled by this method!");
+    }
+  }
+
+  private static Optional<VariableTree> nextVariable(VariableTree current, List<Tree> trees) {
+    int currentIndex = trees.indexOf(current);
+    // If the variable cannot be found in the parent (a bug) or if the variable is the last one in the block before the closing brace, there is no follower to return.
+    if (currentIndex == -1 || trees.size() <= (currentIndex + 1)) {
+      return Optional.empty();
+    }
+    // If there is a following variable, we check that it is a variable and that it is part of the same declaration
+    Tree following = trees.get(currentIndex + 1);
+    if (following.is(Tree.Kind.VARIABLE) && following.firstToken().equals(current.firstToken())) {
+      return Optional.of((VariableTree) following);
+    }
+    return Optional.empty();
+  }
+
   public static String contentForTree(Tree tree, JavaFileScannerContext context) {
     return contentForRange(tree.firstToken(), tree.lastToken(), context);
   }
@@ -123,7 +199,7 @@ public class QuickFixHelper {
     // rebuild content of tree as String
     StringBuilder sb = new StringBuilder();
     sb.append(lines.get(0)
-      .substring(beginIndex))
+        .substring(beginIndex))
       .append("\n");
     for (int i = 1; i < lines.size() - 1; i++) {
       sb.append(lines.get(i))
@@ -143,7 +219,7 @@ public class QuickFixHelper {
    * </ul>
    * If the type is not yet known in the context, the supplier will provide an edit to be inserted with a quick-fix,
    * which will add the type as import in the existing list of imports, at the best place it can.
-   *
+   * <p>
    * If the type is already available in the current context, then no changes are required. There is no need of an extra import.
    *
    * @param context The context of analysis
@@ -154,9 +230,12 @@ public class QuickFixHelper {
 
   public static class ImportSupplier {
 
-    @Nullable private final PackageDeclarationTree packageDeclaration;
-    @Nullable private final String packageName;
-    @Nullable private final Tree firstType;
+    @Nullable
+    private final PackageDeclarationTree packageDeclaration;
+    @Nullable
+    private final String packageName;
+    @Nullable
+    private final Tree firstType;
     private final List<ImportWithName> sortedNonStaticImports;
     private final Set<String> importedTypes;
     private final Set<String> starImportPackages;
@@ -168,7 +247,7 @@ public class QuickFixHelper {
       this.packageName = packageDeclaration == null ? null : ExpressionsHelper.concatenate(packageDeclaration.packageName());
 
       List<Tree> types = cut.types();
-      this.firstType = types.isEmpty() ? null :  types.get(0);
+      this.firstType = types.isEmpty() ? null : types.get(0);
 
       this.sortedNonStaticImports = new ArrayList<>();
       this.importedTypes = new HashSet<>();
@@ -197,7 +276,7 @@ public class QuickFixHelper {
      *
      * @param requiredType The fully qualified name of a the type required to compile the associated quick-fix
      * @return An empty Optional if there is no need of an extra import.
-     *         Otherwise, the edit inserting a new import at the best possible place corresponding to the required type.
+     * Otherwise, the edit inserting a new import at the best possible place corresponding to the required type.
      */
     public Optional<JavaTextEdit> newImportEdit(String requiredType) {
       return cachedResults.computeIfAbsent(requiredType, this::locateNewImportEdit);
@@ -283,6 +362,5 @@ public class QuickFixHelper {
         return importName;
       }
     }
-
   }
 }
