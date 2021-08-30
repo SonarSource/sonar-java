@@ -1,16 +1,21 @@
-class FooClass {
+package checks.unused;
+
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Optional;
+
+class UnusedPrivateFieldCheck {
 
   private int unusedField; // Noncompliant [[sc=15;ec=26]] {{Remove this unused "unusedField" private field.}}
-
-  @UsedBySomeFramework
-  private int foo;
 
   int usedField; // Compliant
 
   public int foo2; // Compliant
 
   private static final long serialVersionUID = 4858622370623524688L; // Compliant
-  
+
   private int usedPrivateField;
   private int unreadField; // Noncompliant {{Remove this unused "unreadField" private field.}}
   private int usedOnlyInAccessWithPostIncrement;
@@ -28,9 +33,7 @@ class FooClass {
     innerClass.innerClassUnreadField = 1;
     unreadField += 1;
     unreadField = (usedOnlyInAssignmentExpression += 1);
-    
-    ((unknownVar)) = 3;
-    
+
     int unusedLocalVariable;
 
     int usedLocalVariable = 42 + usedField;
@@ -40,29 +43,32 @@ class FooClass {
     } catch (Exception e) { // Compliant
     }
 
-    try (Stream foo = new Stream()) {
+    try (FileInputStream foo = new FileInputStream("path/to/some/file")) {
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
     }
 
-    for (int a: new int[]{ 0, 1, 2 }) {
+    for (int a : new int[]{0, 1, 2}) {
     }
   }
-
 }
 
-enum FooEnum {
+enum UnusedPrivateFieldCheckFooEnum {
 
   FOO;
 
 }
 
-interface FooInterface {
+interface UnusedPrivateFieldCheckFooInterface {
 
   int FOO = 0; // Compliant
 
 }
 
-class SpecialAnnotations {
-  
+class UnusedPrivateFieldCheckSpecialAnnotations {
+
   @lombok.Getter
   private int foo; // Compliant
 
@@ -73,7 +79,7 @@ class SpecialAnnotations {
   private int foo2; // Compliant
 }
 
-class TestSonar {
+class UnusedPrivateFieldCheckTestSonar {
   private static Transformer TRANSFORMER = new Transformer();
 
   public void test() {
@@ -87,19 +93,3 @@ class TestSonar {
   }
 }
 
-class usageOfUnkownField {
-
-  private Object field1; // Noncompliant
-  private Object field2; // Noncompliant
-  private Object field3; // Compliant
-  private String field4; // Compliant
-  private Object[] field5; // Compliant
-
-  void foo(java.util.List<Integer> list) {
-    field5[0] = new Object();
-    field1(); // unknown method - ignored
-    list.stream().filter(stuff::field2); // unknown method reference - ignored
-    list.stream().filter(field3::equals);
-    Object value = stuff.field4; // unknown field4
-  }
-}
