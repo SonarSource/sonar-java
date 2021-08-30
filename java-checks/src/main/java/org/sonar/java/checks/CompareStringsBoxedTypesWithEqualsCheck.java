@@ -26,6 +26,7 @@ import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -38,6 +39,14 @@ public class CompareStringsBoxedTypesWithEqualsCheck extends CompareWithEqualsVi
   private static final String ISSUE_MESSAGE = "Strings and Boxed types should be compared using \"equals()\".";
   private static final String QUICK_FIX_MESSAGE = "Replace with boxed comparison";
   private static final String DOT_EQUALS_AND_OPENING_PARENTHESIS = ".equals(";
+
+  private QuickFixHelper.ImportSupplier importSupplier;
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    importSupplier = null;
+    super.scanFile(context);
+  }
 
   @Override
   protected void checkEqualityExpression(BinaryExpressionTree tree) {
@@ -92,17 +101,25 @@ public class CompareStringsBoxedTypesWithEqualsCheck extends CompareWithEqualsVi
     return Optional.empty();
   }
 
-  private static JavaQuickFix computeDefaultQuickFix(BinaryExpressionTree tree) {
-    String callToEquals = tree.is(Tree.Kind.NOT_EQUAL_TO) ? "!java.util.Objects.equals(" : "java.util.Objects.equals(";
+  private JavaQuickFix computeDefaultQuickFix(BinaryExpressionTree tree) {
+    String callToEquals = tree.is(Tree.Kind.NOT_EQUAL_TO) ? "!Objects.equals(" : "Objects.equals(";
     AnalyzerMessage.TextSpan interOperandSpace = AnalyzerMessage.textSpanBetween(
       tree.leftOperand(), false,
       tree.rightOperand(), false
     );
-    return JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE)
+    JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE)
       .addTextEdit(JavaTextEdit.insertAfterTree(tree.rightOperand(), ")"))
       .addTextEdit(JavaTextEdit.replaceTextSpan(interOperandSpace, ", "))
-      .addTextEdit(JavaTextEdit.insertBeforeTree(tree.leftOperand(), callToEquals))
-      .build();
+      .addTextEdit(JavaTextEdit.insertBeforeTree(tree.leftOperand(), callToEquals));
+
+    if (importSupplier == null) {
+      importSupplier = QuickFixHelper.newImportSupplier(context);
+    }
+
+    importSupplier.newImportEdit("java.util.Objects")
+      .ifPresent(builder::addTextEdit);
+
+    return builder.build();
   }
 
 }

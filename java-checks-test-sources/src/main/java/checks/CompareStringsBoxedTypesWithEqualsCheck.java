@@ -16,7 +16,8 @@ class CompareStringsBoxedTypesWithEqualsCheck {
       // fix@qf0 {{Replace with boxed comparison}}
       // edit@qf0 [[sc=23;ec=23]]{{)}}
       // edit@qf0 [[sc=15;ec=19]]{{, }}
-      // edit@qf0 [[sc=11;ec=11]]{{java.util.Objects.equals(}}
+      // edit@qf0 [[sc=11;ec=11]]{{Objects.equals(}}
+      // edit@qf0 [[sl=3;sc=25;el=3;ec=25]]{{\nimport java.util.Objects;}}
       if (str1 == "blue") {} // Noncompliant [[sc=16;ec=18;quickfixes=qf1]]
       // fix@qf1 {{Replace with boxed comparison}}
       // edit@qf1 [[sc=15;ec=25]]{{)}}
@@ -29,19 +30,22 @@ class CompareStringsBoxedTypesWithEqualsCheck {
       // fix@qf3 {{Replace with boxed comparison}}
       // edit@qf3 [[sc=50;ec=50]]{{)}}
       // edit@qf3 [[sc=15;ec=19]]{{, }}
-      // edit@qf3 [[sc=11;ec=11]]{{java.util.Objects.equals(}}
+      // edit@qf3 [[sc=11;ec=11]]{{Objects.equals(}}
+      // edit@qf3 [[sl=3;sc=25;el=3;ec=25]]{{\nimport java.util.Objects;}}
       if ("BLUE".toLowerCase(Locale.ROOT) == str1) {} // Noncompliant [[sc=43;ec=45;quickfixes=qf4]]
       // fix@qf4 {{Replace with boxed comparison}}
       // edit@qf4 [[sc=50;ec=50]]{{)}}
       // edit@qf4 [[sc=42;ec=46]]{{, }}
-      // edit@qf4 [[sc=11;ec=11]]{{java.util.Objects.equals(}}
+      // edit@qf4 [[sc=11;ec=11]]{{Objects.equals(}}
+      // edit@qf4 [[sl=3;sc=25;el=3;ec=25]]{{\nimport java.util.Objects;}}
 
       /* -- NEGATION --  */
       if (str1 != str2) {} // Noncompliant [[sc=16;ec=18;quickfixes=qf100]]
       // fix@qf100 {{Replace with boxed comparison}}
       // edit@qf100 [[sc=23;ec=23]]{{)}}
       // edit@qf100 [[sc=15;ec=19]]{{, }}
-      // edit@qf100 [[sc=11;ec=11]]{{!java.util.Objects.equals(}}
+      // edit@qf100 [[sc=11;ec=11]]{{!Objects.equals(}}
+      // edit@qf100 [[sl=3;sc=25;el=3;ec=25]]{{\nimport java.util.Objects;}}
       if (str1 != "blue") {} // Noncompliant [[sc=16;ec=18;quickfixes=qf101]]
       // fix@qf101 {{Replace with boxed comparison}}
       // edit@qf101 [[sc=15;ec=25]]{{)}}
@@ -55,12 +59,14 @@ class CompareStringsBoxedTypesWithEqualsCheck {
       // fix@qf103 {{Replace with boxed comparison}}
       // edit@qf103 [[sc=50;ec=50]]{{)}}
       // edit@qf103 [[sc=15;ec=19]]{{, }}
-      // edit@qf103 [[sc=11;ec=11]]{{!java.util.Objects.equals(}}
+      // edit@qf103 [[sc=11;ec=11]]{{!Objects.equals(}}
+      // edit@qf103 [[sl=3;sc=25;el=3;ec=25]]{{\nimport java.util.Objects;}}
       if ("BLUE".toLowerCase(Locale.ROOT) != str1) {} // Noncompliant [[sc=43;ec=45;quickfixes=qf104]]
       // fix@qf104 {{Replace with boxed comparison}}
       // edit@qf104 [[sc=50;ec=50]]{{)}}
       // edit@qf104 [[sc=42;ec=46]]{{, }}
-      // edit@qf104 [[sc=11;ec=11]]{{!java.util.Objects.equals(}}
+      // edit@qf104 [[sc=11;ec=11]]{{!Objects.equals(}}
+      // edit@qf104 [[sl=3;sc=25;el=3;ec=25]]{{\nimport java.util.Objects;}}
     }
 
     private void method() {
