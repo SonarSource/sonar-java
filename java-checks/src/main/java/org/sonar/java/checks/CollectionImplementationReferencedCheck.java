@@ -19,13 +19,14 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Map;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.collections.MapBuilder;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
@@ -33,56 +34,53 @@ import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-import java.util.Map;
 
 @Rule(key = "S1319")
 public class CollectionImplementationReferencedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final String DEQUE = "Deque";
-  private static final String LIST = "List";
-  private static final String MAP = "Map";
-  private static final String CONCURRENT_MAP = "ConcurrentMap";
-  private static final String QUEUE = "Queue";
-  private static final String SET = "Set";
-  private static final String SORTED_MAP = "SortedMap";
-  private static final String SORTED_SET = "SortedSet";
+  private static final String DEQUE = "java.util.Deque";
+  private static final String LIST = "java.util.List";
+  private static final String MAP = "java.util.Map";
+  private static final String CONCURRENT_MAP = "java.util.concurrent.ConcurrentMap";
+  private static final String QUEUE = "java.util.Queue";
+  private static final String SET = "java.util.Set";
+  private static final String SORTED_MAP = "java.util.SortedMap";
+  private static final String SORTED_SET = "java.util.SortedSet";
 
   private static final Map<String, String> MAPPING = MapBuilder.<String, String> newMap()
-    .put("ArrayDeque", DEQUE)
-    .put("ConcurrentLinkedDeque", DEQUE)
+    .put("java.util.ArrayDeque", DEQUE)
+    .put("java.util.concurrent.ConcurrentLinkedDeque", DEQUE)
 
-    .put("AbstractList", LIST)
-    .put("AbstractSequentialList", LIST)
-    .put("ArrayList", LIST)
-    .put("CopyOnWriteArrayList", LIST)
-    .put("LinkedList", LIST)
+    .put("java.util.AbstractList", LIST)
+    .put("java.util.AbstractSequentialList", LIST)
+    .put("java.util.ArrayList", LIST)
+    .put("java.util.LinkedList", LIST)
+    .put("java.util.concurrent.CopyOnWriteArrayList", LIST)
 
-    .put("AbstractMap", MAP)
-    .put("EnumMap", MAP)
-    .put("HashMap", MAP)
-    .put("Hashtable", MAP)
-    .put("IdentityHashMap", MAP)
-    .put("LinkedHashMap", MAP)
-    .put("WeakHashMap", MAP)
+    .put("java.util.AbstractMap", MAP)
+    .put("java.util.EnumMap", MAP)
+    .put("java.util.HashMap", MAP)
+    .put("java.util.Hashtable", MAP)
+    .put("java.util.IdentityHashMap", MAP)
+    .put("java.util.LinkedHashMap", MAP)
+    .put("java.util.WeakHashMap", MAP)
 
-    .put("ConcurrentHashMap", CONCURRENT_MAP)
-    .put("ConcurrentSkipListMap", CONCURRENT_MAP)
+    .put("java.util.concurrent.ConcurrentHashMap", CONCURRENT_MAP)
+    .put("java.util.concurrent.ConcurrentSkipListMap", CONCURRENT_MAP)
 
-    .put("AbstractQueue", QUEUE)
-    .put("ConcurrentLinkedQueue", QUEUE)
-    .put("SynchronousQueue", QUEUE)
+    .put("java.util.AbstractQueue", QUEUE)
+    .put("java.util.concurrent.ConcurrentLinkedQueue", QUEUE)
+    .put("java.util.concurrent.SynchronousQueue", QUEUE)
 
-    .put("AbstractSet", SET)
-    .put("CopyOnWriteArraySet", SET)
-    .put("EnumSet", SET)
-    .put("HashSet", SET)
-    .put("LinkedHashSet", SET)
+    .put("java.util.AbstractSet", SET)
+    .put("java.util.concurrent.CopyOnWriteArraySet", SET)
+    .put("java.util.EnumSet", SET)
+    .put("java.util.HashSet", SET)
+    .put("java.util.LinkedHashSet", SET)
 
-    .put("TreeMap", SORTED_MAP)
+    .put("java.util.TreeMap", SORTED_MAP)
 
-    .put("TreeSet", SORTED_SET)
+    .put("java.util.TreeSet", SORTED_SET)
     .build();
 
   private JavaFileScannerContext context;
@@ -97,7 +95,7 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
   public void visitVariable(VariableTree tree) {
     super.visitVariable(tree);
     if (isPublic(tree.modifiers())) {
-      checkIfAllowed(tree.type(), "The type of the \"" + tree.simpleName() + "\" object ");
+      checkIfAllowed(tree.type(), String.format("The type of \"%s\"", tree.simpleName()));
     }
   }
 
@@ -105,9 +103,9 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
   public void visitMethod(MethodTree tree) {
     super.visitMethod(tree);
     if (isPublic(tree.modifiers()) && Boolean.FALSE.equals(tree.isOverriding())) {
-      checkIfAllowed(tree.returnType(), "The return type of this method ");
+      checkIfAllowed(tree.returnType(), "The return type of this method");
       for (VariableTree variableTree : tree.parameters()) {
-        checkIfAllowed(variableTree.type(), "The type of the \"" + variableTree.simpleName() + "\" object ");
+        checkIfAllowed(variableTree.type(), String.format("The type of \"%s\"", variableTree.simpleName()));
       }
     }
   }
@@ -116,26 +114,28 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
     if (tree == null) {
       return;
     }
-    String collectionImplementation = getTypeIdentifier(tree);
-    String collectionInterface = MAPPING.get(collectionImplementation);
 
-    if (collectionInterface != null) {
-      context.reportIssue(this, tree, messagePrefix + messageRemainder(collectionImplementation, collectionInterface));
+    String collectionImplementation = tree.symbolType().erasure().fullyQualifiedName();
+    if (!MAPPING.containsKey(collectionImplementation)) {
+      return;
     }
+
+    if (tree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+      tree = ((ParameterizedTypeTree) tree).type();
+    }
+
+    String message = String.format("%s should be an interface such as \"%s\" rather than the implementation \"%s\".",
+      messagePrefix,
+      toSimpleName(MAPPING.get(collectionImplementation)),
+      toSimpleName(collectionImplementation));
+    context.reportIssue(this, tree, message);
+  }
+
+  private static String toSimpleName(String fullyQualifiedName) {
+    return fullyQualifiedName.substring(fullyQualifiedName.lastIndexOf('.') + 1);
   }
 
   private static boolean isPublic(ModifiersTree modifiers) {
     return ModifiersUtils.hasModifier(modifiers, Modifier.PUBLIC);
   }
-
-  @CheckForNull
-  private static String getTypeIdentifier(Tree tree) {
-    Tree actualTree = tree.is(Tree.Kind.PARAMETERIZED_TYPE) ? ((ParameterizedTypeTree) tree).type() : tree;
-    return actualTree.is(Tree.Kind.IDENTIFIER) ? ((IdentifierTree) actualTree).name() : null;
-  }
-
-  private static String messageRemainder(String collectionImplementation, String collectionInterface) {
-    return "should be an interface such as \"" + collectionInterface + "\" rather than the implementation \"" + collectionImplementation + "\".";
-  }
-
 }
