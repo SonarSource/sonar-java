@@ -36,23 +36,23 @@ class StaticMembersAccessCheckB {
   }
 
   public void noncompliant() {
-    first.counter ++; // Noncompliant [[sc=5;ec=18;quickfixes=qf1]] {{Change this instance-reference to a static reference.}}
+    first.counter ++; // Noncompliant [[sc=5;ec=10;quickfixes=qf1]] {{Change this instance-reference to a static reference.}}
     // fix@qf1 {{Replace "first" by "StaticMembersAccessCheckA"}}
     // edit@qf1 [[sc=5;ec=10]] {{StaticMembersAccessCheckA}}
     second.counter ++; // Noncompliant
-    second.method(); // Noncompliant [[sc=5;ec=18;quickfixes=qf2]]
+    second.method(); // Noncompliant [[sc=5;ec=11;quickfixes=qf2]]
     // fix@qf2 {{Replace "second" by "StaticMembersAccessCheckA"}}
     // edit@qf2 [[sc=5;ec=11]] {{StaticMembersAccessCheckA}}
     third.counter ++; // Noncompliant
     first.d.counter++; // Noncompliant
-    first.c.d.counter++; // Noncompliant [[sc=5;ec=22;quickfixes=qf3]]
+    first.c.d.counter++; // Noncompliant [[sc=5;ec=14;quickfixes=qf3]]
     // fix@qf3 {{Replace the expression by "StaticMembersAccessCheckD"}}
     // edit@qf3 [[sc=5;ec=14]] {{StaticMembersAccessCheckD}}
-    first.d().counter++; // Noncompliant [[sc=5;ec=22;quickfixes=qf4]]
+    first.d().counter++; // Noncompliant [[sc=5;ec=14;quickfixes=qf4]]
     // fix@qf4 {{Replace the expression by "StaticMembersAccessCheckD"}}
     // edit@qf4 [[sc=5;ec=14]] {{StaticMembersAccessCheckD}}
     d().counter++; // Noncompliant
-    // Noncompliant@+1 [[sc=5;el=+3;ec=14;quickfixes=qf5]]
+    // Noncompliant@+1 [[sc=5;el=+3;ec=6;quickfixes=qf5]]
     (
       (StaticMembersAccessCheckA.StaticMembersAccessCheckD) d()
     ).counter++;
@@ -60,11 +60,11 @@ class StaticMembersAccessCheckB {
     // edit@qf5 [[sc=5;el=+2;ec=6]] {{StaticMembersAccessCheckD}}
     (d()).counter++; // Noncompliant
     StaticMembersAccessCheckA.StaticMembersAccessCheckD[] darray = new StaticMembersAccessCheckA.StaticMembersAccessCheckD[1];
-    darray[0].counter++; // Noncompliant [[sc=5;ec=22;quickfixes=qf6]]
+    darray[0].counter++; // Noncompliant [[sc=5;ec=14;quickfixes=qf6]]
     // fix@qf6 {{Replace the expression by "StaticMembersAccessCheckD"}}
     // edit@qf6 [[sc=5;ec=14]] {{StaticMembersAccessCheckD}}
     Path path = Paths.get("abc");
-    char separator = path.toFile().separatorChar; // Noncompliant [[sc=22;ec=49;quickfixes=qf7]]
+    char separator = path.toFile().separatorChar; // Noncompliant [[sc=22;ec=35;quickfixes=qf7]]
     // fix@qf7 {{Replace the expression by "File"}}
     // edit@qf7 [[sc=22;ec=35]] {{File}}
     // edit@qf7 [[sl=3;sc=1;el=3;ec=1]] {{import java.io.File;\n}}

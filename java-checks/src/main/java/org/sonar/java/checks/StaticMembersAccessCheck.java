@@ -68,7 +68,7 @@ public class StaticMembersAccessCheck extends IssuableSubscriptionVisitor {
       if (!selectExpression.is(Tree.Kind.IDENTIFIER) || ((IdentifierTree) selectExpression).symbol().isVariableSymbol()) {
         QuickFixHelper.newIssue(context)
           .forRule(this)
-          .onTree(memberSelect)
+          .onTree(leftOperand)
           .withMessage("Change this instance-reference to a static reference.")
           .withQuickFix(() -> createQuickFixes(leftOperand, memberSelectSymbol.owner().type()))
           .report();
