@@ -45,7 +45,7 @@ public class ArrayDesignatorAfterTypeCheck extends IssuableSubscriptionVisitor {
       .ifPresent(misplaced -> QuickFixHelper.newIssue(context)
         .forRule(this)
         .onRange(misplaced.firstArray.openBracketToken(), misplaced.lastArray.closeBracketToken())
-        .withMessage("Move the array designators " + misplaced.replacement() + " to the end of the return type.")
+        .withMessage("Move the array designators " + misplaced.replacement + " to the end of the return type.")
         .withQuickFix(() -> createQuickFix(misplaced, "return type"))
         .report());
   }

@@ -52,7 +52,7 @@ public class ArrayDesignatorOnVariableCheck extends IssuableSubscriptionVisitor 
       .ifPresent(misplaced -> QuickFixHelper.newIssue(context)
         .forRule(this)
         .onRange(misplaced.firstArray.openBracketToken(), misplaced.lastArray.closeBracketToken())
-        .withMessage("Move the array designator from the variable to the type.")
+        .withMessage("Move the array designators " + misplaced.replacement + " to the type.")
         .withQuickFixes(() -> isDeclarationTypeUsedBySeveralVariable(variableTree)
           ? Collections.emptyList()
           : Collections.singletonList(createQuickFix(misplaced, "variable type")))
@@ -60,13 +60,13 @@ public class ArrayDesignatorOnVariableCheck extends IssuableSubscriptionVisitor 
   }
 
   static JavaQuickFix createQuickFix(MisplacedArray misplaced, String type) {
-    return JavaQuickFix.newQuickFix("Move " + misplaced.replacement() + " to the " + type)
+    return JavaQuickFix.newQuickFix("Move " + misplaced.replacement + " to the " + type)
       .addTextEdit(JavaTextEdit.removeBetweenTree(
         misplaced.firstArray.openBracketToken(),
         misplaced.lastArray.closeBracketToken()))
       .addTextEdit(JavaTextEdit.insertAfterTree(
         misplaced.firstArray.type(),
-        misplaced.replacement()))
+        misplaced.replacement))
       .build();
   }
 
@@ -89,28 +89,24 @@ public class ArrayDesignatorOnVariableCheck extends IssuableSubscriptionVisitor 
     return otherTree.is(Tree.Kind.VARIABLE) && variable.firstToken().equals(otherTree.firstToken());
   }
 
-  static boolean isInvalidPosition(ArrayTypeTree arrayTypeTree, SyntaxToken identifierToken) {
-    SyntaxToken openBracketToken = arrayTypeTree.openBracketToken();
-    return openBracketToken != null && identifierToken.range().start().isBefore(openBracketToken.range().start());
-  }
-
   static class MisplacedArray {
     ArrayTypeTree firstArray;
     ArrayTypeTree lastArray;
-    int misplacedCount;
+    String replacement;
 
     private MisplacedArray(ArrayTypeTree lastArrayType, SyntaxToken identifierToken) {
       firstArray = lastArrayType;
       lastArray = lastArrayType;
-      misplacedCount = 1;
+      StringBuilder replacementBuilder = new StringBuilder("[]");
       while (firstArray.type().is(Tree.Kind.ARRAY_TYPE)) {
         ArrayTypeTree previous = (ArrayTypeTree) firstArray.type();
         if (!isInvalidPosition(previous, identifierToken)) {
           break;
         }
-        misplacedCount++;
+        replacementBuilder.append("[]");
         firstArray = previous;
       }
+      replacement = replacementBuilder.toString();
     }
 
     static Optional<MisplacedArray> find(@Nullable TypeTree type, SyntaxToken identifierToken) {
@@ -121,9 +117,11 @@ public class ArrayDesignatorOnVariableCheck extends IssuableSubscriptionVisitor 
         .map(arrayType -> new MisplacedArray(arrayType, identifierToken));
     }
 
-    String replacement() {
-      return String.join("", Collections.nCopies(misplacedCount, "[]"));
+    private static boolean isInvalidPosition(ArrayTypeTree arrayTypeTree, SyntaxToken identifierToken) {
+      SyntaxToken openBracketToken = arrayTypeTree.openBracketToken();
+      return openBracketToken != null && identifierToken.range().start().isBefore(openBracketToken.range().start());
     }
+
   }
 
 }
