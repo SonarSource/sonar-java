@@ -19,10 +19,13 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.visitors.PublicApiChecker;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -30,16 +33,24 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
+import static org.sonar.java.checks.helpers.DeprecatedCheckerHelper.deprecatedAnnotation;
+import static org.sonar.java.checks.helpers.DeprecatedCheckerHelper.reportTreeForDeprecatedTree;
+import static org.sonar.java.checks.helpers.DeprecatedCheckerHelper.hasJavadocDeprecatedTag;
 import static org.sonar.java.model.JUtils.isLocalVariable;
 
 @DeprecatedRuleKey(ruleKey = "MissingDeprecatedCheck", repositoryKey = "squid")
 @Rule(key = "S1123")
-public class MissingDeprecatedCheck extends AbstractDeprecatedChecker {
+public class MissingDeprecatedCheck extends IssuableSubscriptionVisitor {
 
   private static final Kind[] CLASS_KINDS = PublicApiChecker.classKinds();
 
   private final Deque<Boolean> classOrInterfaceIsDeprecated = new LinkedList<>();
   private boolean isJava9 = false;
+
+  @Override
+  public List<Kind> nodesToVisit() {
+    return Arrays.asList(PublicApiChecker.apiKinds());
+  }
 
   @Override
   public void setContext(JavaFileScannerContext context) {
@@ -56,12 +67,12 @@ public class MissingDeprecatedCheck extends AbstractDeprecatedChecker {
     if (currentClassNotDeprecated() && !isLocalVar) {
       if (hasDeprecatedAnnotation) {
         if (!hasJavadocDeprecatedTag) {
-          reportIssue(getReportTree(tree), "Add the missing @deprecated Javadoc tag.");
+          reportIssue(reportTreeForDeprecatedTree(tree), "Add the missing @deprecated Javadoc tag.");
         } else if (isJava9 && deprecatedAnnotation.arguments().isEmpty()) {
-          reportIssue(getReportTree(deprecatedAnnotation), "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation.");
+          reportIssue(reportTreeForDeprecatedTree(deprecatedAnnotation), "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation.");
         }
       } else if (hasJavadocDeprecatedTag) {
-        reportIssue(getReportTree(tree), "Add the missing @Deprecated annotation.");
+        reportIssue(reportTreeForDeprecatedTree(tree), "Add the missing @Deprecated annotation.");
       }
     }
     if (tree.is(CLASS_KINDS)) {
