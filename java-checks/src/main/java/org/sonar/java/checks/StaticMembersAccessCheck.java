@@ -26,7 +26,9 @@ import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -35,9 +37,22 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S2209")
 public class StaticMembersAccessCheck extends IssuableSubscriptionVisitor {
 
+  private QuickFixHelper.ImportSupplier importSupplier;
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.MEMBER_SELECT);
+  }
+
+  @Override
+  public void setContext(JavaFileScannerContext context) {
+    super.setContext(context);
+    importSupplier = null;
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    importSupplier = null;
   }
 
   @Override
@@ -55,17 +70,24 @@ public class StaticMembersAccessCheck extends IssuableSubscriptionVisitor {
           .forRule(this)
           .onTree(memberSelect)
           .withMessage("Change this instance-reference to a static reference.")
-          .withQuickFix(() -> createQuickFixes(leftOperand, memberSelectSymbol.owner().name()))
+          .withQuickFix(() -> createQuickFixes(leftOperand, memberSelectSymbol.owner().type()))
           .report();
       }
     }
   }
 
-  private JavaQuickFix createQuickFixes(ExpressionTree leftOperand, String replacement) {
+  private JavaQuickFix createQuickFixes(ExpressionTree leftOperand, Type type) {
     String leftOperandAsText = QuickFixHelper.contentForTree(leftOperand, context).replaceAll("\\s+", " ");
-    return JavaQuickFix.newQuickFix(String.format("Replace \"%s\" by \"%s\"", leftOperandAsText, replacement))
-      .addTextEdit(JavaTextEdit.replaceTree(leftOperand, replacement))
-      .build();
+    JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix(String.format("Replace \"%s\" by \"%s\"", leftOperandAsText, type.name()))
+      .addTextEdit(JavaTextEdit.replaceTree(leftOperand, type.name()));
+
+    if (importSupplier == null) {
+      importSupplier = QuickFixHelper.newImportSupplier(context);
+    }
+    importSupplier.newImportEdit(type.fullyQualifiedName())
+      .ifPresent(builder::addTextEdit);
+
+    return builder.build();
   }
 
 }

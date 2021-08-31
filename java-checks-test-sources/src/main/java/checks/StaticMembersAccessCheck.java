@@ -1,5 +1,8 @@
 package checks;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 class StaticMembersAccessCheckA {
   public static int counter = 0;
   public int nonStaticCounter = 0;
@@ -57,9 +60,14 @@ class StaticMembersAccessCheckB {
     // edit@qf5 [[sc=5;el=+2;ec=6]] {{StaticMembersAccessCheckD}}
     (d()).counter++; // Noncompliant
     StaticMembersAccessCheckA.StaticMembersAccessCheckD[] darray = new StaticMembersAccessCheckA.StaticMembersAccessCheckD[1];
-    darray[0].counter++; // Noncompliant // Noncompliant [[sc=5;ec=22;quickfixes=qf6]]
+    darray[0].counter++; // Noncompliant [[sc=5;ec=22;quickfixes=qf6]]
     // fix@qf6 {{Replace "darray[0]" by "StaticMembersAccessCheckD"}}
     // edit@qf6 [[sc=5;ec=14]] {{StaticMembersAccessCheckD}}
+    Path path = Paths.get("abc");
+    char separator = path.toFile().separatorChar; // Noncompliant [[sc=22;ec=49;quickfixes=qf7]]
+    // fix@qf7 {{Replace "path.toFile()" by "File"}}
+    // edit@qf7 [[sc=22;ec=35]] {{File}}
+    // edit@qf7 [[sl=3;sc=1;el=3;ec=1]] {{import java.io.File;\n}}
   }
 
   public void compliant() {
