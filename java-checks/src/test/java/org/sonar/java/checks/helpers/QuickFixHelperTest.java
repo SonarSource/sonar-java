@@ -37,6 +37,7 @@ import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.InferedTypeTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -97,13 +98,58 @@ class QuickFixHelperTest {
     assertThat(content).isEmpty();
   }
 
-  static class NextVariableArgumentsProvider implements ArgumentsProvider {
+  static class ClassLikeMemberWithoutNextArgumentsProvider implements ArgumentsProvider {
+
+    @Override
+    public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+      return Stream.of(
+        //arguments(source code, index of the member that should be targeted)
+        arguments("class A { int target = 42; int notRelevant; }", 0),
+        arguments("class A { int target = 42; }", 0),
+        arguments("record A(int a, int b) { final static int c = 42, target = 0; }", 1),
+        arguments("record A(int a, int b) { final static int c = 42, target = 0; int e; }", 1),
+        arguments("enum MyEnum { A, B; int c, target; }", 3),
+        arguments("enum MyEnum { A, B; int c, target; int e; }", 3),
+        arguments("interface I { int c, target; }", 1),
+        arguments("interface I { int c, target; int e; }", 1)
+      );
+    }
+  }
+
+  static class ClassLikeMemberWithNextArgumentsProvider implements ArgumentsProvider {
+
+    @Override
+    public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+      return Stream.of(
+        //arguments(source code, index of the member that should be targeted, index of the member that should be next)
+        arguments("class A { int target = 42, next; }", 0, 1),
+        arguments("class A { int first, target, next; }", 0, 1),
+        arguments("record A(int a, int b) { final static int target = 42, c = 0; }", 0, 1),
+        arguments("enum MyEnum { A, B; int target, d; }", 2, 3),
+        arguments("interface I { int target, d; }", 0, 1)
+      );
+    }
+  }
+
+  static class LocalVariableWithoutNextVariableArgumentsProvider implements ArgumentsProvider {
     @Override
     public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
       return Arrays.asList(
+        //arguments(source code, index of the variable that should be targeted in the method)
         arguments("class A { void f() { int target = 42; } }", 1),
         arguments("class A { void f() { int target = 42; System.out.println(\"Hello, World!\"); } }", 1),
         arguments("class A { void f() { int target = 42; int notRelevant; } }", 1)
+      ).stream();
+    }
+  }
+
+  static class LocalVariableWithNextVariableArgumentsProvider implements ArgumentsProvider {
+    @Override
+    public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+      return Arrays.asList(
+        //arguments(source code, index of the variable that should be targeted in the method, index of the next variable in the method)
+        arguments("class A { void f() { int target = 42, next; } }", 1, 2),
+        arguments("class A { void f() { int first, target = 42, next; } }", 2, 3)
       ).stream();
     }
   }
@@ -122,8 +168,8 @@ class QuickFixHelperTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(NextVariableArgumentsProvider.class)
-    void returns_empty(String source, int statementIndex) {
+    @ArgumentsSource(LocalVariableWithoutNextVariableArgumentsProvider.class)
+    void returns_empty_on_local_variable(String source, int statementIndex) {
       CompilationUnitTree cut = JParserTestUtils.parse(source);
       ClassTree theClass = (ClassTree) cut.types().get(0);
       MethodTree method = (MethodTree) theClass.members().get(0);
@@ -131,70 +177,122 @@ class QuickFixHelperTest {
       assertThat(QuickFixHelper.nextVariable(target)).isEmpty();
     }
 
-    @Test
-    void returns_next_on_2_variable_declaration_in_block() {
-      CompilationUnitTree cut = JParserTestUtils.parse("class A { void f() { int target = 42, next; } }");
+    @ParameterizedTest
+    @ArgumentsSource(LocalVariableWithNextVariableArgumentsProvider.class)
+    void returns_next_on_local_variable(String source, int targetIndex, int nextIndex) {
+      CompilationUnitTree cut = JParserTestUtils.parse(source);
       ClassTree theClass = (ClassTree) cut.types().get(0);
       MethodTree method = (MethodTree) theClass.members().get(0);
-      VariableTree target = (VariableTree) ((BlockTreeImpl) method.block()).getChildren().get(1);
-      VariableTree next = (VariableTree) ((BlockTreeImpl) method.block()).getChildren().get(2);
+      VariableTree target = (VariableTree) ((BlockTreeImpl) method.block()).getChildren().get(targetIndex);
+      VariableTree next = (VariableTree) ((BlockTreeImpl) method.block()).getChildren().get(nextIndex);
       assertThat(QuickFixHelper.nextVariable(target)).contains(next);
     }
 
     @Test
-    void returns_next_on_3_variable_declaration_in_block() {
-      CompilationUnitTree cut = JParserTestUtils.parse("class A { void f() { int first, target = 42, next; } }");
-      ClassTree theClass = (ClassTree) cut.types().get(0);
-      MethodTree method = (MethodTree) theClass.members().get(0);
-      VariableTree target = (VariableTree) ((BlockTreeImpl) method.block()).getChildren().get(2);
-      VariableTree next = (VariableTree) ((BlockTreeImpl) method.block()).getChildren().get(3);
+    void throws_an_illegal_argument_exception_on_record_component() {
+      CompilationUnitTree cut = JParserTestUtils.parse("record A(int a, int target) {}");
+      ClassTree record = (ClassTree) cut.types().get(0);
+      VariableTree target = record.recordComponents().get(1);
+
+      assertThatThrownBy(() -> QuickFixHelper.previousVariable(target))
+        .isInstanceOfAny(IllegalArgumentException.class)
+        .hasMessageContaining("Nom-members cannot be declared as part of multi-variable declarations!");
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ClassLikeMemberWithoutNextArgumentsProvider.class)
+    void returns_empty_on_member_of_class_like_parent(String source, int targetIndex) {
+      CompilationUnitTree cut = JParserTestUtils.parse(source);
+      ClassTree classLikeElement = (ClassTree) cut.types().get(0);
+      VariableTree target =  (VariableTree) classLikeElement.members().get(targetIndex);
+      assertThat(QuickFixHelper.nextVariable(target)).isEmpty();
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ClassLikeMemberWithNextArgumentsProvider.class)
+    void returns_next_on_member_of_class_like_parent(String source, int targetNext, int nextIndex) {
+      CompilationUnitTree cut = JParserTestUtils.parse(source);
+      ClassTree record = (ClassTree) cut.types().get(0);
+      VariableTree target = (VariableTree) record.members().get(targetNext);
+      VariableTree next = (VariableTree) record.members().get(nextIndex);
       assertThat(QuickFixHelper.nextVariable(target)).contains(next);
     }
 
     @Test
-    void returns_next_on_single_variable_declaration() {
-      CompilationUnitTree cut = JParserTestUtils.parse("class A { int target = 42; }");
-      ClassTree theClass = (ClassTree) cut.types().get(0);
-      VariableTree target = (VariableTree) theClass.members().get(0);
+    void returns_empty_on_variable_in_for_loop_initializer() {
+      CompilationUnitTree cut = JParserTestUtils.parse("class A { void f() { for (int i, target; ;); } }");
+      ClassTree record = (ClassTree) cut.types().get(0);
+      MethodTree method = (MethodTree) record.members().get(0);
+      ForStatementTree forStatementTree = (ForStatementTree) method.block().body().get(0);
+      VariableTree target = (VariableTree) forStatementTree.initializer().get(1);
       assertThat(QuickFixHelper.nextVariable(target)).isEmpty();
     }
 
     @Test
-    void returns_empty_on_separate_variable_declarations() {
-      CompilationUnitTree cut = JParserTestUtils.parse("class A { int target = 42; int notRelevant; }");
-      ClassTree theClass = (ClassTree) cut.types().get(0);
-      VariableTree target = (VariableTree) theClass.members().get(1);
-      assertThat(QuickFixHelper.nextVariable(target)).isEmpty();
-    }
-
-    @Test
-    void returns_next_on_2_variable_declaration() {
-      CompilationUnitTree cut = JParserTestUtils.parse("class A { int target = 42, next; }");
-      ClassTree theClass = (ClassTree) cut.types().get(0);
-      VariableTree target = (VariableTree) theClass.members().get(0);
-      VariableTree next = (VariableTree) theClass.members().get(1);
-      assertThat(QuickFixHelper.nextVariable(target)).contains(next);
-    }
-
-    @Test
-    void returns_next_on_3_variable_declaration() {
-      CompilationUnitTree cut = JParserTestUtils.parse("class A { int first, target, next; }");
-      ClassTree theClass = (ClassTree) cut.types().get(0);
-      VariableTree target = (VariableTree) theClass.members().get(1);
-      VariableTree next = (VariableTree) theClass.members().get(2);
+    void returns_previous_on_variable_in_for_loop_initializer() {
+      CompilationUnitTree cut = JParserTestUtils.parse("class A { void f() { for (int target, i; ;); } }");
+      ClassTree record = (ClassTree) cut.types().get(0);
+      MethodTree method = (MethodTree) record.members().get(0);
+      ForStatementTree forStatementTree = (ForStatementTree) method.block().body().get(0);
+      VariableTree target = (VariableTree) forStatementTree.initializer().get(0);
+      VariableTree next = (VariableTree) forStatementTree.initializer().get(1);
       assertThat(QuickFixHelper.nextVariable(target)).contains(next);
     }
   }
 
-  static class PreviousVariableArgumentsProvider implements ArgumentsProvider {
+  static class ClassLikeMemberWithoutPreviousArgumentsProvider implements ArgumentsProvider {
+
+    @Override
+    public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+      return Stream.of(
+        //arguments(source code, index of the member that should be targeted)
+        arguments("class A { int target = 42; }", 0),
+        arguments("class A { int notRelevant; int target = 42; }", 1),
+        arguments("record A(int a, int b) { int c; final static int target = 42; }", 1),
+        arguments("record A(int a, int b) { final static int target = 42; }", 0),
+        arguments("enum MyEnum { A, B; int c; int target; }", 3),
+        arguments("enum MyEnum { A, B; int target; }", 2),
+        arguments("interface I { int c; int target; }", 0)
+      );
+    }
+  }
+
+  static class ClassLikeMemberWithPreviousArgumentsProvider implements ArgumentsProvider {
+    @Override
+    public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+      return Stream.of(
+        //arguments(source code, index of the member that should be targeted, index of the member that should be next)
+        arguments("class A { int previous, target = 42; }", 1, 0),
+        arguments("class A { int first, previous, target; }", 2, 1),
+        arguments("record A(int a, int b) { final static int c = 42, target = 0; }", 1, 0),
+        arguments("enum MyEnum { A, B; int c, target; }", 3, 2),
+        arguments("interface I { int c, target; }", 1, 0)
+      );
+    }
+  }
+
+
+  static class LocalVariableWithoutPreviousArgumentsProvider implements ArgumentsProvider {
 
     @Override
     public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
       return Arrays.asList(
+        //arguments(source code, index of the variable that should be targeted in the method)
         arguments("class A { void f() { int target = 42; } }", 1),
         arguments("class A { void f() { System.out.println(\"Hello, World!\"); int target = 42; } }", 2),
         arguments("class A { void f() { int notRelevant; int target = 42; } }", 2)
       ).stream();
+    }
+  }
+
+  static class LocalVariableWithPreviousArgumentsProvider implements ArgumentsProvider {
+
+    @Override
+    public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) throws Exception {
+      return Stream.of(
+        arguments("class A { void f() { int first, target = 42; } }", 2, 1),
+        arguments("class A { void f() { int first, previous, target; } }", 3, 2)
+      );
     }
   }
 
@@ -212,8 +310,8 @@ class QuickFixHelperTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(PreviousVariableArgumentsProvider.class)
-    void returns_empty(String source, int statementIndex) {
+    @ArgumentsSource(LocalVariableWithoutPreviousArgumentsProvider.class)
+    void returns_empty_on_local_variable(String source, int statementIndex) {
       CompilationUnitTree cut = JParserTestUtils.parse(source);
       ClassTree theClass = (ClassTree) cut.types().get(0);
       MethodTree method = (MethodTree) theClass.members().get(0);
@@ -221,57 +319,65 @@ class QuickFixHelperTest {
       assertThat(QuickFixHelper.previousVariable(target)).isEmpty();
     }
 
-    @Test
-    void returns_previous_on_2_variable_declaration_in_block() {
-      CompilationUnitTree cut = JParserTestUtils.parse("class A { void f() { int first, target = 42; } }");
+    @ParameterizedTest
+    @ArgumentsSource(LocalVariableWithPreviousArgumentsProvider.class)
+    void returns_previous_on_local_variable(String source, int targetIndex, int previousIndex) {
+      CompilationUnitTree cut = JParserTestUtils.parse(source);
       ClassTree theClass = (ClassTree) cut.types().get(0);
       MethodTree method = (MethodTree) theClass.members().get(0);
-      VariableTree previous = (VariableTree) ((BlockTreeImpl) method.block()).getChildren().get(1);
-      VariableTree target = (VariableTree) ((BlockTreeImpl) method.block()).getChildren().get(2);
+      VariableTree previous = (VariableTree) ((BlockTreeImpl) method.block()).getChildren().get(previousIndex);
+      VariableTree target = (VariableTree) ((BlockTreeImpl) method.block()).getChildren().get(targetIndex);
       assertThat(QuickFixHelper.previousVariable(target)).contains(previous);
     }
 
     @Test
-    void returns_previous_on_3_variable_declaration_in_block() {
-      CompilationUnitTree cut = JParserTestUtils.parse("class A { void f() { int first, previous, target; } }");
-      ClassTree theClass = (ClassTree) cut.types().get(0);
-      MethodTree method = (MethodTree) theClass.members().get(0);
-      VariableTree previous = (VariableTree) ((BlockTreeImpl) method.block()).getChildren().get(2);
-      VariableTree target = (VariableTree) ((BlockTreeImpl) method.block()).getChildren().get(3);
+    void throws_an_illegal_argument_exception_on_record_component() {
+      CompilationUnitTree cut = JParserTestUtils.parse("record A(int a, int target) {}");
+      ClassTree record = (ClassTree) cut.types().get(0);
+      VariableTree target = record.recordComponents().get(1);
+
+      assertThatThrownBy(() -> QuickFixHelper.previousVariable(target))
+        .isInstanceOfAny(IllegalArgumentException.class)
+        .hasMessageContaining("Nom-members cannot be declared as part of multi-variable declarations!");
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ClassLikeMemberWithoutPreviousArgumentsProvider.class)
+    void returns_empty_on_class_like_member(String source, int targetIndex) {
+      CompilationUnitTree cut = JParserTestUtils.parse(source);
+      ClassTree record = (ClassTree) cut.types().get(0);
+      VariableTree target = (VariableTree) record.members().get(targetIndex);
+      assertThat(QuickFixHelper.previousVariable(target)).isEmpty();
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ClassLikeMemberWithPreviousArgumentsProvider.class)
+    void returns_previous_on_class_like_member(String source, int targetIndex, int previousIndex) {
+      CompilationUnitTree cut = JParserTestUtils.parse(source);
+      ClassTree record = (ClassTree) cut.types().get(0);
+      VariableTree target = (VariableTree) record.members().get(targetIndex);
+      VariableTree previous = (VariableTree) record.members().get(previousIndex);
       assertThat(QuickFixHelper.previousVariable(target)).contains(previous);
     }
 
     @Test
-    void returns_empty_on_single_variable_declaration() {
-      CompilationUnitTree cut = JParserTestUtils.parse("class A { int target = 42; }");
-      ClassTree theClass = (ClassTree) cut.types().get(0);
-      VariableTree target = (VariableTree) theClass.members().get(0);
+    void returns_empty_on_variable_in_for_loop_initializer() {
+      CompilationUnitTree cut = JParserTestUtils.parse("class A { void f() { for (int target, i; ;); } }");
+      ClassTree record = (ClassTree) cut.types().get(0);
+      MethodTree method = (MethodTree) record.members().get(0);
+      ForStatementTree forStatementTree = (ForStatementTree) method.block().body().get(0);
+      VariableTree target = (VariableTree) forStatementTree.initializer().get(0);
       assertThat(QuickFixHelper.previousVariable(target)).isEmpty();
     }
 
     @Test
-    void returns_empty_on_separate_variable_declarations() {
-      CompilationUnitTree cut = JParserTestUtils.parse("class A { int notRelevant; int target = 42; }");
-      ClassTree theClass = (ClassTree) cut.types().get(0);
-      VariableTree target = (VariableTree) theClass.members().get(1);
-      assertThat(QuickFixHelper.previousVariable(target)).isEmpty();
-    }
-
-    @Test
-    void returns_previous_on_2_variable_declaration() {
-      CompilationUnitTree cut = JParserTestUtils.parse("class A { int previous, target = 42; }");
-      ClassTree theClass = (ClassTree) cut.types().get(0);
-      VariableTree target = (VariableTree) theClass.members().get(1);
-      VariableTree previous = (VariableTree) theClass.members().get(0);
-      assertThat(QuickFixHelper.previousVariable(target)).contains(previous);
-    }
-
-    @Test
-    void returns_previous_on_3_variable_declaration() {
-      CompilationUnitTree cut = JParserTestUtils.parse("class A { int first, previous, target; }");
-      ClassTree theClass = (ClassTree) cut.types().get(0);
-      VariableTree target = (VariableTree) theClass.members().get(2);
-      VariableTree previous = (VariableTree) theClass.members().get(1);
+    void returns_previous_on_variable_in_for_loop_initializer() {
+      CompilationUnitTree cut = JParserTestUtils.parse("class A { void f() { for (int i, target; ;); } }");
+      ClassTree record = (ClassTree) cut.types().get(0);
+      MethodTree method = (MethodTree) record.members().get(0);
+      ForStatementTree forStatementTree = (ForStatementTree) method.block().body().get(0);
+      VariableTree previous = (VariableTree) forStatementTree.initializer().get(0);
+      VariableTree target = (VariableTree) forStatementTree.initializer().get(1);
       assertThat(QuickFixHelper.previousVariable(target)).contains(previous);
     }
   }

@@ -33,7 +33,6 @@ import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.collections.ListUtils;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -42,24 +41,18 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
+import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
 
 /**
  * For internal use only. Can not be used outside SonarJava analyzer.
  */
 @Beta
 public class QuickFixHelper {
-  /**
-   * A block's children list contains opening and closing braces that are not relevant to variables search
-   */
-  private static final int TRIMMING_OFFSET_IN_BLOCK_CHILDREN = 1;
-  /**
-   * A class members list only contains relevant elements
-   */
-  private static final int TRIMMING_OFFSET_IN_CLASS_MEMBERS = 0;
 
   private QuickFixHelper() {
     // Utility class
@@ -120,22 +113,13 @@ public class QuickFixHelper {
    * @return An Optional with the preceding variable, Optional.empty otherwise.
    */
   public static Optional<VariableTree> previousVariable(VariableTree current) {
-    Tree parent = current.parent();
-    if (parent.is(Tree.Kind.BLOCK, Tree.Kind.INITIALIZER, Tree.Kind.STATIC_INITIALIZER)) {
-      List<Tree> children = ((BlockTreeImpl) parent).children();
-      return previousVariable(current, children, TRIMMING_OFFSET_IN_BLOCK_CHILDREN);
-    } else if (parent.is(Tree.Kind.CLASS)) {
-      List<Tree> members = ((ClassTree) parent).members();
-      return previousVariable(current, members, TRIMMING_OFFSET_IN_CLASS_MEMBERS);
-    } else {
-      throw new IllegalArgumentException("The variable's parent kind is not handled by this method!");
-    }
+    return previousVariable(current, getSiblings(current));
   }
 
-  private static Optional<VariableTree> previousVariable(VariableTree current, List<Tree> trees, int firstRelevantIndex) {
+  private static Optional<VariableTree> previousVariable(VariableTree current, List<? extends Tree> trees) {
     int currentIndex = trees.indexOf(current);
     // If the variable is the first element that follows the opening token, there is no predecessor to return
-    if (currentIndex <= firstRelevantIndex) {
+    if (currentIndex <= 0) {
       return Optional.empty();
     }
     // If there is a predecessor, we check that it is a variable and that it is part of the same declaration
@@ -149,23 +133,14 @@ public class QuickFixHelper {
   /**
    * Returns the following variable in a mutli-variable declaration.
    *
-   * @param current The target variable
+   * @param variable The target variable
    * @return An Optional with the following variable, Optional.empty otherwise.
    */
-  public static Optional<VariableTree> nextVariable(VariableTree current) {
-    Tree parent = current.parent();
-    if (parent.is(Tree.Kind.BLOCK, Tree.Kind.INITIALIZER, Tree.Kind.STATIC_INITIALIZER)) {
-      List<Tree> children = ((BlockTreeImpl) parent).children();
-      return nextVariable(current, children);
-    } else if (parent.is(Tree.Kind.CLASS)) {
-      List<Tree> members = ((ClassTree) parent).members();
-      return nextVariable(current, members);
-    } else {
-      throw new IllegalArgumentException("The variable's parent kind is not handled by this method!");
-    }
+  public static Optional<VariableTree> nextVariable(VariableTree variable) {
+    return nextVariable(variable, getSiblings(variable));
   }
 
-  private static Optional<VariableTree> nextVariable(VariableTree current, List<Tree> trees) {
+  private static Optional<VariableTree> nextVariable(VariableTree current, List<? extends Tree> trees) {
     int currentIndex = trees.indexOf(current);
     // If the variable cannot be found in the parent (a bug) or if the variable is the last one in the block before the closing brace, there is no follower to return.
     if (currentIndex == -1 || trees.size() <= (currentIndex + 1)) {
@@ -177,6 +152,25 @@ public class QuickFixHelper {
       return Optional.of((VariableTree) following);
     }
     return Optional.empty();
+  }
+
+  private static List<? extends Tree> getSiblings(VariableTree current) {
+    Tree parent = current.parent();
+    if (parent.is(Tree.Kind.LIST)) {
+      return ((ListTree) parent);
+    }
+    if (parent.is(Tree.Kind.BLOCK, Tree.Kind.INITIALIZER, Tree.Kind.STATIC_INITIALIZER)) {
+      return ((JavaTree) parent).getChildren();
+    }
+
+    if (parent instanceof ClassTree) {
+      List<? extends Tree> siblings = ((ClassTree) parent).members();
+      if (parent.is(Tree.Kind.RECORD)  && !siblings.contains(current)) {
+        throw new IllegalArgumentException("Nom-members cannot be declared as part of multi-variable declarations!");
+      }
+      return siblings;
+    }
+    throw new IllegalArgumentException("The variable's parent kind is not handled by this method!");
   }
 
   public static String contentForTree(Tree tree, JavaFileScannerContext context) {
@@ -210,7 +204,7 @@ public class QuickFixHelper {
     // rebuild content of tree as String
     StringBuilder sb = new StringBuilder();
     sb.append(lines.get(0)
-      .substring(beginIndex))
+        .substring(beginIndex))
       .append("\n");
     for (int i = 1; i < lines.size() - 1; i++) {
       sb.append(lines.get(i))
@@ -255,7 +249,7 @@ public class QuickFixHelper {
       this.packageName = packageDeclaration == null ? null : ExpressionsHelper.concatenate(packageDeclaration.packageName());
 
       List<Tree> types = cut.types();
-      this.firstType = types.isEmpty() ? null :  types.get(0);
+      this.firstType = types.isEmpty() ? null : types.get(0);
 
       this.sortedNonStaticImports = new ArrayList<>();
       this.importedTypes = new HashSet<>();
