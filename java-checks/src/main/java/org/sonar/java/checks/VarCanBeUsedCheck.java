@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -75,6 +76,7 @@ public class VarCanBeUsedCheck extends IssuableSubscriptionVisitor implements Ja
     if (isMultiAssignment(variableTree) ||
       initializer == null ||
       type.is(Tree.Kind.VAR_TYPE) ||
+      isArrayInitializerWithoutType(initializer) ||
       symbolType.isUnknown() ||
       !JUtils.isLocalVariable(variableTree.symbol()) ||
       symbolType.isParameterized()) {
@@ -137,5 +139,9 @@ public class VarCanBeUsedCheck extends IssuableSubscriptionVisitor implements Ja
     typeAssignmentLine = line;
     SyntaxToken token = variableTree.endToken();
     return token != null && token.text().equals(",");
+  }
+
+  private static boolean isArrayInitializerWithoutType(ExpressionTree initializer) {
+    return initializer.is(Tree.Kind.NEW_ARRAY) && ((NewArrayTree) initializer).newKeyword() == null;
   }
 }

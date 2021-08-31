@@ -66,8 +66,13 @@ public class VarCanBeUsedCheck {
     char c = i == 3 ? 0 : "hdr".charAt(i); // Compliant, despite it's possible here, ternary  operator may bring confusion in understanding the inferred type
 
     byte[] input = new byte[array.length]; // Noncompliant
-    
     var input2 = new byte[array.length]; // Compliant
+
+    String[] arrayInit = new String[]{"A", "B", "C"}; // Noncompliant
+    var arrayInit2 = new String[]{"A", "B", "C"}; // Compliant
+
+    String[] arrayInit3 = {"A", "B", "C"}; // Compliant, for array initializer, without type, it is not possible to change to var
+    //var arrayInit4 = (String[]) {"A", "B", "C"}; // does not compile
 
     Abc abc = Abc.getAbc(); // Noncompliant
 
