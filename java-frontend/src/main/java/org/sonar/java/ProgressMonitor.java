@@ -20,6 +20,7 @@
 package org.sonar.java;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.sonar.api.utils.log.Logger;
@@ -39,8 +40,19 @@ public class ProgressMonitor implements IProgressMonitor, Runnable {
   private boolean unknownTotalWork = false;
   private int processedWork = 0;
 
+  /**
+   * The report loop can not rely only on Thread.interrupted() to end, according to
+   * interrupted() javadoc, a thread interruption can be ignored because a thread was
+   * not alive at the time of the interrupt. This could happen if done() is being called
+   * before ProgressMonitor's thread becomes alive.
+   * So this boolean flag ensures that ProgressMonitor never enter an infinite loop when
+   * Thread.interrupted() failed to be set to true.
+   */
+  private final AtomicBoolean interrupted = new AtomicBoolean();
+
   @VisibleForTesting
   ProgressMonitor(BooleanSupplier isCanceled, Logger logger, long period) {
+    interrupted.set(false);
     this.isCanceled = isCanceled;
     this.logger = logger;
     this.period = period;
@@ -56,7 +68,7 @@ public class ProgressMonitor implements IProgressMonitor, Runnable {
 
   @Override
   public void run() {
-    while (!Thread.interrupted()) {
+    while (!(interrupted.get() || Thread.currentThread().isInterrupted())) {
       try {
         Thread.sleep(period);
         if (unknownTotalWork) {
@@ -66,6 +78,7 @@ public class ProgressMonitor implements IProgressMonitor, Runnable {
           log(String.format("%d%% analyzed", (int) (percentage * 100)));
         }
       } catch (InterruptedException e) {
+        interrupted.set(true);
         thread.interrupt();
         break;
       }
@@ -88,6 +101,7 @@ public class ProgressMonitor implements IProgressMonitor, Runnable {
       log("100% analyzed");
       log("Batch processing: Done!");
     }
+    interrupted.set(true);
     thread.interrupt();
     join();
   }
