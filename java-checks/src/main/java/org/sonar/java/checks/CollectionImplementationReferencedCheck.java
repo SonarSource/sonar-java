@@ -19,6 +19,8 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -87,10 +89,12 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
     .build();
 
   private JavaFileScannerContext context;
+  private QuickFixHelper.ImportSupplier importSupplier;
 
   @Override
   public void scanFile(final JavaFileScannerContext context) {
     this.context = context;
+    this.importSupplier = null;
     scan(context.getTree());
   }
 
@@ -145,11 +149,25 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
       .report();
   }
 
-  private static JavaQuickFix quickFix(TypeTree typeTree, String usedCollection, String targetedCollection) {
+  private JavaQuickFix quickFix(TypeTree typeTree, String usedCollection, String targetedCollection) {
     String targetedCollectionSimpleName = toSimpleName(targetedCollection);
+    List<JavaTextEdit> edits = new ArrayList<>();
+    edits.add(JavaTextEdit.replaceTree(typeTree, targetedCollectionSimpleName));
+
+    getImportSupplier()
+      .newImportEdit(targetedCollection)
+      .ifPresent(edits::add);
+
     return JavaQuickFix.newQuickFix("Replace \"%s\" by \"%s\"", usedCollection, targetedCollectionSimpleName)
-      .addTextEdit(JavaTextEdit.replaceTree(typeTree, targetedCollectionSimpleName))
+      .addTextEdits(edits)
       .build();
+  }
+
+  private QuickFixHelper.ImportSupplier getImportSupplier() {
+    if (importSupplier == null) {
+      importSupplier = QuickFixHelper.newImportSupplier(context);
+    }
+    return importSupplier;
   }
 
   private static String toSimpleName(String fullyQualifiedName) {

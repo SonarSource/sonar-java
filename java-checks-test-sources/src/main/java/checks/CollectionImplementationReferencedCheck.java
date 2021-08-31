@@ -23,6 +23,7 @@ class EmployeesTopLevel {
   public LinkedList<Employee> foo1() { return null; }            // Noncompliant [[sc=10;ec=20;quickfixes=LinkedList]] {{The return type of this method should be an interface such as "List" rather than the implementation "LinkedList".}}
                                                                  // fix@LinkedList {{Replace "LinkedList" by "List"}}
                                                                  // edit@LinkedList [[sc=10;ec=20]] {{List}}
+                                                                 // edit@LinkedList [[sl=5;sc=29;el=5;ec=29]] {{\nimport java.util.List;}}
 
   private LinkedList<Employee> foo2() { return null; }
 
@@ -40,6 +41,7 @@ class EmployeesTopLevel {
   public ConcurrentHashMap<?,?> concurrentHashMap() { return null; } // Noncompliant [[sc=10;ec=27;quickfixes=ConcurrentHashMap]] {{The return type of this method should be an interface such as "ConcurrentMap" rather than the implementation "ConcurrentHashMap".}}
                                                                      // fix@ConcurrentHashMap {{Replace "ConcurrentHashMap" by "ConcurrentMap"}}
                                                                      // edit@ConcurrentHashMap [[sc=10;ec=27]] {{ConcurrentMap}}
+                                                                     // edit@ConcurrentHashMap [[sl=9;sc=47;el=9;ec=47]] {{\nimport java.util.concurrent.ConcurrentMap;}}
 
   public ConcurrentSkipListMap concurrentSkipListMap() { return null; } // Noncompliant {{The return type of this method should be an interface such as "ConcurrentMap" rather than the implementation "ConcurrentSkipListMap".}}
 
@@ -50,6 +52,7 @@ class EmployeesTopLevel {
     public void foo(HashMap<String, String> map) { } // Noncompliant [[sc=21;ec=28;quickfixes=HashMap]]
                                                      // fix@HashMap {{Replace "HashMap" by "Map"}}
                                                      // edit@HashMap [[sc=21;ec=28]] {{Map}}
+                                                     // edit@HashMap [[sl=5;sc=29;el=5;ec=29]] {{\nimport java.util.Map;}}
   }
 
   class B extends A {
