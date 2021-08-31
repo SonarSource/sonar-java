@@ -23,10 +23,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.helpers.UnresolvedIdentifiersVisitor;
-import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
@@ -144,7 +144,7 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
     SyntaxToken lastToken = variable.lastToken();
     if (parent.is(Tree.Kind.BLOCK, Tree.Kind.INITIALIZER, Tree.Kind.STATIC_INITIALIZER)) {
       // If the variable is in the declaration list but is not the last one, we also need to include the following comma
-      Optional<VariableTree> followingVariable = getFollowingVariable(variable);
+      Optional<VariableTree> followingVariable = QuickFixHelper.nextVariable(variable);
       if (followingVariable.isPresent()) {
         return Optional.of(AnalyzerMessage.textSpanBetween(variable.simpleName(), true, followingVariable.get().simpleName(), false));
       }
@@ -175,38 +175,6 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
   }
 
   private static Optional<SyntaxToken> getPrecedingComma(VariableTree variable) {
-    return getPrecedingVariable(variable).map(VariableTree::lastToken);
-  }
-
-  private static Optional<VariableTree> getPrecedingVariable(VariableTree current) {
-    Tree parent = current.parent();
-    List<Tree> children = ((BlockTreeImpl) parent).children();
-    int currentIndex = children.indexOf(current);
-    // If the variable is the first element that follows the opening token, there is no predecessor to return
-    if (currentIndex <= 1) {
-      return Optional.empty();
-    }
-    // If there is a predecessor, we check that it is a variable and that it is part of the same declaration
-    Tree preceding = children.get(currentIndex - 1);
-    if (preceding.is(Tree.Kind.VARIABLE) && preceding.firstToken().equals(current.firstToken())) {
-      return Optional.of((VariableTree) preceding);
-    }
-    return Optional.empty();
-  }
-
-  private static Optional<VariableTree> getFollowingVariable(VariableTree current) {
-    Tree parent = current.parent();
-    List<Tree> children = ((BlockTreeImpl) parent).children();
-    int currentIndex = children.indexOf(current);
-    // If the variable cannot be found in the parent (a bug) or if the variable is the last one in the block before the closing brace, there is no follower to return.
-    if (currentIndex == -1 || children.size() <= (currentIndex + 2)) {
-      return Optional.empty();
-    }
-    // If there is a following variable, we check that it is a variable and that it is part of the same declaration
-    Tree following = children.get(currentIndex + 1);
-    if (following.is(Tree.Kind.VARIABLE) && following.firstToken().equals(current.firstToken())) {
-      return Optional.of((VariableTree) following);
-    }
-    return Optional.empty();
+    return QuickFixHelper.previousVariable(variable).map(VariableTree::lastToken);
   }
 }
