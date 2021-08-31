@@ -137,7 +137,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
         .forRule(this)
         .onTree(boxedBoolean)
         .withMessage("Use the primitive boolean expression here.")
-        .withQuickFixes(() -> getQuickFix(tree))
+        .withQuickFixes(() -> getQuickFix(tree, boxedBoolean))
         .report();
       return false;
     }
@@ -256,7 +256,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
       .anyMatch(name -> name.equalsIgnoreCase("nonNull") || name.equalsIgnoreCase("notNull"));
   }
 
-  private static List<JavaQuickFix> getQuickFix(ExpressionTree tree) {
+  private static List<JavaQuickFix> getQuickFix(ExpressionTree tree, ExpressionTree boxedBoolean) {
     if (tree.is(Kind.METHOD_INVOCATION) && OPTIONAL_ORELSE.matches((MethodInvocationTree) tree)) {
       // We do not suggest a quick fix when we have an optional
       return Collections.emptyList();
@@ -265,9 +265,9 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
     if (tree.is(Kind.LOGICAL_COMPLEMENT)) {
       edits.add(JavaTextEdit.replaceTree(((UnaryExpressionTree) tree).operatorToken(), "Boolean.FALSE.equals("));
     } else {
-      edits.add(JavaTextEdit.insertBeforeTree(tree, "Boolean.TRUE.equals("));
+      edits.add(JavaTextEdit.insertBeforeTree(boxedBoolean, "Boolean.TRUE.equals("));
     }
-    edits.add(JavaTextEdit.insertAfterTree(tree, ")"));
+    edits.add(JavaTextEdit.insertAfterTree(boxedBoolean, ")"));
 
     return Collections.singletonList(JavaQuickFix.newQuickFix("Use the primitive boolean expression")
       .addTextEdits(edits)
