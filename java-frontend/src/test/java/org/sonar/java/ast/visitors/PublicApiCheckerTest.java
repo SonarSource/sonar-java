@@ -137,7 +137,8 @@ class PublicApiCheckerTest {
 
     @Test
     void two_javadoc_comment() {
-      CompilationUnitTree cut = JParserTestUtils.parse("/**\n" +
+      CompilationUnitTree cut = JParserTestUtils.parse(
+        "/**\n" +
         "* dandling javadoc\n" +
         "*/\n" +
         "/**\n" +
