@@ -254,7 +254,7 @@ public class QuickFixHelper {
 
     @VisibleForTesting
     boolean requiresImportOf(String requiredType) {
-      if (importedTypes.contains(requiredType)) {
+      if (!requiredType.contains(".") || importedTypes.contains(requiredType)) {
         // already explicitly imported
         return false;
       }

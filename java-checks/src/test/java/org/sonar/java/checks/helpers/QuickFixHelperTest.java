@@ -112,6 +112,7 @@ class QuickFixHelperTest {
       JavaFileScannerContext context = mockContext(source);
       ImportSupplier supplier = QuickFixHelper.newImportSupplier(context);
 
+      assertThat(supplier.requiresImportOf("B")).isFalse();
       assertThat(supplier.requiresImportOf("org.foo.B")).isFalse();
       assertThat(supplier.requiresImportOf("java.util.List")).isFalse();
       assertThat(supplier.requiresImportOf("java.util.Collections")).isFalse();

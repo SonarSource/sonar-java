@@ -19,18 +19,25 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Collections;
-import java.util.List;
-
 @Rule(key = "S2209")
 public class StaticMembersAccessCheck extends IssuableSubscriptionVisitor {
+
+  private QuickFixHelper.ImportSupplier importSupplier;
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -38,16 +45,51 @@ public class StaticMembersAccessCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
+  public void setContext(JavaFileScannerContext context) {
+    super.setContext(context);
+    importSupplier = null;
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    importSupplier = null;
+  }
+
+  @Override
   public void visitNode(Tree tree) {
     MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) tree;
-    if (memberSelect.identifier().symbol().isStatic()) {
-      ExpressionTree memberSelectExpression = memberSelect.expression();
-      if (memberSelectExpression.is(Tree.Kind.MEMBER_SELECT)) {
-        memberSelectExpression = ((MemberSelectExpressionTree) memberSelectExpression).identifier();
-      }
-      if (!memberSelectExpression.is(Tree.Kind.IDENTIFIER) || ((IdentifierTree) memberSelectExpression).symbol().isVariableSymbol()) {
-        context.reportIssue(this, memberSelect, "Change this instance-reference to a static reference.");
+    IdentifierTree memberSelectIdentifier = memberSelect.identifier();
+    Symbol memberSelectSymbol = memberSelectIdentifier.symbol();
+    if (memberSelectSymbol.isStatic()) {
+      ExpressionTree leftOperand = memberSelect.expression();
+      ExpressionTree selectExpression = leftOperand.is(Tree.Kind.MEMBER_SELECT)
+        ? ((MemberSelectExpressionTree) leftOperand).identifier()
+        : leftOperand;
+      if (!selectExpression.is(Tree.Kind.IDENTIFIER) || ((IdentifierTree) selectExpression).symbol().isVariableSymbol()) {
+        QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(leftOperand)
+          .withMessage("Change this instance-reference to a static reference.")
+          .withQuickFix(() -> createQuickFixes(leftOperand, memberSelectSymbol.owner().type()))
+          .report();
       }
     }
   }
+
+  private JavaQuickFix createQuickFixes(ExpressionTree leftOperand, Type type) {
+    String leftOperandAsText = leftOperand.is(Tree.Kind.IDENTIFIER)
+      ? ("\"" + ((IdentifierTree) leftOperand).name() + "\"")
+      : "the expression";
+    JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix(String.format("Replace %s by \"%s\"", leftOperandAsText, type.name()))
+      .addTextEdit(JavaTextEdit.replaceTree(leftOperand, type.name()));
+
+    if (importSupplier == null) {
+      importSupplier = QuickFixHelper.newImportSupplier(context);
+    }
+    importSupplier.newImportEdit(type.fullyQualifiedName())
+      .ifPresent(builder::addTextEdit);
+
+    return builder.build();
+  }
+
 }
