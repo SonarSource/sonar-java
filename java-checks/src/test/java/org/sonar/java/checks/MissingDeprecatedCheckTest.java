@@ -38,7 +38,7 @@ class MissingDeprecatedCheckTest {
   @Test
   void test_java9() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/MissingDeprecatedCheckJava9.java"))
+      .onFile(testSourcesPath("checks/MissingDeprecatedCheckJava9.java"))
       .withCheck(new MissingDeprecatedCheck())
       .withJavaVersion(9)
       .verifyIssues();

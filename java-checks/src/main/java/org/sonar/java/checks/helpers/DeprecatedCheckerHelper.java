@@ -17,14 +17,10 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.helpers;
 
-import java.util.Arrays;
-import java.util.List;
 import javax.annotation.CheckForNull;
 import org.sonar.java.ast.visitors.PublicApiChecker;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -33,34 +29,30 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-public class AbstractDeprecatedChecker extends IssuableSubscriptionVisitor {
+public class DeprecatedCheckerHelper {
 
   private static final Kind[] CLASS_KINDS = PublicApiChecker.classKinds();
   private static final Kind[] METHOD_KINDS = PublicApiChecker.methodKinds();
 
-  @Override
-  public List<Kind> nodesToVisit() {
-    return Arrays.asList(PublicApiChecker.apiKinds());
+  private DeprecatedCheckerHelper() {
+    // Helper class, should not be implemented.
   }
 
   public static boolean hasJavadocDeprecatedTag(Tree tree) {
     return PublicApiChecker.getApiJavadoc(tree).filter(comment -> comment.contains("@deprecated")).isPresent();
   }
 
-  public static boolean hasDeprecatedAnnotation(Tree tree) {
-    return deprecatedAnnotation(tree) != null;
-  }
-
   @CheckForNull
   public static AnnotationTree deprecatedAnnotation(Tree tree) {
+    AnnotationTree annotationTree = null;
     if (tree.is(CLASS_KINDS)) {
-      return deprecatedAnnotation((ClassTree) tree);
+      annotationTree = deprecatedAnnotation((ClassTree) tree);
     } else if (tree.is(METHOD_KINDS)) {
-      return deprecatedAnnotation((MethodTree) tree);
+      annotationTree = deprecatedAnnotation((MethodTree) tree);
     } else if (tree.is(Kind.VARIABLE)) {
-      return deprecatedAnnotation((VariableTree) tree);
+      annotationTree = deprecatedAnnotation((VariableTree) tree);
     }
-    return null;
+    return annotationTree;
   }
 
   @CheckForNull
@@ -88,19 +80,19 @@ public class AbstractDeprecatedChecker extends IssuableSubscriptionVisitor {
     return null;
   }
 
-  protected static Tree getReportTree(Tree tree) {
+  public static Tree reportTreeForDeprecatedTree(Tree tree) {
     Tree reportTree = tree;
-    if(reportTree.is(PublicApiChecker.classKinds())) {
+    if (reportTree.is(PublicApiChecker.classKinds())) {
       reportTree = ExpressionsHelper.reportOnClassTree((ClassTree) reportTree);
-    } else if(reportTree.is(PublicApiChecker.methodKinds())) {
+    } else if (reportTree.is(PublicApiChecker.methodKinds())) {
       reportTree = ((MethodTree) reportTree).simpleName();
-    } else if(reportTree.is(Tree.Kind.VARIABLE)) {
+    } else if (reportTree.is(Tree.Kind.VARIABLE)) {
       reportTree = ((VariableTree) reportTree).simpleName();
     }
     return reportTree;
   }
 
-  public static boolean isDeprecated(AnnotationTree tree) {
+  private static boolean isDeprecated(AnnotationTree tree) {
     return tree.annotationType().is(Kind.IDENTIFIER) &&
       "Deprecated".equals(((IdentifierTree) tree.annotationType()).name());
   }

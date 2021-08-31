@@ -1,4 +1,6 @@
-class Foo {
+package checks;
+
+class MissingDeprecatedCheckJava9 {
 
   @Deprecated
   public int lim; // Noncompliant [[sc=14;ec=17]] {{Add the missing @deprecated Javadoc tag.}}
