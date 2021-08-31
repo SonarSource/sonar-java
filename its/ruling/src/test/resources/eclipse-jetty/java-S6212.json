@@ -1300,7 +1300,6 @@
 1212,
 ],
 'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ByteArrayISO8859Writer.java':[
-111,
 121,
 139,
 164,
@@ -1591,7 +1590,6 @@
 386,
 ],
 'org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/TypeUtil.java':[
-151,
 195,
 196,
 354,
@@ -2008,8 +2006,6 @@
 378,
 379,
 436,
-526,
-534,
 541,
 550,
 563,
