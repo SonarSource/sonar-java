@@ -21,6 +21,7 @@ package org.sonar.java;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -193,6 +194,44 @@ class ProgressMonitorTest {
       "Starting batch processing.",
       "0% analyzed"
     );
+  }
+
+  @Timeout(2)
+  @Test
+  void interrupting_the_thread_should_never_create_a_deadlock() {
+    Logger logger = mock(Logger.class);
+    ProgressMonitor report = new ProgressMonitor(() -> true, logger, TimeUnit.MILLISECONDS.toMillis(500));
+
+    long start = System.currentTimeMillis();
+    report.beginTask("taskName", 100);
+    report.done();
+    long end = System.currentTimeMillis();
+
+    // stopping the report too soon could fail to interrupt the thread that was not yet alive,
+    // and fail to set the proper state for Thread.interrupted()
+    // this test ensures that the report does not loop once or is interrupted when stop() is
+    // called just after start()
+    assertThat(end - start).isLessThan(300);
+  }
+
+  @Timeout(1)
+  @Test
+  void interrupted_thread_should_exit_immediately() throws InterruptedException {
+    Logger logger = mock(Logger.class);
+    ProgressMonitor report = new ProgressMonitor(() -> true, logger, TimeUnit.MILLISECONDS.toMillis(500));
+    AtomicLong time = new AtomicLong(10000);
+    Thread selfInterruptedThread = new Thread(() -> {
+      // set the thread as interrupted
+      Thread.currentThread().interrupt();
+      long start = System.currentTimeMillis();
+      // execute run, while the thread is interrupted
+      report.run();
+      long end = System.currentTimeMillis();
+      time.set(end - start);
+    });
+    selfInterruptedThread.start();
+    selfInterruptedThread.join();
+    assertThat(time.get()).isLessThan(300);
   }
 
   private static void waitForMessage(Logger logger) throws InterruptedException {
