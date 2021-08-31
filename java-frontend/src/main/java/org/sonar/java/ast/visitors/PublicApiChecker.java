@@ -143,7 +143,8 @@ public class PublicApiChecker {
       .stream()
       .map(SyntaxTrivia::comment)
       .filter(PublicApiChecker::isJavadoc)
-      .findFirst();
+      // Get last element of stream, as the last javadoc comment is the one we are looking for.
+      .reduce((first, second) -> second);
   }
 
   private static boolean isJavadoc(String comment) {

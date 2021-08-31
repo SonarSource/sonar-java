@@ -60,6 +60,28 @@ class MissingDeprecatedCheck {
 
   }
 
+  /**
+   * @deprecated
+   */
+  /**
+   * Unrelated javadoc
+   */
+  @Deprecated
+  public int foo10() { // Noncompliant
+    return 42;
+  }
+
+  /**
+   * Unrelated javadoc (can be copyright for example)
+   */
+  /**
+   * @deprecated
+   */
+  @Deprecated
+  public int foo11() { // Compliant
+    return 42;
+  }
+
 }
 
 interface MissingDeprecatedCheck_Bar {

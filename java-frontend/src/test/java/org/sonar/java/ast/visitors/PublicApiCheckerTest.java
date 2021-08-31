@@ -134,6 +134,22 @@ class PublicApiCheckerTest {
       assertThat(PublicApiChecker.isPublicApi(null, a)).isTrue();
       assertThat(PublicApiChecker.isPublicApi(a, b)).isTrue();
     }
+
+    @Test
+    void two_javadoc_comment() {
+      CompilationUnitTree cut = JParserTestUtils.parse(
+        "/**\n" +
+        "* dandling javadoc\n" +
+        "*/\n" +
+        "/**\n" +
+        "* documented\n" +
+        "*/\n" +
+        "class A { }");
+      Optional<String> apiJavadoc = PublicApiChecker.getApiJavadoc(cut.types().get(0));
+      assertThat(apiJavadoc)
+        .isPresent()
+        .contains("/**\n* documented\n*/");
+    }
   }
 
   @Test
