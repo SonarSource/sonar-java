@@ -44,8 +44,8 @@ public class ProgressMonitor implements IProgressMonitor, Runnable {
    * The report loop can not rely only on Thread.interrupted() to end, according to
    * interrupted() javadoc, a thread interruption can be ignored because a thread was
    * not alive at the time of the interrupt. This could happen if done() is being called
-   * before ProgressReport's thread becomes alive.
-   * So this boolean flag ensures that ProgressReport never enter an infinite loop when
+   * before ProgressMonitor's thread becomes alive.
+   * So this boolean flag ensures that ProgressMonitor never enter an infinite loop when
    * Thread.interrupted() failed to be set to true.
    */
   private final AtomicBoolean interrupted = new AtomicBoolean();
