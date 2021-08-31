@@ -77,8 +77,10 @@ public class StaticMembersAccessCheck extends IssuableSubscriptionVisitor {
   }
 
   private JavaQuickFix createQuickFixes(ExpressionTree leftOperand, Type type) {
-    String leftOperandAsText = QuickFixHelper.contentForTree(leftOperand, context).replaceAll("\\s+", " ");
-    JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix(String.format("Replace \"%s\" by \"%s\"", leftOperandAsText, type.name()))
+    String leftOperandAsText = leftOperand.is(Tree.Kind.IDENTIFIER)
+      ? ("\"" + ((IdentifierTree) leftOperand).name() + "\"")
+      : "the expression";
+    JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix(String.format("Replace %s by \"%s\"", leftOperandAsText, type.name()))
       .addTextEdit(JavaTextEdit.replaceTree(leftOperand, type.name()));
 
     if (importSupplier == null) {
