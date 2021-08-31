@@ -72,7 +72,7 @@ public class VarCanBeUsedCheck {
     var arrayInit2 = new String[]{"A", "B", "C"}; // Compliant
 
     String[] arrayInit3 = {"A", "B", "C"}; // Compliant, for array initializer, without type, it is not possible to change to var
-    //var arrayInit4 = (String[]) {"A", "B", "C"}; // does not compile
+    //var arrayInit4 = {"A", "B", "C"}; does not compile, see JEP 286: Poly expressions that require such a type will trigger an error
 
     Abc abc = Abc.getAbc(); // Noncompliant
 
