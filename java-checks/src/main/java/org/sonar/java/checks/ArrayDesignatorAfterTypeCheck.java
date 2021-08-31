@@ -22,15 +22,13 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.ArrayDesignatorOnVariableCheck.MisplacedArray;
 import org.sonar.java.checks.helpers.QuickFixHelper;
-import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TypeTree;
+
+import static org.sonar.java.checks.ArrayDesignatorOnVariableCheck.createQuickFix;
 
 @Rule(key = "S1195")
 public class ArrayDesignatorAfterTypeCheck extends IssuableSubscriptionVisitor {
@@ -43,33 +41,13 @@ public class ArrayDesignatorAfterTypeCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    TypeTree returnType = methodTree.returnType();
-    SyntaxToken identifierToken = methodTree.simpleName().identifierToken();
-    while (returnType.is(Tree.Kind.ARRAY_TYPE)) {
-      ArrayTypeTree arrayTypeTree = (ArrayTypeTree) returnType;
-      SyntaxToken openBracketToken = arrayTypeTree.openBracketToken();
-      if (isInvalidPosition(openBracketToken, identifierToken)) {
-        QuickFixHelper.newIssue(context)
-          .forRule(this)
-          .onTree(openBracketToken)
-          .withMessage("Move the array designators \"[]\" to the end of the return type.")
-          .withQuickFix(() -> createQuickFixes(arrayTypeTree))
-          .report();
-        break;
-      }
-      returnType = arrayTypeTree.type();
-    }
-  }
-
-  private static JavaQuickFix createQuickFixes(ArrayTypeTree type) {
-    return JavaQuickFix.newQuickFix("Move [] to the return type")
-      .addTextEdit(JavaTextEdit.removeBetweenTree(type.openBracketToken(), type.closeBracketToken()))
-      .addTextEdit(JavaTextEdit.insertAfterTree(type.type(), "[]"))
-      .build();
-  }
-
-  private static boolean isInvalidPosition(SyntaxToken openBracketToken, SyntaxToken identifierToken) {
-    return identifierToken.range().start().isBefore(openBracketToken.range().start());
+    MisplacedArray.find(methodTree.returnType(), methodTree.simpleName().identifierToken())
+      .ifPresent(misplaced -> QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onRange(misplaced.firstArray.openBracketToken(), misplaced.lastArray.closeBracketToken())
+        .withMessage("Move the array designators " + misplaced.replacement() + " to the end of the return type.")
+        .withQuickFix(() -> createQuickFix(misplaced, "return type"))
+        .report());
   }
 
 }
