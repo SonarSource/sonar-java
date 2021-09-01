@@ -250,6 +250,14 @@ class Class extends SuperClass {
     }
   }
 
+  public void instanceOfPatternMathing() {
+    Object object = new Object();
+    // Java 16 pattern matching instance of
+    if (object instanceof String s) { // Compliant
+    } else if (object instanceof Integer i) { // Compliant
+    }
+  }
+
   public void literals() {
     // literals
     if (!true) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
