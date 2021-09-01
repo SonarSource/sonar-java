@@ -1106,6 +1106,7 @@ public class CFG implements ControlFlowGraph {
 
   private void buildInstanceOf(PatternInstanceOfTree instanceOfTree) {
     currentBlock.elements.add(instanceOfTree);
+    build(instanceOfTree.variable());
     build(instanceOfTree.expression());
   }
 

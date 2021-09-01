@@ -1794,6 +1794,7 @@ class CFGTest {
     final CFGChecker cfgChecker = checker(
       block(
         element(Tree.Kind.IDENTIFIER, "a"),
+        element(Kind.VARIABLE, "str"),
         element(Tree.Kind.PATTERN_INSTANCE_OF)
         ).terminator(Tree.Kind.IF_STATEMENT).successors(0, 1),
       block(
