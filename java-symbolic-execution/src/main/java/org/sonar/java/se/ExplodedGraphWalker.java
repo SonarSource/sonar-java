@@ -706,6 +706,7 @@ public class ExplodedGraphWalker {
       case BITWISE_COMPLEMENT:
       case LOGICAL_COMPLEMENT:
       case INSTANCE_OF:
+      case PATTERN_INSTANCE_OF:
         executeUnaryExpression(tree);
         break;
       case IDENTIFIER:

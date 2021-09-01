@@ -63,6 +63,7 @@ public class ConstraintManager {
         result = new SymbolicValue.NotSymbolicValue();
         break;
       case INSTANCE_OF:
+      case PATTERN_INSTANCE_OF:
         result = new SymbolicValue.InstanceOfSymbolicValue();
         break;
       case MEMBER_SELECT:
