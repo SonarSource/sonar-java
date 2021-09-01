@@ -1,0 +1,17 @@
+{
+  "title": "Deprecated annotations should include explanations",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java9"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6355",
+  "sqKey": "S6355",
+  "scope": "All",
+  "defaultQualityProfiles": ["Sonar way"]
+}
