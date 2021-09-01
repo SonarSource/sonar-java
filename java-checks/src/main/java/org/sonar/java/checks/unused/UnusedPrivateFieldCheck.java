@@ -26,10 +26,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -43,6 +48,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -145,7 +151,12 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
         && onlyUsedInVariableAssignment(symbol)
         && !"serialVersionUID".equals(name)
         && !unknownIdentifiers.contains(name)) {
-        reportIssue(tree.simpleName(), "Remove this unused \"" + name + "\" private field.");
+        QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(tree.simpleName())
+          .withMessage("Remove this unused \"" + name + "\" private field.")
+          .withQuickFix(() -> computeQuickFix(tree))
+          .report();
       }
     }
   }
@@ -178,6 +189,61 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
     if (!reference.isUnknown()) {
       assignments.computeIfAbsent(reference, k -> new ArrayList<>()).add(identifier);
     }
+  }
+
+
+  private static JavaQuickFix computeQuickFix(VariableTree tree) {
+    Optional<VariableTree> followingVariable = getFollowingVariable(tree);
+    AnalyzerMessage.TextSpan textSpan;
+    if (followingVariable.isPresent()) {
+      textSpan = AnalyzerMessage.textSpanBetween(tree.simpleName(), true, followingVariable.get().simpleName(), false);
+    } else {
+      Optional<SyntaxToken> precedingComma = getPrecedingComma(tree);
+      if (precedingComma.isPresent()) {
+        SyntaxToken endingSemiColon = tree.lastToken();
+        textSpan = AnalyzerMessage.textSpanBetween(precedingComma.get(), true, endingSemiColon, false);
+      } else {
+        textSpan = AnalyzerMessage.textSpanFor(tree);
+      }
+    }
+    return JavaQuickFix.newQuickFix("Remove this unused private field")
+      .addTextEdit(JavaTextEdit.removeTextSpan(textSpan))
+      .build();
+  }
+
+  private static Optional<SyntaxToken> getPrecedingComma(VariableTree variable) {
+    return getPrecedingVariable(variable).map(VariableTree::lastToken);
+  }
+
+  private static Optional<VariableTree> getPrecedingVariable(VariableTree current) {
+    Tree parent = current.parent();
+    List<Tree> children = ((ClassTree) parent).members();
+    int currentIndex = children.indexOf(current);
+    // If the variable is the first element that follows the opening token, there is no predecessor to return
+    if (currentIndex <= 1) {
+      return Optional.empty();
+    }
+    // If there is a predecessor, we check that it is a variable and that it is part of the same declaration
+    Tree preceding = children.get(currentIndex - 1);
+    if (preceding.is(Tree.Kind.VARIABLE) && preceding.firstToken().equals(current.firstToken())) {
+      return Optional.of((VariableTree) preceding);
+    }
+    return Optional.empty();
+  }
+
+  private static Optional<VariableTree> getFollowingVariable(VariableTree current) {
+    Tree parent = current.parent();
+    List<Tree> children = ((ClassTree) parent).members();
+    int currentIndex = children.indexOf(current);
+    if (currentIndex == -1 || children.size() <= (currentIndex + 1)) {
+      return Optional.empty();
+    }
+    // If there is a following variable, we check that it is a variable and that it is part of the same declaration
+    Tree following = children.get(currentIndex + 1);
+    if (following.is(Tree.Kind.VARIABLE) && following.firstToken().equals(current.firstToken())) {
+      return Optional.of((VariableTree) following);
+    }
+    return Optional.empty();
   }
 
 }
