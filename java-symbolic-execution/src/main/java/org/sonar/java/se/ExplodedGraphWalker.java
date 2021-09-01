@@ -914,19 +914,14 @@ public class ExplodedGraphWalker {
   private void executeVariable(VariableTree variableTree, @Nullable Tree terminator) {
     Symbol variableSymbol = variableTree.symbol();
     if (variableTree.initializer() == null) {
-      SymbolicValue sv = null;
+      SymbolicValue sv;
       if (terminator != null && terminator.is(Tree.Kind.FOR_EACH_STATEMENT)) {
         sv = constraintManager.createSymbolicValue(variableTree);
         if (isAnnotatedNonNull(variableSymbol)) {
           programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
         }
-      } else if (variableTree.parent().is(Tree.Kind.CATCH)) {
-        sv = handleCatchVariable(variableSymbol.type());
-        // an exception have been thrown and caught, stack must be cleared
-        // see notes in JVMS 8 - §6.5. - instruction "athrow"
-        programState = programState.clearStack();
-        // exception variable is not null by definition
-        programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
+      } else {
+        sv = executeVariableSpecialParent(variableTree, variableSymbol);
       }
       if (sv != null) {
         programState = programState.put(variableSymbol, sv);
@@ -936,6 +931,27 @@ public class ExplodedGraphWalker {
       programState = unstack.state;
       programState = programState.put(variableSymbol, unstack.values.get(0));
     }
+  }
+
+  @Nullable
+  private SymbolicValue executeVariableSpecialParent(VariableTree variableTree, Symbol variableSymbol) {
+    Tree parent = variableTree.parent();
+    SymbolicValue sv = null;
+    if (parent.is(Tree.Kind.CATCH)) {
+      sv = handleCatchVariable(variableSymbol.type());
+      // an exception have been thrown and caught, stack must be cleared
+      // see notes in JVMS 8 - §6.5. - instruction "athrow"
+      programState = programState.clearStack();
+      // exception variable is not null by definition
+      programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
+    } else if (parent.is(Tree.Kind.PATTERN_INSTANCE_OF)) {
+      // The new variable created from a pattern instance of share the same symbolic value as the current object.
+      SymbolicValue peekValue = programState.peekValue();
+      if (peekValue != null) {
+        programState = programState.put(variableSymbol, peekValue);
+      }
+    }
+    return sv;
   }
 
   private SymbolicValue handleCatchVariable(Type caughtType) {
