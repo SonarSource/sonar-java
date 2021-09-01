@@ -338,6 +338,7 @@ public final class CheckList {
       DateUtilsTruncateCheck.class,
       DeadStoreCheck.class,
       DebugFeatureEnabledCheck.class,
+      DeprecatedArgumentsCheck.class,
       DefaultEncodingUsageCheck.class,
       DefaultInitializedFieldCheck.class,
       DeprecatedTagPresenceCheck.class,

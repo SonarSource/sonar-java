@@ -21,24 +21,25 @@ package org.sonar.java.checks;
 
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-import static org.sonar.java.checks.helpers.DeprecatedCheckerHelper.reportTreeForDeprecatedTree;
+@Rule(key = "S6355")
+public class DeprecatedArgumentsCheck extends AbstractMissingDeprecatedChecker {
 
-@DeprecatedRuleKey(ruleKey = "MissingDeprecatedCheck", repositoryKey = "squid")
-@Rule(key = "S1123")
-public class MissingDeprecatedCheck extends AbstractMissingDeprecatedChecker {
+  private boolean isJava9 = false;
 
+  @Override
+  public void setContext(JavaFileScannerContext context) {
+    isJava9 = context.getJavaVersion().isJava9Compatible();
+    super.setContext(context);
+  }
+
+  @Override
   void handleDeprecatedElement(Tree tree, @CheckForNull AnnotationTree deprecatedAnnotation, boolean hasJavadocDeprecatedTag) {
-    boolean hasDeprecatedAnnotation = deprecatedAnnotation != null;
-    if (hasDeprecatedAnnotation) {
-      if (!hasJavadocDeprecatedTag) {
-        reportIssue(reportTreeForDeprecatedTree(tree), "Add the missing @deprecated Javadoc tag.");
-      }
-    } else if (hasJavadocDeprecatedTag) {
-      reportIssue(reportTreeForDeprecatedTree(tree), "Add the missing @Deprecated annotation.");
+    if (isJava9 && deprecatedAnnotation != null && deprecatedAnnotation.arguments().isEmpty()) {
+      reportIssue(deprecatedAnnotation, "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation.");
     }
   }
 

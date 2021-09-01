@@ -8,25 +8,25 @@ class MissingDeprecatedCheckJava9 {
   /**
    * @deprecated
    */
-  @Deprecated // Noncompliant [[sc=3;ec=14]] {{Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation.}}
+  @Deprecated // Compliant: will be reported by S6355
   public int foo;
 
   /**
    * @deprecated
    */
-  @Deprecated(since = "4.2") // Compliant - at least one of the argument
+  @Deprecated(since = "4.2") // Compliant: even for S6355
   public int bar;
 
   /**
    * @deprecated
    */
-  @Deprecated(forRemoval = false) // Compliant - at least one of the argument
+  @Deprecated(forRemoval = false) // Compliant: even for S6355
   public int gul;
 
   /**
    * @deprecated
    */
-  @Deprecated(since = "4.2", forRemoval = true) // Compliant - at least one of the argument
+  @Deprecated(since = "4.2", forRemoval = true) // Compliant: even for S6355
   public int qix;
 
 }
