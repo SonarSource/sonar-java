@@ -27,6 +27,13 @@ class StringPrimitiveConstructorCheck {
     BigInteger bigInteger6 = new BigInteger("error");
     BigDecimal doubleBigDecimal = new BigDecimal(1.1);
     BigDecimal stringBigDecimal = new BigDecimal("1.1");
+
+    BigInteger bigDecimalWithABody = new BigInteger("1") { // Compliant, can not be replaced by BigInteger.valueOf(1)
+      @Override
+      public String toString() {
+        return "'" + super.toString() + "'";
+      }
+    };
   }
 
   void foo() {

@@ -58,6 +58,9 @@ public class StringPrimitiveConstructorCheck extends AbstractMethodDetection {
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
+    if (newClassTree.classBody() != null) {
+      return;
+    }
     if(isBigIntegerPotentiallyBiggerThanLong(newClassTree)) {
       return;
     }
