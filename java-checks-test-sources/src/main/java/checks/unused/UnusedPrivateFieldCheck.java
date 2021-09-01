@@ -135,6 +135,16 @@ class UnusedPrivateFieldCheckQuickfix {
   //  fix@qf8 {{Remove this unused private field}}
   // edit@qf8 [[sc=28;ec=56]]{{}}
 
+  /**
+   * This comment will not be removed
+   */
+  /**
+   * This documentation should be removed as part of the quickfix
+   */
+  private static final int FIELD_WITH_JAVADOC = 42; // Noncompliant [[sc=28;ec=46;quickfixes=qf9]]
+  //  fix@qf9 {{Remove this unused private field}}
+  // edit@qf9 [[sl=-3;sc=3;el=+0;ec=52]]{{}}
+
   private void f() {
     System.out.println(usedField);
     System.out.println(usedSecond);

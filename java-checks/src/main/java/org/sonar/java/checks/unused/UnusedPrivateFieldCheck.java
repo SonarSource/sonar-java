@@ -37,6 +37,7 @@ import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -49,6 +50,7 @@ import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -191,24 +193,38 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-
   private static JavaQuickFix computeQuickFix(VariableTree tree) {
-    Optional<VariableTree> followingVariable = getFollowingVariable(tree);
-    AnalyzerMessage.TextSpan textSpan;
-    if (followingVariable.isPresent()) {
-      textSpan = AnalyzerMessage.textSpanBetween(tree.simpleName(), true, followingVariable.get().simpleName(), false);
-    } else {
-      Optional<SyntaxToken> precedingComma = getPrecedingComma(tree);
-      if (precedingComma.isPresent()) {
-        SyntaxToken endingSemiColon = tree.lastToken();
-        textSpan = AnalyzerMessage.textSpanBetween(precedingComma.get(), true, endingSemiColon, false);
-      } else {
-        textSpan = AnalyzerMessage.textSpanFor(tree);
-      }
-    }
+    AnalyzerMessage.TextSpan textSpan = computeTextSpan(tree);
     return JavaQuickFix.newQuickFix("Remove this unused private field")
       .addTextEdit(JavaTextEdit.removeTextSpan(textSpan))
       .build();
+  }
+
+  private static AnalyzerMessage.TextSpan computeTextSpan(VariableTree tree) {
+    // If the variable is followed by another in a mutli-variable declaration, we remove include the space up to the following variable's name
+    Optional<VariableTree> followingVariable = getFollowingVariable(tree);
+    if (followingVariable.isPresent()) {
+      return AnalyzerMessage.textSpanBetween(tree.simpleName(), true, followingVariable.get().simpleName(), false);
+    }
+    // If the variable is preceded by another in a multi-variable declaration, we include the space up to the comma that precedes tree
+    Optional<SyntaxToken> precedingComma = getPrecedingComma(tree);
+    if (precedingComma.isPresent()) {
+      SyntaxToken endingSemiColon = tree.lastToken();
+      return AnalyzerMessage.textSpanBetween(precedingComma.get(), true, endingSemiColon, false);
+    }
+    // If the variable is preceded by some related javadoc, we include the javadoc in the span
+    List<SyntaxTrivia> trivias = tree.firstToken().trivias();
+    if (!trivias.isEmpty()) {
+      SyntaxTrivia lastTrivia = trivias.get(trivias.size() - 1);
+      if (lastTrivia.comment().startsWith("/**")) {
+        SyntaxToken lastToken = tree.lastToken();
+        Position start = lastTrivia.range().start();
+        Position end = lastToken.range().end();
+        return JavaTextEdit.textSpan(start.line(), start.columnOffset(), end.line(), end.columnOffset());
+      }
+    }
+    // By default, we delete the variable's tree
+    return AnalyzerMessage.textSpanFor(tree);
   }
 
   private static Optional<SyntaxToken> getPrecedingComma(VariableTree variable) {
