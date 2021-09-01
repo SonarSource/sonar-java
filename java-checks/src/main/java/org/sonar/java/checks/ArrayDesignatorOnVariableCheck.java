@@ -21,6 +21,8 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.JavaTree;
@@ -46,33 +48,26 @@ public class ArrayDesignatorOnVariableCheck extends IssuableSubscriptionVisitor 
   @Override
   public void visitNode(Tree tree) {
     VariableTree variableTree = (VariableTree) tree;
-    TypeTree type = variableTree.type();
-    SyntaxToken identifierToken = variableTree.simpleName().identifierToken();
-    while (type.is(Tree.Kind.ARRAY_TYPE)) {
-      ArrayTypeTree arrayTypeTree = (ArrayTypeTree) type;
-      SyntaxToken openBracketToken = arrayTypeTree.openBracketToken();
-      if (openBracketToken != null && isInvalidPosition(openBracketToken, identifierToken)) {
-        QuickFixHelper.newIssue(context)
-          .forRule(this)
-          .onTree(openBracketToken)
-          .withMessage("Move the array designator from the variable to the type.")
-          .withQuickFixes(() -> createQuickFixes(variableTree, arrayTypeTree))
-          .report();
-        break;
-      }
-      type = arrayTypeTree.type();
-    }
+    MisplacedArray.find(variableTree.type(), variableTree.simpleName().identifierToken())
+      .ifPresent(misplaced -> QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onRange(misplaced.firstArray.openBracketToken(), misplaced.lastArray.closeBracketToken())
+        .withMessage("Move the array designators " + misplaced.replacement + " to the type.")
+        .withQuickFixes(() -> isDeclarationTypeUsedBySeveralVariable(variableTree)
+          ? Collections.emptyList()
+          : Collections.singletonList(createQuickFix(misplaced, "variable type")))
+        .report());
   }
 
-  private static List<JavaQuickFix> createQuickFixes(VariableTree variableTree, ArrayTypeTree arrayTypeTree) {
-    if (isDeclarationTypeUsedBySeveralVariable(variableTree)) {
-      return Collections.emptyList();
-    }
-    return Collections.singletonList(
-      JavaQuickFix.newQuickFix("Move [] to the variable type")
-        .addTextEdit(JavaTextEdit.removeBetweenTree(arrayTypeTree.openBracketToken(), arrayTypeTree.closeBracketToken()))
-        .addTextEdit(JavaTextEdit.insertAfterTree(arrayTypeTree.type(), "[]"))
-        .build());
+  static JavaQuickFix createQuickFix(MisplacedArray misplaced, String type) {
+    return JavaQuickFix.newQuickFix("Move " + misplaced.replacement + " to the " + type)
+      .addTextEdit(JavaTextEdit.removeBetweenTree(
+        misplaced.firstArray.openBracketToken(),
+        misplaced.lastArray.closeBracketToken()))
+      .addTextEdit(JavaTextEdit.insertAfterTree(
+        misplaced.firstArray.type(),
+        misplaced.replacement))
+      .build();
   }
 
   private static boolean isDeclarationTypeUsedBySeveralVariable(VariableTree current) {
@@ -94,8 +89,39 @@ public class ArrayDesignatorOnVariableCheck extends IssuableSubscriptionVisitor 
     return otherTree.is(Tree.Kind.VARIABLE) && variable.firstToken().equals(otherTree.firstToken());
   }
 
-  private static boolean isInvalidPosition(SyntaxToken arrayDesignatorToken, SyntaxToken identifierToken) {
-    return identifierToken.range().start().isBefore(arrayDesignatorToken.range().start());
+  static class MisplacedArray {
+    ArrayTypeTree firstArray;
+    ArrayTypeTree lastArray;
+    String replacement;
+
+    private MisplacedArray(ArrayTypeTree lastArrayType, SyntaxToken identifierToken) {
+      firstArray = lastArrayType;
+      lastArray = lastArrayType;
+      StringBuilder replacementBuilder = new StringBuilder("[]");
+      while (firstArray.type().is(Tree.Kind.ARRAY_TYPE)) {
+        ArrayTypeTree previous = (ArrayTypeTree) firstArray.type();
+        if (!isInvalidPosition(previous, identifierToken)) {
+          break;
+        }
+        replacementBuilder.append("[]");
+        firstArray = previous;
+      }
+      replacement = replacementBuilder.toString();
+    }
+
+    static Optional<MisplacedArray> find(@Nullable TypeTree type, SyntaxToken identifierToken) {
+      return Optional.ofNullable(type)
+        .filter(t -> t.is(Tree.Kind.ARRAY_TYPE))
+        .map(ArrayTypeTree.class::cast)
+        .filter(arrayType -> isInvalidPosition(arrayType, identifierToken))
+        .map(arrayType -> new MisplacedArray(arrayType, identifierToken));
+    }
+
+    private static boolean isInvalidPosition(ArrayTypeTree arrayTypeTree, SyntaxToken identifierToken) {
+      SyntaxToken openBracketToken = arrayTypeTree.openBracketToken();
+      return openBracketToken != null && identifierToken.range().start().isBefore(openBracketToken.range().start());
+    }
+
   }
 
 }
