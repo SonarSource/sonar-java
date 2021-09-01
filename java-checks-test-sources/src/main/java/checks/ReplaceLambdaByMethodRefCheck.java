@@ -221,6 +221,9 @@ class CastCheck {
     bar9(Character.class::cast); //Compliant
     bar9((o) -> (char) o); // Noncompliant {{Replace this lambda with method reference 'char.class::cast'.}}
     bar9((o) -> (Character) o); // Noncompliant {{Replace this lambda with method reference 'Character.class::cast'.}}
+
+    "abc".chars().mapToObj(i -> (char) i); // Compliant, char::cast takes an Object as its argument causing i to be implicitly converted to Integer,
+    "abc".chars().mapToObj(char.class::cast); // since casting Integer to char is invalid, this change would turn a valid cast into an invalid one
   }
 
   void testCasts2(Object param) {

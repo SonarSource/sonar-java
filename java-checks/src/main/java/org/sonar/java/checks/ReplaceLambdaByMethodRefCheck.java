@@ -156,7 +156,7 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
   private static Optional<String> getTypeCastOrInstanceOfName(Symbol symbol, ExpressionTree expr) {
     if (expr.is(Tree.Kind.TYPE_CAST)) {
       TypeCastTree typeCastTree = (TypeCastTree) expr;
-      if (isSingleParamExpression(typeCastTree.expression(), symbol)) {
+      if (isSingleParamExpression(typeCastTree.expression(), symbol) && !symbol.type().isPrimitive()) {
         return getTypeName(typeCastTree.type())
           .map(s -> s + ".class::cast");
       }
