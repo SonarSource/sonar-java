@@ -22,6 +22,13 @@ public class MyClass {
 }
 </pre>
 <h2>Exceptions</h2>
+<p>The rule admits 3 exceptions:</p>
+<ul>
+  <li> Serialization id fields </li>
+  <li> Annotated fields </li>
+  <li> Fields from classes with native methods </li>
+</ul>
+<h3>Serialization id fields</h3>
 <p>The Java serialization runtime associates with each serializable class a version number, called <code>serialVersionUID</code>, which is used during
 deserialization to verify that the sender and receiver of a serialized object have loaded classes for that object that are compatible with respect to
 serialization.</p>
@@ -32,5 +39,20 @@ public class MyClass implements java.io.Serializable {
   private static final long serialVersionUID = 42L;
 }
 </pre>
-<p>Moreover, this rule doesn’t raise any issue on annotated fields.</p>
+<h3>Annotated fields</h3>
+<p>The unused field in this class will not be reported by the rule as it is annotated.</p>
+<pre>
+public class MyClass {
+  @SomeAnnotation
+  private int unused;
+}
+</pre>
+<h3>Fields from classes with native methods</h3>
+<p>The unused field in this class will not be reported by the rule as it might be used by native code.</p>
+<pre>
+public class MyClass {
+  private int unused = 42;
+  private native static void doSomethingNative();
+}
+</pre>
 

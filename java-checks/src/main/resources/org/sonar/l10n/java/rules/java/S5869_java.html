@@ -4,7 +4,7 @@ has no effect.</p>
 <p>Thus duplicate characters in a character class are either a simple oversight or a sign that a range in the character class matches more than is
 intended or that the author misunderstood how character classes work and wanted to match more than one character. A common example of the latter
 mistake is trying to use a range like <code>[0-99]</code> to match numbers of up to two digits, when in fact it is equivalent to <code>[0-9]</code>.
-Another common cause is forgetting to escape the '<code>-</code>' character, creating an unintended range that overlaps with other characters in the
+Another common cause is forgetting to escape the <code>-</code> character, creating an unintended range that overlaps with other characters in the
 character class.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>

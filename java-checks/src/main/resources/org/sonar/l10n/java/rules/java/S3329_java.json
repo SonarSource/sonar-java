@@ -1,5 +1,5 @@
 {
-  "title": "Cipher Block Chaining IV\u0027s should be unpredictable",
+  "title": "Cipher Block Chaining IVs should be unpredictable",
   "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {

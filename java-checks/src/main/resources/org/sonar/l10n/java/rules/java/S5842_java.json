@@ -1,5 +1,5 @@
 {
-  "title": "Regex repetition pattern\u0027s body should not match the empty String",
+  "title": "Repeated patterns in regular expressions should not match the empty string",
   "type": "BUG",
   "status": "ready",
   "remediation": {

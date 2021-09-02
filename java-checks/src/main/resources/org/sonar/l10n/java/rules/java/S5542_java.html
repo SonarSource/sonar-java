@@ -18,7 +18,7 @@
 Cipher c1 = Cipher.getInstance("AES"); // Noncompliant: by default ECB mode is chosen
 Cipher c2 = Cipher.getInstance("AES/ECB/NoPadding"); // Noncompliant: ECB doesn't provide serious message confidentiality
 
-Cipher c3 = Cipher.getInstance("RSA/NONE/NoPadding"); // Noncompliant: RSA without OAEP padding scheme is not recommanded
+Cipher c3 = Cipher.getInstance("RSA/None/NoPadding"); // Noncompliant: RSA without OAEP padding scheme is not recommanded
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
@@ -26,8 +26,9 @@ Cipher c3 = Cipher.getInstance("RSA/NONE/NoPadding"); // Noncompliant: RSA witho
 Cipher c1 = Cipher.getInstance("AES/GCM/NoPadding"); // Compliant
 
 // Recommended for RSA
-Cipher c2= Cipher.getInstance("RSA/None/OAEPWithSHA-1AndMGF1Padding"); // Compliant
 Cipher c3 = Cipher.getInstance("RSA/None/OAEPWITHSHA-256ANDMGF1PADDING"); // Compliant
+// or the ECB mode can be used for RSA when "None" is not available with the security provider used - in that case, ECB will be treated as "None" for RSA.
+Cipher c3 = Cipher.getInstance("RSA/ECB/OAEPWITHSHA-256ANDMGF1PADDING"); // Compliant
 </pre>
 <h2>See</h2>
 <ul>

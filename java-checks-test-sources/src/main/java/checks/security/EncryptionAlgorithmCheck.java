@@ -72,7 +72,7 @@ abstract class EncryptionAlgorithmCheck {
       Cipher.getInstance(separator); // Compliant, can not resolve the declaration, for coverage
 
       // Case is ignored
-      Cipher.getInstance("rsa/NONE/NoPadding"); // Noncompliant
+      Cipher.getInstance("rsa/None/NoPadding"); // Noncompliant
       Cipher.getInstance("AES/ecb/NoPadding"); // Noncompliant
       Cipher.getInstance("aes/GCM/NoPadding"); // Compliant
       Cipher.getInstance("DES/CBC/NOPADDING"); // Compliant
