@@ -51,6 +51,7 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.verifier.FilesUtils;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaCheck;
 
@@ -195,7 +196,7 @@ class RulesSanityTest {
     for (InputFile inputFile : inputFiles) {
       try {
         VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(checks, classpath, sonarComponents);
-        JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge);
+        JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge, new JavaVersionImpl(JavaVersionImpl.MAX_SUPPORTED), null);
       } catch (Exception e) {
         exceptions.add(new SanityCheckException(inputFile, e));
       }
