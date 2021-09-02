@@ -1,40 +1,65 @@
-<p>Returning <code>null</code> instead of an actual array or collection forces callers of the method to explicitly test for nullity, making them more
+<p>Returning <code>null</code> instead of an actual array, collection or map forces callers of the method to explicitly test for nullity, making them more
 complex and less readable.</p>
 <p>Moreover, in many cases, <code>null</code> is used as a synonym for empty.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
-public static List&lt;Result&gt; getResults() {
+public static List&lt;Result&gt; getAllResults() {
   return null;                             // Noncompliant
 }
 
 public static Result[] getResults() {
+  return null;                             // Noncompliant
+}
+
+public static Map<String, Object> getValues() {
   return null;                             // Noncompliant
 }
 
 public static void main(String[] args) {
   Result[] results = getResults();
-
   if (results != null) {                   // Nullity test required to prevent NPE
     for (Result result: results) {
       /* ... */
     }
   }
+
+  List<Result> allResults = getAllResults();
+  if (allResults != null) {                // Nullity test required to prevent NPE
+    for (Result result: allResults) {
+      /* ... */
+    }
+  }
+
+  Map<String, Object> values = getValues();
+  if (values != null) {                   // Nullity test required to prevent NPE
+    values.forEach((k, v) -> doSomething(k, v));
+  }
 }
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-public static List&lt;Result&gt; getResults() {
+public static List&lt;Result&gt; getAllResults() {
   return Collections.emptyList();          // Compliant
 }
 
 public static Result[] getResults() {
-  return new Result[0];
+  return new Result[0];                    // Compliant
+}
+
+public static Map<String, Object> getValues() {
+  return Collections.emptyMap();           // Compliant
 }
 
 public static void main(String[] args) {
+  for (Result result: getAllResults()) {
+    /* ... */
+  }
+
   for (Result result: getResults()) {
     /* ... */
   }
+
+  getValues().forEach((k, v) -> doSomething(k, v));
 }
 </pre>
 <h2>See</h2>

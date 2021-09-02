@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -53,7 +54,7 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
   private QuickFixHelper.ImportSupplier importSupplier;
 
   private enum Returns {
-    ARRAY, COLLECTION, OTHER;
+    ARRAY, COLLECTION, MAP, OTHER;
   }
 
   private static class ReturnKind {
@@ -77,6 +78,9 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
       }
       if (type.isSubtypeOf("java.util.Collection")) {
         return new ReturnKind(Returns.COLLECTION, type);
+      }
+      if (type.isSubtypeOf("java.util.Map")) {
+        return new ReturnKind(Returns.MAP, type);
       }
       return OTHER;
     }
@@ -131,7 +135,7 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
     QuickFixHelper.newIssue(context)
       .forRule(this)
       .onTree(returnStatement.expression())
-      .withMessage("Return an empty %s instead of null.", returnKind.kind == Returns.ARRAY ? "array" : "collection")
+      .withMessage("Return an empty %s instead of null.", returnKind.kind.name().toLowerCase(Locale.ROOT))
       .withQuickFixes(() -> quickFix(returnStatement))
       .report();
   }
@@ -209,7 +213,12 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
     HASH_SET("HashSet"),
     TREE_SET("TreeSet"),
     SORTED_SET("SortedSet", "Collections.emptySortedSet()"),
-    NAVIGABLE_SET("NavigableSet", "Collections.emptyNavigableSet()");
+    NAVIGABLE_SET("NavigableSet", "Collections.emptyNavigableSet()"),
+    MAP("Map", "Collections.emptyMap()"),
+    HASH_MAP("HashMap"),
+    TREE_MAP("TreeMap"),
+    SORTED_MAP("SortedMap", "Collections.emptySortedMap()"),
+    NAVIGABLE_MAP("NavigableMap", "Collections.emptyNavigableMap()");
 
     private final String fullyQualifiedName;
     private final String replacement;
