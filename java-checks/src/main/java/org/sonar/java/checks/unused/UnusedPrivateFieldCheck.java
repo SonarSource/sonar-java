@@ -202,7 +202,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
 
   private static AnalyzerMessage.TextSpan computeTextSpan(VariableTree tree) {
     // If the variable is followed by another in a mutli-variable declaration, we remove include the space up to the following variable's name
-    Optional<VariableTree> followingVariable = getFollowingVariable(tree);
+    Optional<VariableTree> followingVariable = QuickFixHelper.nextVariable(tree);
     if (followingVariable.isPresent()) {
       return AnalyzerMessage.textSpanBetween(tree.simpleName(), true, followingVariable.get().simpleName(), false);
     }
@@ -228,38 +228,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
   }
 
   private static Optional<SyntaxToken> getPrecedingComma(VariableTree variable) {
-    return getPrecedingVariable(variable).map(VariableTree::lastToken);
-  }
-
-  private static Optional<VariableTree> getPrecedingVariable(VariableTree current) {
-    Tree parent = current.parent();
-    List<Tree> children = ((ClassTree) parent).members();
-    int currentIndex = children.indexOf(current);
-    // If the variable is the first element that follows the opening token, there is no predecessor to return
-    if (currentIndex <= 1) {
-      return Optional.empty();
-    }
-    // If there is a predecessor, we check that it is a variable and that it is part of the same declaration
-    Tree preceding = children.get(currentIndex - 1);
-    if (preceding.is(Tree.Kind.VARIABLE) && preceding.firstToken().equals(current.firstToken())) {
-      return Optional.of((VariableTree) preceding);
-    }
-    return Optional.empty();
-  }
-
-  private static Optional<VariableTree> getFollowingVariable(VariableTree current) {
-    Tree parent = current.parent();
-    List<Tree> children = ((ClassTree) parent).members();
-    int currentIndex = children.indexOf(current);
-    if (currentIndex == -1 || children.size() <= (currentIndex + 1)) {
-      return Optional.empty();
-    }
-    // If there is a following variable, we check that it is a variable and that it is part of the same declaration
-    Tree following = children.get(currentIndex + 1);
-    if (following.is(Tree.Kind.VARIABLE) && following.firstToken().equals(current.firstToken())) {
-      return Optional.of((VariableTree) following);
-    }
-    return Optional.empty();
+    return QuickFixHelper.previousVariable(variable).map(VariableTree::lastToken);
   }
 
 }
