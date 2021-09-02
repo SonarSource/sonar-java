@@ -20,6 +20,7 @@
 package org.sonar.java.checks.helpers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,11 +38,11 @@ import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.location.Range;
+import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
-import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -156,21 +157,34 @@ public class QuickFixHelper {
 
   private static List<? extends Tree> getSiblings(VariableTree current) {
     Tree parent = current.parent();
-    if (parent.is(Tree.Kind.LIST)) {
-      return ((ListTree) parent);
+    switch (parent.kind()) {
+      case LIST:
+        // parent.parent() is Kind.TRY_STATEMENT or Kind.FOR_STATEMENT
+        return (List<? extends Tree>) parent;
+      case BLOCK:
+      case INITIALIZER:
+      case STATIC_INITIALIZER:
+        return ((JavaTree) parent).getChildren();
+      case CASE_GROUP:
+        return ((CaseGroupTree) parent).body();
+      case METHOD:
+      case CONSTRUCTOR:
+      case CATCH:
+      case LAMBDA_EXPRESSION:
+      case FOR_EACH_STATEMENT:
+      case PATTERN_INSTANCE_OF:
+        return Collections.emptyList();
+      case CLASS:
+      case ENUM:
+      case INTERFACE:
+      case ANNOTATION_TYPE:
+        return ((ClassTree) parent).members();
+      case RECORD:
+        ClassTree classLike = (ClassTree) parent;
+        return classLike.recordComponents().contains(current) ? Collections.emptyList() : classLike.members();
+      default:
+        throw new IllegalArgumentException("The variable's parent kind " + parent.kind() + " is not handled by this method!");
     }
-    if (parent.is(Tree.Kind.BLOCK, Tree.Kind.INITIALIZER, Tree.Kind.STATIC_INITIALIZER)) {
-      return ((JavaTree) parent).getChildren();
-    }
-
-    if (parent instanceof ClassTree) {
-      List<? extends Tree> siblings = ((ClassTree) parent).members();
-      if (parent.is(Tree.Kind.RECORD)  && !siblings.contains(current)) {
-        throw new IllegalArgumentException("Nom-members cannot be declared as part of multi-variable declarations!");
-      }
-      return siblings;
-    }
-    throw new IllegalArgumentException("The variable's parent kind is not handled by this method!");
   }
 
   public static String contentForTree(Tree tree, JavaFileScannerContext context) {
