@@ -1,5 +1,4 @@
 {
-  "title": "\"String#replace\" should be preferred to \"String#replaceAll\"",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
@@ -13,5 +12,6 @@
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5361",
   "sqKey": "S5361",
-  "scope": "All"
+  "scope": "All",
+  "title": "\"String#replace\" should be preferred to \"String#replaceAll\""
 }

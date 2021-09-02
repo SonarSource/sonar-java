@@ -1,6 +1,6 @@
-<p>In general, altering or bypassing the accessibility of classes, methods, or fields violates the encapsulation principle and could lead to run-time
+<p>In general, altering or bypassing the accessibility of classes, methods, or fields violates the encapsulation principle and could lead to runtime
 errors. For records the case is even trickier: you cannot change the visibility of records’s fields and trying to update the existing value will lead
-to <code>IllegalAccessException</code> in runtime.</p>
+to <code>IllegalAccessException</code> at runtime.</p>
 <p>This rule raises an issue when reflection is used to change the visibility of a record’s field, and when it is used to directly update a record’s
 field value.</p>
 <h2>Noncompliant Code Example</h2>
