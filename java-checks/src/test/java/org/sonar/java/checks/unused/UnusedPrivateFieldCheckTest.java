@@ -21,21 +21,32 @@ package org.sonar.java.checks.unused;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class UnusedPrivateFieldCheckTest {
 
   @Test
   void test() {
+    InternalCheckVerifier.newInstance()
+      .onFile(testSourcesPath("checks/unused/UnusedPrivateFieldCheck.java"))
+      .withCheck(new UnusedPrivateFieldCheck())
+      .withQuickFixes()
+      .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/unused/UnusedPrivateFieldCheck.java")
+      .onFile(nonCompilingTestSourcesPath("checks/unused/UnusedPrivateFieldCheck.java"))
       .withCheck(new UnusedPrivateFieldCheck())
       .verifyIssues();
   }
 
   @Test
-  void testNative() {
+  void test_native() {
     CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/unused/UnusedPrivateFieldCheckWithNative.java"))
       .withCheck(new UnusedPrivateFieldCheck())
