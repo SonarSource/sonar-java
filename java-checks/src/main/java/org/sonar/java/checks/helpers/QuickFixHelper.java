@@ -20,6 +20,7 @@
 package org.sonar.java.checks.helpers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,12 +38,16 @@ import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.location.Range;
+import org.sonar.plugins.java.api.tree.CaseGroupTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
+
 
 /**
  * For internal use only. Can not be used outside SonarJava analyzer.
@@ -102,6 +107,86 @@ public class QuickFixHelper {
     return previousToken(parent);
   }
 
+  /**
+   * Returns the preceding variable in a mutli-variable declaration.
+   *
+   * @param current The target variable
+   * @return An Optional with the preceding variable, Optional.empty otherwise.
+   */
+  public static Optional<VariableTree> previousVariable(VariableTree current) {
+    return previousVariable(current, getSiblings(current));
+  }
+
+  private static Optional<VariableTree> previousVariable(VariableTree current, List<? extends Tree> trees) {
+    int currentIndex = trees.indexOf(current);
+    // If the variable is the first element that follows the opening token, there is no predecessor to return
+    if (currentIndex <= 0) {
+      return Optional.empty();
+    }
+    // If there is a predecessor, we check that it is a variable and that it is part of the same declaration
+    Tree preceding = trees.get(currentIndex - 1);
+    if (preceding.is(Tree.Kind.VARIABLE) && preceding.firstToken().equals(current.firstToken())) {
+      return Optional.of((VariableTree) preceding);
+    }
+    return Optional.empty();
+  }
+
+  /**
+   * Returns the following variable in a mutli-variable declaration.
+   *
+   * @param variable The target variable
+   * @return An Optional with the following variable, Optional.empty otherwise.
+   */
+  public static Optional<VariableTree> nextVariable(VariableTree variable) {
+    return nextVariable(variable, getSiblings(variable));
+  }
+
+  private static Optional<VariableTree> nextVariable(VariableTree current, List<? extends Tree> trees) {
+    int currentIndex = trees.indexOf(current);
+    // If the variable cannot be found in the parent (a bug) or if the variable is the last one in the block before the closing brace, there is no follower to return.
+    if (currentIndex == -1 || trees.size() <= (currentIndex + 1)) {
+      return Optional.empty();
+    }
+    // If there is a following variable, we check that it is a variable and that it is part of the same declaration
+    Tree following = trees.get(currentIndex + 1);
+    if (following.is(Tree.Kind.VARIABLE) && following.firstToken().equals(current.firstToken())) {
+      return Optional.of((VariableTree) following);
+    }
+    return Optional.empty();
+  }
+
+  private static List<? extends Tree> getSiblings(VariableTree current) {
+    Tree parent = current.parent();
+    switch (parent.kind()) {
+      case LIST:
+        // parent.parent() is Kind.TRY_STATEMENT or Kind.FOR_STATEMENT
+        return (List<? extends Tree>) parent;
+      case BLOCK:
+      case INITIALIZER:
+      case STATIC_INITIALIZER:
+        return ((JavaTree) parent).getChildren();
+      case CASE_GROUP:
+        return ((CaseGroupTree) parent).body();
+      case METHOD:
+      case CONSTRUCTOR:
+      case CATCH:
+      case LAMBDA_EXPRESSION:
+      case FOR_EACH_STATEMENT:
+      case PATTERN_INSTANCE_OF:
+        return Collections.emptyList();
+      case CLASS:
+      case ENUM:
+      case INTERFACE:
+      case ANNOTATION_TYPE:
+        return ((ClassTree) parent).members();
+      case RECORD:
+        ClassTree classLike = (ClassTree) parent;
+        return classLike.recordComponents().contains(current) ? Collections.emptyList() : classLike.members();
+      default:
+        throw new IllegalArgumentException("The variable's parent kind " + parent.kind() + " is not handled by this method!");
+    }
+  }
+
   public static String contentForTree(Tree tree, JavaFileScannerContext context) {
     SyntaxToken firstToken = tree.firstToken();
     if (firstToken == null) {
@@ -133,7 +218,7 @@ public class QuickFixHelper {
     // rebuild content of tree as String
     StringBuilder sb = new StringBuilder();
     sb.append(lines.get(0)
-      .substring(beginIndex))
+        .substring(beginIndex))
       .append("\n");
     for (int i = 1; i < lines.size() - 1; i++) {
       sb.append(lines.get(i))
@@ -178,7 +263,7 @@ public class QuickFixHelper {
       this.packageName = packageDeclaration == null ? null : ExpressionsHelper.concatenate(packageDeclaration.packageName());
 
       List<Tree> types = cut.types();
-      this.firstType = types.isEmpty() ? null :  types.get(0);
+      this.firstType = types.isEmpty() ? null : types.get(0);
 
       this.sortedNonStaticImports = new ArrayList<>();
       this.importedTypes = new HashSet<>();

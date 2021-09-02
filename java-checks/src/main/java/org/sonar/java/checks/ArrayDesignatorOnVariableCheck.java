@@ -25,13 +25,10 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
-import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -71,22 +68,7 @@ public class ArrayDesignatorOnVariableCheck extends IssuableSubscriptionVisitor 
   }
 
   private static boolean isDeclarationTypeUsedBySeveralVariable(VariableTree current) {
-    Tree parent = current.parent();
-    List<? extends Tree> children;
-    if (parent instanceof ClassTree) {
-      children = ((ClassTree) parent).members();
-    } else if (parent.is(Tree.Kind.METHOD)) {
-      children = ((MethodTree) parent).parameters();
-    } else {
-      children = ((JavaTree) parent).getChildren();
-    }
-    int index = children.indexOf(current);
-    return ((index - 1 >= 0 && isVariableDeclarationOfTheSameType(current, children.get(index - 1))) ||
-      (index + 1 < children.size() && isVariableDeclarationOfTheSameType(current, children.get(index + 1))));
-  }
-
-  private static boolean isVariableDeclarationOfTheSameType(VariableTree variable, Tree otherTree) {
-    return otherTree.is(Tree.Kind.VARIABLE) && variable.firstToken().equals(otherTree.firstToken());
+    return QuickFixHelper.previousVariable(current).isPresent() || QuickFixHelper.nextVariable(current).isPresent();
   }
 
   static class MisplacedArray {

@@ -20,22 +20,143 @@
 package org.sonar.java.checks.helpers;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.Mockito;
+import org.sonar.java.Preconditions;
 import org.sonar.java.checks.helpers.QuickFixHelper.ImportSupplier;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.InferedTypeTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class QuickFixHelperTest {
+
+  static class VariableWithoutNext implements ArgumentsProvider {
+    @Override
+    public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+      return Stream.of(
+        arguments("record A(int target, int ignore) { }"),
+        arguments("record A(int ignore, int target) { }"),
+        arguments("class A { void f() { int target = 42; } }"),
+        arguments("class A { void f() { int ignore, target = 42; } }"),
+        arguments("class A { void f() { int target = 42; System.out.println(\"Hello, World!\"); } }"),
+        arguments("class A { void f() { int target = 42; int ignore; } }"),
+        arguments("class A { int target = 42; int ignore; }"),
+        arguments("class A { int target = 42; }"),
+        arguments("record A(int ignore1) { final static int ignore2 = 42, target = 0; }"),
+        arguments("record A(int ignore1) { final static int ignore2 = 42, target = 0; int ignore3; }"),
+        arguments("enum MyEnum { A, B; int ignore, target; }"),
+        arguments("enum MyEnum { A, B; int ignore1, target; int ignore2; }"),
+        arguments("interface I { int ignore, target; }"),
+        arguments("interface I { int ignore1, target; int ignore2; }"),
+        arguments("class A { void f() { for (int target; ;); } }"),
+        arguments("class A { void f() { for (int ignore, target; ;); } }"),
+        arguments("class A { void f(Object ignore) { if (ignore instanceof String target) {} } }"),
+        arguments("class A { void f(String... ignoreList) { for(String target : ignoreList) { } } }"),
+        arguments("class A { void f() { Function<String, Boolean> ignore = (String target) -> true; } }"),
+        arguments("class A { void f() { try {} catch(Exception target) {} } }"),
+        arguments("class A { A(int target, int ignore) {} }"),
+        arguments("class A { void f(int target, int ignore) {} }"),
+        arguments("public @interface A { String target = \"\"; int ignore = 2; }"),
+        arguments("class A { static { int target = 42; }}"),
+        arguments("class A { { int target = 42; } }")
+      );
+    }
+  }
+
+  static class VariableWithoutPrevious implements ArgumentsProvider {
+    @Override
+    public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+      return Stream.of(
+        arguments("record A(int target, int ignore) { }"),
+        arguments("record A(int ignore, int target) { }"),
+        arguments("class A { void f() { int target = 42; } }"),
+        arguments("class A { void f() { int target = 42, ignore; } }"),
+        arguments("class A { void f() { System.out.println(\"Hello, World!\"); int target = 42; } }"),
+        arguments("class A { void f() { int ignore; int target = 42; } }"),
+        arguments("class A { int ignore; int target = 42; }"),
+        arguments("class A { int target = 42; }"),
+        arguments("record A(int ignore1) { final static int target = 0, ignore2 = 42; }"),
+        arguments("record A(int ignore1) { int ignore2; final static int target = 0, ignore3 = 42; }"),
+        arguments("enum MyEnum { A, B; int target, ignore; }"),
+        arguments("enum MyEnum { A, B; int ignore1; int target, ignore2; }"),
+        arguments("interface I { int target, ignore; }"),
+        arguments("interface I { int ignore1; int target, ignore2; }"),
+        arguments("class A { void f() { for (int target; ;); } }"),
+        arguments("class A { void f() { for (int target, ignore; ;); } }"),
+        arguments("class A { void f(Object ignore) { if (ignore instanceof String target) {} } }"),
+        arguments("class A { void f(String... ignoreList) { for(String target : ignoreList) { } } }"),
+        arguments("class A { void f() { Function<String, Boolean> ignore = (String target) -> true; } }"),
+        arguments("class A { void f() { try {} catch(Exception target) {} } }"),
+        arguments("class A { A(int ignore, int target) {} }"),
+        arguments("class A { void f(int ignore, int target) {} }"),
+        arguments("public @interface A { String ignore = \"\"; int target = 2; }"),
+        arguments("class A { static { int target = 42; }}"),
+        arguments("class A { { int target = 42; } }")
+      );
+    }
+  }
+
+  static class VariableWithPrevious implements ArgumentsProvider {
+    @Override
+    public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+      return Stream.of(
+        arguments("class A { int previous, target = 42; }"),
+        arguments("class A { int ignore, previous, target = 42; }"),
+        arguments("class A { static { int previous = 12, target; } }"),
+        arguments("class A { { int previous, target; } }"),
+        arguments("public @interface A { String previous = \"\", target = \"1\"; }"),
+        arguments("class A { void f() { int previous, target = 42; } }"),
+        arguments("class A { void f() { int ignore, previous, target; } }"),
+        arguments("record A(int ignore1, int ignore2) { final static int previous = 42, target = 0; }"),
+        arguments("enum MyEnum { A, B; int previous, target; }"),
+        arguments("interface I { int previous, target; }"),
+        arguments("class A { void f() { for (int previous, target; ;) { } } }"),
+        arguments("class A { void f(int ignore) { switch(ignore) { case 1: int previous, target; } } }")
+      );
+    }
+  }
+
+  static class VariableWithNext implements ArgumentsProvider {
+    @Override
+    public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+      return Stream.of(
+        arguments("class A { int target, next = 42; }"),
+        arguments("class A { int ignore, target, next = 42; }"),
+        arguments("class A { int target, next, ignore = 42; }"),
+        arguments("class A { static { int target, next; } }"),
+        arguments("class A { { int target, next; } }"),
+        arguments("public @interface A { String target = \"1\", next = \"\"; }"),
+        arguments("class A { void f() { int target = 42, next; } }"),
+        arguments("class A { void f() { int target, next, ignore; } }"),
+        arguments("record A(int ignore1, int ignore2) { final static int target = 0, next = 42; }"),
+        arguments("enum MyEnum { A, B; int target, next; }"),
+        arguments("interface I { int target, next; }"),
+        arguments("class A { void f() { for (int target, next; ;) { } } }"),
+        arguments("class A { void f(int ignore) { switch(ignore) { case 1: int target, next; } } }")
+      );
+    }
+  }
 
   @Test
   void nextToken() {
@@ -82,6 +203,76 @@ class QuickFixHelperTest {
   void content_for_empty_token() {
     String content = QuickFixHelper.contentForTree(new InferedTypeTree(), mock(JavaFileScannerContext.class));
     assertThat(content).isEmpty();
+  }
+
+  @Nested
+  class NextVariable {
+
+    @ParameterizedTest
+    @ArgumentsSource(VariableWithNext.class)
+    void returns_next(String source) {
+      CompilationUnitTree cut = JParserTestUtils.parse(source);
+      VariableExtractor extractor = new VariableExtractor();
+      cut.accept(extractor);
+      assertThat(QuickFixHelper.nextVariable(extractor.target)).contains(extractor.next);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(VariableWithoutNext.class)
+    void returns_empty(String source) {
+      CompilationUnitTree cut = JParserTestUtils.parse(source);
+      VariableExtractor extractor = new VariableExtractor();
+      cut.accept(extractor);
+      assertThat(QuickFixHelper.nextVariable(extractor.target)).isEmpty();
+    }
+
+    @Test
+    void throws_an_illegal_argument_exception_when_parent_type_is_not_supported() {
+      Tree parent = mock(LiteralTree.class);
+      VariableTree variable = mock(VariableTree.class);
+      when(variable.parent()).thenReturn(parent);
+      when(parent.kind()).thenReturn(Tree.Kind.STRING_LITERAL);
+
+      assertThatThrownBy(() -> QuickFixHelper.nextVariable(variable))
+        .isInstanceOfAny(IllegalArgumentException.class)
+        .hasMessageContaining("The variable's parent kind STRING_LITERAL is not handled by this method!");
+    }
+
+  }
+
+  @Nested
+  class PreviousVariable {
+
+    @ParameterizedTest
+    @ArgumentsSource(VariableWithPrevious.class)
+    void returns_previous(String source) {
+      CompilationUnitTree cut = JParserTestUtils.parse(source);
+      VariableExtractor extractor = new VariableExtractor();
+      cut.accept(extractor);
+      assertThat(QuickFixHelper.previousVariable(extractor.target)).contains(extractor.previous);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(VariableWithoutPrevious.class)
+    void returns_empty(String source) {
+      CompilationUnitTree cut = JParserTestUtils.parse(source);
+      VariableExtractor extractor = new VariableExtractor();
+      cut.accept(extractor);
+      assertThat(QuickFixHelper.previousVariable(extractor.target)).isEmpty();
+    }
+
+    @Test
+    void throws_an_illegal_argument_exception_when_parent_type_is_not_supported() {
+      Tree parent = mock(LiteralTree.class);
+      VariableTree variable = mock(VariableTree.class);
+      when(variable.parent()).thenReturn(parent);
+      when(parent.kind()).thenReturn(Tree.Kind.STRING_LITERAL);
+
+      assertThatThrownBy(() -> QuickFixHelper.previousVariable(variable))
+        .isInstanceOfAny(IllegalArgumentException.class)
+        .hasMessageContaining("The variable's parent kind STRING_LITERAL is not handled by this method!");
+    }
+
   }
 
   @Nested
@@ -302,4 +493,29 @@ class QuickFixHelperTest {
       return context;
     }
   }
+
+
+  static class VariableExtractor extends BaseTreeVisitor {
+    VariableTree target;
+    VariableTree next;
+    VariableTree previous;
+    @Override
+    public void visitVariable(VariableTree tree) {
+      super.visitVariable(tree);
+      String name = tree.simpleName().name();
+      if (name.equals("target")) {
+        Preconditions.checkState(target == null);
+        target = tree;
+      } else if (name.equals("next")) {
+        Preconditions.checkState(next == null);
+        next = tree;
+      } else if (name.equals("previous")) {
+        Preconditions.checkState(previous == null);
+        previous = tree;
+      } else if (!name.startsWith("ignore")) {
+        throw new IllegalStateException(name);
+      }
+    }
+  }
+
 }
