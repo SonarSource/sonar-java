@@ -204,7 +204,7 @@ public class ExplodedGraphWalker {
     this.alwaysTrueOrFalseExpressionCollector = new AlwaysTrueOrFalseExpressionCollector();
     this.checkerDispatcher = new CheckerDispatcher(this, seChecks, context);
     this.behaviorCache = behaviorCache;
-    this.semanticModel = (Sema) context.getSemanticModel();;
+    this.semanticModel = (Sema) context.getSemanticModel();
   }
 
   public MethodBehavior visitMethod(MethodTree tree) {
