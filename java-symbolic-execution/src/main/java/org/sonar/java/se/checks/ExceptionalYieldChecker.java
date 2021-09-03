@@ -21,7 +21,7 @@ package org.sonar.java.se.checks;
 
 import java.util.HashSet;
 
-import org.sonar.java.collections.ListUtils;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.Flow;
 import org.sonar.java.se.FlowComputation;

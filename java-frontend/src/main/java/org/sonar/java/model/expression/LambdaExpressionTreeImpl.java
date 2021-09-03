@@ -21,7 +21,7 @@ package org.sonar.java.model.expression;
 
 import java.util.Arrays;
 import org.sonar.java.cfg.CFG;
-import org.sonar.java.collections.ListUtils;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
 import org.sonar.plugins.java.api.tree.BlockTree;

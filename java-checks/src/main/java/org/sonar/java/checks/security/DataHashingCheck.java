@@ -23,7 +23,7 @@ import java.util.Optional;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.AbstractHashAlgorithmChecker;
-import org.sonar.java.collections.SetUtils;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 @Rule(key = "S4790")
 public class DataHashingCheck extends AbstractHashAlgorithmChecker {

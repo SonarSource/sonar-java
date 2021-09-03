@@ -20,7 +20,7 @@
 package org.sonar.java.model.expression;
 
 import org.sonar.java.ast.parser.ListTreeImpl;
-import org.sonar.java.collections.ListUtils;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;

@@ -38,7 +38,7 @@ import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.java.Preconditions;
 import org.sonar.java.annotations.Beta;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
-import org.sonar.java.collections.ListUtils;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.expression.AssessableExpressionTree;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;

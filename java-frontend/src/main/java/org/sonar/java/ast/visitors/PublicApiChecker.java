@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import org.sonar.java.collections.ListUtils;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;

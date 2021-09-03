@@ -20,7 +20,7 @@
 package org.sonar.java.se;
 
 import java.util.ArrayList;
-import org.sonar.java.collections.ListUtils;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 
 import java.util.Collections;

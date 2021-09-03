@@ -21,7 +21,7 @@ package org.sonar.java.model.expression;
 
 import java.util.Arrays;
 import java.util.List;
-import org.sonar.java.collections.ListUtils;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
