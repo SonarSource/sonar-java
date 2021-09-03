@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.collections.SetUtils;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;

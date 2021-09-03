@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.collections.CollectionUtils;
-import org.sonar.java.collections.SetUtils;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.Flow;

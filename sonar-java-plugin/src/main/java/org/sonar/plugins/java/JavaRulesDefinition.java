@@ -39,7 +39,7 @@ import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.CheckList;
-import org.sonar.java.collections.SetUtils;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 /**

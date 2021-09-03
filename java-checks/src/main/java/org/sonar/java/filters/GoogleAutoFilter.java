@@ -25,7 +25,7 @@ import java.util.Set;
 import org.sonar.java.checks.AbstractClassNoFieldShouldBeInterfaceCheck;
 import org.sonar.java.checks.EqualsNotOverridenWithCompareToCheck;
 import org.sonar.java.checks.EqualsOverridenWithHashCodeCheck;
-import org.sonar.java.collections.SetUtils;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;

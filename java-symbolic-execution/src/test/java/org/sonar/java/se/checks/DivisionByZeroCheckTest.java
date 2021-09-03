@@ -21,7 +21,7 @@ package org.sonar.java.se.checks;
 
 import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.collections.ListUtils;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.constraint.BooleanConstraint;

@@ -22,7 +22,7 @@ package org.sonar.java.model.statement;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.collections.ListUtils;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;

@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import java.util.Map;
 import org.sonar.check.Rule;
-import org.sonar.java.collections.MapBuilder;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;

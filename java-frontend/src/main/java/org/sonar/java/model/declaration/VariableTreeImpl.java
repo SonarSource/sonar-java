@@ -22,7 +22,7 @@ package org.sonar.java.model.declaration;
 import java.util.Arrays;
 import java.util.List;
 import org.eclipse.jdt.core.dom.IVariableBinding;
-import org.sonar.java.collections.ListUtils;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.Symbols;

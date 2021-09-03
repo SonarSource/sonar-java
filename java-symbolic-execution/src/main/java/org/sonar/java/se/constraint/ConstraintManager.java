@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 import org.sonar.java.Preconditions;
-import org.sonar.java.collections.ListUtils;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.se.ExplodedGraphWalker;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramState;

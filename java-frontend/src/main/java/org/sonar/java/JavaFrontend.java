@@ -38,7 +38,7 @@ import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.collections.CollectionUtils;
-import org.sonar.java.collections.ListUtils;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.VisitorsBridge;

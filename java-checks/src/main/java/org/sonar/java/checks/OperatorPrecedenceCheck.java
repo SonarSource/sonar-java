@@ -29,7 +29,7 @@ import java.util.Objects;
 import java.util.Set;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
-import org.sonar.java.collections.SetUtils;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;

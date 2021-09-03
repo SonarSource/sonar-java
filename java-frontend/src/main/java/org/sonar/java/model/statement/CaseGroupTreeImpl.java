@@ -21,7 +21,7 @@ package org.sonar.java.model.statement;
 
 import java.util.Collections;
 import org.sonar.java.ast.parser.StatementListTreeImpl;
-import org.sonar.java.collections.ListUtils;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;

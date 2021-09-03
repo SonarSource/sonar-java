@@ -25,7 +25,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
-import org.sonar.java.collections.MapBuilder;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;

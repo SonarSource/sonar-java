@@ -23,8 +23,8 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import org.sonar.java.collections.PCollections;
-import org.sonar.java.collections.PMap;
+import org.sonarsource.analyzer.commons.collections.PCollections;
+import org.sonarsource.analyzer.commons.collections.PMap;
 
 public class ConstraintsByDomain {
 

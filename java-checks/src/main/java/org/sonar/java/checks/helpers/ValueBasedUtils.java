@@ -20,7 +20,7 @@
 package org.sonar.java.checks.helpers;
 
 import java.util.Set;
-import org.sonar.java.collections.SetUtils;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.semantic.Type.ArrayType;
 

@@ -36,7 +36,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.sonar.java.collections.PMap;
+import org.sonarsource.analyzer.commons.collections.PMap;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.Flow;
 import org.sonar.java.se.FlowComputation;

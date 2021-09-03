@@ -21,7 +21,7 @@ package org.sonar.java.checks.serialization;
 
 import java.util.List;
 import java.util.Set;
-import org.sonar.java.collections.SetUtils;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;

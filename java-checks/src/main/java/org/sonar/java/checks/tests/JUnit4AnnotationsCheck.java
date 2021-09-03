@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.sonar.check.Rule;
-import org.sonar.java.collections.MapBuilder;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Tree;

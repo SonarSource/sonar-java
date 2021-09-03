@@ -19,8 +19,8 @@
  */
 package org.sonar.java.cfg;
 
-import org.sonar.java.collections.ListUtils;
-import org.sonar.java.collections.SetUtils;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;

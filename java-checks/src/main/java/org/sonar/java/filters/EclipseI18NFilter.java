@@ -22,7 +22,7 @@ package org.sonar.java.filters;
 import java.util.Set;
 import org.sonar.java.checks.ClassVariableVisibilityCheck;
 import org.sonar.java.checks.PublicStaticFieldShouldBeFinalCheck;
-import org.sonar.java.collections.SetUtils;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.ClassTree;
 

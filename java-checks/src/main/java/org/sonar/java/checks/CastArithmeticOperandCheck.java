@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.collections.MapBuilder;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;

@@ -31,7 +31,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.java.annotations.Beta;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.collections.ListUtils;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;

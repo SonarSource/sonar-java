@@ -27,7 +27,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import org.sonar.java.checks.helpers.UnitTestUtils;
-import org.sonar.java.collections.MapBuilder;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.reporting.JavaQuickFix;

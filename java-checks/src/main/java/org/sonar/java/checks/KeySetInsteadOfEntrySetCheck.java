@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.collections.ListUtils;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
