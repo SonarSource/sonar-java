@@ -109,22 +109,30 @@ class ReturnEmptyArrayNotNullCheckWithQuickFixes {
 
   Map<Object, Object> map() {
     Map<Object, Object> result = Collections.emptyMap();
-    return null; // Compliant - maps are not covered
+    return null; // Noncompliant [[sc=12;ec=16;quickfixes=map]] {{Return an empty map instead of null.}}
+    // fix@map {{Replace "null" with an empty Map}}
+    // edit@map [[sc=12;ec=16]] {{Collections.emptyMap()}}
   }
 
   HashMap<Object, Object> hashmap() {
     HashMap<Object, Object> result = new HashMap<>();
-    return null; // Compliant - maps are not covered
+    return null; // Noncompliant [[sc=12;ec=16;quickfixes=hashmap]] {{Return an empty map instead of null.}}
+    // fix@hashmap {{Replace "null" with an empty HashMap}}
+    // edit@hashmap [[sc=12;ec=16]] {{new HashMap<>()}}
   }
 
   SortedMap<Object,Object> sortedmap() {
     SortedMap<Object, Object> result = Collections.emptySortedMap();
-    return null; // Compliant - maps are not covered
+    return null; // Noncompliant [[sc=12;ec=16;quickfixes=sortedmap]] {{Return an empty map instead of null.}}
+    // fix@sortedmap {{Replace "null" with an empty SortedMap}}
+    // edit@sortedmap [[sc=12;ec=16]] {{Collections.emptySortedMap()}}
   }
 
-  NavigableMap<Object, Object> navigaleMap() {
+  NavigableMap<Object, Object> navigableMap() {
     NavigableMap<Object, Object> result = Collections.emptyNavigableMap();
-    return null; // Compliant - maps are not covered
+    return null; // Noncompliant [[sc=12;ec=16;quickfixes=navigableMap]] {{Return an empty map instead of null.}}
+    // fix@navigableMap {{Replace "null" with an empty NavigableMap}}
+    // edit@navigableMap [[sc=12;ec=16]] {{Collections.emptyNavigableMap()}}
   }
 
   Collection<Object> collection() {

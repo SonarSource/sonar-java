@@ -1,6 +1,7 @@
 package checks;
 
 import java.util.HashSet; // keep it for testing before/after insertions
+import java.util.Map;
 
 class ReturnEmptyArrayNotNullCheckWithQuickFixesAndImports {
 
@@ -22,6 +23,13 @@ class ReturnEmptyArrayNotNullCheckWithQuickFixesAndImports {
     return null; // Noncompliant [[sc=12;ec=16;quickfixes=HashSet]] {{Return an empty collection instead of null.}}
     // fix@HashSet {{Replace "null" with an empty HashSet}}
     // edit@HashSet [[sc=12;ec=16]] {{new HashSet<>()}}
+  }
+
+  Map<String, String> map() {
+    return null; // Noncompliant [[sc=12;ec=16;quickfixes=map]] {{Return an empty map instead of null.}}
+    // fix@map {{Replace "null" with an empty Map}}
+    // edit@map [[sc=12;ec=16]] {{Collections.emptyMap()}}
+    // edit@map [[sl=3;sc=1;el=3;ec=1]] {{import java.util.Collections;\n}}
   }
 
 }
