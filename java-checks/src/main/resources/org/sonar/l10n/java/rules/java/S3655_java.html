@@ -44,7 +44,7 @@ String stringValue = value.orElse("default");
 </pre>
 <pre>
 Optional&lt;String&gt; optional = methodThatReturnsOptional();
-if (methodThatReturnsOptional().isEmpty()) {
+if (optional.isEmpty()) {
   throw new NotFoundException();
 }
 String value = optional.get();
