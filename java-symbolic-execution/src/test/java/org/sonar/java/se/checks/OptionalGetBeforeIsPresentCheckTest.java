@@ -23,26 +23,25 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.SETestUtils;
 
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
 class OptionalGetBeforeIsPresentCheckTest {
 
   @Test
-  void test() {
+  void test_with_jdk_8() {
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/OptionalGetBeforeIsPresentCheck.java")
       .withCheck(new OptionalGetBeforeIsPresentCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
+      .withJavaVersion(8)
       .verifyIssues();
   }
 
   @Test
-  void test_with_jdk_more_recent_than_8() {
-    assumeTrue(!System.getProperty("java.version").startsWith("1.8"));
+  void test_with_jdk_11() {
     SECheckVerifier.newVerifier()
       .onFile("src/test/files/se/OptionalGetBeforeIsPresentCheck_jdk11.java")
       .withCheck(new OptionalGetBeforeIsPresentCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
+      .withJavaVersion(11)
       .verifyIssues();
   }
 
@@ -52,6 +51,7 @@ class OptionalGetBeforeIsPresentCheckTest {
       .onFile("src/test/files/se/MethodInvocationLeadingToNSEE.java")
       .withCheck(new OptionalGetBeforeIsPresentCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
+      .withJavaVersion(8)
       .verifyIssues();
   }
 

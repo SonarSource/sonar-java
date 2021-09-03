@@ -12,7 +12,19 @@ Optional&lt;String&gt; value = this.getOptionalValue();
 
 String stringValue = value.get(); // Noncompliant
 </pre>
+<pre>
+if (methodThatReturnsOptional().isEmpty()) {
+  throw new NotFoundException();
+}
+String value = methodThatReturnsOptional().get(); // Noncompliant: indirect access, we consider that two consecutive calls can return different values.
+</pre>
 <h2>Compliant Solution</h2>
+<pre>
+this.getOptionalValue().ifPresent(stringValue -&gt;
+  // Do something with stringValue
+);
+</pre>
+<p>or</p>
 <pre>
 Optional&lt;String&gt; value = this.getOptionalValue();
 
@@ -29,6 +41,13 @@ Optional&lt;String&gt; value = this.getOptionalValue();
 // ...
 
 String stringValue = value.orElse("default");
+</pre>
+<pre>
+Optional&lt;String&gt; optional = methodThatReturnsOptional();
+if (methodThatReturnsOptional().isEmpty()) {
+  throw new NotFoundException();
+}
+String value = optional.get();
 </pre>
 <h2>See</h2>
 <ul>

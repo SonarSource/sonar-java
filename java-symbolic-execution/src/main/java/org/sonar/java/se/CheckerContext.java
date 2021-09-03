@@ -19,12 +19,12 @@
  */
 package org.sonar.java.se;
 
+import java.util.Set;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Set;
 
 public interface CheckerContext {
 
@@ -45,4 +45,6 @@ public interface CheckerContext {
   ConstraintManager getConstraintManager();
 
   AlwaysTrueOrFalseExpressionCollector alwaysTrueOrFalseExpressions();
+
+  JavaFileScannerContext getScannerContext();
 }

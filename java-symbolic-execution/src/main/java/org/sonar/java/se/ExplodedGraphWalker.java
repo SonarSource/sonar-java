@@ -62,6 +62,7 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -183,27 +184,27 @@ public class ExplodedGraphWalker {
   }
 
   @VisibleForTesting
-  public ExplodedGraphWalker(BehaviorCache behaviorCache, Sema semanticModel) {
+  public ExplodedGraphWalker(BehaviorCache behaviorCache, JavaFileScannerContext context) {
     List<SECheck> checks = Arrays.asList(new NullDereferenceCheck(), new DivisionByZeroCheck(),
       new UnclosedResourcesCheck(), new LocksNotUnlockedCheck(), new NonNullSetToNullCheck(), new NoWayOutLoopCheck());
     this.alwaysTrueOrFalseExpressionCollector = new AlwaysTrueOrFalseExpressionCollector();
-    this.checkerDispatcher = new CheckerDispatcher(this, checks);
+    this.checkerDispatcher = new CheckerDispatcher(this, checks, context);
     this.behaviorCache = behaviorCache;
-    this.semanticModel = semanticModel;
+    this.semanticModel = (Sema) context.getSemanticModel();
   }
 
   @VisibleForTesting
-  ExplodedGraphWalker(BehaviorCache behaviorCache, Sema semanticModel, boolean cleanup) {
-    this(behaviorCache, semanticModel);
+  ExplodedGraphWalker(BehaviorCache behaviorCache, JavaFileScannerContext context, boolean cleanup) {
+    this(behaviorCache, context);
     this.cleanup = cleanup;
   }
 
   @VisibleForTesting
-  protected ExplodedGraphWalker(List<SECheck> seChecks, BehaviorCache behaviorCache, Sema semanticModel) {
+  protected ExplodedGraphWalker(List<SECheck> seChecks, BehaviorCache behaviorCache, JavaFileScannerContext context) {
     this.alwaysTrueOrFalseExpressionCollector = new AlwaysTrueOrFalseExpressionCollector();
-    this.checkerDispatcher = new CheckerDispatcher(this, seChecks);
+    this.checkerDispatcher = new CheckerDispatcher(this, seChecks, context);
     this.behaviorCache = behaviorCache;
-    this.semanticModel = semanticModel;
+    this.semanticModel = (Sema) context.getSemanticModel();
   }
 
   public MethodBehavior visitMethod(MethodTree tree) {
@@ -1270,8 +1271,8 @@ public class ExplodedGraphWalker {
       seChecks.addAll(checks);
     }
 
-    public ExplodedGraphWalker createWalker(BehaviorCache behaviorCache, Sema semanticModel) {
-      return new ExplodedGraphWalker(seChecks, behaviorCache, semanticModel);
+    public ExplodedGraphWalker createWalker(BehaviorCache behaviorCache, JavaFileScannerContext context) {
+      return new ExplodedGraphWalker(seChecks, behaviorCache, context);
     }
 
     @SuppressWarnings("unchecked")
