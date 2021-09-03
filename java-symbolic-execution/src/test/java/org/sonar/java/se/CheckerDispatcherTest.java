@@ -36,7 +36,7 @@ class CheckerDispatcherTest {
   @Test
   void test_only_one_execution_of_post_statement_by_check() {
     List<SECheck> checks = Arrays.asList(new NullDereferenceCheck(), new CheckTest(), new CheckTest(), new CheckTest());
-    CheckerDispatcher checkerDispatcher = new CheckerDispatcher(mockExplodedGraphWalker(), checks);
+    CheckerDispatcher checkerDispatcher = new CheckerDispatcher(mockExplodedGraphWalker(), checks, null);
     checkerDispatcher.executeCheckPostStatement(mock(Tree.class));
     for (SECheck check : checks) {
       if(check instanceof CheckTest) {

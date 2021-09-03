@@ -32,7 +32,6 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.model.JUtils;
-import org.sonar.java.model.Sema;
 import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
 import org.sonar.java.se.checks.ConditionalUnreachableCodeCheck;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
@@ -90,7 +89,7 @@ class ExplodedGraphWalkerTest {
       .withChecks(new SymbolicExecutionVisitor(Collections.singletonList(new NullDereferenceCheck())) {
         @Override
         public void visitNode(Tree tree) {
-          ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, (Sema) context.getSemanticModel(), false);
+          ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, context, false);
           explodedGraphWalker.visitMethod((MethodTree) tree, methodBehaviorForSymbol(((MethodTree) tree).symbol()));
           steps[0] += explodedGraphWalker.steps;
         }
@@ -102,7 +101,7 @@ class ExplodedGraphWalkerTest {
       .withChecks(new SymbolicExecutionVisitor(Collections.emptyList()) {
         @Override
         public void visitNode(Tree tree) {
-          ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, (Sema) context.getSemanticModel());
+          ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, context);
           MethodTree methodTree = (MethodTree) tree;
           explodedGraphWalker.visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
           steps[1] += explodedGraphWalker.steps;
@@ -172,7 +171,7 @@ class ExplodedGraphWalkerTest {
       @Override
       public void visitNode(Tree tree) {
         if (explodedGraphWalker == null) {
-          explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, (Sema) context.getSemanticModel()) {
+          explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, context) {
 
             private ExplodedGraph.Node firstExceptionalNode = null;
 
@@ -233,7 +232,7 @@ class ExplodedGraphWalkerTest {
       @Override
       public void visitNode(Tree tree) {
         if (explodedGraphWalker == null) {
-          explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, (Sema) context.getSemanticModel()) {
+          explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, context) {
 
             boolean shouldEnqueueFalseBranch = false;
 
@@ -289,7 +288,7 @@ class ExplodedGraphWalkerTest {
         public void visitNode(Tree tree) {
           try {
             MethodTree methodTree = (MethodTree) tree;
-            new ExplodedGraphWalker(this.behaviorCache, (Sema) context.getSemanticModel()).visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
+            new ExplodedGraphWalker(this.behaviorCache, context).visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
           } catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
             fail("loop execution should be limited");
           }
@@ -307,7 +306,7 @@ class ExplodedGraphWalkerTest {
         @Override
         public void visitNode(Tree tree) {
           MethodTree methodTree = (MethodTree) tree;
-          ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, (Sema) context.getSemanticModel());
+          ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, context);
           MethodBehavior methodBehavior = methodBehaviorForSymbol(methodTree.symbol());
           try {
             explodedGraphWalker.visitMethod(methodTree, methodBehavior);
@@ -329,7 +328,7 @@ class ExplodedGraphWalkerTest {
         @Override
         public void visitNode(Tree tree) {
           MethodTree methodTree = (MethodTree) tree;
-          ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, (Sema) context.getSemanticModel());
+          ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, context);
           MethodBehavior methodBehavior = methodBehaviorForSymbol(methodTree.symbol());
           try {
             explodedGraphWalker.visitMethod(methodTree, methodBehavior);
@@ -350,7 +349,7 @@ class ExplodedGraphWalkerTest {
         @Override
         public void visitNode(Tree tree) {
           MethodTree methodTree = (MethodTree) tree;
-          ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, (Sema) context.getSemanticModel());
+          ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, context);
           MethodBehavior methodBehavior = methodBehaviorForSymbol(methodTree.symbol());
           try {
             explodedGraphWalker.visitMethod(methodTree, methodBehavior);
@@ -381,7 +380,7 @@ class ExplodedGraphWalkerTest {
         @Override
         public void visitNode(Tree tree) {
           MethodTree methodTree = (MethodTree) tree;
-          ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, (Sema) context.getSemanticModel());
+          ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, context);
           MethodBehavior methodBehavior = methodBehaviorForSymbol(methodTree.symbol());
           try {
             explodedGraphWalker.visitMethod(methodTree, methodBehavior);
@@ -531,7 +530,7 @@ class ExplodedGraphWalkerTest {
         public void visitNode(Tree tree) {
           MethodTree methodTree = (MethodTree) tree;
           if ("test".equals(methodTree.symbol().name())) {
-            ExplodedGraphWalker egw = new ExplodedGraphWalker(this.behaviorCache, (Sema) context.getSemanticModel());
+            ExplodedGraphWalker egw = new ExplodedGraphWalker(this.behaviorCache, context);
             egw.visitMethod(methodTree, null);
             assertThat(egw.checkerDispatcher.methodYield).isNull();
           }

@@ -28,7 +28,6 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.JUtils;
-import org.sonar.java.model.Sema;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
@@ -96,7 +95,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
 
   @VisibleForTesting
   protected ExplodedGraphWalker getWalker() {
-    return egwFactory.createWalker(behaviorCache, (Sema) context.getSemanticModel());
+    return egwFactory.createWalker(behaviorCache, context);
   }
 
   public static boolean methodCanNotBeOverriden(Symbol.MethodSymbol methodSymbol) {

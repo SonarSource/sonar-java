@@ -30,6 +30,7 @@ import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -41,14 +42,16 @@ public class CheckerDispatcher implements CheckerContext {
   private int currentCheckerIndex = -1;
   private boolean transition = false;
   private Exception interruptionCause = null;
+  private final JavaFileScannerContext scannerContext;
   Tree syntaxNode;
   // used by walker to store chosen yield when adding a transition from MIT
   @Nullable
   MethodYield methodYield = null;
 
-  public CheckerDispatcher(ExplodedGraphWalker explodedGraphWalker, List<SECheck> checks) {
+  public CheckerDispatcher(ExplodedGraphWalker explodedGraphWalker, List<SECheck> checks, JavaFileScannerContext scannerContext) {
     this.explodedGraphWalker = explodedGraphWalker;
     this.checks = checks;
+    this.scannerContext = scannerContext;
   }
 
   public boolean executeCheckPreStatement(Tree syntaxNode) {
@@ -109,7 +112,7 @@ public class CheckerDispatcher implements CheckerContext {
       explodedGraphWalker.programState = checks.get(currentCheckerIndex).checkPostStatement(this, syntaxNode);
     } else {
       CFG.Block block = (CFG.Block) explodedGraphWalker.programPosition.block;
-      if (explodedGraphWalker.programPosition.i< block.elements().size()) {
+      if (explodedGraphWalker.programPosition.i < block.elements().size()) {
         explodedGraphWalker.clearStack(block.elements().get(explodedGraphWalker.programPosition.i));
       }
       explodedGraphWalker.enqueue(
@@ -180,6 +183,11 @@ public class CheckerDispatcher implements CheckerContext {
   @Override
   public AlwaysTrueOrFalseExpressionCollector alwaysTrueOrFalseExpressions() {
     return explodedGraphWalker.alwaysTrueOrFalseExpressionCollector();
+  }
+
+  @Override
+  public JavaFileScannerContext getScannerContext() {
+    return scannerContext;
   }
 
   @CheckForNull
