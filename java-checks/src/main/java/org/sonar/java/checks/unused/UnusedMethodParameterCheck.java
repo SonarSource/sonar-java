@@ -123,7 +123,7 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
       .report();
   }
 
-  private List<JavaQuickFix> createQuickFixes(MethodTree methodTree, List<IdentifierTree> unused) {
+  private static List<JavaQuickFix> createQuickFixes(MethodTree methodTree, List<IdentifierTree> unused) {
     List<JavaQuickFix> quickFixes = new ArrayList<>();
     List<VariableTree> parameters = methodTree.parameters();
     for (int i = 0; i < parameters.size(); i++) {
