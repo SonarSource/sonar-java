@@ -1,1 +1,23 @@
-<p>FIXME, see https://github.com/SonarSource/rspec/pull/290</p>
+<p>Since Java 9, <code>@Deprecated</code> has two additional arguments to the annotation:</p>
+<ul>
+  <li> <code>since</code> allows you to describe when the deprecation took place </li>
+  <li> <code>forRemoval</code>, indicates whether the deprecated element will be removed at some future date </li>
+</ul>
+<p>In order to ease the maintainers work, it is recommended to always add one or both of these arguments.</p>
+<p>This rule reports an issue when <code>@Deprecated</code> is used without any argument.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+@Deprecated
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+@Deprecated(since="4.2", forRemoval=true)
+</pre>
+<h2>Exceptions</h2>
+<p>The members and methods of a deprecated class or interface are ignored by this rule. The classes and interfaces themselves are still subject to
+it.</p>
+<h3>See Also</h3>
+<ul>
+  <li> {rule:java:S1123} </li>
+</ul>
+
