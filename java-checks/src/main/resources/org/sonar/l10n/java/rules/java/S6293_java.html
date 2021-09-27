@@ -1,0 +1,42 @@
+<p>Android comes with Android KeyStore, a secure container for storing key materials. It’s possible to define certain keys to be unlocked when users
+authenticate using biometric credentials. This way, even if the application process is compromised, the attacker cannot access keys, as presence of
+the authorized user is required.</p>
+<p>These keys can be used, to encrypt, sign or create a message authentication code (MAC) as proof that the authentication result has not been
+tampered with. This protection defeats the scenario where an attacker with physical access to the device would try to hook into the application
+process and call the <code>onAuthenticationSucceeded</code> method directly. Therefore he would be unable to extract the sensitive data or to perform
+the critical operations protected by the biometric authentication.</p>
+<h2>Ask Yourself Whether</h2>
+<p>The application contains:</p>
+<ul>
+  <li> Cryptographic keys / sensitive information that need to be protected using biometric authentication. </li>
+</ul>
+<p>There is a risk if you answered yes to this question.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>It’s recommended to tie the biometric authentication to a cryptographic operation by using a <code>CryptoObject</code> during authentication.</p>
+<h2>Noncompliant Code Example</h2>
+<p>A <code>CryptoObject</code> is not used during authentication:</p>
+<pre>
+// ...
+BiometricPrompt biometricPrompt = new BiometricPrompt(activity, executor, callback);
+// ...
+biometricPrompt.authenticate(promptInfo); // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<p>A <code>CryptoObject</code> is used during authentication:</p>
+<pre>
+// ...
+BiometricPrompt biometricPrompt = new BiometricPrompt(activity, executor, callback);
+// ...
+biometricPrompt.authenticate(promptInfo, new BiometricPrompt.CryptoObject(cipher)); // Compliant
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://developer.android.com/training/sign-in/biometric-auth">developer.android.com</a> - Use a cryptographic solution that depends
+  on authentication </li>
+  <li> <a href="https://owasp.org/www-project-mobile-top-10/2016-risks/m4-insecure-authentication">OWASP Mobile Top 10 Category M4</a> - Insecure
+  Authentication </li>
+  <li> <a href="https://mobile-security.gitbook.io/masvs/security-requirements/0x09-v4-authentication_and_session_management_requirements">OWASP
+  MASVS</a> - Authentication and Session Management Requirements </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/287.html">MITRE, CWE-287</a> - Improper Authentication </li>
+</ul>
+

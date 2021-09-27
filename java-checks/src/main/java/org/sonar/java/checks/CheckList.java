@@ -70,6 +70,7 @@ import org.sonar.java.checks.security.AndroidBroadcastingCheck;
 import org.sonar.java.checks.security.AndroidExternalStorageCheck;
 import org.sonar.java.checks.security.AndroidNonAuthenticatedUsersCheck;
 import org.sonar.java.checks.security.AuthorizationsStrongDecisionsCheck;
+import org.sonar.java.checks.security.AndroidBiometricAuthWithoutCryptoCheck;
 import org.sonar.java.checks.security.CipherBlockChainingCheck;
 import org.sonar.java.checks.security.ClearTextProtocolCheck;
 import org.sonar.java.checks.security.CookieHttpOnlyCheck;
@@ -275,6 +276,7 @@ public final class CheckList {
       BadTypeParameterNameCheck.class,
       BasicAuthCheck.class,
       BigDecimalDoubleConstructorCheck.class,
+      AndroidBiometricAuthWithoutCryptoCheck.class,
       BlindSerialVersionUidCheck.class,
       BooleanInversionCheck.class,
       BooleanLiteralCheck.class,

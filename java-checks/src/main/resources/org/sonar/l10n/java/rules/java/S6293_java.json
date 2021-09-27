@@ -1,0 +1,28 @@
+{
+  "title": "Using biometric authentication without a cryptographic solution is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "cwe",
+    "owasp-m4"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6293",
+  "sqKey": "S6293",
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      287
+    ],
+    "OWASP Mobile": [
+      "M4"
+    ],
+    "MASVS": [
+      "MSTG-AUTH-8"
+    ]
+  }
+}
