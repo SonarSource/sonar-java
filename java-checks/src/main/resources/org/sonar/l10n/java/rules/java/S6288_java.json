@@ -1,0 +1,29 @@
+{
+  "title": "Authorizing non-authenticated users to use keys in the Android KeyStore is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "cwe",
+    "owasp-m4",
+    "android"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6288",
+  "sqKey": "S6288",
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      522
+    ],
+    "OWASP Mobile": [
+      "M4"
+    ],
+    "MASVS": [
+      "MSTG-AUTH-1"
+    ]
+  }
+}
