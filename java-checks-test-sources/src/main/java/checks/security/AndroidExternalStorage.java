@@ -1,9 +1,9 @@
-package test;
+package checks.security;
 
 import android.content.Context;
 import android.os.Environment;
 
-public class AccessExternalFiles {
+public class AndroidExternalStorage {
 
   public void accessFiles(Context context) {
     Environment.getExternalStorageDirectory(); // Noncompliant {{Make sure that external files are accessed safely here.}}

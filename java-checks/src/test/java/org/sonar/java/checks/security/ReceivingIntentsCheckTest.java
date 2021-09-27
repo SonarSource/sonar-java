@@ -22,19 +22,18 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.ANDROID_FAKE_CLASS_PATH;
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+
 class ReceivingIntentsCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/security/ReceivingIntents.java")
+      .onFile(testSourcesPath("checks/security/ReceivingIntentsCheck.java"))
       .withCheck(new ReceivingIntentsCheck())
+      .withClassPath(ANDROID_FAKE_CLASS_PATH)
       .verifyIssues();
-    CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/security/ReceivingIntents.java")
-      .withCheck(new ReceivingIntentsCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 
 }

@@ -52,16 +52,3 @@ public abstract class Context {
   public abstract void sendStickyOrderedBroadcast(Intent intent, BroadcastReceiver resultReceiver, Handler scheduler, int initialCode, String initialData, Bundle initialExtras);
   public abstract void sendStickyOrderedBroadcastAsUser(Intent intent, UserHandle user, BroadcastReceiver resultReceiver, Handler scheduler, int initialCode, String initialData, Bundle initialExtras);
 }
-
-
-class Intent {
-
-}
-
-class IntentFilter {
-
-}
-
-class BroadcastReceiver {
-
-}
