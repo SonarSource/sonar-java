@@ -1,0 +1,52 @@
+<p>Android KeyStore is a secure container for storing key materials, in particular it prevents key materials extraction, i.e. when the application
+process is compromised, the attacker cannot extract keys but may still be able to use them. It’s possible to enable an Android security feature, user
+authentication, to restrict usage of keys to only authenticated users. The lock screen has to be unlocked with defined credentials
+(pattern/PIN/password, biometric).</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> The application requires prohibiting the use of keys in case of compromise of the application process. </li>
+  <li> The key material is used in the context of a highly sensitive application like a e-banking mobile app. </li>
+</ul>
+<p>There is a risk if you answered yes to any of those questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>It’s recommended to enable user authentication (by setting <code>setUserAuthenticationRequired</code> to <code>true</code> during key generation)
+to use keys for a limited duration of time (by setting appropriate values to <code>setUserAuthenticationValidityDurationSeconds</code>), after which
+the user must re-authenticate.</p>
+<h2>Noncompliant Code Example</h2>
+<p>Any user can use the key:</p>
+<pre>
+KeyGenerator keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
+
+KeyGenParameterSpec builder = new KeyGenParameterSpec.Builder("test_secret_key_noncompliant", KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT) // Noncompliant
+    .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+    .build();
+
+keyGenerator.init(builder);
+</pre>
+<h2>Compliant Solution</h2>
+<p>The use of the key is limited to authenticated users (for a duration of time defined to 60 seconds):</p>
+<pre>
+KeyGenerator keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
+
+KeyGenParameterSpec builder = new KeyGenParameterSpec.Builder("test_secret_key", KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
+    .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+    .setUserAuthenticationRequired(true)
+    .setUserAuthenticationParameters (60, KeyProperties.AUTH_DEVICE_CREDENTIAL)
+    .build();
+
+keyGenerator.init(builder)
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://developer.android.com/training/articles/keystore">developer.android.com</a> - Android keystore system </li>
+  <li> <a href="https://developer.android.com/training/articles/keystore#UserAuthentication">developer.android.com</a> - Require user authentication
+  for key use </li>
+  <li> <a href="https://mobile-security.gitbook.io/masvs/security-requirements/0x07-v2-data_storage_and_privacy_requirements">Mobile AppSec
+  Verification Standard</a> - Authentication and Session Management Requirements </li>
+  <li> <a href="https://owasp.org/www-project-mobile-top-10/2016-risks/m4-insecure-authentication">OWASP Mobile Top 10 2016 Category M4</a> - Insecure
+  Authentication </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/522.html">MITRE, CWE-522</a> - Insufficiently Protected Credentials </li>
+</ul>
+
