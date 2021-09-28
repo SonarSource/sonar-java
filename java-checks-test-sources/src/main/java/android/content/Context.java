@@ -26,6 +26,12 @@ import java.io.File;
 
 public abstract class Context {
 
+  public File[] externalMediaDirs;
+  public File externalCacheDir;
+  public File[] externalCacheDirs;
+  public File obbDir;
+  public File[] obbDirs;
+
   public abstract File getExternalFilesDir(String type);
   public abstract File[] getExternalFilesDirs(String type);
   public abstract File[] getExternalMediaDirs();

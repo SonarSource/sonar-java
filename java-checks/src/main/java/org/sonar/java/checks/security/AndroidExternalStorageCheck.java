@@ -19,32 +19,61 @@
  */
 package org.sonar.java.checks.security;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 @Rule(key = "S5324")
-public class AndroidExternalStorageCheck extends AbstractMethodDetection {
+public class AndroidExternalStorageCheck extends IssuableSubscriptionVisitor {
+
+  private static final String ANDROID_CONTENT_CONTEXT = "android.content.Context";
+
+  private static final MethodMatchers SENSITIVE_METHODS_MATCHER = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes("android.os.Environment")
+      .names("getExternalStorageDirectory", "getExternalStoragePublicDirectory")
+      .withAnyParameters()
+      .build(),
+    MethodMatchers.create()
+      .ofTypes(ANDROID_CONTENT_CONTEXT)
+      .names("getExternalFilesDir", "getExternalFilesDirs", "getExternalMediaDirs", "getExternalCacheDir", "getExternalCacheDirs", "getObbDir", "getObbDirs")
+      .withAnyParameters()
+      .build()
+  );
+
+  private static final Set<String> SENSITIVE_FIELDS = SetUtils.immutableSetOf(
+    "externalCacheDir",
+    "externalCacheDirs",
+    "externalMediaDirs",
+    "obbDir",
+    "obbDirs");
 
   @Override
-  protected MethodMatchers getMethodInvocationMatchers() {
-    return MethodMatchers.or(
-      MethodMatchers.create()
-        .ofTypes("android.os.Environment")
-        .names("getExternalStorageDirectory", "getExternalStoragePublicDirectory")
-        .withAnyParameters()
-        .build(),
-      MethodMatchers.create()
-        .ofTypes("android.content.Context")
-        .names("getExternalFilesDir", "getExternalFilesDirs", "getExternalMediaDirs", "getExternalCacheDir", "getExternalCacheDirs", "getObbDir", "getObbDirs")
-        .withAnyParameters()
-        .build()
-    );
+  public List<Tree.Kind> nodesToVisit() {
+    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.MEMBER_SELECT);
   }
 
   @Override
-  protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportIssue(mit, "Make sure that external files are accessed safely here.");
+  public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree mit = (MethodInvocationTree) tree;
+      if (SENSITIVE_METHODS_MATCHER.matches(mit)) {
+        reportIssue(mit, "Make sure that external files are accessed safely here.");
+      }
+    } else {
+      MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) tree;
+      IdentifierTree identifier = memberSelect.identifier();
+      if (SENSITIVE_FIELDS.contains(identifier.name()) && memberSelect.expression().symbolType().is(ANDROID_CONTENT_CONTEXT)) {
+        reportIssue(identifier, "Make sure that external files are accessed safely here.");
+      }
+    }
   }
 }
