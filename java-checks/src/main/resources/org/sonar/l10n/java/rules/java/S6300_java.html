@@ -1,0 +1,23 @@
+<p>Storing files locally is a common task for mobile applications. Files that are stored unencrypted can be read out and modified by an attacker with
+physical access to the device. Access to sensitive data can be harmful for the user of the application, for example when the device gets stolen.</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> The file contains sensitive data that could cause harm when leaked. </li>
+</ul>
+<p>There is a risk if you answered yes to any of those questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>It’s recommended to password-encrypt local files that contain sensitive information. The class <a
+href="https://developer.android.com/reference/androidx/security/crypto/EncryptedFile">EncryptedFile</a> can be used to easily encrypt files.</p>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://mobile-security.gitbook.io/masvs/security-requirements/0x07-v2-data_storage_and_privacy_requirements">Mobile AppSec
+  Verification Standard</a> - Data Storage and Privacy Requirements </li>
+  <li> <a href="https://owasp.org/www-project-mobile-top-10/2016-risks/m2-insecure-data-storage">OWASP Mobile Top 10 2016 Category M2</a> - Insecure
+  Data Storage </li>
+  <li> <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data
+  Exposure </li>
+  <li> <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration.html">OWASP Top 10 2017 Category A6</a> - Security
+  Misconfiguration </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/311.html">MITRE, CWE-311</a> - Missing Encryption of Sensitive Data </li>
+</ul>
+
