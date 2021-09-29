@@ -94,6 +94,7 @@ import org.sonar.java.checks.security.PubliclyWritableDirectoriesCheck;
 import org.sonar.java.checks.security.ReceivingIntentsCheck;
 import org.sonar.java.checks.security.SecureCookieCheck;
 import org.sonar.java.checks.security.ServerCertificatesCheck;
+import org.sonar.java.checks.security.AndroidUnencryptedDatabaseCheck;
 import org.sonar.java.checks.security.UnpredictableSaltCheck;
 import org.sonar.java.checks.security.UserEnumerationCheck;
 import org.sonar.java.checks.security.VerifiedServerHostnamesCheck;
@@ -656,6 +657,7 @@ public final class CheckList {
       URLHashCodeAndEqualsCheck.class,
       UnderscoreMisplacedOnNumberCheck.class,
       UnderscoreOnNumberCheck.class,
+      AndroidUnencryptedDatabaseCheck.class,
       UnicodeAwareCharClassesCheck.class,
       UnicodeCaseCheck.class,
       UnnecessaryEscapeSequencesInTextBlockCheck.class,

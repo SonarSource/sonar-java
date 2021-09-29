@@ -1,0 +1,67 @@
+<p>Storing data locally is a common task for mobile applications. Such data includes preferences or authentication tokens for external services, among
+other things. There are many convenient solutions that allow storing data persistently, for example SQLiteDatabase, SharedPreferences, and Realm. By
+default these systems store the data unencrypted, thus an attacker with physical access to the device can read them out easily. Access to sensitive
+data can be harmful for the user of the application, for example when the device gets stolen.</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> The database contains sensitive data that could cause harm when leaked. </li>
+</ul>
+<p>There is a risk if you answered yes to any of those questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>It’s recommended to password-encrypt local databases that contain sensitive information. Most systems provide secure alternatives to plain-text
+storage that should be used. If no secure alternative is available the data can also be encrypted manually before it is stored.</p>
+<p>The encryption password should not be hard-coded in the application. There are different approaches how the password can be provided to encrypt and
+decrypt the database. In the case of <code>EncryptedSharedPreferences</code> the Android Keystore can be used to store the password. Other databases
+can rely on <code>EncryptedSharedPreferences</code> to store passwords. The password can also be provided dynamically by the user of the application
+or it can be fetched from a remote server if the other methods are not feasible.</p>
+<h2>Sensitive Code Example</h2>
+<p>For <a href="https://developer.android.com/reference/kotlin/android/database/sqlite/SQLiteDatabase">SQLiteDatabase</a>:</p>
+<pre>
+SQLiteDatabase db = activity.openOrCreateDatabase("test.db", Context.MODE_PRIVATE, null); // Sensitive
+</pre>
+<p>For <a href="https://developer.android.com/training/data-storage/shared-preferences">SharedPreferences</a>:</p>
+<pre>
+SharedPreferences pref = activity.getPreferences(Context.MODE_PRIVATE); // Sensitive
+</pre>
+<p>For <a href="https://docs.mongodb.com/realm/">Realm</a>:</p>
+<pre>
+RealmConfiguration config = new RealmConfiguration.Builder().build();
+Realm realm = Realm.getInstance(config); // Sensitive
+</pre>
+<h2>Compliant Solution</h2>
+<p>Instead of SQLiteDatabase you can use <a href="https://www.zetetic.net/sqlcipher/sqlcipher-for-android/">SQLCipher</a>:</p>
+<pre>
+SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase("test.db", getKey(), null);
+</pre>
+<p>Instead of SharedPreferences you can use <a
+href="https://developer.android.com/reference/androidx/security/crypto/EncryptedSharedPreferences">EncryptedSharedPreferences</a>:</p>
+<pre>
+String masterKeyAlias = new MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
+EncryptedSharedPreferences.create(
+    "secret",
+    masterKeyAlias,
+    context,
+    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+);
+</pre>
+<p>For Realm an encryption key can be specified in the config:</p>
+<pre>
+RealmConfiguration config = new RealmConfiguration.Builder()
+    .encryptionKey(getKey())
+    .build();
+Realm realm = Realm.getInstance(config);
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://mobile-security.gitbook.io/masvs/security-requirements/0x07-v2-data_storage_and_privacy_requirements">Mobile AppSec
+  Verification Standard</a> - Data Storage and Privacy Requirements </li>
+  <li> <a href="https://owasp.org/www-project-mobile-top-10/2016-risks/m2-insecure-data-storage">OWASP Mobile Top 10 2016 Category M2</a> - Insecure
+  Data Storage </li>
+  <li> <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data
+  Exposure </li>
+  <li> <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration.html">OWASP Top 10 2017 Category A6</a> - Security
+  Misconfiguration </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/311.html">MITRE, CWE-311</a> - Missing Encryption of Sensitive Data </li>
+</ul>
+

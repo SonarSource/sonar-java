@@ -1,0 +1,35 @@
+{
+  "title": "Using unencrypted databases in mobile applications is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "cwe",
+    "owasp-a3",
+    "owasp-a6",
+    "owasp-m2",
+    "android"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6291",
+  "sqKey": "S6291",
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      311
+    ],
+    "OWASP": [
+      "A3",
+      "A6"
+    ],
+    "OWASP Mobile": [
+      "M2"
+    ],
+    "MASVS": [
+      "MSTG-STORAGE-14"
+    ]
+  }
+}
