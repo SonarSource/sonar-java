@@ -1,4 +1,4 @@
-package net.sqlcipher.database;
+package android.database;
 
 public class DatabaseErrorHandler {
 }

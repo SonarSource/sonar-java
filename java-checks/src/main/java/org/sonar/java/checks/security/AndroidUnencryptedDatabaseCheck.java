@@ -64,8 +64,8 @@ public class AndroidUnencryptedDatabaseCheck extends IssuableSubscriptionVisitor
     MethodMatchers.create()
       .ofSubTypes(ANDROID_CONTENT_CONTEXT)
       .names("openOrCreateDatabase")
-      .addParametersMatcher(JAVA_LANG_STRING, "int", "net.sqlcipher.database.CursorFactory")
-      .addParametersMatcher(JAVA_LANG_STRING, "int", "net.sqlcipher.database.CursorFactory", "net.sqlcipher.database.DatabaseErrorHandler")
+      .addParametersMatcher(JAVA_LANG_STRING, "int", "android.database.sqlite.SQLiteDatabase$CursorFactory")
+      .addParametersMatcher(JAVA_LANG_STRING, "int", "android.database.sqlite.SQLiteDatabase$CursorFactory", "android.database.DatabaseErrorHandler")
       .build()
   );
 

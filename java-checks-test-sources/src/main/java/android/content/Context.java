@@ -19,13 +19,12 @@
  */
 package android.content;
 
+import android.database.DatabaseErrorHandler;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.UserHandle;
 import java.io.File;
-import net.sqlcipher.database.CursorFactory;
-import net.sqlcipher.database.DatabaseErrorHandler;
-import net.sqlcipher.database.SQLiteDatabase;
 
 public abstract class Context {
 
@@ -58,7 +57,7 @@ public abstract class Context {
   public abstract SharedPreferences getSharedPreferences(String name, int mode);
   public abstract SharedPreferences getSharedPreferences(File file, int mode);
 
-  public abstract SQLiteDatabase openOrCreateDatabase(String name, int mode, CursorFactory factory);
-  public abstract SQLiteDatabase openOrCreateDatabase(String name, int mode, CursorFactory factory, DatabaseErrorHandler errorHandler);
+  public abstract SQLiteDatabase openOrCreateDatabase(String name, int mode, SQLiteDatabase.CursorFactory factory);
+  public abstract SQLiteDatabase openOrCreateDatabase(String name, int mode, SQLiteDatabase.CursorFactory factory, DatabaseErrorHandler errorHandler);
 
 }

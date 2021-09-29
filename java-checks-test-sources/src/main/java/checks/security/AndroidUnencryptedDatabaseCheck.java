@@ -2,11 +2,11 @@ package checks.security;
 
 import android.app.Activity;
 import android.content.Context;
+import android.database.DatabaseErrorHandler;
+import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import io.realm.RealmConfiguration;
 import java.io.File;
-import net.sqlcipher.database.CursorFactory;
-import net.sqlcipher.database.DatabaseErrorHandler;
 
 public class AndroidUnencryptedDatabaseCheck {
 
@@ -24,7 +24,7 @@ public class AndroidUnencryptedDatabaseCheck {
     PreferenceManager.getDefaultSharedPreferences(context); // Noncompliant
   }
 
-  void testSQLiteDatabase(Context context, CursorFactory cursorFactory, DatabaseErrorHandler databaseErrorHandler) {
+  void testSQLiteDatabase(Context context, SQLiteDatabase.CursorFactory cursorFactory, DatabaseErrorHandler databaseErrorHandler) {
     context.openOrCreateDatabase("name", 1, cursorFactory); // Noncompliant [[sc=13;ec=33]] {{Make sure using an unencrypted database is safe here.}}
     context.openOrCreateDatabase("name", 1, cursorFactory, databaseErrorHandler); // Noncompliant
   }
