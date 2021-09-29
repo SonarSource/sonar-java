@@ -23,6 +23,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.UserHandle;
 import java.io.File;
+import net.sqlcipher.database.CursorFactory;
+import net.sqlcipher.database.DatabaseErrorHandler;
+import net.sqlcipher.database.SQLiteDatabase;
 
 public abstract class Context {
 
@@ -51,4 +54,11 @@ public abstract class Context {
   public abstract void sendStickyBroadcastAsUser(Intent intent, UserHandle user);
   public abstract void sendStickyOrderedBroadcast(Intent intent, BroadcastReceiver resultReceiver, Handler scheduler, int initialCode, String initialData, Bundle initialExtras);
   public abstract void sendStickyOrderedBroadcastAsUser(Intent intent, UserHandle user, BroadcastReceiver resultReceiver, Handler scheduler, int initialCode, String initialData, Bundle initialExtras);
+
+  public abstract SharedPreferences getSharedPreferences(String name, int mode);
+  public abstract SharedPreferences getSharedPreferences(File file, int mode);
+
+  public abstract SQLiteDatabase openOrCreateDatabase(String name, int mode, CursorFactory factory);
+  public abstract SQLiteDatabase openOrCreateDatabase(String name, int mode, CursorFactory factory, DatabaseErrorHandler errorHandler);
+
 }
