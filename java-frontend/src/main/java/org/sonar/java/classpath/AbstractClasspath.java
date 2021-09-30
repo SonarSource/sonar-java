@@ -68,6 +68,7 @@ public abstract class AbstractClasspath {
   protected final List<File> elements;
   protected boolean validateLibraries;
   protected boolean initialized;
+  private boolean inAndroidContext = false;
 
   protected AbstractClasspath(Configuration settings, FileSystem fs, InputFile.Type fileType) {
     this.settings = settings;
@@ -130,6 +131,9 @@ public abstract class AbstractClasspath {
         }
         validateLibraries = validateLibs;
         result.addAll(libraryFilesForPattern);
+        if (pathPattern.endsWith("android.jar")) {
+          inAndroidContext = true;
+        }
       }
     }
     return result;
@@ -321,5 +325,9 @@ public abstract class AbstractClasspath {
   public List<File> getBinaryDirs() {
     init();
     return binaries;
+  }
+
+  public boolean inAndroidContext() {
+    return inAndroidContext;
   }
 }

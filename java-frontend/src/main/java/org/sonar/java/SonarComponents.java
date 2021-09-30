@@ -175,6 +175,10 @@ public class SonarComponents {
     return javaClasspath.getElements();
   }
 
+  public boolean inAndroidContext() {
+    return javaClasspath.inAndroidContext();
+  }
+
   public List<File> getJavaTestClasspath() {
     return javaTestClasspath.getElements();
   }

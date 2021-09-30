@@ -84,6 +84,12 @@ public class SECheckVerifier implements CheckVerifier {
   }
 
   @Override
+  public CheckVerifier withInAndroidContext(boolean inAndroidContext) {
+    checkVerifier.withInAndroidContext(inAndroidContext);
+    return this;
+  }
+
+  @Override
   public CheckVerifier onFile(String filename) {
     checkVerifier.onFile(filename);
     return this;

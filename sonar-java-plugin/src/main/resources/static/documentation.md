@@ -97,6 +97,12 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 ### API changes
 
+#### **7.4**
+
+* New method: `JavaFileScannerContext.inAndroidContext()`. Use this method to know if the current file being analyzed is coming from an Android context. The value is true if Android dependencies are found in the classpath of the current analysis.
+
+* Together with the previous method addition, you can use `CheckVerifier.withInAndroidContext(true)` in unit tests to test the behavior of the rules in an Android context.
+
 #### **7.1**
 
 * **Method `TypeCastTree.bounds()` changed its return type from `ListTree<Tree>` to `ListTree<TypeTree>`.**

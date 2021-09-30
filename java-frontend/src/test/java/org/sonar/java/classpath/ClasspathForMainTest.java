@@ -280,10 +280,10 @@ class ClasspathForMainTest {
   void directory_wildcard_should_be_resolved() {
     settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "**/*.jar");
     javaClasspath = createJavaClasspath();
-    assertThat(javaClasspath.getElements()).hasSize(3);
+    assertThat(javaClasspath.getElements()).hasSize(4);
     File jar = javaClasspath.getElements().get(0);
     assertThat(jar).exists();
-    assertThat(javaClasspath.getElements()).extracting("name").contains("hello.jar", "world.jar", "foo.jar");
+    assertThat(javaClasspath.getElements()).extracting("name").contains("hello.jar", "world.jar", "foo.jar", "android.jar");
   }
 
   @Test
@@ -306,16 +306,16 @@ class ClasspathForMainTest {
   void both_path_separator_should_be_supported_on_one_JVM() {
     settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "**/*.jar");
     javaClasspath = createJavaClasspath();
-    assertThat(javaClasspath.getElements()).hasSize(3);
+    assertThat(javaClasspath.getElements()).hasSize(4);
     File jar = javaClasspath.getElements().get(0);
     assertThat(jar).exists();
-    assertThat(javaClasspath.getElements()).extracting("name").contains("hello.jar", "world.jar", "foo.jar");
+    assertThat(javaClasspath.getElements()).extracting("name").contains("hello.jar", "world.jar", "foo.jar", "android.jar");
     settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "**\\*.jar");
     javaClasspath = createJavaClasspath();
-    assertThat(javaClasspath.getElements()).hasSize(3);
+    assertThat(javaClasspath.getElements()).hasSize(4);
     jar = javaClasspath.getElements().get(0);
     assertThat(jar).exists();
-    assertThat(javaClasspath.getElements()).extracting("name").contains("hello.jar", "world.jar", "foo.jar");
+    assertThat(javaClasspath.getElements()).extracting("name").contains("hello.jar", "world.jar", "foo.jar", "android.jar");
   }
 
   @Test
@@ -344,10 +344,10 @@ class ClasspathForMainTest {
     fs.add(TestUtils.emptyInputFile("foo.java"));
     settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "classpath");
     javaClasspath = createJavaClasspath();
-    assertThat(javaClasspath.getElements()).hasSize(4);
+    assertThat(javaClasspath.getElements()).hasSize(5);
     settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "classpath/");
     javaClasspath = createJavaClasspath();
-    assertThat(javaClasspath.getElements()).hasSize(4);
+    assertThat(javaClasspath.getElements()).hasSize(5);
   }
 
   @Test
@@ -488,6 +488,22 @@ class ClasspathForMainTest {
       .allMatch(debug -> (debug.startsWith("Property 'sonar.java.jdkHome' set with:") && debug.contains(jdkFolder))
         || (debug.startsWith("Property 'sonar.java.jdkHome' resolved with:") && debug.contains(expectedJar))
         || (debug.equals("Property 'sonar.java.libraries' resolved with:" + System.lineSeparator() + "[]")));
+  }
+
+  @Test
+  void should_not_be_in_android_context_by_default() {
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/hello.jar");
+    javaClasspath = createJavaClasspath();
+    javaClasspath.init();
+    assertThat(javaClasspath.inAndroidContext()).isFalse();
+  }
+
+  @Test
+  void should_set_in_android_context() {
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "android/android.jar");
+    javaClasspath = createJavaClasspath();
+    javaClasspath.init();
+    assertThat(javaClasspath.inAndroidContext()).isTrue();
   }
 
   private void checkIllegalStateException(String message) {
