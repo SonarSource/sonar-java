@@ -131,9 +131,9 @@ public abstract class AbstractClasspath {
         }
         validateLibraries = validateLibs;
         result.addAll(libraryFilesForPattern);
-        if (pathPattern.endsWith("android.jar")) {
-          inAndroidContext = true;
-        }
+      }
+      if (result.stream().anyMatch(f -> f.getName().endsWith("android.jar"))) {
+        inAndroidContext = true;
       }
     }
     return result;

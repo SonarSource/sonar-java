@@ -506,6 +506,14 @@ class ClasspathForMainTest {
     assertThat(javaClasspath.inAndroidContext()).isTrue();
   }
 
+  @Test
+  void should_set_in_android_context_indirect() {
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "android/*.jar");
+    javaClasspath = createJavaClasspath();
+    javaClasspath.init();
+    assertThat(javaClasspath.inAndroidContext()).isTrue();
+  }
+
   private void checkIllegalStateException(String message) {
     javaClasspath = createJavaClasspath();
     try {
