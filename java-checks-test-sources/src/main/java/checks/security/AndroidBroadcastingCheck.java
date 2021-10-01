@@ -1,5 +1,6 @@
 package checks.security;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -31,5 +32,20 @@ public class AndroidBroadcastingCheck {
     context.sendOrderedBroadcast(intent, broadcastPermission); // Ok
     context.sendOrderedBroadcastAsUser(intent, user,broadcastPermission, resultReceiver,
       scheduler, initialCode, initialData, initialExtras); // Ok
+  }
+
+  void callThroughActivity(MyActivity myActivity, Intent intent) {
+    myActivity.sendBroadcast(intent); // Noncompliant
+    getActivity().sendBroadcast(intent); // Noncompliant
+  }
+
+  Activity getActivity() {
+    return new MyActivity();
+  }
+
+  class MyActivity extends Activity {
+    public void doSomething(Intent intent) {
+      this.sendStickyBroadcast(intent); // Noncompliant
+    }
   }
 }
