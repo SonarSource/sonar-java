@@ -1,5 +1,6 @@
 package checks.security;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Environment;
 
@@ -16,4 +17,17 @@ public class AndroidExternalStorage {
     context.getObbDir(); // Noncompliant
     context.getObbDirs(); // Noncompliant
   }
+
+  void callThroughActivity(MyActivity myActivity) {
+    myActivity.getObbDirs(); // Noncompliant
+    getActivity().getExternalCacheDirs(); // Noncompliant
+  }
+
+  Activity getActivity() {
+    return new MyActivity();
+  }
+
+  class MyActivity extends Activity {
+  }
+
 }

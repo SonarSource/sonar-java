@@ -36,7 +36,7 @@ public class AndroidExternalStorageCheck extends AbstractMethodDetection {
         .withAnyParameters()
         .build(),
       MethodMatchers.create()
-        .ofTypes("android.content.Context")
+        .ofSubTypes("android.content.Context")
         .names("getExternalFilesDir", "getExternalFilesDirs", "getExternalMediaDirs", "getExternalCacheDir", "getExternalCacheDirs", "getObbDir", "getObbDirs")
         .withAnyParameters()
         .build()
