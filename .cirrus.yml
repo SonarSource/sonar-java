@@ -1,4 +1,4 @@
-gcp_credentials: ENCRYPTED[!17c59813193e86cc337bce848b358412b90f50bc5fe1b8b39d363cdf14a41ebe76cfba0482e7f81d076994b9f6dbfb4c!]
+gcp_credentials: ENCRYPTED[9d7e279a111860e7c6102e55e89c3a10e77228d8df8f65f510101b8fdb340d37b248e62688e4c9805b4c4ff4fb00d07f]
 
 env:
   ARTIFACTORY_URL: ENCRYPTED[!2f8fa307d3289faa0aa6791f18b961627ae44f1ef46b136e1a1e63b0b4c86454dbb25520d49b339e2d50a1e1e5f95c88!]
@@ -20,17 +20,17 @@ env:
   CIRRUS_CLONE_DEPTH: 50
 
 container_definition: &CONTAINER_DEFINITION
-  image: gcr.io/language-team/base:latest
-  cluster_name: cirrus-ci-lt-cluster
-  zone: us-central1-a
+  image: eu.gcr.io/release-engineering-ci-staging/base:j11-m3-latest
+  cluster_name: cirrus-ci-dav
+  zone: europe-west4-b
   namespace: default
 
 win_vm_definition: &WINDOWS_VM_DEFINITION
   gce_instance:
-    image_project: language-team
-    image_family: lt-base-windows
+    image_project: release-engineering-ci-staging
+    image_family: pr-14-lt-base-windows-jdk11
     platform: windows
-    zone: us-central1-a
+    zone: europe-west4-b
     preemptible: false
     disk: 128
     type: n1-standard-4
@@ -41,7 +41,7 @@ only_sonarsource_qa: &ONLY_SONARSOURCE_QA
 build_task:
   gke_container:
     <<: *CONTAINER_DEFINITION
-    image: gcr.io/language-team/base-jdk16:latest
+    image: eu.gcr.io/release-engineering-ci-staging/base:j16-m3-latest
     cpu: 2
     memory: 2G
   env:
@@ -64,10 +64,10 @@ qa_os_win_task:
   depends_on:
     - build
   gce_instance:
-    image_project: language-team
-    image_family: lt-base-windows-jdk16
+    image_project: release-engineering-ci-staging
+    image_family: pr-14-lt-base-windows-jdk16
     platform: windows
-    zone: us-central1-a
+    zone: europe-west4-b
     preemptible: false
     disk: 128
     type: n1-standard-4
@@ -110,7 +110,7 @@ sanity_task:
   <<: *ONLY_SONARSOURCE_QA
   gke_container:
     <<: *CONTAINER_DEFINITION
-    image: gcr.io/language-team/base-jdk16:latest
+    image: eu.gcr.io/release-engineering-ci-staging/base:j16-m3-latest
     cpu: 4
     memory: 8G
   maven_cache:
