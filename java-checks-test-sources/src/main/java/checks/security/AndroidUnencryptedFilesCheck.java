@@ -3,6 +3,7 @@ package checks.security;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
@@ -14,13 +15,14 @@ public class AndroidUnencryptedFilesCheck {
   }
 
   void fileOutputStreamWrite(File file) throws IOException {
-    FileOutputStream out = new FileOutputStream(file);
-    out.write("content".getBytes()); // Noncompliant [[sc=9;ec=14]] {{Make sure using unencrypted files is safe here.}}
+    FileOutputStream out = new FileOutputStream(file); // Noncompliant [[sc=32;ec=48]] {{Make sure using unencrypted files is safe here.}}
+    out.write("content".getBytes());
   }
 
   void fileOutputStreamWrite(Writer writer) throws IOException {
-    BufferedWriter output = new BufferedWriter(writer);
-    output.write("some test content..."); // Noncompliant [[sc=12;ec=17]]
+    FileWriter fw = new FileWriter("outfilename", true); // Noncompliant [[sc=25;ec=35]] {{Make sure using unencrypted files is safe here.}}
+    BufferedWriter output = new BufferedWriter(fw); // Compliant, reported on
+    output.write("some test content...");
   }
 
 }

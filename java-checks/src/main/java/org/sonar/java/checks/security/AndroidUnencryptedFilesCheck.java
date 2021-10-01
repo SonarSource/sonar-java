@@ -19,13 +19,14 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6300")
@@ -33,24 +34,39 @@ public class AndroidUnencryptedFilesCheck extends AbstractMethodDetection {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.METHOD_INVOCATION);
+    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
   }
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
-    return MethodMatchers.create()
-      .ofSubTypes("java.nio.file.Files",
-        "java.io.FileOutputStream",
-        "java.io.BufferedWriter")
-      .names("write")
-      .withAnyParameters()
-      .build();
+    return MethodMatchers.or(
+      MethodMatchers.create()
+        .ofSubTypes("java.nio.file.Files")
+        .names("write")
+        .withAnyParameters()
+        .build(),
+      MethodMatchers.create()
+        .ofSubTypes("java.io.FileWriter",
+          "java.io.FileOutputStream")
+        .constructor()
+        .withAnyParameters()
+        .build()
+    );
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
+    reportIfInAndroidContext(ExpressionUtils.methodName(mit));
+  }
+
+  @Override
+  protected void onConstructorFound(NewClassTree newClassTree) {
+    reportIfInAndroidContext(newClassTree.identifier());
+  }
+
+  private void reportIfInAndroidContext(Tree tree) {
     if (context.inAndroidContext()) {
-      reportIssue(ExpressionUtils.methodName(mit), "Make sure using unencrypted files is safe here.");
+      reportIssue(tree, "Make sure using unencrypted files is safe here.");
     }
   }
 
