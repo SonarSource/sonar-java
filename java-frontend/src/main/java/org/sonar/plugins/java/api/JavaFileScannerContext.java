@@ -108,6 +108,13 @@ public interface JavaFileScannerContext {
   JavaVersion getJavaVersion();
 
   /**
+   * To be used to know if the current file is in an android context or not.
+   * This value is determined thanks to the presence of android classes in the classpath.
+   * @return true if the current file is in an android context.
+   */
+  boolean inAndroidContext();
+
+  /**
    * Checks if file has been parsed correctly.
    * @return true if parsing was successful
    */

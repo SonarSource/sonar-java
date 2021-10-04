@@ -48,8 +48,9 @@ public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContex
   private final SonarComponents sonarComponents;
 
   public JavaFileScannerContextForTests(CompilationUnitTree tree, InputFile inputFile, Sema semanticModel,
-                                        @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean failedParsing) {
-    super(tree, inputFile, semanticModel, sonarComponents, javaVersion, failedParsing);
+                                        @Nullable SonarComponents sonarComponents, JavaVersion javaVersion,
+                                        boolean failedParsing, boolean inAndroidContext) {
+    super(tree, inputFile, semanticModel, sonarComponents, javaVersion, failedParsing, inAndroidContext);
     this.sonarComponents = sonarComponents;
   }
 

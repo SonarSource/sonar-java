@@ -57,6 +57,7 @@ class InternalCheckVerifierTest {
   private static final JavaFileScanner FILE_LINE_ISSUE_CHECK = new FileLineIssueCheck();
   private static final JavaFileScanner PROJECT_ISSUE_CHECK = new ProjectIssueCheck();
   private static final JavaFileScanner FILE_ISSUE_CHECK = new FileIssueCheck();
+  private static final JavaFileScanner FILE_ISSUE_CHECK_IN_ANDROID = new FileIssueCheckInAndroidContext();
 
   @Nested
   class TestingCheckVerifierInitialConfiguration {
@@ -429,6 +430,28 @@ class InternalCheckVerifierTest {
         .isInstanceOf(AssertionError.class)
         .hasMessage("Expected the issue to be raised at project level, not at file level");
     }
+  }
+
+  @Test
+  void no_issue_if_not_in_android_context() {
+    InternalCheckVerifier.newInstance()
+      .onFile(TEST_FILE)
+      .withChecks(FILE_ISSUE_CHECK_IN_ANDROID)
+      .withinAndroidContext(false)
+      .verifyNoIssues();
+  }
+
+  @Test
+  void issue_if_in_android_context() {
+    Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+      .onFile(TEST_FILE)
+      .withChecks(FILE_ISSUE_CHECK_IN_ANDROID)
+      .withinAndroidContext(true)
+      .verifyNoIssues());
+
+    assertThat(e)
+      .isInstanceOf(AssertionError.class)
+      .hasMessageContaining("No issues expected but got 1 issue(s):");
   }
 
   @Nested
@@ -988,6 +1011,16 @@ class InternalCheckVerifierTest {
         .withMessage("message")
         .withQuickFixes(quickFixes)
         .report();
+    }
+  }
+
+  @Rule(key = "FileIssueAndroidCheck")
+  private static final class FileIssueCheckInAndroidContext implements JavaFileScanner {
+    @Override
+    public void scanFile(JavaFileScannerContext context) {
+      if (context.inAndroidContext()) {
+        context.addIssueOnFile(this, "issueOnFile");
+      }
     }
   }
 

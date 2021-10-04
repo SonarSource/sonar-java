@@ -80,7 +80,7 @@ class DefaultJavaFileScannerContextTest {
   public void setup() {
     sonarComponents = createSonarComponentsMock();
     compilationUnitTree = JParserTestUtils.parse(JAVA_FILE);
-    context = new DefaultJavaFileScannerContext(compilationUnitTree, JAVA_INPUT_FILE, null, sonarComponents, new JavaVersionImpl(), true);
+    context = new DefaultJavaFileScannerContext(compilationUnitTree, JAVA_INPUT_FILE, null, sonarComponents, new JavaVersionImpl(), true, false);
     reportedMessage = null;
   }
 
@@ -102,6 +102,11 @@ class DefaultJavaFileScannerContextTest {
   @Test
   void get_java_version() {
     assertThat(context.getJavaVersion()).isNotNull();
+  }
+
+  @Test
+  void in_android_context_false_by_default() {
+    assertThat(context.inAndroidContext()).isFalse();
   }
 
   @Test
@@ -315,10 +320,10 @@ class DefaultJavaFileScannerContextTest {
     GeneratedFile file = mock(GeneratedFile.class);
     SourceMap sourceMap = mock(SourceMap.class);
     when(file.sourceMap()).thenReturn(sourceMap);
-    DefaultJavaFileScannerContext ctx = new DefaultJavaFileScannerContext(compilationUnitTree, file, null, sonarComponents, new JavaVersionImpl(), true);
+    DefaultJavaFileScannerContext ctx = new DefaultJavaFileScannerContext(compilationUnitTree, file, null, sonarComponents, new JavaVersionImpl(), true, false);
     assertThat(ctx.sourceMap()).containsSame(sourceMap);
 
-    ctx = new DefaultJavaFileScannerContext(compilationUnitTree, JAVA_INPUT_FILE, null, sonarComponents, new JavaVersionImpl(), true);
+    ctx = new DefaultJavaFileScannerContext(compilationUnitTree, JAVA_INPUT_FILE, null, sonarComponents, new JavaVersionImpl(), true, false);
     assertThat(ctx.sourceMap()).isEmpty();
   }
 

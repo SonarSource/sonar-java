@@ -80,6 +80,7 @@ public class JavaFrontend {
     List<File> testClasspath = new ArrayList<>();
     List<JavaCheck> jspCodeVisitors = new ArrayList<>();
     List<File> jspClasspath = new ArrayList<>();
+    boolean inAndroidContext = false;
     if (sonarComponents != null) {
       if(!sonarComponents.isSonarLintContext()) {
         codeVisitors = ListUtils.concat(codeVisitors, Arrays.asList(new FileLinesVisitor(sonarComponents), new SyntaxHighlighterVisitor(sonarComponents)));
@@ -90,27 +91,29 @@ public class JavaFrontend {
       jspClasspath = sonarComponents.getJspClasspath();
       testCodeVisitors.addAll(sonarComponents.testChecks());
       jspCodeVisitors = sonarComponents.jspChecks();
+      inAndroidContext = sonarComponents.inAndroidContext();
     }
     globalClasspath = Stream.of(classpath, testClasspath, jspClasspath)
       .flatMap(Collection::stream).distinct().collect(Collectors.toList());
 
     //AstScanner for main files
     astScanner = new JavaAstScanner(sonarComponents);
-    astScanner.setVisitorBridge(createVisitorBridge(codeVisitors, classpath, javaVersion, sonarComponents));
+    astScanner.setVisitorBridge(createVisitorBridge(codeVisitors, classpath, javaVersion, sonarComponents, inAndroidContext));
 
     //AstScanner for test files
     astScannerForTests = new JavaAstScanner(sonarComponents);
-    astScannerForTests.setVisitorBridge(createVisitorBridge(testCodeVisitors, testClasspath, javaVersion, sonarComponents));
+    astScannerForTests.setVisitorBridge(createVisitorBridge(testCodeVisitors, testClasspath, javaVersion, sonarComponents, inAndroidContext));
 
     //AstScanner for generated files
     astScannerForGeneratedFiles = new JavaAstScanner(sonarComponents);
-    astScannerForGeneratedFiles.setVisitorBridge(createVisitorBridge(jspCodeVisitors, jspClasspath, javaVersion, sonarComponents));
+    astScannerForGeneratedFiles.setVisitorBridge(createVisitorBridge(jspCodeVisitors, jspClasspath, javaVersion, sonarComponents, inAndroidContext));
   }
 
   private static VisitorsBridge createVisitorBridge(
-    Iterable<JavaCheck> codeVisitors, List<File> classpath, JavaVersion javaVersion, @Nullable SonarComponents sonarComponents) {
+    Iterable<JavaCheck> codeVisitors, List<File> classpath, JavaVersion javaVersion, @Nullable SonarComponents sonarComponents, boolean inAndroidContext) {
     VisitorsBridge visitorsBridge = new VisitorsBridge(codeVisitors, classpath, sonarComponents);
     visitorsBridge.setJavaVersion(javaVersion);
+    visitorsBridge.setInAndroidContext(inAndroidContext);
     return visitorsBridge;
   }
 

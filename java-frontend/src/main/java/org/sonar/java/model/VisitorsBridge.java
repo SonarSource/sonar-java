@@ -67,6 +67,7 @@ public class VisitorsBridge {
   protected InputFile currentFile;
   protected JavaVersion javaVersion;
   private final List<File> classpath;
+  protected boolean inAndroidContext = false;
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
@@ -110,6 +111,10 @@ public class VisitorsBridge {
   public void setJavaVersion(JavaVersion javaVersion) {
     this.javaVersion = javaVersion;
     updateScanners();
+  }
+
+  public void setInAndroidContext(boolean inAndroidContext) {
+    this.inAndroidContext = inAndroidContext;
   }
 
   public void visitFile(@Nullable Tree parsedTree) {
@@ -196,7 +201,8 @@ public class VisitorsBridge {
       semanticModel,
       sonarComponents,
       javaVersion,
-      fileParsed);
+      fileParsed,
+      inAndroidContext);
   }
 
   private void createSonarSymbolTable(CompilationUnitTree tree) {

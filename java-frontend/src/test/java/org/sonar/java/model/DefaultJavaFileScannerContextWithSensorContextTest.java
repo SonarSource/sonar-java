@@ -86,7 +86,7 @@ class DefaultJavaFileScannerContextWithSensorContextTest {
     InputFile inputFile = TestUtils.inputFile("src/test/files/api/JavaFileScannerContext.java");
     CompilationUnitTree cut = JParserTestUtils.parse(inputFile.contents());
     tree = cut.types().get(0);
-    scannerContext = new DefaultJavaFileScannerContext(cut, inputFile, null, sonarComponents, null, true);
+    scannerContext = new DefaultJavaFileScannerContext(cut, inputFile, null, sonarComponents, null, true, false);
   }
 
   @Test
