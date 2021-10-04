@@ -19,10 +19,12 @@
  */
 package org.sonar.java.checks.security;
 
+import java.util.Arrays;
+import java.util.List;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -35,7 +37,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static org.sonar.java.checks.helpers.ExpressionsHelper.getSingleWriteUsage;
 
 @Rule(key = "S6301")
-public class AndroidMobileDatabaseEncryptionKeysCheck extends AbstractMethodDetection {
+public class AndroidMobileDatabaseEncryptionKeysCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
 
@@ -57,31 +59,44 @@ public class AndroidMobileDatabaseEncryptionKeysCheck extends AbstractMethodDete
     .addParametersMatcher("byte[]")
     .build();
 
-  private static final MethodMatchers STRING_TO_CHAR_GET_BYTES = MethodMatchers.create()
-    .ofTypes(JAVA_LANG_STRING)
-    .names("toCharArray", "getBytes")
-    .withAnyParameters()
-    .build();
+  private static final MethodMatchers JAVA_LANG_STRING_TO_CHAR_GET_BYTES = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes(JAVA_LANG_STRING)
+      .names("toCharArray")
+      .addWithoutParametersMatcher()
+      .build(),
+    MethodMatchers.create()
+      .ofTypes(JAVA_LANG_STRING)
+      .names("getBytes")
+      .addParametersMatcher(MethodMatchers.ANY)
+      .build());
 
   @Override
-  protected MethodMatchers getMethodInvocationMatchers() {
-    return MethodMatchers.or(
-      SQLITE_DATABASE_CONSTRUCTOR,
-      SQLITE_DATABASE_METHODS,
-      REALM_CONFIGURATION_BUILDER_ENCRYPTION_KEY);
+  public List<Tree.Kind> nodesToVisit() {
+    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
   }
 
   @Override
-  protected void onMethodInvocationFound(MethodInvocationTree mit) {
+  public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.NEW_CLASS)) {
+      final NewClassTree newClassTree = (NewClassTree) tree;
+      if (SQLITE_DATABASE_CONSTRUCTOR.matches(newClassTree)) {
+        reportIssueIfHardCoded(newClassTree.arguments().get(1), "password");
+      }
+    } else {
+      final MethodInvocationTree mit = (MethodInvocationTree) tree;
+      if (REALM_CONFIGURATION_BUILDER_ENCRYPTION_KEY.matches(mit)) {
+        reportIssueIfHardCoded(mit, "encryptionKey");
+      } else if (SQLITE_DATABASE_METHODS.matches(mit)) {
+        reportIssueIfHardCoded(mit, "password");
+      }
+    }
+  }
+
+  private void reportIssueIfHardCoded(MethodInvocationTree mit, String argName) {
     Arguments arguments = mit.arguments();
-    String messageArg = REALM_CONFIGURATION_BUILDER_ENCRYPTION_KEY.matches(mit) ? "encryptionKey" : "password";
     ExpressionTree passwordArg = arguments.size() == 1 ? arguments.get(0) : arguments.get(1);
-    reportIssueIfHardCoded(passwordArg, messageArg);
-  }
-
-  @Override
-  protected void onConstructorFound(NewClassTree newClassTree) {
-    reportIssueIfHardCoded(newClassTree.arguments().get(1), "password");
+    reportIssueIfHardCoded(passwordArg, argName);
   }
 
   private void reportIssueIfHardCoded(ExpressionTree expressionTree, String messageArg) {
@@ -104,14 +119,14 @@ public class AndroidMobileDatabaseEncryptionKeysCheck extends AbstractMethodDete
     ExpressionTree expression = givenExpression;
     if (expression.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifier = (IdentifierTree) expression;
-      final ExpressionTree singleWriteUsage = getSingleWriteUsage(identifier.symbol());
-      if (singleWriteUsage != null && singleWriteUsage.is(Tree.Kind.METHOD_INVOCATION)) {
+      ExpressionTree singleWriteUsage = getSingleWriteUsage(identifier.symbol());
+      if (singleWriteUsage != null) {
         expression = singleWriteUsage;
       }
     }
     if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) expression;
-      if (STRING_TO_CHAR_GET_BYTES.matches(mit)) {
+      if (JAVA_LANG_STRING_TO_CHAR_GET_BYTES.matches(mit)) {
         return ((MemberSelectExpressionTree) (mit).methodSelect()).expression();
       }
     }
