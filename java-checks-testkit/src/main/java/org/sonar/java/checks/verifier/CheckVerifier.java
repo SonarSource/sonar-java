@@ -119,6 +119,13 @@ public interface CheckVerifier {
   CheckVerifier withJavaVersion(int javaVersionAsInt);
 
   /**
+   * Defines the whether the current file is analyzer in an android context.
+   *
+   * @return the verifier currently configured
+   */
+  CheckVerifier withinAndroidContext(boolean inAndroidContext);
+
+  /**
    * Defines the filename to be verified with the given rule(s). This file should contain all the "Noncompliant"
    * comments defining the expected issues.
    *

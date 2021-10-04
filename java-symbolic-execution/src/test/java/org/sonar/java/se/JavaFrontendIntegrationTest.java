@@ -109,7 +109,7 @@ class JavaFrontendIntegrationTest {
     sonarComponents = Mockito.spy(sonarComponents);
     Mockito.when(sonarComponents.getRuleKey(Mockito.any())).thenReturn(Optional.of(RuleKey.of("repository", "rule")));
 
-    JavaFileScannerContext scannerContext = new DefaultJavaFileScannerContext(tree, inputFile, tree.sema, sonarComponents, null, true);
+    JavaFileScannerContext scannerContext = new DefaultJavaFileScannerContext(tree, inputFile, tree.sema, sonarComponents, null, true, false);
     scannerContext.reportIssueWithFlow(new SE0_DoesNothing(), tree, "msg", flows, null);
 
     Collection<Issue> issues = context.allIssues();

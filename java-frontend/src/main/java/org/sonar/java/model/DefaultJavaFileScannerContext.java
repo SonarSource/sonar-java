@@ -58,12 +58,14 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
   private final InputFile inputFile;
   private final JavaVersion javaVersion;
   private final boolean fileParsed;
+  private final boolean inAndroidContext;
 
   private List<String> lines = null;
   private String content;
 
   public DefaultJavaFileScannerContext(CompilationUnitTree tree, InputFile inputFile, Sema semanticModel,
-                                       @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean fileParsed) {
+                                       @Nullable SonarComponents sonarComponents, JavaVersion javaVersion,
+                                       boolean fileParsed, boolean inAndroidContext) {
     this.tree = (JavaTree.CompilationUnitTreeImpl) tree;
     this.inputFile = inputFile;
     this.semanticEnabled = semanticModel != null;
@@ -72,6 +74,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
     this.regexCache = new RegexCache();
     this.javaVersion = javaVersion;
     this.fileParsed = fileParsed;
+    this.inAndroidContext = inAndroidContext;
   }
 
   @Override
@@ -111,6 +114,11 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
   @Override
   public JavaVersion getJavaVersion() {
     return this.javaVersion;
+  }
+
+  @Override
+  public boolean inAndroidContext() {
+    return inAndroidContext;
   }
 
   @Override

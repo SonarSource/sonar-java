@@ -167,7 +167,7 @@ class BehaviorCacheTest {
 
     for (InputFile inputFile : inputFiles) {
       CompilationUnitTreeImpl cut = (CompilationUnitTreeImpl) JParserTestUtils.parse("test", inputFile.contents(), SETestUtils.CLASS_PATH);
-      JavaFileScannerContext context = new DefaultJavaFileScannerContext(cut, inputFile, cut.sema, null, new JavaVersionImpl(8), true);
+      JavaFileScannerContext context = new DefaultJavaFileScannerContext(cut, inputFile, cut.sema, null, new JavaVersionImpl(8), true, false);
       sev.scanFile(context);
     }
 

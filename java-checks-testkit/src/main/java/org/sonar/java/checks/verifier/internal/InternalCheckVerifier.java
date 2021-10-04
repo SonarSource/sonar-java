@@ -83,6 +83,7 @@ public class InternalCheckVerifier implements CheckVerifier {
   private List<JavaFileScanner> checks = null;
   private List<InputFile> files = null;
   private JavaVersion javaVersion = null;
+  private boolean inAndroidContext = false;
   private List<File> classpath = null;
   private Consumer<Set<AnalyzerMessage>> customIssueVerifier = null;
   private boolean collectQuickFixes = false;
@@ -137,6 +138,12 @@ public class InternalCheckVerifier implements CheckVerifier {
   public InternalCheckVerifier withJavaVersion(int javaVersionAsInt) {
     requiresNull(javaVersion, "java version");
     javaVersion = new JavaVersionImpl(javaVersionAsInt);
+    return this;
+  }
+
+  @Override
+  public CheckVerifier withinAndroidContext(boolean inAndroidContext) {
+    this.inAndroidContext = inAndroidContext;
     return this;
   }
 
@@ -227,6 +234,7 @@ public class InternalCheckVerifier implements CheckVerifier {
 
     JavaAstScanner astScanner = new JavaAstScanner(sonarComponents);
     visitorsBridge.setJavaVersion(javaVersion == null ? DEFAULT_JAVA_VERSION : javaVersion);
+    visitorsBridge.setInAndroidContext(inAndroidContext);
     astScanner.setVisitorBridge(visitorsBridge);
 
     astScanner.scan(files);
