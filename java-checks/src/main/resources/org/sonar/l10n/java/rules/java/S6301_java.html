@@ -1,0 +1,50 @@
+<p>Storing data locally is a common task for mobile applications. There are many convenient solutions that allow storing data persistently, for
+example SQLiteDatabase and Realm. These systems can be initialized with a secret key in order to store the data encrypted.</p>
+<p>The encryption key is meant to stay secret and should not be hard-coded in the application as it would mean that:</p>
+<ul>
+  <li> All user would use the same encryption key. </li>
+  <li> The encryption key would be known by anyone who as access to the source code or the application binary code. </li>
+  <li> Data stored encrypted in the database would not be protected. </li>
+</ul>
+<p>There are different approaches how the key can be provided to encrypt and decrypt the database. One of the most convinient way to is to rely on
+<code>EncryptedSharedPreferences</code> to store encryption keys. It can also be provided dynamically by the user of the application or fetched from a
+remote server.</p>
+<h2>Noncompliant Code Example</h2>
+<p><a href="https://www.zetetic.net/sqlcipher/sqlcipher-for-android/">SQLCipher</a></p>
+<pre>
+String key = "gb09ym9ydoolp3w886d0tciczj6ve9kszqd65u7d126040gwy86xqimjpuuc788g";
+SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase("test.db", key, null); // Noncompliant
+</pre>
+<p><a href="https://github.com/realm/realm-java/">Realm</a></p>
+<pre>
+String key = "gb09ym9ydoolp3w886d0tciczj6ve9kszqd65u7d126040gwy86xqimjpuuc788g";
+RealmConfiguration config = new RealmConfiguration.Builder();
+    .encryptionKey(key.toByteArray()) // Noncompliant
+    .build();
+Realm realm = Realm.getInstance(config);
+</pre>
+<h2>Compliant Solution</h2>
+<p><a href="https://www.zetetic.net/sqlcipher/sqlcipher-for-android/">SQLCipher</a></p>
+<pre>
+SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase("test.db", getKey(), null);
+</pre>
+<p><a href="https://github.com/realm/realm-java/">Realm</a></p>
+<pre>
+RealmConfiguration config = new RealmConfiguration.Builder()
+    .encryptionKey(getKey())
+    .build();
+Realm realm = Realm.getInstance(config);
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://mobile-security.gitbook.io/masvs/security-requirements/0x07-v2-data_storage_and_privacy_requirements">Mobile AppSec
+  Verification Standard</a> - Data Storage and Privacy Requirements </li>
+  <li> <a href="https://owasp.org/www-project-mobile-top-10/2016-risks/m2-insecure-data-storage">OWASP Mobile Top 10 2016 Category M2</a> - Insecure
+  Data Storage </li>
+  <li> <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data
+  Exposure </li>
+  <li> <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration.html">OWASP Top 10 2017 Category A6</a> - Security
+  Misconfiguration </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/311.html">MITRE, CWE-311</a> - Missing Encryption of Sensitive Data </li>
+</ul>
+
