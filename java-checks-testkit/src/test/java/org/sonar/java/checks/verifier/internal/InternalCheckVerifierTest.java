@@ -437,7 +437,7 @@ class InternalCheckVerifierTest {
     InternalCheckVerifier.newInstance()
       .onFile(TEST_FILE)
       .withChecks(FILE_ISSUE_CHECK_IN_ANDROID)
-      .withInAndroidContext(false)
+      .withinAndroidContext(false)
       .verifyNoIssues();
   }
 
@@ -446,7 +446,7 @@ class InternalCheckVerifierTest {
     Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
       .onFile(TEST_FILE)
       .withChecks(FILE_ISSUE_CHECK_IN_ANDROID)
-      .withInAndroidContext(true)
+      .withinAndroidContext(true)
       .verifyNoIssues());
 
     assertThat(e)

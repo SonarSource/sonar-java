@@ -84,8 +84,8 @@ public class SECheckVerifier implements CheckVerifier {
   }
 
   @Override
-  public CheckVerifier withInAndroidContext(boolean inAndroidContext) {
-    checkVerifier.withInAndroidContext(inAndroidContext);
+  public CheckVerifier withinAndroidContext(boolean inAndroidContext) {
+    checkVerifier.withinAndroidContext(inAndroidContext);
     return this;
   }
 

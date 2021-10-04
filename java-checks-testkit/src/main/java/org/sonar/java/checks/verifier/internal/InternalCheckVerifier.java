@@ -142,7 +142,7 @@ public class InternalCheckVerifier implements CheckVerifier {
   }
 
   @Override
-  public CheckVerifier withInAndroidContext(boolean inAndroidContext) {
+  public CheckVerifier withinAndroidContext(boolean inAndroidContext) {
     this.inAndroidContext = inAndroidContext;
     return this;
   }

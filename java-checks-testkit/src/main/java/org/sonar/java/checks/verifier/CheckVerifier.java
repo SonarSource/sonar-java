@@ -123,7 +123,7 @@ public interface CheckVerifier {
    *
    * @return the verifier currently configured
    */
-  CheckVerifier withInAndroidContext(boolean inAndroidContext);
+  CheckVerifier withinAndroidContext(boolean inAndroidContext);
 
   /**
    * Defines the filename to be verified with the given rule(s). This file should contain all the "Noncompliant"

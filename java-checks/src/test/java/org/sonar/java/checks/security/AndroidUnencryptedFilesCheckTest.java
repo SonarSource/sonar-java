@@ -33,7 +33,7 @@ class AndroidUnencryptedFilesCheckTest {
       .onFile(testSourcesPath("checks/security/AndroidUnencryptedFilesCheck.java"))
       .withCheck(new AndroidUnencryptedFilesCheck())
       .withClassPath(ANDROID_FAKE_CLASS_PATH)
-      .withInAndroidContext(true)
+      .withinAndroidContext(true)
       .verifyIssues();
   }
 
@@ -43,7 +43,7 @@ class AndroidUnencryptedFilesCheckTest {
       .onFile(testSourcesPath("checks/security/AndroidUnencryptedFilesCheck.java"))
       .withCheck(new AndroidUnencryptedFilesCheck())
       .withClassPath(ANDROID_FAKE_CLASS_PATH)
-      .withInAndroidContext(false)
+      .withinAndroidContext(false)
       .verifyNoIssues();
   }
 
