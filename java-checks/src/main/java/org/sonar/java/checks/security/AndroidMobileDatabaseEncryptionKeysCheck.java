@@ -44,13 +44,13 @@ public class AndroidMobileDatabaseEncryptionKeysCheck extends IssuableSubscripti
   private static final MethodMatchers SQLITE_DATABASE_CONSTRUCTOR = MethodMatchers.create()
     .ofTypes("net.sqlcipher.database.SQLiteDatabase")
     .constructor()
-    .withAnyParameters()
+    .addParametersMatcher(args -> !args.isEmpty())
     .build();
 
   private static final MethodMatchers SQLITE_DATABASE_METHODS = MethodMatchers.create()
     .ofTypes("net.sqlcipher.database.SQLiteDatabase")
     .names("changePassword", "openDatabase", "openOrCreateDatabase", "create")
-    .withAnyParameters()
+    .addParametersMatcher(args -> !args.isEmpty())
     .build();
 
   private static final MethodMatchers REALM_CONFIGURATION_BUILDER_ENCRYPTION_KEY = MethodMatchers.create()
