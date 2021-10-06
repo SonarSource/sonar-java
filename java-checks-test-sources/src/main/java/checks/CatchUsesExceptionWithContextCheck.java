@@ -139,6 +139,10 @@ class CatchUsesExceptionWithContextCheck {
     } catch (MalformedURLException e) {          // Compliant
     } catch (java.time.format.DateTimeParseException e) {          // Compliant
     }
+
+    try {
+    } catch (NumberFormatException | java.time.format.DateTimeParseException e) { // Compliant
+    }
   }
 
   void bar(Class<?> clazz) {

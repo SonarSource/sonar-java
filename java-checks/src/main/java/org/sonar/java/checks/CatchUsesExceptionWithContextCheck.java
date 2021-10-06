@@ -55,6 +55,7 @@ import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
+import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.sonar.java.model.ExpressionUtils.skipParentheses;
@@ -210,6 +211,9 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
   }
 
   private boolean isExcludedType(Tree tree) {
+    if (tree.is(Kind.UNION_TYPE)) {
+      return ((UnionTypeTree) tree).typeAlternatives().stream().allMatch(this::isExcludedType);
+    }
     return isUnqualifiedExcludedType(tree) ||
       isQualifiedExcludedType(tree);
   }
