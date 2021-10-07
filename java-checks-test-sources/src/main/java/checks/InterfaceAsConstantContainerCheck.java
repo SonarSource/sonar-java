@@ -45,3 +45,8 @@ interface InterfaceAsConstantContainerCheckF {
 interface InterfaceAsConstantContainerCheckI {
   ;
 }
+
+interface InterfaceAsConstantContainerCheckWithParent extends InterfaceAsConstantContainerCheckB { // Compliant
+  // If the interface has a parent, you will be forced to implement methods, the interface represents more than a set of constants, it is therefore a legitimate use case.
+  int a = 0;
+}

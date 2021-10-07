@@ -40,6 +40,9 @@ public class InterfaceAsConstantContainerCheck extends IssuableSubscriptionVisit
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
+    if (!classTree.superInterfaces().isEmpty()) {
+      return;
+    }
     List<JavaFileScannerContext.Location> constantsLocation = collectConstantsLocation(classTree);
     if (!constantsLocation.isEmpty()) {
       reportIssue(classTree.simpleName(), "Move constants defined in this interfaces to another class or enum.", constantsLocation, null);
