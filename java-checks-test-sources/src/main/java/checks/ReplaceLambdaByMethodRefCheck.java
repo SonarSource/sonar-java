@@ -203,7 +203,7 @@ class CastCheck {
     bar4(TestA.class::cast); //Compliant
   
     bar3(List.class::cast); //Compliant
-    bar3((o) -> (List<String>) o); // Noncompliant {{Replace this lambda with method reference 'List.class::cast'.}}
+    bar3((o) -> (List<String>) o); // Compliant, there is no 'List<String>.class::cast'
 
     bar5(TestA[].class::cast); //Compliant
     bar5((o) -> (TestA[]) o); // Noncompliant {{Replace this lambda with method reference 'TestA[].class::cast'.}}
@@ -212,10 +212,10 @@ class CastCheck {
     bar6((o) -> (TestA[][]) o); // Noncompliant {{Replace this lambda with method reference 'TestA[][].class::cast'.}}
 
     bar7(List.class::cast); //Compliant
-    bar7((o) -> (List<TestA[][]>) o); // Noncompliant {{Replace this lambda with method reference 'List.class::cast'.}}
+    bar7((o) -> (List<TestA[][]>) o); // Compliant, there is no 'List<TestA[][]>.class::cast'
 
     bar8(List[].class::cast); //Compliant
-    bar8((o) -> (List<TestA[][]>[]) o); // Noncompliant {{Replace this lambda with method reference 'List[].class::cast'.}}
+    bar8((o) -> (List<TestA[][]>[]) o); // Compliant, there is no 'List<TestA[][]>[].class::cast'
 
     bar9(char.class::cast); //Compliant
     bar9(Character.class::cast); //Compliant
