@@ -1,5 +1,7 @@
 package checks;
 
+import java.util.Optional;
+
 public class RecordInsteadOfClassCheck {
   class SimpleClass implements NotAClass { // Noncompliant [[sc=9;ec=20]] {{Refactor this class declaration to use 'record SimpleClass(int sum)'.}}
     private final int sum;
@@ -105,5 +107,17 @@ public class RecordInsteadOfClassCheck {
     SimpleRecord(int sum, int base) { this.sum = sum; this.base = base; }
     int getSum() { return sum; }
     int getBase() { return base; }
+  }
+
+  class GetterWithOtherReturnType { // Compliant, getter does not have the same return type as the default one in record
+    private final String bar;
+
+    public GetterWithOtherReturnType(String bar) {
+      this.bar = bar;
+    }
+
+    public Optional<String> bar() { // Not the same type as the field bar.
+      return Optional.of(bar);
+    }
   }
 }

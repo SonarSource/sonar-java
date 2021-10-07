@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
@@ -28,6 +29,7 @@ import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -69,11 +71,9 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
       return;
     }
     List<Symbol.MethodSymbol> methods = classMethods(classSymbol);
-    Set<String> fieldNames = fields.stream()
-      .map(Symbol::name)
-      .collect(Collectors.toSet());
+    Map<String, Type> fieldsNameToType = fields.stream().collect(Collectors.toMap(Symbol::name, Symbol::type));
 
-    if (!hasGetterForEveryField(methods, fieldNames)) {
+    if (!hasGetterForEveryField(methods, fieldsNameToType)) {
       return;
     }
     List<Symbol.MethodSymbol> constructors = classConstructors(methods);
@@ -81,7 +81,7 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
       return;
     }
     Symbol.MethodSymbol constructor = constructors.get(0);
-    if (hasParameterForEveryField(constructor, fieldNames)) {
+    if (hasParameterForEveryField(constructor, fieldsNameToType.keySet())) {
       reportIssue(classTree.simpleName(), String.format("Refactor this class declaration to use 'record %s'.", recordName(classTree, constructor)));
     }
   }
@@ -127,21 +127,21 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
     return symbol.isPrivate() && symbol.isFinal();
   }
 
-  private static boolean hasGetterForEveryField(List<Symbol.MethodSymbol> methods, Set<String> fieldNames) {
+  private static boolean hasGetterForEveryField(List<Symbol.MethodSymbol> methods, Map<String, Type> fieldsNameToType) {
     Set<String> gettersForField = methods.stream()
-      .filter(m -> isGetter(m, fieldNames))
+      .filter(m -> isGetter(m, fieldsNameToType))
       .map(Symbol::name)
       .map(RecordInsteadOfClassCheck::toFieldName)
       .collect(Collectors.toSet());
-    return gettersForField.containsAll(fieldNames);
+    return gettersForField.containsAll(fieldsNameToType.keySet());
   }
 
-  private static boolean isGetter(Symbol.MethodSymbol method, Set<String> fieldNames) {
+  private static boolean isGetter(Symbol.MethodSymbol method, Map<String, Type> fieldsNameToType) {
     String methodName = method.name();
     if (!method.parameterTypes().isEmpty()) {
       return false;
     }
-    if (fieldNames.contains(methodName)) {
+    if (matchNameAndType(methodName, method, fieldsNameToType)) {
       // simple more recent 'myField()' form for getters
       return true;
     }
@@ -149,7 +149,16 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
       return false;
     }
     // traditional getters: 'getMyField()' or 'isMyBooleanField()'
-    return (methodName.startsWith("get") || methodName.startsWith("is")) && fieldNames.contains(toFieldName(methodName));
+    return (methodName.startsWith("get") || methodName.startsWith("is"))
+      && matchNameAndType(toFieldName(methodName), method, fieldsNameToType);
+  }
+
+  private static boolean matchNameAndType(String methodName, Symbol.MethodSymbol method, Map<String, Type> fieldsNameToType) {
+    Type type = fieldsNameToType.get(methodName);
+    if (type != null) {
+      return type.equals(method.returnType().type());
+    }
+    return false;
   }
 
   private static String toFieldName(String methodName) {
