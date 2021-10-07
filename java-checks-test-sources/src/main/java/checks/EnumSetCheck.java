@@ -1,3 +1,5 @@
+package checks;
+
 import java.util.Set;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,7 +10,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-class A {
+class EnumSetCheck {
 
   public enum COLOR {
     RED, GREEN, BLUE, ORANGE;
