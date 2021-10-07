@@ -106,7 +106,7 @@ public class NonNullSetToNullCheck extends SECheck {
       classTree.members().stream()
         .filter(m -> m.is(Tree.Kind.VARIABLE))
         .map(VariableTree.class::cast)
-        .filter(v -> v.initializer() == null)
+        .filter(v -> (v.initializer() == null) && !v.type().is(Tree.Kind.PRIMITIVE_TYPE))
         .forEach(v -> checkVariable(context, methodTree, v.symbol()));
     }
   }
