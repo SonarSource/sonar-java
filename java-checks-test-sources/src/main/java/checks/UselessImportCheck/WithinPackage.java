@@ -29,6 +29,8 @@ import pkg.CompliantClass3;
 import pkg.CompliantClass4;
 
 import checks.UselessImportCheck.WithPackageAux; // Noncompliant {{Remove this unnecessary import: same package classes are always implicitly imported.}}
+import checks.UselessImportCheck.subpackage.WithinSubPackage; // Noncompliant {{Remove this unused import 'checks.UselessImportCheck.subpackage.WithinSubPackage'.}}
+import checks.UselessImportCheck.subpackage.*; // Noncompliant {{Remove this unused import 'checks.UselessImportCheck.subpackage'.}}
 
 import java.io.File; // Noncompliant
 
