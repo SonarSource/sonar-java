@@ -47,7 +47,6 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -100,7 +99,7 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
   private static Optional<String> getNullCheck(LambdaExpressionTree lambda) {
     return getLambdaSingleParamSymbol(lambda).flatMap(symbol -> {
       Tree lambdaBody = lambda.body();
-      return (isBlockWithOneStatement(lambdaBody)) ? 
+      return (isBlockWithOneStatement(lambdaBody)) ?
         getNullCheckFromReturn(((BlockTree) lambdaBody).body().get(0), symbol) :
         getNullCheck(lambdaBody, symbol);
     });
@@ -128,15 +127,15 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
 
   private static boolean nullAgainstParam(ExpressionTree o1, ExpressionTree o2, Symbol paramSymbol) {
     return o1.is(Tree.Kind.NULL_LITERAL) &&
-      o2.is(Tree.Kind.IDENTIFIER) && 
+      o2.is(Tree.Kind.IDENTIFIER) &&
       paramSymbol.equals(((IdentifierTree) o2).symbol());
   }
 
   private static Optional<String> getTypeCastOrInstanceOf(LambdaExpressionTree lambda) {
     return getLambdaSingleParamSymbol(lambda).flatMap(symbol -> {
       Tree lambdaBody = lambda.body();
-      return isBlockWithOneStatement(lambdaBody) ? 
-        getTypeCastOrInstanceOfFromReturn(((BlockTree) lambdaBody).body().get(0), symbol) : 
+      return isBlockWithOneStatement(lambdaBody) ?
+        getTypeCastOrInstanceOfFromReturn(((BlockTree) lambdaBody).body().get(0), symbol) :
         getTypeCastOrInstanceOf(lambdaBody, symbol);
     });
   }
@@ -166,14 +165,11 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
         return getTypeName(instanceOfTree.type())
           .map(s -> s + ".class::isInstance");
       }
-    } 
+    }
     return Optional.empty();
   }
-  
+
   private static Optional<String> getTypeName(TypeTree type) {
-    if (type.is(Tree.Kind.PARAMETERIZED_TYPE)) {
-      type = ((ParameterizedTypeTree) type).type();
-    }
     if (type.is(Tree.Kind.IDENTIFIER) && !isGeneric((IdentifierTree) type)) {
       return Optional.of(((IdentifierTree) type).name());
     }
@@ -189,7 +185,7 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
   private static boolean isGeneric(IdentifierTree identifierTree) {
     return JUtils.isTypeVar(identifierTree.symbolType());
   }
-  
+
   private static boolean isSingleParamExpression(ExpressionTree expression, Symbol symbol) {
     return expression.is(Tree.Kind.IDENTIFIER) && symbol.equals(((IdentifierTree) expression).symbol());
   }

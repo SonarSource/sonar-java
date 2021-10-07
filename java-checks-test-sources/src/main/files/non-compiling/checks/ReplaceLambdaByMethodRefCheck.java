@@ -229,10 +229,10 @@ class CastCheck {
     bar4((o) -> (TestXXXXXX) o); // Noncompliant {{Replace this lambda with method reference 'TestXXXXXX.class::cast'.}}
     bar4(TestXXXXXX.class::cast); //Compliant
     
-    bar4((o) -> (TestXXXXXX<ABC>) o); // Noncompliant {{Replace this lambda with method reference 'TestXXXXXX.class::cast'.}}
+    bar4((o) -> (TestXXXXXX<ABC>) o); // Compliant, there is no 'TestXXXXXX<ABC>.class::cast'
     
     bar3(List.class::cast); //Compliant
-    bar3((o) -> (List<String>) o); // Noncompliant {{Replace this lambda with method reference 'List.class::cast'.}}
+    bar3((o) -> (List<String>) o); // Compliant, there is no 'List<String>.class::cast'
 
     bar5(TestA[].class::cast); //Compliant
     bar5((o) -> (TestA[]) o); // Noncompliant {{Replace this lambda with method reference 'TestA[].class::cast'.}}
