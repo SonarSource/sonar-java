@@ -1,11 +1,13 @@
+package checks;
+
 import java.util.Random;
 
-public class A {
+public class ReuseRandomCheck {
 
   static Random staticField = new Random(); // Compliant for static field
   Random field = new Random(); // Compliant for field
 
-  A() {
+  ReuseRandomCheck() {
     Random localVar = new Random(); // Compliant in constructor
   }
 
