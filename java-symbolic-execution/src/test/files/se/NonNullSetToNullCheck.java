@@ -393,3 +393,14 @@ class DifferentAnnotations {
     nonNullReactor = null; // Noncompliant
   }
 }
+
+@NonNullByDefault
+class NoIssueOnPrimitive {
+  boolean falseByDefault;
+  Boolean nullByDefault;
+
+  public Example() {
+    nullByDefault = false;
+    nullByDefault2 = 200;
+  }
+}
