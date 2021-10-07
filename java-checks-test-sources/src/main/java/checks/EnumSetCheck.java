@@ -51,6 +51,20 @@ class EnumSetCheck {
 
     Set<COLOR> col8 = Set.of(COLOR.RED); // Noncompliant
     Set set= EnumSet.of(E.E1,E.E2,E.E3,E.E4,E.E5,E.E6); //Compliant, overload of(E first, E... rest) properly resolved
+
+    // We are not computing the exact runtime type when the initializer is not a method invocation/new class.
+    Set<COLOR> col3_1 = Collections.unmodifiableSet(warm3); // Compliant, created from EnumSet
+    Set<COLOR> col3_2 = Collections.unmodifiableSet(warm4); // Compliant, created from EnumSet
+    Set<COLOR> col3_3 = Collections.unmodifiableSet(ports); // FN, we are not computing the runtime type of the argument
+
+    Set<COLOR> ternaryInit = param.isEmpty() ? EnumSet.allOf(COLOR.class) : EnumSet.of(COLOR.GREEN); // Compliant
+    Set<COLOR> ternaryInit2 = param.isEmpty() ? new HashSet<>() : new HashSet<>(); // FN: acceptable corner case
+
+    int i = 42;
+    Set<COLOR> switchExpressionInit = switch (i) { // Compliant
+      case 1 -> EnumSet.of(COLOR.GREEN);
+      default -> EnumSet.allOf(COLOR.class);
+    };
   }
 
   private Set<COLOR> rgb() {
