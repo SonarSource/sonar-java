@@ -69,6 +69,10 @@ public class EnumSetCheck extends IssuableSubscriptionVisitor {
         return;
       }
     }
+    if (!initializer.is(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS)) {
+      // We are not trying to compute the exact type of more complex expressions
+      return;
+    }
     checkIssue(initializer.symbolType(), initializer);
   }
 
