@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Optional;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
@@ -26,7 +27,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ReassignmentFinder;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -60,14 +60,14 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree firstArgument = mit.arguments().get(0);
-    Integer methodFirstArgumentAsInteger = LiteralUtils.intLiteralValue(firstArgument);
-    if (methodFirstArgumentAsInteger == null) {
+    Optional<Integer> firstArgumentAsConstant = firstArgument.asConstant(Integer.class);
+    if (!firstArgumentAsConstant.isPresent()) {
       // nothing to say if first argument can not be evaluated
       return;
     }
 
     boolean isMethodFromJavaSqlResultSet = mit.symbol().owner().type().is(JAVA_SQL_RESULTSET);
-    int methodFirstArgumentValue = methodFirstArgumentAsInteger.intValue();
+    int methodFirstArgumentValue = firstArgumentAsConstant.get();
 
     if (isMethodFromJavaSqlResultSet && methodFirstArgumentValue == 0) {
       reportIssue(firstArgument, "ResultSet indices start at 1.");

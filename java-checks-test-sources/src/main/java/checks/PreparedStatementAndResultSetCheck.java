@@ -12,6 +12,9 @@ import java.util.Map;
 
 abstract class PreparedStatementAndResultSetCheck {
 
+  private static final int INDEX_42 = 42;
+  private static final int INDEX_1 = 1;
+
   abstract PreparedStatement getPreparedStatement();
   abstract PreparedStatement getPreparedStatement(String s);
   abstract int getIntValue();
@@ -162,6 +165,13 @@ abstract class PreparedStatementAndResultSetCheck {
       qix.setString(3, ""); // Compliant
     } catch(SQLException e) {
     }
+  }
+
+  void fromConstant(Connection con) throws SQLException {
+    String sql = "select ... from ... where job_id = ?";
+    PreparedStatement ps = con.prepareStatement(sql);
+    ps.setInt(INDEX_42, 1); // Noncompliant
+    ps.setInt(INDEX_1, 1); // Compliant
   }
 
   private class IndirectInititalization {
