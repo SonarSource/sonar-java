@@ -22,14 +22,25 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+
 class PreparedStatementAndResultSetCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/PreparedStatementAndResultSetCheck.java")
+      .onFile(testSourcesPath("checks/PreparedStatementAndResultSetCheck.java"))
       .withCheck(new PreparedStatementAndResultSetCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/PreparedStatementAndResultSetCheck.java"))
+      .withCheck(new PreparedStatementAndResultSetCheck())
+      .verifyNoIssues();
   }
 
 }
