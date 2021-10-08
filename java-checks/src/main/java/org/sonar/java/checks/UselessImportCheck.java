@@ -42,6 +42,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -102,7 +103,7 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
           String message;
           if (duplicatedImports.contains(importName)) {
             message = "Remove this duplicated import.";
-          } else if (importName.startsWith(currentPackage)) {
+          } else if (isImportFromSamePackage(importName, warning.syntaxTree())) {
             message = "Remove this unnecessary import: same package classes are always implicitly imported.";
           } else {
             message = "Remove this unused import '" + importName + "'.";
@@ -117,6 +118,21 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
         }
       });
     }
+  }
+
+  private boolean isImportFromSamePackage(String importName, Tree tree) {
+    // ECJ warning message does not contain the ".*" in case of star import, we have to find out if we are in this case.
+    // Defensive programming, the syntax tree of the warning should always be an ImportTree.
+    if (tree.is(Tree.Kind.IMPORT)) {
+      Tree qualifiedIdentifier = ((ImportTree) tree).qualifiedIdentifier();
+      // Defensive programming, the qualifiedIdentifier should always be a MemberSelectTree.
+      if (qualifiedIdentifier.is(Tree.Kind.MEMBER_SELECT) &&
+        ((MemberSelectExpressionTree) qualifiedIdentifier).identifier().name().equals("*")) {
+        return importName.equals(currentPackage);
+      }
+    }
+
+    return importName.substring(0, importName.lastIndexOf(".")).equals(currentPackage);
   }
 
   private void handleImportTree(ImportTree importTree) {
