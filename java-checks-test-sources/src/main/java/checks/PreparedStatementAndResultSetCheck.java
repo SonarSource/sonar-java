@@ -198,4 +198,60 @@ abstract class PreparedStatementAndResultSetCheck {
     PreparedStatement ps = conn.prepareStatement(q);
     ps.setString(1, "someValue"); // compliant, += with constant.
   }
+
+  void plusEqualWithConstant2(Connection conn) throws SQLException {
+    String sql = "update User set";
+    sql += " user_password=?,";
+    sql += " user_name=?,";
+    PreparedStatement ps = conn.prepareStatement(sql);
+    ps.setString(1, "someValue"); // compliant, += with constant.
+    ps.setString(2, "someValue"); // compliant, += with constant.
+    ps.setString(3, "someValue"); // Noncompliant
+  }
+
+  void plusEqualWithConstant3(Connection conn) throws SQLException {
+    String q = "SELECT * FROM table WHERE name=?";
+    q += q;
+    PreparedStatement ps = conn.prepareStatement(q);
+    ps.setString(2, "someValue"); // compliant, += with constant.
+    ps.setString(3, "someValue"); // Noncompliant
+  }
+
+  void concatenation(Connection conn) throws SQLException {
+    String sql = "update User set";
+    String sql2 = " user_password=?,";
+    String sql3 = " user_name=?,";
+
+    PreparedStatement ps = conn.prepareStatement(sql + sql2 + sql3);
+    ps.setString(1, "someValue"); // compliant, += with constant.
+    ps.setString(2, "someValue"); // compliant
+    ps.setString(3, "someValue"); // Noncompliant
+  }
+
+  void concatenation2(Connection con, String password, String name, int position) throws Exception {
+    String sql = " user_password=?,";
+    sql += " user_name=?,";
+    sql += " user_position=?,";
+
+    sql = "update User set" + sql + " WHERE user_id=?";
+
+    PreparedStatement statement = con.prepareStatement(sql);
+    statement.setString(1, password);
+    statement.setString(2, name); // compliant
+    statement.setInt(3, position); // compliant
+    statement.setInt(4, position); // compliant
+    statement.setInt(5, position); // Noncompliant
+    // ...
+  }
+
+  void concatenation3(Connection con, String password, String name, int position) throws Exception {
+    String firstPart = " user_password=?,";
+    firstPart += " user_name=?,";
+    String secondPart = " user_position=?,";
+
+    String bothParts = firstPart + secondPart;
+    PreparedStatement statement = con.prepareStatement(bothParts);
+    statement.setString(3, password); // compliant
+    statement.setString(4, password); // Noncompliant
+  }
 }
