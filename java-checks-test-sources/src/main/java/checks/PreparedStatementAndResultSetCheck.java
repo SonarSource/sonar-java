@@ -1,13 +1,16 @@
+package checks;
+
+import com.google.common.base.Strings;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
-abstract class A extends UnknownClassFromSamePackage {
+abstract class PreparedStatementAndResultSetCheck {
 
   abstract PreparedStatement getPreparedStatement();
   abstract PreparedStatement getPreparedStatement(String s);
@@ -82,11 +85,6 @@ abstract class A extends UnknownClassFromSamePackage {
 
     int[] b = new int[1];
     b[0] = 3;
-  }
-
-  void unknownQuery() throws SQLException {
-    PreparedStatement ps = getPreparedStatement(UNKNOWN_QUERY_FROM_UNKNOWN_PARENT); // Compliant
-    ps.setDouble(2, 0.0);
   }
 
   void false_negative(boolean test) throws SQLException {
@@ -166,27 +164,6 @@ abstract class A extends UnknownClassFromSamePackage {
     }
   }
 
-  public class Example {
-
-    private final String REQUETE_SELECT_RESA_RESEAU = "SELECT COLUMN1 FROM TABLE";
-
-    private final String CLAUSE_ETAT = " WHERE COLUMN2 = ?";
-
-    public Example() {
-    }
-
-    public synchronized void method1() {
-
-      String req= REQUETE_SELECT_RESA_RESEAU;
-      req = req + CLAUSE_ETAT; //StackOverflowError
-      PreparedStatement pstmt= m_con.prepareStatement(req);
-      pstmt.setInt(1,10);
-      ResultSet rs=pstmt.executeQuery();
-
-    }
-
-  }
-
   private class IndirectInititalization {
     Connection conn;
 
@@ -205,7 +182,7 @@ abstract class A extends UnknownClassFromSamePackage {
     }
   }
 
-  void foo(Connection conn) throws SQLException {
+  void plusEqualWithConstant(Connection conn) throws SQLException {
     String q = "SELECT * FROM table WHERE name=?";
     q += " AND c IS NOT NULL";
     PreparedStatement ps = conn.prepareStatement(q);
