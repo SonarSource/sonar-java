@@ -1,12 +1,15 @@
+package checks;
+
 import java.util.Random;
 
-public class A {
+public class ReuseRandomCheck {
 
   static Random staticField = new Random(); // Compliant for static field
   Random field = new Random(); // Compliant for field
 
-  A() {
+  ReuseRandomCheck() {
     Random localVar = new Random(); // Compliant in constructor
+    new Random();
   }
 
   void func(long seed, Random param) {
@@ -30,6 +33,8 @@ public class A {
 
     func(12, new Random());
     func(12, localVar1 = new Random());
+    int usedDirectly = new Random().nextInt(); // Noncompliant [[sc=28;ec=34]]
+    (new Random()).nextInt(); // Noncompliant
   }
 
   public static void main(String[] args) {

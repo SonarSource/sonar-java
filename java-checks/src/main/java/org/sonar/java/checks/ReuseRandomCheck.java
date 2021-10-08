@@ -19,13 +19,18 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -35,6 +40,11 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public class ReuseRandomCheck extends AbstractMethodDetection {
 
   @Override
+  public List<Kind> nodesToVisit() {
+    return Collections.singletonList(Kind.NEW_CLASS);
+  }
+
+  @Override
   protected MethodMatchers getMethodInvocationMatchers() {
     return MethodMatchers.create()
       .ofTypes("java.util.Random").constructor().addWithoutParametersMatcher().build();
@@ -42,30 +52,38 @@ public class ReuseRandomCheck extends AbstractMethodDetection {
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
-    if (assignedToLocalVariablesNotInConstructorOrStaticMain(newClassTree)) {
+    if (!isInConstructorOrStaticMain(newClassTree) && isUsedOnlyLocally(newClassTree)) {
       reportIssue(newClassTree.identifier(), "Save and re-use this \"Random\".");
     }
   }
 
-  private static boolean assignedToLocalVariablesNotInConstructorOrStaticMain(Tree tree) {
+  private static boolean isInConstructorOrStaticMain(ExpressionTree tree) {
+    MethodTree enclosingMethod = ExpressionUtils.getEnclosingMethod(tree);
+    if (enclosingMethod != null) {
+      Symbol.MethodSymbol symbol = enclosingMethod.symbol();
+      String name = symbol.name();
+      return MethodMatchers.CONSTRUCTOR.equals(name) || ("main".equals(name) && symbol.isStatic());
+    }
+    return false;
+  }
+
+  private static boolean isUsedOnlyLocally(Tree tree) {
     Tree parent = tree.parent();
     if (parent.is(Kind.ASSIGNMENT)) {
-      return isLocalVariableNotInConstructorOrStaticMain(((AssignmentExpressionTree) parent).variable()) &&
-        assignedToLocalVariablesNotInConstructorOrStaticMain(parent);
+      return isLocalVariable(((AssignmentExpressionTree) parent).variable()) &&
+        isUsedOnlyLocally(parent);
     } else if (parent.is(Kind.VARIABLE)) {
-      return isLocalVariableNotInConstructorOrStaticMain(((VariableTree) parent).simpleName());
+      return isLocalVariable(((VariableTree) parent).simpleName());
     } else if (parent.is(Kind.PARENTHESIZED_EXPRESSION)) {
-      return assignedToLocalVariablesNotInConstructorOrStaticMain(parent);
+      return isUsedOnlyLocally(parent);
     } else {
-      return parent.is(Kind.EXPRESSION_STATEMENT);
+      return parent.is(Kind.EXPRESSION_STATEMENT, Kind.MEMBER_SELECT);
     }
   }
 
-  private static boolean isLocalVariableNotInConstructorOrStaticMain(ExpressionTree expression) {
+  private static boolean isLocalVariable(ExpressionTree expression) {
     if (expression.is(Kind.IDENTIFIER)) {
-      Symbol symbol = ((IdentifierTree) expression).symbol().owner();
-      return symbol.isMethodSymbol() &&
-        !(MethodMatchers.CONSTRUCTOR.equals(symbol.name()) || ("main".equals(symbol.name()) && symbol.isStatic()));
+      return JUtils.isLocalVariable(((IdentifierTree) expression).symbol());
     }
     return false;
   }
