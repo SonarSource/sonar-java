@@ -154,11 +154,7 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
   }
 
   private static boolean matchNameAndType(String methodName, Symbol.MethodSymbol method, Map<String, Type> fieldsNameToType) {
-    Type type = fieldsNameToType.get(methodName);
-    if (type != null) {
-      return type.equals(method.returnType().type());
-    }
-    return false;
+    return method.returnType().type().equals(fieldsNameToType.get(methodName));
   }
 
   private static String toFieldName(String methodName) {
