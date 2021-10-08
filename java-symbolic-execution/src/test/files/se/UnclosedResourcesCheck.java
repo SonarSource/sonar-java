@@ -46,6 +46,14 @@ public class A {
 
   private static class FastByteArrayOutputStream extends ByteArrayOutputStream { }
 
+  public void apacheCommonsIgnoredType() {
+    org.apache.commons.io.output.ByteArrayOutputStream s1 = new org.apache.commons.io.output.ByteArrayOutputStream(); // Compliant
+    stream.write('c');
+
+    org.apache.commons.io.output.UnsynchronizedByteArrayOutputStream s2 = new org.apache.commons.io.output.UnsynchronizedByteArrayOutputStream(); // Compliant
+    stream.write('c');
+  }
+
   public void whileLoopHandling() {
     FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Use try-with-resources or close this "FileInputStream" in a "finally" clause.}}
     while(needsMore()) {

@@ -139,6 +139,8 @@ public class UnclosedResourcesCheck extends SECheck {
     "java.io.CharArrayWriter",
     "java.io.StringReader",
     "java.io.StringWriter",
+    "org.apache.commons.io.output.ByteArrayOutputStream",
+    "org.apache.commons.io.output.UnsynchronizedByteArrayOutputStream",
     "com.sun.org.apache.xml.internal.security.utils.UnsyncByteArrayOutputStream",
     "org.springframework.context.ConfigurableApplicationContext"
   };
