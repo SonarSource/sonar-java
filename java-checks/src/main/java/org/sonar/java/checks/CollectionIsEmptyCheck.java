@@ -24,6 +24,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -90,13 +91,17 @@ public class CollectionIsEmptyCheck extends BaseTreeVisitor implements JavaFileS
   private static JavaQuickFix getQuickFix(BinaryExpressionTree tree, MethodInvocationTree callToSizeInvocation, EmptyComparisonType emptyComparisonType) {
     IdentifierTree sizeCallIdentifier = ExpressionUtils.methodName(callToSizeInvocation);
     // We want to keep the object on which "size" is called, we therefore replace everything before with ! (if needed) and after with "isEmpty()".
-    return JavaQuickFix.newQuickFix("Use \"isEmpty()\"")
-      .addTextEdit(
-        JavaTextEdit.replaceTextSpan(textSpanBetween(tree.firstToken(), true, callToSizeInvocation, false),
-          emptyComparisonType == EmptyComparisonType.EMPTY ? "" : "!"),
-        JavaTextEdit.replaceTextSpan(textSpanBetween(sizeCallIdentifier, true, tree.lastToken(), true),
-          "isEmpty()"))
-      .build();
+    JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix("Use \"isEmpty()\"");
+
+    AnalyzerMessage.TextSpan textSpan = textSpanBetween(tree.firstToken(), true, callToSizeInvocation, false);
+    String replacement = emptyComparisonType == EmptyComparisonType.EMPTY ? "" : "!";
+    if (!(textSpan.isEmpty() && replacement.isEmpty())) {
+      builder.addTextEdit(JavaTextEdit.replaceTextSpan(textSpan, replacement));
+    }
+
+    builder.addTextEdit(JavaTextEdit.replaceTextSpan(textSpanBetween(sizeCallIdentifier, true, tree.lastToken(), true),
+      "isEmpty()"));
+    return builder.build();
   }
 
   private static Optional<MethodInvocationTree> getCallToSizeInvocation(BinaryExpressionTree tree) {

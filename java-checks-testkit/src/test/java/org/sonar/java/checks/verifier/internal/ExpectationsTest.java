@@ -391,20 +391,62 @@ class ExpectationsTest {
 
     @Test
     void quick_fix_edit_without_start_column() {
-      parser.parseIssue("// Noncompliant@ [[sc=5;ec=10;quickfixes=qf1]]", TEST_LINE);
-      parser.parseQuickFix("// fix@qf1 {{message}}", TEST_LINE + 1);
-      parser.parseQuickFix("// edit@qf1 [[ec=4]] {{Do something}}", TEST_LINE + 2);
-      assertThatThrownBy(() -> parser.consolidateQuickFixes()).isInstanceOf(AssertionError.class)
-        .hasMessage("start column not specified for quick fix edit at line 44.");
+      assertEditCommentThrows("// edit@qf1 [[ec=4]] {{Do something}}",
+        "start column not specified for quick fix edit at line 44.");
     }
 
     @Test
     void quick_fix_edit_without_end_column() {
+      assertEditCommentThrows("// edit@qf1 [[sc=4]] {{Do something}}",
+        "end column not specified for quick fix edit at line 44.");
+    }
+
+    @Test
+    void quick_fix_unnecessary_edit() {
+      assertEditCommentThrows("// edit@qf1 [[sc=2;ec=2]] {{}}",
+        "Unnecessary edit for quick fix id qf1. TextEdits should not have empty range and text.");
+    }
+
+    @Test
+    void quick_fix_unnecessary_edit_same_line() {
+      assertEditCommentThrows("// edit@qf1 [[sc=2;ec=2;sl=2;el=2]] {{}}",
+        "Unnecessary edit for quick fix id qf1. TextEdits should not have empty range and text.");
+    }
+
+    private void assertEditCommentThrows(String editComment, String expectedMessage) {
       parser.parseIssue("// Noncompliant@ [[sc=5;ec=10;quickfixes=qf1]]", TEST_LINE);
       parser.parseQuickFix("// fix@qf1 {{message}}", TEST_LINE + 1);
-      parser.parseQuickFix("// edit@qf1 [[sc=4]] {{Do something}}", TEST_LINE + 2);
+      parser.parseQuickFix(editComment, TEST_LINE + 2);
       assertThatThrownBy(() -> parser.consolidateQuickFixes()).isInstanceOf(AssertionError.class)
-        .hasMessage("end column not specified for quick fix edit at line 44.");
+        .hasMessage(expectedMessage);
+    }
+
+    @Test
+    void quick_fix_necessary_empty_edit() {
+      parser.parseIssue("// Noncompliant@ [[sc=5;ec=10;quickfixes=qf1]]", TEST_LINE);
+      parser.parseQuickFix("// fix@qf1 {{message}}", TEST_LINE + 1);
+      // Empty edit with non-empty text range is a deletion.
+      parser.parseQuickFix("// edit@qf1 [[sc=2;ec=3]] {{}}", TEST_LINE + 2);
+      parser.consolidateQuickFixes();
+      Map<TextSpan, List<JavaQuickFix>> quickFixes = expectations.quickFixes();
+      assertThat(quickFixes).hasSize(1);
+      TextSpan expectedTextSpanIssue = new TextSpan(42,4, 42,9);
+      JavaQuickFix quickFix = quickFixes.get(expectedTextSpanIssue).get(0);
+      assertThat(quickFix.getTextEdits()).hasSize(1);
+    }
+
+    @Test
+    void quick_fix_necessary_empty_range() {
+      parser.parseIssue("// Noncompliant@ [[sc=5;ec=10;quickfixes=qf1]]", TEST_LINE);
+      parser.parseQuickFix("// fix@qf1 {{message}}", TEST_LINE + 1);
+      // Empty edit with non-empty text range is an addition.
+      parser.parseQuickFix("// edit@qf1 [[sc=2;ec=2]] {{something}}", TEST_LINE + 2);
+      parser.consolidateQuickFixes();
+      Map<TextSpan, List<JavaQuickFix>> quickFixes = expectations.quickFixes();
+      assertThat(quickFixes).hasSize(1);
+      TextSpan expectedTextSpanIssue = new TextSpan(42,4, 42,9);
+      JavaQuickFix quickFix = quickFixes.get(expectedTextSpanIssue).get(0);
+      assertThat(quickFix.getTextEdits()).hasSize(1);
     }
 
     @Test
