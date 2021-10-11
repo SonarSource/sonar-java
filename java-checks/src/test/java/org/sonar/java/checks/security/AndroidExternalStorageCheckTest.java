@@ -22,7 +22,6 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.ANDROID_FAKE_CLASS_PATH;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class AndroidExternalStorageCheckTest {
@@ -32,7 +31,6 @@ class AndroidExternalStorageCheckTest {
     CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/security/AndroidExternalStorage.java"))
       .withCheck(new AndroidExternalStorageCheck())
-      .withClassPath(ANDROID_FAKE_CLASS_PATH)
       .verifyIssues();
   }
 

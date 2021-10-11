@@ -19,11 +19,8 @@
  */
 package org.sonar.java.checks.security;
 
-import java.io.File;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.FilesUtils;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -45,11 +42,8 @@ class DebugFeatureEnabledCheckTest {
 
   @Test
   void testPrintStackTrace() {
-    List<File> classPath = FilesUtils.getClassPath(FilesUtils.DEFAULT_TEST_JARS_DIRECTORY);
-    classPath.add(new File("../java-checks-test-sources/target/classes"));
     CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/security/DebugFeatureEnabledCheck.java"))
-      .withClassPath(classPath)
       .withCheck(new DebugFeatureEnabledCheck())
       .verifyIssues();
   }

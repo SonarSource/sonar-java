@@ -42,6 +42,7 @@ public final class FilesUtils {
    * Default location of the jars/zips to be taken into account when performing the analysis.
    */
   public static final String DEFAULT_TEST_JARS_DIRECTORY = "../java-checks-test-sources/target/test-jars";
+  public static final String DEFAULT_TEST_CLASSES_DIRECTORY = "../java-checks-test-sources/target/classes";
 
   public static List<File> getClassPath(String jarsDirectory) {
     List<File> classpath = new LinkedList<>();
@@ -51,7 +52,6 @@ public final class FilesUtils {
     } else if (!DEFAULT_TEST_JARS_DIRECTORY.equals(jarsDirectory)) {
       throw new AssertionError("The directory to be used to extend class path does not exists (" + testJars.toAbsolutePath() + ").");
     }
-    classpath.add(new File("target/test-classes"));
     return classpath;
   }
 

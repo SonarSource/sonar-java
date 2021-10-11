@@ -19,10 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import java.io.File;
-import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.FilesUtils;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
@@ -40,12 +37,8 @@ class ChangeMethodContractCheckTest {
 
   @Test
   void test_package_level_annotations() {
-    List<File> classPath = FilesUtils.getClassPath(FilesUtils.DEFAULT_TEST_JARS_DIRECTORY);
-    // Add package-info to the classPath
-    classPath.add(new File("../java-checks-test-sources/target/classes/"));
     CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/S2638_ChangeMethodContractCheck/nonNullApi/ChangeMethodContractCheck.java"))
-      .withClassPath(classPath)
       .withCheck(new ChangeMethodContractCheck())
       .verifyIssues();
   }

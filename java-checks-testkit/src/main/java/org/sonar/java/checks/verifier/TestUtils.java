@@ -21,8 +21,6 @@ package org.sonar.java.checks.verifier;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Set;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.checks.verifier.internal.InternalInputFile;
 
@@ -33,12 +31,6 @@ public class TestUtils {
 
   private static final String TEST_SOURCES_DIR = "../java-checks-test-sources/src/main/java/";
   private static final String NON_COMPILING_TEST_SOURCES_DIR = "../java-checks-test-sources/src/main/files/non-compiling/";
-
-  /**
-   * It is not convenient to get Android dependencies in a maven context, we therefore have to redefine android classes required
-   * in our rules in java-checks-test-sources/src/main/java/android package and use this class path to correctly resolve types in unit tests.
-   */
-  public static final Set<File> ANDROID_FAKE_CLASS_PATH = Collections.singleton(new File("../java-checks-test-sources/target/classes/"));
 
   public static String testSourcesPath(String path) {
     return getFileFrom(path, TEST_SOURCES_DIR);

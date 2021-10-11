@@ -22,7 +22,6 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.ANDROID_FAKE_CLASS_PATH;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class AndroidUnencryptedFilesCheckTest {
@@ -32,7 +31,6 @@ class AndroidUnencryptedFilesCheckTest {
     CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/security/AndroidUnencryptedFilesCheck.java"))
       .withCheck(new AndroidUnencryptedFilesCheck())
-      .withClassPath(ANDROID_FAKE_CLASS_PATH)
       .withinAndroidContext(true)
       .verifyIssues();
   }
@@ -42,7 +40,6 @@ class AndroidUnencryptedFilesCheckTest {
     CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/security/AndroidUnencryptedFilesCheck.java"))
       .withCheck(new AndroidUnencryptedFilesCheck())
-      .withClassPath(ANDROID_FAKE_CLASS_PATH)
       .withinAndroidContext(false)
       .verifyNoIssues();
   }

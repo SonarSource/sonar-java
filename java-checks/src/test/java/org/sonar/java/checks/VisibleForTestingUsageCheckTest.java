@@ -19,11 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import java.io.File;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.FilesUtils;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -31,10 +28,7 @@ import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 class VisibleForTestingUsageCheckTest {
   @Test
   void test() {
-    List<File> classPath = FilesUtils.getClassPath(FilesUtils.DEFAULT_TEST_JARS_DIRECTORY);
-    classPath.add(new File("../java-checks-test-sources/target/classes/"));
     CheckVerifier.newVerifier()
-      .withClassPath(classPath)
       .onFile(testSourcesPath("checks/VisibleForTestingUsageCheck/Service.java"))
       .withCheck(new VisibleForTestingUsageCheck())
       .verifyIssues();
@@ -42,10 +36,7 @@ class VisibleForTestingUsageCheckTest {
 
   @Test
   void test_no_semantic() {
-    List<File> classPath = FilesUtils.getClassPath(FilesUtils.DEFAULT_TEST_JARS_DIRECTORY);
-    classPath.add(new File("../java-checks-test-sources/target/classes/"));
     CheckVerifier.newVerifier()
-      .withClassPath(classPath)
       .onFile(testSourcesPath("checks/VisibleForTestingUsageCheck/Service.java"))
       .withCheck(new VisibleForTestingUsageCheck())
       .withoutSemantic()

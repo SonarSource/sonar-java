@@ -20,12 +20,8 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.FilesUtils;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 import org.sonar.java.checks.verifier.CheckVerifier;
-
-import java.io.File;
-import java.util.List;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -35,7 +31,6 @@ class UselessImportCheckTest {
   @Test
   void detected_with_package() {
     CheckVerifier.newVerifier()
-      .withClassPath(getClassPath())
       .onFile(testSourcesPath("checks/UselessImportCheck/WithinPackage.java"))
       .withCheck(new UselessImportCheck())
       .verifyIssues();
@@ -44,14 +39,12 @@ class UselessImportCheckTest {
   @Test
   void quickFixes() {
     InternalCheckVerifier.newInstance()
-      .withClassPath(getClassPath())
       .onFile(testSourcesPath("checks/UselessImportCheck/WithQuickFixes.java"))
       .withCheck(new UselessImportCheck())
       .withQuickFixes()
       .verifyIssues();
 
     InternalCheckVerifier.newInstance()
-      .withClassPath(getClassPath())
       .onFile(testSourcesPath("checks/UselessImportCheck/WithQuickFixesSingleImport.java"))
       .withCheck(new UselessImportCheck())
       .withQuickFixes()
@@ -61,7 +54,6 @@ class UselessImportCheckTest {
   @Test
   void records() {
     CheckVerifier.newVerifier()
-      .withClassPath(getClassPath())
       .onFile(testSourcesPath("checks/UselessImportCheck/records.java"))
       .withCheck(new UselessImportCheck())
       .verifyIssues();
@@ -89,7 +81,6 @@ class UselessImportCheckTest {
     CheckVerifier.newVerifier()
       .onFile(testSourcesPath("WithoutPackage.java"))
       .withCheck(new UselessImportCheck())
-      .withClassPath(getClassPath())
       .verifyIssues();
   }
 
@@ -115,12 +106,6 @@ class UselessImportCheckTest {
       .onFile(testSourcesPath("checks/UselessImportCheck/IntersectionCase.java"))
       .withCheck(new UselessImportCheck())
       .verifyIssues();
-  }
-
-  private List<File> getClassPath() {
-    List<File> classPath = FilesUtils.getClassPath(FilesUtils.DEFAULT_TEST_JARS_DIRECTORY);
-    classPath.add(new File("../java-checks-test-sources/target/classes"));
-    return classPath;
   }
 
 }
