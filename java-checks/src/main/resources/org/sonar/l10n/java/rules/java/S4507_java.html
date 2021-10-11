@@ -8,12 +8,12 @@
 detailed information on both the system running the application and users.</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
-  <li> the code or configuration enabling the application debug features is deployed on production servers. </li>
+  <li> the code or configuration enabling the application debug features is deployed on production servers or distributed to end users. </li>
   <li> the application runs by default with debug features activated. </li>
 </ul>
 <p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
-<p>Do not enable debug features on production servers.</p>
+<p>Do not enable debug features on production servers or applications distributed to end users.</p>
 <h2>Sensitive Code Example</h2>
 <p><code>Throwable.printStackTrace(...)</code> prints a Throwable and its stack trace to <code>System.Err</code> (by default) which is not easily
 parseable and can expose sensitive information:</p>
@@ -21,12 +21,12 @@ parseable and can expose sensitive information:</p>
 try {
   /* ... */
 } catch(Exception e) {
-  e.printStackTrace();        // Sensitive
+  e.printStackTrace(); // Sensitive
 }
 </pre>
 <p><a
 href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/config/annotation/web/configuration/EnableWebSecurity.html">EnableWebSecurity</a>
-annotation for SpringFramework with <code>debug</code> to <code>true</code> enable debugging support:</p>
+annotation for SpringFramework with <code>debug</code> to <code>true</code> enables debugging support:</p>
 <pre>
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -37,27 +37,45 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   // ...
 }
 </pre>
+<p><a
+href="https://developer.android.com/reference/android/webkit/WebView#setWebContentsDebuggingEnabled(boolean)">WebView.setWebContentsDebuggingEnabled(true)</a>
+for Android enables debugging support:</p>
+<pre>
+import android.webkit.WebView;
+
+WebView.setWebContentsDebuggingEnabled(true); // Sensitive
+WebView.getFactory().getStatics().setWebContentsDebuggingEnabled(true); // Sensitive
+</pre>
 <h2>Compliant Solution</h2>
 <p>Loggers should be used (instead of <code>printStackTrace</code>) to print throwables:</p>
 <pre>
 try {
   /* ... */
 } catch(Exception e) {
-  LOGGER.log("context", e); // Compliant
+  LOGGER.log("context", e);
 }
 </pre>
 <p><a
 href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/config/annotation/web/configuration/EnableWebSecurity.html">EnableWebSecurity</a>
-annotation for SpringFramework with <code>debug</code> to <code>false</code> disable debugging support:</p>
+annotation for SpringFramework with <code>debug</code> to <code>false</code> disables debugging support:</p>
 <pre>
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 @Configuration
-@EnableWebSecurity(debug = false) // Compliant
+@EnableWebSecurity(debug = false)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   // ...
 }
+</pre>
+<p><a
+href="https://developer.android.com/reference/android/webkit/WebView#setWebContentsDebuggingEnabled(boolean)">WebView.setWebContentsDebuggingEnabled(false)</a>
+for Android disables debugging support:</p>
+<pre>
+import android.webkit.WebView;
+
+WebView.setWebContentsDebuggingEnabled(false);
+WebView.getFactory().getStatics().setWebContentsDebuggingEnabled(false);
 </pre>
 <h2>See</h2>
 <ul>
