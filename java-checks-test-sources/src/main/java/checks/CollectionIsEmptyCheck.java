@@ -14,7 +14,6 @@ class CollectionIsEmptyCheck {
 
     b = myCollection.size() == 0; // Noncompliant [[sc=9;ec=33;quickfixes=qf1]] {{Use isEmpty() to check whether the collection is empty or not.}}
     // fix@qf1 {{Use "isEmpty()"}}
-    // edit@qf1 [[sc=9;ec=9]] {{}}
     // edit@qf1 [[sc=22;ec=33]] {{isEmpty()}}
     b = myCollection.size() != 0; // Noncompliant [[sc=9;ec=33;quickfixes=qf2]]
     // fix@qf2 {{Use "isEmpty()"}}
@@ -30,11 +29,9 @@ class CollectionIsEmptyCheck {
     // edit@qf4 [[sc=22;ec=33]] {{isEmpty()}}
     b = myCollection.size() < 1; // Noncompliant [[sc=9;ec=32;quickfixes=qf5]]
     // fix@qf5 {{Use "isEmpty()"}}
-    // edit@qf5 [[sc=9;ec=9]] {{}}
     // edit@qf5 [[sc=22;ec=32]] {{isEmpty()}}
     b = myCollection.size() <= 0; // Noncompliant [[sc=9;ec=33;quickfixes=qf6]]
     // fix@qf6 {{Use "isEmpty()"}}
-    // edit@qf6 [[sc=9;ec=9]] {{}}
     // edit@qf6 [[sc=22;ec=33]] {{isEmpty()}}
 
     b = 0 == myCollection.size(); // Noncompliant [[sc=9;ec=33;quickfixes=qf7]]
