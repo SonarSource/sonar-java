@@ -33,11 +33,11 @@ public class AssertionTypesCheck_JUnit4 {
 
     assertNotEquals(new A[] {}, new A[] {});
     assertNotEquals(new A[] {}, new B[] {});
-    assertNotEquals(new A[] {}, new X[] {});
-    assertNotEquals(new X[] {}, new A[] {});
+    assertNotEquals(new A[] {}, new X[] {}); // Noncompliant
+    assertNotEquals(new X[] {}, new A[] {}); // Noncompliant
     assertNotEquals(new A[][] {}, new A[] {}); // Noncompliant
     assertNotEquals(new A[][] {}, new B[][] {});
-    assertNotEquals(new A[][] {}, new X[][] {});
+    assertNotEquals(new A[][] {}, new X[][] {}); // Noncompliant
 
     assertNotEquals(new int[] {}, new int[] {});
     assertNotEquals(new A[] {}, new int[] {});    // Noncompliant
@@ -52,13 +52,13 @@ public class AssertionTypesCheck_JUnit4 {
     assertNotEquals(a, b);
     assertNotEquals(b, a);
     assertNotEquals(b, o);
-    assertNotEquals(a, x);
-    assertEquals(a, x);
+    assertNotEquals(a, x); // Noncompliant
+    assertEquals(a, x); // Noncompliant
     assertNotEquals(a, i1);
     assertEquals(a, i1);
     assertNotEquals(a, i2);
     assertEquals(a, i2);
-    assertEquals(a, x);
+    assertEquals(a, x); // Noncompliant
     assertNotEquals(i1, i1);
     assertEquals(i1, i1);
     assertNotEquals(i1, i2);

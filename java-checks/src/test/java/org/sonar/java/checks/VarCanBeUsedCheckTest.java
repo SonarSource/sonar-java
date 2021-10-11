@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
@@ -68,6 +69,7 @@ class VarCanBeUsedCheckTest {
   void test_non_compiling() {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/VarCanBeUsedCheck.java"))
+      .withClassPath(Collections.emptyList())
       .withCheck(new VarCanBeUsedCheck())
       .withJavaVersion(10)
       .verifyNoIssues();

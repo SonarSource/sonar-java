@@ -22,7 +22,6 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.ANDROID_FAKE_CLASS_PATH;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class AndroidBiometricAuthWithoutCryptoCheckTest {
@@ -32,7 +31,6 @@ class AndroidBiometricAuthWithoutCryptoCheckTest {
     CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/security/AndroidBiometricAuthWithoutCryptoCheck.java"))
       .withCheck(new AndroidBiometricAuthWithoutCryptoCheck())
-      .withClassPath(ANDROID_FAKE_CLASS_PATH)
       .verifyIssues();
   }
 

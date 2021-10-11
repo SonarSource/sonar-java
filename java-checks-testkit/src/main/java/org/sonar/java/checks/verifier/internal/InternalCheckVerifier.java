@@ -76,6 +76,9 @@ public class InternalCheckVerifier implements CheckVerifier {
 
   private static final JavaVersion DEFAULT_JAVA_VERSION = new JavaVersionImpl();
   private static final List<File> DEFAULT_CLASSPATH = FilesUtils.getClassPath(FilesUtils.DEFAULT_TEST_JARS_DIRECTORY);
+  static {
+    Optional.of(new File(FilesUtils.DEFAULT_TEST_CLASSES_DIRECTORY)).filter(File::exists).ifPresent(DEFAULT_CLASSPATH::add);
+  }
 
   private boolean withoutSemantic = false;
 
