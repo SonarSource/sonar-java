@@ -1,5 +1,7 @@
 package checks.security;
 
+import android.webkit.WebView;
+import android.webkit.WebViewFactoryProvider;
 import java.lang.reflect.InvocationTargetException;
 
 // Tests for printStackTrace.
@@ -12,6 +14,13 @@ public class DebugFeatureEnabledCheck {
     new java.lang.Throwable().printStackTrace(); // Noncompliant
     String s = e1.printStackTrace[0]; // Compliant
     printStackTrace();
+  }
+
+  private void androidWebView(WebViewFactoryProvider.Statics statics) {
+    WebView.setWebContentsDebuggingEnabled(true); // Noncompliant [[sc=13;ec=43] {{Make sure this debug feature is deactivated before delivering the code in production.}}
+    WebView.setWebContentsDebuggingEnabled(false);
+    statics.setWebContentsDebuggingEnabled(true); // Noncompliant
+    statics.setWebContentsDebuggingEnabled(false);
   }
 
   void printStackTrace() {

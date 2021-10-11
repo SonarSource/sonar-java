@@ -47,6 +47,10 @@ public class DebugFeatureEnabledCheck extends IssuableSubscriptionVisitor {
   private static final MethodMatchers PRINT_STACK_TRACE_MATCHER = MethodMatchers.create()
     .ofSubTypes("java.lang.Throwable").names("printStackTrace").addWithoutParametersMatcher().build();
 
+  private static final MethodMatchers SET_WEB_CONTENTS_DEBUGGING_ENABLED = MethodMatchers.create()
+      .ofSubTypes("android.webkit.WebView", "android.webkit.WebViewFactoryProvider$Statics")
+      .names("setWebContentsDebuggingEnabled").addParametersMatcher("boolean").build();
+
   private final Deque<Symbol.TypeSymbol> enclosingClass = new LinkedList<>();
 
   @Override
@@ -78,9 +82,18 @@ public class DebugFeatureEnabledCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkMethodInvocation(MethodInvocationTree mit) {
-    if (!enclosingClassExtendsThrowable() && PRINT_STACK_TRACE_MATCHER.matches(mit)) {
+    if (isPrintStackTraceIllegalUsage(mit) || isSetWebContentsDebuggingEnabled(mit)) {
       reportIssue(ExpressionUtils.methodName(mit), MESSAGE);
     }
+  }
+
+  private boolean isPrintStackTraceIllegalUsage(MethodInvocationTree mit) {
+    return !enclosingClassExtendsThrowable() && PRINT_STACK_TRACE_MATCHER.matches(mit);
+  }
+
+  private static boolean isSetWebContentsDebuggingEnabled(MethodInvocationTree mit) {
+    return SET_WEB_CONTENTS_DEBUGGING_ENABLED.matches(mit) &&
+      Boolean.TRUE.equals(ExpressionUtils.resolveAsConstant(mit.arguments().get(0)));
   }
 
   private void checkAnnotation(AnnotationTree annotation) {
