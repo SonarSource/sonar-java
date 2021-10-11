@@ -467,8 +467,7 @@ class Expectations {
 
           JavaQuickFix javaQuickFix = JavaQuickFix.newQuickFix(message).addTextEdits(
             edits.stream()
-              .map(edit ->
-                JavaTextEdit.replaceTextSpan(edit.getTextSpan(issueTextSpan.startLine), edit.replacement()))
+              .map(edit -> getEdit(edit, issueTextSpan, quickFixId))
               .collect(toList())
           ).build();
           quickFixesForIssue.add(javaQuickFix);
@@ -481,6 +480,15 @@ class Expectations {
         .forEach(id -> {
           throw new AssertionError("Missing issue for quick fix id: " + id);
         });
+    }
+
+    private static JavaTextEdit getEdit(QuickFixEditComment edit, AnalyzerMessage.TextSpan issueTextSpan, String quickFixId) {
+      AnalyzerMessage.TextSpan textSpan = edit.getTextSpan(issueTextSpan.startLine);
+      String replacement = edit.replacement();
+      if (textSpan.isEmpty() && replacement.isEmpty()) {
+        throw new AssertionError(String.format("Unnecessary edit for quick fix id %s. TextEdits should not have empty range and text.", quickFixId));
+      }
+      return JavaTextEdit.replaceTextSpan(textSpan, replacement);
     }
 
     private static TreeSet<FlowComment> newFlowSet() {
