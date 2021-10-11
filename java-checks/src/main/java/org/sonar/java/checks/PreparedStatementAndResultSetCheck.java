@@ -102,48 +102,47 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
     if (tree != null && tree.is(Tree.Kind.METHOD_INVOCATION)) {
       Arguments arguments = ((MethodInvocationTree) tree).arguments();
       if (!arguments.isEmpty() && PREPARE_STATEMENT.matches((MethodInvocationTree) tree)) {
-        return getNumberQuery(arguments.get(0));
+        ExpressionTree firstArgument = arguments.get(0);
+        return getNumberQuery(firstArgument, firstArgument);
       }
     }
     return null;
   }
 
+  /**
+   * Count the number of query in the given expression. The method will reconstruct the string, if created in multiples steps.
+   * During the process, we are looking for closest reassignment of a variable. We will look for any reassignment before
+   * the first token of the argument "startingPointForReassignment". It is used to avoid infinite recursion in case the variable
+   * is reassigned and read in the same statement.
+   */
   @CheckForNull
-  private static Integer getNumberQuery(ExpressionTree expression) {
+  private static Integer getNumberQuery(ExpressionTree expression, Tree startingPointForReassignment) {
     ExpressionTree expr = ExpressionUtils.skipParentheses(expression);
     if (expr.is(Tree.Kind.IDENTIFIER)) {
-      return handleVariableUsedAsQuery((IdentifierTree) expr);
+      return handleVariableUsedAsQuery((IdentifierTree) expr, startingPointForReassignment);
     } else if (expr.is(Tree.Kind.PLUS)) {
-      return handleStringConcatenation((BinaryExpressionTree) expr);
+      return handleStringConcatenation((BinaryExpressionTree) expr, startingPointForReassignment);
     }
     return countQuery(expr);
   }
 
-  private static Integer handleVariableUsedAsQuery(IdentifierTree identifier) {
-    ExpressionTree lastAssignmentExpr = ReassignmentFinder.getClosestReassignmentOrDeclarationExpression(identifier, identifier.symbol());
+  private static Integer handleVariableUsedAsQuery(IdentifierTree identifier, Tree startingPointForReassignment) {
+    ExpressionTree lastAssignmentExpr = ReassignmentFinder.getClosestReassignmentOrDeclarationExpression(startingPointForReassignment, identifier.symbol());
     if (lastAssignmentExpr != null) {
       Tree lastAssignment = lastAssignmentExpr.parent();
       if (lastAssignment.is(Tree.Kind.PLUS_ASSIGNMENT)) {
-        return zeroIfNull(getNumberQuery(lastAssignmentExpr)) + zeroIfNull(getNumberQuery(((AssignmentExpressionTree) lastAssignment).variable()));
+        return zeroIfNull(getNumberQuery(lastAssignmentExpr, lastAssignment))
+          + zeroIfNull(getNumberQuery(((AssignmentExpressionTree) lastAssignment).variable(), lastAssignment));
       }
-      if (!isPartOfExpression(identifier, lastAssignmentExpr)) {
-        return getNumberQuery(lastAssignmentExpr);
-      }
+      // If the current assignment contains the identifier, we have to update the starting point for reassignment to avoid infinite recursion.
+      return getNumberQuery(lastAssignmentExpr, lastAssignment);
     }
     return null;
   }
 
-  private static boolean isPartOfExpression(IdentifierTree identifier, ExpressionTree lastAssignment) {
-    Tree parent = identifier;
-    do {
-      parent = parent.parent();
-    } while (parent != null && !parent.equals(lastAssignment));
-    return parent != null;
-  }
-
-  private static Integer handleStringConcatenation(BinaryExpressionTree expr) {
-    Integer left = getNumberQuery(expr.leftOperand());
-    Integer right = getNumberQuery(expr.rightOperand());
+  private static Integer handleStringConcatenation(BinaryExpressionTree expr, Tree startingPointForReassignment) {
+    Integer left = getNumberQuery(expr.leftOperand(), startingPointForReassignment);
+    Integer right = getNumberQuery(expr.rightOperand(), startingPointForReassignment);
     return (left == null && right == null) ? null : (zeroIfNull(left) + zeroIfNull(right));
   }
 
