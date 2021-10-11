@@ -48,10 +48,10 @@ public class A {
 
   public void apacheCommonsIgnoredType() {
     org.apache.commons.io.output.ByteArrayOutputStream s1 = new org.apache.commons.io.output.ByteArrayOutputStream(); // Compliant
-    stream.write('c');
+    s1.write('c');
 
     org.apache.commons.io.output.UnsynchronizedByteArrayOutputStream s2 = new org.apache.commons.io.output.UnsynchronizedByteArrayOutputStream(); // Compliant
-    stream.write('c');
+    s2.write('c');
   }
 
   public void whileLoopHandling() {
