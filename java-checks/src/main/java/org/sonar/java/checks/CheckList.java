@@ -101,6 +101,7 @@ import org.sonar.java.checks.security.UnpredictableSaltCheck;
 import org.sonar.java.checks.security.UserEnumerationCheck;
 import org.sonar.java.checks.security.VerifiedServerHostnamesCheck;
 import org.sonar.java.checks.security.WebViewJavaScriptSupportCheck;
+import org.sonar.java.checks.security.WebViewsFileAccessCheck;
 import org.sonar.java.checks.security.XxeActiveMQCheck;
 import org.sonar.java.checks.security.ZipEntryCheck;
 import org.sonar.java.checks.serialization.BlindSerialVersionUidCheck;
@@ -701,6 +702,7 @@ public final class CheckList {
       WaitOnConditionCheck.class,
       WeakSSLContextCheck.class,
       WebViewJavaScriptSupportCheck.class,
+      WebViewsFileAccessCheck.class,
       WildcardImportsShouldNotBeUsedCheck.class,
       WildcardReturnParameterTypeCheck.class,
       WriteObjectTheOnlySynchronizedMethodCheck.class,
