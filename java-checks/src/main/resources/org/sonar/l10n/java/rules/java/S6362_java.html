@@ -1,0 +1,38 @@
+<p>WebViews can be used to display web content as part of a mobile application. A browser engine is used to render and display the content. Like a web
+application a mobile application that uses WebViews can be vulnerable to Cross-Site Scripting if untrusted code is rendered. In the context of a
+WebView JavaScript code can exfiltrate local files that might be sensitive or even worse, access exposed functions of the application that can result
+in more severe vulnerabilities such as code injection. Thus JavaScript support should not be enabled for WebViews unless it is absolutely necessary
+and the authenticity of the web resources can be guaranteed.</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> The WebWiew only renders static web content that does not require JavaScript code to be executed. </li>
+  <li> The WebView contains untrusted data that could cause harm when rendered. </li>
+</ul>
+<p>There is a risk if you answered yes to any of those questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>It’s recommended to disable JavaScript support for WebViews unless it is necessary to execute JavaScript code. Only trusted pages should be
+rendered.</p>
+<h2>Sensitive Code Example</h2>
+<pre>
+import android.webkit.WebView;
+
+WebView webView = (WebView) findViewById(R.id.webview);
+webView.getSettings().setJavaScriptEnabled(true); // Sensitive
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+import android.webkit.WebView;
+
+WebView webView = (WebView) findViewById(R.id.webview);
+webView.getSettings().setJavaScriptEnabled(false);
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration.html">OWASP Top 10 2017 Category A6</a> - Security
+  Misconfiguration </li>
+  <li> <a href="https://owasp.org/www-project-top-ten/2017/A7_2017-Cross-Site_Scripting_(XSS)">OWASP Top 10 2017 Category A7</a> - Cross-Site
+  Scripting (XSS) </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/79.html">MITRE, CWE-79</a> - Improper Neutralization of Input During Web Page Generation
+  ('Cross-site Scripting') </li>
+</ul>
+

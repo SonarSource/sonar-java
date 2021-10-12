@@ -71,6 +71,7 @@ import org.sonar.java.checks.security.AndroidBroadcastingCheck;
 import org.sonar.java.checks.security.AndroidExternalStorageCheck;
 import org.sonar.java.checks.security.AndroidMobileDatabaseEncryptionKeysCheck;
 import org.sonar.java.checks.security.AndroidNonAuthenticatedUsersCheck;
+import org.sonar.java.checks.security.AndroidUnencryptedDatabaseCheck;
 import org.sonar.java.checks.security.AndroidUnencryptedFilesCheck;
 import org.sonar.java.checks.security.AuthorizationsStrongDecisionsCheck;
 import org.sonar.java.checks.security.CipherBlockChainingCheck;
@@ -96,10 +97,10 @@ import org.sonar.java.checks.security.PubliclyWritableDirectoriesCheck;
 import org.sonar.java.checks.security.ReceivingIntentsCheck;
 import org.sonar.java.checks.security.SecureCookieCheck;
 import org.sonar.java.checks.security.ServerCertificatesCheck;
-import org.sonar.java.checks.security.AndroidUnencryptedDatabaseCheck;
 import org.sonar.java.checks.security.UnpredictableSaltCheck;
 import org.sonar.java.checks.security.UserEnumerationCheck;
 import org.sonar.java.checks.security.VerifiedServerHostnamesCheck;
+import org.sonar.java.checks.security.WebViewJavaScriptSupportCheck;
 import org.sonar.java.checks.security.XxeActiveMQCheck;
 import org.sonar.java.checks.security.ZipEntryCheck;
 import org.sonar.java.checks.serialization.BlindSerialVersionUidCheck;
@@ -699,6 +700,7 @@ public final class CheckList {
       WaitInWhileLoopCheck.class,
       WaitOnConditionCheck.class,
       WeakSSLContextCheck.class,
+      WebViewJavaScriptSupportCheck.class,
       WildcardImportsShouldNotBeUsedCheck.class,
       WildcardReturnParameterTypeCheck.class,
       WriteObjectTheOnlySynchronizedMethodCheck.class,

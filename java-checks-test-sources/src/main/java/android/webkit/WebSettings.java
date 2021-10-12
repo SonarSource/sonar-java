@@ -6,4 +6,6 @@ public abstract class WebSettings {
   public static final int MIXED_CONTENT_COMPATIBILITY_MODE = 2;
 
   public abstract void setMixedContentMode(int mode);
+
+  public abstract void setJavaScriptEnabled(boolean flag);
 }
