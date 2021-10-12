@@ -8,4 +8,14 @@ public abstract class WebSettings {
   public abstract void setMixedContentMode(int mode);
 
   public abstract void setJavaScriptEnabled(boolean flag);
+
+  public abstract void setAllowFileAccess(boolean allow);
+  public abstract void setAllowContentAccess(boolean allow);
+
+  @Deprecated
+  public abstract void setAllowFileAccessFromFileURLs(boolean flag);
+
+  @Deprecated
+  public abstract void setAllowUniversalAccessFromFileURLs(boolean flag);
+
 }

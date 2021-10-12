@@ -1,0 +1,38 @@
+<p>WebViews can be used to display web content as part of a mobile application. A browser engine is used to render and display the content. Like a web
+application a mobile application that uses WebViews can be vulnerable to Cross-Site Scripting if untrusted code is rendered.</p>
+<p>If malicious JavaScript code in a WebView is executed this can leak the contents of sensitive files when access to local files is enabled.</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> No local files have to be accessed by the Webview. </li>
+  <li> The WebView contains untrusted data that could cause harm when rendered. </li>
+</ul>
+<p>There is a risk if you answered yes to any of those questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>It’s recommended to disable access to local files for WebViews unless it is necessary. In the case of a successful attack through a Cross-Site
+Scripting vulnerability the attackers attack surface decreases drastically if no files can be read out.</p>
+<h2>Sensitive Code Example</h2>
+<pre>
+import android.webkit.WebView;
+
+WebView webView = (WebView) findViewById(R.id.webview);
+webView.getSettings().setAllowFileAccess(true); // Sensitive
+webView.getSettings().setAllowContentAccess(true); // Sensitive
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+import android.webkit.WebView;
+
+WebView webView = (WebView) findViewById(R.id.webview);
+webView.getSettings().setAllowFileAccess(false);
+webView.getSettings().setAllowContentAccess(false);
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration.html">OWASP Top 10 2017 Category A6</a> - Security
+  Misconfiguration </li>
+  <li> <a href="https://owasp.org/www-project-top-ten/2017/A7_2017-Cross-Site_Scripting_(XSS)">OWASP Top 10 2017 Category A7</a> - Cross-Site
+  Scripting (XSS) </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/79.html">MITRE, CWE-79</a> - Improper Neutralization of Input During Web Page Generation
+  ('Cross-site Scripting') </li>
+</ul>
+
