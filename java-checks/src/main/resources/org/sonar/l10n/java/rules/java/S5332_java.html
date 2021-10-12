@@ -20,6 +20,7 @@ href="https://blog.mozilla.org/security/2015/04/30/deprecating-non-secure-http">
 <ul>
   <li> The confidentiality and integrity of data is necessary in the context of the web application. </li>
   <li> The data is exchanged on an exposed network (Internet, public network etc). </li>
+  <li> Your application renders web pages with a relaxed mixed content policy. </li>
 </ul>
 <p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
@@ -28,6 +29,7 @@ href="https://blog.mozilla.org/security/2015/04/30/deprecating-non-secure-http">
   <li> Use <code>sftp</code>, <code>scp</code> or <code>ftps</code> instead of <code>ftp</code> </li>
   <li> Use <code>https</code> instead of <code>http</code> </li>
   <li> Use <code>SMTP</code> over <code>SSL/TLS</code> or <code>SMTP</code> with <code>STARTTLS</code> instead of clear-text SMTP </li>
+  <li> Configure your application to block mixed content when rendering web pages. </li>
 </ul>
 <p>It is recommended to secure all transport channels (event local network) as it can take a single non secure connection to compromise an entire
 application or system.</p>
@@ -45,6 +47,14 @@ SMTPClient smtpClient = new SMTPClient(); // Sensitive
 <pre>
 ConnectionSpec spec = new ConnectionSpec.Builder(ConnectionSpec.CLEARTEXT) // Sensitive
   .build();
+</pre>
+<p>Android WebView can be configured to allow a secure origin to load content from any other origin, even if that origin is insecure (mixed
+content);</p>
+<pre>
+import android.webkit.WebView
+
+WebView webView = findViewById(R.id.webview)
+webView.getSettings().setMixedContentMode(MIXED_CONTENT_ALWAYS_ALLOW); // Sensitive
 </pre>
 <h2>Compliant Solution</h2>
 <p>Use instead these clients from <a href="https://commons.apache.org/proper/commons-net/">Apache commons net</a> and <a
@@ -76,6 +86,13 @@ else {
 <pre>
 ConnectionSpec spec = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS) // Compliant
   .build();
+</pre>
+<p>The most secure mode for Android WebView is <code>MIXED_CONTENT_NEVER_ALLOW</code>;</p>
+<pre>
+import android.webkit.WebView
+
+WebView webView = findViewById(R.id.webview)
+webView.getSettings().setMixedContentMode(MIXED_CONTENT_NEVER_ALLOW);
 </pre>
 <h2>Exceptions</h2>
 <p>No issue is reported for the following cases because they are not considered sensitive:</p>

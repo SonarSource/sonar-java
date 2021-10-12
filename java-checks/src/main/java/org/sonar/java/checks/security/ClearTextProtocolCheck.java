@@ -24,10 +24,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -42,6 +44,7 @@ public class ClearTextProtocolCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Using %s protocol is insecure. Use %s instead.";
   private static final String MESSAGE_HTTP = "Using HTTP protocol is insecure. Use HTTPS instead.";
+  private static final String MESSAGE_ANDROID_MIXED_CONTENT = "Using a relaxed mixed content policy is security-sensitive.";
 
   static {
     PROTOCOLS.put("org.apache.commons.net.ftp.FTPClient", new Protocol("FTP", "SFTP, SCP or FTPS"));
@@ -67,6 +70,14 @@ public class ClearTextProtocolCheck extends IssuableSubscriptionVisitor {
     .addParametersMatcher(ANY)
     .build();
 
+  private static final MethodMatchers ANDROID_SET_MIXED_CONTENT_MODE = MethodMatchers.create()
+    .ofSubTypes("android.webkit.WebSettings")
+    .names("setMixedContentMode")
+    .addParametersMatcher("int")
+    .build();
+
+  public static final Integer MIXED_CONTENT_ALWAYS_ALLOW = 0;
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
@@ -87,7 +98,15 @@ public class ClearTextProtocolCheck extends IssuableSubscriptionVisitor {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
       if (OK_HTTP_BUILDERS.matches(mit)) {
         reportIfUsesClearText(mit.arguments());
+      } else if (ANDROID_SET_MIXED_CONTENT_MODE.matches(mit)) {
+        reportIfAlwaysAllow(mit.arguments().get(0));
       }
+    }
+  }
+
+  private void reportIfAlwaysAllow(ExpressionTree setMixedContentModeArgument) {
+    if (MIXED_CONTENT_ALWAYS_ALLOW.equals(ExpressionUtils.resolveAsConstant(setMixedContentModeArgument))) {
+      reportIssue(setMixedContentModeArgument, MESSAGE_ANDROID_MIXED_CONTENT);
     }
   }
 

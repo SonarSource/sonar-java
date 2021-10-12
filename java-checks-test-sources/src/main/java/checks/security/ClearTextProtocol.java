@@ -1,5 +1,6 @@
 package checks.security;
 
+import android.webkit.WebSettings;
 import java.util.Arrays;
 import java.util.Collections;
 import okhttp3.ConnectionSpec;
@@ -55,6 +56,14 @@ public class ClearTextProtocol {
     OkHttpClient client5 = new OkHttpClient.Builder()
       .connectionSpecs(Collections.singletonList(spec2))
       .build();
+  }
+
+  void androidWebSettings(WebSettings settings, int value) {
+    settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW); // Noncompliant [[sc=34;ec=72]] {{Using a relaxed mixed content policy is security-sensitive.}}
+    settings.setMixedContentMode(0); // Noncompliant
+    settings.setMixedContentMode(value); // Compliant
+    settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW); // Compliant
+    settings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE); // Compliant
   }
 
 }
