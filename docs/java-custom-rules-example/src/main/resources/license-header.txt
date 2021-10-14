@@ -1,0 +1,2 @@
+Copyright (C) ${license.years} ${license.owner} - ${license.mailto}
+This code is released under [MIT No Attribution](https://opensource.org/licenses/MIT-0) license.
