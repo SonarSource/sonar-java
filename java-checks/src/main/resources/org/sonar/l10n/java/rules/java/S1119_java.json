@@ -11,6 +11,7 @@
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-1119",
-  "sqKey": "LabelsShouldNotBeUsedCheck",
-  "scope": "All"
+  "sqKey": "S1119",
+  "scope": "Main",
+  "quickfix": "unknown"
 }

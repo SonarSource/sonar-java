@@ -12,5 +12,6 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-6103",
   "sqKey": "S6103",
-  "scope": "Tests"
+  "scope": "Tests",
+  "quickfix": "unknown"
 }

@@ -13,6 +13,7 @@
   "ruleSpecification": "RSPEC-1168",
   "sqKey": "S1168",
   "scope": "Main",
+  "quickfix": "partial",
   "securityStandards": {
     "CERT": [
       "MSC19-C.",

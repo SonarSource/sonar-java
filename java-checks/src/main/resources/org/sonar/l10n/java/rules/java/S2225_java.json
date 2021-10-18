@@ -15,11 +15,9 @@
   "sqKey": "S2225",
   "scope": "Main",
   "securityStandards": {
-    "CWE": [
-      476
-    ],
     "CERT": [
       "EXP01-J."
     ]
-  }
+  },
+  "quickfix": "unknown"
 }

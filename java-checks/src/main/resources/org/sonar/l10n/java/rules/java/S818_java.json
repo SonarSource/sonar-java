@@ -15,6 +15,7 @@
   "ruleSpecification": "RSPEC-818",
   "sqKey": "S818",
   "scope": "All",
+  "quickfix": "unknown",
   "securityStandards": {
     "CERT": [
       "DCL16-C.",

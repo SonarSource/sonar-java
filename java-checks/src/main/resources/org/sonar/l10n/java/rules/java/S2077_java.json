@@ -21,15 +21,6 @@
   "sqKey": "S2077",
   "scope": "Main",
   "securityStandards": {
-    "CWE": [
-      564,
-      89,
-      20,
-      943
-    ],
-    "OWASP": [
-      "A1"
-    ],
     "CERT": [
       "IDS00-J."
     ]

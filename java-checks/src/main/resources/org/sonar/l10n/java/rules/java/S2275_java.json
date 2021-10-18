@@ -13,6 +13,7 @@
   "ruleSpecification": "RSPEC-2275",
   "sqKey": "S2275",
   "scope": "All",
+  "quickfix": "unknown",
   "securityStandards": {
     "CERT": [
       "FIO47-C."

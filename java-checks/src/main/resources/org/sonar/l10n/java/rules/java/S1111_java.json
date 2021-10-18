@@ -12,7 +12,7 @@
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-1111",
-  "sqKey": "ObjectFinalizeCheck",
+  "sqKey": "S1111",
   "scope": "Main",
   "securityStandards": {
     "CWE": [
@@ -21,5 +21,6 @@
     "CERT": [
       "MET12-J."
     ]
-  }
+  },
+  "quickfix": "unknown"
 }

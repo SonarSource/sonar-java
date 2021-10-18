@@ -16,11 +16,9 @@
   "sqKey": "S1874",
   "scope": "Main",
   "securityStandards": {
-    "CWE": [
-      477
-    ],
     "CERT": [
       "MET02-J."
     ]
-  }
+  },
+  "quickfix": "unknown"
 }

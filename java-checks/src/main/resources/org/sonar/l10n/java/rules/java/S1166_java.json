@@ -18,14 +18,9 @@
   "sqKey": "S1166",
   "scope": "Main",
   "securityStandards": {
-    "CWE": [
-      778
-    ],
-    "OWASP": [
-      "A10"
-    ],
     "CERT": [
       "ERR00-J."
     ]
-  }
+  },
+  "quickfix": "unknown"
 }

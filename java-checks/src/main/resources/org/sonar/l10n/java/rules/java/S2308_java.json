@@ -11,6 +11,7 @@
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2308",
-  "sqKey": "CallToFileDeleteOnExitMethod",
-  "scope": "Main"
+  "sqKey": "S2308",
+  "scope": "Main",
+  "quickfix": "unknown"
 }

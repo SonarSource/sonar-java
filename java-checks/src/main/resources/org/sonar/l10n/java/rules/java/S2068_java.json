@@ -17,13 +17,6 @@
   "sqKey": "S2068",
   "scope": "Main",
   "securityStandards": {
-    "CWE": [
-      798,
-      259
-    ],
-    "OWASP": [
-      "A2"
-    ],
     "CERT": [
       "MSC03-J."
     ]

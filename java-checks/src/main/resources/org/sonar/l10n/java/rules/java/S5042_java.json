@@ -17,13 +17,6 @@
   "sqKey": "S5042",
   "scope": "Main",
   "securityStandards": {
-    "CWE": [
-      409
-    ],
-    "OWASP": [
-      "A5",
-      "A6"
-    ],
     "CERT": [
       "IDS04-J."
     ]

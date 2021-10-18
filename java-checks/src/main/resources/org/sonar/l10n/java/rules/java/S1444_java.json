@@ -15,11 +15,9 @@
   "sqKey": "S1444",
   "scope": "Main",
   "securityStandards": {
-    "CWE": [
-      500
-    ],
     "CERT": [
       "OBJ10-J."
     ]
-  }
+  },
+  "quickfix": "unknown"
 }

@@ -11,6 +11,7 @@
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-1107",
-  "sqKey": "RightCurlyBraceSameLineAsNextBlockCheck",
-  "scope": "All"
+  "sqKey": "S1107",
+  "scope": "All",
+  "quickfix": "covered"
 }

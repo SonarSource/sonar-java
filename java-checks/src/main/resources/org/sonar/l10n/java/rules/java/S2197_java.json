@@ -14,6 +14,7 @@
   "ruleSpecification": "RSPEC-2197",
   "sqKey": "S2197",
   "scope": "All",
+  "quickfix": "unknown",
   "securityStandards": {
     "CERT": [
       "NUM51-J."

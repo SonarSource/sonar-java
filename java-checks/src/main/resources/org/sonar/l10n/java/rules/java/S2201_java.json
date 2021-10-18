@@ -13,6 +13,7 @@
   "ruleSpecification": "RSPEC-2201",
   "sqKey": "S2201",
   "scope": "Main",
+  "quickfix": "unknown",
   "securityStandards": {
     "CERT": [
       "EXP12-C.",

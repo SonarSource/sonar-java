@@ -14,14 +14,12 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-1854",
   "sqKey": "S1854",
-  "scope": "All",
+  "scope": "Main",
   "securityStandards": {
-    "CWE": [
-      563
-    ],
     "CERT": [
       "MSC13-C.",
       "MSC56-J."
     ]
-  }
+  },
+  "quickfix": "unknown"
 }

@@ -16,11 +16,9 @@
   "sqKey": "S1696",
   "scope": "Main",
   "securityStandards": {
-    "CWE": [
-      395
-    ],
     "CERT": [
       "ERR08-J."
     ]
-  }
+  },
+  "quickfix": "unknown"
 }

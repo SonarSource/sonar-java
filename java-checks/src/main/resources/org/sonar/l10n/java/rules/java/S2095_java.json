@@ -17,13 +17,10 @@
   "sqKey": "S2095",
   "scope": "All",
   "securityStandards": {
-    "CWE": [
-      459,
-      772
-    ],
     "CERT": [
       "FIO04-J.",
       "FIO42-C."
     ]
-  }
+  },
+  "quickfix": "unknown"
 }

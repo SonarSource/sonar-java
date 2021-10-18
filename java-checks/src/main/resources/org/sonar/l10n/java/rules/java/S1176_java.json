@@ -11,6 +11,7 @@
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-1176",
-  "sqKey": "UndocumentedApi",
-  "scope": "All"
+  "sqKey": "S1176",
+  "scope": "All",
+  "quickfix": "unknown"
 }

@@ -1,5 +1,4 @@
 {
-  "title": "Text blocks should not be used in complex expressions",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
@@ -10,5 +9,7 @@
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-6203",
   "sqKey": "S6203",
-  "scope": "Main"
+  "scope": "Main",
+  "quickfix": "unknown",
+  "title": "Text blocks should not be used in complex expressions"
 }

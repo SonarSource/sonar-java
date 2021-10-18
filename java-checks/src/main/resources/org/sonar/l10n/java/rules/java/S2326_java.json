@@ -14,6 +14,7 @@
   "ruleSpecification": "RSPEC-2326",
   "sqKey": "S2326",
   "scope": "All",
+  "quickfix": "unknown",
   "securityStandards": {
     "CERT": [
       "MSC12-CPP."

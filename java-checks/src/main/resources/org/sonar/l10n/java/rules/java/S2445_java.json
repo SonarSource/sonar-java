@@ -16,12 +16,9 @@
   "sqKey": "S2445",
   "scope": "All",
   "securityStandards": {
-    "CWE": [
-      412,
-      413
-    ],
     "CERT": [
       "LCK00-J."
     ]
-  }
+  },
+  "quickfix": "unknown"
 }
