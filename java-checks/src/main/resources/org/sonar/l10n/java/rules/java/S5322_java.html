@@ -1,9 +1,16 @@
-<p>In Android applications, receiving intents is security-sensitive. For example, it has led in the past to the following vulnerability:</p>
+<p>Android applications can receive broadcasts from the system or other applications. Receiving intents is security-sensitive. For example, it has led
+in the past to the following vulnerabilities:</p>
 <ul>
   <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1677">CVE-2019-1677</a> </li>
   <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-1275">CVE-2015-1275</a> </li>
 </ul>
-<p>Once a receiver is registered, any app can broadcast potentially malicious intents to your application.</p>
+<p>Receivers can be declared in the manifest or in the code to make them context specific. If the receiver is declared in the manifest Android will
+start the application if it is not already running once a matching broadcast is received. The receiver is an entry point into the application.</p>
+<p>Other applications can send potentially malicious broadcasts, so it is important to consider broadcasts as untrusted and to limit the applications
+that can send broadcasts to the receiver.</p>
+<p>Permissions can be specified to restrict broadcasts to authorized applications. Restrictions can be enforced by both the sender and receiver of a
+broadcast. If permissions are specified when registering a broadcast receiver, then only broadcasters who were granted this permission can send a
+message to the receiver.</p>
 <p>This rule raises an issue when a receiver is registered without specifying any "broadcast permission".</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
@@ -38,10 +45,29 @@ public class MyIntentReceiver {
         // Broadcasting intent with "null" for broadcastPermission
         context.registerReceiver(receiver, filter, null, scheduler); // Sensitive
         context.registerReceiver(receiver, filter, null, scheduler, flags); // Sensitive
+    }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
+import android.os.Build;
+import android.os.Handler;
+import android.support.annotation.RequiresApi;
 
+public class MyIntentReceiver {
 
-        context.registerReceiver(receiver, filter,broadcastPermission, scheduler); // OK
-        context.registerReceiver(receiver, filter,broadcastPermission, scheduler, flags); // OK
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void register(Context context, BroadcastReceiver receiver,
+                         IntentFilter filter,
+                         String broadcastPermission,
+                         Handler scheduler,
+                         int flags) {
+
+        context.registerReceiver(receiver, filter, broadcastPermission, scheduler);
+        context.registerReceiver(receiver, filter, broadcastPermission, scheduler, flags);
     }
 }
 </pre>
@@ -52,6 +78,7 @@ public class MyIntentReceiver {
   <li> <a href="https://www.owasp.org/index.php/Mobile_Top_10_2016-M1-Improper_Platform_Usage">OWASP Mobile Top 10 2016 Category M1</a> - Improper
   Platform Usage </li>
   <li> <a href="https://cwe.mitre.org/data/definitions/925.html">MITRE, CWE-925</a> - Improper Verification of Intent by Broadcast Receiver </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/926.html">MITRE, CWE-926</a> - Improper Export of Android Application Components </li>
   <li> <a href="https://www.sans.org/top25-software-errors/#cat1">SANS Top 25</a> - Insecure Interaction Between Components </li>
   <li> <a href="https://developer.android.com/guide/components/broadcasts.html#restricting_broadcasts_with_permissions">Android documentation</a> -
   Broadcast Overview - Security considerations and best practices </li>

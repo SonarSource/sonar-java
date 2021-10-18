@@ -8,6 +8,29 @@ physical access to the device. Access to sensitive data can be harmful for the u
 <h2>Recommended Secure Coding Practices</h2>
 <p>It’s recommended to password-encrypt local files that contain sensitive information. The class <a
 href="https://developer.android.com/reference/androidx/security/crypto/EncryptedFile">EncryptedFile</a> can be used to easily encrypt files.</p>
+<h2>Sensitive Code Example</h2>
+<pre>
+Files.write(path, content); // Sensitive
+
+FileOutputStream out = new FileOutputStream(file); // Sensitive
+
+FileWriter fw = new FileWriter("outfilename", false); // Sensitive
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+String masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
+
+File file = new File(context.getFilesDir(), "secret_data");
+EncryptedFile encryptedFile = EncryptedFile.Builder(
+    file,
+    context,
+    masterKeyAlias,
+    EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
+).build();
+
+// write to the encrypted file
+FileOutputStream encryptedOutputStream = encryptedFile.openFileOutput();
+</pre>
 <h2>See</h2>
 <ul>
   <li> <a href="https://mobile-security.gitbook.io/masvs/security-requirements/0x07-v2-data_storage_and_privacy_requirements">Mobile AppSec
