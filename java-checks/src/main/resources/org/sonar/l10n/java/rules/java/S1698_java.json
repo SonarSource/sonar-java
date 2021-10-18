@@ -16,13 +16,10 @@
   "sqKey": "S1698",
   "scope": "Main",
   "securityStandards": {
-    "CWE": [
-      595,
-      597
-    ],
     "CERT": [
       "EXP03-J.",
       "EXP50-J."
     ]
-  }
+  },
+  "quickfix": "unknown"
 }

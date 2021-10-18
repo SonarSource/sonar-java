@@ -19,22 +19,9 @@
   "sqKey": "S5547",
   "scope": "Main",
   "securityStandards": {
-    "CWE": [
-      327,
-      326
-    ],
-    "OWASP": [
-      "A3",
-      "A6"
-    ],
-    "OWASP Mobile": [
-      "M5"
-    ],
-    "MASVS": [
-      "MSTG-CRYPTO-3"
-    ],
     "CERT": [
       "MSC61-J."
     ]
-  }
+  },
+  "quickfix": "unknown"
 }

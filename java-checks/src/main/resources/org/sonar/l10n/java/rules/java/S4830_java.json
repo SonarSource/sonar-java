@@ -19,21 +19,9 @@
   "sqKey": "S4830",
   "scope": "Main",
   "securityStandards": {
-    "CWE": [
-      295
-    ],
-    "OWASP": [
-      "A6",
-      "A3"
-    ],
-    "OWASP Mobile": [
-      "M3"
-    ],
-    "MASVS": [
-      "MSTG-NETWORK-3"
-    ],
     "CERT": [
       "MSC61-J."
     ]
-  }
+  },
+  "quickfix": "unknown"
 }

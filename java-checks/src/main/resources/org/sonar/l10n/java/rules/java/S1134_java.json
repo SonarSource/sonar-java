@@ -12,10 +12,11 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-1134",
   "sqKey": "S1134",
-  "scope": "All",
+  "scope": "Main",
   "securityStandards": {
     "CWE": [
       546
     ]
-  }
+  },
+  "quickfix": "unknown"
 }

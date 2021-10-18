@@ -12,5 +12,6 @@
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5996",
   "sqKey": "S5996",
-  "scope": "Main"
+  "scope": "Main",
+  "quickfix": "unknown"
 }

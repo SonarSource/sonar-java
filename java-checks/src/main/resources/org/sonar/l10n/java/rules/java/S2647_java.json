@@ -17,11 +17,11 @@
   "scope": "Main",
   "securityStandards": {
     "CWE": [
-      522,
-      311
+      522
     ],
     "OWASP": [
       "A3"
     ]
-  }
+  },
+  "quickfix": "unknown"
 }

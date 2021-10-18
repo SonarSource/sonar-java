@@ -13,5 +13,6 @@
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-3419",
   "sqKey": "S3419",
-  "scope": "All"
+  "scope": "All",
+  "quickfix": "unknown"
 }

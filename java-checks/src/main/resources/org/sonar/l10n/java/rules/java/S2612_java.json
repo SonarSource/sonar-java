@@ -17,13 +17,6 @@
   "sqKey": "S2612",
   "scope": "Main",
   "securityStandards": {
-    "CWE": [
-      732,
-      266
-    ],
-    "OWASP": [
-      "A5"
-    ],
     "CERT": [
       "FIO01-J.",
       "FIO06-C."

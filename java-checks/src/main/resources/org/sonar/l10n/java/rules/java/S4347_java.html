@@ -1,11 +1,11 @@
 <p>The <code>java.security.SecureRandom</code> class provides a strong random number generator (RNG) appropriate for cryptography. However, seeding it
 with a constant or another predictable value will weaken it significantly. In general, it is much safer to rely on the seed provided by the
 <code>SecureRandom</code> implementation.</p>
-<p>This rule raises an issue when <code>SecureRandom.setSeed()</code> or <code>SecureRandom(byte[])</code> are called with a seed that is either
+<p>This rule raises an issue when <code>SecureRandom.setSeed()</code> or <code>SecureRandom(byte[])</code> are called with a seed that is either one
 of:</p>
 <ul>
   <li> a constant </li>
-  <li> <code>System.currentTimeMillis()</code> </li>
+  <li> the system time </li>
 </ul>
 <h2>Noncompliant Code Example</h2>
 <pre>

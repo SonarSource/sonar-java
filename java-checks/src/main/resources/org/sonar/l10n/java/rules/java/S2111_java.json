@@ -17,5 +17,6 @@
     "CERT": [
       "NUM10-J."
     ]
-  }
+  },
+  "quickfix": "partial"
 }

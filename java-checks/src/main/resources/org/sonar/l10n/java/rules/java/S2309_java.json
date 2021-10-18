@@ -11,6 +11,7 @@
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-2309",
-  "sqKey": "EmptyFile",
-  "scope": "All"
+  "sqKey": "S2309",
+  "scope": "All",
+  "quickfix": "unknown"
 }

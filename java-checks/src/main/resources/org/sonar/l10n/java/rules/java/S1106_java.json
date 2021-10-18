@@ -11,6 +11,7 @@
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-1106",
-  "sqKey": "LeftCurlyBraceStartLineCheck",
-  "scope": "All"
+  "sqKey": "S1106",
+  "scope": "All",
+  "quickfix": "unknown"
 }

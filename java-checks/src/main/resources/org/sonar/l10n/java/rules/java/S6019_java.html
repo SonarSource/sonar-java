@@ -6,12 +6,12 @@ that always matches the empty string, such as <code>()</code>) behaves indisting
 <p>This is likely a sign that the regex does not work as intended.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
-str.split(".*?x?"); // Noncompliant, this will behave just like "x?"
-str.matches(".*?"); // Noncompliant, replace with ".*"
+"start123endstart456".replaceAll("start\\w*?(end)?", "x"); // Noncompliant. In contrast to what one would expect, the result is not "xx".
+str.matches("\\d*?"); // Noncompliant. Matches the same as "\d*", but will backtrack in every position.
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-str.split(".*?x");
-str.matches(".*");
+"start123endstart456".replaceAll("start\\w*?(end|$)", "x"); // Result is "xx".
+str.matches("\\d*");
 </pre>
 

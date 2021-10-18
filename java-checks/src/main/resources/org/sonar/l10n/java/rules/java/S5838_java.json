@@ -13,5 +13,6 @@
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-5838",
   "sqKey": "S5838",
-  "scope": "Tests"
+  "scope": "Tests",
+  "quickfix": "partial"
 }

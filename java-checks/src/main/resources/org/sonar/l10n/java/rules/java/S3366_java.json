@@ -15,6 +15,7 @@
   "ruleSpecification": "RSPEC-3366",
   "sqKey": "S3366",
   "scope": "Main",
+  "quickfix": "unknown",
   "securityStandards": {
     "CERT": [
       "TSM01-J.",

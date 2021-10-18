@@ -14,6 +14,7 @@
   "ruleSpecification": "RSPEC-1065",
   "sqKey": "S1065",
   "scope": "All",
+  "quickfix": "unknown",
   "securityStandards": {
     "CERT": [
       "MSC12-C."

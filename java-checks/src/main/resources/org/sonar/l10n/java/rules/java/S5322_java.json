@@ -14,7 +14,8 @@
   "scope": "Main",
   "securityStandards": {
     "CWE": [
-      925
+      925,
+      926
     ],
     "OWASP Mobile": [
       "M1"

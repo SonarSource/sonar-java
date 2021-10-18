@@ -13,6 +13,7 @@
   "ruleSpecification": "RSPEC-3011",
   "sqKey": "S3011",
   "scope": "Main",
+  "quickfix": "unknown",
   "securityStandards": {
     "CERT": [
       "SEC05-J."

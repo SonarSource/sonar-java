@@ -13,6 +13,7 @@
   "ruleSpecification": "RSPEC-2674",
   "sqKey": "S2674",
   "scope": "Main",
+  "quickfix": "unknown",
   "securityStandards": {
     "CERT": [
       "FIO10-J."

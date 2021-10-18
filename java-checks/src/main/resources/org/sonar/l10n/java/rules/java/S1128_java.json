@@ -11,6 +11,7 @@
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-1128",
-  "sqKey": "UselessImportCheck",
-  "scope": "All"
+  "sqKey": "S1128",
+  "scope": "Main",
+  "quickfix": "covered"
 }

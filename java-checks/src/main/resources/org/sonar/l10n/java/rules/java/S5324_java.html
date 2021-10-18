@@ -1,42 +1,45 @@
-<p>In Android applications, accessing external storage is security-sensitive. For example, it has led in the past to the following vulnerability:</p>
-<ul>
-  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-15004">CVE-2018-15004</a> </li>
-  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-15002">CVE-2018-15002</a> </li>
-  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-14995">CVE-2018-14995</a> </li>
-</ul>
-<p>Any application having the permissions <code>WRITE_EXTERNAL_STORAGE</code> or <code>READ_EXTERNAL_STORAGE</code> can access files stored on an
-external storage, be it a private or a public file.</p>
-<p>This rule raises an issue when the following functions are called:</p>
-<ul>
-  <li> <code>android.os.Environment.getExternalStorageDirectory</code> </li>
-  <li> <code>android.os.Environment.getExternalStoragePublicDirectory</code> </li>
-  <li> <code>android.content.Context.getExternalFilesDir</code> </li>
-  <li> <code>android.content.Context.getExternalFilesDirs</code> </li>
-  <li> <code>android.content.Context.getExternalMediaDirs</code> </li>
-  <li> <code>android.content.Context.getExternalCacheDir</code> </li>
-  <li> <code>android.content.Context.getExternalCacheDirs</code> </li>
-  <li> <code>android.content.Context.getObbDir</code> </li>
-  <li> <code>android.content.Context.getObbDirs</code> </li>
-</ul>
+<p>Storing data locally is a common task for mobile applications. Such data includes files among other things. One convenient way to store files is to
+use the external file storage which usually offers a larger amount of disc space compared to internal storage.</p>
+<p>Files created on the external storage are globally readable and writable. Therefore, a malicious application having the permissions
+<code>WRITE_EXTERNAL_STORAGE</code> or <code>READ_EXTERNAL_STORAGE</code> could try to read sensitive information from the files that other
+applications have stored on the external storage.</p>
+<p>External storage can also be removed by the user (e.g when based on SD card) making the files unavailable to the application.</p>
 <h2>Ask Yourself Whether</h2>
+<p>Your application uses external storage to:</p>
 <ul>
-  <li> Data written to the external storage is security-sensitive and is not encrypted. </li>
-  <li> Data read from files is not validated. </li>
+  <li> store files that contain sensitive data. </li>
+  <li> store files that are not meant to be shared with other application. </li>
+  <li> store files that are critical for the application to work. </li>
 </ul>
 <p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
-<p>Validate any data read from files.</p>
-<p>Avoid writing sensitive information to an external storage. If this is required, make sure that the data is encrypted properly.</p>
+<ul>
+  <li> Use internal storage whenever possible as the system prevents other apps from accessing this location. </li>
+  <li> Only use external storage if you need to share non-sensitive files with other applications. </li>
+  <li> If your application has to use the external storage to store sensitive data, make sure it encrypts the files using <a
+  href="https://developer.android.com/reference/androidx/security/crypto/EncryptedFile">EncryptedFile</a>. </li>
+  <li> Data coming from external storage should always be considered untrusted and should be validated. </li>
+  <li> As some external storage can be removed, make sure to never store files on it that are critical for the usability of your application. </li>
+</ul>
 <h2>Sensitive Code Example</h2>
 <pre>
 import android.content.Context;
-import android.os.Environment;
 
 public class AccessExternalFiles {
 
     public void accessFiles(Context context) {
-        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES); // Sensitive
-        context.getExternalFilesDir(Environment.DIRECTORY_PICTURES); // Sensitive
+        context.getExternalFilesDir(null); // Sensitive
+    }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+import android.content.Context;
+
+public class AccessExternalFiles {
+
+    public void accessFiles(Context context) {
+        context.getFilesDir();
     }
 }
 </pre>

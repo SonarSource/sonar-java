@@ -1,5 +1,4 @@
 {
-  "title": "Redundant constructors\/methods should be avoided in records",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
@@ -12,5 +11,7 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-6207",
   "sqKey": "S6207",
-  "scope": "Main"
+  "scope": "Main",
+  "quickfix": "unknown",
+  "title": "Redundant constructors\/methods should be avoided in records"
 }

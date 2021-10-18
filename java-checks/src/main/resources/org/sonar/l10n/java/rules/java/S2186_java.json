@@ -13,5 +13,6 @@
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2186",
   "sqKey": "S2186",
-  "scope": "Tests"
+  "scope": "Tests",
+  "quickfix": "unknown"
 }

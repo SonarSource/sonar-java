@@ -11,6 +11,7 @@
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-1124",
-  "sqKey": "ModifiersOrderCheck",
-  "scope": "All"
+  "sqKey": "S1124",
+  "scope": "All",
+  "quickfix": "covered"
 }

@@ -18,13 +18,9 @@
   "sqKey": "S2583",
   "scope": "All",
   "securityStandards": {
-    "CWE": [
-      489,
-      571,
-      570
-    ],
     "CERT": [
       "MSC12-C."
     ]
-  }
+  },
+  "quickfix": "unknown"
 }

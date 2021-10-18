@@ -15,13 +15,11 @@
   "sqKey": "S864",
   "scope": "All",
   "securityStandards": {
-    "CWE": [
-      783
-    ],
     "CERT": [
       "EXP00-C.",
       "EXP00-CPP.",
       "EXP53-J."
     ]
-  }
+  },
+  "quickfix": "unknown"
 }

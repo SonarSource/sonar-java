@@ -14,15 +14,13 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-1121",
   "sqKey": "S1121",
-  "scope": "All",
+  "scope": "Main",
   "securityStandards": {
-    "CWE": [
-      481
-    ],
     "CERT": [
       "EXP45-C.",
       "EXP51-J.",
       "EXP19-CPP."
     ]
-  }
+  },
+  "quickfix": "unknown"
 }

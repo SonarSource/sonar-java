@@ -15,11 +15,9 @@
   "sqKey": "S1872",
   "scope": "All",
   "securityStandards": {
-    "CWE": [
-      486
-    ],
     "CERT": [
       "OBJ09-J."
     ]
-  }
+  },
+  "quickfix": "unknown"
 }

@@ -16,21 +16,6 @@
   "sqKey": "S2245",
   "scope": "Main",
   "securityStandards": {
-    "CWE": [
-      338,
-      330,
-      326,
-      1241
-    ],
-    "OWASP": [
-      "A3"
-    ],
-    "OWASP Mobile": [
-      "M5"
-    ],
-    "MASVS": [
-      "MSTG-CRYPTO-6"
-    ],
     "CERT": [
       "MSC02-J.",
       "MSC30-C.",

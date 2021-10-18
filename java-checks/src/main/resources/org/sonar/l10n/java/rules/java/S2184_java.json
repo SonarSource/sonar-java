@@ -17,12 +17,10 @@
   "sqKey": "S2184",
   "scope": "All",
   "securityStandards": {
-    "CWE": [
-      190
-    ],
     "CERT": [
       "NUM50-J.",
       "INT18-C."
     ]
-  }
+  },
+  "quickfix": "unknown"
 }
