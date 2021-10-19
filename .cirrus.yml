@@ -33,7 +33,8 @@ win_vm_definition: &WINDOWS_VM_DEFINITION
     zone: us-central1-a
     preemptible: false
     disk: 128
-    type: n1-standard-4
+    use_ssd: true
+    type: n2d-standard-4
 
 only_sonarsource_qa: &ONLY_SONARSOURCE_QA
   only_if: $CIRRUS_USER_COLLABORATOR == 'true' && ($CIRRUS_PR != "" || $CIRRUS_BRANCH == "master" || $CIRRUS_BRANCH =~ "branch-.*" || $CIRRUS_BRANCH =~ "dogfood-on-.*")
@@ -42,8 +43,8 @@ build_task:
   gke_container:
     <<: *CONTAINER_DEFINITION
     image: gcr.io/language-team/base-jdk16:latest
-    cpu: 2
-    memory: 2G
+    cpu: 4
+    memory: 8G
   env:
     SIGN_KEY: ENCRYPTED[!cc216dfe592f79db8006f2a591f8f98b40aa2b078e92025623594976fd32f6864c1e6b6ba74b50647f608e2418e6c336!]
     PGP_PASSPHRASE: ENCRYPTED[!314a8fc344f45e462dd5e8dccd741d7562283a825e78ebca27d4ae9db8e65ce618e7f6aece386b2782a5abe5171467bd!]
@@ -70,7 +71,8 @@ qa_os_win_task:
     zone: us-central1-a
     preemptible: false
     disk: 128
-    type: n1-standard-4
+    use_ssd: true
+    type: n2d-standard-4
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   build_script:
