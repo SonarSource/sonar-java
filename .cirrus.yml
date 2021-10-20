@@ -34,7 +34,7 @@ win_vm_definition: &WINDOWS_VM_DEFINITION
     preemptible: false
     disk: 128
     use_ssd: true
-    type: n2d-standard-4
+    type: n2d-standard-16
 
 only_sonarsource_qa: &ONLY_SONARSOURCE_QA
   only_if: $CIRRUS_USER_COLLABORATOR == 'true' && ($CIRRUS_PR != "" || $CIRRUS_BRANCH == "master" || $CIRRUS_BRANCH =~ "branch-.*" || $CIRRUS_BRANCH =~ "dogfood-on-.*")
@@ -86,8 +86,8 @@ plugin_qa_task:
   <<: *ONLY_SONARSOURCE_QA
   gke_container:
     <<: *CONTAINER_DEFINITION
-    cpu: 3
-    memory: 8G
+    cpu: 8
+    memory: 16G
   env:
     matrix:
       - SQ_VERSION: LATEST_RELEASE[8.9]
@@ -103,7 +103,7 @@ plugin_qa_task:
     - cd docs/java-custom-rules-example
     - mvn clean install -B -e -V
     - cd ../../its/plugin
-    - mvn package -Pit-plugin -Dsonar.runtimeVersion=${SQ_VERSION} -Dmaven.test.redirectTestOutputToFile=false -B -e -V
+    - mvn package -Pit-plugin -Dsonar.runtimeVersion=${SQ_VERSION} -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=classes -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
 
 sanity_task:
@@ -129,8 +129,8 @@ ruling_task:
   <<: *ONLY_SONARSOURCE_QA
   gke_container:
     <<: *CONTAINER_DEFINITION
-    cpu: 4
-    memory: 8G
+    cpu: 8
+    memory: 16G
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   submodules_script:
@@ -139,7 +139,7 @@ ruling_task:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - cd its/ruling
-    - mvn package -Pit-ruling -Dsonar.runtimeVersion=LATEST_RELEASE[8.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V
+    - mvn package -Pit-ruling -Dsonar.runtimeVersion=LATEST_RELEASE[8.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
 
 ruling_win_task:
@@ -154,7 +154,7 @@ ruling_win_task:
     - source set_maven_build_version $BUILD_NUMBER
     - init_git_submodules its/sources
     - cd its/ruling
-    - mvn package -Pit-ruling -Dsonar.runtimeVersion=LATEST_RELEASE[8.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V
+    - mvn package -Pit-ruling -Dsonar.runtimeVersion=LATEST_RELEASE[8.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
 
 promote_task:
