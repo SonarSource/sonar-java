@@ -199,22 +199,6 @@ public class JavaClasspathTest {
     testJdk8ProjectWithModularJdk(true);
   }
 
-  @Test
-  public void analyze_java11_plus_project_using_a_java8_runtime_placing_jar_in_libraries() {
-    // only valid till SQ 8.9 LTS, since SQ 9.0 requires java 11
-    if (isBeforeSonarQube9()) {
-      testModularJdkProjectWithJdk8(false);
-    }
-  }
-
-  @Test
-  public void analyze_java11_plus_project_using_a_java8_runtime_and_dedicated_jdkHome_property() {
-    // only valid till SQ 8.9 LTS, since SQ 9.0 requires java 11
-    if (isBeforeSonarQube9()) {
-      testModularJdkProjectWithJdk8(true);
-    }
-  }
-
   private static boolean isBeforeSonarQube9() {
     return !ORCHESTRATOR.getServer()
       .version()
@@ -247,32 +231,6 @@ public class JavaClasspathTest {
         tuple(componentKey, ruleKey, issueMessage, 11),
         tuple(componentKey, ruleKey, issueMessage, 16),
         tuple(componentKey, ruleKey, issueMessage, 21));
-  }
-
-  private static void testModularJdkProjectWithJdk8(boolean useJdkHomeProperty) {
-    String projectKey = "jvm-type-resolution-" + (useJdkHomeProperty ? "with" : "without") + "-jdkHome-property";
-
-    SonarScanner scanner = SonarScanner.create(TestUtils.projectDir("jvm-type-resolution"))
-      .setProperty("sonar.projectKey", projectKey)
-      .setProperty("sonar.projectName", projectKey)
-      .setProperty("sonar.projectVersion", "1.0-SNAPSHOT")
-      .setProperty("sonar.sources", "src/main/java")
-      .setProperty("sonar.java.binaries", "fakeoutput")
-      .setProperty("sonar.java.source", "11");
-
-    setupEnvironment(scanner, useJdkHomeProperty, false);
-
-    TestUtils.provisionProject(ORCHESTRATOR, projectKey, projectKey, "java", "depends-on-jdk-types");
-    ORCHESTRATOR.executeBuild(scanner);
-
-    String componentKey = projectKey + ":src/main/java/foo/Main.java";
-    String ruleKey = "java:S1481";
-    String issueMessage = "Remove this unused \"unused\" local variable.";
-
-    List<Issue> issues = TestUtils.issuesForComponent(ORCHESTRATOR, projectKey);
-    assertThat(issues).extracting(Issue::getComponent, Issue::getRule, Issue::getMessage, Issue::getLine)
-      .containsOnly(
-        tuple(componentKey, ruleKey, issueMessage, 13));
   }
 
   private static void setupEnvironment(SonarScanner scanner, boolean useJdkHomeProperty, boolean modularRuntime) {
