@@ -84,6 +84,8 @@
   <properties>
     <license.title>SonarQube Java</license.title>
 
+    <jdk.min.version>11</jdk.min.version>
+
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
     <sonar.version>8.9.0.43852</sonar.version>
@@ -344,16 +346,4 @@
     </plugins>
   </build>
 
-  <profiles>
-    <profile>
-      <!-- Use javac's release flag for Java 9 and higher -->
-      <id>java9+</id>
-      <activation>
-        <jdk>[9,)</jdk>
-      </activation>
-      <properties>
-        <maven.compiler.release>8</maven.compiler.release>
-      </properties>
-    </profile>
-  </profiles>
 </project>
