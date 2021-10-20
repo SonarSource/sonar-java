@@ -28,15 +28,14 @@ import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
-import org.sonar.api.utils.Version;
 import org.sonar.java.AnalysisWarningsWrapper;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaConstants;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.classpath.ClasspathForMain;
-import org.sonar.java.classpath.ClasspathProperties;
 import org.sonar.java.classpath.ClasspathForMainForSonarLint;
 import org.sonar.java.classpath.ClasspathForTest;
+import org.sonar.java.classpath.ClasspathProperties;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.plugins.surefire.SurefireExtensions;
@@ -80,7 +79,7 @@ public class JavaPlugin implements Plugin {
       JavaSensor.class,
       PostAnalysisIssueFilter.class,
       XmlFileSensor.class
-      ));
+    ));
 
     list.add(AnalysisWarningsWrapper.class);
 
@@ -88,11 +87,8 @@ public class JavaPlugin implements Plugin {
   }
 
   private static boolean supportJspTranspilation(Context context) {
-    if (context.getRuntime().getProduct() != SonarProduct.SONARQUBE) {
-      return false;
-    }
-    SonarEdition edition = context.getRuntime().getEdition();
-    boolean greaterThan83 = context.getSonarQubeVersion().isGreaterThanOrEqual(Version.create(8, 3));
-    return edition != SonarEdition.COMMUNITY && greaterThan83;
+    // currently, only security rules are interested in jsp
+    return context.getRuntime().getProduct() == SonarProduct.SONARQUBE
+      && context.getRuntime().getEdition() != SonarEdition.COMMUNITY;
   }
 }
