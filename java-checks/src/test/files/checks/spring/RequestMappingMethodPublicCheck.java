@@ -15,7 +15,7 @@ public class HelloWorld {
   }
 
   @RequestMapping(value = "/greet", method = GET)
-  private String greet(String greetee) { // Noncompliant [[sc=18;ec=23]] {{Make this method "public".}}
+  private String greet(String greetee) { // Noncompliant [[sc=18;ec=23]] {{Make this method non "private".}}
   }
 
   @GetMapping
@@ -63,7 +63,7 @@ class Foo {
   }
 
   @RequestMapping(value = "/greet", method = GET)
-  private String greet(String greetee) { // Noncompliant [[sc=18;ec=23]] {{Make this method "public".}}
+  private String greet(String greetee) { // Noncompliant [[sc=18;ec=23]] {{Make this method non "private".}}
   }
 
   @GetMapping public String a() { }
