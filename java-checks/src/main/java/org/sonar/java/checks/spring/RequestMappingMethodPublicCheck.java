@@ -57,8 +57,8 @@ public class RequestMappingMethodPublicCheck extends IssuableSubscriptionVisitor
 
     if (isClassController(methodSymbol)
       && isRequestMappingAnnotated(methodSymbol)
-      && !methodSymbol.isPublic()) {
-      reportIssue(methodTree.simpleName(), "Make this method \"public\".");
+      && methodSymbol.isPrivate()) {
+      reportIssue(methodTree.simpleName(), "Make this method non \"private\".");
     }
   }
 
