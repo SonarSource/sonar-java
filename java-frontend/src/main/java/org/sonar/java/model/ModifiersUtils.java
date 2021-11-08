@@ -19,12 +19,19 @@
  */
 package org.sonar.java.model;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import javax.annotation.CheckForNull;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
-
-import javax.annotation.CheckForNull;
-import java.util.Optional;
+import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 public final class ModifiersUtils {
 
@@ -46,4 +53,18 @@ public final class ModifiersUtils {
       .filter(modifierKeywordTree -> modifierKeywordTree.modifier() == expectedModifier)
       .findAny();
   }
+
+  public static List<AnnotationTree> getAnnotations(Tree tree) {
+    if (tree.kind() == Tree.Kind.VARIABLE) {
+      return ((VariableTree) tree).modifiers().annotations();
+    } else if (tree instanceof MethodTree) {
+      return ((MethodTree) tree).modifiers().annotations();
+    } else if (tree instanceof ClassTree) {
+      return ((ClassTree) tree).modifiers().annotations();
+    } else if (tree.kind() == Tree.Kind.PACKAGE) {
+      return ((PackageDeclarationTree) tree).annotations();
+    }
+    return Collections.emptyList();
+  }
+
 }

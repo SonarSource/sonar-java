@@ -271,6 +271,7 @@ public final class JUtils {
     IMethodBinding methodBinding = (IMethodBinding) ((JSymbol) method).binding;
     return new JSymbolMetadata(
       ((JSymbol) method).sema,
+      method,
       methodBinding.getParameterTypes()[param].getTypeAnnotations(),
       methodBinding.getParameterAnnotations(param)
     );

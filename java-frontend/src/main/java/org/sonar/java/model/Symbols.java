@@ -24,9 +24,11 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.CheckForNull;
 
+import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -64,6 +66,22 @@ public class Symbols {
     @Override
     public List<AnnotationInstance> annotations() {
       return Collections.emptyList();
+    }
+
+    @Override
+    public NullabilityData nullabilityData() {
+      return JSymbolMetadata.UNKNOWN_NULLABILITY;
+    }
+
+    @Override
+    public NullabilityData nullabilityData(NullabilityTarget level) {
+      return JSymbolMetadata.UNKNOWN_NULLABILITY;
+    }
+
+    @Nullable
+    @Override
+    public AnnotationTree findAnnotationTree(AnnotationInstance annotationInstance) {
+      return null;
     }
   };
 
