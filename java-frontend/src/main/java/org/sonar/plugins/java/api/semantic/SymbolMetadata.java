@@ -21,6 +21,9 @@ package org.sonar.plugins.java.api.semantic;
 
 import javax.annotation.CheckForNull;
 import java.util.List;
+import javax.annotation.Nullable;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 /**
  * Holds the metadata information (annotations) of a symbol.
@@ -48,6 +51,22 @@ public interface SymbolMetadata {
    * @return A list of {@link AnnotationInstance}
    */
   List<AnnotationInstance> annotations();
+
+  /**
+   * @return the nullability definition for metadata() of:
+   * - fields
+   * - method parameters
+   * - methods (related to method return values)
+   * And currently always return UNKNOWN_NULLABILITY for unsupported metadata() of:
+   * - local variables
+   * - lambda parameters
+   */
+  NullabilityData nullabilityData();
+
+  NullabilityData nullabilityData(NullabilityTarget level);
+
+  @Nullable
+  AnnotationTree findAnnotationTree(AnnotationInstance annotationInstance);
 
   /**
    * Occurrence of an annotation on a symbol.
@@ -88,5 +107,45 @@ public interface SymbolMetadata {
 
   }
 
+  enum NullabilityType {
+    UNKNOWN,
+    STRONG_NULLABLE,
+    WEAK_NULLABLE,
+    NON_NULL
+  }
+
+  enum NullabilityLevel {
+    UNKNOWN,
+    PACKAGE,
+    CLASS,
+    METHOD,
+    VARIABLE
+  }
+
+  enum NullabilityTarget {
+    METHOD,
+    PARAMETER,
+    FIELD
+  }
+
+  interface NullabilityData {
+    @Nullable
+    AnnotationInstance annotation();
+
+    @Nullable
+    Tree declaration();
+
+    NullabilityType type();
+
+    NullabilityLevel level();
+
+    boolean metaAnnotation();
+
+    boolean isNonNull(NullabilityLevel minLevel, boolean ignoreMetaAnnotation, boolean defaultValue);
+
+    boolean isNullable(NullabilityLevel minLevel, boolean ignoreMetaAnnotation, boolean defaultValue);
+
+    boolean isStrongNullable(NullabilityLevel minLevel, boolean ignoreMetaAnnotation, boolean defaultValue);
+  }
 
 }

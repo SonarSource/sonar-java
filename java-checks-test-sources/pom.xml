@@ -32,6 +32,7 @@
       <groupId>org.checkerframework</groupId>
       <artifactId>checker-compat-qual</artifactId>
       <version>2.5.5</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
@@ -173,6 +174,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>io.reactivex.rxjava3</groupId>
+      <artifactId>rxjava</artifactId>
+      <version>3.1.2</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
       <version>5.0.6.RELEASE</version>
@@ -225,6 +232,12 @@
       <groupId>org.springframework.data</groupId>
       <artifactId>spring-data-mongodb</artifactId>
       <version>2.0.8.RELEASE</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>mongo-java-driver</artifactId>
+      <version>3.12.10</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -392,6 +405,13 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>annotations</artifactId>
+      <version>3.0.0</version>
+      <type>jar</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-collections4</artifactId>
       <version>4.1</version>
@@ -490,6 +510,18 @@
       <groupId>org.eclipse.equinox</groupId>
       <artifactId>common</artifactId>
       <version>3.6.200-v20130402-1505</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jdt</groupId>
+      <artifactId>org.eclipse.jdt.annotation</artifactId>
+      <version>2.2.600</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jgit</groupId>
+      <artifactId>org.eclipse.jgit</artifactId>
+      <version>5.13.0.202109080827-r</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.easymock</groupId>
@@ -778,6 +810,18 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
       <version>5.2.7.RELEASE</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-netbeans-api-annotations-common</artifactId>
+      <version>RELEASE125</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.projectreactor</groupId>
+      <artifactId>reactor-core</artifactId>
+      <version>3.4.11</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

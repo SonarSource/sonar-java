@@ -19,13 +19,13 @@
  */
 package org.sonar.java.model;
 
+import java.io.File;
+import java.lang.reflect.Constructor;
 import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Modifier;
-
-import java.io.File;
-import java.lang.reflect.Constructor;
+import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 
 import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isPrivate;
@@ -62,4 +62,13 @@ class ModifiersUtilsTest {
     assertThat(ModifiersUtils.findModifier(classTree.modifiers(), Modifier.PUBLIC)).isPresent();
     assertThat(ModifiersUtils.findModifier(classTree.modifiers(), Modifier.ABSTRACT)).isNotPresent();
   }
+
+  @Test
+  void test_package_annotations() {
+    File file = new File("src/main/java/org/sonar/java/model/package-info.java");
+    CompilationUnitTree tree = JParserTestUtils.parse(file);
+    PackageDeclarationTree packageDeclaration = tree.packageDeclaration();
+    assertThat(ModifiersUtils.getAnnotations(packageDeclaration)).hasSize(2);
+  }
+
 }

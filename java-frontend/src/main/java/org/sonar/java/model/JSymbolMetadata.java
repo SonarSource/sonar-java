@@ -19,21 +19,34 @@
  */
 package org.sonar.java.model;
 
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import static org.sonar.java.model.JSymbolMetadataNullabilityHelper.getNullabilityDataAtLevel;
 
 final class JSymbolMetadata implements SymbolMetadata {
 
+  public static final NullabilityData UNKNOWN_NULLABILITY = new JNullabilityData(
+    NullabilityType.UNKNOWN, NullabilityLevel.UNKNOWN, null, null, false);
+
   private final JSema sema;
+  private final Symbol symbol;
   private final IAnnotationBinding[] annotationBindings;
 
   /**
@@ -41,13 +54,17 @@ final class JSymbolMetadata implements SymbolMetadata {
    */
   private List<AnnotationInstance> annotations;
 
-  JSymbolMetadata(JSema sema, IAnnotationBinding[] annotationBindings) {
+  private final Map<NullabilityTarget, NullabilityData> nullabilityCache = new EnumMap<>(NullabilityTarget.class);
+
+  JSymbolMetadata(JSema sema, Symbol symbol, IAnnotationBinding[] annotationBindings) {
     this.sema = Objects.requireNonNull(sema);
+    this.symbol = symbol;
     this.annotationBindings = annotationBindings;
   }
 
-  JSymbolMetadata(JSema sema, IAnnotationBinding[] typeAnnotationBindings, IAnnotationBinding[] annotationBindings) {
+  JSymbolMetadata(JSema sema, Symbol symbol, IAnnotationBinding[] typeAnnotationBindings, IAnnotationBinding[] annotationBindings) {
     this.sema = Objects.requireNonNull(sema);
+    this.symbol = symbol;
     this.annotationBindings = new IAnnotationBinding[typeAnnotationBindings.length + annotationBindings.length];
     System.arraycopy(typeAnnotationBindings, 0, this.annotationBindings, 0, typeAnnotationBindings.length);
     System.arraycopy(annotationBindings, 0, this.annotationBindings, typeAnnotationBindings.length, annotationBindings.length);
@@ -83,6 +100,167 @@ final class JSymbolMetadata implements SymbolMetadata {
       }
     }
     return null;
+  }
+
+  @Override
+  public NullabilityData nullabilityData() {
+    NullabilityTarget target = getTarget(symbol);
+    if (target == null) {
+      return UNKNOWN_NULLABILITY;
+    }
+    return nullabilityData(target);
+  }
+
+  @Override
+  public NullabilityData nullabilityData(NullabilityTarget target) {
+    return nullabilityCache.computeIfAbsent(target, this::resolveNullability);
+  }
+
+  @Nullable
+  @Override
+  public AnnotationTree findAnnotationTree(AnnotationInstance annotationInstance) {
+    Tree declaration = symbol.declaration();
+    if (declaration != null) {
+      return findAnnotationTree(ModifiersUtils.getAnnotations(declaration), annotationInstance);
+    }
+    return null;
+  }
+
+  @Nullable
+  private static AnnotationTree findAnnotationTree(List<AnnotationTree> annotations, AnnotationInstance annotationInstance) {
+    for (AnnotationTree annotationTree : annotations) {
+      if (annotationTree.symbolType().symbol() == annotationInstance.symbol() &&
+        annotationTree.arguments().size() == annotationInstance.values().size()) {
+        return annotationTree;
+      }
+    }
+    return null;
+  }
+
+  private NullabilityData resolveNullability(NullabilityTarget target) {
+    NullabilityLevel currentLevel = getLevel(symbol);
+    Optional<NullabilityData> nullabilityDataAtLevel = getNullabilityDataAtLevel(this, target, currentLevel);
+    if (nullabilityDataAtLevel.isPresent()) {
+      return nullabilityDataAtLevel.get();
+    }
+
+    // Not annotated or meta annotated, check upper level...
+    if (symbol.isPackageSymbol()) {
+      return UNKNOWN_NULLABILITY;
+    }
+    Symbol owner = symbol.owner();
+    return owner == null ? UNKNOWN_NULLABILITY : owner.metadata().nullabilityData(target);
+  }
+
+  private static NullabilityLevel getLevel(Symbol symbol) {
+    if (symbol.isVariableSymbol()) {
+      return NullabilityLevel.VARIABLE;
+    } else if (symbol.isMethodSymbol()) {
+      return NullabilityLevel.METHOD;
+    } else if (symbol.isTypeSymbol()) {
+      return NullabilityLevel.CLASS;
+    } else if (symbol.isPackageSymbol()) {
+      return NullabilityLevel.PACKAGE;
+    }
+    return NullabilityLevel.UNKNOWN;
+  }
+
+  @CheckForNull
+  private static NullabilityTarget getTarget(Symbol symbol) {
+    if (symbol.isMethodSymbol()) {
+      return NullabilityTarget.METHOD;
+    } else if (symbol.isVariableSymbol()) {
+      Symbol owner = symbol.owner();
+      if (owner != null && owner.isTypeSymbol()) {
+        return NullabilityTarget.FIELD;
+      }
+      Tree variableTree = symbol.declaration();
+      if (variableTree == null) {
+        return NullabilityTarget.PARAMETER;
+      }
+      Tree variableTreeParent = variableTree.parent();
+      if (variableTreeParent == null || variableTreeParent instanceof MethodTree) {
+        return NullabilityTarget.PARAMETER;
+      }
+      // when variableTreeParent is instance of LambdaExpressionTree we intentionally do not return PARAMETER
+      // because parameters of lambda are not supported and if it's not a lambda parameter, then it's a local
+      // variable which is also not supported
+    }
+    return null;
+  }
+
+  static final class JNullabilityData implements NullabilityData {
+
+    private final NullabilityType type;
+    private final NullabilityLevel level;
+
+    @Nullable
+    private final AnnotationInstance annotation;
+    @Nullable
+    private final AnnotationTree annotationTree;
+
+    private final boolean metaAnnotation;
+
+    public JNullabilityData(NullabilityType type, NullabilityLevel level, @Nullable AnnotationInstance annotation,
+      @Nullable AnnotationTree annotationTree, boolean metaAnnotation) {
+      this.type = type;
+      this.level = level;
+      this.annotation = annotation;
+      this.annotationTree = annotationTree;
+      this.metaAnnotation = metaAnnotation;
+    }
+
+    @Override
+    public NullabilityType type() {
+      return type;
+    }
+
+    @Override
+    public NullabilityLevel level() {
+      return level;
+    }
+
+    @Override
+    public boolean metaAnnotation() {
+      return metaAnnotation;
+    }
+
+    @Override
+    public boolean isNonNull(NullabilityLevel minLevel, boolean ignoreMetaAnnotation, boolean defaultValue) {
+      return testNullabilityType(minLevel, ignoreMetaAnnotation, defaultValue, t -> t == NullabilityType.NON_NULL);
+    }
+
+    @Override
+    public boolean isNullable(NullabilityLevel minLevel, boolean ignoreMetaAnnotation, boolean defaultValue) {
+      return testNullabilityType(minLevel, ignoreMetaAnnotation, defaultValue,
+        t -> t == NullabilityType.STRONG_NULLABLE || t == NullabilityType.WEAK_NULLABLE);
+    }
+
+    @Override
+    public boolean isStrongNullable(NullabilityLevel minLevel, boolean ignoreMetaAnnotation, boolean defaultValue) {
+      return testNullabilityType(minLevel, ignoreMetaAnnotation, defaultValue, t -> t == NullabilityType.STRONG_NULLABLE);
+    }
+
+    private boolean testNullabilityType(NullabilityLevel minLevel, boolean ignoreMetaAnnotation, boolean defaultValue, Predicate<NullabilityType> typePredicate) {
+      if (type == NullabilityType.UNKNOWN || (ignoreMetaAnnotation && metaAnnotation)) {
+        return defaultValue;
+      } else if (typePredicate.test(type)) {
+        return minLevel.ordinal() <= level.ordinal();
+      }
+      return false;
+    }
+
+    @Nullable
+    @Override
+    public AnnotationInstance annotation() {
+      return annotation;
+    }
+
+    @Nullable
+    @Override
+    public Tree declaration() {
+      return annotationTree;
+    }
   }
 
   static final class JAnnotationInstance implements AnnotationInstance {

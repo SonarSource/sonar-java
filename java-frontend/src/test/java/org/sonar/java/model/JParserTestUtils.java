@@ -21,11 +21,18 @@ package org.sonar.java.model;
 
 import com.google.common.io.Files;
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JParserTestUtils {
 
@@ -34,6 +41,8 @@ public class JParserTestUtils {
   }
 
   public static final List<File> DEFAULT_CLASSPATH = Arrays.asList(new File("target/test-classes"), new File("target/classes"));
+
+  public static final Path CHECKS_TEST_DIR = Paths.get("..", "java-checks-test-sources");
 
   public static CompilationUnitTree parse(File file) {
     return parse(file, DEFAULT_CLASSPATH);
@@ -68,6 +77,22 @@ public class JParserTestUtils {
   public static CompilationUnitTree parse(String unitName, String source, List<File> classpath) {
     String version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
     return JParser.parse(JParserConfig.Mode.FILE_BY_FILE.create(version, classpath).astParser(), version, unitName, source);
+  }
+
+  public static List<File> checksTestClassPath() throws IOException {
+    Path testProjectDir = CHECKS_TEST_DIR.toRealPath();
+    List<File> classPath = new ArrayList<>();
+    classPath.add(testProjectDir.resolve(Paths.get("target", "classes")).toFile());
+    Path jarFolder = testProjectDir.resolve(Paths.get("target", "test-jars"));
+    try (
+      Stream<Path> walker = java.nio.file.Files.list(jarFolder)) {
+      walker
+        .filter(path -> path.getFileName().toString().endsWith(".jar"))
+        .map(Path::toFile)
+        .forEach(classPath::add);
+    }
+    assertThat(classPath).hasSizeGreaterThan(300);
+    return classPath;
   }
 
 }

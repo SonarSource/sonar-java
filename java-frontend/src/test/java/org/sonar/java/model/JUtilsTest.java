@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class JUtilsTest {
 
-  private static final JSema SEMA = test("").sema;
+  static final JSema SEMA = test("").sema;
   private static final Type OBJECT_TYPE = SEMA.type(SEMA.resolveType("java.lang.Object"));
 
   @Nested
