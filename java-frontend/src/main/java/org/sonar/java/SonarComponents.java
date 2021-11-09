@@ -22,6 +22,7 @@ package org.sonar.java;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,6 +47,7 @@ import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
+import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
@@ -92,6 +94,7 @@ public class SonarComponents {
   private final List<JavaCheck> jspChecks;
   private final List<Checks<JavaCheck>> allChecks;
   private SensorContext context;
+  private Method methodSetQuickFixAvailable;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath,
@@ -142,6 +145,11 @@ public class SonarComponents {
         registerMainCheckClasses(registrarContext.repositoryKey(), checkClasses);
         registerTestCheckClasses(registrarContext.repositoryKey(), testCheckClasses);
       }
+    }
+    try {
+      this.methodSetQuickFixAvailable = NewIssue.class.getMethod("setQuickFixAvailable", boolean.class);
+    } catch (NoSuchMethodException e) {
+      this.methodSetQuickFixAvailable = null;
     }
   }
 
@@ -302,6 +310,11 @@ public class SonarComponents {
 
   public boolean isQuickFixCompatible() {
     return isSonarLintContext() && ((SonarLintRuntime) context.runtime()).getSonarLintPluginApiVersion().isGreaterThanOrEqual(SONARLINT_6_3);
+  }
+
+  @Nullable
+  public Method getMethodSetQuickFixAvailable() {
+    return methodSetQuickFixAvailable;
   }
 
   public List<String> fileLines(InputFile inputFile) {

@@ -19,6 +19,7 @@
  */
 package org.sonar.java.reporting;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -55,6 +56,8 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
   private final InputFile inputFile;
   @Nullable
   private final SonarComponents sonarComponents;
+  private final Method methodSetQuickFixAvailable;
+  private final boolean isQuickFixCompatible;
 
   private JavaCheck rule;
   private AnalyzerMessage.TextSpan textSpan;
@@ -72,6 +75,8 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
     this.inputFile = inputFile;
     this.sonarComponents = sonarComponents;
     this.reported = false;
+    isQuickFixCompatible = sonarComponents != null ? sonarComponents.isQuickFixCompatible() : false;
+    methodSetQuickFixAvailable = sonarComponents != null ? sonarComponents.getMethodSetQuickFixAvailable() : null;
   }
 
   private static void requiresValueToBeSet(Object target, String targetName) {
@@ -227,32 +232,40 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
       }
     }
 
-
-    if (!quickFixes.isEmpty() && sonarComponents.isQuickFixCompatible()) {
-      addQuickFixes(ruleKey.get(), (NewSonarLintIssue) newIssue);
+    final List<JavaQuickFix> flatQuickFixes = quickFixes.stream()
+      .flatMap(s -> s.get().stream())
+      .collect(Collectors.toList());
+    if (!flatQuickFixes.isEmpty()) {
+      if (isQuickFixCompatible) {
+        addQuickFixes(inputFile, ruleKey.get(), flatQuickFixes, (NewSonarLintIssue) newIssue);
+      } else if (methodSetQuickFixAvailable != null) {
+        try {
+          methodSetQuickFixAvailable.invoke(newIssue, true);
+        } catch (ReflectiveOperationException e) {
+          throw new RuntimeException(e);
+        }
+      }
     }
 
     newIssue.save();
     reported = true;
   }
 
-  private void addQuickFixes(RuleKey ruleKey, NewSonarLintIssue sonarLintIssue) {
+  private static void addQuickFixes(InputFile inputFile, RuleKey ruleKey, Iterable<JavaQuickFix> quickFixes, NewSonarLintIssue sonarLintIssue) {
     try {
-      for (Supplier<List<JavaQuickFix>> listSupplier : quickFixes) {
-        for (JavaQuickFix quickFix : listSupplier.get()) {
-          NewQuickFix newQuickFix = sonarLintIssue.newQuickFix()
-            .message(quickFix.getDescription());
+      for (JavaQuickFix quickFix : quickFixes) {
+        NewQuickFix newQuickFix = sonarLintIssue.newQuickFix()
+          .message(quickFix.getDescription());
 
-          NewInputFileEdit edit = newQuickFix.newInputFileEdit().on(inputFile);
+        NewInputFileEdit edit = newQuickFix.newInputFileEdit().on(inputFile);
 
-          quickFix.getTextEdits().stream()
-            .map(javaTextEdit ->
-              edit.newTextEdit().at(rangeFromTextSpan(inputFile, javaTextEdit.getTextSpan()))
-                .withNewText(javaTextEdit.getReplacement()))
-            .forEach(edit::addTextEdit);
-          newQuickFix.addInputFileEdit(edit);
-          sonarLintIssue.addQuickFix(newQuickFix);
-        }
+        quickFix.getTextEdits().stream()
+          .map(javaTextEdit ->
+            edit.newTextEdit().at(rangeFromTextSpan(inputFile, javaTextEdit.getTextSpan()))
+              .withNewText(javaTextEdit.getReplacement()))
+          .forEach(edit::addTextEdit);
+        newQuickFix.addInputFileEdit(edit);
+        sonarLintIssue.addQuickFix(newQuickFix);
       }
     } catch (RuntimeException e) {
       // We still want to report the issue if we did not manage to create a quick fix.
