@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -205,7 +206,11 @@ public class ExpressionsHelper {
 
   private static boolean isAssignedToNonSerializable(ExpressionTree expression) {
     return ExpressionUtils.extractIdentifierSymbol(expression)
-      .filter(symbol -> initializedAndAssignedExpressionStream(symbol).anyMatch(ExpressionsHelper::isNotSerializable))
+      .filter(symbol ->
+        initializedAndAssignedExpressionStream(symbol)
+          .map(ExpressionTree::symbolType)
+          .filter(Predicate.not(Type::isUnknown))
+          .anyMatch(ExpressionsHelper::isNonSerializable))
       .isPresent();
   }
 
