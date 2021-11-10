@@ -75,7 +75,7 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
     this.inputFile = inputFile;
     this.sonarComponents = sonarComponents;
     this.reported = false;
-    isQuickFixCompatible = sonarComponents != null ? sonarComponents.isQuickFixCompatible() : false;
+    isQuickFixCompatible = sonarComponents != null && sonarComponents.isQuickFixCompatible();
     methodSetQuickFixAvailable = sonarComponents != null ? sonarComponents.getMethodSetQuickFixAvailable() : null;
   }
 
@@ -204,8 +204,9 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
       return;
     }
 
+    final RuleKey ruleKeyVal = ruleKey.get();
     NewIssue newIssue = sonarComponents.context().newIssue()
-      .forRule(ruleKey.get())
+      .forRule(ruleKeyVal)
       .gap(cost == null ? 0 : cost.doubleValue());
 
     newIssue.at(
@@ -232,23 +233,31 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
       }
     }
 
-    final List<JavaQuickFix> flatQuickFixes = quickFixes.stream()
-      .flatMap(s -> s.get().stream())
-      .collect(Collectors.toList());
-    if (!flatQuickFixes.isEmpty()) {
-      if (isQuickFixCompatible) {
-        addQuickFixes(inputFile, ruleKey.get(), flatQuickFixes, (NewSonarLintIssue) newIssue);
-      } else if (methodSetQuickFixAvailable != null) {
-        try {
-          methodSetQuickFixAvailable.invoke(newIssue, true);
-        } catch (ReflectiveOperationException e) {
-          throw new RuntimeException(e);
-        }
-      }
-    }
+    handleQuickFixes(ruleKeyVal, newIssue);
 
     newIssue.save();
     reported = true;
+  }
+
+  private void handleQuickFixes(RuleKey ruleKey, NewIssue newIssue) {
+    if (quickFixes.isEmpty() || (!isQuickFixCompatible && methodSetQuickFixAvailable == null)) {
+      return;
+    }
+    final List<JavaQuickFix> flatQuickFixes = quickFixes.stream()
+      .flatMap(s -> s.get().stream())
+      .collect(Collectors.toList());
+    if (flatQuickFixes.isEmpty()) {
+      return;
+    }
+    if (isQuickFixCompatible) {
+      addQuickFixes(inputFile, ruleKey, flatQuickFixes, (NewSonarLintIssue) newIssue);
+    } else if (methodSetQuickFixAvailable != null) {
+      try {
+        methodSetQuickFixAvailable.invoke(newIssue, true);
+      } catch (ReflectiveOperationException e) {
+        LOG.warn("Could not call NewIssue.setQuickFixAvailable() method", e);
+      }
+    }
   }
 
   private static void addQuickFixes(InputFile inputFile, RuleKey ruleKey, Iterable<JavaQuickFix> quickFixes, NewSonarLintIssue sonarLintIssue) {
