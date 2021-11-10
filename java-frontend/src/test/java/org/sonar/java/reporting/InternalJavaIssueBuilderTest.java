@@ -21,6 +21,7 @@ package org.sonar.java.reporting;
 
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -68,7 +69,9 @@ import org.sonarsource.sonarlint.plugin.api.issue.NewSonarLintIssue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
@@ -438,14 +441,14 @@ class InternalJavaIssueBuilderTest {
     @Test
     void test_report_issue_with_broken_quick_fix() {
       when(sc.isQuickFixCompatible()).thenReturn(true);
+      when(sct.newIssue()).thenReturn(new MockSonarLintIssue(sct) {
+        @Override
+        public NewQuickFix newQuickFix() {
+          throw new RuntimeException("Exception message");
+        }
+      });
 
-      ClassTree tree = (ClassTree) cut.types().get(0);
-      Tree member = tree.members().get(0);
-      new InternalJavaIssueBuilder(ipf, sc).forRule(CHECK)
-        .onRange(member.firstToken(), member.lastToken())
-        .withMessage("msg")
-        .withQuickFix(() -> { throw new RuntimeException("Exception message"); })
-        .report();
+      addIssueWithQuickFix();
 
       Collection<Issue> issues = sct.allIssues();
       assertThat(issues).hasSize(1);
@@ -472,6 +475,37 @@ class InternalJavaIssueBuilderTest {
       assertThat(issue.quickFixes).isEmpty();
     }
 
+    @Test
+    void test_quick_fix_available_for_advertisement() throws NoSuchMethodException {
+      final Method methodSetQuickFixAvailable = MockSonarLintIssue.class.getMethod("setQuickFixAvailable", boolean.class);
+      when(sc.getMethodSetQuickFixAvailable()).thenReturn(methodSetQuickFixAvailable);
+
+      addIssueWithQuickFix();
+
+      Collection<Issue> issues = sct.allIssues();
+      assertThat(issues).hasSize(1);
+      MockSonarLintIssue issue = (MockSonarLintIssue) issues.iterator().next();
+
+      assertThat(issue.saved).isTrue();
+      assertThat(issue.quickFixes).isEmpty();
+      assertTrue(issue.isQuickFixAvailable());
+    }
+
+    @Test
+    void test_quick_fix_not_available_for_advertisement() {
+      when(sc.getMethodSetQuickFixAvailable()).thenReturn(null);
+
+      addIssueWithQuickFix();
+
+      Collection<Issue> issues = sct.allIssues();
+      assertThat(issues).hasSize(1);
+      MockSonarLintIssue issue = (MockSonarLintIssue) issues.iterator().next();
+
+      assertThat(issue.saved).isTrue();
+      assertThat(issue.quickFixes).isEmpty();
+      assertFalse(issue.isQuickFixAvailable());
+    }
+
     private void addIssueWithQuickFix() {
       ClassTree tree = (ClassTree) cut.types().get(0);
       Tree member = tree.members().get(0);
@@ -489,6 +523,7 @@ class InternalJavaIssueBuilderTest {
     private final DefaultSonarLintIssue parent = new DefaultSonarLintIssue(null, null, null);
     private final SensorContextTester context;
     private final List<DefaultQuickFix> quickFixes = new ArrayList<>();
+    private boolean isQuickFixAvailable = false;
     private boolean saved;
 
     MockSonarLintIssue(SensorContextTester context) {
@@ -534,6 +569,12 @@ class InternalJavaIssueBuilderTest {
       throw new IllegalStateException("Not supposed to be tested");
     }
 
+    // @Override in SonarQube 9.2
+    public NewIssue setQuickFixAvailable(boolean b) {
+      isQuickFixAvailable = b;
+      return this;
+    }
+
     @Override
     public NewIssue addFlow(Iterable<NewIssueLocation> flowLocations) {
       throw new IllegalStateException("Not supposed to be tested");
@@ -574,6 +615,11 @@ class InternalJavaIssueBuilderTest {
     @Override
     public List<Flow> flows() {
       throw new IllegalStateException("Not supposed to be tested");
+    }
+
+    // @Override in SonarQube 9.2
+    public boolean isQuickFixAvailable() {
+      return isQuickFixAvailable;
     }
   }
 

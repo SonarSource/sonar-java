@@ -77,6 +77,7 @@ import org.sonarsource.sonarlint.core.container.global.SonarLintRuntimeImpl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -398,6 +399,15 @@ class SonarComponentsTest {
     SonarRuntime sonarLintWithQuickFix = new SonarLintRuntimeImpl(V8_9, Version.create(6, 4), -1L);
     context.setRuntime(sonarLintWithQuickFix);
     assertThat(sonarComponents.isQuickFixCompatible()).isTrue();
+  }
+
+  @Test
+  void knows_if_quickfixes_can_be_advertised() {
+    SensorContextTester context = SensorContextTester.create(new File(""));
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    sonarComponents.setSensorContext(context);
+
+    assertNull(sonarComponents.getMethodSetQuickFixAvailable());
   }
 
   @Test
