@@ -82,6 +82,18 @@ class NonSerializableWriteCheck {
     Enumeration<String> enumeration = Collections.emptyEnumeration();
     out.writeObject(enumeration);
   }
+
+  void shouldNotLeadToStackoverflow(ObjectOutputStream out, Object obj1) throws IOException {
+    obj1 = obj1;
+    out.writeObject(obj1);
+  }
+
+  void shouldNotLeadToStackoverflow2(ObjectOutputStream out, Object obj1, Object obj2) throws IOException {
+    Object tmp = obj1;
+    obj1 = obj2;
+    obj2 = tmp;
+    out.writeObject(obj1);
+  }
 }
 
 class MySerializable implements Serializable {
