@@ -255,7 +255,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
-      <version>4.3.7.RELEASE</version>
+      <version>5.3.12</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

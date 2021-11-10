@@ -25,10 +25,15 @@ class SpringTest {
   public void fakeTest1() throws Exception { // Compliant
     getResultActions().andExpect(getResultMatcher());
   }
-  
+
   @Test
   public void fakeTest2() throws Exception { // Compliant
     getResultActions().andDo(getResultHandler()).andExpect(getResultMatcher()).andReturn();
+  }
+
+  @Test
+  public void andExpectAllTest() throws Exception { // Compliant
+    getResultActions().andDo(getResultHandler()).andExpectAll(getResultMatcher(), getResultMatcher()).andReturn();
   }
   
   private ResultActions getResultActions() {
