@@ -60,7 +60,10 @@ public class SerializableSuperConstructorCheck extends IssuableSubscriptionVisit
   }
 
   private static boolean isNotSerializableMissingNoArgConstructor(@Nullable Type superclass) {
-    return superclass != null && !isSerializable(superclass) && !hasNonPrivateNoArgConstructor(superclass);
+    return superclass != null
+      && !superclass.isUnknown()
+      && !isSerializable(superclass)
+      && !hasNonPrivateNoArgConstructor(superclass);
   }
 
   private static boolean isSerializable(Type type) {
