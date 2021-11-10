@@ -31,3 +31,11 @@ class G {
     Object writeReplace() throws ObjectStreamException { return null; }
   };
 }
+
+class Az<T> implements Serializable {
+  public Az(String arg1) {}
+  private Az() {}
+}
+
+class Bz extends Az<Unknown> implements Serializable {}
+class Bz2 extends Az<String> implements Serializable {}
