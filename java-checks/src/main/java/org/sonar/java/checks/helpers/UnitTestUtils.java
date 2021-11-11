@@ -63,8 +63,7 @@ public final class UnitTestUtils {
     // assertJ
     MethodMatchers.create().ofSubTypes("org.assertj.core.api.AbstractAssert").anyName().withAnyParameters().build(),
     // spring
-    MethodMatchers.create().ofTypes("org.springframework.test.web.servlet.ResultActions").names("andExpect").withAnyParameters().build(),
-    MethodMatchers.create().ofTypes("org.springframework.test.web.servlet.ResultActions").names("andExpectAll").withAnyParameters().build(),
+MethodMatchers.create().ofTypes("org.springframework.test.web.servlet.ResultActions").names("andExpect", "andExpectAll").withAnyParameters().build(),
     // JMockit
     MethodMatchers.create().ofTypes("mockit.Verifications").constructor().withAnyParameters().build(),
     // Eclipse Vert.x
