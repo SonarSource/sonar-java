@@ -49,8 +49,8 @@ class ChangeMethodContractCheck_B extends ChangeMethodContractCheck {
   String annotatedStrongNullable(Object a) { return null; } // Compliant: Weak instead of Strong Nullable is accepted.
   // Annotations on methods is the opposite of arguments: if the method from the parent claim to never return null, the method from the child
   // that can actually be executed at runtime should not return null.
-  @javax.annotation.CheckForNull // Noncompliant {{Remove this "CheckForNull" annotation to honor the overridden method's contract.}}
-  String annotatedNonNull(Object a) { return null; }
+  @javax.annotation.CheckForNull
+  String annotatedNonNull(Object a) { return null; } // Noncompliant {{Fix the incompatibility of the annotation @CheckForNull to honor @Nonnull of the overridden method.}}
 
   @javax.annotation.CheckForNull // Compliant: unrelated method.
   void unrelatedMethod(Object a) { }
@@ -60,9 +60,9 @@ class ChangeMethodContractCheck_B extends ChangeMethodContractCheck {
 
 class ChangeMethodContractCheck_C extends ChangeMethodContractCheck {
   @Override
-  void argAnnotatedWeakNullable(@javax.annotation.Nonnull @MyAnnotation Object a) { } // Noncompliant {{Remove this "Nonnull" annotation to honor the overridden method's contract.}}
+  void argAnnotatedWeakNullable(@javax.annotation.Nonnull @MyAnnotation Object a) { } // Noncompliant {{Fix the incompatibility of the annotation @Nonnull to honor @Nullable of the overridden method.}}
   @Override
-  void argAnnotatedStrongNullable(@javax.annotation.Nonnull Object a) { } // Noncompliant
+  void argAnnotatedStrongNullable(@javax.annotation.Nonnull Object a) { } // Noncompliant {{Fix the incompatibility of the annotation @Nonnull to honor @CheckForNull of the overridden method.}}
   @Override
   void argAnnotatedNonNull(@javax.annotation.Nonnull Object a, @javax.validation.constraints.NotNull Object b) { } // Compliant: Nonnull to Nonnull is fine (even if different annotations).
 
@@ -74,8 +74,8 @@ class ChangeMethodContractCheck_C extends ChangeMethodContractCheck {
   @javax.annotation.Nonnull
   String annotatedWeakNullable(Object a) { return ""; } // Compliant: Weak Nullable to Nonnull
   @Deprecated
-  @javax.annotation.Nullable // Noncompliant [[sc=3;ec=29]] {{Remove this "Nullable" annotation to honor the overridden method's contract.}}
-  String annotatedNonNull(Object a) { return null; }
+  @javax.annotation.Nullable
+  String annotatedNonNull(Object a) { return null; } // Noncompliant [[sc=3;ec=9;secondary=-1,30]] {{Fix the incompatibility of the annotation @Nullable to honor @Nonnull of the overridden method.}}
 
   public boolean equals(@javax.annotation.Nonnull Object o) { return false; } // Compliant, handled by by S4454.
 }
@@ -109,26 +109,26 @@ class ChangeMethodContractCheck_WithMetaAnnotations {
   }
 
   class Child extends Parent {
-    // Parent and Child with meta-annotation, leads to FN.
-    void argAnnotatedNullableViaMetaAnnotation(@MyNonnullMetaAnnotation Object a) { } // FN
+    // Parent and Child with meta-annotation.
+    void argAnnotatedNullableViaMetaAnnotation(@MyNonnullMetaAnnotation Object a) { } // Noncompliant {{Fix the incompatibility of the annotation @Nonnull via meta-annotation to honor @CheckForNull via meta-annotation of the overridden method.}}
     // Parent with meta-annotation, then Child annotated directly works
-    void argAnnotatedNullableViaMetaAnnotation2(@javax.annotation.Nonnull Object a) { } // Noncompliant
-    // Parent directly annotated but Child with meta-annotations leads to FN.
-    void argAnnotatedDirectlyNullable(@MyNonnullMetaAnnotation Object a) { }
+    void argAnnotatedNullableViaMetaAnnotation2(@javax.annotation.Nonnull Object a) { } // Noncompliant {{Fix the incompatibility of the annotation @Nonnull to honor @CheckForNull via meta-annotation of the overridden method.}}
+    // Parent directly annotated but Child with meta-annotations.
+    void argAnnotatedDirectlyNullable(@MyNonnullMetaAnnotation Object a) { } // Noncompliant {{Fix the incompatibility of the annotation @Nonnull via meta-annotation to honor @CheckForNull of the overridden method.}}
 
     @Override
-    // Parent and Child with meta-annotation, leads to FN.
+    // Parent and Child with meta-annotation.
     @MyCheckFroNullMetaAnnotation
-    String annotatedNonnullViaMetaAnnotation(Object a) { return null; } // FN
+    String annotatedNonnullViaMetaAnnotation(Object a) { return null; } // Noncompliant {{Fix the incompatibility of the annotation @CheckForNull via meta-annotation to honor @Nonnull via meta-annotation of the overridden method.}}
 
     // Parent with meta-annotation, then child annotated directly works
-    @javax.annotation.CheckForNull // Noncompliant
-    String annotatedNonnullViaMetaAnnotation2(Object a) { return "null"; }
+    @javax.annotation.CheckForNull
+    String annotatedNonnullViaMetaAnnotation2(Object a) { return "null"; } // Noncompliant {{Fix the incompatibility of the annotation @CheckForNull to honor @Nonnull via meta-annotation of the overridden method.}}
 
     @Override
-    // Parent directly annotated but Child with meta-annotations leads to FN.
+    // Parent directly annotated but Child with meta-annotations.
     @MyCheckFroNullMetaAnnotation
-    String annotatedNonnullDirectly(Object a) { return "null"; } // FN
+    String annotatedNonnullDirectly(Object a) { return "null"; } // Noncompliant [[secondary=92,107]] {{Fix the incompatibility of the annotation @CheckForNull via meta-annotation to honor @Nonnull of the overridden method.}}
   }
 }
 
@@ -149,15 +149,15 @@ class ChangeMethodContractCheck_NonnullWithArguments {
   }
 
   class Child extends Parent {
-    // FP, parent is not strictly not null (NotNull with arguments).
+    // Parent is not strictly not null (NotNull with arguments).
     @Override
-    @javax.annotation.CheckForNull // Noncompliant
+    @javax.annotation.CheckForNull
     String annotatedNotNullWithArg(Object a) { return null; }
 
     @Override
     // This one is a TP though.
-    @javax.annotation.CheckForNull // Noncompliant
-    String annotatedNotNullWithoutArg(Object a) { return null; }
+    @javax.annotation.CheckForNull
+    String annotatedNotNullWithoutArg(Object a) { return null; } // Noncompliant {{Fix the incompatibility of the annotation @CheckForNull to honor @NotNull of the overridden method.}}
 
     // It works correctly for arguments though.
     void argAnnotatedNoNullWithArg(@javax.annotation.CheckForNull Object a) { }
@@ -185,11 +185,11 @@ class ChangeMethodContractCheck_NullableViaNonnull {
 
   class Child extends Parent {
     @Override
-    @javax.annotation.Nonnull(when=When.MAYBE) // FN, Nonnull to Nullable should be reported
-    String annotatedNonnull(Object a) { return "null"; }
+    @javax.annotation.Nonnull(when=When.MAYBE) // Nonnull to Nullable should be reported
+    String annotatedNonnull(Object a) { return "null"; } // Noncompliant {{Fix the incompatibility of the annotation @Nonnull to honor @Nonnull of the overridden method.}}
     @Override
-    @javax.annotation.Nonnull(when=When.UNKNOWN) // FN, Nonnull to Nullable should be reported
-    String annotatedNonnull2(Object a) { return "null"; }
+    @javax.annotation.Nonnull(when=When.UNKNOWN) // Nonnull to Nullable should be reported
+    String annotatedNonnull2(Object a) { return "null"; } // Noncompliant {{Fix the incompatibility of the annotation @Nonnull to honor @Nonnull of the overridden method.}}
     @Override
     @javax.annotation.CheckForNull // Compliant, Nullable to Nullable is compliant for return value, annotation with argument is correctly taken into account in the parent.
     String annotatedNullableViaNonNull(Object a) { return "null"; }
@@ -198,5 +198,22 @@ class ChangeMethodContractCheck_NullableViaNonnull {
     void argNullableViaNonnull1(@javax.annotation.Nonnull Object a) { } // Noncompliant
     void argNullableViaNonnull2(@javax.annotation.Nonnull Object a) { } // Noncompliant
     void argNonnullViaNonnull(@javax.annotation.Nonnull(when=When.MAYBE) Object a) { } // Compliant, Nonnull to CheckForNull
+  }
+}
+
+class ChangeMethodContractCheck_FromExternalDependency {
+
+  class ImplementsFunction implements com.google.common.base.Function<String, String> {
+
+    @Override
+    @javax.annotation.Nonnull
+    public String apply(@lombok.NonNull String s) { // Noncompliant [[sc=48;ec=49]] {{Fix the incompatibility of the annotation @NonNull to honor @Nullable of the overridden method.}}
+      return null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      return false;
+    }
   }
 }

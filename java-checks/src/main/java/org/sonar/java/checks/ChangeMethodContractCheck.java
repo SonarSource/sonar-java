@@ -19,18 +19,24 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.model.JUtils;
-import org.sonar.java.se.NullableAnnotationUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityData;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.PACKAGE;
 
 @Rule(key = "S2638")
 public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
@@ -63,18 +69,71 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
       VariableTree parameter = methodTree.parameters().get(i);
       checkParameter(parameter, JUtils.parameterAnnotations(overridee, i));
     }
-    if (NullableAnnotationUtils.isAnnotatedNonNull(overridee)) {
-      NullableAnnotationUtils.nullableAnnotation(methodTree.modifiers())
-        .ifPresent(annotation -> reportIssue(annotation, "Remove this \""+ annotation.symbolType().name() +"\" annotation to honor the overridden method's contract."));
+
+    // If the method from the parent claims to never return null, the method from the child
+    // that can actually be executed at runtime should not return null.
+    NullabilityData overrideeNullability = overridee.metadata().nullabilityData();
+    if (overrideeNullability.isNonNull(PACKAGE, false, false)) {
+      NullabilityData methodNullability = methodTree.symbol().metadata().nullabilityData();
+      if (methodNullability.isNullable(PACKAGE, false, false)) {
+        // returnType() returns null in case of constructor: the rule does not support them.
+        reportIssue(methodTree.returnType(), overrideeNullability, methodNullability);
+      }
     }
   }
 
   private void checkParameter(VariableTree parameter, SymbolMetadata overrideeParamMetadata) {
-    if (NullableAnnotationUtils.isAnnotatedNullable(overrideeParamMetadata)) {
-      NullableAnnotationUtils.nonNullAnnotation(parameter.modifiers())
-        .ifPresent(annotation -> reportIssue(annotation,
-          "Remove this \"" + annotation.annotationType().symbolType().name() + "\" annotation to honor the overridden method's contract."));
+    // Annotations on parameters is the opposite of return value: if arguments of the parent can be null, the child method has to accept null value.
+    NullabilityData overrideeParamNullability = overrideeParamMetadata.nullabilityData();
+    if (overrideeParamNullability.isNullable(PACKAGE, false, false)) {
+      NullabilityData paramNullability = parameter.symbol().metadata().nullabilityData();
+      if (paramNullability.isNonNull(PACKAGE, false, false)) {
+        reportIssue(parameter.simpleName(), overrideeParamNullability, paramNullability);
+      }
     }
+  }
+
+  private void reportIssue(Tree reportLocation, NullabilityData overrideeNullability, NullabilityData otherNullability) {
+    reportIssue(reportLocation,
+      String.format("Fix the incompatibility of the annotation %s to honor %s of the overridden method.",
+        nullabilityAsString(otherNullability),
+        nullabilityAsString(overrideeNullability)),
+      getSecondariesForAnnotations(otherNullability, overrideeNullability),
+      null);
+  }
+
+  private static String nullabilityAsString(NullabilityData nullabilityData) {
+    String name = nullabilityData.annotation().symbol().name();
+    if (nullabilityData.metaAnnotation()) {
+      name += " via meta-annotation";
+    }
+    String level = levelToString(nullabilityData.level());
+    return String.format("@%s%s", name, level);
+  }
+
+  private static String levelToString(NullabilityLevel level) {
+    switch (level) {
+      case PACKAGE:
+      case CLASS:
+        return String.format(" at %s level", level.toString().toLowerCase(Locale.ROOT));
+      case METHOD:
+      case VARIABLE:
+      default:
+        return "";
+    }
+  }
+
+  private static List<JavaFileScannerContext.Location> getSecondariesForAnnotations(NullabilityData childData, NullabilityData parentData) {
+    List<JavaFileScannerContext.Location> secondaries = new ArrayList<>();
+    Tree childDeclaration = childData.declaration();
+    if (childDeclaration != null) {
+      secondaries.add(new JavaFileScannerContext.Location("Child annotation", childDeclaration));
+    }
+    Tree parentDeclaration = parentData.declaration();
+    if (parentDeclaration != null) {
+      secondaries.add(new JavaFileScannerContext.Location("Overridden annotation", parentDeclaration));
+    }
+    return secondaries;
   }
 
 }

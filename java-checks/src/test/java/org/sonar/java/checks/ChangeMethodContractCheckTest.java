@@ -44,6 +44,14 @@ class ChangeMethodContractCheckTest {
   }
 
   @Test
+  void test_package_level_annotations_nullable_api() {
+    CheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/S2638_ChangeMethodContractCheck/nullableApi/ChangeMethodContractCheck.java"))
+      .withCheck(new ChangeMethodContractCheck())
+      .verifyIssues();
+  }
+
+  @Test
   void non_compiling() {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/ChangeMethodContractCheck.java"))
