@@ -237,6 +237,19 @@ class JUtilsTest {
     assertThat(JUtils.isEffectivelyFinal((Symbol.VariableSymbol) j.symbol())).isFalse();
   }
 
+  @Test
+  void placeholder_are_never_effectivelyFinal() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class A { void foo() { \"\".substring(1); } }");
+    ClassTreeImpl a = firstClass(cu);
+    MethodTreeImpl m = firstMethod(a);
+    ExpressionStatementTreeImpl es = (ExpressionStatementTreeImpl) m.block().body().get(0);
+    MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) es.expression();
+    Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) mit.symbol();
+    Symbol symbol = methodSymbol.declarationParameters().get(0);
+    assertThat(symbol.isVariableSymbol()).isTrue();
+    assertThat(JUtils.isEffectivelyFinal((Symbol.VariableSymbol) symbol)).isFalse();
+  }
+
   @Nested
   class IsLocalVariable {
     private final JavaTree.CompilationUnitTreeImpl cu = test("class C {\n"
@@ -279,6 +292,7 @@ class JUtilsTest {
       + "  void m(Object p) {\n"
       + "    String localVariable;\n"
       + "    m(this);\n"
+      + "    \"\".substring(1);\n"
       + "  }\n"
       + "}");
     private final ClassTreeImpl c = firstClass(cu);
@@ -314,16 +328,24 @@ class JUtilsTest {
       IdentifierTreeImpl arg0 = (IdentifierTreeImpl) mit.arguments().get(0);
       assertThat(JUtils.isParameter(arg0.symbol())).isFalse();
     }
+
+    @Test
+    void placeholder_symbols_are_parameters() {
+      ExpressionStatementTreeImpl es = (ExpressionStatementTreeImpl) m.block().body().get(2);
+      MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) es.expression();
+      Symbol.MethodSymbol symbol = (Symbol.MethodSymbol) mit.symbol();
+      assertThat(JUtils.isParameter(symbol.declarationParameters().get(0))).isTrue();
+    }
   }
 
   @Nested
   class ConstantValue {
-    private final JavaTree.CompilationUnitTreeImpl cu = test("class C { static int field; void m(Object... os) { m(this); } }");
+    private final JavaTree.CompilationUnitTreeImpl cu = test("class C { static int field; void m(Object... os) { m(this); \"\".substring(1); } }");
     private final ClassTreeImpl c = firstClass(cu);
+    private final MethodTreeImpl m = nthMethod(c, 1);
 
     @Test
     void this_can_not_be_evaluated() {
-      MethodTreeImpl m = nthMethod(c, 1);
       ExpressionStatementTreeImpl es = (ExpressionStatementTreeImpl) m.block().body().get(0);
       MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) es.expression();
       IdentifierTreeImpl thisArg = (IdentifierTreeImpl) mit.arguments().get(0);
@@ -336,6 +358,16 @@ class JUtilsTest {
       VariableTreeImpl field = firstField(c);
       assertThat(field.symbol().isVariableSymbol()).isTrue();
       assertThat(JUtils.constantValue((Symbol.VariableSymbol) field.symbol())).isEmpty();
+    }
+
+    @Test
+    void placeholders_can_not_be_evaluated() {
+      ExpressionStatementTreeImpl es = (ExpressionStatementTreeImpl) m.block().body().get(1);
+      MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) es.expression();
+      Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) mit.symbol();
+      Symbol symbol = methodSymbol.declarationParameters().get(0);
+      assertThat(symbol.isVariableSymbol()).isTrue();
+      assertThat(JUtils.constantValue((Symbol.VariableSymbol) symbol)).isEmpty();
     }
 
     @Test

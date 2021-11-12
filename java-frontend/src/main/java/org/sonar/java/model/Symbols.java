@@ -163,7 +163,7 @@ public class Symbols {
     }
 
     @Override
-    public final SymbolMetadata metadata() {
+    public SymbolMetadata metadata() {
       return EMPTY_METADATA;
     }
   }
@@ -257,6 +257,11 @@ public class Symbols {
 
     @Override
     public List<Type> parameterTypes() {
+      return Collections.emptyList();
+    }
+
+    @Override
+    public List<Symbol> declarationParameters() {
       return Collections.emptyList();
     }
 

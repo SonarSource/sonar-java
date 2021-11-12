@@ -52,6 +52,11 @@ final class JInitializerBlockSymbol implements Symbol.MethodSymbol {
   }
 
   @Override
+  public List<Symbol> declarationParameters() {
+    return Collections.emptyList();
+  }
+
+  @Override
   public Symbol.TypeSymbol returnType() {
     return Symbols.unknownTypeSymbol;
   }

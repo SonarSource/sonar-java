@@ -39,8 +39,12 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityType;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -196,6 +200,30 @@ class JSymbolMetadataTest {
     assertNullability(
       NULLABILITY_SOURCE_DIR.resolve(Paths.get("no_default", "NullabilityWithMetaAnnotation.java"))
     );
+  }
+
+  @Test
+  void generics_nullability() throws IOException {
+    Path sourceFile = NULLABILITY_SOURCE_DIR.resolve(Paths.get("no_default", "NullabilityWithGenerics.java"));
+    CompilationUnitTree cut = JParserTestUtils.parse(sourceFile.toRealPath().toFile(), JParserTestUtils.checksTestClassPath());
+    ClassTree classTree = (ClassTree) cut.types().get(0);
+    MethodTree declaration = (MethodTree) classTree.members().get(0);
+
+    SymbolMetadata.NullabilityData declarationData = declaration.symbol().declarationParameters().get(0).metadata().nullabilityData();
+    assertThat(declarationData.isNullable(VARIABLE, false, false)).isTrue();
+
+    MethodTree callDeclaration = (MethodTree) classTree.members().get(1);
+    MethodInvocationTree invocationWithString = (MethodInvocationTree) ((ExpressionStatementTree) callDeclaration.block().body().get(0)).expression();
+    MethodInvocationTree invocationWithInteger = (MethodInvocationTree) ((ExpressionStatementTree) callDeclaration.block().body().get(1)).expression();
+
+    SymbolMetadata.NullabilityData invocation1ParamData = ((Symbol.MethodSymbol) invocationWithString.symbol())
+      .declarationParameters().get(0).metadata().nullabilityData();
+    SymbolMetadata.NullabilityData invocation2ParamData = ((Symbol.MethodSymbol) invocationWithInteger.symbol())
+      .declarationParameters().get(0).metadata().nullabilityData();
+
+    assertThat(declarationData)
+      .isSameAs(invocation1ParamData)
+      .isSameAs(invocation2ParamData);
   }
 
   @Nested

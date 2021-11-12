@@ -170,9 +170,23 @@ public interface Symbol {
 
     /**
      * Type of parameters declared by this method.
+     * In case of generic types of method invocations, this list of types is more specialized than declarationParameters().stream().map(Symbol::type).
+     * For example it could be String instead of T.
+     *
      * @return empty list if method has a zero arity.
      */
     List<Type> parameterTypes();
+
+    /**
+     * Symbols of parameters declared by this method.
+     * Use to access parameter annotations. Note:
+     * 1) in case of generic types of method invocations, this list of types is less specialized than {@link #parameterTypes()}.
+     * For example it could be T instead of String.
+     * 2) when the declaration comes from binaries, the name of the symbol will be generated (@see JVariableSymbol.ParameterPlaceholderSymbol).
+     *
+     * @return empty list if methods has not parameters
+     */
+    List<Symbol> declarationParameters();
 
     TypeSymbol returnType();
 

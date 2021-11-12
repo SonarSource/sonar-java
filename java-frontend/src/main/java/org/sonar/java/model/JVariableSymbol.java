@@ -19,11 +19,17 @@
  */
 package org.sonar.java.model;
 
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nullable;
+import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.Nullable;
 
 final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
 
@@ -37,4 +43,78 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
     return (VariableTree) super.declaration();
   }
 
+
+  static class ParameterPlaceholderSymbol extends Symbols.DefaultSymbol implements Symbol.VariableSymbol {
+    private final String name;
+    private final Symbol owner;
+    private final Type type;
+    private final JSymbolMetadata metadata;
+
+
+    ParameterPlaceholderSymbol(int index, Symbol owner, ITypeBinding typeBinding) {
+      name = "arg" + index;
+      this.owner = owner;
+      this.type = ((JSymbol) owner).sema.type(typeBinding);
+
+      IMethodBinding methodBinding = (IMethodBinding) ((JSymbol) owner).binding;
+      metadata = new JSymbolMetadata(
+        ((JSymbol) owner).sema,
+        this,
+        typeBinding.getTypeAnnotations(),
+        methodBinding.getParameterAnnotations(index)
+      );
+    }
+
+    @Override
+    public String name() {
+      return name;
+    }
+
+    @Override
+    public Symbol owner() {
+      return owner;
+    }
+
+    @Override
+    public Type type() {
+      return type;
+    }
+
+    @Override
+    public boolean isUnknown() {
+      return false;
+    }
+
+    @Override
+    public TypeSymbol enclosingClass() {
+      return owner.enclosingClass();
+    }
+
+    @Override
+    public List<IdentifierTree> usages() {
+      return Collections.emptyList();
+    }
+
+    @Override
+    public VariableTree declaration() {
+      return null;
+    }
+
+    @Override
+    public SymbolMetadata metadata() {
+      return metadata;
+    }
+
+    @Override
+    public boolean isVariableSymbol() {
+      return true;
+    }
+
+    @Override
+    public boolean isFinal() {
+      // From a caller perspective, it is not useful (and even not possible) to know if the parameter is final.
+      return false;
+    }
+
+  }
 }

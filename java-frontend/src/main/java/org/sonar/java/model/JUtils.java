@@ -19,12 +19,15 @@
  */
 package org.sonar.java.model;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
-import org.eclipse.jdt.core.dom.IMethodBinding;
+import java.util.Optional;
+import java.util.Set;
+import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Modifier;
-import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -32,12 +35,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
-
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
 
 public final class JUtils {
 
@@ -107,7 +105,7 @@ public final class JUtils {
   }
 
   public static boolean isEffectivelyFinal(Symbol.VariableSymbol variableSymbol) {
-    return ((IVariableBinding) ((JVariableSymbol) variableSymbol).binding).isEffectivelyFinal();
+    return (variableSymbol instanceof JVariableSymbol) && ((IVariableBinding) ((JVariableSymbol) variableSymbol).binding).isEffectivelyFinal();
   }
 
   public static boolean isLocalVariable(Symbol symbol) {
@@ -118,11 +116,13 @@ public final class JUtils {
     if (symbol instanceof JTypeSymbol.SpecialField) {
       return false;
     }
-    return symbol.isVariableSymbol() && ((IVariableBinding) ((JVariableSymbol) symbol).binding).isParameter();
+    return symbol.isVariableSymbol() && 
+      ((symbol instanceof JVariableSymbol.ParameterPlaceholderSymbol)
+        || ((IVariableBinding) ((JVariableSymbol) symbol).binding).isParameter());
   }
 
   public static Optional<Object> constantValue(Symbol.VariableSymbol symbol) {
-    if (!symbol.isFinal() || !symbol.isStatic()) {
+    if (!symbol.isFinal() || !symbol.isStatic() || !(symbol instanceof JVariableSymbol)) {
       return Optional.empty();
     }
     Object c = ((IVariableBinding) ((JVariableSymbol) symbol).binding).getConstantValue();
@@ -268,13 +268,7 @@ public final class JUtils {
     if (method.isUnknown()) {
       return Symbols.EMPTY_METADATA;
     }
-    IMethodBinding methodBinding = (IMethodBinding) ((JSymbol) method).binding;
-    return new JSymbolMetadata(
-      ((JSymbol) method).sema,
-      method,
-      methodBinding.getParameterTypes()[param].getTypeAnnotations(),
-      methodBinding.getParameterAnnotations(param)
-    );
+    return method.declarationParameters().get(param).metadata();
   }
 
 }
