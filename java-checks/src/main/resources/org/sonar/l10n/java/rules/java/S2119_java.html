@@ -2,7 +2,7 @@
 on the JDK. For better efficiency and randomness, create a single <code>Random</code>, then store, and reuse it.</p>
 <p>The <code>Random()</code> constructor tries to set the seed with a distinct value every time. However there is no guarantee that the seed will be
 random or even uniformly distributed. Some JDK will use the current time as seed, which makes the generated numbers not random at all.</p>
-<p>This rule finds cases where a new <code>Random</code> is created each time a method is invoked and assigned to a local random variable.</p>
+<p>This rule finds cases where a new <code>Random</code> is created each time a method is invoked.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public void doSomethingCommon() {
