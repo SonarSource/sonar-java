@@ -19,6 +19,9 @@
     "CERT": [
       "NUM02-J.",
       "INT33-C."
+    ],
+    "CWE": [
+      369
     ]
   },
   "quickfix": "unknown"

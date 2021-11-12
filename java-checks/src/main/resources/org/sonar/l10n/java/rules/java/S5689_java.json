@@ -13,13 +13,16 @@
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-5689",
   "sqKey": "S5689",
-  "scope": "Main",
+  "scope": "All",
   "securityStandards": {
     "CWE": [
       200
     ],
     "OWASP": [
       "A6"
+    ],
+    "OWASP Top 10 2021": [
+      "A5"
     ]
   }
 }

@@ -1,5 +1,5 @@
 {
-  "title": "\"@RequestMapping\" methods should not be \"private\"",
+  "title": "\"@RequestMapping\" methods should be \"public\"",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

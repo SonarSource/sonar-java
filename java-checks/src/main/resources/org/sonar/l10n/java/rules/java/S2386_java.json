@@ -19,6 +19,10 @@
     "CERT": [
       "OBJ01-J.",
       "OBJ13-J."
+    ],
+    "CWE": [
+      607,
+      582
     ]
   },
   "quickfix": "unknown"

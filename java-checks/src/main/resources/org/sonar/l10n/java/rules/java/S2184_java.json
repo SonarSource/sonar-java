@@ -20,6 +20,9 @@
     "CERT": [
       "NUM50-J.",
       "INT18-C."
+    ],
+    "CWE": [
+      190
     ]
   },
   "quickfix": "unknown"

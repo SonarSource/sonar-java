@@ -18,6 +18,9 @@
   "securityStandards": {
     "CERT": [
       "MET02-J."
+    ],
+    "CWE": [
+      477
     ]
   },
   "quickfix": "unknown"

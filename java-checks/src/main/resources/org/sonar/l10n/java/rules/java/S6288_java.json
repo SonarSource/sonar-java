@@ -24,6 +24,9 @@
     ],
     "MASVS": [
       "MSTG-AUTH-1"
+    ],
+    "OWASP Top 10 2021": [
+      "A4"
     ]
   }
 }

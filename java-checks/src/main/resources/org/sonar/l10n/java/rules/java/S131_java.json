@@ -13,10 +13,13 @@
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-131",
   "sqKey": "S131",
-  "scope": "Main",
+  "scope": "All",
   "securityStandards": {
     "CERT": [
       "MSC01-C."
+    ],
+    "CWE": [
+      478
     ]
   },
   "quickfix": "unknown"

@@ -20,6 +20,10 @@
     "CERT": [
       "FIO04-J.",
       "FIO42-C."
+    ],
+    "CWE": [
+      459,
+      772
     ]
   },
   "quickfix": "unknown"

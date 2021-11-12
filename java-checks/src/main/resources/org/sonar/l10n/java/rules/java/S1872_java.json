@@ -17,6 +17,9 @@
   "securityStandards": {
     "CERT": [
       "OBJ09-J."
+    ],
+    "CWE": [
+      486
     ]
   },
   "quickfix": "unknown"

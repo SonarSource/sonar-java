@@ -30,6 +30,11 @@
     ],
     "MASVS": [
       "MSTG-STORAGE-14"
+    ],
+    "OWASP Top 10 2021": [
+      "A2",
+      "A4",
+      "A5"
     ]
   }
 }

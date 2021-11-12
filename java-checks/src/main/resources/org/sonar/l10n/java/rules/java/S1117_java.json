@@ -14,7 +14,7 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-1117",
   "sqKey": "S1117",
-  "scope": "Main",
+  "scope": "All",
   "quickfix": "unknown",
   "securityStandards": {
     "CERT": [

@@ -14,11 +14,14 @@
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-128",
   "sqKey": "S128",
-  "scope": "Main",
+  "scope": "All",
   "securityStandards": {
     "CERT": [
       "MSC17-C.",
       "MSC52-J."
+    ],
+    "CWE": [
+      484
     ]
   },
   "quickfix": "unknown"

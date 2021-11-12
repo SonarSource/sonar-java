@@ -20,14 +20,17 @@
   "scope": "Main",
   "securityStandards": {
     "CWE": [
-      328,
-      327,
+      256,
       916
     ],
     "OWASP": [
       "A2",
       "A6",
       "A3"
+    ],
+    "OWASP Top 10 2021": [
+      "A2",
+      "A4"
     ]
   },
   "quickfix": "unknown"

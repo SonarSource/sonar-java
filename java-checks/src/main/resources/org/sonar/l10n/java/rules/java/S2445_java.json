@@ -18,6 +18,10 @@
   "securityStandards": {
     "CERT": [
       "LCK00-J."
+    ],
+    "CWE": [
+      412,
+      413
     ]
   },
   "quickfix": "unknown"
