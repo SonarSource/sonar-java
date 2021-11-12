@@ -23,6 +23,18 @@
   "securityStandards": {
     "CERT": [
       "IDS00-J."
+    ],
+    "CWE": [
+      564,
+      89,
+      20,
+      943
+    ],
+    "OWASP": [
+      "A1"
+    ],
+    "OWASP Top 10 2021": [
+      "A3"
     ]
   }
 }

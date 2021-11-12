@@ -20,6 +20,15 @@
   "securityStandards": {
     "CERT": [
       "ERR00-J."
+    ],
+    "CWE": [
+      778
+    ],
+    "OWASP": [
+      "A10"
+    ],
+    "OWASP Top 10 2021": [
+      "A9"
     ]
   },
   "quickfix": "unknown"

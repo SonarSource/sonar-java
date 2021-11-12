@@ -17,13 +17,17 @@
   "scope": "Main",
   "securityStandards": {
     "CWE": [
-      15
+      915
     ],
     "OWASP": [
       "A1"
     ],
     "CERT": [
       "MSC61-J."
+    ],
+    "OWASP Top 10 2021": [
+      "A3",
+      "A8"
     ]
   }
 }

@@ -22,6 +22,9 @@
       "FIO02-J.",
       "ERR33-C.",
       "POS54-C."
+    ],
+    "CWE": [
+      754
     ]
   },
   "quickfix": "unknown"

@@ -21,6 +21,24 @@
   "securityStandards": {
     "CERT": [
       "MSC61-J."
+    ],
+    "CWE": [
+      295
+    ],
+    "OWASP": [
+      "A6",
+      "A3"
+    ],
+    "OWASP Mobile": [
+      "M3"
+    ],
+    "MASVS": [
+      "MSTG-NETWORK-3"
+    ],
+    "OWASP Top 10 2021": [
+      "A2",
+      "A5",
+      "A7"
     ]
   },
   "quickfix": "unknown"

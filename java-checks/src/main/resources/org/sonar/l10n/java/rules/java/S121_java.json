@@ -13,7 +13,7 @@
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-121",
   "sqKey": "S121",
-  "scope": "Main",
+  "scope": "All",
   "quickfix": "unknown",
   "securityStandards": {
     "CERT": [

@@ -19,6 +19,9 @@
       "EXP00-C.",
       "EXP00-CPP.",
       "EXP53-J."
+    ],
+    "CWE": [
+      783
     ]
   },
   "quickfix": "unknown"

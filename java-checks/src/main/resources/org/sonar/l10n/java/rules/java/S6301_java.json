@@ -19,7 +19,8 @@
   "scope": "All",
   "securityStandards": {
     "CWE": [
-      311
+      311,
+      321
     ],
     "OWASP": [
       "A3",
@@ -30,6 +31,10 @@
     ],
     "MASVS": [
       "MSTG-STORAGE-14"
+    ],
+    "OWASP Top 10 2021": [
+      "A2",
+      "A4"
     ]
   },
   "quickfix": "unknown"

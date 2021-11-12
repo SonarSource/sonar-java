@@ -18,6 +18,9 @@
   "securityStandards": {
     "CERT": [
       "ERR09-J."
+    ],
+    "CWE": [
+      382
     ]
   },
   "quickfix": "unknown"

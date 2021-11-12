@@ -13,7 +13,7 @@
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-1116",
   "sqKey": "S1116",
-  "scope": "Main",
+  "scope": "All",
   "quickfix": "covered",
   "securityStandards": {
     "CERT": [

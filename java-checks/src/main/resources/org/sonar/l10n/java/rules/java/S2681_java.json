@@ -13,10 +13,13 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2681",
   "sqKey": "S2681",
-  "scope": "Main",
+  "scope": "All",
   "securityStandards": {
     "CERT": [
       "EXP52-J."
+    ],
+    "CWE": [
+      483
     ]
   },
   "quickfix": "unknown"

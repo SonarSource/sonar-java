@@ -16,6 +16,9 @@
   "securityStandards": {
     "CWE": [
       579
+    ],
+    "OWASP Top 10 2021": [
+      "A4"
     ]
   },
   "quickfix": "unknown"
