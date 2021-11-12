@@ -25,6 +25,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.ASTUtils;
@@ -34,6 +35,7 @@ import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
 
@@ -41,6 +43,8 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
    * Cache for {@link #parameterTypes()}.
    */
   private List<Type> parameterTypes;
+
+  private List<Symbol> parameters;
 
   /**
    * Cache for {@link #returnType()}.
@@ -77,6 +81,23 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
       parameterTypes = sema.types(methodBinding().getParameterTypes());
     }
     return parameterTypes;
+  }
+
+  @Override
+  public List<Symbol> declarationParameters() {
+    if (parameters == null) {
+      MethodTree declaration = declaration();
+      if (declaration != null) {
+        parameters = declaration.parameters().stream().map(VariableTree::symbol).collect(Collectors.toList());
+      } else {
+        parameters = new ArrayList<>();
+        ITypeBinding[] parameterTypeBindings = methodBinding().getParameterTypes();
+        for (int i = 0; i < parameterTypeBindings.length; i++) {
+          parameters.add(new JVariableSymbol.ParameterPlaceholderSymbol(i, this, parameterTypeBindings[i]));
+        }
+      }
+    }
+    return parameters;
   }
 
   /**

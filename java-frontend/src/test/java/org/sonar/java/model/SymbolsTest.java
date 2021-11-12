@@ -149,6 +149,7 @@ class SymbolsTest {
     assertThat(unknownMethodSymbol.signature()).isEqualTo("!unknownMethod!");
     assertThat(unknownMethodSymbol.returnType()).isEqualTo(Symbols.unknownTypeSymbol);
     assertThat(unknownMethodSymbol.parameterTypes()).isEmpty();
+    assertThat(unknownMethodSymbol.declarationParameters()).isEmpty();
     assertThat(unknownMethodSymbol.thrownTypes()).isEmpty();
     assertThat(unknownMethodSymbol.overriddenSymbol()).isNull();
     assertThat(unknownMethodSymbol.overriddenSymbols()).isEmpty();

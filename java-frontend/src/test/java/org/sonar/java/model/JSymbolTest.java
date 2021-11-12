@@ -198,6 +198,7 @@ class JSymbolTest {
     assertThat(initializerBlock.overriddenSymbols()).isEmpty();
     assertThat(initializerBlock.usages()).isEmpty();
     assertThat(initializerBlock.parameterTypes()).isEmpty();
+    assertThat(initializerBlock.declarationParameters()).isEmpty();
     assertThat(initializerBlock.thrownTypes()).isEmpty();
   }
 

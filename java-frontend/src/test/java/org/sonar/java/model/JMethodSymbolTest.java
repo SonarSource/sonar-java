@@ -22,6 +22,7 @@ package org.sonar.java.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,10 @@ import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -48,10 +53,85 @@ class JMethodSymbolTest {
     JMethodSymbol symbol = cu.sema.methodSymbol(Objects.requireNonNull(m.methodBinding));
     assertThat(symbol.parameterTypes())
       .containsOnly(cu.sema.type(Objects.requireNonNull(c.typeBinding)));
+    assertThat(symbol.declarationParameters())
+      .containsExactly(m.parameters().get(0).symbol());
     assertThat(symbol.returnType())
       .isSameAs(cu.sema.typeSymbol(Objects.requireNonNull(c.typeBinding)));
     assertThat(symbol.thrownTypes())
       .containsOnly(cu.sema.type(Objects.requireNonNull(cu.sema.resolveType("java.lang.Exception"))));
+  }
+
+  @Test
+  void test_with_generics() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { <T> void m(T p) { m(1); } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    Symbol.MethodSymbol declarationSymbol = m.symbol();
+    JType declarationParameterType = cu.sema.type(Objects.requireNonNull((m.methodBinding.getParameterTypes()[0])));
+    assertThat(declarationSymbol.parameterTypes())
+      .containsOnly(declarationParameterType);
+    Symbol declarationParameterSymbol = m.parameters().get(0).symbol();
+    assertThat(declarationSymbol.declarationParameters())
+      .containsExactly(declarationParameterSymbol);
+
+    MethodInvocationTree invocationWithString = (MethodInvocationTree) ((ExpressionStatementTree) m.block().body().get(0)).expression();
+    Symbol.MethodSymbol invocationSymbol = (Symbol.MethodSymbol) invocationWithString.symbol();
+    // Parameter types are not always the same as the one from the declaration: it can be the actual type and not the generic (Integer instead of T).
+    Type invocationArgument = invocationSymbol.parameterTypes().get(0);
+    assertThat(invocationArgument)
+      .isNotEqualTo(declarationParameterType);
+    assertThat(invocationArgument.name()).isEqualTo("Integer");
+    // However, the symbols of the declaration should be the same
+    invocationSymbol.declarationParameters().containsAll(
+      declarationSymbol.declarationParameters()
+    );
+  }
+
+  @Test
+  void test_declaration_not_in_code() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C {" +
+      "void m() {" +
+      "    \"1a\".startsWith(\"1\");\n" +
+      "    \"2b\".startsWith(\"2\"); } " +
+      "}");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+
+    List<StatementTree> body = m.block().body();
+    MethodInvocationTree startWith1 = (MethodInvocationTree) ((ExpressionStatementTree) body.get(0)).expression();
+    MethodInvocationTree startWith2 = (MethodInvocationTree) ((ExpressionStatementTree) body.get(1)).expression();
+
+    Symbol.MethodSymbol symbol1 = (Symbol.MethodSymbol) startWith1.symbol();
+    Symbol.MethodSymbol symbol2 = (Symbol.MethodSymbol) startWith2.symbol();
+
+    assertThat(symbol1.parameterTypes().get(0).name()).isEqualTo("String");
+    assertThat(symbol2.parameterTypes().get(0).name()).isEqualTo("String");
+
+    Symbol symbolParam1 = symbol1.declarationParameters().get(0);
+    Symbol symbolParam2 = symbol2.declarationParameters().get(0);
+    assertThat(symbolParam1).isInstanceOf(JVariableSymbol.ParameterPlaceholderSymbol.class)
+      .isInstanceOf(Symbol.VariableSymbol.class);
+    assertThat(symbolParam2).isInstanceOf(JVariableSymbol.ParameterPlaceholderSymbol.class)
+      .isInstanceOf(Symbol.VariableSymbol.class);
+
+    assertThat(symbolParam1.isVariableSymbol()).isTrue();
+    assertThat(symbolParam2.isVariableSymbol()).isTrue();
+
+    JVariableSymbol.ParameterPlaceholderSymbol parameterSymbol1 = (JVariableSymbol.ParameterPlaceholderSymbol) symbolParam1;
+    JVariableSymbol.ParameterPlaceholderSymbol parameterSymbol2 = (JVariableSymbol.ParameterPlaceholderSymbol) symbolParam2;
+
+    assertThat(parameterSymbol1).isSameAs(parameterSymbol2);
+
+    assertThat(parameterSymbol1.name()).isEqualTo("arg0");
+    assertThat(parameterSymbol1.owner().name()).isEqualTo("startsWith");
+    assertThat(parameterSymbol1.type().name()).isEqualTo("String");
+    assertThat(parameterSymbol1.isUnknown()).isFalse();
+    assertThat(parameterSymbol1.enclosingClass()).isEqualTo(parameterSymbol1.owner().enclosingClass());
+    assertThat(parameterSymbol1.usages()).isEmpty();
+    assertThat(parameterSymbol1.declaration()).isNull();
+    assertThat(parameterSymbol1.metadata()).isSameAs(parameterSymbol2.metadata());
+    assertThat(parameterSymbol1.isVariableSymbol()).isTrue();
+    assertThat(parameterSymbol1.isFinal()).isFalse();
   }
 
   @Test

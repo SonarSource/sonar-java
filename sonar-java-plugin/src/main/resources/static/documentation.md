@@ -97,6 +97,10 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 ### API changes
 
+#### **7.6**
+
+* New method: `MethodSymbol.declarationParameters()`. Use this method to get the list of parameters symbols of this method. Placeholders symbols are created in case the declaration is not available (coming from an external dependency).
+
 #### **7.4**
 
 * New method: `JavaFileScannerContext.inAndroidContext()`. Use this method to know if the current file being analyzed is coming from an Android context. The value is true if Android dependencies are found in the classpath of the current analysis.
