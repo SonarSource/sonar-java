@@ -352,21 +352,23 @@ public class SimplifiedRegexCharacterClass {
     }
 
     private void addRange(int from, int to, CharacterClassElementTree tree) {
-      int upperCaseFrom = Character.toUpperCase(from);
-      int upperCaseTo = Character.toUpperCase(to);
-      int lowerCaseFrom = Character.toLowerCase(upperCaseFrom);
-      int lowerCaseTo = Character.toLowerCase(upperCaseTo);
-      if (tree.activeFlags().contains(Pattern.CASE_INSENSITIVE) && lowerCaseFrom != upperCaseFrom && lowerCaseTo != upperCaseTo
-        && ((isAscii(from) && isAscii(to)) || tree.activeFlags().contains(Pattern.UNICODE_CASE))) {
-        characters.addRange(upperCaseFrom, upperCaseTo, tree);
-        characters.addRange(lowerCaseFrom, lowerCaseTo, tree);
-      } else {
-        characters.addRange(from, to, tree);
+      characters.addRange(from, to, tree);
+      if (tree.activeFlags().contains(Pattern.CASE_INSENSITIVE)) {
+        addCaseInsensitiveRangeFor(from, to, tree, 'A', 'Z', 'a', 'z');
+        if (tree.activeFlags().contains(Pattern.UNICODE_CASE)) {
+          addCaseInsensitiveRangeFor(from, to, tree, 'À', 'Þ', 'à', 'þ');
+        }
       }
     }
 
-    private static boolean isAscii(int c) {
-      return c < 128;
+    private void addCaseInsensitiveRangeFor(int from, int to, CharacterClassElementTree tree, char upperStart, char upperEnd, char lowerStart, char lowerEnd) {
+      final int lowerCaseShift = lowerStart - upperStart;
+      if (from <= upperEnd && to >= upperStart) {
+        characters.addRange(Math.max(from, upperStart) + lowerCaseShift, Math.min(to, upperEnd) + lowerCaseShift, tree);
+      }
+      if (from <= lowerEnd && to >= lowerStart) {
+        characters.addRange(Math.max(from, lowerStart) - lowerCaseShift, Math.min(to, lowerEnd) - lowerCaseShift, tree);
+      }
     }
 
   }

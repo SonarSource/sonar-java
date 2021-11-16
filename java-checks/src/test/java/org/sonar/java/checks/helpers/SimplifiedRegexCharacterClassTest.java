@@ -303,6 +303,81 @@ class SimplifiedRegexCharacterClassTest {
     assertSupersetOf("a", "A", false, flags).isTrue();
     assertSupersetOf("[a-z]", "[B-F]", false, flags).isTrue();
     assertSupersetOf("[a-f]", "[B-Z]", true, flags).isFalse();
+
+    assertSupersetOf("[Z-a]", "[A]", false, flags).isTrue();
+    assertSupersetOf("[Z-a]", "[z]", false, flags).isTrue();
+    assertSupersetOf("[Z-a]", "[Z-a]", false, flags).isTrue();
+
+    assertSupersetOf("[Y-b]", "[A-B]", false, flags).isTrue();
+    assertSupersetOf("[Y-b]", "[y-z]", false, flags).isTrue();
+    assertSupersetOf("[Y-b]", "[Y-b]", false, flags).isTrue();
+
+    assertSupersetOf("[Z-_]", "[Z]", false, flags).isTrue();
+    assertSupersetOf("[Z-_]", "[z]", false, flags).isTrue();
+    assertSupersetOf("[_-b]", "[a-b]", false, flags).isTrue();
+    assertSupersetOf("[_-b]", "[A-B]", false, flags).isTrue();
+
+    assertSupersetOf("[_-`]", "[`]", false, flags).isTrue();
+    assertSupersetOf("[_-`]", "[_]", false, flags).isTrue();
+
+    assertSupersetOf("[6-a]", "[6-Z]", false, flags).isTrue();
+    assertSupersetOf("[6-a]", "[a-z]", false, flags).isTrue();
+
+    assertSupersetOf("[6-Q]", "[6-Q]", false, flags).isTrue();
+    assertSupersetOf("[6-Q]", "[a-q]", false, flags).isTrue();
+
+    assertSupersetOf("[6-_]", "[6-_]", false, flags).isTrue();
+    assertSupersetOf("[6-_]", "[a-z]", false, flags).isTrue();
+    assertSupersetOf("[6-_]", "[`]", false, flags).isFalse();
+
+    assertSupersetOf("[Q-k]", "[Q-k]", false, flags).isTrue();
+    assertSupersetOf("[Q-k]", "[A-K]", false, flags).isTrue();
+    assertSupersetOf("[Q-k]", "[q-z]", false, flags).isTrue();
+
+    flags = Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE;
+
+    assertSupersetOf("[Z-à]", "[Z]", false, flags).isTrue();
+    assertSupersetOf("[à-è]", "[è]", false, flags).isTrue();
+
+    assertSupersetOf("[Ü-à]", "[Ü]", false, flags).isTrue();
+    assertSupersetOf("[Ü-à]", "[à]", false, flags).isTrue();
+    assertSupersetOf("[Ü-à]", "[ü]", false, flags).isTrue();
+    assertSupersetOf("[Ü-à]", "[À]", false, flags).isTrue();
+
+    assertSupersetOf("[ß-ý]", "[ß]", false, flags).isTrue();
+    assertSupersetOf("[ß-ý]", "[ý]", false, flags).isTrue();
+    assertSupersetOf("[ß-ý]", "[Ý]", false, flags).isTrue();
+
+  }
+
+  @Test
+  void superset_of_character_classes() {
+    int flags = 0;
+    assertSupersetOf("A", "a", false, flags).isFalse();
+    assertSupersetOf("a", "A", false, flags).isFalse();
+    assertSupersetOf("[a-z]", "[B-F]", false, flags).isFalse();
+
+    assertSupersetOf("[Z-a]", "[A]", false, flags).isFalse();
+    assertSupersetOf("[Z-a]", "[z]", false, flags).isFalse();
+    assertSupersetOf("[Z-a]", "[Z-a]", false, flags).isTrue();
+
+    assertSupersetOf("[Y-b]", "[A-B]", false, flags).isFalse();
+    assertSupersetOf("[Y-b]", "[y-z]", false, flags).isFalse();
+    assertSupersetOf("[Y-b]", "[Y-b]", false, flags).isTrue();
+
+    assertSupersetOf("[Z-_]", "[Z]", false, flags).isTrue();
+    assertSupersetOf("[Z-_]", "[z]", false, flags).isFalse();
+    assertSupersetOf("[_-b]", "[a-b]", false, flags).isTrue();
+    assertSupersetOf("[_-b]", "[A-B]", false, flags).isFalse();
+
+    assertSupersetOf("[Ü-à]", "[Ü]", false, flags).isTrue();
+    assertSupersetOf("[Ü-à]", "[à]", false, flags).isTrue();
+    assertSupersetOf("[Ü-à]", "[ü]", false, flags).isFalse();
+    assertSupersetOf("[Ü-à]", "[À]", false, flags).isFalse();
+
+    assertSupersetOf("[ß-ý]", "[ß]", false, flags).isTrue();
+    assertSupersetOf("[ß-ý]", "[ý]", false, flags).isTrue();
+    assertSupersetOf("[ß-ý]", "[Ý]", false, flags).isFalse();
   }
 
   @Test

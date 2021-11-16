@@ -113,8 +113,11 @@ public class DuplicatesInCharacterClassCheck {
                                   // fully understand, we ignore it to avoid false positives
     str.matches("[\\N{slightly smiling face}\\N{slightly smiling face}]"); // FN because we don't support \\N
     str.matches("[[a-z&&b-e]c]"); // FN because we don't support intersections
-    str.matches("(?i)[A-_d-{]"); // FN because we ignore case insensitivity unless both ends of the ranges are letters
-    str.matches("(?i)[A-z_]"); // FN because A-z gets misinterpreted as A-Za-z due to the way we handle case insensitivity
+    str.matches("(?i)[A-_d-{]"); // Noncompliant
+    str.matches("(?i)[A-z_]"); // Noncompliant
+    str.matches("(?i)[A-z]");
+    str.matches("(?i)[Z-a_]"); // Noncompliant
+    str.matches("(?i)[Z-a]");
     str.matches("[\\p{IsLatin}x]"); // FN because we don't support \p at the moment
   }
 
