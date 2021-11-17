@@ -22,6 +22,9 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -29,6 +32,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
+import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.METHOD;
 
 @Rule(key = "S4682")
@@ -46,10 +50,20 @@ public final class PrimitivesMarkedNullableCheck extends IssuableSubscriptionVis
     if (returnType.symbolType().isPrimitive()) {
       SymbolMetadata.NullabilityData nullabilityData = methodTree.symbol().metadata().nullabilityData();
       if (nullabilityData.isNullable(METHOD, true, false)) {
-        reportIssue(returnType, String.format("\"@%s\" annotation should not be used on primitive types",
-          nullabilityData.annotation().symbol().name()),
-          Collections.singletonList(new JavaFileScannerContext.Location("Child annotation", nullabilityData.declaration())),
-          null);
+        // Both "annotation" and "declaration" should never be null, as we only target directly annotated methods
+        String annotationName = nullabilityData.annotation().symbol().name();
+        Tree annotationTree = nullabilityData.declaration();
+        QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(returnType)
+          .withMessage("\"@%s\" annotation should not be used on primitive types", annotationName)
+          .withSecondaries(new JavaFileScannerContext.Location("Child annotation", annotationTree))
+          .withQuickFix(() ->
+            JavaQuickFix.newQuickFix("Remove \"@%s\"", annotationName)
+              .addTextEdit(JavaTextEdit.removeTextSpan(textSpanBetween(annotationTree, true,
+                QuickFixHelper.nextToken(annotationTree), false)))
+              .build())
+          .report();
       }
     }
   }
