@@ -22,11 +22,14 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.se.NullableAnnotationUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
+
+import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.METHOD;
 
 @Rule(key = "S4682")
 public final class PrimitivesMarkedNullableCheck extends IssuableSubscriptionVisitor {
@@ -41,9 +44,13 @@ public final class PrimitivesMarkedNullableCheck extends IssuableSubscriptionVis
     MethodTree methodTree = (MethodTree) tree;
     TypeTree returnType = methodTree.returnType();
     if (returnType.symbolType().isPrimitive()) {
-      NullableAnnotationUtils.nullableAnnotation(methodTree.modifiers())
-        .map(annotation -> annotation.annotationType().symbolType().name())
-        .ifPresent(annotation -> reportIssue(returnType, String.format("\"@%s\" annotation should not be used on primitive types", annotation)));
+      SymbolMetadata.NullabilityData nullabilityData = methodTree.symbol().metadata().nullabilityData();
+      if (nullabilityData.isNullable(METHOD, true, false)) {
+        reportIssue(returnType, String.format("\"@%s\" annotation should not be used on primitive types",
+          nullabilityData.annotation().symbol().name()),
+          Collections.singletonList(new JavaFileScannerContext.Location("Child annotation", nullabilityData.declaration())),
+          null);
+      }
     }
   }
 
