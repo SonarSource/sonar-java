@@ -50,4 +50,11 @@ public class EqualsParametersMarkedNonNullCheck {
     }
   }
 
+  @org.eclipse.jdt.annotation.NonNullByDefault
+  static class G {
+    public boolean equals(Object object) { // Compliant
+      return false;
+    }
+  }
+
 }

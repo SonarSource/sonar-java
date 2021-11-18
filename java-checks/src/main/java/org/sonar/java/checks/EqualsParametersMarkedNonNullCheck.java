@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
@@ -47,13 +48,10 @@ public class EqualsParametersMarkedNonNullCheck extends IssuableSubscriptionVisi
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (!"equals".equals(methodTree.symbol().name()) || methodTree.parameters().size() != 1) {
+    if (!MethodTreeUtils.isEqualsMethod(methodTree)) {
       return;
     }
     VariableTree variable = methodTree.parameters().get(0);
-    if (!variable.symbol().type().is("java.lang.Object")) {
-      return;
-    }
     SymbolMetadata.NullabilityData nullabilityData = variable.symbol().metadata().nullabilityData();
     AnnotationInstance annotation = nullabilityData.annotation();
     Tree annotationTree = nullabilityData.declaration();
