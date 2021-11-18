@@ -50,20 +50,23 @@ public final class PrimitivesMarkedNullableCheck extends IssuableSubscriptionVis
     if (returnType.symbolType().isPrimitive()) {
       SymbolMetadata.NullabilityData nullabilityData = methodTree.symbol().metadata().nullabilityData();
       if (nullabilityData.isNullable(METHOD, true, false)) {
-        // Both "annotation" and "declaration" should never be null, as we only target directly annotated methods
-        String annotationName = nullabilityData.annotation().symbol().name();
+        SymbolMetadata.AnnotationInstance annotation = nullabilityData.annotation();
         Tree annotationTree = nullabilityData.declaration();
-        QuickFixHelper.newIssue(context)
-          .forRule(this)
-          .onTree(returnType)
-          .withMessage("\"@%s\" annotation should not be used on primitive types", annotationName)
-          .withSecondaries(new JavaFileScannerContext.Location("Child annotation", annotationTree))
-          .withQuickFix(() ->
-            JavaQuickFix.newQuickFix("Remove \"@%s\"", annotationName)
-              .addTextEdit(JavaTextEdit.removeTextSpan(textSpanBetween(annotationTree, true,
-                QuickFixHelper.nextToken(annotationTree), false)))
-              .build())
-          .report();
+        // Both "annotation" and "declaration" should never be null, as we only target directly annotated methods. We keep the check for defensive programming.
+        if (annotation != null && annotationTree != null) {
+          String annotationName = annotation.symbol().name();
+          QuickFixHelper.newIssue(context)
+            .forRule(this)
+            .onTree(returnType)
+            .withMessage("\"@%s\" annotation should not be used on primitive types", annotationName)
+            .withSecondaries(new JavaFileScannerContext.Location("Child annotation", annotationTree))
+            .withQuickFix(() ->
+              JavaQuickFix.newQuickFix("Remove \"@%s\"", annotationName)
+                .addTextEdit(JavaTextEdit.removeTextSpan(textSpanBetween(annotationTree, true,
+                  QuickFixHelper.nextToken(annotationTree), false)))
+                .build())
+            .report();
+        }
       }
     }
   }

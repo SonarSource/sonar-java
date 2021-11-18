@@ -61,3 +61,9 @@ abstract class PrimitivesMarkedNullableCheck {
   // edit@qf3 [[sc=22;ec=32]] {{}}
 
 }
+
+abstract class PrimitivesMarkedNullableCheckChild extends PrimitivesMarkedNullableCheckParent {
+
+  abstract int getInt0(); // Compliant, not directly marked as CheckForNull, an issue will be on the parent if needed.
+
+}
