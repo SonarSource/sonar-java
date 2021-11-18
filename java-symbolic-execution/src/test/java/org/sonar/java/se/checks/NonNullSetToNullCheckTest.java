@@ -23,12 +23,33 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.SETestUtils;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+
 class NonNullSetToNullCheckTest {
 
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile("src/test/files/se/NonNullSetToNullCheck.java")
+      .onFile(testSourcesPath("symbolicexecution/checks/NonNullSetToNullCheck/noDefault/NonNullSetToNullCheck.java"))
+      .withCheck(new NonNullSetToNullCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
+  }
+
+  @Test
+  void test_non_null_api() {
+    SECheckVerifier.newVerifier()
+      .onFile(testSourcesPath("symbolicexecution/checks/NonNullSetToNullCheck/packageNonNull/NonNullSetToNullCheck.java"))
+      .withCheck(new NonNullSetToNullCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    SECheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/NonNullSetToNullCheck.java"))
       .withCheck(new NonNullSetToNullCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
