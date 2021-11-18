@@ -22,12 +22,19 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.se.NullableAnnotationUtils;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationInstance;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
 @Rule(key = "S4454")
 public class EqualsParametersMarkedNonNullCheck extends IssuableSubscriptionVisitor {
@@ -40,14 +47,27 @@ public class EqualsParametersMarkedNonNullCheck extends IssuableSubscriptionVisi
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    List<VariableTree> params = methodTree.parameters();
-    if ("equals".equals(methodTree.symbol().name()) && params.size() == 1) {
-      VariableTree variable = params.get(0);
-      if (variable.type().symbolType().is("java.lang.Object") &&
-        NullableAnnotationUtils.isAnnotatedNonNull(variable.symbol())) {
-        reportIssue(variable, "\"equals\" method parameters should not be marked \"@Nonnull\".");
-
-      }
+    if (!"equals".equals(methodTree.symbol().name()) || methodTree.parameters().size() != 1) {
+      return;
+    }
+    VariableTree variable = methodTree.parameters().get(0);
+    if (!variable.symbol().type().is("java.lang.Object")) {
+      return;
+    }
+    SymbolMetadata.NullabilityData nullabilityData = variable.symbol().metadata().nullabilityData();
+    AnnotationInstance annotation = nullabilityData.annotation();
+    Tree annotationTree = nullabilityData.declaration();
+    if (annotationTree != null && annotation != null && nullabilityData.isNonNull(NullabilityLevel.VARIABLE, true, false)) {
+      String annotationName = annotation.symbol().name();
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(annotationTree)
+        .withMessage("\"equals\" method parameters should not be marked \"@%s\".", annotationName)
+        .withQuickFix(() -> JavaQuickFix.newQuickFix("Remove \"@%s\"", annotationName)
+          .addTextEdit(JavaTextEdit.removeTextSpan(textSpanBetween(annotationTree, true,
+            QuickFixHelper.nextToken(annotationTree), false)))
+          .build())
+        .report();
     }
   }
 
