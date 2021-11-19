@@ -63,7 +63,7 @@ class JSymbolMetadataTest {
     .resolve(Paths.get("src", "main", "java", "annotations", "nullability"));
 
   private static final Pattern NULLABILITY_ID_PATTERN = Pattern.compile("id\\d++" +
-    "_type_(?<type>UNKNOWN|STRONG_NULLABLE|WEAK_NULLABLE|NON_NULL)" +
+    "_type_(?<type>NO_ANNOTATION|UNKNOWN|STRONG_NULLABLE|WEAK_NULLABLE|NON_NULL)" +
     "(?:_level_(?<level>UNKNOWN|PACKAGE|CLASS|METHOD|VARIABLE))?" +
     "(?<meta>_meta)?" +
     "(?:_line_(?<line>empty|\\d++))?");
@@ -83,9 +83,9 @@ class JSymbolMetadataTest {
     JavaTree.CompilationUnitTreeImpl cu = test("class A {}");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     SymbolMetadata.NullabilityData nullabilityData = c.symbol().metadata().nullabilityData();
-    assertThat(nullabilityData.isNonNull(SymbolMetadata.NullabilityLevel.PACKAGE, false, false)).isFalse();
+    assertThat(nullabilityData.isNonNull(NullabilityLevel.PACKAGE, false, false)).isFalse();
     assertThat(nullabilityData.annotation()).isNull();
-    assertThat(nullabilityData.level()).isEqualTo(SymbolMetadata.NullabilityLevel.UNKNOWN);
+    assertThat(nullabilityData.level()).isEqualTo(NullabilityLevel.UNKNOWN);
     assertThat(nullabilityData.declaration()).isNull();
   }
 
@@ -94,9 +94,9 @@ class JSymbolMetadataTest {
     JavaTree.CompilationUnitTreeImpl cu = test("@Unknown class A {}");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     SymbolMetadata.NullabilityData nullabilityData = c.symbol().metadata().nullabilityData();
-    assertThat(nullabilityData.isNonNull(SymbolMetadata.NullabilityLevel.PACKAGE, false, false)).isFalse();
+    assertThat(nullabilityData.isNonNull(NullabilityLevel.PACKAGE, false, false)).isFalse();
     assertThat(nullabilityData.annotation()).isNull();
-    assertThat(nullabilityData.level()).isEqualTo(SymbolMetadata.NullabilityLevel.UNKNOWN);
+    assertThat(nullabilityData.level()).isEqualTo(NullabilityLevel.UNKNOWN);
     assertThat(nullabilityData.declaration()).isNull();
   }
 
@@ -111,9 +111,10 @@ class JSymbolMetadataTest {
     Symbol symbol = methodSymbol.declarationParameters().get(0);
 
     SymbolMetadata.NullabilityData nullabilityData = symbol.metadata().nullabilityData();
-    assertThat(nullabilityData.isNonNull(SymbolMetadata.NullabilityLevel.PACKAGE, false, false)).isFalse();
+    assertThat(nullabilityData.isNonNull(NullabilityLevel.PACKAGE, false, false)).isFalse();
     assertThat(nullabilityData.annotation()).isNull();
-    assertThat(nullabilityData.level()).isEqualTo(SymbolMetadata.NullabilityLevel.UNKNOWN);
+    assertThat(nullabilityData.type()).isEqualTo(NullabilityType.NO_ANNOTATION);
+    assertThat(nullabilityData.level()).isEqualTo(NullabilityLevel.PACKAGE);
     assertThat(nullabilityData.declaration()).isNull();
   }
 

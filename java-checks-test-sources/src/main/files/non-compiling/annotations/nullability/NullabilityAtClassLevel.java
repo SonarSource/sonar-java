@@ -6,10 +6,10 @@ import org.eclipse.jdt.annotation.DefaultLocation;
 
 public class NullabilityAtClassLevel {
 
-  Object id3000_type_UNKNOWN;
+  Object id3000_type_NO_ANNOTATION_level_PACKAGE;
 
-  public Object id3001_type_UNKNOWN(
-    Object id3002_type_UNKNOWN) {
+  public Object id3001_type_NO_ANNOTATION_level_PACKAGE(
+    Object id3002_type_NO_ANNOTATION_level_PACKAGE) {
     return new Object();
   }
 
@@ -43,7 +43,7 @@ class NullabilityAtClassLevel2 {
 public class NullabilityAtClassLevel3 {
 
   @Unknown
-  public Object id20011_type_UNKNOWN(Object id20012_type_UNKNOWN) {
+  public Object id20011_type_UNKNOWN_level_METHOD(Object id20012_type_UNKNOWN_level_METHOD) {
     // Unknown annotation returns unknown nullability
     return new Object();
   }

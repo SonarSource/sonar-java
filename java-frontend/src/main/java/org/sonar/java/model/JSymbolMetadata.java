@@ -24,7 +24,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
@@ -42,8 +42,11 @@ import static org.sonar.java.model.JSymbolMetadataNullabilityHelper.getNullabili
 
 final class JSymbolMetadata implements SymbolMetadata {
 
-  public static final NullabilityData UNKNOWN_NULLABILITY = new JNullabilityData(
-    NullabilityType.UNKNOWN, NullabilityLevel.UNKNOWN, null, null, false);
+  private static final NullabilityData[] NO_ANNOTATION_NULLABILITY =
+    forEachLevel(level -> new JNullabilityData(NullabilityType.NO_ANNOTATION, level, null, null, false));
+
+  private static final NullabilityData[] UNKNOWN_NULLABILITY =
+    forEachLevel(level -> new JNullabilityData(NullabilityType.UNKNOWN, level, null, null, false));
 
   private final JSema sema;
   private final Symbol symbol;
@@ -68,6 +71,18 @@ final class JSymbolMetadata implements SymbolMetadata {
     this.annotationBindings = new IAnnotationBinding[typeAnnotationBindings.length + annotationBindings.length];
     System.arraycopy(typeAnnotationBindings, 0, this.annotationBindings, 0, typeAnnotationBindings.length);
     System.arraycopy(annotationBindings, 0, this.annotationBindings, typeAnnotationBindings.length, annotationBindings.length);
+  }
+
+  private static NullabilityData[] forEachLevel(Function<NullabilityLevel, NullabilityData> initializer) {
+    return Arrays.stream(NullabilityLevel.values()).map(initializer).toArray(NullabilityData[]::new);
+  }
+
+  public static NullabilityData noNullabilityAnnotationAt(NullabilityLevel level) {
+    return NO_ANNOTATION_NULLABILITY[level.ordinal()];
+  }
+
+  public static NullabilityData unknownNullabilityAt(NullabilityLevel level) {
+    return UNKNOWN_NULLABILITY[level.ordinal()];
   }
 
   @Override
@@ -106,7 +121,7 @@ final class JSymbolMetadata implements SymbolMetadata {
   public NullabilityData nullabilityData() {
     NullabilityTarget target = getTarget(symbol);
     if (target == null) {
-      return UNKNOWN_NULLABILITY;
+      return unknownNullabilityAt(NullabilityLevel.UNKNOWN);
     }
     return nullabilityData(target);
   }
@@ -139,17 +154,17 @@ final class JSymbolMetadata implements SymbolMetadata {
 
   private NullabilityData resolveNullability(NullabilityTarget target) {
     NullabilityLevel currentLevel = getLevel(symbol);
-    Optional<NullabilityData> nullabilityDataAtLevel = getNullabilityDataAtLevel(this, target, currentLevel);
-    if (nullabilityDataAtLevel.isPresent()) {
-      return nullabilityDataAtLevel.get();
+    NullabilityData nullabilityDataAtLevel = getNullabilityDataAtLevel(this, target, currentLevel);
+    if (nullabilityDataAtLevel.type() != NullabilityType.NO_ANNOTATION) {
+      return nullabilityDataAtLevel;
     }
 
     // Not annotated or meta annotated, check upper level...
     if (symbol.isPackageSymbol()) {
-      return UNKNOWN_NULLABILITY;
+      return NO_ANNOTATION_NULLABILITY[currentLevel.ordinal()];
     }
     Symbol owner = symbol.owner();
-    return owner == null ? UNKNOWN_NULLABILITY : owner.metadata().nullabilityData(target);
+    return owner == null ? unknownNullabilityAt(currentLevel) : owner.metadata().nullabilityData(target);
   }
 
   private static NullabilityLevel getLevel(Symbol symbol) {
@@ -242,7 +257,9 @@ final class JSymbolMetadata implements SymbolMetadata {
     }
 
     private boolean testNullabilityType(NullabilityLevel minLevel, boolean ignoreMetaAnnotation, boolean defaultValue, Predicate<NullabilityType> typePredicate) {
-      if (type == NullabilityType.UNKNOWN || (ignoreMetaAnnotation && metaAnnotation)) {
+      if (type == NullabilityType.NO_ANNOTATION) {
+        return false;
+      } else if (type == NullabilityType.UNKNOWN || (ignoreMetaAnnotation && metaAnnotation)) {
         return defaultValue;
       } else if (typePredicate.test(type)) {
         return minLevel.ordinal() <= level.ordinal();

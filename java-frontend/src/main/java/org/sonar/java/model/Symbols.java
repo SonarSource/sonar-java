@@ -70,12 +70,12 @@ public class Symbols {
 
     @Override
     public NullabilityData nullabilityData() {
-      return JSymbolMetadata.UNKNOWN_NULLABILITY;
+      return JSymbolMetadata.unknownNullabilityAt(NullabilityLevel.UNKNOWN);
     }
 
     @Override
     public NullabilityData nullabilityData(NullabilityTarget level) {
-      return JSymbolMetadata.UNKNOWN_NULLABILITY;
+      return JSymbolMetadata.unknownNullabilityAt(NullabilityLevel.UNKNOWN);
     }
 
     @Nullable

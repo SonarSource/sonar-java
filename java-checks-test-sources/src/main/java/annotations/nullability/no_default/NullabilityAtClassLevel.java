@@ -6,10 +6,10 @@ import org.eclipse.jdt.annotation.DefaultLocation;
 
 public class NullabilityAtClassLevel {
 
-  Object id3000_type_UNKNOWN;
+  Object id3000_type_NO_ANNOTATION_level_PACKAGE_line_empty;
 
-  public Object id3001_type_UNKNOWN(
-    Object id3002_type_UNKNOWN) {
+  public Object id3001_type_NO_ANNOTATION_level_PACKAGE(
+    Object id3002_type_NO_ANNOTATION_level_PACKAGE) {
     return new Object();
   }
 
@@ -19,15 +19,15 @@ public class NullabilityAtClassLevel {
 class NullabilityAtClassLevel2 {
 
   // No effect on fields
-  Object id3003_type_UNKNOWN;
+  Object id3003_type_NO_ANNOTATION_level_PACKAGE;
 
   // No effects on methods return value
-  public Object id3004_type_UNKNOWN(
+  public Object id3004_type_NO_ANNOTATION_level_PACKAGE(
     Object id3005_type_NON_NULL_level_CLASS) {
     return new Object();
   }
 
-  public Object id3006_type_UNKNOWN(
+  public Object id3006_type_NO_ANNOTATION_level_PACKAGE(
     // Variable level has priority
     @Nullable Object id3007_type_WEAK_NULLABLE_level_VARIABLE) {
     return new Object();
@@ -35,13 +35,13 @@ class NullabilityAtClassLevel2 {
 
   // Annotations targetting something else should not change the value
   @org.eclipse.jdt.annotation.NonNullByDefault(DefaultLocation.FIELD)
-  public Object id3008_type_UNKNOWN(
+  public Object id3008_type_NO_ANNOTATION_level_PACKAGE(
     Object id3009_type_NON_NULL_level_CLASS) {
     return new Object();
   }
 
   @javax.annotation.ParametersAreNonnullByDefault
-  public Object id3010_type_UNKNOWN(
+  public Object id3010_type_NO_ANNOTATION_level_PACKAGE(
     // level is equal to the first annotation in the hierarchy
     Object id3011_type_NON_NULL_level_METHOD) {
     return new Object();
@@ -67,8 +67,8 @@ class NullabilityAtClassLevel4 {
 
   Object id3015_type_NON_NULL_level_CLASS;
 
-  public Object id3016_type_UNKNOWN(
-    Object id3017_type_UNKNOWN) {
+  public Object id3016_type_NO_ANNOTATION_level_PACKAGE(
+    Object id3017_type_NO_ANNOTATION_level_PACKAGE) {
     return new Object();
   }
 }
@@ -77,9 +77,9 @@ class NullabilityAtClassLevel4 {
 @org.eclipse.jdt.annotation.NonNullByDefault(DefaultLocation.PARAMETER)
 class NullabilityAtClassLevel5 {
 
-  Object id3018_type_UNKNOWN;
+  Object id3018_type_NO_ANNOTATION_level_PACKAGE;
 
-  public Object id3019_type_UNKNOWN(
+  public Object id3019_type_NO_ANNOTATION_level_PACKAGE(
     Object id3020_type_NON_NULL_level_CLASS) {
     return new Object();
   }
@@ -89,10 +89,10 @@ class NullabilityAtClassLevel5 {
 @org.eclipse.jdt.annotation.NonNullByDefault(DefaultLocation.RETURN_TYPE)
 class NullabilityAtClassLevel6 {
 
-  Object id3021_type_UNKNOWN;
+  Object id3021_type_NO_ANNOTATION_level_PACKAGE;
 
   public Object id3022_type_NON_NULL_level_CLASS(
-    Object id3023_type_UNKNOWN) {
+    Object id3023_type_NO_ANNOTATION_level_PACKAGE) {
     return new Object();
   }
 }
@@ -101,10 +101,10 @@ class NullabilityAtClassLevel6 {
 @org.eclipse.jdt.annotation.NonNullByDefault(DefaultLocation.ARRAY_CONTENTS)
 class NullabilityAtClassLevel7 {
 
-  Object id3024_type_UNKNOWN;
+  Object id3024_type_NO_ANNOTATION_level_PACKAGE;
 
-  public Object id3025_type_UNKNOWN(
-    Object id3026_type_UNKNOWN) {
+  public Object id3025_type_NO_ANNOTATION_level_PACKAGE(
+    Object id3026_type_NO_ANNOTATION_level_PACKAGE) {
     return new Object();
   }
 }
@@ -112,15 +112,15 @@ class NullabilityAtClassLevel7 {
 @javax.annotation.ParametersAreNullableByDefault
 class NullabilityAtClassLevel8 {
   // No effect on fields
-  Object id3026_type_UNKNOWN;
+  Object id3026_type_NO_ANNOTATION_level_PACKAGE;
 
   // No effects on methods return value
-  public Object id3027_type_UNKNOWN(
+  public Object id3027_type_NO_ANNOTATION_level_PACKAGE(
     Object id3028_type_WEAK_NULLABLE_level_CLASS) {
     return new Object();
   }
 
-  public Object id3029_type_UNKNOWN(
+  public Object id3029_type_NO_ANNOTATION_level_PACKAGE(
     // Variable level has priority
     @Nonnull Object id3030_type_NON_NULL_level_VARIABLE) {
     return new Object();
