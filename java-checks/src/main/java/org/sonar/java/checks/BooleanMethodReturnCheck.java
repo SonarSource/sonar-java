@@ -24,6 +24,7 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
@@ -31,8 +32,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-
-import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNullable;
 
 @Rule(key = "S2447")
 public class BooleanMethodReturnCheck extends IssuableSubscriptionVisitor {
@@ -46,17 +45,13 @@ public class BooleanMethodReturnCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
     SymbolMetadata metadata = methodTree.symbol().metadata();
-    if (returnsBoolean(methodTree) && !isAnnotatedNullable(metadata) && !hasUnknownAnnotation(metadata)) {
+    if (returnsBoolean(methodTree) && !metadata.nullabilityData().isNullable(NullabilityLevel.PACKAGE, false, true)) {
       methodTree.accept(new ReturnStatementVisitor());
     }
   }
 
   private static boolean returnsBoolean(MethodTree methodTree) {
     return methodTree.returnType().symbolType().is("java.lang.Boolean");
-  }
-
-  private static boolean hasUnknownAnnotation(SymbolMetadata symbolMetadata) {
-    return symbolMetadata.annotations().stream().anyMatch(annotation -> annotation.symbol().isUnknown());
   }
 
   private class ReturnStatementVisitor extends BaseTreeVisitor {
