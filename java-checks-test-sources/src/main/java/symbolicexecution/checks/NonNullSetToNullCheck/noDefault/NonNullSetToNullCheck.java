@@ -16,6 +16,8 @@ import org.eclipse.jdt.annotation.DefaultLocation;
  * - When a nullable value is returned from a method annotated nonnull.
  * - 3 Arguments:
  * - When a nullable value is passed to a parameter annotated nonnull.
+ * Note: S4449 is targeting point 3 aswell, but only when it is not directly annotated. The current rule will therefore only report an issue if
+ * the parameter is directly annotated nonnull.
  */
 class NonNullSetToNullCheck {
 
@@ -36,7 +38,7 @@ class NonNullSetToNullCheck {
     if (color != null) {
       secondary = null;
     }
-    primary = color;  // Noncompliant [[sc=5;ec=20]] {{"primary" is marked "javax.annotation.Nonnull" but is set to null.}}
+    primary = color;  // Noncompliant [[sc=5;ec=20]] {{"primary" is marked "@Nonnull" but is set to null.}}
     testObject = new Object();
   }
 
@@ -46,19 +48,19 @@ class NonNullSetToNullCheck {
     testObject = new Object();
   }
 
-  public NonNullSetToNullCheck() { // Noncompliant [[sc=10;ec=31]] {{"primary" is marked "javax.annotation.Nonnull" but is not initialized in this constructor.}}
+  public NonNullSetToNullCheck() { // Noncompliant [[sc=10;ec=31]] {{"primary" is marked "@Nonnull" but is not initialized in this constructor.}}
     return; // Just for coverage
   }
 
   // ============ 1.2 Testing fields set to nullable ============
   public void reset() {
-    primary = null; // Noncompliant {{"primary" is marked "javax.annotation.Nonnull" but is set to null.}}
+    primary = null; // Noncompliant {{"primary" is marked "@Nonnull" but is set to null.}}
     secondary = null;
   }
 
   public String returnColor() {
     if (secondary == null) {
-      this.primary = null; // Noncompliant {{"primary" is marked "javax.annotation.Nonnull" but is set to null.}}
+      this.primary = null; // Noncompliant {{"primary" is marked "@Nonnull" but is set to null.}}
       return secondary;
     }
     return primary;
@@ -66,7 +68,7 @@ class NonNullSetToNullCheck {
 
   public void resetConvoluted(String color) {
     if (secondary == null) {
-      primary = secondary; // Noncompliant {{"primary" is marked "javax.annotation.Nonnull" but is set to null.}}
+      primary = secondary; // Noncompliant {{"primary" is marked "@Nonnull" but is set to null.}}
     }
     secondary = color;
   }
@@ -81,13 +83,13 @@ class NonNullSetToNullCheck {
   }
 
   public void setColors2(@Nullable String color) {
-    primary = color; // Noncompliant {{"primary" is marked "javax.annotation.Nonnull" but is set to null.}}
+    primary = color; // Noncompliant {{"primary" is marked "@Nonnull" but is set to null.}}
     secondary = color; // Compliant, secondary is not Nonnull
   }
 
   public void parameterAssignment(@Nonnull String color) {
     if (secondary == null) {
-      color = secondary; // Noncompliant {{"color" is marked "javax.annotation.Nonnull" but is set to null.}}
+      color = secondary; // Noncompliant {{"color" is marked "@Nonnull" but is set to null.}}
     }
   }
 
@@ -107,7 +109,7 @@ class NonNullSetToNullCheck {
   // ============ 2. Testing Return values ============
   @Nonnull
   public String colorMix() {
-    return null;  // Noncompliant {{This method's return value is marked "javax.annotation.Nonnull" but null is returned.}}
+    return null;  // Noncompliant {{This method's return value is marked "@Nonnull" but null is returned.}}
   }
 
   @Nonnull(when = When.MAYBE)
@@ -128,7 +130,7 @@ class NonNullSetToNullCheck {
   @Nonnull
   public String indirectMix() {
     String mix = null;
-    return mix;  // Noncompliant {{This method's return value is marked "javax.annotation.Nonnull" but null is returned.}}
+    return mix;  // Noncompliant {{This method's return value is marked "@Nonnull" but null is returned.}}
   }
 
   @Nonnull
@@ -159,17 +161,17 @@ class NonNullSetToNullCheck {
   // ============ 3. Testing nullable value passed as argument ============
   public static void initialize1() {
     NonNullSetToNullCheck instance =
-      new NonNullSetToNullCheck(null, "Blue");  // Noncompliant [[sc=7;ec=46]] {{Parameter 1 to this constructor is marked "javax.annotation.Nonnull" but null could be passed.}}
+      new NonNullSetToNullCheck(null, "Blue");  // Noncompliant [[sc=7;ec=46]] {{Parameter 1 to this constructor is marked "@Nonnull" but null could be passed.}}
   }
 
   public static void initialize2() {
     NonNullSetToNullCheck instance = new NonNullSetToNullCheck("Black", null);
-    instance.setColors(null, "Green");  // Noncompliant {{Parameter 1 to this call is marked "javax.annotation.Nonnull" but null could be passed.}}
+    instance.setColors(null, "Green");  // Noncompliant {{Parameter 1 to this call is marked "@Nonnull" but null could be passed.}}
   }
 
   public static void initialize3() {
     NonNullSetToNullCheck instance = new NonNullSetToNullCheck("Red", null);
-    instance.setSecondary(null);  // Noncompliant {{Parameter 1 to this call is marked "javax.annotation.Nonnull" but null could be passed.}}
+    instance.setSecondary(null);  // Noncompliant {{Parameter 1 to this call is marked "@Nonnull" but null could be passed.}}
   }
 
   public static void initiliaze4() {
@@ -312,9 +314,9 @@ abstract class ExcludedMethods {
   abstract Object getMyObject();
 
   void foo() {
-    com.google.common.base.Preconditions.checkNotNull(getMyObject()); // Compliant
-    com.google.common.base.Preconditions.checkNotNull(getMyObject(), "yolo"); // Compliant
-    com.google.common.base.Preconditions.checkNotNull(getMyObject(), "yolo", new Object(), 2); // Compliant
+    com.google.common.base.Preconditions.checkNotNull(getMyObject()); // Compliant - will be reported in S4449
+    com.google.common.base.Preconditions.checkNotNull(getMyObject(), "yolo"); // Compliant - will be reported in S4449
+    com.google.common.base.Preconditions.checkNotNull(getMyObject(), "yolo", new Object(), 2); // Compliant - will be reported in S4449
   }
 }
 
@@ -374,7 +376,7 @@ class JpaEntityInvalidDefault {
 
   private String otherField;
 
-  public JpaEntityInvalidDefault() { // Noncompliant  {{"itemName" is marked "javax.annotation.Nonnull" but is not initialized in this constructor.}}
+  public JpaEntityInvalidDefault() { // Noncompliant  {{"itemName" is marked "@Nonnull" but is not initialized in this constructor.}}
     otherField = "test";
   }
 }
@@ -416,8 +418,8 @@ class HandleParametersAreNonnullByDefault {
   }
 
   void foo(Object o) {
-    foo(null); // Compliant- FN - @ParametersAreNonnullByDefault not handled
-    new HandleParametersAreNonnullByDefault(null); // Compliant - FN - @ParametersAreNonnullByDefault not handled
+    foo(null); // Compliant - will be reported in S4449
+    new HandleParametersAreNonnullByDefault(null); // Compliant - will be reported in S4449
   }
 
   void bar(@Nullable Object o) {
@@ -426,7 +428,7 @@ class HandleParametersAreNonnullByDefault {
 
   @Override
   public boolean equals(Object obj) {
-    return equals(null); // Compliant
+    return equals(null); // Compliant - will be reported in S4449
   }
 }
 
@@ -437,23 +439,23 @@ class HandleNonNullByDefault {
   Integer initialized;
 
   // 1.1: field not assigned in constructor
-  public HandleNonNullByDefault() { // Noncompliant {{"notInitialized" is marked "org.eclipse.jdt.annotation.NonNullByDefault" but is not initialized in this constructor.}}
+  public HandleNonNullByDefault() { // Noncompliant {{"notInitialized" is marked "@NonNullByDefault at class level" but is not initialized in this constructor.}}
     initialized = 200;
   }
 
   // 1.2: field assigned
   public void setInitialized() {
-    this.initialized = null; // Noncompliant {{"initialized" is marked "org.eclipse.jdt.annotation.NonNullByDefault" but is set to null.}}
+    this.initialized = null; // Noncompliant {{"initialized" is marked "@NonNullByDefault at class level" but is set to null.}}
   }
 
   // 2. return values
   public String returnNull() {
-    return null;  // Noncompliant {{This method's return value is marked "org.eclipse.jdt.annotation.NonNullByDefault" but null is returned.}}
+    return null;  // Noncompliant {{This method's return value is marked "@NonNullByDefault at class level" but null is returned.}}
   }
 
   // 3.
   public void notNullArgument(Object o) {
-    notNullArgument(null);  // Compliant - FN
+    notNullArgument(null);  // Compliant - will be reported in S4449
   }
 }
 
@@ -469,7 +471,7 @@ class HandleNonNullByDefaultPrimitives {
 class HandleEclipseParametersNonNull {
   @org.eclipse.jdt.annotation.NonNullByDefault(DefaultLocation.PARAMETER)
   void foo(Object o) {
-    foo(null); // Compliant - FN - @NonNullByDefault not handled
+    foo(null); // Compliant - will be reported in S4449
   }
 
   @org.eclipse.jdt.annotation.NonNullByDefault(DefaultLocation.RETURN_TYPE)
@@ -479,7 +481,7 @@ class HandleEclipseParametersNonNull {
 
   @org.eclipse.jdt.annotation.NonNullByDefault(DefaultLocation.RETURN_TYPE)
   Object shouldNotReturnNull(Object o) {
-    return null; // Noncompliant {{This method's return value is marked "org.eclipse.jdt.annotation.NonNullByDefault" but null is returned.}}
+    return null; // Noncompliant {{This method's return value is marked "@NonNullByDefault" but null is returned.}}
   }
 }
 
@@ -492,7 +494,7 @@ class HandleEclipseParametersNonNull {
 class HandleAnnotatedViaMetaAnnotation {
   @MyNonNull
   Object shouldNotReturnNull(Object o) {
-    return null; // Compliant - FN
+    return null; // Noncompliant {{This method's return value is marked "@Nonnull via meta-annotation" but null is returned.}}
   }
 }
 

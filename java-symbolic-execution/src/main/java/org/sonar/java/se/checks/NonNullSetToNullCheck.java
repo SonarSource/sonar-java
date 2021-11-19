@@ -23,13 +23,12 @@ import java.text.MessageFormat;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ConstraintManager;
@@ -37,6 +36,7 @@ import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -51,9 +51,12 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 import static org.sonar.java.model.JUtils.isLocalVariable;
-import static org.sonar.java.se.NullableAnnotationUtils.nonNullAnnotation;
+import static org.sonar.java.se.NullabilityDataUtils.nullabilityAsString;
+import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.PACKAGE;
+import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.VARIABLE;
 
 @Rule(key = "S2637")
 public class NonNullSetToNullCheck extends SECheck {
@@ -143,13 +146,19 @@ public class NonNullSetToNullCheck extends SECheck {
   }
 
   private void checkVariable(CheckerContext context, MethodTree tree, final Symbol symbol) {
-    String nonNullAnnotation = nonNullAnnotation(symbol);
-    if (nonNullAnnotation == null || nonNullAnnotation.startsWith("javax.validation.constraints.") || symbol.isStatic()) {
+    Optional<String> nonnullAnnotationAsString = getNonnullAnnotationAsString(symbol);
+    if (nonnullAnnotationAsString.isEmpty() || isJavaxValidationConstraint(symbol) || symbol.isStatic()) {
       return;
     }
     if (isUndefinedOrNull(context, symbol)) {
-      context.reportIssue(tree.simpleName(), this, MessageFormat.format("\"{0}\" is marked \"{1}\" but is not initialized in this constructor.", symbol.name(), nonNullAnnotation));
+      context.reportIssue(tree.simpleName(), this,
+        MessageFormat.format("\"{0}\" is marked \"{1}\" but is not initialized in this constructor.", symbol.name(), nonnullAnnotationAsString.get()));
     }
+  }
+
+  private static boolean isJavaxValidationConstraint(Symbol symbol) {
+    SymbolMetadata.AnnotationInstance annotation = symbol.metadata().nullabilityData().annotation();
+    return annotation != null && annotation.symbol().type().fullyQualifiedName().startsWith("javax.validation.constraints.");
   }
 
   private static boolean isUndefinedOrNull(CheckerContext context, Symbol symbol) {
@@ -183,14 +192,14 @@ public class NonNullSetToNullCheck extends SECheck {
       if (ExpressionUtils.isSimpleAssignment(tree)) {
         IdentifierTree variable = ExpressionUtils.extractIdentifier(tree);
         Symbol symbol = variable.symbol();
-        String nonNullAnnotation = nonNullAnnotation(symbol);
-        if (nonNullAnnotation == null) {
+        Optional<String> nonNullAnnotation = getNonnullAnnotationAsString(symbol);
+        if (nonNullAnnotation.isEmpty()) {
           return;
         }
         SymbolicValue assignedValue = programState.peekValue();
         ObjectConstraint constraint = programState.getConstraint(assignedValue, ObjectConstraint.class);
         if (constraint != null && constraint.isNull()) {
-          reportIssue(tree, "\"{0}\" is marked \"{1}\" but is set to null.", symbol.name(), nonNullAnnotation);
+          reportIssue(tree, "\"{0}\" is marked \"{1}\" but is set to null.", symbol.name(), nonNullAnnotation.get());
         }
       }
     }
@@ -234,10 +243,10 @@ public class NonNullSetToNullCheck extends SECheck {
     private void checkNullArgument(Tree syntaxTree, Symbol.MethodSymbol symbol, int param, SymbolicValue argumentValue, int index) {
       ObjectConstraint constraint = programState.getConstraint(argumentValue, ObjectConstraint.class);
       if (constraint != null && constraint.isNull()) {
-        String nonNullAnnotation = nonNullAnnotation(JUtils.parameterAnnotations(symbol, param));
-        if (nonNullAnnotation != null) {
+        Optional<String> nonNullAnnotation = getNonnullAnnotationAsString(symbol.declarationParameters().get(param), VARIABLE);
+        if (nonNullAnnotation.isPresent()) {
           String message = "Parameter {0} to this {1} is marked \"{2}\" but null could be passed.";
-          reportIssue(syntaxTree, message, index + 1, ("<init>".equals(symbol.name()) ? "constructor" : "call"), nonNullAnnotation);
+          reportIssue(syntaxTree, message, index + 1, ("<init>".equals(symbol.name()) ? "constructor" : "call"), nonNullAnnotation.get());
         }
       }
     }
@@ -259,12 +268,12 @@ public class NonNullSetToNullCheck extends SECheck {
           return;
         }
       }
-      String nonNullAnnotation = nonNullAnnotation(((MethodTree) parent).symbol());
-      if (nonNullAnnotation == null) {
+      Optional<String> nonNullAnnotation = getNonnullAnnotationAsString(((MethodTree) parent).symbol());
+      if (nonNullAnnotation.isEmpty()) {
         return;
       }
       if (isLocalExpression(tree.expression())) {
-        checkReturnedValue(tree, nonNullAnnotation);
+        checkReturnedValue(tree, nonNullAnnotation.get());
       }
     }
 
@@ -285,6 +294,18 @@ public class NonNullSetToNullCheck extends SECheck {
         reportIssue(tree, "This method''s return value is marked \"{0}\" but null is returned.", nonNullAnnotation);
       }
     }
+  }
+
+  private static Optional<String> getNonnullAnnotationAsString(Symbol symbol) {
+    return getNonnullAnnotationAsString(symbol, PACKAGE);
+  }
+
+  private static Optional<String> getNonnullAnnotationAsString(Symbol symbol, NullabilityLevel minLevel) {
+    SymbolMetadata.NullabilityData nullabilityData = symbol.metadata().nullabilityData();
+    if (nullabilityData.isNonNull(minLevel, false, false)) {
+      return nullabilityAsString(nullabilityData);
+    }
+    return Optional.empty();
   }
 
 }
