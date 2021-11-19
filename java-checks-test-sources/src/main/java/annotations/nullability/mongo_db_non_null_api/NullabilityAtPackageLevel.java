@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
  */
 public class NullabilityAtPackageLevel {
 
-  Object id5001_type_UNKNOWN;
+  Object id5001_type_NO_ANNOTATION_level_PACKAGE;
   @Nonnull Object id5002_type_NON_NULL_level_VARIABLE;
 
   public Object id5003_type_NON_NULL_level_PACKAGE(

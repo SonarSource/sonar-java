@@ -30,7 +30,7 @@ import org.eclipse.jdt.annotation.DefaultLocation;
  */
 public class NullabilityAtVariableLevel {
   // ============== Fields ==============
-  Object id1000_type_UNKNOWN;
+  Object id1000_type_NO_ANNOTATION_level_PACKAGE;
   // ============== Strong nullable ==============
   @javax.annotation.CheckForNull
   Object id1001_type_STRONG_NULLABLE_level_VARIABLE;
@@ -184,7 +184,7 @@ public class NullabilityAtVariableLevel {
   @org.eclipse.jdt.annotation.NonNullByDefault(DefaultLocation.FIELD)
   Object id1060_type_NON_NULL_level_VARIABLE;
   @org.eclipse.jdt.annotation.NonNullByDefault(DefaultLocation.RETURN_TYPE)
-  Object id1061_type_UNKNOWN;
+  Object id1061_type_NO_ANNOTATION_level_PACKAGE;
 
   // ============== Should work without fully qualified name ==============
   @CheckForNull
@@ -198,7 +198,7 @@ public class NullabilityAtVariableLevel {
   @edu.umd.cs.findbugs.annotations.CheckForNull
   public Object id1065_type_STRONG_NULLABLE_level_METHOD(
     // Annotations on method does not impact arguments
-    Object id1066_type_UNKNOWN,
+    Object id1066_type_NO_ANNOTATION_level_PACKAGE,
     @edu.umd.cs.findbugs.annotations.CheckForNull Object id1067_type_STRONG_NULLABLE_level_VARIABLE
   ) {
     return new Object();
@@ -207,7 +207,7 @@ public class NullabilityAtVariableLevel {
   @org.jetbrains.annotations.Nullable
   public Object id1068_type_WEAK_NULLABLE_level_METHOD(
     // Annotations on method does not impact arguments
-    Object id1069_type_UNKNOWN,
+    Object id1069_type_NO_ANNOTATION_level_PACKAGE,
     @org.jetbrains.annotations.Nullable Object id1070_type_WEAK_NULLABLE_level_VARIABLE
   ) {
     return new Object();
@@ -216,7 +216,7 @@ public class NullabilityAtVariableLevel {
   @org.eclipse.jgit.annotations.NonNull
   public Object id1071_type_NON_NULL_level_METHOD(
     // Annotations on method does not impact arguments
-    Object id1072_type_UNKNOWN,
+    Object id1072_type_NO_ANNOTATION_level_PACKAGE,
     @org.eclipse.jgit.annotations.NonNull Object id1073_type_NON_NULL_level_VARIABLE
   ) {
     return new Object();
@@ -226,14 +226,14 @@ public class NullabilityAtVariableLevel {
   @org.eclipse.jdt.annotation.NonNullByDefault(DefaultLocation.RETURN_TYPE)
   public Object id1074_type_NON_NULL_level_METHOD(
     // Annotations on method does not impact arguments
-    Object id1075_type_UNKNOWN,
+    Object id1075_type_NO_ANNOTATION_level_PACKAGE,
     @org.eclipse.jdt.annotation.NonNullByDefault(DefaultLocation.PARAMETER) Object id1076_type_NON_NULL_level_VARIABLE
   ) {
     return new Object();
   }
 
-  public Object id1077_type_UNKNOWN(
-    Object id1078_type_UNKNOWN,
+  public Object id1077_type_NO_ANNOTATION_level_PACKAGE(
+    Object id1078_type_NO_ANNOTATION_level_PACKAGE,
     @org.eclipse.jdt.annotation.NonNullByDefault(DefaultLocation.PARAMETER) Object id1079_type_NON_NULL_level_VARIABLE
   ) {
     return new Object();

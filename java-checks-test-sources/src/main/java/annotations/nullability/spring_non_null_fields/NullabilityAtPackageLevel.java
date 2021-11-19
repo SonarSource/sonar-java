@@ -13,8 +13,8 @@ public class NullabilityAtPackageLevel {
   @Nonnull Object id4002_type_NON_NULL_level_VARIABLE;
   @Nullable Object id4003_type_WEAK_NULLABLE_level_VARIABLE;
 
-  public Object id4004_type_UNKNOWN(
-    Object id4005_type_UNKNOWN) {
+  public Object id4004_type_NO_ANNOTATION_level_PACKAGE(
+    Object id4005_type_NO_ANNOTATION_level_PACKAGE) {
     return new Object();
   }
 }

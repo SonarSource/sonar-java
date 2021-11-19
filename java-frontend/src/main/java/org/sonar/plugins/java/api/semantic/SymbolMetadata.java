@@ -108,10 +108,11 @@ public interface SymbolMetadata {
   }
 
   enum NullabilityType {
+    NO_ANNOTATION,
     UNKNOWN,
-    STRONG_NULLABLE,
+    NON_NULL,
     WEAK_NULLABLE,
-    NON_NULL
+    STRONG_NULLABLE
   }
 
   enum NullabilityLevel {

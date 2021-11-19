@@ -25,7 +25,9 @@ import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationInstance;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityTarget;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityType;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.semantic.Type.Primitives;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -35,7 +37,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.sonar.java.model.JSymbolMetadata.UNKNOWN_NULLABILITY;
 
 class SymbolsTest {
 
@@ -77,8 +78,9 @@ class SymbolsTest {
     assertThat(metadata.valuesForAnnotation("whatever")).isNull();
 
     // since SonarJava 7.6
-    assertThat(metadata.nullabilityData()).isEqualTo(UNKNOWN_NULLABILITY);
-    assertThat(metadata.nullabilityData(NullabilityTarget.METHOD)).isEqualTo(UNKNOWN_NULLABILITY);
+    assertThat(metadata.nullabilityData().type()).isEqualTo(NullabilityType.UNKNOWN);
+    assertThat(metadata.nullabilityData().level()).isEqualTo(NullabilityLevel.UNKNOWN);
+    assertThat(metadata.nullabilityData(NullabilityTarget.METHOD).type()).isEqualTo(NullabilityType.UNKNOWN);
     assertThat(metadata.findAnnotationTree(mock(AnnotationInstance.class))).isNull();
   }
 
@@ -87,8 +89,8 @@ class SymbolsTest {
     File file = new File("src/main/java/org/sonar/java/model/package-info.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     SymbolMetadata metadata = tree.packageDeclaration().packageName().symbolType().symbol().metadata();
-    assertThat(metadata.nullabilityData()).isEqualTo(UNKNOWN_NULLABILITY);
-    assertThat(metadata.nullabilityData(NullabilityTarget.METHOD)).isEqualTo(UNKNOWN_NULLABILITY);
+    assertThat(metadata.nullabilityData().type()).isEqualTo(NullabilityType.UNKNOWN);
+    assertThat(metadata.nullabilityData(NullabilityTarget.METHOD).type()).isEqualTo(NullabilityType.UNKNOWN);
   }
 
   @Test
@@ -98,8 +100,8 @@ class SymbolsTest {
     when(symbol.declaration()).thenReturn(unsupportedDeclaration);
     SymbolMetadata metadata = new JSymbolMetadata(JUtilsTest.SEMA, symbol, new IAnnotationBinding[0]);
     assertThat(metadata.findAnnotationTree(mock(AnnotationInstance.class))).isNull();
-    assertThat(metadata.nullabilityData()).isEqualTo(UNKNOWN_NULLABILITY);
-    assertThat(metadata.nullabilityData(NullabilityTarget.METHOD)).isEqualTo(UNKNOWN_NULLABILITY);
+    assertThat(metadata.nullabilityData().type()).isEqualTo(NullabilityType.UNKNOWN);
+    assertThat(metadata.nullabilityData(NullabilityTarget.METHOD).type()).isEqualTo(NullabilityType.UNKNOWN);
   }
 
   @Test
@@ -120,8 +122,8 @@ class SymbolsTest {
     assertThat(unknownSymbol.name()).isEqualTo("!unknown!");
     assertThat(unknownSymbol.owner()).isEqualTo(Symbols.rootPackage);
     SymbolMetadata metadata = unknownSymbol.metadata();
-    assertThat(metadata.nullabilityData()).isEqualTo(UNKNOWN_NULLABILITY);
-    assertThat(metadata.nullabilityData(NullabilityTarget.METHOD)).isEqualTo(UNKNOWN_NULLABILITY);
+    assertThat(metadata.nullabilityData().type()).isEqualTo(NullabilityType.UNKNOWN);
+    assertThat(metadata.nullabilityData(NullabilityTarget.METHOD).type()).isEqualTo(NullabilityType.UNKNOWN);
   }
 
   @Test
