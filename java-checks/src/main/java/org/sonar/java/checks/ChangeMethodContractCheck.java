@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
+import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.model.JUtils;
@@ -31,11 +31,11 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityData;
-import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.sonar.java.se.NullabilityDataUtils.nullabilityAsString;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.PACKAGE;
 
 @Rule(key = "S2638")
@@ -94,32 +94,15 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
   }
 
   private void reportIssue(Tree reportLocation, NullabilityData overrideeNullability, NullabilityData otherNullability) {
-    reportIssue(reportLocation,
-      String.format("Fix the incompatibility of the annotation %s to honor %s of the overridden method.",
-        nullabilityAsString(otherNullability),
-        nullabilityAsString(overrideeNullability)),
-      getSecondariesForAnnotations(otherNullability, overrideeNullability),
-      null);
-  }
-
-  private static String nullabilityAsString(NullabilityData nullabilityData) {
-    String name = nullabilityData.annotation().symbol().name();
-    if (nullabilityData.metaAnnotation()) {
-      name += " via meta-annotation";
-    }
-    String level = levelToString(nullabilityData.level());
-    return String.format("@%s%s", name, level);
-  }
-
-  private static String levelToString(NullabilityLevel level) {
-    switch (level) {
-      case PACKAGE:
-      case CLASS:
-        return String.format(" at %s level", level.toString().toLowerCase(Locale.ROOT));
-      case METHOD:
-      case VARIABLE:
-      default:
-        return "";
+    Optional<String> overrideeAsString = nullabilityAsString(otherNullability);
+    Optional<String> otherAsString = nullabilityAsString(overrideeNullability);
+    if (overrideeAsString.isPresent() && otherAsString.isPresent()) {
+      reportIssue(reportLocation,
+        String.format("Fix the incompatibility of the annotation %s to honor %s of the overridden method.",
+          overrideeAsString.get(),
+          otherAsString.get()),
+        getSecondariesForAnnotations(otherNullability, overrideeNullability),
+        null);
     }
   }
 
