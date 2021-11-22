@@ -96,7 +96,6 @@ import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonarsource.performance.measure.PerformanceMeasure;
 
-import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNonNull;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.PACKAGE;
 
 public class ExplodedGraphWalker {
@@ -914,7 +913,7 @@ public class ExplodedGraphWalker {
       SymbolicValue sv;
       if (terminator != null && terminator.is(Tree.Kind.FOR_EACH_STATEMENT)) {
         sv = constraintManager.createSymbolicValue(variableTree);
-        if (isAnnotatedNonNull(variableSymbol)) {
+        if (variableSymbol.metadata().nullabilityData().isNonNull(PACKAGE, false, false)) {
           programState = programState.addConstraint(sv, ObjectConstraint.NOT_NULL);
         }
       } else {

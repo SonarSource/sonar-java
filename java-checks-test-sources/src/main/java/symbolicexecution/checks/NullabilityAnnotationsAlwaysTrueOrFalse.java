@@ -1,10 +1,13 @@
 package symbolicexecution.checks;
 
+import java.util.List;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 public class NullabilityAnnotationsAlwaysTrueOrFalse {
+  boolean field;
 
   public void nullableAttributes() {
     RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
@@ -70,6 +73,26 @@ public class NullabilityAnnotationsAlwaysTrueOrFalse {
       if (o != null) { // Noncompliant
       }
     }
+  }
+
+  void localVariable() {
+    @Nonnull
+    Object o = getSomething();
+    if (o != null) {
+    }
+  }
+  void localVariable2(List<String>items) {
+    for (@Nonnull Object o : items) {
+      if (o != null) { // Noncompliant
+      }
+    }
+  }
+
+  private Object getSomething() {
+    if (field) {
+      return null;
+    }
+    return new Object();
   }
 
 }
