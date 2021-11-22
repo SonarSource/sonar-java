@@ -54,10 +54,13 @@ import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -267,6 +270,31 @@ class JavaFrontendTest {
       .hasMessage("Batch Mode failed, analysis of Java Files stopped.");
   }
 
+  @Test
+  void test_preview_feature_log_message() throws IOException {
+    logTester.setLevel(LoggerLevel.DEBUG);
+    scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "16"),
+      "sealed class Shape { } sealed class Circle extends Shape { }");
+    assertThat(sensorContext.allAnalysisErrors()).isEmpty();
+    assertTrue(logTester.logs(LoggerLevel.WARN).stream().anyMatch(l -> l.endsWith("Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.")));
+    // We should keep this message or we won't have anything actionable in the debug logs to understand the warning
+    assertTrue(logTester.logs(LoggerLevel.DEBUG).stream().anyMatch(l -> l.replace("\r\n", "\n").endsWith("Unresolved imports/types:\n" +
+      "- Sealed Types is a preview feature and disabled by default. Use --enable-preview to enable")));
+    assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(1);
+    assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
+  }
+
+  @Test
+  void test_java17_feature() throws IOException {
+    logTester.setLevel(LoggerLevel.DEBUG);
+    scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "17"),
+      "sealed class Shape { } sealed class Circle extends Shape { }");
+    String allLogs = String.join("\n", logTester.logs());
+    assertFalse(allLogs.contains("Unresolved imports/types"));
+    assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(1);
+    assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
+  }
+
   private List<InputFile> scan(String... codeList) throws IOException {
     return scan(new MapSettings(), codeList);
   }
@@ -305,7 +333,8 @@ class JavaFrontendTest {
     sonarComponents.setSensorContext(sensorContext);
     sonarComponents.mainChecks().add(mainCodeIssueScannerAndFilter);
     sonarComponents.testChecks().add(testCodeIssueScannerAndFilter);
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class),
+    JavaVersion javaVersion = JavaVersionImpl.fromString(settings.asConfig().get(JavaVersion.SOURCE_VERSION).orElse(null));
+    JavaFrontend frontend = new JavaFrontend(javaVersion, sonarComponents, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class),
       null, mainCodeIssueScannerAndFilter);
     frontend.scan(inputFiles, Collections.emptyList(), Collections.emptyList());
 

@@ -50,7 +50,7 @@ import org.sonarsource.performance.measure.PerformanceMeasure;
 
 public abstract class JParserConfig {
 
-  public static final String MAXIMUM_SUPPORTED_JAVA_VERSION = "16";
+  public static final String MAXIMUM_SUPPORTED_JAVA_VERSION = Integer.toString(JavaVersionImpl.MAX_SUPPORTED);
 
   private static final Logger LOG = Loggers.get(JParserConfig.class);
 
