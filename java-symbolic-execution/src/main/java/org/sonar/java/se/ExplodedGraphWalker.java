@@ -1122,7 +1122,8 @@ public class ExplodedGraphWalker {
   }
 
   private static boolean isNonNullMethodInvocation(ExpressionTree expr) {
-    return expr.is(Tree.Kind.METHOD_INVOCATION) && isAnnotatedNonNull(((MethodInvocationTree) expr).symbol());
+    return expr.is(Tree.Kind.METHOD_INVOCATION)
+      && ((MethodInvocationTree) expr).symbol().metadata().nullabilityData().isNonNull(PACKAGE, false, false);
   }
 
   private void executeMemberSelect(MemberSelectExpressionTree mse) {

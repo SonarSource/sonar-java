@@ -58,4 +58,18 @@ public class NullabilityAnnotationsAlwaysTrueOrFalse {
 
   }
 
+  class ClassWithFinalNonNullField {
+    final Object o = nonNullCall();
+
+    @javax.annotation.Nonnull
+    public Object nonNullCall() {
+      return new Object();
+    }
+
+    public void alwaysTrue4() {
+      if (o != null) { // Noncompliant
+      }
+    }
+  }
+
 }
