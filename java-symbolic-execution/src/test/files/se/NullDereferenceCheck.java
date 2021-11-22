@@ -71,6 +71,10 @@ class NullPointerTest {
   public String eclipseJgitNullableMethod() {
     return nullableFieldString;
   }
+  @javax.annotation.Nonnull(when=javax.annotation.meta.When.MAYBE)
+  public String strongNullableViaNonNull() {
+    return nullableFieldString;
+  }
 
   public void testNotnullable(Object[] parameter) {
     int i;
@@ -126,6 +130,8 @@ class NullPointerTest {
 
     i = eclipseJdtNullableMethod().length(); // Noncompliant
     i = eclipseJgitNullableMethod().length(); // Noncompliant
+
+    i = strongNullableViaNonNull().length(); // Noncompliant
   }
 
   class A {
