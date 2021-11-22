@@ -42,7 +42,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNullable;
+import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel;
 
 @Rule(key = "S1168")
 public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
@@ -112,7 +112,7 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
     if (tree.is(Tree.Kind.METHOD)) {
       MethodTree methodTree = (MethodTree) tree;
       SymbolMetadata metadata = methodTree.symbol().metadata();
-      if (hasUnknownAnnotation(metadata) || isAnnotatedNullable(metadata) || requiresReturnNull(methodTree)) {
+      if (metadata.nullabilityData().isNullable(NullabilityLevel.PACKAGE, false, true) || requiresReturnNull(methodTree)) {
         returnKinds.push(ReturnKind.OTHER);
       } else {
         returnKinds.push(ReturnKind.forType(methodTree.returnType().symbolType()));
@@ -166,10 +166,6 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isOverriding(MethodTree tree) {
     return Boolean.TRUE.equals(tree.isOverriding());
-  }
-
-  private static boolean hasUnknownAnnotation(SymbolMetadata symbolMetadata) {
-    return symbolMetadata.annotations().stream().anyMatch(annotation -> annotation.symbol().isUnknown());
   }
 
   private List<JavaQuickFix> quickFix(ReturnStatementTree returnStatement) {
