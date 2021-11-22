@@ -127,3 +127,23 @@ class NullabilityAtClassLevel8 {
   }
 }
 
+@javax.annotation.ParametersAreNullableByDefault
+abstract class NullabilityAtClassLevel9 {
+  abstract Object id3031_type_NO_ANNOTATION_level_PACKAGE(Object id3032_type_WEAK_NULLABLE_level_CLASS);
+
+  class NestedClass {
+    Object id3033_type_NO_ANNOTATION_level_PACKAGE(
+      Object id3034_type_WEAK_NULLABLE_level_CLASS_line_130 // Annotation of nested class takes the annotation from the enclosing one.
+    ) {
+      return new NullabilityAtClassLevel9() {
+        @Override
+        Object id3031_type_NO_ANNOTATION_level_PACKAGE(
+          Object id30322_type_WEAK_NULLABLE_level_CLASS_line_130
+        ) {
+          return null;
+        }
+      };
+    }
+  }
+}
+

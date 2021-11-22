@@ -163,8 +163,18 @@ final class JSymbolMetadata implements SymbolMetadata {
     if (symbol.isPackageSymbol()) {
       return NO_ANNOTATION_NULLABILITY[currentLevel.ordinal()];
     }
-    Symbol owner = symbol.owner();
+    Symbol owner = getEffectiveOwner(symbol, currentLevel);
     return owner == null ? unknownNullabilityAt(currentLevel) : owner.metadata().nullabilityData(target);
+  }
+
+  @CheckForNull
+  private static Symbol getEffectiveOwner(Symbol symbol, NullabilityLevel currentLevel) {
+    Symbol owner = symbol.owner();
+    if (owner != null && owner.isMethodSymbol() && currentLevel == NullabilityLevel.CLASS) {
+      // Owner of anonymous class can be a method symbol, but the nullability of the method is unrelated to the ones from the anonymous classes.
+      return getEffectiveOwner(owner, currentLevel);
+    }
+    return owner;
   }
 
   private static NullabilityLevel getLevel(Symbol symbol) {

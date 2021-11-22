@@ -1,6 +1,7 @@
 package annotations.nullability.no_default;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.eclipse.jdt.annotation.DefaultLocation;
 
 /**
@@ -70,4 +71,18 @@ public class NullabilityAtMethodLevel {
     return new Object();
   }
 
+}
+
+abstract class NullabilityAtMethodLevelParent {
+  abstract int id2021_type_NO_ANNOTATION_level_PACKAGE();
+
+  @Nullable
+  Object id2022_type_WEAK_NULLABLE_level_METHOD() {
+    return new NullabilityAtMethodLevelParent() {
+      @Override
+      int id2021_type_NO_ANNOTATION_level_PACKAGE() {
+        return 0;
+      }
+    };
+  }
 }

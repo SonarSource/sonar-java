@@ -60,6 +60,15 @@ abstract class PrimitivesMarkedNullableCheck {
   // fix@qf3 {{Remove "@Nullable"}}
   // edit@qf3 [[sc=22;ec=32]] {{}}
 
+  @CheckForNull
+  Object containsAnonymousClass() {
+    return new PrimitivesMarkedNullableCheckParent() {
+      int getInt0() {
+        return 0;
+      }
+    };
+  }
+
 }
 
 abstract class PrimitivesMarkedNullableCheckChild extends PrimitivesMarkedNullableCheckParent {
