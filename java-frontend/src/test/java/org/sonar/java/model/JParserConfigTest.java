@@ -28,8 +28,8 @@ class JParserConfigTest {
 
   @Test
   void effective_java_version() {
-    assertThat(effectiveJavaVersion(null)).isEqualTo("16");
-    assertThat(effectiveJavaVersion(new JavaVersionImpl())).isEqualTo("16");
+    assertThat(effectiveJavaVersion(null)).isEqualTo("17");
+    assertThat(effectiveJavaVersion(new JavaVersionImpl())).isEqualTo("17");
     assertThat(effectiveJavaVersion(new JavaVersionImpl(10))).isEqualTo("10");
   }
 
