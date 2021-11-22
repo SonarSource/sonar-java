@@ -817,7 +817,7 @@ public class ExplodedGraphWalker {
   }
 
   private ProgramState handleSpecialMethods(ProgramState ps, MethodInvocationTree mit) {
-    if (isAnnotatedNonNull(mit.symbol())) {
+    if (mit.symbol().metadata().nullabilityData().isNonNull(PACKAGE, false, false)) {
       return ps.addConstraint(ps.peekValue(), ObjectConstraint.NOT_NULL);
     } else if (OBJECT_WAIT_MATCHER.matches(mit)) {
       return ps.resetFieldValues(constraintManager, false);
