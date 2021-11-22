@@ -1,4 +1,4 @@
-package symbolicexecution.checks;
+package symbolicexecution.checks.ParameterNullnessCheck.noDefault;
 
 import com.google.common.base.Preconditions;
 import javax.annotation.Nullable;
@@ -12,11 +12,11 @@ abstract class ParameterNullnessCheck {
   void foo(Object o) { // flow@foo [[order=2]] {{Method 'foo' declaration.}}
     foo( // Noncompliant [[sc=5;ec=8;flows=foo]] {{Annotate the parameter with @javax.annotation.Nullable in method 'foo' declaration, or make sure that null can not be passed as argument.}}
       null); // flow@foo [[order=1]] {{Argument can be null.}}
-    bar(o, null);
+    bar(o, null); // Compliant, annotated Nullable
     bar(null, o); // Noncompliant [[sc=5;ec=8]]
 
     equals(null);
-    B.foo(null); // Compliant
+    B.foo(null); // Noncompliant
     if (o != null) {
       foo(o);
     }
@@ -30,6 +30,8 @@ abstract class ParameterNullnessCheck {
     C c2 = new C(o, // Noncompliant [[sc=16;ec=17;flows=A]] {{Annotate the parameter with @javax.annotation.Nullable in constructor declaration, or make sure that null can not be passed as argument.}}
       null); // flow@A [[order=1]] {{Argument can be null.}}
     B b = new B();
+
+    checkerFrameworkNullableAnnotations(null, null, null, null, null); // Compliant - reported by S2637
   }
 
   void qix(@Nullable Object o) {
@@ -43,9 +45,9 @@ abstract class ParameterNullnessCheck {
     @org.checkerframework.checker.nullness.compatqual.NonNullDecl Object compatQualNonNull,
     @org.checkerframework.checker.nullness.compatqual.NullableDecl Object compatQualNullable
   ) {
-    checkerFrameworkQualNonNull(javaxNullable); // Noncompliant
+    checkerFrameworkQualNonNull(javaxNullable); // Compliant - reported by S2637
     checkerFrameworkQualNullable(javaxNullable);
-    checkerFrameworkCompatQualNonNull(javaxNullable); // Noncompliant
+    checkerFrameworkCompatQualNonNull(javaxNullable); // Compliant - reported by S2637
     checkerFrameworkCompatQualNullable(javaxNullable);
 
     foo(qualNonNull);
@@ -73,6 +75,7 @@ abstract class ParameterNullnessCheck {
   abstract void gul2(String s, Object ... objects);
 
   static class B {
+    // Nested class of class annotated are also impacted.
     static void foo(Object o) { }
   }
 

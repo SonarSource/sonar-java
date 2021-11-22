@@ -20,18 +20,24 @@
 package org.sonar.java.se.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.se.SECheckVerifier;
-import org.sonar.java.se.utils.SETestUtils;
 import org.sonar.java.checks.verifier.TestUtils;
+import org.sonar.java.se.SECheckVerifier;
 
 class ParameterNullnessCheckTest {
 
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/ParameterNullnessCheck.java"))
+      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/ParameterNullnessCheck/noDefault/ParameterNullnessCheck.java"))
       .withCheck(new ParameterNullnessCheck())
-      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
+  }
+
+  @Test
+  void test_package_annotation() {
+    SECheckVerifier.newVerifier()
+      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/ParameterNullnessCheck/packageNonNull/ParameterNullnessCheck.java"))
+      .withCheck(new ParameterNullnessCheck())
       .verifyIssues();
   }
 

@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.sonar.check.Rule;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.se.CheckerContext;
@@ -34,22 +33,26 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 import static org.sonar.java.se.ExplodedGraphWalker.EQUALS_METHODS;
-import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNullable;
-import static org.sonar.java.se.NullableAnnotationUtils.nonNullAnnotationOnParameters;
+import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.PACKAGE;
+import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.VARIABLE;
 
 @Rule(key = "S4449")
 public class ParameterNullnessCheck extends SECheck {
 
-  private static final MethodMatchers AUTHORIZED_METHODS = MethodMatchers
-    .create().ofTypes("com.google.common.base.Preconditions").names("checkNotNull").withAnyParameters().build();
+  private static final MethodMatchers AUTHORIZED_METHODS = MethodMatchers.or(
+    MethodMatchers.create().ofTypes("com.google.common.base.Preconditions").names("checkNotNull").withAnyParameters().build(),
+    EQUALS_METHODS
+  );
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
@@ -68,17 +71,17 @@ public class ParameterNullnessCheck extends SECheck {
     if (!symbol.isMethodSymbol() || arguments.isEmpty()) {
       return;
     }
-    Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
-    if (nonNullAnnotationOnParameters(methodSymbol) == null || AUTHORIZED_METHODS.matches(symbol)) {
-      // method is not annotated (locally or globally)
+    if (AUTHORIZED_METHODS.matches(symbol)) {
       return;
     }
+    Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
     int nbArguments = arguments.size();
     List<SymbolicValue> argumentSVs = getArgumentSVs(state, syntaxNode, nbArguments);
     int nbArgumentToCheck = Math.min(nbArguments, methodSymbol.parameterTypes().size() - (JUtils.isVarArgsMethod(methodSymbol) ? 1 : 0));
+    List<Symbol> parameterSymbols = methodSymbol.declarationParameters();
     for (int i = 0; i < nbArgumentToCheck; i++) {
       ObjectConstraint constraint = state.getConstraint(argumentSVs.get(i), ObjectConstraint.class);
-      if (constraint != null && constraint.isNull() && !parameterIsNullable(methodSymbol, i)) {
+      if (constraint != null && constraint.isNull() && parameterIsNonNullIndirectly(parameterSymbols.get(i))) {
         reportIssue(syntaxNode, arguments.get(i), methodSymbol);
       }
     }
@@ -115,7 +118,8 @@ public class ParameterNullnessCheck extends SECheck {
     return ListUtils.reverse(state.peekValues(nbArguments));
   }
 
-  private static boolean parameterIsNullable(Symbol.MethodSymbol method, int param) {
-    return isAnnotatedNullable(JUtils.parameterAnnotations(method, param)) || EQUALS_METHODS.matches(method);
+  private static boolean parameterIsNonNullIndirectly(Symbol symbol) {
+    SymbolMetadata.NullabilityData nullabilityData = symbol.metadata().nullabilityData();
+    return nullabilityData.isNonNull(PACKAGE, false, false) && nullabilityData.level() != VARIABLE;
   }
 }
