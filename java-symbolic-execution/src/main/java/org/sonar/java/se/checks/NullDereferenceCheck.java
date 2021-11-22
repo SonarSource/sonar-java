@@ -52,7 +52,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedWithStrongNullness;
+import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.PACKAGE;
 
 @Rule(key = "S2259")
 public class NullDereferenceCheck extends SECheck {
@@ -239,7 +239,7 @@ public class NullDereferenceCheck extends SECheck {
   private static List<ProgramState> setNullConstraint(CheckerContext context, Tree syntaxNode) {
     SymbolicValue val = context.getState().peekValue();
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION) &&
-      isAnnotatedWithStrongNullness(((MethodInvocationTree) syntaxNode).symbol().metadata())) {
+      ((MethodInvocationTree) syntaxNode).symbol().metadata().nullabilityData().isStrongNullable(PACKAGE, false, false)) {
       Objects.requireNonNull(val);
       List<ProgramState> states = new ArrayList<>();
       states.addAll(val.setConstraint(context.getState(), ObjectConstraint.NULL));
