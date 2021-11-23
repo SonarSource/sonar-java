@@ -19,8 +19,8 @@
  */
 package org.sonar.plugins.java.api.semantic;
 
-import javax.annotation.CheckForNull;
 import java.util.List;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -57,8 +57,8 @@ public interface SymbolMetadata {
    * - fields
    * - method parameters
    * - methods (related to method return values)
-   * And currently always return UNKNOWN_NULLABILITY for unsupported metadata() of:
    * - local variables
+   * And currently always return UNKNOWN_NULLABILITY for unsupported metadata() of:
    * - lambda parameters
    */
   NullabilityData nullabilityData();
@@ -126,7 +126,8 @@ public interface SymbolMetadata {
   enum NullabilityTarget {
     METHOD,
     PARAMETER,
-    FIELD
+    FIELD,
+    LOCAL_VARIABLE
   }
 
   interface NullabilityData {

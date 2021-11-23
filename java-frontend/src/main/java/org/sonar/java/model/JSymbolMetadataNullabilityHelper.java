@@ -47,6 +47,7 @@ import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLeve
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.PACKAGE;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.VARIABLE;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityTarget.FIELD;
+import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityTarget.LOCAL_VARIABLE;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityTarget.METHOD;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityTarget.PARAMETER;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityType.NON_NULL;
@@ -182,23 +183,23 @@ public class JSymbolMetadataNullabilityHelper {
   static {
     // Low level annotation (directly annotated)
     configureAnnotation(JSymbolMetadataNullabilityHelper::getIfStrongNullable,
-      Arrays.asList(PARAMETER, FIELD), Collections.singletonList(VARIABLE));
+      Arrays.asList(PARAMETER, FIELD, LOCAL_VARIABLE), Collections.singletonList(VARIABLE));
     configureAnnotation(JSymbolMetadataNullabilityHelper::getIfStrongNullable,
       Collections.singletonList(METHOD), Collections.singletonList(NullabilityLevel.METHOD));
 
     configureAnnotation(JSymbolMetadataNullabilityHelper::getIfNullable,
-      Arrays.asList(PARAMETER, FIELD), Collections.singletonList(VARIABLE));
+      Arrays.asList(PARAMETER, FIELD, LOCAL_VARIABLE), Collections.singletonList(VARIABLE));
     configureAnnotation(JSymbolMetadataNullabilityHelper::getIfNullable,
       Collections.singletonList(METHOD), Collections.singletonList(NullabilityLevel.METHOD));
 
     configureAnnotation(JSymbolMetadataNullabilityHelper::getIfNonNull,
-      Arrays.asList(PARAMETER, FIELD), Collections.singletonList(VARIABLE));
+      Arrays.asList(PARAMETER, FIELD, LOCAL_VARIABLE), Collections.singletonList(VARIABLE));
     configureAnnotation(JSymbolMetadataNullabilityHelper::getIfNonNull,
       Collections.singletonList(METHOD), Collections.singletonList(NullabilityLevel.METHOD));
 
     // Low level: javax.NonNull specific case
     configureAnnotation(JSymbolMetadataNullabilityHelper::getTypeFromNonNull,
-      Arrays.asList(PARAMETER, FIELD), Collections.singletonList(VARIABLE));
+      Arrays.asList(PARAMETER, FIELD, LOCAL_VARIABLE), Collections.singletonList(VARIABLE));
     configureAnnotation(JSymbolMetadataNullabilityHelper::getTypeFromNonNull,
       Collections.singletonList(METHOD), Collections.singletonList(NullabilityLevel.METHOD));
 
@@ -255,7 +256,7 @@ public class JSymbolMetadataNullabilityHelper {
     if (typeForAnnotations != null) {
       return getNullabilityDataAtLevel(new HashSet<>(), metadata, level, false, typeForAnnotations);
     }
-    return unknownNullabilityAt(level);
+    return noNullabilityAnnotationAt(level);
   }
 
   private static NullabilityData getNullabilityDataAtLevel(Set<Type> knownTypes, SymbolMetadata metadata,

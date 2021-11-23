@@ -207,9 +207,12 @@ final class JSymbolMetadata implements SymbolMetadata {
       if (variableTreeParent == null || variableTreeParent instanceof MethodTree) {
         return NullabilityTarget.PARAMETER;
       }
-      // when variableTreeParent is instance of LambdaExpressionTree we intentionally do not return PARAMETER
-      // because parameters of lambda are not supported and if it's not a lambda parameter, then it's a local
-      // variable which is also not supported
+      // If variableTreeParent is not a lambda, we consider that the target is a local variable.
+      if (!variableTreeParent.is(Tree.Kind.LAMBDA_EXPRESSION)) {
+        return NullabilityTarget.LOCAL_VARIABLE;
+      }
+      // When variableTreeParent is an instance of LambdaExpressionTree we intentionally return null
+      // because parameters of lambdas are not supported.
     }
     return null;
   }
