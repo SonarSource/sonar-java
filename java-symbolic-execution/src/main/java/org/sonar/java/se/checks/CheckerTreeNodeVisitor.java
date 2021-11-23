@@ -19,13 +19,13 @@
  */
 package org.sonar.java.se.checks;
 
+import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.java.se.ProgramState;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.List;
 
 public abstract class CheckerTreeNodeVisitor extends BaseTreeVisitor {
 
@@ -36,7 +36,7 @@ public abstract class CheckerTreeNodeVisitor extends BaseTreeVisitor {
   }
 
   @Override
-  protected void scan(Tree tree) {
+  protected void scan(@Nullable Tree tree) {
     // Cut recursive processing
   }
 
@@ -46,7 +46,7 @@ public abstract class CheckerTreeNodeVisitor extends BaseTreeVisitor {
   }
 
   @Override
-  protected void scan(ListTree<? extends Tree> listTree) {
+  protected void scan(@Nullable ListTree<? extends Tree> listTree) {
     // Cut recursive processing
   }
 

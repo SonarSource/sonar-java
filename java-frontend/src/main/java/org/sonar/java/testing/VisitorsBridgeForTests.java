@@ -53,7 +53,7 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
   }
 
   @Override
-  protected JavaFileScannerContext createScannerContext(CompilationUnitTree tree, Sema semanticModel, SonarComponents sonarComponents, boolean failedParsing) {
+  protected JavaFileScannerContext createScannerContext(CompilationUnitTree tree, @Nullable Sema semanticModel, SonarComponents sonarComponents, boolean failedParsing) {
     Sema model = enableSemantic ? semanticModel : null;
     testContext = new JavaFileScannerContextForTests(tree, currentFile, model, sonarComponents, javaVersion, failedParsing, inAndroidContext);
     return testContext;

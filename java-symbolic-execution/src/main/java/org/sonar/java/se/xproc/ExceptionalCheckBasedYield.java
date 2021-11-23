@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.xproc;
 
-import org.sonar.java.Preconditions;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -28,8 +27,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.sonar.java.Preconditions;
 import org.sonar.java.model.Sema;
 import org.sonar.java.se.ExplodedGraph.Node;
 import org.sonar.java.se.Flow;
@@ -120,7 +121,7 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
   }
 
   @Override
-  public void setExceptionType(String exceptionType) {
+  public void setExceptionType(@Nullable String exceptionType) {
     throw new UnsupportedOperationException("Exception type can not be changed");
   }
 
