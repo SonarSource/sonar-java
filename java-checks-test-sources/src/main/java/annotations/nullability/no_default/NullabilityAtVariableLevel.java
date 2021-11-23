@@ -1,8 +1,12 @@
 package annotations.nullability.no_default;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.annotation.meta.When;
 import org.eclipse.jdt.annotation.DefaultLocation;
 
@@ -238,5 +242,45 @@ public class NullabilityAtVariableLevel {
   ) {
     return new Object();
   }
+
+  public Object id1079_type_NO_ANNOTATION_level_PACKAGE() {
+    // ============== Strong nullable ==============
+    @javax.annotation.CheckForNull
+    Object id1080_type_STRONG_NULLABLE_level_VARIABLE;
+
+    // ============== Weak Nullable ==============
+    @javax.annotation.Nullable
+    Object id1087_type_WEAK_NULLABLE_level_VARIABLE;
+
+    // ============== Non Null ==============
+    @javax.annotation.Nonnull
+    Object id1103_type_NON_NULL_level_VARIABLE;
+
+    return null;
+  }
+  @ParametersAreNonnullByDefault
+  public class LocalVariableLikes {
+
+    public Object id1001_type_NO_ANNOTATION_level_PACKAGE() {
+      // @ParametersAreNonnullByDefault does not impact local variables
+      Object id3000_type_NO_ANNOTATION_level_PACKAGE = new Object();
+      try (InputStream id3001_type_NO_ANNOTATION_level_PACKAGE = null) {
+      } catch (IOException id3002_type_NO_ANNOTATION_level_PACKAGE) {
+      }
+      try (@Nullable InputStream id3003_type_WEAK_NULLABLE_level_VARIABLE = null) {
+      } catch (@CheckForNull IOException id3004_type_STRONG_NULLABLE_level_VARIABLE) {
+      }
+
+      for (Object id3005_type_NO_ANNOTATION_level_PACKAGE : new ArrayList<Object>()) {
+      }
+      for (@Nonnull Object id3006_type_NON_NULL_level_VARIABLE : new ArrayList<Object>()) {
+      }
+
+      @Nonnull
+      Object id1008_type_NON_NULL_level_VARIABLE = new Object();
+      return id1008_type_NON_NULL_level_VARIABLE;
+    }
+  }
+
 
 }
