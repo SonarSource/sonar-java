@@ -19,10 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import java.io.File;
-import java.util.List;
-import java.util.stream.Collectors;
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.se.AlwaysTrueOrFalseExpressionCollector;
 import org.sonar.java.se.CheckerContext;
@@ -54,15 +50,10 @@ class ConditionAlwaysTrueOrFalseCheckTest {
   }
 
   @Test
-  void test_without_jsr305() {
-    List<File> classpath = FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar"}, true).stream()
-      .filter(file -> file.getName().startsWith("spring-core-") || file.getName().startsWith("spring-web-"))
-      .collect(Collectors.toList());
-    classpath.add(new File("target/test-classes"));
+  void test_nullability_annotations() {
     SECheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/SpringNullableAndNonNullAnnotationsWithoutJSR305.java"))
+      .onFile(testSourcesPath("symbolicexecution/checks/NullabilityAnnotationsAlwaysTrueOrFalse.java"))
       .withCheck(new BooleanGratuitousExpressionsCheck())
-      .withClassPath(classpath)
       .verifyIssues();
   }
 
