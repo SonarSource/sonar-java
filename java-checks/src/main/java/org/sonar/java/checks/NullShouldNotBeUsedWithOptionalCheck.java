@@ -19,12 +19,14 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Optional;
 import java.util.Set;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
-import org.sonar.java.se.NullableAnnotationUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -34,11 +36,11 @@ import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 @Rule(key = "S2789")
 public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -58,7 +60,7 @@ public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implem
     if (!method.is(Tree.Kind.CONSTRUCTOR) && returnsOptional(method)) {
 
       // check that the method is not annotated with @Nullable
-      checkNullableAnnotation(method.modifiers(), "Methods with an \"Optional\" return type should not be \"%s\".");
+      checkNullability(method.symbol(), "Methods with an \"Optional\" return type should not be \"%s\".");
 
       // check that the method does not return "null"
       method.accept(new ReturnNullVisitor());
@@ -92,7 +94,7 @@ public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implem
   @Override
   public void visitVariable(VariableTree variable) {
     if (isOptionalType(variable.type())) {
-      checkNullableAnnotation(variable.modifiers(), "\"Optional\" variables should not be \"%s\".");
+      checkNullability(variable.symbol(), "\"Optional\" variables should not be \"%s\".");
       ExpressionTree initializer = variable.initializer();
       if (initializer != null && isNull(initializer)) {
         context.reportIssue(this, initializer, "Replace this null literal by an \"Optional\" object.");
@@ -139,6 +141,7 @@ public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implem
 
 
   }
+
   private static boolean returnsOptional(MethodTree method) {
     return isOptionalType(method.returnType());
   }
@@ -163,10 +166,33 @@ public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implem
     return expression.is(Tree.Kind.NULL_LITERAL);
   }
 
-  private void checkNullableAnnotation(ModifiersTree modifiers, String messageFormat) {
-    NullableAnnotationUtils.nullableAnnotation(modifiers)
-      .ifPresent(annotation -> context.reportIssue(this, annotation,
-        String.format(messageFormat, "@" + annotation.annotationType().symbolType().name())));
+  private void checkNullability(Symbol symbol, String messageFormat) {
+    SymbolMetadata.NullabilityLevel level;
+    if (symbol.isVariableSymbol()) {
+      level = SymbolMetadata.NullabilityLevel.VARIABLE;
+    } else {
+      level = SymbolMetadata.NullabilityLevel.METHOD;
+    }
+    SymbolMetadata.NullabilityData nullabilityData = symbol.metadata().nullabilityData();
+    if (nullabilityData.isNullable(level, true, false)) {
+      Tree annotationTree = nullabilityData.declaration();
+      if (annotationTree != null) {
+        getAnnotationText(nullabilityData.annotation()).ifPresent(annotationText ->
+          context.reportIssue(
+            this,
+            annotationTree,
+            String.format(messageFormat, "@" + annotationText)
+          )
+        );
+      }
+    }
+  }
+
+  private static Optional<String> getAnnotationText(@Nullable SymbolMetadata.AnnotationInstance annotation) {
+    if (annotation == null) {
+      return Optional.empty();
+    }
+    return Optional.of(annotation.symbol().name());
   }
 
 }
