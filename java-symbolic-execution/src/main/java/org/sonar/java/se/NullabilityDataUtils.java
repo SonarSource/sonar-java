@@ -19,8 +19,10 @@
  */
 package org.sonar.java.se;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 
 public class NullabilityDataUtils {
@@ -33,12 +35,29 @@ public class NullabilityDataUtils {
     if (annotation == null) {
       return Optional.empty();
     }
-    String name = annotation.symbol().name();
+    String name = getAnnotationName(annotation);
     if (nullabilityData.metaAnnotation()) {
       name += " via meta-annotation";
     }
     String level = levelToString(nullabilityData.level());
     return Optional.of(String.format("@%s%s", name, level));
+  }
+
+  private static String getAnnotationName(SymbolMetadata.AnnotationInstance annotation) {
+    String name = annotation.symbol().name();
+    if (name.equals("Nonnull")) {
+      return name + annotationArguments(annotation.values());
+    }
+    return name;
+  }
+
+  private static String annotationArguments(List<SymbolMetadata.AnnotationValue> valuesForAnnotation) {
+    return valuesForAnnotation.stream()
+      .filter(annotationValue -> "when".equals(annotationValue.name()))
+      .map(SymbolMetadata.AnnotationValue::value)
+      .filter(Symbol.class::isInstance)
+      .map(symbol -> String.format("(when=%s)", ((Symbol) symbol).name()))
+      .findFirst().orElse("");
   }
 
   private static String levelToString(SymbolMetadata.NullabilityLevel level) {

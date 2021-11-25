@@ -19,9 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Optional;
 import java.util.Set;
-import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -41,6 +39,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
+
+import static org.sonar.java.se.NullabilityDataUtils.nullabilityAsString;
 
 @Rule(key = "S2789")
 public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -177,22 +177,15 @@ public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implem
     if (nullabilityData.isNullable(level, true, false)) {
       Tree annotationTree = nullabilityData.declaration();
       if (annotationTree != null) {
-        getAnnotationText(nullabilityData.annotation()).ifPresent(annotationText ->
+        nullabilityAsString(nullabilityData).ifPresent(annotationText ->
           context.reportIssue(
             this,
             annotationTree,
-            String.format(messageFormat, "@" + annotationText)
+            String.format(messageFormat, annotationText)
           )
         );
       }
     }
-  }
-
-  private static Optional<String> getAnnotationText(@Nullable SymbolMetadata.AnnotationInstance annotation) {
-    if (annotation == null) {
-      return Optional.empty();
-    }
-    return Optional.of(annotation.symbol().name());
   }
 
 }
