@@ -29,6 +29,7 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ConstraintManager;
@@ -192,6 +193,10 @@ public class NonNullSetToNullCheck extends SECheck {
       if (ExpressionUtils.isSimpleAssignment(tree)) {
         IdentifierTree variable = ExpressionUtils.extractIdentifier(tree);
         Symbol symbol = variable.symbol();
+        if (JUtils.isParameter(symbol)) {
+          // It is fine to assign a parameter to null in the body of the method.
+          return;
+        }
         Optional<String> nonNullAnnotation = getNonnullAnnotationAsString(symbol);
         if (nonNullAnnotation.isEmpty()) {
           return;

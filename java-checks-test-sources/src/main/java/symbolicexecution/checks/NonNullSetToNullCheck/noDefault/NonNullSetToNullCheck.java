@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.DefaultLocation;
  * - When a nullable value is returned from a method annotated nonnull.
  * - 3 Arguments:
  * - When a nullable value is passed to a parameter annotated nonnull.
+ * - 4 Local Variable: when a nonnull local variable is assigned a nullable value.
  * Note: S4449 is targeting point 3 aswell, but only when it is not directly annotated. The current rule will therefore only report an issue if
  * the parameter is directly annotated nonnull.
  */
@@ -25,6 +26,9 @@ class NonNullSetToNullCheck {
   private String primary;
   private String secondary;
   private Object testObject;
+
+  @Nonnull
+  private String otherNonnullField;
 
   @Nullable
   private String nullableField;
@@ -40,12 +44,14 @@ class NonNullSetToNullCheck {
     }
     primary = color;  // Noncompliant [[sc=5;ec=20]] {{"primary" is marked "@Nonnull" but is set to null.}}
     testObject = new Object();
+    otherNonnullField = "";
   }
 
   public NonNullSetToNullCheck(@Nonnull String color, String other) {
     primary = color;
     secondary = other;
     testObject = new Object();
+    otherNonnullField = "";
   }
 
   public NonNullSetToNullCheck() { // Noncompliant [[sc=10;ec=31]] {{"primary" is marked "@Nonnull" but is not initialized in this constructor.}}
@@ -87,15 +93,15 @@ class NonNullSetToNullCheck {
     secondary = color; // Compliant, secondary is not Nonnull
   }
 
-  public void parameterAssignment(@Nonnull String color) {
+  public void parameterAssignment() {
     if (secondary == null) {
-      color = secondary; // Noncompliant {{"color" is marked "@Nonnull" but is set to null.}}
+      otherNonnullField = secondary; // Noncompliant {{"otherNonnullField" is marked "@Nonnull" but is set to null.}}
     }
   }
 
-  public void parameterAssignment2(@Nonnull String color) {
+  public void parameterAssignment2() {
     if (secondary != null) {
-      color = secondary; // Compliant: secondary is not null
+      otherNonnullField = secondary; // Compliant: secondary is not null
     }
   }
 
@@ -186,6 +192,33 @@ class NonNullSetToNullCheck {
   public static void initialize5() {
     NonNullSetToNullCheck instance =
       new NonNullSetToNullCheck(checkForNull(), "Blue");  // Noncompliant
+  }
+
+  // ============ 4. Local variable assigned nullable value ============
+  public static void localToNull() {
+    @Nonnull
+    Object o = new Object();
+    o = null; // Noncompliant {{"o" is marked "@Nonnull" but is set to null.}}
+  }
+
+  public void localToNull2() {
+    @Nonnull
+    Object o = new Object();
+    if (secondary == null) {
+      o = secondary; // Noncompliant {{"o" is marked "@Nonnull" but is set to null.}}
+    }
+  }
+
+  public void localToNull3() {
+    @Nonnull
+    Object o = new Object();
+    if (secondary != null) {
+      o = secondary; // Compliant
+    }
+  }
+
+  public static void argumentToNull(@Nonnull Object o) {
+    o = null; // Compliant: it is fine to assign a Nonnull parameter to null in the body of the method.
   }
 
   private static void doSomething() {
