@@ -186,10 +186,10 @@ class ChangeMethodContractCheck_NullableViaNonnull {
   class Child extends Parent {
     @Override
     @javax.annotation.Nonnull(when=When.MAYBE) // Nonnull to Nullable should be reported
-    String annotatedNonnull(Object a) { return "null"; } // Noncompliant {{Fix the incompatibility of the annotation @Nonnull to honor @Nonnull of the overridden method.}}
+    String annotatedNonnull(Object a) { return "null"; } // Noncompliant {{Fix the incompatibility of the annotation @Nonnull(when=MAYBE) to honor @Nonnull of the overridden method.}}
     @Override
     @javax.annotation.Nonnull(when=When.UNKNOWN) // Nonnull to Nullable should be reported
-    String annotatedNonnull2(Object a) { return "null"; } // Noncompliant {{Fix the incompatibility of the annotation @Nonnull to honor @Nonnull of the overridden method.}}
+    String annotatedNonnull2(Object a) { return "null"; } // Noncompliant {{Fix the incompatibility of the annotation @Nonnull(when=UNKNOWN) to honor @Nonnull of the overridden method.}}
     @Override
     @javax.annotation.CheckForNull // Compliant, Nullable to Nullable is compliant for return value, annotation with argument is correctly taken into account in the parent.
     String annotatedNullableViaNonNull(Object a) { return "null"; }

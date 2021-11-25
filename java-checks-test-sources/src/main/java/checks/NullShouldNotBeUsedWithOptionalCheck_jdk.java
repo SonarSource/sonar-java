@@ -4,6 +4,7 @@ package checks;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import javax.annotation.meta.When;
 
 interface NullShouldNotBeUsedWithOptionalCheck_jdk {
 
@@ -91,7 +92,32 @@ class NullShouldNotBeUsedWithOptionalCheck_jdkClassA {
     @Nullable // Noncompliant [[sc=5;ec=14]] {{"Optional" variables should not be "@Nullable".}}
     Optional<String> var;
   }
-  
+
+  public void NonnullWithArgument1() {
+    @javax.annotation.Nonnull(when= When.MAYBE) // Noncompliant [[sc=5;ec=48]] {{"Optional" variables should not be "@Nonnull(when=MAYBE)".}}
+    Optional<String> var;
+  }
+
+  public void NonnullWithArgument2() {
+    @javax.annotation.Nonnull(when= When.NEVER) // Noncompliant [[sc=5;ec=48]] {{"Optional" variables should not be "@Nonnull(when=NEVER)".}}
+    Optional<String> var;
+  }
+
+  public void NonnullWithArgument3() {
+    @javax.annotation.Nonnull(when= When.UNKNOWN) // Noncompliant [[sc=5;ec=50]] {{"Optional" variables should not be "@Nonnull(when=UNKNOWN)".}}
+    Optional<String> var;
+  }
+
+  public void NonnullWithArgument4() {
+    @javax.annotation.Nonnull(when= When.ALWAYS) // Compliant: when=ALWAYS is Nonnull
+    Optional<String> var;
+  }
+
+  public void NonnullWithArgument5() {
+    @javax.annotation.Nonnull() // Compliant
+    Optional<String> var;
+  }
+
   public Optional<String> doSomething8(boolean b) {
     Object obj = b ? null : new Object();
     return Optional.of("hello");
