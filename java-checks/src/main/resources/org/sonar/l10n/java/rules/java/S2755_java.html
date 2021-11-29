@@ -97,8 +97,8 @@ SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS
 // to be compliant, completely disable DOCTYPE declaration:
 factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 // or prohibit the use of all protocols by external entities:
-factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 </pre>
 <p>For <a href="https://dom4j.github.io/">Dom4j</a> library:</p>
 <pre>
