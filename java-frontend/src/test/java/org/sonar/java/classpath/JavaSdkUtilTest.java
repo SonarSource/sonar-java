@@ -21,6 +21,7 @@ package org.sonar.java.classpath;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -63,5 +64,23 @@ class JavaSdkUtilTest {
     Path path = new File("src/test/jdk/do-not-exists").toPath();
     List<File> jdkClassesRoots = JavaSdkUtil.getJdkClassesRoots(path, true);
     assertThat(jdkClassesRoots).isEmpty();
+  }
+
+  @Test
+  void should_load_vm_jar_from_ibm_specific_dir_on_unix() {
+    Path path = Paths.get("src", "test", "jdk", "ibm_jdk_8_linux");
+    List<File> jdkClassRoots = JavaSdkUtil.getJdkClassesRoots(path);
+    assertThat(jdkClassRoots).isNotEmpty();
+    File expected = path.resolve(Paths.get("jre", "lib","amd64","default","jclSC180","vm.jar")).toAbsolutePath().toFile();
+    assertThat(jdkClassRoots).contains(expected);
+  }
+
+  @Test
+  void should_load_vm_jar_from_ibm_specific_dir_on_windows() {
+    Path path = Paths.get("src", "test", "jdk", "ibm_jdk_8_windows");
+    List<File> jdkClassRoots = JavaSdkUtil.getJdkClassesRoots(path);
+    assertThat(jdkClassRoots).isNotEmpty();
+    File expected = path.resolve(Paths.get("bin","default","jclSC180","vm.jar")).toAbsolutePath().toFile();
+    assertThat(jdkClassRoots).contains(expected);
   }
 }
