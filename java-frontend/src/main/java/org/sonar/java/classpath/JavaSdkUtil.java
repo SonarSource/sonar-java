@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -96,7 +97,7 @@ public class JavaSdkUtil {
   }
 
   private static Path[] collectJarDirs(Path home, boolean isMac) {
-    Path[] jarDirs;
+    List<Path> jarDirs = new ArrayList<>();
     if (isMac) {
       Path openJdkRtJar = home.resolve("jre/lib/rt.jar");
       if (Files.isRegularFile(openJdkRtJar)) {
@@ -104,13 +105,13 @@ public class JavaSdkUtil {
         Path classesDir = openJdkRtJar.getParent();
         Path libExtDir = openJdkRtJar.getParent().resolve("ext");
         Path libEndorsedDir = libDir.resolve(ENDORSED);
-        jarDirs = new Path[] {libEndorsedDir, libDir, classesDir, libExtDir};
+        jarDirs.addAll(List.of(libEndorsedDir, libDir, classesDir, libExtDir));
       } else {
         Path libDir = home.resolve("lib");
         Path classesDir = home.getParent().resolve("Classes");
         Path libExtDir = libDir.resolve("ext");
         Path libEndorsedDir = libDir.resolve(ENDORSED);
-        jarDirs = new Path[] {libEndorsedDir, libDir, classesDir, libExtDir};
+        jarDirs.addAll(List.of(libEndorsedDir, libDir, classesDir, libExtDir));
       }
     } else {
       Path libDir = home.resolve("jre/lib");
@@ -119,9 +120,10 @@ public class JavaSdkUtil {
       }
       Path libExtDir = libDir.resolve("ext");
       Path libEndorsedDir = libDir.resolve(ENDORSED);
-      jarDirs = new Path[] {libEndorsedDir, libDir, libExtDir};
+      jarDirs.addAll(List.of(libEndorsedDir, libDir, libExtDir));
     }
-    return jarDirs;
+    getIbmDir(home).ifPresent(jarDirs::add);
+    return jarDirs.toArray(new Path[]{});
   }
 
   private static boolean isModularRuntime(Path home) {
@@ -142,5 +144,24 @@ public class JavaSdkUtil {
     } catch (IOException e) {
       return Optional.empty();
     }
+  }
+
+  /**
+   * IBM bundles its own JDK in a way that places basic types such as Strings inside `vm.jar` that resides either in
+   * `jre/lib/amd64/default/jclSC180` or `bin\default\jclSC180`.
+   *
+   * @param home JDK home directory
+   * @return The path to the directory that may contain vm.jar. Optional.Empty otherwise.
+   */
+  private static Optional<Path> getIbmDir(Path home) {
+    Path jclSC180Dir = home.resolve(Paths.get("jre", "lib", "amd64", "default", "jclSC180"));
+    if (Files.isDirectory(jclSC180Dir)) {
+      return Optional.of(jclSC180Dir);
+    }
+    jclSC180Dir = home.resolve(Paths.get("bin", "default", "jclSC180"));
+    if (Files.isDirectory(jclSC180Dir)) {
+      return Optional.of(jclSC180Dir);
+    }
+    return Optional.empty();
   }
 }
