@@ -38,13 +38,14 @@ import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.collections.CollectionUtils;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.filters.SonarJavaIssueFilter;
+import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonarsource.performance.measure.PerformanceMeasure;
 import org.sonarsource.performance.measure.PerformanceMeasure.Duration;
 
@@ -123,9 +124,12 @@ public class JavaFrontend {
   }
 
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
-    if (isBatchModeEnabled()) {
-      // generated files are intentionally ignored in batch mode
-      scanAsBatch(sourceFiles, testFiles);
+    if (isGlobalBatchModeEnabled()) {
+      scanAsGlobalBatch(sourceFiles, testFiles, generatedFiles);
+    } else if (isPartialBatchModeEnabled()) {
+      scanAndMeasureTask(sourceFiles, astScanner::scanAsBatch, "Main");
+      scanAndMeasureTask(testFiles, astScannerForTests::scanAsBatch, "Test");
+      scanAndMeasureTask(generatedFiles, astScannerForGeneratedFiles::scanAsBatch, "Generated");
     } else {
       scanAndMeasureTask(sourceFiles, astScanner::scan, "Main");
       scanAndMeasureTask(testFiles, astScannerForTests::scan, "Test");
@@ -133,41 +137,59 @@ public class JavaFrontend {
     }
   }
 
-  private void scanAsBatch(Iterable<InputFile>... sourceFiles) {
-    try {
-      List<InputFile> allFiles = new ArrayList<>();
-      Arrays.stream(sourceFiles).forEach(files -> files.forEach(allFiles::add));
+  private boolean isGlobalBatchModeEnabled() {
+    return sonarComponents != null && sonarComponents.isGlobalBatchModeEnabled();
+  }
+
+  private boolean isPartialBatchModeEnabled() {
+    return !isGlobalBatchModeEnabled() &&
+      sonarComponents != null && sonarComponents.getPartialBatchModeSizeMB() != 0L;
+  }
+
+  private void scanAsGlobalBatch(Iterable<? extends InputFile>... sourceFiles) {
+    List<InputFile> allFiles = new ArrayList<>();
+    Arrays.stream(sourceFiles).forEach(files -> files.forEach(allFiles::add));
+    if (!allFiles.isEmpty()) {
       try {
-        JParserConfig.Mode.BATCH
-          .create(JParserConfig.effectiveJavaVersion(javaVersion), globalClasspath)
-          .parse(allFiles, this::analysisCancelled, this::scanAsBatchCallback);
-      } finally {
-        astScanner.endOfAnalysis();
-        astScannerForTests.endOfAnalysis();
-        astScannerForGeneratedFiles.endOfAnalysis();
-      }
-    } catch (AnalysisException e) {
-      throw e;
-    } catch (Exception e) {
-      astScanner.checkInterrupted(e);
-      LOG.error("Batch Mode failed, analysis of Java Files stopped.", e);
-      if (astScanner.shouldFailAnalysis()) {
-        throw new AnalysisException("Batch Mode failed, analysis of Java Files stopped.", e);
+        try {
+          JParserConfig.Mode.BATCH
+            .create(JParserConfig.effectiveJavaVersion(javaVersion), globalClasspath)
+            .parse(allFiles, this::analysisCancelled, this::scanAsBatchCallback);
+        } finally {
+          astScanner.endOfAnalysis();
+          astScannerForTests.endOfAnalysis();
+          astScannerForGeneratedFiles.endOfAnalysis();
+        }
+      } catch (AnalysisException e) {
+        throw e;
+      } catch (Exception e) {
+        astScanner.checkInterrupted(e);
+        LOG.error("Batch Mode failed, analysis of Java Files stopped.", e);
+        if (astScanner.shouldFailAnalysis()) {
+          throw new AnalysisException("Batch Mode failed, analysis of Java Files stopped.", e);
+        }
       }
     }
   }
 
   private void scanAsBatchCallback(InputFile inputFile, JParserConfig.Result result) {
-    JavaAstScanner scanner = inputFile.type() == InputFile.Type.TEST ? astScannerForTests : astScanner;
-    Duration duration = PerformanceMeasure.start(inputFile.type() == InputFile.Type.TEST ? "Test" : "Main");
+    String descriptor;
+    JavaAstScanner scanner;
+    if (inputFile instanceof GeneratedFile) {
+      descriptor = "Generated";
+      scanner = astScannerForGeneratedFiles;
+    } else if (inputFile.type() == InputFile.Type.TEST) {
+      descriptor = "Test";
+      scanner = astScannerForTests;
+    } else {
+      descriptor = "Main";
+      scanner = astScanner;
+    }
+    Duration duration = PerformanceMeasure.start(descriptor);
     scanner.simpleScan(inputFile, result, ast -> {
       // Do nothing. In batch mode, can not clean the ast as it will be used in later processing.
     });
     duration.stop();
-  }
-
-  private boolean isBatchModeEnabled() {
-    return sonarComponents != null && sonarComponents.isBatchModeEnabled();
   }
 
   private static <T> void scanAndMeasureTask(Iterable<T> files, Consumer<Iterable<T>> action, String descriptor) {

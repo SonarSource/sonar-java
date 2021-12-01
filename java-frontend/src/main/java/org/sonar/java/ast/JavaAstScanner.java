@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -60,8 +61,59 @@ public class JavaAstScanner {
   }
 
   public void scan(Iterable<? extends InputFile> inputFiles) {
+    List<InputFile> filesNames = filterModuleInfo(inputFiles);
+    try {
+      JParserConfig.Mode.FILE_BY_FILE
+        .create(JParserConfig.effectiveJavaVersion(visitor.getJavaVersion()), visitor.getClasspath())
+        .parse(filesNames,
+          this::analysisCancelled,
+          (i, r) -> simpleScan(i, r, JavaAstScanner::cleanUpAst));
+    } finally {
+      endOfAnalysis();
+    }
+  }
+
+  public void scanAsBatch(Iterable<? extends InputFile> inputFiles) {
+    List<InputFile> filesNames = filterModuleInfo(inputFiles);
+    long minPartialBatchModeSizeMB = sonarComponents != null ? sonarComponents.getPartialBatchModeSizeMB() * 1_000_000L : 0L;
+    String effectiveJavaVersion = JParserConfig.effectiveJavaVersion(visitor.getJavaVersion());
+    BiConsumer<InputFile, JParserConfig.Result> scanAction = (i, r) -> simpleScan(i, r, ast -> {
+      // Do nothing. In batch mode, can not clean the ast as it will be used in later processing.
+    });
+    int batchFirstPos = 0;
+    int batchLastPosExclusive = 0;
+    try {
+      try {
+        while(batchFirstPos < filesNames.size()) {
+          long batchSize = filesNames.get(batchFirstPos).contents().length();
+          batchLastPosExclusive = batchFirstPos + 1;
+          while (batchSize < minPartialBatchModeSizeMB && batchLastPosExclusive < filesNames.size()) {
+            batchSize += filesNames.get(batchLastPosExclusive).contents().length();
+            batchLastPosExclusive++;
+          }
+          List<InputFile> batchFiles = filesNames.subList(batchFirstPos, batchLastPosExclusive);
+          JParserConfig.Mode.BATCH
+              .create(effectiveJavaVersion, visitor.getClasspath())
+              .parse(batchFiles, this::analysisCancelled,scanAction);
+          batchFirstPos = batchLastPosExclusive;
+        }
+      } finally {
+        endOfAnalysis();
+      }
+    } catch (AnalysisException e) {
+      throw e;
+    } catch (Exception e) {
+      checkInterrupted(e);
+      LOG.error("Batch Mode failed, analysis of Java Files stopped.", e);
+      if (shouldFailAnalysis()) {
+        throw new AnalysisException("Batch Mode failed, analysis of Java Files stopped.", e);
+      }
+    }
+  }
+
+  public List<InputFile> filterModuleInfo(Iterable<? extends InputFile> inputFiles) {
     JavaVersion javaVersion = visitor.getJavaVersion();
-    List<InputFile> filesNames = StreamSupport.stream(inputFiles.spliterator(), false)
+    return StreamSupport.stream(inputFiles.spliterator(), false)
       .filter(file -> {
         if (("module-info.java".equals(file.filename())) && !javaVersion.isNotSet() && javaVersion.asInt() <= 8) {
           // When the java version is not set, we use the maximum version supported, able to parse module info.
@@ -70,16 +122,6 @@ public class JavaAstScanner {
         }
         return true;
       }).collect(Collectors.toList());
-
-    try {
-      JParserConfig.Mode.FILE_BY_FILE
-        .create(JParserConfig.effectiveJavaVersion(javaVersion), visitor.getClasspath())
-        .parse(filesNames,
-          this::analysisCancelled,
-          (i, r) -> simpleScan(i, r, JavaAstScanner::cleanUpAst));
-    } finally {
-      endOfAnalysis();
-    }
   }
 
   public void endOfAnalysis() {
