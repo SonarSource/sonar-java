@@ -23,12 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.SETestUtils;
 
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+
 class NoWayOutLoopCheckTest {
 
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile("src/test/files/se/NoWayOutLoopCheck.java")
+      .onFile(testSourcesPath("symbolicexecution/checks/NoWayOutLoopCheck.java"))
       .withCheck(new NoWayOutLoopCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
