@@ -24,29 +24,40 @@ import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.SETestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class LocksNotUnlockedCheckTest {
 
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile("src/test/files/se/LocksNotUnlockedCheck.java")
+      .onFile(testSourcesPath("symbolicexecution/checks/LocksNotUnlockedCheck.java"))
       .withCheck(new LocksNotUnlockedCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
   }
 
   @Test
-  void object_constraint_cache_issues() throws Exception {
+  void object_constraint_cache_issues() {
     SECheckVerifier.newVerifier()
-      .onFile("src/test/files/se/LocksNotUnlockedCheckCache.java")
+      .onFile(testSourcesPath("symbolicexecution/checks/LocksNotUnlockedCheckCache.java"))
       .withCheck(new LocksNotUnlockedCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
   }
 
   @Test
-  void test_value_as_string_for_locked_constraints() throws Exception {
+  void unknown_variable_still_report_issues() {
+    SECheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("symbolicexecution/checks/LocksNotUnlockedCheck.java"))
+      .withCheck(new LocksNotUnlockedCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
+  }
+
+  @Test
+  void test_value_as_string_for_locked_constraints() {
     assertThat(LocksNotUnlockedCheck.LockConstraint.LOCKED.valueAsString()).isSameAs("locked");
     assertThat(LocksNotUnlockedCheck.LockConstraint.UNLOCKED.valueAsString()).isSameAs("unlocked");
   }

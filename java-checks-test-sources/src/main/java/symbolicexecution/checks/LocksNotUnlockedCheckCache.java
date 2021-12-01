@@ -1,9 +1,11 @@
+package symbolicexecution.checks;
+
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class MyClass {
+public class LocksNotUnlockedCheckCache {
 
-  public void thisReportsOnlyOneIssue() {
+  public void thisReportsOnlyOneIssue(boolean foo) {
     Lock lock = new ReentrantLock();
     if(foo) {
       lock.lock();// Noncompliant {{Unlock this lock along all executions paths of this method.}}
@@ -15,7 +17,7 @@ public class MyClass {
     end();
   }
 
-  public void fourIssues() {
+  public void fourIssues(boolean foo) {
     Lock lock = new ReentrantLock();
     Lock lock2 = new ReentrantLock();
     if(foo) {
@@ -36,4 +38,12 @@ public class MyClass {
     end();
   }
 
+  private void end() {
+  }
+
+  private void ifStmt() {
+  }
+
+  private void elseStmt() {
+  }
 }
