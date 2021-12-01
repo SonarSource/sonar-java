@@ -21,7 +21,6 @@ package org.sonar.java.se.checks;
 
 import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.constraint.BooleanConstraint;
@@ -29,8 +28,10 @@ import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValueTestUtil;
 import org.sonar.java.se.utils.SETestUtils;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 import static org.sonar.java.se.checks.DivisionByZeroCheck.ZeroConstraint.NON_ZERO;
 import static org.sonar.java.se.checks.DivisionByZeroCheck.ZeroConstraint.ZERO;
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.EQUAL;
@@ -43,7 +44,7 @@ class DivisionByZeroCheckTest {
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile("src/test/files/se/DivisionByZeroCheck.java")
+      .onFile(testSourcesPath("symbolicexecution/checks/DivisionByZeroCheck.java"))
       .withCheck(new DivisionByZeroCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
@@ -52,7 +53,7 @@ class DivisionByZeroCheckTest {
   @Test
   void invocation_leading_to_ArithmeticException() {
     SECheckVerifier.newVerifier()
-      .onFile("src/test/files/se/MethodInvocationLeadingToDivisionByZero.java")
+      .onFile(testSourcesPath("symbolicexecution/checks/MethodInvocationLeadingToDivisionByZero.java"))
       .withCheck(new DivisionByZeroCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
