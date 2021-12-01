@@ -1,4 +1,12 @@
-class A {
+package symbolicexecution.checks;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+abstract class InvariantReturnCheck {
+  private boolean bool;
+
   private int foo(boolean a) { // Noncompliant [[flows=issue1]] {{Refactor this method to not always return the same value.}}
     int b = 12;
     if (a) {
@@ -8,6 +16,8 @@ class A {
     }
     return b; // flow@issue1 [[order=3]] {{Returned value.}}
   }
+
+  abstract boolean polop();
 
   private int foo2(boolean a) {
     int b = 12;
@@ -46,17 +56,19 @@ class A {
     return 42;
   }
 
-  private int getConstant3() {
-    myList.stream().filter(item -> {
+  private int getConstant3(List<String> myList) {
+    myList.stream().map(item -> {
       return 0;
     }).collect(Collectors.toList());
     return 0;
   }
 
-  private A() {
+  private InvariantReturnCheck() {
   }
 
   String constructComponentName() {
+    String base = "";
+    int nameCounter = 0;
     synchronized (getClass()) {
       return base + nameCounter++;
     }
@@ -115,43 +127,6 @@ class A {
     }
   }
 
-  public Object get(final String name) {
-
-    // Return any non-null value for the specified property
-    final Object value = values.get(name);
-    if (value != null) {
-      return (value);
-    }
-
-    // Return a null value for a non-primitive property
-    final Class<?> type = getDynaProperty(name).getType();
-    if (!type.isPrimitive()) {
-      return (value);
-    }
-
-    // Manufacture default values for primitive properties
-    if (type == Boolean.TYPE) {
-      return (Boolean.FALSE);
-    } else if (type == Byte.TYPE) {
-      return (new Byte((byte) 0));
-    } else if (type == Character.TYPE) {
-      return (new Character((char) 0));
-    } else if (type == Double.TYPE) {
-      return (new Double(0.0));
-    } else if (type == Float.TYPE) {
-      return (new Float((float) 0.0));
-    } else if (type == Integer.TYPE) {
-      return (new Integer(0));
-    } else if (type == Long.TYPE) {
-      return (new Long(0));
-    } else if (type == Short.TYPE) {
-      return (new Short((short) 0));
-    } else {
-      return (null);
-    }
-
-  }
-
   // Example of a method that could raise issue based on returning the same SV AND same constraints on all the returned value.
   int plop(int a, boolean foo) { // Noncompliant
     int b = 0;
@@ -185,11 +160,16 @@ class A {
     return true;
   }
 
+  class MyException extends Exception {
+  }
+
+  protected abstract void someExceptionalMethod() throws MyException;
+
 }
 
 class SONARJAVA3155 {
   // java.lang.Void cannot be instaniated, null is the only possible value for this type
-  public Void call() throws Exception {
+  public Void call(boolean a) throws Exception {
     if (a) {
       return null;
     }
