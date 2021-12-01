@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
@@ -175,13 +176,34 @@ class JavaFrontendTest {
   }
 
   @Test
-  void test_as_batch_scan_main_and_test() throws IOException {
+  void test_as_global_batch_scan_main_and_test() throws IOException {
     MapSettings settings = new MapSettings();
     settings.setProperty("sonar.java.internal.batchMode", "true");
     scan(settings, "class A {}", "class ATest { A a; }");
     assertThat(sensorContext.allAnalysisErrors()).isEmpty();
     String allLogs = String.join("\n", logTester.logs());
     assertThat(allLogs)
+      .contains("Using ECJ batch to parse source files.")
+      .doesNotContain("Java \"Main\" source files AST scan")
+      .doesNotContain("Java \"Test\" source files AST scan")
+      .doesNotContain("Unresolved imports/types have been detected during analysis.")
+      .doesNotContain("A cannot be resolved to a type");
+    assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(1);
+    assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(1);
+  }
+
+  @Test
+  void test_as_partial_batch_scan_main_and_test() throws IOException {
+    MapSettings settings = new MapSettings();
+    settings.setProperty("sonar.java.batchMode.minSizeMB", "1");
+    scan(settings, "class A {}", "class ATest {}");
+    assertThat(sensorContext.allAnalysisErrors()).isEmpty();
+    String allLogs = String.join("\n", logTester.logs());
+    assertThat(allLogs)
+      .contains("Using ECJ batch to parse source files.")
+      .contains("Java \"Main\" source files AST scan")
+      .contains("Java \"Test\" source files AST scan")
+      .contains("No \"Generated\" source files to scan.")
       .doesNotContain("Unresolved imports/types have been detected during analysis.")
       .doesNotContain("A cannot be resolved to a type");
     assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(1);
@@ -336,7 +358,10 @@ class JavaFrontendTest {
     JavaVersion javaVersion = JavaVersionImpl.fromString(settings.asConfig().get(JavaVersion.SOURCE_VERSION).orElse(null));
     JavaFrontend frontend = new JavaFrontend(javaVersion, sonarComponents, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class),
       null, mainCodeIssueScannerAndFilter);
-    frontend.scan(inputFiles, Collections.emptyList(), Collections.emptyList());
+    frontend.scan(
+      inputFiles.stream().filter(f -> f.type() != InputFile.Type.TEST).collect(Collectors.toList()),
+      inputFiles.stream().filter(f -> f.type() == InputFile.Type.TEST).collect(Collectors.toList()),
+      Collections.emptyList());
 
     return inputFiles;
   }

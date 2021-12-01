@@ -345,7 +345,7 @@ class JavaAstScannerTest {
                                      int javaVersion, boolean failOnException, boolean batchMode) {
     context.setSettings(new MapSettings()
       .setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, failOnException)
-      .setProperty(SonarComponents.SONAR_BATCH_MODE_KEY, batchMode)
+      .setProperty(SonarComponents.SONAR_GLOBAL_BATCH_MODE_KEY, batchMode)
     );
 
     DefaultFileSystem fileSystem = context.fileSystem();
