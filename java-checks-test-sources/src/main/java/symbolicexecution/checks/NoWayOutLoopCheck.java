@@ -1,14 +1,15 @@
-package org.sonar.trial;
-
-import org.sonar.trial.NoWayOutLoop.TextIterator;
+package symbolicexecution.checks;
 
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
-public class NoWayOutLoop {
+public class NoWayOutLoopCheck {
 
   private boolean loopExit;
+  private Object a;
 
   void badForLoop() {
     for (;;) { // Noncompliant {{Add an end condition to this loop.}}
@@ -157,20 +158,20 @@ public class NoWayOutLoop {
     for (int i = 1;      ; ) {} // Noncompliant {{Add an end condition to this loop.}}
   }
   
-  void unsupportedUpdate() {
-    for (n = len; n < size - n; n <<= 1) { // Compliant: shift operand not supported
+  void unsupportedUpdate(int len, int size) {
+    for (int n = len; n < size - n; n <<= 1) { // Compliant: shift operand not supported
       doSomething();
     }
   }
   
   void fullExpressionUpdate() {
     String a = "aaaaa";
-    for(int i = 0; i < a.length; i = i + 3) { // Compliant: loop variable is reassigned
+    for(int i = 0; i < a.length(); i = i + 3) { // Compliant: loop variable is reassigned
       doSomething();
     }
   }
   
-  void indirectUpdate() {
+  void indirectUpdate(int index) {
     int[] spine = {1,2,3,4};
     int[] next = {3,4,2,1}; 
     for (int i = spine[index]; i >= 0; i = next[i]) { // Compliant: loop variable is reassigned
@@ -178,7 +179,7 @@ public class NoWayOutLoop {
     }
   }
   
-  void reassignedValue() {
+  void reassignedValue(int listeners) {
     for (int count = listeners, i = 0; count > 0; i++) { // Compliant: condition is modified within loop body
       count = next();
     }
@@ -189,14 +190,22 @@ public class NoWayOutLoop {
       doSomething(e.nextElement());
     }
   }
-  
+
+  private Enumeration keys() {
+    return null;
+  }
+
   private void iteratorLoop() {
     for (Iterator iterator = values(); iterator.hasNext();) {
       doSomething(iterator.next());
     }
   }
 
-  private void doSomething() {}
+  private Iterator values() {
+    return null;
+  }
+
+  public void doSomething() {}
 
   private void doSomething(Object obj) {}
 
@@ -211,43 +220,46 @@ public class NoWayOutLoop {
   }
 }
 
-public class UnsupportedYet {
+class NoWayOutLoopCheckUnsupportedYet {
 
   void unreachableCount() {
     for (int i = 0; i < 10; i--) { // Noncompliant {{Correct this loop's end condition.}}
       doSomething();
     }
   }
-  
+
+  private void doSomething() {
+  }
+
 }
 
-public class Coverage {
+class NoWayOutLoopCheckCoverage {
 
   int n;
 
   static void otherPlusAssignment() {
-    Coverage cov = new Coverage();
+    NoWayOutLoopCheckCoverage cov = new NoWayOutLoopCheckCoverage();
     cov.n = 0;
     for (int i = 1; i < 10; i += 1, cov.n += 1) {
     }
   }
 
   static void otherMinusAssignment() {
-    Coverage cov = new Coverage();
+    NoWayOutLoopCheckCoverage cov = new NoWayOutLoopCheckCoverage();
     cov.n = 0;
     for (int i = 1; i < 10; i += 1, cov.n -= 1) {
     }
   }
 
   static void otherIncrement() {
-    Coverage cov = new Coverage();
+    NoWayOutLoopCheckCoverage cov = new NoWayOutLoopCheckCoverage();
     cov.n = 0;
     for (int i = 1; i < 10; ++i, cov.n++) {
     }
   }
 
   static void otherDecrement() {
-    Coverage cov = new Coverage();
+    NoWayOutLoopCheckCoverage cov = new NoWayOutLoopCheckCoverage();
     cov.n = 0;
     for (int i = 1; i < 10; ++i, cov.n--) {
       cov.n = -cov.n;
@@ -261,11 +273,12 @@ public class Coverage {
   }
   
   static void whileFalse() {
-    while(false) {
+    boolean condition = false;
+    while(condition) {
       doSomething();
     }
   }
-  
+
   static void whileVariable() {
     boolean condition = true;
     while(condition) { // Noncompliant
@@ -273,20 +286,23 @@ public class Coverage {
     }
   }
 
+  private static void doSomething() {
+  }
+
 }
 
-public class MyThread extends Thread {
+class NoWayOutLoopThread extends Thread {
   @Override
   public void run() {
-    NoWayOutLoop loop = new NoWayOutLoop();
+    NoWayOutLoopCheck loop = new NoWayOutLoopCheck();
     for (;;) {
       loop.doSomething();
     }
   }
 }
 
-public class Ruling {
-  private final Map<K, Long> map;
+class NoWayOutLoopRuling<K> {
+  private final Map<K, AtomicLong> map = new HashMap<>();
   public long put(K key, long newValue) {
     outer: for (;;) {
       AtomicLong atomic = map.get(key);
@@ -296,7 +312,7 @@ public class Ruling {
       for (;;) {
         long oldValue = atomic.get();
         if (oldValue == 0L) {
-          if (map.replace(key, atomic, new Long(newValue))) { 
+          if (map.replace(key, atomic, new AtomicLong(newValue))) {
             return 0L;
           }
           continue outer;
@@ -305,7 +321,7 @@ public class Ruling {
     }
   }
   
-  public void incrementWithinLoopBody(bolean[] isSet) {
+  public void incrementWithinLoopBody(boolean[] isSet) {
     for (int i = 0; i < isSet.length; ) {
       isSet[i++] = false;
     }
@@ -353,7 +369,11 @@ public class Ruling {
       }
     }
   }
-  
+
+  private boolean canExit() {
+    return false;
+  }
+
   private void updateThroughMethod(TextIterator text, int endIndex) {
     for (char c = text.current(); text.getIndex() < endIndex; c = text.next()) {
       doSomething(c);
@@ -364,6 +384,12 @@ public class Ruling {
     char current();
     int getIndex();
     char next();
+  }
+
+  private void doSomething() {
+  }
+
+  private void doSomething(char c) {
   }
 
 }

@@ -23,12 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.SETestUtils;
 
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+
 class RedundantAssignmentsCheckTest {
 
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile("src/test/files/se/RedundantAssignmentsCheck.java")
+      .onFile(testSourcesPath("symbolicexecution/checks/RedundantAssignmentsCheck.java"))
       .withCheck(new RedundantAssignmentsCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();

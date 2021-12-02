@@ -1,10 +1,17 @@
+package symbolicexecution.checks;
+
+import java.util.ArrayList;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-public class MyClass {
+
+abstract class LocksNotUnlockedCheck {
 
   Lock l1 = new ReentrantLock();
   Lock l2 = new ReentrantLock();
-  Object a = null;
+  Boolean a = null;
+  boolean foo = false;
+  Integer fooInt = 12;
 
   public void acquireLock() {
     Lock local = new ReentrantLock();
@@ -31,7 +38,7 @@ public class MyClass {
     lock.toString();
   }
 
-  public void lock_interruptibly() {
+  public void lock_interruptibly() throws InterruptedException {
     Lock lock = new ReentrantLock();
     lock.lockInterruptibly();
     lock.unlock();
@@ -119,7 +126,7 @@ public class MyClass {
   public void switch_statement() {
     Lock lock = new ReentrantLock();
     lock.tryLock(); // Noncompliant {{Unlock this lock along all executions paths of this method.}}
-    switch (foo) {
+    switch (fooInt) {
       case 0:
         System.out.println("");
       case 1:
@@ -128,7 +135,7 @@ public class MyClass {
     }
     lock = new ReentrantLock();
     lock.tryLock();
-    switch (foo) {
+    switch (fooInt) {
       case 0:
         System.out.println("");
       case 1:
@@ -139,7 +146,7 @@ public class MyClass {
     }
     lock = new ReentrantLock();
     lock.tryLock(); // Noncompliant {{Unlock this lock along all executions paths of this method.}}
-    switch (foo) {
+    switch (fooInt) {
       case 0:
         System.out.println("");
         break;
@@ -184,19 +191,6 @@ public class MyClass {
     }
   }
 
-  public void while_statement() {
-    Lock lock = new ReentrantLock();
-    while (foo) {
-      lock.tryLock();
-    }
-    lock.unlock();
-    while (foo) {
-      lock.tryLock(); // Noncompliant {{Unlock this lock along all executions paths of this method.}}
-      lock =  new ReentrantLock();
-    }
-    lock.unlock();
-  }
-
   public void doubleLock() {
     Lock lock = new ReentrantLock();
     lock.tryLock();
@@ -225,7 +219,7 @@ public class MyClass {
     }
     lock.unlock();
 
-    for (Foo foo : foos) {
+    for (String foo : new ArrayList<String>()) {
       lock.tryLock(); // Noncompliant {{Unlock this lock along all executions paths of this method.}}
       lock =  new ReentrantLock();
     }
@@ -260,44 +254,35 @@ public class MyClass {
     }
   }
 
-  private volatile ScheduledExecutorService executorService;
-  private final Runnable task = new Task();
+  protected abstract void cleanUp();
 
-  @Override protected final void doStart() {
-    executorService = MoreExecutors.renamingDecorator(executor(), new Supplier<String>() {
-      @Override public String get() {
-        return serviceName() + " " + state();
-      }
-    });
+  private volatile ScheduledExecutorService executorService;
+  Lock lock = new ReentrantLock();
+
+  protected final void doStart() {
     executorService.execute(new Runnable() {
       @Override public void run() {
         lock.lock();
         try {
           startUp();
-          runningTask = scheduler().schedule(delegate, executorService, task);
-          notifyStarted();
         } catch (Throwable t) {
-          notifyFailed(t);
-          if (runningTask != null) {
-            // prevent the task from running if possible
-            runningTask.cancel(false);
-          }
+          cancel();
         } finally {
           lock.unlock();
         }
+      }
+
+      private void cancel() {
+      }
+
+      private void startUp() {
       }
     });
   }
 
   private final AbstractService delegate = new AbstractService() {
-    private volatile Future<?> runningTask;
-    private volatile ScheduledExecutorService executorService;
     private final ReentrantLock lock = new ReentrantLock();
-
-    private final Runnable task = new Task();
-
-    @Override protected final void doStartWithinDelegate() {
-      executorService = MoreExecutors.executor();
+    protected final void doStartWithinDelegate() {
       executorService.execute(new Runnable() {
         @Override public void run() {
           lock.lock();
@@ -306,6 +291,8 @@ public class MyClass {
           } finally {
             lock.unlock();
           }
+        }
+        private void startUp() {
         }
       });
     }
@@ -322,6 +309,9 @@ public class MyClass {
         logLocked();
       }
     }
+
+    private void logLocked() {
+    }
   }
 
   public class SonarFail {
@@ -336,6 +326,7 @@ public class MyClass {
       } finally {
         local.unlock();
       }
+      return new Object();
     }
 
     void t2(Lock local) {
@@ -348,5 +339,13 @@ public class MyClass {
         local.unlock();
       }
     }
+  }
+
+  class MyException extends RuntimeException {
+  }
+
+  class MyOtherException extends RuntimeException {
+  }
+  abstract class AbstractService {
   }
 }

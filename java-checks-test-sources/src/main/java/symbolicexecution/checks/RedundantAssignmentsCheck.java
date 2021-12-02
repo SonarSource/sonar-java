@@ -1,9 +1,11 @@
+package symbolicexecution.checks;
+
 import java.util.Objects;
 import java.util.List;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
-class A {
+class RedundantAssignmentsCheck {
   Object a,b,c,d;
 
   void foo() {

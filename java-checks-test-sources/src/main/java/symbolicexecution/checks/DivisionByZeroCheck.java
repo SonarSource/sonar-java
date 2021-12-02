@@ -1,7 +1,10 @@
+package symbolicexecution.checks;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
 
-class A {
+class DivisionByZeroCheck {
   void foo(int r) {
     int z1 = 0; // flow@foo {{Implies 'z1' is zero.}}
     int z2 = z1; // flow@foo {{Implies 'z2' has the same value as 'z1'.}}
@@ -33,11 +36,11 @@ class A {
     r = 1 / (int) '\u0000'; // Noncompliant [[sc=13;ec=27]] {{Make sure this expression can't be zero before doing this division.}}
   }
 
-  void moo(int r) {
+  void moo1(int r) {
     r = 1 / (int) 0b0101_000_01; // Compliant
   }
 
-  void moo(int r) {
+  void moo2(int r) {
     r = 1 / (int) 0B0101_000_01; // Compliant
   }
 
@@ -91,13 +94,13 @@ class A {
 
   void mug(int r) {
     int z1 = 0x00;
-    int z2 = 0x00L;
+    int z2 = (int) 0x00L;
     r = 1 / (z2 + z1); // Noncompliant [[sc=13;ec=22]] {{Make sure this expression can't be zero before doing this division.}}
   }
 
   void mug2(int r) {
     int z1 = 0x00;
-    int z2 = 0x00l;
+    int z2 = (int) 0x00l;
     r = 1 / (z2 + z1); // Noncompliant [[sc=13;ec=22]] {{Make sure this expression can't be zero before doing this division.}}
   }
 
@@ -155,8 +158,9 @@ class A {
   int par(int s) {
     double weight = 0.0;
     if (weight > 0.0) {
-      int dx = s / weight; // Compliant
+      int dx = (int) (s / weight); // Compliant
     }
+    return 1;
   }
 
   void preferredLayoutSize(boolean useBaseline) {
@@ -330,17 +334,17 @@ class A {
       myLong = 0L;
     }
     if (myLong != null) {
-      int x = 42 / myLong; // Noncompliant
+      long x = 42 / myLong; // Noncompliant
     }
   }
 
   void roo(boolean b) {
-    Long myLong = 14;
+    Long myLong = 14L;
     if (b) {
       myLong = null;
     }
     if (myLong != null) {
-      int x = 42 / myLong; // Compliant
+      long x = 42 / myLong; // Compliant
     }
   }
 
@@ -406,6 +410,7 @@ class A {
     if (x * 0.0 + y * 0.0 == a) {
       return 14 / a; // Noncompliant
     }
+    return 1.2;
   }
 
   int ifStatement(int x) {
@@ -525,7 +530,7 @@ class A {
   }
 }
 
-class Assignment {
+class DivisionByZeroCheckAssignment {
   int myField;
 
   public int calculate(int i) {
@@ -539,7 +544,7 @@ class Assignment {
   }
 }
 
-class ConstraintCopy {
+class DivisionByZeroCheckConstraintCopy {
   void f(int x) {
     boolean b1 = x < 0 || (x == 0.0 && (1 / x > 0)); // Noncompliant
   }
@@ -549,7 +554,7 @@ class ConstraintCopy {
   }
 }
 
-class TwoCompoundAssignments {
+class DivisionByZeroCheckTwoCompoundAssignments {
 
   double sSum;
   double mSum;
@@ -565,7 +570,7 @@ class TwoCompoundAssignments {
   }
 }
 
-class NonZeroAfterDiv {
+class DivisionByZeroCheckNonZeroAfterDiv {
 
   void test(int i, int j) {
     int x = i / j;
@@ -585,7 +590,7 @@ class NonZeroAfterDiv {
 
 }
 
-class RelationalOperators {
+class DivisionByZeroCheckRelationalOperators {
   void h() {
     int x = 1;
     int a = 0;
@@ -631,7 +636,7 @@ class RelationalOperators {
   }
 }
 
-class BigIntegerAndDecimal {
+class DivisionByZeroCheckBigIntegerAndDecimal {
   void simpleBigInt(BigInteger r) {
     BigInteger z1 = BigInteger.valueOf(0); // flow@simpleBigInt {{'valueOf()' can return zero.}} flow@simpleBigInt {{Implies 'z1' can be zero.}}
     BigInteger z2 = z1; // flow@simpleBigInt {{Implies 'z2' has the same value as 'z1'.}}
