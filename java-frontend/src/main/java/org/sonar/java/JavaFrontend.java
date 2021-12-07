@@ -39,7 +39,6 @@ import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.collections.CollectionUtils;
 import org.sonar.java.filters.SonarJavaIssueFilter;
-import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -61,9 +60,9 @@ public class JavaFrontend {
   private final JavaAstScanner astScannerForGeneratedFiles;
 
   public JavaFrontend(JavaVersion javaVersion, @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
-                     JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
+                      JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
     this.javaVersion = javaVersion;
-    this.sonarComponents =sonarComponents;
+    this.sonarComponents = sonarComponents;
     List<JavaCheck> commonVisitors = new ArrayList<>();
     commonVisitors.add(javaResourceLocator);
     if (postAnalysisIssueFilter != null) {
@@ -83,7 +82,7 @@ public class JavaFrontend {
     List<File> jspClasspath = new ArrayList<>();
     boolean inAndroidContext = false;
     if (sonarComponents != null) {
-      if(!sonarComponents.isSonarLintContext()) {
+      if (!sonarComponents.isSonarLintContext()) {
         codeVisitors = ListUtils.concat(codeVisitors, Arrays.asList(new FileLinesVisitor(sonarComponents), new SyntaxHighlighterVisitor(sonarComponents)));
         testCodeVisitors.add(new SyntaxHighlighterVisitor(sonarComponents));
       }
@@ -123,13 +122,10 @@ public class JavaFrontend {
     return sonarComponents != null && sonarComponents.analysisCancelled();
   }
 
+
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
-    if (isGlobalBatchModeEnabled()) {
-      scanAsGlobalBatch(sourceFiles, testFiles, generatedFiles);
-    } else if (isPartialBatchModeEnabled()) {
-      scanAndMeasureTask(sourceFiles, astScanner::scanAsBatch, "Main");
-      scanAndMeasureTask(testFiles, astScannerForTests::scanAsBatch, "Test");
-      scanAndMeasureTask(generatedFiles, astScannerForGeneratedFiles::scanAsBatch, "Generated");
+    if (isBatchModeEnabled()) {
+      scanAsBatch(sourceFiles, testFiles);
     } else {
       scanAndMeasureTask(sourceFiles, astScanner::scan, "Main");
       scanAndMeasureTask(testFiles, astScannerForTests::scan, "Test");
@@ -137,59 +133,41 @@ public class JavaFrontend {
     }
   }
 
-  private boolean isGlobalBatchModeEnabled() {
-    return sonarComponents != null && sonarComponents.isGlobalBatchModeEnabled();
-  }
-
-  private boolean isPartialBatchModeEnabled() {
-    return !isGlobalBatchModeEnabled() &&
-      sonarComponents != null && sonarComponents.getPartialBatchModeSizeMB() != 0L;
-  }
-
-  private void scanAsGlobalBatch(Iterable<? extends InputFile>... sourceFiles) {
-    List<InputFile> allFiles = new ArrayList<>();
-    Arrays.stream(sourceFiles).forEach(files -> files.forEach(allFiles::add));
-    if (!allFiles.isEmpty()) {
+  private void scanAsBatch(Iterable<? extends InputFile>... sourceFiles) {
+    try {
+      List<InputFile> allFiles = new ArrayList<>();
+      Arrays.stream(sourceFiles).forEach(files -> files.forEach(allFiles::add));
       try {
-        try {
-          JParserConfig.Mode.BATCH
-            .create(JParserConfig.effectiveJavaVersion(javaVersion), globalClasspath)
-            .parse(allFiles, this::analysisCancelled, this::scanAsBatchCallback);
-        } finally {
-          astScanner.endOfAnalysis();
-          astScannerForTests.endOfAnalysis();
-          astScannerForGeneratedFiles.endOfAnalysis();
-        }
-      } catch (AnalysisException e) {
-        throw e;
-      } catch (Exception e) {
-        astScanner.checkInterrupted(e);
-        LOG.error("Batch Mode failed, analysis of Java Files stopped.", e);
-        if (astScanner.shouldFailAnalysis()) {
-          throw new AnalysisException("Batch Mode failed, analysis of Java Files stopped.", e);
-        }
+        JParserConfig.Mode.BATCH
+          .create(JParserConfig.effectiveJavaVersion(javaVersion), globalClasspath)
+          .parse(allFiles, this::analysisCancelled, this::scanAsBatchCallback);
+      } finally {
+        astScanner.endOfAnalysis();
+        astScannerForTests.endOfAnalysis();
+        astScannerForGeneratedFiles.endOfAnalysis();
+      }
+    } catch(AnalysisException e){
+      throw e;
+    } catch(Exception e){
+      astScanner.checkInterrupted(e);
+      LOG.error("Batch Mode failed, analysis of Java Files stopped.", e);
+      if (astScanner.shouldFailAnalysis()) {
+        throw new AnalysisException("Batch Mode failed, analysis of Java Files stopped.", e);
       }
     }
   }
 
   private void scanAsBatchCallback(InputFile inputFile, JParserConfig.Result result) {
-    String descriptor;
-    JavaAstScanner scanner;
-    if (inputFile instanceof GeneratedFile) {
-      descriptor = "Generated";
-      scanner = astScannerForGeneratedFiles;
-    } else if (inputFile.type() == InputFile.Type.TEST) {
-      descriptor = "Test";
-      scanner = astScannerForTests;
-    } else {
-      descriptor = "Main";
-      scanner = astScanner;
-    }
-    Duration duration = PerformanceMeasure.start(descriptor);
+    JavaAstScanner scanner = inputFile.type() == InputFile.Type.TEST ? astScannerForTests : astScanner;
+    Duration duration = PerformanceMeasure.start(inputFile.type() == InputFile.Type.TEST ? "Test" : "Main");
     scanner.simpleScan(inputFile, result, ast -> {
       // Do nothing. In batch mode, can not clean the ast as it will be used in later processing.
     });
     duration.stop();
+  }
+
+  private boolean isBatchModeEnabled() {
+    return sonarComponents != null && sonarComponents.isBatchModeEnabled();
   }
 
   private static <T> void scanAndMeasureTask(Iterable<T> files, Consumer<Iterable<T>> action, String descriptor) {

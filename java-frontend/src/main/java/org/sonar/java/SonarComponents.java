@@ -36,7 +36,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import javax.annotation.Nullable;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.batch.bootstrap.ProjectDefinition;
@@ -67,6 +66,8 @@ import org.sonar.plugins.java.api.JspCodeVisitor;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 import org.sonarsource.sonarlint.plugin.api.SonarLintRuntime;
 
+import javax.annotation.Nullable;
+
 @ScannerSide
 @SonarLintSide
 public class SonarComponents {
@@ -75,7 +76,7 @@ public class SonarComponents {
   private static final int LOGGED_MAX_NUMBER_UNDEFINED_TYPES = 50;
 
   public static final String FAIL_ON_EXCEPTION_KEY = "sonar.internal.analysis.failFast";
-  public static final String SONAR_GLOBAL_BATCH_MODE_KEY = "sonar.java.internal.batchMode";
+  public static final String SONAR_BATCH_MODE_KEY = "sonar.java.internal.batchMode";
   public static final String SONAR_MIN_PARTIAL_BATCH_SIZE_KEY = "sonar.java.batchMode.minSizeMB";
 
   private static final Version SONARLINT_6_3 = Version.parse("6.3");
@@ -338,11 +339,11 @@ public class SonarComponents {
     return context.config().getBoolean(FAIL_ON_EXCEPTION_KEY).orElse(false);
   }
 
-  public boolean isGlobalBatchModeEnabled() {
-    return context.config().getBoolean(SONAR_GLOBAL_BATCH_MODE_KEY).orElse(false);
+  public boolean isBatchModeEnabled() {
+    return context.config().getBoolean(SONAR_BATCH_MODE_KEY).orElse(false);
   }
 
-  public long getPartialBatchModeSizeMB() {
+  public long getBatchModeSizeInMB() {
     return context.config().getLong(SONAR_MIN_PARTIAL_BATCH_SIZE_KEY).orElse(0L);
   }
 

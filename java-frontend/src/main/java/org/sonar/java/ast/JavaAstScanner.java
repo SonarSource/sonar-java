@@ -75,7 +75,7 @@ public class JavaAstScanner {
 
   public void scanAsBatch(Iterable<? extends InputFile> inputFiles) {
     List<InputFile> filesNames = filterModuleInfo(inputFiles);
-    long minPartialBatchModeSizeMB = sonarComponents != null ? sonarComponents.getPartialBatchModeSizeMB() * 1_000_000L : 0L;
+    long minPartialBatchModeSizeMB = sonarComponents != null ? sonarComponents.getBatchModeSizeInMB() * 1_000_000L : 0L;
     String effectiveJavaVersion = JParserConfig.effectiveJavaVersion(visitor.getJavaVersion());
     BiConsumer<InputFile, JParserConfig.Result> scanAction = (i, r) -> simpleScan(i, r, ast -> {
       // Do nothing. In batch mode, can not clean the ast as it will be used in later processing.
