@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -70,44 +69,6 @@ public class JavaAstScanner {
           (i, r) -> simpleScan(i, r, JavaAstScanner::cleanUpAst));
     } finally {
       endOfAnalysis();
-    }
-  }
-
-  public void scanAsBatch(Iterable<? extends InputFile> inputFiles) {
-    List<InputFile> filesNames = filterModuleInfo(inputFiles);
-    long minPartialBatchModeSizeMB = sonarComponents != null ? sonarComponents.getBatchModeSizeInMB() * 1_000_000L : 0L;
-    String effectiveJavaVersion = JParserConfig.effectiveJavaVersion(visitor.getJavaVersion());
-    BiConsumer<InputFile, JParserConfig.Result> scanAction = (i, r) -> simpleScan(i, r, ast -> {
-      // Do nothing. In batch mode, can not clean the ast as it will be used in later processing.
-    });
-    int batchFirstPos = 0;
-    int batchLastPosExclusive = 0;
-    try {
-      try {
-        while(batchFirstPos < filesNames.size()) {
-          long batchSize = filesNames.get(batchFirstPos).contents().length();
-          batchLastPosExclusive = batchFirstPos + 1;
-          while (batchSize < minPartialBatchModeSizeMB && batchLastPosExclusive < filesNames.size()) {
-            batchSize += filesNames.get(batchLastPosExclusive).contents().length();
-            batchLastPosExclusive++;
-          }
-          List<InputFile> batchFiles = filesNames.subList(batchFirstPos, batchLastPosExclusive);
-          JParserConfig.Mode.BATCH
-              .create(effectiveJavaVersion, visitor.getClasspath())
-              .parse(batchFiles, this::analysisCancelled,scanAction);
-          batchFirstPos = batchLastPosExclusive;
-        }
-      } finally {
-        endOfAnalysis();
-      }
-    } catch (AnalysisException e) {
-      throw e;
-    } catch (Exception e) {
-      checkInterrupted(e);
-      LOG.error("Batch Mode failed, analysis of Java Files stopped.", e);
-      if (shouldFailAnalysis()) {
-        throw new AnalysisException("Batch Mode failed, analysis of Java Files stopped.", e);
-      }
     }
   }
 

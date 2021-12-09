@@ -49,8 +49,10 @@ import org.sonarsource.performance.measure.PerformanceMeasure;
 import org.sonarsource.performance.measure.PerformanceMeasure.Duration;
 
 public class JavaFrontend {
+  public static final long MAX_BATCH_SIZE = (long) (Runtime.getRuntime().totalMemory() * 0.1);
 
   private static final Logger LOG = Loggers.get(JavaFrontend.class);
+  private static final String BATCH_ERROR_MESSAGE = "Batch Mode failed, analysis of Java Files stopped.";
 
   private final JavaVersion javaVersion;
   private final SonarComponents sonarComponents;
@@ -133,27 +135,68 @@ public class JavaFrontend {
     }
   }
 
-  private void scanAsBatch(Iterable<? extends InputFile>... sourceFiles) {
+  /**
+   * Scans the files given as input in batch mode.
+   *
+   * The batch size used is determined by configuration and bounded to max at 10% of total memory.
+   * This batch size is then used as a threshold: files are added to a batch until the threshold is passed.
+   * Once the threshold is passed, the batch is processed for analysis.
+   *
+   * If no batch size is configured, the input files are scanned as a single batch.
+   *
+   * @param inputFiles The collections of files to scan
+   */
+  private void scanAsBatch(Iterable<? extends InputFile>... inputFiles) {
+    List<InputFile> files = new ArrayList<>();
+    for (Iterable<? extends InputFile> group: inputFiles) {
+      files.addAll(astScanner.filterModuleInfo(group));
+    }
+
+    // Compute the batch size
+    long minBatchModeSize = MAX_BATCH_SIZE;
+    long batchModeSizeInMB = sonarComponents.getBatchModeSizeInMB();
+    if (batchModeSizeInMB != -1L) {
+      minBatchModeSize = batchModeSizeInMB * 1_000_000L;
+      // Bound the memory usage per batch to a maximum of 10% of total memory
+      minBatchModeSize = Math.min(minBatchModeSize, MAX_BATCH_SIZE);
+    }
+    LOG.debug("Scanning with batch size {} B", minBatchModeSize);
+
     try {
-      List<InputFile> allFiles = new ArrayList<>();
-      Arrays.stream(sourceFiles).forEach(files -> files.forEach(allFiles::add));
-      try {
-        JParserConfig.Mode.BATCH
-          .create(JParserConfig.effectiveJavaVersion(javaVersion), globalClasspath)
-          .parse(allFiles, this::analysisCancelled, this::scanAsBatchCallback);
-      } finally {
-        astScanner.endOfAnalysis();
-        astScannerForTests.endOfAnalysis();
-        astScannerForGeneratedFiles.endOfAnalysis();
+      int batchFirstPos = 0;
+      while (batchFirstPos < files.size()) {
+        long batchSize = files.get(batchFirstPos).contents().length();
+        int batchLastPosExclusive = batchFirstPos + 1;
+        while (batchSize < minBatchModeSize && batchLastPosExclusive < files.size()) {
+          batchSize += files.get(batchLastPosExclusive).contents().length();
+          batchLastPosExclusive++;
+        }
+        List<InputFile> batch = files.subList(batchFirstPos, batchLastPosExclusive);
+        scanBatch(batch);
+        batchFirstPos = batchLastPosExclusive;
       }
-    } catch(AnalysisException e){
+    } catch (AnalysisException e) {
       throw e;
-    } catch(Exception e){
+    } catch (Exception e) {
       astScanner.checkInterrupted(e);
-      LOG.error("Batch Mode failed, analysis of Java Files stopped.", e);
+      astScannerForTests.checkInterrupted(e);
+      astScannerForGeneratedFiles.checkInterrupted(e);
+      LOG.error(BATCH_ERROR_MESSAGE, e);
       if (astScanner.shouldFailAnalysis()) {
-        throw new AnalysisException("Batch Mode failed, analysis of Java Files stopped.", e);
+        throw new AnalysisException(BATCH_ERROR_MESSAGE, e);
       }
+    }
+  }
+
+  private<T extends InputFile> void scanBatch(List<T> allFiles) {
+    try {
+      JParserConfig.Mode.BATCH
+        .create(JParserConfig.effectiveJavaVersion(javaVersion), globalClasspath)
+        .parse(allFiles, this::analysisCancelled, this::scanAsBatchCallback);
+    } finally {
+      astScanner.endOfAnalysis();
+      astScannerForTests.endOfAnalysis();
+      astScannerForGeneratedFiles.endOfAnalysis();
     }
   }
 

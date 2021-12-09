@@ -295,6 +295,58 @@ class JavaFrontendTest {
     assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
   }
 
+  @Test
+  void test_scan_as_batch_uses_MAX_BATCH_SIZE_when_no_batch_size_is_configured() throws IOException {
+    MapSettings settings = new MapSettings().setProperty(SonarComponents.SONAR_BATCH_MODE_KEY, true);
+    logTester.setLevel(LoggerLevel.DEBUG);
+    scan(settings, "class A {}", "class B extends A {}");
+    String allLogs = String.join("\n", logTester.logs());
+    assertThat(allLogs)
+      .doesNotContain("Unresolved imports/types")
+      .contains(String.format("Scanning with batch size %d B", JavaFrontend.MAX_BATCH_SIZE));
+  }
+
+  @Test
+  void test_scan_as_batch_uses_configured_batch_size_when_below_threshold() throws IOException {
+    MapSettings settings = new MapSettings()
+      .setProperty(SonarComponents.SONAR_BATCH_MODE_KEY, true)
+      .setProperty(SonarComponents.SONAR_BATCH_MIN_SIZE_KEY, 1);
+    logTester.setLevel(LoggerLevel.DEBUG);
+    scan(settings, "class A {}", "class B extends A {}");
+    String allLogs = String.join("\n", logTester.logs());
+    assertThat(allLogs)
+      .doesNotContain("Unresolved imports/types")
+      .contains("Scanning with batch size 1000000 B");
+  }
+
+  @Test
+  void test_scan_as_batch_corrects_batch_size_with_a_reasonable_value() throws IOException {
+    long overTheTopBatchSize = Runtime.getRuntime().totalMemory() * 2;
+    MapSettings settings = new MapSettings()
+      .setProperty(SonarComponents.SONAR_BATCH_MODE_KEY, true)
+      .setProperty(SonarComponents.SONAR_BATCH_MIN_SIZE_KEY, overTheTopBatchSize);
+    logTester.setLevel(LoggerLevel.DEBUG);
+    scan(settings, "class A {}", "class B extends A {}");
+    String allLogs = String.join("\n", logTester.logs());
+    assertThat(allLogs)
+      .doesNotContain("Unresolved imports/types")
+      .doesNotContain(String.format("Scanning with batch size %s B", overTheTopBatchSize))
+      .contains(String.format("Scanning with batch size %s B", JavaFrontend.MAX_BATCH_SIZE));
+  }
+
+  @Test
+  void test_scan_as_batch_effectively_splits_scans_in_batches() throws IOException {
+    MapSettings settings = new MapSettings()
+      .setProperty(SonarComponents.SONAR_BATCH_MODE_KEY, true)
+      .setProperty(SonarComponents.SONAR_BATCH_MIN_SIZE_KEY, 0);
+    logTester.setLevel(LoggerLevel.DEBUG);
+    scan(settings, "class A {}", "class B extends A {}");
+    String allLogs = String.join("\n", logTester.logs());
+    assertThat(allLogs)
+      .contains("Unresolved imports/types")
+      .contains("Scanning with batch size 0 B");
+  }
+
   private List<InputFile> scan(String... codeList) throws IOException {
     return scan(new MapSettings(), codeList);
   }

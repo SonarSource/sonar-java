@@ -77,7 +77,7 @@ public class SonarComponents {
 
   public static final String FAIL_ON_EXCEPTION_KEY = "sonar.internal.analysis.failFast";
   public static final String SONAR_BATCH_MODE_KEY = "sonar.java.internal.batchMode";
-  public static final String SONAR_MIN_PARTIAL_BATCH_SIZE_KEY = "sonar.java.batchMode.minSizeMB";
+  public static final String SONAR_BATCH_MIN_SIZE_KEY = "sonar.java.internal.batchModeSizeInMB";
 
   private static final Version SONARLINT_6_3 = Version.parse("6.3");
 
@@ -343,8 +343,12 @@ public class SonarComponents {
     return context.config().getBoolean(SONAR_BATCH_MODE_KEY).orElse(false);
   }
 
+  /**
+   * Returns the batch mode size as read from configuration. If not value can be found, returns -1L.
+   * @return the batch mode size or a default value of -1L.
+   */
   public long getBatchModeSizeInMB() {
-    return context.config().getLong(SONAR_MIN_PARTIAL_BATCH_SIZE_KEY).orElse(0L);
+    return context.config().getLong(SONAR_BATCH_MIN_SIZE_KEY).orElse(-1L);
   }
 
   public File workDir() {
