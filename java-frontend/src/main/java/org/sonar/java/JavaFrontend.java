@@ -208,7 +208,7 @@ public class JavaFrontend {
       .parse(allFiles, this::analysisCancelled, (input, result) -> scanAsBatchCallback(input, result, context));
   }
 
-  private void scanAsBatchCallback(InputFile inputFile, JParserConfig.Result result, BatchModeContext context) {
+  private static void scanAsBatchCallback(InputFile inputFile, JParserConfig.Result result, BatchModeContext context) {
     JavaAstScanner scanner = context.selectScanner(inputFile);
     Duration duration = PerformanceMeasure.start(context.descriptor(inputFile));
     scanner.simpleScan(inputFile, result, ast -> {
@@ -281,11 +281,13 @@ public class JavaFrontend {
 
   }
 
-  private boolean isBatchModeEnabled() {
+  @VisibleForTesting
+  boolean isBatchModeEnabled() {
     return sonarComponents != null && sonarComponents.isBatchModeEnabled();
   }
 
-  private boolean isAutoScan() {
+  @VisibleForTesting
+  boolean isAutoScan() {
     return sonarComponents != null && sonarComponents.isAutoScan();
   }
 

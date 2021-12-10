@@ -122,7 +122,7 @@ class JavaFrontendTest {
 
   @Test
   void should_add_issue_filter_to_JavaFrontend_scanners() throws IOException {
-    scan(SONARLINT_RUNTIME, "class A { }");
+    scan(SONARQUBE_RUNTIME, "class A { }");
     assertThat(sensorContext.allAnalysisErrors()).isEmpty();
     assertThat(mainCodeIssueScannerAndFilter.lastScannedTree).isInstanceOf(CompilationUnitTree.class);
   }
@@ -149,8 +149,10 @@ class JavaFrontendTest {
   }
 
   @Test
-  void test_analysisCancelled_with_null_sonarComponents() {
+  void test_getters_with_null_sonarComponents() {
     JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), null, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), mainCodeIssueScannerAndFilter);
+    assertThat(frontend.isAutoScan()).isFalse();
+    assertThat(frontend.isBatchModeEnabled()).isFalse();
     assertThat(frontend.analysisCancelled()).isFalse();
   }
 
