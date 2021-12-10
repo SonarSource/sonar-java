@@ -20,6 +20,7 @@
 package org.sonar.java;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -49,7 +50,6 @@ import org.sonarsource.performance.measure.PerformanceMeasure;
 import org.sonarsource.performance.measure.PerformanceMeasure.Duration;
 
 public class JavaFrontend {
-  public static final long MAX_BATCH_SIZE = (long) (Runtime.getRuntime().totalMemory() * 0.1);
 
   private static final Logger LOG = Loggers.get(JavaFrontend.class);
   private static final String BATCH_ERROR_MESSAGE = "Batch Mode failed, analysis of Java Files stopped.";
@@ -126,7 +126,9 @@ public class JavaFrontend {
 
 
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
-    if (isBatchModeEnabled()) {
+    // SonarLint is not compatible with batch mode, it needs InputFile#contents() and batch mode use InputFile#absolutePath()
+    boolean isSonarLint = sonarComponents != null && sonarComponents.isSonarLintContext();
+    if (isBatchModeEnabled() && !isSonarLint) {
       scanAsBatch(sourceFiles, testFiles);
     } else {
       scanAndMeasureTask(sourceFiles, astScanner::scan, "Main");
@@ -138,7 +140,7 @@ public class JavaFrontend {
   /**
    * Scans the files given as input in batch mode.
    *
-   * The batch size used is determined by configuration and bounded to max at 10% of total memory.
+   * The batch size used is determined by configuration.
    * This batch size is then used as a threshold: files are added to a batch until the threshold is passed.
    * Once the threshold is passed, the batch is processed for analysis.
    *
@@ -148,32 +150,16 @@ public class JavaFrontend {
    */
   private void scanAsBatch(Iterable<? extends InputFile>... inputFiles) {
     List<InputFile> files = new ArrayList<>();
-    for (Iterable<? extends InputFile> group: inputFiles) {
-      files.addAll(astScanner.filterModuleInfo(group));
+    for (Iterable<? extends InputFile> group : inputFiles) {
+      files.addAll(astScanner.filterModuleInfo(group).collect(Collectors.toList()));
     }
-
-    // Compute the batch size
-    long minBatchModeSize = MAX_BATCH_SIZE;
-    long batchModeSizeInMB = sonarComponents.getBatchModeSizeInMB();
-    if (batchModeSizeInMB != -1L) {
-      minBatchModeSize = batchModeSizeInMB * 1_000_000L;
-      // Bound the memory usage per batch to a maximum of 10% of total memory
-      minBatchModeSize = Math.min(minBatchModeSize, MAX_BATCH_SIZE);
-    }
-    LOG.debug("Scanning with batch size {} B", minBatchModeSize);
-
     try {
-      int batchFirstPos = 0;
-      while (batchFirstPos < files.size()) {
-        long batchSize = files.get(batchFirstPos).contents().length();
-        int batchLastPosExclusive = batchFirstPos + 1;
-        while (batchSize < minBatchModeSize && batchLastPosExclusive < files.size()) {
-          batchSize += files.get(batchLastPosExclusive).contents().length();
-          batchLastPosExclusive++;
-        }
-        List<InputFile> batch = files.subList(batchFirstPos, batchLastPosExclusive);
-        scanBatch(batch);
-        batchFirstPos = batchLastPosExclusive;
+      try {
+        scanInBatches(files);
+      } finally {
+        astScanner.endOfAnalysis();
+        astScannerForTests.endOfAnalysis();
+        astScannerForGeneratedFiles.endOfAnalysis();
       }
     } catch (AnalysisException e) {
       throw e;
@@ -188,16 +174,33 @@ public class JavaFrontend {
     }
   }
 
+  private void scanInBatches(List<InputFile> allInputFiles) throws IOException {
+    long batchModeSizeInKB = sonarComponents.getBatchModeSizeInKB();
+    if (batchModeSizeInKB < 0L || batchModeSizeInKB >= Long.MAX_VALUE / 1_000L) {
+      LOG.debug("Scanning in a single batch");
+      scanBatch(allInputFiles);
+    } else {
+      long minBatchModeSize = batchModeSizeInKB * 1_000L;
+      LOG.debug("Scanning with batch size {} B", minBatchModeSize);
+      int batchFirstPos = 0;
+      while (batchFirstPos < allInputFiles.size()) {
+        long batchSize = allInputFiles.get(batchFirstPos).file().length();
+        int batchLastPosExclusive = batchFirstPos + 1;
+        while (batchSize < minBatchModeSize && batchLastPosExclusive < allInputFiles.size()) {
+          batchSize += allInputFiles.get(batchLastPosExclusive).contents().length();
+          batchLastPosExclusive++;
+        }
+        List<InputFile> batch = allInputFiles.subList(batchFirstPos, batchLastPosExclusive);
+        scanBatch(batch);
+        batchFirstPos = batchLastPosExclusive;
+      }
+    }
+  }
+
   private<T extends InputFile> void scanBatch(List<T> allFiles) {
-    try {
       JParserConfig.Mode.BATCH
         .create(JParserConfig.effectiveJavaVersion(javaVersion), globalClasspath)
         .parse(allFiles, this::analysisCancelled, this::scanAsBatchCallback);
-    } finally {
-      astScanner.endOfAnalysis();
-      astScannerForTests.endOfAnalysis();
-      astScannerForGeneratedFiles.endOfAnalysis();
-    }
   }
 
   private void scanAsBatchCallback(InputFile inputFile, JParserConfig.Result result) {

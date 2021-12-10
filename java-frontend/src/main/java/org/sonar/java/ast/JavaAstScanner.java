@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -60,7 +61,7 @@ public class JavaAstScanner {
   }
 
   public void scan(Iterable<? extends InputFile> inputFiles) {
-    List<InputFile> filesNames = filterModuleInfo(inputFiles);
+    List<InputFile> filesNames = filterModuleInfo(inputFiles).collect(Collectors.toList());
     try {
       JParserConfig.Mode.FILE_BY_FILE
         .create(JParserConfig.effectiveJavaVersion(visitor.getJavaVersion()), visitor.getClasspath())
@@ -72,7 +73,7 @@ public class JavaAstScanner {
     }
   }
 
-  public List<InputFile> filterModuleInfo(Iterable<? extends InputFile> inputFiles) {
+  public Stream<? extends InputFile> filterModuleInfo(Iterable<? extends InputFile> inputFiles) {
     JavaVersion javaVersion = visitor.getJavaVersion();
     return StreamSupport.stream(inputFiles.spliterator(), false)
       .filter(file -> {
@@ -82,7 +83,7 @@ public class JavaAstScanner {
           return false;
         }
         return true;
-      }).collect(Collectors.toList());
+      });
   }
 
   public void endOfAnalysis() {
