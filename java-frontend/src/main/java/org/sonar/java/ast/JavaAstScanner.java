@@ -20,6 +20,7 @@
 package org.sonar.java.ast;
 
 import com.sonar.sslr.api.RecognitionException;
+import java.io.File;
 import java.io.InterruptedIOException;
 import java.util.Collections;
 import java.util.List;
@@ -60,6 +61,10 @@ public class JavaAstScanner {
     this.sonarComponents = sonarComponents;
   }
 
+  public List<File> getClasspath() {
+    return visitor.getClasspath();
+  }
+
   public void scan(Iterable<? extends InputFile> inputFiles) {
     List<InputFile> filesNames = filterModuleInfo(inputFiles).collect(Collectors.toList());
     try {
@@ -73,7 +78,7 @@ public class JavaAstScanner {
     }
   }
 
-  public Stream<? extends InputFile> filterModuleInfo(Iterable<? extends InputFile> inputFiles) {
+  public <T extends InputFile> Stream<T> filterModuleInfo(Iterable<T> inputFiles) {
     JavaVersion javaVersion = visitor.getJavaVersion();
     return StreamSupport.stream(inputFiles.spliterator(), false)
       .filter(file -> {

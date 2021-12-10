@@ -345,7 +345,7 @@ class JavaFrontendTest {
     String allLogs = String.join("\n", logTester.logs());
     assertThat(allLogs)
       .doesNotContain("Unresolved imports/types")
-      .contains("Scanning with batch size 1000 B");
+      .containsOnlyOnce("Scanning with batch size 1000 B");
   }
 
   @Test

@@ -128,12 +128,17 @@ public class JavaFrontend {
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
     // SonarLint is not compatible with batch mode, it needs InputFile#contents() and batch mode use InputFile#absolutePath()
     boolean isSonarLint = sonarComponents != null && sonarComponents.isSonarLintContext();
-    if (isBatchModeEnabled() && !isSonarLint) {
-      scanAsBatch(sourceFiles, testFiles);
-    } else {
+    boolean fileByFileMode = isSonarLint || !isBatchModeEnabled();
+    if (fileByFileMode) {
       scanAndMeasureTask(sourceFiles, astScanner::scan, "Main");
       scanAndMeasureTask(testFiles, astScannerForTests::scan, "Test");
       scanAndMeasureTask(generatedFiles, astScannerForGeneratedFiles::scan, "Generated");
+    } else if (isAutoScan()) {
+      scanAsBatch(new AutoScanBatchContext(), sourceFiles, testFiles);
+    } else {
+      scanAsBatch(new DefaultBatchModeContext(astScanner, "Main"), sourceFiles);
+      scanAsBatch(new DefaultBatchModeContext(astScannerForTests, "Test"), testFiles);
+      scanAsBatch(new DefaultBatchModeContext(astScannerForGeneratedFiles, "Generated"), generatedFiles);
     }
   }
 
@@ -148,18 +153,18 @@ public class JavaFrontend {
    *
    * @param inputFiles The collections of files to scan
    */
-  private void scanAsBatch(Iterable<? extends InputFile>... inputFiles) {
+  private void scanAsBatch(BatchModeContext context, Iterable<? extends InputFile>... inputFiles) {
     List<InputFile> files = new ArrayList<>();
     for (Iterable<? extends InputFile> group : inputFiles) {
       files.addAll(astScanner.filterModuleInfo(group).collect(Collectors.toList()));
     }
     try {
       try {
-        scanInBatches(files);
+        if (!files.isEmpty()) {
+          scanInBatches(context, files);
+        }
       } finally {
-        astScanner.endOfAnalysis();
-        astScannerForTests.endOfAnalysis();
-        astScannerForGeneratedFiles.endOfAnalysis();
+        context.endOfAnalysis();
       }
     } catch (AnalysisException e) {
       throw e;
@@ -174,11 +179,11 @@ public class JavaFrontend {
     }
   }
 
-  private void scanInBatches(List<InputFile> allInputFiles) throws IOException {
+  private void scanInBatches(BatchModeContext context, List<InputFile> allInputFiles) throws IOException {
     long batchModeSizeInKB = sonarComponents.getBatchModeSizeInKB();
     if (batchModeSizeInKB < 0L || batchModeSizeInKB >= Long.MAX_VALUE / 1_000L) {
       LOG.debug("Scanning in a single batch");
-      scanBatch(allInputFiles);
+      scanBatch(context, allInputFiles);
     } else {
       long minBatchModeSize = batchModeSizeInKB * 1_000L;
       LOG.debug("Scanning with batch size {} B", minBatchModeSize);
@@ -191,29 +196,97 @@ public class JavaFrontend {
           batchLastPosExclusive++;
         }
         List<InputFile> batch = allInputFiles.subList(batchFirstPos, batchLastPosExclusive);
-        scanBatch(batch);
+        scanBatch(context, batch);
         batchFirstPos = batchLastPosExclusive;
       }
     }
   }
 
-  private<T extends InputFile> void scanBatch(List<T> allFiles) {
-      JParserConfig.Mode.BATCH
-        .create(JParserConfig.effectiveJavaVersion(javaVersion), globalClasspath)
-        .parse(allFiles, this::analysisCancelled, this::scanAsBatchCallback);
+  private <T extends InputFile> void scanBatch(BatchModeContext context, List<T> allFiles) {
+    JParserConfig.Mode.BATCH
+      .create(JParserConfig.effectiveJavaVersion(javaVersion), context.getClasspath())
+      .parse(allFiles, this::analysisCancelled, (input, result) -> scanAsBatchCallback(input, result, context));
   }
 
-  private void scanAsBatchCallback(InputFile inputFile, JParserConfig.Result result) {
-    JavaAstScanner scanner = inputFile.type() == InputFile.Type.TEST ? astScannerForTests : astScanner;
-    Duration duration = PerformanceMeasure.start(inputFile.type() == InputFile.Type.TEST ? "Test" : "Main");
+  private void scanAsBatchCallback(InputFile inputFile, JParserConfig.Result result, BatchModeContext context) {
+    JavaAstScanner scanner = context.selectScanner(inputFile);
+    Duration duration = PerformanceMeasure.start(context.descriptor(inputFile));
     scanner.simpleScan(inputFile, result, ast -> {
       // Do nothing. In batch mode, can not clean the ast as it will be used in later processing.
     });
     duration.stop();
   }
 
+  interface BatchModeContext {
+    String descriptor(InputFile input);
+    List<File> getClasspath();
+    JavaAstScanner selectScanner(InputFile input);
+    void endOfAnalysis();
+  }
+
+  class AutoScanBatchContext implements BatchModeContext {
+
+    @Override
+    public String descriptor(InputFile input) {
+      return input.type() == InputFile.Type.TEST ? "Test" : "Main";
+    }
+
+    @Override
+    public List<File> getClasspath() {
+      return globalClasspath;
+    }
+
+    @Override
+    public JavaAstScanner selectScanner(InputFile input) {
+      return input.type() == InputFile.Type.TEST ? astScannerForTests : astScanner;
+    }
+
+    @Override
+    public void endOfAnalysis() {
+      astScanner.endOfAnalysis();
+      astScannerForTests.endOfAnalysis();
+      astScannerForGeneratedFiles.endOfAnalysis();
+    }
+
+  }
+
+  static class DefaultBatchModeContext implements BatchModeContext {
+    private final JavaAstScanner scanner;
+    private final String descriptor;
+
+    public DefaultBatchModeContext(JavaAstScanner scanner, String descriptor) {
+      this.scanner = scanner;
+      this.descriptor = descriptor;
+    }
+
+    @Override
+    public String descriptor(InputFile input) {
+      return descriptor;
+    }
+
+    @Override
+    public List<File> getClasspath() {
+      return scanner.getClasspath();
+    }
+
+    @Override
+    public JavaAstScanner selectScanner(InputFile input) {
+      return scanner;
+    }
+
+    @Override
+    public void endOfAnalysis() {
+      scanner.endOfAnalysis();
+    }
+
+  }
+
   private boolean isBatchModeEnabled() {
     return sonarComponents != null && sonarComponents.isBatchModeEnabled();
+  }
+
+  private boolean isAutoScan() {
+    return sonarComponents != null && sonarComponents.isAutoScan();
   }
 
   private static <T> void scanAndMeasureTask(Iterable<T> files, Consumer<Iterable<T>> action, String descriptor) {

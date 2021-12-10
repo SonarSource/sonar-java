@@ -344,6 +344,11 @@ public class SonarComponents {
       context.config().hasKey(SONAR_BATCH_MIN_SIZE_KEY);
   }
 
+  public boolean isAutoScan() {
+    return context.config().getBoolean(SONAR_BATCH_MODE_KEY).orElse(false) &&
+      !context.config().hasKey(SONAR_BATCH_MIN_SIZE_KEY);
+  }
+
   /**
    * Returns the batch mode size as read from configuration. If not value can be found, returns -1L.
    * @return the batch mode size or a default value of -1L.
