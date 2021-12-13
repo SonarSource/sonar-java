@@ -293,38 +293,34 @@ public class JavaFrontend {
     }
 
     public List<InputFile> next() {
-      List<InputFile> batch = new ArrayList<>();
-      long batchSize = 0;
-      if (buffer != null) {
-        batchSize += buffer.file().length();
-        batch.add(buffer);
-        buffer = null;
-        if (batchSize > batchSizeInBytes) {
-          return batch;
-        }
-      }
-      if (!source.hasNext()) {
-        return batch;
-      }
-      buffer = source.next();
-      batch.add(buffer);
-      batchSize += buffer.file().length();
-      while (true) {
-        if (batchSize > batchSizeInBytes) {
-          if (batch.size() == 1) {
-            buffer = null;
-            return batch;
-          }
-          return batch.subList(0, batch.size() - 1);
-        }
-        if (!source.hasNext()) {
-          buffer = null;
-          return batch;
-        }
+      List<InputFile> batch = clearBuffer();
+      long batchSize = batch.isEmpty() ? 0L : batch.get(0).file().length();
+      while (source.hasNext() && batchSize <= batchSizeInBytes) {
         buffer = source.next();
-        batch.add(buffer);
         batchSize += buffer.file().length();
+        if (batchSize > batchSizeInBytes) {
+          // If the batch is empty, we clear the value from the buffer and add it to the batch
+          if (batch.isEmpty()) {
+            batch.add(buffer);
+            buffer = null;
+          }
+          // If the last inputFile does not fit into the non-empty batch, we keep it in the buffer for the next call
+          return batch;
+        }
+        batch.add(buffer);
       }
+      buffer = null;
+      return batch;
+    }
+
+    private List<InputFile> clearBuffer() {
+      if (buffer == null) {
+        return new ArrayList<>();
+      }
+      List<InputFile> batch = new ArrayList<>();
+      batch.add(buffer);
+      buffer = null;
+      return batch;
     }
   }
 

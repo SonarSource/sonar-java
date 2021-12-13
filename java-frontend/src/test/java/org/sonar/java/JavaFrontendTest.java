@@ -230,7 +230,7 @@ class JavaFrontendTest {
   @Test
   void test_end_of_analysis_should_be_called_once_with_several_batches() throws IOException {
     MapSettings settings = new MapSettings();
-    settings.setProperty(SonarComponents.SONAR_BATCH_MIN_SIZE_KEY, 0L);
+    settings.setProperty(SonarComponents.SONAR_BATCH_SIZE_KEY, 0L);
     scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B { A a; }");
     assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(2);
     assertThat(mainCodeIssueScannerAndFilter.endOfAnalysisInvocationCount).isEqualTo(1);
@@ -342,7 +342,7 @@ class JavaFrontendTest {
   void test_scan_as_batch_uses_configured_batch_size_when_below_threshold() throws IOException {
     MapSettings settings = new MapSettings()
       .setProperty(SonarComponents.SONAR_BATCH_MODE_KEY, true)
-      .setProperty(SonarComponents.SONAR_BATCH_MIN_SIZE_KEY, 1);
+      .setProperty(SonarComponents.SONAR_BATCH_SIZE_KEY, 1);
     logTester.setLevel(LoggerLevel.DEBUG);
     scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B extends A {}");
     String allLogs = String.join("\n", logTester.logs());
@@ -356,7 +356,7 @@ class JavaFrontendTest {
     long overTheTopBatchSize = 9_223_372_036_855_038L;
     MapSettings settings = new MapSettings()
       .setProperty(SonarComponents.SONAR_BATCH_MODE_KEY, true)
-      .setProperty(SonarComponents.SONAR_BATCH_MIN_SIZE_KEY, overTheTopBatchSize);
+      .setProperty(SonarComponents.SONAR_BATCH_SIZE_KEY, overTheTopBatchSize);
     logTester.setLevel(LoggerLevel.DEBUG);
     scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B extends A {}");
     String allLogs = String.join("\n", logTester.logs());
@@ -369,7 +369,7 @@ class JavaFrontendTest {
   @Test
   void test_scan_as_batch_effectively_splits_scans_in_batches() throws IOException {
     MapSettings settings = new MapSettings()
-      .setProperty(SonarComponents.SONAR_BATCH_MIN_SIZE_KEY, 0);
+      .setProperty(SonarComponents.SONAR_BATCH_SIZE_KEY, 0);
     logTester.setLevel(LoggerLevel.DEBUG);
     scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B extends A {}");
     String allLogs = String.join("\n", logTester.logs());

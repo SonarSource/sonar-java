@@ -77,7 +77,7 @@ public class SonarComponents {
 
   public static final String FAIL_ON_EXCEPTION_KEY = "sonar.internal.analysis.failFast";
   public static final String SONAR_BATCH_MODE_KEY = "sonar.java.internal.batchMode";
-  public static final String SONAR_BATCH_MIN_SIZE_KEY = "sonar.java.experimental.batchModeSizeInKB";
+  public static final String SONAR_BATCH_SIZE_KEY = "sonar.java.experimental.batchModeSizeInKB";
 
   private static final Version SONARLINT_6_3 = Version.parse("6.3");
 
@@ -341,12 +341,12 @@ public class SonarComponents {
 
   public boolean isBatchModeEnabled() {
     return context.config().getBoolean(SONAR_BATCH_MODE_KEY).orElse(false) ||
-      context.config().hasKey(SONAR_BATCH_MIN_SIZE_KEY);
+      context.config().hasKey(SONAR_BATCH_SIZE_KEY);
   }
 
   public boolean isAutoScan() {
     return context.config().getBoolean(SONAR_BATCH_MODE_KEY).orElse(false) &&
-      !context.config().hasKey(SONAR_BATCH_MIN_SIZE_KEY);
+      !context.config().hasKey(SONAR_BATCH_SIZE_KEY);
   }
 
   /**
@@ -354,7 +354,7 @@ public class SonarComponents {
    * @return the batch mode size or a default value of -1L.
    */
   public long getBatchModeSizeInKB() {
-    return context.config().getLong(SONAR_BATCH_MIN_SIZE_KEY).orElse(-1L);
+    return context.config().getLong(SONAR_BATCH_SIZE_KEY).orElse(-1L);
   }
 
   public File workDir() {
