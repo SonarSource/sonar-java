@@ -20,11 +20,11 @@
 package org.sonar.java;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -179,25 +179,18 @@ public class JavaFrontend {
     }
   }
 
-  private void scanInBatches(BatchModeContext context, List<InputFile> allInputFiles) throws IOException {
+  private void scanInBatches(BatchModeContext context, List<InputFile> allInputFiles) {
     long batchModeSizeInKB = sonarComponents.getBatchModeSizeInKB();
     if (batchModeSizeInKB < 0L || batchModeSizeInKB >= Long.MAX_VALUE / 1_000L) {
       LOG.debug("Scanning in a single batch");
       scanBatch(context, allInputFiles);
     } else {
-      long minBatchModeSize = batchModeSizeInKB * 1_000L;
-      LOG.debug("Scanning with batch size {} B", minBatchModeSize);
-      int batchFirstPos = 0;
-      while (batchFirstPos < allInputFiles.size()) {
-        long batchSize = allInputFiles.get(batchFirstPos).file().length();
-        int batchLastPosExclusive = batchFirstPos + 1;
-        while (batchSize < minBatchModeSize && batchLastPosExclusive < allInputFiles.size()) {
-          batchSize += allInputFiles.get(batchLastPosExclusive).contents().length();
-          batchLastPosExclusive++;
-        }
-        List<InputFile> batch = allInputFiles.subList(batchFirstPos, batchLastPosExclusive);
+      long batchize = batchModeSizeInKB * 1_000L;
+      LOG.debug("Scanning with batch size {} B", batchize);
+      BatchGenerator generator = new BatchGenerator(allInputFiles.iterator(), batchize);
+      while (generator.hasNext()) {
+        List<InputFile> batch = generator.next();
         scanBatch(context, batch);
-        batchFirstPos = batchLastPosExclusive;
       }
     }
   }
@@ -219,8 +212,11 @@ public class JavaFrontend {
 
   interface BatchModeContext {
     String descriptor(InputFile input);
+
     List<File> getClasspath();
+
     JavaAstScanner selectScanner(InputFile input);
+
     void endOfAnalysis();
   }
 
@@ -280,6 +276,58 @@ public class JavaFrontend {
     }
 
   }
+
+  static class BatchGenerator {
+    public final long batchSizeInBytes;
+    private final Iterator<InputFile> source;
+    private InputFile buffer = null;
+
+
+    public BatchGenerator(Iterator<InputFile> source, long batchSizeInBytes) {
+      this.source = source;
+      this.batchSizeInBytes = batchSizeInBytes;
+    }
+
+    public boolean hasNext() {
+      return buffer != null || source.hasNext();
+    }
+
+    public List<InputFile> next() {
+      List<InputFile> batch = new ArrayList<>();
+      long batchSize = 0;
+      if (buffer != null) {
+        batchSize += buffer.file().length();
+        batch.add(buffer);
+        buffer = null;
+        if (batchSize > batchSizeInBytes) {
+          return batch;
+        }
+      }
+      if (!source.hasNext()) {
+        return batch;
+      }
+      buffer = source.next();
+      batch.add(buffer);
+      batchSize += buffer.file().length();
+      while (true) {
+        if (batchSize > batchSizeInBytes) {
+          if (batch.size() == 1) {
+            buffer = null;
+            return batch;
+          }
+          return batch.subList(0, batch.size() - 1);
+        }
+        if (!source.hasNext()) {
+          buffer = null;
+          return batch;
+        }
+        buffer = source.next();
+        batch.add(buffer);
+        batchSize += buffer.file().length();
+      }
+    }
+  }
+
 
   @VisibleForTesting
   boolean isBatchModeEnabled() {

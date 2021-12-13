@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -86,8 +87,8 @@ class JavaFrontendTest {
   private FileLinesContext fileLinesContext;
   private ClasspathForMain javaClasspath;
   private ClasspathForTest javaTestClasspath;
-  private TestIssueFilter mainCodeIssueScannerAndFilter = new TestIssueFilter();;
-  private TestIssueFilter testCodeIssueScannerAndFilter = new TestIssueFilter();;
+  private TestIssueFilter mainCodeIssueScannerAndFilter = new TestIssueFilter();
+  private TestIssueFilter testCodeIssueScannerAndFilter = new TestIssueFilter();
 
   private SonarComponents sonarComponents;
   private SensorContextTester sensorContext;
@@ -256,7 +257,7 @@ class JavaFrontendTest {
     assertThat(mainCodeIssueScannerAndFilter.endOfAnalysisInvocationCount).isEqualTo(1);
   }
 
- @Test
+  @Test
   void should_handle_compilation_error_in_batch_mode() throws IOException {
     MapSettings settings = new MapSettings();
     settings.setProperty("sonar.java.internal.batchMode", "true");
@@ -377,6 +378,100 @@ class JavaFrontendTest {
       .contains("Scanning with batch size 0 B");
   }
 
+  @Test
+  void batch_generator_returns_an_empty_list_when_no_input_files() throws IOException {
+    List<InputFile> emptyList = Collections.emptyList();
+    JavaFrontend.BatchGenerator generator = new JavaFrontend.BatchGenerator(emptyList.iterator(), 0);
+    assertThat(generator.hasNext()).isFalse();
+    assertThat(generator.next()).isEmpty();
+  }
+
+  @Test
+  void batch_generator_returns_at_most_one_item_per_batch_when_size_is_zero() throws IOException {
+    if (sensorContext == null) {
+      File baseDir = temp.getRoot().getAbsoluteFile();
+      sensorContext = SensorContextTester.create(baseDir);
+      sensorContext.setSettings(new MapSettings());
+    }
+    List<InputFile> inputFiles = new ArrayList<>();
+    inputFiles.add(addFile("class A {}", sensorContext));
+    inputFiles.add(addFile("class B extends A {}", sensorContext));
+    JavaFrontend.BatchGenerator generator = new JavaFrontend.BatchGenerator(inputFiles.iterator(), 0);
+    assertThat(generator.hasNext()).isTrue();
+    assertThat(generator.next())
+      .hasSize(1)
+      .contains(inputFiles.get(0));
+    assertThat(generator.hasNext()).isTrue();
+    assertThat(generator.next())
+      .hasSize(1)
+      .contains(inputFiles.get(1));
+    assertThat(generator.hasNext()).isFalse();
+    assertThat(generator.next()).isEmpty();
+  }
+
+  @Test
+  void batch_generator_returns_batches_with_multiple_files_that_are_smaller_than_batch_size() throws IOException {
+    if (sensorContext == null) {
+      File baseDir = temp.getRoot().getAbsoluteFile();
+      sensorContext = SensorContextTester.create(baseDir);
+      sensorContext.setSettings(new MapSettings());
+    }
+    InputFile A = addFile("class A { public void doSomething() {} }", sensorContext);
+    InputFile B = addFile("class B extends A {}", sensorContext);
+    InputFile C = addFile("class C {}", sensorContext);
+
+    long sizeofA = A.file().length() + 1;
+    JavaFrontend.BatchGenerator generator = new JavaFrontend.BatchGenerator(
+      Arrays.asList(A, B, C).iterator(), sizeofA
+    );
+    assertThat(generator.hasNext()).isTrue();
+    assertThat(generator.next()).hasSize(1).contains(A);
+    assertThat(generator.hasNext()).isTrue();
+    List<InputFile> batchWithMultipleFiles = generator.next();
+    assertThat(batchWithMultipleFiles).hasSize(2).contains(B).contains(C);
+    long batchSize = batchWithMultipleFiles.stream().map(i -> i.file().length()).reduce(0L, Long::sum);
+    assertThat(batchSize).isLessThanOrEqualTo(sizeofA);
+    assertThat(generator.hasNext()).isFalse();
+    assertThat(generator.next()).isEmpty();
+
+    long sizeOfAPlusB = A.file().length() + B.file().length();
+    generator = new JavaFrontend.BatchGenerator(
+      Arrays.asList(A, B, C).iterator(), sizeOfAPlusB
+    );
+    assertThat(generator.hasNext()).isTrue();
+    batchWithMultipleFiles = generator.next();
+    assertThat(batchWithMultipleFiles).hasSize(2).contains(A).contains(B);
+    batchSize = batchWithMultipleFiles.stream().map(i -> i.file().length()).reduce(0L, Long::sum);
+    assertThat(batchSize).isLessThanOrEqualTo(sizeOfAPlusB);
+    assertThat(generator.hasNext()).isTrue();
+    assertThat(generator.next()).hasSize(1).contains(C);
+    assertThat(generator.hasNext()).isFalse();
+    assertThat(generator.next()).isEmpty();
+  }
+
+  @Test
+  void batch_generator_includes_file_excluded_from_previous_batch_into_next_batch() throws IOException {
+    if (sensorContext == null) {
+      File baseDir = temp.getRoot().getAbsoluteFile();
+      sensorContext = SensorContextTester.create(baseDir);
+      sensorContext.setSettings(new MapSettings());
+    }
+    InputFile A = addFile("class A { public void doSomething() {} }", sensorContext);
+    InputFile B = addFile("class B extends A {}", sensorContext);
+    InputFile C = addFile("class C {}", sensorContext);
+    JavaFrontend.BatchGenerator generator = new JavaFrontend.BatchGenerator(
+      Arrays.asList(A, C, B).iterator(), C.file().length()
+    );
+    assertThat(generator.hasNext()).isTrue();
+    assertThat(generator.next()).hasSize(1).contains(A);
+    assertThat(generator.hasNext()).isTrue();
+    assertThat(generator.next()).hasSize(1).contains(C);
+    assertThat(generator.hasNext()).isTrue();
+    assertThat(generator.next()).hasSize(1).contains(B);
+    assertThat(generator.hasNext()).isFalse();
+    assertThat(generator.next()).isEmpty();
+  }
+
   private List<InputFile> scan(SonarRuntime sonarRuntime, String... codeList) throws IOException {
     return scan(new MapSettings(), sonarRuntime, codeList);
   }
@@ -462,6 +557,7 @@ class JavaFrontendTest {
     public boolean accept(FilterableIssue issue, IssueFilterChain chain) {
       return true;
     }
+
     @Override
     public void endOfAnalysis() {
       endOfAnalysisInvocationCount++;
