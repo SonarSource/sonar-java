@@ -185,9 +185,9 @@ public class JavaFrontend {
       LOG.debug("Scanning in a single batch");
       scanBatch(context, allInputFiles);
     } else {
-      long batchize = batchModeSizeInKB * 1_000L;
-      LOG.debug("Scanning with batch size {} B", batchize);
-      BatchGenerator generator = new BatchGenerator(allInputFiles.iterator(), batchize);
+      long batchSize = batchModeSizeInKB * 1_000L;
+      LOG.debug("Scanning with batch size {} B", batchSize);
+      BatchGenerator generator = new BatchGenerator(allInputFiles.iterator(), batchSize);
       while (generator.hasNext()) {
         List<InputFile> batch = generator.next();
         scanBatch(context, batch);
