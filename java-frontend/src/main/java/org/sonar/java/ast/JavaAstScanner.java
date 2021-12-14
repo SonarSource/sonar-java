@@ -20,6 +20,7 @@
 package org.sonar.java.ast;
 
 import com.sonar.sslr.api.RecognitionException;
+import java.io.File;
 import java.io.InterruptedIOException;
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -59,9 +61,26 @@ public class JavaAstScanner {
     this.sonarComponents = sonarComponents;
   }
 
+  public List<File> getClasspath() {
+    return visitor.getClasspath();
+  }
+
   public void scan(Iterable<? extends InputFile> inputFiles) {
+    List<InputFile> filesNames = filterModuleInfo(inputFiles).collect(Collectors.toList());
+    try {
+      JParserConfig.Mode.FILE_BY_FILE
+        .create(JParserConfig.effectiveJavaVersion(visitor.getJavaVersion()), visitor.getClasspath())
+        .parse(filesNames,
+          this::analysisCancelled,
+          (i, r) -> simpleScan(i, r, JavaAstScanner::cleanUpAst));
+    } finally {
+      endOfAnalysis();
+    }
+  }
+
+  public <T extends InputFile> Stream<T> filterModuleInfo(Iterable<T> inputFiles) {
     JavaVersion javaVersion = visitor.getJavaVersion();
-    List<InputFile> filesNames = StreamSupport.stream(inputFiles.spliterator(), false)
+    return StreamSupport.stream(inputFiles.spliterator(), false)
       .filter(file -> {
         if (("module-info.java".equals(file.filename())) && !javaVersion.isNotSet() && javaVersion.asInt() <= 8) {
           // When the java version is not set, we use the maximum version supported, able to parse module info.
@@ -69,17 +88,7 @@ public class JavaAstScanner {
           return false;
         }
         return true;
-      }).collect(Collectors.toList());
-
-    try {
-      JParserConfig.Mode.FILE_BY_FILE
-        .create(JParserConfig.effectiveJavaVersion(javaVersion), visitor.getClasspath())
-        .parse(filesNames,
-          this::analysisCancelled,
-          (i, r) -> simpleScan(i, r, JavaAstScanner::cleanUpAst));
-    } finally {
-      endOfAnalysis();
-    }
+      });
   }
 
   public void endOfAnalysis() {
