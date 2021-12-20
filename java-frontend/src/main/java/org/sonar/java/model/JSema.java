@@ -43,7 +43,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 public final class JSema implements Sema {
 
   private final AST ast;
-  final Set<String> undefinedTypes = new HashSet<>();
+  final Set<JParser.ParserMessage> undefinedTypes = new HashSet<>();
   final Map<IBinding, Tree> declarations = new HashMap<>();
   final Map<IBinding, List<IdentifierTree>> usages = new HashMap<>();
   private final Map<ITypeBinding, JType> types = new HashMap<>();
@@ -150,7 +150,7 @@ public final class JSema implements Sema {
     ASTUtils.cleanupEnvironment(ast);
   }
 
-  public Set<String> undefinedTypes() {
+  public Set<JParser.ParserMessage> undefinedTypes() {
     return Collections.unmodifiableSet(undefinedTypes);
   }
 }

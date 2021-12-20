@@ -50,6 +50,7 @@ import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.java.TestUtils;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -57,16 +58,18 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -120,14 +123,16 @@ class JParserTest {
   void unknown_types_are_collected() {
     // import org.foo missing, type Bar unknown
     CompilationUnitTree cut = test("import org.foo.Bar;\n class Foo {\n void foo(Bar b) {}\n }\n");
-    assertThat(((CompilationUnitTreeImpl) cut).sema.undefinedTypes).containsExactlyInAnyOrder("The import org.foo cannot be resolved", "Bar cannot be resolved to a type");
+    assertThat(((CompilationUnitTreeImpl) cut).sema.undefinedTypes.stream().map(Object::toString))
+      .containsExactlyInAnyOrder("The import org.foo cannot be resolved", "Bar cannot be resolved to a type");
   }
 
   @Test
   void warnings_are_collected() {
     // import org.foo missing, type Bar unknown
     CompilationUnitTree cut = test("import java.util.List;\n import java.util.ArrayList;\n class Foo {\n void foo(Bar b) {}\n }\n");
-    assertThat(((CompilationUnitTreeImpl) cut).sema.undefinedTypes).containsExactlyInAnyOrder("Bar cannot be resolved to a type");
+    assertThat(((CompilationUnitTreeImpl) cut).sema.undefinedTypes.stream().map(Object::toString))
+      .containsExactlyInAnyOrder("Bar cannot be resolved to a type");
   }
 
   @Test
@@ -393,6 +398,19 @@ class JParserTest {
     VariableTree variableTree = (VariableTree) tryStatementTree.resourceList().get(0);
     assertThat(variableTree.type().kind()).isEqualTo(Tree.Kind.ARRAY_TYPE);
     assertThat(( (ArrayTypeTree) variableTree.type()).openBracketToken()).isNotNull();
+  }
+
+  @Test
+  void test_parser_message() {
+    JParser.ParserMessage parserMessage1 = new JParser.ParserMessage(0, "message");
+    assertTrue(parserMessage1.equals(parserMessage1));
+    assertFalse(parserMessage1.equals(null));
+
+    JParser.ParserMessage parserMessage2 = new JParser.ParserMessage(0, "message2");
+    assertNotEquals(parserMessage1, parserMessage2);
+
+    parserMessage2 = new JParser.ParserMessage(1, "message");
+    assertNotEquals(parserMessage1, parserMessage2);
   }
 
   private Path createFakeJrtFs(Path tempFolder) throws IOException {
