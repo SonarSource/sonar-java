@@ -88,6 +88,10 @@ class JSymbolTest {
       .as("of field")
       .hasOwner(cu.sema.typeSymbol(c1.typeBinding));
 
+    assertThat(cu.sema.typeSymbol(f.variableBinding.getType()))
+      .as("of primitive type")
+      .hasOwner(null);
+
     assertThat(cu.sema.variableSymbol(p.variableBinding))
       .as("of method parameter")
       .hasOwner(cu.sema.methodSymbol(m.methodBinding));
@@ -210,6 +214,16 @@ class JSymbolTest {
   @Test
   void variable_in_static_class_initializer() {
     variable_in_class_initializer(true);
+  }
+
+  @Test
+  void primitive_type_hash_code() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { int u; int v; void m() {} }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    VariableTreeImpl uField = (VariableTreeImpl) c.members().get(0);
+    VariableTreeImpl vField = (VariableTreeImpl) c.members().get(1);
+    assertThat(cu.sema.typeSymbol(uField.variableBinding.getType()).hashCode())
+      .isEqualTo(cu.sema.typeSymbol(vField.variableBinding.getType()).hashCode());
   }
 
   @Test
