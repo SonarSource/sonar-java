@@ -251,7 +251,7 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
     }
     if (isQuickFixCompatible) {
       addQuickFixes(inputFile, ruleKey, flatQuickFixes, (NewSonarLintIssue) newIssue);
-    } else if (methodSetQuickFixAvailable != null) {
+    } else {
       try {
         methodSetQuickFixAvailable.invoke(newIssue, true);
       } catch (ReflectiveOperationException e) {
