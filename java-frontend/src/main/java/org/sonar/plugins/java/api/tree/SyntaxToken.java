@@ -40,7 +40,7 @@ public interface SyntaxToken extends Tree {
    * @deprecated for removal, since = 7.3, use "range().start().line()". A token is not anymore on a single line
    * since the text block feature has been introduced in the java language.
    */
-  @Deprecated
+  @Deprecated(since = "7.3", forRemoval = true)
   int line();
 
   /**
@@ -49,7 +49,7 @@ public interface SyntaxToken extends Tree {
    * @deprecated for removal, since = 7.3, "column()" can be replaced by range().start().columnOffset()
    * and "column() + 1" can be replaced by range().start().column()
    */
-  @Deprecated
+  @Deprecated(since = "7.3", forRemoval = true)
   int column();
 
   Range range();
