@@ -206,7 +206,7 @@ public interface Symbol {
      *             Use {@link #overriddenSymbols()} to get a list of all symbols
      */
     @Nullable
-    @Deprecated
+    @Deprecated(since = "6.15", forRemoval = true)
     Symbol.MethodSymbol overriddenSymbol();
 
     /**

@@ -90,7 +90,7 @@ public interface ClassTree extends StatementTree {
    * @since Java 15
    * @deprecated Preview Feature
    */
-  @Deprecated
+  @Deprecated(since = "6.12", forRemoval = false)
   @Nullable
   SyntaxToken permitsKeyword();
 
@@ -98,7 +98,7 @@ public interface ClassTree extends StatementTree {
    * @since Java 15
    * @deprecated Preview Feature
    */
-  @Deprecated
+  @Deprecated(since = "6.12", forRemoval = false)
   ListTree<TypeTree> permittedTypes();
 
   SyntaxToken openBraceToken();

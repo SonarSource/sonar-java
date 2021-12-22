@@ -35,7 +35,7 @@ public interface SyntaxTrivia extends Tree {
   /**
    * @deprecated for removal, since = 7.3, use range().start().line()
    */
-  @Deprecated
+  @Deprecated(since = "7.3", forRemoval = true)
   int startLine();
 
   /**
@@ -44,7 +44,7 @@ public interface SyntaxTrivia extends Tree {
    * @deprecated for removal, since = 7.3, "column()" can be replaced by range().start().columnOffset()
    * and "column() + 1" can be replaced by range().start().column()
    */
-  @Deprecated
+  @Deprecated(since = "7.3", forRemoval = true)
   int column();
 
   Range range();
