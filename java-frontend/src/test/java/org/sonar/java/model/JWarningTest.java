@@ -31,6 +31,10 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.sonar.java.model.JWarning.Mapper.isInsideTree;
 import static org.sonar.java.model.JWarning.Mapper.setSyntaxTree;
 import static org.sonar.java.model.JWarning.Mapper.matchesTreeExactly;
@@ -51,6 +55,47 @@ class JWarningTest {
     assertThat(warning.message()).isEqualTo(message);
     assertThat(warning.type()).isEqualTo(type);
     assertThat(warning.syntaxTree()).isNull();
+  }
+
+  @Test
+  void test_equals() {
+    JWarning j1 = new JWarning("a", JProblem.Type.UNUSED_IMPORT, 0, 1, 2, 3);
+    assertFalse(j1.equals(null));
+    assertTrue(j1.equals(j1));
+
+    JWarning j2 = new JWarning("a", JProblem.Type.UNUSED_IMPORT, 0, 1, 2, 3);
+    assertTrue(j1.equals(j2));
+
+    // syntaxTree is ignored in JWarning.equals()
+    Tree beforeDifferentLine = importTree(4, 0, 5, 19);
+    setSyntaxTree(j2, beforeDifferentLine);
+    assertTrue(j1.equals(j2));
+
+    j2 = new JWarning("b", JProblem.Type.UNUSED_IMPORT, 0, 1, 2, 3);
+    assertFalse(j1.equals(j2));
+    j2 = new JWarning("a", JProblem.Type.UNUSED_IMPORT, 42, 1, 2, 3);
+    assertFalse(j1.equals(j2));
+    j2 = new JWarning("a", JProblem.Type.UNUSED_IMPORT, 0, 1, 42, 3);
+    assertFalse(j1.equals(j2));
+  }
+
+  @Test
+  void test_hashcode() {
+    JWarning j1 = new JWarning("a", JProblem.Type.UNUSED_IMPORT, 0, 1, 2, 3);
+    JWarning j2 = new JWarning("a", JProblem.Type.UNUSED_IMPORT, 0, 1, 2, 3);
+    assertEquals(j1.hashCode(), j2.hashCode());
+
+    // syntaxTree is ignored in JWarning.hashCode()
+    Tree beforeDifferentLine = importTree(4, 0, 5, 19);
+    setSyntaxTree(j2, beforeDifferentLine);
+    assertEquals(j1.hashCode(), j2.hashCode());
+
+    assertNotEquals(
+      new JWarning("a", JProblem.Type.UNUSED_IMPORT, 0, 1, 2, 3).hashCode(),
+      new JWarning("b", JProblem.Type.UNUSED_IMPORT, 0, 1, 2, 3).hashCode());
+    assertNotEquals(
+      new JWarning("a", JProblem.Type.UNUSED_IMPORT, 0, 1, 2, 3).hashCode(),
+      new JWarning("a", JProblem.Type.REDUNDANT_CAST, 0, 1, 2, 3).hashCode());
   }
 
   @Nested
