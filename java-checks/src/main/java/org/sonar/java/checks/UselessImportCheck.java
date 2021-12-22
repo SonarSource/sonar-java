@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.model.JProblem;
 import org.sonar.java.model.JWarning;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -89,7 +90,7 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
   @Override
   public void leaveNode(Tree tree) {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
-      handleWarnings(((CompilationUnitTreeImpl) tree).warnings(JWarning.Type.UNUSED_IMPORT));
+      handleWarnings(((CompilationUnitTreeImpl) tree).warnings(JProblem.Type.UNUSED_IMPORT));
       imports.clear();
     }
   }
