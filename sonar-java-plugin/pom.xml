@@ -126,9 +126,7 @@
           <skipDependenciesPackaging>true</skipDependenciesPackaging>
           <pluginClass>org.sonar.plugins.java.JavaPlugin</pluginClass>
           <sonarLintSupported>true</sonarLintSupported>
-          <!-- FIXME: https://jira.sonarsource.com/browse/SLCORE-315 -->
-          <!-- SonarLint currently supports only up to SQ 8.5, instead of 8.9 LTS -->
-          <sonarQubeMinVersion>7.9</sonarQubeMinVersion>
+          <sonarQubeMinVersion>8.9</sonarQubeMinVersion>
           <jreMinVersion>11</jreMinVersion>
         </configuration>
       </plugin>
