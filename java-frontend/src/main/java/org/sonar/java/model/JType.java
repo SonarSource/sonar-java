@@ -26,6 +26,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 final class JType implements Type, Type.ArrayType {
@@ -98,7 +99,7 @@ final class JType implements Type, Type.ArrayType {
   @Override
   public boolean isPrimitive(Primitives primitive) {
     // TODO suboptimal
-    return primitive.name().toLowerCase().equals(fullyQualifiedName());
+    return primitive.name().toLowerCase(Locale.ROOT).equals(fullyQualifiedName());
   }
 
   @Override
