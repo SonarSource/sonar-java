@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.model.JProblem;
 import org.sonar.java.model.JWarning;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.SyntacticEquivalence;
@@ -48,7 +49,7 @@ public class SelfAssignementCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
       warnings.clear();
-      warnings.addAll(((JavaTree.CompilationUnitTreeImpl) tree).warnings(JWarning.Type.ASSIGNMENT_HAS_NO_EFFECT));
+      warnings.addAll(((JavaTree.CompilationUnitTreeImpl) tree).warnings(JProblem.Type.ASSIGNMENT_HAS_NO_EFFECT));
       return;
     }
     AssignmentExpressionTree node = (AssignmentExpressionTree) tree;

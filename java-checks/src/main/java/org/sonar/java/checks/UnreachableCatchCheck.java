@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.model.JProblem;
 import org.sonar.java.model.JWarning;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -55,7 +56,7 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
       warnings.clear();
-      warnings.addAll(((CompilationUnitTreeImpl) tree).warnings(JWarning.Type.MASKED_CATCH));
+      warnings.addAll(((CompilationUnitTreeImpl) tree).warnings(JProblem.Type.MASKED_CATCH));
       return;
     }
     checkWarnings((TryStatementTree) tree);

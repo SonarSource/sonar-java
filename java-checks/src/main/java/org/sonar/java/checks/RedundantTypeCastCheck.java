@@ -24,6 +24,7 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.JProblem;
 import org.sonar.java.model.JWarning;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -48,7 +49,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
-      warnings = ((JavaTree.CompilationUnitTreeImpl) tree).warnings(JWarning.Type.REDUNDANT_CAST);
+      warnings = ((JavaTree.CompilationUnitTreeImpl) tree).warnings(JProblem.Type.REDUNDANT_CAST);
       return;
     }
 
@@ -72,7 +73,9 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
   }
 
   public static Tree skipParentheses(Tree tree) {
-    if (tree instanceof ExpressionTree) return ExpressionUtils.skipParentheses((ExpressionTree) tree);
+    if (tree instanceof ExpressionTree) {
+      return ExpressionUtils.skipParentheses((ExpressionTree) tree);
+    }
     return tree;
   }
 
