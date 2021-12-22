@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -60,7 +59,7 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
-import org.sonar.java.model.JParser;
+import org.sonar.java.model.JProblem;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaIssue;
@@ -87,7 +86,7 @@ public class SonarComponents {
 
   private final ClasspathForMain javaClasspath;
   private final ClasspathForTest javaTestClasspath;
-  private final Set<JParser.ParserMessage> undefinedTypes = new HashSet<>();
+  private final Set<JProblem> undefinedTypes = new HashSet<>();
 
   private final CheckFactory checkFactory;
   @Nullable
@@ -374,7 +373,7 @@ public class SonarComponents {
     return context.project();
   }
 
-  public void collectUndefinedTypes(Set<JParser.ParserMessage> undefinedTypes) {
+  public void collectUndefinedTypes(Set<JProblem> undefinedTypes) {
     this.undefinedTypes.addAll(undefinedTypes);
   }
 
@@ -392,21 +391,21 @@ public class SonarComponents {
   private void logUndefinedTypes(int maxLines) {
     logParserMessages(
       undefinedTypes.stream()
-        .filter(Predicate.not(JParser.ParserMessage::previewFeatureUsed)),
+        .filter(m -> m.type() == JProblem.Type.UNDEFINED_TYPE),
       maxLines,
       "Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.",
       "Unresolved imports/types:"
     );
     logParserMessages(
       undefinedTypes.stream()
-        .filter(JParser.ParserMessage::previewFeatureUsed),
+        .filter(m -> m.type() == JProblem.Type.PREVIEW_FEATURE_USED),
       maxLines,
       "Use of preview features have been detected during analysis. Enable DEBUG mode to see them.",
       "Use of preview features:"
     );
   }
 
-  private static void logParserMessages(Stream<JParser.ParserMessage> messages, int maxLines, String warningMessage, String debugMessage) {
+  private static void logParserMessages(Stream<JProblem> messages, int maxLines, String warningMessage, String debugMessage) {
     final List<String> messagesList = messages
       .map(Object::toString)
       .sorted()

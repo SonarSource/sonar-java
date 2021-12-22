@@ -20,10 +20,8 @@
 package org.sonar.java.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -34,39 +32,24 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.model.location.InternalPosition;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.Tree;
 
-public final class JWarning {
-
-  private final String message;
-  private final Type type;
+public final class JWarning extends JProblem {
   private final Position start;
   private final Position end;
 
   private Tree syntaxTree;
 
-  @VisibleForTesting
   JWarning(String message, Type type, int startLine, int startColumnOffset, int endLine, int endColumnOffset) {
-    this.message = message;
-    this.type = type;
+    super(message, type);
     this.start = InternalPosition.atOffset(startLine, startColumnOffset);
     this.end = InternalPosition.atOffset(endLine, endColumnOffset);
-  }
-
-  public Type type() {
-    return type;
-  }
-
-  public String message() {
-    return message;
   }
 
   public Tree syntaxTree() {
@@ -81,42 +64,32 @@ public final class JWarning {
     return end;
   }
 
-  public enum Type {
-    UNUSED_IMPORT(IProblem.UnusedImport, JavaCore.COMPILER_PB_UNUSED_IMPORT, Tree.Kind.IMPORT),
-    REDUNDANT_CAST(IProblem.UnnecessaryCast, JavaCore.COMPILER_PB_UNNECESSARY_TYPE_CHECK, Tree.Kind.TYPE_CAST, Tree.Kind.PARENTHESIZED_EXPRESSION),
-    ASSIGNMENT_HAS_NO_EFFECT(IProblem.AssignmentHasNoEffect, JavaCore.COMPILER_PB_NO_EFFECT_ASSIGNMENT, Tree.Kind.ASSIGNMENT),
-    MASKED_CATCH(IProblem.MaskedCatch, JavaCore.COMPILER_PB_HIDDEN_CATCH_BLOCK, Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT);
-
-    private final int warningID;
-    private final String compilerOptionKey;
-    private final Set<Tree.Kind> kinds;
-
-    private static final Set<String> COMPILER_OPTIONS = new HashSet<>();
-
-    Type(int warningID, String compilerOptionKey, Tree.Kind... kinds) {
-      this.warningID = warningID;
-      this.compilerOptionKey = compilerOptionKey;
-      this.kinds = SetUtils.immutableSetOf(kinds);
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
-
-    private boolean matches(IProblem warning) {
-      return warning.getID() == warningID;
+    if (!(o instanceof JWarning)) {
+      return false;
     }
-
-    public static Set<String> compilerOptions() {
-      if (COMPILER_OPTIONS.isEmpty()) {
-        Stream.of(Type.values())
-          .map(t -> t.compilerOptionKey)
-          .forEach(COMPILER_OPTIONS::add);
-      }
-      return Collections.unmodifiableSet(COMPILER_OPTIONS);
+    if (!super.equals(o)) {
+      return false;
     }
+    JWarning jWarning = (JWarning) o;
+    // skip syntaxTree
+    return start.equals(jWarning.start) && end.equals(jWarning.end);
+  }
+
+  @Override
+  public int hashCode() {
+    // skip syntaxTree
+    return Objects.hash(super.hashCode(), start, end);
   }
 
   public static class Mapper extends SubscriptionVisitor {
 
     private static final Set<Tree.Kind> KINDS = Stream.of(Type.values())
-      .map(t -> t.kinds)
+      .map(Type::getKinds)
       .flatMap(Set::stream)
       .collect(Collectors.toSet());
 
@@ -187,7 +160,7 @@ public final class JWarning {
 
     @VisibleForTesting
     static boolean isInsideTree(JWarning warning, Tree tree) {
-      if (warning.type.kinds.stream().noneMatch(tree::is)) {
+      if (warning.type().getKinds().stream().noneMatch(tree::is)) {
         // wrong kind
         return false;
       }

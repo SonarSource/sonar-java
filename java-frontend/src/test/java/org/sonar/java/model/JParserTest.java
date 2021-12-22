@@ -64,12 +64,9 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -398,19 +395,6 @@ class JParserTest {
     VariableTree variableTree = (VariableTree) tryStatementTree.resourceList().get(0);
     assertThat(variableTree.type().kind()).isEqualTo(Tree.Kind.ARRAY_TYPE);
     assertThat(( (ArrayTypeTree) variableTree.type()).openBracketToken()).isNotNull();
-  }
-
-  @Test
-  void test_parser_message() {
-    JParser.ParserMessage parserMessage1 = new JParser.ParserMessage(0, "message");
-    assertTrue(parserMessage1.equals(parserMessage1));
-    assertFalse(parserMessage1.equals(null));
-
-    JParser.ParserMessage parserMessage2 = new JParser.ParserMessage(0, "message2");
-    assertNotEquals(parserMessage1, parserMessage2);
-
-    parserMessage2 = new JParser.ParserMessage(1, "message");
-    assertNotEquals(parserMessage1, parserMessage2);
   }
 
   private Path createFakeJrtFs(Path tempFolder) throws IOException {

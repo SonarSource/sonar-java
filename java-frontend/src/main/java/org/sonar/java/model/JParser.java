@@ -159,47 +159,6 @@ public class JParser {
     return convert(version, unitName, source, astNode);
   }
 
-  public static class ParserMessage {
-    public final int id;
-    public final String message;
-
-    public ParserMessage(IProblem iProblem) {
-      this.id = iProblem.getID();
-      this.message = iProblem.getMessage();
-    }
-
-    public ParserMessage(int id, String message) {
-      this.id = id;
-      this.message = message;
-    }
-
-    public boolean previewFeatureUsed() {
-      return (id & IProblem.PreviewFeatureUsed) != 0;
-    }
-
-    @Override
-    public String toString() {
-      return message;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (!(o instanceof ParserMessage)) {
-        return false;
-      }
-      ParserMessage that = (ParserMessage) o;
-      return id == that.id && message.equals(that.message);
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(id, message);
-    }
-  }
-
   static JavaTree.CompilationUnitTreeImpl convert(String version, String unitName, String source, CompilationUnit astNode) {
     List<IProblem> errors = Stream.of(astNode.getProblems()).filter(IProblem::isError).collect(Collectors.toList());
     Optional<IProblem> possibleSyntaxError = errors.stream().filter(IS_SYNTAX_ERROR).findFirst();
@@ -212,9 +171,11 @@ public class JParser {
       throw new RecognitionException(line, message);
     }
 
-    Set<ParserMessage> undefinedTypes = errors.stream()
+    Set<JProblem> undefinedTypes = errors.stream()
       .filter(IS_UNDEFINED_TYPE_ERROR)
-      .map(ParserMessage::new)
+      .map(i -> new JProblem(
+        i.getMessage(),
+        (i.getID() & IProblem.PreviewFeatureUsed) != 0 ? JProblem.Type.PREVIEW_FEATURE_USED : JProblem.Type.UNDEFINED_TYPE))
       .collect(Collectors.toSet());
 
     JParser converter = new JParser();
