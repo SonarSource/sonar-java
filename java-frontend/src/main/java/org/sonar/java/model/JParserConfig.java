@@ -105,7 +105,7 @@ public abstract class JParserConfig {
   }
 
   public ASTParser astParser() {
-    ASTParser astParser = ASTParser.newParser(AST.JLS_Latest);
+    ASTParser astParser = ASTParser.newParser(AST.getJLSLatest());
     Map<String, String> options = new HashMap<>();
     options.put(JavaCore.COMPILER_COMPLIANCE, javaVersion);
     options.put(JavaCore.COMPILER_SOURCE, javaVersion);
