@@ -35,7 +35,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import javax.annotation.Nullable;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.batch.bootstrap.ProjectDefinition;
@@ -57,6 +59,7 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
+import org.sonar.java.model.JProblem;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaIssue;
@@ -65,8 +68,6 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 import org.sonarsource.sonarlint.plugin.api.SonarLintRuntime;
-
-import javax.annotation.Nullable;
 
 @ScannerSide
 @SonarLintSide
@@ -85,7 +86,7 @@ public class SonarComponents {
 
   private final ClasspathForMain javaClasspath;
   private final ClasspathForTest javaTestClasspath;
-  private final Set<String> undefinedTypes = new HashSet<>();
+  private final Set<JProblem> undefinedTypes = new HashSet<>();
 
   private final CheckFactory checkFactory;
   @Nullable
@@ -372,7 +373,7 @@ public class SonarComponents {
     return context.project();
   }
 
-  public void collectUndefinedTypes(Set<String> undefinedTypes) {
+  public void collectUndefinedTypes(Set<JProblem> undefinedTypes) {
     this.undefinedTypes.addAll(undefinedTypes);
   }
 
@@ -388,19 +389,44 @@ public class SonarComponents {
   }
 
   private void logUndefinedTypes(int maxLines) {
-    boolean moreThanMax = undefinedTypes.size() > maxLines;
+    logParserMessages(
+      undefinedTypes.stream()
+        .filter(m -> m.type() == JProblem.Type.UNDEFINED_TYPE),
+      maxLines,
+      "Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.",
+      "Unresolved imports/types:"
+    );
+    logParserMessages(
+      undefinedTypes.stream()
+        .filter(m -> m.type() == JProblem.Type.PREVIEW_FEATURE_USED),
+      maxLines,
+      "Use of preview features have been detected during analysis. Enable DEBUG mode to see them.",
+      "Use of preview features:"
+    );
+  }
 
-    String warningMessage = "Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.";
-    String debugMessage = moreThanMax ? String.format("First %d unresolved imports/types:", maxLines) : "Unresolved imports/types:";
+  private static void logParserMessages(Stream<JProblem> messages, int maxLines, String warningMessage, String debugMessage) {
+    final List<String> messagesList = messages
+      .map(Object::toString)
+      .sorted()
+      .collect(Collectors.toList());
+    int messagesListSize = messagesList.size();
+    if (messagesListSize == 0) {
+      return;
+    }
+    final boolean moreThanMax = messagesListSize > maxLines;
 
-    String delimiter = System.lineSeparator() + "- ";
-    String prefix = debugMessage + delimiter;
-    String suffix = moreThanMax ? (delimiter + "...") : "";
+    if (moreThanMax) {
+      debugMessage += " (Limited to " + maxLines + ")";
+    }
+
+    final String delimiter = System.lineSeparator() + "- ";
+    final String prefix = debugMessage + delimiter;
+    final String suffix = moreThanMax ? (delimiter + "...") : "";
 
     LOG.warn(warningMessage);
-    LOG.debug(undefinedTypes
+    LOG.debug(messagesList
       .stream()
-      .sorted()
       .limit(maxLines)
       .collect(Collectors.joining(delimiter, prefix, suffix)));
   }

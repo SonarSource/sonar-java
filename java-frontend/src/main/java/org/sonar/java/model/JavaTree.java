@@ -159,7 +159,7 @@ public abstract class JavaTree implements Tree {
     private final SyntaxToken eofToken;
     public JSema sema;
 
-    private final Map<JWarning.Type, Set<JWarning>> warnings = new EnumMap<>(JWarning.Type.class);
+    private final Map<JProblem.Type, Set<JWarning>> warnings = new EnumMap<>(JProblem.Type.class);
 
     public CompilationUnitTreeImpl(@Nullable PackageDeclarationTree packageDeclaration, List<ImportClauseTree> imports, List<Tree> types,
       @Nullable ModuleDeclarationTree moduleDeclaration, SyntaxToken eofToken) {
@@ -187,7 +187,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Beta
-    public List<JWarning> warnings(JWarning.Type type) {
+    public List<JWarning> warnings(JProblem.Type type) {
       return Collections.unmodifiableList(new ArrayList<>(warnings.getOrDefault(type, Collections.emptySet())));
     }
 
@@ -225,7 +225,7 @@ public abstract class JavaTree implements Tree {
       return eofToken;
     }
 
-    public void addWarnings(Map<JWarning.Type, Set<JWarning>> warnings) {
+    public void addWarnings(Map<JProblem.Type, Set<JWarning>> warnings) {
       this.warnings.putAll(warnings);
     }
 

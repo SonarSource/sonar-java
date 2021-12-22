@@ -518,7 +518,7 @@ class SonarComponentsTest {
 
       String list = debugLogs.get(0);
       assertThat(list)
-        .startsWith("First 50 unresolved imports/types:")
+        .startsWith("Unresolved imports/types: (Limited to 50)")
         .endsWith("- ...")
         .doesNotContain("- Y cannot be resolved to a type")
         .doesNotContain("- Z cannot be resolved to a type");

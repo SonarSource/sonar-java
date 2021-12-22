@@ -50,6 +50,7 @@ import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.java.TestUtils;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -57,7 +58,6 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -120,14 +120,16 @@ class JParserTest {
   void unknown_types_are_collected() {
     // import org.foo missing, type Bar unknown
     CompilationUnitTree cut = test("import org.foo.Bar;\n class Foo {\n void foo(Bar b) {}\n }\n");
-    assertThat(((CompilationUnitTreeImpl) cut).sema.undefinedTypes).containsExactlyInAnyOrder("The import org.foo cannot be resolved", "Bar cannot be resolved to a type");
+    assertThat(((CompilationUnitTreeImpl) cut).sema.undefinedTypes.stream().map(Object::toString))
+      .containsExactlyInAnyOrder("The import org.foo cannot be resolved", "Bar cannot be resolved to a type");
   }
 
   @Test
   void warnings_are_collected() {
     // import org.foo missing, type Bar unknown
     CompilationUnitTree cut = test("import java.util.List;\n import java.util.ArrayList;\n class Foo {\n void foo(Bar b) {}\n }\n");
-    assertThat(((CompilationUnitTreeImpl) cut).sema.undefinedTypes).containsExactlyInAnyOrder("Bar cannot be resolved to a type");
+    assertThat(((CompilationUnitTreeImpl) cut).sema.undefinedTypes.stream().map(Object::toString))
+      .containsExactlyInAnyOrder("Bar cannot be resolved to a type");
   }
 
   @Test

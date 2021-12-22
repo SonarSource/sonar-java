@@ -171,9 +171,11 @@ public class JParser {
       throw new RecognitionException(line, message);
     }
 
-    Set<String> undefinedTypes = errors.stream()
+    Set<JProblem> undefinedTypes = errors.stream()
       .filter(IS_UNDEFINED_TYPE_ERROR)
-      .map(IProblem::getMessage)
+      .map(i -> new JProblem(
+        i.getMessage(),
+        (i.getID() & IProblem.PreviewFeatureUsed) != 0 ? JProblem.Type.PREVIEW_FEATURE_USED : JProblem.Type.UNDEFINED_TYPE))
       .collect(Collectors.toSet());
 
     JParser converter = new JParser();

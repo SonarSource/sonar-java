@@ -39,6 +39,7 @@ import org.sonar.java.AnalysisException;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.JParserConfig;
+import org.sonar.java.model.JProblem;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
@@ -135,7 +136,7 @@ public class JavaAstScanner {
     ast.sema.cleanupEnvironment();
   }
 
-  private void collectUndefinedTypes(Set<String> undefinedTypes) {
+  private void collectUndefinedTypes(Set<JProblem> undefinedTypes) {
     if (sonarComponents != null) {
       sonarComponents.collectUndefinedTypes(undefinedTypes);
     }
