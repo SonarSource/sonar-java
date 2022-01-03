@@ -21,6 +21,7 @@ package org.sonar.java.classpath;
 
 import java.io.File;
 import java.util.List;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -30,7 +31,10 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.config.internal.MapSettings;
+import org.sonar.api.config.internal.MultivalueProperty;
+import org.sonar.api.utils.System2;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.AnalysisException;
@@ -59,7 +63,19 @@ class ClasspathForMainTest {
   void setup() throws Exception {
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
     fs.add(TestUtils.emptyInputFile("foo.java"));
-    settings = new MapSettings();
+    PropertyDefinitions propertyDefinitions = new PropertyDefinitions(System2.INSTANCE);
+    ClasspathProperties.getProperties().forEach(propertyDefinitions::addComponent);
+    settings = new MapSettings(propertyDefinitions) {
+      /**
+       * MapSettings doesn't support CSV encoded properties, but real scanner component does (see org/sonar/scanner/config/DefaultConfiguration)
+       */
+      @Override
+      public String[] getStringArray(String key) {
+        return get(key)
+          .map(v -> MultivalueProperty.parseAsCsv(key, v))
+          .orElse(ArrayUtils.EMPTY_STRING_ARRAY);
+      }
+    };
     analysisWarnings = mock(AnalysisWarningsWrapper.class);
   }
 
@@ -334,7 +350,8 @@ class ClasspathForMainTest {
       fail("Exception should have been raised");
     } catch (AnalysisException ise) {
       assertThat(ise.getMessage())
-        .isEqualTo("sonar.binaries and sonar.libraries are not supported since version 4.0 of the SonarSource Java Analyzer, please use sonar.java.binaries and sonar.java.libraries instead");
+        .isEqualTo(
+          "sonar.binaries and sonar.libraries are not supported since version 4.0 of the SonarSource Java Analyzer, please use sonar.java.binaries and sonar.java.libraries instead");
     }
   }
 
@@ -512,6 +529,16 @@ class ClasspathForMainTest {
     javaClasspath = createJavaClasspath();
     javaClasspath.init();
     assertThat(javaClasspath.inAndroidContext()).isTrue();
+  }
+
+  @Test
+  void libraries_should_accept_paths_with_comma_csv_escaped() {
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/hello.jar,\"../classpath_with_comma/hello,world.jar\"");
+    javaClasspath = createJavaClasspath();
+    assertThat(javaClasspath.getElements()).hasSize(2);
+    assertThat(javaClasspath.getElements().get(0)).exists();
+    assertThat(javaClasspath.getElements().get(1)).exists();
+    assertThat(javaClasspath.getElements()).extracting("name").contains("hello.jar", "hello,world.jar");
   }
 
   private void checkIllegalStateException(String message) {

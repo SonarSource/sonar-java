@@ -55,7 +55,6 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
 @SonarLintSide
 public abstract class AbstractClasspath {
 
-  private static final String SEPARATOR = ",";
   private static final char UNIX_SEPARATOR = '/';
   private static final char WINDOWS_SEPARATOR = '\\';
   private static final Logger LOG = Loggers.get(AbstractClasspath.class);
@@ -114,9 +113,8 @@ public abstract class AbstractClasspath {
 
   protected Set<File> getFilesFromProperty(String property) {
     Set<File> result = new LinkedHashSet<>();
-    String fileList = settings.get(property).orElse("");
-    if (StringUtils.isNotEmpty(fileList)) {
-      Iterable<String> fileNames  = Arrays.stream(fileList.split(SEPARATOR))
+    if (settings.hasKey(property)) {
+      List<String> fileNames = Arrays.stream(settings.getStringArray(property))
         .filter(s -> !s.isEmpty()).collect(Collectors.toList());
       File baseDir = fs.baseDir();
       boolean hasJavaSources = hasJavaSources();
@@ -152,7 +150,7 @@ public abstract class AbstractClasspath {
     try {
       Path filePath = resolvePath(baseDir, pathPattern);
       File file = filePath.toFile();
-      if(file.isFile()) {
+      if (file.isFile()) {
         return getMatchingFile(pathPattern, file);
       }
       if (file.isDirectory()) {
@@ -255,7 +253,7 @@ public abstract class AbstractClasspath {
 
     matches.addAll(dirs);
     matches.addAll(new LibraryFinder().find(dir, matcher));
-    if(pattern.startsWith("**/")) {
+    if (pattern.startsWith("**/")) {
       // match jar in the base dir when using wildcard
       matches.addAll(new LibraryFinder().find(dir, FileSystems.getDefault().getPathMatcher(getGlob(dir, pattern.substring(3)))));
     }
