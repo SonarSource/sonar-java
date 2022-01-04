@@ -87,18 +87,14 @@ public interface ClassTree extends StatementTree {
   ListTree<TypeTree> superInterfaces();
 
   /**
-   * @since Java 15
-   * @deprecated Preview Feature
+   * @since Java 15 (preview), Java 17 (final)
    */
-  @Deprecated(since = "6.12", forRemoval = false)
   @Nullable
   SyntaxToken permitsKeyword();
 
   /**
-   * @since Java 15
-   * @deprecated Preview Feature
+   * @since Java 15 (preview), Java 17 (final)
    */
-  @Deprecated(since = "6.12", forRemoval = false)
   ListTree<TypeTree> permittedTypes();
 
   SyntaxToken openBraceToken();

@@ -37,16 +37,12 @@ public enum Modifier {
   DEFAULT,
   STRICTFP,
   /**
-   * @since Java 15
-   * @deprecated Preview Feature
+   * @since Java 15 (preview), Java 17 (final)
    */
-  @Deprecated
   SEALED,
   /**
-   * @since Java 15
-   * @deprecated Preview Feature
+   * @since Java 15 (preview), Java 17 (final)
    */
-  @Deprecated
   NON_SEALED,
   // since java 9, only used by Requires Module Directive (JLS9 - §7.7)
   TRANSITIVE;
