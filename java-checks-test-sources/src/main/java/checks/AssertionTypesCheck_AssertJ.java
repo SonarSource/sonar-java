@@ -130,8 +130,8 @@ public class AssertionTypesCheck_AssertJ {
       .isNotEqualTo(42); // Compliant
 
     int[][] arrayOfArray = new int[0][];
-    assertThat(arrayOfArray).contains(arrayOfArray);       // false-negative
-    assertThat(arrayOfArray).doesNotContain(arrayOfArray); // false-negative
+    // assertThat(arrayOfArray).contains(arrayOfArray); // false-negative - removed in latest versions of assertj
+    // assertThat(arrayOfArray).doesNotContain(arrayOfArray); // false-negative - removed in latest versions of assertj
     assertThat(arrayOfArray).isIn(arrayOfArray);           // false-negative
   }
 
