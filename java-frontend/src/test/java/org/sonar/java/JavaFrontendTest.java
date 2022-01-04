@@ -63,7 +63,6 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -303,16 +302,47 @@ class JavaFrontendTest {
   }
 
   @Test
-  void test_preview_feature_log_message() throws IOException {
+  void test_preview_feature_in_max_supported_version_do_not_log_message() throws IOException {
+    // When the the actual version match the maximum supported version (currently 17), the preview features flag is
+    // enable in the parser config and we made sure to be able to parse preview features, no need to log anything.
     logTester.setLevel(LoggerLevel.DEBUG);
-    scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "16"),
-      SONARLINT_RUNTIME, "sealed class Shape { } sealed class Circle extends Shape { }");
+    scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "17"),
+      SONARLINT_RUNTIME, "class A { void m(String s) { switch(s) { case null: default: } } }");
+    assertThat(sensorContext.allAnalysisErrors()).isEmpty();
+    String allLogs = String.join("\n", logTester.logs());
+    assertThat(allLogs).doesNotContain("Unresolved imports/types", "Use of preview features");
+  }
+
+  @Test
+  void test_preview_feature_log_message() throws IOException {
+    // When the the actual version is greater than the maximum supported version (currently 17),
+    // we can not guarantee the correct behavior of preview features and log a message.
+    logTester.setLevel(LoggerLevel.DEBUG);
+    scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "18"),
+      SONARLINT_RUNTIME, "class A { void m(String s) { switch(s) { case null: default: } } }");
     assertThat(sensorContext.allAnalysisErrors()).isEmpty();
     assertTrue(logTester.logs(LoggerLevel.WARN).stream().noneMatch(l -> l.endsWith("Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.")));
     assertTrue(logTester.logs(LoggerLevel.WARN).stream().anyMatch(l -> l.endsWith("Use of preview features have been detected during analysis. Enable DEBUG mode to see them.")));
     // We should keep this message or we won't have anything actionable in the debug logs to understand the warning
     assertTrue(logTester.logs(LoggerLevel.DEBUG).stream().anyMatch(l -> l.replace("\r\n", "\n").endsWith("Use of preview features:\n" +
-      "- Sealed Types is a preview feature and disabled by default. Use --enable-preview to enable")));
+      "- Pattern Matching in Switch is a preview feature and disabled by default. Use --enable-preview to enable")));
+    assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(1);
+    assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
+  }
+
+  @Test
+  void test_sealed_classes_in_java_16_log_message() throws IOException {
+    // When the the actual version is lower than the maximum supported version (currently 17),
+    // we can not guarantee that we are still parsing preview features the same way (it may have evolved) and log a message.
+    logTester.setLevel(LoggerLevel.DEBUG);
+    scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "16"),
+      SONARLINT_RUNTIME, "sealed class Shape permits Circle { } final class Circle extends Shape { }");
+    assertThat(sensorContext.allAnalysisErrors()).isEmpty();
+    assertTrue(logTester.logs(LoggerLevel.WARN).stream().noneMatch(l -> l.endsWith("Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.")));
+    assertTrue(logTester.logs(LoggerLevel.WARN).stream().anyMatch(l -> l.endsWith("Use of preview features have been detected during analysis. Enable DEBUG mode to see them.")));
+    // We should keep this message or we won't have anything actionable in the debug logs to understand the warning
+    assertTrue(logTester.logs(LoggerLevel.DEBUG).stream().anyMatch(l -> l.replace("\r\n", "\n").endsWith("Use of preview features:\n" +
+      "- The Java feature 'Sealed Types' is only available with source level 17 and above")));
     assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(1);
     assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
   }
@@ -321,9 +351,9 @@ class JavaFrontendTest {
   void test_java17_feature() throws IOException {
     logTester.setLevel(LoggerLevel.DEBUG);
     scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "17"),
-      SONARLINT_RUNTIME, "sealed class Shape { } sealed class Circle extends Shape { }");
+      SONARLINT_RUNTIME, "sealed class Shape permits Circle { } final class Circle extends Shape { }");
     String allLogs = String.join("\n", logTester.logs());
-    assertFalse(allLogs.contains("Unresolved imports/types"));
+    assertThat(allLogs).doesNotContain("Unresolved imports/types", "Use of preview features");
     assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(1);
     assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
   }
