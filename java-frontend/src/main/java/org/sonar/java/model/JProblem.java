@@ -49,6 +49,18 @@ public class JProblem {
 
   @Override
   public String toString() {
+    if (type == JProblem.Type.PREVIEW_FEATURE_USED) {
+      return cleanMessage(message);
+    }
+    return message;
+  }
+
+  private static String cleanMessage(String message) {
+    String enablePreviewMessage = " Use --enable-preview to enable";
+    if (message.endsWith(enablePreviewMessage)) {
+      // Using --enable-preview is irrelevant in this context.
+      return message.substring(0, message.length() - enablePreviewMessage.length());
+    }
     return message;
   }
 
