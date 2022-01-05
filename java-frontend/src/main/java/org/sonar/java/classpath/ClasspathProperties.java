@@ -50,21 +50,25 @@ public class ClasspathProperties {
     );
     extensions.add(PropertyDefinition.builder(SONAR_JAVA_BINARIES)
       .description("Comma-separated paths to directories containing the binary files (directories with class files).")
+      .multiValues(true)
       .hidden()
       .build()
     );
     extensions.add(PropertyDefinition.builder(SONAR_JAVA_LIBRARIES)
       .description("Comma-separated paths to libraries required by the project.")
+      .multiValues(true)
       .hidden()
       .build()
     );
     extensions.add(PropertyDefinition.builder(SONAR_JAVA_TEST_BINARIES)
       .description("Comma-separated paths to directories containing the binary files (directories with class files).")
+      .multiValues(true)
       .hidden()
       .build()
     );
     extensions.add(PropertyDefinition.builder(SONAR_JAVA_TEST_LIBRARIES)
       .description("Comma-separated paths to libraries required by the project.")
+      .multiValues(true)
       .hidden()
       .build()
     );

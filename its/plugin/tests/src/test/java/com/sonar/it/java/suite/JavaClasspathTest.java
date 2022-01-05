@@ -54,7 +54,7 @@ public class JavaClasspathTest {
 
   @Rule
   public final TemporaryFolder tmp = new TemporaryFolder();
-  private String guavaJarPath;
+  private String guavaJarPathEscaped;
   private String aarPath;
   private String fakeGuavaJarPath;
 
@@ -67,11 +67,12 @@ public class JavaClasspathTest {
   public void copyGuavaJar() {
     MavenLocation guava = MavenLocation.of("com.google.guava", "guava", "10.0.1");
     File subFolder = new File(tmp.getRoot(), "subFolder");
-    File subSubFolder = new File(subFolder, "subSubFolder");
+    // Use a folder with comma to test proper property parsing
+    File subSubFolder = new File(subFolder, "sub,SubFolder");
     ORCHESTRATOR.getConfiguration().locators().copyToDirectory(guava, subSubFolder);
 
     aarPath = new File(new File(TestUtils.projectDir("using-aar-dep"), "lib"), "cache-1.3.0.aar").getAbsolutePath();
-    guavaJarPath = new File(subSubFolder.getAbsolutePath(), guava.getFilename()).getAbsolutePath();
+    guavaJarPathEscaped = "\"" + new File(subSubFolder.getAbsolutePath(), guava.getFilename()).getAbsolutePath() + "\"";
     fakeGuavaJarPath = new File(new File(TestUtils.projectDir("dit-check"), "lib"), "fake-guava-1.0.jar").getAbsolutePath();
   }
 
@@ -122,7 +123,7 @@ public class JavaClasspathTest {
   public void should_use_new_java_libraries_property() {
     SonarScanner scanner = ditProjectSonarScanner();
     scanner.setProperty("sonar.java.binaries", "target/classes");
-    scanner.setProperty("sonar.java.libraries", guavaJarPath);
+    scanner.setProperty("sonar.java.libraries", guavaJarPathEscaped);
     TestUtils.provisionProject(ORCHESTRATOR, PROJECT_KEY_DIT, PROJECT_KEY_DIT, "java", "dit-check");
     ORCHESTRATOR.executeBuild(scanner);
     assertThat(getNumberOfViolations(PROJECT_KEY_DIT)).isEqualTo(2);
@@ -134,7 +135,7 @@ public class JavaClasspathTest {
 
     SonarScanner scanner = ditProjectSonarScanner();
     scanner.setProperty("sonar.java.binaries", "target/classes");
-    scanner.setProperty("sonar.java.libraries", guavaJarPath + "," + fakeGuavaJarPath);
+    scanner.setProperty("sonar.java.libraries", guavaJarPathEscaped + "," + fakeGuavaJarPath);
     scanner.setProperty("sonar.verbose", "true");
     scanner.setProjectKey(projectKey);
 
@@ -146,7 +147,7 @@ public class JavaClasspathTest {
 
     scanner = ditProjectSonarScanner();
     scanner.setProperty("sonar.java.binaries", "target/classes");
-    scanner.setProperty("sonar.java.libraries", fakeGuavaJarPath + "," + guavaJarPath);
+    scanner.setProperty("sonar.java.libraries", fakeGuavaJarPath + "," + guavaJarPathEscaped);
     scanner.setProperty("sonar.verbose", "true");
     scanner.setProjectKey(projectKey);
     TestUtils.provisionProject(ORCHESTRATOR, projectKey, projectKey, "java", "dit-check");
@@ -158,12 +159,12 @@ public class JavaClasspathTest {
   public void should_support_the_old_binaries_and_libraries_properties() {
     SonarScanner scanner = ditProjectSonarScanner();
     scanner.setProperty("sonar.binaries", "target/classes");
-    scanner.setProperty("sonar.libraries", guavaJarPath);
+    scanner.setProperty("sonar.libraries", guavaJarPathEscaped);
     BuildResult buildResult = ORCHESTRATOR.executeBuildQuietly(scanner);
 
     assertThat(buildResult.getLogs()).contains(
       "sonar.binaries and sonar.libraries are not supported since version 4.0 of the SonarSource Java Analyzer," +
-      " please use sonar.java.binaries and sonar.java.libraries instead");
+        " please use sonar.java.binaries and sonar.java.libraries instead");
     assertThat(buildResult.isSuccess()).isFalse();
   }
 
