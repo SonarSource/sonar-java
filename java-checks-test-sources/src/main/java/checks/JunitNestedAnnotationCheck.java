@@ -79,4 +79,12 @@ public class JunitNestedAnnotationCheck { // Compliant, this class has some test
     }
   }
 
+  abstract class AbstractInner { // Compliant abstract classes do no not need to be annottated
+    protected abstract String abstractMethod();
+
+    @Test
+    void test() {
+    }
+  }
+
 }

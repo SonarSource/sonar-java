@@ -65,7 +65,8 @@ public class JunitNestedAnnotationCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isNestedClass(Symbol.TypeSymbol classSymbol) {
-    return Optional.ofNullable(classSymbol.owner())
+    return !classSymbol.isAbstract() &&
+      Optional.ofNullable(classSymbol.owner())
       .map(Symbol::isTypeSymbol)
       .orElse(false);
   }
