@@ -19,23 +19,23 @@
  */
 package org.sonar.java.model;
 
+import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.IVariableBinding;
-import org.eclipse.jdt.core.dom.Modifier;
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
 
@@ -153,21 +153,6 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
   @Override
   public ClassTree declaration() {
     return (ClassTree) super.declaration();
-  }
-
-  @Override
-  public boolean isSealed() {
-    return Modifier.isSealed(binding.getModifiers());
-  }
-
-  @Override
-  public boolean isNonSealed() {
-    return Modifier.isNonSealed(binding.getModifiers());
-  }
-
-  @Override
-  public List<Type> permitsTypes() {
-    return Collections.emptyList(); // FIXME
   }
 
   abstract class SpecialField extends Symbols.DefaultSymbol implements Symbol.VariableSymbol {

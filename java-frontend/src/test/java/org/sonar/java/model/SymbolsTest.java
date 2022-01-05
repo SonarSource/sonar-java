@@ -138,10 +138,6 @@ class SymbolsTest {
     assertThat(unknownTypeSymbol.interfaces()).isEmpty();
     assertThat(unknownTypeSymbol.memberSymbols()).isEmpty();
     assertThat(unknownTypeSymbol.lookupSymbols("whatever")).isEmpty();
-
-    assertThat(unknownTypeSymbol.isSealed()).isFalse();
-    assertThat(unknownTypeSymbol.isNonSealed()).isFalse();
-    assertThat(unknownTypeSymbol.permitsTypes()).isEmpty();
   }
 
   @Test

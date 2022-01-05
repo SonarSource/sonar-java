@@ -150,16 +150,6 @@ public interface Symbol {
     @Override
     ClassTree declaration();
 
-    boolean isSealed();
-
-    boolean isNonSealed();
-
-    /**
-     * Types permitted by this type in the context of Sealed Classes.
-     * @return an empty list if this type is not Sealed or if the permits clause is omitted.
-     */
-    List<Type> permitsTypes();
-
   }
 
   /**
