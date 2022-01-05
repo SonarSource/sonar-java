@@ -26,6 +26,7 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 
 import java.util.Objects;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -86,6 +87,43 @@ class JTypeSymbolTest {
         cu.sema.methodSymbol(m.methodBinding),
         cu.sema.typeSymbol(n.typeBinding)
       );
+  }
+
+  @Test
+  void sealedClass() {
+    JavaTree.CompilationUnitTreeImpl cu = test(
+      "sealed class A permits B,C,D {}\n" +
+        "final class B extends A {}\n" +
+        "non-sealed class C extends A {}\n" +
+        "sealed class D extends A permits E {}\n" +
+        "non-sealed class E extends D {}");
+    ClassTreeImpl a = (ClassTreeImpl) cu.types().get(0);
+    ClassTreeImpl b = (ClassTreeImpl) cu.types().get(1);
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(2);
+    ClassTreeImpl d = (ClassTreeImpl) cu.types().get(3);
+    ClassTreeImpl e = (ClassTreeImpl) cu.types().get(4);
+    Symbol.TypeSymbol aSymbol = a.symbol();
+    Symbol.TypeSymbol bSymbol = b.symbol();
+    Symbol.TypeSymbol cSymbol = c.symbol();
+    Symbol.TypeSymbol dSymbol = d.symbol();
+    Symbol.TypeSymbol eSymbol = e.symbol();
+
+    assertThat(aSymbol.isSealed()).isTrue();
+    assertThat(aSymbol.isNonSealed()).isFalse();
+    assertThat(aSymbol.permitsTypes()).containsExactly();
+
+    assertThat(bSymbol.isSealed()).isFalse();
+    assertThat(bSymbol.isNonSealed()).isFalse();
+
+    assertThat(cSymbol.isSealed()).isFalse();
+    assertThat(cSymbol.isNonSealed()).isTrue();
+
+    assertThat(dSymbol.isSealed()).isTrue();
+    assertThat(dSymbol.isNonSealed()).isFalse();
+    assertThat(aSymbol.permitsTypes()).containsExactly();
+
+    assertThat(eSymbol.isSealed()).isFalse();
+    assertThat(eSymbol.isNonSealed()).isTrue();
   }
 
   private static JavaTree.CompilationUnitTreeImpl test(String source) {

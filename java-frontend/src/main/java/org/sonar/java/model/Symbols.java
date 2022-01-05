@@ -230,6 +230,21 @@ public class Symbols {
     public Collection<Symbol> lookupSymbols(String name) {
       return Collections.emptyList();
     }
+
+    @Override
+    public boolean isSealed() {
+      return false;
+    }
+
+    @Override
+    public boolean isNonSealed() {
+      return false;
+    }
+
+    @Override
+    public List<Type> permitsTypes() {
+      return Collections.emptyList();
+    }
   }
 
   private static final class RootPackageSymbol extends UnknownSymbol {
