@@ -6,7 +6,7 @@ This example demonstrates how to write **Custom Rules** for SonarJava.
 If you are using SonarQube 8.9 LTS (latest release), use the following command to build it without any dependency to the current project status:
 
 ```
-mvn clean install -f pom_SQ_8_9_LTS
+mvn clean install -f pom_SQ_8_9_LTS.xml
 ```
 
 If you are using our previous SonarQube 7.9 LTS, use this one:
