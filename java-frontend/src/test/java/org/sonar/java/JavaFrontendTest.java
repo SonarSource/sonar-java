@@ -304,7 +304,7 @@ class JavaFrontendTest {
   @Test
   void test_preview_feature_in_max_supported_version_do_not_log_message() throws IOException {
     // When the the actual version match the maximum supported version (currently 17), the preview features flag is
-    // enable in the parser config and we made sure to be able to parse preview features, no need to log anything.
+    // enabled in the parser config and we made sure to be able to parse preview features, no need to log anything.
     logTester.setLevel(LoggerLevel.DEBUG);
     scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "17"),
       SONARLINT_RUNTIME, "class A { void m(String s) { switch(s) { case null: default: } } }");
