@@ -325,7 +325,7 @@ class JavaFrontendTest {
     assertTrue(logTester.logs(LoggerLevel.WARN).stream().anyMatch(l -> l.endsWith("Use of preview features have been detected during analysis. Enable DEBUG mode to see them.")));
     // We should keep this message or we won't have anything actionable in the debug logs to understand the warning
     assertTrue(logTester.logs(LoggerLevel.DEBUG).stream().anyMatch(l -> l.replace("\r\n", "\n").endsWith("Use of preview features:\n" +
-      "- Pattern Matching in Switch is a preview feature and disabled by default. Use --enable-preview to enable")));
+      "- Pattern Matching in Switch is a preview feature and disabled by default.")));
     assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(1);
     assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
   }

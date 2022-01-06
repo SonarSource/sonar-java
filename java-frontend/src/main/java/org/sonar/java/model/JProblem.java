@@ -31,6 +31,8 @@ import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 public class JProblem {
 
+  private static final String USE_ENABLE_PREVIEW = " Use --enable-preview to enable";
+
   private final String message;
   private final Type type;
 
@@ -49,6 +51,17 @@ public class JProblem {
 
   @Override
   public String toString() {
+    if (type == JProblem.Type.PREVIEW_FEATURE_USED) {
+      return cleanMessage(message);
+    }
+    return message;
+  }
+
+  private static String cleanMessage(String message) {
+    if (message.endsWith(USE_ENABLE_PREVIEW)) {
+      // Using --enable-preview is irrelevant in this context.
+      return message.substring(0, message.length() - USE_ENABLE_PREVIEW.length());
+    }
     return message;
   }
 
