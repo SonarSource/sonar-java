@@ -361,6 +361,16 @@ class LombokVal {
     Integer y = 42;
     return words.contains(y); // WithIssue
   }
+
+  void S5845(String s) {
+    lombok.val y = "Hello World";
+    org.junit.Assert.assertEquals(y, s); // NoIssue
+  }
+
+  boolean S5845_valid(String s) {
+    Integer y = 42;
+    org.junit.Assert.assertEquals(y, s); // WithIssue
+  }
 }
 
 class PrivateFieldOnlyUsedLocally {
