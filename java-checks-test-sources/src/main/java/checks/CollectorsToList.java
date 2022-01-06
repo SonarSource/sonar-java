@@ -71,6 +71,11 @@ public class CollectorsToList {
 
     List<String> list4 = Stream.of("A", "B", "C")
       .collect(Collectors.toCollection(ArrayList::new)); // Compliant because it's creating a specific list type instead of using toList
+
+    List<String> list5 = Stream.of("A", "B", "C")
+      .collect(Collectors.toList()); // Compliant, list5 needs to be mutable
+
+    list5.removeIf(s -> true);
   }
 
   void addX() {

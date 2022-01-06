@@ -59,7 +59,7 @@ public class CollectorsToListCheck extends AbstractMethodDetection implements Ja
 
   private static final MethodMatchers LIST_MODIFICATION_METHODS = MethodMatchers.create()
     .ofSubTypes("java.util.List")
-    .names("add", "addAll", "remove", "removeAll", "retainAll", "replaceAll", "set", "sort", "clear")
+    .names("add", "addAll", "remove", "removeAll", "retainAll", "replaceAll", "set", "sort", "clear", "removeIf")
     .withAnyParameters()
     .build();
 
