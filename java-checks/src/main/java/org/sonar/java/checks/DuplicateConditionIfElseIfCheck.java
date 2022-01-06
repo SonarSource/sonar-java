@@ -19,17 +19,18 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Collections;
 
 @Rule(key = "S1862")
 public class DuplicateConditionIfElseIfCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -50,7 +51,7 @@ public class DuplicateConditionIfElseIfCheck extends BaseTreeVisitor implements 
     StatementTree statement = tree.elseStatement();
     while (statement != null && statement.is(Tree.Kind.IF_STATEMENT)) {
       IfStatementTree ifStatement = (IfStatementTree) statement;
-      if (SyntacticEquivalence.areEquivalent(condition, ifStatement.condition())) {
+      if (areTriviallyEquivalent(condition, ifStatement.condition())) {
         context.reportIssue(
           this,
           ifStatement.condition(),
@@ -63,6 +64,22 @@ public class DuplicateConditionIfElseIfCheck extends BaseTreeVisitor implements 
     }
 
     super.visitIfStatement(tree);
+  }
+
+  private static boolean areTriviallyEquivalent(ExpressionTree condition1, ExpressionTree condition2) {
+    ExpressionTree cleanCondition1 = ExpressionUtils.skipParentheses(condition1);
+    ExpressionTree cleanCondition2 = ExpressionUtils.skipParentheses(condition2);
+    if (cleanCondition1.is(Tree.Kind.EQUAL_TO) && cleanCondition2.is(Tree.Kind.EQUAL_TO)) {
+      BinaryExpressionTree binary1 = (BinaryExpressionTree) cleanCondition1;
+      BinaryExpressionTree binary2 = (BinaryExpressionTree) cleanCondition2;
+      // a == b
+      return (areTriviallyEquivalent(binary1.leftOperand(), binary2.leftOperand())
+        && areTriviallyEquivalent(binary1.rightOperand(), binary2.rightOperand()))
+        // b == a
+        || (areTriviallyEquivalent(binary1.leftOperand(), binary2.rightOperand())
+        && areTriviallyEquivalent(binary1.rightOperand(), binary2.leftOperand()));
+    }
+    return SyntacticEquivalence.areEquivalent(cleanCondition1, cleanCondition2);
   }
 
 }
