@@ -479,6 +479,7 @@ public final class CheckList {
       ObjectFinalizeOverridenCallsSuperFinalizeCheck.class,
       ObjectFinalizeOverridenCheck.class,
       ObjectFinalizeOverridenNotPublicCheck.class,
+      OmitPermittedTypesCheck.class,
       OneClassInterfacePerFileCheck.class,
       OneDeclarationPerLineCheck.class,
       OpenSAML2AuthenticationBypassCheck.class,
