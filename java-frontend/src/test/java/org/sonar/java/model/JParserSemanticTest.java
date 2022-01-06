@@ -70,7 +70,10 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.ListTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
@@ -82,12 +85,13 @@ import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.sonar.java.model.assertions.TreeAssert.assertThat;
 import static org.sonar.java.model.assertions.TypeAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class JParserSemanticTest {
 
@@ -1012,12 +1016,13 @@ class JParserSemanticTest {
    * Sealed Classes
    * (Preview in Java 15) https://openjdk.java.net/jeps/360
    * (Second Preview in Java 16) https://openjdk.java.net/jeps/397
+   * (Final in Java 17) https://openjdk.java.net/jeps/409
    *
    * @see org.eclipse.jdt.core.dom.TypeDeclaration
    */
   @Test
   void declaration_sealed_class() {
-    JavaTree.CompilationUnitTreeImpl cu = test("sealed class Shape permits Circle, Rectangle { }");
+    JavaTree.CompilationUnitTreeImpl cu = test("sealed class Shape permits Circle, Package.Rectangle { }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     assertThat(c.modifiers()).hasSize(1);
     ModifierKeywordTree m = (ModifierKeywordTree) c.modifiers().get(0);
@@ -1025,7 +1030,16 @@ class JParserSemanticTest {
     assertThat(m.firstToken()).is("sealed");
 
     assertThat(c.permitsKeyword()).is("permits");
-    assertThat(c.permittedTypes()).hasSize(2);
+    ListTree<TypeTree> permittedTypes = c.permittedTypes();
+    assertThat(permittedTypes).hasSize(2);
+    TypeTree circle = permittedTypes.get(0);
+    TypeTree rectangle = permittedTypes.get(1);
+    assertThat(circle).isInstanceOf(IdentifierTree.class);
+    assertThat(((IdentifierTree) circle).name()).isEqualTo("Circle");
+    assertThat(rectangle).isInstanceOf(MemberSelectExpressionTree.class);
+    MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) rectangle;
+    assertThat(memberSelect.identifier().name()).isEqualTo("Rectangle");
+    assertThat(((IdentifierTree) memberSelect.expression()).name()).isEqualTo("Package");
 
     cu = test("non-sealed class Square extends Shape { }");
     c = (ClassTreeImpl) cu.types().get(0);
