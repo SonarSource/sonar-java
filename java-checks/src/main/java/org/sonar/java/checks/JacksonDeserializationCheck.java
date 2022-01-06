@@ -74,7 +74,7 @@ public class JacksonDeserializationCheck extends IssuableSubscriptionVisitor {
   private static boolean isAnnotationOnClassOrField(AnnotationTree annotationTree) {
     if (annotationTree.parent().is(Tree.Kind.MODIFIERS)) {
       Tree modifiers = annotationTree.parent();
-      return modifiers.parent().is(Tree.Kind.CLASS, Tree.Kind.VARIABLE);
+      return modifiers.parent().is(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.VARIABLE);
     }
     return false;
   }

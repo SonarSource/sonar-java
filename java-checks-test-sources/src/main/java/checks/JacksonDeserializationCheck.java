@@ -32,6 +32,10 @@ abstract class JacksonDeserializationPhoneNumber2 {
 
 }
 
+@JsonTypeInfo(use = MINIMAL_CLASS) // Noncompliant
+interface JacksonDeserializationPhoneNumber3 {
+}
+
 // test below is testing older versions of Jackson with different package name
 
 class JacksonDeserializationJacksonCodehaus {
