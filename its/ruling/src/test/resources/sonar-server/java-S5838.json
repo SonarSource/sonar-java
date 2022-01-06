@@ -35,6 +35,10 @@
 268,
 309,
 ],
+'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/authentication/JwtSerializerTest.java':[
+108,
+274,
+],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/authentication/OAuthCsrfVerifierTest.java':[
 86,
 ],
@@ -299,6 +303,7 @@
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/debt/DebtModelPluginRepositoryTest.java':[
 71,
 79,
+91,
 110,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/BulkIndexerTest.java':[
@@ -470,6 +475,9 @@
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/measure/ws/SearchHistoryActionTest.java':[
 117,
+],
+'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/metric/CoreCustomMetricsTest.java':[
+35,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/metric/ws/CreateActionTest.java':[
 89,
@@ -646,6 +654,19 @@
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/rule/index/RuleIndexTest.java':[
 279,
+734,
+736,
+737,
+755,
+756,
+757,
+868,
+869,
+870,
+894,
+895,
+896,
+897,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/rule/index/RuleIndexerTest.java':[
 73,
@@ -671,6 +692,7 @@
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/setting/DatabaseSettingLoaderTest.java':[
 52,
 58,
+65,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/setting/ThreadLocalSettingsTest.java':[
 78,
