@@ -26,12 +26,14 @@ import org.sonar.java.IllegalRuleParameterException;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -40,6 +42,11 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S3688")
 public class DisallowedClassCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  private static final MethodMatchers CLASS_FOR_NAME = MethodMatchers.create().ofSubTypes("java.lang.Class")
+    .names("forName")
+    .addParametersMatcher("java.lang.String")
+    .build();
 
   @RuleProperty(
     key = "className",
@@ -120,6 +127,16 @@ public class DisallowedClassCheck extends BaseTreeVisitor implements JavaFileSca
       checkIfDisallowed(memberSelectTypeName, tree);
     }
     super.visitMemberSelectExpression(tree);
+  }
+
+  @Override
+  public void visitMethodInvocation(MethodInvocationTree tree) {
+    if (CLASS_FOR_NAME.matches(tree)) {
+      tree.arguments().get(0).asConstant(String.class).ifPresent(
+        argumentAsString -> checkIfDisallowed(argumentAsString, tree)
+      );
+    }
+    super.visitMethodInvocation(tree);
   }
 
   private boolean checkIfDisallowed(String className, Tree tree) {
