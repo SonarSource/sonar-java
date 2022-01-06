@@ -19,13 +19,16 @@
  */
 package checks;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.io.File;
-import java.nio.file.Path;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatObject;
@@ -52,12 +55,24 @@ public class AssertJChainSimplificationCheckTest {
     return new HashMap<>();
   }
 
+  private HashMap<Object, Object> getHashMap() {
+    return new HashMap<>();
+  }
+
   private Object[] getArray() {
     return new Object[1];
   }
 
   private Collection<Object> getCollection() {
     return new ArrayList<>();
+  }
+
+  private List<Object> getList() {
+    return new ArrayList<>();
+  }
+
+  private Set<Object> getSet() {
+    return new HashSet<>();
   }
 
   private File getFile() {
@@ -262,6 +277,14 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(getCollection().contains(something)).isFalse(); // Noncompliant {{Use assertThat(actual).doesNotContain(expected) instead.}}
     assertThat(getCollection().containsAll(otherCollection)).isTrue(); // Noncompliant {{Use assertThat(actual).containsAll(expected) instead.}}
     assertThat(getCollection().containsAll(otherCollection)).isFalse(); // Compliant, no method "doesNotContainsAll"
+
+    // Same applies to Subtype of Collections.
+    assertThat(getList().size()).isZero(); // Noncompliant {{Use assertThat(actual).isEmpty() instead.}}
+    assertThat(getList().size()).isEqualTo(length); // Noncompliant {{Use assertThat(actual).hasSize(expected) instead.}}
+    assertThat(getList().contains(something)).isTrue(); // Noncompliant {{Use assertThat(actual).contains(expected) instead.}}
+    assertThat(getList().containsAll(otherCollection)).isTrue(); // Noncompliant {{Use assertThat(actual).containsAll(expected) instead.}}
+
+    assertThat(getSet().contains(something)).isTrue(); // Noncompliant {{Use assertThat(actual).contains(expected) instead.}}
   }
 
   void mapRelatedAssertionChains() {
@@ -296,6 +319,11 @@ public class AssertJChainSimplificationCheckTest {
 
     assertThat(getMap().get(key)).isEqualTo(value); // Noncompliant {{Use assertThat(actual).containsEntry(key, value) instead.}}
     assertThat(getMap().get(key)).isNotEqualTo(value); // Noncompliant {{Use assertThat(actual).doesNotContainEntry(key, value) instead.}}
+
+    // Same applies to subtypes of Map
+    assertThat(getHashMap().isEmpty()).isTrue(); // Noncompliant {{Use assertThat(actual).isEmpty() instead.}}
+    assertThat(getHashMap().keySet()).contains("foo"); // Noncompliant {{Use assertThat(actual).containsKey(expected) instead.}}
+    assertThat(getHashMap().get(key)).isEqualTo(value); // Noncompliant {{Use assertThat(actual).containsEntry(key, value) instead.}}
   }
 
   void fileRelatedAssertionChains() {

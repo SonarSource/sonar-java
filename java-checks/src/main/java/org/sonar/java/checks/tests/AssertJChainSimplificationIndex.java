@@ -302,7 +302,7 @@ public class AssertJChainSimplificationIndex {
       .names("compareTo").addParametersMatcher(MethodMatchers.ANY).build();
     public static final MethodMatchers COMPARE_TO_IGNORE_CASE = MethodMatchers.create().ofSubTypes(JAVA_LANG_STRING)
       .names("compareToIgnoreCase").addParametersMatcher(MethodMatchers.ANY).build();
-    public static final MethodMatchers CONTAINS = MethodMatchers.create().ofTypes(JAVA_LANG_STRING, JAVA_UTIL_COLLECTION)
+    public static final MethodMatchers CONTAINS = MethodMatchers.create().ofSubTypes(JAVA_LANG_STRING, JAVA_UTIL_COLLECTION)
       .names(AssertJChainSimplificationIndex.CONTAINS).addParametersMatcher(MethodMatchers.ANY).build();
     public static final MethodMatchers CONTENT_EQUALS = MethodMatchers.create().ofTypes(JAVA_LANG_STRING)
       .names("contentEquals").addParametersMatcher(MethodMatchers.ANY).build();
@@ -320,7 +320,7 @@ public class AssertJChainSimplificationIndex {
       .names("indexOf").addParametersMatcher(JAVA_LANG_STRING).build();
     public static final MethodMatchers IS_BLANK = MethodMatchers.create().ofTypes(JAVA_LANG_STRING)
       .names(AssertJChainSimplificationIndex.IS_BLANK).addWithoutParametersMatcher().build();
-    public static final MethodMatchers IS_EMPTY_GENERIC = MethodMatchers.create().ofTypes(JAVA_LANG_STRING, JAVA_UTIL_COLLECTION, JAVA_UTIL_MAP)
+    public static final MethodMatchers IS_EMPTY_GENERIC = MethodMatchers.create().ofSubTypes(JAVA_LANG_STRING, JAVA_UTIL_COLLECTION, JAVA_UTIL_MAP)
       .names(IS_EMPTY).addWithoutParametersMatcher().build();
     public static final MethodMatchers IS_EMPTY_OPTIONAL = MethodMatchers.create().ofTypes(JAVA_UTIL_OPTIONAL)
       .names(IS_EMPTY).addWithoutParametersMatcher().build();
@@ -366,19 +366,19 @@ public class AssertJChainSimplificationIndex {
       .names(AssertJChainSimplificationIndex.STARTS_WITH).addParametersMatcher(JAVA_LANG_STRING).build();
     public static final MethodMatchers PATH_ENDS_WITH = MethodMatchers.create().ofTypes(JAVA_NIO_FILE_PATH)
       .names(AssertJChainSimplificationIndex.ENDS_WITH).addParametersMatcher(JAVA_LANG_STRING).build();
-    public static final MethodMatchers COLLECTION_SIZE = MethodMatchers.create().ofTypes(JAVA_UTIL_COLLECTION, JAVA_UTIL_MAP)
+    public static final MethodMatchers COLLECTION_SIZE = MethodMatchers.create().ofSubTypes(JAVA_UTIL_COLLECTION, JAVA_UTIL_MAP)
       .names("size").addWithoutParametersMatcher().build();
-    public static final MethodMatchers COLLECTION_CONTAINS_ALL = MethodMatchers.create().ofTypes(JAVA_UTIL_COLLECTION)
+    public static final MethodMatchers COLLECTION_CONTAINS_ALL = MethodMatchers.create().ofSubTypes(JAVA_UTIL_COLLECTION)
       .names("containsAll").addParametersMatcher(MethodMatchers.ANY).build();
-    public static final MethodMatchers MAP_CONTAINS_KEY = MethodMatchers.create().ofTypes(JAVA_UTIL_MAP)
+    public static final MethodMatchers MAP_CONTAINS_KEY = MethodMatchers.create().ofSubTypes(JAVA_UTIL_MAP)
       .names(CONTAINS_KEY).addParametersMatcher(MethodMatchers.ANY).build();
-    public static final MethodMatchers MAP_CONTAINS_VALUE = MethodMatchers.create().ofTypes(JAVA_UTIL_MAP)
+    public static final MethodMatchers MAP_CONTAINS_VALUE = MethodMatchers.create().ofSubTypes(JAVA_UTIL_MAP)
       .names(CONTAINS_VALUE).addParametersMatcher(MethodMatchers.ANY).build();
-    public static final MethodMatchers MAP_GET = MethodMatchers.create().ofTypes(JAVA_UTIL_MAP)
+    public static final MethodMatchers MAP_GET = MethodMatchers.create().ofSubTypes(JAVA_UTIL_MAP)
       .names("get").addParametersMatcher(MethodMatchers.ANY).build();
-    public static final MethodMatchers MAP_KEY_SET = MethodMatchers.create().ofTypes(JAVA_UTIL_MAP)
+    public static final MethodMatchers MAP_KEY_SET = MethodMatchers.create().ofSubTypes(JAVA_UTIL_MAP)
       .names("keySet").addWithoutParametersMatcher().build();
-    public static final MethodMatchers MAP_VALUES = MethodMatchers.create().ofTypes(JAVA_UTIL_MAP)
+    public static final MethodMatchers MAP_VALUES = MethodMatchers.create().ofSubTypes(JAVA_UTIL_MAP)
       .names("values").addWithoutParametersMatcher().build();
   }
 
