@@ -28,6 +28,10 @@ class A {
     var.doSomething(new Integer(1));
     return new Unknown();
   }
+
+  void usedWithReflection() throws ClassNotFoundException {
+    Class c = Class.forName("java.lang.String"); // Noncompliant [[sc=15;ec=48]]
+  }
 }
 class B extends String { // Noncompliant [[sc=17;ec=23]]
   public B(Integer a) {
