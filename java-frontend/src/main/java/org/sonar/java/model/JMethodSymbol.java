@@ -119,16 +119,6 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     return thrownTypes;
   }
 
-  @Nullable
-  @Override
-  public MethodSymbol overriddenSymbol() {
-    if (overriddenSymbols == null) {
-      // only compute overridenSymbols once
-      overriddenSymbols();
-    }
-    return firstOverridenSymbol;
-  }
-
   @Override
   public List<MethodSymbol> overriddenSymbols() {
     if (overriddenSymbols == null) {

@@ -67,11 +67,6 @@ final class JInitializerBlockSymbol implements Symbol.MethodSymbol {
   }
 
   @Override
-  public Symbol.MethodSymbol overriddenSymbol() {
-    return null;
-  }
-
-  @Override
   public List<Symbol.MethodSymbol> overriddenSymbols() {
     return Collections.emptyList();
   }
