@@ -153,7 +153,6 @@ class SymbolsTest {
     assertThat(unknownMethodSymbol.parameterTypes()).isEmpty();
     assertThat(unknownMethodSymbol.declarationParameters()).isEmpty();
     assertThat(unknownMethodSymbol.thrownTypes()).isEmpty();
-    assertThat(unknownMethodSymbol.overriddenSymbol()).isNull();
     assertThat(unknownMethodSymbol.overriddenSymbols()).isEmpty();
   }
 

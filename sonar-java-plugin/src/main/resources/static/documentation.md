@@ -97,6 +97,10 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 ### API changes
 
+#### **7.7**
+
+* **Method `MethodSymbol.overriddenSymbol()` was dropped.**. Deprecated in 6.15 and planned to be dropped in 7.0, `overriddenSymbol()` has now been removed from the API. Use `MethodSymbol.overriddenSymbols()` instead.
+
 #### **7.6**
 
 * New method: `MethodSymbol.declarationParameters()`. Use this method to get the list of parameters symbols of this method. Placeholders symbols are created in case the declaration is not available (coming from an external dependency).

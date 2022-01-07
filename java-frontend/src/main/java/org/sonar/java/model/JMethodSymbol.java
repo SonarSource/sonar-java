@@ -57,10 +57,9 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
   private List<Type> thrownTypes;
 
   /**
-   * Cache for {@link #overriddenSymbol()}.
+   * Cache for {@link #overriddenSymbols()}.
    */
   private List<MethodSymbol> overriddenSymbols;
-  private MethodSymbol firstOverridenSymbol;
 
   private final String signature;
 
@@ -119,23 +118,10 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     return thrownTypes;
   }
 
-  @Nullable
-  @Override
-  public MethodSymbol overriddenSymbol() {
-    if (overriddenSymbols == null) {
-      // only compute overridenSymbols once
-      overriddenSymbols();
-    }
-    return firstOverridenSymbol;
-  }
-
   @Override
   public List<MethodSymbol> overriddenSymbols() {
     if (overriddenSymbols == null) {
       overriddenSymbols = findOverriddenSymbols();
-      if (!overriddenSymbols.isEmpty()) {
-        firstOverridenSymbol = overriddenSymbols.get(0);
-      }
     }
     return overriddenSymbols;
   }

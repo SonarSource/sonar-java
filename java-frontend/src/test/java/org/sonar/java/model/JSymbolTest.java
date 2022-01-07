@@ -194,7 +194,6 @@ class JSymbolTest {
     assertThat(initializerBlock.declaration()).isNull();
     assertThat(initializerBlock.returnType()).isUnknown();
     assertThat(initializerBlock).isOfUnknownType();
-    assertThat(initializerBlock.overriddenSymbol()).isNull();
     assertThat(initializerBlock.overriddenSymbols()).isEmpty();
     assertThat(initializerBlock.usages()).isEmpty();
     assertThat(initializerBlock.parameterTypes()).isEmpty();
