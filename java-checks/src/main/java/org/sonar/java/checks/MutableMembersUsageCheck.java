@@ -200,6 +200,10 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
   }
 
   private static boolean isMutableType(ExpressionTree expressionTree) {
+    if (expressionTree.is(Tree.Kind.NULL_LITERAL)) {
+      // In case of incomplete semantic, working with "nulltype" returns strange results, we can return early as the null will never be mutable anyway.
+      return false;
+    }
     if (expressionTree.is(Tree.Kind.METHOD_INVOCATION) && UNMODIFIABLE_COLLECTION_CALL.matches((MethodInvocationTree) expressionTree)) {
       return false;
     }
