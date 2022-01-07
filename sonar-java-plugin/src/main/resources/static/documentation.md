@@ -99,7 +99,7 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 #### **7.7**
 
-* **Method `MethodSymbol.overriddenSymbol()` was dropped.**. Despite, the changes described in version 7.0, `overriddenSymbol()` was still shipped as part of the API because it was still used by sonar-security. As this is no longer the case, the method has now been safely removed.
+* **Method `MethodSymbol.overriddenSymbol()` was dropped.**. Deprecated in 6.15 and planned to be dropped in 7.0, `overriddenSymbol()` has now been removed from the API. Use `MethodSymbol.overriddenSymbols()` instead.
 
 #### **7.6**
 
