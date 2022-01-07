@@ -87,6 +87,10 @@ import org.sonar.java.model.expression.ParenthesizedTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.java.model.expression.TypeCastExpressionTreeImpl;
 import org.sonar.java.model.expression.VarTypeTreeImpl;
+import org.sonar.java.model.pattern.DefaultPatternTreeImpl;
+import org.sonar.java.model.pattern.GuardedPatternTreeImpl;
+import org.sonar.java.model.pattern.NullPatternTreeImpl;
+import org.sonar.java.model.pattern.TypePatternTreeImpl;
 import org.sonar.java.model.statement.AssertStatementTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.BreakStatementTreeImpl;
@@ -124,6 +128,7 @@ import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.ModuleDeclarationTree;
 import org.sonar.plugins.java.api.tree.ModuleDirectiveTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
+import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
@@ -1369,15 +1374,16 @@ public class JParser {
       convertExpression(expression),
       firstTokenAfter(expression, TerminalTokens.TokenNameRPAREN),
       firstTokenAfter(expression, TerminalTokens.TokenNameLBRACE),
-      convertSwitchStatements(e.statements()),
+      convertSwitchStatements(e.statements(), e.getAST().isPreviewEnabled()),
       lastTokenIn(e, TerminalTokens.TokenNameRBRACE)
     );
   }
 
-  private List<CaseGroupTreeImpl> convertSwitchStatements(List<?> list) {
+  private List<CaseGroupTreeImpl> convertSwitchStatements(List<?> list, boolean previewEnabled) {
     List<CaseGroupTreeImpl> groups = new ArrayList<>();
     List<CaseLabelTreeImpl> caselabels = null;
     StatementListTreeImpl body = null;
+
     for (Object o : list) {
       if (o instanceof SwitchCase) {
         if (caselabels == null) {
@@ -1388,7 +1394,9 @@ public class JParser {
         SwitchCase c = (SwitchCase) o;
         List<ExpressionTree> expressions = new ArrayList<>();
         for (Object oo : c.expressions()) {
-          expressions.add(convertExpression((Expression) oo));
+          Expression e = (Expression) oo;
+          ExpressionTree expression = previewEnabled ? convertExpressionFromCase(e) : convertExpression(e);
+          expressions.add(expression);
         }
 
         caselabels.add(new CaseLabelTreeImpl(
@@ -1408,6 +1416,38 @@ public class JParser {
       groups.add(new CaseGroupTreeImpl(caselabels, body));
     }
     return groups;
+  }
+
+  private ExpressionTree convertExpressionFromCase(Expression e) {
+    if (e.getNodeType() == ASTNode.CASE_DEFAULT_EXPRESSION) {
+      return new DefaultPatternTreeImpl(firstTokenIn(e, TerminalTokens.TokenNamedefault));
+    }
+    if (e.getNodeType() == ASTNode.NULL_LITERAL) {
+      return new NullPatternTreeImpl((LiteralTreeImpl) convertExpression(e));
+    }
+    if (e instanceof Pattern) {
+      return convertPattern((Pattern) e);
+    }
+    return convertExpression(e);
+  }
+
+  private PatternTree convertPattern(Pattern p) {
+    switch (p.getNodeType()) {
+      case ASTNode.TYPE_PATTERN:
+        return new TypePatternTreeImpl(convertVariable(((TypePattern) p).getPatternVariable()));
+      case ASTNode.GUARDED_PATTERN:
+        GuardedPattern g = (GuardedPattern) p;
+        PatternTree innerPattern = convertPattern(g.getPattern());
+        SyntaxToken andOperator = firstTokenBefore(g.getExpression(), TerminalTokens.TokenNameAND_AND);
+        ExpressionTree guardedExpressionTree = convertExpression(g.getExpression());
+        return new GuardedPatternTreeImpl(innerPattern, andOperator, guardedExpressionTree);
+      case ASTNode.NULL_PATTERN:
+        // FIXME no idea how to reach this one - seems to be possible only with badly constructed AST
+        // fall-through
+      default:
+        // JEP-405 (not released as part of any JDK yet): ArrayPattern, RecordPattern
+        throw new IllegalStateException(ASTNode.nodeClassForType(p.getNodeType()).toString());
+    }
   }
 
   private SynchronizedStatementTreeImpl convertSynchronized(SynchronizedStatement e) {
@@ -2186,7 +2226,7 @@ public class JParser {
       convertExpression(expr),
       firstTokenAfter(expr, TerminalTokens.TokenNameRPAREN),
       firstTokenAfter(expr, TerminalTokens.TokenNameLBRACE),
-      convertSwitchStatements(e.statements()),
+      convertSwitchStatements(e.statements(), e.getAST().isPreviewEnabled()),
       lastTokenIn(e, TerminalTokens.TokenNameRBRACE)
     );
   }

@@ -1,6 +1,6 @@
 /*
  * SonarQube Java
- * Copyright (C) 2012-2022 SonarSource SA
+ * Copyright (C) 2012-2021 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,15 +19,22 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import org.junit.jupiter.api.Test;
+/**
+ * Typed Pattern tree, introduced with Java 17 and JEP-406
+ *
+ * <pre>
+ *   switch(o) {
+ *     case {@link #patternVariable()} : ...
+ *     case {@link #patternVariable()} -> ...
+ *   }
+ * </pre>
+ *
+ * @since Java 17
+ * @deprecated Preview Feature
+ */
+@Deprecated(since = "7.7", forRemoval = false)
+public interface TypePatternTree extends PatternTree {
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-class TreeTest {
-
-  @Test
-  void test() {
-    assertThat(Tree.Kind.values()).hasSize(127);
-  }
+  VariableTree patternVariable();
 
 }

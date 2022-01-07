@@ -156,4 +156,32 @@ public interface TreeVisitor {
   void visitProvidesDirective(ProvidesDirectiveTree tree);
 
   void visitArrayDimension(ArrayDimensionTree tree);
+
+  /**
+   * @since Java 17
+   * @deprecated Preview Feature
+   */
+  @Deprecated(since = "7.7", forRemoval = false)
+  void visitTypePattern(TypePatternTree tree);
+
+  /**
+   * @since Java 17
+   * @deprecated Preview Feature
+   */
+  @Deprecated(since = "7.7", forRemoval = false)
+  void visitNullPattern(NullPatternTree tree);
+
+  /**
+   * @since Java 17
+   * @deprecated Preview Feature
+   */
+  @Deprecated(since = "7.7", forRemoval = false)
+  void visitDefaultPattern(DefaultPatternTree tree);
+
+  /**
+   * @since Java 17
+   * @deprecated Preview Feature
+   */
+  @Deprecated(since = "7.7", forRemoval = false)
+  void visitGuardedPattern(GuardedPatternTree tree);
 }

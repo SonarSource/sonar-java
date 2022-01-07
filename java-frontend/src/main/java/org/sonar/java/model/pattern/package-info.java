@@ -1,6 +1,6 @@
 /*
  * SonarQube Java
- * Copyright (C) 2012-2022 SonarSource SA
+ * Copyright (C) 2012-2021 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,17 +17,8 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.java.api.tree;
+@javax.annotation.ParametersAreNonnullByDefault
+@MethodsAreNonnullByDefault
+package org.sonar.java.model.pattern;
 
-import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-class TreeTest {
-
-  @Test
-  void test() {
-    assertThat(Tree.Kind.values()).hasSize(127);
-  }
-
-}
+import org.sonar.plugins.java.api.tree.MethodsAreNonnullByDefault;
