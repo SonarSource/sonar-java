@@ -56,7 +56,9 @@ public class StaticMemberAccessCheck extends IssuableSubscriptionVisitor {
     if (symbol.isStatic()  && !isListOrSetOf(mse)) {
       ExpressionTree expression = mse.expression();
       Type staticType = symbol.owner().type();
-      if (!expression.symbolType().erasure().equals(staticType.erasure())) {
+      Type expressionType = expression.symbolType();
+      if (!staticType.isUnknown() && !expressionType.isUnknown()
+        && !expressionType.erasure().equals(staticType.erasure())) {
         QuickFixHelper.newIssue(context)
           .forRule(this)
           .onTree(mse.identifier())
