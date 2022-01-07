@@ -50,22 +50,28 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
+    SymbolMetadata metadata = methodSymbol.metadata();
     if (!methodSymbol.isPublic()
       || !Boolean.FALSE.equals(methodTree.isOverriding())
-      || isOverloaded(methodSymbol)) {
+      || isOverloaded(methodSymbol)
+      || hasUnknownAnnotation(metadata)) {
       return;
     }
 
-    boolean springInjectionAnnotated = isSpringInjectionAnnotated(methodSymbol.metadata());
+    boolean springInjectionAnnotated = isSpringInjectionAnnotated(metadata);
     methodTree.parameters().stream()
       .map(VariableTree::symbol)
-      .filter(p -> p.type().isClass() && !p.type().symbol().isEnum() && !p.type().is("java.lang.String"))
+      .filter(p -> p.type().isClass() && !p.type().symbol().isEnum() && !isStringType(p.type()))
       .filter(p -> !(springInjectionAnnotated && p.type().is("java.util.Collection")))
       .forEach(p -> handleParameter(p, springInjectionAnnotated));
   }
 
   private static boolean isOverloaded(Symbol.MethodSymbol methodSymbol) {
     return ((Symbol.TypeSymbol) methodSymbol.owner()).lookupSymbols(methodSymbol.name()).size() > 1;
+  }
+
+  private static boolean isStringType(Type type) {
+    return type.isUnknown() || type.is("java.lang.String");
   }
 
   private void handleParameter(Symbol parameter, boolean springInjectionAnnotated) {
@@ -222,5 +228,9 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
     return metadata.isAnnotatedWith("org.springframework.beans.factory.annotation.Autowired")
       || metadata.isAnnotatedWith("javax.inject.Inject")
       || metadata.isAnnotatedWith("javax.annotation.Resource");
+  }
+
+  private static boolean hasUnknownAnnotation(SymbolMetadata symbolMetadata) {
+    return symbolMetadata.annotations().stream().anyMatch(annotation -> annotation.symbol().isUnknown());
   }
 }
