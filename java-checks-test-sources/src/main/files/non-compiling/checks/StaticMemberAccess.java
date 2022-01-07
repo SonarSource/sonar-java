@@ -22,7 +22,7 @@ class StaticMemberAccessChild extends StaticMemberAccessParent {
 }
 
 class StaticMemberAccessCheckWithUnknown {
-  public unknownGenericType() {
+  public void unknownGenericType() {
     Stream.Builder<Unknown> metrics = Stream.builder(); // Compliant, type is unknown
   }
 }
