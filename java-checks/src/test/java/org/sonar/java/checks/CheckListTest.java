@@ -80,7 +80,7 @@ class CheckListTest {
         count++;
       }
     }
-    assertThat(CheckList.getChecks().size()).isEqualTo(count + SE_CHEKS.size());
+    assertThat(CheckList.getChecks()).hasSize(count + SE_CHEKS.size());
   }
 
   private static class CustomRulesDefinition implements RulesDefinition {

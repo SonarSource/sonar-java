@@ -102,7 +102,7 @@ class RulesSanityTest {
 
     File moduleBaseDir = new File(".").getCanonicalFile().getParentFile();
     List<InputFile> inputFiles = getJavaInputFiles(moduleBaseDir);
-    assertThat(inputFiles.size()).isGreaterThanOrEqualTo(checks.size());
+    assertThat(inputFiles).hasSizeGreaterThanOrEqualTo(checks.size());
 
     List<File> classpath = getClassPath();
     assertThat(classpath).isNotEmpty();
