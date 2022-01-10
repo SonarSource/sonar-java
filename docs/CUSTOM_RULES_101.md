@@ -329,7 +329,7 @@ From the symbol, it is then pretty easy to retrieve **the type of its first para
 public void visitNode(Tree tree) {
   MethodTree method = (MethodTree) tree;
   if (method.parameters().size() == 1) {
-    MethodSymbol symbol = method.symbol();
+    Symbol.MethodSymbol symbol = method.symbol();
     Type firstParameterType = symbol.parameterTypes().get(0);
     Type returnType = symbol.returnType().type();
     reportIssue(method.simpleName(), "Never do that!");
@@ -344,7 +344,7 @@ Since the rule should only raise an issue when these two types are the same, we 
 public void visitNode(Tree tree) {
   MethodTree method = (MethodTree) tree;
   if (method.parameters().size() == 1) {
-    MethodSymbol symbol = method.symbol();
+    Symbol.MethodSymbol symbol = method.symbol();
     Type firstParameterType = symbol.parameterTypes().get(0);
     Type returnType = symbol.returnType().type();
     if (returnType.is(firstParameterType.fullyQualifiedName())) {
