@@ -1394,9 +1394,7 @@ public class JParser {
         SwitchCase c = (SwitchCase) o;
         List<ExpressionTree> expressions = new ArrayList<>();
         for (Object oo : c.expressions()) {
-          Expression e = (Expression) oo;
-          ExpressionTree expression = previewEnabled ? convertExpressionFromCase(e) : convertExpression(e);
-          expressions.add(expression);
+          expressions.add(convertExpressionFromCase((Expression) oo));
         }
 
         caselabels.add(new CaseLabelTreeImpl(
@@ -1442,8 +1440,8 @@ public class JParser {
         ExpressionTree guardedExpressionTree = convertExpression(g.getExpression());
         return new GuardedPatternTreeImpl(innerPattern, andOperator, guardedExpressionTree);
       case ASTNode.NULL_PATTERN:
-        // FIXME no idea how to reach this one - seems to be possible only with badly constructed AST
-        // fall-through
+        // It is not clear how to reach this one, it seems to be possible only with badly constructed AST
+        // fall-through. Do nothing for now.
       default:
         // JEP-405 (not released as part of any JDK yet): ArrayPattern, RecordPattern
         throw new IllegalStateException(ASTNode.nodeClassForType(p.getNodeType()).toString());

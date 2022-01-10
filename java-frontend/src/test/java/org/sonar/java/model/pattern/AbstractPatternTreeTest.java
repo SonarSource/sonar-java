@@ -33,6 +33,8 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.GuardedPatternTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NullPatternTree;
+import org.sonar.plugins.java.api.tree.ParenthesizedTree;
+import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -179,6 +181,48 @@ class AbstractPatternTreeTest {
     assertThat(guardedPattern.symbolType()).isUnknown();
     assertThat(guardedPattern.asConstant()).isEmpty();
     assertThat(guardedPattern.asConstant(Object.class)).isEmpty();
+  }
+
+  @Test
+  void test_guarded_pattern_parenthesized() {
+    String code = "switch (shape) {\n"
+      + "    case (Rectangle r) && (r.volume() > 42) -> String.format(\"big rectangle of volume %d!\", r.volume());\n"
+      + "    default -> \"default case\";\n"
+      + "  }";
+    SwitchExpressionTree s = switchExpressionTree("Shape shape", code);
+    List<CaseLabelTree> labels = s.cases().get(0).labels();
+    assertThat(labels).hasSize(1);
+    List<ExpressionTree> expressions = labels.get(0).expressions();
+    assertThat(expressions).hasSize(1);
+    ExpressionTree expression = expressions.get(0);
+    assertThat(expression).is(Tree.Kind.GUARDED_PATTERN);
+    GuardedPatternTree guardedPattern = (GuardedPatternTree) expression;
+    assertThat(guardedPattern.pattern()).is(Tree.Kind.TYPE_PATTERN);
+    ExpressionTree guardedExpression = guardedPattern.expression();
+    assertThat(guardedExpression).is(Tree.Kind.PARENTHESIZED_EXPRESSION);
+    assertThat(((ParenthesizedTree) guardedExpression).expression()).is(Tree.Kind.GREATER_THAN);
+  }
+
+  @Test
+  void test_guarded_pattern_parenthesized_nested() {
+    String code = "switch (shape) {\n"
+      + "    case (Rectangle r && r.volume() > 42) && false -> String.format(\"big rectangle of volume %d!\", r.volume());\n"
+      + "    default -> \"default case\";\n"
+      + "  }";
+    SwitchExpressionTree s = switchExpressionTree("Shape shape", code);
+    List<CaseLabelTree> labels = s.cases().get(0).labels();
+    assertThat(labels).hasSize(1);
+    List<ExpressionTree> expressions = labels.get(0).expressions();
+    assertThat(expressions).hasSize(1);
+    ExpressionTree expression = expressions.get(0);
+    assertThat(expression).is(Tree.Kind.GUARDED_PATTERN);
+    GuardedPatternTree guardedPattern = (GuardedPatternTree) expression;
+    PatternTree nestedPattern = guardedPattern.pattern();
+    assertThat(nestedPattern).is(Tree.Kind.GUARDED_PATTERN);
+    GuardedPatternTree nestedGuardedPattern = (GuardedPatternTree) nestedPattern;
+    assertThat(nestedGuardedPattern.pattern()).is(Tree.Kind.TYPE_PATTERN);
+    assertThat(nestedGuardedPattern.expression()).is(Tree.Kind.GREATER_THAN);
+    assertThat(guardedPattern.expression()).is(Tree.Kind.BOOLEAN_LITERAL);
   }
 
   @Test
