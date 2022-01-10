@@ -21,13 +21,15 @@ public class MyJavaRulesDefinition implements RulesDefinition {
   private static final String RESOURCE_BASE_PATH = "org/sonar/l10n/java/rules/java";
 
   public static final String REPOSITORY_KEY = "mycompany-java";
+  public static final String REPOSITORY_NAME = "MyCompany Custom Repository";
 
   // Add the rule keys of the rules which need to be considered as template-rules
   private static final Set<String> RULE_TEMPLATES_KEY = Collections.emptySet();
 
+
   @Override
   public void define(Context context) {
-    NewRepository repository = context.createRepository(REPOSITORY_KEY, "java").setName("MyCompany Custom Repository");
+    NewRepository repository = context.createRepository(REPOSITORY_KEY, "java").setName(REPOSITORY_NAME);
 
     RuleMetadataLoader ruleMetadataLoader = new RuleMetadataLoader(RESOURCE_BASE_PATH);
 

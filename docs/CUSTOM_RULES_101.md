@@ -429,6 +429,7 @@ We can now add metadata to `src/main/resources/org/sonar/l10n/java/rules/java/My
 ```
 With this example, we have a concise but descriptive `title` for our rule, the `type` of issue it highlights, its `status` (ready or deprecated), the `tags` that should bring it up in a search and the `severity` of the issue.
 
+
 ### Rule Activation
 The second thing to do is to activate the rule within the plugin. To do so, open class `RulesList` (`org.sonar.samples.java.RulesList`). In this class, you will notice methods `getJavaChecks()` and `getJavaTestChecks()`. These methods are used to register our rules with alongside the rule of the Java plugin. Note that rules registered in `getJavaChecks()` will only be played against source files, while rules registered in `getJavaTestChecks()` will only be played against test files. To register the rule, simply add the rule class to the list builder, as in the following code snippet:
 
@@ -441,6 +442,7 @@ public static List<Class<? extends JavaCheck>> getJavaChecks() {
 }
 
 ```
+
 
 ### Rule Registrar
 
@@ -502,6 +504,22 @@ class MyJavaFileCheckRegistrarTest {
 }
 ```
 
+### Rules repository
+
+With the actions taken above, your rule is activated, registered and should be ready to test.
+But before doing so, you may want to customize the repository name your rule belongs to.
+
+This repository's key and name are defined in `MyJavaRulesDefinition.java` and can be customized to suit your needs.
+```java
+public class MyJavaRulesDefinition implements RulesDefinition {
+  // ...
+  public static final String REPOSITORY_KEY = "fellowship-inc";
+
+  public static final String REPOSITORY_NAME = "The Fellowship's custom rules";
+  // ...
+}
+```
+
 ## Testing a custom plugin
 
 >
@@ -549,7 +567,7 @@ Then, grab the jar file `java-custom-rules-example-1.0.0-SNAPSHOT.jar` from the 
 
 Now, (re-)start your SonarQube instance, log as admin and navigate to the ***Rules*** tab.
 
-From there, under the language section, select "**Java**", and then "**MyCompany Custom Repository**" under the repository section. Your rule should now be visible (with all the other sample rules). 
+From there, under the language section, select "**Java**", and then "**The Fellowship's custom rules**" (or "**MyCompany Custom Repository**" if you did not change it) under the repository section. Your rule should now be visible (with all the other sample rules). 
 
 ![Selected rules](resources/rules_selected.png)
 
