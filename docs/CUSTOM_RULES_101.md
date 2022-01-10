@@ -385,9 +385,35 @@ While annotation provides a handy way to document the rule, static documentation
 Incidentally, static documentation is also the way rules in the sonar-java analyzer are described.
 
 To provide metadata for your rule, you need to create an HTML file, where you can provide an extended textual description of the rule, and a JSON file, with the actual metadata.
-In the case of `MyFirstCustomCheck`, you will head to the `src/main/resources/org/sonar/l10n/java/rules/java/` folder to create `MyFirstCustomCheck.html` and `MyFirstCustomCheck.json`.
-Please note that both files are needed to register our rule but the HTML one can be left empty.
-We can now add metadata to `src/main/resources/org/sonar/l10n/java/rules/java/MyFirstCustomCheck.json`:
+In the case of `MyFirstCustomRule`, you will head to the `src/main/resources/org/sonar/l10n/java/rules/java/` folder to create `MyFirstCustomRule.html` and `MyFirstCustomRule.json`.
+
+We first need to populate the HTML file with some information that will help developers fix the issue.
+```html
+<p>For a method having a single parameter, the types of its return value and its parameter should never be the same.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+class MyClass {
+  int doSomething(int a) { // Noncompliant
+    return 42;
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+class MyClass {
+  int doSomething() { // Compliant
+    return 42;
+  }
+  long doSomething(int a) { // Compliant
+    return 42L;
+  }
+}
+</pre>
+```
+
+We can now add metadata to `src/main/resources/org/sonar/l10n/java/rules/java/MyFirstCustomRule.json`:
 ```json
 {
   "title": "Return type and parameter of a method should not be the same",
@@ -402,7 +428,7 @@ We can now add metadata to `src/main/resources/org/sonar/l10n/java/rules/java/My
 }
 ```
 With this example, we have a concise but descriptive `title` for our rule, the `type` of issue it highlights, its `status` (ready or deprecated), the `tags` that should bring it up in a search and the `severity` of the issue.
-Further information can be fed to SonarQube by describing the context in the HTML file or by adding fields in the JSON document but this minimal example should be enough to register our rule.
+
 ### Rule Activation
 The second thing to do is to activate the rule within the plugin. To do so, open class `RulesList` (`org.sonar.samples.java.RulesList`). In this class, you will notice methods `getJavaChecks()` and `getJavaTestChecks()`. These methods are used to register our rules with alongside the rule of the Java plugin. Note that rules registered in `getJavaChecks()` will only be played against source files, while rules registered in `getJavaTestChecks()` will only be played against test files. To register the rule, simply add the rule class to the list builder, as in the following code snippet:
 
