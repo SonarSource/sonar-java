@@ -9,12 +9,6 @@ If you are using SonarQube 8.9 LTS (latest release), use the following command t
 mvn clean install -f pom_SQ_8_9_LTS.xml
 ```
 
-If you are using our previous SonarQube 7.9 LTS, use this one:
-
-```
-mvn clean install -f pom_SQ_7_9_LTS.xml
-```
-
 For more details about how to write custom rules, please refer to the official tutorial, [Writing Custom Java Rules 101](../CUSTOM_RULES_101.md).
 
 ### License

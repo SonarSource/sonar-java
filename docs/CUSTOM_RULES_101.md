@@ -41,7 +41,6 @@ A custom plugin is a Maven project, and before diving into code, it is important
 
 In our case, we have 3 of them:
 * `pom.xml`: use a snapshot version of the Java Analyzer
-* `pom_SQ_7_9_LTS.xml`: self-contained `pom` file, configured with dependencies matching SonarQube `7.9 LTS` requirements
 * `pom_SQ_8_9_LTS.xml`: self-contained `pom` file, configured with dependencies matching SonarQube `8.9 LTS` requirements
 
 These 3 `pom`s correspond different use-cases, depending on which instance of SonarQube you will target with your custom-rules plugin. In this tutorial, **we will only use the file named `pom_SQ_8_9_LTS.xml`**, as it is completely independent from the build of the Java Analyzer, is self-contained, and will target the latest release of SonarQube.
@@ -561,7 +560,6 @@ Then, grab the jar file `java-custom-rules-example-1.0.0-SNAPSHOT.jar` from the 
 >
 > Before going further, be sure to have the adequate version of the SonarQube Java Analyzer with your SonarQube instance. The dependency over the Java Analyzer of our custom plugin is defined in its `pom`, as seen in the first chapter of this tutorial. We consequently provide two distinct `pom` files mapping both the `7.9` previous LTS version of SonarQube, as well as the latest LTS release, version `8.9`.
 >
-> * If your instance is SonarQube `7.9` version, make sure to update the Java Analyzer to its latest compatible version through the SonarQube marketplace (it should be version `6.3.2.22818`), and then use this the file `pom_SQ_7_9_LTS.xml` file to build the project. 
 > * If you are using a SonarQube `8.9` and updated to the latest LTS already, then you won't have the possibility to update the Java Analyzer independently anymore. Consequently, use the file `pom_SQ_8_9_LTS.xml` to build the project.
 >
 
