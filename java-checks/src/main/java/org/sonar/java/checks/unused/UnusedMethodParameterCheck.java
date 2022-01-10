@@ -30,7 +30,6 @@ import org.sonar.java.checks.helpers.Javadoc;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.helpers.UnresolvedIdentifiersVisitor;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -40,6 +39,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -51,6 +51,7 @@ import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 @Rule(key = "S1172")
 public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
@@ -91,7 +92,7 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
     for (VariableTree parameter : methodTree.parameters()) {
       Symbol symbol = parameter.symbol();
       if (symbol.usages().isEmpty()
-        && !symbol.metadata().isAnnotatedWith(AUTHORIZED_ANNOTATION)
+        && !isAnnotatedWithAuthorizedAnnotation(symbol)
         && !isStrutsActionParameter(parameter)
         && (!overridableMethod || undocumentedParameters.contains(symbol.name()))) {
         unused.add(parameter.simpleName());
@@ -105,6 +106,11 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
     if (!unused.isEmpty()) {
       reportUnusedParameters(methodTree, unused);
     }
+  }
+
+  private static boolean isAnnotatedWithAuthorizedAnnotation(Symbol symbol) {
+    SymbolMetadata metadata = symbol.metadata();
+    return metadata.isAnnotatedWith(AUTHORIZED_ANNOTATION) || hasUnknownAnnotation(metadata);
   }
 
   private void reportUnusedParameters(MethodTree methodTree, List<IdentifierTree> unused) {
@@ -216,5 +222,9 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
     return tree.symbol().usages().stream()
       // no need to check which side of method reference, from an identifierTree, it's the only possibility as direct parent
       .anyMatch(identifier -> identifier.parent().is(Tree.Kind.METHOD_REFERENCE));
+  }
+
+  private static boolean hasUnknownAnnotation(SymbolMetadata symbolMetadata) {
+    return symbolMetadata.annotations().stream().anyMatch(annotation -> annotation.symbol().isUnknown());
   }
 }
