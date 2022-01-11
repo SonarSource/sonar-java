@@ -84,7 +84,7 @@ public class JavaRulingTest {
   public static Orchestrator orchestrator = Orchestrator.builderEnv()
     .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE[8.9]"))
     .addPlugin(FileLocation.byWildcardMavenFilename(new File("../../sonar-java-plugin/target"), "sonar-java-plugin-*.jar"))
-    .addPlugin(MavenLocation.of("org.sonarsource.sonar-lits-plugin","sonar-lits-plugin", "0.9.0.1682"))
+    .addPlugin(MavenLocation.of("org.sonarsource.sonar-lits-plugin", "sonar-lits-plugin", "0.10.0.2181"))
     .build();
 
   @BeforeClass
@@ -267,9 +267,9 @@ public class JavaRulingTest {
       .setProperty("sonar.java.performance.measure.path", "target/performance/sonar.java.performance.measure.json")
       .setProperty("sonar.import_unknown_files", "true")
       .setProperty("sonar.skipPackageDesign", "true")
-      .setProperty("dump.old", effectiveDumpOldFolder.resolve(projectName).toString())
-      .setProperty("dump.new", FileLocation.of("target/actual/" + projectName).getFile().getAbsolutePath())
-      .setProperty("lits.differences", litsDifferencesPath(projectName))
+      .setProperty("sonar.lits.dump.old", effectiveDumpOldFolder.resolve(projectName).toString())
+      .setProperty("sonar.lits.dump.new", FileLocation.of("target/actual/" + projectName).getFile().getAbsolutePath())
+      .setProperty("sonar.lits.differences", litsDifferencesPath(projectName))
       .setProperty("sonar.internal.analysis.failFast", "true");
     BuildResult buildResult;
     if (buildQuietly) {
