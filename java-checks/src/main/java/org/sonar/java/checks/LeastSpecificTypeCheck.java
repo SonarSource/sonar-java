@@ -38,6 +38,8 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.sonar.java.checks.helpers.AnnotationsHelper.hasUnknownAnnotation;
+
 @Rule(key = "S3242")
 public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
 
@@ -230,7 +232,4 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
       || metadata.isAnnotatedWith("javax.annotation.Resource");
   }
 
-  private static boolean hasUnknownAnnotation(SymbolMetadata symbolMetadata) {
-    return symbolMetadata.annotations().stream().anyMatch(annotation -> annotation.symbol().isUnknown());
-  }
 }
