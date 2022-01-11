@@ -34,12 +34,25 @@ public class NoWayOutLoopCheck {
     }
   }
 
+  void badDoWhileLoop() {
+    int j = 0;
+    do  { // Noncompliant {{Add an end condition to this loop.}}
+      j++;
+    } while (true);
+  }
+
   void badWhileLoopWithVariable() {
     boolean condition = true;
     if (condition) {
     }
     while((condition)) { // Noncompliant
     }
+  }
+
+  void badDoWhileLoopWithVariable() {
+    boolean condition = true;
+    do { // Noncompliant
+    } while(condition);
   }
 
   void okWhileLoop() {
@@ -52,11 +65,32 @@ public class NoWayOutLoopCheck {
     }
   }
 
+  void okDoWhileLoop() {
+    int j = 0;
+    do {
+      j++;
+      if (canExit()) {
+        break;
+      }
+    } while (true); // Compliant: explicit exit
+  }
+
   void okWhileLoopWithVariable() {
     boolean condition = true;
     while(condition) {
       condition = false;
     }
+  }
+
+  void okDoWhileLoopWithVariable() {
+    boolean condition = true;
+    int i = 0;
+    do {
+      if (i == 10) {
+        condition = false;
+      }
+      i++;
+    } while(condition); // Compliant: explicit exit
   }
 
   void returnWhileLoop() {
