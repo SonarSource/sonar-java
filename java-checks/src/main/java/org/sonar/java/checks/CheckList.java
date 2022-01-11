@@ -407,7 +407,6 @@ public final class CheckList {
       ImpossibleBackReferenceCheck.class,
       ImpossibleBoundariesCheck.class,
       InappropriateRegexpCheck.class,
-      IndexOfStartPositionCheck.class,
       IndexOfWithPositiveNumberCheck.class,
       InnerClassOfNonSerializableCheck.class,
       InnerClassOfSerializableCheck.class,
