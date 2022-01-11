@@ -34,7 +34,7 @@ class UnitTestClassReportTest {
     report.add(new UnitTestResult().setStatus(UnitTestResult.STATUS_OK).setDurationMilliseconds(-200L));
     report.add(new UnitTestResult().setStatus(UnitTestResult.STATUS_SKIPPED));
 
-    assertThat(report.getResults().size()).isEqualTo(4);
+    assertThat(report.getResults()).hasSize(4);
     assertThat(report.getSkipped()).isEqualTo(1);
     assertThat(report.getTests()).isEqualTo(4);
     assertThat(report.getDurationMilliseconds()).isEqualTo(500L + 200L);
@@ -46,7 +46,7 @@ class UnitTestClassReportTest {
   @Test
   void shouldHaveEmptyReport() {
     UnitTestClassReport report = new UnitTestClassReport();
-    assertThat(report.getResults().size()).isZero();
+    assertThat(report.getResults()).isEmpty();
     assertThat(report.getSkipped()).isZero();
     assertThat(report.getTests()).isZero();
     assertThat(report.getDurationMilliseconds()).isZero();

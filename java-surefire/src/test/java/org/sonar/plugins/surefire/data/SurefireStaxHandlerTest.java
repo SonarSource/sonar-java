@@ -84,7 +84,7 @@ class SurefireStaxHandlerTest {
     UnitTestClassReport report = index.get("org.sonar.Foo");
     assertThat(report.getErrors()).isEqualTo(1);
     assertThat(report.getFailures()).isEqualTo(1);
-    assertThat(report.getResults().size()).isEqualTo(2);
+    assertThat(report.getResults()).hasSize(2);
 
     // failure
     UnitTestResult failure = report.getResults().get(0);

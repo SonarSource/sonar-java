@@ -195,7 +195,7 @@ class ExplodedGraphWalkerTest {
                 if (firstExceptionalNode == null) {
                   firstExceptionalNode = workList.peekFirst();
                 }
-                assertThat(workList.size()).as("Should have created a new node in the graph for each of the exceptions").isEqualTo(workListSize + 1);
+                assertThat(workList).as("Should have created a new node in the graph for each of the exceptions").hasSize(workListSize + 1);
                 assertThat(workList.peekFirst().programState.peekValue()).as("Exceptional Symbolic Value should stay on the stack").isEqualTo(exceptionSV);
                 tested[0]++;
               }
@@ -249,7 +249,7 @@ class ExplodedGraphWalkerTest {
 
               super.enqueue(programPoint, programState, exitPath);
 
-              assertThat(workList.size()).isEqualTo(workListSize + 1);
+              assertThat(workList).hasSize(workListSize + 1);
               if (shouldEnqueueFalseBranch) {
                 assertThat(programPoints[1]).isNull();
                 programPoints[1] = workList.peekFirst().programPoint;

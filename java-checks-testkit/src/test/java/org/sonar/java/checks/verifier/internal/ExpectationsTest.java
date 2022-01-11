@@ -108,9 +108,9 @@ class ExpectationsTest {
   @Test
   void issue_with_attributes_and_comment_switched() {
     Expectations.Issue issue = new Expectations().parser().parseIssue("// Noncompliant {{message}} [[sc=1;ec=6]]", TEST_LINE).issue;
-    assertThat(issue.get(MESSAGE)).isEqualTo("message");
-    assertThat(issue.get(START_COLUMN)).isEqualTo(1);
-    assertThat(issue.get(END_COLUMN)).isEqualTo(6);
+    assertThat(issue).containsEntry(MESSAGE, "message")
+      .containsEntry(START_COLUMN, 1)
+      .containsEntry(END_COLUMN, 6);
   }
 
   @Test
@@ -171,7 +171,7 @@ class ExpectationsTest {
   @Test
   void issue_and_flow_on_the_same_line() {
     Expectations.Parser.ParsedComment iaf = new Expectations().parser().parseIssue("// Noncompliant [[flows=id]] flow@id", TEST_LINE);
-    assertThat(iaf.issue.get(Expectations.IssueAttribute.LINE)).isEqualTo(TEST_LINE);
+    assertThat(iaf.issue).containsEntry(Expectations.IssueAttribute.LINE, TEST_LINE);
     assertThat((List) iaf.issue.get(FLOWS)).contains("id");
     assertThat(iaf.flows).hasSize(1);
     Expectations.FlowComment flow = iaf.flows.iterator().next();
@@ -182,7 +182,7 @@ class ExpectationsTest {
   @Test
   void issue_and_flow_message() {
     Expectations.Parser.ParsedComment iaf = new Expectations().parser().parseIssue("// Noncompliant {{issue msg}} flow@id {{flow msg}}", TEST_LINE);
-    assertThat(iaf.issue.get(MESSAGE)).isEqualTo("issue msg");
+    assertThat(iaf.issue).containsEntry(MESSAGE, "issue msg");
     assertThat(iaf.flows).hasSize(1);
     Expectations.FlowComment flow = iaf.flows.iterator().next();
     assertThat(flow.attributes).containsEntry(MESSAGE, "flow msg");
@@ -200,8 +200,8 @@ class ExpectationsTest {
   @Test
   void issue_and_flow_attr() {
     Expectations.Parser.ParsedComment iaf = new Expectations().parser().parseIssue("// Noncompliant [[sc=1;ec=2]] bla bla flow@id [[sc=3;ec=4]] bla bla", TEST_LINE);
-    assertThat(iaf.issue.get(START_COLUMN)).isEqualTo(1);
-    assertThat(iaf.issue.get(END_COLUMN)).isEqualTo(2);
+    assertThat(iaf.issue).containsEntry(START_COLUMN, 1)
+      .containsEntry(END_COLUMN, 2);
     assertThat(iaf.flows).hasSize(1);
     Expectations.FlowComment flow = iaf.flows.iterator().next();
     assertThat(flow.attributes)
@@ -233,7 +233,7 @@ class ExpectationsTest {
   void issue_and_multiple_flows_on_the_same_line() {
     Expectations.Parser.ParsedComment iaf = new Expectations().parser().parseIssue("// Noncompliant [[flows=id]] {{issue msg}} flow@id1,id2 {{flow msg12}} flow@id3 {{flow msg3}}",
       TEST_LINE);
-    assertThat(iaf.issue.get(MESSAGE)).isEqualTo("issue msg");
+    assertThat(iaf.issue).containsEntry(MESSAGE, "issue msg");
     assertThat(iaf.flows).hasSize(3);
     List<Integer> lines = iaf.flows.stream().map(f -> f.line).collect(Collectors.toList());
     assertThat(lines).isEqualTo(Arrays.asList(TEST_LINE, TEST_LINE, TEST_LINE));

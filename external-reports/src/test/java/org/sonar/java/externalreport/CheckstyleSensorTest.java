@@ -70,7 +70,7 @@ class CheckstyleSensorTest {
     assertThat(repository.language()).isEqualTo("java");
     assertThat(repository.isExternal()).isTrue();
 
-    assertThat(repository.rules().size()).isEqualTo(156);
+    assertThat(repository.rules()).hasSize(156);
 
     RulesDefinition.Rule rule = repository.rule("ArrayTypeStyleCheck");
     assertThat(rule).isNotNull();

@@ -44,15 +44,15 @@ class JavaSonarWayProfileTest {
     assertThat(profile.language()).isEqualTo(Java.KEY);
     List<BuiltInQualityProfilesDefinition.BuiltInActiveRule> activeRules = profile.rules();
     assertThat(activeRules.stream().filter(r -> r.repoKey().equals("common-java"))).hasSize(1);
-    assertThat(activeRules.size()).as("Expected number of rules in profile").isGreaterThanOrEqualTo(268);
+    assertThat(activeRules).as("Expected number of rules in profile").hasSizeGreaterThanOrEqualTo(268);
     assertThat(profile.name()).isEqualTo("Sonar way");
     Set<String> keys = new HashSet<>();
     for (BuiltInQualityProfilesDefinition.BuiltInActiveRule activeRule : activeRules) {
       keys.add(activeRule.ruleKey());
     }
     //We no longer store active rules with legacy keys, only RSPEC keys are used.
-    assertThat(keys.contains("S00116")).isFalse();
-    assertThat(keys).contains("S116");
+    assertThat(keys).doesNotContain("S00116")
+      .contains("S116");
     assertThat(validation.hasErrors()).isFalse();
 
     // Check that we use severity from the read rule and not default one.
