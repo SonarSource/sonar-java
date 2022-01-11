@@ -53,6 +53,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 
+import static org.sonar.java.checks.helpers.AnnotationsHelper.hasUnknownAnnotation;
+
 @Rule(key = "S1172")
 public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
   private static final String PRIMARY_SINGULAR_MESSAGE_FORMAT = "Remove this unused method parameter %s.";
@@ -224,7 +226,4 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
       .anyMatch(identifier -> identifier.parent().is(Tree.Kind.METHOD_REFERENCE));
   }
 
-  private static boolean hasUnknownAnnotation(SymbolMetadata symbolMetadata) {
-    return symbolMetadata.annotations().stream().anyMatch(annotation -> annotation.symbol().isUnknown());
-  }
 }

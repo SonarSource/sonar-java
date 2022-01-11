@@ -35,6 +35,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.sonar.java.checks.helpers.AnnotationsHelper.hasUnknownAnnotation;
+
 @Rule(key = "S1258")
 public class AtLeastOneConstructorCheck extends IssuableSubscriptionVisitor {
 
@@ -108,10 +110,6 @@ public class AtLeastOneConstructorCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isBuilderPatternName(String name) {
     return name.endsWith("Builder");
-  }
-
-  private static boolean hasUnknownAnnotation(SymbolMetadata symbolMetadata) {
-    return symbolMetadata.annotations().stream().anyMatch(annotation -> annotation.symbol().isUnknown());
   }
 
 }
