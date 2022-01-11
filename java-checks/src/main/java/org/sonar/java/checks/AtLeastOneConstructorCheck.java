@@ -27,6 +27,7 @@ import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -96,15 +97,21 @@ public class AtLeastOneConstructorCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isAutowired(Symbol symbol) {
-    return AUTOWIRED_ANNOTATIONS.stream().anyMatch(symbol.metadata()::isAnnotatedWith);
+    SymbolMetadata metadata = symbol.metadata();
+    return hasUnknownAnnotation(metadata) || AUTOWIRED_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
   }
 
   private static boolean isAnnotationExcluded(Symbol symbol) {
-    return EXCLUDED_ANNOTATIONS.stream().anyMatch(symbol.metadata()::isAnnotatedWith);
+    SymbolMetadata metadata = symbol.metadata();
+    return hasUnknownAnnotation(metadata) || EXCLUDED_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
   }
 
   private static boolean isBuilderPatternName(String name) {
     return name.endsWith("Builder");
+  }
+
+  private static boolean hasUnknownAnnotation(SymbolMetadata symbolMetadata) {
+    return symbolMetadata.annotations().stream().anyMatch(annotation -> annotation.symbol().isUnknown());
   }
 
 }

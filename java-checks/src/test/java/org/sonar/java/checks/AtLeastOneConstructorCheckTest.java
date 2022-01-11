@@ -22,6 +22,8 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+
 class AtLeastOneConstructorCheckTest {
 
   @Test
@@ -30,5 +32,13 @@ class AtLeastOneConstructorCheckTest {
       .onFile("src/test/files/checks/AtLeastOneConstructorCheck.java")
       .withCheck(new AtLeastOneConstructorCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/AtLeastOneConstructorCheck.java"))
+      .withCheck(new AtLeastOneConstructorCheck())
+      .verifyNoIssues();
   }
 }
