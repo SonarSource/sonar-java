@@ -16,6 +16,10 @@ class MutableMembersUsageCheck {
 
   private List<String> mutableList = new ArrayList<>();
   private List<String> immutableList = Collections.unmodifiableList(mutableList);
+  private List<String> singletonList = Collections.singletonList("A");
+  private List<String> emptyList = Collections.emptyList();
+  private Set<String> emptySet = Collections.emptySet();
+  private Set<String> checkedSet = Collections.checkedSet(new HashSet<>(), String.class);
   private List<String> customImmutableList1 = customImmutableList(mutableList);
   private List<String> customImmutableList2 = CustomImmutableList.create(mutableList);
   private List<String> customImmutableList3 = staticallyImportedMethod(mutableList);
@@ -41,6 +45,22 @@ class MutableMembersUsageCheck {
 
   public List<String> getImmutableList() {
     return immutableList;
+  }
+
+  public List<String> getSingletonList() {
+    return singletonList;
+  }
+
+  public List<String> getEmptyList() {
+    return emptyList;
+  }
+
+  public Set<String> getEmptySet() {
+    return emptySet;
+  }
+
+  public Set<String> getCheckedSet() {
+    return checkedSet; // Noncompliant
   }
 
   public List<String> getCustomImmutableList1() {
