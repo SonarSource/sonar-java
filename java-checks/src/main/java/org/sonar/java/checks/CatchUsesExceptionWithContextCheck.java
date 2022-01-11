@@ -186,7 +186,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
   @Override
   public void visitMethodInvocation(MethodInvocationTree mit) {
     super.visitMethodInvocation(mit);
-    if (LOGGING_METHODS.matches(mit)) {
+    if (LOGGING_METHODS.matches(mit) || mit.symbol().isUnknown()) {
       usageStatusStack.forEach(usageStatus -> usageStatus.addLoggingMethodInvocation(mit));
     }
   }
