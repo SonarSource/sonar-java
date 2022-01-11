@@ -37,6 +37,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -79,7 +80,7 @@ public class NoWayOutLoopCheck extends SECheck {
   public void checkEndOfExecution(CheckerContext context) {
     context.alwaysTrueOrFalseExpressions().alwaysTrue().forEach(tree -> {
       Tree statementParent = firstStatementParent(tree);
-      if (statementParent != null && statementParent.is(Tree.Kind.WHILE_STATEMENT)) {
+      if (statementParent != null && statementParent.is(Tree.Kind.WHILE_STATEMENT, Tree.Kind.DO_STATEMENT)) {
         checkLoopWithAlwaysTrueCondition(context, statementParent);
       }
     });
@@ -109,7 +110,16 @@ public class NoWayOutLoopCheck extends SECheck {
 
     @Override
     public void visitWhileStatement(WhileStatementTree tree) {
-      if (LiteralUtils.isTrue(tree.condition())) {
+      visitLoopCondition(tree.condition(), tree);
+    }
+
+    @Override
+    public void visitDoWhileStatement(DoWhileStatementTree tree) {
+      visitLoopCondition(tree.condition(), tree);
+    }
+
+    private void visitLoopCondition(ExpressionTree condition, Tree tree) {
+      if (LiteralUtils.isTrue(condition)) {
         checkLoopWithAlwaysTrueCondition(context, tree);
       }
     }
