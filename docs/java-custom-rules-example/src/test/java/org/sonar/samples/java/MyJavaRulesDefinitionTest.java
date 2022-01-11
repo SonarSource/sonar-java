@@ -24,7 +24,7 @@ class MyJavaRulesDefinitionTest {
     rulesDefinition.define(context);
     RulesDefinition.Repository repository = context.repository(MyJavaRulesDefinition.REPOSITORY_KEY);
 
-    assertThat(repository.name()).isEqualTo("MyCompany Custom Repository");
+    assertThat(repository.name()).isEqualTo(MyJavaRulesDefinition.REPOSITORY_NAME);
     assertThat(repository.language()).isEqualTo("java");
     assertThat(repository.rules()).hasSize(RulesList.getChecks().size());
     assertThat(repository.rules().stream().filter(Rule::template)).isEmpty();

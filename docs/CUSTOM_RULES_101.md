@@ -41,7 +41,6 @@ A custom plugin is a Maven project, and before diving into code, it is important
 
 In our case, we have 3 of them:
 * `pom.xml`: use a snapshot version of the Java Analyzer
-* `pom_SQ_7_9_LTS.xml`: self-contained `pom` file, configured with dependencies matching SonarQube `7.9 LTS` requirements
 * `pom_SQ_8_9_LTS.xml`: self-contained `pom` file, configured with dependencies matching SonarQube `8.9 LTS` requirements
 
 These 3 `pom`s correspond different use-cases, depending on which instance of SonarQube you will target with your custom-rules plugin. In this tutorial, **we will only use the file named `pom_SQ_8_9_LTS.xml`**, as it is completely independent from the build of the Java Analyzer, is self-contained, and will target the latest release of SonarQube.
@@ -204,23 +203,23 @@ The test file now contains the following test cases:
 
 ### A test class to make it pass
 
-Once the test file is updated, let's update our test class to use it, and link the test to our (not yet implemented) rule. To do so, get back to our test class `MyFirstCustomCheckTest`, and update the `test()` method as shown in the following code snippet (you may have to import class `org.sonar.java.checks.verifier.JavaCheckVerifier`):
+Once the test file is updated, let's update our test class to use it, and link the test to our (not yet implemented) rule. To do so, get back to our test class `MyFirstCustomCheckTest`, and update the `test()` method as shown in the following code snippet (you may have to import class `org.sonar.java.checks.verifier.CheckVerifier`):
 
 ```java
   @Test
   void test() {
-    JavaCheckVerifier.newVerifier()
+    CheckVerifier.newVerifier()
       .onFile("src/test/files/MyFirstCustomCheck.java")
       .withCheck(new MyFirstCustomCheck())
       .verifyIssues();
   }
 ```
 
-As you probably noticed, this test class contains a single test, the purpose of which is to verify the behavior of the rule we are going to implement. To do so, it relies on usage of the `JavaCheckVerifier` class, provided by the Java Analyzer rule-testing API. This `JavaCheckVerifier` class provides useful methods to validate rule implementations, allowing us to totally abstract all the mechanisms related to analyzer initialization. Note that while verifying a rule, the *verifier* will collect lines marked as being *Noncompliant*, and verify that the rule raises the expected issues and *only* those issues.
+As you probably noticed, this test class contains a single test, the purpose of which is to verify the behavior of the rule we are going to implement. To do so, it relies on usage of the `CheckVerifier` class, provided by the Java Analyzer rule-testing API. This `CheckVerifier` class provides useful methods to validate rule implementations, allowing us to totally abstract all the mechanisms related to analyzer initialization. Note that while verifying a rule, the *verifier* will collect lines marked as being *Noncompliant*, and verify that the rule raises the expected issues and *only* those issues.
 
-Now, let's proceed to the next step of TDD: make the test fail!
+Now, let's proceed to the next step of TDD: make the test fail!
 
-To do so, simply execute the test from the test file using JUnit. The test should **fail** with error message "**At least one issue expected**", as shown in the code snippet below. Since our check is not yet implemented, no issue can be raised yet, so that's the expected behavior.
+To do so, simply execute the test from the test file using JUnit. The test should **fail** with error message "**At least one issue expected**", as shown in the code snippet below. Since our check is not yet implemented, no issue can be raised yet, so that's the expected behavior.
 
 ```
 java.lang.AssertionError: No issue raised. At least one issue expected
@@ -292,7 +291,7 @@ java.lang.AssertionError: Unexpected at [5, 7, 11]
     ...
 ```
 
-Of course, our test failed again... The `JavaCheckVerifier` reported that lines 5, 7 and 11 are raising unexpected issues, as visible in the stack-trace above. By looking back at our test file, it's easy to figure out that raising an issue line 5 is wrong because the return type of the method is `void`, line 7 is wrong because `Object` is not the same as `int`, and line 11 is also wrong because of the variable *arity* of the method. Raising these issues is however correct accordingly to our implementation, as we didn't check for the types of the parameter and return type. To handle type, however, we will need to rely on more that what we can achieve using only knowledge of the syntax tree. This time, we will need to use the semantic API!
+Of course, our test failed again... The `CheckVerifier` reported that lines 5, 7 and 11 are raising unexpected issues, as visible in the stack-trace above. By looking back at our test file, it's easy to figure out that raising an issue line 5 is wrong because the return type of the method is `void`, line 7 is wrong because `Object` is not the same as `int`, and line 11 is also wrong because of the variable *arity* of the method. Raising these issues is however correct accordingly to our implementation, as we didn't check for the types of the parameter and return type. To handle type, however, we will need to rely on more that what we can achieve using only knowledge of the syntax tree. This time, we will need to use the semantic API!
 
 >
 > :question: **IssuableSubscriptionVisitor and BaseTreeVisitor**
@@ -329,7 +328,7 @@ From the symbol, it is then pretty easy to retrieve **the type of its first para
 public void visitNode(Tree tree) {
   MethodTree method = (MethodTree) tree;
   if (method.parameters().size() == 1) {
-    MethodSymbol symbol = method.symbol();
+    Symbol.MethodSymbol symbol = method.symbol();
     Type firstParameterType = symbol.parameterTypes().get(0);
     Type returnType = symbol.returnType().type();
     reportIssue(method.simpleName(), "Never do that!");
@@ -344,7 +343,7 @@ Since the rule should only raise an issue when these two types are the same, we 
 public void visitNode(Tree tree) {
   MethodTree method = (MethodTree) tree;
   if (method.parameters().size() == 1) {
-    MethodSymbol symbol = method.symbol();
+    Symbol.MethodSymbol symbol = method.symbol();
     Type firstParameterType = symbol.parameterTypes().get(0);
     Type returnType = symbol.returnType().type();
     if (returnType.is(firstParameterType.fullyQualifiedName())) {
@@ -385,9 +384,35 @@ While annotation provides a handy way to document the rule, static documentation
 Incidentally, static documentation is also the way rules in the sonar-java analyzer are described.
 
 To provide metadata for your rule, you need to create an HTML file, where you can provide an extended textual description of the rule, and a JSON file, with the actual metadata.
-In the case of `MyFirstCustomCheck`, you will head to the `src/main/resources/org/sonar/l10n/java/rules/java/` folder to create `MyFirstCustomCheck.html` and `MyFirstCustomCheck.json`.
-Please note that both files are needed to register our rule but the HTML one can be left empty.
-We can now add metadata to `src/main/resources/org/sonar/l10n/java/rules/java/MyFirstCustomCheck.json`:
+In the case of `MyFirstCustomRule`, you will head to the `src/main/resources/org/sonar/l10n/java/rules/java/` folder to create `MyFirstCustomRule.html` and `MyFirstCustomRule.json`.
+
+We first need to populate the HTML file with some information that will help developers fix the issue.
+```html
+<p>For a method having a single parameter, the types of its return value and its parameter should never be the same.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+class MyClass {
+  int doSomething(int a) { // Noncompliant
+    return 42;
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+class MyClass {
+  int doSomething() { // Compliant
+    return 42;
+  }
+  long doSomething(int a) { // Compliant
+    return 42L;
+  }
+}
+</pre>
+```
+
+We can now add metadata to `src/main/resources/org/sonar/l10n/java/rules/java/MyFirstCustomRule.json`:
 ```json
 {
   "title": "Return type and parameter of a method should not be the same",
@@ -402,7 +427,8 @@ We can now add metadata to `src/main/resources/org/sonar/l10n/java/rules/java/My
 }
 ```
 With this example, we have a concise but descriptive `title` for our rule, the `type` of issue it highlights, its `status` (ready or deprecated), the `tags` that should bring it up in a search and the `severity` of the issue.
-Further information can be fed to SonarQube by describing the context in the HTML file or by adding fields in the JSON document but this minimal example should be enough to register our rule.
+
+
 ### Rule Activation
 The second thing to do is to activate the rule within the plugin. To do so, open class `RulesList` (`org.sonar.samples.java.RulesList`). In this class, you will notice methods `getJavaChecks()` and `getJavaTestChecks()`. These methods are used to register our rules with alongside the rule of the Java plugin. Note that rules registered in `getJavaChecks()` will only be played against source files, while rules registered in `getJavaTestChecks()` will only be played against test files. To register the rule, simply add the rule class to the list builder, as in the following code snippet:
 
@@ -415,6 +441,7 @@ public static List<Class<? extends JavaCheck>> getJavaChecks() {
 }
 
 ```
+
 
 ### Rule Registrar
 
@@ -476,6 +503,22 @@ class MyJavaFileCheckRegistrarTest {
 }
 ```
 
+### Rules repository
+
+With the actions taken above, your rule is activated, registered and should be ready to test.
+But before doing so, you may want to customize the repository name your rule belongs to.
+
+This repository's key and name are defined in `MyJavaRulesDefinition.java` and can be customized to suit your needs.
+```java
+public class MyJavaRulesDefinition implements RulesDefinition {
+  // ...
+  public static final String REPOSITORY_KEY = "fellowship-inc";
+
+  public static final String REPOSITORY_NAME = "The Fellowship's custom rules";
+  // ...
+}
+```
+
 ## Testing a custom plugin
 
 >
@@ -517,13 +560,12 @@ Then, grab the jar file `java-custom-rules-example-1.0.0-SNAPSHOT.jar` from the 
 >
 > Before going further, be sure to have the adequate version of the SonarQube Java Analyzer with your SonarQube instance. The dependency over the Java Analyzer of our custom plugin is defined in its `pom`, as seen in the first chapter of this tutorial. We consequently provide two distinct `pom` files mapping both the `7.9` previous LTS version of SonarQube, as well as the latest LTS release, version `8.9`.
 >
-> * If your instance is SonarQube `7.9` version, make sure to update the Java Analyzer to its latest compatible version through the SonarQube marketplace (it should be version `6.3.2.22818`), and then use this the file `pom_SQ_7_9_LTS.xml` file to build the project. 
 > * If you are using a SonarQube `8.9` and updated to the latest LTS already, then you won't have the possibility to update the Java Analyzer independently anymore. Consequently, use the file `pom_SQ_8_9_LTS.xml` to build the project.
 >
 
 Now, (re-)start your SonarQube instance, log as admin and navigate to the ***Rules*** tab.
 
-From there, under the language section, select "**Java**", and then "**MyCompany Custom Repository**" under the repository section. Your rule should now be visible (with all the other sample rules). 
+From there, under the language section, select "**Java**", and then "**The Fellowship's custom rules**" (or "**MyCompany Custom Repository**" if you did not change it) under the repository section. Your rule should now be visible (with all the other sample rules). 
 
 ![Selected rules](resources/rules_selected.png)
 
