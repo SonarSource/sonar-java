@@ -120,4 +120,119 @@ public class RecordInsteadOfClassCheck {
       return Optional.of(bar);
     }
   }
+
+  // When the constructor has smaller visibility, it is not possible to create a record with the same behavior.
+  // Order: Public > protected > package private > private
+
+  public class ClassWithPublicConstructor { // Noncompliant
+    private final int sum;
+    public ClassWithPublicConstructor(int sum) {
+      this.sum = sum;
+    }
+    int getSum() { return sum; }
+  }
+
+  public class ClassWithProtectedConstructor { // Compliant, constructor visibility is smaller than public
+    private final int sum;
+    protected ClassWithProtectedConstructor(int sum) {
+      this.sum = sum;
+    }
+    int getSum() { return sum; }
+  }
+
+  public class ClassWithPackagePrivateConstructor { // Compliant, constructor visibility is smaller than public
+    private final int sum;
+    ClassWithPackagePrivateConstructor(int sum) {
+      this.sum = sum;
+    }
+    int getSum() { return sum; }
+  }
+
+  public class ClassWithPrivateConstructor { // Compliant, constructor visibility is smaller than public
+    private final int sum;
+    private ClassWithPrivateConstructor(int sum) {
+      this.sum = sum;
+    }
+    int getSum() { return sum; }
+  }
+
+  protected class ProtectedClassWithPublicConstructor { // Noncompliant
+    private final int sum;
+    public ProtectedClassWithPublicConstructor(int sum) {
+      this.sum = sum;
+    }
+    int getSum() { return sum; }
+  }
+
+  protected class ProtectedClassWithProtectedConstructor { // Noncompliant
+    private final int sum;
+    protected ProtectedClassWithProtectedConstructor(int sum) {
+      this.sum = sum;
+    }
+    int getSum() { return sum; }
+  }
+
+  protected class ProtectedClassWithPackagePrivateConstructor { // Compliant
+    private final int sum;
+    ProtectedClassWithPackagePrivateConstructor(int sum) {
+      this.sum = sum;
+    }
+    int getSum() { return sum; }
+  }
+
+  protected class ProtectedClassWithPrivateConstructor { // Compliant
+    private final int sum;
+    private ProtectedClassWithPrivateConstructor(int sum) {
+      this.sum = sum;
+    }
+    int getSum() { return sum; }
+  }
+
+  class PackagePrivateClassWithPublicConstructor { // Noncompliant
+    private final int sum;
+    public PackagePrivateClassWithPublicConstructor(int sum) {
+      this.sum = sum;
+    }
+    int getSum() { return sum; }
+  }
+
+  class PackagePrivateClassWithProtectedConstructor { // Noncompliant
+    private final int sum;
+    protected PackagePrivateClassWithProtectedConstructor(int sum) {
+      this.sum = sum;
+    }
+    int getSum() { return sum; }
+  }
+
+  class PackagePrivateClassWithPackagePrivateConstructor { // Noncompliant
+    private final int sum;
+    PackagePrivateClassWithPackagePrivateConstructor(int sum) {
+      this.sum = sum;
+    }
+    int getSum() { return sum; }
+  }
+
+  class PackagePrivateClassWithPrivateConstructor { // Compliant
+    private final int sum;
+    private PackagePrivateClassWithPrivateConstructor(int sum) {
+      this.sum = sum;
+    }
+    int getSum() { return sum; }
+  }
+
+  private class PrivateClassWithPublicConstructor { // Noncompliant
+    private final int sum;
+    public PrivateClassWithPublicConstructor(int sum) {
+      this.sum = sum;
+    }
+    int getSum() { return sum; }
+  }
+
+  private class PrivatelassWithPrivateConstructor { // Noncompliant
+    private final int sum;
+    private PrivatelassWithPrivateConstructor(int sum) {
+      this.sum = sum;
+    }
+    int getSum() { return sum; }
+  }
 }
