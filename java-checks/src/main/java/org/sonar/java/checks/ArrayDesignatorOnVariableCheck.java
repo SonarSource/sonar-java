@@ -29,6 +29,7 @@ import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -45,10 +46,11 @@ public class ArrayDesignatorOnVariableCheck extends IssuableSubscriptionVisitor 
   @Override
   public void visitNode(Tree tree) {
     VariableTree variableTree = (VariableTree) tree;
-    MisplacedArray.find(variableTree.type(), variableTree.simpleName().identifierToken())
+    IdentifierTree identifierTree = variableTree.simpleName();
+    MisplacedArray.find(variableTree.type(), identifierTree.identifierToken())
       .ifPresent(misplaced -> QuickFixHelper.newIssue(context)
         .forRule(this)
-        .onRange(misplaced.firstArray.openBracketToken(), misplaced.lastArray.closeBracketToken())
+        .onRange(identifierTree, misplaced.lastArray.closeBracketToken())
         .withMessage("Move the array designators " + misplaced.replacement + " to the type.")
         .withQuickFixes(() -> isDeclarationTypeUsedBySeveralVariable(variableTree)
           ? Collections.emptyList()
