@@ -22,13 +22,16 @@ package org.sonar.java.model.expression;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -54,6 +57,31 @@ class InstanceOfTreeImplTest {
 
     piot.accept(visitor);
     assertThat(visitor.visited).containsExactly(true, false);
+  }
+
+  @Test
+  void test_GuardedPatternInstanceOfTree() {
+    InstanceOfTreeImpl ioti = instanceOf("o instanceof (String s && s.length() > 10)");
+    assertThat(ioti.is(Tree.Kind.PATTERN_INSTANCE_OF)).isTrue();
+
+    PatternInstanceOfTree piot = ioti;
+    assertThat(piot.expression()).isNotNull();
+    assertThat(piot.instanceofKeyword()).isNotNull();
+    VariableTree variable = piot.variable();
+    assertThat(variable).isNotNull();
+    assertThat(variable.simpleName().name()).isEqualTo("s");
+    assertThat(variable.type().symbolType().is("java.lang.String")).isTrue();
+    // instanceof with guarded pattern is not fully parsed by ECJ in this version.
+    // It does not crash though, and as it is a preview feature anyway, it is fine to not support it completely.
+  }
+
+  @Test
+  void test_PatternInstanceOfAsBinary() {
+    ExpressionTree condition = ifCondition("o instanceof String s && s.length() > 10");
+    assertThat(condition.is(Tree.Kind.CONDITIONAL_AND)).isTrue();
+    BinaryExpressionTree binaryExpression = (BinaryExpressionTree) condition;
+    assertThat(binaryExpression.leftOperand().is(Tree.Kind.PATTERN_INSTANCE_OF)).isTrue();
+    assertThat(binaryExpression.rightOperand().is(Tree.Kind.GREATER_THAN)).isTrue();
   }
 
   @Test
@@ -89,11 +117,15 @@ class InstanceOfTreeImplTest {
   }
 
   private static InstanceOfTreeImpl instanceOf(String instanceofExpression) {
+    return (InstanceOfTreeImpl) ifCondition(instanceofExpression);
+  }
+
+  private static ExpressionTree ifCondition(String instanceofExpression) {
     CompilationUnitTree cut = JParserTestUtils.parse(String.format(CLASS_WITH_INSTANCE_OF, instanceofExpression));
     ClassTree classTree = (ClassTree) cut.types().get(0);
     MethodTree methodTree = (MethodTree) classTree.members().get(0);
     IfStatementTree ifStatementTree = (IfStatementTree) methodTree.block().body().get(0);
-    return (InstanceOfTreeImpl) ifStatementTree.condition();
+    return ifStatementTree.condition();
   }
 
 }

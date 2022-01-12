@@ -19,15 +19,20 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-class TreeTest {
-
-  @Test
-  void test() {
-    assertThat(Tree.Kind.values()).hasSize(127);
-  }
+/**
+ * Common interface shared between all possible pattern as introduced with Java 17 and JEP-406.
+ * Currently.
+ * <li>
+ *   <ul>{@link TypePatternTree}</ul>
+ *   <ul>{@link GuardedPatternTree}</ul>
+ *   <ul>{@link NullPatternTree}</ul>
+ *   <ul>{@link DefaultPatternTree}</ul>
+ * </li>
+ *
+ * @since Java 17
+ * @deprecated Preview Feature
+ */
+@Deprecated(since = "7.7", forRemoval = false)
+public interface PatternTree extends ExpressionTree {
 
 }

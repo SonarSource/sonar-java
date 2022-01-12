@@ -706,6 +706,42 @@ public interface Tree {
     ARRAY_DIMENSION(ArrayDimensionTree.class),
 
     /**
+     * {@link TypePatternTree}
+     *
+     * @since Java 17
+     * @deprecated Preview Feature
+     */
+    @Deprecated(since = "7.7", forRemoval = false)
+    TYPE_PATTERN(TypePatternTree.class),
+
+    /**
+     * {@link GuardedPatternTree}
+     *
+     * @since Java 17
+     * @deprecated Preview Feature
+     */
+    @Deprecated(since = "7.7", forRemoval = false)
+    GUARDED_PATTERN(GuardedPatternTree.class),
+
+    /**
+     * {@link NullPatternTree}
+     *
+     * @since Java 17
+     * @deprecated Preview Feature
+     */
+    @Deprecated(since = "7.7", forRemoval = false)
+    NULL_PATTERN(NullPatternTree.class),
+
+    /**
+     * {@link DefaultPatternTree}
+     *
+     * @since Java 17
+     * @deprecated Preview Feature
+     */
+    @Deprecated(since = "7.7", forRemoval = false)
+    DEFAULT_PATTERN(DefaultPatternTree.class),
+
+    /**
      *An implementation-reserved node.
      *
      */

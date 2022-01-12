@@ -19,15 +19,20 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import org.junit.jupiter.api.Test;
+/**
+ * Null pattern tree, introduced with Java 17 and JEP-406.
+ *
+ * <pre>
+ *   case {@link #nullLiteral()} : ...
+ *   case {@link #nullLiteral()} -> ...
+ * </pre>
+ *
+ * @since Java 17
+ * @deprecated Preview Feature
+ */
+@Deprecated(since = "7.7", forRemoval = false)
+public interface NullPatternTree extends PatternTree {
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-class TreeTest {
-
-  @Test
-  void test() {
-    assertThat(Tree.Kind.values()).hasSize(127);
-  }
+  LiteralTree nullLiteral();
 
 }
