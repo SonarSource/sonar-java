@@ -58,6 +58,11 @@ class Fields {
     private int foo; // NoIssue
   }
 
+  @lombok.SuperBuilder
+  class SuperBuilder { // WithIssue
+    private int foo; // NoIssue
+  }
+
   class Builder2 { // WithIssue
     private int foo; // WithIssue
   }
