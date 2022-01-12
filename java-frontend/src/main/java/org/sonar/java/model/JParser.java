@@ -1374,12 +1374,12 @@ public class JParser {
       convertExpression(expression),
       firstTokenAfter(expression, TerminalTokens.TokenNameRPAREN),
       firstTokenAfter(expression, TerminalTokens.TokenNameLBRACE),
-      convertSwitchStatements(e.statements(), e.getAST().isPreviewEnabled()),
+      convertSwitchStatements(e.statements()),
       lastTokenIn(e, TerminalTokens.TokenNameRBRACE)
     );
   }
 
-  private List<CaseGroupTreeImpl> convertSwitchStatements(List<?> list, boolean previewEnabled) {
+  private List<CaseGroupTreeImpl> convertSwitchStatements(List<?> list) {
     List<CaseGroupTreeImpl> groups = new ArrayList<>();
     List<CaseLabelTreeImpl> caselabels = null;
     StatementListTreeImpl body = null;
@@ -2224,7 +2224,7 @@ public class JParser {
       convertExpression(expr),
       firstTokenAfter(expr, TerminalTokens.TokenNameRPAREN),
       firstTokenAfter(expr, TerminalTokens.TokenNameLBRACE),
-      convertSwitchStatements(e.statements(), e.getAST().isPreviewEnabled()),
+      convertSwitchStatements(e.statements()),
       lastTokenIn(e, TerminalTokens.TokenNameRBRACE)
     );
   }
