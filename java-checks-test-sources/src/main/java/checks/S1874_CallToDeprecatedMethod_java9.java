@@ -1,4 +1,6 @@
-class CallToDeprecatedMethod {
+package checks;
+
+class S1874_CallToDeprecatedMethod_java9 {
 
   @Deprecated
   String a;
@@ -34,7 +36,7 @@ class CallToDeprecatedMethod {
   @Deprecated
   static class DeprecatedDefault {}
 
-  static class Extending extends CallToDeprecatedMethod {
+  static class Extending extends S1874_CallToDeprecatedMethod_java9 {
     @Override
     void foo() {}
 

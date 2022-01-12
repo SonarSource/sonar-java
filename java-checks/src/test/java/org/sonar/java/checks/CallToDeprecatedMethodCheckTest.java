@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class CallToDeprecatedMethodCheckTest {
 
@@ -41,7 +40,7 @@ class CallToDeprecatedMethodCheckTest {
   @Test
   void flagged_for_removal_should_not_raise_issue() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/S1874_CallToDeprecatedMethod_java9.java"))
+      .onFile(testSourcesPath("checks/S1874_CallToDeprecatedMethod_java9.java"))
       .withJavaVersion(9)
       .withCheck(new CallToDeprecatedMethodCheck())
       .verifyIssues();
