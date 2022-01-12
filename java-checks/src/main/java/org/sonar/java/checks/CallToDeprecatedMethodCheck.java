@@ -22,8 +22,14 @@ package org.sonar.java.checks;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "CallToDeprecatedMethod", repositoryKey = "squid")
@@ -37,8 +43,20 @@ public class CallToDeprecatedMethodCheck extends AbstractCallToDeprecatedCodeChe
       return;
     }
     String name = deprecatedSymbol.name();
-    if (isConstructor(deprecatedSymbol)) {
-      name = deprecatedSymbol.owner().name();
+
+    if (deprecatedSymbol.isMethodSymbol()) {
+      Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) deprecatedSymbol;
+      Tree parent = identifierTree.parent();
+      Arguments arguments = null;
+      if (parent.is(Tree.Kind.METHOD_INVOCATION)) {
+        arguments = ((MethodInvocationTree) parent).arguments();
+      } else if (parent.is(Tree.Kind.NEW_CLASS)) {
+        name = deprecatedSymbol.owner().name();
+        arguments = ((NewClassTree) parent).arguments();
+      }
+      if (arguments != null && !argumentsMatchSignature(arguments, methodSymbol.parameterTypes())) {
+        return;
+      }
     }
     reportIssue(identifierTree, String.format("Remove this use of \"%s\"; it is deprecated.", name));
   }
@@ -55,5 +73,27 @@ public class CallToDeprecatedMethodCheck extends AbstractCallToDeprecatedCodeChe
     return !(method.isAbstract()
       // if the method is flagged for removal, it will be handled by S5738
       || isFlaggedForRemoval(method));
+  }
+
+  /**
+   * Tests that the arguments types match the parameter types.
+   * Please note that the method returns false when the signature contains variadic parameters.
+   *
+   * @param arguments Arguments in a method call
+   * @param types Parameter types in a method signature
+   * @return true if the arguments' types match types. false otherwise.
+   */
+  private static boolean argumentsMatchSignature(Arguments arguments, List<Type> types) {
+    if (arguments.size() != types.size()) {
+      return false;
+    }
+    for (int i = 0; i < arguments.size(); i++) {
+      ExpressionTree argument = arguments.get(i);
+      Type type = types.get(i);
+      if (!argument.symbolType().equals(type)) {
+        return false;
+      }
+    }
+    return true;
   }
 }
