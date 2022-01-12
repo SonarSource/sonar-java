@@ -2,7 +2,9 @@ package checks.security;
 
 import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
+import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 class CipherBlockChainingCheck {
 
@@ -125,6 +127,35 @@ class CipherBlockChainingCheck {
     byte[] iv1 = "111".getBytes("UTF-8");
     byte[] iv2 = random.generateSeed(16);
     IvParameterSpec ivParameterSpec = new IvParameterSpec(iv1); // Noncompliant
+  }
+
+  private static final String OPERATION_MODE = "Threefish-1024/CBC/ISO10126Padding";
+  private static final int IV_SIZE = 2048;
+
+  static void encryptImpl(SecretKeySpec ks) throws Exception {
+    byte[] biv = new byte[IV_SIZE];
+
+    SecureRandom.getInstanceStrong().nextBytes(biv);
+
+    IvParameterSpec iv = new IvParameterSpec(biv); // Compliant
+
+    Cipher
+      .getInstance(OPERATION_MODE, "BC")
+      .init(Cipher.ENCRYPT_MODE, ks, iv);
+  }
+
+  static void decryptImpl1(byte[] biv, SecretKeySpec ks) throws Exception {
+    IvParameterSpec iv = new IvParameterSpec(biv); // Compliant - iv is going to be use for decryption only,
+                                                   // and needs to be in pair with the one used for encryption
+    Cipher
+      .getInstance(OPERATION_MODE, "BC")
+      .init(Cipher.DECRYPT_MODE, ks, iv);
+  }
+
+  static void decryptImpl2(byte[] biv, SecretKeySpec ks) throws Exception {
+    Cipher
+      .getInstance(OPERATION_MODE, "BC")
+      .init(Cipher.DECRYPT_MODE, ks, new IvParameterSpec(biv)); // compliant
   }
 }
 
