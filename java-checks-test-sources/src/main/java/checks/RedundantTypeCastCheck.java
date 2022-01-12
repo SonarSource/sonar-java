@@ -17,7 +17,7 @@ class Outer {
   List list;
   List<String> foo() {
     Object obj = null;
-    Object o1 = (List<String>) foo(); // Noncompliant [[sc=18;ec=30;quickfixes=qf1]] {{Remove this unnecessary cast to "List".}}
+    Object o1 = (List<String>) foo(); // Noncompliant [[sc=17;ec=31;quickfixes=qf1]] {{Remove this unnecessary cast to "List".}}
                                       // fix@qf1 {{Remove the cast to "List"}}
                                       // edit@qf1 [[sc=17;ec=32]] {{}}
     Object o2 = (List<? extends String>) foo(); // Noncompliant {{Remove this unnecessary cast to "List".}}
@@ -32,7 +32,7 @@ class Outer {
     fun((ExtendedNested) b); // Noncompliant
     fun(((ExtendedNested) b)); // Noncompliant
     fun((((ExtendedNested) b))); // Noncompliant
-    fun((Nested) a, (ExtendedNested) a); // Noncompliant [[sc=10;ec=16]]
+    fun((Nested) a, (ExtendedNested) a); // Noncompliant [[sc=9;ec=17]]
     fun((Nested) b); // Compliant - exception to distinguish the method to call
     List<ExtendedNested> bees = new java.util.ArrayList<ExtendedNested>();
     List<Nested> aaas = (List) bees;

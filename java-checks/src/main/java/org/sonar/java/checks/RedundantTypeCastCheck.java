@@ -59,7 +59,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
       String newType = cast.erasure().name();
       QuickFixHelper.newIssue(context)
         .forRule(this)
-        .onTree(typeCastTree.type())
+        .onRange(typeCastTree.openParenToken(), typeCastTree.closeParenToken())
         .withMessage("Remove this unnecessary cast to \"%s\".", newType)
         .withQuickFix(() ->
           JavaQuickFix.newQuickFix("Remove the cast to \"%s\"", newType)
