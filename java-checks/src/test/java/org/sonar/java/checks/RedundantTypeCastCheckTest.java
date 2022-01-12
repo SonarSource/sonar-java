@@ -34,7 +34,10 @@ class RedundantTypeCastCheckTest {
       .withCheck(new RedundantTypeCastCheck())
       .withQuickFixes()
       .verifyIssues();
+  }
 
+  @Test
+  void test_non_compiling() {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/RedundantTypeCastCheck.java"))
       .withCheck(new RedundantTypeCastCheck())
