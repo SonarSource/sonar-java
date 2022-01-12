@@ -1435,10 +1435,10 @@ public class JParser {
         return new TypePatternTreeImpl(convertVariable(((TypePattern) p).getPatternVariable()));
       case ASTNode.GUARDED_PATTERN:
         GuardedPattern g = (GuardedPattern) p;
-        PatternTree innerPattern = convertPattern(g.getPattern());
-        SyntaxToken andOperator = firstTokenBefore(g.getExpression(), TerminalTokens.TokenNameAND_AND);
-        ExpressionTree guardedExpressionTree = convertExpression(g.getExpression());
-        return new GuardedPatternTreeImpl(innerPattern, andOperator, guardedExpressionTree);
+        return new GuardedPatternTreeImpl(
+          convertPattern(g.getPattern()),
+          firstTokenBefore(g.getExpression(), TerminalTokens.TokenNameAND_AND),
+          convertExpression(g.getExpression()));
       case ASTNode.NULL_PATTERN:
         // It is not clear how to reach this one, it seems to be possible only with badly constructed AST
         // fall-through. Do nothing for now.

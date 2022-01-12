@@ -27,6 +27,11 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypePatternTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+/**
+ * JDK 17 Preview feature  (JEP-406), deprecated by design until it will be final
+ * java:S1874 = "@Deprecated" code should not be used
+ */
+@SuppressWarnings("java:S1874")
 public class TypePatternTreeImpl extends AbstractPatternTree implements TypePatternTree {
 
   private final VariableTree patternVariable;

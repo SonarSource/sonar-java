@@ -23,10 +23,15 @@ import java.util.Optional;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-public abstract class AbstractPatternTree extends JavaTree implements ExpressionTree {
+/**
+ * JDK 17 Preview feature  (JEP-406), deprecated by design until it will be final
+ * java:S1874 = "@Deprecated" code should not be used
+ */
+@SuppressWarnings("java:S1874")
+public abstract class AbstractPatternTree extends JavaTree implements PatternTree {
 
   private final Tree.Kind kind;
 

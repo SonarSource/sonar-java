@@ -28,6 +28,11 @@ import org.sonar.plugins.java.api.tree.NullPatternTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
+/**
+ * JDK 17 Preview feature  (JEP-406), deprecated by design until it will be final
+ * java:S1874 = "@Deprecated" code should not be used
+ */
+@SuppressWarnings("java:S1874")
 public class NullPatternTreeImpl extends AbstractPatternTree implements NullPatternTree {
 
   private final LiteralTree nullLiteral;
