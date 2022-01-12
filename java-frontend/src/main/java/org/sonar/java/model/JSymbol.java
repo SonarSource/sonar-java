@@ -172,6 +172,9 @@ abstract class JSymbol implements Symbol {
   }
 
   private Symbol typeOwner(ITypeBinding typeBinding) {
+    if (typeBinding.isPrimitive()) {
+      return Symbols.rootPackage;
+    }
     IMethodBinding declaringMethod = typeBinding.getDeclaringMethod();
     if (declaringMethod != null) {
       // local type
