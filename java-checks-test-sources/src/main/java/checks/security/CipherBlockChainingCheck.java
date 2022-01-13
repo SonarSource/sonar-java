@@ -6,6 +6,8 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import static checks.security.ClassWithRandomStuff.BIV;
+
 class CipherBlockChainingCheck {
 
   SecureRandom random = new SecureRandom();
@@ -129,6 +131,10 @@ class CipherBlockChainingCheck {
     IvParameterSpec ivParameterSpec = new IvParameterSpec(iv1); // Noncompliant
   }
 
+  void foo20() throws Exception {
+    new IvParameterSpec(BIV); // Noncompliant
+  }
+
   private static final String OPERATION_MODE = "Threefish-1024/CBC/ISO10126Padding";
   private static final int IV_SIZE = 2048;
 
@@ -156,6 +162,35 @@ class CipherBlockChainingCheck {
     Cipher
       .getInstance(OPERATION_MODE, "BC")
       .init(Cipher.DECRYPT_MODE, ks, new IvParameterSpec(biv)); // compliant
+  }
+
+  static void decryptImpl3(byte[] biv, SecretKeySpec ks) throws Exception {
+    new IvParameterSpec(biv); // Noncompliant - not used...
+    Cipher
+      .getInstance(OPERATION_MODE, "BC")
+      .init(Cipher.DECRYPT_MODE, ks);
+  }
+
+  static void decryptImpl4(SecretKeySpec ks) throws Exception {
+    byte[] biv = new byte[IV_SIZE];
+    IvParameterSpec iv = new IvParameterSpec(biv); // Noncompliant - not random
+    Cipher
+      .getInstance(OPERATION_MODE, "BC")
+      .init(Cipher.ENCRYPT_MODE, ks, iv);
+  }
+
+  static void decryptImpl5(byte[] biv, SecretKeySpec ks, IvParameterSpec iv) throws Exception {
+    new IvParameterSpec(biv); // Noncompliant - not used...
+    Cipher
+      .getInstance(OPERATION_MODE, "BC")
+      .init(Cipher.DECRYPT_MODE, ks, iv);
+  }
+
+  static void decryptImpl6(byte[] biv, SecretKeySpec ks, IvParameterSpec iv) throws Exception {
+    IvParameterSpec iv2 = new IvParameterSpec(biv); // Noncompliant - not used...
+    Cipher
+      .getInstance(OPERATION_MODE, "BC")
+      .init(Cipher.DECRYPT_MODE, ks, iv);
   }
 }
 

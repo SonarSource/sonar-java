@@ -19,11 +19,11 @@
  */
 package org.sonar.java.checks.security;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -92,38 +92,82 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
   private static class MethodInvocationVisitor extends BaseTreeVisitor {
 
     private boolean secureRandomFound = false;
-    private NewClassTree ivParameterSpecInstantiation = null;
-
-    public MethodInvocationVisitor(NewClassTree newClassTree) {
-      ivParameterSpecInstantiation = newClassTree;
-    }
+    private final NewClassTree ivParameterSpecInstantiation;
+    // to be used in case of assignment to a variable
+    private final Symbol ivParameterSymbol;
 
     private static final MethodMatchers SECURE_RANDOM_NEXT_BYTES = MethodMatchers.create()
       .ofTypes("java.security.SecureRandom")
       .names("nextBytes")
       .withAnyParameters()
       .build();
+    private static final MethodMatchers CIPHER_INIT = MethodMatchers.create()
+      .ofTypes("javax.crypto.Cipher")
+      .names("init")
+      .withAnyParameters()
+      .build();
+    // value of javax.crypto.Cipher.DECRYPT_MODE
+    private static final int CIPHER_INIT_DECRYPT_MODE = 2;
+
+    public MethodInvocationVisitor(NewClassTree newClassTree) {
+      ivParameterSpecInstantiation = newClassTree;
+      ivParameterSymbol = ivSymbol(newClassTree);
+    }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
       if (SECURE_RANDOM_NEXT_BYTES.matches(methodInvocation)) {
         Symbol initVector = symbol(ivParameterSpecInstantiation.arguments().get(0));
-        if (initVector != null && initVector.equals(symbol(methodInvocation.arguments().get(0)))) {
+        if (!initVector.isUnknown() && initVector.equals(symbol(methodInvocation.arguments().get(0)))) {
+          secureRandomFound = true;
+        }
+      }
+      // make sure it is not used for decryption - in such case you need to reuse one
+      if (CIPHER_INIT.matches(methodInvocation) && methodInvocation.arguments().size() > 2) {
+        int opMode = methodInvocation.arguments().get(0).asConstant(Integer.class).orElse(-1);
+        if (CIPHER_INIT_DECRYPT_MODE == opMode && isPartOfArguments(methodInvocation)) {
           secureRandomFound = true;
         }
       }
       super.visitMethodInvocation(methodInvocation);
     }
 
-    @CheckForNull
+    private boolean isPartOfArguments(MethodInvocationTree methodInvocation) {
+      return isPartOfArguments(methodInvocation, ivParameterSpecInstantiation)
+        || (!ivParameterSymbol.isUnknown() && isPartOfArguments(methodInvocation, ivParameterSymbol));
+    }
+
+    private static boolean isPartOfArguments(MethodInvocationTree methodInvocation, ExpressionTree ivParameter) {
+      return methodInvocation.arguments()
+        .stream()
+        .map(ExpressionUtils::skipParentheses)
+        .anyMatch(ivParameter::equals);
+    }
+
+    private static boolean isPartOfArguments(MethodInvocationTree methodInvocation, Symbol ivParameterSymbol) {
+      return methodInvocation.arguments()
+        .stream()
+        .map(ExpressionUtils::skipParentheses)
+        .map(MethodInvocationVisitor::symbol)
+        .anyMatch(ivParameterSymbol::equals);
+    }
+
     private static Symbol symbol(ExpressionTree expression) {
-      Symbol symbol = null;
       if (expression.is(Tree.Kind.IDENTIFIER)) {
-        symbol = ((IdentifierTree) expression).symbol();
-      } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
-        symbol = ((MemberSelectExpressionTree) expression).identifier().symbol();
+        return ((IdentifierTree) expression).symbol();
       }
-      return symbol;
+      if (expression.is(Tree.Kind.MEMBER_SELECT)) {
+        return ((MemberSelectExpressionTree) expression).identifier().symbol();
+      }
+      return Symbols.unknownSymbol;
+    }
+
+    private static Symbol ivSymbol(NewClassTree newClassTree) {
+      Tree parent = newClassTree.parent();
+      if (parent.is(Tree.Kind.VARIABLE)) {
+        return ((VariableTree) parent).symbol();
+      }
+      return Symbols.unknownSymbol;
     }
   }
 }
