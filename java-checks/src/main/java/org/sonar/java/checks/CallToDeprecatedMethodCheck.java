@@ -22,8 +22,12 @@ package org.sonar.java.checks;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "CallToDeprecatedMethod", repositoryKey = "squid")
@@ -37,8 +41,20 @@ public class CallToDeprecatedMethodCheck extends AbstractCallToDeprecatedCodeChe
       return;
     }
     String name = deprecatedSymbol.name();
-    if (isConstructor(deprecatedSymbol)) {
-      name = deprecatedSymbol.owner().name();
+
+    if (deprecatedSymbol.isMethodSymbol()) {
+      Tree parent = identifierTree.parent();
+      Arguments arguments = null;
+      if (parent.is(Tree.Kind.METHOD_INVOCATION)) {
+        arguments = ((MethodInvocationTree) parent).arguments();
+      } else if (parent.is(Tree.Kind.NEW_CLASS)) {
+        name = deprecatedSymbol.owner().name();
+        arguments = ((NewClassTree) parent).arguments();
+      }
+      // If any of the arguments is of unknown type then we don't report any issue
+      if (arguments != null && arguments.stream().anyMatch(arg -> arg.symbolType().isUnknown())) {
+        return;
+      }
     }
     reportIssue(identifierTree, String.format("Remove this use of \"%s\"; it is deprecated.", name));
   }
