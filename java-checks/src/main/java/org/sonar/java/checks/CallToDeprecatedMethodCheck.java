@@ -22,9 +22,7 @@ package org.sonar.java.checks;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -45,7 +43,6 @@ public class CallToDeprecatedMethodCheck extends AbstractCallToDeprecatedCodeChe
     String name = deprecatedSymbol.name();
 
     if (deprecatedSymbol.isMethodSymbol()) {
-      Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) deprecatedSymbol;
       Tree parent = identifierTree.parent();
       Arguments arguments = null;
       if (parent.is(Tree.Kind.METHOD_INVOCATION)) {
@@ -54,7 +51,8 @@ public class CallToDeprecatedMethodCheck extends AbstractCallToDeprecatedCodeChe
         name = deprecatedSymbol.owner().name();
         arguments = ((NewClassTree) parent).arguments();
       }
-      if (arguments != null && !argumentsMatchSignature(arguments, methodSymbol.parameterTypes())) {
+      // If any of the arguments is of unknown type then we don't report any issue
+      if (arguments != null && arguments.stream().anyMatch(arg -> arg.symbolType().isUnknown())) {
         return;
       }
     }
@@ -73,27 +71,5 @@ public class CallToDeprecatedMethodCheck extends AbstractCallToDeprecatedCodeChe
     return !(method.isAbstract()
       // if the method is flagged for removal, it will be handled by S5738
       || isFlaggedForRemoval(method));
-  }
-
-  /**
-   * Tests that the arguments types match the parameter types.
-   * Please note that the method returns false when the signature contains variadic parameters.
-   *
-   * @param arguments Arguments in a method call
-   * @param types Parameter types in a method signature
-   * @return true if the arguments' types match types. false otherwise.
-   */
-  private static boolean argumentsMatchSignature(Arguments arguments, List<Type> types) {
-    if (arguments.size() != types.size()) {
-      return false;
-    }
-    for (int i = 0; i < arguments.size(); i++) {
-      ExpressionTree argument = arguments.get(i);
-      Type type = types.get(i);
-      if (!argument.symbolType().equals(type)) {
-        return false;
-      }
-    }
-    return true;
   }
 }

@@ -22,7 +22,7 @@ class CallToDeprecatedMethod {
     foo(unknown()); // Compliant because we cannot determine the type of unknown
     foo(42L);
 
-    bar("Hello", " World!"); // Compliant FN
+    bar("Hello", " World!"); // Noncompliant
     bar("Hello, World!"); // Compliant
     bar(unknwonCall()); // Compliant because we cannot determine the type of unknownCall
   }
