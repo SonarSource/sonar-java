@@ -81,9 +81,22 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
       return;
     }
     Symbol.MethodSymbol constructor = constructors.get(0);
-    if (hasParameterForEveryField(constructor, fieldsNameToType.keySet())) {
+    if (hasParameterForEveryField(constructor, fieldsNameToType.keySet()) && !constructorHasSmallerVisibility(constructor, classSymbol)) {
       reportIssue(classTree.simpleName(), String.format("Refactor this class declaration to use 'record %s'.", recordName(classTree, constructor)));
     }
+  }
+
+  private static boolean constructorHasSmallerVisibility(Symbol.MethodSymbol constructor, Symbol.TypeSymbol classSymbol) {
+    boolean constructorIsPrivate = constructor.isPrivate();
+    boolean constructorIsPackageVisibility = constructor.isPackageVisibility();
+    if (classSymbol.isPublic()) {
+      return constructorIsPrivate || constructorIsPackageVisibility || constructor.isProtected();
+    } else if (classSymbol.isProtected()) {
+      return constructorIsPrivate || constructorIsPackageVisibility;
+    } else if (classSymbol.isPackageVisibility()) {
+      return constructorIsPrivate;
+    }
+    return false;
   }
 
   private static List<Symbol.MethodSymbol> classMethods(Symbol.TypeSymbol classSymbol) {
