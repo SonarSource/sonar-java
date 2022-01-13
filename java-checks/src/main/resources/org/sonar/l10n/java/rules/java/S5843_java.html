@@ -27,13 +27,13 @@ if (dateString.matches("^(?:(?:31(\\/|-|\\.)(?:0?[13578]|1[02]))\\1|(?:(?:29|30)
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-    if (dateString.matches("^\\d{1,2}([-/.])\\d{1,2}\\1\\d{1,4}$")) {
-        String dateParts[] = dateString.split("[-/.]");
-        int day = Integer.parseInt(dateParts[0]);
-        int month = Integer.parseInt(dateParts[1]);
-        int year = Integer.parseInt(dateParts[2]);
-        // Put logic to validate and process the date based on its integer parts here
-    }
+if (dateString.matches("^\\d{1,2}([-/.])\\d{1,2}\\1\\d{1,4}$")) {
+    String dateParts[] = dateString.split("[-/.]");
+    int day = Integer.parseInt(dateParts[0]);
+    int month = Integer.parseInt(dateParts[1]);
+    int year = Integer.parseInt(dateParts[2]);
+    // Put logic to validate and process the date based on its integer parts here
+}
 </pre>
 <h2>Exceptions</h2>
 <p>Regular expressions are only analyzed if all parts of the regular expression are either string literals, effectively final local variables or

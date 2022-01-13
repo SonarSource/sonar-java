@@ -7,7 +7,7 @@
     "constantCost": "5min"
   },
   "tags": [
-    "java16"
+    "java17"
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-6217",
