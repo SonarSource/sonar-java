@@ -39,39 +39,12 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.sonar.java.cfg.CFGTestUtils.buildCFG;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.ASSERT_STATEMENT;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.BREAK_STATEMENT;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.CONTINUE_STATEMENT;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.EQUAL_TO;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.IDENTIFIER;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.INT_LITERAL;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.MEMBER_SELECT;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.METHOD_INVOCATION;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.MULTIPLY_ASSIGNMENT;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.NEW_ARRAY;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.NEW_CLASS;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.NULL_LITERAL;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.PLUS;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.RETURN_STATEMENT;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.STRING_LITERAL;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.SWITCH_EXPRESSION;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.SWITCH_STATEMENT;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.THROW_STATEMENT;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.TRY_STATEMENT;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.VARIABLE;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.WHILE_STATEMENT;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.YIELD_STATEMENT;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.DEFAULT_PATTERN;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.TYPE_PATTERN;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.NULL_PATTERN;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.GUARDED_PATTERN;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.GREATER_THAN;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.*;
 
 class CFGTest {
 
@@ -222,7 +195,7 @@ class CFGTest {
       return this;
     }
 
-    BlockChecker terminator(final Kind kind) {
+    BlockChecker terminator(final Tree.Kind kind) {
       this.terminatorChecker = new TerminatorChecker(kind);
       return this;
     }
@@ -424,7 +397,7 @@ class CFGTest {
 
   private static class TerminatorChecker {
 
-    private final Kind kind;
+    private final Tree.Kind kind;
 
     private TerminatorChecker(final Tree.Kind kind) {
       this.kind = kind;
@@ -471,8 +444,8 @@ class CFGTest {
     final CFG cfg = buildCFG("void fun() { bar();}");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.IDENTIFIER, "bar"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(0));
+        element(IDENTIFIER, "bar"),
+        element(METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
     CFG.Block entry = cfg.entryBlock();
     assertThat(entry.isMethodExitBlock()).as("1st block is not an exit").isFalse();
@@ -486,9 +459,9 @@ class CFGTest {
     final CFG cfg = buildCFG("void fun() { record R(int x) {} bar();}");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.RECORD, "R"),
-        element(Tree.Kind.IDENTIFIER, "bar"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(0));
+        element(RECORD, "R"),
+        element(IDENTIFIER, "bar"),
+        element(METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
     CFG.Block entry = cfg.entryBlock();
     assertThat(entry.isMethodExitBlock()).as("1st block is not an exit").isFalse();
@@ -502,12 +475,12 @@ class CFGTest {
     final CFG cfg = buildCFG("void fun() { bar();qix();baz();}");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.IDENTIFIER, "bar"),
-        element(Tree.Kind.METHOD_INVOCATION),
-        element(Tree.Kind.IDENTIFIER, "qix"),
-        element(Tree.Kind.METHOD_INVOCATION),
-        element(Tree.Kind.IDENTIFIER, "baz"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(0));
+        element(IDENTIFIER, "bar"),
+        element(METHOD_INVOCATION),
+        element(IDENTIFIER, "qix"),
+        element(METHOD_INVOCATION),
+        element(IDENTIFIER, "baz"),
+        element(METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
   }
 
@@ -516,7 +489,7 @@ class CFGTest {
     final CFG cfg = buildCFG("void fun() {Object o;}");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.VARIABLE, "o")).successors(0));
+        element(VARIABLE, "o")).successors(0));
     cfgChecker.check(cfg);
   }
 
@@ -525,11 +498,11 @@ class CFGTest {
     final CFG cfg = buildCFG("void fun() {if(a) { foo(); } }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.IDENTIFIER, "a")
-        ).terminator(Tree.Kind.IF_STATEMENT).successors(0, 1),
+        element(IDENTIFIER, "a")
+        ).terminator(IF_STATEMENT).successors(0, 1),
       block(
-        element(Tree.Kind.IDENTIFIER, "foo"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(0));
+        element(IDENTIFIER, "foo"),
+        element(METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
   }
 
@@ -538,14 +511,14 @@ class CFGTest {
     final CFG cfg = buildCFG("void fun() {if(a) { foo(); } else { bar(); } }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.IDENTIFIER, "a"))
-      .terminator(Tree.Kind.IF_STATEMENT).successors(1, 2),
+        element(IDENTIFIER, "a"))
+      .terminator(IF_STATEMENT).successors(1, 2),
       block(
-        element(Tree.Kind.IDENTIFIER, "foo"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(0),
+        element(IDENTIFIER, "foo"),
+        element(METHOD_INVOCATION)).successors(0),
       block(
-        element(Tree.Kind.IDENTIFIER, "bar"),
-        element(Tree.Kind.METHOD_INVOCATION)
+        element(IDENTIFIER, "bar"),
+        element(METHOD_INVOCATION)
         ).successors(0));
     cfgChecker.check(cfg);
   }
@@ -555,18 +528,18 @@ class CFGTest {
     final CFG cfg = buildCFG("void fun() {\nif(a) {\n foo(); \n } else if(b) {\n bar();\n } }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.IDENTIFIER, "a")
-        ).terminator(Tree.Kind.IF_STATEMENT).successors(2, 3),
+        element(IDENTIFIER, "a")
+        ).terminator(IF_STATEMENT).successors(2, 3),
       block(
-        element(Tree.Kind.IDENTIFIER, "foo"),
-        element(Tree.Kind.METHOD_INVOCATION)
+        element(IDENTIFIER, "foo"),
+        element(METHOD_INVOCATION)
         ).successors(0),
       block(
-        element(Tree.Kind.IDENTIFIER, "b")
-        ).terminator(Tree.Kind.IF_STATEMENT).successors(0, 1),
+        element(IDENTIFIER, "b")
+        ).terminator(IF_STATEMENT).successors(0, 1),
       block(
-        element(Tree.Kind.IDENTIFIER, "bar"),
-        element(Tree.Kind.METHOD_INVOCATION)
+        element(IDENTIFIER, "bar"),
+        element(METHOD_INVOCATION)
         ).successors(0));
     cfgChecker.check(cfg);
   }
@@ -576,14 +549,14 @@ class CFGTest {
     final CFG cfg = buildCFG("void fun() {if(a || b) { foo(); } }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.IDENTIFIER, "a")
-        ).terminator(Tree.Kind.CONDITIONAL_OR).successors(1, 2),
+        element(IDENTIFIER, "a")
+        ).terminator(CONDITIONAL_OR).successors(1, 2),
       block(
-        element(Tree.Kind.IDENTIFIER, "b")
-        ).terminator(Tree.Kind.IF_STATEMENT).successors(0, 1),
+        element(IDENTIFIER, "b")
+        ).terminator(IF_STATEMENT).successors(0, 1),
       block(
-        element(Tree.Kind.IDENTIFIER, "foo"),
-        element(Tree.Kind.METHOD_INVOCATION)
+        element(IDENTIFIER, "foo"),
+        element(METHOD_INVOCATION)
         ).successors(0));
     cfgChecker.check(cfg);
   }
@@ -593,14 +566,14 @@ class CFGTest {
     final CFG cfg = buildCFG("void fun() {if((a && b)) { foo(); } }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.IDENTIFIER, "a")
-        ).terminator(Tree.Kind.CONDITIONAL_AND).successors(0, 2),
+        element(IDENTIFIER, "a")
+        ).terminator(CONDITIONAL_AND).successors(0, 2),
       block(
-        element(Tree.Kind.IDENTIFIER, "b")
-        ).terminator(Tree.Kind.IF_STATEMENT).successors(0, 1),
+        element(IDENTIFIER, "b")
+        ).terminator(IF_STATEMENT).successors(0, 1),
       block(
-        element(Tree.Kind.IDENTIFIER, "foo"),
-        element(Tree.Kind.METHOD_INVOCATION)
+        element(IDENTIFIER, "foo"),
+        element(METHOD_INVOCATION)
         ).successors(0));
     cfgChecker.check(cfg);
   }
@@ -610,11 +583,11 @@ class CFGTest {
     final CFG cfg = buildCFG("void fun() {boolean bool = a && b;}");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.IDENTIFIER, "a")).terminator(Tree.Kind.CONDITIONAL_AND).successors(1, 2),
+        element(IDENTIFIER, "a")).terminator(CONDITIONAL_AND).successors(1, 2),
       block(
-        element(Tree.Kind.IDENTIFIER, "b")).successors(1),
+        element(IDENTIFIER, "b")).successors(1),
       block(
-        element(Tree.Kind.VARIABLE, "bool")).successors(0));
+        element(VARIABLE, "bool")).successors(0));
     cfgChecker.check(cfg);
   }
 
@@ -623,15 +596,15 @@ class CFGTest {
     final CFG cfg = buildCFG("void fun() { Object c = foo ? a : b; a.toString();}");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.IDENTIFIER, "foo")).terminator(Tree.Kind.CONDITIONAL_EXPRESSION).successors(2, 3),
+        element(IDENTIFIER, "foo")).terminator(CONDITIONAL_EXPRESSION).successors(2, 3),
       block(
-        element(Tree.Kind.IDENTIFIER, "a")).successors(1),
+        element(IDENTIFIER, "a")).successors(1),
       block(
-        element(Tree.Kind.IDENTIFIER, "b")).successors(1),
+        element(IDENTIFIER, "b")).successors(1),
       block(
-        element(Kind.VARIABLE, "c"),
-        element(Tree.Kind.IDENTIFIER, "a"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(0));
+        element(VARIABLE, "c"),
+        element(IDENTIFIER, "a"),
+        element(METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
   }
 
@@ -659,32 +632,32 @@ class CFGTest {
       "}");
     CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.CASE_GROUP),
-        element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.IDENTIFIER, "bar"),
-        element(Tree.Kind.METHOD_INVOCATION)
+        element(CASE_GROUP),
+        element(IDENTIFIER, "System"),
+        element(MEMBER_SELECT),
+        element(IDENTIFIER, "bar"),
+        element(METHOD_INVOCATION)
         ).hasCaseGroup().successors(3),
       block(
-        element(Tree.Kind.CASE_GROUP),
-        element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.IDENTIFIER, "qix"),
-        element(Tree.Kind.METHOD_INVOCATION)
-        ).hasCaseGroup().terminator(Tree.Kind.BREAK_STATEMENT).successors(0),
+        element(CASE_GROUP),
+        element(IDENTIFIER, "System"),
+        element(MEMBER_SELECT),
+        element(IDENTIFIER, "qix"),
+        element(METHOD_INVOCATION)
+        ).hasCaseGroup().terminator(BREAK_STATEMENT).successors(0),
       block(
-        element(Tree.Kind.CASE_GROUP),
-        element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.IDENTIFIER, "baz"),
-        element(Tree.Kind.METHOD_INVOCATION)
+        element(CASE_GROUP),
+        element(IDENTIFIER, "System"),
+        element(MEMBER_SELECT),
+        element(IDENTIFIER, "baz"),
+        element(METHOD_INVOCATION)
         ).hasCaseGroup().successors(0),
       block(
-        element(Tree.Kind.VARIABLE, "a"),
-        element(Tree.Kind.IDENTIFIER, "foo"),
-        element(Tree.Kind.INT_LITERAL, 1),
-        element(Tree.Kind.INT_LITERAL, 2)
-        ).terminator(Tree.Kind.SWITCH_STATEMENT).successors(2, 3, 4));
+        element(VARIABLE, "a"),
+        element(IDENTIFIER, "foo"),
+        element(INT_LITERAL, 1),
+        element(INT_LITERAL, 2)
+        ).terminator(SWITCH_STATEMENT).successors(2, 3, 4));
     cfgChecker.check(cfg);
   }
 
@@ -706,30 +679,30 @@ class CFGTest {
       "  }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.CASE_GROUP),
-        element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.IDENTIFIER, "bar"),
-        element(Tree.Kind.METHOD_INVOCATION)).hasCaseGroup().successors(3),
+        element(CASE_GROUP),
+        element(IDENTIFIER, "System"),
+        element(MEMBER_SELECT),
+        element(IDENTIFIER, "bar"),
+        element(METHOD_INVOCATION)).hasCaseGroup().successors(3),
       block(
-        element(Tree.Kind.CASE_GROUP),
-        element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.IDENTIFIER, "qix"),
-        element(Tree.Kind.METHOD_INVOCATION)).terminator(Tree.Kind.BREAK_STATEMENT).hasCaseGroup().successors(0),
+        element(CASE_GROUP),
+        element(IDENTIFIER, "System"),
+        element(MEMBER_SELECT),
+        element(IDENTIFIER, "qix"),
+        element(METHOD_INVOCATION)).terminator(BREAK_STATEMENT).hasCaseGroup().successors(0),
       block(
-        element(Tree.Kind.CASE_GROUP),
-        element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.IDENTIFIER, "baz"),
-        element(Tree.Kind.METHOD_INVOCATION)).hasCaseGroup().successors(0),
+        element(CASE_GROUP),
+        element(IDENTIFIER, "System"),
+        element(MEMBER_SELECT),
+        element(IDENTIFIER, "baz"),
+        element(METHOD_INVOCATION)).hasCaseGroup().successors(0),
       block(
-        element(Tree.Kind.VARIABLE, "a"),
-        element(Tree.Kind.IDENTIFIER, "foo"),
-        element(Tree.Kind.INT_LITERAL, 1),
-        element(Tree.Kind.INT_LITERAL, 2),
-        element(Tree.Kind.INT_LITERAL, 3),
-        element(Tree.Kind.INT_LITERAL, 4)).terminator(Tree.Kind.SWITCH_STATEMENT).successors(2, 3, 4));
+        element(VARIABLE, "a"),
+        element(IDENTIFIER, "foo"),
+        element(INT_LITERAL, 1),
+        element(INT_LITERAL, 2),
+        element(INT_LITERAL, 3),
+        element(INT_LITERAL, 4)).terminator(SWITCH_STATEMENT).successors(2, 3, 4));
     cfgChecker.check(cfg);
   }
 
@@ -748,26 +721,26 @@ class CFGTest {
       "  }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.CASE_GROUP),
-        element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.IDENTIFIER, "bar"),
-        element(Tree.Kind.METHOD_INVOCATION)).hasCaseGroup().successors(3),
+        element(CASE_GROUP),
+        element(IDENTIFIER, "System"),
+        element(MEMBER_SELECT),
+        element(IDENTIFIER, "bar"),
+        element(METHOD_INVOCATION)).hasCaseGroup().successors(3),
       block(
-        element(Tree.Kind.CASE_GROUP),
-        element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.IDENTIFIER, "qix"),
-        element(Tree.Kind.METHOD_INVOCATION)).terminator(Tree.Kind.BREAK_STATEMENT).hasCaseGroup().successors(1),
+        element(CASE_GROUP),
+        element(IDENTIFIER, "System"),
+        element(MEMBER_SELECT),
+        element(IDENTIFIER, "qix"),
+        element(METHOD_INVOCATION)).terminator(BREAK_STATEMENT).hasCaseGroup().successors(1),
       block(
-        element(Tree.Kind.VARIABLE, "a"),
-        element(Tree.Kind.IDENTIFIER, "foo"),
-        element(Tree.Kind.INT_LITERAL, 1),
-        element(Tree.Kind.INT_LITERAL, 2)).terminator(Tree.Kind.SWITCH_STATEMENT).successors(1, 3, 4),
+        element(VARIABLE, "a"),
+        element(IDENTIFIER, "foo"),
+        element(INT_LITERAL, 1),
+        element(INT_LITERAL, 2)).terminator(SWITCH_STATEMENT).successors(1, 3, 4),
       block(
-        element(Tree.Kind.IDENTIFIER, "Integer"),
-        element(Tree.Kind.IDENTIFIER, "foo"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(0));
+        element(IDENTIFIER, "Integer"),
+        element(IDENTIFIER, "foo"),
+        element(METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
   }
 
@@ -792,7 +765,7 @@ class CFGTest {
       "  }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.CASE_GROUP),
+        element(CASE_GROUP),
         element(IDENTIFIER, "fun"),
         element(IDENTIFIER, "bar1"),
         element(METHOD_INVOCATION),
@@ -800,33 +773,33 @@ class CFGTest {
         element(IDENTIFIER, "bar2"),
         element(METHOD_INVOCATION)).hasCaseGroup().successors(1),
       block(
-        element(Tree.Kind.CASE_GROUP),
+        element(CASE_GROUP),
         element(IDENTIFIER, "fun"),
         element(IDENTIFIER, "qix"),
         element(METHOD_INVOCATION)).hasCaseGroup().successors(1),
       block(
-        element(Tree.Kind.CASE_GROUP),
+        element(CASE_GROUP),
         element(IDENTIFIER, "fun"),
         element(IDENTIFIER, "gul"),
         element(METHOD_INVOCATION)).hasCaseGroup().successors(1),
       block(
-        element(Tree.Kind.CASE_GROUP),
+        element(CASE_GROUP),
         element(STRING_LITERAL, "boom"),
         element(NEW_CLASS)).hasCaseGroup().terminator(THROW_STATEMENT).successors(0),
       block(
-        element(Tree.Kind.CASE_GROUP),
+        element(CASE_GROUP),
         element(IDENTIFIER, "fun"),
         element(IDENTIFIER, "def"),
         element(METHOD_INVOCATION)).hasCaseGroup().successors(1),
       block(
         element(VARIABLE, "a"),
         element(IDENTIFIER, "foo"),
-        element(Tree.Kind.INT_LITERAL, 1),
-        element(Tree.Kind.INT_LITERAL, 2),
-        element(Tree.Kind.INT_LITERAL, 3),
-        element(Tree.Kind.INT_LITERAL, 4),
-        element(Tree.Kind.INT_LITERAL, 5),
-        element(Tree.Kind.INT_LITERAL, 6)).terminator(SWITCH_STATEMENT).successors(3, 4, 5, 6, 7),
+        element(INT_LITERAL, 1),
+        element(INT_LITERAL, 2),
+        element(INT_LITERAL, 3),
+        element(INT_LITERAL, 4),
+        element(INT_LITERAL, 5),
+        element(INT_LITERAL, 6)).terminator(SWITCH_STATEMENT).successors(3, 4, 5, 6, 7),
       block(
         element(IDENTIFIER, "Integer"),
         element(IDENTIFIER, "foo"),
@@ -846,11 +819,11 @@ class CFGTest {
       + "enum MyEnum { BAR, QIX; }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.CASE_GROUP),
-        element(Tree.Kind.INT_LITERAL, 1)).hasCaseGroup().successors(1),
+        element(CASE_GROUP),
+        element(INT_LITERAL, 1)).hasCaseGroup().successors(1),
       block(
-        element(Tree.Kind.CASE_GROUP),
-        element(Tree.Kind.INT_LITERAL, 2)).hasCaseGroup().successors(1),
+        element(CASE_GROUP),
+        element(INT_LITERAL, 2)).hasCaseGroup().successors(1),
       block(
         element(IDENTIFIER, "foo"),
         element(IDENTIFIER, "BAR"),
@@ -874,7 +847,7 @@ class CFGTest {
       "  }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.CASE_GROUP),
+        element(CASE_GROUP),
         element(IDENTIFIER, "fun"),
         element(IDENTIFIER, "bar1"),
         element(METHOD_INVOCATION),
@@ -883,26 +856,26 @@ class CFGTest {
         element(METHOD_INVOCATION),
         element(PLUS)).hasCaseGroup().successors(1),
       block(
-        element(Tree.Kind.CASE_GROUP),
+        element(CASE_GROUP),
         element(IDENTIFIER, "fun"),
         element(IDENTIFIER, "qix"),
         element(METHOD_INVOCATION)).hasCaseGroup().successors(1),
       block(
-        element(Tree.Kind.CASE_GROUP),
+        element(CASE_GROUP),
         element(STRING_LITERAL, "boom"),
         element(NEW_CLASS)).hasCaseGroup().terminator(THROW_STATEMENT).successors(0),
       block(
-        element(Tree.Kind.CASE_GROUP),
+        element(CASE_GROUP),
         element(IDENTIFIER, "fun"),
         element(IDENTIFIER, "def"),
         element(METHOD_INVOCATION)).hasCaseGroup().successors(1),
       block(
         element(IDENTIFIER, "foo"),
-        element(Tree.Kind.INT_LITERAL, 1),
-        element(Tree.Kind.INT_LITERAL, 2),
-        element(Tree.Kind.INT_LITERAL, 3),
-        element(Tree.Kind.INT_LITERAL, 4),
-        element(Tree.Kind.INT_LITERAL, 5)).terminator(SWITCH_EXPRESSION).successors(3, 4, 5, 6),
+        element(INT_LITERAL, 1),
+        element(INT_LITERAL, 2),
+        element(INT_LITERAL, 3),
+        element(INT_LITERAL, 4),
+        element(INT_LITERAL, 5)).terminator(SWITCH_EXPRESSION).successors(3, 4, 5, 6),
       block(
         element(VARIABLE, "a"),
         element(IDENTIFIER, "a")).terminator(RETURN_STATEMENT).successors(0));
@@ -930,12 +903,12 @@ class CFGTest {
       "  }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.CASE_GROUP),
+        element(CASE_GROUP),
         element(IDENTIFIER, "fun"),
         element(IDENTIFIER, "bar"),
         element(METHOD_INVOCATION)).hasCaseGroup().successors(6),
       block(
-        element(Tree.Kind.CASE_GROUP),
+        element(CASE_GROUP),
         element(IDENTIFIER, "fun"),
         element(IDENTIFIER, "bar1"),
         element(METHOD_INVOCATION),
@@ -944,25 +917,25 @@ class CFGTest {
         element(METHOD_INVOCATION),
         element(PLUS)).hasCaseGroup().terminator(YIELD_STATEMENT).successors(1),
       block(
-        element(Tree.Kind.CASE_GROUP),
+        element(CASE_GROUP),
         element(STRING_LITERAL, "boom"),
         element(NEW_CLASS)).hasCaseGroup().terminator(THROW_STATEMENT).successors(0),
       block(
-        element(Tree.Kind.CASE_GROUP),
+        element(CASE_GROUP),
         element(IDENTIFIER, "foo")).hasCaseGroup().successors(1),
       block(
-        element(Tree.Kind.CASE_GROUP),
+        element(CASE_GROUP),
         element(IDENTIFIER, "fun"),
         element(IDENTIFIER, "def"),
         element(METHOD_INVOCATION)).hasCaseGroup().successors(1),
       block(
         element(IDENTIFIER, "foo"),
-        element(Tree.Kind.INT_LITERAL, 1),
-        element(Tree.Kind.INT_LITERAL, 2),
-        element(Tree.Kind.INT_LITERAL, 3),
-        element(Tree.Kind.INT_LITERAL, 4),
-        element(Tree.Kind.INT_LITERAL, 5),
-        element(Tree.Kind.INT_LITERAL, 6)).terminator(SWITCH_EXPRESSION).successors(3, 4, 5, 6, 7),
+        element(INT_LITERAL, 1),
+        element(INT_LITERAL, 2),
+        element(INT_LITERAL, 3),
+        element(INT_LITERAL, 4),
+        element(INT_LITERAL, 5),
+        element(INT_LITERAL, 6)).terminator(SWITCH_EXPRESSION).successors(3, 4, 5, 6, 7),
       block(
         element(VARIABLE, "a"),
         element(IDENTIFIER, "a")).terminator(RETURN_STATEMENT).successors(0));
@@ -984,16 +957,16 @@ class CFGTest {
       + "  }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.CASE_GROUP),
+        element(CASE_GROUP),
         element(IDENTIFIER, "arr"),
-        element(MEMBER_SELECT)).hasCaseGroup().terminator(Tree.Kind.YIELD_STATEMENT).successors(1),
+        element(MEMBER_SELECT)).hasCaseGroup().terminator(YIELD_STATEMENT).successors(1),
       block(
-        element(Tree.Kind.CASE_GROUP),
+        element(CASE_GROUP),
         element(INT_LITERAL, 1),
-        element(Tree.Kind.UNARY_MINUS)).hasCaseGroup().terminator(Tree.Kind.YIELD_STATEMENT).successors(1),
+        element(UNARY_MINUS)).hasCaseGroup().terminator(YIELD_STATEMENT).successors(1),
       block(
-        element(Tree.Kind.CASE_GROUP),
-        element(INT_LITERAL, 42)).hasCaseGroup().terminator(Tree.Kind.YIELD_STATEMENT).successors(1),
+        element(CASE_GROUP),
+        element(INT_LITERAL, 42)).hasCaseGroup().terminator(YIELD_STATEMENT).successors(1),
       block(
         element(IDENTIFIER, "o"),
         element(TYPE_PATTERN),
@@ -1017,11 +990,11 @@ class CFGTest {
     final CFG cfg = buildCFG("void fun(Object foo) { if(foo == null) return; }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.IDENTIFIER, "foo"),
-        element(Tree.Kind.NULL_LITERAL),
+        element(IDENTIFIER, "foo"),
+        element(NULL_LITERAL),
         element(EQUAL_TO)
-        ).terminator(Tree.Kind.IF_STATEMENT).successors(0, 1),
-      terminator(Tree.Kind.RETURN_STATEMENT, 0).successorWithoutJump(0));
+        ).terminator(IF_STATEMENT).successors(0, 1),
+      terminator(RETURN_STATEMENT, 0).successorWithoutJump(0));
     cfgChecker.check(cfg);
   }
 
@@ -1030,27 +1003,27 @@ class CFGTest {
     final CFG cfg = buildCFG("void fun(Object foo) {System.out.println('c'); for(int i =0;i<10;i++) { System.out.println(i); } }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.CHAR_LITERAL, "'c'"),
-        element(Tree.Kind.METHOD_INVOCATION),
+        element(IDENTIFIER, "System"),
+        element(MEMBER_SELECT),
+        element(CHAR_LITERAL, "'c'"),
+        element(METHOD_INVOCATION),
         element(INT_LITERAL, 0),
-        element(Tree.Kind.VARIABLE, "i")
+        element(VARIABLE, "i")
         ).successors(3),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
+        element(IDENTIFIER, "i"),
         element(INT_LITERAL, 10),
-        element(Tree.Kind.LESS_THAN)
-        ).terminator(Tree.Kind.FOR_STATEMENT).successors(0, 2),
+        element(LESS_THAN)
+        ).terminator(FOR_STATEMENT).successors(0, 2),
       block(
-        element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.IDENTIFIER, "i"),
-        element(Tree.Kind.METHOD_INVOCATION)
+        element(IDENTIFIER, "System"),
+        element(MEMBER_SELECT),
+        element(IDENTIFIER, "i"),
+        element(METHOD_INVOCATION)
         ).successors(1),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
-        element(Tree.Kind.POSTFIX_INCREMENT)
+        element(IDENTIFIER, "i"),
+        element(POSTFIX_INCREMENT)
         ).successors(3));
     cfgChecker.check(cfg);
   }
@@ -1061,22 +1034,22 @@ class CFGTest {
     final CFGChecker cfgChecker = checker(
       block(
         element(INT_LITERAL, 0),
-        element(Tree.Kind.VARIABLE, "i")
+        element(VARIABLE, "i")
         ).successors(4),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
+        element(IDENTIFIER, "i"),
         element(INT_LITERAL, 10),
-        element(Tree.Kind.LESS_THAN)
-        ).terminator(Tree.Kind.FOR_STATEMENT).successors(0, 3),
+        element(LESS_THAN)
+        ).terminator(FOR_STATEMENT).successors(0, 3),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
+        element(IDENTIFIER, "i"),
         element(INT_LITERAL, 5),
         element(EQUAL_TO)
-        ).terminator(Tree.Kind.IF_STATEMENT).successors(1, 2),
-      terminator(Tree.Kind.BREAK_STATEMENT, 0).successorWithoutJump(1),
+        ).terminator(IF_STATEMENT).successors(1, 2),
+      terminator(BREAK_STATEMENT, 0).successorWithoutJump(1),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
-        element(Tree.Kind.POSTFIX_INCREMENT)
+        element(IDENTIFIER, "i"),
+        element(POSTFIX_INCREMENT)
         ).successors(4));
     cfgChecker.check(cfg);
   }
@@ -1087,22 +1060,22 @@ class CFGTest {
     final CFGChecker cfgChecker = checker(
       block(
         element(INT_LITERAL, 0),
-        element(Tree.Kind.VARIABLE, "i")
+        element(VARIABLE, "i")
         ).successors(4),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
+        element(IDENTIFIER, "i"),
         element(INT_LITERAL, 10),
-        element(Tree.Kind.LESS_THAN)
-        ).terminator(Tree.Kind.FOR_STATEMENT).successors(0, 3),
+        element(LESS_THAN)
+        ).terminator(FOR_STATEMENT).successors(0, 3),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
+        element(IDENTIFIER, "i"),
         element(INT_LITERAL, 5),
         element(EQUAL_TO)
-        ).terminator(Tree.Kind.IF_STATEMENT).successors(1, 2),
-      terminator(Tree.Kind.CONTINUE_STATEMENT, 1).successorWithoutJump(1),
+        ).terminator(IF_STATEMENT).successors(1, 2),
+      terminator(CONTINUE_STATEMENT, 1).successorWithoutJump(1),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
-        element(Tree.Kind.POSTFIX_INCREMENT)
+        element(IDENTIFIER, "i"),
+        element(POSTFIX_INCREMENT)
         ).successors(4));
     cfgChecker.check(cfg);
   }
@@ -1112,35 +1085,35 @@ class CFGTest {
     final CFG cfg = buildCFG("void fun(){ System.out.println(\"start\"); for(String foo:list) {System.out.println(foo); if(foo.length()> 2) {continue;}  System.out.println('c');} System.out.println(\"end\"); }");
     final CFGChecker cfgChecker = checker(
         block(
-          element(Tree.Kind.IDENTIFIER, "System"),
-          element(Tree.Kind.MEMBER_SELECT),
-          element(Tree.Kind.STRING_LITERAL, "start"),
-          element(Tree.Kind.METHOD_INVOCATION)).successors(6),
+          element(IDENTIFIER, "System"),
+          element(MEMBER_SELECT),
+          element(STRING_LITERAL, "start"),
+          element(METHOD_INVOCATION)).successors(6),
         block(
-            element(Tree.Kind.IDENTIFIER, "list")).successors(2),
+            element(IDENTIFIER, "list")).successors(2),
         block(
-          element(Tree.Kind.IDENTIFIER, "System"),
-          element(Tree.Kind.MEMBER_SELECT),
-          element(Tree.Kind.IDENTIFIER, "foo"),
-          element(Kind.METHOD_INVOCATION),
-          element(Tree.Kind.IDENTIFIER, "foo"),
-          element(Kind.METHOD_INVOCATION),
+          element(IDENTIFIER, "System"),
+          element(MEMBER_SELECT),
+          element(IDENTIFIER, "foo"),
+          element(METHOD_INVOCATION),
+          element(IDENTIFIER, "foo"),
+          element(METHOD_INVOCATION),
           element(INT_LITERAL, 2),
-          element(Kind.GREATER_THAN)
-        ).terminator(Kind.IF_STATEMENT).successors(3, 4),
-        terminator(Kind.CONTINUE_STATEMENT).successors(2).successorWithoutJump(3),
+          element(GREATER_THAN)
+        ).terminator(IF_STATEMENT).successors(3, 4),
+        terminator(CONTINUE_STATEMENT).successors(2).successorWithoutJump(3),
         block(
-          element(Tree.Kind.IDENTIFIER, "System"),
-          element(Tree.Kind.MEMBER_SELECT),
-          element(Tree.Kind.CHAR_LITERAL, "'c'"),
-          element(Tree.Kind.METHOD_INVOCATION)).successors(2),
+          element(IDENTIFIER, "System"),
+          element(MEMBER_SELECT),
+          element(CHAR_LITERAL, "'c'"),
+          element(METHOD_INVOCATION)).successors(2),
         block(
-            element(Tree.Kind.VARIABLE, "foo")).terminator(Tree.Kind.FOR_EACH_STATEMENT).successors(1, 5),
+            element(VARIABLE, "foo")).terminator(FOR_EACH_STATEMENT).successors(1, 5),
         block(
-          element(Tree.Kind.IDENTIFIER, "System"),
-          element(Tree.Kind.MEMBER_SELECT),
-          element(Tree.Kind.STRING_LITERAL, "end"),
-          element(Tree.Kind.METHOD_INVOCATION)).successors(0));
+          element(IDENTIFIER, "System"),
+          element(MEMBER_SELECT),
+          element(STRING_LITERAL, "end"),
+          element(METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
   }
 
@@ -1149,24 +1122,24 @@ class CFGTest {
     CFG cfg = buildCFG("void fun(){ System.out.println('c'); for(String foo:list) {System.out.println(foo);} System.out.println('d'); }");
     CFGChecker cfgChecker = checker(
         block(
-          element(Tree.Kind.IDENTIFIER, "System"),
-          element(Tree.Kind.MEMBER_SELECT),
-          element(Tree.Kind.CHAR_LITERAL, "'c'"),
-          element(Tree.Kind.METHOD_INVOCATION)).successors(4),
+          element(IDENTIFIER, "System"),
+          element(MEMBER_SELECT),
+          element(CHAR_LITERAL, "'c'"),
+          element(METHOD_INVOCATION)).successors(4),
         block(
-            element(Tree.Kind.IDENTIFIER, "list")).successors(2),
+            element(IDENTIFIER, "list")).successors(2),
         block(
-          element(Tree.Kind.IDENTIFIER, "System"),
-          element(Tree.Kind.MEMBER_SELECT),
-          element(Tree.Kind.IDENTIFIER, "foo"),
-          element(Tree.Kind.METHOD_INVOCATION)).successors(2),
+          element(IDENTIFIER, "System"),
+          element(MEMBER_SELECT),
+          element(IDENTIFIER, "foo"),
+          element(METHOD_INVOCATION)).successors(2),
         block(
-            element(Tree.Kind.VARIABLE, "foo")).terminator(Tree.Kind.FOR_EACH_STATEMENT).successors(1, 3),
+            element(VARIABLE, "foo")).terminator(FOR_EACH_STATEMENT).successors(1, 3),
         block(
-          element(Tree.Kind.IDENTIFIER, "System"),
-          element(Tree.Kind.MEMBER_SELECT),
-          element(Tree.Kind.CHAR_LITERAL, "'d'"),
-          element(Tree.Kind.METHOD_INVOCATION)).successors(0));
+          element(IDENTIFIER, "System"),
+          element(MEMBER_SELECT),
+          element(CHAR_LITERAL, "'d'"),
+          element(METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
     cfg = buildCFG("void fun(){ for (String n : dir.list(foo() ? \"**\" : \"\")) {\n" +
         "      if (s.isEmpty()) {\n" +
@@ -1175,20 +1148,20 @@ class CFGTest {
         "    }}");
     cfgChecker = new CFGChecker(
         block(
-          element(Kind.IDENTIFIER, "dir"),
-          element(Kind.IDENTIFIER, "foo"),
-          element(Kind.METHOD_INVOCATION)).terminator(Kind.CONDITIONAL_EXPRESSION).ifTrue(6).ifFalse(5),
-        block(element(Kind.STRING_LITERAL, "**")).successors(4),
-        block(element(Kind.STRING_LITERAL, "")).successors(4),
+          element(IDENTIFIER, "dir"),
+          element(IDENTIFIER, "foo"),
+          element(METHOD_INVOCATION)).terminator(CONDITIONAL_EXPRESSION).ifTrue(6).ifFalse(5),
+        block(element(STRING_LITERAL, "**")).successors(4),
+        block(element(STRING_LITERAL, "")).successors(4),
         block(
-            element(Kind.METHOD_INVOCATION)).successors(1),
+            element(METHOD_INVOCATION)).successors(1),
         block(
-            element(Kind.IDENTIFIER, "s"),
-            element(Kind.METHOD_INVOCATION)).terminator(Kind.IF_STATEMENT).ifTrue(2).ifFalse(1),
+            element(IDENTIFIER, "s"),
+            element(METHOD_INVOCATION)).terminator(IF_STATEMENT).ifTrue(2).ifFalse(1),
         block(
-            element(Kind.IDENTIFIER, "n"),
-            element(Kind.ASSIGNMENT)).successors(1),
-        block(element(Kind.VARIABLE, "n")).terminator(Kind.FOR_EACH_STATEMENT).ifFalse(0).ifTrue(3)
+            element(IDENTIFIER, "n"),
+            element(ASSIGNMENT)).successors(1),
+        block(element(VARIABLE, "n")).terminator(FOR_EACH_STATEMENT).ifFalse(0).ifTrue(3)
         );
     cfgChecker.check(cfg);
   }
@@ -1199,20 +1172,20 @@ class CFGTest {
     final CFGChecker cfgChecker = checker(
       block(
         element(INT_LITERAL, 0),
-        element(Tree.Kind.VARIABLE, "i")
+        element(VARIABLE, "i")
         ).successors(2),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
+        element(IDENTIFIER, "i"),
         element(INT_LITERAL, 10),
-        element(Tree.Kind.LESS_THAN)
-        ).terminator(Tree.Kind.WHILE_STATEMENT).successors(0, 1),
+        element(LESS_THAN)
+        ).terminator(WHILE_STATEMENT).successors(0, 1),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
-        element(Tree.Kind.POSTFIX_INCREMENT),
-        element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.IDENTIFIER, "i"),
-        element(Tree.Kind.METHOD_INVOCATION)
+        element(IDENTIFIER, "i"),
+        element(POSTFIX_INCREMENT),
+        element(IDENTIFIER, "System"),
+        element(MEMBER_SELECT),
+        element(IDENTIFIER, "i"),
+        element(METHOD_INVOCATION)
         ).successors(2));
     cfgChecker.check(cfg);
   }
@@ -1223,21 +1196,21 @@ class CFGTest {
     final CFGChecker cfgChecker = checker(
       block(
         element(INT_LITERAL, 0),
-        element(Tree.Kind.VARIABLE, "i")
+        element(VARIABLE, "i")
         ).successors(3),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
+        element(IDENTIFIER, "i"),
         element(INT_LITERAL, 10),
-        element(Tree.Kind.LESS_THAN)
-        ).terminator(Tree.Kind.WHILE_STATEMENT).successors(0, 2),
+        element(LESS_THAN)
+        ).terminator(WHILE_STATEMENT).successors(0, 2),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
-        element(Tree.Kind.POSTFIX_INCREMENT),
-        element(Tree.Kind.IDENTIFIER, "i"),
+        element(IDENTIFIER, "i"),
+        element(POSTFIX_INCREMENT),
+        element(IDENTIFIER, "i"),
         element(INT_LITERAL, 5),
         element(EQUAL_TO)
-        ).terminator(Tree.Kind.IF_STATEMENT).successors(1, 3),
-      terminator(Tree.Kind.BREAK_STATEMENT, 0).successorWithoutJump(3));
+        ).terminator(IF_STATEMENT).successors(1, 3),
+      terminator(BREAK_STATEMENT, 0).successorWithoutJump(3));
     cfgChecker.check(cfg);
   }
 
@@ -1247,21 +1220,21 @@ class CFGTest {
     final CFGChecker cfgChecker = checker(
       block(
         element(INT_LITERAL, 0),
-        element(Tree.Kind.VARIABLE, "i")
+        element(VARIABLE, "i")
         ).successors(3),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
+        element(IDENTIFIER, "i"),
         element(INT_LITERAL, 10),
-        element(Tree.Kind.LESS_THAN)
-        ).terminator(Tree.Kind.WHILE_STATEMENT).successors(0, 2),
+        element(LESS_THAN)
+        ).terminator(WHILE_STATEMENT).successors(0, 2),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
-        element(Tree.Kind.POSTFIX_INCREMENT),
-        element(Tree.Kind.IDENTIFIER, "i"),
+        element(IDENTIFIER, "i"),
+        element(POSTFIX_INCREMENT),
+        element(IDENTIFIER, "i"),
         element(INT_LITERAL, 5),
         element(EQUAL_TO)
-        ).terminator(Tree.Kind.IF_STATEMENT).successors(1, 3),
-      terminator(Tree.Kind.CONTINUE_STATEMENT, 3).successorWithoutJump(3));
+        ).terminator(IF_STATEMENT).successors(1, 3),
+      terminator(CONTINUE_STATEMENT, 3).successorWithoutJump(3));
     cfgChecker.check(cfg);
   }
 
@@ -1282,7 +1255,7 @@ class CFGTest {
       ).terminator(WHILE_STATEMENT).successors(0, 4),
       block(element(TRY_STATEMENT)).successors(3),
       block(
-        element(Tree.Kind.IDENTIFIER, "bar"),
+        element(IDENTIFIER, "bar"),
         element(STRING_LITERAL, "try"),
         element(METHOD_INVOCATION)
       ).successors(2).exceptions(1),
@@ -1312,7 +1285,7 @@ class CFGTest {
       ).terminator(WHILE_STATEMENT).successors(0, 4),
       block(element(TRY_STATEMENT)).successors(3),
       block(
-        element(Tree.Kind.IDENTIFIER, "bar"),
+        element(IDENTIFIER, "bar"),
         element(STRING_LITERAL, "try"),
         element(METHOD_INVOCATION)
       ).successors(2).exceptions(1),
@@ -1331,21 +1304,21 @@ class CFGTest {
     final CFGChecker cfgChecker = checker(
       block(
         element(INT_LITERAL, 0),
-        element(Tree.Kind.VARIABLE, "i")
+        element(VARIABLE, "i")
         ).successors(2),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
-        element(Tree.Kind.POSTFIX_INCREMENT),
-        element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.IDENTIFIER, "i"),
-        element(Tree.Kind.METHOD_INVOCATION)
+        element(IDENTIFIER, "i"),
+        element(POSTFIX_INCREMENT),
+        element(IDENTIFIER, "System"),
+        element(MEMBER_SELECT),
+        element(IDENTIFIER, "i"),
+        element(METHOD_INVOCATION)
         ).successors(1),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
+        element(IDENTIFIER, "i"),
         element(INT_LITERAL, 10),
-        element(Tree.Kind.LESS_THAN)
-        ).terminator(Tree.Kind.DO_STATEMENT).successors(0, 2));
+        element(LESS_THAN)
+        ).terminator(DO_STATEMENT).successors(0, 2));
     cfgChecker.check(cfg);
   }
 
@@ -1355,21 +1328,21 @@ class CFGTest {
     final CFGChecker cfgChecker = checker(
       block(
         element(INT_LITERAL, 0),
-        element(Tree.Kind.VARIABLE, "i")
+        element(VARIABLE, "i")
         ).successors(3),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
-        element(Tree.Kind.POSTFIX_INCREMENT),
-        element(Tree.Kind.IDENTIFIER, "i"),
+        element(IDENTIFIER, "i"),
+        element(POSTFIX_INCREMENT),
+        element(IDENTIFIER, "i"),
         element(INT_LITERAL, 5),
         element(EQUAL_TO)
-        ).terminator(Tree.Kind.IF_STATEMENT).successors(1, 2),
-      terminator(Tree.Kind.BREAK_STATEMENT, 0).successorWithoutJump(1),
+        ).terminator(IF_STATEMENT).successors(1, 2),
+      terminator(BREAK_STATEMENT, 0).successorWithoutJump(1),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
+        element(IDENTIFIER, "i"),
         element(INT_LITERAL, 10),
-        element(Tree.Kind.LESS_THAN)
-        ).terminator(Tree.Kind.DO_STATEMENT).successors(0, 3));
+        element(LESS_THAN)
+        ).terminator(DO_STATEMENT).successors(0, 3));
     cfgChecker.check(cfg);
   }
 
@@ -1379,21 +1352,21 @@ class CFGTest {
     final CFGChecker cfgChecker = checker(
       block(
         element(INT_LITERAL, 0),
-        element(Tree.Kind.VARIABLE, "i")
+        element(VARIABLE, "i")
         ).successors(3),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
-        element(Tree.Kind.POSTFIX_INCREMENT),
-        element(Tree.Kind.IDENTIFIER, "i"),
+        element(IDENTIFIER, "i"),
+        element(POSTFIX_INCREMENT),
+        element(IDENTIFIER, "i"),
         element(INT_LITERAL, 5),
         element(EQUAL_TO)
-        ).terminator(Tree.Kind.IF_STATEMENT).successors(1, 2),
-      terminator(Tree.Kind.CONTINUE_STATEMENT, 1).successorWithoutJump(1),
+        ).terminator(IF_STATEMENT).successors(1, 2),
+      terminator(CONTINUE_STATEMENT, 1).successorWithoutJump(1),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
+        element(IDENTIFIER, "i"),
         element(INT_LITERAL, 10),
-        element(Tree.Kind.LESS_THAN)
-        ).terminator(Tree.Kind.DO_STATEMENT).successors(0, 3));
+        element(LESS_THAN)
+        ).terminator(DO_STATEMENT).successors(0, 3));
     cfgChecker.check(cfg);
   }
 
@@ -1408,22 +1381,22 @@ class CFGTest {
     final CFGChecker cfgChecker = checker(
       block(
         element(INT_LITERAL, 0),
-        element(Tree.Kind.VARIABLE, "i")
+        element(VARIABLE, "i")
         ).successors(4),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
+        element(IDENTIFIER, "i"),
         element(INT_LITERAL, 10),
-        element(Tree.Kind.LESS_THAN)
-        ).terminator(Tree.Kind.FOR_STATEMENT).successors(0, 3),
+        element(LESS_THAN)
+        ).terminator(FOR_STATEMENT).successors(0, 3),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
+        element(IDENTIFIER, "i"),
         element(INT_LITERAL, 5),
         element(EQUAL_TO)
-        ).terminator(Tree.Kind.IF_STATEMENT).successors(1, 2),
-      terminator(Tree.Kind.BREAK_STATEMENT, 0).successorWithoutJump(1),
+        ).terminator(IF_STATEMENT).successors(1, 2),
+      terminator(BREAK_STATEMENT, 0).successorWithoutJump(1),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
-        element(Tree.Kind.POSTFIX_INCREMENT)
+        element(IDENTIFIER, "i"),
+        element(POSTFIX_INCREMENT)
         ).successors(4));
     cfgChecker.check(cfg);
   }
@@ -1441,28 +1414,28 @@ class CFGTest {
     final CFGChecker cfgChecker = checker(
       block(
         element(INT_LITERAL, 0),
-        element(Tree.Kind.VARIABLE, "i")
+        element(VARIABLE, "i")
         ).successors(5),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
+        element(IDENTIFIER, "i"),
         element(INT_LITERAL, 10),
-        element(Tree.Kind.LESS_THAN)
-        ).terminator(Tree.Kind.FOR_STATEMENT).successors(0, 4),
+        element(LESS_THAN)
+        ).terminator(FOR_STATEMENT).successors(0, 4),
       block(
-        element(Tree.Kind.IDENTIFIER, "plop"),
-        element(Kind.METHOD_INVOCATION),
-        element(Tree.Kind.IDENTIFIER, "i"),
+        element(IDENTIFIER, "plop"),
+        element(METHOD_INVOCATION),
+        element(IDENTIFIER, "i"),
         element(INT_LITERAL, 5),
         element(EQUAL_TO)
-        ).terminator(Tree.Kind.IF_STATEMENT).successors(2,3),
-      terminator(Tree.Kind.CONTINUE_STATEMENT, 1).successorWithoutJump(2),
+        ).terminator(IF_STATEMENT).successors(2,3),
+      terminator(CONTINUE_STATEMENT, 1).successorWithoutJump(2),
         block(
-            element(Tree.Kind.IDENTIFIER, "plop"),
-            element(Kind.METHOD_INVOCATION)
+            element(IDENTIFIER, "plop"),
+            element(METHOD_INVOCATION)
         ).successors(1),
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
-        element(Tree.Kind.POSTFIX_INCREMENT)
+        element(IDENTIFIER, "i"),
+        element(POSTFIX_INCREMENT)
         ).successors(5));
     cfgChecker.check(cfg);
   }
@@ -1476,18 +1449,18 @@ class CFGTest {
       "   }");
     CFGChecker checker = checker(
       block(
-        element(Tree.Kind.INT_LITERAL, 4),
-        element(Tree.Kind.INT_LITERAL, 4),
-        element(Tree.Kind.NEW_ARRAY),
-        element(Tree.Kind.VARIABLE, "a"),
-        element(Tree.Kind.INT_LITERAL, 1),
-        element(Tree.Kind.VARIABLE, "b"),
-        element(Tree.Kind.IDENTIFIER, "a"),
-        element(Tree.Kind.IDENTIFIER, "b"),
-        element(Tree.Kind.ARRAY_ACCESS_EXPRESSION),
-        element(Tree.Kind.INT_LITERAL, 0),
-        element(Tree.Kind.ASSIGNMENT),
-        element(Tree.Kind.ASSIGNMENT)).successors(0));
+        element(INT_LITERAL, 4),
+        element(INT_LITERAL, 4),
+        element(NEW_ARRAY),
+        element(VARIABLE, "a"),
+        element(INT_LITERAL, 1),
+        element(VARIABLE, "b"),
+        element(IDENTIFIER, "a"),
+        element(IDENTIFIER, "b"),
+        element(ARRAY_ACCESS_EXPRESSION),
+        element(INT_LITERAL, 0),
+        element(ASSIGNMENT),
+        element(ASSIGNMENT)).successors(0));
     checker.check(cfg);
   }
 
@@ -1531,10 +1504,10 @@ class CFGTest {
     final CFG cfg = buildCFG("void fun() { ++i;i++; }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.IDENTIFIER, "i"),
-        element(Tree.Kind.PREFIX_INCREMENT),
-        element(Tree.Kind.IDENTIFIER, "i"),
-        element(Tree.Kind.POSTFIX_INCREMENT)).successors(0));
+        element(IDENTIFIER, "i"),
+        element(PREFIX_INCREMENT),
+        element(IDENTIFIER, "i"),
+        element(POSTFIX_INCREMENT)).successors(0));
     cfgChecker.check(cfg);
   }
   @Test
@@ -1551,26 +1524,26 @@ class CFGTest {
       "    }");
     CFGChecker cfgChecker = checker(
       block(
-        element(Kind.VARIABLE, "bar"),
-        element(Kind.TRY_STATEMENT)
+        element(VARIABLE, "bar"),
+        element(TRY_STATEMENT)
       ).successors(6),
       block(
-        element(Kind.NEW_CLASS)
+        element(NEW_CLASS)
       ).successors(5).exceptions(4),
       block(
-        element(Kind.ASSIGNMENT)
+        element(ASSIGNMENT)
       ).successors(4),
       block(
-        element(Kind.IDENTIFIER, "fooCalled")
-      ).terminator(Kind.IF_STATEMENT).successors(2, 3),
+        element(IDENTIFIER, "fooCalled")
+      ).terminator(IF_STATEMENT).successors(2, 3),
       block(
-        element(Kind.IDENTIFIER, "foo"),
-        element(Kind.METHOD_INVOCATION)
+        element(IDENTIFIER, "foo"),
+        element(METHOD_INVOCATION)
       ).successors(2),
       new BlockChecker(1, 0).exit(0),
       block(
-        element(Kind.IDENTIFIER, "bar"),
-        element(Kind.METHOD_INVOCATION)
+        element(IDENTIFIER, "bar"),
+        element(METHOD_INVOCATION)
       ).successors(0)
     );
     cfgChecker.check(cfg);
@@ -1593,26 +1566,26 @@ class CFGTest {
       " class MyException extends Exception {}");
     CFGChecker checker = checker(
       block(
-        element(Tree.Kind.TRY_STATEMENT)
+        element(TRY_STATEMENT)
       ).successors(4),
       block(
-        element(Tree.Kind.TRY_STATEMENT)
+        element(TRY_STATEMENT)
         ).successors(3),
       block(
-        element(Kind.IDENTIFIER, "foo"),
-        element(Kind.METHOD_INVOCATION)
+        element(IDENTIFIER, "foo"),
+        element(METHOD_INVOCATION)
         ).successors(0).exceptions(0,2),
       block(
-        element(Kind.VARIABLE, "e"),
-        element(Kind.IDENTIFIER, "foo"),
-        element(Kind.METHOD_INVOCATION)
+        element(VARIABLE, "e"),
+        element(IDENTIFIER, "foo"),
+        element(METHOD_INVOCATION)
         ).successors(0).exceptions(0, 1),
       block(
-        element(Kind.VARIABLE, "e"),
-        element(Kind.IDENTIFIER, "System"),
-        element(Kind.MEMBER_SELECT),
-        element(Kind.STRING_LITERAL, "outercatch"),
-        element(Kind.METHOD_INVOCATION)
+        element(VARIABLE, "e"),
+        element(IDENTIFIER, "System"),
+        element(MEMBER_SELECT),
+        element(STRING_LITERAL, "outercatch"),
+        element(METHOD_INVOCATION)
       ).successors(0).exceptions(0)
     );
     checker.check(cfg);
@@ -1635,26 +1608,26 @@ class CFGTest {
       "  }");
     CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.TRY_STATEMENT)
+        element(TRY_STATEMENT)
       ).successors(5),
       block(
-        element(Tree.Kind.IDENTIFIER, "fileName"),
-        element(Kind.NEW_CLASS)
+        element(IDENTIFIER, "fileName"),
+        element(NEW_CLASS)
       ).successors(4).exceptions(0,1),
       block(
-        element(Kind.VARIABLE, "file"),
-        element(Kind.TRY_STATEMENT)
+        element(VARIABLE, "file"),
+        element(TRY_STATEMENT)
       ).successors(3),
       block(
-        element(Tree.Kind.IDENTIFIER, "file"),
-        element(Tree.Kind.METHOD_INVOCATION)
+        element(IDENTIFIER, "file"),
+        element(METHOD_INVOCATION)
       ).successors(2).exceptions(2),
       block(
-        element(Tree.Kind.IDENTIFIER, "file"),
-        element(Tree.Kind.METHOD_INVOCATION)
+        element(IDENTIFIER, "file"),
+        element(METHOD_INVOCATION)
       ).successors(0).exceptions(0,1),
       block(
-        element(Kind.VARIABLE, "e")
+        element(VARIABLE, "e")
       )
       );
     cfgChecker.check(cfg);
@@ -1672,16 +1645,16 @@ class CFGTest {
       "      }");
       CFGChecker cfgChecker = checker(
         block(
-          element(Kind.TRY_STATEMENT)
+          element(TRY_STATEMENT)
         ).successors(2),
         block(
-          element(Kind.IDENTIFIER, "getNextSchedule"),
-          element(Kind.METHOD_INVOCATION)
+          element(IDENTIFIER, "getNextSchedule"),
+          element(METHOD_INVOCATION)
           ).successors(0).exceptions(0, 1),
         block(
-          element(Kind.VARIABLE, "t"),
-          element(Kind.IDENTIFIER, "notifyFailed"),
-          element(Kind.METHOD_INVOCATION)
+          element(VARIABLE, "t"),
+          element(IDENTIFIER, "notifyFailed"),
+          element(METHOD_INVOCATION)
         ).successors(0).exceptions(0)
       );
     cfgChecker.check(cfg);
@@ -1698,13 +1671,13 @@ class CFGTest {
       "      }");
     CFGChecker cfgChecker = checker(
       block(
-        element(Kind.TRY_STATEMENT)).successors(2),
+        element(TRY_STATEMENT)).successors(2),
       block(
-        element(Kind.IDENTIFIER, "doSomething"),
-        element(Kind.METHOD_INVOCATION)).successors(0).exceptions(0, 1),
+        element(IDENTIFIER, "doSomething"),
+        element(METHOD_INVOCATION)).successors(0).exceptions(0, 1),
       block(
-        element(Kind.VARIABLE, "e"),
-        element(Kind.IDENTIFIER, "e")).successors(0));
+        element(VARIABLE, "e"),
+        element(IDENTIFIER, "e")).successors(0));
     cfgChecker.check(cfg);
   }
 
@@ -1713,50 +1686,50 @@ class CFGTest {
     CFG cfg = buildCFG("void fun() {try {System.out.println('c');} finally { System.out.println('c'); }}");
     CFGChecker cfgChecker = checker(
         block(
-            element(Tree.Kind.TRY_STATEMENT)
+            element(TRY_STATEMENT)
         ).successors(2),
         block(
-          element(Tree.Kind.IDENTIFIER, "System"),
-          element(Tree.Kind.MEMBER_SELECT),
-          element(Tree.Kind.CHAR_LITERAL, "'c'"),
-          element(Tree.Kind.METHOD_INVOCATION)
+          element(IDENTIFIER, "System"),
+          element(MEMBER_SELECT),
+          element(CHAR_LITERAL, "'c'"),
+          element(METHOD_INVOCATION)
         ).successors(1).exceptions(1),
         block(
-          element(Tree.Kind.IDENTIFIER, "System"),
-          element(Tree.Kind.MEMBER_SELECT),
-          element(Tree.Kind.CHAR_LITERAL, "'c'"),
-          element(Tree.Kind.METHOD_INVOCATION)
+          element(IDENTIFIER, "System"),
+          element(MEMBER_SELECT),
+          element(CHAR_LITERAL, "'c'"),
+          element(METHOD_INVOCATION)
       ).successors(0).isFinallyBlock());
     cfgChecker.check(cfg);
     cfg = buildCFG("void fun() {try {System.out.println('c');} catch(IllegalArgumentException e) { foo('i');} catch(Exception e){bar('e');}" +
         " finally { System.out.println(\"finally\"); }}");
     cfgChecker = checker(
         block(
-            element(Tree.Kind.TRY_STATEMENT)
+            element(TRY_STATEMENT)
         ).successors(4),
       block(
-        element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.CHAR_LITERAL, "'c'"),
-        element(Tree.Kind.METHOD_INVOCATION)
+        element(IDENTIFIER, "System"),
+        element(MEMBER_SELECT),
+        element(CHAR_LITERAL, "'c'"),
+        element(METHOD_INVOCATION)
       ).successors(1).exceptions(1, 2, 3),
       block(
-        element(Kind.VARIABLE, "e"),
-        element(Tree.Kind.IDENTIFIER, "foo"),
-        element(Tree.Kind.CHAR_LITERAL, "'i'"),
-        element(Tree.Kind.METHOD_INVOCATION)
+        element(VARIABLE, "e"),
+        element(IDENTIFIER, "foo"),
+        element(CHAR_LITERAL, "'i'"),
+        element(METHOD_INVOCATION)
       ).successors(1).exceptions(1).isCatchBlock(),
       block(
-        element(Kind.VARIABLE, "e"),
-        element(Tree.Kind.IDENTIFIER, "bar"),
-        element(Tree.Kind.CHAR_LITERAL, "'e'"),
-        element(Tree.Kind.METHOD_INVOCATION)
+        element(VARIABLE, "e"),
+        element(IDENTIFIER, "bar"),
+        element(CHAR_LITERAL, "'e'"),
+        element(METHOD_INVOCATION)
       ).successors(1).exceptions(1).isCatchBlock(),
       block(
-        element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Kind.STRING_LITERAL, "finally"),
-        element(Tree.Kind.METHOD_INVOCATION)
+        element(IDENTIFIER, "System"),
+        element(MEMBER_SELECT),
+        element(STRING_LITERAL, "finally"),
+        element(METHOD_INVOCATION)
       ).successors(0).isFinallyBlock()
     );
     cfgChecker.check(cfg);
@@ -1768,13 +1741,13 @@ class CFGTest {
             "      }\n}}");
     cfgChecker = checker(
         block(
-            element(Tree.Kind.TRY_STATEMENT)
+            element(TRY_STATEMENT)
         ).successors(0),
         block(
-          element(Kind.VARIABLE, "e"),
-          element(Tree.Kind.IDENTIFIER, "e"),
-            element(Tree.Kind.INSTANCE_OF)
-      ).terminator(Tree.Kind.IF_STATEMENT).ifTrue(0).ifFalse(0).isCatchBlock()
+          element(VARIABLE, "e"),
+          element(IDENTIFIER, "e"),
+            element(INSTANCE_OF)
+      ).terminator(IF_STATEMENT).ifTrue(0).ifFalse(0).isCatchBlock()
     );
     cfgChecker.check(cfg);
     cfg = buildCFG(
@@ -1784,16 +1757,16 @@ class CFGTest {
             "} finally { foo();} bar(); }");
     cfgChecker = checker(
         block(
-            element(Tree.Kind.TRY_STATEMENT)
+            element(TRY_STATEMENT)
         ).successors(3),
-        terminator(Kind.RETURN_STATEMENT).successors(2).exit(2).successorWithoutJump(2),
+        terminator(RETURN_STATEMENT).successors(2).exit(2).successorWithoutJump(2),
         block(
-            element(Tree.Kind.IDENTIFIER, "foo"),
-            element(Kind.METHOD_INVOCATION)
+            element(IDENTIFIER, "foo"),
+            element(METHOD_INVOCATION)
       ).successors(0, 1).exit(0).isFinallyBlock(),
         block(
-            element(Tree.Kind.IDENTIFIER, "bar"),
-            element(Kind.METHOD_INVOCATION)
+            element(IDENTIFIER, "bar"),
+            element(METHOD_INVOCATION)
         ).successors(0)
     );
     cfgChecker.check(cfg);
@@ -1804,17 +1777,17 @@ class CFGTest {
     final CFG cfg = buildCFG("void fun(Object a) {if(a==null) { throw new Exception();} System.out.println('c'); }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.IDENTIFIER, "a"),
-        element(Tree.Kind.NULL_LITERAL),
+        element(IDENTIFIER, "a"),
+        element(NULL_LITERAL),
         element(EQUAL_TO)
-        ).terminator(Tree.Kind.IF_STATEMENT).successors(1, 2),
+        ).terminator(IF_STATEMENT).successors(1, 2),
       block(
-        element(Tree.Kind.NEW_CLASS)).terminator(Tree.Kind.THROW_STATEMENT).successors(0),
+        element(NEW_CLASS)).terminator(THROW_STATEMENT).successors(0),
       block(
-        element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.CHAR_LITERAL, "'c'"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(0));
+        element(IDENTIFIER, "System"),
+        element(MEMBER_SELECT),
+        element(CHAR_LITERAL, "'c'"),
+        element(METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
   }
 
@@ -1823,21 +1796,21 @@ class CFGTest {
     final CFG cfg = buildCFG("void fun(Object a) {if(a==null) { synchronized(a) { foo();bar();} } System.out.println('c'); }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.IDENTIFIER, "a"),
-        element(Tree.Kind.NULL_LITERAL),
-        element(EQUAL_TO)).terminator(Tree.Kind.IF_STATEMENT).successors(1, 3),
+        element(IDENTIFIER, "a"),
+        element(NULL_LITERAL),
+        element(EQUAL_TO)).terminator(IF_STATEMENT).successors(1, 3),
       block(
-        element(Tree.Kind.IDENTIFIER, "a")).terminator(Tree.Kind.SYNCHRONIZED_STATEMENT).successors(2),
+        element(IDENTIFIER, "a")).terminator(SYNCHRONIZED_STATEMENT).successors(2),
       block(
-        element(Tree.Kind.IDENTIFIER, "foo"),
-        element(Tree.Kind.METHOD_INVOCATION),
-        element(Tree.Kind.IDENTIFIER, "bar"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(1),
+        element(IDENTIFIER, "foo"),
+        element(METHOD_INVOCATION),
+        element(IDENTIFIER, "bar"),
+        element(METHOD_INVOCATION)).successors(1),
       block(
-        element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.CHAR_LITERAL, "'c'"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(0));
+        element(IDENTIFIER, "System"),
+        element(MEMBER_SELECT),
+        element(CHAR_LITERAL, "'c'"),
+        element(METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
   }
 
@@ -1846,20 +1819,20 @@ class CFGTest {
     final CFG cfg = buildCFG("void fun(Object a) {if(a instanceof String str) { Supplier<String> s = a::toString;foo(y -> y+1); a += (String) a;  } }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.IDENTIFIER, "a"),
-        element(Kind.VARIABLE, "str"),
-        element(Tree.Kind.PATTERN_INSTANCE_OF)
-        ).terminator(Tree.Kind.IF_STATEMENT).successors(0, 1),
+        element(IDENTIFIER, "a"),
+        element(VARIABLE, "str"),
+        element(PATTERN_INSTANCE_OF)
+        ).terminator(IF_STATEMENT).successors(0, 1),
       block(
-        element(Kind.METHOD_REFERENCE),
-        element(Kind.VARIABLE, "s"),
-        element(Tree.Kind.IDENTIFIER, "foo"),
-        element(Tree.Kind.LAMBDA_EXPRESSION),
-        element(Tree.Kind.METHOD_INVOCATION),
-        element(Tree.Kind.IDENTIFIER, "a"),
-        element(Tree.Kind.IDENTIFIER, "a"),
-        element(Tree.Kind.TYPE_CAST),
-        element(Tree.Kind.PLUS_ASSIGNMENT)
+        element(METHOD_REFERENCE),
+        element(VARIABLE, "s"),
+        element(IDENTIFIER, "foo"),
+        element(LAMBDA_EXPRESSION),
+        element(METHOD_INVOCATION),
+        element(IDENTIFIER, "a"),
+        element(IDENTIFIER, "a"),
+        element(TYPE_CAST),
+        element(PLUS_ASSIGNMENT)
         ).successors(0));
     cfgChecker.check(cfg);
   }
@@ -1872,12 +1845,12 @@ class CFGTest {
         element(TRY_STATEMENT)
       ),
       block(
-        element(Tree.Kind.IDENTIFIER, "a"),
-        element(Tree.Kind.TYPE_CAST)
+        element(IDENTIFIER, "a"),
+        element(TYPE_CAST)
       ).successors(1, 2),
       terminator(RETURN_STATEMENT, 0).successorWithoutJump(0),
       block(
-        element(Kind.VARIABLE, "cce"),
+        element(VARIABLE, "cce"),
         element(NULL_LITERAL)
       ).successors(0)
     );
@@ -1890,18 +1863,18 @@ class CFGTest {
     final CFG cfg = buildCFG("void fun(int[] array) { array[0] = 1; array[3+2] = 4; }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.IDENTIFIER, "array"),
+        element(IDENTIFIER, "array"),
         element(INT_LITERAL, 0),
-        element(Tree.Kind.ARRAY_ACCESS_EXPRESSION),
+        element(ARRAY_ACCESS_EXPRESSION),
         element(INT_LITERAL, 1),
-        element(Tree.Kind.ASSIGNMENT),
-        element(Tree.Kind.IDENTIFIER, "array"),
+        element(ASSIGNMENT),
+        element(IDENTIFIER, "array"),
         element(INT_LITERAL, 3),
         element(INT_LITERAL, 2),
-        element(Tree.Kind.PLUS),
-        element(Tree.Kind.ARRAY_ACCESS_EXPRESSION),
+        element(PLUS),
+        element(ARRAY_ACCESS_EXPRESSION),
         element(INT_LITERAL, 4),
-        element(Tree.Kind.ASSIGNMENT)).successors(0));
+        element(ASSIGNMENT)).successors(0));
     cfgChecker.check(cfg);
   }
 
@@ -1910,16 +1883,16 @@ class CFGTest {
     final CFG cfg = buildCFG("void fun() { String path = \"\"; try (BufferedReader br = new BufferedReader(new FileReader(path))) {} }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Kind.STRING_LITERAL, ""),
-        element(Kind.VARIABLE, "path"),
-        element(Kind.TRY_STATEMENT)).successors(3),
+        element(STRING_LITERAL, ""),
+        element(VARIABLE, "path"),
+        element(TRY_STATEMENT)).successors(3),
       block(
-        element(Kind.IDENTIFIER, "path"),
-        element(Kind.NEW_CLASS)).successors(2).exceptions(0),
+        element(IDENTIFIER, "path"),
+        element(NEW_CLASS)).successors(2).exceptions(0),
       block(
-          element(Kind.NEW_CLASS)).successors(1).exceptions(0),
+          element(NEW_CLASS)).successors(1).exceptions(0),
       block(
-        element(Kind.VARIABLE, "br")).successors(0));
+        element(VARIABLE, "br")).successors(0));
     cfgChecker.check(cfg);
   }
 
@@ -1928,11 +1901,11 @@ class CFGTest {
     final CFG cfg = buildCFG("void fun() { final Resource r = new Resource(); try (r) {} }");
     final CFGChecker cfgChecker = checker(
       block(
-        element(Kind.NEW_CLASS),
-        element(Kind.VARIABLE, "r"),
-        element(Kind.TRY_STATEMENT)).successors(1),
+        element(NEW_CLASS),
+        element(VARIABLE, "r"),
+        element(TRY_STATEMENT)).successors(1),
       block(
-        element(Kind.IDENTIFIER, "r")).successors(0))
+        element(IDENTIFIER, "r")).successors(0))
       ;
     cfgChecker.check(cfg);
   }
@@ -1942,11 +1915,11 @@ class CFGTest {
     final CFG cfg = buildCFG(
       "boolean andAll(boolean a, boolean b, boolean c) { return a && b && c;}");
     final CFGChecker cfgChecker = checker(
-      block(element(Kind.IDENTIFIER, "a")).terminator(Kind.CONDITIONAL_AND).ifTrue(4).ifFalse(3),
-      block(element(Kind.IDENTIFIER, "b")).successors(3),
-      terminator(Kind.CONDITIONAL_AND).ifTrue(2).ifFalse(1),
-      block(element(Kind.IDENTIFIER, "c")).successors(1),
-      terminator(Kind.RETURN_STATEMENT).successors(0));
+      block(element(IDENTIFIER, "a")).terminator(CONDITIONAL_AND).ifTrue(4).ifFalse(3),
+      block(element(IDENTIFIER, "b")).successors(3),
+      terminator(CONDITIONAL_AND).ifTrue(2).ifFalse(1),
+      block(element(IDENTIFIER, "c")).successors(1),
+      terminator(RETURN_STATEMENT).successors(0));
     cfgChecker.check(cfg);
   }
 
@@ -1955,11 +1928,11 @@ class CFGTest {
     final CFG cfg = buildCFG(
       "boolean orAll(boolean a, boolean b, boolean c) { return a || b || c;}");
     final CFGChecker cfgChecker = checker(
-      block(element(Kind.IDENTIFIER, "a")).terminator(Kind.CONDITIONAL_OR).ifTrue(3).ifFalse(4),
-      block(element(Kind.IDENTIFIER, "b")).successors(3),
-      terminator(Kind.CONDITIONAL_OR).ifTrue(1).ifFalse(2),
-      block(element(Kind.IDENTIFIER, "c")).successors(1),
-      terminator(Kind.RETURN_STATEMENT).successors(0));
+      block(element(IDENTIFIER, "a")).terminator(CONDITIONAL_OR).ifTrue(3).ifFalse(4),
+      block(element(IDENTIFIER, "b")).successors(3),
+      terminator(CONDITIONAL_OR).ifTrue(1).ifFalse(2),
+      block(element(IDENTIFIER, "c")).successors(1),
+      terminator(RETURN_STATEMENT).successors(0));
     cfgChecker.check(cfg);
   }
 
@@ -1970,14 +1943,14 @@ class CFGTest {
         "  }");
     final CFGChecker cfgChecker = checker(
         block(
-            element(Kind.IDENTIFIER, "bool"),
-            element(Kind.LOGICAL_COMPLEMENT)
-        ).terminator(Kind.CONDITIONAL_AND).ifTrue(5).ifFalse(4),
-        block(element(Kind.IDENTIFIER, "a")).successors(4),
-        terminator(Kind.CONDITIONAL_OR).ifTrue(1).ifFalse(3),
-        block(element(Kind.IDENTIFIER, "bool")).terminator(Kind.CONDITIONAL_AND).ifTrue(2).ifFalse(1),
-        block(element(Kind.IDENTIFIER, "b")).successors(1),
-        terminator(Kind.RETURN_STATEMENT).successors(0));
+            element(IDENTIFIER, "bool"),
+            element(LOGICAL_COMPLEMENT)
+        ).terminator(CONDITIONAL_AND).ifTrue(5).ifFalse(4),
+        block(element(IDENTIFIER, "a")).successors(4),
+        terminator(CONDITIONAL_OR).ifTrue(1).ifFalse(3),
+        block(element(IDENTIFIER, "bool")).terminator(CONDITIONAL_AND).ifTrue(2).ifFalse(1),
+        block(element(IDENTIFIER, "b")).successors(1),
+        terminator(RETURN_STATEMENT).successors(0));
     cfgChecker.check(cfg);
 
   }
@@ -1987,9 +1960,9 @@ class CFGTest {
     final CFG cfg = buildCFG("void fun() { foo(Object::toString); }");
     final CFGChecker cfgChecker = checker(
         block(
-          element(Kind.IDENTIFIER, "foo"),
-          element(Kind.METHOD_REFERENCE),
-            element(Kind.METHOD_INVOCATION)
+          element(IDENTIFIER, "foo"),
+          element(METHOD_REFERENCE),
+            element(METHOD_INVOCATION)
         ).successors(0));
     cfgChecker.check(cfg);
   }
@@ -2007,22 +1980,22 @@ class CFGTest {
         "} catch(Exception e) { foo();} bar(); }");
     CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.TRY_STATEMENT)).successors(5),
+        element(TRY_STATEMENT)).successors(5),
       block(
-        element(Tree.Kind.IDENTIFIER, "action")).terminator(Kind.IF_STATEMENT).successors(3, 4),
+        element(IDENTIFIER, "action")).terminator(IF_STATEMENT).successors(3, 4),
       block(
-        element(Tree.Kind.IDENTIFIER, "performAction"),
-        element(Kind.METHOD_INVOCATION)).successors(3).exceptions(0, 2).exit(0),
+        element(IDENTIFIER, "performAction"),
+        element(METHOD_INVOCATION)).successors(3).exceptions(0, 2).exit(0),
       block(
-        element(Tree.Kind.IDENTIFIER, "doSomething"),
-        element(Kind.METHOD_INVOCATION)).successors(1).exceptions(0, 2).exit(0),
+        element(IDENTIFIER, "doSomething"),
+        element(METHOD_INVOCATION)).successors(1).exceptions(0, 2).exit(0),
       block(
-        element(Kind.VARIABLE, "e"),
-        element(Tree.Kind.IDENTIFIER, "foo"),
-        element(Kind.METHOD_INVOCATION)).successors(1).exceptions(0).exit(0),
+        element(VARIABLE, "e"),
+        element(IDENTIFIER, "foo"),
+        element(METHOD_INVOCATION)).successors(1).exceptions(0).exit(0),
       block(
-        element(Tree.Kind.IDENTIFIER, "bar"),
-        element(Kind.METHOD_INVOCATION)).successors(0));
+        element(IDENTIFIER, "bar"),
+        element(METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
 
     // method invocation before if
@@ -2036,22 +2009,22 @@ class CFGTest {
         "} catch(Exception e) { foo();} bar(); }");
     cfgChecker = checker(
       block(
-        element(Tree.Kind.TRY_STATEMENT)).successors(5),
+        element(TRY_STATEMENT)).successors(5),
       block(
-        element(Tree.Kind.IDENTIFIER, "doSomething"),
-        element(Kind.METHOD_INVOCATION)).successors(4).exceptions(0, 2).exit(0),
+        element(IDENTIFIER, "doSomething"),
+        element(METHOD_INVOCATION)).successors(4).exceptions(0, 2).exit(0),
       block(
-        element(Tree.Kind.IDENTIFIER, "action")).terminator(Kind.IF_STATEMENT).successors(1, 3),
+        element(IDENTIFIER, "action")).terminator(IF_STATEMENT).successors(1, 3),
       block(
-        element(Tree.Kind.IDENTIFIER, "performAction"),
-        element(Kind.METHOD_INVOCATION)).successors(1).exceptions(0, 2),
+        element(IDENTIFIER, "performAction"),
+        element(METHOD_INVOCATION)).successors(1).exceptions(0, 2),
       block(
-        element(Kind.VARIABLE, "e"),
-        element(Tree.Kind.IDENTIFIER, "foo"),
-        element(Kind.METHOD_INVOCATION)).successors(1).exceptions(0),
+        element(VARIABLE, "e"),
+        element(IDENTIFIER, "foo"),
+        element(METHOD_INVOCATION)).successors(1).exceptions(0),
       block(
-        element(Tree.Kind.IDENTIFIER, "bar"),
-        element(Kind.METHOD_INVOCATION)).successors(0));
+        element(IDENTIFIER, "bar"),
+        element(METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
 
     // finally
@@ -2065,21 +2038,21 @@ class CFGTest {
         "} finally { foo();} bar(); }");
     cfgChecker = checker(
       block(
-        element(Tree.Kind.TRY_STATEMENT)).successors(5),
+        element(TRY_STATEMENT)).successors(5),
       block(
-        element(Tree.Kind.IDENTIFIER, "action")).terminator(Kind.IF_STATEMENT).successors(3, 4),
+        element(IDENTIFIER, "action")).terminator(IF_STATEMENT).successors(3, 4),
       block(
-        element(Tree.Kind.IDENTIFIER, "performAction"),
-        element(Kind.METHOD_INVOCATION)).successors(3).exceptions(2),
+        element(IDENTIFIER, "performAction"),
+        element(METHOD_INVOCATION)).successors(3).exceptions(2),
       block(
-        element(Tree.Kind.IDENTIFIER, "doSomething"),
-        element(Kind.METHOD_INVOCATION)).successors(2).exceptions(2),
+        element(IDENTIFIER, "doSomething"),
+        element(METHOD_INVOCATION)).successors(2).exceptions(2),
       block(
-        element(Tree.Kind.IDENTIFIER, "foo"),
-        element(Kind.METHOD_INVOCATION)).successors(0, 1),
+        element(IDENTIFIER, "foo"),
+        element(METHOD_INVOCATION)).successors(0, 1),
       block(
-        element(Tree.Kind.IDENTIFIER, "bar"),
-        element(Kind.METHOD_INVOCATION)).successors(0));
+        element(IDENTIFIER, "bar"),
+        element(METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
   }
 
@@ -2104,26 +2077,26 @@ class CFGTest {
 
     CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.TRY_STATEMENT)).successors(7),
+        element(TRY_STATEMENT)).successors(7),
       block(
-        element(Kind.NEW_CLASS)).successors(1).exceptions(0, 6),
+        element(NEW_CLASS)).successors(1).exceptions(0, 6),
       block(
-        element(Kind.VARIABLE, "iae"),
-        element(Tree.Kind.TRY_STATEMENT)).successors(5).isCatchBlock(),
+        element(VARIABLE, "iae"),
+        element(TRY_STATEMENT)).successors(5).isCatchBlock(),
       block(
-        element(Kind.NEW_CLASS)).successors(3).exceptions(0, 4),
+        element(NEW_CLASS)).successors(3).exceptions(0, 4),
       block(
-        element(Kind.VARIABLE, "iae2")
+        element(VARIABLE, "iae2")
       ).successors(2),
       block(
-        element(Kind.ASSIGNMENT)
+        element(ASSIGNMENT)
       ).successors(2),
       block(
-        element(Kind.IDENTIFIER, "result"),
-        element(Kind.METHOD_INVOCATION)
+        element(IDENTIFIER, "result"),
+        element(METHOD_INVOCATION)
         ).successors(0).exceptions(0),
       block(
-        element(Kind.ASSIGNMENT)
+        element(ASSIGNMENT)
       ).successors(0)
       );
     cfgChecker.check(cfg);
@@ -2134,9 +2107,9 @@ class CFGTest {
     CFG cfg = buildCFG(new File("src/test/files/cfg/CFGRuntimeExceptions.java"));
     CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.TRY_STATEMENT)).successors(9),
+        element(TRY_STATEMENT)).successors(9),
       block(
-        element(Tree.Kind.IDENTIFIER, "doSomething"),
+        element(IDENTIFIER, "doSomething"),
         // trigger runtime exception -> branch to:
         // B8 : RuntimeException
         // B7 : Subtype of RuntimeException
@@ -2145,40 +2118,40 @@ class CFGTest {
         // B4 : Throwable
         // B3 : Subtype of Throwable but not subtype of Exception
         // B2 : Exception
-        element(Tree.Kind.METHOD_INVOCATION)).successors(0).exceptions(8, 7, 6, 5, 4, 3, 2, 0),
+        element(METHOD_INVOCATION)).successors(0).exceptions(8, 7, 6, 5, 4, 3, 2, 0),
       block(
-        element(Tree.Kind.VARIABLE, "re"),
-        element(Tree.Kind.IDENTIFIER, "doSomethingElse"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(0).exceptions(0).isCatchBlock(),
+        element(VARIABLE, "re"),
+        element(IDENTIFIER, "doSomethingElse"),
+        element(METHOD_INVOCATION)).successors(0).exceptions(0).isCatchBlock(),
       block(
-        element(Tree.Kind.VARIABLE, "mre"),
-        element(Tree.Kind.IDENTIFIER, "doSomethingElse"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(0).exceptions(0).isCatchBlock(),
+        element(VARIABLE, "mre"),
+        element(IDENTIFIER, "doSomethingElse"),
+        element(METHOD_INVOCATION)).successors(0).exceptions(0).isCatchBlock(),
       block(
-        element(Tree.Kind.VARIABLE, "er"),
-        element(Tree.Kind.IDENTIFIER, "doSomethingElse"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(0).exceptions(0).isCatchBlock(),
+        element(VARIABLE, "er"),
+        element(IDENTIFIER, "doSomethingElse"),
+        element(METHOD_INVOCATION)).successors(0).exceptions(0).isCatchBlock(),
       block(
-        element(Tree.Kind.VARIABLE, "mer"),
-        element(Tree.Kind.IDENTIFIER, "doSomethingElse"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(0).exceptions(0).isCatchBlock(),
+        element(VARIABLE, "mer"),
+        element(IDENTIFIER, "doSomethingElse"),
+        element(METHOD_INVOCATION)).successors(0).exceptions(0).isCatchBlock(),
       block(
-        element(Tree.Kind.VARIABLE, "t"),
-        element(Tree.Kind.IDENTIFIER, "doSomethingElse"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(0).exceptions(0).isCatchBlock(),
+        element(VARIABLE, "t"),
+        element(IDENTIFIER, "doSomethingElse"),
+        element(METHOD_INVOCATION)).successors(0).exceptions(0).isCatchBlock(),
       block(
-        element(Tree.Kind.VARIABLE, "mt"),
-        element(Tree.Kind.IDENTIFIER, "doSomethingElse"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(0).exceptions(0).isCatchBlock(),
+        element(VARIABLE, "mt"),
+        element(IDENTIFIER, "doSomethingElse"),
+        element(METHOD_INVOCATION)).successors(0).exceptions(0).isCatchBlock(),
       block(
-        element(Tree.Kind.VARIABLE, "ex"),
-        element(Tree.Kind.IDENTIFIER, "doSomethingElse"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(0).exceptions(0).isCatchBlock(),
+        element(VARIABLE, "ex"),
+        element(IDENTIFIER, "doSomethingElse"),
+        element(METHOD_INVOCATION)).successors(0).exceptions(0).isCatchBlock(),
       block(
         // no way to enter the block (checked Exception)
-        element(Tree.Kind.VARIABLE, "mex"),
-        element(Tree.Kind.IDENTIFIER, "doNothing"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(0).exceptions(0).isCatchBlock());
+        element(VARIABLE, "mex"),
+        element(IDENTIFIER, "doNothing"),
+        element(METHOD_INVOCATION)).successors(0).exceptions(0).isCatchBlock());
     cfgChecker.check(cfg);
   }
 
@@ -2188,36 +2161,36 @@ class CFGTest {
 
     CFGChecker cfgChecker = checker(
       block(
-        element(Tree.Kind.TRY_STATEMENT)).successors(8),
+        element(TRY_STATEMENT)).successors(8),
       block(
-        element(Tree.Kind.IDENTIFIER, "m1"),
-        element(Tree.Kind.IDENTIFIER, "o1"),
-        element(Tree.Kind.IDENTIFIER, "o2"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(1).exceptions(7, 5, 3, 1),
+        element(IDENTIFIER, "m1"),
+        element(IDENTIFIER, "o1"),
+        element(IDENTIFIER, "o2"),
+        element(METHOD_INVOCATION)).successors(1).exceptions(7, 5, 3, 1),
       block(
-        element(Tree.Kind.VARIABLE, "e"),
-        element(Tree.Kind.IDENTIFIER, "m2"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(6).exceptions(1).isCatchBlock(),
+        element(VARIABLE, "e"),
+        element(IDENTIFIER, "m2"),
+        element(METHOD_INVOCATION)).successors(6).exceptions(1).isCatchBlock(),
       block(
-        element(Tree.Kind.IDENTIFIER, "m3"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(1).exceptions(1),
+        element(IDENTIFIER, "m3"),
+        element(METHOD_INVOCATION)).successors(1).exceptions(1),
       block(
-        element(Tree.Kind.VARIABLE, "e"),
-        element(Tree.Kind.IDENTIFIER, "o2"),
-        element(Tree.Kind.NULL_LITERAL),
-        element(Tree.Kind.EQUAL_TO)).terminator(Tree.Kind.IF_STATEMENT).ifTrue(4).ifFalse(1).isCatchBlock(),
+        element(VARIABLE, "e"),
+        element(IDENTIFIER, "o2"),
+        element(NULL_LITERAL),
+        element(EQUAL_TO)).terminator(IF_STATEMENT).ifTrue(4).ifFalse(1).isCatchBlock(),
       block(
-        element(Tree.Kind.IDENTIFIER, "m4"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(1).exceptions(1),
+        element(IDENTIFIER, "m4"),
+        element(METHOD_INVOCATION)).successors(1).exceptions(1),
       block(
-        element(Tree.Kind.VARIABLE, "e"),
-        element(Tree.Kind.IDENTIFIER, "m5"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(2).exceptions(1).isCatchBlock(),
+        element(VARIABLE, "e"),
+        element(IDENTIFIER, "m5"),
+        element(METHOD_INVOCATION)).successors(2).exceptions(1).isCatchBlock(),
       block(
-        element(Tree.Kind.VARIABLE, "res")).successors(1),
+        element(VARIABLE, "res")).successors(1),
       block(
-        element(Tree.Kind.IDENTIFIER, "m6"),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(0).isFinallyBlock());
+        element(IDENTIFIER, "m6"),
+        element(METHOD_INVOCATION)).successors(0).isFinallyBlock());
     cfgChecker.check(cfg);
   }
 
@@ -2233,28 +2206,28 @@ class CFGTest {
       "  }");
     CFGChecker cfgChecker = checker(
       block(
-        element(Kind.IDENTIFIER, "inverted")
-      ).terminator(Kind.IF_STATEMENT)
+        element(IDENTIFIER, "inverted")
+      ).terminator(IF_STATEMENT)
         .ifTrue(5)
         .ifFalse(4),
-      terminator(Kind.BREAK_STATEMENT).successors(0),
+      terminator(BREAK_STATEMENT).successors(0),
       block(
-        element(Kind.IDENTIFIER, "test"),
+        element(IDENTIFIER, "test"),
         element(INT_LITERAL, 0),
-        element(Kind.BOOLEAN_LITERAL, "false")
-        ).terminator(Kind.CONDITIONAL_EXPRESSION)
+        element(BOOLEAN_LITERAL, "false")
+        ).terminator(CONDITIONAL_EXPRESSION)
         .ifTrue(3)
         .ifFalse(2),
       block(
-        element(Kind.IDENTIFIER, "inverted")
+        element(IDENTIFIER, "inverted")
       ).successors(1),
       block(
-        element(Kind.IDENTIFIER, "inverted"),
-        element(Kind.LOGICAL_COMPLEMENT)
+        element(IDENTIFIER, "inverted"),
+        element(LOGICAL_COMPLEMENT)
       ).successors(1),
       block(
-        element(Kind.IDENTIFIER, "visitor"),
-        element(Kind.METHOD_INVOCATION)
+        element(IDENTIFIER, "visitor"),
+        element(METHOD_INVOCATION)
       ).successors(0)
     );
     cfgChecker.check(cfg);
@@ -2275,7 +2248,7 @@ class CFGTest {
         element(IDENTIFIER, "p"),
         element(NULL_LITERAL),
         element(EQUAL_TO)
-      ).terminator(Kind.IF_STATEMENT)
+      ).terminator(IF_STATEMENT)
         .ifTrue(1)
         .ifFalse(0),
       block(
@@ -2899,12 +2872,12 @@ class CFGTest {
       block(
         element(IDENTIFIER, "i"),
         element(INT_LITERAL, 2),
-        element(Tree.Kind.LESS_THAN)
-      ).terminator(Tree.Kind.FOR_STATEMENT).successors(1, 5),
+        element(LESS_THAN)
+      ).terminator(FOR_STATEMENT).successors(1, 5),
       block(element(TRY_STATEMENT)).successors(4),
       block(element(NEW_CLASS)).successors(3).exceptions(2),
       block(
-        element(Tree.Kind.ASSIGNMENT)
+        element(ASSIGNMENT)
       ).terminator(BREAK_STATEMENT).successors(2),
       block(
         element(IDENTIFIER, "doSomething"),
@@ -2937,11 +2910,11 @@ class CFGTest {
         element(NULL_LITERAL),
         element(VARIABLE, "e")
       ).successors(6),
-      terminator(Tree.Kind.FOR_STATEMENT).successors(5),
+      terminator(FOR_STATEMENT).successors(5),
       block(element(TRY_STATEMENT)).successors(4),
       block(element(NEW_CLASS)).successors(3).exceptions(2),
       block(
-        element(Tree.Kind.ASSIGNMENT)
+        element(ASSIGNMENT)
       ).terminator(BREAK_STATEMENT).successors(2),
       block(
         element(IDENTIFIER, "doSomething"),
