@@ -160,6 +160,20 @@ class ExplodedGraphWalkerTest {
       .verifyIssues();
   }
 
+  /**
+   * Checking that Java 17 patterns do not fail SE engine
+   * TODO once feature is final: make sure learned constraints propagate in branches
+   */
+  @Test
+  void switchWithPatterns() {
+    SECheckVerifier.newVerifier()
+      .onFile(TestUtils.nonCompilingTestSourcesPath("symbolicexecution/engine/SwitchWithPatterns.java"))
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .withJavaVersion(17)
+      .verifyNoIssues();
+  }
+
   @Test
   void different_exceptions_lead_to_different_program_states_with_catch_exception_block() {
     Set<Type> encounteredExceptions = new HashSet<>();

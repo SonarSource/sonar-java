@@ -57,6 +57,7 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
+import org.sonar.plugins.java.api.tree.GuardedPatternTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
@@ -67,6 +68,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.NullPatternTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
@@ -79,6 +81,7 @@ import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.plugins.java.api.tree.TypePatternTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
@@ -610,6 +613,25 @@ public class CFG implements ControlFlowGraph {
       case NULL_LITERAL:
         currentBlock.elements.add(tree);
         break;
+      case NULL_PATTERN:
+        currentBlock.elements.add(((NullPatternTree) tree).nullLiteral());
+        currentBlock.elements.add(tree);
+        break;
+      case TYPE_PATTERN:
+        buildVariable(((TypePatternTree) tree).patternVariable());
+        currentBlock.elements.add(tree);
+        break;
+      case GUARDED_PATTERN:
+        GuardedPatternTree guardedPatternTree = (GuardedPatternTree) tree;
+        // reverted order
+        build(guardedPatternTree.expression());
+        build(guardedPatternTree.pattern());
+        currentBlock.elements.add(tree);
+        break;
+      case DEFAULT_PATTERN:
+        // do nothing - handled when building the switch
+        currentBlock.elements.add(tree);
+        break;
       default:
         throw new UnsupportedOperationException(tree.kind().name() + " " + ((JavaTree) tree).getLine());
     }
@@ -815,7 +837,9 @@ public class CFG implements ControlFlowGraph {
   }
 
   private static boolean containsDefaultCase(List<CaseLabelTree> labels) {
-    return labels.stream().anyMatch(caseLabel -> "default".equals(caseLabel.caseOrDefaultKeyword().text()));
+    return labels.stream().anyMatch(caseLabel -> "default".equals(caseLabel.caseOrDefaultKeyword().text())
+      // JDK 17 preview feature
+      || caseLabel.expressions().stream().anyMatch(expr -> expr.is(Tree.Kind.DEFAULT_PATTERN)));
   }
 
   private void buildBreakStatement(BreakStatementTree tree) {

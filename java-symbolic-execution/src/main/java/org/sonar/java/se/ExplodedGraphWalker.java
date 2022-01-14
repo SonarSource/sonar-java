@@ -527,6 +527,9 @@ public class ExplodedGraphWalker {
 
     Map<CaseGroupTree, List<ProgramState.SymbolicValueSymbol>> caseValues = new HashMap<>();
     for (CaseGroupTree caseGroup : ListUtils.reverse(caseGroups)) {
+      // FIXME this logic do not work with patterns from JDK17, as we need to consume the pattern adequately.
+      // The NULL_PATTERN can lead to NPE in the block, as it is equivalent to if (o == null) { ... }
+      // also, there is a good chance that the stack would be corrupted when patterns are used.
       int numberOfCaseValues = caseGroup.labels()
         .stream()
         .map(CaseLabelTree::expressions)
@@ -732,6 +735,21 @@ public class ExplodedGraphWalker {
       case LAMBDA_EXPRESSION:
       case METHOD_REFERENCE:
       case SWITCH_EXPRESSION:
+        programState = programState.stackValue(constraintManager.createSymbolicValue(tree));
+        break;
+      case DEFAULT_PATTERN:
+        programState = programState.stackValue(constraintManager.createSymbolicValue(tree));
+        break;
+      case TYPE_PATTERN:
+        programState = programState.stackValue(constraintManager.createSymbolicValue(tree));
+        break;
+      case NULL_PATTERN:
+        // FIXME we could add a null constraint to the argument of the switch, since it should be 
+        // considered being null in this branch
+        programState = programState.stackValue(constraintManager.createSymbolicValue(tree));
+        break;
+      case GUARDED_PATTERN:
+        // push a random SV, just to be consumed
         programState = programState.stackValue(constraintManager.createSymbolicValue(tree));
         break;
       case ASSERT_STATEMENT:
