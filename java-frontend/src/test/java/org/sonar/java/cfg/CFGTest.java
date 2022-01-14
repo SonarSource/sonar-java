@@ -67,6 +67,11 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.TRY_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.VARIABLE;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.WHILE_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.YIELD_STATEMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.DEFAULT_PATTERN;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.TYPE_PATTERN;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.NULL_PATTERN;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.GUARDED_PATTERN;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.GREATER_THAN;
 
 class CFGTest {
 
@@ -362,8 +367,13 @@ class CFGTest {
         case ARRAY_ACCESS_EXPRESSION:
         case LOGICAL_COMPLEMENT:
         case MULTIPLY_ASSIGNMENT:
+        case UNARY_MINUS:
         case PLUS:
         case CASE_GROUP:
+        case NULL_PATTERN:
+        case TYPE_PATTERN:
+        case GUARDED_PATTERN:
+        case DEFAULT_PATTERN:
           break;
         default:
           throw new IllegalArgumentException("Unsupported element kind: " + kind);
@@ -956,6 +966,49 @@ class CFGTest {
       block(
         element(VARIABLE, "a"),
         element(IDENTIFIER, "a")).terminator(RETURN_STATEMENT).successors(0));
+    cfgChecker.check(cfg);
+  }
+
+  // FIXME add tests for jdk 17
+  @Test
+  void switch_with_pattern() {
+    final CFG cfg = buildCFG("static int switch_array_default_null_pattern(Object o) {\n"
+      + "    return switch (o) {\n"
+      // array type pattern
+      + "      case Object[] arr -> arr.length;\n"
+      // guarded pattern
+      + "      case Rectangle r && r.volume() > 42 -> -1;\n"
+      // default and null pattern
+      + "      case default, null -> 42;\n"
+      + "    };\n"
+      + "  }");
+    final CFGChecker cfgChecker = checker(
+      block(
+        element(Tree.Kind.CASE_GROUP),
+        element(IDENTIFIER, "arr"),
+        element(MEMBER_SELECT)).hasCaseGroup().terminator(Tree.Kind.YIELD_STATEMENT).successors(1),
+      block(
+        element(Tree.Kind.CASE_GROUP),
+        element(INT_LITERAL, 1),
+        element(Tree.Kind.UNARY_MINUS)).hasCaseGroup().terminator(Tree.Kind.YIELD_STATEMENT).successors(1),
+      block(
+        element(Tree.Kind.CASE_GROUP),
+        element(INT_LITERAL, 42)).hasCaseGroup().terminator(Tree.Kind.YIELD_STATEMENT).successors(1),
+      block(
+        element(IDENTIFIER, "o"),
+        element(TYPE_PATTERN),
+        element(VARIABLE, "arr"),
+        element(GUARDED_PATTERN),
+        element(TYPE_PATTERN),
+        element(VARIABLE, "r"),
+        element(IDENTIFIER, "r"),
+        element(METHOD_INVOCATION),
+        element(INT_LITERAL, 42),
+        element(GREATER_THAN),
+        element(DEFAULT_PATTERN),
+        element(NULL_PATTERN),
+        element(NULL_LITERAL)).terminator(SWITCH_EXPRESSION).successors(3, 4, 5),
+      terminator(RETURN_STATEMENT).successors(0));
     cfgChecker.check(cfg);
   }
 
