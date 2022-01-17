@@ -42,7 +42,7 @@ only_sonarsource_qa: &ONLY_SONARSOURCE_QA
 build_task:
   gke_container:
     <<: *CONTAINER_DEFINITION
-    image: gcr.io/language-team/base-jdk16:latest
+    image: gcr.io/language-team/base-jdk17:latest
     cpu: 4
     memory: 8G
   env:
@@ -90,7 +90,7 @@ qa_os_win_task:
     - build
   gce_instance:
     image_project: language-team
-    image_family: lt-base-windows-jdk16
+    image_family: lt-base-windows-jdk17
     platform: windows
     zone: us-central1-a
     preemptible: false
@@ -136,7 +136,7 @@ sanity_task:
   <<: *ONLY_SONARSOURCE_QA
   gke_container:
     <<: *CONTAINER_DEFINITION
-    image: gcr.io/language-team/base-jdk16:latest
+    image: gcr.io/language-team/base-jdk17:latest
     cpu: 4
     memory: 8G
   maven_cache:
