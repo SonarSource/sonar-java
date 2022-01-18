@@ -134,7 +134,7 @@ public class XxeProcessingCheck extends SECheck {
     .withAnyParameters()
     .build();
 
-  private static final MethodMatchers NEW_DOCUMENT_BUILDER = MethodMatchers.create()
+  protected static final MethodMatchers NEW_DOCUMENT_BUILDER = MethodMatchers.create()
     .ofSubTypes(DOCUMENT_BUILDER_FACTORY)
     .names("newDocumentBuilder")
     .addWithoutParametersMatcher()
@@ -208,7 +208,7 @@ public class XxeProcessingCheck extends SECheck {
     MethodMatchers.create().ofTypes(SAX_PARSER).names("getXMLReader").withAnyParameters().build()
   );
 
-  private static final MethodMatchers PARSING_METHODS = MethodMatchers.or(
+  protected static final MethodMatchers PARSING_METHODS = MethodMatchers.or(
     MethodMatchers.create().ofSubTypes(SAX_PARSER, XML_READER, DOCUMENT_BUILDER).names("parse").withAnyParameters().build(),
     MethodMatchers.create().ofSubTypes(TRANSFORMER_FACTORY).names("newTransformer").withAnyParameters().build(),
     MethodMatchers.create().ofSubTypes(XML_INPUT_FACTORY).name(n -> n.startsWith("create")).withAnyParameters().build(),
