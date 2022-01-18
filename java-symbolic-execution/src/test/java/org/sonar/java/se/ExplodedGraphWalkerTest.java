@@ -35,6 +35,7 @@ import org.sonar.java.model.JUtils;
 import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
 import org.sonar.java.se.checks.ConditionalUnreachableCodeCheck;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
+import org.sonar.java.se.checks.DenialOfServiceXMLCheck;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.InvariantReturnCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
@@ -689,7 +690,8 @@ class ExplodedGraphWalkerTest {
       ObjectOutputStreamCheck.class,
       MinMaxRangeCheck.class,
       ParameterNullnessCheck.class,
-      XxeProcessingCheck.class)
+      XxeProcessingCheck.class,
+      DenialOfServiceXMLCheck.class)
       .map(Class::getSimpleName)
       .collect(Collectors.toList());
     // Compute the list of SEChecks defined in package

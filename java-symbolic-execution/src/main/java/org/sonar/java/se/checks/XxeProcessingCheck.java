@@ -189,7 +189,7 @@ public class XxeProcessingCheck extends SECheck {
       .names("setAttribute").addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_OBJECT).build(),
     MethodMatchers.create().ofSubTypes(XML_INPUT_FACTORY, SAX_PARSER, SCHEMA_FACTORY, VALIDATOR, XML_READER, SAX_BUILDER)
       .names("setProperty").addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_OBJECT).build(),
-    MethodMatchers.create().ofSubTypes(DOCUMENT_BUILDER_FACTORY, SAX_PARSER_FACTORY, XML_READER, SAX_BUILDER, SAX_READER)
+    MethodMatchers.create().ofSubTypes(DOCUMENT_BUILDER_FACTORY, SAX_PARSER_FACTORY, TRANSFORMER_FACTORY, SCHEMA_FACTORY, XML_READER, SAX_BUILDER, SAX_READER)
       .names("setFeature").addParametersMatcher(JAVA_LANG_STRING, BOOLEAN).build());
 
   private static final String DOCUMENT_BUILDER = "javax.xml.parsers.DocumentBuilder";
@@ -445,10 +445,10 @@ public class XxeProcessingCheck extends SECheck {
     CUSTOM_ENTITY_RESOLVER
   }
 
-  private static class XxeSymbolicValue extends SymbolicValue {
-    private final Tree init;
+  protected static class XxeSymbolicValue extends SymbolicValue {
+    protected final Tree init;
     private final Predicate<ConstraintsByDomain> conditionForSecured;
-    private boolean isField;
+    protected boolean isField;
 
     private XxeSymbolicValue(Tree init, Predicate<ConstraintsByDomain> conditionForSecured) {
       this.init = init;
