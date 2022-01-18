@@ -1,0 +1,88 @@
+<p>An XML bomb / <a href="https://en.wikipedia.org/wiki/Billion_laughs_attack">billion laughs</a> attack is a malicious XML document containing the
+same large entity repeated over and over again. If no restrictions is in place, such a limit on the number of entity expansions, the XML processor can
+consume a lot memory and time during the parsing of such documents leading to Denial of Service.</p>
+<pre>
+&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE lolz [
+ &lt;!ENTITY lol "lol"&gt;
+ &lt;!ELEMENT lolz (#PCDATA)&gt;
+ &lt;!ENTITY lol1 "&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;"&gt;
+ &lt;!ENTITY lol2 "&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;"&gt;
+ &lt;!ENTITY lol3 "&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;"&gt;
+ &lt;!ENTITY lol4 "&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;"&gt;
+ &lt;!ENTITY lol5 "&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;"&gt;
+ &lt;!ENTITY lol6 "&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;"&gt;
+ &lt;!ENTITY lol7 "&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;"&gt;
+ &lt;!ENTITY lol8 "&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;"&gt;
+ &lt;!ENTITY lol9 "&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;"&gt;
+]&gt;
+&lt;lolz&gt;&amp;lol9;&lt;/lolz&gt;
+</pre>
+<h2>Noncompliant Code Example</h2>
+<p>For <a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilder</a>, <a
+href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/SAXParserFactory.html">SAXParser</a> and <a
+href="https://docs.oracle.com/javase/9/docs/api/javax/xml/validation/SchemaFactory.html">Schema</a> and <a
+href="https://docs.oracle.com/javase/9/docs/api/javax/xml/transform/TransformerFactory.html">Transformer</a> JAPX factories:</p>
+<pre>
+DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant
+
+SAXParserFactory factory = SAXParserFactory.newInstance();
+factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant
+
+SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant
+
+TransformerFactory factory = javax.xml.transform.TransformerFactory.newInstance();
+factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant
+</pre>
+<p>For <a href="https://dom4j.github.io/">Dom4j</a> library:</p>
+<pre>
+SAXReader xmlReader = new SAXReader();
+xmlReader.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant
+</pre>
+<p>For <a href="http://www.jdom.org/">Jdom2</a> library:</p>
+<pre>
+SAXBuilder builder = new SAXBuilder();
+builder.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);  // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<p>For <a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilder</a>, <a
+href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/SAXParserFactory.html">SAXParser</a> and <a
+href="https://docs.oracle.com/javase/9/docs/api/javax/xml/validation/SchemaFactory.html">Schema</a> and <a
+href="https://docs.oracle.com/javase/9/docs/api/javax/xml/transform/TransformerFactory.html">Transformer</a> JAPX factories:</p>
+<pre>
+DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+
+SAXParserFactory factory = SAXParserFactory.newInstance();
+factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+
+SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+
+TransformerFactory factory = javax.xml.transform.TransformerFactory.newInstance();
+factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+</pre>
+<p>For <a href="https://dom4j.github.io/">Dom4j</a> library:</p>
+<pre>
+SAXReader xmlReader = new SAXReader();
+xmlReader.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+</pre>
+<p>For <a href="http://www.jdom.org/">Jdom2</a> library:</p>
+<pre>
+SAXBuilder builder = new SAXBuilder();
+builder.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a
+  href="https://docs.oracle.com/en/java/javase/13/security/java-api-xml-processing-jaxp-security-guide.html#GUID-8CD65EF5-D113-4D5C-A564-B875C8625FAC">Oracle Java Documentation</a> - XML External Entity Injection Attack </li>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A4-XML_External_Entities_(XXE)">OWASP Top 10 2017 Category A4</a> - XML External Entities
+  (XXE) </li>
+  <li> <a href="https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html#java">OWASP XXE Prevention Cheat
+  Sheet</a> </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/776.html">MITRE, CWE-776</a> - Improper Restriction of Recursive Entity References in DTDs ('XML
+  Entity Expansion') </li>
+</ul>
+

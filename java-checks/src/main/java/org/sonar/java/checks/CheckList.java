@@ -191,6 +191,7 @@ import org.sonar.java.checks.unused.UnusedTypeParameterCheck;
 import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
 import org.sonar.java.se.checks.ConditionalUnreachableCodeCheck;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
+import org.sonar.java.se.checks.DenialOfServiceXMLCheck;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.InvariantReturnCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
@@ -776,6 +777,9 @@ public final class CheckList {
       OptionalGetBeforeIsPresentCheck.class,
       StreamConsumedCheck.class,
       RedundantAssignmentsCheck.class,
+      XxeProcessingCheck.class,
+      // SEChecks Depending on XxeProcessingCheck
+      DenialOfServiceXMLCheck.class,
 
       // SEChecks not require by ExplodedGraphWalker, from the fastest to the slowest
       ParameterNullnessCheck.class,
@@ -784,7 +788,6 @@ public final class CheckList {
       CustomUnclosedResourcesCheck.class,
       MapComputeIfAbsentOrPresentCheck.class,
       InvariantReturnCheck.class,
-      XxeProcessingCheck.class,
       StreamNotConsumedCheck.class,
       ObjectOutputStreamCheck.class,
       MinMaxRangeCheck.class);
