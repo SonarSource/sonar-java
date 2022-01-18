@@ -1,6 +1,7 @@
 package symbolicexecution.checks;
 
 import java.io.IOException;
+import java.io.InputStream;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -11,8 +12,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 import org.jdom2.input.SAXBuilder;
+import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -71,6 +74,30 @@ public class DenialOfServiceXMLCheck {
     DocumentBuilder builder = factory.newDocumentBuilder();
     builder.setEntityResolver(new MyEntityResolver());
     return factory;
+  }
+
+  void new_instance_used(InputStream is) throws Exception {
+    DocumentBuilderFactory df = DocumentBuilderFactory.newInstance();
+    df.setFeature("http://xml.org/sax/features/external-general-entities", false); // To make XxeProcessingCheck secured
+    DocumentBuilder builder = df.newDocumentBuilder();
+    Document doc1 = builder.parse(is);
+  }
+
+  void secure_processing_true_used(InputStream is) throws Exception {
+    DocumentBuilderFactory df = DocumentBuilderFactory.newInstance();
+    df.setFeature("http://xml.org/sax/features/external-general-entities", false); // To make XxeProcessingCheck secured
+
+    df.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+    DocumentBuilder builder = df.newDocumentBuilder();
+    Document doc1 = builder.parse(is);
+  }
+
+  void secure_processing_false_used(InputStream is) throws Exception {
+    DocumentBuilderFactory df = DocumentBuilderFactory.newInstance(); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
+    df.setFeature("http://xml.org/sax/features/external-general-entities", false); // To make XxeProcessingCheck secured
+    df.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
+    DocumentBuilder builder = df.newDocumentBuilder();
+    Document doc1 = builder.parse(is);
   }
 
   // ========== SAXParserFactory ==========
@@ -146,6 +173,22 @@ public class DenialOfServiceXMLCheck {
     saxer.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
     return saxer;
   }
+
+  void sax_reader_new_instance_used() throws SAXException, DocumentException {
+    SAXReader saxer = new SAXReader();
+    saxer.setFeature("http://xml.org/sax/features/external-general-entities", false); // To make XxeProcessingCheck secured
+
+    org.dom4j.Document xmlResponse = saxer.read("something.xml");
+  }
+
+  void sax_reader_unsecured_used() throws SAXException, DocumentException {
+    SAXReader saxer = new SAXReader(); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
+    saxer.setFeature("http://xml.org/sax/features/external-general-entities", false); // To make XxeProcessingCheck secured
+
+    saxer.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
+    org.dom4j.Document xmlResponse = saxer.read("something.xml");
+  }
+
   // ========== SAXBuilder  ==========
   SAXBuilder sax_builder_new_instance() {
     SAXBuilder builder = new SAXBuilder();
