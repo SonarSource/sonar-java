@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.java;
 
-import com.sonar.plugins.security.api.JavaRules;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -72,13 +71,23 @@ class JavaSonarWayProfileTest {
   @Test
   void should_contains_security_rules_if_present() {
     // no security rules available
-    JavaRules.ruleKeys = new HashSet<>();
+    com.sonar.plugins.security.api.JavaRules.ruleKeys = new HashSet<>();
     assertThat(JavaSonarWayProfile.getSecurityRuleKeys(true)).isEmpty();
 
     // one security rule available
-    JavaRules.ruleKeys = new HashSet<>(Arrays.asList("S3649"));
+    com.sonar.plugins.security.api.JavaRules.ruleKeys = new HashSet<>(Arrays.asList("S3649"));
     assertThat(JavaSonarWayProfile.getSecurityRuleKeys(true)).containsOnly(RuleKey.of("java", "S3649"));
     assertThat(JavaSonarWayProfile.getSecurityRuleKeys(false)).containsOnly(RuleKey.of("security-repo-key", "S3649"));
   }
 
+  @Test
+  void should_contains_dataflow_bug_detection_rules_if_present() {
+    // no security rules available
+    com.sonar.plugins.dbd.api.JavaRules.ruleKeys = new HashSet<>();
+    assertThat(JavaSonarWayProfile.getDataflowBugDetectionRuleKeys()).isEmpty();
+
+    // one dataflow bug detection rule available
+    com.sonar.plugins.dbd.api.JavaRules.ruleKeys = new HashSet<>(Arrays.asList("S6322"));
+    assertThat(JavaSonarWayProfile.getDataflowBugDetectionRuleKeys()).containsOnly(RuleKey.of("dbd-repo-key", "S6322"));
+  }
 }
