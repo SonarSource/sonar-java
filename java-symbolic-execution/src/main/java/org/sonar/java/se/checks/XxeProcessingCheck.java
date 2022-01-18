@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.FlowComputation;
@@ -42,6 +41,7 @@ import org.sonar.java.se.checks.XxeProperty.FeatureDisallowDoctypeDecl;
 import org.sonar.java.se.checks.XxeProperty.FeatureExternalGeneralEntities;
 import org.sonar.java.se.checks.XxeProperty.FeatureIsSupportingExternalEntities;
 import org.sonar.java.se.checks.XxeProperty.FeatureLoadExternalDtd;
+import org.sonar.java.se.checks.XxeProperty.FeatureSecureProcessing;
 import org.sonar.java.se.checks.XxeProperty.FeatureSupportDtd;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
@@ -57,6 +57,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
 
 @Rule(key = "S2755")
 public class XxeProcessingCheck extends SECheck {
@@ -222,6 +223,7 @@ public class XxeProcessingCheck extends SECheck {
     FeatureDisallowDoctypeDecl.values(),
     FeatureExternalGeneralEntities.values(),
     FeatureLoadExternalDtd.values(),
+    FeatureSecureProcessing.values(),
     AttributeDTD.values(),
     AttributeSchema.values(),
     AttributeStyleSheet.values())
