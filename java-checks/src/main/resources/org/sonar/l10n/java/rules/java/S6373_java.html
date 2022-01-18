@@ -1,0 +1,68 @@
+<p>XML standard allows the inclusion of xml files with the <a href="https://www.w3.org/TR/xinclude-11/">xinclude</a> element.</p>
+<p>XML processors will replace an xinclude element with the content of the file located at the URI defined in the href attribute, potentially from an
+external storage such as file system or network, which may lead, if no restrictions are put in place, to arbitrary file disclosures or <a
+href="https://www.owasp.org/index.php/Server_Side_Request_Forgery">server-side request forgery (SSRF)</a> vulnerabilities.</p>
+<pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;person&gt;
+  &lt;name&gt;foo&lt;/name&gt;
+  &lt;city&gt;bar&lt;/city&gt;
+  &lt;age&gt;18&lt;/age&gt;
+  &lt;xi:include parse="text" href="file:///etc/passwd"/&gt;
+&lt;/person&gt;
+</pre>
+<h2>Noncompliant Code Example</h2>
+<p>For <a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilder</a>, <a
+href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/SAXParserFactory.html">SAXParser</a>, <a
+href="https://docs.oracle.com/javase/9/docs/api/javax/xml/stream/XMLInputFactory.html">XMLInput</a>, <a
+href="https://docs.oracle.com/javase/9/docs/api/javax/xml/transform/TransformerFactory.html">Transformer</a> and <a
+href="https://docs.oracle.com/javase/9/docs/api/javax/xml/validation/SchemaFactory.html">Schema</a> JAPX factories:</p>
+<pre>
+factory.setXIncludeAware(true); // Noncompliant
+// or
+factory.setFeature("http://apache.org/xml/features/xinclude", true); // Noncompliant
+</pre>
+<p>For <a href="https://dom4j.github.io/">Dom4j</a> library:</p>
+<pre>
+SAXReader xmlReader = new SAXReader();
+xmlReader.setFeature("http://apache.org/xml/features/xinclude", true); // Noncompliant
+</pre>
+<p>For <a href="http://www.jdom.org/">Jdom2</a> library:</p>
+<pre>
+SAXBuilder builder = new SAXBuilder();
+builder.setFeature("http://apache.org/xml/features/xinclude", true); // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<p>Xinclude is disabled by default and can be explicitely disabled like below.</p>
+<p>For <a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilder</a>, <a
+href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/SAXParserFactory.html">SAXParser</a>, <a
+href="https://docs.oracle.com/javase/9/docs/api/javax/xml/stream/XMLInputFactory.html">XMLInput</a>, <a
+href="https://docs.oracle.com/javase/9/docs/api/javax/xml/transform/TransformerFactory.html">Transformer</a> and <a
+href="https://docs.oracle.com/javase/9/docs/api/javax/xml/validation/SchemaFactory.html">Schema</a> JAPX factories:</p>
+<pre>
+factory.setXIncludeAware(false);
+// or
+factory.setFeature("http://apache.org/xml/features/xinclude", false);
+</pre>
+<p>For <a href="https://dom4j.github.io/">Dom4j</a> library:</p>
+<pre>
+SAXReader xmlReader = new SAXReader();
+xmlReader.setFeature("http://apache.org/xml/features/xinclude", false);
+</pre>
+<p>For <a href="http://www.jdom.org/">Jdom2</a> library:</p>
+<pre>
+SAXBuilder builder = new SAXBuilder();
+builder.setFeature("http://apache.org/xml/features/xinclude", false);
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a
+  href="https://docs.oracle.com/en/java/javase/13/security/java-api-xml-processing-jaxp-security-guide.html#GUID-8CD65EF5-D113-4D5C-A564-B875C8625FAC">Oracle Java Documentation</a> - XML External Entity Injection Attack </li>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A4-XML_External_Entities_(XXE)">OWASP Top 10 2017 Category A4</a> - XML External Entities
+  (XXE) </li>
+  <li> <a href="https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html#java">OWASP XXE Prevention Cheat
+  Sheet</a> </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/611.html">MITRE, CWE-611</a> - Information Exposure Through XML External Entity Reference </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/827.html">MITRE, CWE-827</a> - Improper Control of Document Type Definition </li>
+</ul>
+
