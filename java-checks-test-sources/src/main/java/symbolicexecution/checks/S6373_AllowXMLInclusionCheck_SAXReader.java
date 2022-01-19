@@ -23,15 +23,15 @@ public class S6373_AllowXMLInclusionCheck_SAXReader {
   }
 
   SAXReader x_include_feature_to_true() throws SAXException {
-    SAXReader xmlReader = new SAXReader(); // Noncompliant [[sc=31;ec=40]] {{Disable the inclusion of files in XML processing.}}
-    xmlReader.setFeature("http://apache.org/xml/features/xinclude", true);
+    SAXReader xmlReader = new SAXReader();
+    xmlReader.setFeature("http://apache.org/xml/features/xinclude", true); // Noncompliant {{Disable the inclusion of files in XML processing.}}
     xmlReader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
     return xmlReader;
   }
 
   SAXReader x_include_feature_to_true_without_entity_resolver() throws SAXException {
-    SAXReader xmlReader = new SAXReader(); // Noncompliant
-    xmlReader.setFeature("http://apache.org/xml/features/xinclude", true);
+    SAXReader xmlReader = new SAXReader();
+    xmlReader.setFeature("http://apache.org/xml/features/xinclude", true); // Noncompliant
     xmlReader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
     xmlReader.setEntityResolver(null);
     return xmlReader;
@@ -46,8 +46,8 @@ public class S6373_AllowXMLInclusionCheck_SAXReader {
   }
 
   void x_include_feature_to_true_used() throws SAXException, DocumentException {
-    SAXReader xmlReader = new SAXReader(); // Noncompliant [[sc=31;ec=40]] {{Disable the inclusion of files in XML processing.}}
-    xmlReader.setFeature("http://apache.org/xml/features/xinclude", true);
+    SAXReader xmlReader = new SAXReader();
+    xmlReader.setFeature("http://apache.org/xml/features/xinclude", true); // Noncompliant {{Disable the inclusion of files in XML processing.}}
     xmlReader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
     xmlReader.read(new File("f"));
   }

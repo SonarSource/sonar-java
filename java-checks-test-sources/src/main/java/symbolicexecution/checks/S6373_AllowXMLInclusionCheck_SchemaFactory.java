@@ -30,8 +30,8 @@ public class S6373_AllowXMLInclusionCheck_SchemaFactory {
   }
 
   Validator x_include_feature_to_true() throws SAXException {
-    SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI); // Noncompliant [[sc=49;ec=60]] {{Disable the inclusion of files in XML processing.}}
-    schemaFactory.setFeature("http://apache.org/xml/features/xinclude", true);
+    SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+    schemaFactory.setFeature("http://apache.org/xml/features/xinclude", true); // Noncompliant {{Disable the inclusion of files in XML processing.}}
     schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
     schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 

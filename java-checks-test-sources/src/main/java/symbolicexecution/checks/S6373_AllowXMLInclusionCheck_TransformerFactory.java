@@ -22,8 +22,8 @@ public class S6373_AllowXMLInclusionCheck_TransformerFactory {
   }
 
   TransformerFactory x_include_feature_to_true() throws TransformerConfigurationException {
-    TransformerFactory factory = TransformerFactory.newInstance(); // Noncompliant [[sc=53;ec=64]] {{Disable the inclusion of files in XML processing.}}
-    factory.setFeature("http://apache.org/xml/features/xinclude", true);
+    TransformerFactory factory = TransformerFactory.newInstance();
+    factory.setFeature("http://apache.org/xml/features/xinclude", true); // Noncompliant {{Disable the inclusion of files in XML processing.}}
     factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
     factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
     return factory;

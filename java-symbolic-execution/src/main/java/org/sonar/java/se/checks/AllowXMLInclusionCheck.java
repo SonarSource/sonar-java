@@ -19,10 +19,14 @@
  */
 package org.sonar.java.se.checks;
 
+import java.util.Arrays;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
+import org.sonar.java.se.checks.XxeProcessingCheck.XmlSetXIncludeAware;
+import org.sonar.java.se.checks.XxeProperty.FeatureXInclude;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -78,11 +82,21 @@ public class AllowXMLInclusionCheck extends SECheck {
 
   private void reportIfNotSecured(CheckerContext context, XxeProcessingCheck.XxeSymbolicValue xxeSV, @Nullable ConstraintsByDomain constraintsByDomain) {
     if (!xxeSV.isField && isUnSecuredByProperty(constraintsByDomain)) {
-      context.reportIssue(xxeSV.init,
+      context.reportIssue(getIssueLocation(context, xxeSV),
         this,
-        "Disable the inclusion of files in XML processing."); // TODO: Flows?
+        "Disable the inclusion of files in XML processing.");
     }
+  }
 
+  private static Tree getIssueLocation(CheckerContext context, XxeProcessingCheck.XxeSymbolicValue xxeSV) {
+    return FlowComputation.flowWithoutExceptions(context.getNode(), xxeSV, c -> c == FeatureXInclude.ENABLE || c == XmlSetXIncludeAware.ENABLE,
+      Arrays.asList(FeatureXInclude.class, XmlSetXIncludeAware.class), FlowComputation.FIRST_FLOW)
+      .stream()
+      .findFirst()
+      .flatMap(f -> f.elements().stream().findFirst())
+      .map(e -> e.syntaxNode)
+      // Last step should never occurs, we add it for defensive programming
+      .orElse(xxeSV.init);
   }
 
   private static boolean isUnSecuredByProperty(@Nullable ConstraintsByDomain constraintsByDomain) {
@@ -90,8 +104,8 @@ public class AllowXMLInclusionCheck extends SECheck {
       // Not vulnerable unless some properties are explicitly set.
       return false;
     }
-    return (constraintsByDomain.hasConstraint(XxeProperty.FeatureXInclude.ENABLE)
-      || constraintsByDomain.hasConstraint(XxeProcessingCheck.XmlSetXIncludeAware.ENABLE))
+    return (constraintsByDomain.hasConstraint(FeatureXInclude.ENABLE)
+      || constraintsByDomain.hasConstraint(XmlSetXIncludeAware.ENABLE))
       && !constraintsByDomain.hasConstraint(XxeProcessingCheck.XxeEntityResolver.CUSTOM_ENTITY_RESOLVER);
   }
 

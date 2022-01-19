@@ -35,15 +35,15 @@ public class S6373_AllowXMLInclusionCheck_DocumentBuilderFactory {
   }
 
   DocumentBuilderFactory x_include_setter_to_true() throws ParserConfigurationException {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Noncompliant [[sc=61;ec=72]] {{Disable the inclusion of files in XML processing.}}
-    factory.setXIncludeAware(true);
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    factory.setXIncludeAware(true); // Noncompliant [[sc=5;ec=35]] {{Disable the inclusion of files in XML processing.}}
     factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
     return factory;
   }
 
   DocumentBuilderFactory x_include_feature_to_true() throws ParserConfigurationException {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Noncompliant [[sc=61;ec=72]] {{Disable the inclusion of files in XML processing.}}
-    factory.setFeature("http://apache.org/xml/features/xinclude", true);
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    factory.setFeature("http://apache.org/xml/features/xinclude", true); // Noncompliant {{Disable the inclusion of files in XML processing.}}
     factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
     return factory;
   }
@@ -57,9 +57,17 @@ public class S6373_AllowXMLInclusionCheck_DocumentBuilderFactory {
 
   Document x_include_setter_to_true_without_entity_resolver(InputStream is) throws ParserConfigurationException, IOException, SAXException {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    factory.setXIncludeAware(true);
+    factory.setXIncludeAware(true); // Noncompliant [[sc=5;ec=35]]
     factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-    DocumentBuilder builder = factory.newDocumentBuilder(); // Noncompliant [[sc=34;ec=52]]
+    DocumentBuilder builder = factory.newDocumentBuilder();
+    return builder.parse(is);
+  }
+
+  Document x_include_setter_to_true_with_entity_resolver_null(InputStream is) throws ParserConfigurationException, IOException, SAXException {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    factory.setXIncludeAware(true); // Noncompliant
+    factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+    DocumentBuilder builder = factory.newDocumentBuilder();
     builder.setEntityResolver(null);
     return builder.parse(is);
   }

@@ -20,15 +20,15 @@ public class S6373_AllowXMLInclusionCheck_SAXBuilder {
   }
 
   SAXBuilder x_include_feature_to_true() {
-    SAXBuilder builder = new SAXBuilder(); // Noncompliant [[sc=30;ec=40]] {{Disable the inclusion of files in XML processing.}}
-    builder.setFeature("http://apache.org/xml/features/xinclude", true);
+    SAXBuilder builder = new SAXBuilder();
+    builder.setFeature("http://apache.org/xml/features/xinclude", true); // Noncompliant {{Disable the inclusion of files in XML processing.}}
     builder.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
     return builder;
   }
 
   SAXBuilder x_include_feature_to_true_without_entity_resolver() {
-    SAXBuilder builder = new SAXBuilder(); // Noncompliant
-    builder.setFeature("http://apache.org/xml/features/xinclude", true);
+    SAXBuilder builder = new SAXBuilder();
+    builder.setFeature("http://apache.org/xml/features/xinclude", true); // Noncompliant
     builder.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
     builder.setEntityResolver(null);
     return builder;

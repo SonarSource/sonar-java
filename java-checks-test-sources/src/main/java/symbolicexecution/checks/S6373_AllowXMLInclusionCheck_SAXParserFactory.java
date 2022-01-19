@@ -28,15 +28,15 @@ public class S6373_AllowXMLInclusionCheck_SAXParserFactory {
   }
 
   SAXParserFactory x_include_setter_to_true() throws SAXNotSupportedException, SAXNotRecognizedException, ParserConfigurationException {
-    SAXParserFactory factory = SAXParserFactory.newInstance();  // Noncompliant [[sc=49;ec=60]] {{Disable the inclusion of files in XML processing.}}
-    factory.setXIncludeAware(true);
+    SAXParserFactory factory = SAXParserFactory.newInstance();
+    factory.setXIncludeAware(true); // Noncompliant [[sc=5;ec=35]] {{Disable the inclusion of files in XML processing.}}
     factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
     return factory;
   }
 
   SAXParserFactory x_include_feature_to_true() throws SAXNotSupportedException, SAXNotRecognizedException, ParserConfigurationException {
-    SAXParserFactory factory = SAXParserFactory.newInstance();  // Noncompliant
-    factory.setFeature("http://apache.org/xml/features/xinclude", true);
+    SAXParserFactory factory = SAXParserFactory.newInstance();
+    factory.setFeature("http://apache.org/xml/features/xinclude", true);   // Noncompliant
     factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
     return factory;
   }

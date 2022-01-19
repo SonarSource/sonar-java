@@ -18,15 +18,15 @@ public class S6373_AllowXMLInclusionCheck_XMLInputFactory {
   }
 
   XMLInputFactory x_include_feature_to_true() {
-    XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant [[sc=47;ec=58]] {{Disable the inclusion of files in XML processing.}}
-    factory.setProperty("http://apache.org/xml/features/xinclude", true);
+    XMLInputFactory factory = XMLInputFactory.newInstance();
+    factory.setProperty("http://apache.org/xml/features/xinclude", true); // Noncompliant [[sc=5;ec=73]] {{Disable the inclusion of files in XML processing.}}
     factory.setProperty(XMLInputFactory.SUPPORT_DTD, Boolean.FALSE);
     return factory;
   }
 
   XMLInputFactory x_include_feature_to_true_without_entity_resolver() {
-    XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant
-    factory.setProperty("http://apache.org/xml/features/xinclude", true);
+    XMLInputFactory factory = XMLInputFactory.newInstance();
+    factory.setProperty("http://apache.org/xml/features/xinclude", true);  // Noncompliant
     factory.setXMLResolver(null);
     factory.setProperty(XMLInputFactory.SUPPORT_DTD, Boolean.FALSE);
     return factory;
