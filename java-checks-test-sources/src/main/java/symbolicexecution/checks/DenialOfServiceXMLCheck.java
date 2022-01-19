@@ -24,6 +24,8 @@ import org.xml.sax.SAXNotSupportedException;
 
 public class DenialOfServiceXMLCheck {
 
+  DocumentBuilderFactory factoryAsField;
+
   // ========== DocumentBuilderFactory ==========
 
   DocumentBuilderFactory no_property_new_instance() throws ParserConfigurationException {
@@ -34,10 +36,10 @@ public class DenialOfServiceXMLCheck {
   }
 
   DocumentBuilderFactory secure_processing_false() throws ParserConfigurationException {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     factory.setFeature("http://xml.org/sax/features/external-general-entities", false); // To make XxeProcessingCheck secured
 
-    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
+    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant [[sc=5;ec=70]] {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
     return factory;
   }
 
@@ -59,18 +61,19 @@ public class DenialOfServiceXMLCheck {
   }
 
   DocumentBuilderFactory secure_processing_false_with_disallow_doctype_false() throws ParserConfigurationException {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     factory.setFeature("http://xml.org/sax/features/external-general-entities", false); // To make XxeProcessingCheck secured
 
-    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
+    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
     factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false);
     return factory;
   }
 
   DocumentBuilderFactory entity_resolver_has_no_effect() throws ParserConfigurationException {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     factory.setFeature("http://xml.org/sax/features/external-general-entities", false); // To make XxeProcessingCheck secured
-    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
+
+    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
     DocumentBuilder builder = factory.newDocumentBuilder();
     builder.setEntityResolver(new MyEntityResolver());
     return factory;
@@ -93,11 +96,20 @@ public class DenialOfServiceXMLCheck {
   }
 
   void secure_processing_false_used(InputStream is) throws Exception {
-    DocumentBuilderFactory df = DocumentBuilderFactory.newInstance(); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
+    DocumentBuilderFactory df = DocumentBuilderFactory.newInstance();
     df.setFeature("http://xml.org/sax/features/external-general-entities", false); // To make XxeProcessingCheck secured
-    df.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
+
+    df.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
     DocumentBuilder builder = df.newDocumentBuilder();
     Document doc1 = builder.parse(is);
+  }
+
+  DocumentBuilderFactory fields_are_not_reported() throws ParserConfigurationException {
+    factoryAsField = DocumentBuilderFactory.newInstance();
+    factoryAsField.setFeature("http://xml.org/sax/features/external-general-entities", false); // To make XxeProcessingCheck secured
+
+    factoryAsField.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
+    return factoryAsField;
   }
 
   // ========== SAXParserFactory ==========
@@ -110,10 +122,10 @@ public class DenialOfServiceXMLCheck {
   }
 
   SAXParserFactory sax_parser_unsecured() throws ParserConfigurationException, SAXNotRecognizedException, SAXNotSupportedException {
-    SAXParserFactory factory = SAXParserFactory.newInstance(); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
+    SAXParserFactory factory = SAXParserFactory.newInstance();
     factory.setFeature("http://xml.org/sax/features/external-general-entities", false); // To make XxeProcessingCheck secured
 
-    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
+    factory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", false); // Noncompliant [[sc=5;ec=89]] {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
     return factory;
   }
 
@@ -129,11 +141,11 @@ public class DenialOfServiceXMLCheck {
   }
 
   Validator schema_factory_unsecured() throws SAXException {
-    SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
+    SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
     schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, ""); // To make XxeProcessingCheck secured
     schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, ""); // To make XxeProcessingCheck secured
 
-    schemaFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
+    schemaFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
 
     Schema schema = schemaFactory.newSchema();
     Validator validator = schema.newValidator();
@@ -150,11 +162,11 @@ public class DenialOfServiceXMLCheck {
   }
 
   TransformerFactory transformer_factory_unsecured() throws TransformerConfigurationException {
-    TransformerFactory factory = TransformerFactory.newInstance(); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
+    TransformerFactory factory = TransformerFactory.newInstance();
     factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, ""); // To make XxeProcessingCheck secured
     factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, ""); // To make XxeProcessingCheck secured
 
-    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
+    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
     return factory;
   }
 
@@ -167,10 +179,10 @@ public class DenialOfServiceXMLCheck {
   }
 
   SAXReader sax_reader_unsecured() throws SAXException {
-    SAXReader saxer = new SAXReader(); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
+    SAXReader saxer = new SAXReader();
     saxer.setFeature("http://xml.org/sax/features/external-general-entities", false); // To make XxeProcessingCheck secured
 
-    saxer.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
+    saxer.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
     return saxer;
   }
 
@@ -182,10 +194,10 @@ public class DenialOfServiceXMLCheck {
   }
 
   void sax_reader_unsecured_used() throws SAXException, DocumentException {
-    SAXReader saxer = new SAXReader(); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
+    SAXReader saxer = new SAXReader();
     saxer.setFeature("http://xml.org/sax/features/external-general-entities", false); // To make XxeProcessingCheck secured
 
-    saxer.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
+    saxer.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
     org.dom4j.Document xmlResponse = saxer.read("something.xml");
   }
 
@@ -199,11 +211,21 @@ public class DenialOfServiceXMLCheck {
   }
 
   SAXBuilder sax_builder_unsecured() {
-    SAXBuilder builder = new SAXBuilder();  // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
+    SAXBuilder builder = new SAXBuilder();
     builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, ""); // To make XxeProcessingCheck secured
     builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, ""); // To make XxeProcessingCheck secured
 
-    builder.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
+    builder.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
+    return builder;
+  }
+
+  SAXBuilder sax_builder_unsecured_2() {
+    SAXBuilder builder = new SAXBuilder();
+    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, ""); // To make XxeProcessingCheck secured
+    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, ""); // To make XxeProcessingCheck secured
+
+    builder.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
+    builder.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Compliant, only report the first
     return builder;
   }
 

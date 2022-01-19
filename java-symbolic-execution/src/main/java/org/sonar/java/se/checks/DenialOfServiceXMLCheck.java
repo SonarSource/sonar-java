@@ -19,11 +19,14 @@
  */
 package org.sonar.java.se.checks;
 
+import java.util.Collections;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.checks.XxeProcessingCheck.XxeSymbolicValue;
+import org.sonar.java.se.checks.XxeProperty.FeatureSecureProcessing;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -61,7 +64,6 @@ public class DenialOfServiceXMLCheck extends SECheck {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
-      // Test if API is used without any protection against XXE.
       if (PARSING_METHODS_DOS.matches(mit)) {
         SymbolicValue peek = programState.peekValue(mit.arguments().size());
 
@@ -90,10 +92,21 @@ public class DenialOfServiceXMLCheck extends SECheck {
 
   private void reportIfUnSecured(CheckerContext context, XxeSymbolicValue xxeSV, @Nullable ConstraintsByDomain constraintsByDomain) {
     if (!xxeSV.isField && isUnSecuredByProperty(constraintsByDomain)) {
-      context.reportIssue(xxeSV.init,
+      context.reportIssue(getIssueLocation(context, xxeSV),
         this,
-        "Enable XML parsing limitations to prevent Denial of Service attacks."); // TODO: Flows
+        "Enable XML parsing limitations to prevent Denial of Service attacks.");
     }
+  }
+
+  private static Tree getIssueLocation(CheckerContext context, XxeSymbolicValue xxeSV) {
+    return FlowComputation.flowWithoutExceptions(context.getNode(), xxeSV, c -> c == FeatureSecureProcessing.UNSECURED,
+      Collections.singletonList(FeatureSecureProcessing.class), FlowComputation.FIRST_FLOW)
+      .stream()
+      .findFirst()
+      .flatMap(f -> f.elements().stream().findFirst())
+      .map(e -> e.syntaxNode)
+      // Last step should never occurs, we add it for defensive programming
+      .orElse(xxeSV.init);
   }
 
   private static boolean isUnSecuredByProperty(@Nullable ConstraintsByDomain constraintsByDomain) {
@@ -101,7 +114,7 @@ public class DenialOfServiceXMLCheck extends SECheck {
       // Not vulnerable unless some properties are explicitly set.
       return false;
     }
-    return constraintsByDomain.hasConstraint(XxeProperty.FeatureSecureProcessing.UNSECURED)
+    return constraintsByDomain.hasConstraint(FeatureSecureProcessing.UNSECURED)
       && !constraintsByDomain.hasConstraint(XxeProperty.FeatureDisallowDoctypeDecl.SECURED);
   }
 }
