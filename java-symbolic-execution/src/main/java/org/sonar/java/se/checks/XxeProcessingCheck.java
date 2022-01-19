@@ -158,7 +158,6 @@ public class XxeProcessingCheck extends SECheck {
           || c.hasConstraint(FeatureIsSupportingExternalEntities.SECURED)
           || c.hasConstraint(XxeEntityResolver.CUSTOM_ENTITY_RESOLVER))
       .put(DOCUMENT_BUILDER_FACTORY_NEW_INSTANCE, XxeProcessingCheck::documentBuilderFactoryIsSecured)
-      .put(NEW_DOCUMENT_BUILDER, c -> c.hasConstraint(XxeEntityResolver.CUSTOM_ENTITY_RESOLVER))
       .put(SAX_PARSER_FACTORY_NEW_INSTANCE,
         c -> (c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeSchema.SECURED))
           || c.hasConstraint(FeatureDisallowDoctypeDecl.SECURED)
@@ -179,7 +178,8 @@ public class XxeProcessingCheck extends SECheck {
       || (c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeSchema.SECURED))
       || c.hasConstraint(FeatureDisallowDoctypeDecl.SECURED)
       || c.hasConstraint(FeatureLoadExternalDtd.SECURED)
-      || c.hasConstraint(FeatureExternalGeneralEntities.SECURED);
+      || c.hasConstraint(FeatureExternalGeneralEntities.SECURED)
+      || c.hasConstraint(XxeEntityResolver.CUSTOM_ENTITY_RESOLVER);
   }
 
   private static final Map<MethodMatchers, Predicate<ConstraintsByDomain>> CONDITIONS_FOR_SECURED_BY_TYPE_NEW_CLASS =
@@ -215,7 +215,8 @@ public class XxeProcessingCheck extends SECheck {
     MethodMatchers.create().ofTypes(SAX_PARSER_FACTORY).names("newSAXParser").withAnyParameters().build(),
     MethodMatchers.create().ofTypes(SCHEMA_FACTORY).names("newSchema").withAnyParameters().build(),
     MethodMatchers.create().ofTypes("javax.xml.validation.Schema").names("newValidator").withAnyParameters().build(),
-    MethodMatchers.create().ofTypes(SAX_PARSER).names("getXMLReader").withAnyParameters().build()
+    MethodMatchers.create().ofTypes(SAX_PARSER).names("getXMLReader").withAnyParameters().build(),
+    NEW_DOCUMENT_BUILDER
   );
 
   protected static final MethodMatchers PARSING_METHODS = MethodMatchers.or(
@@ -281,20 +282,12 @@ public class XxeProcessingCheck extends SECheck {
       programState = addNamedConstraint(tree.initializer(), programState);
     }
 
-    private boolean isSecuredDocumentBuilderCreation(MethodInvocationTree mit) {
-      ConstraintsByDomain c = programState.getConstraints(programState.peekValue(mit.arguments().size()));
-      return documentBuilderFactoryIsSecured(c);
-    }
-
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
       // Test initialisation of XML processing API
       for (Map.Entry<MethodMatchers, Predicate<ConstraintsByDomain>> entry : CONDITIONS_FOR_SECURED_BY_TYPE.entrySet()) {
         if (entry.getKey().matches(mit)) {
-          if (!(entry.getKey() == NEW_DOCUMENT_BUILDER && isSecuredDocumentBuilderCreation(mit))) {
-            constraintManager
-              .setValueFactory(() -> new XxeSymbolicValue(ExpressionUtils.methodName(mit), entry.getValue()));
-          }
+          constraintManager.setValueFactory(() -> new XxeSymbolicValue(ExpressionUtils.methodName(mit), entry.getValue()));
           break;
         }
       }
