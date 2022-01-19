@@ -39,7 +39,7 @@ class AllowXMLInclusionCheckTest {
       .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S6373_AllowXMLInclusionCheck_DocumentBuilderFactory.java"))
       .withChecks(CHECKS)
       .withClassPath(SETestUtils.CLASS_PATH)
-      .verifyNoIssues(); // TODO .verifyIssues();
+      .verifyIssues();
   }
 
   @Test
@@ -48,7 +48,7 @@ class AllowXMLInclusionCheckTest {
       .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S6373_AllowXMLInclusionCheck_SAXBuilder.java"))
       .withChecks(CHECKS)
       .withClassPath(SETestUtils.CLASS_PATH)
-      .verifyNoIssues(); // TODO .verifyIssues();
+      .verifyIssues();
   }
 
   @Test
@@ -57,7 +57,7 @@ class AllowXMLInclusionCheckTest {
       .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S6373_AllowXMLInclusionCheck_SAXParserFactory.java"))
       .withChecks(CHECKS)
       .withClassPath(SETestUtils.CLASS_PATH)
-      .verifyNoIssues(); // TODO .verifyIssues();
+      .verifyIssues();
   }
 
   @Test
@@ -66,7 +66,7 @@ class AllowXMLInclusionCheckTest {
       .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S6373_AllowXMLInclusionCheck_SAXReader.java"))
       .withChecks(CHECKS)
       .withClassPath(SETestUtils.CLASS_PATH)
-      .verifyNoIssues(); // TODO .verifyIssues();
+      .verifyIssues();
   }
 
   @Test
@@ -75,7 +75,7 @@ class AllowXMLInclusionCheckTest {
       .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S6373_AllowXMLInclusionCheck_SchemaFactory.java"))
       .withChecks(CHECKS)
       .withClassPath(SETestUtils.CLASS_PATH)
-      .verifyNoIssues(); // TODO .verifyIssues();
+      .verifyIssues();
   }
 
   @Test
@@ -84,7 +84,7 @@ class AllowXMLInclusionCheckTest {
       .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S6373_AllowXMLInclusionCheck_TransformerFactory.java"))
       .withChecks(CHECKS)
       .withClassPath(SETestUtils.CLASS_PATH)
-      .verifyNoIssues(); // TODO .verifyIssues();
+      .verifyIssues();
   }
 
   @Test
@@ -93,7 +93,7 @@ class AllowXMLInclusionCheckTest {
       .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S6373_AllowXMLInclusionCheck_XMLInputFactory.java"))
       .withChecks(CHECKS)
       .withClassPath(SETestUtils.CLASS_PATH)
-      .verifyNoIssues(); // TODO .verifyIssues();
+      .verifyIssues();
   }
 
 }

@@ -464,11 +464,11 @@ public class XxeProcessingCheck extends SECheck {
     SENSITIVE
   }
 
-  private enum XxeEntityResolver implements Constraint {
+  protected enum XxeEntityResolver implements Constraint {
     CUSTOM_ENTITY_RESOLVER
   }
 
-  private enum XmlSetXIncludeAware implements Constraint {
+  protected enum XmlSetXIncludeAware implements Constraint {
     ENABLE
   }
 

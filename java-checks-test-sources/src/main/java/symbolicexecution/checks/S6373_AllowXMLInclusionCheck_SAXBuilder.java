@@ -20,7 +20,7 @@ public class S6373_AllowXMLInclusionCheck_SAXBuilder {
   }
 
   SAXBuilder x_include_feature_to_true() {
-    SAXBuilder builder = new SAXBuilder(); // Noncompliant [[sc=31;ec=40]] {{Disable the inclusion of files in XML processing.}}
+    SAXBuilder builder = new SAXBuilder(); // Noncompliant [[sc=30;ec=40]] {{Disable the inclusion of files in XML processing.}}
     builder.setFeature("http://apache.org/xml/features/xinclude", true);
     builder.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
     return builder;
