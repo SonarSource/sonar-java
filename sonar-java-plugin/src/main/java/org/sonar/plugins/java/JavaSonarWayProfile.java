@@ -124,14 +124,8 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
         repositoryKey = (String) getRepositoryKeyMethod.invoke(null);
       }
       return ruleKeys.stream().map(k -> RuleKey.of(repositoryKey, k)).collect(Collectors.toSet());
-    } catch (ClassNotFoundException e) {
-      LOG.debug(String.format("%s is not found, no %s rules added to Sonar way java profile: %s", className, rulesCategory, e.getMessage()));
-    } catch (NoSuchMethodException e) {
-      LOG.debug(String.format("Method is not found, no %s rules added to Sonar way java profile: %s", rulesCategory, e.getMessage()));
-    } catch (IllegalAccessException e) {
-      LOG.debug(String.format("[IllegalAccessException] no %s rules added to Sonar way java profile: %s", rulesCategory, e.getMessage()));
-    } catch (InvocationTargetException e) {
-      LOG.debug(String.format("[InvocationTargetException] no %s rules added to Sonar way java profile: %s", rulesCategory, e.getMessage()));
+    } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+      LOG.debug(String.format("[%s], no %s rules added to Sonar way java profile: %s", e.getClass().getSimpleName(), rulesCategory, e.getMessage()));
     }
     return new HashSet<>();
   }
