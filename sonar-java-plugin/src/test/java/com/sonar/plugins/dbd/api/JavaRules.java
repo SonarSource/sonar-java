@@ -36,4 +36,8 @@ public class JavaRules {
   public static String getRepositoryKey() {
     return "dbd-repo-key";
   }
+
+  public static Set<String> methodThrowingException() throws Exception {
+    throw new RuntimeException("testing");
+  }
 }
