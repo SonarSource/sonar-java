@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.model.JUtils;
+import org.sonar.java.se.checks.AllowXMLInclusionCheck;
 import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
 import org.sonar.java.se.checks.ConditionalUnreachableCodeCheck;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
@@ -691,7 +692,8 @@ class ExplodedGraphWalkerTest {
       MinMaxRangeCheck.class,
       ParameterNullnessCheck.class,
       XxeProcessingCheck.class,
-      DenialOfServiceXMLCheck.class)
+      DenialOfServiceXMLCheck.class,
+      AllowXMLInclusionCheck.class)
       .map(Class::getSimpleName)
       .collect(Collectors.toList());
     // Compute the list of SEChecks defined in package

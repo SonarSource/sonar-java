@@ -66,7 +66,6 @@ import org.sonar.java.checks.regex.StringReplaceCheck;
 import org.sonar.java.checks.regex.UnicodeAwareCharClassesCheck;
 import org.sonar.java.checks.regex.UnicodeCaseCheck;
 import org.sonar.java.checks.regex.UnusedGroupNamesCheck;
-import org.sonar.java.checks.security.AllowXMLInclusionCheck;
 import org.sonar.java.checks.security.AndroidBiometricAuthWithoutCryptoCheck;
 import org.sonar.java.checks.security.AndroidBroadcastingCheck;
 import org.sonar.java.checks.security.AndroidExternalStorageCheck;
@@ -189,6 +188,7 @@ import org.sonar.java.checks.unused.UnusedReturnedDataCheck;
 import org.sonar.java.checks.unused.UnusedTestRuleCheck;
 import org.sonar.java.checks.unused.UnusedThrowableCheck;
 import org.sonar.java.checks.unused.UnusedTypeParameterCheck;
+import org.sonar.java.se.checks.AllowXMLInclusionCheck;
 import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
 import org.sonar.java.se.checks.ConditionalUnreachableCodeCheck;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
@@ -244,7 +244,6 @@ public final class CheckList {
       AccessibilityChangeCheck.class,
       AccessibilityChangeOnRecordsCheck.class,
       AllBranchesAreIdenticalCheck.class,
-      AllowXMLInclusionCheck.class,
       AnchorPrecedenceCheck.class,
       AndroidBroadcastingCheck.class,
       AndroidUnencryptedFilesCheck.class,
@@ -782,6 +781,7 @@ public final class CheckList {
       XxeProcessingCheck.class,
       // SEChecks Depending on XxeProcessingCheck
       DenialOfServiceXMLCheck.class,
+      AllowXMLInclusionCheck.class,
 
       // SEChecks not require by ExplodedGraphWalker, from the fastest to the slowest
       ParameterNullnessCheck.class,
