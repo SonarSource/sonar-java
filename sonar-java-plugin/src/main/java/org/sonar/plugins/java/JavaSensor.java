@@ -55,7 +55,7 @@ import org.sonarsource.performance.measure.PerformanceMeasure;
 
 @Phase(name = Phase.Name.PRE)
 public class JavaSensor implements Sensor {
-
+// new comment
   private static final Logger LOG = Loggers.get(JavaSensor.class);
 
   private static final String PERFORMANCE_MEASURE_ACTIVATION_PROPERTY = "sonar.java.performance.measure";
