@@ -43,6 +43,8 @@ import org.sonar.java.se.checks.XxeProperty.FeatureIsSupportingExternalEntities;
 import org.sonar.java.se.checks.XxeProperty.FeatureLoadExternalDtd;
 import org.sonar.java.se.checks.XxeProperty.FeatureSecureProcessing;
 import org.sonar.java.se.checks.XxeProperty.FeatureSupportDtd;
+import org.sonar.java.se.checks.XxeProperty.FeatureXInclude;
+import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
@@ -91,6 +93,14 @@ public class XxeProcessingCheck extends SECheck {
     .ofTypes(SAX_PARSER_FACTORY)
     .names(NEW_INSTANCE)
     .withAnyParameters()
+    .build();
+
+  private static final MethodMatchers SET_X_INCLUDE_AWARE = MethodMatchers.create()
+    .ofSubTypes(
+      DOCUMENT_BUILDER_FACTORY,
+      SAX_PARSER_FACTORY)
+    .names("setXIncludeAware")
+    .addParametersMatcher(BOOLEAN)
     .build();
 
   // SchemaFactory and Validator
@@ -224,6 +234,7 @@ public class XxeProcessingCheck extends SECheck {
     FeatureExternalGeneralEntities.values(),
     FeatureLoadExternalDtd.values(),
     FeatureSecureProcessing.values(),
+    FeatureXInclude.values(),
     AttributeDTD.values(),
     AttributeSchema.values(),
     AttributeStyleSheet.values())
@@ -299,6 +310,8 @@ public class XxeProcessingCheck extends SECheck {
         }
       } else if (ENTITY_RESOLVER_SETTERS.matches(mit)) {
         handleEntityResolver(mit);
+      } else if (SET_X_INCLUDE_AWARE.matches(mit)) {
+        handleSetXIncludeAware(mit);
       }
 
       // Test if API is used without any protection against XXE.
@@ -309,6 +322,16 @@ public class XxeProcessingCheck extends SECheck {
           XxeSymbolicValue xxeSymbolicValue = (XxeSymbolicValue) peek;
           reportIfNotSecured(context, xxeSymbolicValue, programState.getConstraints(xxeSymbolicValue));
         }
+      }
+    }
+
+    private void handleSetXIncludeAware(MethodInvocationTree mit) {
+      SymbolicValue mitResultSV = programState.peekValue(mit.arguments().size());
+      SymbolicValue entityResolverSV = programState.peekValue(0);
+      if (programState.getConstraint(entityResolverSV, BooleanConstraint.class) == BooleanConstraint.FALSE) {
+        programState = programState.removeConstraintsOnDomain(mitResultSV, XmlSetXIncludeAware.class);
+      } else {
+        programState = programState.addConstraint(mitResultSV, XmlSetXIncludeAware.ENABLE);
       }
     }
 
@@ -443,6 +466,10 @@ public class XxeProcessingCheck extends SECheck {
 
   private enum XxeEntityResolver implements Constraint {
     CUSTOM_ENTITY_RESOLVER
+  }
+
+  private enum XmlSetXIncludeAware implements Constraint {
+    ENABLE
   }
 
   protected static class XxeSymbolicValue extends SymbolicValue {
