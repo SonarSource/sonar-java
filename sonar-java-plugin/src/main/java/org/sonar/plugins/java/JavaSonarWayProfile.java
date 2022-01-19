@@ -49,6 +49,11 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
 
   private static final Logger LOG = Loggers.get(JavaSonarWayProfile.class);
 
+  static final String SECURITY_RULES_CLASS_NAME = "com.sonar.plugins.security.api.JavaRules";
+  static final String DBD_RULES_CLASS_NAME = "com.sonar.plugins.dbd.api.JavaRules";
+  static final String DBD_RULE_KEYS_METHOD_NAME = "getDataflowBugDetectionRuleKeys";
+  static final String GET_REPOSITORY_KEY = "getRepositoryKey";
+
 
   @Override
   public void define(Context context) {
@@ -61,7 +66,7 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
     }
 
     getSecurityRuleKeys(isSonarSecurityBefore78()).forEach(key -> sonarWay.activateRule(key.repository(), key.rule()));
-
+    getDataflowBugDetectionRuleKeys().forEach(key -> sonarWay.activateRule(key.repository(), key.rule()));
     sonarWay.done();
   }
 
@@ -93,40 +98,42 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
     }
   }
 
-  @SuppressWarnings("unchecked")
   @VisibleForTesting
   static Set<RuleKey> getSecurityRuleKeys(boolean sonarSecurityBefore78) {
+    String ruleKeysMethod = sonarSecurityBefore78 ? "getRuleKeys" : "getSecurityRuleKeys";
+    return getExternalRuleKeys(SECURITY_RULES_CLASS_NAME, ruleKeysMethod, "security", sonarSecurityBefore78);
+  }
+
+  @VisibleForTesting
+  static Set<RuleKey> getDataflowBugDetectionRuleKeys() {
+    return getExternalRuleKeys(DBD_RULES_CLASS_NAME, DBD_RULE_KEYS_METHOD_NAME, "dataflow bug detection", false);
+  }
+
+  @SuppressWarnings("unchecked")
+  @VisibleForTesting
+  static Set<RuleKey> getExternalRuleKeys(String className, String ruleKeysMethod, String rulesCategory, boolean sonarSecurityBefore78) {
     try {
-      Class<?> javaRulesClass = Class.forName("com.sonar.plugins.security.api.JavaRules");
-      String ruleKeysMethod = sonarSecurityBefore78 ? "getRuleKeys" : "getSecurityRuleKeys";
+      Class<?> javaRulesClass = Class.forName(className);
       Method getRuleKeysMethod = javaRulesClass.getMethod(ruleKeysMethod);
       Set<String> ruleKeys = (Set<String>) getRuleKeysMethod.invoke(null);
+      Method getRepositoryKeyMethod = javaRulesClass.getMethod(GET_REPOSITORY_KEY);
       String repositoryKey;
       if (sonarSecurityBefore78) {
         repositoryKey = CheckList.REPOSITORY_KEY;
       } else {
-        Method getRepositoryKeyMethod = javaRulesClass.getMethod("getRepositoryKey");
         repositoryKey = (String) getRepositoryKeyMethod.invoke(null);
       }
       return ruleKeys.stream().map(k -> RuleKey.of(repositoryKey, k)).collect(Collectors.toSet());
-
-    } catch (ClassNotFoundException e) {
-      LOG.debug("com.sonar.plugins.security.api.JavaRules is not found, no security rules added to Sonar way java profile: " + e.getMessage());
-    } catch (NoSuchMethodException e) {
-      LOG.debug("Method is not found, no security rules added to Sonar way java profile: " + e.getMessage());
-    } catch (IllegalAccessException e) {
-      LOG.debug("[IllegalAccessException] no security rules added to Sonar way java profile: " + e.getMessage());
-    } catch (InvocationTargetException e) {
-      LOG.debug("[InvocationTargetException] no security rules added to Sonar way java profile: " + e.getMessage());
+    } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+      LOG.debug(String.format("[%s], no %s rules added to Sonar way java profile: %s", e.getClass().getSimpleName(), rulesCategory, e.getMessage()));
     }
-
     return new HashSet<>();
   }
 
   private static boolean isSonarSecurityBefore78() {
     try {
-      Class<?> javaRulesClass = Class.forName("com.sonar.plugins.security.api.JavaRules");
-      javaRulesClass.getMethod("getRepositoryKey");
+      Class<?> javaRulesClass = Class.forName(SECURITY_RULES_CLASS_NAME);
+      javaRulesClass.getMethod(GET_REPOSITORY_KEY);
       return false;
 
     } catch (NoSuchMethodException | ClassNotFoundException e) {
