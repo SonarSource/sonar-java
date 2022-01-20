@@ -229,6 +229,47 @@ public class DenialOfServiceXMLCheck {
     return builder;
   }
 
+  SAXBuilder sax_builder_unsecured_3() {
+    SAXBuilder builder = new SAXBuilder();
+    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, ""); // To make XxeProcessingCheck secured
+    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, ""); // To make XxeProcessingCheck secured
+
+    builder.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
+    builder.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+    builder.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
+    return builder;
+  }
+
+  SAXBuilder sax_builder_unsecured_4(boolean cond) {
+    SAXBuilder builder = new SAXBuilder();
+    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, ""); // To make XxeProcessingCheck secured
+    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, ""); // To make XxeProcessingCheck secured
+
+    // Two end of execution, but only one issue
+    builder.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
+    if (cond) {
+      return builder;
+    } else {
+      System.out.println("Do something else");
+      return builder;
+    }
+  }
+
+  SAXBuilder sax_builder_unsecured_5(boolean cond) {
+    SAXBuilder builder = new SAXBuilder();
+    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, ""); // To make XxeProcessingCheck secured
+    builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, ""); // To make XxeProcessingCheck secured
+
+    if (cond) {
+      builder.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
+      return builder;
+    } else {
+      System.out.println("Do something else");
+      builder.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false); // Noncompliant {{Enable XML parsing limitations to prevent Denial of Service attacks.}}
+      return builder;
+    }
+  }
+
 }
 
 class MyEntityResolver implements EntityResolver {
