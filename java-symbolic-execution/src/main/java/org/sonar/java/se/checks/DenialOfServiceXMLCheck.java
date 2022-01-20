@@ -37,6 +37,12 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static org.sonar.java.se.checks.XxeProcessingCheck.NEW_DOCUMENT_BUILDER;
 import static org.sonar.java.se.checks.XxeProcessingCheck.PARSING_METHODS;
 
+/**
+ * This check uses the symbolic value and constraints set by XxeProcessingCheck.
+ * It must therefore always be executed afterwards.
+ *
+ * @see org.sonar.java.se.checks.XxeProcessingCheck
+ */
 @Rule(key = "S6376")
 public class DenialOfServiceXMLCheck extends SECheck {
 
