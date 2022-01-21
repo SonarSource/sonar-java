@@ -19,13 +19,12 @@
  */
 package org.sonar.java.se.checks;
 
-import java.util.Arrays;
+import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
-import org.sonar.java.se.checks.XxeProcessingCheck.XmlSetXIncludeAware;
-import org.sonar.java.se.checks.XxeProperty.FeatureXInclude;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -85,15 +84,21 @@ public abstract class AbstractXMLProcessing extends SECheck {
     if (!xxeSV.isField && isUnSecuredByProperty(constraintsByDomain)) {
       context.reportIssue(getIssueLocation(context, xxeSV),
         this,
-        "Disable the inclusion of files in XML processing.");
+        getMessage());
     }
   }
 
   protected abstract boolean isUnSecuredByProperty(@Nullable ConstraintsByDomain constraintsByDomain);
 
-  private static Tree getIssueLocation(CheckerContext context, XxeProcessingCheck.XxeSymbolicValue xxeSV) {
-    return FlowComputation.flowWithoutExceptions(context.getNode(), xxeSV, c -> c == FeatureXInclude.ENABLE || c == XmlSetXIncludeAware.ENABLE,
-      Arrays.asList(FeatureXInclude.class, XmlSetXIncludeAware.class), FlowComputation.FIRST_FLOW)
+  protected abstract String getMessage();
+
+  protected abstract boolean shouldTrackConstraint(Constraint constraint);
+
+  protected abstract List<Class<? extends Constraint>> getDomains();
+
+  private Tree getIssueLocation(CheckerContext context, XxeProcessingCheck.XxeSymbolicValue xxeSV) {
+    return FlowComputation.flowWithoutExceptions(context.getNode(), xxeSV, this::shouldTrackConstraint,
+      getDomains(), FlowComputation.FIRST_FLOW)
       .stream()
       .findFirst()
       .flatMap(f -> f.elements().stream().findFirst())

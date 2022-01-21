@@ -19,9 +19,12 @@
  */
 package org.sonar.java.se.checks;
 
+import java.util.Collections;
+import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.se.checks.XxeProperty.FeatureSecureProcessing;
+import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 
@@ -36,6 +39,8 @@ import static org.sonar.java.se.checks.XxeProcessingCheck.PARSING_METHODS;
  */
 @Rule(key = "S6376")
 public class DenialOfServiceXMLCheck extends AbstractXMLProcessing {
+
+  private static final List<Class<? extends Constraint>> DOMAINS = Collections.singletonList(FeatureSecureProcessing.class);
 
   private static final MethodMatchers PARSING_METHODS_DOS = MethodMatchers.or(
     PARSING_METHODS,
@@ -55,5 +60,20 @@ public class DenialOfServiceXMLCheck extends AbstractXMLProcessing {
     }
     return constraintsByDomain.hasConstraint(FeatureSecureProcessing.UNSECURED)
       && !constraintsByDomain.hasConstraint(XxeProperty.FeatureDisallowDoctypeDecl.SECURED);
+  }
+
+  @Override
+  protected String getMessage() {
+    return "Enable XML parsing limitations to prevent Denial of Service attacks.";
+  }
+
+  @Override
+  protected boolean shouldTrackConstraint(Constraint constraint) {
+    return constraint == FeatureSecureProcessing.UNSECURED;
+  }
+
+  @Override
+  protected List<Class<? extends Constraint>> getDomains() {
+    return DOMAINS;
   }
 }
