@@ -72,32 +72,4 @@ public class AllowXMLInclusionCheck extends AbstractXMLProcessing {
     return DOMAINS;
   }
 
-  /*
-     TODO: we should ensure that we add a XxeProperty.FeatureXInclude constraint for the following cases:
-
-     1) Setter with one argument
-          .ofSubTypes("javax.xml.parsers.DocumentBuilderFactory", "javax.xml.parsers.SAXParserFactory")
-          .names("setXIncludeAware")
-          .addParametersMatcher("boolean")
-
-     2) Set feature with two arguments, the first one matching "http://apache.org/xml/features/xinclude"
-          .ofSubTypes("javax.xml.stream.XMLInputFactory")
-          .names("setProperty")
-          .addParametersMatcher("java.lang.String", "java.lang.Object")
-
-          .ofSubTypes(
-            "javax.xml.transform.TransformerFactory",
-            "javax.xml.validation.SchemaFactory",
-            "org.dom4j.io.SAXReader",
-            "org.jdom2.input.SAXBuilder")
-          .names("setFeature")
-          .addParametersMatcher("java.lang.String", "boolean")
-
-     TODO: we should report when the last argument of "setXIncludeAware|setProperty|setFeature" is `true`
-           and there's no XxeEntityResolver.CUSTOM_ENTITY_RESOLVER constraints
-           with the message "Disable the inclusion of files in XML processing."
-
-     TODO: update the rspec to add an exception about EntityResolver
-   */
-
 }

@@ -1,6 +1,9 @@
 package symbolicexecution.checks;
 
+import java.io.Reader;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 public class S6373_AllowXMLInclusionCheck_XMLInputFactory {
 
@@ -38,6 +41,11 @@ public class S6373_AllowXMLInclusionCheck_XMLInputFactory {
     factory.setXMLResolver(NoopXMLResolver.create());
     factory.setProperty(XMLInputFactory.SUPPORT_DTD, Boolean.FALSE);
     return factory;
+  }
+
+  XMLStreamReader partial_configuration(XMLInputFactory factory, Reader reader) throws XMLStreamException {
+    factory.setProperty("http://apache.org/xml/features/xinclude", true);
+    return factory.createXMLStreamReader(reader);
   }
 
 }

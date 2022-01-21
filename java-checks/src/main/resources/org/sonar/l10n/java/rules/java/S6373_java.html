@@ -54,6 +54,34 @@ xmlReader.setFeature("http://apache.org/xml/features/xinclude", false);
 SAXBuilder builder = new SAXBuilder();
 builder.setFeature("http://apache.org/xml/features/xinclude", false);
 </pre>
+<h2>Exceptions</h2>
+<p>This rule does not raise issues when Xinclude is enabled with a custom <code>EntityResolver</code>:</p>
+<p>For DocumentBuilderFactory:</p>
+<pre>
+DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+factory.setXIncludeAware(true);
+// ...
+DocumentBuilder builder = factory.newDocumentBuilder();
+builder.setEntityResolver((publicId, systemId) -&gt; new MySafeEntityResolver(publicId, systemId));
+</pre>
+<p>For SAXBuilder:</p>
+<pre>
+SAXBuilder builder = new SAXBuilder();
+builder.setFeature("http://apache.org/xml/features/xinclude", true);
+builder.setEntityResolver((publicId, systemId) -&gt; new MySafeEntityResolver(publicId, systemId));
+</pre>
+<p>For SAXReader:</p>
+<pre>
+SAXReader xmlReader = new SAXReader();
+xmlReader.setFeature("http://apache.org/xml/features/xinclude", true);
+xmlReader.setEntityResolver((publicId, systemId) -&gt; new MySafeEntityResolver(publicId, systemId));
+</pre>
+<p>For XMLInputFactory:</p>
+<pre>
+XMLInputFactory factory = XMLInputFactory.newInstance();
+factory.setProperty("http://apache.org/xml/features/xinclude", true);
+factory.setXMLResolver(new MySafeEntityResolver());
+</pre>
 <h2>See</h2>
 <ul>
   <li> <a

@@ -27,6 +27,13 @@ public class S6373_AllowXMLInclusionCheck_DocumentBuilderFactory {
     return factory;
   }
 
+  DocumentBuilderFactory x_include_setter_to_unknown(boolean unknown) throws ParserConfigurationException {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    factory.setXIncludeAware(unknown); // Compliant
+    factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+    return factory;
+  }
+
   DocumentBuilderFactory x_include_feature_to_false() throws ParserConfigurationException {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Compliant, xinclude is explicitly false
     factory.setFeature("http://apache.org/xml/features/xinclude", false);

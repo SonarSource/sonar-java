@@ -320,11 +320,11 @@ public class XxeProcessingCheck extends SECheck {
 
     private void handleSetXIncludeAware(MethodInvocationTree mit) {
       SymbolicValue mitResultSV = programState.peekValue(mit.arguments().size());
-      SymbolicValue entityResolverSV = programState.peekValue(0);
-      if (programState.getConstraint(entityResolverSV, BooleanConstraint.class) == BooleanConstraint.FALSE) {
-        programState = programState.removeConstraintsOnDomain(mitResultSV, XmlSetXIncludeAware.class);
-      } else {
+      SymbolicValue enableSV = programState.peekValue(0);
+      if (programState.getConstraint(enableSV, BooleanConstraint.class) == BooleanConstraint.TRUE) {
         programState = programState.addConstraint(mitResultSV, XmlSetXIncludeAware.ENABLE);
+      } else {
+        programState = programState.removeConstraintsOnDomain(mitResultSV, XmlSetXIncludeAware.class);
       }
     }
 
