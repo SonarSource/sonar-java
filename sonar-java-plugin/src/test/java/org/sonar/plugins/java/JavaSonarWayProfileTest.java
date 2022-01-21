@@ -90,11 +90,11 @@ class JavaSonarWayProfileTest {
   @Test
   void should_contains_dataflow_bug_detection_rules_if_present() {
     // no dataflow bug detection rules available
-    com.sonar.plugins.dbd.api.JavaRules.ruleKeys = new HashSet<>();
+    com.sonarsource.plugins.dbd.api.JavaRules.ruleKeys = new HashSet<>();
     assertThat(JavaSonarWayProfile.getDataflowBugDetectionRuleKeys()).isEmpty();
 
     // one dataflow bug detection rule available
-    com.sonar.plugins.dbd.api.JavaRules.ruleKeys = new HashSet<>(Arrays.asList("S6322"));
+    com.sonarsource.plugins.dbd.api.JavaRules.ruleKeys = new HashSet<>(Arrays.asList("S6322"));
     assertThat(JavaSonarWayProfile.getDataflowBugDetectionRuleKeys()).containsOnly(RuleKey.of("dbd-repo-key", "S6322"));
   }
 
@@ -108,7 +108,7 @@ class JavaSonarWayProfileTest {
   void external_rule_keys_missing_method() {
     JavaSonarWayProfile.getExternalRuleKeys(DBD_RULES_CLASS_NAME, "nonExistingRuleKeysMethod", "ruleCategory", false);
     assertThat(logTester.logs(LoggerLevel.DEBUG))
-      .containsExactly("[NoSuchMethodException], no ruleCategory rules added to Sonar way java profile: com.sonar.plugins.dbd.api.JavaRules.nonExistingRuleKeysMethod()");
+      .containsExactly("[NoSuchMethodException], no ruleCategory rules added to Sonar way java profile: com.sonarsource.plugins.dbd.api.JavaRules.nonExistingRuleKeysMethod()");
   }
 
   @Test
