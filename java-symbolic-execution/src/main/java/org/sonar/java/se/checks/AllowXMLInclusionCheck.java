@@ -19,87 +19,30 @@
  */
 package org.sonar.java.se.checks;
 
-import java.util.Arrays;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.se.CheckerContext;
-import org.sonar.java.se.FlowComputation;
-import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.checks.XxeProcessingCheck.XmlSetXIncludeAware;
 import org.sonar.java.se.checks.XxeProperty.FeatureXInclude;
-import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
-import org.sonar.java.se.symbolicvalues.SymbolicValue;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 
+import static org.sonar.java.se.checks.XxeProcessingCheck.PARSING_METHODS;
+
+/**
+ * This check uses the symbolic value and constraints set by XxeProcessingCheck.
+ * It must therefore always be executed afterwards.
+ *
+ * @see org.sonar.java.se.checks.XxeProcessingCheck
+ */
 @Rule(key = "S6373")
-public class AllowXMLInclusionCheck extends SECheck {
+public class AllowXMLInclusionCheck extends AbstractXMLProcessing {
 
   @Override
-  public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
-    PreStatementVisitor visitor = new PreStatementVisitor(context);
-    syntaxNode.accept(visitor);
-    return visitor.programState;
+  protected MethodMatchers getParsingMethods() {
+    return PARSING_METHODS;
   }
 
-  private class PreStatementVisitor extends CheckerTreeNodeVisitor {
-
-    private final CheckerContext context;
-
-    private PreStatementVisitor(CheckerContext context) {
-      super(context.getState());
-      this.context = context;
-    }
-
-    @Override
-    public void visitMethodInvocation(MethodInvocationTree mit) {
-      if (XxeProcessingCheck.PARSING_METHODS.matches(mit)) {
-        SymbolicValue peek = programState.peekValue(mit.arguments().size());
-
-        if (peek instanceof XxeProcessingCheck.XxeSymbolicValue) {
-          XxeProcessingCheck.XxeSymbolicValue xxeSymbolicValue = (XxeProcessingCheck.XxeSymbolicValue) peek;
-          reportIfNotSecured(context, xxeSymbolicValue, programState.getConstraints(xxeSymbolicValue));
-        }
-      }
-    }
-  }
-
-  @Override
-  public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
-    ProgramState endState = context.getState();
-    if (endState.exitingOnRuntimeException()) {
-      return;
-    }
-
-    // We want to report only when the unsecured factory is returned, if it is the case, it will be on the top of the stack.
-    SymbolicValue peek = endState.peekValue();
-    if (peek instanceof XxeProcessingCheck.XxeSymbolicValue) {
-      XxeProcessingCheck.XxeSymbolicValue xxeSV = (XxeProcessingCheck.XxeSymbolicValue) peek;
-      reportIfNotSecured(context, xxeSV, endState.getConstraints(xxeSV));
-    }
-  }
-
-  private void reportIfNotSecured(CheckerContext context, XxeProcessingCheck.XxeSymbolicValue xxeSV, @Nullable ConstraintsByDomain constraintsByDomain) {
-    if (!xxeSV.isField && isUnSecuredByProperty(constraintsByDomain)) {
-      context.reportIssue(getIssueLocation(context, xxeSV),
-        this,
-        "Disable the inclusion of files in XML processing.");
-    }
-  }
-
-  private static Tree getIssueLocation(CheckerContext context, XxeProcessingCheck.XxeSymbolicValue xxeSV) {
-    return FlowComputation.flowWithoutExceptions(context.getNode(), xxeSV, c -> c == FeatureXInclude.ENABLE || c == XmlSetXIncludeAware.ENABLE,
-      Arrays.asList(FeatureXInclude.class, XmlSetXIncludeAware.class), FlowComputation.FIRST_FLOW)
-      .stream()
-      .findFirst()
-      .flatMap(f -> f.elements().stream().findFirst())
-      .map(e -> e.syntaxNode)
-      // Last step should never occurs, we add it for defensive programming
-      .orElse(xxeSV.init);
-  }
-
-  private static boolean isUnSecuredByProperty(@Nullable ConstraintsByDomain constraintsByDomain) {
+  protected boolean isUnSecuredByProperty(@Nullable ConstraintsByDomain constraintsByDomain) {
     if (constraintsByDomain == null) {
       // Not vulnerable unless some properties are explicitly set.
       return false;
@@ -108,7 +51,6 @@ public class AllowXMLInclusionCheck extends SECheck {
       || constraintsByDomain.hasConstraint(XmlSetXIncludeAware.ENABLE))
       && !constraintsByDomain.hasConstraint(XxeProcessingCheck.XxeEntityResolver.CUSTOM_ENTITY_RESOLVER);
   }
-
 
   /*
      TODO: we should ensure that we add a XxeProperty.FeatureXInclude constraint for the following cases:
