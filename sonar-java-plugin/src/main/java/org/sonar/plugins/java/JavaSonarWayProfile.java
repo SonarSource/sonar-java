@@ -50,7 +50,7 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
   private static final Logger LOG = Loggers.get(JavaSonarWayProfile.class);
 
   static final String SECURITY_RULES_CLASS_NAME = "com.sonar.plugins.security.api.JavaRules";
-  static final String DBD_RULES_CLASS_NAME = "com.sonar.plugins.dbd.api.JavaRules";
+  static final String DBD_RULES_CLASS_NAME = "com.sonarsource.plugins.dbd.api.JavaRules";
   static final String DBD_RULE_KEYS_METHOD_NAME = "getDataflowBugDetectionRuleKeys";
   static final String GET_REPOSITORY_KEY = "getRepositoryKey";
 
