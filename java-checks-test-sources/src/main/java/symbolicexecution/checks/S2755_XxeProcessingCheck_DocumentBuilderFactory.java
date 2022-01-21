@@ -20,8 +20,8 @@ class DocumentBuilderFactoryTest {
   }
 
   DocumentBuilder no_property_builder() throws Exception {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    DocumentBuilder builder = factory.newDocumentBuilder(); // Noncompliant
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Noncompliant
+    DocumentBuilder builder = factory.newDocumentBuilder();
     return builder;
   }
 
@@ -71,17 +71,17 @@ class DocumentBuilderFactoryTest {
   }
 
   void secure_with_no_op_entity_resolver(InputStream is) throws Exception {
-    DocumentBuilderFactory df = DocumentBuilderFactory.newInstance();
+    DocumentBuilderFactory df = DocumentBuilderFactory.newInstance(); // FN: one path is not secured
     DocumentBuilder builder1 = df.newDocumentBuilder(); // Compliant thanks to "builder.setEntityResolver"
     builder1.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
     Document doc1 = builder1.parse(is);
-    DocumentBuilder builder2 = df.newDocumentBuilder(); // Noncompliant [[sc=35;ec=53]]
+    DocumentBuilder builder2 = df.newDocumentBuilder(); // No entity resolver set
     Document doc2 = builder2.parse(is);
   }
 
   void insecure_with_null_entity_resolver(InputStream is) throws Exception {
-    DocumentBuilderFactory df = DocumentBuilderFactory.newInstance();
-    DocumentBuilder builder = df.newDocumentBuilder(); // Noncompliant [[sc=34;ec=52]]
+    DocumentBuilderFactory df = DocumentBuilderFactory.newInstance(); // Noncompliant [[sc=56;ec=67]]
+    DocumentBuilder builder = df.newDocumentBuilder();
     builder.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
     builder.setEntityResolver(null);
     Document doc = builder.parse(is);
@@ -117,8 +117,8 @@ class DocumentBuilderFactoryTest {
   // Directly used without return
 
   void used_in_method() throws ParserConfigurationException, IOException, SAXException {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    DocumentBuilder builder = factory.newDocumentBuilder(); // Noncompliant
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Noncompliant
+    DocumentBuilder builder = factory.newDocumentBuilder();
     Document document = builder.parse(new File("xxe.xml"));
   }
 
@@ -134,8 +134,8 @@ class DocumentBuilderFactoryTest {
   }
 
   DocumentBuilder document_builder_returned() throws ParserConfigurationException {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    DocumentBuilder builder = factory.newDocumentBuilder(); // Noncompliant
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Noncompliant
+    DocumentBuilder builder = factory.newDocumentBuilder();
     return builder;
   }
 

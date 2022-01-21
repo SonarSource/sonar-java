@@ -43,6 +43,8 @@ import org.sonar.java.se.checks.XxeProperty.FeatureIsSupportingExternalEntities;
 import org.sonar.java.se.checks.XxeProperty.FeatureLoadExternalDtd;
 import org.sonar.java.se.checks.XxeProperty.FeatureSecureProcessing;
 import org.sonar.java.se.checks.XxeProperty.FeatureSupportDtd;
+import org.sonar.java.se.checks.XxeProperty.FeatureXInclude;
+import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
@@ -91,6 +93,14 @@ public class XxeProcessingCheck extends SECheck {
     .ofTypes(SAX_PARSER_FACTORY)
     .names(NEW_INSTANCE)
     .withAnyParameters()
+    .build();
+
+  private static final MethodMatchers SET_X_INCLUDE_AWARE = MethodMatchers.create()
+    .ofSubTypes(
+      DOCUMENT_BUILDER_FACTORY,
+      SAX_PARSER_FACTORY)
+    .names("setXIncludeAware")
+    .addParametersMatcher(BOOLEAN)
     .build();
 
   // SchemaFactory and Validator
@@ -148,7 +158,6 @@ public class XxeProcessingCheck extends SECheck {
           || c.hasConstraint(FeatureIsSupportingExternalEntities.SECURED)
           || c.hasConstraint(XxeEntityResolver.CUSTOM_ENTITY_RESOLVER))
       .put(DOCUMENT_BUILDER_FACTORY_NEW_INSTANCE, XxeProcessingCheck::documentBuilderFactoryIsSecured)
-      .put(NEW_DOCUMENT_BUILDER, c -> c.hasConstraint(XxeEntityResolver.CUSTOM_ENTITY_RESOLVER))
       .put(SAX_PARSER_FACTORY_NEW_INSTANCE,
         c -> (c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeSchema.SECURED))
           || c.hasConstraint(FeatureDisallowDoctypeDecl.SECURED)
@@ -169,7 +178,8 @@ public class XxeProcessingCheck extends SECheck {
       || (c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeSchema.SECURED))
       || c.hasConstraint(FeatureDisallowDoctypeDecl.SECURED)
       || c.hasConstraint(FeatureLoadExternalDtd.SECURED)
-      || c.hasConstraint(FeatureExternalGeneralEntities.SECURED);
+      || c.hasConstraint(FeatureExternalGeneralEntities.SECURED)
+      || c.hasConstraint(XxeEntityResolver.CUSTOM_ENTITY_RESOLVER);
   }
 
   private static final Map<MethodMatchers, Predicate<ConstraintsByDomain>> CONDITIONS_FOR_SECURED_BY_TYPE_NEW_CLASS =
@@ -205,7 +215,8 @@ public class XxeProcessingCheck extends SECheck {
     MethodMatchers.create().ofTypes(SAX_PARSER_FACTORY).names("newSAXParser").withAnyParameters().build(),
     MethodMatchers.create().ofTypes(SCHEMA_FACTORY).names("newSchema").withAnyParameters().build(),
     MethodMatchers.create().ofTypes("javax.xml.validation.Schema").names("newValidator").withAnyParameters().build(),
-    MethodMatchers.create().ofTypes(SAX_PARSER).names("getXMLReader").withAnyParameters().build()
+    MethodMatchers.create().ofTypes(SAX_PARSER).names("getXMLReader").withAnyParameters().build(),
+    NEW_DOCUMENT_BUILDER
   );
 
   protected static final MethodMatchers PARSING_METHODS = MethodMatchers.or(
@@ -224,6 +235,7 @@ public class XxeProcessingCheck extends SECheck {
     FeatureExternalGeneralEntities.values(),
     FeatureLoadExternalDtd.values(),
     FeatureSecureProcessing.values(),
+    FeatureXInclude.values(),
     AttributeDTD.values(),
     AttributeSchema.values(),
     AttributeStyleSheet.values())
@@ -270,20 +282,12 @@ public class XxeProcessingCheck extends SECheck {
       programState = addNamedConstraint(tree.initializer(), programState);
     }
 
-    private boolean isSecuredDocumentBuilderCreation(MethodInvocationTree mit) {
-      ConstraintsByDomain c = programState.getConstraints(programState.peekValue(mit.arguments().size()));
-      return documentBuilderFactoryIsSecured(c);
-    }
-
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
       // Test initialisation of XML processing API
       for (Map.Entry<MethodMatchers, Predicate<ConstraintsByDomain>> entry : CONDITIONS_FOR_SECURED_BY_TYPE.entrySet()) {
         if (entry.getKey().matches(mit)) {
-          if (!(entry.getKey() == NEW_DOCUMENT_BUILDER && isSecuredDocumentBuilderCreation(mit))) {
-            constraintManager
-              .setValueFactory(() -> new XxeSymbolicValue(ExpressionUtils.methodName(mit), entry.getValue()));
-          }
+          constraintManager.setValueFactory(() -> new XxeSymbolicValue(ExpressionUtils.methodName(mit), entry.getValue()));
           break;
         }
       }
@@ -299,6 +303,8 @@ public class XxeProcessingCheck extends SECheck {
         }
       } else if (ENTITY_RESOLVER_SETTERS.matches(mit)) {
         handleEntityResolver(mit);
+      } else if (SET_X_INCLUDE_AWARE.matches(mit)) {
+        handleSetXIncludeAware(mit);
       }
 
       // Test if API is used without any protection against XXE.
@@ -309,6 +315,16 @@ public class XxeProcessingCheck extends SECheck {
           XxeSymbolicValue xxeSymbolicValue = (XxeSymbolicValue) peek;
           reportIfNotSecured(context, xxeSymbolicValue, programState.getConstraints(xxeSymbolicValue));
         }
+      }
+    }
+
+    private void handleSetXIncludeAware(MethodInvocationTree mit) {
+      SymbolicValue mitResultSV = programState.peekValue(mit.arguments().size());
+      SymbolicValue enableSV = programState.peekValue(0);
+      if (programState.getConstraint(enableSV, BooleanConstraint.class) == BooleanConstraint.TRUE) {
+        programState = programState.addConstraint(mitResultSV, XmlSetXIncludeAware.ENABLE);
+      } else {
+        programState = programState.removeConstraintsOnDomain(mitResultSV, XmlSetXIncludeAware.class);
       }
     }
 
@@ -441,8 +457,12 @@ public class XxeProcessingCheck extends SECheck {
     SENSITIVE
   }
 
-  private enum XxeEntityResolver implements Constraint {
+  protected enum XxeEntityResolver implements Constraint {
     CUSTOM_ENTITY_RESOLVER
+  }
+
+  protected enum XmlSetXIncludeAware implements Constraint {
+    ENABLE
   }
 
   protected static class XxeSymbolicValue extends SymbolicValue {
