@@ -60,6 +60,18 @@ xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external
 SAXBuilder builder = new SAXBuilder();
 builder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 </pre>
+<h2>Exceptions</h2>
+<p>This rules does not raise an issue when an <code>EntityResolver</code> is set.</p>
+<pre>
+DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+factory.setValidating(true);
+DocumentBuilder builder = factory.newDocumentBuilder();
+builder.setEntityResolver(new MyEntityResolver());
+
+SAXBuilder builder = new SAXBuilder();
+builder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", true);
+builder.setEntityResolver(new EntityResolver());
+</pre>
 <h2>See</h2>
 <ul>
   <li> <a

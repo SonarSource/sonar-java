@@ -60,6 +60,9 @@ public class XmlParserLoadsExternalSchemasCheck {
       schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
       schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 
+      // Throwing some misleading constraints for test purporses
+      schemaFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
       schemaFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", true); // Noncompliant {{Disable loading of external schemas in XML parsing.}}
       return schemaFactory;
     }
