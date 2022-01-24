@@ -103,6 +103,14 @@ public class XxeProcessingCheck extends SECheck {
     .addParametersMatcher(BOOLEAN)
     .build();
 
+  private static final MethodMatchers SET_VALIDATING = MethodMatchers.create()
+    .ofSubTypes(
+      DOCUMENT_BUILDER_FACTORY,
+      SAX_PARSER_FACTORY)
+    .names("setValidating")
+    .addParametersMatcher(BOOLEAN)
+    .build();
+
   // SchemaFactory and Validator
   private static final String SCHEMA_FACTORY = "javax.xml.validation.SchemaFactory";
   private static final MethodMatchers SCHEMA_FACTORY_NEW_INSTANCE = MethodMatchers.create()
@@ -304,7 +312,9 @@ public class XxeProcessingCheck extends SECheck {
       } else if (ENTITY_RESOLVER_SETTERS.matches(mit)) {
         handleEntityResolver(mit);
       } else if (SET_X_INCLUDE_AWARE.matches(mit)) {
-        handleSetXIncludeAware(mit);
+        handleBooleanConstraintFromFirstArgument(mit, XmlSetXIncludeAware.ENABLE, XmlSetXIncludeAware.class);
+      } else if (SET_VALIDATING.matches(mit)) {
+        handleBooleanConstraintFromFirstArgument(mit, XmlSetValidating.ENABLE, XmlSetValidating.class);
       }
 
       // Test if API is used without any protection against XXE.
@@ -318,13 +328,13 @@ public class XxeProcessingCheck extends SECheck {
       }
     }
 
-    private void handleSetXIncludeAware(MethodInvocationTree mit) {
+    private void handleBooleanConstraintFromFirstArgument(MethodInvocationTree mit, Constraint constraint, Class<? extends Constraint> domain) {
       SymbolicValue mitResultSV = programState.peekValue(mit.arguments().size());
       SymbolicValue enableSV = programState.peekValue(0);
       if (programState.getConstraint(enableSV, BooleanConstraint.class) == BooleanConstraint.TRUE) {
-        programState = programState.addConstraint(mitResultSV, XmlSetXIncludeAware.ENABLE);
+        programState = programState.addConstraint(mitResultSV, constraint);
       } else {
-        programState = programState.removeConstraintsOnDomain(mitResultSV, XmlSetXIncludeAware.class);
+        programState = programState.removeConstraintsOnDomain(mitResultSV, domain);
       }
     }
 
@@ -459,6 +469,10 @@ public class XxeProcessingCheck extends SECheck {
 
   protected enum XxeEntityResolver implements Constraint {
     CUSTOM_ENTITY_RESOLVER
+  }
+
+  protected enum XmlSetValidating implements Constraint {
+    ENABLE
   }
 
   protected enum XmlSetXIncludeAware implements Constraint {
