@@ -29,26 +29,18 @@
   </licenses>
 
   <developers>
-    <developer>
-      <id>godin</id>
-      <name>Evgeny Mandrikov</name>
-      <organization>SonarSource</organization>
-    </developer>
-    <developer>
-      <id>benzonico</id>
-      <name>Nicolas Peru</name>
-      <organization>SonarSource</organization>
-    </developer>
-    <developer>
-      <id>m-g-sonar</id>
-      <name>Michael Gumowski</name>
-      <organization>SonarSource</organization>
-    </developer>
-    <developer>
-      <id>saberduck</id>
-      <name>Tibor Blenessy</name>
-      <organization>SonarSource</organization>
-    </developer>
+    <!-- Main maintainers -->
+    <developer><name>Alban Auzeill</name>        <id>alban-auzeill</id>                    <organization>SonarSource</organization></developer>
+    <developer><name>Dorian Burihabwa</name>     <id>dorian-burihabwa-sonarsource</id>     <organization>SonarSource</organization></developer>
+    <developer><name>Johann Beleites</name>      <id>johann-beleites-sonarsource</id>      <organization>SonarSource</organization></developer>
+    <developer><name>Margarita Nedzelska</name>  <id>margarita-nedzelska-sonarsource</id>  <organization>SonarSource</organization></developer>
+    <developer><name>Michael Gumowski</name>     <id>m-g-sonar</id>                        <organization>SonarSource</organization></developer>
+    <developer><name>Quentin Jaquier</name>      <id>quentin-jaquier-sonarsource</id>      <organization>SonarSource</organization></developer>
+    <developer><name>Sebastian Hungerecker</name><id>sebastian-hungerecker-sonarsource</id><organization>SonarSource</organization></developer>
+    <!-- Frequent Contributors -->
+    <developer><name>Evgeny Mandrikov</name>     <id>godin</id>                            <organization>SonarSource</organization></developer>
+    <developer><name>Nicolas Peru</name>         <id>benzonico</id>                        <organization>SonarSource</organization></developer>
+    <developer><name>Tibor Blenessy</name>       <id>saberduck</id>                        <organization>SonarSource</organization></developer>
   </developers>
 
   <modules>
