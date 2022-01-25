@@ -1,0 +1,64 @@
+<p>XML document can be signed to ensure data integrity and authentication. The signature should be verified and validated to make sure it’s secure.
+For instance, signatures based on weak cipher algorithms like MD5 should be rejected, and an XML document should not contain hostile constructs that
+can lead to Denial of Services attacks, like a large number of <code>SignedInfo</code> elements.</p>
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" standalone="no"?&gt;
+&lt;Envelope xmlns="urn:envelope"&gt;
+  &lt;Signature xmlns="http://www.w3.org/2000/09/xmldsig#"&gt;
+    &lt;SignedInfo&gt;
+      &lt;CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments"/&gt;
+      &lt;SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/&gt;
+      &lt;Reference URI=""&gt;
+        &lt;Transforms&gt;
+          &lt;Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/&gt;
+        &lt;/Transforms&gt;
+        &lt;DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/&gt;
+        &lt;DigestValue&gt;/juoQ4bDxElf1M+KJauO20euW+QAvvPP0nDCruCQooM=&lt;/DigestValue&gt;
+      &lt;/Reference&gt;
+    &lt;/SignedInfo&gt;
+    &lt;SignatureValue&gt;
+Vorr4nABCD7eWOjh4jn8pdM5iseGJPt4BmlgjEbxr05TsR9ObHq7WLVOBOtJfb3M6pXv6NnTucpH
+e/97zHbuUMaNeGxCs/gN7YDUGOkQE1Gs4HAbGwXuTcif3pw+066ZW4uxyzapwS6lZHmqIm7PRl8I
+NIQXVL4dezLe+rx77Kh+rZRheVe4UlTTP+TmIOaBZo93GQ5FudreMhSiuIC0Nx2SP7mAkt6+8kVH
+luZouFbqriSvyhzIxDgyOXpm/PHCuuPU2scCokwjEZBtlZXDOl6lIWGllnyrptWntQ6F/ngQObI5
+c2+npgCshq1svGuS/xx18MAFHGWi98Vj+07QCg==
+    &lt;/SignatureValue&gt;
+    &lt;KeyInfo&gt;
+      &lt;KeyValue&gt;
+        &lt;RSAKeyValue&gt;
+          &lt;Modulus&gt;
+9hSmAKw/4TTw/1l1u1pYzdFm6lOjRB/5NfdGWl/fB8iAa/tiK0f1u/VWoK6SMtogYgSDKqQThbAu
+9dy9rRnOWRGY2He1JtpOvGh0WCmIFUEs2P22HvEf+JGKVEpkoP4hv53ucT69T+7nKGK3/bjxgp+T
+C7fbnVj651+jAHuDFlC8Txt1R8ZymfN5cUeHIH96dvNFrtai/uwZDbVMfhV9chL//+Vyhx4O5nHv
+jfS+0So9Qi52YAbEyLu6+BLdu8wnMWapC88CfXsRwrpx8b6aCU0e6QSZyOvdgXWz3+9ifVTBDIxE
+kjhL5OASx0qjvc+dPUOMvq7fJE05RRZLyb0YJw==
+          &lt;/Modulus&gt;
+          &lt;Exponent&gt;AQAB&lt;/Exponent&gt;
+        &lt;/RSAKeyValue&gt;
+      &lt;/KeyValue&gt;
+    &lt;/KeyInfo&gt;
+  &lt;/Signature&gt;
+&lt;/Envelope&gt;
+</pre>
+<h2>Noncompliant Code Example</h2>
+<p>The Java XML Digital Signature API doesn’t use a strong signature validation mode by default:</p>
+<pre>
+DOMValidateContext valContext = new DOMValidateContext(new KeyValueKeySelector(), nl.item(0)); // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<p>The Java XML Digital Signature API offers a secure validation mode to protect against various <a
+href="https://docs.oracle.com/en/java/javase/14/security/java-xml-digital-signature-api-overview-and-tutorial.html#GUID-8618C294-3BFE-45C3-9A1E-C4629E337E68">security
+issues</a>:</p>
+<pre>
+DOMValidateContext valContext = new DOMValidateContext(new KeyValueKeySelector(), nl.item(0));
+valContext.setProperty("org.jcp.xml.dsig.secureValidation", Boolean.TRUE);
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a
+  href="https://docs.oracle.com/en/java/javase/14/security/java-xml-digital-signature-api-overview-and-tutorial.html#GUID-DB46A001-6DBD-4571-BDBC-1BBC394BF61E">Oracle Java Documentation</a> - XML Digital Signature API Overview and Tutorial </li>
+  <li> <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data
+  Exposure </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/347.html">MITRE, CWE-347</a> - Improper Verification of Cryptographic Signature </li>
+</ul>
+
