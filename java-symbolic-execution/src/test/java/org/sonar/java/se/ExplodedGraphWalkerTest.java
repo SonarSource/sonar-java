@@ -52,6 +52,7 @@ import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.checks.StreamNotConsumedCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.java.se.checks.XmlParserLoadsExternalSchemasCheck;
+import org.sonar.java.se.checks.XmlValidatedSignatureCheck;
 import org.sonar.java.se.checks.XxeProcessingCheck;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -695,7 +696,8 @@ class ExplodedGraphWalkerTest {
       XxeProcessingCheck.class,
       DenialOfServiceXMLCheck.class,
       AllowXMLInclusionCheck.class,
-      XmlParserLoadsExternalSchemasCheck.class)
+      XmlParserLoadsExternalSchemasCheck.class,
+      XmlValidatedSignatureCheck.class)
       .map(Class::getSimpleName)
       .collect(Collectors.toList());
     // Compute the list of SEChecks defined in package

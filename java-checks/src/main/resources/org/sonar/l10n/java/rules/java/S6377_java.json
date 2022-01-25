@@ -1,0 +1,26 @@
+{
+  "title": "XML signatures should be validated securely",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6377",
+  "sqKey": "S6377",
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      347
+    ],
+    "OWASP": [
+      "A3"
+    ],
+    "OWASP Top 10 2021": [
+      "A2"
+    ]
+  },
+  "quickfix": "unknown"
+}

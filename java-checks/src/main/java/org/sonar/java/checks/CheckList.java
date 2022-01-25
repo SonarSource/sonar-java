@@ -209,6 +209,7 @@ import org.sonar.java.se.checks.StreamConsumedCheck;
 import org.sonar.java.se.checks.StreamNotConsumedCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.java.se.checks.XmlParserLoadsExternalSchemasCheck;
+import org.sonar.java.se.checks.XmlValidatedSignatureCheck;
 import org.sonar.java.se.checks.XxeProcessingCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 
@@ -789,6 +790,7 @@ public final class CheckList {
       ParameterNullnessCheck.class,
       BooleanGratuitousExpressionsCheck.class,
       ConditionalUnreachableCodeCheck.class,
+      XmlValidatedSignatureCheck.class,
       CustomUnclosedResourcesCheck.class,
       MapComputeIfAbsentOrPresentCheck.class,
       InvariantReturnCheck.class,
