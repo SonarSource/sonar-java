@@ -118,4 +118,13 @@ class XxeProcessingCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void non_compiling_code() {
+    SECheckVerifier.newVerifier()
+      .onFile(TestUtils.nonCompilingTestSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_DocumentBuilderFactory.java"))
+      .withCheck(new XxeProcessingCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
+  }
+
 }
