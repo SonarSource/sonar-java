@@ -187,7 +187,7 @@ class DocumentBuilderFactoryTest_InStaticBlock {
   }
 
   public static DocumentBuilder noIssue() throws Exception {
-    // No issue here, the code is equivalent to the one in the other method.
+    // No issue here, the code is equivalent to the one in the next method.
     // We only report an issue on the declaration of "DocumentBuilderFactory", exactly to avoid such cases where the DocumentBuilder is created somewhere else.
     return documentBuilderFactory.newDocumentBuilder();
   }
