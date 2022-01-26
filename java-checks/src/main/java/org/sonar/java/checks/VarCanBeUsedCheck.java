@@ -30,6 +30,7 @@ import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -85,7 +86,7 @@ public class VarCanBeUsedCheck extends IssuableSubscriptionVisitor implements Ja
 
     initializer = ExpressionUtils.skipParentheses(initializer);
 
-    if (initializer.is(Tree.Kind.CONDITIONAL_EXPRESSION, Tree.Kind.METHOD_REFERENCE, Tree.Kind.LAMBDA_EXPRESSION)) {
+    if (isExcludedInitializer(initializer)) {
       return;
     }
 
@@ -96,6 +97,14 @@ public class VarCanBeUsedCheck extends IssuableSubscriptionVisitor implements Ja
         typeWasMentionedInTheInitializer(initializer, typeName))) {
       reportIssue(identifierTree, MESSAGE);
     }
+  }
+
+  private static boolean isExcludedInitializer(ExpressionTree initializer) {
+    if (initializer.is(Tree.Kind.METHOD_INVOCATION)) {
+      Symbol symbol = ((MethodInvocationTree) initializer).symbol();
+      return symbol.isMethodSymbol() && JUtils.isParametrizedMethod((Symbol.MethodSymbol) symbol);
+    }
+    return initializer.is(Tree.Kind.CONDITIONAL_EXPRESSION, Tree.Kind.METHOD_REFERENCE, Tree.Kind.LAMBDA_EXPRESSION);
   }
 
   private static boolean typeWasMentionedInTheName(IdentifierTree variable, String type) {
