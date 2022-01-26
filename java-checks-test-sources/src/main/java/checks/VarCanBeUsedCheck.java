@@ -98,6 +98,18 @@ public class VarCanBeUsedCheck {
     Function function2 = this::objectToObject2; // Compliant
   }
 
+  class MyType {
+    void f() {
+      MyType myType = getValue(); // Compliant, see next two lines
+      var myType2 = getValue(); // Type is "Object"
+      var myType3 = (MyType) getValue(); // Type is correct, but acceptable to not use var here
+    }
+
+    <T> T getValue() {
+      return null;
+    }
+  }
+
   void testFile(File file) {
     try (FileInputStream in = new FileInputStream(file)) // Noncompliant
     {
