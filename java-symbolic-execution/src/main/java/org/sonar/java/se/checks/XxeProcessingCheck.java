@@ -50,6 +50,7 @@ import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -84,6 +85,12 @@ public class XxeProcessingCheck extends SECheck {
     .ofTypes(DOCUMENT_BUILDER_FACTORY)
     .names(NEW_INSTANCE)
     .withAnyParameters()
+    .build();
+
+  private static final MethodMatchers SET_EXPAND_ENTITY_REFERENCE = MethodMatchers.create()
+    .ofSubTypes(DOCUMENT_BUILDER_FACTORY)
+    .names("setExpandEntityReferences")
+    .addParametersMatcher(BOOLEAN)
     .build();
 
   // SAXParserFactory
@@ -187,6 +194,7 @@ public class XxeProcessingCheck extends SECheck {
       || c.hasConstraint(FeatureDisallowDoctypeDecl.SECURED)
       || c.hasConstraint(FeatureLoadExternalDtd.SECURED)
       || c.hasConstraint(FeatureExternalGeneralEntities.SECURED)
+      || c.hasConstraint(XxeSetExpandEntity.DISABLE)
       || c.hasConstraint(XxeEntityResolver.CUSTOM_ENTITY_RESOLVER);
   }
 
@@ -267,11 +275,14 @@ public class XxeProcessingCheck extends SECheck {
 
     private final ConstraintManager constraintManager;
     private final CheckerContext context;
+    private final boolean canSecureWithSetExpandEntityReferences;
 
     private PreStatementVisitor(CheckerContext context) {
       super(context.getState());
       this.constraintManager = context.getConstraintManager();
       this.context = context;
+      JavaVersion javaVersion = context.getScannerContext().getJavaVersion();
+      this.canSecureWithSetExpandEntityReferences = javaVersion.isNotSet() || javaVersion.asInt() >= 13;
     }
 
     @Override
@@ -312,9 +323,11 @@ public class XxeProcessingCheck extends SECheck {
       } else if (ENTITY_RESOLVER_SETTERS.matches(mit)) {
         handleEntityResolver(mit);
       } else if (SET_X_INCLUDE_AWARE.matches(mit)) {
-        handleBooleanConstraintFromFirstArgument(mit, XmlSetXIncludeAware.ENABLE, XmlSetXIncludeAware.class);
+        handleBooleanConstraintFromFirstArgument(mit, BooleanConstraint.TRUE, XmlSetXIncludeAware.ENABLE, XmlSetXIncludeAware.class);
       } else if (SET_VALIDATING.matches(mit)) {
-        handleBooleanConstraintFromFirstArgument(mit, XmlSetValidating.ENABLE, XmlSetValidating.class);
+        handleBooleanConstraintFromFirstArgument(mit, BooleanConstraint.TRUE, XmlSetValidating.ENABLE, XmlSetValidating.class);
+      } else if (canSecureWithSetExpandEntityReferences && SET_EXPAND_ENTITY_REFERENCE.matches(mit)) {
+        handleBooleanConstraintFromFirstArgument(mit, BooleanConstraint.FALSE, XxeSetExpandEntity.DISABLE, XxeSetExpandEntity.class);
       }
 
       // Test if API is used without any protection against XXE.
@@ -328,10 +341,11 @@ public class XxeProcessingCheck extends SECheck {
       }
     }
 
-    private void handleBooleanConstraintFromFirstArgument(MethodInvocationTree mit, Constraint constraint, Class<? extends Constraint> domain) {
+    private void handleBooleanConstraintFromFirstArgument(MethodInvocationTree mit, BooleanConstraint valueForConstraint,
+                                                          Constraint constraint, Class<? extends Constraint> domain) {
       SymbolicValue mitResultSV = programState.peekValue(mit.arguments().size());
       SymbolicValue enableSV = programState.peekValue(0);
-      if (programState.getConstraint(enableSV, BooleanConstraint.class) == BooleanConstraint.TRUE) {
+      if (programState.getConstraint(enableSV, BooleanConstraint.class) == valueForConstraint) {
         programState = programState.addConstraint(mitResultSV, constraint);
       } else {
         programState = programState.removeConstraintsOnDomain(mitResultSV, domain);
@@ -469,6 +483,10 @@ public class XxeProcessingCheck extends SECheck {
 
   protected enum XxeEntityResolver implements Constraint {
     CUSTOM_ENTITY_RESOLVER
+  }
+
+  protected enum XxeSetExpandEntity implements Constraint {
+    DISABLE
   }
 
   protected enum XmlSetValidating implements Constraint {

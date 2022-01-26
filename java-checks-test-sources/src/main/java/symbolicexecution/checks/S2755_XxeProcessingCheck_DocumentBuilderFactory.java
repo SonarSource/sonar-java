@@ -114,6 +114,19 @@ class DocumentBuilderFactoryTest {
     return factory;
   }
 
+  // Secure with "setExpandEntityReferences"
+  DocumentBuilderFactory secure_with_set_expand_entity_references_false() {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Compliant, when the java version is not explicitly set, we accept the fix
+    factory.setExpandEntityReferences(false);
+    return factory;
+  }
+
+  DocumentBuilderFactory secure_with_set_expand_entity_references_true() {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Noncompliant
+    factory.setExpandEntityReferences(true);
+    return factory;
+  }
+
   // Directly used without return
 
   void used_in_method() throws ParserConfigurationException, IOException, SAXException {
@@ -143,7 +156,6 @@ class DocumentBuilderFactoryTest {
     try {
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
-      factory.setExpandEntityReferences(true);
       factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true); // Compliant when set to true
 
       DocumentBuilder builder = factory.newDocumentBuilder();
