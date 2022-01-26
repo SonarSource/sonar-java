@@ -177,3 +177,25 @@ class DocumentBuilderFactoryTest {
     }
   }
 }
+
+class DocumentBuilderFactoryTest_InStaticBlock {
+  private static final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+
+  static {
+    documentBuilderFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    documentBuilderFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+  }
+
+  public static DocumentBuilder noIssue() throws Exception {
+    // No issue here, the code is equivalent to the one in the other method.
+    // We only report an issue on the declaration of "DocumentBuilderFactory", exactly to avoid such cases where the DocumentBuilder is created somewhere else.
+    return documentBuilderFactory.newDocumentBuilder();
+  }
+
+  public static DocumentBuilder equivalent() throws Exception {
+    DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+    documentBuilderFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    documentBuilderFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+    return documentBuilderFactory.newDocumentBuilder();
+  }
+}
