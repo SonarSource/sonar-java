@@ -19,6 +19,11 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
@@ -34,13 +39,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import static org.sonar.java.se.ProgramState.isField;
 
@@ -103,33 +101,18 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
     MethodTree method = null;
 
     for (IdentifierTree usageIdentifier : privateFieldSymbol.usages()) {
-      Tree containingClassOrMethod = containingClassOrMethod(usageIdentifier);
+      MethodTree enclosingMethod = ExpressionUtils.getEnclosingMethod(usageIdentifier);
 
-      if (noContainerOrClassContainer(containingClassOrMethod)
-        || !((MethodTree) containingClassOrMethod).symbol().owner().equals(classSymbol)
-        || (method != null && !method.equals(containingClassOrMethod))) {
+      if (enclosingMethod == null
+        || !enclosingMethod.symbol().owner().equals(classSymbol)
+        || (method != null && !method.equals(enclosingMethod))) {
         return null;
-
       } else {
-        method = (MethodTree)containingClassOrMethod;
-
+        method = enclosingMethod;
       }
     }
 
     return method;
-  }
-
-  private static boolean noContainerOrClassContainer(@Nullable Tree containingClassOrMethod) {
-    return containingClassOrMethod == null || containingClassOrMethod.is(Kind.CLASS, Kind.INTERFACE, Kind.ENUM, Kind.ANNOTATION_TYPE);
-  }
-
-  private static Tree containingClassOrMethod(IdentifierTree usageIdentifier) {
-    Tree parent = usageIdentifier;
-    do {
-      parent = parent.parent();
-    } while (!parent.is(Kind.METHOD, Kind.CLASS, Kind.INTERFACE, Kind.ENUM, Kind.ANNOTATION_TYPE));
-
-    return parent;
   }
 
   private static class FieldsReadOnAnotherInstanceVisitor extends BaseTreeVisitor {

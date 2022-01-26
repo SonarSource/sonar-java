@@ -226,6 +226,14 @@ class Container {
     }
 
   }
+
+  // Constructor are also supported
+  class Class17 {
+    private int privateField; // Noncompliant
+    Class17() {
+      privateField = 5;
+    }
+  }
 }
 
 class UsageOfLogger {
@@ -285,5 +293,12 @@ enum A {
 
   public static A lookup(int indexValue) {
     return Inner.INDEX.get(indexValue);
+  }
+}
+
+record PrivateFieldUsedLocallyCheckRecord() {
+  static String s = OtherClass.f + "";
+  static class OtherClass {
+    private static int f = 12;
   }
 }
