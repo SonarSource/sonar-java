@@ -98,4 +98,24 @@ class XxeProcessingCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void document_builder_factory_java_11() {
+    SECheckVerifier.newVerifier()
+      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_DocumentBuilderFactory_version_11.java"))
+      .withCheck(new XxeProcessingCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .withJavaVersion(11)
+      .verifyIssues();
+  }
+
+  @Test
+  void document_builder_factory_java_13() {
+    SECheckVerifier.newVerifier()
+      .onFile(TestUtils.testSourcesPath("symbolicexecution/checks/S2755_XxeProcessingCheck_DocumentBuilderFactory_version_13.java"))
+      .withCheck(new XxeProcessingCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .withJavaVersion(13)
+      .verifyIssues();
+  }
+
 }
