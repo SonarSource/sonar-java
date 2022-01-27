@@ -2,15 +2,6 @@
 <p>XML processors will replace an xinclude element with the content of the file located at the URI defined in the href attribute, potentially from an
 external storage such as file system or network, which may lead, if no restrictions are put in place, to arbitrary file disclosures or <a
 href="https://www.owasp.org/index.php/Server_Side_Request_Forgery">server-side request forgery (SSRF)</a> vulnerabilities.</p>
-<pre>
-&lt;?xml version="1.0" encoding="utf-8"?&gt;
-&lt;person&gt;
-  &lt;name&gt;foo&lt;/name&gt;
-  &lt;city&gt;bar&lt;/city&gt;
-  &lt;age&gt;18&lt;/age&gt;
-  &lt;xi:include parse="text" href="file:///etc/passwd"/&gt;
-&lt;/person&gt;
-</pre>
 <h2>Noncompliant Code Example</h2>
 <p>For <a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilder</a>, <a
 href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/SAXParserFactory.html">SAXParser</a>, <a

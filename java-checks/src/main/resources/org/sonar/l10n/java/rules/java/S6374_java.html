@@ -1,15 +1,6 @@
-<p>By default XML processors attempt to load all XML schemas and DTD, potentially from an external storage such as file system or network, which may
-lead, if no restrictions are put in place, to <a href="https://www.owasp.org/index.php/Server_Side_Request_Forgery">server-side request forgery
-(SSRF)</a> vulnerabilities.</p>
-<pre>
-&lt;?xml version="1.0" encoding="utf-8"?&gt;
-&lt;!DOCTYPE external SYSTEM "https://company.internal/sensitive_resource"&gt;
-&lt;person xmlns="http://external" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://external https://company.internal/sensitive_resource"&gt;
-  &lt;name&gt;foo&lt;/name&gt;
-  &lt;city&gt;bar&lt;/city&gt;
-  &lt;age&gt;18&lt;/age&gt;
-&lt;/person&gt;
-</pre>
+<p>By default XML processors attempt to load all XML schemas and DTD (their locations are defined with <code>xsi:schemaLocation</code> attributes and
+<code>DOCTYPE</code> declarations), potentially from an external storage such as file system or network, which may lead, if no restrictions are put in
+place, to <a href="https://www.owasp.org/index.php/Server_Side_Request_Forgery">server-side request forgery (SSRF)</a> vulnerabilities.</p>
 <h2>Noncompliant Code Example</h2>
 <p>For <a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilder</a>, <a
 href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/SAXParserFactory.html">SAXParser</a> and <a
