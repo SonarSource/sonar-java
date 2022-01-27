@@ -187,5 +187,10 @@ class UnusedLocalVariableCheck {
       for (int counter = 0; condition(); counter++) { // Noncompliant [[sc=16;ec=23;quickfixes=!]]
       }
     }
+
+    void test() {
+      record Bar(int used) { } // Compliant
+      System.out.println(new Bar(42).used);
+    }
   }
 }
