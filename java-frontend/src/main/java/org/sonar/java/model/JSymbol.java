@@ -19,6 +19,11 @@
  */
 package org.sonar.java.model;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
@@ -31,12 +36,6 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
 
 abstract class JSymbol implements Symbol {
 
@@ -194,15 +193,17 @@ abstract class JSymbol implements Symbol {
   }
 
   private Symbol variableOwner(IVariableBinding variableBinding) {
-    IMethodBinding declaringMethod = variableBinding.getDeclaringMethod();
-    if (declaringMethod != null) {
-      // local variable
-      return sema.methodSymbol(declaringMethod);
-    }
-    ITypeBinding declaringClass = variableBinding.getDeclaringClass();
-    if (declaringClass != null) {
-      // field
-      return sema.typeSymbol(declaringClass);
+    if (!variableBinding.isRecordComponent()) {
+      IMethodBinding declaringMethod = variableBinding.getDeclaringMethod();
+      if (declaringMethod != null) {
+        // local variable
+        return sema.methodSymbol(declaringMethod);
+      }
+      ITypeBinding declaringClass = variableBinding.getDeclaringClass();
+      if (declaringClass != null) {
+        // field
+        return sema.typeSymbol(declaringClass);
+      }
     }
     Tree node = sema.declarations.get(variableBinding);
     if (node == null) {

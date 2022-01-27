@@ -105,6 +105,23 @@ class JSymbolTest {
   }
 
   @Test
+  void owner_local_record() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C1 { void m() { record r(Object p) {  } } }");
+    ClassTreeImpl c1 = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c1.members().get(0);
+    ClassTreeImpl r = (ClassTreeImpl) m.block().body().get(0);
+    VariableTreeImpl p = (VariableTreeImpl) r.recordComponents().get(0);
+
+    assertThat(cu.sema.variableSymbol(p.variableBinding))
+      .as("of record component")
+      .hasOwner(cu.sema.typeSymbol(r.typeBinding));
+
+    assertThat(cu.sema.methodSymbol(m.methodBinding))
+      .as("of method")
+      .hasOwner(cu.sema.typeSymbol(c1.typeBinding));
+  }
+
+  @Test
   void primitive_type_hash_code() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { int u; int v; }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
