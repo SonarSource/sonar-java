@@ -1,23 +1,6 @@
 <p>An XML bomb / <a href="https://en.wikipedia.org/wiki/Billion_laughs_attack">billion laughs</a> attack is a malicious XML document containing the
 same large entity repeated over and over again. If no restrictions is in place, such a limit on the number of entity expansions, the XML processor can
 consume a lot memory and time during the parsing of such documents leading to Denial of Service.</p>
-<pre>
-&lt;?xml version="1.0"?&gt;
-&lt;!DOCTYPE lolz [
- &lt;!ENTITY lol "lol"&gt;
- &lt;!ELEMENT lolz (#PCDATA)&gt;
- &lt;!ENTITY lol1 "&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;"&gt;
- &lt;!ENTITY lol2 "&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;&amp;lol1;"&gt;
- &lt;!ENTITY lol3 "&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;"&gt;
- &lt;!ENTITY lol4 "&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;"&gt;
- &lt;!ENTITY lol5 "&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;"&gt;
- &lt;!ENTITY lol6 "&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;"&gt;
- &lt;!ENTITY lol7 "&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;"&gt;
- &lt;!ENTITY lol8 "&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;"&gt;
- &lt;!ENTITY lol9 "&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;"&gt;
-]&gt;
-&lt;lolz&gt;&amp;lol9;&lt;/lolz&gt;
-</pre>
 <h2>Noncompliant Code Example</h2>
 <p>For <a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilder</a>, <a
 href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/SAXParserFactory.html">SAXParser</a> and <a
