@@ -227,11 +227,19 @@ class Container {
 
   }
 
-  // Constructor are also supported
+  // Constructors
   class Class17 {
-    private int privateField; // Noncompliant
+    private int privateField; // Compliant: this field should be reported by S1068 (unused field), and not by this rule
     Class17() {
+      this.privateField = 5;
+    }
+  }
+
+  class Class18 {
+    private int privateField; // Not reported by S1068, we could decide to report it in this rule (see SONARJAVA-4142).
+    Class18() {
       privateField = 5;
+      System.out.println(privateField);
     }
   }
 }

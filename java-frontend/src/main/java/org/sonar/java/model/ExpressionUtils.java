@@ -166,10 +166,18 @@ public final class ExpressionUtils {
     return id;
   }
 
+  /**
+   * Return the first enclosing method or constructor containing the given expression.
+   */
   @CheckForNull
   public static MethodTree getEnclosingMethod(ExpressionTree expr) {
+    return getEnclosingElement(expr, Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
+  }
+
+  @CheckForNull
+  public static MethodTree getEnclosingElement(ExpressionTree expr, Tree.Kind... kinds) {
     Tree result = expr.parent();
-    while (result != null && !result.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR)) {
+    while (result != null && !result.is(kinds)) {
       result = result.parent();
     }
     return (MethodTree) result;
