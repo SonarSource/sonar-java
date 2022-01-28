@@ -101,7 +101,7 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
     MethodTree method = null;
 
     for (IdentifierTree usageIdentifier : privateFieldSymbol.usages()) {
-      MethodTree enclosingMethod = ExpressionUtils.getEnclosingMethod(usageIdentifier);
+      MethodTree enclosingMethod = ExpressionUtils.getEnclosingElement(usageIdentifier, Kind.METHOD);
 
       if (enclosingMethod == null
         || !enclosingMethod.symbol().owner().equals(classSymbol)
