@@ -51,17 +51,16 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
     private final JSymbolMetadata metadata;
 
 
-    ParameterPlaceholderSymbol(int index, Symbol owner, ITypeBinding typeBinding) {
+    ParameterPlaceholderSymbol(int index, JSema sema, IMethodBinding owner, ITypeBinding typeBinding) {
       name = "arg" + index;
-      this.owner = owner;
-      this.type = ((JSymbol) owner).sema.type(typeBinding);
+      this.owner = sema.methodSymbol(owner);
+      this.type = sema.type(typeBinding);
 
-      IMethodBinding methodBinding = (IMethodBinding) ((JSymbol) owner).binding;
       metadata = new JSymbolMetadata(
-        ((JSymbol) owner).sema,
+        sema,
         this,
         typeBinding.getTypeAnnotations(),
-        methodBinding.getParameterAnnotations(index)
+        owner.getParameterAnnotations(index)
       );
     }
 

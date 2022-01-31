@@ -90,9 +90,10 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
         parameters = declaration.parameters().stream().map(VariableTree::symbol).collect(Collectors.toList());
       } else {
         parameters = new ArrayList<>();
-        ITypeBinding[] parameterTypeBindings = methodBinding().getParameterTypes();
+        IMethodBinding methodBinding = methodBinding();
+        ITypeBinding[] parameterTypeBindings = methodBinding.getParameterTypes();
         for (int i = 0; i < parameterTypeBindings.length; i++) {
-          parameters.add(new JVariableSymbol.ParameterPlaceholderSymbol(i, this, parameterTypeBindings[i]));
+          parameters.add(new JVariableSymbol.ParameterPlaceholderSymbol(i, sema, methodBinding.getMethodDeclaration(), parameterTypeBindings[i]));
         }
       }
     }

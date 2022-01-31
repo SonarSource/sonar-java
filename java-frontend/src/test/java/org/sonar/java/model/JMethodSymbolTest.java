@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Objects;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.junit.jupiter.api.Test;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.java.TestUtils;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -40,6 +42,7 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -132,6 +135,46 @@ class JMethodSymbolTest {
     assertThat(parameterSymbol1.metadata()).isSameAs(parameterSymbol2.metadata());
     assertThat(parameterSymbol1.isVariableSymbol()).isTrue();
     assertThat(parameterSymbol1.isFinal()).isFalse();
+  }
+
+  @Test
+  void test_forward_declaration_in_the_same_batch() {
+    List<InputFile> inputFiles = Arrays.asList(
+      TestUtils.inputFile("src/test/files/semantic/Main.java"),
+      TestUtils.inputFile("src/test/files/semantic/Dependency.java"),
+      TestUtils.inputFile("src/test/files/semantic/GenericDependency.java"),
+      TestUtils.inputFile("src/test/files/semantic/Nullable.java"));
+    List<String> processed = new ArrayList<>();
+    JParserConfig.Mode.BATCH
+      .create(JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION, JParserTestUtils.DEFAULT_CLASSPATH)
+      .parse(inputFiles, () -> false, (inputFile, result) -> {
+        processed.add(inputFile.filename());
+        if (inputFile.filename().equals("Main.java")) {
+          try {
+            ClassTreeImpl classA = (ClassTreeImpl) result.get().types().get(0);
+            MethodTreeImpl methodM = (MethodTreeImpl) classA.members().get(0);
+            List<StatementTree> body = methodM.block().body();
+
+            // Even if Dependency.java and GenericDependency.java will be analyzed after Main.java
+            // the semantic API of Main.java should have a @Nullable annotation on the
+            // method parameter declaration of
+            // Dependency#m(@Nullable Object param)
+            // GenericDependency#m(@Nullable T param)
+            MethodInvocationTree dependencyInvocation = (MethodInvocationTree) ((ExpressionStatementTree) body.get(0)).expression();
+            Symbol dependencyParamDeclaration = ((Symbol.MethodSymbol) dependencyInvocation.symbol()).declarationParameters().get(0);
+            assertThat(dependencyParamDeclaration.owner().owner().name()).isEqualTo("Dependency");
+            assertThat(dependencyParamDeclaration.metadata().isAnnotatedWith("semantic.Nullable")).isTrue();
+
+            MethodInvocationTree genericDependencyInvocation = (MethodInvocationTree) ((ExpressionStatementTree) body.get(1)).expression();
+            Symbol genericDependencyParamDeclaration = ((Symbol.MethodSymbol) genericDependencyInvocation.symbol()).declarationParameters().get(0);
+            assertThat(genericDependencyParamDeclaration.owner().owner().name()).isEqualTo("GenericDependency");
+            assertThat(genericDependencyParamDeclaration.metadata().isAnnotatedWith("semantic.Nullable")).isTrue();
+          } catch (Exception e) {
+            fail(e);
+          }
+        }
+      });
+    assertThat(processed).containsExactly("Main.java", "Dependency.java", "GenericDependency.java", "Nullable.java");
   }
 
   @Test
