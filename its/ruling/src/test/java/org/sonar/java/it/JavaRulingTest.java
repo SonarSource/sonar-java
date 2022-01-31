@@ -166,6 +166,7 @@ public class JavaRulingTest {
   public void guava() throws Exception {
     String projectName = "guava";
     MavenBuild build = test_project("com.google.guava:guava", projectName);
+    build.setProperty("sonar.java.experimental.batchModeSizeInKB", "8192");
     executeBuildWithCommonProperties(build, projectName);
   }
 
@@ -173,6 +174,7 @@ public class JavaRulingTest {
   public void apache_commons_beanutils() throws Exception {
     String projectName = "commons-beanutils";
     MavenBuild build = test_project("commons-beanutils:commons-beanutils", projectName);
+    build.setProperty("sonar.java.experimental.batchModeSizeInKB", "8192");
     executeBuildWithCommonProperties(build, projectName);
   }
 
