@@ -158,6 +158,16 @@ public class AuthorizationsStrongDecisionsCheck {
     }
   }
 
+  abstract class ThrowException implements AccessDecisionVoter {
+    @Override
+    public int vote(Authentication authentication, Object object, Collection collection) { // Compliant, Exceptions are considered as strong decision
+      if (collection.isEmpty()) {
+        throw new UnauthorizedException();
+      }
+      return ACCESS_GRANTED;
+    }
+  }
+
   // PermissionEvaluator =================================================
 
   class MyPermissionEvaluatorNonCompliant implements PermissionEvaluator {
@@ -295,8 +305,29 @@ public class AuthorizationsStrongDecisionsCheck {
     }
   }
 
+  class ThrowsException implements PermissionEvaluator {
+
+    @Override
+    public boolean hasPermission(Authentication authentication, Object o, Object o1) {   // Compliant, Exceptions are considered as strong decision
+      if (o1.equals("+")) {
+        throw new UnauthorizedException();
+      }
+      return true;
+    }
+
+    @Override
+    public boolean hasPermission(Authentication authentication, Serializable serializable, String s, Object o) {   // Compliant, Exceptions are considered as strong decision
+      if (s.equals("+")) {
+        throw new UnauthorizedException();
+      }
+      return true;
+    }
+  }
+
   boolean testAccess(Authentication authentication, Object object, Collection collection) {
     return true;
   }
 
+  private class UnauthorizedException extends RuntimeException {
+  }
 }

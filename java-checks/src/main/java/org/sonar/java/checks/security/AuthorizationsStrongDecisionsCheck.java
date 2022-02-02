@@ -34,6 +34,7 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S5808")
@@ -123,6 +124,12 @@ public class AuthorizationsStrongDecisionsCheck extends IssuableSubscriptionVisi
       if (expression != null && isStrongDecision.test(expression)) {
         takesStrongDecision = true;
       }
+    }
+
+    @Override
+    public void visitThrowStatement(ThrowStatementTree tree) {
+      // Throwing an exception is considered as taking a strong decision
+      takesStrongDecision = true;
     }
 
     @Override
