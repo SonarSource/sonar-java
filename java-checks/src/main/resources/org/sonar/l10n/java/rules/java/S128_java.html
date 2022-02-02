@@ -30,20 +30,22 @@ switch (myVariable) {
 <h2>Exceptions</h2>
 <p>This rule is relaxed in the following cases:</p>
 <pre>
-switch (myVariable) {
+<code data-lang="java">switch (myVariable) {
   case 0:                                // Empty case used to specify the same behavior for a group of cases.
   case 1:
     doSomething();
     break;
-  case 2:                                // Use of return statement
+  case 2:                                // Use of a fallthrough comment
+    // fallthrough
+  case 3:                                // Use of return statement
     return;
-  case 3:                                // Use of throw statement
+  case 4:                                // Use of throw statement
     throw new IllegalStateException();
-  case 4:                                // Use of continue statement
+  case 5:                                // Use of continue statement
     continue;
   default:                               // For the last case, use of break statement is optional
     doSomethingElse();
-}
+}</code>
 </pre>
 <h2>See</h2>
 <ul>
