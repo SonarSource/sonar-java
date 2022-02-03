@@ -30,18 +30,6 @@ public class AnalysisProgress {
     analysedFileCount = 0;
   }
 
-  public int totalFileCount() {
-    return totalFileCount;
-  }
-
-  public int analysedFileCount() {
-    return analysedFileCount;
-  }
-
-  public int currentBatchSize() {
-    return currentBatchSize;
-  }
-
   public void startBatch(int currentBatchSize) {
     this.currentBatchSize = currentBatchSize;
   }
@@ -50,4 +38,22 @@ public class AnalysisProgress {
     this.analysedFileCount += currentBatchSize;
     this.currentBatchSize = 0;
   }
+
+  public boolean isFirstBatch() {
+    return analysedFileCount == 0;
+  }
+
+  public boolean isLastBatch() {
+    return analysedFileCount + currentBatchSize == totalFileCount;
+  }
+
+  public double toGlobalPercentage(double currentBatchPercentage) {
+    if (totalFileCount == 0) {
+      return 0;
+    }
+    double percentageDoneInPreviousBatches = analysedFileCount / (double) totalFileCount;
+    double currentBatchFactor = currentBatchSize / (double) totalFileCount;
+    return percentageDoneInPreviousBatches + currentBatchFactor * currentBatchPercentage;
+  }
+
 }
