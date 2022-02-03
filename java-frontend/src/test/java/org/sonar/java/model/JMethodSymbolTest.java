@@ -27,6 +27,7 @@ import java.util.Objects;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.java.AnalysisProgress;
 import org.sonar.java.TestUtils;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
@@ -147,7 +148,7 @@ class JMethodSymbolTest {
     List<String> processed = new ArrayList<>();
     JParserConfig.Mode.BATCH
       .create(JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION, JParserTestUtils.DEFAULT_CLASSPATH)
-      .parse(inputFiles, () -> false, (inputFile, result) -> {
+      .parse(inputFiles, () -> false, new AnalysisProgress(inputFiles.size()), (inputFile, result) -> {
         processed.add(inputFile.filename());
         if (inputFile.filename().equals("Main.java")) {
           try {

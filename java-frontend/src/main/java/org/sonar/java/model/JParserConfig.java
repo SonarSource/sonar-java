@@ -42,6 +42,7 @@ import org.eclipse.jdt.core.dom.FileASTRequestor;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonar.java.AnalysisProgress;
 import org.sonar.java.ExecutionTimeReport;
 import org.sonar.java.ProgressMonitor;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -65,7 +66,8 @@ public abstract class JParserConfig {
     this.classpath = classpath;
   }
 
-  public abstract void parse(Iterable<? extends InputFile> inputFiles, BooleanSupplier isCanceled, BiConsumer<InputFile, Result> action);
+  public abstract void parse(Iterable<? extends InputFile> inputFiles, BooleanSupplier isCanceled,
+    AnalysisProgress analysisProgress, BiConsumer<InputFile, Result> action);
 
   public enum Mode {
     BATCH(Batch::new),
@@ -139,7 +141,8 @@ public abstract class JParserConfig {
     }
 
     @Override
-    public void parse(Iterable<? extends InputFile> inputFiles, BooleanSupplier isCanceled, BiConsumer<InputFile, Result> action) {
+    public void parse(Iterable<? extends InputFile> inputFiles, BooleanSupplier isCanceled,
+      AnalysisProgress analysisProgress, BiConsumer<InputFile, Result> action) {
       LOG.info("Using ECJ batch to parse source files.");
 
       List<String> sourceFilePaths = new ArrayList<>();
@@ -154,7 +157,7 @@ public abstract class JParserConfig {
 
       PerformanceMeasure.Duration batchPerformance = PerformanceMeasure.start("ParseAsBatch");
       ExecutionTimeReport executionTimeReport = new ExecutionTimeReport();
-      ProgressMonitor monitor = new ProgressMonitor(isCanceled);
+      ProgressMonitor monitor = new ProgressMonitor(isCanceled, analysisProgress);
 
       try {
         astParser().createASTs(sourceFilePaths.toArray(new String[0]), encodings.toArray(new String[0]), new String[0], new FileASTRequestor() {
@@ -194,7 +197,8 @@ public abstract class JParserConfig {
     }
 
     @Override
-    public void parse(Iterable<? extends InputFile> inputFiles, BooleanSupplier isCanceled, BiConsumer<InputFile, Result> action) {
+    public void parse(Iterable<? extends InputFile> inputFiles, BooleanSupplier isCanceled,
+      AnalysisProgress analysisProgress, BiConsumer<InputFile, Result> action) {
       boolean successfullyCompleted = false;
       boolean cancelled = false;
 

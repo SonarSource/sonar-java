@@ -47,6 +47,7 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.LogTesterJUnit5;
+import org.sonar.java.AnalysisProgress;
 import org.sonar.java.TestUtils;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
@@ -145,7 +146,9 @@ class JParserTest {
     Set<InputFile> inputFiles = Collections.singleton(inputFile);
     JParserConfig config = JParserConfig.Mode.FILE_BY_FILE.create(MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList());
 
-    RuntimeException actual = assertThrows(RuntimeException.class, () -> config.parse(inputFiles, () -> false, consumer));
+    AnalysisProgress analysisProgress = new AnalysisProgress(inputFiles.size());
+    RuntimeException actual = assertThrows(RuntimeException.class, () -> config.parse(inputFiles, () -> false,
+      analysisProgress, consumer));
     assertSame(expected, actual);
   }
 
@@ -164,7 +167,7 @@ class JParserTest {
 
     FILE_BY_FILE
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList())
-      .parse(Collections.singleton(inputFile), () -> false, consumer);
+      .parse(Collections.singleton(inputFile), () -> false, new AnalysisProgress(1), consumer);
 
     JParserConfig.Result result = results.get(0);
     assertThrows(IOException.class, result::get);
@@ -179,7 +182,7 @@ class JParserTest {
 
     BATCH
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList())
-      .parse(Collections.singleton(inputFile), () -> false, consumer);
+      .parse(Collections.singleton(inputFile), () -> false, new AnalysisProgress(1), consumer);
 
     JParserConfig.Result result = results.get(0);
     assertThrows(IOException.class, result::get);
@@ -193,7 +196,9 @@ class JParserTest {
     };
     List<InputFile> inputFiles = Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/Classes.java"));
     JParserConfig config = BATCH.create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH);
-    NullPointerException actual = assertThrows(NullPointerException.class, () -> config.parse(inputFiles, () -> false, consumerThrowing));
+    AnalysisProgress analysisProgress = new AnalysisProgress(inputFiles.size());
+    NullPointerException actual = assertThrows(NullPointerException.class, () -> config.parse(inputFiles, () -> false,
+      analysisProgress, consumerThrowing));
 
     assertSame(expected, actual);
   }
@@ -291,7 +296,7 @@ class JParserTest {
     List<InputFile> inputFilesProcessed = new ArrayList<>();
     FILE_BY_FILE
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
-      .parse(inputFiles, () -> false, (inputFile, result) -> {
+      .parse(inputFiles, () -> false, new AnalysisProgress(inputFiles.size()), (inputFile, result) -> {
         results.add(result);
         inputFilesProcessed.add(inputFile);
       });
@@ -307,7 +312,7 @@ class JParserTest {
     List<InputFile> inputFilesProcessed = new ArrayList<>();
     BATCH
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
-      .parse(inputFiles, () -> false, (inputFile, result) -> {
+      .parse(inputFiles, () -> false, new AnalysisProgress(inputFiles.size()), (inputFile, result) -> {
         results.add(result);
         inputFilesProcessed.add(inputFile);
       });
@@ -349,7 +354,7 @@ class JParserTest {
 
     FILE_BY_FILE
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
-      .parse(inputFiles, isCanceled, action);
+      .parse(inputFiles, isCanceled, new AnalysisProgress(inputFiles.size()), action);
 
     InOrder inOrder = Mockito.inOrder(action, isCanceled);
     inOrder.verify(isCanceled).getAsBoolean();
@@ -365,7 +370,7 @@ class JParserTest {
     List<JParserConfig.Result> results = new ArrayList<>();
     FILE_BY_FILE
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
-      .parse(inputFiles, () -> true, (inputFile, result) -> results.add(result));
+      .parse(inputFiles, () -> true, new AnalysisProgress(inputFiles.size()), (inputFile, result) -> results.add(result));
 
     assertThat(results).isEmpty();
   }

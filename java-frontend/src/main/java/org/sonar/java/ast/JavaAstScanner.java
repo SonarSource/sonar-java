@@ -36,6 +36,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.AnalysisException;
+import org.sonar.java.AnalysisProgress;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.JParserConfig;
@@ -68,11 +69,13 @@ public class JavaAstScanner {
 
   public void scan(Iterable<? extends InputFile> inputFiles) {
     List<InputFile> filesNames = filterModuleInfo(inputFiles).collect(Collectors.toList());
+    AnalysisProgress analysisProgress = new AnalysisProgress(filesNames.size());
     try {
       JParserConfig.Mode.FILE_BY_FILE
         .create(JParserConfig.effectiveJavaVersion(visitor.getJavaVersion()), visitor.getClasspath())
         .parse(filesNames,
           this::analysisCancelled,
+          analysisProgress,
           (i, r) -> simpleScan(i, r, JavaAstScanner::cleanUpAst));
     } finally {
       endOfAnalysis();

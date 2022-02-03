@@ -49,21 +49,23 @@ public class ProgressMonitor implements IProgressMonitor, Runnable {
    * Thread.interrupted() failed to be set to true.
    */
   private final AtomicBoolean interrupted = new AtomicBoolean();
+  private final AnalysisProgress analysisProgress;
 
   @VisibleForTesting
-  ProgressMonitor(BooleanSupplier isCanceled, Logger logger, long period) {
+  ProgressMonitor(BooleanSupplier isCanceled, Logger logger, long period, AnalysisProgress analysisProgress) {
     interrupted.set(false);
     this.isCanceled = isCanceled;
     this.logger = logger;
     this.period = period;
+    this.analysisProgress = analysisProgress;
 
     thread = new Thread(this);
     thread.setName("Report about progress of Java AST analyzer");
     thread.setDaemon(true);
   }
 
-  public ProgressMonitor(BooleanSupplier isCanceled) {
-    this(isCanceled, Loggers.get(ProgressMonitor.class), TimeUnit.SECONDS.toMillis(10));
+  public ProgressMonitor(BooleanSupplier isCanceled, AnalysisProgress analysisProgress) {
+    this(isCanceled, Loggers.get(ProgressMonitor.class), TimeUnit.SECONDS.toMillis(10), analysisProgress);
   }
 
   @Override
@@ -74,7 +76,14 @@ public class ProgressMonitor implements IProgressMonitor, Runnable {
         if (unknownTotalWork) {
           log(String.format("%d/UNKNOWN unit(s) analyzed", processedWork));
         } else {
-          double percentage = processedWork / (double) totalWork;
+          double globalPercentage = 0.0d;
+          double batchPercentage = 0.0d;
+          int totalFileCount = analysisProgress.totalFileCount();
+          if (totalFileCount > 0) {
+            globalPercentage = analysisProgress.analysedFileCount() / (double) totalFileCount;
+            batchPercentage = analysisProgress.currentBatchSize() / (double) totalFileCount;
+          }
+          double percentage = globalPercentage + batchPercentage * (processedWork / (double) totalWork);
           log(String.format("%d%% analyzed", (int) (percentage * 100)));
         }
       } catch (InterruptedException e) {
@@ -91,13 +100,17 @@ public class ProgressMonitor implements IProgressMonitor, Runnable {
       unknownTotalWork = true;
     }
     this.totalWork = totalWork;
-    log("Starting batch processing.");
+    boolean firstBatch = analysisProgress.analysedFileCount() == 0;
+    if (firstBatch) {
+      log("Starting batch processing.");
+    }
     thread.start();
   }
 
   @Override
   public void done() {
-    if (success) {
+    boolean lastBatch = analysisProgress.analysedFileCount() + analysisProgress.currentBatchSize() == analysisProgress.totalFileCount();
+    if (success && lastBatch) {
       log("100% analyzed");
       log("Batch processing: Done!");
     }

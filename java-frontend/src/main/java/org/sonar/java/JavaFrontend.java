@@ -180,25 +180,28 @@ public class JavaFrontend {
   }
 
   private void scanInBatches(BatchModeContext context, List<InputFile> allInputFiles) {
+    AnalysisProgress analysisProgress = new AnalysisProgress(allInputFiles.size());
     long batchModeSizeInKB = sonarComponents.getBatchModeSizeInKB();
     if (batchModeSizeInKB < 0L || batchModeSizeInKB >= Long.MAX_VALUE / 1_000L) {
       LOG.debug("Scanning in a single batch");
-      scanBatch(context, allInputFiles);
+      scanBatch(context, allInputFiles, analysisProgress);
     } else {
       long batchSize = batchModeSizeInKB * 1_000L;
       LOG.debug("Scanning with batch size {} B", batchSize);
       BatchGenerator generator = new BatchGenerator(allInputFiles.iterator(), batchSize);
       while (generator.hasNext()) {
         List<InputFile> batch = generator.next();
-        scanBatch(context, batch);
+        scanBatch(context, batch, analysisProgress);
       }
     }
   }
 
-  private <T extends InputFile> void scanBatch(BatchModeContext context, List<T> allFiles) {
+  private <T extends InputFile> void scanBatch(BatchModeContext context, List<T> allFiles, AnalysisProgress analysisProgress) {
+    analysisProgress.startBatch(allFiles.size());
     JParserConfig.Mode.BATCH
       .create(JParserConfig.effectiveJavaVersion(javaVersion), context.getClasspath())
-      .parse(allFiles, this::analysisCancelled, (input, result) -> scanAsBatchCallback(input, result, context));
+      .parse(allFiles, this::analysisCancelled, analysisProgress, (input, result) -> scanAsBatchCallback(input, result, context));
+    analysisProgress.endBatch();
   }
 
   private static void scanAsBatchCallback(InputFile inputFile, JParserConfig.Result result, BatchModeContext context) {

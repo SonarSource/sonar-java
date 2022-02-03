@@ -38,7 +38,8 @@ class ProgressMonitorTest {
 
   @Test
   void test_set_cancel_does_nothing() {
-    ProgressMonitor progressMonitor = new ProgressMonitor(() -> false);
+    AnalysisProgress analysisProgress = new AnalysisProgress(10);
+    ProgressMonitor progressMonitor = new ProgressMonitor(() -> false, analysisProgress);
 
     progressMonitor.setCanceled(true);
     assertThat(progressMonitor.isCanceled()).isFalse();
@@ -49,8 +50,8 @@ class ProgressMonitorTest {
   @Test
   void methods_do_nothing() {
     Logger logger = mock(Logger.class);
-
-    ProgressMonitor report = new ProgressMonitor(() -> false, logger, TimeUnit.MILLISECONDS.toMillis(500));
+    AnalysisProgress analysisProgress = new AnalysisProgress(10);
+    ProgressMonitor report = new ProgressMonitor(() -> false, logger, TimeUnit.MILLISECONDS.toMillis(500), analysisProgress);
 
     report.setTaskName("task");
     report.subTask("task");
@@ -65,8 +66,9 @@ class ProgressMonitorTest {
   @Test
   void test_simple_report_progress() throws Exception {
     Logger logger = mock(Logger.class);
-
-    ProgressMonitor report = new ProgressMonitor(() -> false, logger, TimeUnit.MILLISECONDS.toMillis(250));
+    AnalysisProgress analysisProgress = new AnalysisProgress(50);
+    analysisProgress.startBatch(50);
+    ProgressMonitor report = new ProgressMonitor(() -> false, logger, TimeUnit.MILLISECONDS.toMillis(250), analysisProgress);
 
     report.beginTask("taskName", 100);
 
@@ -88,10 +90,123 @@ class ProgressMonitorTest {
 
   @Timeout(3)
   @Test
+  void test_empty_batch() throws Exception {
+    Logger logger = mock(Logger.class);
+    AnalysisProgress analysisProgress = new AnalysisProgress(0);
+    analysisProgress.startBatch(0);
+    ProgressMonitor report = new ProgressMonitor(() -> false, logger, TimeUnit.MILLISECONDS.toMillis(250), analysisProgress);
+
+    report.beginTask("taskName", 2);
+
+    waitForMessage(logger);
+    report.worked(2);
+    report.done();
+
+    ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+    verify(logger, atLeast(2)).info(captor.capture());
+
+    List<String> messages = captor.getAllValues();
+    assertThat(messages).hasSizeGreaterThanOrEqualTo(4).contains(
+      "Starting batch processing.",
+      "100% analyzed",
+      "Batch processing: Done!"
+    );
+  }
+
+  @Timeout(3)
+  @Test
+  void test_report_progress_first_batch() throws Exception {
+    Logger logger = mock(Logger.class);
+    AnalysisProgress analysisProgress = new AnalysisProgress(50);
+    analysisProgress.startBatch(10);
+    ProgressMonitor report = new ProgressMonitor(() -> false, logger, TimeUnit.MILLISECONDS.toMillis(250), analysisProgress);
+
+    report.beginTask("taskName", 20);
+
+    waitForMessage(logger);
+    report.worked(10);
+    waitForMessage(logger);
+    report.worked(10);
+    waitForMessage(logger);
+    report.done();
+
+    ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+    verify(logger, atLeast(4)).info(captor.capture());
+    List<String> messages = captor.getAllValues();
+    assertThat(messages).contains(
+      "Starting batch processing.",
+      "0% analyzed",
+      "10% analyzed",
+      "20% analyzed"
+    );
+  }
+
+  @Timeout(3)
+  @Test
+  void test_report_progress_second_batch() throws Exception {
+    Logger logger = mock(Logger.class);
+    AnalysisProgress analysisProgress = new AnalysisProgress(50);
+    analysisProgress.startBatch(10);
+    analysisProgress.endBatch();
+    analysisProgress.startBatch(10);
+    ProgressMonitor report = new ProgressMonitor(() -> false, logger, TimeUnit.MILLISECONDS.toMillis(250), analysisProgress);
+
+    report.beginTask("taskName", 20);
+
+    waitForMessage(logger);
+    report.worked(10);
+    waitForMessage(logger);
+    report.worked(10);
+    waitForMessage(logger);
+    report.done();
+
+    ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+    verify(logger, atLeast(3)).info(captor.capture());
+    List<String> messages = captor.getAllValues();
+    assertThat(messages).contains(
+      "20% analyzed",
+      "30% analyzed",
+      "40% analyzed"
+    );
+  }
+
+  @Timeout(3)
+  @Test
+  void test_report_progress_last_batch() throws Exception {
+    Logger logger = mock(Logger.class);
+    AnalysisProgress analysisProgress = new AnalysisProgress(50);
+    analysisProgress.startBatch(40);
+    analysisProgress.endBatch();
+    analysisProgress.startBatch(10);
+    ProgressMonitor report = new ProgressMonitor(() -> false, logger, TimeUnit.MILLISECONDS.toMillis(250), analysisProgress);
+
+    report.beginTask("taskName", 20);
+
+    waitForMessage(logger);
+    report.worked(10);
+    waitForMessage(logger);
+    report.worked(10);
+    waitForMessage(logger);
+    report.done();
+
+    ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+    verify(logger, atLeast(3)).info(captor.capture());
+    List<String> messages = captor.getAllValues();
+    assertThat(messages).contains(
+      "80% analyzed",
+      "90% analyzed",
+      "100% analyzed",
+      "Batch processing: Done!"
+    );
+  }
+
+  @Timeout(3)
+  @Test
   void test_report_progress() throws Exception {
     Logger logger = mock(Logger.class);
-
-    ProgressMonitor report = new ProgressMonitor(() -> false, logger, TimeUnit.MILLISECONDS.toMillis(250));
+    AnalysisProgress analysisProgress = new AnalysisProgress(500);
+    analysisProgress.startBatch(500);
+    ProgressMonitor report = new ProgressMonitor(() -> false, logger, TimeUnit.MILLISECONDS.toMillis(250), analysisProgress);
 
     report.beginTask("taskName", 1000);
     // Wait for start message
@@ -127,7 +242,9 @@ class ProgressMonitorTest {
   void test_unknown_total_work() throws Exception {
     Logger logger = mock(Logger.class);
 
-    ProgressMonitor report = new ProgressMonitor(() -> false, logger, TimeUnit.MILLISECONDS.toMillis(250));
+    AnalysisProgress analysisProgress = new AnalysisProgress(125);
+    analysisProgress.startBatch(125);
+    ProgressMonitor report = new ProgressMonitor(() -> false, logger, TimeUnit.MILLISECONDS.toMillis(250), analysisProgress);
 
     report.beginTask("taskName", IProgressMonitor.UNKNOWN);
 
@@ -152,7 +269,9 @@ class ProgressMonitorTest {
   void test_is_cancelled() throws Exception {
     Logger logger = mock(Logger.class);
 
-    ProgressMonitor report = new ProgressMonitor(() -> true, logger, TimeUnit.MILLISECONDS.toMillis(250));
+    AnalysisProgress analysisProgress = new AnalysisProgress(50);
+    analysisProgress.startBatch(50);
+    ProgressMonitor report = new ProgressMonitor(() -> true, logger, TimeUnit.MILLISECONDS.toMillis(250), analysisProgress);
 
     report.beginTask("taskName", 100);
 
@@ -178,7 +297,9 @@ class ProgressMonitorTest {
   void test_done_without_success() throws Exception {
     Logger logger = mock(Logger.class);
 
-    ProgressMonitor report = new ProgressMonitor(() -> true, logger, TimeUnit.MILLISECONDS.toMillis(250));
+    AnalysisProgress analysisProgress = new AnalysisProgress(50);
+    analysisProgress.startBatch(50);
+    ProgressMonitor report = new ProgressMonitor(() -> true, logger, TimeUnit.MILLISECONDS.toMillis(250), analysisProgress);
 
     report.beginTask("taskName", 100);
 
@@ -200,7 +321,9 @@ class ProgressMonitorTest {
   @Test
   void interrupting_the_thread_should_never_create_a_deadlock() {
     Logger logger = mock(Logger.class);
-    ProgressMonitor report = new ProgressMonitor(() -> true, logger, TimeUnit.MILLISECONDS.toMillis(500));
+
+    AnalysisProgress analysisProgress = new AnalysisProgress(50);
+    ProgressMonitor report = new ProgressMonitor(() -> true, logger, TimeUnit.MILLISECONDS.toMillis(500), analysisProgress);
 
     long start = System.currentTimeMillis();
     report.beginTask("taskName", 100);
@@ -218,7 +341,9 @@ class ProgressMonitorTest {
   @Test
   void interrupted_thread_should_exit_immediately() throws InterruptedException {
     Logger logger = mock(Logger.class);
-    ProgressMonitor report = new ProgressMonitor(() -> true, logger, TimeUnit.MILLISECONDS.toMillis(500));
+
+    AnalysisProgress analysisProgress = new AnalysisProgress(50);
+    ProgressMonitor report = new ProgressMonitor(() -> true, logger, TimeUnit.MILLISECONDS.toMillis(500), analysisProgress);
     AtomicLong time = new AtomicLong(10000);
     Thread selfInterruptedThread = new Thread(() -> {
       // set the thread as interrupted
