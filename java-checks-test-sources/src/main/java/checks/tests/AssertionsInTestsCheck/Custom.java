@@ -45,3 +45,18 @@ abstract class CustomTest extends UnknownAbstractSuperClassTest {
   }
 
 }
+
+class UnknownAbstractSuperClassTest {
+
+  protected void validateSomething() {
+  }
+
+  protected void testSomething() {
+  }
+
+  protected void doTheTest() {
+  }
+
+  protected void doSomething() {
+  }
+}

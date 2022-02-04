@@ -22,6 +22,7 @@ package org.sonar.java.checks.tests;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class AssertJAssertionsInConsumerCheckTest {
@@ -30,6 +31,14 @@ class AssertJAssertionsInConsumerCheckTest {
   void test() {
     CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/tests/AssertJAssertionsInConsumerCheck.java"))
+      .withCheck(new AssertJAssertionsInConsumerCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/tests/AssertJAssertionsInConsumerCheck.java"))
       .withCheck(new AssertJAssertionsInConsumerCheck())
       .verifyIssues();
   }

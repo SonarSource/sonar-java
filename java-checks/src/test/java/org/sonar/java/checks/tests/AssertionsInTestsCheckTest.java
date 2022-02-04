@@ -64,7 +64,9 @@ class AssertionsInTestsCheckTest {
     "VertX",
     "Selenide",
     "JMockit",
-    "Awaitility"
+    "Awaitility",
+    "AssertJ",
+    "Custom"
   })
   void test(String framework) {
     CheckVerifier.newVerifier()
@@ -77,17 +79,12 @@ class AssertionsInTestsCheckTest {
       "Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: ' #bla'");
   }
 
-  @ParameterizedTest
-  @ValueSource(strings = {
-    "AssertJ",
-    "Custom"
-  })
-  void testNonCompilingCode(String framework) {
+  @Test
+  void testNonCompilingCode() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/tests/AssertionsInTestsCheck/" + framework +
-        ".java"))
+      .onFile(nonCompilingTestSourcesPath("checks/tests/AssertionsInTestsCheck/AssertJ.java"))
       .withCheck(check)
-      .verifyIssues();
+      .verifyNoIssues();
   }
 
   @Test
