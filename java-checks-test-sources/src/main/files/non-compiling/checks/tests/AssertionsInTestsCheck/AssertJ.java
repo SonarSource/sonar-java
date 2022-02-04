@@ -23,5 +23,9 @@ public abstract class AssertionsInTestsCheckAssertJ {
     new org.sonarsource.helper.AssertionsHelper.ConstructorAssertion();
   }
 
+  @Test
+  public void with_unknown_method_call() { // Compliant: unknown method calls are considered as assertions to avoid FP.
+    unknownCall();
+  }
 
 }

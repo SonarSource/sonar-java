@@ -67,7 +67,9 @@ public abstract class AbstractAssertionVisitor extends BaseTreeVisitor {
   protected abstract boolean isAssertion(Symbol methodSymbol);
 
   private boolean isAssertion(@Nullable IdentifierTree method, Symbol methodSymbol) {
-    return matchesMethodPattern(method, methodSymbol)
+    // To avoid FP, we consider unknown methods as assertions
+    return methodSymbol.isUnknown()
+      || matchesMethodPattern(method, methodSymbol)
       || ASSERTION_INVOCATION_MATCHERS.matches(methodSymbol)
       || isAssertion(methodSymbol);
   }
