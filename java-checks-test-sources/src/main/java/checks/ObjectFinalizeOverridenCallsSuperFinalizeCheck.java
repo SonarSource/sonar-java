@@ -1,4 +1,6 @@
-class Case_1 extends Class3 {
+package checks;
+
+class S1114_Case_1 extends S1114_Class3 {
   @Override
   protected void finalize() throws Throwable {  // Compliant
     System.out.println("foo");
@@ -6,7 +8,7 @@ class Case_1 extends Class3 {
   }
 }
 
-class Case_2 extends Class3 {
+class S1114_Case_2 extends S1114_Class3 {
   @Override
   protected void finalize() throws Throwable {
     super.finalize();                           // Noncompliant [[sc=5;ec=21]] {{Move this super.finalize() call to the end of this Object.finalize() implementation.}}
@@ -14,24 +16,24 @@ class Case_2 extends Class3 {
   }
 }
 
-class Case_3 extends Class3 {
+class S1114_Case_3 extends S1114_Class3 {
   @Override
   protected void finalize() throws Throwable {  // Noncompliant [[sc=18;ec=26]] {{Add a call to super.finalize() at the end of this Object.finalize() implementation.}}
-    new Object().finalize();
+    new S1114_MyObject().finalize();
     System.out.println("foo");
   }
 }
 
-class Case_4 extends Class3 {
+class S1114_Case_4 extends S1114_Class3 {
   @Override
   protected void finalize() throws Throwable {  // Noncompliant {{Add a call to super.finalize() at the end of this Object.finalize() implementation.}}
-    Object object = new Object();
+    S1114_MyObject object = new S1114_MyObject();
     object.finalize();
     System.out.println("foo");
   }
 }
 
-class Case_5 extends Class3 {
+class S1114_Case_5 extends S1114_Class3 {
   @Override
   protected void finalize() throws Throwable {  // Noncompliant {{Add a call to super.finalize() at the end of this Object.finalize() implementation.}}
     finalize();
@@ -39,13 +41,13 @@ class Case_5 extends Class3 {
   }
 }
 
-class Case_6 extends Class3 {
+class S1114_Case_6 extends S1114_Class3 {
   @Override
   protected void finalize() throws Throwable {  // Noncompliant {{Add a call to super.finalize() at the end of this Object.finalize() implementation.}}
   }
 }
 
-class Case_7 extends Class3 {
+class S1114_Case_7 extends S1114_Class3 {
   @Override
   protected void finalize() throws Throwable {  // Noncompliant
     System.out.println("foo");
@@ -57,9 +59,11 @@ class Case_7 extends Class3 {
   }
 }
 
-class Case_8 extends Class3 {
-  void finalize() {
-    if (0) {
+class S1114_Case_8 extends S1114_Class3 {
+  boolean test;
+
+  protected void finalize() throws Throwable {
+    if (test) {
       super.finalize();
     } else {
       super.finalize();                         // Noncompliant
@@ -67,8 +71,8 @@ class Case_8 extends Class3 {
   }
 }
 
-class Case_9 extends Class3 {
-  void finalize() {
+class S1114_Case_9 extends S1114_Class3 {
+  protected void finalize() throws Throwable {
     try {
       // ...
     } finally {
@@ -79,8 +83,8 @@ class Case_9 extends Class3 {
   }
 }
 
-class Case_10 extends Class3 {
-  void finalize() {
+class S1114_Case_10 extends S1114_Class3 {
+  protected void finalize() throws Throwable {
     try {
       // ...
     } finally {
@@ -90,8 +94,8 @@ class Case_10 extends Class3 {
   }
 }
 
-class Case_11 extends Class3 {
-  void finalize() {
+class S1114_Case_11 extends S1114_Class3 {
+  protected void finalize() throws Throwable {
     try {
       // ...
     } catch (Exception e) {
@@ -103,19 +107,30 @@ class Case_11 extends Class3 {
   }
 }
 
-class Class3 extends Class1 {
+class S1114_Class3 extends S1114_Class1 {
   public void finalize(Object object) {
   }
 }
 
-class Class2 extends Class1 {
+class S1114_Class2 extends S1114_Class1 {
   @Override
   protected void finalize() throws Throwable {  // Noncompliant {{Add a call to super.finalize() at the end of this Object.finalize() implementation.}}
   }
 }
 
-class Class1 {
+class S1114_Class1 {
   @Override
   protected void finalize() throws Throwable {  // Compliant, superclass is java.lang.Object
+  }
+
+  protected void foo() throws Throwable {
+  }
+}
+
+class S1114_MyObject {
+
+  @Override
+  protected void finalize() throws Throwable {
+    super.finalize();
   }
 }

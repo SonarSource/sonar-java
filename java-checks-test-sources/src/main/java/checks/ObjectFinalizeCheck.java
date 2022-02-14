@@ -1,9 +1,21 @@
-class Foo {
+package checks;
 
-  int[] finalize;
+class ObjectFinalizeCheck {
+
+  public static class Foo {
+    int[] finalize;
+
+    @Override
+    protected void finalize() throws Throwable {
+      super.finalize();     // Compliant
+    }
+
+    void finalize(int i) {}
+  }
+
   Object x;
 
-  void foo() {
+  void foo() throws Throwable {
     Foo foo = new Foo();
     foo.finalize();       // Noncompliant [[sc=9;ec=17]] {{Remove this call to finalize().}}
     x = foo.finalize[0];  // Compliant
@@ -13,18 +25,9 @@ class Foo {
     super.finalize();     // Noncompliant {{Remove this call to finalize().}}
     this.finalize();      // Noncompliant {{Remove this call to finalize().}}
     finalize();           // Noncompliant {{Remove this call to finalize().}}
-    x = finalize() + 0;   // Noncompliant {{Remove this call to finalize().}}
   }
 
-  @Override
-  protected void finalize() throws Throwable {
-    super.finalize();     // Compliant
-  }
-
-  public int foo() {
+  public int bar() {
     return 0;
   }
-
-  void finalize(int i) { }
-
 }
