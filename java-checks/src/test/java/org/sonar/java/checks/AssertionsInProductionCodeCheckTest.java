@@ -22,14 +22,15 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class AssertionsInProductionCodeCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/AssertionsInProductionCodeCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/AssertionsInProductionCodeCheck.java"))
       .withCheck(new AssertionsInProductionCodeCheck())
       .verifyIssues();
   }
@@ -37,7 +38,7 @@ class AssertionsInProductionCodeCheckTest {
   @Test
   void test_specific_package_name() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/tests/AssertionsInProductionCodeCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertionsInProductionCodeCheck.java"))
       .withCheck(new AssertionsInProductionCodeCheck())
       .verifyNoIssues();
   }
@@ -45,7 +46,7 @@ class AssertionsInProductionCodeCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/AssertionsInProductionCodeCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/AssertionsInProductionCodeCheck.java"))
       .withCheck(new AssertionsInProductionCodeCheck())
       .withoutSemantic()
       .verifyNoIssues();

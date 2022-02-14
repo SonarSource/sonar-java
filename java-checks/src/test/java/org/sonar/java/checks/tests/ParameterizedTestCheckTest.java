@@ -22,14 +22,14 @@ package org.sonar.java.checks.tests;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class ParameterizedTestCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/tests/ParameterizedTestCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/ParameterizedTestCheck.java"))
       .withCheck(new ParameterizedTestCheck())
       .verifyIssues();
   }

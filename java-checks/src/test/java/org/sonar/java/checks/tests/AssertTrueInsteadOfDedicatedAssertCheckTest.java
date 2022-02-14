@@ -22,13 +22,13 @@ package org.sonar.java.checks.tests;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class AssertTrueInsteadOfDedicatedAssertCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/AssertTrueInsteadOfDedicatedAssertCheckTest.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertTrueInsteadOfDedicatedAssertCheckTest.java"))
       .withCheck(new AssertTrueInsteadOfDedicatedAssertCheck())
       .verifyIssues();
   }
@@ -36,7 +36,7 @@ class AssertTrueInsteadOfDedicatedAssertCheckTest {
   @Test
   void testNoSemantic() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/AssertTrueInsteadOfDedicatedAssertCheckTest.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertTrueInsteadOfDedicatedAssertCheckTest.java"))
       .withCheck(new AssertTrueInsteadOfDedicatedAssertCheck())
       .withoutSemantic()
       .verifyNoIssues();

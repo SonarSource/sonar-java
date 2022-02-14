@@ -22,13 +22,13 @@ package org.sonar.java.checks.tests;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class JUnitCompatibleAnnotationsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/JUnitCompatibleAnnotationsCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/JUnitCompatibleAnnotationsCheck.java"))
       .withCheck(new JUnitCompatibleAnnotationsCheck())
       .verifyIssues();
   }

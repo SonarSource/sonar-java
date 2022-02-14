@@ -22,14 +22,14 @@ package org.sonar.java.checks.tests;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class MockitoAnnotatedObjectsShouldBeInitializedCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/tests/MockitoAnnotatedObjectsShouldBeInitialized.java"))
+      .onFile(testCodeSourcesPath("checks/tests/MockitoAnnotatedObjectsShouldBeInitialized.java"))
       .withCheck(new MockitoAnnotatedObjectsShouldBeInitializedCheck())
       .verifyIssues();
   }

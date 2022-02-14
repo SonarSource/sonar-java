@@ -22,14 +22,14 @@ package org.sonar.java.checks.tests;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class TestAnnotationWithExpectedExceptionCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/TestAnnotationWithExpectedExceptionCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/TestAnnotationWithExpectedExceptionCheck.java"))
       .withCheck(new TestAnnotationWithExpectedExceptionCheck())
       .verifyIssues();
   }
@@ -37,7 +37,7 @@ class TestAnnotationWithExpectedExceptionCheckTest {
   @Test
   void testWithCompilationErrors() {
     CheckVerifier.newVerifier()
-      .onFile(("src/test/files/checks/TestAnnotationsWithExpectedExceptionCheckWithCompilationErrors.java"))
+      .onFile(("src/test/files/checks/tests/TestAnnotationsWithExpectedExceptionCheckWithCompilationErrors.java"))
       .withCheck(new TestAnnotationWithExpectedExceptionCheck())
       .verifyNoIssues();
   }

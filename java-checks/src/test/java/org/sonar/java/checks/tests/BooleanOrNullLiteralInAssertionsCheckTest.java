@@ -22,13 +22,13 @@ package org.sonar.java.checks.tests;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class BooleanOrNullLiteralInAssertionsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/BooleanOrNullLiteralInAssertionsCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/BooleanOrNullLiteralInAssertionsCheck.java"))
       .withCheck(new BooleanOrNullLiteralInAssertionsCheck())
       .verifyIssues();
   }

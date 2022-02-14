@@ -22,13 +22,13 @@ package org.sonar.java.checks.tests;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class JUnit4AnnotationsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/JUnit4AnnotationsCheckTest.java"))
+      .onFile(testCodeSourcesPath("checks/tests/JUnit4AnnotationsCheckTest.java"))
       .withCheck(new JUnit4AnnotationsCheck())
       .verifyIssues();
   }
@@ -36,7 +36,7 @@ class JUnit4AnnotationsCheckTest {
   @Test
   void testNoSemantic() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/JUnit4AnnotationsCheckTest.java"))
+      .onFile(testCodeSourcesPath("checks/tests/JUnit4AnnotationsCheckTest.java"))
       .withCheck(new JUnit4AnnotationsCheck())
       .withoutSemantic()
       .verifyNoIssues();

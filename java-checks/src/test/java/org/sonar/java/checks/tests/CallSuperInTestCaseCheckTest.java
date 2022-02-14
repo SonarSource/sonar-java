@@ -22,18 +22,18 @@ package org.sonar.java.checks.tests;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class CallSuperInTestCaseCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/CallSuperInTestCaseCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/CallSuperInTestCaseCheck.java"))
       .withCheck(new CallSuperInTestCaseCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/CallSuperInTestCaseCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/CallSuperInTestCaseCheck.java"))
       .withCheck(new CallSuperInTestCaseCheck())
       .withoutSemantic()
       .verifyNoIssues();

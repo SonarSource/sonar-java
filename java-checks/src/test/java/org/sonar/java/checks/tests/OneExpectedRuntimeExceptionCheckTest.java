@@ -22,14 +22,14 @@ package org.sonar.java.checks.tests;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class OneExpectedRuntimeExceptionCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/OneExpectedRuntimeExceptionCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/OneExpectedRuntimeExceptionCheck.java"))
       .withCheck(new OneExpectedRuntimeExceptionCheck())
       .verifyIssues();
   }

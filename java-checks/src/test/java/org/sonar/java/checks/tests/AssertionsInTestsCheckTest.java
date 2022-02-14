@@ -30,7 +30,7 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class AssertionsInTestsCheckTest {
 
@@ -70,7 +70,7 @@ class AssertionsInTestsCheckTest {
   })
   void test(String framework) {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/tests/AssertionsInTestsCheck/" + framework + ".java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertionsInTestsCheck/" + framework + ".java"))
       .withCheck(check)
       .verifyIssues();
     assertThat(logTester.logs(LoggerLevel.WARN)).contains(
@@ -90,7 +90,7 @@ class AssertionsInTestsCheckTest {
   @Test
   void testNoIssuesWithoutSemantic() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/tests/AssertionsInTestsCheck/Junit3.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertionsInTestsCheck/Junit3.java"))
       .withCheck(check)
       .withoutSemantic()
       .verifyNoIssues();
@@ -100,7 +100,7 @@ class AssertionsInTestsCheckTest {
   void testWithEmptyCustomAssertionMethods() {
     check.customAssertionMethods = "";
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/tests/AssertionsInTestsCheck/Junit3.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertionsInTestsCheck/Junit3.java"))
       .withCheck(check)
       .verifyIssues();
     assertThat(logTester.logs(LoggerLevel.WARN))

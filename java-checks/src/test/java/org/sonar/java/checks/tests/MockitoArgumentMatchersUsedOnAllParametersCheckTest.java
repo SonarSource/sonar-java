@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class MockitoArgumentMatchersUsedOnAllParametersCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/tests/MockitoArgumentMatchersUsedOnAllParameters.java"))
+      .onFile(testCodeSourcesPath("checks/tests/MockitoArgumentMatchersUsedOnAllParameters.java"))
       .withCheck(new MockitoArgumentMatchersUsedOnAllParametersCheck())
       .verifyIssues();
   }

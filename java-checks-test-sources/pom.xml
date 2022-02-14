@@ -17,6 +17,7 @@
   <properties>
     <sonar.skip>true</sonar.skip>
     <forbiddenapis.skip>true</forbiddenapis.skip>
+    <skipTests>true</skipTests>
   </properties>
 
   <!--
@@ -911,6 +912,7 @@
         <configuration>
           <excludes>
             <exclude>src/main/java/**</exclude>
+            <exclude>src/test/java/**</exclude>
           </excludes>
         </configuration>
       </plugin>

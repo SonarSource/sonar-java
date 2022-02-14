@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class AssertionArgumentOrderCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/AssertionArgumentOrderCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertionArgumentOrderCheck.java"))
       .withCheck(new AssertionArgumentOrderCheck())
       .verifyIssues();
   }
@@ -38,7 +38,7 @@ class AssertionArgumentOrderCheckTest {
   @Test
   void test_JUnit5() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/AssertionArgumentOrderCheck_JUnit5.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertionArgumentOrderCheck_JUnit5.java"))
       .withCheck(new AssertionArgumentOrderCheck())
       .verifyIssues();
   }
@@ -46,7 +46,7 @@ class AssertionArgumentOrderCheckTest {
   @Test
   void test_TestNG() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/AssertionArgumentOrderCheck_TestNG.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertionArgumentOrderCheck_TestNG.java"))
       .withCheck(new AssertionArgumentOrderCheck())
       .verifyIssues();
   }
@@ -55,7 +55,7 @@ class AssertionArgumentOrderCheckTest {
   void quickfixes() {
     InternalCheckVerifier
       .newInstance()
-      .onFile(testSourcesPath("checks/AssertionArgumentOrderCheck_QuickFixes.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertionArgumentOrderCheck_QuickFixes.java"))
       .withCheck(new AssertionArgumentOrderCheck())
       .withQuickFixes()
       .verifyIssues();

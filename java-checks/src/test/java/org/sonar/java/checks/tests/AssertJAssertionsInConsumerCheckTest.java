@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class AssertJAssertionsInConsumerCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/tests/AssertJAssertionsInConsumerCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertJAssertionsInConsumerCheck.java"))
       .withCheck(new AssertJAssertionsInConsumerCheck())
       .verifyIssues();
   }

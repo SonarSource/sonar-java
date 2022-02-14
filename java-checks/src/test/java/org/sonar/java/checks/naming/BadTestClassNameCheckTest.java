@@ -22,10 +22,10 @@ package org.sonar.java.checks.naming;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class BadTestClassNameCheckTest {
-  private static final String TEST_FILE = testSourcesPath("checks/tests/BadTestClassNameCheck.java");
+  private static final String TEST_FILE = testCodeSourcesPath("checks/tests/BadTestClassNameCheck.java");
 
   @Test
   void test() {
@@ -44,7 +44,7 @@ class BadTestClassNameCheckTest {
   @Test
   void test_no_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/tests/BadTestClassNameCheckNoSemantic.java"))
+      .onFile(testCodeSourcesPath("checks/tests/BadTestClassNameCheckNoSemantic.java"))
       .withCheck(new BadTestClassNameCheck())
       .withoutSemantic()
       .verifyIssues();
@@ -55,7 +55,7 @@ class BadTestClassNameCheckTest {
     BadTestClassNameCheck check = new BadTestClassNameCheck();
     check.format = "^[A-Z][a-zA-Z0-9]*SonarTest$";
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/tests/BadTestClassNameCheckCustom.java"))
+      .onFile(testCodeSourcesPath("checks/tests/BadTestClassNameCheckCustom.java"))
       .withCheck(check)
       .verifyIssues();
   }

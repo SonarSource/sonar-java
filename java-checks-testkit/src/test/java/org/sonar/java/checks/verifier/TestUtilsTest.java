@@ -41,9 +41,21 @@ class TestUtilsTest {
   }
 
   @Test
+  void checkMainCodeSourcesPath() {
+    assertThat(TestUtils.mainCodeSourcesPath("Dummy.java"))
+      .matches("(.+)java-checks-test-sources.src.main.java.Dummy\\.java");
+  }
+
+  @Test
+  void checkTestCodeSourcesPath() {
+    assertThat(TestUtils.testCodeSourcesPath("DummyTest.java"))
+      .matches("(.+)java-checks-test-sources.src.test.java.DummyTest\\.java");
+  }
+
+  @Test
   void checkNonCompilingTestResourcesPath() {
     assertThat(TestUtils.nonCompilingTestSourcesPath("Dummy.java"))
-      .endsWith("Dummy.java");
+      .matches("(.+)java-checks-test-sources.src.main.files.non-compiling.Dummy\\.java");
   }
 
   @Test
@@ -106,7 +118,7 @@ class TestUtilsTest {
     assertThat(inputFile.type()).isEqualTo(MAIN);
     assertThat(inputFile.language()).isEqualTo("java");
   }
-  
+
   @Test
   void checkEmptyTestInputFile() throws IOException {
     InputFile inputFile = TestUtils.emptyInputFile(DUMMY_FILE, TEST);

@@ -23,11 +23,11 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class JUnit5DefaultPackageClassAndMethodCheckTest {
 
-  private static final String testSourcePath = testSourcesPath("checks/JUnit5DefaultPackageClassAndMethodCheck.java");
+  private static final String testSourcePath = testCodeSourcesPath("checks/tests/JUnit5DefaultPackageClassAndMethodCheck.java");
 
   @Test
   void test() {
