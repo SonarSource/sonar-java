@@ -24,7 +24,7 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class TooManyAssertionsCheckTest {
   @Test
@@ -37,7 +37,7 @@ class TooManyAssertionsCheckTest {
     TooManyAssertionsCheck check = new TooManyAssertionsCheck();
     check.maximum = 2;
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/TooManyAssertionsCheckCustom2.java"))
+      .onFile(testCodeSourcesPath("checks/tests/TooManyAssertionsCheckCustom2.java"))
       .withCheck(check)
       .verifyIssues();
   }
@@ -47,7 +47,7 @@ class TooManyAssertionsCheckTest {
     TooManyAssertionsCheck check = new TooManyAssertionsCheck();
     check.maximum = 25;
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/TooManyAssertionsCheckCustom25.java"))
+      .onFile(testCodeSourcesPath("checks/tests/TooManyAssertionsCheckCustom25.java"))
       .withCheck(check)
       .verifyIssues();
   }
@@ -55,7 +55,7 @@ class TooManyAssertionsCheckTest {
   @Test
   void nonCompiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/TooManyAssertionsCheck.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/tests/TooManyAssertionsCheck.java"))
       .withCheck(new TooManyAssertionsCheck())
       .verifyNoIssues();
   }

@@ -24,13 +24,13 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class AssertJChainSimplificationCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/AssertJChainSimplificationCheckTest.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertJChainSimplificationCheckTest.java"))
       .withCheck(new AssertJChainSimplificationCheck())
       .verifyIssues();
   }
@@ -46,7 +46,7 @@ class AssertJChainSimplificationCheckTest {
   @Test
   void test_quick_fixes() {
     InternalCheckVerifier.newInstance()
-      .onFile(testSourcesPath("checks/AssertJChainSimplificationCheckTest_QuickFix.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertJChainSimplificationCheckTest_QuickFix.java"))
       .withCheck(new AssertJChainSimplificationCheck())
       .withQuickFixes()
       .verifyIssues();

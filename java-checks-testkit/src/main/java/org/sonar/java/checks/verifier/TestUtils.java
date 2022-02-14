@@ -29,13 +29,36 @@ public class TestUtils {
     // utility class, forbidden constructor
   }
 
-  private static final String TEST_SOURCES_DIR = "../java-checks-test-sources/src/main/java/";
-  private static final String NON_COMPILING_TEST_SOURCES_DIR = "../java-checks-test-sources/src/main/files/non-compiling/";
+  private static final String PROJECT_LOCATION = "../java-checks-test-sources/";
+  private static final String MAIN_CODE_SOURCES_DIR = PROJECT_LOCATION + "src/main/java/";
+  private static final String TEST_CODE_SOURCES_DIR = PROJECT_LOCATION + "src/test/java/";
+  private static final String NON_COMPILING_TEST_SOURCES_DIR = PROJECT_LOCATION + "src/main/files/non-compiling/";
 
+  /**
+   * @deprecated use {@link #mainCodeSourcesPath(String)}, {@link #testCodeSourcesPath(String)} instead
+   */
+  @Deprecated(forRemoval = true)
   public static String testSourcesPath(String path) {
-    return getFileFrom(path, TEST_SOURCES_DIR);
+    return getFileFrom(path, MAIN_CODE_SOURCES_DIR);
   }
 
+  /**
+   * To be used when testing rules targeting MAIN code.
+   */
+  public static String mainCodeSourcesPath(String path) {
+    return getFileFrom(path, MAIN_CODE_SOURCES_DIR);
+  }
+
+  /**
+   * To be used when testing rules targeting TEST code.
+   */
+  public static String testCodeSourcesPath(String path) {
+    return getFileFrom(path, TEST_CODE_SOURCES_DIR);
+  }
+
+  /**
+   * To be used when testing rules behavior when bytecode is missing, partial, or code does not compile.
+   */
   public static String nonCompilingTestSourcesPath(String path) {
     return getFileFrom(path, NON_COMPILING_TEST_SOURCES_DIR);
   }

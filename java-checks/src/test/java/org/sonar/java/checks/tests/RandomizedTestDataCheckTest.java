@@ -22,14 +22,14 @@ package org.sonar.java.checks.tests;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class RandomizedTestDataCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/RandomizedTestDataCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/RandomizedTestDataCheck.java"))
       .withCheck(new RandomizedTestDataCheck())
       .verifyIssues();
   }
@@ -37,7 +37,7 @@ class RandomizedTestDataCheckTest {
   @Test
   void testNoIssues() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/NonRandomizedTestDataCheck.java"))
+      .onFile(testCodeSourcesPath("checks/tests/NonRandomizedTestDataCheck.java"))
       .withCheck(new RandomizedTestDataCheck())
       .verifyNoIssues();
   }

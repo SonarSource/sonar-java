@@ -32,14 +32,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class AssertionTypesCheckTest {
 
   @Test
   void test_junit4() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/AssertionTypesCheck_JUnit4.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertionTypesCheck_JUnit4.java"))
       .withCheck(new AssertionTypesCheck())
       .verifyIssues();
   }
@@ -47,7 +47,7 @@ class AssertionTypesCheckTest {
   @Test
   void test_junit4_unknown_symbol_coverage() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/AssertionTypesCheck_JUnit4.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/tests/AssertionTypesCheck_JUnit4.java"))
       .withCheck(new AssertionTypesCheck())
       .verifyIssues();
   }
@@ -55,7 +55,7 @@ class AssertionTypesCheckTest {
   @Test
   void test_junit5() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/AssertionTypesCheck_JUnit5.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertionTypesCheck_JUnit5.java"))
       .withCheck(new AssertionTypesCheck())
       .verifyIssues();
   }
@@ -63,7 +63,7 @@ class AssertionTypesCheckTest {
   @Test
   void test_assertj() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/AssertionTypesCheck_AssertJ.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertionTypesCheck_AssertJ.java"))
       .withCheck(new AssertionTypesCheck())
       .verifyIssues();
   }

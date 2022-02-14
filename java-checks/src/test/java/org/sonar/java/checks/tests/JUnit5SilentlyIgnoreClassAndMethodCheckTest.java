@@ -23,16 +23,16 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class JUnit5SilentlyIgnoreClassAndMethodCheckTest {
 
-  private static final String SOURCE_PATH = "checks/JUnit5SilentlyIgnoreClassAndMethodCheck.java";
+  private static final String SOURCE_PATH = "checks/tests/JUnit5SilentlyIgnoreClassAndMethodCheck.java";
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath(SOURCE_PATH))
+      .onFile(testCodeSourcesPath(SOURCE_PATH))
       .withCheck(new JUnit5SilentlyIgnoreClassAndMethodCheck())
       .verifyIssues();
   }
@@ -40,7 +40,7 @@ class JUnit5SilentlyIgnoreClassAndMethodCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath(SOURCE_PATH))
+      .onFile(testCodeSourcesPath(SOURCE_PATH))
       .withCheck(new JUnit5SilentlyIgnoreClassAndMethodCheck())
       .withoutSemantic()
       .verifyNoIssues();
