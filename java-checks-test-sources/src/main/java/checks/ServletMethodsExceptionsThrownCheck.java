@@ -1,19 +1,18 @@
+package checks;
 
 import java.io.IOException;
-import java.lang.IllegalArgumentException;
-import java.lang.IllegalStateException;
 import java.net.InetAddress;
 import javax.naming.NamingException;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.ServletException;
 
-class A extends HttpServlet {
+class ServletMethodsExceptionsThrownCheck extends HttpServlet {
 
   private static boolean var = staticMethod();
 
-  private static boolean staticMethod() {}
+  private static boolean staticMethod() { return true; }
 
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     String ip = request.getRemoteAddr();
@@ -27,7 +26,8 @@ class A extends HttpServlet {
     }
     staticMethod();
   }
-  public void foo(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+
+  public void foo(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, NamingException {
     String ip = request.getRemoteAddr();
     InetAddress addr = InetAddress.getByName(ip);
   }
