@@ -1,7 +1,9 @@
+package checks;
+
 import java.util.*;
 import static java.util.Calendar.MONTH;
 
-class A {
+class InvalidDateValuesCheck {
 
   public final static int MINUTE = Calendar.MINUTE;
   boolean b;
@@ -20,7 +22,7 @@ class A {
     d.setSeconds(61);
     d.setSeconds(63);// Noncompliant {{"63" is not a valid value for "setSeconds" method.}}
     d.setSeconds(-1);// Noncompliant {{"-1" is not a valid value for "setSeconds" method.}}
-    java.sql.Date d1;
+    java.sql.Date d1 = new java.sql.Date(0L);
     d1.setHours(23);
     d1.setHours(24); // Noncompliant {{"24" is not a valid value for "setHours" method.}}
     d1.setMinutes(59);
@@ -38,7 +40,7 @@ class A {
     cal.set(Calendar.HOUR_OF_DAY, 24);// Noncompliant {{"24" is not a valid value for setting "HOUR_OF_DAY".}}
     cal.set(Calendar.MINUTE, 59);
     cal.set(Calendar.MINUTE, 61);// Noncompliant {{"61" is not a valid value for setting "MINUTE".}}
-    cal.set(A.MINUTE, 61);// support only Calendar members
+    cal.set(InvalidDateValuesCheck.MINUTE, 61);// support only Calendar members
     cal.set(Calendar.SECOND, 61);
     cal.set(Calendar.SECOND, 63);// Noncompliant {{"63" is not a valid value for setting "SECOND".}}
     cal.set(Calendar.HOUR_OF_DAY, -2);// Noncompliant {{"-2" is not a valid value for setting "HOUR_OF_DAY".}}
@@ -69,21 +71,24 @@ class A {
     b = foo() == d.getDate();
     b = 32 == d.getDate(); // Noncompliant {{"32" is not a valid value for "getDate".}}
     b = d1.getSeconds() == -1;// Noncompliant {{"-1" is not a valid value for "getSeconds".}}
-    b = calendar.get(Calendar.DST_OFFSET) == 0;
+    b = cal.get(Calendar.DST_OFFSET) == 0;
+    return 0;
+  }
+
+  class RollingCalendar extends GregorianCalendar {
+
+    RollingCalendar() {
+      super(); // Compliant
+    }
+
+    RollingCalendar(String s) {
+      super(2015, 12, 31); // Noncompliant {{"12" is not a valid value for setting "month".}}
+    }
+
+    RollingCalendar(int i) {
+      super(2015, 11, 31, 1, 1, 1); // Compliant
+    }
   }
 }
 
-class RollingCalendar extends GregorianCalendar {
 
-  RollingCalendar() {
-    super(); // Compliant
-  }
-
-  RollingCalendar(String s) {
-    super(2015, 12, 31); // Noncompliant {{"12" is not a valid value for setting "month".}}
-  }
-
-  RollingCalendar(int i) {
-    super(2015, 11, 31, 1, 1, 1 , /* millis */ 1); // Compliant
-  }
-}
