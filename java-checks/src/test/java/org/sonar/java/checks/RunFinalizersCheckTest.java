@@ -23,6 +23,8 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.model.JavaVersionImpl;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+
 class RunFinalizersCheckTest {
 
   @Test
@@ -30,32 +32,32 @@ class RunFinalizersCheckTest {
     int javaVersion = JavaVersionImpl.fromString(System.getProperty("java.specification.version")).asInt();
     if (javaVersion < 11) {
       CheckVerifier.newVerifier()
-        .onFile("src/test/files/checks/RunFinalizersCheck.java")
+        .onFile(nonCompilingTestSourcesPath("checks/RunFinalizersCheck.java"))
         .withCheck(new RunFinalizersCheck())
         .verifyIssues();
       CheckVerifier.newVerifier()
-        .onFile("src/test/files/checks/RunFinalizersCheck.java")
+        .onFile(nonCompilingTestSourcesPath("checks/RunFinalizersCheck.java"))
         .withCheck(new RunFinalizersCheck())
         .withJavaVersion(javaVersion)
         .verifyIssues();
       CheckVerifier.newVerifier()
-        .onFile("src/test/files/checks/RunFinalizersCheck_no_issue.java")
+        .onFile(nonCompilingTestSourcesPath("checks/RunFinalizersCheckNoIssue.java"))
         .withCheck(new RunFinalizersCheck())
         .withJavaVersion(11)
         .verifyNoIssues();
     } else {
       // No issue raised starting JDK 11 as the related APIs were removed from JDK and cannot be resolved
       CheckVerifier.newVerifier()
-        .onFile("src/test/files/checks/RunFinalizersCheck_no_issue.java")
+        .onFile(nonCompilingTestSourcesPath("checks/RunFinalizersCheckNoIssue.java"))
         .withCheck(new RunFinalizersCheck())
         .verifyNoIssues();
       CheckVerifier.newVerifier()
-        .onFile("src/test/files/checks/RunFinalizersCheck_no_issue.java")
+        .onFile(nonCompilingTestSourcesPath("checks/RunFinalizersCheckNoIssue.java"))
         .withCheck(new RunFinalizersCheck())
         .withJavaVersion(javaVersion)
         .verifyNoIssues();
       CheckVerifier.newVerifier()
-        .onFile("src/test/files/checks/RunFinalizersCheck_no_issue.java")
+        .onFile(nonCompilingTestSourcesPath("checks/RunFinalizersCheckNoIssue.java"))
         .withCheck(new RunFinalizersCheck())
         .withJavaVersion(10)
         .verifyNoIssues();
