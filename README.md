@@ -127,6 +127,9 @@ For example using the command:
 
     cp its/ruling/target/actual/* its/ruling/src/test/resources/
 
+#### Debugging Integration Tests
+You can debug ITs by adding `-Dmaven.binary=mvnDebug` as an option when running the tests. This will cause the analyzer JVM to wait for a debugger to be attached before continuing.
+
 ### License
 
 Copyright 2012-2022 SonarSource.
