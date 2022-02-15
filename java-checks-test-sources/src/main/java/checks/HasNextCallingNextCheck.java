@@ -1,6 +1,8 @@
+package checks;
+
 import java.util.Iterator;
 
-class A implements Iterator<String> {
+class HasNextCallingNextCheck implements Iterator<String> {
 
   private Iterator<String> other;
 
@@ -21,13 +23,13 @@ class A implements Iterator<String> {
   public void remove() {}
   public String next() { return "a"; }
   public String next(String a) { return "a"; }
-  public String otherMethod() {}
+  public String otherMethod() { return ""; }
 }
 
 // Not Iterator
-class B {
+class HasNextCallingNextCheck_B {
 
-  private A iterator;
+  private HasNextCallingNextCheck iterator;
 
   public boolean hasNext() {
     boolean b = false;
@@ -37,16 +39,16 @@ class B {
   }
 
   public String next() { return "a"; }
-  public void remove() {}  
+  public void remove() {}
 }
 
-class C implements Iterator<String> {
-  public boolean hasNext() { return true; }  
+class HasNextCallingNextCheck_C implements Iterator<String> {
+  public boolean hasNext() { return true; }
   public String next() { return "a"; }
-  public void remove() {}  
+  public void remove() {}
 }
 
-class D extends C {
+class HasNextCallingNextCheck_D extends HasNextCallingNextCheck_C {
   public boolean hasNext() {
     boolean b = false;
     b = next() != null; // Noncompliant
@@ -54,9 +56,9 @@ class D extends C {
   }
 }
 
-class E extends C {
+class HasNextCallingNextCheck_E extends HasNextCallingNextCheck_C {
   public boolean hasNext() {
-    class Internal extends C {
+    class Internal extends HasNextCallingNextCheck_C {
       public void myMethod() {
         next();
       }
@@ -65,15 +67,15 @@ class E extends C {
   }
 }
 
-abstract class F implements Iterator<String> {
-  public abstract boolean hasNext();  
+abstract class HasNextCallingNextCheck_F implements Iterator<String> {
+  public abstract boolean hasNext();
   public String next() { return "a"; }
-  public void remove() {}  
+  public void remove() {}
 }
 
-abstract class FirstIterator implements Iterator<String> {
+abstract class HasNextCallingNextCheck_FirstIterator implements Iterator<String> {
 
-  private OtherIterator otherIterator;
+  private HasNextCallingNextCheck_OtherIterator otherIterator;
 
   @Override
   public boolean hasNext() {
@@ -84,7 +86,7 @@ abstract class FirstIterator implements Iterator<String> {
   }
 }
 
-abstract class OtherIterator implements Iterator<String> {
+abstract class HasNextCallingNextCheck_OtherIterator implements Iterator<String> {
 
   @Override
   public abstract String next();
