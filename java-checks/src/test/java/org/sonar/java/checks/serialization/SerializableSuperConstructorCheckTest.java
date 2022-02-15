@@ -22,12 +22,23 @@ package org.sonar.java.checks.serialization;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+
 class SerializableSuperConstructorCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/serialization/SerializableSuperConstructorCheck.java")
+      .onFile(mainCodeSourcesPath("checks/serialization/SerializableSuperConstructorCheck.java"))
+      .withCheck(new SerializableSuperConstructorCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/serialization/SerializableSuperConstructorCheck.java"))
       .withCheck(new SerializableSuperConstructorCheck())
       .verifyIssues();
   }
