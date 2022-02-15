@@ -22,12 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+
 class ServletMethodsExceptionsThrownCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ServletMethodsExceptionsThrownCheck.java")
+      .onFile(mainCodeSourcesPath("checks/ServletMethodsExceptionsThrownCheck.java"))
       .withCheck(new ServletMethodsExceptionsThrownCheck())
       .verifyIssues();
   }
