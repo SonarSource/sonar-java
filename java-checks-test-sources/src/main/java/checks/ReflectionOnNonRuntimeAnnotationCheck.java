@@ -1,19 +1,21 @@
+package checks;
+
 import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Method;
+
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
-class A {
+class ReflectionOnNonRuntimeAnnotationCheck {
   private Class<? extends Annotation> annotation;
-  void foo() {
-    Method m;
-    Class<?> c;
+  void foo(Method m, Class<?> c) {
     m.isAnnotationPresent(Override.class); // Noncompliant [[sc=27;ec=41]] {{"@Override" is not available at runtime and cannot be seen with reflection.}}
     c.isAnnotationPresent(Override.class); // Noncompliant {{"@Override" is not available at runtime and cannot be seen with reflection.}}
     m.isAnnotationPresent(Deprecated.class); //Compliant, runtime retention
     m.isAnnotationPresent(bar());           //Compliant, we can't know what the bar method is returning.
     m.isAnnotationPresent(this.annotation); //Compliant, we can't know what the field annotation is returning.
-    m.isAnnotationPresent(UnknownAnnotation.class); // Compliant, unable to retrieve annotation
   }
   
   Class<? extends Annotation> bar() {

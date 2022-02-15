@@ -22,12 +22,23 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+
 class ReflectionOnNonRuntimeAnnotationCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ReflectionOnNonRuntimeAnnotationCheck.java")
+      .onFile(mainCodeSourcesPath("checks/ReflectionOnNonRuntimeAnnotationCheck.java"))
       .withCheck(new ReflectionOnNonRuntimeAnnotationCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/ReflectionOnNonRuntimeAnnotationCheck.java"))
+      .withCheck(new ReflectionOnNonRuntimeAnnotationCheck())
+      .verifyNoIssues();
   }
 }
