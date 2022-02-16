@@ -1,7 +1,7 @@
-package test;
+package checks;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class DoubleCheckedLockingAssignment {
 
@@ -139,5 +139,6 @@ public class DoubleCheckedLockingAssignment {
         if (strings == strings2) while (true) {};
       }
     }
+    return param;
   }
 }
