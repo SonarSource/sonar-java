@@ -22,14 +22,14 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class AndroidUnencryptedFilesCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/AndroidUnencryptedFilesCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/AndroidUnencryptedFilesCheck.java"))
       .withCheck(new AndroidUnencryptedFilesCheck())
       .withinAndroidContext(true)
       .verifyIssues();
@@ -38,7 +38,7 @@ class AndroidUnencryptedFilesCheckTest {
   @Test
   void test_not_android_context() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/AndroidUnencryptedFilesCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/AndroidUnencryptedFilesCheck.java"))
       .withCheck(new AndroidUnencryptedFilesCheck())
       .withinAndroidContext(false)
       .verifyNoIssues();
