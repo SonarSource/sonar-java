@@ -1,6 +1,9 @@
-package test;
+package checks;
 
-class TextBlocksInComplexExpressionsCheck {
+import java.util.List;
+import java.util.function.Supplier;
+
+class TextBlocksInComplexExpressionsCheckCustom {
 
   // Compliant
   Supplier<String> supplier = () -> """
@@ -21,8 +24,8 @@ class TextBlocksInComplexExpressionsCheck {
     ABC
     """;
   
-  void fun() {
-    listOfString.stream()
+  void fun(List<String> listOfStrings) {
+    listOfStrings.stream()
       // Noncompliant@+1
       .map(str -> !"""
         <project>
@@ -43,8 +46,8 @@ class TextBlocksInComplexExpressionsCheck {
         """.equals(str));
   } 
 
-  void fun() {
-    listOfString.stream()
+  void fun2(List<String> listOfStrings) {
+    listOfStrings.stream()
       .map(str -> { // Noncompliant@+1
         return !"""
           <project>
@@ -66,8 +69,8 @@ class TextBlocksInComplexExpressionsCheck {
       });
   }
 
-  void fun() {
-    listOfString.stream()
+  void fun3(List<String> listOfStrings) {
+    listOfStrings.stream()
       // Compliant
       .map(str -> !"""
     <project>
@@ -102,7 +105,7 @@ class TextBlocksInComplexExpressionsCheck {
     </project>
     """;
 
-    listOfString.stream()
+    listOfStrings.stream()
       .map(str -> !myTextBlock.equals(str)); // Compliant
   }
   
