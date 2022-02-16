@@ -1,11 +1,13 @@
+package checks.tests;
+
+import java.io.IOException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestName;
 import org.junit.rules.Timeout;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-class ProjectDefinitionTest {
+class UnusedTestRuleCheck {
 
   @Rule
   public TestName testNameUnused = new TestName(); // Noncompliant [[sc=19;ec=33]] {{Remove this unused "TestName".}}

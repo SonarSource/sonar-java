@@ -22,12 +22,14 @@ package org.sonar.java.checks.unused;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
+
 class UnusedTestRuleCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/unused/UnusedTestRuleCheck.java")
+      .onFile(testCodeSourcesPath("checks/tests/UnusedTestRuleCheck.java"))
       .withCheck(new UnusedTestRuleCheck())
       .verifyIssues();
   }
@@ -35,7 +37,7 @@ class UnusedTestRuleCheckTest {
   @Test
   void test_JUnit5() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/unused/UnusedTestRuleCheck_JUnit5.java")
+      .onFile(testCodeSourcesPath("checks/tests/UnusedTestRuleCheck_JUnit5.java"))
       .withCheck(new UnusedTestRuleCheck())
       .verifyIssues();
   }
@@ -43,7 +45,7 @@ class UnusedTestRuleCheckTest {
   @Test
   void test_no_issues_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/unused/UnusedTestRuleCheck_JUnit5.java")
+      .onFile(testCodeSourcesPath("checks/tests/UnusedTestRuleCheck_JUnit5.java"))
       .withCheck(new UnusedTestRuleCheck())
       .withoutSemantic()
       .verifyNoIssues();
