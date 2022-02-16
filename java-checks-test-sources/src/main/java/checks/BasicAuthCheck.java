@@ -1,7 +1,15 @@
-class A{
-  void foo(String authent) {
-    String encoding = Base64Encoder.encode ("login:passwd");
-    org.apache.http.client.methods.HttpPost httppost = new org.apache.http.client.methods.HttpPost(url);
+package checks;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
+class BasicAuthCheck {
+  void foo(String authent, URL url) throws IOException, URISyntaxException {
+    String encoding = Base64.getEncoder().encodeToString("login:passwd".getBytes(StandardCharsets.UTF_8));
+    org.apache.http.client.methods.HttpPost httppost = new org.apache.http.client.methods.HttpPost(url.toURI());
     httppost.setHeader("Authorization", "Basic " + encoding+encoding);  // Noncompliant [[sc=41;ec=49]] {{Use a more secure method than basic authentication.}}
     httppost.addHeader("Authorization", "Basic " + encoding);  // Noncompliant
     httppost.setHeader("Authorization", "Digest " + encoding);
