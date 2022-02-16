@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -74,21 +75,24 @@ public class PredictableSeedCheck extends AbstractMethodDetection {
 
   private static boolean isPredictable(ExpressionTree expressionTree) {
     return expressionTree.is(LITERAL_KINDS)
-      || isStaticFinal(expressionTree)
       || expressionTree.is(Tree.Kind.NEW_ARRAY)
+      || isStaticFinal(expressionTree)
       || isStringLiteralToBytes(expressionTree);
   }
 
   private static boolean isStringLiteralToBytes(ExpressionTree expressionTree) {
-    if (expressionTree.is(Tree.Kind.METHOD_INVOCATION) && GET_BYTES.matches(((MethodInvocationTree) expressionTree))) {
-      return ((MemberSelectExpressionTree) ((MethodInvocationTree) expressionTree).methodSelect()).expression().is(Tree.Kind.STRING_LITERAL);
+    if (!expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
+      return false;
     }
-    return false;
+    MethodInvocationTree mit = (MethodInvocationTree) expressionTree;
+    return GET_BYTES.matches(mit) && ((MemberSelectExpressionTree) mit.methodSelect()).expression().is(Tree.Kind.STRING_LITERAL);
   }
 
   private static boolean isStaticFinal(ExpressionTree expressionTree) {
-    return expressionTree.is(Tree.Kind.IDENTIFIER)
-      && ((IdentifierTree) expressionTree).symbol().isStatic()
-      && ((IdentifierTree) expressionTree).symbol().isFinal();
+    if (!expressionTree.is(Tree.Kind.IDENTIFIER)) {
+      return false;
+    }
+    Symbol symbol = ((IdentifierTree) expressionTree).symbol();
+    return symbol.isStatic() && symbol.isFinal();
   }
 }

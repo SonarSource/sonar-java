@@ -22,12 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+
 class PredictableSeedCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/PredictableSeedCheck.java")
+      .onFile(mainCodeSourcesPath("checks/PredictableSeedCheck.java"))
       .withCheck(new PredictableSeedCheck())
       .verifyIssues();
   }
