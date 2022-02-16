@@ -22,12 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+
 class CompareToReturnValueCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/CompareToReturnValueCheck.java")
+      .onFile(mainCodeSourcesPath("checks/CompareToReturnValueCheck.java"))
       .withCheck(new CompareToReturnValueCheck())
       .verifyIssues();
   }
