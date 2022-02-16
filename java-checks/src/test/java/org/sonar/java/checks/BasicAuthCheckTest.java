@@ -21,13 +21,14 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.TestUtils;
 
 class BasicAuthCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/BasicAuthCheck.java")
+      .onFile(TestUtils.mainCodeSourcesPath("checks/BasicAuthCheck.java"))
       .withCheck(new BasicAuthCheck())
       .verifyIssues();
   }
