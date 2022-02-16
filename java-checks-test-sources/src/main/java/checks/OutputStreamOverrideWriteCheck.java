@@ -1,9 +1,14 @@
-import java.io.*;
+package checks;
 
-public class MyStream extends OutputStream { // Noncompliant [[sc=14;ec=22]]{{Provide an override of "write(byte[],int,int)" for this class.}}
+import java.io.FileOutputStream;
+import java.io.FilterOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
+class S4349 extends OutputStream { // Noncompliant [[sc=7;ec=12]]{{Provide an override of "write(byte[],int,int)" for this class.}}
   private FileOutputStream fout;
 
-  public MyStream(File file) throws IOException {
+  public S4349(File file) throws IOException {
     fout = new FileOutputStream(file);
   }
 
@@ -20,10 +25,10 @@ public class MyStream extends OutputStream { // Noncompliant [[sc=14;ec=22]]{{Pr
   }
 }
 
-public class MyStream2 extends OutputStream {
+class S4349_2 extends OutputStream {
   private FileOutputStream fout;
 
-  public MyStream(File file) throws IOException {
+  public S4349_2(File file) throws IOException {
     fout = new FileOutputStream(file);
   }
 
@@ -45,10 +50,11 @@ public class MyStream2 extends OutputStream {
   }
 }
 
-public class MyStream3 extends FilterOutputStream { // Noncompliant
+class S4349_3 extends FilterOutputStream { // Noncompliant
   private FileOutputStream fout;
 
-  public MyStream(File file) throws IOException {
+  public S4349_3(File file) throws IOException {
+    super(null);
     fout = new FileOutputStream(file);
   }
 
@@ -64,15 +70,17 @@ public class MyStream3 extends FilterOutputStream { // Noncompliant
     super.close();
   }
 }
-public class MyStream4 {
+
+class S4349_4 {
   private OutputStream fout = new OutputStream() {
+    @Override public void write(int b) throws IOException { }
   };
 }
 
-public abstract class MyStream5 extends OutputStream { // compliant : abstract class.
+abstract class S4349_5 extends OutputStream { // compliant : abstract class.
   private FileOutputStream fout;
 
-  public MyStream(File file) throws IOException {
+  public S4349_5(File file) throws IOException {
     fout = new FileOutputStream(file);
   }
 
@@ -89,12 +97,12 @@ public abstract class MyStream5 extends OutputStream { // compliant : abstract c
   }
 }
 
-public class MyStream6 extends OutputStream { // Noncompliant {{Provide an empty override of "write(byte[],int,int)" for this class as well.}}
+class S4349_6 extends OutputStream { // Noncompliant {{Provide an empty override of "write(byte[],int,int)" for this class as well.}}
   @Override
   public void write(int b) throws IOException {
   }
 }
 
-public abstract class MyStream7 extends OutputStream {
+abstract class S4349_7 extends OutputStream {
   public abstract void write(int b) throws IOException;
 }
