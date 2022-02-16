@@ -1,9 +1,11 @@
+package checks;
+
 import java.lang.Override;
 import java.lang.Thread;
 
-class Outer {
+class ThreadWaitCallCheck {
 
-  void foo() {
+  void foo() throws InterruptedException {
     new A().wait();
     new A().wait(1l);
     new A().wait(1,1);
