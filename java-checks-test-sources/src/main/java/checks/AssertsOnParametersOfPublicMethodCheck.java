@@ -1,4 +1,6 @@
-class A {
+package checks;
+
+class S4274_A {
 
   public void setPrice(int price1) {
     assert price1 >= 0 && price1 <= 10000; // Noncompliant [[sc=5;ec=43]] {{Replace this assert with a proper check.}}
@@ -21,7 +23,7 @@ class A {
   }
 
   public void foo(Object a) {
-    new B() {
+    new S4274_B() {
       void Bar() {
         assert a != null; // Noncompliant
       }
@@ -36,7 +38,7 @@ class A {
   }
 }
 
-class B {
+class S4274_B {
 
   public void foo(int a) {
     new Thread() {
@@ -48,14 +50,14 @@ class B {
   }
 }
 
-class C {
+class S4274_C {
 
-  public C(int c) {
+  public S4274_C(int c) {
     assert c > 0; // Noncompliant
     // ...
   }
 
-  public synchronized void put(String a) {
+  public synchronized void put(String a, String b) {
     assert ((a != null) && (b != null)); // Noncompliant
     assert (find1(a) == null); // Noncompliant
   }
