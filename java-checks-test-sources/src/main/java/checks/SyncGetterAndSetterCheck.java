@@ -1,4 +1,6 @@
-public class Person {
+package checks;
+
+public abstract class SyncGetterAndSetterCheck {
   String name;
   int age;
   String address;
@@ -59,13 +61,22 @@ public class Person {
   public void setAddress4(String address) {
     this.address4 = address;
   }
+
+  public synchronized void setAge(int age, double ratio) { // not a setter
+    // do something
+  }
+
+  public synchronized int getAge(int age) { // not a getter
+    return -1;
+  }
 }
 
-public class Person2 {
+class SyncGetterAndSetterCheck2 {
   String name;
   int age;
   boolean old;
   boolean young;
+  boolean big;
 
   public synchronized void setName(String name) {
     this.name = name;
@@ -86,12 +97,29 @@ public class Person2 {
     }
   }
 
+  public synchronized boolean isOld(String s) { // not a getter
+    return false;
+  }
+
   public synchronized boolean isOld() {
     return old;
   }
 
   public void setOld(boolean old) { // Noncompliant
     this.old = old;
+  }
+
+  public synchronized boolean setBig(boolean big) { // not at setter
+    this.big = big;
+    return false;
+  }
+
+  public synchronized void isBig() { // not at getter
+    // muscle up
+  }
+
+  public synchronized void getBig() { // not at getter
+    // do something
   }
 
   public boolean isYoung() { // Noncompliant
