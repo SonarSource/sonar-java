@@ -1,7 +1,10 @@
+package checks;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
-class A {
+class ArraysAsListOfPrimitiveToStreamCheck {
   void foo(Set<String> s) {
     Arrays.asList("a1", "a2", "b1", "c2", "c1").stream().close(); // Compliant
     Arrays.asList(1.0, 2, 3L).stream().close(); // Compliant
