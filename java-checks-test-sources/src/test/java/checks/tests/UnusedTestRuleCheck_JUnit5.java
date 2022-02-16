@@ -1,3 +1,8 @@
+package checks.tests;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -9,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("TestInfo Demo")
-class Test1 {
+class UnusedTestRuleCheck_Junit5 {
 
   @TempDir
   static Path sharedTempDir;
@@ -20,7 +25,7 @@ class Test1 {
   @TempDir
   File unusedTempDir; // Noncompliant [[sc=8;ec=21]] {{Remove this unused "TempDir".}}
 
-  Test1(TestInfo testInfo) {
+  UnusedTestRuleCheck_Junit5(TestInfo testInfo) {
     assertEquals("TestInfo Demo", testInfo.getDisplayName());
   }
 
@@ -45,7 +50,7 @@ class Test1 {
   @Test
   void testUsingTempDir() throws IOException {
     Path file1 = sharedTempDir.resolve("test.txt");
-    Path file2 = tempDir.resolve("test.txt");
+    Path file2 = tempDir.toPath().resolve("test.txt");
     assertTrue(true);
   }
 
