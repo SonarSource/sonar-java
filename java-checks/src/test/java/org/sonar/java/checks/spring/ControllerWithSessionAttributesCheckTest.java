@@ -22,15 +22,17 @@ package org.sonar.java.checks.spring;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+
 class ControllerWithSessionAttributesCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/spring/ControllerWithSessionAttributesCheck.java")
+      .onFile(mainCodeSourcesPath("checks/spring/ControllerWithSessionAttributesCheck.java"))
       .withCheck(new ControllerWithSessionAttributesCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/spring/ControllerWithSessionAttributesCheck.java")
+      .onFile(mainCodeSourcesPath("checks/spring/ControllerWithSessionAttributesCheck.java"))
       .withCheck(new ControllerWithSessionAttributesCheck())
       .withoutSemantic()
       .verifyNoIssues();

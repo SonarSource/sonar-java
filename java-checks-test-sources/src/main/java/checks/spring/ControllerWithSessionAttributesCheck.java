@@ -1,3 +1,5 @@
+package checks.spring;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,7 +10,7 @@ import org.springframework.web.bind.support.SessionStatus;
 
 @Controller
 @SessionAttributes("foo") // Noncompliant [[sc=2;ec=19]] {{Add a call to "setComplete()" on the SessionStatus object in a "@RequestMapping" method.}}
-public class Foo {
+class S3753 {
   private int field;
 
   @RequestMapping("/foo")
@@ -29,7 +31,7 @@ public class Foo {
 
 @Controller
 @SessionAttributes("foo")
-public class Foo2 {
+class S3753_2 {
   @RequestMapping(value = "/end", method = RequestMethod.GET)
   public void baz(SessionStatus status) {
     status.setComplete();
@@ -38,7 +40,7 @@ public class Foo2 {
 
 @Controller
 @SessionAttributes("foo")
-public class Foo3 {
+class S3753_3 {
   @GetMapping
   public void baw(SessionStatus status) {
     help(status);
@@ -50,7 +52,7 @@ public class Foo3 {
 
 @Controller
 @SessionAttributes("x")
-public class Bar {
+class S3753_4 {
   @RequestMapping(method = RequestMethod.POST)
   public void bar(SessionStatus status) {
     status.setComplete();
@@ -59,7 +61,7 @@ public class Bar {
 
 @Controller
 @SessionAttributes("x")
-public class Baw {
+class S3753_5 {
   @PostMapping
   public void baw(SessionStatus status) {
     status.setComplete();
@@ -67,14 +69,14 @@ public class Baw {
 }
 
 @SessionAttributes("foo")
-public class Boo { // not a controller
+class S3753_6 { // not a controller
   @RequestMapping("/foo")
   public String boo(String foo) {
     return "foo" + foo;
   }
 }
 
-public abstract class AbstractController {
+abstract class S3753_AbstractController {
   @PostMapping
   public void end(SessionStatus status) {
     status.setComplete();
@@ -83,11 +85,9 @@ public abstract class AbstractController {
 
 @Controller
 @SessionAttributes("foo") // Noncompliant, FP
-public class ResultControllerHosting extends AbstractController {
+class S3753_ResultControllerHosting extends S3753_AbstractController { }
 
-}
-
-public class X { // not a controller
+class S3753_X { // not a controller
   @RequestMapping("/foo")
   public String boo(String foo) {
     return "foo" + foo;
