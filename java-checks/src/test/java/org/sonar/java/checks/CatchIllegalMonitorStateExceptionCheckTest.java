@@ -22,14 +22,25 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+
 class CatchIllegalMonitorStateExceptionCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/CatchIllegalMonitorStateExceptionCheck.java")
+      .onFile(mainCodeSourcesPath("checks/CatchIllegalMonitorStateExceptionCheck.java"))
       .withCheck(new CatchIllegalMonitorStateExceptionCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/CatchIllegalMonitorStateExceptionCheck.java"))
+      .withCheck(new CatchIllegalMonitorStateExceptionCheck())
+      .verifyNoIssues();
   }
 
 }
