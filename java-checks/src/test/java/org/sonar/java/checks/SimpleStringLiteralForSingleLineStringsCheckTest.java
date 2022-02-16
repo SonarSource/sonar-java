@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class SimpleStringLiteralForSingleLineStringsCheckTest {
 
@@ -30,7 +30,7 @@ class SimpleStringLiteralForSingleLineStringsCheckTest {
   void test() {
     
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/SimpleStringLiteralForSingleLineStringsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/SimpleStringLiteralForSingleLineStringsCheck.java"))
       .withCheck(new SimpleStringLiteralForSingleLineStringsCheck())
       .verifyIssues();
   }
