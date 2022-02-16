@@ -20,6 +20,7 @@
 package org.sonar.java.se.checks;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.SETestUtils;
 
@@ -28,7 +29,7 @@ class ObjectOutputStreamCheckTest {
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile("src/test/files/se/ObjectOutputStreamCheck.java")
+      .onFile(TestUtils.mainCodeSourcesPath("/symbolicexecution/checks/ObjectOutputStreamCheck.java"))
       .withCheck(new ObjectOutputStreamCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
