@@ -1,15 +1,20 @@
-import java.io.*;
+package checks;
 
-public class RubberBall {
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+
+class RubberBall {
 
   public void bounce(float angle, float velocity) {
   }
 
   private synchronized void writeObject(ObjectOutputStream stream) throws IOException { // Noncompliant {{Remove this "synchronized" keyword.}}
   }
+
+  static class Color {}
 }
 
-public class RubberBall2 {
+class RubberBall2 {
 
   public void bounce(float angle, float velocity) {
   }
@@ -29,7 +34,7 @@ public class RubberBall2 {
 
   class NestedCompliant {
 
-    public Nested(Color color, int diameter) {
+    public NestedCompliant(RubberBall.Color color, int diameter) {
       synchronized (this) {
         System.out.println("This is OK");
       }
@@ -37,13 +42,22 @@ public class RubberBall2 {
 
     private synchronized void writeObject(ObjectOutputStream stream) throws IOException { // Compliant
     }
+  }
+
+  class NestedCompliant2 {
+
+    public NestedCompliant2(RubberBall.Color color, int diameter) {
+      synchronized (this) {
+        System.out.println("This is OK");
+      }
+    }
 
     private void writeObject(ObjectOutputStream stream) throws IOException { // Compliant
     }
   }
 }
 
-public class ClassWithSynchronizedStmtIsOK {
+class ClassWithSynchronizedStmtIsOK {
 
   public void bounce(float angle, float velocity) {
     synchronized (this) {
@@ -54,9 +68,10 @@ public class ClassWithSynchronizedStmtIsOK {
   }
 }
 
-public class TwoSynchrozniedMethodIsOK {
+class TwoSynchrozniedMethodIsOK {
 
-  public RubberBall(Color color, int diameter) {  }
+  public TwoSynchrozniedMethodIsOK(RubberBall.Color color, int diameter) {
+  }
 
   public synchronized void bounce(float angle, float velocity) {
 
@@ -66,7 +81,7 @@ public class TwoSynchrozniedMethodIsOK {
   }
 }
 
-public class Nested3 {
+class Nested3 {
 
   private synchronized void writeObject(ObjectOutputStream stream) throws IOException { // Compliant
   }
