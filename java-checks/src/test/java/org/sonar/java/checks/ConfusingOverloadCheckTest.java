@@ -22,12 +22,23 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+
 class ConfusingOverloadCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ConfusingOverloadCheck.java")
+      .onFile(mainCodeSourcesPath("checks/ConfusingOverloadCheck.java"))
+      .withCheck(new ConfusingOverloadCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/ConfusingOverloadCheck.java"))
       .withCheck(new ConfusingOverloadCheck())
       .verifyIssues();
   }
