@@ -23,12 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.SETestUtils;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+
 class MinMaxRangeCheckTest {
 
   @Test
   void test() {
     SECheckVerifier.newVerifier()
-      .onFile("src/test/java/org/sonar/java/resolve/targets/se/MinMaxRangeCheck.java")
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/MinMaxRangeCheck.java"))
       .withCheck(new MinMaxRangeCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyIssues();
