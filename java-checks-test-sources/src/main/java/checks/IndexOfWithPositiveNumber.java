@@ -1,8 +1,9 @@
+package checks;
+
 import java.util.List;
 
-class TestClass {
-  void method(int length) {
-    List<String> strings;
+class IndexOfWithPositiveNumber {
+  void method(int length, List<String> strings) {
 
     if (length > 0) { // Compliant
     }
