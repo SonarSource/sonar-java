@@ -1,8 +1,10 @@
+package checks;
+
 import java.util.Collections;
 import java.util.List;
 
-public class A {
-  void foo(A a, boolean b, List<Object> myList) {
+public class AssertOnBooleanVariableCheck {
+  void foo(AssertOnBooleanVariableCheck a, boolean b, List<Object> myList) {
     assert myList.remove(myList.get(0)); // Noncompliant [[sc=19;ec=25]] {{Move this "assert" side effect to another statement.}}
     assert myList.remove(myList.remove(1)); // Noncompliant [[sc=19;ec=25]] {{Move this "assert" side effect to another statement.}}
 
@@ -16,7 +18,7 @@ public class A {
     assert bar() > 1 ? doNothing() : deleteStuff(); // Noncompliant [[sc=38;ec=49]]
 
     assert bar() == 0; // Compliant
-    assert new A() { // Compliant
+    assert new AssertOnBooleanVariableCheck() { // Compliant
       @Override
       boolean deleteStuff() {
         // do nothing
