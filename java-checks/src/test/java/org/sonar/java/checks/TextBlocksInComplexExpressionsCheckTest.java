@@ -22,14 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class TextBlocksInComplexExpressionsCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/TextBlocksInComplexExpressionsCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/TextBlocksInComplexExpressionsCheck.java"))
       .withCheck(new TextBlocksInComplexExpressionsCheck())
       .verifyIssues();
   }
@@ -39,7 +39,7 @@ class TextBlocksInComplexExpressionsCheckTest {
     TextBlocksInComplexExpressionsCheck check = new TextBlocksInComplexExpressionsCheck();
     check.setLinesNumber(15);
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/TextBlocksInComplexExpressionsCheck_custom.java"))
+      .onFile(mainCodeSourcesPath("checks/TextBlocksInComplexExpressionsCheckCustom.java"))
       .withCheck(check)
       .verifyIssues();
   }

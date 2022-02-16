@@ -1,4 +1,7 @@
-package test;
+package checks;
+
+import java.util.List;
+import java.util.function.Supplier;
 
 class TextBlocksInComplexExpressionsCheck {
 
@@ -18,8 +21,8 @@ class TextBlocksInComplexExpressionsCheck {
     </project>
     """;
 
-  void fun() {
-    listOfString.stream()
+  void fun(List<String> listOfStrings) {
+    listOfStrings.stream()
 
       .map(str -> { // Noncompliant@+1 [[sc=18;ec=14;el=+14]]{{Move this text block out of the lambda body and refactor it to a local variable or a static final field.}}
         var b = !"""
@@ -44,7 +47,7 @@ class TextBlocksInComplexExpressionsCheck {
         return 0;
       });
 
-    listOfString.stream()
+    listOfStrings.stream()
       // Noncompliant@+1
       .map(str -> !"""
         <project>
@@ -54,7 +57,7 @@ class TextBlocksInComplexExpressionsCheck {
             <artifactId>my-app</artifactId>
         """.equals(str));
 
-    listOfString.stream()
+    listOfStrings.stream()
       .map(str -> { // Compliant
         return !"""
               <groupId>com.mycompany.app</groupId>
@@ -62,7 +65,7 @@ class TextBlocksInComplexExpressionsCheck {
           """.equals(str);
       });
 
-    listOfString.stream()
+    listOfStrings.stream()
       .map(str -> { // Noncompliant@+1
         return !"""
 
@@ -75,7 +78,7 @@ class TextBlocksInComplexExpressionsCheck {
           """.equals(str);
       });
 
-    listOfString.stream()
+    listOfStrings.stream()
       // Compliant
       .map(str -> !"""
         <project>
@@ -98,10 +101,10 @@ class TextBlocksInComplexExpressionsCheck {
       </project>
       """;
 
-    listOfString.stream()
+    listOfStrings.stream()
       .map(str -> !myTextBlock.equals(str)); // Compliant
 
-    listOfString.stream()
+    listOfStrings.stream()
       .map(str -> "ABC\nABC\nABC\nABC\nABC\nABC"); // Compliant
   }
 
