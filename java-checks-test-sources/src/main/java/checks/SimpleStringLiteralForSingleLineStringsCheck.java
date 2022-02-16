@@ -12,7 +12,7 @@ public class SimpleStringLiteralForSingleLineStringsCheck {
               What's the point, really
               ?"""; // Compliant, 3 lines
 
-    String question2 = """
+    String question3 = """
               What's the point, really\n?"""; // Noncompliant@-1 [[sc=24;endColumn=45]]{{Use simple literal for a single-line string.}}
 
   }
