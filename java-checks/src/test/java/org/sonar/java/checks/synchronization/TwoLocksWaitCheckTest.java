@@ -22,12 +22,14 @@ package org.sonar.java.checks.synchronization;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+
 class TwoLocksWaitCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/TwoLocksWaitCheck.java")
+      .onFile(mainCodeSourcesPath("checks/TwoLocksWaitCheck.java"))
       .withCheck(new TwoLocksWaitCheck())
       .verifyIssues();
   }

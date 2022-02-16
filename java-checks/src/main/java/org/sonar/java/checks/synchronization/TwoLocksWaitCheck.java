@@ -19,6 +19,13 @@
  */
 package org.sonar.java.checks.synchronization;
 
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -28,22 +35,12 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import static org.sonar.java.model.ModifiersUtils.findModifier;
-import static org.sonar.plugins.java.api.tree.Modifier.SYNCHRONIZED;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.CONSTRUCTOR;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.METHOD;
 
 @Rule(key = "S3046")
 public class TwoLocksWaitCheck extends IssuableSubscriptionVisitor {
@@ -54,24 +51,20 @@ public class TwoLocksWaitCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(METHOD, CONSTRUCTOR);
+    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(METHOD, CONSTRUCTOR)) {
-      MethodTree methodTree = (MethodTree) tree;
-      int initialCounter = findModifier(methodTree.modifiers(), SYNCHRONIZED).map(m -> 1).orElse(0);
-      synchronizedStack.push(new Counter(initialCounter));
-      findWaitInvocation(methodTree);
-    }
+    MethodTree methodTree = (MethodTree) tree;
+    int initialCounter = findModifier(methodTree.modifiers(), Modifier.SYNCHRONIZED).map(m -> 1).orElse(0);
+    synchronizedStack.push(new Counter(initialCounter));
+    findWaitInvocation(methodTree);
   }
 
   @Override
   public void leaveNode(Tree tree) {
-    if (tree.is(METHOD, CONSTRUCTOR)) {
-      synchronizedStack.pop();
-    }
+    synchronizedStack.pop();
   }
 
   private void findWaitInvocation(MethodTree tree) {
@@ -144,7 +137,7 @@ public class TwoLocksWaitCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitMethod(MethodTree tree) {
-      findModifier(tree.modifiers(), SYNCHRONIZED)
+      findModifier(tree.modifiers(), Modifier.SYNCHRONIZED)
         .ifPresent(s -> synchronizedKeywords.add(s.keyword()));
       super.visitMethod(tree);
     }
