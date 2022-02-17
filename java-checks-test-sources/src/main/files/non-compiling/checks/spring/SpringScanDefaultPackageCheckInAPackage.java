@@ -11,7 +11,6 @@ import org.springframework.context.annotation.ComponentScan;
 
 @ComponentScan(basePackages = "") // Noncompliant
 @ComponentScan(basePackageClasses = App.class)
-
 @SpringBootApplication(scanBasePackages = "") // Noncompliant
 @SpringBootApplication(scanBasePackageClasses = App.class)
 
