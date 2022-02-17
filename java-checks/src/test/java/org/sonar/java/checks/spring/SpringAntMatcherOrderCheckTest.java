@@ -21,6 +21,7 @@ package org.sonar.java.checks.spring;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.TestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.spring.SpringAntMatcherOrderCheck.antMatcherToRegEx;
@@ -32,11 +33,11 @@ class SpringAntMatcherOrderCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/spring/SpringAntMatcherOrderCheck.java")
+      .onFile(TestUtils.mainCodeSourcesPath("checks/spring/SpringAntMatcherOrderCheck.java"))
       .withCheck(new SpringAntMatcherOrderCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/spring/SpringAntMatcherOrderCheck.java")
+      .onFile(TestUtils.mainCodeSourcesPath("checks/spring/SpringAntMatcherOrderCheck.java"))
       .withCheck(new SpringAntMatcherOrderCheck())
       .withoutSemantic()
       .verifyNoIssues();
