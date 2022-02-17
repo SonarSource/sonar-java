@@ -22,23 +22,31 @@ package org.sonar.java.checks.spring;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+
 class SpringScanDefaultPackageCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/spring/SpringScanDefaultPackageCheck.java")
+      .onFile(mainCodeSourcesPath("SpringScanDefaultPackageCheck.java"))
       .withCheck(new SpringScanDefaultPackageCheck())
       .verifyIssues();
+
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/spring/SpringScanDefaultPackageCheckInAPackage.java")
-      .withCheck(new SpringScanDefaultPackageCheck())
-      .verifyIssues();
-    CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/spring/SpringScanDefaultPackageCheck.java")
+      .onFile(mainCodeSourcesPath("SpringScanDefaultPackageCheck.java"))
       .withCheck(new SpringScanDefaultPackageCheck())
       .withoutSemantic()
       .verifyNoIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/spring/SpringScanDefaultPackageCheckInAPackage.java"))
+      .withCheck(new SpringScanDefaultPackageCheck())
+      .verifyIssues();
   }
 
 }
