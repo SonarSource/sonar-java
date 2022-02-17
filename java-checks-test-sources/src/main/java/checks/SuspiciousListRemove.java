@@ -1,4 +1,4 @@
-package test;
+package checks;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public class SuspiciousListRemove {
     }
   }
 
-  void shiftCounter(List<String> list) {
+  void shiftCounter2(List<String> list) {
     for (int i = 0; i < list.size(); i++) {
       if (list.get(i).isEmpty()) {
         list.remove(i);  // Compliant because counter is assigned
@@ -68,15 +68,15 @@ public class SuspiciousListRemove {
 
   void coverage1(List<String> list, int from) {
     for (this.x = from; this.x < list.size(); this.x++)
-      list.remove(i); // Consider only local vars
+      list.remove(this.x); // Consider only local vars
   }
 
   void coverage2(List<String> list) {
-    for (int i,j = 0; i < list.size(); i++)
+    for (int i=0,j = 0; i < list.size(); i++)
       list.remove(i); // Consider only simple initialization
   }
 
-  void coverage2(List<String> list) {
+  void coverage3(List<String> list) {
     for (int i = 0; i < list.size(); i++, this.x++)
       list.remove(i); // Invalid update
   }
