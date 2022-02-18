@@ -23,9 +23,12 @@ import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
+import org.sonar.api.SonarRuntime;
+import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
+import org.sonar.api.utils.Version;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.CheckList;
 import org.sonar.java.checks.ServletMethodsExceptionsThrownCheck;
@@ -41,10 +44,11 @@ import static org.mockito.Mockito.when;
 class JavaRulesDefinitionTest {
 
   private static final String REPOSITORY_KEY = "java";
+  private static final SonarRuntime SONAR_RUNTIME_9_3 = SonarRuntimeImpl.forSonarLint(Version.create(9, 3));
 
   @Test
   void test_creation_of_rules() {
-    JavaRulesDefinition definition = new JavaRulesDefinition();
+    JavaRulesDefinition definition = new JavaRulesDefinition(SONAR_RUNTIME_9_3);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
@@ -79,7 +83,7 @@ class JavaRulesDefinitionTest {
     Locale defaultLocale = Locale.getDefault();
     Locale trlocale = Locale.forLanguageTag("tr-TR");
     Locale.setDefault(trlocale);
-    JavaRulesDefinition definition = new JavaRulesDefinition();
+    JavaRulesDefinition definition = new JavaRulesDefinition(SONAR_RUNTIME_9_3);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
@@ -95,7 +99,7 @@ class JavaRulesDefinitionTest {
     RulesDefinition.Context context = new RulesDefinition.Context();
     RulesDefinition.NewRepository newRepository = context.createRepository("test", "java");
     newRepository.createRule("correctRule");
-    JavaRulesDefinition definition = new JavaRulesDefinition();
+    JavaRulesDefinition definition = new JavaRulesDefinition(SONAR_RUNTIME_9_3);
     JavaSonarWayProfile.Profile profile = new JavaSonarWayProfile.Profile();
     profile.ruleKeys = new LinkedHashSet<>();
     try {
@@ -122,7 +126,7 @@ class JavaRulesDefinitionTest {
 
   @Test
   void test_security_hotspot() throws Exception {
-    JavaRulesDefinition definition = new JavaRulesDefinition();
+    JavaRulesDefinition definition = new JavaRulesDefinition(SONAR_RUNTIME_9_3);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
@@ -134,20 +138,32 @@ class JavaRulesDefinitionTest {
   }
 
   @Test
-  void test_security_standards() throws Exception {
-    JavaRulesDefinition definition = new JavaRulesDefinition();
+  void test_security_standards() {
+    JavaRulesDefinition definition = new JavaRulesDefinition(SONAR_RUNTIME_9_3);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
 
-    RulesDefinition.Rule rule = repository.rule("S1989");
-    assertThat(rule.deprecatedRuleKeys()).containsExactly(RuleKey.of("squid", "S1989"));
-    assertThat(rule.securityStandards()).containsExactlyInAnyOrder("cwe:600", "owaspTop10:a3");
+    RulesDefinition.Rule rule = repository.rule("S1166");
+    assertThat(rule.deprecatedRuleKeys()).containsExactly(RuleKey.of("squid", "S1166"));
+    assertThat(rule.securityStandards()).containsExactlyInAnyOrder("cwe:778", "owaspTop10:a10", "owaspTop10-2021:a9");
+  }
+
+  @Test
+  void test_security_standards_sq_9_2() {
+    JavaRulesDefinition definition = new JavaRulesDefinition(SonarRuntimeImpl.forSonarLint(Version.create(9, 2)));
+    RulesDefinition.Context context = new RulesDefinition.Context();
+    definition.define(context);
+    RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
+
+    RulesDefinition.Rule rule = repository.rule("S1166");
+    assertThat(rule.deprecatedRuleKeys()).containsExactly(RuleKey.of("squid", "S1166"));
+    assertThat(rule.securityStandards()).containsExactlyInAnyOrder("cwe:778", "owaspTop10:a10");
   }
 
   @Test
   void test_deprecated_key() {
-    JavaRulesDefinition definition = new JavaRulesDefinition();
+    JavaRulesDefinition definition = new JavaRulesDefinition(SONAR_RUNTIME_9_3);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
@@ -159,7 +175,7 @@ class JavaRulesDefinitionTest {
 
   @Test
   void rules_should_not_have_legacy_key() {
-    JavaRulesDefinition definition = new JavaRulesDefinition();
+    JavaRulesDefinition definition = new JavaRulesDefinition(SONAR_RUNTIME_9_3);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     Pattern pattern = Pattern.compile("^S[0-9]{3,5}$");
@@ -174,7 +190,7 @@ class JavaRulesDefinitionTest {
 
   @Test
   void test_security_standards_not_set_when_unsupported() throws Exception {
-    JavaRulesDefinition definition = new JavaRulesDefinition();
+    JavaRulesDefinition definition = new JavaRulesDefinition(SONAR_RUNTIME_9_3);
     RulesDefinition.NewRepository repository = mock(RulesDefinition.NewRepository.class);
     RulesDefinition.NewRule newRule = mock(RulesDefinition.NewRule.class);
     when(repository.rule(any())).thenReturn(newRule);

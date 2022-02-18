@@ -20,6 +20,7 @@
 package org.sonar.plugins.java;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -31,12 +32,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
+import org.sonar.api.SonarRuntime;
 import org.sonar.api.rule.RuleStatus;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.debt.DebtRemediationFunction;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
 import org.sonar.api.utils.AnnotationUtils;
+import org.sonar.api.utils.Version;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.CheckList;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
@@ -59,6 +62,12 @@ public class JavaRulesDefinition implements RulesDefinition {
     "S3688",
     "S3546",
     "S4011");
+
+  private final SonarRuntime sonarRuntime;
+
+  public JavaRulesDefinition(SonarRuntime sonarRuntime) {
+    this.sonarRuntime = sonarRuntime;
+  }
 
   @SuppressWarnings("rawtypes")
   @Override
@@ -134,7 +143,7 @@ public class JavaRulesDefinition implements RulesDefinition {
     return null;
   }
 
-  private static void addMetadata(NewRule rule, @Nullable RuleMetadata metadata) {
+  private void addMetadata(NewRule rule, @Nullable RuleMetadata metadata) {
     if (metadata == null) {
       return;
     }
@@ -151,9 +160,15 @@ public class JavaRulesDefinition implements RulesDefinition {
     addSecurityStandards(rule, metadata.securityStandards);
   }
 
-  private static void addSecurityStandards(NewRule rule, SecurityStandards securityStandards) {
-    for (String s : securityStandards.OWASP) {
+  private void addSecurityStandards(NewRule rule, SecurityStandards securityStandards) {
+    for (String s : securityStandards.OWASP_2017) {
       rule.addOwaspTop10(OwaspTop10.valueOf(s));
+    }
+    boolean isOwaspByVersionSupported = sonarRuntime.getApiVersion().isGreaterThanOrEqual(Version.create(9, 3));
+    if (isOwaspByVersionSupported) {
+      for (String s : securityStandards.OWASP_2021) {
+        rule.addOwaspTop10(OwaspTop10Version.Y2021, OwaspTop10.valueOf(s));
+      }
     }
     rule.addCwe(securityStandards.CWE);
   }
@@ -186,7 +201,12 @@ public class JavaRulesDefinition implements RulesDefinition {
 
   static class SecurityStandards {
     int[] CWE = {};
-    String[] OWASP = {};
+
+    @SerializedName("OWASP Top 10 2021")
+    String[] OWASP_2021 = {};
+
+    @SerializedName("OWASP")
+    String[] OWASP_2017 = {};
   }
 
   private static class Remediation {
