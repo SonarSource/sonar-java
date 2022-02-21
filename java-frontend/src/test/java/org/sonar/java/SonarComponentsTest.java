@@ -77,7 +77,9 @@ import org.sonarsource.sonarlint.core.container.global.SonarLintRuntimeImpl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -407,7 +409,17 @@ class SonarComponentsTest {
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
     sonarComponents.setSensorContext(context);
 
-    assertNull(sonarComponents.getMethodSetQuickFixAvailable());
+    assertTrue(sonarComponents.isSetQuickFixAvailableCompatible());
+  }
+
+  @Test
+  void knows_if_quickfixes_can_not_be_advertised() {
+    SensorContextTester context = SensorContextTester.create(new File(""));
+    context.setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(9, 0), SonarQubeSide.SERVER, SonarEdition.COMMUNITY));
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    sonarComponents.setSensorContext(context);
+
+    assertFalse(sonarComponents.isSetQuickFixAvailableCompatible());
   }
 
   @Test

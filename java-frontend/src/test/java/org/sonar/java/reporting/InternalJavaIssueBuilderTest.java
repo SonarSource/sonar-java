@@ -36,6 +36,8 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.sonar.api.SonarEdition;
+import org.sonar.api.SonarQubeSide;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextPointer;
 import org.sonar.api.batch.fs.TextRange;
@@ -48,7 +50,9 @@ import org.sonar.api.batch.sensor.issue.IssueLocation;
 import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
 import org.sonar.api.batch.sensor.issue.internal.DefaultIssue;
+import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.SonarComponents;
@@ -476,10 +480,8 @@ class InternalJavaIssueBuilderTest {
     }
 
     @Test
-    void test_quick_fix_available_for_advertisement() throws NoSuchMethodException {
-      final Method methodSetQuickFixAvailable = MockSonarLintIssue.class.getMethod("setQuickFixAvailable", boolean.class);
-      when(sc.getMethodSetQuickFixAvailable()).thenReturn(methodSetQuickFixAvailable);
-
+    void test_quick_fix_available_for_advertisement() {
+      when(sc.isSetQuickFixAvailableCompatible()).thenReturn(true);
       addIssueWithQuickFix();
 
       Collection<Issue> issues = sct.allIssues();
@@ -493,8 +495,6 @@ class InternalJavaIssueBuilderTest {
 
     @Test
     void test_quick_fix_not_available_for_advertisement() {
-      when(sc.getMethodSetQuickFixAvailable()).thenReturn(null);
-
       addIssueWithQuickFix();
 
       Collection<Issue> issues = sct.allIssues();
