@@ -63,10 +63,10 @@ public class JavaRulesDefinition implements RulesDefinition {
     "S3546",
     "S4011");
 
-  private final SonarRuntime sonarRuntime;
+  private final boolean isOwaspByVersionSupported;
 
   public JavaRulesDefinition(SonarRuntime sonarRuntime) {
-    this.sonarRuntime = sonarRuntime;
+    isOwaspByVersionSupported = sonarRuntime.getApiVersion().isGreaterThanOrEqual(Version.create(9, 3));
   }
 
   @SuppressWarnings("rawtypes")
@@ -162,12 +162,11 @@ public class JavaRulesDefinition implements RulesDefinition {
 
   private void addSecurityStandards(NewRule rule, SecurityStandards securityStandards) {
     for (String s : securityStandards.OWASP_2017) {
-      rule.addOwaspTop10(OwaspTop10.valueOf(s));
+      rule.addOwaspTop10(RulesDefinition.OwaspTop10.valueOf(s));
     }
-    boolean isOwaspByVersionSupported = sonarRuntime.getApiVersion().isGreaterThanOrEqual(Version.create(9, 3));
     if (isOwaspByVersionSupported) {
       for (String s : securityStandards.OWASP_2021) {
-        rule.addOwaspTop10(OwaspTop10Version.Y2021, OwaspTop10.valueOf(s));
+        rule.addOwaspTop10(RulesDefinition.OwaspTop10Version.Y2021, RulesDefinition.OwaspTop10.valueOf(s));
       }
     }
     rule.addCwe(securityStandards.CWE);
