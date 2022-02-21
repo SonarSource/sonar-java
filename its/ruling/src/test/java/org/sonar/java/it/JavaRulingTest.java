@@ -166,7 +166,12 @@ public class JavaRulingTest {
   public void guava() throws Exception {
     String projectName = "guava";
     MavenBuild build = test_project("com.google.guava:guava", projectName);
-    build.setProperty("sonar.java.experimental.batchModeSizeInKB", "8192");
+    build
+      // by default guava is compatible with java 6, however this is not supported with JDK 17
+      .setProperty("java.version", "1.7")
+      .setProperty("maven.javadoc.skip", "true")
+      // use batch
+      .setProperty("sonar.java.experimental.batchModeSizeInKB", "8192");
     executeBuildWithCommonProperties(build, projectName);
   }
 
@@ -174,7 +179,11 @@ public class JavaRulingTest {
   public void apache_commons_beanutils() throws Exception {
     String projectName = "commons-beanutils";
     MavenBuild build = test_project("commons-beanutils:commons-beanutils", projectName);
-    build.setProperty("sonar.java.experimental.batchModeSizeInKB", "8192");
+    build
+      // by default it can not be built with jdk 17 without changing some plugin versions
+      .setProperty("maven-bundle-plugin.version", "5.1.4")
+      // use batch
+      .setProperty("sonar.java.experimental.batchModeSizeInKB", "8192");
     executeBuildWithCommonProperties(build, projectName);
   }
 
