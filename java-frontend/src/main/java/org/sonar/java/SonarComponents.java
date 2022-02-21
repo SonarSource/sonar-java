@@ -81,6 +81,7 @@ public class SonarComponents {
   public static final String SONAR_BATCH_SIZE_KEY = "sonar.java.experimental.batchModeSizeInKB";
 
   private static final Version SONARLINT_6_3 = Version.parse("6.3");
+  private static final Version SONARQUBE_9_2 = Version.parse("9.2");
 
   private final FileLinesContextFactory fileLinesContextFactory;
 
@@ -97,7 +98,6 @@ public class SonarComponents {
   private final List<JavaCheck> jspChecks;
   private final List<Checks<JavaCheck>> allChecks;
   private SensorContext context;
-  private Method methodSetQuickFixAvailable;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath,
@@ -148,11 +148,6 @@ public class SonarComponents {
         registerMainCheckClasses(registrarContext.repositoryKey(), checkClasses);
         registerTestCheckClasses(registrarContext.repositoryKey(), testCheckClasses);
       }
-    }
-    try {
-      this.methodSetQuickFixAvailable = NewIssue.class.getMethod("setQuickFixAvailable", boolean.class);
-    } catch (NoSuchMethodException e) {
-      this.methodSetQuickFixAvailable = null;
     }
   }
 
@@ -315,9 +310,8 @@ public class SonarComponents {
     return isSonarLintContext() && ((SonarLintRuntime) context.runtime()).getSonarLintPluginApiVersion().isGreaterThanOrEqual(SONARLINT_6_3);
   }
 
-  @Nullable
-  public Method getMethodSetQuickFixAvailable() {
-    return methodSetQuickFixAvailable;
+  public boolean isSetQuickFixAvailableCompatible() {
+    return context.runtime().getProduct() == SonarProduct.SONARQUBE && context.runtime().getApiVersion().isGreaterThanOrEqual(SONARQUBE_9_2);
   }
 
   public List<String> fileLines(InputFile inputFile) {

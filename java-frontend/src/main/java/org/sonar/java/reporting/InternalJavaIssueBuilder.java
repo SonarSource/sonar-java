@@ -56,8 +56,8 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
   private final InputFile inputFile;
   @Nullable
   private final SonarComponents sonarComponents;
-  private final Method methodSetQuickFixAvailable;
   private final boolean isQuickFixCompatible;
+  private final boolean isSetQuickFixAvailableCompatible;
 
   private JavaCheck rule;
   private AnalyzerMessage.TextSpan textSpan;
@@ -76,7 +76,7 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
     this.sonarComponents = sonarComponents;
     this.reported = false;
     isQuickFixCompatible = sonarComponents != null && sonarComponents.isQuickFixCompatible();
-    methodSetQuickFixAvailable = sonarComponents != null ? sonarComponents.getMethodSetQuickFixAvailable() : null;
+    isSetQuickFixAvailableCompatible = sonarComponents != null && sonarComponents.isSetQuickFixAvailableCompatible();
   }
 
   private static void requiresValueToBeSet(Object target, String targetName) {
@@ -240,7 +240,7 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
   }
 
   private void handleQuickFixes(RuleKey ruleKey, NewIssue newIssue) {
-    if (quickFixes.isEmpty() || (!isQuickFixCompatible && methodSetQuickFixAvailable == null)) {
+    if (quickFixes.isEmpty() || (!isQuickFixCompatible && !isSetQuickFixAvailableCompatible)) {
       return;
     }
     final List<JavaQuickFix> flatQuickFixes = quickFixes.stream()
@@ -252,11 +252,7 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
     if (isQuickFixCompatible) {
       addQuickFixes(inputFile, ruleKey, flatQuickFixes, (NewSonarLintIssue) newIssue);
     } else {
-      try {
-        methodSetQuickFixAvailable.invoke(newIssue, true);
-      } catch (ReflectiveOperationException e) {
-        LOG.warn("Could not call NewIssue.setQuickFixAvailable() method", e);
-      }
+      newIssue.setQuickFixAvailable(true);
     }
   }
 
