@@ -28,7 +28,7 @@ container_definition: &CONTAINER_DEFINITION
 win_vm_definition: &WINDOWS_VM_DEFINITION
   gce_instance:
     image_project: language-team
-    image_family: lt-base-windows
+    image_family: lt-base-windows-jdk17
     platform: windows
     zone: us-central1-a
     preemptible: false
@@ -42,7 +42,7 @@ only_sonarsource_qa: &ONLY_SONARSOURCE_QA
 build_task:
   gke_container:
     <<: *CONTAINER_DEFINITION
-    image: gcr.io/language-team/base-jdk17:latest
+    image: gcr.io/language-team/base-jdk17-slim:latest
     cpu: 4
     memory: 8G
   env:
@@ -88,15 +88,7 @@ ws_scan_task:
 qa_os_win_task:
   depends_on:
     - build
-  gce_instance:
-    image_project: language-team
-    image_family: lt-base-windows-jdk17
-    platform: windows
-    zone: us-central1-a
-    preemptible: false
-    disk: 128
-    use_ssd: true
-    type: n2d-standard-4
+  <<: *WINDOWS_VM_DEFINITION
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   build_script:
@@ -136,7 +128,7 @@ sanity_task:
   <<: *ONLY_SONARSOURCE_QA
   gke_container:
     <<: *CONTAINER_DEFINITION
-    image: gcr.io/language-team/base-jdk17:latest
+    image: gcr.io/language-team/base-jdk17-slim:latest
     cpu: 4
     memory: 8G
   maven_cache:
@@ -153,6 +145,7 @@ ruling_task:
   <<: *ONLY_SONARSOURCE_QA
   gke_container:
     <<: *CONTAINER_DEFINITION
+    image: gcr.io/language-team/base-jdk17-slim:latest
     cpu: 8
     memory: 16G
   maven_cache:
