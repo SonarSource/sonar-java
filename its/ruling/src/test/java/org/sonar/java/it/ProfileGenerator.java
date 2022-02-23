@@ -30,7 +30,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonarqube.ws.Rules;
@@ -48,6 +50,14 @@ public class ProfileGenerator {
 
   static void generate(Orchestrator orchestrator, ImmutableMap<String, ImmutableMap<String, String>> rulesParameters,
     Set<String> excluded, Set<String> subsetOfEnabledRules, Set<String> activatedRuleKeys) {
+    generate(orchestrator, null, rulesParameters, excluded, subsetOfEnabledRules, activatedRuleKeys);
+  }
+
+  /**
+   * @return the list of enabled rule keys for the given profile
+   */
+  static void generate(Orchestrator orchestrator, @Nullable String qualityProfile, ImmutableMap<String, ImmutableMap<String, String>> rulesParameters,
+    Set<String> excluded, Set<String> subsetOfEnabledRules, Set<String> activatedRuleKeys) {
     try {
       LOG.info("Generating profile containing all the rules");
       StringBuilder sb = new StringBuilder()
@@ -56,7 +66,7 @@ public class ProfileGenerator {
         .append("<language>").append(LANGUAGE).append("</language>")
         .append("<rules>");
 
-      for (String key : getRuleKeys(orchestrator)) {
+      for (String key : getRuleKeys(orchestrator, qualityProfile)) {
         if (excluded.contains(key) || (!subsetOfEnabledRules.isEmpty() && !subsetOfEnabledRules.contains(key))) {
           continue;
         }
@@ -91,19 +101,23 @@ public class ProfileGenerator {
     }
   }
 
-  private static List<String> getRuleKeys(Orchestrator orchestrator) {
+  private static List<String> getRuleKeys(Orchestrator orchestrator, @Nullable String qualityProfile) {
     List<String> ruleKeys = new ArrayList<>();
     // pages are 1-based
     int currentPage = 1;
 
     long totalNumberRules;
     long collectedRulesNumber;
+    Optional<String> qualityProfileName = getQualityProfileName(orchestrator, qualityProfile);
     do {
-      Rules.SearchResponse searchResponse = newAdminWsClient(orchestrator).rules().search(new SearchRequest()
+      SearchRequest searchRequest = new SearchRequest()
         .setLanguages(Collections.singletonList(LANGUAGE))
         .setRepositories(Collections.singletonList(REPOSITORY_KEY))
         .setP(Integer.toString(currentPage))
-        .setPs(Integer.toString(NUMBER_RULES_BY_PAGE)));
+        .setPs(Integer.toString(NUMBER_RULES_BY_PAGE));
+      qualityProfileName.ifPresent(qProfile -> searchRequest.setActivation("true").setQprofile(qProfile));
+
+      Rules.SearchResponse searchResponse = newAdminWsClient(orchestrator).rules().search(searchRequest);
 
       searchResponse.getRulesList().stream()
         .map(Rules.Rule::getKey)
@@ -119,5 +133,17 @@ public class ProfileGenerator {
     } while (collectedRulesNumber != totalNumberRules);
 
     return ruleKeys;
+  }
+
+  private static Optional<String> getQualityProfileName(Orchestrator orchestrator, @Nullable String qualityProfile) {
+    if (qualityProfile == null || qualityProfile.isEmpty()) {
+      return Optional.empty();
+    }
+    org.sonarqube.ws.client.qualityprofiles.SearchRequest request = new org.sonarqube.ws.client.qualityprofiles.SearchRequest().setLanguage(LANGUAGE);
+
+    return newAdminWsClient(orchestrator).qualityprofiles().search(request).getProfilesList().stream()
+      .filter(p -> qualityProfile.equalsIgnoreCase(p.getName()))
+      .map(p -> p.getKey())
+      .findFirst();
   }
 }
