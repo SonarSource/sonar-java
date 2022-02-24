@@ -22,12 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+
 class ConcatenationWithStringValueOfCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ConcatenationWithStringValueOfCheck.java")
+      .onFile(mainCodeSourcesPath("checks/ConcatenationWithStringValueOfCheck.java"))
       .withCheck(new ConcatenationWithStringValueOfCheck())
       .verifyIssues();
   }
