@@ -1,5 +1,10 @@
-class A {
-  public void f() {
+package checks;
+
+import java.io.Closeable;
+import java.io.IOException;
+
+class NestedTryCatchCheck {
+  public void f() throws Exception {
     try {
     } finally {
     }
@@ -14,7 +19,7 @@ class A {
     try {
     } catch (Exception e) {
       try {             // Compliant
-      } catch (Exception e) {
+      } catch (Exception e1) {
       }
     }
 
@@ -28,7 +33,7 @@ class A {
     try {
     } catch (Exception e) {
       try {             // Compliant
-      } catch (Exception e) {
+      } catch (Exception e1) {
       }
     } finally {
       try {             // Compliant
@@ -43,16 +48,16 @@ class A {
 
       try {             // Noncompliant
       } catch (Exception e) {
-        try {           // Noncompliant [[sc=9;ec=12;secondary=39]]
+        try {           // Noncompliant [[sc=9;ec=12;secondary=44]]
 
-        } catch (Exception e) {
+        } catch (Exception e1) {
         }
       }
     } catch (Exception e) {
     }
 
     try (Resource r = new Resource()) {    // Compliant
-      try (Resource r = new Resource()) {  // Compliant
+      try (Resource r2 = new Resource()) { // Compliant
         try {                              // Compliant
         } finally {
         }
@@ -72,6 +77,10 @@ class A {
         }
       }catch (Exception e){}
     } catch (Exception e) {}
+  }
+
+  private static class Resource implements Closeable {
+    @Override public void close() throws IOException { }
   }
 }
 
@@ -126,8 +135,7 @@ class AnonymousClass {
     }
   }
 
-  void bar() {
-  }
+  void bar() { }
 }
 
 abstract class Lambda {
@@ -154,6 +162,7 @@ abstract class Lambda {
         }
       } catch (Exception e) {
       }
+      return k;
     });
   }
 
