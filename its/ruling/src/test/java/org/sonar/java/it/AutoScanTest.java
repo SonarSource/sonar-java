@@ -171,7 +171,7 @@ public class AutoScanTest {
 
     assertThat(knownDiffByRules).isEqualTo(newDiffByRules);
     assertThat(rulesCausingFPs).hasSize(8);
-    assertThat(rulesNotReporting).hasSize(25);
+    assertThat(rulesNotReporting).hasSize(24);
     assertThat(rulesSilenced).hasSize(58);
 
     /**
