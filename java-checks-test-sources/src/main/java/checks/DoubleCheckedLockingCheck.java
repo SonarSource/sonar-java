@@ -1,5 +1,5 @@
-
-class Foo {
+package checks;
+class DoubleCheckedLockingCheck {
   private Helper helper = null;
 
   public Helper classicCase() {
@@ -87,22 +87,13 @@ class Foo {
     return abstractHelper;
   }
 
-  private UnknownType unknownType;
-
-  public UnknownType unknownType() {
-    if (unknownType == null) {
-      synchronized (Helper.class) { // Noncompliant [[sc=7;ec=19;secondary=93,95]] {{Remove this dangerous instance of double-checked locking.}}
-        if (unknownType == null) {
-          this.unknownType = new UnknownType();
-        }
-      }
-    }
-    return unknownType;
-  }
+  static class Helper extends AbstractHelper implements HelperInterface {  int field; }
+  abstract static class AbstractHelper { int field; }
+  interface HelperInterface { }
 }
 
 // after java 5 volatile keyword will guarantee correct read/write ordering with memory barriers
-class VolatileFoo {
+class DoubleCheckedLockingCheckVolatile {
   private volatile Helper helper = null;
 
   public Helper classicCase() {
@@ -113,17 +104,20 @@ class VolatileFoo {
       }
     return helper;
   }
+
+  static class Helper { }
 }
 
-class NestedIfs {
+class DoubleCheckedLockingCheckNestedIfs {
   private Helper helper = null;
+  private boolean sunIsUp, sunIsDown;
 
   public Helper unrelatedNestedIfs() {
     if (null == helper) {
       if (sunIsUp) {
         doSomething();
       }
-      synchronized (this) { // Noncompliant [[sc=7;ec=19;secondary=122,129]] {{Remove this dangerous instance of double-checked locking.}}
+      synchronized (this) { // Noncompliant [[sc=7;ec=19;secondary=116,123]] {{Remove this dangerous instance of double-checked locking.}}
         if (sunIsDown) {
           doSomethingElse();
           if (null == helper)
@@ -137,12 +131,17 @@ class NestedIfs {
   static class Helper {
     int field;
   }
+
+  void doSomething() { }
+  void doSomethingElse() { }
 }
 
-class Compliant {
+class DoubleCheckedLockingCheckCompliant {
 
   private Helper helper = null;
   private int primitiveField = 0;
+  private Integer field;
+  private boolean sunIsUp;
 
   public void notTheSameTest() {
     if (sunIsUp) {
@@ -179,8 +178,8 @@ class Compliant {
   public void otherField() {
     if (helper == null) {
       synchronized (this) { // Compliant
-        if (primitiveField == null) {
-          primitiveField = 42;
+        if (field == null) {
+          field = 42;
         }
       }
     }
@@ -196,7 +195,7 @@ class Compliant {
     }
   }
 
-  public void synchronizedWithTwoIfs() {
+  public Helper synchronizedWithTwoIfs() {
     synchronized (this) { // Compliant
       if (helper == null)
         if (helper == null)
@@ -224,8 +223,9 @@ class Compliant {
     return helper;
   }
 
+  static class Helper { }
 }
 
-class StringResource {
-  final String field;
+class DoubleCheckedLockingCheckStringResource {
+  final String field = "";
 }
