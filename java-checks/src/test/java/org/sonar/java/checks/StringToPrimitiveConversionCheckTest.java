@@ -22,13 +22,24 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+
 class StringToPrimitiveConversionCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/StringToPrimitiveConversionCheck.java")
+      .onFile(mainCodeSourcesPath("checks/StringToPrimitiveConversionCheck.java"))
       .withCheck(new StringToPrimitiveConversionCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void not_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/StringToPrimitiveConversionCheck.java"))
+      .withCheck(new StringToPrimitiveConversionCheck())
+      .verifyNoIssues();
   }
 }

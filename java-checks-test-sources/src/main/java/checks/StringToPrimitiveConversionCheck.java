@@ -1,6 +1,8 @@
+package checks;
+
 import static java.lang.Integer.MAX_VALUE;
 
-class A {
+class StringToPrimitiveConversionCheck {
   void ints(Integer integerParam) {
     int i1 = new Integer("42").intValue(); // Noncompliant [[sc=14;ec=31]] {{Use "Integer.parseInt" for this string-to-int conversion.}}
     new Integer("42").intValue(); // Noncompliant
@@ -16,16 +18,15 @@ class A {
     int i8 = new Integer(42).intValue();
     int i9 = valueOf("42").intValue();
     int i10 = 3 + Integer.valueOf("42");
-    int i11 = unknown;
     int i12 = integerParam;
     int i13;
     int i14 = MAX_VALUE;
   }
-  
+
   Integer valueOf(String s) {
     return null;
   }
-  
+
   void others() {
     boolean bool1 = new Boolean("true").booleanValue(); // Noncompliant
     byte byte1 = new Byte("0").byteValue(); // Noncompliant
