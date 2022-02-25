@@ -181,7 +181,7 @@ public class AutoScanTest {
     assertThat(actualDiffs).isEmpty();
     assertThat(newTotal).isEqualTo(knownTotal);
     assertThat(rulesCausingFPs).hasSize(8);
-    assertThat(rulesNotReporting).hasSize(14);
+    assertThat(rulesNotReporting).hasSize(13);
     assertThat(rulesSilenced).hasSize(59);
 
     /**

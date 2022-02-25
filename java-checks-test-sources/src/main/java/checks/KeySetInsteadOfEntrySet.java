@@ -1,8 +1,11 @@
-public class MyClass extends java.util.HashMap<String, Object> {
+package checks;
+
+class KeySetInsteadOfEntrySetCheck extends java.util.HashMap<String, Object> {
+  KeySetInsteadOfEntrySetCheck inner;
   java.util.HashMap<String, Object> map;
 }
 
-public class MyExtendedClass extends MyClass {
+class KeySetInsteadOfEntrySetCheckExtendedClass extends KeySetInsteadOfEntrySetCheck {
 
   public class InnerClass {
     InnerClass inner;
@@ -17,7 +20,7 @@ public class MyExtendedClass extends MyClass {
 
   private java.util.List<String> list;
 
-  private List<String> list() {
+  private java.util.List<String> list() {
     return list;
   }
 
@@ -41,14 +44,14 @@ public class MyExtendedClass extends MyClass {
     for (String key5 : this.map3[0].keySet()) { // Compliant, false negative
       Object value = this.map3[0].get(key5);
     }
-    for (String key5 : inner.inner.keySet()) { // Compliant, false negative
-      Object value = inner.inner.get(key5);
+    for (String key5 : inner.inner.map.keySet()) { // Compliant, false negative
+      Object value = inner.inner.map.get(key5);
     }
     for (String key5 : keySet()) { // Compliant, false negative
       Object value = map3[0].get(key5);
     }
-    for (String key5 : super.inner.keySet()) { // Compliant, false negative
-      Object value = super.inner.get(key5);
+    for (String key5 : super.inner.map.keySet()) { // Compliant, false negative
+      Object value = super.inner.map.get(key5);
     }
     for (String key5 : this.inner.map.keySet()) { // Compliant, false negative
       Object value = this.inner.map.get(key5);
