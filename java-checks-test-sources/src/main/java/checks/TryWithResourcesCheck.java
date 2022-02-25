@@ -1,18 +1,14 @@
+package checks;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 
-class Auto implements AutoCloseable {
-  public void doSomething() {}
-
-  @Override
-  public void close() {}
-}
-
-class A {
-  void foo(String fileName) {
+class TryWithResourcesCheck {
+  String foo(String fileName) {
     FileReader fr = null;
     BufferedReader br = null;
-    try { // Noncompliant [[sc=5;ec=8;secondary=16,17]] {{Change this "try" to a try-with-resources.}}
+    try { // Noncompliant [[sc=5;ec=8;secondary=12,13]] {{Change this "try" to a try-with-resources.}}
       fr = new FileReader(fileName);
       br = new BufferedReader(fr);
       return br.readLine();
@@ -37,17 +33,18 @@ class A {
 
     }
     try (
-      FileReader fr = new FileReader(fileName);
-      BufferedReader br = new BufferedReader(fr)) { // compliant
+      FileReader fr2 = new FileReader(fileName);
+      BufferedReader br2 = new BufferedReader(fr)) { // compliant
       return br.readLine();
     } catch (Exception e) {
     }
+    return null;
   }
 
   void newJustBeforeTryStatement() {
     Auto a1 = new Auto();
     Auto a2 = new Auto();
-    try { // Noncompliant [[sc=5;ec=8;secondary=48,49]] {{Change this "try" to a try-with-resources.}}
+    try { // Noncompliant [[sc=5;ec=8;secondary=45,46]] {{Change this "try" to a try-with-resources.}}
       a1.doSomething();
     }  finally {
       a1.close();
@@ -58,7 +55,7 @@ class A {
   void newJustBeforeAndAfterTryStatement() {
     Auto a1 = null;
     Auto a2 = new Auto();
-    try { // Noncompliant [[sc=5;ec=8;secondary=60,62]] {{Change this "try" to a try-with-resources.}}
+    try { // Noncompliant [[sc=5;ec=8;secondary=57,59]] {{Change this "try" to a try-with-resources.}}
       a1 = new Auto();
       a1.doSomething();
     }  finally {
@@ -111,7 +108,7 @@ class A {
 
   void enclosedTryWithFinallyStatements() {
     Auto a1 = new Auto();
-    try { // Noncompliant [[sc=5;ec=8;secondary=113,116]] {{Change this "try" to a try-with-resources.}}
+    try { // Noncompliant [[sc=5;ec=8;secondary=110,113]] {{Change this "try" to a try-with-resources.}}
       a1.doSomething();
       Auto a2 = new Auto();
       try {
@@ -126,7 +123,7 @@ class A {
 
   void enclosedTryStatements() {
     Auto a1 = new Auto();
-    try { // Noncompliant [[sc=5;ec=8;secondary=128,131]] {{Change this "try" to a try-with-resources.}}
+    try { // Noncompliant [[sc=5;ec=8;secondary=125,128]] {{Change this "try" to a try-with-resources.}}
       a1.doSomething();
       Auto a2 = new Auto();
       try {
@@ -146,6 +143,13 @@ class A {
         continue;
       }
     }
+  }
+
+  static class Auto implements AutoCloseable {
+    public void doSomething() {}
+
+    @Override
+    public void close() {}
   }
 
 }
