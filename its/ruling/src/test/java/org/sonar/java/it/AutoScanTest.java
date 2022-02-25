@@ -21,6 +21,7 @@ package org.sonar.java.it;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.MavenBuild;
@@ -54,8 +55,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class AutoScanTest {
 
-  private static final Gson GSON = new Gson();
+  private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
   private static final Type GSON_MAP_TYPE = new TypeToken<Map<String, List<Integer>>>() {}.getType();
+  private static final Type GSON_LIST_ISSUE_DIFF_TYPE = new TypeToken<List<IssueDiff>>() {}.getType();
+
   private static final Logger LOG = LoggerFactory.getLogger(AutoScanTest.class);
 
   @ClassRule
@@ -72,7 +75,7 @@ public class AutoScanTest {
   private static final String PROJECT_LOCATION = "../../java-checks-test-sources/";
   private static final String PROJECT_KEY = "java-checks-test-sources";
   private static final String PROJECT_NAME = "Java Checks Test Sources";
-  private static final String DIFF_FILE = "autoscan-diff-by-rules.csv";
+  private static final String DIFF_FILE = "autoscan-diff-by-rules";
 
   private static final Comparator<String> RULE_KEY_COMPARATOR = (k1, k2) -> Integer.compare(
     // "S128" should be before "S1028"
@@ -144,32 +147,35 @@ public class AutoScanTest {
      */
     Map<String, RuleIssues> mvnIssues = loadIssues(PROJECT_KEY + "-mvn");
     Map<String, RuleIssues> noBinariesIssues = loadIssues(PROJECT_KEY + "-no-binaries");
-    Map<String, IssueDiff> newDifferencesByRules = calculateDifferences(ruleKeys, mvnIssues, noBinariesIssues);
+    Collection<IssueDiff> newDiffs = calculateDifferences(ruleKeys, mvnIssues, noBinariesIssues).values();
 
-    IssueDiff total = IssueDiff.total(newDifferencesByRules);
-    LOG.info("Comparing results for both runs:\n- Rules={}\n- TPs={}\n- FNs={}\n- FPs={}\n- Differences={}",
-      newDifferencesByRules.keySet().size(),
-      total.truePositives,
-      total.falseNegatives,
-      total.falsePositives,
-      total.falsePositives + total.falseNegatives);
+    IssueDiff newTotal = IssueDiff.total(newDiffs);
+    LOG.info("Comparing results for both runs:\n- Rules={}\n- TPs={}\n- FNs={}\n- FPs={}\n- Differences={}\n",
+      newDiffs.size(),
+      newTotal.truePositives,
+      newTotal.falseNegatives,
+      newTotal.falsePositives,
+      newTotal.falsePositives + newTotal.falseNegatives);
 
-    Collection<IssueDiff> diffs = newDifferencesByRules.values();
-
-    List<IssueDiff> rulesCausingFPs = diffs.stream().filter(IssueDiff::causesFPs).collect(Collectors.toList());
+    List<IssueDiff> rulesCausingFPs = newDiffs.stream().filter(IssueDiff::causesFPs).collect(Collectors.toList());
     LOG.info("{} rules causing FPs:\n{}", rulesCausingFPs.size(), IssueDiff.prettyPrint(rulesCausingFPs));
 
-    List<IssueDiff> rulesNotReporting = diffs.stream().filter(IssueDiff::notReporting).collect(Collectors.toList());
+    List<IssueDiff> rulesNotReporting = newDiffs.stream().filter(IssueDiff::notReporting).collect(Collectors.toList());
     LOG.info("{} rules never reporting anything:\n{}", rulesNotReporting.size(), IssueDiff.prettyPrint(rulesNotReporting));
 
-    List<IssueDiff> rulesSilenced = diffs.stream().filter(IssueDiff::onlyFNs).collect(Collectors.toList());
+    List<IssueDiff> rulesSilenced = newDiffs.stream().filter(IssueDiff::onlyFNs).collect(Collectors.toList());
     LOG.info("{} rules silenced without binaries (only FNs):\n{}", rulesSilenced.size(), IssueDiff.prettyPrint(rulesSilenced));
 
-    String newDiffByRules = IssueDiff.prettyPrint(newDifferencesByRules, total);
-    Files.writeString(pathFor(TARGET_ACTUAL + DIFF_FILE), newDiffByRules);
-    String knownDiffByRules = Files.readString(pathFor("src/test/resources/autoscan/" + DIFF_FILE));
+    // store in a JSON file - serializable
+    Files.writeString(pathFor(TARGET_ACTUAL + DIFF_FILE + ".json"), GSON.toJson(newDiffs));
+    // store in a CSV file - can be easily imported in google sheets
+    Files.writeString(pathFor(TARGET_ACTUAL + DIFF_FILE + ".csv"), IssueDiff.prettyPrint(newDiffs, newTotal));
 
-    assertThat(knownDiffByRules).isEqualTo(newDiffByRules);
+    List<IssueDiff> knownDiffs = GSON.fromJson(Files.readString(pathFor("src/test/resources/autoscan/" + DIFF_FILE + ".json")), GSON_LIST_ISSUE_DIFF_TYPE);
+    IssueDiff knownTotal = IssueDiff.total(knownDiffs);
+
+    assertThat(newDiffs).containsExactlyElementsOf(knownDiffs);
+    assertThat(newTotal).isEqualTo(knownTotal);
     assertThat(rulesCausingFPs).hasSize(8);
     assertThat(rulesNotReporting).hasSize(22);
     assertThat(rulesSilenced).hasSize(58);
@@ -281,6 +287,29 @@ public class AutoScanTest {
       return (truePositives + falsePositives) == 0 && falseNegatives > 0;
     }
 
+    @Override
+    public int hashCode() {
+      return Objects.hash(ruleKey, truePositives, falseNegatives, falsePositives);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (getClass() != obj.getClass()) {
+        return false;
+      }
+      IssueDiff other = (IssueDiff) obj;
+      return ruleKey.equals(other.ruleKey)
+        && truePositives == other.truePositives
+        && falseNegatives == other.falseNegatives
+        && falsePositives == other.falsePositives;
+    }
+
     private static IssueDiff onlyFalsePositives(String ruleKey, int countFP) {
       IssueDiff result = new IssueDiff(ruleKey);
       result.falsePositives += countFP;
@@ -293,9 +322,9 @@ public class AutoScanTest {
       return result;
     }
 
-    public static IssueDiff total(Map<String, IssueDiff> issueDiffs) {
+    public static IssueDiff total(Collection<IssueDiff> issueDiffs) {
       IssueDiff total = new IssueDiff("Total");
-      for (IssueDiff issueDiff : issueDiffs.values()) {
+      for (IssueDiff issueDiff : issueDiffs) {
         total.truePositives += issueDiff.truePositives;
         total.falseNegatives += issueDiff.falseNegatives;
         total.falsePositives += issueDiff.falsePositives;
@@ -354,11 +383,11 @@ public class AutoScanTest {
         .collect(Collectors.joining("\n", "", "\n"));
     }
 
-    private static String prettyPrint(Map<String, IssueDiff> diffs, IssueDiff total) {
+    private static String prettyPrint(Collection<IssueDiff> diffs, IssueDiff total) {
       return new StringBuilder()
         .append(COLUMN_TITLES)
         .append(SEPARATORS)
-        .append(prettyPrint(diffs.values()))
+        .append(prettyPrint(diffs))
         .append(SEPARATORS)
         .append(COLUMN_TITLES)
         .append(SEPARATORS)
