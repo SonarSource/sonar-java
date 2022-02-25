@@ -1,4 +1,8 @@
-class Shifts {
+package checks;
+
+class ShiftOnIntOrLongCheck {
+  byte value;
+
   void ignoreZeroWhenAligned() {
     byte b1, b2;
     b2 = (byte) (value >> 0); // Compliant, because of formatting
@@ -53,7 +57,7 @@ class Shifts {
     c = (a - 3) << 64; // Noncompliant
     c = (a - 3) >> 96; // Noncompliant
     c = returnLong() << 97; // Noncompliant
-    c = d[0] >> 98; // Noncompliant 
+    c = d[0] >> 98; // Noncompliant
     c = e[0] << 99; // Noncompliant
     c = a >> 0x0009;
     c = a << 0x0000; // Noncompliant
@@ -78,17 +82,17 @@ class Shifts {
     c = a >> 0x0000; // Noncompliant
     return c;
   }
-  
+
   public void cornerCase() {
-    int a;
+    long a;
     a = 1 << 0;
     a = 1 << 1;
     a = 1 << 1L;
     a = 1 << 1l;
-    a = 0xfffffffffffffffeL << 7; 
-    a = 0xffffffffffffffffL << 7; 
-    a = 0x8000000000000000L << 7; 
-    a = 1 << 0x8000000000000000L; 
+    a = 0xfffffffffffffffeL << 7;
+    a = 0xffffffffffffffffL << 7;
+    a = 0x8000000000000000L << 7;
+    a = 1 << 0x8000000000000000L;
   }
 
   public int returnInt() {
@@ -99,13 +103,7 @@ class Shifts {
     return 0L;
   }
 
-  void ignoreZeroWhenAligned() {
-    byte b1, b2;
-    b1 = (byte) (value >> 8);
-    b2 = (byte) (value >> 0); // Compliant, because of formatting
-  }
-
-  void aligned() {
+  void aligned(byte b1, byte b2) {
     b1 = (byte) (value >> 8);
     b2 = (byte) (value >> 0); // Compliant
     b2 = (byte) (value << 0); // Noncompliant - another type of shift
