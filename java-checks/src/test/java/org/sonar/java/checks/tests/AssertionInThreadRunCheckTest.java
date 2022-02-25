@@ -22,16 +22,18 @@ package org.sonar.java.checks.tests;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
+
 class AssertionInThreadRunCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/AssertionInThreadRunCheck.java")
+      .onFile(testCodeSourcesPath("checks/tests/AssertionInThreadRunCheck.java"))
       .withCheck(new AssertionInThreadRunCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/AssertionInThreadRunCheck.java")
+      .onFile(testCodeSourcesPath("checks/tests/AssertionInThreadRunCheck.java"))
       .withCheck(new AssertionInThreadRunCheck())
       .withoutSemantic()
       .verifyNoIssues();
