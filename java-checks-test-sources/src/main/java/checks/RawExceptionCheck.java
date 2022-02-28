@@ -68,6 +68,16 @@ public class RawExceptionCheck {
   @Deprecated
   public void throws_Exception2() throws Exception { // Noncompliant
   }
+
+  private class Nested {
+    Nested() throws Exception {
+      throws_Exception();
+    }
+  }
+
+  void forcedException() throws Exception { // Compliant - Nested() can throw Exception
+    new Nested();
+  }
 }
 class SubClass extends RawExceptionCheck {
 
