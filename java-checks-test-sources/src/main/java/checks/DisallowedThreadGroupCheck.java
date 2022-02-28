@@ -1,15 +1,18 @@
-abstract class A
+package checks;
+
+abstract class DisallowedThreadGroupCheck
   extends ThreadGroup { // Noncompliant
 
-  A (ThreadGroup tg) { // Noncompliant
+  DisallowedThreadGroupCheck (ThreadGroup tg) { // Noncompliant
+    super("DisallowedThreadGroupCheck");
   }
 
   void foo(
     Object o,
-    ThreadGroup threadGroup) {  // Noncompliant 
+    ThreadGroup threadGroup) {  // Noncompliant
 
     ThreadGroup tg = // Noncompliant [[sc=5;ec=16]] {{Remove this use of "ThreadGroup". Prefer the use of "ThreadPoolExecutor".}}
-      new ThreadGroup("A"); // Compliant
+      new ThreadGroup("DisallowedThreadGroupCheck"); // Compliant
 
     tg.activeCount(); // Compliant - not following method invocation, only declarations of ThreadGroup
     tg.activeGroupCount(); // Compliant
@@ -44,7 +47,12 @@ abstract class A
   abstract ThreadGroup getThreadGroup(); // Noncompliant
 }
 
-class B extends A { // Compliant
+class DisallowedThreadGroupCheckB extends DisallowedThreadGroupCheck { // Compliant
+
+  DisallowedThreadGroupCheckB(ThreadGroup tg) {
+    super(tg);
+  }
+
   @Override
   ThreadGroup getThreadGroup() { // Compliant
     return null;
@@ -55,12 +63,13 @@ class B extends A { // Compliant
 
   @Override
   void qix(Object o, boolean b) {
-    ThreadGroup tg = new ThreadGroup("B"); // Noncompliant
+    ThreadGroup tg = new ThreadGroup("DisallowedThreadGroupCheckB"); // Noncompliant
   }
 }
 
-class C {
+class DisallowedThreadGroupCheckC {
   Object foo() {
     Object o = new Object();
+    return o;
   }
 }
