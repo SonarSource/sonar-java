@@ -137,7 +137,7 @@ public class SonarComponents {
     this.testChecks = new ArrayList<>();
     this.jspChecks = new ArrayList<>();
     this.allChecks = new ArrayList<>();
-    if (checkRegistrars != null) {
+    if (checkRegistrars != null && !isAutoScan()) {
       CheckRegistrar.RegistrarContext registrarContext = new CheckRegistrar.RegistrarContext();
       for (CheckRegistrar checkClassesRegister : checkRegistrars) {
         checkClassesRegister.register(registrarContext);
