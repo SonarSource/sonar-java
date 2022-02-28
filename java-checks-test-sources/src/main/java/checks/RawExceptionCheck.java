@@ -1,4 +1,6 @@
-public class Example {
+package checks;
+
+public class RawExceptionCheck {
 
   public void throws_Throwable() throws Throwable { // Noncompliant [[sc=41;ec=50]]
     throw new Throwable(); // Noncompliant
@@ -40,13 +42,13 @@ public class Example {
     throw create(); // OK
   }
 
-  public Exception create() {
+  public RuntimeException create() {
     return new RuntimeException(); // OK
   }
 
-  public Exception() {
+  public void exception() {
     try {
-      throws_exception();
+      throws_Exception();
     } catch (Exception e) {
       if (e instanceof RuntimeException) {
         throw (RuntimeException) e; // OK
@@ -54,20 +56,26 @@ public class Example {
     }
   }
 
-  public Example() throws
+  public RawExceptionCheck() throws
+     Throwable,               // Noncompliant
      Error,                   // Noncompliant
      Exception {              // Noncompliant {{Define and throw a dedicated exception instead of using a generic one.}}
      throw new
          Throwable();         // Noncompliant
 
-     throw new int[0];        // Compliant
      }
 
   @Deprecated
   public void throws_Exception2() throws Exception { // Noncompliant
   }
 }
-class SubClass extends Example {
+class SubClass extends RawExceptionCheck {
+
+  public SubClass() throws Error,
+    Throwable,
+    Exception {
+    super();
+  }
 
   @Override
   public void throws_Exception() throws Exception { // Compliant because overrides.
