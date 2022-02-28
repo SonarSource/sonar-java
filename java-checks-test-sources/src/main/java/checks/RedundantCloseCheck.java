@@ -1,14 +1,16 @@
-abstract class A {
-  MyCloseable mc3;
+package checks;
 
-  void foo(MyCloseable mc2) {
+abstract class RedundantCloseCheck {
+  final MyCloseable mc3 = new MyCloseable();
+
+  void foo(MyCloseable mc2) throws Exception {
     MyCloseable mc4 = new MyCloseable();
 
     try(
       // java 7
       MyCloseable mc1 = new MyCloseable();
       // java 9
-      mc2; this.mc3; unknownVariable) {
+      mc2; this.mc3) {
 
       mc1.close(); // Noncompliant [[sc=11;ec=18]] {{Remove this "close" call; closing the resource is handled automatically by the try-with-resources.}}
       mc2.close(); // Noncompliant
