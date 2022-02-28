@@ -22,12 +22,14 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+
 class LogConfigurationCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/security/LogConfigurationCheck.java")
+      .onFile(mainCodeSourcesPath("checks/security/LogConfigurationCheck.java"))
       .withCheck(new LogConfigurationCheck())
       .verifyIssues();
   }
