@@ -23,12 +23,22 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class RawExceptionCheckTest {
+
   @Test
   void test() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/RawExceptionCheck.java"))
+      .withCheck(new RawExceptionCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/RawExceptionCheck.java"))
       .withCheck(new RawExceptionCheck())
       .verifyIssues();
   }

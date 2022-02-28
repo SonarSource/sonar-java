@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
+import org.sonar.java.reporting.FluentReporting;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -48,20 +49,20 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
     "java.lang.Exception",
     "java.lang.RuntimeException");
 
-  private JavaFileScannerContext context;
+  private FluentReporting context;
   private final Set<Type> exceptionsThrownByMethodInvocations = new HashSet<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
+    this.context = (FluentReporting) context;
     scan(context.getTree());
   }
 
   @Override
-  public void visitMethod(MethodTree tree) {
-    super.visitMethod(tree);
-    if ((tree.is(Tree.Kind.CONSTRUCTOR) || isNotOverridden(tree)) && isNotMainMethod(tree)) {
-      for (TypeTree throwClause : tree.throwsClauses()) {
+  public void visitMethod(MethodTree method) {
+    super.visitMethod(method);
+    if ((method.is(Tree.Kind.CONSTRUCTOR) || isNotOverridden(method)) && isNotMainMethod(method) && hasNoUnknownMethod(method)) {
+      for (TypeTree throwClause : method.throwsClauses()) {
         Type exceptionType = throwClause.symbolType();
         if (isRawException(exceptionType) && !exceptionsThrownByMethodInvocations.contains(exceptionType)) {
           reportIssue(throwClause);
@@ -71,12 +72,17 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
     exceptionsThrownByMethodInvocations.clear();
   }
 
+  private static boolean hasNoUnknownMethod(MethodTree method) {
+    MethodTreeUtils.MethodInvocationCollector unknownMethodVisitor = new MethodTreeUtils.MethodInvocationCollector(Symbol::isUnknown);
+    method.accept(unknownMethodVisitor);
+    return unknownMethodVisitor.getInvocationTree().isEmpty();
+  }
+
   @Override
   public void visitThrowStatement(ThrowStatementTree tree) {
     if (tree.expression().is(Tree.Kind.NEW_CLASS)) {
       TypeTree exception = ((NewClassTree) tree.expression()).identifier();
-      Type symbolType = exception.symbolType();
-      if (isRawException(symbolType)) {
+      if (isRawException(exception.symbolType())) {
         reportIssue(exception);
       }
     }
@@ -84,24 +90,33 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
   }
 
   private void reportIssue(Tree tree) {
-    context.reportIssue(this, tree, "Define and throw a dedicated exception instead of using a generic one.");
+    context.newIssue()
+      .forRule(this)
+      .onTree(tree)
+      .withMessage("Define and throw a dedicated exception instead of using a generic one.")
+      .report();
   }
 
   @Override
-  public void visitMethodInvocation(MethodInvocationTree tree) {
-    if (tree.symbol().isMethodSymbol()) {
-      exceptionsThrownByMethodInvocations.addAll(((Symbol.MethodSymbol) tree.symbol()).thrownTypes());
+  public void visitMethodInvocation(MethodInvocationTree mit) {
+    collectThrownTypes(mit.symbol());
+    super.visitMethodInvocation(mit);
+  }
+
+  @Override
+  public void visitNewClass(NewClassTree nct) {
+    collectThrownTypes(nct.constructorSymbol());
+    super.visitNewClass(nct);
+  }
+
+  private void collectThrownTypes(Symbol symbol) {
+    if (symbol.isMethodSymbol()) {
+      exceptionsThrownByMethodInvocations.addAll(((Symbol.MethodSymbol) symbol).thrownTypes());
     }
-    super.visitMethodInvocation(tree);
   }
 
   private static boolean isRawException(Type type) {
-    for (String rawException : RAW_EXCEPTIONS) {
-      if (type.is(rawException)) {
-        return true;
-      }
-    }
-    return false;
+    return RAW_EXCEPTIONS.stream().anyMatch(type::is);
   }
 
   private static boolean isNotOverridden(MethodTree tree) {
