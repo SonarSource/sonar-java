@@ -22,13 +22,24 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+
 class RedundantCloseCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/RedundantCloseCheck.java")
+      .onFile(mainCodeSourcesPath("checks/RedundantCloseCheck.java"))
       .withCheck(new RedundantCloseCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/RedundantCloseCheck.java"))
+      .withCheck(new RedundantCloseCheck())
+      .verifyNoIssues();
   }
 }
