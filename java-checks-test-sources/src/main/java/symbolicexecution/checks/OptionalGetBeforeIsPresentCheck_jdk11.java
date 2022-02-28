@@ -1,6 +1,10 @@
+package symbolicexecution.checks;
+
 import java.util.Optional;
 
-abstract class A {
+abstract class OptionalGetBeforeIsPresentCheck_jdk11 {
+
+  Optional<String> optional;
 
   String isEmpty(Optional<String> s) {
     return s.isEmpty() ? s.get() : null; // Noncompliant {{Call "s.isPresent()" or "!s.isEmpty()" before accessing the value.}}

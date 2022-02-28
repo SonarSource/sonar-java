@@ -23,12 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.SETestUtils;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+
 class OptionalGetBeforeIsPresentCheckTest {
 
   @Test
   void test_with_jdk_8() {
     SECheckVerifier.newVerifier()
-      .onFile("src/test/files/se/OptionalGetBeforeIsPresentCheck.java")
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/OptionalGetBeforeIsPresentCheck.java"))
       .withCheck(new OptionalGetBeforeIsPresentCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .withJavaVersion(8)
@@ -38,7 +40,7 @@ class OptionalGetBeforeIsPresentCheckTest {
   @Test
   void test_with_jdk_11() {
     SECheckVerifier.newVerifier()
-      .onFile("src/test/files/se/OptionalGetBeforeIsPresentCheck_jdk11.java")
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/OptionalGetBeforeIsPresentCheck_jdk11.java"))
       .withCheck(new OptionalGetBeforeIsPresentCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .withJavaVersion(11)
@@ -48,7 +50,7 @@ class OptionalGetBeforeIsPresentCheckTest {
   @Test
   void invocation_leading_to_NoSuchElementException() {
     SECheckVerifier.newVerifier()
-      .onFile("src/test/files/se/MethodInvocationLeadingToNSEE.java")
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/MethodInvocationLeadingToNSEE.java"))
       .withCheck(new OptionalGetBeforeIsPresentCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .withJavaVersion(8)
