@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -78,17 +79,16 @@ public class LoggerClassCheck extends IssuableSubscriptionVisitor {
     Symbol.TypeSymbol clazz = ((ClassTree) tree).symbol();
     clazz.memberSymbols().stream()
       .filter(Symbol::isVariableSymbol)
-      .forEach(field -> checkField(clazz, (Symbol.VariableSymbol) field));
+      .map(Symbol.VariableSymbol.class::cast)
+      .map(Symbol.VariableSymbol::declaration)
+      .filter(Objects::nonNull)
+      .map(VariableTree::initializer)
+      .filter(Objects::nonNull)
+      .forEach(initializer -> checkField(clazz, initializer));
   }
 
-  private void checkField(Symbol.TypeSymbol clazz, Symbol.VariableSymbol field) {
-    VariableTree declaration = field.declaration();
-    if (declaration == null) {
-      return;
-    }
-    ExpressionTree initializer = declaration.initializer();
-    if (initializer != null && initializer.is(Tree.Kind.METHOD_INVOCATION)
-      && LOG_FACTORIES.matches((MethodInvocationTree) initializer)) {
+  private void checkField(Symbol.TypeSymbol clazz, ExpressionTree initializer) {
+    if (initializer.is(Tree.Kind.METHOD_INVOCATION) && LOG_FACTORIES.matches((MethodInvocationTree) initializer)) {
       ExpressionTree firstArg = ((MethodInvocationTree) initializer).arguments().get(0);
       Symbol classLiteral = classLiteral(firstArg);
       if (classLiteral != null && !clazz.type().erasure().equals(classLiteral.type().erasure())) {
