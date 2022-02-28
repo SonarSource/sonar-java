@@ -22,12 +22,14 @@ package org.sonar.java.checks.tests;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
+
 class ThreadSleepInTestsCheckTest {
 
   @Test
-  void test() throws InterruptedException {
+  void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ThreadSleepInTestsCheck.java")
+      .onFile(testCodeSourcesPath("checks/tests/ThreadSleepInTestsCheck.java"))
       .withCheck(new ThreadSleepInTestsCheck())
       .verifyIssues();
   }
