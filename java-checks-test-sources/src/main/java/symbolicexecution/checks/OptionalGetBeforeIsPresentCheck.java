@@ -1,17 +1,18 @@
-import javax.annotation.Nullable;
+package symbolicexecution.checks;
 
 import java.util.Optional;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 
-abstract class A {
+abstract class OptionalGetBeforeIsPresentCheck {
   Optional<String> getOptional() { return Optional.of(""); }
   Optional<String> optional;
 
-  A() {
+  OptionalGetBeforeIsPresentCheck() {
     this(Optional.empty());
   }
 
-  A(Optional<String> s) {
+  OptionalGetBeforeIsPresentCheck(Optional<String> s) {
     s.get();  // Noncompliant {{Call "s.isPresent()" before accessing the value.}}
     if (s.isPresent()) {
       s.get(); // Compliant
@@ -210,7 +211,7 @@ class OptionalField2 {
     return "";
   }
 
-  public String issueOnField() {
+  public String issueOnField2() {
     return state.get(); // We can not know the exact state of the field, we don't report anything
   }
 

@@ -1,19 +1,21 @@
+package symbolicexecution.checks;
+
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 
-class A {
+abstract class MethodInvocationLeadingToNSEE {
 
-  void foo0() {
+  void foo0() throws Exception {
     nseeIfCalled(getOptional()); // Noncompliant {{"NoSuchElementException" will be thrown when invoking method "nseeIfCalled()" without verifying Optional parameter.}}
   }
 
-  void foo1() {
+  void foo1() throws Exception {
     Optional<String> o = getOptional();
     nseeIfCalled(o); // Noncompliant {{"NoSuchElementException" will be thrown when invoking method "nseeIfCalled()" without verifying Optional parameter.}}
   }
 
-  void foo2() {
+  void foo2() throws Exception {
     Optional<String> o = getOptional();
     if (o.isPresent()) {
       nseeIfCalled(o); // Compliant
@@ -39,13 +41,13 @@ class A {
   void foo6(boolean b) {
     Optional<String> o = getOptional(); // flow@foo6 [[order=1]] {{'getOptional()' can return not null.}} flow@foo6 [[order=2]] {{Implies 'o' can be not null.}}
     if (b) { // flow@foo6 [[order=3]] {{Implies 'b' is true.}}
-      A.nseeIfCalledAndTrue(b, o); // Noncompliant [[flows=foo6]] {{"NoSuchElementException" will be thrown when invoking method "nseeIfCalledAndTrue()" without verifying Optional parameter.}} flow@foo6 [[order=4]] {{'o' is passed to 'nseeIfCalledAndTrue()'.}}
+      MethodInvocationLeadingToNSEE.nseeIfCalledAndTrue(b, o); // Noncompliant [[flows=foo6]] {{"NoSuchElementException" will be thrown when invoking method "nseeIfCalledAndTrue()" without verifying Optional parameter.}} flow@foo6 [[order=4]] {{'o' is passed to 'nseeIfCalledAndTrue()'.}}
     } else {
       nseeIfCalledAndTrue(b, o); // Compliant
     }
   }
 
-  void foo7() {
+  void foo7() throws Exception {
     Optional<String> o = getOptional();
     Optional<String> o2 = o;
     try {
@@ -56,7 +58,7 @@ class A {
     o2.get(); // Noncompliant {{Call "o2.isPresent()" before accessing the value.}}
   }
 
-  static void nseeIfCalled(Optional<String> o) {
+  static void nseeIfCalled(Optional<String> o) throws MyCheckedException {
     o.get(); // Noncompliant {{Call "o.isPresent()" before accessing the value.}}
   }
 
