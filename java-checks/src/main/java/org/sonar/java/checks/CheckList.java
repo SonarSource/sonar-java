@@ -841,8 +841,65 @@ public final class CheckList {
     .flatMap(List::stream).collect(Collectors.toList());
 
   private static final Set<Class<? extends JavaCheck>> JAVA_CHECKS_NOT_WORKING_FOR_AUTOSCAN = Set.of(
+    // Symbolic executions rules
+    AllowXMLInclusionCheck.class,
+    BooleanGratuitousExpressionsCheck.class,
+    ConditionalUnreachableCodeCheck.class,
+    CustomUnclosedResourcesCheck.class,
+    DenialOfServiceXMLCheck.class,
+    DivisionByZeroCheck.class,
+    InvariantReturnCheck.class,
+    LocksNotUnlockedCheck.class,
+    MapComputeIfAbsentOrPresentCheck.class,
+    MinMaxRangeCheck.class,
+    NonNullSetToNullCheck.class,
+    NoWayOutLoopCheck.class,
+    NullDereferenceCheck.class,
+    ObjectOutputStreamCheck.class,
+    OptionalGetBeforeIsPresentCheck.class,
+    ParameterNullnessCheck.class,
+    RedundantAssignmentsCheck.class,
+    StreamConsumedCheck.class,
+    StreamNotConsumedCheck.class,
+    UnclosedResourcesCheck.class,
+    XmlParserLoadsExternalSchemasCheck.class,
+    XxeProcessingCheck.class,
+    // Rules relying on correct setup of jdk.home
+    CallToDeprecatedCodeMarkedForRemovalCheck.class,
+    CallToDeprecatedMethodCheck.class,
+    // Rules relying on correct setup of java version
+    AbstractClassNoFieldShouldBeInterfaceCheck.class,
+    AnonymousClassShouldBeLambdaCheck.class,
+    CombineCatchCheck.class,
     DiamondOperatorCheck.class,
-    AnonymousClassShouldBeLambdaCheck.class
+    ReplaceGuavaWithJavaCheck.class,
+    TryWithResourcesCheck.class,
+    // Rules with a high deviation (>3%)
+    AccessibilityChangeCheck.class,
+    CipherBlockChainingCheck.class,
+    ClassNamedLikeExceptionCheck.class,
+    ClassWithOnlyStaticMethodsInstantiationCheck.class,
+    CollectionInappropriateCallsCheck.class,
+    DeadStoreCheck.class,
+    EqualsArgumentTypeCheck.class,
+    EqualsNotOverridenWithCompareToCheck.class,
+    EqualsOverridenWithHashCodeCheck.class,
+    ForLoopVariableTypeCheck.class,
+    InsecureCreateTempFileCheck.class,
+    JWTWithStrongCipherCheck.class,
+    MethodNamedEqualsCheck.class,
+    NioFileDeleteCheck.class,
+    PrivateFieldUsedLocallyCheck.class,
+    SillyEqualsCheck.class,
+    StandardCharsetsConstantsCheck.class,
+    ThreadLocalCleanupCheck.class,
+    ThreadOverridesRunCheck.class,
+    UnusedMethodParameterCheck.class,
+    UnusedPrivateClassCheck.class,
+    UnusedPrivateFieldCheck.class,
+    VerifiedServerHostnamesCheck.class,
+    VolatileNonPrimitiveFieldCheck.class,
+    WeakSSLContextCheck.class
   );
 
   private CheckList() {
