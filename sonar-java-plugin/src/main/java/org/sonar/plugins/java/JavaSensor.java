@@ -104,7 +104,7 @@ public class JavaSensor implements Sensor {
     PerformanceMeasure.Duration sensorDuration = createPerformanceMeasureReport(context);
 
     sonarComponents.setSensorContext(context);
-    sonarComponents.setCheckFilter(createCheckFilter(sonarComponents.isAutoScan()));
+    sonarComponents.setCheckFilter(createCheckFilter(sonarComponents.isAutoScanCheckFiltering()));
 
     Measurer measurer = new Measurer(context, noSonarFilter);
 
@@ -115,8 +115,8 @@ public class JavaSensor implements Sensor {
     sensorDuration.stop();
   }
 
-  private static UnaryOperator<List<JavaCheck>> createCheckFilter(boolean isAutoScanContext) {
-    if (isAutoScanContext) {
+  private static UnaryOperator<List<JavaCheck>> createCheckFilter(boolean isAutoScanCheckFiltering) {
+    if (isAutoScanCheckFiltering) {
       Set<String> sonarWayRuleKeys = JavaSonarWayProfile.readProfile().ruleKeys;
       Set<Class<? extends JavaCheck>> notWorkingChecks = CheckList.getJavaChecksNotWorkingForAutoScan();
       return checks -> checks.stream()

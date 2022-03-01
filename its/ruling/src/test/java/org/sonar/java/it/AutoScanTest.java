@@ -129,7 +129,8 @@ public class AutoScanTest {
       .setProperty("sonar.skipPackageDesign", "true")
       .setProperty("sonar.internal.analysis.failFast", "true")
       // force AutoScan mode
-      .setProperty("sonar.java.internal.batchMode", "true")
+      .setProperty("sonar.internal.analysis.autoscan", "true")
+      .setProperty("sonar.internal.analysis.autoscan.filtering", "false")
       // dummy sonar.java.binaries to pass validation
       .setProperty("sonar.java.binaries", tmpDumpOldFolder.newFolder().getAbsolutePath())
       // use as "old" issues the ones from Maven analysis
