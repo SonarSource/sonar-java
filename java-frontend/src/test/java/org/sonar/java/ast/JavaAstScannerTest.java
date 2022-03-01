@@ -323,14 +323,14 @@ class JavaAstScannerTest {
     scanFilesWithVisitors(Collections.singletonList(file), Collections.emptyList(), -1, failOnException, false);
   }
 
-  private void scanTwoFilesWithVisitor(JavaFileScanner visitor, boolean failOnException, boolean batchMode) {
+  private void scanTwoFilesWithVisitor(JavaFileScanner visitor, boolean failOnException, boolean autoscanMode) {
     scanFilesWithVisitors(Arrays.asList(
       TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java")
     ), Collections.singletonList(visitor),
       -1,
       failOnException,
-      batchMode);
+      autoscanMode);
   }
 
   private void scanWithJavaVersion(int version, List<InputFile> inputFiles) {
@@ -342,10 +342,10 @@ class JavaAstScannerTest {
   }
 
   private void scanFilesWithVisitors(List<InputFile> inputFiles, List<JavaFileScanner> visitors,
-                                     int javaVersion, boolean failOnException, boolean batchMode) {
+                                     int javaVersion, boolean failOnException, boolean autoscanMode) {
     context.setSettings(new MapSettings()
       .setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, failOnException)
-      .setProperty(SonarComponents.SONAR_BATCH_MODE_KEY, batchMode)
+      .setProperty(SonarComponents.SONAR_AUTOSCAN, autoscanMode)
     );
 
     DefaultFileSystem fileSystem = context.fileSystem();

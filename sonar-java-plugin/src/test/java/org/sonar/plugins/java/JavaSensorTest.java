@@ -198,10 +198,10 @@ class JavaSensorTest {
   }
 
   @Test
-  void should_not_invoke_jasper_jsp_compilation_in_batch_mode_for_security_reasons() throws Exception {
+  void should_not_invoke_jasper_jsp_compilation_in_autoscan_for_security_reasons() throws Exception {
     Path base = tmp.newFolder().toPath();
     MapSettings settings = new MapSettings();
-    settings.setProperty("sonar.java.internal.batchMode", "true");
+    settings.setProperty("sonar.internal.analysis.autoscan", "true");
 
     SensorContextTester context = SensorContextTester.create(base);
     context.setSettings(settings);
