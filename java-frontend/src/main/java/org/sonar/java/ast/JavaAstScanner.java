@@ -114,7 +114,7 @@ public class JavaAstScanner {
     visitor.setCurrentFile(inputFile);
     try {
       JavaTree.CompilationUnitTreeImpl ast = result.get();
-      visitor.visitFile(ast);
+      visitor.visitFile(ast, sonarComponents.fileCanBeSkipped(inputFile));
       collectUndefinedTypes(ast.sema.undefinedTypes());
       cleanUp.accept(ast);
     } catch (RecognitionException e) {

@@ -377,6 +377,15 @@ public class SonarComponents {
     return current.getWorkDir();
   }
 
+  public boolean canSkipUnchangedFiles() {
+    //return context.canSkipUnchangedFiles();
+    return false;
+  }
+
+  public boolean fileCanBeSkipped(InputFile inputFile) {
+    return canSkipUnchangedFiles() && inputFile.status() == InputFile.Status.SAME;
+  }
+
   public InputComponent project() {
     return context.project();
   }

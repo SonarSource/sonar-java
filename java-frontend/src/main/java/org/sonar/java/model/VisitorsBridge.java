@@ -62,7 +62,8 @@ public class VisitorsBridge {
   private static final Logger LOG = Loggers.get(VisitorsBridge.class);
 
   private final Iterable<? extends JavaCheck> visitors;
-  private final List<JavaFileScanner> scanners;
+  private final List<JavaFileScanner> allScanners;
+  private final List<JavaFileScanner> scannersForSkippedFiles;
   private final SonarComponents sonarComponents;
   protected InputFile currentFile;
   protected JavaVersion javaVersion;
@@ -76,28 +77,49 @@ public class VisitorsBridge {
 
   public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
     this.visitors = visitors;
-    this.scanners = new ArrayList<>();
+    this.allScanners = new ArrayList<>();
+    this.scannersForSkippedFiles = new ArrayList<>();
     this.classpath = projectClasspath;
     this.sonarComponents = sonarComponents;
     updateScanners();
   }
 
   private void updateScanners() {
-    scanners.clear();
-    IssuableSubscriptionVisitorsRunner subscriptionVisitorsRunner = null;
+    scannersForSkippedFiles.clear();
+    allScanners.clear();
+
+    IssuableSubscriptionVisitorsRunner runnerWithAllScanners = null;
+    IssuableSubscriptionVisitorsRunner reducedRunnerForSkippedFiles = null;
     for (Object visitor : visitors) {
       if (javaVersion != null && visitor instanceof JavaVersionAwareVisitor && !((JavaVersionAwareVisitor) visitor).isCompatibleWithJavaVersion(javaVersion)) {
         // ignore visitors not compatible with java version
       } else if (visitor instanceof IssuableSubscriptionVisitor) {
-        if (subscriptionVisitorsRunner == null) {
-          subscriptionVisitorsRunner = new IssuableSubscriptionVisitorsRunner();
-          scanners.add(subscriptionVisitorsRunner);
+        if (runnerWithAllScanners == null) {
+          runnerWithAllScanners = new IssuableSubscriptionVisitorsRunner();
+          allScanners.add(runnerWithAllScanners);
         }
-        subscriptionVisitorsRunner.add((IssuableSubscriptionVisitor) visitor);
+        runnerWithAllScanners.add((IssuableSubscriptionVisitor) visitor);
+
+        if (incrementalScanNotSupported(visitor)) {
+          if (reducedRunnerForSkippedFiles == null) {
+            reducedRunnerForSkippedFiles = new IssuableSubscriptionVisitorsRunner();
+            scannersForSkippedFiles.add(reducedRunnerForSkippedFiles);
+          }
+          reducedRunnerForSkippedFiles.add((IssuableSubscriptionVisitor) visitor);
+        }
       } else if (visitor instanceof JavaFileScanner) {
-        scanners.add((JavaFileScanner) visitor);
+        allScanners.add((JavaFileScanner) visitor);
+
+        if (incrementalScanNotSupported(visitor)) {
+          scannersForSkippedFiles.add((JavaFileScanner) visitor);
+        }
       }
     }
+  }
+
+  private boolean incrementalScanNotSupported(Object visitor) {
+    return sonarComponents == null || (sonarComponents.canSkipUnchangedFiles() &&
+      (visitor instanceof EndOfAnalysisCheck || !visitor.getClass().getCanonicalName().startsWith("org.sonar.java.checks.")));
   }
 
   public JavaVersion getJavaVersion() {
@@ -117,7 +139,7 @@ public class VisitorsBridge {
     this.inAndroidContext = inAndroidContext;
   }
 
-  public void visitFile(@Nullable Tree parsedTree) {
+  public void visitFile(@Nullable Tree parsedTree, boolean fileCanBeSkipped) {
     PerformanceMeasure.Duration compilationUnitDuration = PerformanceMeasure.start("CompilationUnit");
     JavaTree.CompilationUnitTreeImpl tree = new JavaTree.CompilationUnitTreeImpl(null, new ArrayList<>(), new ArrayList<>(), null, null);
     compilationUnitDuration.stop();
@@ -131,6 +153,7 @@ public class VisitorsBridge {
     symbolTableDuration.stop();
 
     JavaFileScannerContext javaFileScannerContext = createScannerContext(tree, tree.sema, sonarComponents, fileParsed);
+    var scanners = getScanners(fileCanBeSkipped);
 
     PerformanceMeasure.Duration scannersDuration = PerformanceMeasure.start("Scanners");
     for (JavaFileScanner scanner : scanners) {
@@ -215,10 +238,15 @@ public class VisitorsBridge {
     }
   }
 
+  private List<JavaFileScanner> getScanners(boolean supportedScannersCanBeSkippedForThisFile) {
+    return supportedScannersCanBeSkippedForThisFile ? scannersForSkippedFiles : allScanners;
+  }
+
   public void processRecognitionException(RecognitionException e, InputFile inputFile) {
-    if(sonarComponents == null || !sonarComponents.reportAnalysisError(e, inputFile)) {
-      this.visitFile(null);
-      scanners.stream()
+    if (sonarComponents == null || !sonarComponents.reportAnalysisError(e, inputFile)) {
+      var fileCanBeSkipped = sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile);
+      this.visitFile(null, fileCanBeSkipped);
+      getScanners(fileCanBeSkipped).stream()
         .filter(ExceptionHandler.class::isInstance)
         .forEach(scanner -> ((ExceptionHandler) scanner).processRecognitionException(e));
     }
@@ -229,7 +257,7 @@ public class VisitorsBridge {
   }
 
   public void endOfAnalysis() {
-    scanners.stream()
+    allScanners.stream()
       .filter(EndOfAnalysisCheck.class::isInstance)
       .map(EndOfAnalysisCheck.class::cast)
       .forEach(EndOfAnalysisCheck::endOfAnalysis);
@@ -299,7 +327,7 @@ public class VisitorsBridge {
       } else {
         visitChildren(tree);
       }
-      if(!isToken) {
+      if (!isToken) {
         forEach(subscribed, s -> s.leaveNode(tree));
       }
     }

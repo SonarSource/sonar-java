@@ -46,13 +46,13 @@ class VisitorsBridgeForTestsTest {
     Tree parse = JParserTestUtils.parse("class A{}");
     VisitorsBridgeForTests visitorsBridgeForTests = new VisitorsBridgeForTests(Collections.singletonList(new DummyVisitor()), sonarComponents);
     visitorsBridgeForTests.setCurrentFile(TestUtils.emptyInputFile("dummy.java"));
-    visitorsBridgeForTests.visitFile(parse);
+    visitorsBridgeForTests.visitFile(parse, true);
     assertThat(visitorsBridgeForTests.lastCreatedTestContext().getSemanticModel()).isNull();
 
     parse = JParserTestUtils.parse("class A{}");
     visitorsBridgeForTests = new VisitorsBridgeForTests(new DummyVisitor(), sonarComponents);
     visitorsBridgeForTests.setCurrentFile(TestUtils.emptyInputFile("dummy.java"));
-    visitorsBridgeForTests.visitFile(parse);
+    visitorsBridgeForTests.visitFile(parse, true);
     assertThat(visitorsBridgeForTests.lastCreatedTestContext().getSemanticModel()).isNotNull();
   }
 
@@ -66,7 +66,7 @@ class VisitorsBridgeForTestsTest {
     DummyVisitor javaCheck = new DummyVisitor();
     VisitorsBridgeForTests visitorsBridgeForTests = new VisitorsBridgeForTests(Collections.singletonList(javaCheck), sonarComponents);
     visitorsBridgeForTests.setCurrentFile(TestUtils.emptyInputFile("dummy.java"));
-    visitorsBridgeForTests.visitFile(parse);
+    visitorsBridgeForTests.visitFile(parse, true);
     JavaFileScannerContextForTests lastContext = visitorsBridgeForTests.lastCreatedTestContext();
     assertThat(lastContext.getIssues()).isEmpty();
 
