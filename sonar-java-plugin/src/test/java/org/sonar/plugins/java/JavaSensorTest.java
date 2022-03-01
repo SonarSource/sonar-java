@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -40,6 +41,8 @@ import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
+import org.sonar.api.batch.rule.internal.ActiveRulesBuilder;
+import org.sonar.api.batch.rule.internal.NewActiveRule;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.config.internal.MapSettings;
@@ -49,18 +52,21 @@ import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleAnnotationUtils;
+import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.checks.CheckList;
 import org.sonar.java.checks.naming.BadMethodNameCheck;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -107,7 +113,7 @@ class JavaSensorTest {
 
   @Test
   void test_issues_creation_on_main_file() throws IOException {
-    testIssueCreation(InputFile.Type.MAIN, 11);
+    testIssueCreation(InputFile.Type.MAIN, 13);
   }
 
   @Test
@@ -126,8 +132,8 @@ class JavaSensorTest {
     JavaSensor jss = new JavaSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, null);
 
     jss.execute(context);
-    // argument 114 refers to the comment on line #114 in this file
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(114));
+    // argument 120 refers to the comment on line #120 in this file
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(120));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     settings.setProperty(JavaVersion.SOURCE_VERSION, "wrongFormat");
@@ -310,6 +316,88 @@ class JavaSensorTest {
     assertThat(new String(Files.readAllBytes(defaultPerformanceFile), UTF_8)).contains("\"JavaSensor\"");
   }
 
+  @Test
+  void do_not_filter_checks_when_no_autoscan() throws IOException {
+    MapSettings settings = new MapSettings();
+    // no "sonar.internal.analysis.autoscan"
+    SensorContextTester context = analyzeTwoFilesWithIssues(settings);
+    assertThat(context.allIssues())
+      .extracting(issue -> issue.ruleKey().toString())
+      .contains(
+        "CustomRepository:CustomMainCheck",
+        "CustomRepository:CustomJspCheck",
+        "CustomRepository:CustomTestCheck",
+        // not in SonarWay
+        "java:S1451",
+        // main check in SonarWay
+        "java:S1220",
+        // main check in SonarWay, not supported by autoscan
+        "java:S2147",
+        // test check in SonarWay
+        "java:S2187"
+      );
+  }
+
+  @Test
+  void filter_checks_when_autoscan_true() throws IOException {
+    MapSettings settings = new MapSettings();
+    settings.setProperty("sonar.internal.analysis.autoscan", "true");
+    SensorContextTester context = analyzeTwoFilesWithIssues(settings);
+    assertThat(context.allIssues())
+      .extracting(issue -> issue.ruleKey().toString())
+      .contains(
+        // main check in SonarWay
+        "java:S1220",
+        // test check in SonarWay
+        "java:S2187"
+      );
+  }
+
+  private SensorContextTester analyzeTwoFilesWithIssues(MapSettings settings) throws IOException {
+    SensorContextTester context = SensorContextTester.create(new File("src/test/files").getAbsoluteFile())
+      .setSettings(settings)
+      .setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(8, 7), SonarQubeSide.SCANNER, SonarEdition.COMMUNITY));
+
+    DefaultFileSystem fs = context.fileSystem();
+    fs.setWorkDir(tmp.newFolder().toPath());
+
+    File mainFile = new File(fs.baseDir(), "CodeWithIssues.java");
+    fs.add(new TestInputFileBuilder("", mainFile.getName()).setLanguage("java").setModuleBaseDir(fs.baseDirPath())
+      .setType(InputFile.Type.MAIN).initMetadata(Files.readString(mainFile.toPath())).setCharset(UTF_8).build());
+
+    File testFile = new File(fs.baseDir(), "CodeWithIssuesTest.java");
+    fs.add(new TestInputFileBuilder("", testFile.getName()).setLanguage("java").setModuleBaseDir(fs.baseDirPath())
+      .setType(InputFile.Type.TEST).initMetadata(Files.readString(testFile.toPath())).setCharset(UTF_8).build());
+
+    FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
+    when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(mock(FileLinesContext.class));
+    ClasspathForTest javaTestClasspath = new ClasspathForTest(context.config(), fs);
+    ClasspathForMain javaClasspath = new ClasspathForMain(context.config(), fs);
+    DefaultJavaResourceLocator resourceLocator = new DefaultJavaResourceLocator(new ClasspathForMain(context.config(), fs));
+
+    CheckRegistrar[] checkRegistrars = new CheckRegistrar[] {new CustomRegistrar()};
+
+    ActiveRulesBuilder activeRulesBuilder = new ActiveRulesBuilder();
+
+    CheckList.getChecks().stream()
+      .map(check -> AnnotationUtils.getAnnotation(check, org.sonar.check.Rule.class).key())
+      .map(key -> new NewActiveRule.Builder().setRuleKey(RuleKey.of("java", key)).build())
+      .forEach(activeRulesBuilder::addRule);
+
+    Stream.of("CustomMainCheck", "CustomJspCheck", "CustomTestCheck")
+      .map(key -> new NewActiveRule.Builder().setRuleKey(RuleKey.of("CustomRepository", key)).build())
+      .forEach(activeRulesBuilder::addRule);
+
+    CheckFactory checkFactory = new CheckFactory(activeRulesBuilder.build());
+
+    SonarComponents components = new SonarComponents(fileLinesContextFactory, fs,
+      javaClasspath, javaTestClasspath, checkFactory, checkRegistrars, null);
+
+    JavaSensor jss = new JavaSensor(components, fs, resourceLocator, context.config(), mock(NoSonarFilter.class), null);
+    jss.execute(context);
+    return context;
+  }
+
   private void executeJavaSensorForPerformanceMeasure(MapSettings settings, Path workDir) throws IOException {
     Configuration configuration = settings.asConfig();
     SensorContextTester context = createContext(InputFile.Type.MAIN)
@@ -325,4 +413,35 @@ class JavaSensorTest {
 
   interface JspCodeScanner extends JavaFileScanner, JspCodeVisitor {
   }
+
+  @org.sonar.check.Rule(key = "CustomMainCheck")
+  public static class CustomMainCheck implements JavaFileScanner {
+    public void scanFile(JavaFileScannerContext context) {
+      context.reportIssue(this, context.getTree().firstToken(), "CustomMainCheck");
+    }
+  }
+
+  @org.sonar.check.Rule(key = "CustomJspCheck")
+  public static class CustomJspCheck implements JspCodeScanner {
+    public void scanFile(JavaFileScannerContext context) {
+      context.reportIssue(this, context.getTree().firstToken(), "CustomJspCheck");
+    }
+  }
+
+  @org.sonar.check.Rule(key = "CustomTestCheck")
+  public static class CustomTestCheck implements JavaFileScanner {
+    public void scanFile(JavaFileScannerContext context) {
+      context.reportIssue(this, context.getTree().firstToken(), "CustomTestCheck");
+    }
+  }
+
+  public static class CustomRegistrar implements CheckRegistrar {
+    @Override
+    public void register(RegistrarContext registrarContext) {
+      registrarContext.registerClassesForRepository("CustomRepository", 
+        List.of(CustomMainCheck.class, CustomJspCheck.class),
+        List.of(CustomTestCheck.class));
+    }
+  }
+
 }
