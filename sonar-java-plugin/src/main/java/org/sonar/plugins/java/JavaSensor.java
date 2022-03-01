@@ -128,7 +128,8 @@ public class JavaSensor implements Sensor {
     }
   }
 
-  private static String getKeyFromCheck(JavaCheck check) {
+  @VisibleForTesting
+  static String getKeyFromCheck(JavaCheck check) {
     Rule ruleAnnotation = AnnotationUtils.getAnnotation(check.getClass(), Rule.class);
     return ruleAnnotation != null ? ruleAnnotation.key() : "";
   }

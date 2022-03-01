@@ -56,6 +56,7 @@ import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.Issue;
 import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.api.config.Configuration;
+import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
@@ -78,7 +79,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -253,6 +253,35 @@ class SonarComponentsTest {
     List<JavaCheck> testChecks = sonarComponents.testChecks();
     assertThat(testChecks).extracting(JavaCheck::getClass).extracting(Class::getSimpleName)
       .containsExactly("CheckC", "CheckA", "CheckB");
+  }
+
+  @Test
+  void filter_checks() {
+    class CheckA implements JavaCheck {
+    }
+    class CheckB implements JavaCheck {
+    }
+    class CheckC implements JavaCheck {
+    }
+    CheckRegistrar expectedRegistrar = registrarContext -> registrarContext.registerClassesForRepository(
+      REPOSITORY_NAME,
+      Arrays.asList(CheckA.class, CheckB.class, CheckC.class),
+      Arrays.asList(CheckC.class, CheckB.class, CheckA.class));
+    when(this.checks.all())
+      .thenReturn(Arrays.asList(new CheckA(), new CheckB(), new CheckC()))
+      .thenReturn(Arrays.asList(new CheckC(), new CheckB(), new CheckA()));
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
+      null, checkFactory, new CheckRegistrar[] {expectedRegistrar});
+    sonarComponents.setSensorContext(context);
+    sonarComponents.setCheckFilter(checks -> checks.stream()
+      .filter(c -> !c.getClass().getSimpleName().equals("CheckB")).collect(Collectors.toList()));
+
+    List<JavaCheck> mainChecks = sonarComponents.mainChecks();
+    assertThat(mainChecks).extracting(JavaCheck::getClass).extracting(Class::getSimpleName)
+      .containsExactly("CheckA", "CheckC");
+    List<JavaCheck> testChecks = sonarComponents.testChecks();
+    assertThat(testChecks).extracting(JavaCheck::getClass).extracting(Class::getSimpleName)
+      .containsExactly("CheckC", "CheckA");
   }
 
   @Test
@@ -490,6 +519,67 @@ class SonarComponentsTest {
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, mock(ClasspathForTest.class), checkFactory);
     List<String> jspClassPath = sonarComponents.getJspClasspath().stream().map(File::getAbsolutePath).collect(Collectors.toList());
     assertThat(jspClassPath).containsExactly(plugin.getAbsolutePath(), someJar.getAbsolutePath());
+  }
+
+  @Test
+  void autoscan_getters() {
+    MapSettings settings = new MapSettings();
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(settings));
+
+    // default value
+    settings.clear();
+    assertThat(sonarComponents.isAutoScan()).isFalse();
+    assertThat(sonarComponents.isBatchModeEnabled()).isFalse();
+    assertThat(sonarComponents.isAutoScanCheckFiltering()).isFalse();
+
+    // autoscan
+    settings.clear();
+    settings.setProperty("sonar.internal.analysis.autoscan", "true");
+    assertThat(sonarComponents.isAutoScan()).isTrue();
+    assertThat(sonarComponents.isBatchModeEnabled()).isTrue();
+    assertThat(sonarComponents.isAutoScanCheckFiltering()).isTrue();
+
+    // autoscan, without check filter
+    settings.clear();
+    settings.setProperty("sonar.internal.analysis.autoscan", "true");
+    settings.setProperty("sonar.internal.analysis.autoscan.filtering", "false");
+    assertThat(sonarComponents.isAutoScan()).isTrue();
+    assertThat(sonarComponents.isBatchModeEnabled()).isTrue();
+    assertThat(sonarComponents.isAutoScanCheckFiltering()).isFalse();
+
+    // deprecated autoscan key
+    settings.clear();
+    settings.setProperty("sonar.java.internal.batchMode", "true");
+    assertThat(sonarComponents.isAutoScan()).isTrue();
+    assertThat(sonarComponents.isBatchModeEnabled()).isTrue();
+    assertThat(sonarComponents.isAutoScanCheckFiltering()).isTrue();
+  }
+
+  @Test
+  void batch_getters() {
+    MapSettings settings = new MapSettings();
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(settings));
+
+    // default value
+    assertThat(sonarComponents.isAutoScan()).isFalse();
+    assertThat(sonarComponents.isBatchModeEnabled()).isFalse();
+    assertThat(sonarComponents.isAutoScanCheckFiltering()).isFalse();
+    assertThat(sonarComponents.getBatchModeSizeInKB()).isEqualTo(-1L);
+
+    // batch mode
+    settings.setProperty("sonar.java.experimental.batchModeSizeInKB", "1000");
+    assertThat(sonarComponents.isAutoScan()).isFalse();
+    assertThat(sonarComponents.isBatchModeEnabled()).isTrue();
+    assertThat(sonarComponents.getBatchModeSizeInKB()).isEqualTo(1000);
+
+    // autoscan is not compatible with batch mode size
+    settings.setProperty("sonar.internal.analysis.autoscan", "true");
+    settings.setProperty("sonar.java.experimental.batchModeSizeInKB", "1000");
+    assertThat(sonarComponents.isAutoScan()).isFalse();
+    assertThat(sonarComponents.isBatchModeEnabled()).isTrue();
+    assertThat(sonarComponents.getBatchModeSizeInKB()).isEqualTo(1000);
   }
 
   @Nested

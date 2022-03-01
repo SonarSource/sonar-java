@@ -113,7 +113,7 @@ class JavaSensorTest {
 
   @Test
   void test_issues_creation_on_main_file() throws IOException {
-    testIssueCreation(InputFile.Type.MAIN, 13);
+    testIssueCreation(InputFile.Type.MAIN, 14);
   }
 
   @Test
@@ -351,6 +351,15 @@ class JavaSensorTest {
         // test check in SonarWay
         "java:S2187"
       );
+  }
+
+  @Test
+  void extract_rule_key() {
+    @org.sonar.check.Rule(key = "123")
+    class MyRule implements JavaCheck {}
+    class MyRuleWithoutKey implements JavaCheck {}
+    assertThat(JavaSensor.getKeyFromCheck(new MyRule())).isEqualTo("123");
+    assertThat(JavaSensor.getKeyFromCheck(new MyRuleWithoutKey())).isEmpty();
   }
 
   private SensorContextTester analyzeTwoFilesWithIssues(MapSettings settings) throws IOException {
