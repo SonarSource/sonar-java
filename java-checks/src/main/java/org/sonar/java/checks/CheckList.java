@@ -840,18 +840,10 @@ public final class CheckList {
   private static final List<Class<?>> ALL_CHECKS = Stream.of(JAVA_MAIN_CHECKS, JAVA_TEST_CHECKS)
     .flatMap(List::stream).collect(Collectors.toList());
 
-  private static final Set<Class<? extends JavaCheck>> RULES_NOT_WORKING_FOR_AUTOSCAN = Set.of(
+  private static final Set<Class<? extends JavaCheck>> JAVA_CHECKS_NOT_WORKING_FOR_AUTOSCAN = Set.of(
     DiamondOperatorCheck.class,
     AnonymousClassShouldBeLambdaCheck.class
   );
-
-  private static final List<Class<? extends JavaCheck>> JAVA_MAIN_CHECKS_FOR_AUTOSCAN = JAVA_MAIN_CHECKS.stream()
-    .filter(rule -> !RULES_NOT_WORKING_FOR_AUTOSCAN.contains(rule))
-    .collect(Collectors.toList());
-
-  private static final List<Class<? extends JavaCheck>> JAVA_TEST_CHECKS_FOR_AUTOSCAN = JAVA_TEST_CHECKS.stream()
-    .filter(rule -> !RULES_NOT_WORKING_FOR_AUTOSCAN.contains(rule))
-    .collect(Collectors.toList());
 
   private CheckList() {
   }
@@ -868,12 +860,8 @@ public final class CheckList {
     return JAVA_TEST_CHECKS;
   }
 
-  public static List<Class<? extends JavaCheck>> getJavaChecksForAutoscan() {
-    return JAVA_MAIN_CHECKS_FOR_AUTOSCAN;
-  }
-
-  public static List<Class<? extends JavaCheck>> getJavaTestChecksForAutoscan() {
-    return JAVA_TEST_CHECKS_FOR_AUTOSCAN;
+  public static Set<Class<? extends JavaCheck>> getJavaChecksNotWorkingForAutoScan() {
+    return JAVA_CHECKS_NOT_WORKING_FOR_AUTOSCAN;
   }
 
 }

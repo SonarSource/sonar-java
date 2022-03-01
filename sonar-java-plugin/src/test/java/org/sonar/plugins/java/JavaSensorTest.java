@@ -100,8 +100,9 @@ class JavaSensorTest {
   public LogTesterJUnit5 logTester = new LogTesterJUnit5();
 
   @Test
-  void test_toString() {
-    assertThat(new JavaSensor(null, null, null, null, null, null)).hasToString("JavaSensor");
+  void test_toString() throws IOException {
+    SonarComponents sonarComponents = createSonarComponentsMock(createContext(InputFile.Type.MAIN));
+    assertThat(new JavaSensor(sonarComponents, null, null, null, null, null)).hasToString("JavaSensor");
   }
 
   @Test
@@ -125,8 +126,8 @@ class JavaSensorTest {
     JavaSensor jss = new JavaSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, null);
 
     jss.execute(context);
-    // argument 103 refers to the comment on line #103 in this file
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(113));
+    // argument 114 refers to the comment on line #114 in this file
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(114));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     settings.setProperty(JavaVersion.SOURCE_VERSION, "wrongFormat");

@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -96,6 +97,7 @@ public class SonarComponents {
   private final List<JavaCheck> jspChecks;
   private final List<Checks<JavaCheck>> allChecks;
   private SensorContext context;
+  private UnaryOperator<List<JavaCheck>> checkFilter = UnaryOperator.identity();
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath,
@@ -137,7 +139,7 @@ public class SonarComponents {
     this.testChecks = new ArrayList<>();
     this.jspChecks = new ArrayList<>();
     this.allChecks = new ArrayList<>();
-    if (checkRegistrars != null && !isAutoScan()) {
+    if (checkRegistrars != null) {
       CheckRegistrar.RegistrarContext registrarContext = new CheckRegistrar.RegistrarContext();
       for (CheckRegistrar checkClassesRegister : checkRegistrars) {
         checkClassesRegister.register(registrarContext);
@@ -157,6 +159,10 @@ public class SonarComponents {
 
   public void setSensorContext(SensorContext context) {
     this.context = context;
+  }
+
+  public void setCheckFilter(UnaryOperator<List<JavaCheck>> checkFilter) {
+    this.checkFilter = checkFilter;
   }
 
   public FileLinesContext fileLinesContextFor(InputFile inputFile) {
@@ -232,15 +238,15 @@ public class SonarComponents {
   }
 
   public List<JavaCheck> mainChecks() {
-    return mainChecks;
+    return checkFilter.apply(mainChecks);
   }
 
   public List<JavaCheck> testChecks() {
-    return testChecks;
+    return checkFilter.apply(testChecks);
   }
 
   public List<JavaCheck> jspChecks() {
-    return jspChecks;
+    return checkFilter.apply(jspChecks);
   }
 
   public Optional<RuleKey> getRuleKey(JavaCheck check) {
