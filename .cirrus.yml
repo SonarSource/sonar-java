@@ -112,7 +112,7 @@ plugin_qa_task:
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   submodules_script:
-    - git submodule update --init
+    - git submodule update --init --recursive
   qa_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
@@ -151,7 +151,7 @@ ruling_task:
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   submodules_script:
-    - git submodule update --init
+    - git submodule update --init --recursive
   ruling_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
@@ -170,6 +170,7 @@ ruling_win_task:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - init_git_submodules its/sources
+    - git submodule update --init --recursive
     - cd its/ruling
     - mvn package -Pit-ruling -Dsonar.runtimeVersion=LATEST_RELEASE[8.9] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository

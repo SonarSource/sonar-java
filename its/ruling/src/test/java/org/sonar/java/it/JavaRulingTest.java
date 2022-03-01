@@ -27,6 +27,7 @@ import com.sonar.orchestrator.build.Build;
 import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
+import com.sonar.orchestrator.container.Edition;
 import com.sonar.orchestrator.container.Server;
 import com.sonar.orchestrator.locator.FileLocation;
 import com.sonar.orchestrator.locator.MavenLocation;
@@ -67,6 +68,9 @@ public class JavaRulingTest {
   private static final int LOGS_NUMBER_LINES = 200;
   private static final Logger LOG = LoggerFactory.getLogger(JavaRulingTest.class);
 
+  private static String INCREMENTAL_ANALYSIS_KEY = "sonar.java.internal.skipUnchanged";
+  private static boolean INCREMENTAL_ANALYSIS_VALUE = true;
+
   // by default all rules are enabled, if you want to enable just a subset of rules you can specify the list of
   // rule keys from the command line using "rules" property, i.e. mvn test -Drules=S100,S101
   private static final ImmutableSet<String> SUBSET_OF_ENABLED_RULES = ImmutableSet.copyOf(
@@ -85,6 +89,8 @@ public class JavaRulingTest {
     .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE[8.9]"))
     .addPlugin(FileLocation.byWildcardMavenFilename(new File("../../sonar-java-plugin/target"), "sonar-java-plugin-*.jar"))
     .addPlugin(MavenLocation.of("org.sonarsource.sonar-lits-plugin", "sonar-lits-plugin", "0.10.0.2181"))
+    .setEdition(Edition.DEVELOPER)
+    .activateLicense()
     .build();
 
   @BeforeClass
@@ -203,6 +209,37 @@ public class JavaRulingTest {
           "jetty-osgi/jetty-osgi-boot/src/main/java/org/eclipse/jetty/osgi/boot/internal/serverfactory/ServerInstanceWrapper.java")
       .addArgument("-Dpmd.skip=true")
       .addArgument("-Dcheckstyle.skip=true");
+    executeBuildWithCommonProperties(build, projectName);
+  }
+
+  @Test
+  public void eclipse_jetty_incremental() throws Exception {
+    String projectName = "eclipse-jetty-similar-to-main";
+    List<String> dirs = Arrays.asList("jetty-http/", "jetty-io/", "jetty-jmx/", "jetty-server/", "jetty-slf4j-impl/", "jetty-util/", "jetty-util-ajax/", "jetty-xml/", "tests/jetty-http-tools/");
+    String binaries = dirs.stream().map(dir -> FileLocation.of("../sources/eclipse-jetty-similar-to-main/" + dir + "target/classes"))
+      .map(JavaRulingTest::getFileLocationAbsolutePath)
+      .collect(Collectors.joining(","));
+
+    final var branch = "eclipse-jetty-same-issues-as-main";
+    final var mainBranch = "eclipse-jetty-main";
+
+    MavenBuild build = test_project("org.eclipse.jetty:jetty-project-branch", projectName)
+      // re-define binaries from initial maven build
+      .setProperty("sonar.java.binaries", binaries)
+      .setProperty("sonar.exclusions", "jetty-server/src/main/java/org/eclipse/jetty/server/HttpInput.java," +
+        "jetty-osgi/jetty-osgi-boot/src/main/java/org/eclipse/jetty/osgi/boot/internal/serverfactory/ServerInstanceWrapper.java")
+      .addArgument("-Dpmd.skip=true")
+      .addArgument("-Dcheckstyle.skip=true")
+      // Set up incremental analysis
+      .setProperty(INCREMENTAL_ANALYSIS_KEY, Boolean.toString(INCREMENTAL_ANALYSIS_VALUE))
+      .setProperties(
+        "sonar.pullrequest.key", branch,
+        "sonar.pullrequest.branch", branch,
+        "sonar.pullrequest.base", mainBranch,
+        "sonar.scm.provider", "git",
+        "sonar.scm.disabled", "false"
+      );
+
     executeBuildWithCommonProperties(build, projectName);
   }
 

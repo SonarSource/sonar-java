@@ -32,7 +32,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -46,10 +45,14 @@ import org.sonar.java.ExceptionHandler;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
+import org.sonar.java.checks.VisitorThatCanBeSkipped;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
+import org.sonar.java.exceptions.ApiMismatchException;
+import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.notchecks.VisitorNotInChecksPackage;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 
@@ -57,8 +60,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -80,8 +86,8 @@ class JavaAstScannerTest {
     EndOfAnalysisScanner endOfAnalysisScanner = spy(new EndOfAnalysisScanner());
     scanTwoFilesWithVisitor(endOfAnalysisScanner, false, false);
 
-    verify(endOfAnalysisScanner, Mockito.times(2)).scanFile(any());
-    verify(endOfAnalysisScanner, Mockito.times(1)).endOfAnalysis();
+    verify(endOfAnalysisScanner, times(2)).scanFile(any());
+    verify(endOfAnalysisScanner, times(1)).endOfAnalysis();
   }
 
   @Test
@@ -153,7 +159,7 @@ class JavaAstScannerTest {
 
     scanTwoFilesWithVisitor(visitor, false, false);
 
-    verify(visitor, Mockito.times(1))
+    verify(visitor, times(1))
       .scanFile(any());
     verifyNoMoreInteractions(visitor);
   }
@@ -269,7 +275,7 @@ class JavaAstScannerTest {
         TestUtils.inputFile("src/test/resources/module-info.java")
       ));
 
-    assertThat(logTester.logs(LoggerLevel.INFO)).hasSize(2)
+    assertThat(logTester.logs(LoggerLevel.INFO)).hasSize(3)
       .contains("1/1 source file has been analyzed");
     assertThat(logTester.logs(LoggerLevel.ERROR)).containsExactly(
       "Unable to parse source file : 'src/test/files/metrics/Java15SwitchExpression.java'",
@@ -317,6 +323,29 @@ class JavaAstScannerTest {
     scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerParseError.txt")));
     verify(sonarComponents).reportAnalysisError(any(RecognitionException.class), any(InputFile.class));
     verifyZeroInteractions(listener);
+  }
+
+  @Test
+  void skippableVisitors_are_not_used_when_file_is_unchanged() throws ApiMismatchException {
+    SonarComponents sonarComponents = mock(SonarComponents.class);
+    doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
+    doReturn(true).when(sonarComponents).fileCanBeSkipped(any());
+    JavaAstScanner jas = new JavaAstScanner(sonarComponents);
+
+    VisitorThatCanBeSkipped skippable = spy(new VisitorThatCanBeSkipped());
+    VisitorNotInChecksPackage unskippable = spy(new VisitorNotInChecksPackage());
+    VisitorsBridge visitorsBridge = new VisitorsBridge(
+      List.of(skippable, unskippable),
+      Collections.emptyList(),
+      sonarComponents
+    );
+    jas.setVisitorBridge(visitorsBridge);
+
+    InputFile inputFile = mock(InputFile.class);
+    jas.simpleScan(inputFile, mock(JParserConfig.Result.class), ignored -> {});
+
+    verify(skippable, never()).visitNode(any());
+    verify(unskippable, times(1)).visitNode(any());
   }
 
   private void scanSingleFile(InputFile file, boolean failOnException) {

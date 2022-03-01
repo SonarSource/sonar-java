@@ -1,0 +1,11 @@
+{
+'org.eclipse.jetty:jetty-project-branch:jetty-http/src/main/java/org/eclipse/jetty/http/HttpCompliance.java':[
+31,
+],
+'org.eclipse.jetty:jetty-project-branch:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java':[
+37,
+],
+'org.eclipse.jetty:jetty-project-branch:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelState.java':[
+40,
+],
+}

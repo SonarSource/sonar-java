@@ -22,6 +22,8 @@ package org.sonar.java;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,6 +62,7 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
+import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.model.JProblem;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -83,6 +86,7 @@ public class SonarComponents {
   public static final String SONAR_AUTOSCAN_CHECK_FILTERING = "sonar.internal.analysis.autoscan.filtering";
   public static final String SONAR_BATCH_SIZE_KEY = "sonar.java.experimental.batchModeSizeInKB";
   public static final String SONAR_FILE_BY_FILE = "sonar.java.fileByFile";
+  public static final String SONAR_CAN_SKIP_UNCHANGED_FILES_KEY = "sonar.java.internal.skipUnchanged";
 
   private static final Version SONARLINT_6_3 = Version.parse("6.3");
   private static final Version SONARQUBE_9_2 = Version.parse("9.2");
@@ -105,6 +109,8 @@ public class SonarComponents {
   private final List<Checks<JavaCheck>> allChecks;
   private SensorContext context;
   private UnaryOperator<List<JavaCheck>> checkFilter = UnaryOperator.identity();
+
+  private boolean alreadyLoggedSkipStatus = false;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath,
@@ -381,13 +387,63 @@ public class SonarComponents {
 
   public File workDir() {
     ProjectDefinition current = projectDefinition;
-    if(current == null) {
+    if (current == null) {
       return fs.workDir();
     }
     while (current.getParent() != null) {
       current = current.getParent();
     }
     return current.getWorkDir();
+  }
+
+  public boolean canSkipUnchangedFiles() throws ApiMismatchException {
+    if (context == null) {
+      return false;
+    } else {
+      var overrideSkipFlag = context.config() == null ? null : context.config().getBoolean(SONAR_CAN_SKIP_UNCHANGED_FILES_KEY).orElse(null);
+      try {
+        if (overrideSkipFlag != null) {
+          return overrideSkipFlag;
+        }
+        Method canSkipUnchangedFiles = context.getClass().getDeclaredMethod("canSkipUnchangedFiles");
+        return (Boolean) canSkipUnchangedFiles.invoke(context);
+      } catch (NoSuchMethodError | NoSuchMethodException error) {
+        throw new ApiMismatchException(error);
+      } catch (InvocationTargetException | IllegalAccessException error) {
+        Throwable cause = error.getCause();
+        if (cause instanceof NoSuchMethodError) {
+          throw new ApiMismatchException(cause);
+        }
+        throw new ApiMismatchException(error);
+      }
+    }
+  }
+
+
+  public boolean fileCanBeSkipped(InputFile inputFile) {
+    boolean canSkipInContext;
+    try {
+      canSkipInContext = canSkipUnchangedFiles();
+      if (!alreadyLoggedSkipStatus) {
+        if (canSkipInContext) {
+          LOG.info("The Java analyzer is running in a context where unchanged files can be skipped. Full analysis is performed " +
+            "for changed files, optimized analysis for unchanged files.");
+        } else {
+          LOG.info("The Java analyzer cannot skip unchanged files in this context. A full analysis is performed for all files.");
+        }
+        alreadyLoggedSkipStatus = true;
+      }
+    } catch (ApiMismatchException e) {
+      if (!alreadyLoggedSkipStatus) {
+        LOG.info(
+          "Cannot determine whether the context allows skipping unchanged files: canSkipUnchangedFiles not part of sonar-plugin-api. Not skipping. {}",
+          e.getCause().getMessage()
+        );
+        alreadyLoggedSkipStatus = true;
+      }
+      return false;
+    }
+    return canSkipInContext && inputFile.status() == InputFile.Status.SAME;
   }
 
   public InputComponent project() {

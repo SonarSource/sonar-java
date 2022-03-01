@@ -32,6 +32,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
+import org.sonar.api.utils.log.LogAndArguments;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.AnalysisException;
@@ -41,6 +42,10 @@ import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.checks.EndOfAnalysisVisitor;
+import org.sonar.java.checks.VisitorThatCanBeSkipped;
+import org.sonar.java.exceptions.ApiMismatchException;
+import org.sonar.java.notchecks.VisitorNotInChecksPackage;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -53,8 +58,12 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 class VisitorsBridgeTest {
@@ -99,7 +108,7 @@ class VisitorsBridgeTest {
 
   private static void checkFile(String filename, String code, VisitorsBridge visitorsBridge) {
     visitorsBridge.setCurrentFile(TestUtils.emptyInputFile(filename));
-    visitorsBridge.visitFile(JParserTestUtils.parse(code));
+    visitorsBridge.visitFile(JParserTestUtils.parse(code), false);
   }
 
 
@@ -115,7 +124,7 @@ class VisitorsBridgeTest {
   void rethrow_exception_when_hidden_property_set_to_true_with_JavaFileScanner() {
     VisitorsBridge visitorsBridge = visitorsBridge(new JFS_ThrowingNPEJavaFileScanner(), true);
     try {
-      visitorsBridge.visitFile(COMPILATION_UNIT_TREE);
+      visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false);
       Fail.fail("scanning of file should have raise an exception");
     } catch (AnalysisException e) {
       assertThat(e.getMessage()).contains("Failing check");
@@ -133,7 +142,7 @@ class VisitorsBridgeTest {
   void swallow_exception_when_hidden_property_set_to_false_with_JavaFileScanner() {
     try {
       visitorsBridge(new JFS_ThrowingNPEJavaFileScanner(), false)
-        .visitFile(COMPILATION_UNIT_TREE);
+        .visitFile(COMPILATION_UNIT_TREE, false);
     } catch (Exception e) {
       e.printStackTrace();
       Fail.fail("Exception should be swallowed when property is not set");
@@ -147,7 +156,7 @@ class VisitorsBridgeTest {
   void rethrow_exception_when_hidden_property_set_to_true_with_SubscriptionVisitor() {
     VisitorsBridge visitorsBridge = visitorsBridge(new SV1_ThrowingNPEVisitingClass(), true);
     try {
-      visitorsBridge.visitFile(COMPILATION_UNIT_TREE);
+      visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false);
       Fail.fail("scanning of file should have raise an exception");
     } catch (AnalysisException e) {
       assertThat(e.getMessage()).contains("Failing check");
@@ -170,7 +179,7 @@ class VisitorsBridgeTest {
         new SV3_ThrowingNPEVisitingToken(),
         new SV4_ThrowingNPEVisitingTrivia()),
         false)
-        .visitFile(COMPILATION_UNIT_TREE);
+        .visitFile(COMPILATION_UNIT_TREE, false);
     } catch (Exception e) {
       e.printStackTrace();
       Fail.fail("Exceptions should be swallowed when property is not set");
@@ -191,7 +200,7 @@ class VisitorsBridgeTest {
         new IV1_ThrowingNPEVisitingClass(),
         new IV2_ThrowingNPELeavingClass()),
         false)
-        .visitFile(COMPILATION_UNIT_TREE);
+        .visitFile(COMPILATION_UNIT_TREE, false);
     } catch (Exception e) {
       e.printStackTrace();
       Fail.fail("Exceptions should be swallowed when property is not set");
@@ -208,7 +217,7 @@ class VisitorsBridgeTest {
         new SV1_ThrowingNPEVisitingClass(),
         new IV1_ThrowingNPEVisitingClass()),
         false)
-        .visitFile(COMPILATION_UNIT_TREE);
+        .visitFile(COMPILATION_UNIT_TREE, false);
     } catch (Exception e) {
       e.printStackTrace();
       Fail.fail("Exceptions should be swallowed when property is not set");
@@ -219,12 +228,12 @@ class VisitorsBridgeTest {
         "SV1_ThrowingNPEVisitingClass - SV1",
         "IV1_ThrowingNPEVisitingClass - IV1");
   }
-  
+
   @Test
   void no_log_when_filter_execute_fine() {
     VisitorsBridge visitorsBridge = visitorsBridge(Arrays.asList(), true);
     try {
-      visitorsBridge.visitFile(COMPILATION_UNIT_TREE);
+      visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false);
     } catch (Exception e) {
       e.printStackTrace();
       Fail.fail("No exception should be raised");
@@ -238,7 +247,7 @@ class VisitorsBridgeTest {
     VisitorsBridge bridge = new VisitorsBridge(Collections.emptySet(), Collections.emptyList(), sonarComponents);
     bridge.setCurrentFile(new GeneratedFile(null));
     Tree tree = new JavaTree.CompilationUnitTreeImpl(null, new ArrayList<>(), new ArrayList<>(), null, null);
-    bridge.visitFile(tree);
+    bridge.visitFile(tree, false);
     verify(sonarComponents, never()).symbolizableFor(any());
   }
 
@@ -308,6 +317,139 @@ class VisitorsBridgeTest {
     visitorsBridge.setJavaVersion(new JavaVersionImpl(16));
     visitorsBridge.endOfAnalysis();
     assertThat(trace).containsExactly("RuleForAllJavaVersion", "RuleForJava15", "SubscriptionVisitorForJava10");
+  }
+
+  @Test
+  void canSkipScanningOfUnchangedFiles_returns_false_by_default() {
+    VisitorsBridge vb = visitorsBridge(Collections.emptyList(), true);
+    assertThat(vb.canSkipScanningOfUnchangedFiles()).isFalse();
+  }
+
+  @Test
+  void canSkipScanningOfUnchangedFiles_returns_based_on_context() throws ApiMismatchException {
+    SonarComponents sonarComponents = mock(SonarComponents.class);
+    VisitorsBridge vb = new VisitorsBridge(
+      Collections.emptyList(),
+      Collections.emptyList(),
+      sonarComponents
+    );
+
+    doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
+    assertThat(vb.canSkipScanningOfUnchangedFiles()).isTrue();
+
+    doReturn(false).when(sonarComponents).canSkipUnchangedFiles();
+    assertThat(vb.canSkipScanningOfUnchangedFiles()).isFalse();
+
+    ApiMismatchException exception = new ApiMismatchException(new NoSuchMethodError());
+    doThrow(exception).when(sonarComponents).canSkipUnchangedFiles();
+    assertThat(vb.canSkipScanningOfUnchangedFiles()).isFalse();
+  }
+
+  @Test
+  void canVisitorBeSkippedOnUnchangedFiles_returns_false_for_EndOfAnalysisChecks() {
+    Object visitor = new EndOfAnalysisVisitor();
+    assertThat(VisitorsBridge.canVisitorBeSkippedOnUnchangedFiles(visitor)).isFalse();
+  }
+
+  @Test
+  void canVisitorBeSkippedOnUnchangedFiles_returns_false_for_visitors_defined_outside_of_checks_package() {
+    Object visitor = new VisitorNotInChecksPackage();
+    assertThat(VisitorsBridge.canVisitorBeSkippedOnUnchangedFiles(visitor)).isFalse();
+  }
+
+  @Test
+  void canVisitorBeSkippedOnUnchangedFiles_returns_true_for_valid_visitors() {
+    Object visitor = new VisitorThatCanBeSkipped();
+    assertThat(VisitorsBridge.canVisitorBeSkippedOnUnchangedFiles(visitor)).isTrue();
+  }
+
+  @Test
+  void visitorsBridge_uses_appropriate_scanners() throws ApiMismatchException {
+    SonarComponents sonarComponents = mock(SonarComponents.class);
+    doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
+
+    VisitorThatCanBeSkipped skippableVisitor = spy(new VisitorThatCanBeSkipped());
+    EndOfAnalysisVisitor endOfAnalysisVisitor = spy(new EndOfAnalysisVisitor());
+    VisitorNotInChecksPackage unskippableVisitor = spy(new VisitorNotInChecksPackage());
+    VisitorWithIncompatibleVersion incompatibleVisitor = spy(new VisitorWithIncompatibleVersion());
+
+    VisitorsBridge visitorsBridge = new VisitorsBridge(
+      List.of(skippableVisitor, endOfAnalysisVisitor, unskippableVisitor, incompatibleVisitor),
+      Collections.emptyList(),
+      sonarComponents
+    );
+
+    visitorsBridge.setJavaVersion(new JavaVersionImpl(JavaVersionImpl.MAX_SUPPORTED));
+
+    verify(skippableVisitor, times(2)).nodesToVisit();
+    verify(endOfAnalysisVisitor, never()).nodesToVisit();
+    verify(unskippableVisitor, times(4)).nodesToVisit();
+    verify(incompatibleVisitor, times(2)).nodesToVisit();
+
+    visitorsBridge.visitFile(null, true);
+
+    verify(skippableVisitor, never()).visitNode(any());
+    verify(endOfAnalysisVisitor, times(1)).scanFile(any());
+    verify(unskippableVisitor, times(1)).visitNode(any());
+    verify(incompatibleVisitor, never()).visitNode(any());
+
+    visitorsBridge.visitFile(null, false);
+    verify(skippableVisitor, times(1)).visitNode(any());
+    verify(endOfAnalysisVisitor, times(2)).scanFile(any());
+    verify(unskippableVisitor, times(2)).visitNode(any());
+    verify(incompatibleVisitor, never()).visitNode(any());
+  }
+
+  @Test
+  void endOfAnalysis_logs_nothing_when_no_file_has_been_analyzed() {
+    VisitorsBridge visitorsBridge = new VisitorsBridge(
+      Collections.emptyList(),
+      Collections.emptyList(),
+      null
+    );
+    assertThat(logTester.getLogs(LoggerLevel.INFO)).isNull();
+    visitorsBridge.endOfAnalysis();
+    assertThat(logTester.getLogs(LoggerLevel.INFO)).isNull();
+  }
+
+  @Test
+  void endOfAnalysis_logs_when_no_file_has_been_optimized() throws ApiMismatchException {
+    SonarComponents sonarComponents = mock(SonarComponents.class);
+    doReturn(false).when(sonarComponents).canSkipUnchangedFiles();
+    VisitorsBridge visitorsBridge = new VisitorsBridge(
+      Collections.emptyList(),
+      Collections.emptyList(),
+      sonarComponents
+    );
+
+    assertThat(logTester.getLogs(LoggerLevel.INFO)).isNull();
+    visitorsBridge.visitFile(null, false);
+    assertThat(logTester.getLogs(LoggerLevel.INFO)).isNull();
+    visitorsBridge.endOfAnalysis();
+    List<LogAndArguments> logsAfterEndOfAnalysis = logTester.getLogs(LoggerLevel.INFO);
+    assertThat(logsAfterEndOfAnalysis).hasSize(1);
+    assertThat(logsAfterEndOfAnalysis.get(0).getFormattedMsg())
+      .isEqualTo("Did not optimize analysis for any files, performed a full analysis for all 1 files.");
+  }
+
+  @Test
+  void endOfAnalysis_logs_when_at_least_one_file_has_been_optimized() throws ApiMismatchException {
+    SonarComponents sonarComponents = mock(SonarComponents.class);
+    doReturn(false).when(sonarComponents).canSkipUnchangedFiles();
+    VisitorsBridge visitorsBridge = new VisitorsBridge(
+      Collections.emptyList(),
+      Collections.emptyList(),
+      sonarComponents
+    );
+
+    assertThat(logTester.getLogs(LoggerLevel.INFO)).isNull();
+    visitorsBridge.visitFile(null, true);
+    assertThat(logTester.getLogs(LoggerLevel.INFO)).isNull();
+    visitorsBridge.endOfAnalysis();
+    List<LogAndArguments> logsAfterEndOfAnalysis = logTester.getLogs(LoggerLevel.INFO);
+    assertThat(logsAfterEndOfAnalysis).hasSize(1);
+    assertThat(logsAfterEndOfAnalysis.get(0).getFormattedMsg())
+      .isEqualTo("Optimized analysis for 1 of 1 files.");
   }
 
   private static String ruleKeyFromErrorLog(String errorLog) {
@@ -424,4 +566,20 @@ class VisitorsBridgeTest {
     }
   }
 
+  private static class VisitorWithIncompatibleVersion extends IssuableSubscriptionVisitor implements EndOfAnalysisCheck, JavaVersionAwareVisitor {
+    @Override
+    public List<Kind> nodesToVisit() {
+      return List.of(Kind.COMPILATION_UNIT);
+    }
+
+    @Override
+    public void endOfAnalysis() {
+      // do nothing
+    }
+
+    @Override
+    public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+      return false;
+    }
+  }
 }
