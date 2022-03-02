@@ -82,6 +82,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -635,6 +636,28 @@ class SonarComponentsTest {
     sonarComponents.setSensorContext(context);
 
     assertThat(sonarComponents.canSkipUnchangedFiles()).isFalse();
+  }
+
+  @Test
+  void fileCanBeSkipped_always_returns_false_when_skipUnchangedFiles_is_false() {
+
+    SonarComponents sonarComponents = mock(SonarComponents.class, CALLS_REAL_METHODS);
+    when(sonarComponents.canSkipUnchangedFiles()).thenReturn(false);
+    InputFile inputFile = mock(InputFile.class);
+
+    assertThat(sonarComponents.fileCanBeSkipped(inputFile)).isFalse();
+    verify(inputFile, times(0)).status();
+  }
+
+  @Test
+  void fileCanBeSkipped_always_returns_true_when_skipUnchangedFiles_is_true_and_file_status_is_same() {
+    SonarComponents sonarComponents = mock(SonarComponents.class, CALLS_REAL_METHODS);
+    when(sonarComponents.canSkipUnchangedFiles()).thenReturn(true);
+
+    InputFile inputFile = mock(InputFile.class);
+    when(inputFile.status()).thenReturn(InputFile.Status.SAME);
+
+    assertThat(sonarComponents.fileCanBeSkipped(inputFile)).isTrue();
   }
 
   @Nested
