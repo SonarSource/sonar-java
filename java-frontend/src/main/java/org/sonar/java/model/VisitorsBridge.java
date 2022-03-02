@@ -100,7 +100,7 @@ public class VisitorsBridge {
         }
         runnerWithAllScanners.add((IssuableSubscriptionVisitor) visitor);
 
-        if (incrementalScanNotSupported(visitor)) {
+        if (canSkipScanningOfUnchangedFiles() && !visitorCanSkipUnchangedFiles(visitor)) {
           if (reducedRunnerForSkippedFiles == null) {
             reducedRunnerForSkippedFiles = new IssuableSubscriptionVisitorsRunner();
             scannersForSkippedFiles.add(reducedRunnerForSkippedFiles);
@@ -110,16 +110,19 @@ public class VisitorsBridge {
       } else if (visitor instanceof JavaFileScanner) {
         allScanners.add((JavaFileScanner) visitor);
 
-        if (incrementalScanNotSupported(visitor)) {
+        if (canSkipScanningOfUnchangedFiles() && !visitorCanSkipUnchangedFiles(visitor)) {
           scannersForSkippedFiles.add((JavaFileScanner) visitor);
         }
       }
     }
   }
 
-  private boolean incrementalScanNotSupported(Object visitor) {
-    return sonarComponents == null || (sonarComponents.canSkipUnchangedFiles() &&
-      (visitor instanceof EndOfAnalysisCheck || !visitor.getClass().getCanonicalName().startsWith("org.sonar.java.checks.")));
+  private boolean canSkipScanningOfUnchangedFiles() {
+    return sonarComponents != null && sonarComponents.canSkipUnchangedFiles();
+  }
+
+  private boolean visitorCanSkipUnchangedFiles(Object visitor) {
+      return !(visitor instanceof EndOfAnalysisCheck) && visitor.getClass().getCanonicalName().startsWith("org.sonar.java.checks.");
   }
 
   public JavaVersion getJavaVersion() {
@@ -137,6 +140,10 @@ public class VisitorsBridge {
 
   public void setInAndroidContext(boolean inAndroidContext) {
     this.inAndroidContext = inAndroidContext;
+  }
+
+  public void visitFile(Tree parsedTree) {
+
   }
 
   public void visitFile(@Nullable Tree parsedTree, boolean fileCanBeSkipped) {

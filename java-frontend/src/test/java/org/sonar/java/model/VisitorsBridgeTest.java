@@ -99,7 +99,7 @@ class VisitorsBridgeTest {
 
   private static void checkFile(String filename, String code, VisitorsBridge visitorsBridge) {
     visitorsBridge.setCurrentFile(TestUtils.emptyInputFile(filename));
-    visitorsBridge.visitFile(JParserTestUtils.parse(code), true);
+    visitorsBridge.visitFile(JParserTestUtils.parse(code), false);
   }
 
 
@@ -115,7 +115,7 @@ class VisitorsBridgeTest {
   void rethrow_exception_when_hidden_property_set_to_true_with_JavaFileScanner() {
     VisitorsBridge visitorsBridge = visitorsBridge(new JFS_ThrowingNPEJavaFileScanner(), true);
     try {
-      visitorsBridge.visitFile(COMPILATION_UNIT_TREE, true);
+      visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false);
       Fail.fail("scanning of file should have raise an exception");
     } catch (AnalysisException e) {
       assertThat(e.getMessage()).contains("Failing check");
@@ -133,7 +133,7 @@ class VisitorsBridgeTest {
   void swallow_exception_when_hidden_property_set_to_false_with_JavaFileScanner() {
     try {
       visitorsBridge(new JFS_ThrowingNPEJavaFileScanner(), false)
-        .visitFile(COMPILATION_UNIT_TREE, true);
+        .visitFile(COMPILATION_UNIT_TREE, false);
     } catch (Exception e) {
       e.printStackTrace();
       Fail.fail("Exception should be swallowed when property is not set");
@@ -147,7 +147,7 @@ class VisitorsBridgeTest {
   void rethrow_exception_when_hidden_property_set_to_true_with_SubscriptionVisitor() {
     VisitorsBridge visitorsBridge = visitorsBridge(new SV1_ThrowingNPEVisitingClass(), true);
     try {
-      visitorsBridge.visitFile(COMPILATION_UNIT_TREE, true);
+      visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false);
       Fail.fail("scanning of file should have raise an exception");
     } catch (AnalysisException e) {
       assertThat(e.getMessage()).contains("Failing check");
@@ -170,7 +170,7 @@ class VisitorsBridgeTest {
         new SV3_ThrowingNPEVisitingToken(),
         new SV4_ThrowingNPEVisitingTrivia()),
         false)
-        .visitFile(COMPILATION_UNIT_TREE, true);
+        .visitFile(COMPILATION_UNIT_TREE, false);
     } catch (Exception e) {
       e.printStackTrace();
       Fail.fail("Exceptions should be swallowed when property is not set");
@@ -191,7 +191,7 @@ class VisitorsBridgeTest {
         new IV1_ThrowingNPEVisitingClass(),
         new IV2_ThrowingNPELeavingClass()),
         false)
-        .visitFile(COMPILATION_UNIT_TREE, true);
+        .visitFile(COMPILATION_UNIT_TREE, false);
     } catch (Exception e) {
       e.printStackTrace();
       Fail.fail("Exceptions should be swallowed when property is not set");
@@ -208,7 +208,7 @@ class VisitorsBridgeTest {
         new SV1_ThrowingNPEVisitingClass(),
         new IV1_ThrowingNPEVisitingClass()),
         false)
-        .visitFile(COMPILATION_UNIT_TREE, true);
+        .visitFile(COMPILATION_UNIT_TREE, false);
     } catch (Exception e) {
       e.printStackTrace();
       Fail.fail("Exceptions should be swallowed when property is not set");
@@ -224,7 +224,7 @@ class VisitorsBridgeTest {
   void no_log_when_filter_execute_fine() {
     VisitorsBridge visitorsBridge = visitorsBridge(Arrays.asList(), true);
     try {
-      visitorsBridge.visitFile(COMPILATION_UNIT_TREE, true);
+      visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false);
     } catch (Exception e) {
       e.printStackTrace();
       Fail.fail("No exception should be raised");
@@ -238,7 +238,7 @@ class VisitorsBridgeTest {
     VisitorsBridge bridge = new VisitorsBridge(Collections.emptySet(), Collections.emptyList(), sonarComponents);
     bridge.setCurrentFile(new GeneratedFile(null));
     Tree tree = new JavaTree.CompilationUnitTreeImpl(null, new ArrayList<>(), new ArrayList<>(), null, null);
-    bridge.visitFile(tree, true);
+    bridge.visitFile(tree, false);
     verify(sonarComponents, never()).symbolizableFor(any());
   }
 

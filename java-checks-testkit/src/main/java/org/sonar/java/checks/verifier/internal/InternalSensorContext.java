@@ -74,6 +74,11 @@ public final class InternalSensorContext extends InternalMockedSonarAPI implemen
   }
 
   @Override
+  public boolean canSkipUnchangedFiles() {
+    return false;
+  }
+
+  @Override
   public FileSystem fileSystem() {
     return FILE_SYSTEM;
   }
