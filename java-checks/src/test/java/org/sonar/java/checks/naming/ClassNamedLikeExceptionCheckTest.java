@@ -22,13 +22,24 @@ package org.sonar.java.checks.naming;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+
 class ClassNamedLikeExceptionCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/naming/ClassNamedLikeExceptionCheck.java")
+      .onFile(mainCodeSourcesPath("checks/naming/ClassNamedLikeExceptionCheck.java"))
       .withCheck(new ClassNamedLikeExceptionCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/naming/ClassNamedLikeExceptionCheck.java"))
+      .withCheck(new ClassNamedLikeExceptionCheck())
+      .verifyNoIssues();
   }
 }
