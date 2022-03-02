@@ -1,3 +1,7 @@
+package checks;
+
+class ThreadOverridesRunCheck {
+
 class A extends Thread{ // Noncompliant [[sc=7;ec=8]] {{Don't extend "Thread", since the "run" method is not overridden.}}
   int run;
   void run(Object stuff) {
@@ -9,7 +13,7 @@ class B extends A { //Compliant, does not directly extend Thread
 }
 
 class C extends Thread { //Compliant
-  void run() { }
+  public void run() { }
 }
 class D {
   void foo(Runnable r){
@@ -40,6 +44,8 @@ class G extends Thread { // Noncompliant {{Don't extend "Thread", since the "run
     super("hello world");
     foo();
   }
+
+  void foo() {}
 }
 
 class H extends Thread { // Noncompliant {{Don't extend "Thread", since the "run" method is not overridden.}}
@@ -57,4 +63,6 @@ enum MyEnum {
     void fun(){}
   }, BAR;
   void fun() {}
+}
+
 }
