@@ -582,6 +582,61 @@ class SonarComponentsTest {
     assertThat(sonarComponents.getBatchModeSizeInKB()).isEqualTo(1000);
   }
 
+  @Test
+  void skipUnchangedFiles_returns_result_from_context() {
+    SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
+
+    SonarComponents sonarComponents = new SonarComponents(
+      fileLinesContextFactory,
+      sensorContextTester.fileSystem(),
+      mock(ClasspathForMain.class),
+      mock(ClasspathForTest.class),
+      checkFactory
+    );
+
+    SensorContext context = mock(SensorContext.class);
+    when(context.canSkipUnchangedFiles()).thenReturn(true);
+    sonarComponents.setSensorContext(context);
+    assertThat(sonarComponents.canSkipUnchangedFiles()).isTrue();
+
+    when(context.canSkipUnchangedFiles()).thenReturn(false);
+    sonarComponents.setSensorContext(context);
+    assertThat(sonarComponents.canSkipUnchangedFiles()).isFalse();
+  }
+
+  @Test
+  void skipUnchangedFiles_returns_false_by_default() {
+    SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
+
+    SonarComponents sonarComponents = new SonarComponents(
+      fileLinesContextFactory,
+      sensorContextTester.fileSystem(),
+      mock(ClasspathForMain.class),
+      mock(ClasspathForTest.class),
+      checkFactory
+    );
+
+    assertThat(sonarComponents.canSkipUnchangedFiles()).isFalse();
+  }
+
+  @Test
+  void skipUnchangedFiles_returns_false_when_canSkipUnchangedFiles_not_in_API() {
+    SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
+    SonarComponents sonarComponents = new SonarComponents(
+      fileLinesContextFactory,
+      sensorContextTester.fileSystem(),
+      mock(ClasspathForMain.class),
+      mock(ClasspathForTest.class),
+      checkFactory
+    );
+
+    SensorContext context = mock(SensorContext.class);
+    when(context.canSkipUnchangedFiles()).thenThrow(new NoSuchMethodError("API version mismatch :-("));
+    sonarComponents.setSensorContext(context);
+
+    assertThat(sonarComponents.canSkipUnchangedFiles()).isFalse();
+  }
+
   @Nested
   class Logging {
     private final DecimalFormat formatter = new DecimalFormat("00");

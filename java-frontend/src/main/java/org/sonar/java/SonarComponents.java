@@ -378,8 +378,12 @@ public class SonarComponents {
   }
 
   public boolean canSkipUnchangedFiles() {
-    //return context.canSkipUnchangedFiles();
-    return false;
+    try {
+      return context != null && context.canSkipUnchangedFiles();
+    } catch (NoSuchMethodError e) {
+      LOG.warn("canSkipUnchangedFiles not part of sonar-plugin-api: {}", e.getMessage());
+      return false;
+    }
   }
 
   public boolean fileCanBeSkipped(InputFile inputFile) {
