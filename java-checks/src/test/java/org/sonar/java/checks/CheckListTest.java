@@ -87,7 +87,7 @@ class CheckListTest {
   void min_check_count() {
     assertThat(CheckList.getJavaChecks()).hasSizeGreaterThan(500);
     assertThat(CheckList.getJavaTestChecks()).hasSizeGreaterThan(40);
-    assertThat(CheckList.getJavaChecksNotWorkingForAutoScan()).hasSizeGreaterThan(50);
+    assertThat(CheckList.getJavaChecksNotWorkingForAutoScan()).hasSizeGreaterThan(40);
     assertThat(CheckList.getChecks()).hasSizeGreaterThan(600);
   }
 

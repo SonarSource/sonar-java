@@ -120,6 +120,7 @@ public class JavaSensor implements Sensor {
       Set<String> sonarWayRuleKeys = JavaSonarWayProfile.readProfile().ruleKeys;
       Set<Class<? extends JavaCheck>> notWorkingChecks = CheckList.getJavaChecksNotWorkingForAutoScan();
       return checks -> checks.stream()
+        .filter(c -> !(c instanceof SECheck))
         .filter(c -> sonarWayRuleKeys.contains(getKeyFromCheck(c)))
         .filter(c -> !notWorkingChecks.contains(c.getClass()))
         .collect(Collectors.toList());

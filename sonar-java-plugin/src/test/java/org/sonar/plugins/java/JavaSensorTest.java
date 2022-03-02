@@ -327,14 +327,16 @@ class JavaSensorTest {
         "CustomRepository:CustomMainCheck",
         "CustomRepository:CustomJspCheck",
         "CustomRepository:CustomTestCheck",
-        // not in SonarWay
+        // not in SonarWay (FileHeaderCheck)
         "java:S1451",
-        // main check in SonarWay
+        // main check in SonarWay (DefaultPackageCheck)
         "java:S1220",
-        // main check in SonarWay, not supported by autoscan
+        // main check in SonarWay, not supported by autoscan (CombineCatchCheck)
         "java:S2147",
-        // test check in SonarWay
-        "java:S2187"
+        // test check in SonarWay (NoTestInTestClassCheck)
+        "java:S2187",
+        // SE check (BooleanGratuitousExpressionsCheck)
+        "java:S2589"
       );
   }
 
@@ -350,7 +352,17 @@ class JavaSensorTest {
         "java:S1220",
         // test check in SonarWay
         "java:S2187"
-      );
+      ).doesNotContain(
+      "CustomRepository:CustomMainCheck",
+      "CustomRepository:CustomJspCheck",
+      "CustomRepository:CustomTestCheck",
+      // main check in SonarWay, not supported by autoscan (CombineCatchCheck)
+      "java:S2147",
+      // not in SonarWay (FileHeaderCheck)
+      "java:S1451",
+      // SE check (BooleanGratuitousExpressionsCheck)
+      "java:S2589"
+    );
   }
 
   @Test

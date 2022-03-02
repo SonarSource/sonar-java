@@ -841,29 +841,7 @@ public final class CheckList {
     .flatMap(List::stream).collect(Collectors.toList());
 
   private static final Set<Class<? extends JavaCheck>> JAVA_CHECKS_NOT_WORKING_FOR_AUTOSCAN = Set.of(
-    // Symbolic executions rules
-    AllowXMLInclusionCheck.class,
-    BooleanGratuitousExpressionsCheck.class,
-    ConditionalUnreachableCodeCheck.class,
-    CustomUnclosedResourcesCheck.class,
-    DenialOfServiceXMLCheck.class,
-    DivisionByZeroCheck.class,
-    InvariantReturnCheck.class,
-    LocksNotUnlockedCheck.class,
-    MapComputeIfAbsentOrPresentCheck.class,
-    MinMaxRangeCheck.class,
-    NonNullSetToNullCheck.class,
-    NoWayOutLoopCheck.class,
-    NullDereferenceCheck.class,
-    ObjectOutputStreamCheck.class,
-    OptionalGetBeforeIsPresentCheck.class,
-    ParameterNullnessCheck.class,
-    RedundantAssignmentsCheck.class,
-    StreamConsumedCheck.class,
-    StreamNotConsumedCheck.class,
-    UnclosedResourcesCheck.class,
-    XmlParserLoadsExternalSchemasCheck.class,
-    XxeProcessingCheck.class,
+    // Symbolic executions rules are not in this list because they are dynamically excluded
     // Rules relying on correct setup of jdk.home
     CallToDeprecatedCodeMarkedForRemovalCheck.class,
     CallToDeprecatedMethodCheck.class,
