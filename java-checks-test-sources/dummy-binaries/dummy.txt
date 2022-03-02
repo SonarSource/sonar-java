@@ -1,0 +1,1 @@
+This file is only there to play as dummy folder/file for an analysis without binaries.
