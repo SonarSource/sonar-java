@@ -660,6 +660,22 @@ class SonarComponentsTest {
     assertThat(sonarComponents.fileCanBeSkipped(inputFile)).isTrue();
   }
 
+  @Test
+  void fileCanBeSkipped_always_returns_false_when_skipUnchangedFiles_is_true_and_file_status_is_not_same() {
+    SonarComponents sonarComponents = mock(SonarComponents.class, CALLS_REAL_METHODS);
+    when(sonarComponents.canSkipUnchangedFiles()).thenReturn(true);
+
+    InputFile inputFile = mock(InputFile.class);
+    when(inputFile.status()).thenReturn(InputFile.Status.ADDED);
+
+    assertThat(sonarComponents.fileCanBeSkipped(inputFile)).isFalse();
+
+    when(inputFile.status()).thenReturn(InputFile.Status.CHANGED);
+
+    assertThat(sonarComponents.fileCanBeSkipped(inputFile)).isFalse();
+
+  }
+
   @Nested
   class Logging {
     private final DecimalFormat formatter = new DecimalFormat("00");

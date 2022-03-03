@@ -265,9 +265,8 @@ public class VisitorsBridge {
 
   public void processRecognitionException(RecognitionException e, InputFile inputFile) {
     if (sonarComponents == null || !sonarComponents.reportAnalysisError(e, inputFile)) {
-      var fileCanBeSkipped = sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile);
-      this.visitFile(null, fileCanBeSkipped);
-      getScanners(fileCanBeSkipped).stream()
+      this.visitFile(null, false);
+      getScanners(false).stream()
         .filter(ExceptionHandler.class::isInstance)
         .forEach(scanner -> ((ExceptionHandler) scanner).processRecognitionException(e));
     }
