@@ -363,27 +363,33 @@ class VisitorsBridgeTest {
     VisitorThatCanSkip skippableVisitor = spy(new VisitorThatCanSkip());
     EndOfAnalysisVisitor endOfAnalysisVisitor = spy(new EndOfAnalysisVisitor());
     VisitorOutOfChecksPackage unskippableVisitor = spy(new VisitorOutOfChecksPackage());
+    VisitorWithIncompatibleVersion incompatibleVisitor = spy(new VisitorWithIncompatibleVersion());
 
     VisitorsBridge visitorsBridge = new VisitorsBridge(
-      List.of(skippableVisitor, endOfAnalysisVisitor, unskippableVisitor),
+      List.of(skippableVisitor, endOfAnalysisVisitor, unskippableVisitor, incompatibleVisitor),
       Collections.emptyList(),
       sonarComponents
     );
 
-    verify(skippableVisitor, times(1)).nodesToVisit();
+    visitorsBridge.setJavaVersion(new JavaVersionImpl(JavaVersionImpl.MAX_SUPPORTED));
+
+    verify(skippableVisitor, times(2)).nodesToVisit();
     verify(endOfAnalysisVisitor, never()).nodesToVisit();
-    verify(unskippableVisitor, times(2)).nodesToVisit();
+    verify(unskippableVisitor, times(4)).nodesToVisit();
+    verify(incompatibleVisitor, times(2)).nodesToVisit();
 
     visitorsBridge.visitFile(null, true);
 
     verify(skippableVisitor, never()).visitNode(any());
     verify(endOfAnalysisVisitor, times(1)).scanFile(any());
     verify(unskippableVisitor, times(1)).visitNode(any());
+    verify(incompatibleVisitor, never()).visitNode(any());
 
     visitorsBridge.visitFile(null, false);
     verify(skippableVisitor, times(1)).visitNode(any());
     verify(endOfAnalysisVisitor, times(2)).scanFile(any());
     verify(unskippableVisitor, times(2)).visitNode(any());
+    verify(incompatibleVisitor, never()).visitNode(any());
   }
 
   private static String ruleKeyFromErrorLog(String errorLog) {
@@ -504,6 +510,23 @@ class VisitorsBridgeTest {
     @Override
     public List<Kind> nodesToVisit() {
       return List.of(Tree.Kind.COMPILATION_UNIT);
+    }
+  }
+
+  private static class VisitorWithIncompatibleVersion extends IssuableSubscriptionVisitor implements EndOfAnalysisCheck, JavaVersionAwareVisitor {
+    @Override
+    public List<Kind> nodesToVisit() {
+      return List.of(Kind.COMPILATION_UNIT);
+    }
+
+    @Override
+    public void endOfAnalysis() {
+      // do nothing
+    }
+
+    @Override
+    public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+      return false;
     }
   }
 }
