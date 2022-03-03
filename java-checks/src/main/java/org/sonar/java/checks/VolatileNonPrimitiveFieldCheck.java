@@ -92,7 +92,8 @@ public class VolatileNonPrimitiveFieldCheck extends IssuableSubscriptionVisitor 
   }
 
   private static boolean isUnsafeVolatile(Type symbolType) {
-    return !(symbolType.isPrimitive()
+    return !symbolType.isUnknown() &&
+      !(symbolType.isPrimitive()
       || isImmutableType(symbolType)
       || isSafelyAnnotated(symbolType.symbol().metadata()));
   }

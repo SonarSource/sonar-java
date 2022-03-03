@@ -21,16 +21,26 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.TestUtils;
+
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class VolatileNonPrimitiveFieldCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("checks/VolatileNonPrimitiveFieldCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/VolatileNonPrimitiveFieldCheck.java"))
       .withCheck(new VolatileNonPrimitiveFieldCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/VolatileNonPrimitiveFieldCheck.java"))
+      .withCheck(new VolatileNonPrimitiveFieldCheck())
+      .verifyNoIssues();
   }
 
 }
