@@ -83,6 +83,14 @@ class CheckListTest {
     assertThat(CheckList.getChecks()).hasSize(count + SE_CHEKS.size());
   }
 
+  @Test
+  void min_check_count() {
+    assertThat(CheckList.getJavaChecks()).hasSizeGreaterThan(500);
+    assertThat(CheckList.getJavaTestChecks()).hasSizeGreaterThan(40);
+    assertThat(CheckList.getJavaChecksNotWorkingForAutoScan()).hasSizeGreaterThan(40);
+    assertThat(CheckList.getChecks()).hasSizeGreaterThan(600);
+  }
+
   private static class CustomRulesDefinition implements RulesDefinition {
 
     @Override

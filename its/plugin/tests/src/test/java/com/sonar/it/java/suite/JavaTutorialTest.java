@@ -50,7 +50,7 @@ public class JavaTutorialTest {
       .setCleanPackageSonarGoals()
       .setProperty("sonar.projectKey", projectKey)
       .setProperty("sonar.projectName", projectName)
-      .setProperty("sonar.java.internal.batchMode", "true");
+      .setProperty("sonar.java.experimental.batchModeSizeInKB", "8000");
     TestUtils.provisionProject(orchestrator, projectKey, projectName, "java", "java-tutorial");
     executeAndAssertBuild(build, projectKey);
   }

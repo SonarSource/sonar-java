@@ -34,6 +34,8 @@ import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
@@ -168,10 +170,14 @@ class JavaFrontendTest {
     assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
   }
 
-  @Test
-  void test_no_batch_mode_when_sonarlint() throws IOException {
+  @ParameterizedTest
+  @CsvSource({
+    "sonar.java.experimental.batchModeSizeInKB,1000",
+    "sonar.internal.analysis.autoscan,true"
+  })
+  void test_no_batch_mode_when_sonarlint(String propertyName, String propertyValue) throws IOException {
     MapSettings settings = new MapSettings();
-    settings.setProperty("sonar.java.internal.batchMode", "true");
+    settings.setProperty(propertyName, propertyValue);
     scan(settings, SONARLINT_RUNTIME, "class A {}", "class B { A a; }");
     assertThat(sensorContext.allAnalysisErrors()).isEmpty();
     String allLogs = String.join("\n", logTester.logs());
@@ -182,10 +188,16 @@ class JavaFrontendTest {
     assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
   }
 
-  @Test
-  void test_as_batch_scan() throws IOException {
+  @ParameterizedTest
+  @CsvSource({
+    "sonar.java.experimental.batchModeSizeInKB,1000",
+    "sonar.internal.analysis.autoscan,true",
+    // alias of sonar.internal.analysis.autoscan that will be removed
+    "sonar.java.internal.batchMode,true"
+  })
+  void test_as_batch_scan(String propertyName, String propertyValue) throws IOException {
     MapSettings settings = new MapSettings();
-    settings.setProperty("sonar.java.internal.batchMode", "true");
+    settings.setProperty(propertyName, propertyValue);
     scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B { A a; }");
     assertThat(sensorContext.allAnalysisErrors()).isEmpty();
     String allLogs = String.join("\n", logTester.logs());
@@ -197,9 +209,9 @@ class JavaFrontendTest {
   }
 
   @Test
-  void test_as_batch_scan_main_and_test() throws IOException {
+  void test_as_autoscan_main_and_test() throws IOException {
     MapSettings settings = new MapSettings();
-    settings.setProperty("sonar.java.internal.batchMode", "true");
+    settings.setProperty("sonar.internal.analysis.autoscan", "true");
     scan(settings, SONARQUBE_RUNTIME, "class A {}", "class ATest { A a; }");
     assertThat(sensorContext.allAnalysisErrors()).isEmpty();
     String allLogs = String.join("\n", logTester.logs());
@@ -217,10 +229,14 @@ class JavaFrontendTest {
     assertThat(mainCodeIssueScannerAndFilter.endOfAnalysisInvocationCount).isEqualTo(1);
   }
 
-  @Test
-  void test_end_of_analysis_should_be_called_once_with_batch() throws IOException {
+  @ParameterizedTest
+  @CsvSource({
+    "sonar.java.experimental.batchModeSizeInKB,1000",
+    "sonar.internal.analysis.autoscan,true"
+  })
+  void test_end_of_analysis_should_be_called_once_with_batch(String propertyName, String propertyValue) throws IOException {
     MapSettings settings = new MapSettings();
-    settings.setProperty("sonar.java.internal.batchMode", "true");
+    settings.setProperty(propertyName, propertyValue);
     scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B { A a; }");
     assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(2);
     assertThat(mainCodeIssueScannerAndFilter.endOfAnalysisInvocationCount).isEqualTo(1);
@@ -243,11 +259,15 @@ class JavaFrontendTest {
     assertThat(mainCodeIssueScannerAndFilter.endOfAnalysisInvocationCount).isEqualTo(1);
   }
 
-  @Test
-  void should_handle_analysis_cancellation_batch_mode() throws IOException {
+  @ParameterizedTest
+  @CsvSource({
+    "sonar.java.experimental.batchModeSizeInKB,1000",
+    "sonar.internal.analysis.autoscan,true"
+  })
+  void should_handle_analysis_cancellation_batch_mode(String propertyName, String propertyValue) throws IOException {
     mainCodeIssueScannerAndFilter.isCancelled = true;
     MapSettings settings = new MapSettings();
-    settings.setProperty("sonar.java.internal.batchMode", "true");
+    settings.setProperty(propertyName, propertyValue);
     assertThatThrownBy(() -> scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B { A a; }"))
       .isInstanceOf(AnalysisException.class)
       .hasMessage("Analysis cancelled")
@@ -256,10 +276,14 @@ class JavaFrontendTest {
     assertThat(mainCodeIssueScannerAndFilter.endOfAnalysisInvocationCount).isEqualTo(1);
   }
 
-  @Test
-  void should_handle_compilation_error_in_batch_mode() throws IOException {
+  @ParameterizedTest
+  @CsvSource({
+    "sonar.java.experimental.batchModeSizeInKB,1000",
+    "sonar.internal.analysis.autoscan,true"
+  })
+  void should_handle_compilation_error_in_batch_mode(String propertyName, String propertyValue) throws IOException {
     MapSettings settings = new MapSettings();
-    settings.setProperty("sonar.java.internal.batchMode", "true");
+    settings.setProperty(propertyName, propertyValue);
     scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B {", "class C {}");
     String allLogs = String.join("\n", logTester.logs());
     assertThat(allLogs).contains("Unable to parse source file : 'B.java'");
@@ -267,20 +291,28 @@ class JavaFrontendTest {
     assertThat(mainCodeIssueScannerAndFilter.endOfAnalysisInvocationCount).isEqualTo(1);
   }
 
-  @Test
-  void analysis_exception_should_interrupt_analysis_in_batch_mode() throws IOException {
+  @ParameterizedTest
+  @CsvSource({
+    "sonar.java.experimental.batchModeSizeInKB,1000",
+    "sonar.internal.analysis.autoscan,true"
+  })
+  void analysis_exception_should_interrupt_analysis_in_batch_mode(String propertyName, String propertyValue) throws IOException {
     MapSettings settings = new MapSettings();
-    settings.setProperty("sonar.java.internal.batchMode", "true");
+    settings.setProperty(propertyName, propertyValue);
     mainCodeIssueScannerAndFilter.exceptionDuringScan = new IllegalRuleParameterException("Test AnalysisException", new NullPointerException());
     assertThatThrownBy(() -> scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B {}", "class C {}"))
       .isInstanceOf(AnalysisException.class)
       .hasMessage("Bad configuration of rule parameter");
   }
 
-  @Test
-  void exceptions_outside_rules_as_batch_should_be_logged() throws IOException {
+  @ParameterizedTest
+  @CsvSource({
+    "sonar.java.experimental.batchModeSizeInKB,1000",
+    "sonar.internal.analysis.autoscan,true"
+  })
+  void exceptions_outside_rules_as_batch_should_be_logged(String propertyName, String propertyValue) throws IOException {
     MapSettings settings = new MapSettings();
-    settings.setProperty("sonar.java.internal.batchMode", "true");
+    settings.setProperty(propertyName, propertyValue);
     InputFile brokenFile = mock(InputFile.class);
     when(brokenFile.charset()).thenThrow(new NullPointerException());
     scan(settings, SONARQUBE_RUNTIME, Collections.singletonList(brokenFile));
@@ -288,10 +320,14 @@ class JavaFrontendTest {
       containsExactly("Batch Mode failed, analysis of Java Files stopped.");
   }
 
-  @Test
-  void exceptions_outside_rules_as_batch_should_interrupt_analysis_if_fail_fast() throws IOException {
+  @ParameterizedTest
+  @CsvSource({
+    "sonar.java.experimental.batchModeSizeInKB,1000",
+    "sonar.internal.analysis.autoscan,true"
+  })
+  void exceptions_outside_rules_as_batch_should_interrupt_analysis_if_fail_fast(String propertyName, String propertyValue) throws IOException {
     MapSettings settings = new MapSettings();
-    settings.setProperty("sonar.java.internal.batchMode", "true");
+    settings.setProperty(propertyName, propertyValue);
     settings.setProperty("sonar.internal.analysis.failFast", "true");
     InputFile brokenFile = mock(InputFile.class);
     when(brokenFile.charset()).thenThrow(new NullPointerException());
@@ -359,8 +395,8 @@ class JavaFrontendTest {
   }
 
   @Test
-  void test_scan_as_batch_uses_MAX_BATCH_SIZE_when_no_batch_size_is_configured() throws IOException {
-    MapSettings settings = new MapSettings().setProperty(SonarComponents.SONAR_BATCH_MODE_KEY, true);
+  void test_scan_as_autoscan_uses_a_single_batch() throws IOException {
+    MapSettings settings = new MapSettings().setProperty(SonarComponents.SONAR_AUTOSCAN, true);
     logTester.setLevel(LoggerLevel.DEBUG);
     scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B extends A {}");
     String allLogs = String.join("\n", logTester.logs());
@@ -372,7 +408,6 @@ class JavaFrontendTest {
   @Test
   void test_scan_as_batch_uses_configured_batch_size_when_below_threshold() throws IOException {
     MapSettings settings = new MapSettings()
-      .setProperty(SonarComponents.SONAR_BATCH_MODE_KEY, true)
       .setProperty(SonarComponents.SONAR_BATCH_SIZE_KEY, 1);
     logTester.setLevel(LoggerLevel.DEBUG);
     scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B extends A {}");
@@ -386,7 +421,6 @@ class JavaFrontendTest {
   void test_scan_in_a_single_batch_when_batch_size_overflows() throws IOException {
     long overTheTopBatchSize = 9_223_372_036_855_038L;
     MapSettings settings = new MapSettings()
-      .setProperty(SonarComponents.SONAR_BATCH_MODE_KEY, true)
       .setProperty(SonarComponents.SONAR_BATCH_SIZE_KEY, overTheTopBatchSize);
     logTester.setLevel(LoggerLevel.DEBUG);
     scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B extends A {}");

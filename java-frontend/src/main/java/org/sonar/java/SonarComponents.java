@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -48,6 +49,7 @@ import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
 import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
+import org.sonar.api.config.Configuration;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
@@ -76,6 +78,8 @@ public class SonarComponents {
 
   public static final String FAIL_ON_EXCEPTION_KEY = "sonar.internal.analysis.failFast";
   public static final String SONAR_BATCH_MODE_KEY = "sonar.java.internal.batchMode";
+  public static final String SONAR_AUTOSCAN = "sonar.internal.analysis.autoscan";
+  public static final String SONAR_AUTOSCAN_CHECK_FILTERING = "sonar.internal.analysis.autoscan.filtering";
   public static final String SONAR_BATCH_SIZE_KEY = "sonar.java.experimental.batchModeSizeInKB";
 
   private static final Version SONARLINT_6_3 = Version.parse("6.3");
@@ -96,6 +100,7 @@ public class SonarComponents {
   private final List<JavaCheck> jspChecks;
   private final List<Checks<JavaCheck>> allChecks;
   private SensorContext context;
+  private UnaryOperator<List<JavaCheck>> checkFilter = UnaryOperator.identity();
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath,
@@ -157,6 +162,10 @@ public class SonarComponents {
 
   public void setSensorContext(SensorContext context) {
     this.context = context;
+  }
+
+  public void setCheckFilter(UnaryOperator<List<JavaCheck>> checkFilter) {
+    this.checkFilter = checkFilter;
   }
 
   public FileLinesContext fileLinesContextFor(InputFile inputFile) {
@@ -232,15 +241,15 @@ public class SonarComponents {
   }
 
   public List<JavaCheck> mainChecks() {
-    return mainChecks;
+    return checkFilter.apply(mainChecks);
   }
 
   public List<JavaCheck> testChecks() {
-    return testChecks;
+    return checkFilter.apply(testChecks);
   }
 
   public List<JavaCheck> jspChecks() {
-    return jspChecks;
+    return checkFilter.apply(jspChecks);
   }
 
   public Optional<RuleKey> getRuleKey(JavaCheck check) {
@@ -333,13 +342,20 @@ public class SonarComponents {
   }
 
   public boolean isBatchModeEnabled() {
-    return context.config().getBoolean(SONAR_BATCH_MODE_KEY).orElse(false) ||
-      context.config().hasKey(SONAR_BATCH_SIZE_KEY);
+    Configuration config = context.config();
+    return config.getBoolean(SONAR_AUTOSCAN).orElse(false) ||
+      config.getBoolean(SONAR_BATCH_MODE_KEY).orElse(false) ||
+      config.hasKey(SONAR_BATCH_SIZE_KEY);
   }
 
   public boolean isAutoScan() {
-    return context.config().getBoolean(SONAR_BATCH_MODE_KEY).orElse(false) &&
+    return (context.config().getBoolean(SONAR_BATCH_MODE_KEY).orElse(false) ||
+      context.config().getBoolean(SONAR_AUTOSCAN).orElse(false)) &&
       !context.config().hasKey(SONAR_BATCH_SIZE_KEY);
+  }
+
+  public boolean isAutoScanCheckFiltering() {
+    return isAutoScan() && context.config().getBoolean(SONAR_AUTOSCAN_CHECK_FILTERING).orElse(true);
   }
 
   /**
