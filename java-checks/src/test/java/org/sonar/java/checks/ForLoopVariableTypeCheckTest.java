@@ -23,6 +23,7 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class ForLoopVariableTypeCheckTest {
@@ -42,6 +43,14 @@ class ForLoopVariableTypeCheckTest {
       .withCheck(new ForLoopVariableTypeCheck())
       .withClassPath(Collections.emptyList())
       .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/ForLoopVariableTypeCheck.java"))
+      .withCheck(new ForLoopVariableTypeCheck())
+      .verifyNoIssues();
   }
 
 }
