@@ -128,11 +128,11 @@ public class VisitorsBridge {
 
   }
 
-  private boolean canSkipScanningOfUnchangedFiles() {
+  boolean canSkipScanningOfUnchangedFiles() {
     return sonarComponents != null && sonarComponents.canSkipUnchangedFiles();
   }
 
-  private static boolean visitorCanSkipUnchangedFiles(Object visitor) {
+  static boolean visitorCanSkipUnchangedFiles(Object visitor) {
     return !(visitor instanceof EndOfAnalysisCheck) && visitor.getClass().getCanonicalName().startsWith("org.sonar.java.checks.");
   }
 

@@ -41,6 +41,8 @@ import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.checks.EndOfAnalysisVisitor;
+import org.sonar.java.checks.VisitorThatCanSkip;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -53,6 +55,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -310,6 +313,46 @@ class VisitorsBridgeTest {
     assertThat(trace).containsExactly("RuleForAllJavaVersion", "RuleForJava15", "SubscriptionVisitorForJava10");
   }
 
+  @Test
+  void canSkipScanningOfUnchangedFiles_returns_false_by_default() {
+    VisitorsBridge vb = visitorsBridge(Collections.emptyList(), true);
+    assertThat(vb.canSkipScanningOfUnchangedFiles()).isFalse();
+  }
+
+  @Test
+  void canSkipScanningOfUnchangedFiles_returns_based_on_context() {
+    SonarComponents sonarComponents = mock(SonarComponents.class);
+    VisitorsBridge vb = new VisitorsBridge(
+      Collections.emptyList(),
+      Collections.emptyList(),
+      sonarComponents
+    );
+
+    doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
+    assertThat(vb.canSkipScanningOfUnchangedFiles()).isTrue();
+
+    doReturn(false).when(sonarComponents).canSkipUnchangedFiles();
+    assertThat(vb.canSkipScanningOfUnchangedFiles()).isFalse();
+  }
+
+  @Test
+  void visitorCanSkipUnchangedFiles_returns_false_for_EndOfAnalysisChecks() {
+    Object visitor = new EndOfAnalysisVisitor();
+    assertThat(VisitorsBridge.visitorCanSkipUnchangedFiles(visitor)).isFalse();
+  }
+
+  @Test
+  void visitorCanSkipUnchangedFiles_returns_false_for_visitors_defined_outside_of_checks_package() {
+    Object visitor = new VisitorOutOfChecksPackage();
+    assertThat(VisitorsBridge.visitorCanSkipUnchangedFiles(visitor)).isFalse();
+  }
+
+  @Test
+  void visitorCanSkipUnchangedFiles_returns_true_for_valid_visitors() {
+    Object visitor = new VisitorThatCanSkip();
+    assertThat(VisitorsBridge.visitorCanSkipUnchangedFiles(visitor)).isTrue();
+  }
+
   private static String ruleKeyFromErrorLog(String errorLog) {
     String newString = errorLog.substring("Unable to run check class ".length(), errorLog.indexOf(" on file"));
     if (newString.contains("SymbolicExecutionVisitor")) {
@@ -424,4 +467,10 @@ class VisitorsBridgeTest {
     }
   }
 
+  private static class VisitorOutOfChecksPackage extends IssuableSubscriptionVisitor {
+    @Override
+    public List<Kind> nodesToVisit() {
+      return null;
+    }
+  }
 }
