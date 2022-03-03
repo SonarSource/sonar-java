@@ -42,7 +42,8 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.checks.EndOfAnalysisVisitor;
-import org.sonar.java.checks.VisitorThatCanSkip;
+import org.sonar.java.checks.VisitorThatCanBeSkipped;
+import org.sonar.java.notchecks.VisitorNotInChecksPackage;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -345,13 +346,13 @@ class VisitorsBridgeTest {
 
   @Test
   void canVisitorBeSkippedOnUnchangedFiles_returns_false_for_visitors_defined_outside_of_checks_package() {
-    Object visitor = new VisitorOutOfChecksPackage();
+    Object visitor = new VisitorNotInChecksPackage();
     assertThat(VisitorsBridge.canVisitorBeSkippedOnUnchangedFiles(visitor)).isFalse();
   }
 
   @Test
   void canVisitorBeSkippedOnUnchangedFiles_returns_true_for_valid_visitors() {
-    Object visitor = new VisitorThatCanSkip();
+    Object visitor = new VisitorThatCanBeSkipped();
     assertThat(VisitorsBridge.canVisitorBeSkippedOnUnchangedFiles(visitor)).isTrue();
   }
 
@@ -360,9 +361,9 @@ class VisitorsBridgeTest {
     SonarComponents sonarComponents = mock(SonarComponents.class);
     doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
 
-    VisitorThatCanSkip skippableVisitor = spy(new VisitorThatCanSkip());
+    VisitorThatCanBeSkipped skippableVisitor = spy(new VisitorThatCanBeSkipped());
     EndOfAnalysisVisitor endOfAnalysisVisitor = spy(new EndOfAnalysisVisitor());
-    VisitorOutOfChecksPackage unskippableVisitor = spy(new VisitorOutOfChecksPackage());
+    VisitorNotInChecksPackage unskippableVisitor = spy(new VisitorNotInChecksPackage());
     VisitorWithIncompatibleVersion incompatibleVisitor = spy(new VisitorWithIncompatibleVersion());
 
     VisitorsBridge visitorsBridge = new VisitorsBridge(
@@ -503,13 +504,6 @@ class VisitorsBridgeTest {
     @Override
     public void leaveNode(Tree tree) {
       throw NPE;
-    }
-  }
-
-  private static class VisitorOutOfChecksPackage extends IssuableSubscriptionVisitor {
-    @Override
-    public List<Kind> nodesToVisit() {
-      return List.of(Tree.Kind.COMPILATION_UNIT);
     }
   }
 
