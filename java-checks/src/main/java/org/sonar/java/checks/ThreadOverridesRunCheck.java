@@ -90,11 +90,11 @@ public class ThreadOverridesRunCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean hasRunnableArgument(Arguments args) {
-    return args.stream().anyMatch(ThreadOverridesRunCheck::isRunnable);
+    return args.stream().map(ExpressionTree::symbolType).anyMatch(ThreadOverridesRunCheck::isRunnable);
   }
 
-  private static boolean isRunnable(ExpressionTree arg) {
-    return arg.symbolType().isSubtypeOf("java.lang.Runnable");
+  private static boolean isRunnable(Type argType) {
+    return argType.isUnknown() || argType.isSubtypeOf("java.lang.Runnable");
   }
 
   private static boolean hasCallToSuperWithRunnable(MethodTree constructor) {
