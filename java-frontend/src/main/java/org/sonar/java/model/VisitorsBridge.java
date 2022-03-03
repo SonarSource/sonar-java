@@ -103,36 +103,36 @@ public class VisitorsBridge {
       }
     }
     if (canSkipScanningOfUnchangedFiles()) {
-      scannersForSkippedFiles.addAll(filterScannersForSkippedFiles(allScanners));
+      scannersForSkippedFiles.addAll(getScannersThatCannotBeSkipped(visitors));
     }
   }
 
-  private List<JavaFileScanner> filterScannersForSkippedFiles(List<JavaFileScanner> scanners) {
-    List<JavaFileScanner> scannerForSkippedFiles = new ArrayList<>();
+  private List<JavaFileScanner> getScannersThatCannotBeSkipped(Iterable<? extends JavaCheck> visitors) {
+    List<JavaFileScanner> scanners = new ArrayList<>();
     IssuableSubscriptionVisitorsRunner reducedRunnerForSkippedFiles = null;
 
-    for (JavaFileScanner scanner : scanners) {
-      if (scanner instanceof IssuableSubscriptionVisitor) {
-        if (visitorCanSkipUnchangedFiles(scanner)) {
+    for (Object visitor : visitors) {
+      if (!canVisitorBeSkippedOnUnchangedFiles(visitor)) {
+        if (visitor instanceof IssuableSubscriptionVisitor) {
           if (reducedRunnerForSkippedFiles == null) {
             reducedRunnerForSkippedFiles = new IssuableSubscriptionVisitorsRunner();
-            scannersForSkippedFiles.add(reducedRunnerForSkippedFiles);
+            scanners.add(reducedRunnerForSkippedFiles);
           }
-          reducedRunnerForSkippedFiles.add((IssuableSubscriptionVisitor) scanner);
+          reducedRunnerForSkippedFiles.add((IssuableSubscriptionVisitor) visitor);
+        } else {
+          scanners.add((JavaFileScanner) visitor);
         }
-      } else if (!visitorCanSkipUnchangedFiles(scanner)) {
-        scannersForSkippedFiles.add(scanner);
       }
     }
-    return scannerForSkippedFiles;
 
+    return scanners;
   }
 
   boolean canSkipScanningOfUnchangedFiles() {
     return sonarComponents != null && sonarComponents.canSkipUnchangedFiles();
   }
 
-  static boolean visitorCanSkipUnchangedFiles(Object visitor) {
+  static boolean canVisitorBeSkippedOnUnchangedFiles(Object visitor) {
     return !(visitor instanceof EndOfAnalysisCheck) && visitor.getClass().getCanonicalName().startsWith("org.sonar.java.checks.");
   }
 

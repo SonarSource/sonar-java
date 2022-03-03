@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
 import java.util.List;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -27,6 +26,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class VisitorThatCanSkip extends IssuableSubscriptionVisitor {
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.emptyList();
+    return List.of(Tree.Kind.COMPILATION_UNIT);
+  }
+
+  @Override
+  public void visitNode(Tree tree) {
+    super.visitNode(tree);
   }
 }

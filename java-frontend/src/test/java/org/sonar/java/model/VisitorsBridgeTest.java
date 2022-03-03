@@ -58,6 +58,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 class VisitorsBridgeTest {
@@ -336,21 +338,52 @@ class VisitorsBridgeTest {
   }
 
   @Test
-  void visitorCanSkipUnchangedFiles_returns_false_for_EndOfAnalysisChecks() {
+  void canVisitorBeSkippedOnUnchangedFiles_returns_false_for_EndOfAnalysisChecks() {
     Object visitor = new EndOfAnalysisVisitor();
-    assertThat(VisitorsBridge.visitorCanSkipUnchangedFiles(visitor)).isFalse();
+    assertThat(VisitorsBridge.canVisitorBeSkippedOnUnchangedFiles(visitor)).isFalse();
   }
 
   @Test
-  void visitorCanSkipUnchangedFiles_returns_false_for_visitors_defined_outside_of_checks_package() {
+  void canVisitorBeSkippedOnUnchangedFiles_returns_false_for_visitors_defined_outside_of_checks_package() {
     Object visitor = new VisitorOutOfChecksPackage();
-    assertThat(VisitorsBridge.visitorCanSkipUnchangedFiles(visitor)).isFalse();
+    assertThat(VisitorsBridge.canVisitorBeSkippedOnUnchangedFiles(visitor)).isFalse();
   }
 
   @Test
-  void visitorCanSkipUnchangedFiles_returns_true_for_valid_visitors() {
+  void canVisitorBeSkippedOnUnchangedFiles_returns_true_for_valid_visitors() {
     Object visitor = new VisitorThatCanSkip();
-    assertThat(VisitorsBridge.visitorCanSkipUnchangedFiles(visitor)).isTrue();
+    assertThat(VisitorsBridge.canVisitorBeSkippedOnUnchangedFiles(visitor)).isTrue();
+  }
+
+  @Test
+  void visitorsBridge_uses_appropriate_scanners() {
+    SonarComponents sonarComponents = mock(SonarComponents.class);
+    doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
+
+    VisitorThatCanSkip skippableVisitor = spy(new VisitorThatCanSkip());
+    EndOfAnalysisVisitor endOfAnalysisVisitor = spy(new EndOfAnalysisVisitor());
+    VisitorOutOfChecksPackage unskippableVisitor = spy(new VisitorOutOfChecksPackage());
+
+    VisitorsBridge visitorsBridge = new VisitorsBridge(
+      List.of(skippableVisitor, endOfAnalysisVisitor, unskippableVisitor),
+      Collections.emptyList(),
+      sonarComponents
+    );
+
+    verify(skippableVisitor, times(1)).nodesToVisit();
+    verify(endOfAnalysisVisitor, never()).nodesToVisit();
+    verify(unskippableVisitor, times(2)).nodesToVisit();
+
+    visitorsBridge.visitFile(null, true);
+
+    verify(skippableVisitor, never()).visitNode(any());
+    verify(endOfAnalysisVisitor, times(1)).scanFile(any());
+    verify(unskippableVisitor, times(1)).visitNode(any());
+
+    visitorsBridge.visitFile(null, false);
+    verify(skippableVisitor, times(1)).visitNode(any());
+    verify(endOfAnalysisVisitor, times(2)).scanFile(any());
+    verify(unskippableVisitor, times(2)).visitNode(any());
   }
 
   private static String ruleKeyFromErrorLog(String errorLog) {
@@ -470,7 +503,7 @@ class VisitorsBridgeTest {
   private static class VisitorOutOfChecksPackage extends IssuableSubscriptionVisitor {
     @Override
     public List<Kind> nodesToVisit() {
-      return null;
+      return List.of(Tree.Kind.COMPILATION_UNIT);
     }
   }
 }

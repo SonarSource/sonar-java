@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
 import java.util.List;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
@@ -34,6 +33,6 @@ public class EndOfAnalysisVisitor extends SubscriptionVisitor implements EndOfAn
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.emptyList();
+    return List.of(Tree.Kind.COMPILATION_UNIT);
   }
 }
