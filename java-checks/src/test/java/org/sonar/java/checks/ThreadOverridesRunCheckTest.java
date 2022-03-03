@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class ThreadOverridesRunCheckTest {
 
@@ -30,6 +31,14 @@ class ThreadOverridesRunCheckTest {
   void detected() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/ThreadOverridesRunCheck.java"))
+      .withCheck(new ThreadOverridesRunCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/ThreadOverridesRunCheck.java"))
       .withCheck(new ThreadOverridesRunCheck())
       .verifyIssues();
   }
