@@ -52,7 +52,11 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
     Type variableType = actualStatement.variable().type().symbolType();
     Type collectionItemType = getCollectionItemType(actualStatement.expression());
 
-    if (collectionItemType != null && !isMostPreciseType(variableType, collectionItemType)) {
+    if (collectionItemType == null || collectionItemType.isUnknown() || variableType.isUnknown()) {
+      return;
+    }
+
+    if (!isMostPreciseType(variableType, collectionItemType)) {
       // Second pass: check if the variable is down-cast in the statement block
       DownCastVisitor downCastVisitor = new DownCastVisitor(actualStatement.variable().symbol());
       actualStatement.statement().accept(downCastVisitor);
