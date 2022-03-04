@@ -29,6 +29,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
@@ -64,7 +65,7 @@ public class VisitorsBridge {
 
   private final Iterable<? extends JavaCheck> visitors;
   private final List<JavaFileScanner> allScanners;
-  private final List<JavaFileScanner> scannersForSkippedFiles;
+  private final List<JavaFileScanner> scannersThatCannotBeSkipped;
   private final SonarComponents sonarComponents;
   protected InputFile currentFile;
   protected JavaVersion javaVersion;
@@ -79,64 +80,53 @@ public class VisitorsBridge {
   public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
     this.visitors = visitors;
     this.allScanners = new ArrayList<>();
-    this.scannersForSkippedFiles = new ArrayList<>();
+    this.scannersThatCannotBeSkipped = new ArrayList<>();
     this.classpath = projectClasspath;
     this.sonarComponents = sonarComponents;
     updateScanners();
   }
 
   private void updateScanners() {
-    scannersForSkippedFiles.clear();
     allScanners.clear();
+    scannersThatCannotBeSkipped.clear();
 
-    final IssuableSubscriptionVisitorsRunner runnerWithAllScanners = new IssuableSubscriptionVisitorsRunner();
-    StreamSupport.stream(visitors.spliterator(), false)
-      .filter(this::isVisitorJavaVersionCompatible)
-      .forEach(visitor -> {
-        if (visitor instanceof IssuableSubscriptionVisitor) {
-          runnerWithAllScanners.add((IssuableSubscriptionVisitor) visitor);
-        } else if (visitor instanceof JavaFileScanner) {
-          allScanners.add((JavaFileScanner) visitor);
-        }
-      });
-
-    if (!runnerWithAllScanners.subscriptionVisitors.isEmpty()) {
-      allScanners.add(runnerWithAllScanners);
-    }
-
+    allScanners.addAll(filterVisitors(visitors, this::isVisitorJavaVersionCompatible));
     if (canSkipScanningOfUnchangedFiles()) {
-      scannersForSkippedFiles.addAll(getScannersThatCannotBeSkipped(visitors));
+      scannersThatCannotBeSkipped.addAll(filterVisitors(visitors, this::isUnskippableVisitor));
     }
   }
 
-  boolean isVisitorJavaVersionCompatible(Object visitor) {
-    return javaVersion == null || !(visitor instanceof JavaVersionAwareVisitor) ||
-      ((JavaVersionAwareVisitor) visitor).isCompatibleWithJavaVersion(javaVersion);
-  }
-
-  private List<JavaFileScanner> getScannersThatCannotBeSkipped(Iterable<? extends JavaCheck> visitors) {
+  private List<JavaFileScanner> filterVisitors(Iterable<? extends JavaCheck> visitors, Predicate<Object> predicate) {
     List<JavaFileScanner> scanners = new ArrayList<>();
-    final IssuableSubscriptionVisitorsRunner reducedRunnerForSkippedFiles = new IssuableSubscriptionVisitorsRunner();
+    final IssuableSubscriptionVisitorsRunner runner = new IssuableSubscriptionVisitorsRunner();
 
     StreamSupport.stream(visitors.spliterator(), false)
-      .filter(v -> isVisitorJavaVersionCompatible(v) && !canVisitorBeSkippedOnUnchangedFiles(v))
+      .filter(predicate)
       .forEach(visitor -> {
         if (visitor instanceof IssuableSubscriptionVisitor) {
-          reducedRunnerForSkippedFiles.add((IssuableSubscriptionVisitor) visitor);
-        } else {
+          runner.add((IssuableSubscriptionVisitor) visitor);
+        } else if (visitor instanceof JavaFileScanner) {
           scanners.add((JavaFileScanner) visitor);
         }
       });
 
-    if (!reducedRunnerForSkippedFiles.subscriptionVisitors.isEmpty()) {
-      scanners.add(reducedRunnerForSkippedFiles);
+    if (!runner.subscriptionVisitors.isEmpty()) {
+      scanners.add(runner);
     }
-
     return scanners;
   }
 
   boolean canSkipScanningOfUnchangedFiles() {
     return sonarComponents != null && sonarComponents.canSkipUnchangedFiles();
+  }
+
+  boolean isUnskippableVisitor(Object visitor) {
+    return isVisitorJavaVersionCompatible(visitor) && !canVisitorBeSkippedOnUnchangedFiles(visitor);
+  }
+
+  boolean isVisitorJavaVersionCompatible(Object visitor) {
+    return javaVersion == null || !(visitor instanceof JavaVersionAwareVisitor) ||
+      ((JavaVersionAwareVisitor) visitor).isCompatibleWithJavaVersion(javaVersion);
   }
 
   static boolean canVisitorBeSkippedOnUnchangedFiles(Object visitor) {
@@ -260,7 +250,7 @@ public class VisitorsBridge {
   }
 
   private List<JavaFileScanner> getScanners(boolean supportedScannersCanBeSkippedForThisFile) {
-    return supportedScannersCanBeSkippedForThisFile ? scannersForSkippedFiles : allScanners;
+    return supportedScannersCanBeSkippedForThisFile ? scannersThatCannotBeSkipped : allScanners;
   }
 
   public void processRecognitionException(RecognitionException e, InputFile inputFile) {
