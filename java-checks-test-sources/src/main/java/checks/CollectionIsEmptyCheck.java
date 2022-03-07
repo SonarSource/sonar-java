@@ -100,13 +100,15 @@ class CollectionIsEmptyCheck {
     b = foo.bar() == 0; // Compliant
 
     b = foo.col().size() == 0; // Noncompliant
-    
+
     b = baot.size() == 0; // Compliant
     b = foo.size() == 0; // Compliant
-    
+
     i = myCollection.size() & 0; // Compliant
+
+    b = myCollection.size() == 0 && b; // Noncompliant
   }
-  
+
   private int bar() {
     return 0;
   }
@@ -124,10 +126,22 @@ class MyCollection<E> extends ArrayList<E> {
   boolean foo() {
     return size() == 0; // Compliant
   }
-  
+
   class MyInnerClass {
     Collection myCollection;
-    
+
+    boolean bar() {
+      return myCollection.size() == 0; // FN - acceptable as pretty hard to catch with current logic
+    }
+
+    boolean qix() {
+      return size() == 0; // Compliant
+    }
+  }
+
+  static class MyNestedClass {
+    Collection myCollection;
+
     boolean bar() {
       return myCollection.size() == 0; // Noncompliant
     }
