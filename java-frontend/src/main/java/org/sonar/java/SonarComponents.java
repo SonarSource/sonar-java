@@ -81,6 +81,7 @@ public class SonarComponents {
   public static final String SONAR_AUTOSCAN = "sonar.internal.analysis.autoscan";
   public static final String SONAR_AUTOSCAN_CHECK_FILTERING = "sonar.internal.analysis.autoscan.filtering";
   public static final String SONAR_BATCH_SIZE_KEY = "sonar.java.experimental.batchModeSizeInKB";
+  public static final String SONAR_CAN_SKIP_UNCHANGED_FILES_KEY = "sonar.java.internal.skipUnchanged";
 
   private static final Version SONARLINT_6_3 = Version.parse("6.3");
   private static final Version SONARQUBE_9_2 = Version.parse("9.2");
@@ -101,6 +102,8 @@ public class SonarComponents {
   private final List<Checks<JavaCheck>> allChecks;
   private SensorContext context;
   private UnaryOperator<List<JavaCheck>> checkFilter = UnaryOperator.identity();
+
+  private boolean alreadyLoggedSkipStatus = false;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath,
@@ -360,6 +363,7 @@ public class SonarComponents {
 
   /**
    * Returns the batch mode size as read from configuration. If not value can be found, returns -1L.
+   *
    * @return the batch mode size or a default value of -1L.
    */
   public long getBatchModeSizeInKB() {
@@ -379,9 +383,24 @@ public class SonarComponents {
 
   public boolean canSkipUnchangedFiles() {
     try {
-      return context != null && context.canSkipUnchangedFiles();
+      var canSkip = context != null && (
+        (context.config() != null && context.config().getBoolean(SONAR_CAN_SKIP_UNCHANGED_FILES_KEY).orElse(false)) ||
+          context.canSkipUnchangedFiles()
+      );
+
+      if (canSkip) {
+        LOG.info("Skipping unchanged files.");
+        alreadyLoggedSkipStatus = true;
+      }
+      return canSkip;
     } catch (NoSuchMethodError e) {
-      LOG.warn("canSkipUnchangedFiles not part of sonar-plugin-api: {}", e.getMessage());
+      if (!alreadyLoggedSkipStatus) {
+        LOG.warn(
+          "Cannot determine whether we can skip unchecked files: canSkipUnchangedFiles not part of sonar-plugin-api. Not skipping. {}",
+          e.getMessage()
+        );
+        alreadyLoggedSkipStatus = true;
+      }
       return false;
     }
   }
