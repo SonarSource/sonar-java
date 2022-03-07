@@ -167,6 +167,9 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
       if (parent.is(Tree.Kind.VARIABLE)) {
         return ((VariableTree) parent).symbol();
       }
+      if (parent.is(Tree.Kind.ASSIGNMENT)) {
+        return symbol(((AssignmentExpressionTree) parent).variable());
+      }
       return Symbols.unknownSymbol;
     }
   }

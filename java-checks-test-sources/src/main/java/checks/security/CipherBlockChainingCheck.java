@@ -2,6 +2,7 @@ package checks.security;
 
 import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
+import java.security.spec.AlgorithmParameterSpec;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -191,6 +192,26 @@ class CipherBlockChainingCheck {
     Cipher
       .getInstance(OPERATION_MODE, "BC")
       .init(Cipher.DECRYPT_MODE, ks, iv);
+  }
+
+  static void decryptImpl17(byte[] biv, SecretKeySpec ks) throws Exception {
+    AlgorithmParameterSpec spec;
+    spec = new IvParameterSpec(biv); // Compliant
+    Cipher
+      .getInstance(OPERATION_MODE, "BC")
+      .init(Cipher.DECRYPT_MODE, ks, spec);
+  }
+
+  static void decryptImpl18(byte[] biv, SecretKeySpec ks) throws Exception {
+    AlgorithmParameterSpec spec;
+    if (true) {
+      spec = new IvParameterSpec(biv); // Compliant
+    } else {
+      // some other type of initialization
+    }
+    Cipher
+      .getInstance(OPERATION_MODE, "BC")
+      .init(Cipher.DECRYPT_MODE, ks, spec);
   }
 }
 
