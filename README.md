@@ -54,8 +54,7 @@ To run tests locally follow these instructions.
 
 ### Java versions
 
-You need `Java 16` to build the project.
-You need `Java 11` to run the Integration Tests (ITs).
+You need `Java 17` to build the project and run the Integration Tests (ITs).
 
 ### Build the Project and Run Unit Tests
 
@@ -92,6 +91,8 @@ The "Sanity Test" is a test which runs all checks against all the test sources f
 The "Plugin Test" is an integration test suite which verifies plugin features such as metric calculation, coverage etc. To launch it:
 
     mvn clean install -Pit-plugin
+
+Beware that some tests, specifically the `JspTest`, may fail due a missing or unauthorized Github token.
 
 #### Ruling Test
 
