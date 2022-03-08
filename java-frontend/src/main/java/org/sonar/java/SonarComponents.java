@@ -396,7 +396,7 @@ public class SonarComponents {
     } catch (NoSuchMethodError e) {
       if (!alreadyLoggedSkipStatus) {
         LOG.warn(
-          "Cannot determine whether we can skip unchecked files: canSkipUnchangedFiles not part of sonar-plugin-api. Not skipping. {}",
+          "Cannot determine whether we can skip unchanged files: canSkipUnchangedFiles not part of sonar-plugin-api. Not skipping. {}",
           e.getMessage()
         );
         alreadyLoggedSkipStatus = true;
