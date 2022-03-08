@@ -388,7 +388,7 @@ public class SonarComponents {
           context.canSkipUnchangedFiles()
       );
 
-      if (canSkip) {
+      if (canSkip && !alreadyLoggedSkipStatus) {
         LOG.info("Skipping unchanged files.");
         alreadyLoggedSkipStatus = true;
       }
