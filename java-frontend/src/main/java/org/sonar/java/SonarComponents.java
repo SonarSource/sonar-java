@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -82,6 +83,7 @@ public class SonarComponents {
   public static final String SONAR_AUTOSCAN_CHECK_FILTERING = "sonar.internal.analysis.autoscan.filtering";
   public static final String SONAR_BATCH_SIZE_KEY = "sonar.java.experimental.batchModeSizeInKB";
   public static final String SONAR_CAN_SKIP_UNCHANGED_FILES_KEY = "sonar.java.internal.skipUnchanged";
+  public static final String SONAR_CHANGE_SET = "sonar.java.internal.changeSet";
 
   private static final Version SONARLINT_6_3 = Version.parse("6.3");
   private static final Version SONARQUBE_9_2 = Version.parse("9.2");
@@ -104,6 +106,7 @@ public class SonarComponents {
   private UnaryOperator<List<JavaCheck>> checkFilter = UnaryOperator.identity();
 
   private boolean alreadyLoggedSkipStatus = false;
+  private Set<String> changeSet;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath,
@@ -407,6 +410,27 @@ public class SonarComponents {
 
   public boolean fileCanBeSkipped(InputFile inputFile) {
     return canSkipUnchangedFiles() && inputFile.status() == InputFile.Status.SAME;
+  }
+
+  public boolean isIncrementalAnalysisEnabled() {
+    return !loadChangeSet().isEmpty();
+  }
+
+  public boolean isPartOfChangeSet(InputFile inputFile) {
+    return loadChangeSet().contains(inputFile.filename());
+  }
+
+  private synchronized Set<String> loadChangeSet() {
+    if (changeSet != null) {
+      return changeSet;
+    }
+    Configuration config = context.config();
+    if (config.hasKey(SONAR_CHANGE_SET)) {
+      changeSet = new HashSet<>(Arrays.asList(config.getStringArray(SONAR_CHANGE_SET)));
+    } else {
+      changeSet = Collections.emptySet();
+    }
+    return changeSet;
   }
 
   public InputComponent project() {

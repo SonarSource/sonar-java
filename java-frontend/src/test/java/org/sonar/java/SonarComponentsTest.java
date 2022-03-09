@@ -83,6 +83,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -559,9 +560,9 @@ class SonarComponentsTest {
 
   @Test
   void batch_getters() {
-    MapSettings settings = new MapSettings();
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
-    sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(settings));
+      MapSettings settings = new MapSettings();
+      SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+      sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(settings));
 
     // default value
     assertThat(sonarComponents.isAutoScan()).isFalse();
@@ -662,6 +663,7 @@ class SonarComponentsTest {
 
   @Test
   void fileCanBeSkipped_always_returns_false_when_skipUnchangedFiles_is_true_and_file_status_is_not_same() {
+    MapSettings settings = new MapSettings();
     SonarComponents sonarComponents = mock(SonarComponents.class, CALLS_REAL_METHODS);
     when(sonarComponents.canSkipUnchangedFiles()).thenReturn(true);
 
@@ -674,6 +676,55 @@ class SonarComponentsTest {
 
     assertThat(sonarComponents.fileCanBeSkipped(inputFile)).isFalse();
 
+  }
+
+  @Test
+  void isIncrementAnalysisEnabled_returns_false_when_changeSet_property_is_not_set() {
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(new MapSettings()));
+    assertThat(sonarComponents.isIncrementalAnalysisEnabled()).isFalse();
+  }
+
+  @Test
+  void isIncrementAnalysisEnabled_returns_false_when_changeSet_property_is_empty() {
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    MapSettings settings = new MapSettings();
+    settings.setProperty(SonarComponents.SONAR_CHANGE_SET, "");
+    sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(settings));
+    assertThat(sonarComponents.isIncrementalAnalysisEnabled()).isFalse();
+  }
+
+  @Test
+  void isIncrementAnalysisEnabled_returns_true_when_changeSet_property_is_not_empty() {
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    MapSettings settings = new MapSettings();
+    settings.setProperty(SonarComponents.SONAR_CHANGE_SET, "some/file,another/file");
+    sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(settings));
+    assertThat(sonarComponents.isIncrementalAnalysisEnabled()).isTrue();
+  }
+
+  @Test
+  void isPartOfChangeSet_returns_false_when_the_change_set_is_not_set() {
+    MapSettings settings = new MapSettings();
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(settings));
+    assertThat(sonarComponents.isPartOfChangeSet(mock(InputFile.class))).isFalse();
+  }
+
+  @Test
+  void isPartOfChangeSet_returns_true_when_the_change_contains_the_file() {
+    MapSettings settings = new MapSettings();
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(settings));
+    settings.setProperty(SonarComponents.SONAR_CHANGE_SET, "file/in/the/change/Set.java,also/in/the/change/Set.java");
+
+    InputFile first = mock(InputFile.class);
+    doReturn("file/in/the/change/Set.java").when(first).filename();
+    assertThat(sonarComponents.isPartOfChangeSet(first)).isTrue();
+
+    InputFile second = mock(InputFile.class);
+    doReturn("also/in/the/change/Set.java").when(second).filename();
+    assertThat(sonarComponents.isPartOfChangeSet(second)).isTrue();
   }
 
   @Nested
