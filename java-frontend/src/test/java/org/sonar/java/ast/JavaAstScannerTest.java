@@ -274,7 +274,7 @@ class JavaAstScannerTest {
         TestUtils.inputFile("src/test/resources/module-info.java")
       ));
 
-    assertThat(logTester.logs(LoggerLevel.INFO)).hasSize(2)
+    assertThat(logTester.logs(LoggerLevel.INFO)).hasSize(4)
       .contains("1/1 source file has been analyzed");
     assertThat(logTester.logs(LoggerLevel.ERROR)).containsExactly(
       "Unable to parse source file : 'src/test/files/metrics/Java15SwitchExpression.java'",

@@ -375,7 +375,7 @@ public class SonarComponents {
 
   public File workDir() {
     ProjectDefinition current = projectDefinition;
-    if(current == null) {
+    if (current == null) {
       return fs.workDir();
     }
     while (current.getParent() != null) {
@@ -391,15 +391,20 @@ public class SonarComponents {
           context.canSkipUnchangedFiles()
       );
 
-      if (canSkip && !alreadyLoggedSkipStatus) {
-        LOG.info("Skipping unchanged files.");
+      if (!alreadyLoggedSkipStatus) {
+        if (canSkip) {
+          LOG.info("The Java analyzer is running in a context where unchanged files can be skipped. Full analysis is performed " +
+            "for changed files, optimized analysis for unchanged files.");
+        } else {
+          LOG.info("The Java analyzer cannot skip unchanged files in this context. A full analysis is performed for all files.");
+        }
         alreadyLoggedSkipStatus = true;
       }
       return canSkip;
     } catch (NoSuchMethodError e) {
       if (!alreadyLoggedSkipStatus) {
         LOG.warn(
-          "Cannot determine whether we can skip unchanged files: canSkipUnchangedFiles not part of sonar-plugin-api. Not skipping. {}",
+          "Cannot determine whether the context allows skipping unchanged files: canSkipUnchangedFiles not part of sonar-plugin-api. Not skipping. {}",
           e.getMessage()
         );
         alreadyLoggedSkipStatus = true;

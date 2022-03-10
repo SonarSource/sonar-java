@@ -71,6 +71,8 @@ public class VisitorsBridge {
   protected JavaVersion javaVersion;
   private final List<File> classpath;
   protected boolean inAndroidContext = false;
+  private int fullyScannedFileCount = 0;
+  private int skippedFileCount = 0;
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
@@ -151,6 +153,12 @@ public class VisitorsBridge {
   }
 
   public void visitFile(@Nullable Tree parsedTree, boolean fileCanBeSkipped) {
+    if (fileCanBeSkipped) {
+      skippedFileCount++;
+    } else {
+      fullyScannedFileCount++;
+    }
+
     PerformanceMeasure.Duration compilationUnitDuration = PerformanceMeasure.start("CompilationUnit");
     JavaTree.CompilationUnitTreeImpl tree = new JavaTree.CompilationUnitTreeImpl(null, new ArrayList<>(), new ArrayList<>(), null, null);
     compilationUnitDuration.stop();
@@ -267,6 +275,12 @@ public class VisitorsBridge {
   }
 
   public void endOfAnalysis() {
+    if (skippedFileCount > 0) {
+      LOG.info("Optimized analysis for {} of {} files.", skippedFileCount, skippedFileCount + fullyScannedFileCount);
+    } else {
+      LOG.info("Did not optimize analysis for any files, performed a full analysis for all {} files.", fullyScannedFileCount);
+    }
+
     allScanners.stream()
       .filter(EndOfAnalysisCheck.class::isInstance)
       .map(EndOfAnalysisCheck.class::cast)
