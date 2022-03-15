@@ -34,6 +34,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -52,8 +53,14 @@ public class ChangeBasedAnalysisTest {
   private static Path RESOURCES_FOLDER = Paths.get("..", "..", "its", "ruling", "src", "test", "resources").toAbsolutePath().normalize();
   private static Path TARGET_ACTUAL = Paths.get("target", "actual").toAbsolutePath();
 
-  private static final String LOG_MESSAGE = "The Java analyzer is running in a context where unchanged files can be skipped. " +
+  private static final String GENERAL_OPTIMIZATION_LOG_MESSAGE = "The Java analyzer is running in a context where unchanged files can be skipped. " +
     "Full analysis is performed for changed files, optimized analysis for unchanged files.";
+
+  private static final Map<String, String> BRANCH_SPECIFIC_OPTIMIZATION_LOG_MESSAGE = Map.of(
+    "main", "Did not optimize analysis for any files, performed a full analysis for all 3 files.",
+    "branch-same", "Optimized analysis for 3 of 3 files.",
+    "branch-diff", "Optimized analysis for 2 of 3 files."
+  );
 
   @ClassRule
   public static TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -126,7 +133,9 @@ public class ChangeBasedAnalysisTest {
     String mainBranch = "main";
     BuildResult buildResult = orchestrator.executeBuild(setupBuild(mainBranch));
     assertNoDifferences(mainBranch);
-    assertThat(buildResult.getLogs()).contains(LOG_MESSAGE);
+    assertThat(buildResult.getLogs())
+      .contains(GENERAL_OPTIMIZATION_LOG_MESSAGE)
+      .contains(BRANCH_SPECIFIC_OPTIMIZATION_LOG_MESSAGE.get(mainBranch));
 
     for (String branch : List.of("branch-same", "branch-diff")) {
       MavenBuild mavenBuild = setupBuild(branch)
@@ -139,7 +148,9 @@ public class ChangeBasedAnalysisTest {
         );
       buildResult = orchestrator.executeBuild(mavenBuild);
       assertNoDifferences(branch);
-      assertThat(buildResult.getLogs()).contains(LOG_MESSAGE);
+      assertThat(buildResult.getLogs())
+        .contains(GENERAL_OPTIMIZATION_LOG_MESSAGE)
+        .contains(BRANCH_SPECIFIC_OPTIMIZATION_LOG_MESSAGE.get(branch));
     }
   }
 
