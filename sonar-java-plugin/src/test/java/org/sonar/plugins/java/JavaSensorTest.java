@@ -113,7 +113,7 @@ class JavaSensorTest {
 
   @Test
   void test_issues_creation_on_main_file() throws IOException {
-    testIssueCreation(InputFile.Type.MAIN, 14);
+    testIssueCreation(InputFile.Type.MAIN, 15);
   }
 
   @Test
@@ -176,12 +176,24 @@ class JavaSensorTest {
 
   @Test
   void should_invoke_visitors_on_generated_code() throws Exception {
+    assertJasperIsInvoked(new MapSettings());
+  }
+
+  @Test
+  void should_invoke_visitors_on_generated_code_in_batch_mode() throws Exception {
+    MapSettings settings = new MapSettings();
+    settings.setProperty("sonar.java.experimental.batchModeSizeInKB", "10");
+    assertJasperIsInvoked(settings);
+  }
+
+  private void assertJasperIsInvoked(MapSettings settings) throws IOException {
     Path base = tmp.newFolder().toPath();
     Path generatedFilePath = tmp.newFile("Generated.java").toPath();
     Files.write(generatedFilePath, "class Generated {}".getBytes());
     GeneratedFile generatedFile = new GeneratedFile(generatedFilePath);
 
     SensorContextTester context = SensorContextTester.create(base);
+    context.setSettings(settings);
     context.fileSystem().setWorkDir(tmp.newFolder().toPath());
     SonarComponents sonarComponents = createSonarComponentsMock(context);
     JavaFileScanner javaFileScanner = mock(JavaFileScanner.class);
