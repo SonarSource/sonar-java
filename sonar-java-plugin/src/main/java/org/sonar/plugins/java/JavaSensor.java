@@ -164,8 +164,8 @@ public class JavaSensor implements Sensor {
   }
 
   private Collection<GeneratedFile> runJasper(SensorContext context) {
-    if (sonarComponents.isBatchModeEnabled()) {
-      // for security reasons, do not run jasper to generate code in batch mode
+    if (sonarComponents.isAutoScan()) {
+      // for security reasons, do not run jasper to generate code in autoscan mode
       return Collections.emptyList();
     }
     return jasper != null ? jasper.generateFiles(context, sonarComponents.getJavaClasspath()) : Collections.emptyList();
