@@ -22,6 +22,7 @@ package org.sonar.java.it;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableSet;
 import com.sonar.orchestrator.Orchestrator;
+import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.container.Edition;
 import com.sonar.orchestrator.container.Server;
@@ -33,11 +34,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import org.assertj.core.api.Assertions;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ChangeBasedAnalysisTest {
   // Feature configuration
@@ -47,8 +49,11 @@ public class ChangeBasedAnalysisTest {
   // Project configuration
   private static String PROJECT_KEY = "change-based-analysis";
   private static String PROJECT_NAME = PROJECT_KEY;
-  private static Path PROJECT_LOCATION = Paths.get("..", "..", "its", "ruling", "src", "test", "resources").toAbsolutePath().normalize();
+  private static Path RESOURCES_FOLDER = Paths.get("..", "..", "its", "ruling", "src", "test", "resources").toAbsolutePath().normalize();
   private static Path TARGET_ACTUAL = Paths.get("target", "actual").toAbsolutePath();
+
+  private static final String LOG_MESSAGE = "The Java analyzer is running in a context where unchanged files can be skipped. " +
+    "Full analysis is performed for changed files, optimized analysis for unchanged files.";
 
   @ClassRule
   public static TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -64,7 +69,7 @@ public class ChangeBasedAnalysisTest {
   @BeforeClass
   public static void prepare_quality_profiles() throws Exception {
     ImmutableSet<String> subsetOfEnabledRules = ImmutableSet.copyOf(
-        Splitter.on(',').trimResults().omitEmptyStrings().splitToList(
+      Splitter.on(',').trimResults().omitEmptyStrings().splitToList(
         System.getProperty("rules", "")
       )
     );
@@ -83,14 +88,22 @@ public class ChangeBasedAnalysisTest {
 
   private static MavenBuild setupBuild(String branch) throws IOException {
     String folderName = getBranchFolderBasename(branch);
-    Path correctConfigIssues = TARGET_ACTUAL.resolve(folderName + "-issues").toAbsolutePath();
-    Path projectLocation = PROJECT_LOCATION.resolve(folderName);
+
+    Path projectLocation = RESOURCES_FOLDER.resolve(folderName);
+    Path projectPom = projectLocation.resolve("pom.xml");
     String binaries = projectLocation.resolve(Paths.get("target", "classes")).toString();
+
+    Path expectedIssuesFolder = RESOURCES_FOLDER.resolve(folderName + "-issues").toAbsolutePath();
+    Path actualIssuesFolder = TARGET_ACTUAL.resolve(folderName + "-issues").toAbsolutePath();
+    if (!Files.exists(actualIssuesFolder)) {
+      Files.createDirectories(actualIssuesFolder);
+    }
+    Path issuesDifferenceFile = TARGET_ACTUAL.resolve(folderName + ".differences");
     return MavenBuild.create()
       // Set up incremental analysis
       .setProperty(INCREMENTAL_ANALYSIS_KEY, Boolean.toString(INCREMENTAL_ANALYSIS_VALUE))
       // Set up project configuration
-      .setPom(projectLocation.resolve("pom.xml").toFile().getCanonicalFile())
+      .setPom(projectPom.toFile().getCanonicalFile())
       .setCleanPackageSonarGoals()
       .setProperty("sonar.java.binaries", binaries)
       .addArgument("-Prules")
@@ -101,9 +114,9 @@ public class ChangeBasedAnalysisTest {
       .setProperty("sonar.skipPackageDesign", "true")
       .setProperty("sonar.internal.analysis.failFast", "true")
       // issues output configuration
-      .setProperty("sonar.lits.dump.old", correctConfigIssues.toString())
-      .setProperty("sonar.lits.dump.new", createTempFolder(branch).toAbsolutePath().toString())
-      .setProperty("sonar.lits.differences", TARGET_ACTUAL.resolve(folderName + ".differences").toString());
+      .setProperty("sonar.lits.dump.old", expectedIssuesFolder.toString())
+      .setProperty("sonar.lits.dump.new", actualIssuesFolder.toString())
+      .setProperty("sonar.lits.differences", issuesDifferenceFile.toString());
   }
 
   @Test
@@ -111,10 +124,11 @@ public class ChangeBasedAnalysisTest {
     provisionProject(orchestrator, PROJECT_KEY, PROJECT_NAME, "java", "rules");
 
     String mainBranch = "main";
-    orchestrator.executeBuild(setupBuild(mainBranch));
+    BuildResult buildResult = orchestrator.executeBuild(setupBuild(mainBranch));
     assertNoDifferences(mainBranch);
+    assertThat(buildResult.getLogs()).contains(LOG_MESSAGE);
 
-    for (String branch: List.of("branch-same", "branch-diff")) {
+    for (String branch : List.of("branch-same", "branch-diff")) {
       MavenBuild mavenBuild = setupBuild(branch)
         .setProperties(
           "sonar.pullrequest.key", branch,
@@ -123,16 +137,15 @@ public class ChangeBasedAnalysisTest {
           "sonar.scm.provider", "git",
           "sonar.scm.disabled", "false"
         );
-      orchestrator.executeBuild(mavenBuild);
+      buildResult = orchestrator.executeBuild(mavenBuild);
       assertNoDifferences(branch);
-      //TODO assert that optimization is documented in the logs
-      //TODO assert that issues are only raised on files that have changed
+      assertThat(buildResult.getLogs()).contains(LOG_MESSAGE);
     }
   }
 
   private static void assertNoDifferences(String branchName) throws IOException {
     String differences = Files.readString(getDifferencesPath(branchName));
-    Assertions.assertThat(differences).isEmpty();
+    assertThat(differences).isEmpty();
   }
 
   private static Path getDifferencesPath(String branch) {
@@ -141,9 +154,5 @@ public class ChangeBasedAnalysisTest {
 
   private static String getBranchFolderBasename(String branch) {
     return PROJECT_NAME + "-" + branch;
-  }
-
-  private static Path createTempFolder(String branch) throws IOException {
-    return temporaryFolder.newFolder(getBranchFolderBasename(branch)).toPath();
   }
 }
