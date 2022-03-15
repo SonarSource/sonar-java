@@ -34,6 +34,7 @@ import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -45,6 +46,7 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.AnalysisProgress;
 import org.sonar.java.ExecutionTimeReport;
 import org.sonar.java.ProgressMonitor;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonarsource.analyzer.commons.ProgressReport;
 import org.sonarsource.performance.measure.PerformanceMeasure;
@@ -134,9 +136,10 @@ public abstract class JParserConfig {
     return astParser;
   }
 
-  private static class Batch extends JParserConfig {
+  @VisibleForTesting
+  static class Batch extends JParserConfig {
 
-    private Batch(String javaVersion, List<File> classpath) {
+    Batch(String javaVersion, List<File> classpath) {
       super(javaVersion, classpath);
     }
 
@@ -146,6 +149,7 @@ public abstract class JParserConfig {
       LOG.info("Using ECJ batch to parse source files.");
 
       List<String> sourceFilePaths = new ArrayList<>();
+      Set<String> analyzedSourceFilePaths = new HashSet<>();
       List<String> encodings = new ArrayList<>();
       Map<File, InputFile> inputs = new HashMap<>();
       for (InputFile inputFile : inputFiles) {
@@ -164,6 +168,7 @@ public abstract class JParserConfig {
           @Override
           public void acceptAST(String sourceFilePath, CompilationUnit ast) {
             PerformanceMeasure.Duration convertDuration = PerformanceMeasure.start("Convert");
+            analyzedSourceFilePaths.add(sourceFilePath);
 
             InputFile inputFile = inputs.get(new File(sourceFilePath));
             executionTimeReport.start(inputFile);
@@ -181,6 +186,23 @@ public abstract class JParserConfig {
             analyzeDuration.stop();
           }
         }, monitor);
+      } catch (OperationCanceledException e) {
+        throw e;
+      } catch (RuntimeException e) {
+        List<InputFile> notYetAnalyzedFiles = sourceFilePaths.stream()
+          .filter(file -> !analyzedSourceFilePaths.contains(file))
+          .map(file -> inputs.get(new File(file)))
+          .collect(Collectors.toList());
+
+        if (!notYetAnalyzedFiles.isEmpty()) {
+          action.accept(notYetAnalyzedFiles.get(0), new Result(e));
+          fallbackToFileByFileMode(notYetAnalyzedFiles, isCanceled, action);
+        } else if (!sourceFilePaths.isEmpty()) {
+          InputFile lastInputFile = inputs.get(new File(sourceFilePaths.get(sourceFilePaths.size() - 1)));
+          action.accept(lastInputFile, new Result(e));
+        } else {
+          LOG.warn("Unexpected " + e.getClass().getName() + ": " + e.getMessage());
+        }
       } finally {
         // ExecutionTimeReport will not include the parsing time by file when using batch mode.
         executionTimeReport.reportAsBatch();
@@ -188,6 +210,17 @@ public abstract class JParserConfig {
         monitor.done();
       }
     }
+
+    private void fallbackToFileByFileMode(List<InputFile> inputFiles, BooleanSupplier isCanceled, BiConsumer<InputFile, Result> action) {
+      LOG.warn("Fallback to file by file analysis for {} files", inputFiles.size());
+      for (InputFile inputFile : inputFiles) {
+        if (isCanceled.getAsBoolean()) {
+          break;
+        }
+        FileByFile.parse(astParser(), inputFile, javaVersion, action);
+      }
+    }
+
   }
 
   private static class FileByFile extends JParserConfig {
@@ -215,19 +248,7 @@ public abstract class JParserConfig {
             break;
           }
           executionTimeReport.start(inputFile);
-
-          Result result;
-          PerformanceMeasure.Duration parseDuration = PerformanceMeasure.start("JParser");
-          try {
-            result = new Result(JParser.parse(astParser(), javaVersion, inputFile.filename(), inputFile.contents()));
-          } catch (Exception e) {
-            result = new Result(e);
-          } finally {
-            parseDuration.stop();
-          }
-
-          action.accept(inputFile, result);
-
+          parse(astParser(), inputFile, javaVersion, action);
           executionTimeReport.end();
           progressReport.nextFile();
         }
@@ -240,6 +261,19 @@ public abstract class JParserConfig {
         }
         executionTimeReport.report();
       }
+    }
+
+    private static void parse(ASTParser astParser, InputFile inputFile, String javaVersion, BiConsumer<InputFile, Result> action) {
+      Result result;
+      PerformanceMeasure.Duration parseDuration = PerformanceMeasure.start("JParser");
+      try {
+        result = new Result(JParser.parse(astParser, javaVersion, inputFile.filename(), inputFile.contents()));
+      } catch (Exception e) {
+        result = new Result(e);
+      } finally {
+        parseDuration.stop();
+      }
+      action.accept(inputFile, result);
     }
   }
 

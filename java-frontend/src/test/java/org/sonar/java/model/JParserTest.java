@@ -30,8 +30,11 @@ import java.nio.file.ProviderNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.jar.Attributes;
@@ -318,6 +321,103 @@ class JParserTest {
       });
 
     assertResultsOfParsing(results, inputFilesProcessed);
+  }
+
+  @Test
+  void failing_batch_mode_should_continue_file_by_file() throws Exception {
+    List<InputFile> inputFiles = Arrays.asList(
+      TestUtils.inputFile("src/test/files/metrics/Classes.java"),
+      TestUtils.inputFile("src/test/files/metrics/Methods.java"));
+    List<String> trace = new ArrayList<>();
+    BiConsumer<InputFile, JParserConfig.Result> action = (inputFile, result) -> {
+      trace.addAll(logTester.logs());
+      logTester.clear();
+      try {
+        JavaTree.CompilationUnitTreeImpl tree = result.get();
+        trace.add("[action] analyse class " + ((ClassTree)tree.types().get(0)).simpleName().name() + " in " + inputFile.filename());
+      } catch (Exception e) {
+        trace.add("[action] handle " + e.getClass().getSimpleName() + ": " + e.getMessage());
+      }
+    };
+    BatchWithException batchWithException = new BatchWithException();
+    // exception before the first file
+    batchWithException.exceptions.push(new NullPointerException("Boom!"));
+    batchWithException.parse(inputFiles, () -> false, new AnalysisProgress(inputFiles.size()), action);
+    trace.addAll(logTester.logs());
+    logTester.clear();
+    assertThat(trace).containsExactly(
+      "Using ECJ batch to parse source files.",
+      "[action] handle NullPointerException: Boom!",
+      "Fallback to file by file analysis for 2 files",
+      "[action] analyse class HelloWorld in Classes.java",
+      "[action] analyse class MyClass in Methods.java");
+  }
+
+  @Test
+  void failing_batch_mode_should_stop_file_by_file_when_cancelled() throws Exception {
+    List<InputFile> inputFiles = Arrays.asList(
+      TestUtils.inputFile("src/test/files/metrics/Classes.java"),
+      TestUtils.inputFile("src/test/files/metrics/Methods.java"));
+    List<String> trace = new ArrayList<>();
+    AtomicBoolean isCanceled = new AtomicBoolean(false);
+    BiConsumer<InputFile, JParserConfig.Result> action = (inputFile, result) -> {
+      trace.addAll(logTester.logs());
+      logTester.clear();
+      try {
+        JavaTree.CompilationUnitTreeImpl tree = result.get();
+        trace.add("[action] analyse class " + ((ClassTree)tree.types().get(0)).simpleName().name() + " in " + inputFile.filename());
+        // cancel analysis after first file
+        isCanceled.set(true);
+      } catch (Exception e) {
+        trace.add("[action] handle " + e.getClass().getSimpleName() + ": " + e.getMessage());
+      }
+    };
+    BatchWithException batchWithException = new BatchWithException();
+    // exception before the first file
+    batchWithException.exceptions.push(new NullPointerException("Boom!"));
+    batchWithException.parse(inputFiles, isCanceled::get, new AnalysisProgress(inputFiles.size()), action);
+    trace.addAll(logTester.logs());
+    logTester.clear();
+    assertThat(trace).containsExactly(
+      "Using ECJ batch to parse source files.",
+      "[action] handle NullPointerException: Boom!",
+      "Fallback to file by file analysis for 2 files",
+      "[action] analyse class HelloWorld in Classes.java");
+    // Missing Methods.java because of cancellation
+  }
+
+  @Test
+  void failing_batch_mode_with_empty_file_list_should_not_continue_file_by_file() throws Exception {
+    List<InputFile> inputFiles = List.of();
+    List<String> trace = new ArrayList<>();
+    BiConsumer<InputFile, JParserConfig.Result> action = (inputFile, result) -> trace.add("should not be called ");
+    BatchWithException batchWithException = new BatchWithException();
+    // exception before the first file
+    batchWithException.exceptions.push(new NullPointerException("Boom!"));
+    batchWithException.parse(inputFiles, () -> false, new AnalysisProgress(inputFiles.size()), action);
+    trace.addAll(logTester.logs());
+    logTester.clear();
+    assertThat(trace).containsExactly(
+      "Using ECJ batch to parse source files.",
+      "Unexpected java.lang.NullPointerException: Boom!");
+  }
+
+  static class BatchWithException extends JParserConfig.Batch {
+
+    Deque<RuntimeException> exceptions = new LinkedList<>();
+
+    public BatchWithException() {
+      super(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH);
+    }
+
+    @Override
+    public ASTParser astParser() {
+      if (!exceptions.isEmpty()) {
+        throw exceptions.pop();
+      }
+      return super.astParser();
+    }
+
   }
 
   private void assertResultsOfParsing(List<JParserConfig.Result> results, List<InputFile> inputFilesProcessed) throws Exception {
