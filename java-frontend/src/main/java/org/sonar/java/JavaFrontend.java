@@ -162,6 +162,8 @@ public class JavaFrontend {
       try {
         if (!files.isEmpty()) {
           scanInBatches(context, files);
+        } else {
+          LOG.info(String.format("No \"%s\" source files to scan.", context.descriptor()));
         }
       } finally {
         context.endOfAnalysis();
@@ -214,6 +216,8 @@ public class JavaFrontend {
   }
 
   interface BatchModeContext {
+    String descriptor();
+
     String descriptor(InputFile input);
 
     List<File> getClasspath();
@@ -224,6 +228,11 @@ public class JavaFrontend {
   }
 
   class AutoScanBatchContext implements BatchModeContext {
+
+    @Override
+    public String descriptor() {
+      return "Main and Test";
+    }
 
     @Override
     public String descriptor(InputFile input) {
@@ -256,6 +265,11 @@ public class JavaFrontend {
     public DefaultBatchModeContext(JavaAstScanner scanner, String descriptor) {
       this.scanner = scanner;
       this.descriptor = descriptor;
+    }
+
+    @Override
+    public String descriptor() {
+      return descriptor;
     }
 
     @Override
