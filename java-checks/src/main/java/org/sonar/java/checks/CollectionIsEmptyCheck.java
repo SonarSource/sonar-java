@@ -91,7 +91,7 @@ public class CollectionIsEmptyCheck extends IssuableSubscriptionVisitor {
     if (tree.is(CLASS_TREES)) {
       handleClassTree((ClassTree) tree);
     } else {
-      // Necessarily a BinaryExpressionTree - the rule only raise issues when size() comparison
+      // Necessarily a BinaryExpressionTree - the rule only raises issues on size() comparisons
       // are "poorly" used from something which is NOT a Collection
       handleBinaryExpressionTree((BinaryExpressionTree) tree);
     }
