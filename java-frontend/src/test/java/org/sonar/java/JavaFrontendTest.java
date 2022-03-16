@@ -142,7 +142,18 @@ class JavaFrontendTest {
   void scanning_empty_project_should_be_logged_in_file_by_file() throws Exception {
     MapSettings settings = new MapSettings();
     settings.setProperty("sonar.java.fileByFile", "true");
-    scan(settings, SONARLINT_RUNTIME, Collections.emptyList());
+    scan(settings, SONARQUBE_RUNTIME, Collections.emptyList());
+
+    assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly(
+      "No \"Main\" source files to scan.",
+      "No \"Test\" source files to scan.",
+      "No \"Generated\" source files to scan."
+    );
+  }
+
+  @Test
+  void scanning_empty_project_should_be_logged_in_file_by_file_sonarlint() throws Exception {
+    scan(new MapSettings(), SONARLINT_RUNTIME, Collections.emptyList());
 
     assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly(
       "No \"Main\" source files to scan.",
