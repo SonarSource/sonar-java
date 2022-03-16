@@ -128,7 +128,7 @@ public class JavaFrontend {
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
     // SonarLint is not compatible with batch mode, it needs InputFile#contents() and batch mode use InputFile#absolutePath()
     boolean isSonarLint = sonarComponents != null && sonarComponents.isSonarLintContext();
-    boolean fileByFileMode = isSonarLint || !isBatchModeEnabled();
+    boolean fileByFileMode = isSonarLint || isFileByFileEnabled();
     if (fileByFileMode) {
       scanAndMeasureTask(sourceFiles, astScanner::scan, "Main");
       scanAndMeasureTask(testFiles, astScannerForTests::scan, "Test");
@@ -181,7 +181,7 @@ public class JavaFrontend {
 
   private void scanInBatches(BatchModeContext context, List<InputFile> allInputFiles) {
     AnalysisProgress analysisProgress = new AnalysisProgress(allInputFiles.size());
-    long batchModeSizeInKB = sonarComponents.getBatchModeSizeInKB();
+    long batchModeSizeInKB = getBatchModeSizeInKB();
     if (batchModeSizeInKB < 0L || batchModeSizeInKB >= Long.MAX_VALUE / 1_000L) {
       LOG.debug("Scanning in a single batch");
       scanBatch(context, allInputFiles, analysisProgress);
@@ -327,15 +327,19 @@ public class JavaFrontend {
     }
   }
 
-
   @VisibleForTesting
-  boolean isBatchModeEnabled() {
-    return sonarComponents != null && sonarComponents.isBatchModeEnabled();
+  boolean isFileByFileEnabled() {
+    return sonarComponents != null && sonarComponents.isFileByFileEnabled();
   }
 
   @VisibleForTesting
   boolean isAutoScan() {
     return sonarComponents != null && sonarComponents.isAutoScan();
+  }
+
+  @VisibleForTesting
+  long getBatchModeSizeInKB() {
+    return sonarComponents == null ? -1L : sonarComponents.getBatchModeSizeInKB();
   }
 
   private static <T> void scanAndMeasureTask(Iterable<T> files, Consumer<Iterable<T>> action, String descriptor) {

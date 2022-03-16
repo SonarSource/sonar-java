@@ -81,6 +81,7 @@ public class SonarComponents {
   public static final String SONAR_AUTOSCAN = "sonar.internal.analysis.autoscan";
   public static final String SONAR_AUTOSCAN_CHECK_FILTERING = "sonar.internal.analysis.autoscan.filtering";
   public static final String SONAR_BATCH_SIZE_KEY = "sonar.java.experimental.batchModeSizeInKB";
+  public static final String SONAR_FILE_BY_FILE = "sonar.java.fileByFile";
 
   private static final Version SONARLINT_6_3 = Version.parse("6.3");
   private static final Version SONARQUBE_9_2 = Version.parse("9.2");
@@ -341,11 +342,8 @@ public class SonarComponents {
     return context.config().getBoolean(FAIL_ON_EXCEPTION_KEY).orElse(false);
   }
 
-  public boolean isBatchModeEnabled() {
-    Configuration config = context.config();
-    return config.getBoolean(SONAR_AUTOSCAN).orElse(false) ||
-      config.getBoolean(SONAR_BATCH_MODE_KEY).orElse(false) ||
-      config.hasKey(SONAR_BATCH_SIZE_KEY);
+  public boolean isFileByFileEnabled() {
+    return context.config().getBoolean(SONAR_FILE_BY_FILE).orElse(false);
   }
 
   public boolean isAutoScan() {
@@ -359,11 +357,19 @@ public class SonarComponents {
   }
 
   /**
-   * Returns the batch mode size as read from configuration. If not value can be found, returns -1L.
+   * Returns the batch mode size as read from configuration. If not value can be found, compute dynamically an ideal value.
    * @return the batch mode size or a default value of -1L.
    */
   public long getBatchModeSizeInKB() {
-    return context.config().getLong(SONAR_BATCH_SIZE_KEY).orElse(-1L);
+    Configuration config = context.config();
+    if (isAutoScan()) {
+      return -1L;
+    }
+    return config.getLong(SONAR_BATCH_SIZE_KEY).orElse(computeIdealBatchSize());
+  }
+
+  private static long computeIdealBatchSize() {
+    return (long) Math.ceil((Runtime.getRuntime().totalMemory() * 0.05) / 1000L);
   }
 
   public File workDir() {

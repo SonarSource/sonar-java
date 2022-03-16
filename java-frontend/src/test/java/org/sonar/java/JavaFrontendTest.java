@@ -139,9 +139,10 @@ class JavaFrontendTest {
   }
 
   @Test
-  void scanning_empty_project_should_be_logged() throws Exception {
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), mainCodeIssueScannerAndFilter);
-    frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+  void scanning_empty_project_should_be_logged_in_file_by_file() throws Exception {
+    MapSettings settings = new MapSettings();
+    settings.setProperty("sonar.java.fileByFile", "true");
+    scan(settings, SONARLINT_RUNTIME, Collections.emptyList());
 
     assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly(
       "No \"Main\" source files to scan.",
@@ -154,8 +155,9 @@ class JavaFrontendTest {
   void test_getters_with_null_sonarComponents() {
     JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), null, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), mainCodeIssueScannerAndFilter);
     assertThat(frontend.isAutoScan()).isFalse();
-    assertThat(frontend.isBatchModeEnabled()).isFalse();
+    assertThat(frontend.isFileByFileEnabled()).isFalse();
     assertThat(frontend.analysisCancelled()).isFalse();
+    assertThat(frontend.getBatchModeSizeInKB()).isEqualTo(-1L);
   }
 
   @Test
