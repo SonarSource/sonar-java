@@ -19,7 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import org.sonarsource.analyzer.commons.collections.ListUtils;
+import java.util.List;
+import javax.annotation.CheckForNull;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -47,11 +48,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeParameters;
 import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
-
-import javax.annotation.CheckForNull;
-
-import java.util.List;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 public abstract class LeftCurlyBraceBaseTreeVisitor extends BaseTreeVisitor implements JavaFileScanner {
 
@@ -80,6 +79,11 @@ public abstract class LeftCurlyBraceBaseTreeVisitor extends BaseTreeVisitor impl
 
   @CheckForNull
   private static SyntaxToken getLastTokenFromSignature(ClassTree classTree) {
+    // JDK 17 sealed classes
+    List<TypeTree> permittedTypes = classTree.permittedTypes();
+    if (!permittedTypes.isEmpty()) {
+      return getIdentifierToken(ListUtils.getLast(permittedTypes));
+    }
     List<TypeTree> superInterfaces = classTree.superInterfaces();
     if (!superInterfaces.isEmpty()) {
       return getIdentifierToken(ListUtils.getLast(superInterfaces));
@@ -91,6 +95,11 @@ public abstract class LeftCurlyBraceBaseTreeVisitor extends BaseTreeVisitor impl
     TypeParameters typeParameters = classTree.typeParameters();
     if (!typeParameters.isEmpty()) {
       return typeParameters.closeBracketToken();
+    }
+    // JDK 16 records
+    List<VariableTree> recordComponents = classTree.recordComponents();
+    if (!recordComponents.isEmpty()) {
+      return ListUtils.getLast(recordComponents).lastToken();
     }
     IdentifierTree simpleName = classTree.simpleName();
     if (simpleName != null) {
