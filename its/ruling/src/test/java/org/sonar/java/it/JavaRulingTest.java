@@ -222,7 +222,7 @@ public class JavaRulingTest {
     final var branch = "eclipse-jetty-same-issues-as-main";
     final var mainBranch = "eclipse-jetty-main";
 
-    MavenBuild build = test_project("org.eclipse.jetty:jetty-project", projectName)
+    MavenBuild build = test_project("org.eclipse.jetty:jetty-project-branch", projectName)
       // re-define binaries from initial maven build
       .setProperty("sonar.java.binaries", binaries)
       .setProperty("sonar.exclusions", "jetty-server/src/main/java/org/eclipse/jetty/server/HttpInput.java," +
