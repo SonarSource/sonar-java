@@ -29,12 +29,15 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.LongSupplier;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -530,14 +533,14 @@ class SonarComponentsTest {
     // default value
     settings.clear();
     assertThat(sonarComponents.isAutoScan()).isFalse();
-    assertThat(sonarComponents.isBatchModeEnabled()).isFalse();
+    assertThat(sonarComponents.isFileByFileEnabled()).isFalse();
     assertThat(sonarComponents.isAutoScanCheckFiltering()).isFalse();
 
     // autoscan
     settings.clear();
     settings.setProperty("sonar.internal.analysis.autoscan", "true");
     assertThat(sonarComponents.isAutoScan()).isTrue();
-    assertThat(sonarComponents.isBatchModeEnabled()).isTrue();
+    assertThat(sonarComponents.isFileByFileEnabled()).isFalse();
     assertThat(sonarComponents.isAutoScanCheckFiltering()).isTrue();
 
     // autoscan, without check filter
@@ -545,14 +548,14 @@ class SonarComponentsTest {
     settings.setProperty("sonar.internal.analysis.autoscan", "true");
     settings.setProperty("sonar.internal.analysis.autoscan.filtering", "false");
     assertThat(sonarComponents.isAutoScan()).isTrue();
-    assertThat(sonarComponents.isBatchModeEnabled()).isTrue();
+    assertThat(sonarComponents.isFileByFileEnabled()).isFalse();
     assertThat(sonarComponents.isAutoScanCheckFiltering()).isFalse();
 
     // deprecated autoscan key
     settings.clear();
     settings.setProperty("sonar.java.internal.batchMode", "true");
     assertThat(sonarComponents.isAutoScan()).isTrue();
-    assertThat(sonarComponents.isBatchModeEnabled()).isTrue();
+    assertThat(sonarComponents.isFileByFileEnabled()).isFalse();
     assertThat(sonarComponents.isAutoScanCheckFiltering()).isTrue();
   }
 
@@ -564,21 +567,71 @@ class SonarComponentsTest {
 
     // default value
     assertThat(sonarComponents.isAutoScan()).isFalse();
-    assertThat(sonarComponents.isBatchModeEnabled()).isFalse();
+    assertThat(sonarComponents.isFileByFileEnabled()).isFalse();
     assertThat(sonarComponents.isAutoScanCheckFiltering()).isFalse();
-    assertThat(sonarComponents.getBatchModeSizeInKB()).isEqualTo(-1L);
+    assertThat(sonarComponents.getBatchModeSizeInKB()).isPositive();
 
-    // batch mode
+    // batch mode: when a batch mode size is explicitly set, we use this value
     settings.setProperty("sonar.java.experimental.batchModeSizeInKB", "1000");
     assertThat(sonarComponents.isAutoScan()).isFalse();
-    assertThat(sonarComponents.isBatchModeEnabled()).isTrue();
-    assertThat(sonarComponents.getBatchModeSizeInKB()).isEqualTo(1000);
+    assertThat(sonarComponents.isFileByFileEnabled()).isFalse();
+    assertThat(sonarComponents.getBatchModeSizeInKB()).isEqualTo(1000L);
 
     // autoscan is not compatible with batch mode size
     settings.setProperty("sonar.internal.analysis.autoscan", "true");
-    settings.setProperty("sonar.java.experimental.batchModeSizeInKB", "1000");
     assertThat(sonarComponents.isAutoScan()).isFalse();
-    assertThat(sonarComponents.isBatchModeEnabled()).isTrue();
+    assertThat(sonarComponents.isFileByFileEnabled()).isFalse();
+    assertThat(sonarComponents.getBatchModeSizeInKB()).isEqualTo(1000L);
+
+    // batchModeSizeInKB has the priority over deprecated autoscan key
+    settings.setProperty("sonar.java.internal.batchMode", "true");
+    assertThat(sonarComponents.getBatchModeSizeInKB()).isEqualTo(1000L);
+
+    // Deprecated autoscan key returns default value
+    // Note: it means that if someone used this key outside an autoscan context, the project will be analyzed in a single batch (unless batch size is specified)
+    settings.clear();
+    settings.setProperty("sonar.java.internal.batchMode", "true");
+    assertThat(sonarComponents.getBatchModeSizeInKB()).isEqualTo(-1L);
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    "50, 2",
+    "100, 5",
+    "200, 10",
+    "1000, 50",
+    "10000, 500",
+    "20000, 500",
+  })
+  void batch_size_dynamic_computation(long maxMemoryMB, long expectedBatchSizeKB) {
+    long maxMemoryBytes = maxMemoryMB * 1_000_000;
+    MapSettings settings = new MapSettings();
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(settings));
+
+    LongSupplier oldValue = SonarComponents.maxMemoryProvider;
+    SonarComponents.maxMemoryProvider = () -> maxMemoryBytes;
+    long batchModeSizeInKB = sonarComponents.getBatchModeSizeInKB();
+    SonarComponents.maxMemoryProvider = oldValue;
+    assertThat(batchModeSizeInKB).isEqualTo(expectedBatchSizeKB);
+  }
+
+  @Test
+  void file_by_file_getters() {
+    MapSettings settings = new MapSettings();
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(settings));
+
+    // default value
+    assertThat(sonarComponents.isFileByFileEnabled()).isFalse();
+
+    // file by file
+    settings.setProperty("sonar.java.fileByFile", "true");
+    assertThat(sonarComponents.isFileByFileEnabled()).isTrue();
+
+    // file by file + batch mode can be both set, the priority will be defined when using the values.
+    settings.setProperty("sonar.java.experimental.batchModeSizeInKB", "1000");
+    assertThat(sonarComponents.isFileByFileEnabled()).isTrue();
     assertThat(sonarComponents.getBatchModeSizeInKB()).isEqualTo(1000);
   }
 

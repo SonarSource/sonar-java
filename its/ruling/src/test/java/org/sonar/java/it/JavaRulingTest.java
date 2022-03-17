@@ -196,6 +196,7 @@ public class JavaRulingTest {
       .collect(Collectors.joining(","));
 
     MavenBuild build = test_project("org.eclipse.jetty:jetty-project", projectName)
+      .setProperty("sonar.java.fileByFile", "true")
       // re-define binaries from initial maven build
       .setProperty("sonar.java.binaries", binaries)
       .setProperty("sonar.exclusions", "jetty-server/src/main/java/org/eclipse/jetty/server/HttpInput.java," +
@@ -217,7 +218,8 @@ public class JavaRulingTest {
   public void sonarqube_server() throws Exception {
     // sonarqube-6.5/server/sonar-server (v.6.5)
     String projectName = "sonar-server";
-    MavenBuild build = test_project("org.sonarsource.sonarqube:sonar-server", "sonarqube-6.5/server", projectName);
+    MavenBuild build = test_project("org.sonarsource.sonarqube:sonar-server", "sonarqube-6.5/server", projectName)
+      .setProperty("sonar.java.fileByFile", "true");
     executeBuildWithCommonProperties(build, projectName);
   }
 
@@ -227,6 +229,7 @@ public class JavaRulingTest {
     String projectName = "jboss-ejb3-tutorial";
     prepareProject(projectName, projectName);
     SonarScanner build = SonarScanner.create(FileLocation.of("../sources/jboss-ejb3-tutorial").getFile())
+      .setProperty("sonar.java.fileByFile", "true")
       .setProjectKey(projectName)
       .setProjectName(projectName)
       .setProjectVersion("0.1.0-SNAPSHOT")
@@ -242,7 +245,8 @@ public class JavaRulingTest {
   @Test
   public void regex_examples() throws IOException {
     String projectName = "regex-examples";
-    MavenBuild build = test_project("org.regex-examples:regex-examples", projectName);
+    MavenBuild build = test_project("org.regex-examples:regex-examples", projectName)
+      .setProperty("sonar.java.fileByFile", "true");
     executeBuildWithCommonProperties(build, projectName);
   }
 

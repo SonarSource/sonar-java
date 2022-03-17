@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.LongSupplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -81,9 +82,12 @@ public class SonarComponents {
   public static final String SONAR_AUTOSCAN = "sonar.internal.analysis.autoscan";
   public static final String SONAR_AUTOSCAN_CHECK_FILTERING = "sonar.internal.analysis.autoscan.filtering";
   public static final String SONAR_BATCH_SIZE_KEY = "sonar.java.experimental.batchModeSizeInKB";
+  public static final String SONAR_FILE_BY_FILE = "sonar.java.fileByFile";
 
   private static final Version SONARLINT_6_3 = Version.parse("6.3");
   private static final Version SONARQUBE_9_2 = Version.parse("9.2");
+  @VisibleForTesting
+  static LongSupplier maxMemoryProvider = () -> Runtime.getRuntime().maxMemory();
 
   private final FileLinesContextFactory fileLinesContextFactory;
 
@@ -341,11 +345,8 @@ public class SonarComponents {
     return context.config().getBoolean(FAIL_ON_EXCEPTION_KEY).orElse(false);
   }
 
-  public boolean isBatchModeEnabled() {
-    Configuration config = context.config();
-    return config.getBoolean(SONAR_AUTOSCAN).orElse(false) ||
-      config.getBoolean(SONAR_BATCH_MODE_KEY).orElse(false) ||
-      config.hasKey(SONAR_BATCH_SIZE_KEY);
+  public boolean isFileByFileEnabled() {
+    return context.config().getBoolean(SONAR_FILE_BY_FILE).orElse(false);
   }
 
   public boolean isAutoScan() {
@@ -359,11 +360,23 @@ public class SonarComponents {
   }
 
   /**
-   * Returns the batch mode size as read from configuration. If not value can be found, returns -1L.
+   * Returns the batch mode size as read from configuration. If not value can be found, compute dynamically an ideal value.
    * @return the batch mode size or a default value of -1L.
    */
   public long getBatchModeSizeInKB() {
-    return context.config().getLong(SONAR_BATCH_SIZE_KEY).orElse(-1L);
+    Configuration config = context.config();
+    if (isAutoScan()) {
+      return -1L;
+    }
+    return config.getLong(SONAR_BATCH_SIZE_KEY).orElse(computeIdealBatchSize());
+  }
+
+  private static long computeIdealBatchSize() {
+    // We take a fraction of the total memory available though -Xmx.
+    // If we assume that the average size of a file is 5kb and the average CI should have 1GB of memory,
+    // it will be able to analyze 10 files in batch.
+    // We max the value to 500kb (100 files) because there is only little advantages to go further.
+    return Math.min(500L, ((long) (maxMemoryProvider.getAsLong() * 0.00005)) / 1000L);
   }
 
   public File workDir() {

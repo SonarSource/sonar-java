@@ -346,7 +346,6 @@ class JParserTest {
     trace.addAll(logTester.logs());
     logTester.clear();
     assertThat(trace).containsExactly(
-      "Using ECJ batch to parse source files.",
       "[action] handle NullPointerException: Boom!",
       "Fallback to file by file analysis for 2 files",
       "[action] analyse class HelloWorld in Classes.java",
@@ -379,7 +378,6 @@ class JParserTest {
     trace.addAll(logTester.logs());
     logTester.clear();
     assertThat(trace).containsExactly(
-      "Using ECJ batch to parse source files.",
       "[action] handle NullPointerException: Boom!",
       "Fallback to file by file analysis for 2 files",
       "[action] analyse class HelloWorld in Classes.java");
@@ -398,7 +396,6 @@ class JParserTest {
     trace.addAll(logTester.logs());
     logTester.clear();
     assertThat(trace).containsExactly(
-      "Using ECJ batch to parse source files.",
       "Unexpected java.lang.NullPointerException: Boom!");
   }
 
