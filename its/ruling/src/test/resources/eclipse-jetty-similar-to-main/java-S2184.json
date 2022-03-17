@@ -2,6 +2,6 @@
 'org.eclipse.jetty:jetty-project-branch:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionDataStore.java':[
 290,
 325,
-330
-]
+330,
+],
 }

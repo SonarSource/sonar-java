@@ -1,15 +1,15 @@
 {
 'org.eclipse.jetty:jetty-project-branch:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java':[
-1311
+1311,
 ],
 'org.eclipse.jetty:jetty-project-branch:jetty-io/src/main/java/org/eclipse/jetty/io/ByteArrayEndPoint.java':[
-56
+56,
 ],
 'org.eclipse.jetty:jetty-project-branch:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java':[
 587,
 589,
 599,
-601
+601,
 ],
 'org.eclipse.jetty:jetty-project-branch:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java':[
 122,
@@ -18,6 +18,6 @@
 451,
 453,
 467,
-468
-]
+468,
+],
 }

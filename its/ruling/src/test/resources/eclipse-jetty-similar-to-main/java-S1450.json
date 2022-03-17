@@ -1,8 +1,8 @@
 {
 'org.eclipse.jetty:jetty-project-branch:jetty-server/src/main/java/org/eclipse/jetty/server/PushBuilderImpl.java':[
-59
+59,
 ],
 'org.eclipse.jetty:jetty-project-branch:jetty-server/src/main/java/org/eclipse/jetty/server/resource/ByteBufferRangeWriter.java':[
-33
-]
+33,
+],
 }

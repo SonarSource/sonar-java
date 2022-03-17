@@ -1,6 +1,6 @@
 {
 'org.eclipse.jetty:jetty-project-branch:jetty-server/src/main/java/org/eclipse/jetty/server/HomeBaseWarning.java':[
-72
+72,
 ],
 'org.eclipse.jetty:jetty-project-branch:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelState.java':[
 675,
@@ -8,12 +8,12 @@
 822,
 824,
 1009,
-1011
+1011,
 ],
 'org.eclipse.jetty:jetty-project-branch:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java':[
-656
+656,
 ],
 'org.eclipse.jetty:jetty-project-branch:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java':[
-142
-]
+142,
+],
 }

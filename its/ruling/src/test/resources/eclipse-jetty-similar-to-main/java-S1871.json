@@ -1,11 +1,11 @@
 {
 'org.eclipse.jetty:jetty-project-branch:jetty-server/src/main/java/org/eclipse/jetty/server/InclusiveByteRange.java':[
-200
+200,
 ],
 'org.eclipse.jetty:jetty-project-branch:jetty-server/src/main/java/org/eclipse/jetty/server/ResponseWriter.java':[
-492
+492,
 ],
 'org.eclipse.jetty:jetty-project-branch:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java':[
-1639
-]
+1639,
+],
 }

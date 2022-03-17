@@ -1,11 +1,11 @@
 {
 'org.eclipse.jetty:jetty-project-branch:jetty-io/src/main/java/org/eclipse/jetty/io/ClientConnectionFactory.java':[
-96
+96,
 ],
 'org.eclipse.jetty:jetty-project-branch:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractConnector.java':[
-565
+565,
 ],
 'org.eclipse.jetty:jetty-project-branch:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionData.java':[
-73
-]
+73,
+],
 }
