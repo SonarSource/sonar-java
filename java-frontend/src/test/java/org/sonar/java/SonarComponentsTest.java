@@ -29,12 +29,15 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.LongSupplier;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -589,6 +592,28 @@ class SonarComponentsTest {
     settings.clear();
     settings.setProperty("sonar.java.internal.batchMode", "true");
     assertThat(sonarComponents.getBatchModeSizeInKB()).isEqualTo(-1L);
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    "50, 2",
+    "100, 5",
+    "200, 10",
+    "1000, 50",
+    "10000, 500",
+    "20000, 500",
+  })
+  void batch_size_dynamic_computation(long maxMemoryMB, long expectedBatchSizeKB) {
+    long maxMemoryBytes = maxMemoryMB * 1_000_000;
+    MapSettings settings = new MapSettings();
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(settings));
+
+    LongSupplier oldValue = SonarComponents.maxMemoryProvider;
+    SonarComponents.maxMemoryProvider = () -> maxMemoryBytes;
+    long batchModeSizeInKB = sonarComponents.getBatchModeSizeInKB();
+    SonarComponents.maxMemoryProvider = oldValue;
+    assertThat(batchModeSizeInKB).isEqualTo(expectedBatchSizeKB);
   }
 
   @Test

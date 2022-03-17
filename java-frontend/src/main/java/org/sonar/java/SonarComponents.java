@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.LongSupplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -85,6 +86,8 @@ public class SonarComponents {
 
   private static final Version SONARLINT_6_3 = Version.parse("6.3");
   private static final Version SONARQUBE_9_2 = Version.parse("9.2");
+  @VisibleForTesting
+  static LongSupplier maxMemoryProvider = () -> Runtime.getRuntime().maxMemory();
 
   private final FileLinesContextFactory fileLinesContextFactory;
 
@@ -369,7 +372,11 @@ public class SonarComponents {
   }
 
   private static long computeIdealBatchSize() {
-    return (long) Math.ceil((Runtime.getRuntime().totalMemory() * 0.05) / 1000L);
+    // We take a fraction of the total memory available though -Xmx.
+    // If we assume that the average size of a file is 5kb and the average CI should have 1GB of memory,
+    // it will be able to analyze 10 files in batch.
+    // We max the value to 500kb (100 files) because there is only little advantages to go further.
+    return Math.min(500L, ((long) (maxMemoryProvider.getAsLong() * 0.00005)) / 1000L);
   }
 
   public File workDir() {
