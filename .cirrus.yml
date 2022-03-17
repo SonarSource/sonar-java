@@ -112,7 +112,7 @@ plugin_qa_task:
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   submodules_script:
-    - git submodule update --init
+    - git submodule update --init --recursive
   qa_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
@@ -151,7 +151,7 @@ ruling_task:
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   submodules_script:
-    - git submodule update --init
+    - git submodule update --init --recursive
   ruling_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
