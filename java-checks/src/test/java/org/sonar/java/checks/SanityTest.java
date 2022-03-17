@@ -58,18 +58,26 @@ import org.sonar.plugins.java.api.JavaCheck;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
-class RulesSanityTest {
+class SanityTest {
 
-  private static final Logger LOG = Loggers.get(RulesSanityTest.class);
+  private static final Logger LOG = Loggers.get(SanityTest.class);
 
   @RegisterExtension
   public final LogTesterJUnit5 logTester = new LogTesterJUnit5();
 
   private static final String TARGET_CLASSES = "target/test-classes";
-  private static final String TEST_FILES_DIRECTORY = "src/test/files";
   private static final String TEST_FILES_EXTRA_CLASSES = "src/test/resources/";
+
+  private static final String[] FILE_DIRECTORIES = {
+    mainCodeSourcesPath(""),
+    nonCompilingTestSourcesPath(""),
+    testCodeSourcesPath(""),
+    "src/test/files"
+  };
 
   /**
    * Ignore template rules, as they requires configuration
@@ -91,7 +99,7 @@ class RulesSanityTest {
    * Verifies that playing all the checks on all the test files does not trigger any exceptions.
    *
    * This relies on the fact that a lot of tricky cases are covered in unit tests, on a rule by rule and case by case basis.
-   * It does not prevent other rules to fail if similar construct of the language, but not yet encountered. 
+   * It does not prevent other rules to fail if similar construct of the language, but not yet encountered.
    */
   @Test
   void test() throws Exception {
@@ -113,20 +121,64 @@ class RulesSanityTest {
       fail(String.format("Should have been able to execute all the rules on all the test files. %d file(s) made at least 1 rule fail.", exceptions.size()));
     }
 
-    // only 5 errors, all related to parsing issues
     List<LogAndArguments> errorLogs = logTester.getLogs(LoggerLevel.ERROR);
-    List<String> parsingErrorFiles = errorLogs.stream()
-      .map(LogAndArguments::getFormattedMsg)
-      .filter(log -> log.startsWith("Unable to parse source file : '"))
+    List<LogAndArguments> parsingErrors = errorLogs.stream()
+      .filter(SanityTest::isParseError)
+      .collect(Collectors.toList());
+    List<LogAndArguments> typeResolutionErrors = errorLogs.stream()
+      .filter(SanityTest::isTypeResolutionError)
       .collect(Collectors.toList());
 
-    assertThat(errorLogs)
-      .hasSize(6)
-      .allMatch(log -> log.getFormattedMsg().toLowerCase().contains("parse"));
-    assertThat(parsingErrorFiles)
-      .hasSize(3)
-      .allMatch(log -> log.contains("KeywordAsIdentifierCheck") || log.contains("EmptyStatementsInImportsBug"));
+    assertThat(errorLogs).hasSize(24);
 
+    List<LogAndArguments> remainingErrors = new ArrayList<>(errorLogs);
+    remainingErrors.removeAll(parsingErrors);
+    remainingErrors.removeAll(typeResolutionErrors);
+    assertThat(remainingErrors).isEmpty();
+
+    assertThat(typeResolutionErrors)
+      .hasSize(16)
+      .map(LogAndArguments::getFormattedMsg)
+      .map(log -> log.substring("ECJ Unable to resolve type ".length()))
+      // FIXME investigate root cause (seems to be a conflict of version, with classes from JDK not resolved correctly
+      .containsOnly(
+        "javax.servlet.http.Cookie",
+        "javax.validation.ConstraintValidator",
+        "javax.ws.rs.core.Cookie",
+        "javax.ws.rs.core.NewCookie",
+        "junit.framework.TestCase",
+        "org.apache.commons.lang.math.RandomUtils",
+        "org.apache.commons.lang.RandomStringUtils",
+        "org.apache.commons.lang3.RandomStringUtils",
+        "org.apache.commons.lang3.RandomUtils",
+        "org.apache.shiro.web.servlet.SimpleCookie",
+        "org.apache.struts.action.Action",
+        "org.assertj.core.api.AbstractAssert",
+        "org.fest.assertions.GenericAssert",
+        "org.springframework.security.web.savedrequest.SavedCookie",
+        "play.mvc.Http$Cookie",
+        "play.mvc.Http$CookieBuilder");
+
+    assertThat(parsingErrors)
+      .hasSize(8)
+      .map(LogAndArguments::getFormattedMsg)
+      .allMatch(log ->
+      // ECJ error message
+      log.startsWith("Parse error at line ")
+        // analyzer error message mentioning the file
+        || log.contains("KeywordAsIdentifierCheck")
+        || log.contains("EmptyStatementsInImportsBug")
+        || log.contains("RestrictedIdentifiersUsageCheck"));
+
+  }
+
+  private static boolean isParseError(LogAndArguments log) {
+    String message = log.getFormattedMsg();
+    return message.startsWith("Unable to parse source file : '") || message.startsWith("Parse error at line ");
+  }
+
+  private static boolean isTypeResolutionError(LogAndArguments log) {
+    return log.getFormattedMsg().startsWith("ECJ Unable to resolve type ");
   }
 
   private static String processExceptions(List<SanityCheckException> exceptions) {
@@ -158,22 +210,23 @@ class RulesSanityTest {
         // FIXME initialize a new template rule with some default parameter ?!
       } else {
         try {
-          javaChecks.add(checkClass.newInstance());
+          javaChecks.add(checkClass.getConstructor().newInstance());
         } catch (Exception e) {
           fail(String.format("Unable to initialize rule %s", ruleKey), e);
         }
       }
     }
-
     return javaChecks;
   }
 
   private static List<InputFile> getJavaInputFiles(File moduleBaseDir) {
-    return Stream.concat(
-      FilesUtils.getFilesRecursively(new File(testSourcesPath("")).toPath(), "java").stream(),
-      FilesUtils.getFilesRecursively(new File(TEST_FILES_DIRECTORY).toPath(), "java").stream())
+    return Stream.of(FILE_DIRECTORIES)
+      .map(File::new)
+      .map(File::toPath)
+      .map(p -> FilesUtils.getFilesRecursively(p, "java"))
+      .flatMap(List::stream)
       .map(File::getAbsolutePath)
-      .filter(RulesSanityTest::isNotParsingErrorFile)
+      .filter(SanityTest::isNotParsingErrorFile)
       .map(path -> inputFile(moduleBaseDir, path))
       .collect(Collectors.toList());
   }
@@ -197,7 +250,7 @@ class RulesSanityTest {
       try {
         VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(checks, classpath, sonarComponents);
         JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge, new JavaVersionImpl(JavaVersionImpl.MAX_SUPPORTED), null);
-      } catch (Exception e) {
+      } catch (Throwable e) {
         exceptions.add(new SanityCheckException(inputFile, e));
       }
     }
@@ -207,19 +260,23 @@ class RulesSanityTest {
   private static class SanityCheckException extends Exception {
     private static final long serialVersionUID = 1934785706394840975L;
     private final InputFile inputFile;
+    @Nullable
     private final Throwable realCause;
     @Nullable
     private final String failingCheck;
 
-    public SanityCheckException(InputFile inputFile, Exception analysisException) {
+    public SanityCheckException(InputFile inputFile, Throwable analysisException) {
       super(String.format("Unable to analyse file %s", inputFile.filename()), analysisException);
       this.inputFile = inputFile;
       this.realCause = analysisException.getCause();
       this.failingCheck = parseStackForCheck(realCause);
-
     }
 
-    private String parseStackForCheck(Throwable realCause2) {
+    @Nullable
+    private static String parseStackForCheck(@Nullable Throwable realCause) {
+      if (realCause == null) {
+        return null;
+      }
       String stackTrace = ExceptionUtils.getStackTrace(realCause);
       return Arrays.stream(stackTrace.split("\n"))
         // try to retrieve the rule class name in 'checks' package
@@ -235,7 +292,9 @@ class RulesSanityTest {
 
   private static SonarComponents sonarComponents(File moduleBaseDir, List<InputFile> inputFiles) {
     SensorContextTester context = SensorContextTester.create(moduleBaseDir).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
-    context.setSettings(new MapSettings().setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, true));
+    context.setSettings(new MapSettings()
+      .setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, true)
+      .setProperty(SonarComponents.SONAR_BATCH_MODE_KEY, true));
     DefaultFileSystem fileSystem = context.fileSystem();
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null) {
       @Override
