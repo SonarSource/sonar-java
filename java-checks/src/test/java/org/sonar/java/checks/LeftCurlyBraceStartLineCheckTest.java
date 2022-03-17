@@ -28,15 +28,15 @@ class LeftCurlyBraceStartLineCheckTest {
   @Test
   void detected() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("checks/LeftCurlyBraceStartLineCheck.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/LeftCurlyBraceStartLineCheck.java"))
       .withCheck(new LeftCurlyBraceStartLineCheck())
       .verifyIssues();
   }
 
   @Test
-  void java_16() {
+  void java_17() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.testSourcesPath("checks/LeftCurlyBraceStartLineCheck_java16.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/LeftCurlyBraceStartLineCheck_java17.java"))
       .withCheck(new LeftCurlyBraceStartLineCheck())
       .verifyIssues();
   }
