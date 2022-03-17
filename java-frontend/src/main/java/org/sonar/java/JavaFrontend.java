@@ -182,6 +182,7 @@ public class JavaFrontend {
   }
 
   private void scanInBatches(BatchModeContext context, List<InputFile> allInputFiles) {
+    LOG.info("Using ECJ batch to parse source files.");
     AnalysisProgress analysisProgress = new AnalysisProgress(allInputFiles.size());
     long batchModeSizeInKB = getBatchModeSizeInKB();
     if (batchModeSizeInKB < 0L || batchModeSizeInKB >= Long.MAX_VALUE / 1_000L) {

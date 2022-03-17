@@ -146,7 +146,6 @@ public abstract class JParserConfig {
     @Override
     public void parse(Iterable<? extends InputFile> inputFiles, BooleanSupplier isCanceled,
       AnalysisProgress analysisProgress, BiConsumer<InputFile, Result> action) {
-      LOG.info("Using ECJ batch to parse source files.");
 
       List<String> sourceFilePaths = new ArrayList<>();
       Set<String> analyzedSourceFilePaths = new HashSet<>();
