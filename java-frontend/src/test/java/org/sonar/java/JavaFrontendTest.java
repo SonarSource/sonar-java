@@ -438,7 +438,7 @@ class JavaFrontendTest {
     String allLogs = String.join("\n", logTester.logs());
     assertThat(allLogs)
       .doesNotContain("Unresolved imports/types")
-      .contains("Scanning in a single batch");
+      .contains("Using ECJ batch to parse 2 Main and Test java source files in a single batch.");
   }
 
   @Test
@@ -450,7 +450,7 @@ class JavaFrontendTest {
     String allLogs = String.join("\n", logTester.logs());
     assertThat(allLogs)
       .doesNotContain("Unresolved imports/types")
-      .containsOnlyOnce("Scanning with batch size 1000 B");
+      .containsOnlyOnce("Using ECJ batch to parse 2 Main java source files with batch size 1 Kb.");
   }
 
   @Test
@@ -464,7 +464,7 @@ class JavaFrontendTest {
     assertThat(allLogs)
       .doesNotContain("Unresolved imports/types")
       .doesNotContainPattern("Scanning with batch size .*")
-      .contains("Scanning in a single batch");
+      .contains("Using ECJ batch to parse 2 Main java source files in a single batch.");
   }
 
   @Test
@@ -476,7 +476,7 @@ class JavaFrontendTest {
     String allLogs = String.join("\n", logTester.logs());
     assertThat(allLogs)
       .contains("Unresolved imports/types")
-      .contains("Scanning with batch size 0 B");
+      .contains("Using ECJ batch to parse 2 Main java source files with batch size 0 Kb.");
   }
 
   @Test
