@@ -182,15 +182,15 @@ public class JavaFrontend {
   }
 
   private void scanInBatches(BatchModeContext context, List<InputFile> allInputFiles) {
-    LOG.info("Using ECJ batch to parse source files.");
+    String logUsingBatch = String.format("Using ECJ batch to parse %d %s java source files", allInputFiles.size(), context.descriptor());
     AnalysisProgress analysisProgress = new AnalysisProgress(allInputFiles.size());
     long batchModeSizeInKB = getBatchModeSizeInKB();
     if (batchModeSizeInKB < 0L || batchModeSizeInKB >= Long.MAX_VALUE / 1_000L) {
-      LOG.debug("Scanning in a single batch");
+      LOG.info(logUsingBatch + " in a single batch.");
       scanBatch(context, allInputFiles, analysisProgress);
     } else {
       long batchSize = batchModeSizeInKB * 1_000L;
-      LOG.debug("Scanning with batch size {} B", batchSize);
+      LOG.info(logUsingBatch + " with batch size " + batchModeSizeInKB + " Kb.");
       BatchGenerator generator = new BatchGenerator(allInputFiles.iterator(), batchSize);
       while (generator.hasNext()) {
         List<InputFile> batch = generator.next();
