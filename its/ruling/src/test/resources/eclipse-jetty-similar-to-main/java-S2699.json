@@ -1,0 +1,17 @@
+{
+'org.eclipse.jetty:jetty-project-branch:jetty-http/src/test/java/org/eclipse/jetty/http/HttpCookieTest.java':[
+72,
+220,
+242,
+],
+'org.eclipse.jetty:jetty-project-branch:jetty-http/src/test/java/org/eclipse/jetty/http/QuotedQualityCSVTest.java':[
+165,
+],
+'org.eclipse.jetty:jetty-project-branch:jetty-http/src/test/java/org/eclipse/jetty/http/SyntaxTest.java':[
+31,
+84,
+],
+'org.eclipse.jetty:jetty-project-branch:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartFormInputStreamTest.java':[
+570,
+],
+}

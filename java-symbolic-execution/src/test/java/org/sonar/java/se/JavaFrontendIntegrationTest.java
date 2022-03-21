@@ -145,7 +145,7 @@ class JavaFrontendIntegrationTest {
     VisitorsBridge visitorsBridge = visitorsBridgeWithSymbolicExecution(new SE1_ThrowingNPEPreStatement(), new SE2_ThrowingNPEPostStatement());
 
     try {
-      visitorsBridge.visitFile(tree);
+      visitorsBridge.visitFile(tree, false);
       Fail.fail("scanning of file should have raise an exception");
     } catch (AnalysisException e) {
       assertThat(e.getMessage()).contains("Failing check");
@@ -168,7 +168,7 @@ class JavaFrontendIntegrationTest {
     VisitorsBridge visitorsBridge = visitorsBridgeWithSymbolicExecution(new SE1_ThrowingNPEPreStatement(), new SE2_ThrowingNPEPostStatement());
 
     try {
-      visitorsBridge.visitFile(tree);
+      visitorsBridge.visitFile(tree, false);
     } catch (Exception e) {
       Fail.fail("Exception should be swallowed when property is not set");
     }

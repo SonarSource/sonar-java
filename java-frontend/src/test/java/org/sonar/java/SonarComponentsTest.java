@@ -29,15 +29,20 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.LongSupplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.annotation.CheckForNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -65,11 +70,13 @@ import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.Version;
+import org.sonar.api.utils.log.LogAndArguments;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.check.Rule;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
+import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -82,9 +89,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -101,6 +113,11 @@ class SonarComponentsTest {
 
   private static final String REPOSITORY_NAME = "custom";
 
+  private static final String LOG_MESSAGE_FILES_CAN_BE_SKIPPED = "The Java analyzer is running in a context where unchanged files can be skipped. Full analysis is performed " +
+    "for changed files, optimized analysis for unchanged files.";
+  private static final String LOG_MESSAGE_FILES_CANNOT_BE_SKIPPED = "The Java analyzer cannot skip unchanged files in this context. A full analysis is performed for all files.";
+  private static final String LOG_MESSAGE_CANNOT_DETERMINE_IF_FILES_CAN_BE_SKIPPED = "Cannot determine whether the context allows skipping unchanged files: canSkipUnchangedFiles not part of sonar-plugin-api. Not skipping. {}";
+
   @Mock
   private FileLinesContextFactory fileLinesContextFactory;
 
@@ -112,6 +129,9 @@ class SonarComponentsTest {
 
   @Mock
   private SensorContext context;
+
+  @RegisterExtension
+  public LogTesterJUnit5 logTester = new LogTesterJUnit5();
 
   @BeforeEach
   void setUp() {
@@ -181,7 +201,7 @@ class SonarComponentsTest {
     assertThat(newHighlighting).isNotNull();
     verify(sensorContextTester, times(1)).newHighlighting();
     NewSymbolTable newSymbolTable = sonarComponents.symbolizableFor(inputFile);
-    assertThat(newSymbolTable ).isNotNull();
+    assertThat(newSymbolTable).isNotNull();
     verify(sensorContextTester, times(1)).newSymbolTable();
     assertThat(sonarComponents.fileLinesContextFor(inputFile)).isEqualTo(fileLinesContext);
     assertThat(sonarComponents.context()).isSameAs(sensorContextTester);
@@ -200,7 +220,7 @@ class SonarComponentsTest {
 
     when(this.checks.all()).thenReturn(Collections.singletonList(expectedCheck)).thenReturn(new ArrayList<>());
     SonarComponents sonarComponents = new SonarComponents(this.fileLinesContextFactory, null, null,
-      null, this.checkFactory, new CheckRegistrar[] {expectedRegistrar});
+      null, this.checkFactory, new CheckRegistrar[]{expectedRegistrar});
     sonarComponents.setSensorContext(context);
 
     List<JavaCheck> visitors = sonarComponents.mainChecks();
@@ -219,7 +239,7 @@ class SonarComponentsTest {
 
     when(checks.all()).thenReturn(new ArrayList<>()).thenReturn(Collections.singletonList(expectedCheck));
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
-      null, checkFactory, new CheckRegistrar[] {expectedRegistrar});
+      null, checkFactory, new CheckRegistrar[]{expectedRegistrar});
     sonarComponents.setSensorContext(context);
 
     List<JavaCheck> visitors = sonarComponents.mainChecks();
@@ -247,7 +267,7 @@ class SonarComponentsTest {
       .thenReturn(Arrays.asList(new CheckA(), new CheckB(), new CheckC()))
       .thenReturn(Arrays.asList(new CheckA(), new CheckB(), new CheckC()));
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
-      null, checkFactory, new CheckRegistrar[] {expectedRegistrar});
+      null, checkFactory, new CheckRegistrar[]{expectedRegistrar});
     sonarComponents.setSensorContext(context);
 
     List<JavaCheck> mainChecks = sonarComponents.mainChecks();
@@ -274,7 +294,7 @@ class SonarComponentsTest {
       .thenReturn(Arrays.asList(new CheckA(), new CheckB(), new CheckC()))
       .thenReturn(Arrays.asList(new CheckC(), new CheckB(), new CheckA()));
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
-      null, checkFactory, new CheckRegistrar[] {expectedRegistrar});
+      null, checkFactory, new CheckRegistrar[]{expectedRegistrar});
     sonarComponents.setSensorContext(context);
     sonarComponents.setCheckFilter(checks -> checks.stream()
       .filter(c -> !c.getClass().getSimpleName().equals("CheckB")).collect(Collectors.toList()));
@@ -298,7 +318,7 @@ class SonarComponentsTest {
 
     when(this.checks.all()).thenReturn(Collections.singletonList(expectedCheck)).thenReturn(Collections.singletonList(expectedTestCheck));
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
-      null, checkFactory, new CheckRegistrar[] {expectedRegistrar});
+      null, checkFactory, new CheckRegistrar[]{expectedRegistrar});
     sonarComponents.setSensorContext(context);
 
     List<JavaCheck> visitors = sonarComponents.mainChecks();
@@ -318,7 +338,7 @@ class SonarComponentsTest {
 
     when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(null);
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
-      null, checkFactory, new CheckRegistrar[] {expectedRegistrar});
+      null, checkFactory, new CheckRegistrar[]{expectedRegistrar});
     sonarComponents.setSensorContext(context);
 
     sonarComponents.addIssue(TestUtils.emptyInputFile("file.java"), expectedCheck, 0, "message", null);
@@ -347,7 +367,7 @@ class SonarComponentsTest {
     when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(mock(RuleKey.class));
 
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fileSystem, null,
-      null, checkFactory, new CheckRegistrar[] {expectedRegistrar});
+      null, checkFactory, new CheckRegistrar[]{expectedRegistrar});
     sonarComponents.setSensorContext(context);
 
     sonarComponents.addIssue(inputFile, expectedCheck, -5, "message on wrong line", null);
@@ -377,14 +397,14 @@ class SonarComponentsTest {
     RuleKey ruleKey = RuleKey.of("MyRepo", "CustomCheck");
 
     InputFile inputFile = new TestInputFileBuilder("", "file.java")
-    .initMetadata("class A {\n"
-      + "  void foo() {\n"
-      + "    System.out.println();\n"
-      + "  }\n"
-      + "}\n").build();
+      .initMetadata("class A {\n"
+        + "  void foo() {\n"
+        + "    System.out.println();\n"
+        + "  }\n"
+        + "}\n").build();
 
     SensorContextTester context = SensorContextTester.create(new File(""));
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, context.fileSystem(), null, null, checkFactory, new CheckRegistrar[] {expectedRegistrar});
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, context.fileSystem(), null, null, checkFactory, new CheckRegistrar[]{expectedRegistrar});
     sonarComponents.setSensorContext(context);
 
     AnalyzerMessage.TextSpan emptyTextSpan = new AnalyzerMessage.TextSpan(3, 10, 3, 10);
@@ -635,6 +655,197 @@ class SonarComponentsTest {
     assertThat(sonarComponents.getBatchModeSizeInKB()).isEqualTo(1000);
   }
 
+  @Test
+  void skipUnchangedFiles_returns_result_from_context() throws ApiMismatchException {
+    SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
+
+    SonarComponents sonarComponents = new SonarComponents(
+      fileLinesContextFactory,
+      sensorContextTester.fileSystem(),
+      mock(ClasspathForMain.class),
+      mock(ClasspathForTest.class),
+      checkFactory
+    );
+
+    IncrementalAnalysisSensorContext context = mock(IncrementalAnalysisSensorContext.class);
+    when(context.canSkipUnchangedFiles()).thenReturn(true);
+    sonarComponents.setSensorContext(context);
+    assertThat(sonarComponents.canSkipUnchangedFiles()).isTrue();
+
+    when(context.canSkipUnchangedFiles()).thenReturn(false);
+    sonarComponents.setSensorContext(context);
+    assertThat(sonarComponents.canSkipUnchangedFiles()).isFalse();
+  }
+
+  @Test
+  void skipUnchangedFiles_returns_false_by_default() throws ApiMismatchException {
+    SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
+
+    SonarComponents sonarComponents = new SonarComponents(
+      fileLinesContextFactory,
+      sensorContextTester.fileSystem(),
+      mock(ClasspathForMain.class),
+      mock(ClasspathForTest.class),
+      checkFactory
+    );
+
+    assertThat(sonarComponents.canSkipUnchangedFiles()).isFalse();
+  }
+
+  @Test
+  void skipUnchangedFiles_throws_a_NoSuchMethodError_when_canSkipUnchangedFiles_not_in_API() {
+    SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
+    SonarComponents sonarComponents = new SonarComponents(
+      fileLinesContextFactory,
+      sensorContextTester.fileSystem(),
+      mock(ClasspathForMain.class),
+      mock(ClasspathForTest.class),
+      checkFactory
+    );
+
+    IncrementalAnalysisSensorContext context = mock(IncrementalAnalysisSensorContext.class);
+    when(context.canSkipUnchangedFiles()).thenThrow(new NoSuchMethodError("API version mismatch :-("));
+    sonarComponents.setSensorContext(context);
+
+    ApiMismatchException error = assertThrows(
+      ApiMismatchException.class,
+      sonarComponents::canSkipUnchangedFiles
+    );
+    assertThat(error).hasCause(new NoSuchMethodError("API version mismatch :-("));
+  }
+
+  @Test
+  void fileCanBeSkipped_always_returns_false_when_skipUnchangedFiles_is_false() throws ApiMismatchException {
+
+    SonarComponents sonarComponents = mock(SonarComponents.class, CALLS_REAL_METHODS);
+    when(sonarComponents.canSkipUnchangedFiles()).thenReturn(false);
+    InputFile inputFile = mock(InputFile.class);
+
+    assertThat(sonarComponents.fileCanBeSkipped(inputFile)).isFalse();
+    verify(inputFile, times(0)).status();
+  }
+
+  @Test
+  void fileCanBeSkipped_always_returns_true_when_skipUnchangedFiles_is_true_and_file_status_is_same() throws ApiMismatchException {
+    SonarComponents sonarComponents = mock(SonarComponents.class, CALLS_REAL_METHODS);
+    when(sonarComponents.canSkipUnchangedFiles()).thenReturn(true);
+
+    InputFile inputFile = mock(InputFile.class);
+    when(inputFile.status()).thenReturn(InputFile.Status.SAME);
+
+    assertThat(sonarComponents.fileCanBeSkipped(inputFile)).isTrue();
+  }
+
+  @Test
+  void fileCanBeSkipped_always_returns_false_when_skipUnchangedFiles_is_true_and_file_status_is_not_same() throws ApiMismatchException {
+    SonarComponents sonarComponents = mock(SonarComponents.class, CALLS_REAL_METHODS);
+    when(sonarComponents.canSkipUnchangedFiles()).thenReturn(true);
+
+    InputFile inputFile = mock(InputFile.class);
+    when(inputFile.status()).thenReturn(InputFile.Status.ADDED);
+
+    assertThat(sonarComponents.fileCanBeSkipped(inputFile)).isFalse();
+
+    when(inputFile.status()).thenReturn(InputFile.Status.CHANGED);
+
+    assertThat(sonarComponents.fileCanBeSkipped(inputFile)).isFalse();
+
+  }
+
+  @Test
+  void fileCanBeSkipped_returns_false_when_canSkipUnchangedFile_isFalse() throws ApiMismatchException {
+    SonarComponents sonarComponents = mock(SonarComponents.class, CALLS_REAL_METHODS);
+
+    ApiMismatchException apiMismatchException = new ApiMismatchException(new NoSuchMethodError("API version mismatch :-("));
+    doThrow(apiMismatchException).when(sonarComponents).canSkipUnchangedFiles();
+
+    assertThat(sonarComponents.fileCanBeSkipped(mock(InputFile.class))).isFalse();
+  }
+
+  private static Stream<Arguments> fileCanBeSkipped_only_logs_on_first_call_input() throws ApiMismatchException {
+    ApiMismatchException apiMismatchException = new ApiMismatchException(new NoSuchMethodError("API version mismatch :-("));
+
+    SonarComponents sonarComponentsThatCanSkipFiles = mock(SonarComponents.class, CALLS_REAL_METHODS);
+    doReturn(true).when(sonarComponentsThatCanSkipFiles).canSkipUnchangedFiles();
+    SonarComponents sonarComponentsThatCannotSkipFiles = mock(SonarComponents.class, CALLS_REAL_METHODS);
+    doReturn(false).when(sonarComponentsThatCannotSkipFiles).canSkipUnchangedFiles();
+    SonarComponents sonarComponentsWithApiMismatch = mock(SonarComponents.class, CALLS_REAL_METHODS);
+    doThrow(apiMismatchException).when(sonarComponentsWithApiMismatch).canSkipUnchangedFiles();
+
+    InputFile inputFile = mock(InputFile.class);
+    doReturn(InputFile.Status.SAME).when(inputFile).status();
+
+    return Stream.of(
+      Arguments.of(sonarComponentsThatCanSkipFiles, inputFile, LOG_MESSAGE_FILES_CAN_BE_SKIPPED),
+      Arguments.of(sonarComponentsThatCannotSkipFiles, mock(InputFile.class), LOG_MESSAGE_FILES_CANNOT_BE_SKIPPED),
+      Arguments.of(sonarComponentsWithApiMismatch, mock(InputFile.class), LOG_MESSAGE_CANNOT_DETERMINE_IF_FILES_CAN_BE_SKIPPED)
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("fileCanBeSkipped_only_logs_on_first_call_input")
+  void fileCanBeSkipped_only_logs_on_the_first_call(SonarComponents sonarComponents, InputFile inputFile, String logMessage) throws ApiMismatchException {
+    assertThat(logTester.getLogs(LoggerLevel.INFO)).isNull();
+
+    sonarComponents.fileCanBeSkipped(inputFile);
+    List<LogAndArguments> logs = logTester.getLogs(LoggerLevel.INFO);
+    assertThat(logs).hasSize(1);
+    assertThat(logs.get(0).getRawMsg()).isEqualTo(logMessage);
+
+    sonarComponents.fileCanBeSkipped(inputFile);
+    logs = logTester.getLogs(LoggerLevel.INFO);
+    assertThat(logs).hasSize(1);
+    assertThat(logs.get(0).getRawMsg()).isEqualTo(logMessage);
+  }
+
+  private static Stream<Arguments> provideInputsFor_canSkipUnchangedFiles() {
+    return Stream.of(
+      Arguments.of(null, null, null),
+      Arguments.of(null, true, true),
+      Arguments.of(true, null, true),
+      Arguments.of(null, false, false),
+      Arguments.of(false, null, false),
+      Arguments.of(false, false, false),
+      Arguments.of(false, true, false),
+      Arguments.of(true, false, true),
+      Arguments.of(true, true, true)
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("provideInputsFor_canSkipUnchangedFiles")
+  void canSkipUnchangedFiles(@CheckForNull Boolean overrideFlagVal, @CheckForNull Boolean apiResponseVal, @CheckForNull Boolean expectedResult) throws ApiMismatchException {
+    SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
+    SonarComponents sonarComponents = new SonarComponents(
+      fileLinesContextFactory,
+      sensorContextTester.fileSystem(),
+      mock(ClasspathForMain.class),
+      mock(ClasspathForTest.class),
+      checkFactory
+    );
+
+    IncrementalAnalysisSensorContext context = mock(IncrementalAnalysisSensorContext.class);
+    Configuration config = mock(Configuration.class);
+    when(context.config()).thenReturn(config);
+
+    when(config.getBoolean(any())).thenReturn(Optional.ofNullable(overrideFlagVal));
+
+    if (apiResponseVal == null) {
+      lenient().when(context.canSkipUnchangedFiles()).thenThrow(new NoSuchMethodError("API version mismatch :-("));
+    } else {
+      lenient().when(context.canSkipUnchangedFiles()).thenReturn(apiResponseVal);
+    }
+
+    sonarComponents.setSensorContext(context);
+
+    if (expectedResult == null) {
+      ApiMismatchException noSuchMethodError = assertThrows(ApiMismatchException.class, sonarComponents::canSkipUnchangedFiles);
+      assertThat(noSuchMethodError).hasCause(new NoSuchMethodError("API version mismatch :-("));
+    } else {
+      assertThat(sonarComponents.canSkipUnchangedFiles()).isEqualTo(expectedResult);
+    }
+  }
+
   @Nested
   class Logging {
     private final DecimalFormat formatter = new DecimalFormat("00");
@@ -729,8 +940,11 @@ class SonarComponentsTest {
       Collections.singletonList(expectedCheck.getClass()), null);
   }
 
-  private static class CustomCheck implements JavaCheck { }
-  private static class CustomTestCheck implements JavaCheck { }
+  private static class CustomCheck implements JavaCheck {
+  }
+
+  private static class CustomTestCheck implements JavaCheck {
+  }
 
   @Test
   void should_return_generated_code_visitors() throws Exception {
@@ -753,5 +967,10 @@ class SonarComponentsTest {
   @Rule(key = "jsp")
   public static class JspCodeCheck implements JspCodeVisitor {
 
+  }
+
+  //TODO Remove this extended API after the upgrade of sonar-plugin-api to 9.4
+  interface IncrementalAnalysisSensorContext extends SensorContext {
+    boolean canSkipUnchangedFiles();
   }
 }

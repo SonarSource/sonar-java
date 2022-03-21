@@ -1,0 +1,10 @@
+{
+'org.eclipse.jetty:jetty-project-branch:jetty-server/src/main/java/org/eclipse/jetty/server/session/UnreadableSessionDataException.java':[
+30,
+31,
+],
+'org.eclipse.jetty:jetty-project-branch:jetty-server/src/main/java/org/eclipse/jetty/server/session/UnwriteableSessionDataException.java':[
+26,
+27,
+],
+}
