@@ -13,6 +13,9 @@
 
   <properties>
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
+    <!-- default values for linux, overridden by below profiles for windows and mac -->
+    <openjdk8.url>https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u265-b01/OpenJDK8U-jre_x64_linux_hotspot_8u265b01.tar.gz</openjdk8.url>
+    <openjdk8.sha256>9bce39f63d24626da75778f240294fa466a0ed117e32db798164621fe30b0723</openjdk8.sha256>
   </properties>
 
   <dependencies>
@@ -99,105 +102,53 @@
         </plugin>
       </plugins>
     </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>com.googlecode.maven-download-plugin</groupId>
+        <artifactId>download-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-jre</id>
+            <phase>generate-test-resources</phase>
+            <goals>
+              <goal>wget</goal>
+            </goals>
+            <configuration>
+              <url>${openjdk8.url}</url>
+              <unpack>true</unpack>
+              <outputDirectory>${project.build.directory}/jre</outputDirectory>
+              <sha256>${openjdk8.sha256}</sha256>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 
   <profiles>
     <profile>
-      <id>download-jre-8-linux</id>
-      <activation>
-        <os>
-          <family>unix</family>
-        </os>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.googlecode.maven-download-plugin</groupId>
-            <artifactId>download-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>unpack-jre-linux</id>
-                <phase>generate-test-resources</phase>
-                <goals>
-                  <goal>wget</goal>
-                </goals>
-                <configuration>
-                  <url>https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u265-b01/OpenJDK8U-jre_x64_linux_hotspot_8u265b01.tar.gz</url>
-                  <unpack>true</unpack>
-                  <outputDirectory>${project.build.directory}/jre</outputDirectory>
-                  <sha256>9bce39f63d24626da75778f240294fa466a0ed117e32db798164621fe30b0723</sha256>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <id>download-jre-8-windows</id>
+      <id>set-openjdk8-windows</id>
       <activation>
         <os>
           <family>windows</family>
         </os>
       </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.googlecode.maven-download-plugin</groupId>
-            <artifactId>download-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>unpack-jre-windows</id>
-                <phase>generate-test-resources</phase>
-                <goals>
-                  <goal>wget</goal>
-                </goals>
-                <configuration>
-                  <url>https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u265-b01/OpenJDK8U-jre_x86-32_windows_hotspot_8u265b01.zip</url>
-                  <unpack>true</unpack>
-                  <outputDirectory>${project.build.directory}/jre</outputDirectory>
-                  <sha256>1d1624afe2aaa811e2bf09fb1c432f3f0ad4b8a7b6243db2245390f1b59a17cf</sha256>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
+      <properties>
+        <openjdk8.url>https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u265-b01/OpenJDK8U-jre_x86-32_windows_hotspot_8u265b01.zip</openjdk8.url>
+        <openjdk8.sha256>1d1624afe2aaa811e2bf09fb1c432f3f0ad4b8a7b6243db2245390f1b59a17cf</openjdk8.sha256>
+      </properties>
     </profile>
     <profile>
-      <id>download-jre-8-macosx</id>
+      <id>set-openjdk8-mac</id>
       <activation>
         <os>
           <family>mac</family>
         </os>
       </activation>
       <properties>
-        <jre.dirname>jdk8u256-b01-jre/Contents/Home</jre.dirname>
+        <openjdk8.url>https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u265-b01/OpenJDK8U-jre_x64_mac_hotspot_8u265b01.tar.gz</openjdk8.url>
+        <openjdk8.sha256>6df6bd51fbc4527546308e1e1c06954e380e264e84b3263b0c128f8d0288eb51</openjdk8.sha256>
       </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.googlecode.maven-download-plugin</groupId>
-            <artifactId>download-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>unpack-jre-macosx</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>wget</goal>
-                </goals>
-                <configuration>
-                  <url>https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u265-b01/OpenJDK8U-jre_x64_mac_hotspot_8u265b01.tar.gz</url>
-                  <unpack>true</unpack>
-                  <outputDirectory>${project.build.directory}/jre</outputDirectory>
-                  <sha256>6df6bd51fbc4527546308e1e1c06954e380e264e84b3263b0c128f8d0288eb51</sha256>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
   </profiles>
 
