@@ -78,7 +78,7 @@ public class ExternalReportTest {
   public void spotbugs() {
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("spotbugs-external-report"))
       .setProperty("sonar.java.spotbugs.reportPaths", "target" + File.separator + "spotbugsXml.xml")
-      .setGoals("clean package com.github.spotbugs:spotbugs-maven-plugin:3.1.12:spotbugs", "sonar:sonar");
+      .setGoals("clean package com.github.spotbugs:spotbugs-maven-plugin:4.5.3.0:spotbugs", "sonar:sonar");
     orchestrator.executeBuild(build);
 
     String projectKey = "org.sonarsource.it.projects:spotbugs-external-report";
