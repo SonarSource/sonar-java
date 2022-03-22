@@ -70,7 +70,7 @@ It is possible to manually set this value by using the property `sonar.java.expe
 Note that the perfect value depends on the project and the ecosystem setup, bigger batch size will not necessarily increase the performance and can even slow things down if the memory is a limiting factor.
 If needed, it is possible to run the parsing file by file by setting `sonar.java.fileByFile=true`.
 
-More details can be found in the [wiki of the analyzer](https://github.com/SonarSource/sonar-java/wiki/Batch-mode).
+More details can be found [here](https://github.com/SonarSource/sonar-java/wiki/Batch-mode).
 
 ## Analyzing JSP and Thymeleaf for XSS vulnerabilities
 
