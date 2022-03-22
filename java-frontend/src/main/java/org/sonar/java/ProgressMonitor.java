@@ -103,7 +103,7 @@ public class ProgressMonitor implements IProgressMonitor, Runnable {
   public void done() {
     if (success && analysisProgress.isLastBatch()) {
       log("100% analyzed");
-      log("Batch processing: Done!");
+      log("Batch processing: Done.");
     }
     interrupted.set(true);
     thread.interrupt();

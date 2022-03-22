@@ -84,7 +84,7 @@ class ProgressMonitorTest {
       "Starting batch processing.",
       "0% analyzed",
       "100% analyzed",
-      "Batch processing: Done!"
+      "Batch processing: Done."
     );
   }
 
@@ -109,7 +109,7 @@ class ProgressMonitorTest {
     assertThat(messages).hasSizeGreaterThanOrEqualTo(4).contains(
       "Starting batch processing.",
       "100% analyzed",
-      "Batch processing: Done!"
+      "Batch processing: Done."
     );
   }
 
@@ -196,7 +196,7 @@ class ProgressMonitorTest {
       "80% analyzed",
       "90% analyzed",
       "100% analyzed",
-      "Batch processing: Done!"
+      "Batch processing: Done."
     );
   }
 
@@ -233,7 +233,7 @@ class ProgressMonitorTest {
       "100% analyzed",
       // We waited an extra log before "done()", hence the two report of "100%"
       "100% analyzed",
-      "Batch processing: Done!"
+      "Batch processing: Done."
     );
   }
 

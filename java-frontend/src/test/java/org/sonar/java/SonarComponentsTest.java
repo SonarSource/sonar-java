@@ -629,10 +629,10 @@ class SonarComponentsTest {
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
     sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(settings));
 
-    LongSupplier oldValue = SonarComponents.maxMemoryProvider;
-    SonarComponents.maxMemoryProvider = () -> maxMemoryBytes;
+    LongSupplier oldValue = SonarComponents.maxMemoryInBytesProvider;
+    SonarComponents.maxMemoryInBytesProvider = () -> maxMemoryBytes;
     long batchModeSizeInKB = sonarComponents.getBatchModeSizeInKB();
-    SonarComponents.maxMemoryProvider = oldValue;
+    SonarComponents.maxMemoryInBytesProvider = oldValue;
     assertThat(batchModeSizeInKB).isEqualTo(expectedBatchSizeKB);
   }
 
