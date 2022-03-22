@@ -190,7 +190,7 @@ public class JavaFrontend {
       scanBatch(context, allInputFiles, analysisProgress);
     } else {
       long batchSize = batchModeSizeInKB * 1_000L;
-      LOG.info(logUsingBatch + " with batch size " + batchModeSizeInKB + " Kb.");
+      LOG.info(logUsingBatch + " with batch size " + batchModeSizeInKB + " KB.");
       BatchGenerator generator = new BatchGenerator(allInputFiles.iterator(), batchSize);
       while (generator.hasNext()) {
         List<InputFile> batch = generator.next();

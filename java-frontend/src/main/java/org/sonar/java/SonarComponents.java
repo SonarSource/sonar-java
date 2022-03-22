@@ -91,7 +91,7 @@ public class SonarComponents {
   private static final Version SONARLINT_6_3 = Version.parse("6.3");
   private static final Version SONARQUBE_9_2 = Version.parse("9.2");
   @VisibleForTesting
-  static LongSupplier maxMemoryProvider = () -> Runtime.getRuntime().maxMemory();
+  static LongSupplier maxMemoryInBytesProvider = () -> Runtime.getRuntime().maxMemory();
 
   private final FileLinesContextFactory fileLinesContextFactory;
 
@@ -366,7 +366,7 @@ public class SonarComponents {
   }
 
   /**
-   * Returns the batch mode size as read from configuration. If not value can be found, compute dynamically an ideal value.
+   * Returns the batch mode size as read from configuration, in Kilo Bytes. If not value can be found, compute dynamically an ideal value.
    * @return the batch mode size or a default value of -1L.
    */
   public long getBatchModeSizeInKB() {
@@ -379,10 +379,10 @@ public class SonarComponents {
 
   private static long computeIdealBatchSize() {
     // We take a fraction of the total memory available though -Xmx.
-    // If we assume that the average size of a file is 5kb and the average CI should have 1GB of memory,
+    // If we assume that the average size of a file is 5KB and the average CI should have 1GB of memory,
     // it will be able to analyze 10 files in batch.
-    // We max the value to 500kb (100 files) because there is only little advantages to go further.
-    return Math.min(500L, ((long) (maxMemoryProvider.getAsLong() * 0.00005)) / 1000L);
+    // We max the value to 500KB (100 files) because there is only little advantages to go further.
+    return Math.min(500L, ((long) (maxMemoryInBytesProvider.getAsLong() * 0.00005)) / 1000L);
   }
 
   public File workDir() {
