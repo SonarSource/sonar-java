@@ -17,13 +17,14 @@ Useful links
 * [Project homepage](https://redirect.sonarsource.com/plugins/java.html)
 * [Issue tracking](https://jira.sonarsource.com/browse/SONARJAVA/)
 * [Available rules](https://rules.sonarsource.com/java)
-* [SonarQube Community Forum](https://community.sonarsource.com/)
+* [Sonar Community Forum](https://community.sonarsource.com/)
 * [Demo project analysis](https://next.sonarqube.com/sonarqube/dashboard?id=org.sonarsource.java%3Ajava)
+* [Plugin Wiki](https://github.com/SonarSource/sonar-java/wiki)
 
 Have question or feedback?
 --------------------------
 
-To provide feedback (request a feature, report a bug etc.) use the [SonarQube Community Forum](https://community.sonarsource.com/). Please do not forget to specify the language (Java!), plugin version and SonarQube version.
+To provide feedback (request a feature, report a bug etc.) use the [Sonar Community Forum](https://community.sonarsource.com/). Please do not forget to specify the language (Java!), plugin version and SonarQube version.
 
 If you have a question on how to use plugin (and the [docs](https://docs.sonarqube.org/latest/analysis/languages/java/) don't help you), we also encourage you to use the community forum.
 
