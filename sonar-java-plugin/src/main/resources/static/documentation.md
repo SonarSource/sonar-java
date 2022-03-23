@@ -75,9 +75,12 @@ More details can be found [here](https://github.com/SonarSource/sonar-java/wiki/
 ## Skipping unchanged files
 Starting with SonarQube 9.4, and by default, the Java analyzer optimizes the analysis of unchanged files in pull requests.
 In practice, this means that on a file that has not changed, the analyzer only runs a restricted list of checks.
-Please note that this restricted list of checks, is currently limited to checks:
-* whose scope targets multiple files
-* are part of sonar-java
+To get a better understanding of the rule exclusion mechanism, keep in mind that:
+* Rules that need to run on multiple files to decide whether they need to raise issues are always executed
+* Rules that need to run at the end of the analysis to decide whether they need to raise issues are always executed
+* Rules that are defined out of the `sonar.java.checks` package are always executed
+
+This last criteria implies that checks defined in custom plugins cannot be skipped.
 
 If you wish to disable this optimization, you can set the value of the analysis parameter `sonar.java.skipUnchanged` to `false`.
 Leaving the parameter untouched is equivalent to having `sonar.java.skipUnchanged` set to `true`.
