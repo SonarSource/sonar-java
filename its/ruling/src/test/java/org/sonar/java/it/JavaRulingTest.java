@@ -68,7 +68,7 @@ public class JavaRulingTest {
   private static final int LOGS_NUMBER_LINES = 200;
   private static final Logger LOG = LoggerFactory.getLogger(JavaRulingTest.class);
 
-  private static String INCREMENTAL_ANALYSIS_KEY = "sonar.java.internal.skipUnchanged";
+  private static String INCREMENTAL_ANALYSIS_KEY = "sonar.java.skipUnchanged";
   private static boolean INCREMENTAL_ANALYSIS_VALUE = true;
 
   // by default all rules are enabled, if you want to enable just a subset of rules you can specify the list of
@@ -90,7 +90,6 @@ public class JavaRulingTest {
     .addPlugin(FileLocation.byWildcardMavenFilename(new File("../../sonar-java-plugin/target"), "sonar-java-plugin-*.jar"))
     .addPlugin(MavenLocation.of("org.sonarsource.sonar-lits-plugin", "sonar-lits-plugin", "0.10.0.2181"))
     .setEdition(Edition.DEVELOPER)
-    .activateLicense()
     .build();
 
   @BeforeClass
