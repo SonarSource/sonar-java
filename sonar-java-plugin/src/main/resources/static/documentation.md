@@ -72,6 +72,16 @@ If needed, it is possible to run the parsing file by file by setting `sonar.java
 
 More details can be found [here](https://github.com/SonarSource/sonar-java/wiki/Batch-mode).
 
+## Skipping unchanged files
+Starting with SonarQube 9.4, and by default, the Java analyzer optimizes the analysis of unchanged files in pull requests.
+In practice, this means that on a file that has not changed, the analyzer only runs a restricted list of checks.
+Please note that this restricted list of checks, is currently limited to checks:
+* whose scope targets multiple files
+* are part of sonar-java
+
+If you wish to disable this optimization, you can set the value of the analysis parameter `sonar.java.skipUnchanged` to `false`.
+Leaving the parameter untouched is equivalent to having `sonar.java.skipUnchanged` set to `true`.
+
 ## Analyzing JSP and Thymeleaf for XSS vulnerabilities
 
 In SonarQube Developer and Enterprise editions and on SonarCloud you can benefit from advanced security rules including XSS vulnerability detection. Java analysis supports analysis of Thymeleaf and JSP views when used with Java Servlets or Spring. To benefit from this analysis you need to make your views part of the project sources using `sonar.sources` property. In practice this usually means adding the following in your Maven `pom.xml` file
