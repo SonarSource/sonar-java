@@ -76,7 +76,9 @@ public class JavaAstScanner {
         .parse(filesNames,
           this::analysisCancelled,
           analysisProgress,
-          (i, r) -> simpleScan(i, r, JavaAstScanner::cleanUpAst));
+          (i, r) -> simpleScan(i, r,
+            // Due to a bug in ECJ, JAR files remain locked after the analysis on Windows, we unlock them manually. See SONARJAVA-3609.
+            JavaAstScanner::cleanUpAst));
     } finally {
       endOfAnalysis();
     }
@@ -136,7 +138,7 @@ public class JavaAstScanner {
 
   private static void cleanUpAst(JavaTree.CompilationUnitTreeImpl ast) {
     // release environment used for semantic resolution
-    ast.sema.cleanupEnvironment();
+    ast.sema.getEnvironmentCleaner().run();
   }
 
   private void collectUndefinedTypes(Set<JProblem> undefinedTypes) {

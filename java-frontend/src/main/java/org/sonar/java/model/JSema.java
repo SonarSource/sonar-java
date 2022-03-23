@@ -146,8 +146,8 @@ public final class JSema implements Sema {
     return ASTUtils.resolvePackageAnnotations(ast, packageName);
   }
 
-  public void cleanupEnvironment() {
-    ASTUtils.cleanupEnvironment(ast);
+  public Runnable getEnvironmentCleaner() {
+    return ASTUtils.getEnvironmentCleaner(ast);
   }
 
   public Set<JProblem> undefinedTypes() {

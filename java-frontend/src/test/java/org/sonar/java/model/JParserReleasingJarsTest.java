@@ -107,11 +107,38 @@ class JParserReleasingJarsTest {
     assertThat(((Symbol.MethodSymbol) foo).signature()).isEqualTo("org.foo.A#foo(Z)I");
 
     // force clean
-    cu.sema.cleanupEnvironment();
+    Runnable iNameEnvironment = cu.sema.getEnvironmentCleaner();
+    iNameEnvironment.run();
 
     // can be safely deleted
     assertThat(newJar.delete()).isTrue();
     assertThat(newJar).doesNotExist();
+  }
+
+  @Test
+  void environment_cleaner_should_support_equals_and_hashcode() {
+    JavaTree.CompilationUnitTreeImpl cu = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("class A {}");
+    Runnable env1 = cu.sema.getEnvironmentCleaner();
+    Runnable env2 = cu.sema.getEnvironmentCleaner();
+
+    assertThat(env1.equals(env1)).isTrue();
+    assertThat(env1.equals(env2)).isTrue();
+    assertThat(env1.equals(null)).isFalse();
+    assertThat(env1.equals("str")).isFalse();
+    assertThat(env1)
+      .hasSameHashCodeAs(env1)
+      .hasSameHashCodeAs(env2);
+  }
+
+  @Test
+  void environment_from_different_cu_are_not_equals() {
+    JavaTree.CompilationUnitTreeImpl cu1 = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("class A {}");
+    Runnable env1 = cu1.sema.getEnvironmentCleaner();
+    JavaTree.CompilationUnitTreeImpl cu2 = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("class A {}");
+    Runnable env2 = cu2.sema.getEnvironmentCleaner();
+
+    assertThat(env1.equals(env2)).isFalse();
+    assertThat(env1.hashCode()).isNotEqualTo(env2.hashCode());
   }
 
   private static Symbol getFooSymbol(JavaTree.CompilationUnitTreeImpl cu) {
