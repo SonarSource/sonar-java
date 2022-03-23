@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.env.IBinaryAnnotation;
 import org.eclipse.jdt.internal.compiler.env.IBinaryType;
+import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.eclipse.jdt.internal.compiler.env.NameEnvironmentAnswer;
 import org.eclipse.jdt.internal.compiler.lookup.AnnotationBinding;
 import org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
@@ -46,7 +47,11 @@ public final class ASTUtils {
   }
 
   public static void cleanupEnvironment(AST ast) {
-    ast.getBindingResolver().lookupEnvironment().nameEnvironment.cleanup();
+    getINameEnvironment(ast).cleanup();
+  }
+
+  public static INameEnvironment getINameEnvironment(AST ast) {
+    return ast.getBindingResolver().lookupEnvironment().nameEnvironment;
   }
 
   @Nullable

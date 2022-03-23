@@ -24,12 +24,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -199,20 +202,24 @@ public class JavaFrontend {
     }
   }
 
-  private <T extends InputFile> void scanBatch(BatchModeContext context, List<T> allFiles, AnalysisProgress analysisProgress) {
-    analysisProgress.startBatch(allFiles.size());
+  private <T extends InputFile> void scanBatch(BatchModeContext context, List<T> batchFiles, AnalysisProgress analysisProgress) {
+    analysisProgress.startBatch(batchFiles.size());
+    Set<INameEnvironment> environmentsToClean = new HashSet<>();
     JParserConfig.Mode.BATCH
       .create(JParserConfig.effectiveJavaVersion(javaVersion), context.getClasspath())
-      .parse(allFiles, this::analysisCancelled, analysisProgress, (input, result) -> scanAsBatchCallback(input, result, context));
+      .parse(batchFiles, this::analysisCancelled, analysisProgress, (input, result) -> scanAsBatchCallback(input, result, context, environmentsToClean));
+    // Due to a bug in ECJ, JAR files remain locked after the analysis on Windows, we unlock them manually, at the end of each batches. See SONARJAVA-3609.
+    environmentsToClean.forEach(INameEnvironment::cleanup);
     analysisProgress.endBatch();
   }
 
-  private static void scanAsBatchCallback(InputFile inputFile, JParserConfig.Result result, BatchModeContext context) {
+  private static void scanAsBatchCallback(InputFile inputFile, JParserConfig.Result result, BatchModeContext context, Set<INameEnvironment> environmentsToClean) {
     JavaAstScanner scanner = context.selectScanner(inputFile);
     Duration duration = PerformanceMeasure.start(context.descriptor(inputFile));
-    scanner.simpleScan(inputFile, result, ast -> {
-      // Do nothing. In batch mode, can not clean the ast as it will be used in later processing.
-    });
+    scanner.simpleScan(inputFile, result, ast ->
+      // In batch mode, we delay the cleaning of the environment as it will be used in later processing.
+      environmentsToClean.add(ast.sema.getINameEnvironment())
+    );
     duration.stop();
   }
 

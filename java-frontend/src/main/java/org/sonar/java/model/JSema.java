@@ -35,6 +35,7 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -148,6 +149,10 @@ public final class JSema implements Sema {
 
   public void cleanupEnvironment() {
     ASTUtils.cleanupEnvironment(ast);
+  }
+
+  public INameEnvironment getINameEnvironment() {
+    return ASTUtils.getINameEnvironment(ast);
   }
 
   public Set<JProblem> undefinedTypes() {

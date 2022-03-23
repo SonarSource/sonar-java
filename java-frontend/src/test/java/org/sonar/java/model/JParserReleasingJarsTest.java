@@ -23,6 +23,7 @@ import com.google.common.io.Files;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
+import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.junit.rules.TemporaryFolder;
@@ -108,6 +109,30 @@ class JParserReleasingJarsTest {
 
     // force clean
     cu.sema.cleanupEnvironment();
+
+    // can be safely deleted
+    assertThat(newJar.delete()).isTrue();
+    assertThat(newJar).doesNotExist();
+  }
+
+  @Test
+  void delaying_release_of_jar_should_be_possible() throws Exception {
+    File newJar = new File(temp.newFolder(), "project3.jar");
+    Files.copy(new File(PROJECT_JAR), newJar);
+
+    assertThat(newJar).exists();
+
+    List<File> classPath = Collections.singletonList(newJar);
+    JavaTree.CompilationUnitTreeImpl cu = parse(classPath);
+    Symbol foo = getFooSymbol(cu);
+
+    assertThat(foo.isUnknown()).isFalse();
+    assertThat(foo.isMethodSymbol()).isTrue();
+    assertThat(((Symbol.MethodSymbol) foo).signature()).isEqualTo("org.foo.A#foo(Z)I");
+
+    // force clean
+    INameEnvironment iNameEnvironment = cu.sema.getINameEnvironment();
+    iNameEnvironment.cleanup();
 
     // can be safely deleted
     assertThat(newJar.delete()).isTrue();
