@@ -86,7 +86,11 @@ public class SonarComponents {
   public static final String SONAR_AUTOSCAN_CHECK_FILTERING = "sonar.internal.analysis.autoscan.filtering";
   public static final String SONAR_BATCH_SIZE_KEY = "sonar.java.experimental.batchModeSizeInKB";
   public static final String SONAR_FILE_BY_FILE = "sonar.java.fileByFile";
-  public static final String SONAR_CAN_SKIP_UNCHANGED_FILES_KEY = "sonar.java.internal.skipUnchanged";
+  /**
+   * Enables optimized analysis of unchanged by skipping some checks.
+   * Defaults to true.
+   */
+  public static final String SONAR_CAN_SKIP_UNCHANGED_FILES_KEY = "sonar.java.skipUnchanged";
 
   private static final Version SONARLINT_6_3 = Version.parse("6.3");
   private static final Version SONARQUBE_9_2 = Version.parse("9.2");
