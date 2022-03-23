@@ -23,7 +23,6 @@ import com.google.common.io.Files;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
-import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.junit.rules.TemporaryFolder;
@@ -108,7 +107,8 @@ class JParserReleasingJarsTest {
     assertThat(((Symbol.MethodSymbol) foo).signature()).isEqualTo("org.foo.A#foo(Z)I");
 
     // force clean
-    cu.sema.cleanupEnvironment();
+    Runnable iNameEnvironment = cu.sema.getEnvironmentCleaner();
+    iNameEnvironment.run();
 
     // can be safely deleted
     assertThat(newJar.delete()).isTrue();
@@ -116,27 +116,29 @@ class JParserReleasingJarsTest {
   }
 
   @Test
-  void delaying_release_of_jar_should_be_possible() throws Exception {
-    File newJar = new File(temp.newFolder(), "project3.jar");
-    Files.copy(new File(PROJECT_JAR), newJar);
+  void environment_cleaner_should_support_equals_and_hashcode() {
+    JavaTree.CompilationUnitTreeImpl cu = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("class A {}");
+    Runnable env1 = cu.sema.getEnvironmentCleaner();
+    Runnable env2 = cu.sema.getEnvironmentCleaner();
 
-    assertThat(newJar).exists();
+    assertThat(env1.equals(env1)).isTrue();
+    assertThat(env1.equals(env2)).isTrue();
+    assertThat(env1.equals(null)).isFalse();
+    assertThat(env1.equals("str")).isFalse();
+    assertThat(env1)
+      .hasSameHashCodeAs(env1)
+      .hasSameHashCodeAs(env2);
+  }
 
-    List<File> classPath = Collections.singletonList(newJar);
-    JavaTree.CompilationUnitTreeImpl cu = parse(classPath);
-    Symbol foo = getFooSymbol(cu);
+  @Test
+  void environment_from_different_cu_are_not_equals() {
+    JavaTree.CompilationUnitTreeImpl cu1 = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("class A {}");
+    Runnable env1 = cu1.sema.getEnvironmentCleaner();
+    JavaTree.CompilationUnitTreeImpl cu2 = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("class A {}");
+    Runnable env2 = cu2.sema.getEnvironmentCleaner();
 
-    assertThat(foo.isUnknown()).isFalse();
-    assertThat(foo.isMethodSymbol()).isTrue();
-    assertThat(((Symbol.MethodSymbol) foo).signature()).isEqualTo("org.foo.A#foo(Z)I");
-
-    // force clean
-    INameEnvironment iNameEnvironment = cu.sema.getINameEnvironment();
-    iNameEnvironment.cleanup();
-
-    // can be safely deleted
-    assertThat(newJar.delete()).isTrue();
-    assertThat(newJar).doesNotExist();
+    assertThat(env1.equals(env2)).isFalse();
+    assertThat(env1.hashCode()).isNotEqualTo(env2.hashCode());
   }
 
   private static Symbol getFooSymbol(JavaTree.CompilationUnitTreeImpl cu) {

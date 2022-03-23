@@ -19,6 +19,7 @@
  */
 package org.eclipse.jdt.core.dom;
 
+import java.util.Objects;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.env.IBinaryAnnotation;
@@ -46,12 +47,8 @@ public final class ASTUtils {
     ast.getBindingResolver().lookupEnvironment().mayTolerateMissingType = true;
   }
 
-  public static void cleanupEnvironment(AST ast) {
-    getINameEnvironment(ast).cleanup();
-  }
-
-  public static INameEnvironment getINameEnvironment(AST ast) {
-    return ast.getBindingResolver().lookupEnvironment().nameEnvironment;
+  public static Runnable getEnvironmentCleaner(AST ast) {
+    return new EnvironmentCleaner(ast.getBindingResolver().lookupEnvironment().nameEnvironment);
   }
 
   @Nullable
@@ -103,6 +100,36 @@ public final class ASTUtils {
   public static String signature(IMethodBinding methodBinding) {
     char[] signature = ((MethodBinding) methodBinding).binding.signature();
     return new String(signature);
+  }
+
+  private static class EnvironmentCleaner implements Runnable {
+    private final INameEnvironment env;
+
+    private EnvironmentCleaner(INameEnvironment env) {
+      this.env = env;
+    }
+
+    @Override
+    public void run() {
+      env.cleanup();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      EnvironmentCleaner that = (EnvironmentCleaner) o;
+      return Objects.equals(env, that.env);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(env);
+    }
   }
 
 }
