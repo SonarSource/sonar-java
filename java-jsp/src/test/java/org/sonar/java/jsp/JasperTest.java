@@ -28,6 +28,7 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.apache.commons.io.file.PathUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -41,6 +42,7 @@ import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.model.GeneratedFile;
@@ -109,6 +111,48 @@ class JasperTest {
     InputFile generatedFile = generatedFiles.iterator().next();
     List<String> generatedCode = Files.readAllLines(generatedFile.path());
     assertThat(generatedCode).contains("      out.write(\"<html>\\n<body>\\n<h2>Hello World!</h2>\\n</body>\\n</html>\");");
+  }
+
+  @Test
+  void test_exclude_unrelated_files() throws Exception {
+    SensorContextTester ctx = jspContext(JSP_SOURCE);
+    ctx.setSettings(new MapSettings().setProperty("sonar.exclusions", "**/*something.xml"));
+    Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, emptyList());
+    assertThat(generatedFiles).hasSize(1);
+  }
+
+  @Test
+  void test_exclude_all_jsp() throws Exception {
+    SensorContextTester ctx = jspContext(JSP_SOURCE);
+    ctx.setSettings(new MapSettings().setProperty("sonar.exclusions", "**/*_jsp.java"));
+    Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, emptyList());
+    assertThat(generatedFiles).isEmpty();
+  }
+
+  @Test
+  void test_exclude_current_jsp() throws Exception {
+    SensorContextTester ctx = jspContext(JSP_SOURCE);
+    ctx.setSettings(new MapSettings().setProperty("sonar.exclusions", "**/any.js,**/test_jsp.java"));
+    Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, emptyList());
+    assertThat(generatedFiles).isEmpty();
+  }
+
+  @Test
+  void test_exclude_filter() throws Exception {
+    List<String> sonarExclusions = List.of("**/*A_jsp.java", "**\\*B_jsp.java", " *C_jsp.java ");
+    Predicate<String> filter = Jasper.createExclusionFilter(sonarExclusions);
+    assertThat(filter.test(null)).isTrue();
+    assertThat(filter.test("X_jsp.java")).isFalse();
+    assertThat(filter.test("A_jsp.java")).isTrue();
+    assertThat(filter.test("B_jsp.java")).isTrue();
+    assertThat(filter.test("C_jsp.java")).isTrue();
+    assertThat(filter.test("folder/A_jsp.java")).isTrue();
+    assertThat(filter.test("folder\\A_jsp.java")).isTrue();
+    assertThat(filter.test("folder/B_jsp.java")).isTrue();
+    assertThat(filter.test("folder\\B_jsp.java")).isTrue();
+    assertThat(filter.test("folder/B_JSP.JAVA")).isFalse();
+    assertThat(filter.test("folder/C_jsp.java")).isFalse();
+    assertThat(filter.test("A.java")).isFalse();
   }
 
   @Test
