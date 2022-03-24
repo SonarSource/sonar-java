@@ -865,6 +865,7 @@ class SonarComponentsTest {
     @BeforeEach
     void beforeEach() {
       sonarComponents = new SonarComponents(null, fs, javaClasspath, javaTestClasspath, null);
+      sonarComponents.setSensorContext(context);
     }
 
     @Test
@@ -898,7 +899,7 @@ class SonarComponentsTest {
     }
 
     @Test
-    void log_all_undefined_types_if_less_than_thresold() {
+    void log_all_undefined_types_if_less_than_threshold() {
       String source = generateSource(1);
 
       // artificially populated the semantic errors with 1 unknown types and 2 errors
@@ -917,6 +918,44 @@ class SonarComponentsTest {
         .doesNotContain("- ...")
         .contains("- A cannot be resolved to a type")
         .contains("- The import org.package01 cannot be resolved");
+    }
+
+    @Test
+    void suspicious_empty_libraries_should_be_logged() {
+      logUndefinedTypesWithOneMainAndOneTest();
+
+      assertThat(logTester.logs(LoggerLevel.WARN))
+        .contains("Dependencies/libraries were not provided for analysis of SOURCE files. The 'sonar.java.libraries' property is empty. Verify your configuration, as you might end up with less precise results.")
+        .contains("Dependencies/libraries were not provided for analysis of TEST files. The 'sonar.java.test.libraries' property is empty. Verify your configuration, as you might end up with less precise results.");
+    }
+
+    @Test
+    void suspicious_empty_libraries_should_not_be_logged_in_autoscan() {
+      // Enable autoscan with a property
+      context.setSettings(new MapSettings().setProperty(SonarComponents.SONAR_AUTOSCAN, true));
+
+      logUndefinedTypesWithOneMainAndOneTest();
+
+      assertThat(logTester.logs(LoggerLevel.WARN))
+        .contains("Dependencies/libraries were not provided for analysis of SOURCE files. The 'sonar.java.libraries' property is empty. Verify your configuration, as you might end up with less precise results.")
+        .doesNotContain("Dependencies/libraries were not provided for analysis of TEST files. The 'sonar.java.test.libraries' property is empty. Verify your configuration, as you might end up with less precise results.");
+    }
+
+    private void logUndefinedTypesWithOneMainAndOneTest() {
+      String source = generateSource(1);
+
+      // Add one test and one main file
+      fs.add(TestUtils.emptyInputFile("fooMain.java", InputFile.Type.MAIN));
+      fs.add(TestUtils.emptyInputFile("fooTest.java", InputFile.Type.TEST));
+
+      // artificially populated the semantic errors with 1 unknown types and 2 errors
+      sonarComponents.collectUndefinedTypes(((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+
+      // Call these methods to initiate Main and Test ClassPath
+      sonarComponents.getJavaClasspath();
+      sonarComponents.getJavaTestClasspath();
+
+      sonarComponents.logUndefinedTypes();
     }
 
     private String generateSource(int numberUnknownTypes) {

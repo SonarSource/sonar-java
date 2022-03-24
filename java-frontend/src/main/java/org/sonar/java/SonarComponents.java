@@ -457,7 +457,11 @@ public class SonarComponents {
   public void logUndefinedTypes() {
     if (!undefinedTypes.isEmpty()) {
       javaClasspath.logSuspiciousEmptyLibraries();
-      javaTestClasspath.logSuspiciousEmptyLibraries();
+      if (!isAutoScan()) {
+        // In autoscan, test + main code are analyzed in the same batch, and we do not make the distinction between
+        // test and main libraries, everything is inside "sonar.java.libraries", it is expected to let the test property empty.
+        javaTestClasspath.logSuspiciousEmptyLibraries();
+      }
       logUndefinedTypes(LOGGED_MAX_NUMBER_UNDEFINED_TYPES);
 
       // clear the set so only new undefined types will be logged
