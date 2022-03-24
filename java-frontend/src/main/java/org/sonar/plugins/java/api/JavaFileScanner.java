@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.java.api;
 
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.annotations.Beta;
 
 /**
@@ -33,4 +34,7 @@ public interface JavaFileScanner extends JavaCheck {
    */
   void scanFile(JavaFileScannerContext context);
 
+  default boolean preScan(InputFile inputFile) {
+    return false;
+  }
 }

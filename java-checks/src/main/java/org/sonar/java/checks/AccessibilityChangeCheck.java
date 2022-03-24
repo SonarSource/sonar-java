@@ -26,6 +26,8 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 public class AccessibilityChangeCheck extends AbstractAccessibilityChangeChecker {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
+
+
     if (isModifyingFieldFromRecord(mit)) {
       return;
     }

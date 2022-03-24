@@ -127,6 +127,10 @@ public class JavaFrontend {
 
 
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
+    sourceFiles = astScanner.preScan(sourceFiles);
+    testFiles = astScannerForTests.preScan(testFiles);
+    generatedFiles = astScannerForGeneratedFiles.preScan(generatedFiles);
+
     // SonarLint is not compatible with batch mode, it needs InputFile#contents() and batch mode use InputFile#absolutePath()
     boolean isSonarLint = sonarComponents != null && sonarComponents.isSonarLintContext();
     boolean fileByFileMode = isSonarLint || isFileByFileEnabled();

@@ -158,6 +158,14 @@ public class VisitorsBridge {
     this.inAndroidContext = inAndroidContext;
   }
 
+  public boolean preScan(InputFile inputFile) {
+    if (sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile)) {
+      return scannersThatCannotBeSkipped.stream().allMatch(scanner -> scanner.preScan(inputFile));
+    } else {
+      return false;
+    }
+  }
+
   public void visitFile(@Nullable Tree parsedTree, boolean fileCanBeSkipped) {
     if (fileCanBeSkipped) {
       skippedFileCount++;
