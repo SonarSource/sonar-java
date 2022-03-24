@@ -63,6 +63,15 @@ Example: `sonar.java.source=1.6`
 
 If the property is provided, the analysis will take the source version into account, and execute related rules accordingly. At run time, each of these rules will be executed – or not – depending of the Java version used by sources within the project. For instance, on a correctly configured project built with Java 6, rules targeting Java 7 and Java 8 will never raise issues, even though they are enabled in the associated rule profile.
 
+## Batch mode settings
+
+By default, files are parsed in batches. The size of the batch is dynamically computed based on the maximum memory available.
+It is possible to manually set this value by using the property `sonar.java.experimental.batchModeSizeInKB`.
+Note that the perfect value depends on the project and the ecosystem setup, bigger batch size will not necessarily increase the performance and can even slow things down if the memory is a limiting factor.
+If needed, it is possible to run the parsing file by file by setting `sonar.java.fileByFile=true`.
+
+More details can be found [here](https://github.com/SonarSource/sonar-java/wiki/Batch-mode).
+
 ## Analyzing JSP and Thymeleaf for XSS vulnerabilities
 
 In SonarQube Developer and Enterprise editions and on SonarCloud you can benefit from advanced security rules including XSS vulnerability detection. Java analysis supports analysis of Thymeleaf and JSP views when used with Java Servlets or Spring. To benefit from this analysis you need to make your views part of the project sources using `sonar.sources` property. In practice this usually means adding the following in your Maven `pom.xml` file
