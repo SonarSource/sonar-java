@@ -30,12 +30,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.servlet.jsp.JspFactory;
@@ -51,17 +53,27 @@ import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.scanner.ScannerSide;
+import org.sonar.api.utils.PathUtils;
+import org.sonar.api.utils.WildcardPattern;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.SmapFile;
 
 @ScannerSide
 public class Jasper {
 
+  private static final String SONAR_EXCLUSIONS_PROPERTY = "sonar.exclusions";
+
   private static final Logger LOG = Loggers.get(Jasper.class);
 
   public Collection<GeneratedFile> generateFiles(SensorContext sensorContext, List<File> javaClasspath) {
+    List<String> sonarExclusions = Arrays.asList(sensorContext.config().getStringArray(SONAR_EXCLUSIONS_PROPERTY));
+    if (isAllJavaJspExcluded(sonarExclusions)) {
+      return Collections.emptyList();
+    }
+    Predicate<String> javaExclusionFilter = createExclusionFilter(sonarExclusions);
     List<InputFile> jspFiles = jspFiles(sensorContext.fileSystem());
     LOG.debug("Found {} JSP files.", jspFiles.size());
     if (jspFiles.isEmpty()) {
@@ -87,8 +99,8 @@ public class Jasper {
       Map<Path, GeneratedFile> generatedJavaFiles = new HashMap<>();
       for (InputFile jsp : jspFiles) {
         try {
-          Path generatedFile = transpileJsp(jsp.path(), uriRoot, classLoader, servletContext, options, runtimeContext);
-          generatedJavaFiles.put(generatedFile, new GeneratedFile(generatedFile));
+          transpileJsp(jsp.path(), uriRoot, classLoader, servletContext, options, runtimeContext, javaExclusionFilter)
+            .ifPresent(generatedFile -> generatedJavaFiles.put(generatedFile, new GeneratedFile(generatedFile)));
         } catch (Exception | LinkageError e) {
           errorTranspiling = true;
           StringWriter w = new StringWriter();
@@ -110,6 +122,24 @@ public class Jasper {
     }
   }
 
+  private static boolean isAllJavaJspExcluded(List<String> sonarExclusions) {
+    return sonarExclusions.contains("**/*_jsp.java");
+  }
+
+  @VisibleForTesting
+  static Predicate<String> createExclusionFilter(List<String> sonarExclusions) {
+    if (sonarExclusions.isEmpty()) {
+      return file -> false;
+    }
+    List<WildcardPattern> exclusionsPatterns = sonarExclusions.stream()
+      .map(pattern -> WildcardPattern.create(pattern.trim().replace('\\', '/'), "/"))
+      .collect(Collectors.toList());
+    return path -> {
+      String sanitizedPath = PathUtils.sanitize(path);
+      return sanitizedPath == null || exclusionsPatterns.stream().anyMatch(pattern -> pattern.match(sanitizedPath));
+    };
+  }
+
   private static void processSourceMap(Path uriRoot, Map<Path, GeneratedFile> generatedJavaFiles, SmapStratum smap, FileSystem fileSystem) {
     Path smapRoot = Paths.get(smap.getClassFileName()).getParent();
     SmapFile smapFile = new SmapFile(smapRoot, smap.getSmapString(), uriRoot, fileSystem);
@@ -119,17 +149,20 @@ public class Jasper {
     }
   }
 
-  private static Path transpileJsp(Path jsp, Path uriRoot, ClassLoader classLoader, JspCServletContext servletContext,
-                                   JasperOptions options, JspRuntimeContext runtimeContext) throws Exception {
+  private static Optional<Path> transpileJsp(Path jsp, Path uriRoot, ClassLoader classLoader, JspCServletContext servletContext,
+    JasperOptions options, JspRuntimeContext runtimeContext, Predicate<String> javaExclusionFilter) throws Exception {
     LOG.debug("Transpiling JSP: {}", jsp);
     // on windows we need to replace \ in path to / to form uri (see org.apache.jasper.JspC#processFile)
-    String jspUri = "/" + uriRoot.relativize(jsp).toString().replace('\\','/');
-    JspCompilationContext compilationContext = new JspCompilationContext(jspUri, options, servletContext, null,
-      runtimeContext);
+    String jspUri = "/" + uriRoot.relativize(jsp).toString().replace('\\', '/');
+    JspCompilationContext compilationContext = new JspCompilationContext(jspUri, options, servletContext, null, runtimeContext);
+    String javaFileName = compilationContext.getServletJavaFileName();
+    if (javaExclusionFilter.test(javaFileName)) {
+      return Optional.empty();
+    }
     compilationContext.setClassLoader(classLoader);
     Compiler compiler = compilationContext.createCompiler();
     compiler.compile(false, true);
-    return Paths.get(compilationContext.getServletJavaFileName());
+    return Optional.of(Paths.get(javaFileName));
   }
 
   JasperOptions getJasperOptions(Path outputDir, JspCServletContext servletContext) {
