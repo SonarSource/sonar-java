@@ -78,12 +78,12 @@ In practice, this means that on a file that has not changed, the analyzer only r
 To get a better understanding of the rule exclusion mechanism, keep in mind that:
 * Rules that need to run on multiple files to decide whether they need to raise issues are always executed
 * Rules that need to run at the end of the analysis to decide whether they need to raise issues are always executed
-* Rules that are defined out of the `sonar.java.checks` package are always executed
+* Rules that are defined outside of the `sonar.java.checks` package are always executed
 
 This last criteria implies that [custom rules](https://redirect.sonarsource.com/doc/java-custom-rules-guide.html) cannot be skipped.
 
 If you wish to disable this optimization, you can set the value of the analysis parameter `sonar.java.skipUnchanged` to `false`.
-Leaving the parameter untouched is equivalent to having `sonar.java.skipUnchanged` set to `true`.
+Leaving the parameter unset lets the server decide whether the optimization should be enabled.
 
 ## Analyzing JSP and Thymeleaf for XSS vulnerabilities
 

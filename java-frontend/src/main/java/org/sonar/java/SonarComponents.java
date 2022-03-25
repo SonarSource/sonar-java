@@ -87,8 +87,9 @@ public class SonarComponents {
   public static final String SONAR_BATCH_SIZE_KEY = "sonar.java.experimental.batchModeSizeInKB";
   public static final String SONAR_FILE_BY_FILE = "sonar.java.fileByFile";
   /**
-   * Enables optimized analysis of unchanged by skipping some checks.
-   * Defaults to true.
+   * Describes if an optimized analysis of unchanged by skipping some rules is enabled.
+   * By default, the property is not set (null), leaving SQ/SC to decide whether to enable this behavior.
+   * Setting it to true or false, forces the behavior from the analyzer independently of the server.
    */
   public static final String SONAR_CAN_SKIP_UNCHANGED_FILES_KEY = "sonar.java.skipUnchanged";
 
