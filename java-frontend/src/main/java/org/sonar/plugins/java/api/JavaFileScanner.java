@@ -20,6 +20,8 @@
 package org.sonar.plugins.java.api;
 
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.java.annotations.Beta;
 
 /**
@@ -34,7 +36,7 @@ public interface JavaFileScanner extends JavaCheck {
    */
   void scanFile(JavaFileScannerContext context);
 
-  default boolean preScan(InputFile inputFile) {
+  default boolean preScan(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
     return false;
   }
 }

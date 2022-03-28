@@ -33,6 +33,8 @@ import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -158,9 +160,9 @@ public class VisitorsBridge {
     this.inAndroidContext = inAndroidContext;
   }
 
-  public boolean preScan(InputFile inputFile) {
+  public boolean preScan(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
     if (sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile)) {
-      return scannersThatCannotBeSkipped.stream().allMatch(scanner -> scanner.preScan(inputFile));
+      return scannersThatCannotBeSkipped.stream().allMatch(scanner -> scanner.preScan(inputFile, readCache, writeCache));
     } else {
       return false;
     }

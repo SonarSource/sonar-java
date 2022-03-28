@@ -34,6 +34,8 @@ import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.AnalysisException;
@@ -67,9 +69,9 @@ public class JavaAstScanner {
     return visitor.getClasspath();
   }
 
-  public Iterable<InputFile> preScan(Iterable<? extends InputFile> inputFiles) {
+  public Iterable<InputFile> preScan(Iterable<? extends InputFile> inputFiles, ReadCache readCache, WriteCache writeCache) {
     return StreamSupport.stream(inputFiles.spliterator(), false).filter( file ->
-      !visitor.preScan(file)
+      !visitor.preScan(file, readCache, writeCache)
     ).collect(Collectors.toList());
   }
 
