@@ -40,6 +40,7 @@ public final class InternalInputFile extends InternalMockedSonarAPI implements I
   private final String contents;
   private final int numberLines;
   private final InputFile.Type type;
+  private final Status status;
 
   private InternalInputFile(String filename, InputFile.Type type) {
     this.file = new File(filename);
@@ -47,14 +48,16 @@ public final class InternalInputFile extends InternalMockedSonarAPI implements I
     this.contents = "";
     this.numberLines = -1;
     this.type = type;
+    this.status = Status.SAME;
   }
 
-  private InternalInputFile(String moduleKey, File file) {
+  private InternalInputFile(String moduleKey, File file, Status status) {
     this.file = file;
     this.moduleKey = moduleKey;
     this.contents = readFile(file);
     this.numberLines = contents.split("(\r)?\n|\r").length;
     this.type = InputFile.Type.MAIN;
+    this.status = status;
   }
 
   private static String readFile(File file) {
@@ -66,7 +69,11 @@ public final class InternalInputFile extends InternalMockedSonarAPI implements I
   }
 
   public static InputFile inputFile(String moduleKey, File file) {
-    return new InternalInputFile(moduleKey, file);
+    return new InternalInputFile(moduleKey, file, Status.SAME);
+  }
+
+  public static InputFile inputFile(String moduleKey, File file, Status status) {
+    return new InternalInputFile(moduleKey, file, status);
   }
 
   public static InputFile emptyInputFile(String filename, InputFile.Type type) {
@@ -175,6 +182,6 @@ public final class InternalInputFile extends InternalMockedSonarAPI implements I
 
   @Override
   public Status status() {
-    throw notSupportedException("status()");
+    return status;
   }
 }

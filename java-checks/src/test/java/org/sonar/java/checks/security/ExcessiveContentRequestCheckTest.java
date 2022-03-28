@@ -20,12 +20,25 @@
 package org.sonar.java.checks.security;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class ExcessiveContentRequestCheckTest {
+
+  @Test
+  void test_caching() {
+    ((InternalCheckVerifier) CheckVerifier.newVerifier())
+      .onFiles(mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/A.java"))
+      .addFiles(InputFile.Status.CHANGED, mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/B.java"))
+      .withCheck(new ExcessiveContentRequestCheck())
+      .incrementalAnalysisEnabled(true)
+      .verifyNoIssues();
+  }
 
   @Test
   void test_default_max() {

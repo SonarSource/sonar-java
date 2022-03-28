@@ -26,6 +26,9 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.EndOfAnalysisCheck;
@@ -108,6 +111,11 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
 
   private final List<AnalyzerMessage> multipartConstructorIssues = new ArrayList<>();
   private boolean sizeSetSomewhere = false;
+
+  @Override
+  public boolean preScan(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
+    return true;
+  }
 
   @Override
   public void endOfAnalysis() {

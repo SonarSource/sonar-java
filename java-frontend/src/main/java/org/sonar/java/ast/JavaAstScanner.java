@@ -69,7 +69,7 @@ public class JavaAstScanner {
     return visitor.getClasspath();
   }
 
-  public Iterable<InputFile> preScan(Iterable<? extends InputFile> inputFiles, ReadCache readCache, WriteCache writeCache) {
+  public List<InputFile> preScan(Iterable<? extends InputFile> inputFiles, ReadCache readCache, WriteCache writeCache) {
     return StreamSupport.stream(inputFiles.spliterator(), false).filter( file ->
       !visitor.preScan(file, readCache, writeCache)
     ).collect(Collectors.toList());

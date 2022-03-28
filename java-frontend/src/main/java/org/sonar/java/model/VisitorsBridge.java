@@ -319,6 +319,11 @@ public class VisitorsBridge {
     }
 
     @Override
+    public boolean preScan(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
+      return subscriptionVisitors.stream().allMatch(visitor -> visitor.preScan(inputFile, readCache, writeCache));
+    }
+
+    @Override
     public void scanFile(JavaFileScannerContext javaFileScannerContext) {
       PerformanceMeasure.Duration issuableSubscriptionVisitorsDuration = PerformanceMeasure.start("IssuableSubscriptionVisitors");
       try {

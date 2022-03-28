@@ -38,7 +38,9 @@ import java.util.SortedSet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import org.apache.commons.lang3.ArrayUtils;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -51,6 +53,7 @@ import org.sonar.java.checks.verifier.FilesUtils;
 import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
+import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
@@ -76,6 +79,7 @@ public class InternalCheckVerifier implements CheckVerifier {
 
   private static final JavaVersion DEFAULT_JAVA_VERSION = new JavaVersionImpl();
   private static final List<File> DEFAULT_CLASSPATH = FilesUtils.getClassPath(FilesUtils.DEFAULT_TEST_JARS_DIRECTORY);
+
   static {
     Optional.of(new File(FilesUtils.DEFAULT_TEST_CLASSES_DIRECTORY)).filter(File::exists).ifPresent(DEFAULT_CLASSPATH::add);
   }
@@ -87,6 +91,7 @@ public class InternalCheckVerifier implements CheckVerifier {
   private List<InputFile> files = null;
   private JavaVersion javaVersion = null;
   private boolean inAndroidContext = false;
+  private boolean incrementalAnalysisEnabled = false;
   private List<File> classpath = null;
   private Consumer<Set<AnalyzerMessage>> customIssueVerifier = null;
   private boolean collectQuickFixes = false;
@@ -150,6 +155,11 @@ public class InternalCheckVerifier implements CheckVerifier {
     return this;
   }
 
+  public CheckVerifier incrementalAnalysisEnabled(boolean incrementalAnalysisEnabled) {
+    this.incrementalAnalysisEnabled = incrementalAnalysisEnabled;
+    return this;
+  }
+
   @Override
   public InternalCheckVerifier onFile(String filename) {
     requiresNull(files, FILE_OR_FILES);
@@ -167,10 +177,27 @@ public class InternalCheckVerifier implements CheckVerifier {
   public InternalCheckVerifier onFiles(Collection<String> filenames) {
     requiresNull(files, FILE_OR_FILES);
     requiresNonEmpty(filenames, "file");
-    files = filenames.stream()
+    files = new ArrayList<>();
+    return addFiles(InputFile.Status.SAME, filenames);
+  }
+
+  public InternalCheckVerifier addFiles(InputFile.Status status, String... modifiedFileNames) {
+    return addFiles(status, Arrays.asList(modifiedFileNames));
+  }
+
+  public InternalCheckVerifier addFiles(InputFile.Status status, Collection<String> modifiedFileNames) {
+    requiresNonEmpty(modifiedFileNames, "file");
+
+    if (files == null) {
+      files = new ArrayList<>(modifiedFileNames.size());
+    }
+
+    files.addAll(modifiedFileNames.stream()
       .map(File::new)
-      .map(TestUtils::inputFile)
-      .collect(Collectors.toList());
+      .map(file -> TestUtils.inputFile("", file, status))
+      .collect(Collectors.toList())
+    );
+
     return this;
   }
 
@@ -240,7 +267,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     visitorsBridge.setInAndroidContext(inAndroidContext);
     astScanner.setVisitorBridge(visitorsBridge);
 
-    astScanner.scan(files);
+    astScanner.scan(astScanner.preScan(files, null, null));
 
     JavaFileScannerContextForTests testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
     checkIssues(testJavaFileScannerContext.getIssues(), testJavaFileScannerContext.getQuickFixes());
@@ -564,7 +591,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     }
   }
 
-  private static SonarComponents sonarComponents() {
+  private SonarComponents sonarComponents() {
     SensorContext context = new InternalSensorContext();
     FileSystem fileSystem = context.fileSystem();
     Configuration config = context.config();
@@ -576,6 +603,11 @@ public class InternalCheckVerifier implements CheckVerifier {
       @Override
       public boolean reportAnalysisError(RecognitionException re, InputFile inputFile) {
         throw new AssertionError(String.format("Should not fail analysis (%s)", re.getMessage()));
+      }
+
+      @Override
+      public boolean canSkipUnchangedFiles() {
+        return incrementalAnalysisEnabled;
       }
     };
     sonarComponents.setSensorContext(context);
@@ -638,9 +670,9 @@ public class InternalCheckVerifier implements CheckVerifier {
       String expectedDescription = expected.getDescription();
       if (!actualDescription.equals(expectedDescription)) {
         throw new AssertionError(String.format("[Quick Fix] Wrong description for issue on line %d.%nExpected: {{%s}}%nbut was:     {{%s}}",
-            actualIssue.getLine(),
-            expectedDescription,
-            actualDescription));
+          actualIssue.getLine(),
+          expectedDescription,
+          actualDescription));
       }
       List<JavaTextEdit> actualTextEdits = actual.getTextEdits();
       List<JavaTextEdit> expectedTextEdits = expected.getTextEdits();

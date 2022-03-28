@@ -53,6 +53,9 @@ import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
@@ -384,6 +387,11 @@ class Expectations {
       this.issues = issues;
       this.flows = flows;
       this.quickFixes = quickFixes;
+    }
+
+    @Override
+    public boolean preScan(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
+      return true;
     }
 
     @Override
