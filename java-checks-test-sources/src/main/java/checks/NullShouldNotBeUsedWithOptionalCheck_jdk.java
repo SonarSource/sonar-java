@@ -94,7 +94,7 @@ class NullShouldNotBeUsedWithOptionalCheck_jdkClassA {
   }
 
   public void NonnullWithArgument1() {
-    @javax.annotation.Nonnull(when= When.MAYBE) // Noncompliant [[sc=5;ec=48]] {{"Optional" variables should not be "@Nonnull(when=MAYBE)".}}
+    @javax.annotation.Nonnull(when= When.NEVER) // Noncompliant [[sc=5;ec=48]] {{"Optional" variables should not be "@Nonnull(when=NEVER)".}}
     Optional<String> var;
   }
 
