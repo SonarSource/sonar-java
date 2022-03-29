@@ -113,7 +113,7 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
   private boolean sizeSetSomewhere = false;
 
   @Override
-  public boolean preScan(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
+  public boolean shouldBeScanned(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
     return true;
   }
 

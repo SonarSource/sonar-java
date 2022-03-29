@@ -160,9 +160,9 @@ public class VisitorsBridge {
     this.inAndroidContext = inAndroidContext;
   }
 
-  public boolean preScan(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
+  public boolean shouldBeScanned(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
     if (sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile)) {
-      return scannersThatCannotBeSkipped.stream().allMatch(scanner -> scanner.preScan(inputFile, readCache, writeCache));
+      return scannersThatCannotBeSkipped.stream().anyMatch(scanner -> scanner.shouldBeScanned(inputFile, readCache, writeCache));
     } else {
       return false;
     }
@@ -319,8 +319,8 @@ public class VisitorsBridge {
     }
 
     @Override
-    public boolean preScan(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
-      return subscriptionVisitors.stream().allMatch(visitor -> visitor.preScan(inputFile, readCache, writeCache));
+    public boolean shouldBeScanned(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
+      return subscriptionVisitors.stream().allMatch(visitor -> visitor.shouldBeScanned(inputFile, readCache, writeCache));
     }
 
     @Override

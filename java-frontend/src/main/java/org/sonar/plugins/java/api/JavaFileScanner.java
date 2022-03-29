@@ -24,6 +24,8 @@ import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.java.annotations.Beta;
 
+import javax.annotation.CheckForNull;
+
 /**
  * Common interface for all checks analyzing a java file.
  */
@@ -36,7 +38,17 @@ public interface JavaFileScanner extends JavaCheck {
    */
   void scanFile(JavaFileScannerContext context);
 
-  default boolean preScan(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
-    return false;
+  /**
+   * Returns true if a file needs to be scanned by the rule, false otherwise.
+   * This information is deduced from the input file and the read cache.
+   * The rule may persist data to the write cache for future analyses.
+   *
+   * @param inputFile The file thay will eventually be scanned
+   * @param readCache The cache of information from previous analyses
+   * @param writeCache The cache may persist data for future analyses
+   * @return Returns true by default or if the file needs to be scanned again, false otherwise.
+   */
+  default boolean shouldBeScanned(InputFile inputFile, @CheckForNull ReadCache readCache, @CheckForNull WriteCache writeCache) {
+    return true;
   }
 }

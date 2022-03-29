@@ -25,7 +25,6 @@ import java.io.InterruptedIOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.Spliterator;
 import java.util.concurrent.CancellationException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -69,9 +68,9 @@ public class JavaAstScanner {
     return visitor.getClasspath();
   }
 
-  public List<InputFile> preScan(Iterable<? extends InputFile> inputFiles, ReadCache readCache, WriteCache writeCache) {
+  public List<InputFile> filterFilesThatShouldBeParsed(Iterable<? extends InputFile> inputFiles, ReadCache readCache, WriteCache writeCache) {
     return StreamSupport.stream(inputFiles.spliterator(), false).filter( file ->
-      !visitor.preScan(file, readCache, writeCache)
+      visitor.shouldBeScanned(file, readCache, writeCache)
     ).collect(Collectors.toList());
   }
 

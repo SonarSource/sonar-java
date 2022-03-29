@@ -23,8 +23,12 @@ import java.io.File;
 import java.util.Collection;
 
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 import org.sonar.plugins.java.api.JavaFileScanner;
+
+import javax.annotation.Nullable;
 
 /**
  * This interface defines how to use checks (rules) verifiers. It's goal is to provide all the required information
@@ -185,6 +189,14 @@ public interface CheckVerifier {
    * @return the verifier configured to consider that no bytecode will be provided for analysis
    */
   CheckVerifier withoutSemantic();
+
+  /**
+   * Tells the verifier to feed the check with cached information in its preScan phase.
+   * @param readCache A source of information from previous analyses
+   * @param writeCache A place to dump information at the end of the analysis
+   * @return the verifier configured with the caches to use.
+   */
+  CheckVerifier withCache(@Nullable ReadCache readCache, @Nullable WriteCache writeCache);
 
   /**
    * Verifies that all the expected issues are correctly raised by the rule(s),

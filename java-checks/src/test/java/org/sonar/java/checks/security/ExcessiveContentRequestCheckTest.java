@@ -31,6 +31,14 @@ import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 class ExcessiveContentRequestCheckTest {
 
   @Test
+  /**
+   * On a module made of files A.java and B.java, where the rule is applied in incremental mode,
+   * where A.java is unmodified and B.java is modified, the check should:
+   * [x] Not analyze the unmodified source file
+   * [] Recover the results from a previous analysis from the injected cache
+   * [] Raise no issue
+   * [] Write the result to the cache
+   */
   void test_caching() {
     ((InternalCheckVerifier) CheckVerifier.newVerifier())
       .onFiles(mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/A.java"))

@@ -38,12 +38,13 @@ import java.util.SortedSet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import org.apache.commons.lang3.ArrayUtils;
+
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.api.config.Configuration;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.Beta;
@@ -53,7 +54,6 @@ import org.sonar.java.checks.verifier.FilesUtils;
 import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
-import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
@@ -97,6 +97,8 @@ public class InternalCheckVerifier implements CheckVerifier {
   private boolean collectQuickFixes = false;
 
   private Expectations expectations = new Expectations();
+  private ReadCache readCache;
+  private WriteCache writeCache;
 
   private InternalCheckVerifier() {
   }
@@ -217,6 +219,14 @@ public class InternalCheckVerifier implements CheckVerifier {
   }
 
   @Override
+  public CheckVerifier withCache(@Nullable ReadCache readCache, @Nullable WriteCache writeCache) {
+    this.readCache = readCache;
+    this.writeCache = writeCache;
+    incrementalAnalysisEnabled = true;
+    return this;
+  }
+
+  @Override
   public void verifyIssues() {
     requiresNonNull(checks, CHECK_OR_CHECKS);
     requiresNonNull(files, FILE_OR_FILES);
@@ -275,10 +285,18 @@ public class InternalCheckVerifier implements CheckVerifier {
     visitorsBridge.setInAndroidContext(inAndroidContext);
     astScanner.setVisitorBridge(visitorsBridge);
 
-    astScanner.scan(astScanner.preScan(files, null, null));
+    List<InputFile> filesToParse = files;
+    if (incrementalAnalysisEnabled) {
+      filesToParse = astScanner.filterFilesThatShouldBeParsed(files, readCache, writeCache);
+    }
+    astScanner.scan(filesToParse);
 
     JavaFileScannerContextForTests testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
-    checkIssues(testJavaFileScannerContext.getIssues(), testJavaFileScannerContext.getQuickFixes());
+    if (testJavaFileScannerContext != null) {
+      checkIssues(testJavaFileScannerContext.getIssues(), testJavaFileScannerContext.getQuickFixes());
+    } else {
+      checkIssues(Collections.emptySet(), Collections.emptyMap());
+    }
   }
 
   private void checkIssues(Set<AnalyzerMessage> issues, Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> quickFixes) {

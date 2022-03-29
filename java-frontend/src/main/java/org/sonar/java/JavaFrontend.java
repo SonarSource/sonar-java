@@ -131,9 +131,9 @@ public class JavaFrontend {
       var readCache = sonarComponents.context().previousAnalysisCache();
       var writeCache = sonarComponents.context().nextCache();
 
-      sourceFiles = astScanner.preScan(sourceFiles, readCache, writeCache);
-      testFiles = astScannerForTests.preScan(testFiles, readCache, writeCache);
-      generatedFiles = astScannerForGeneratedFiles.preScan(generatedFiles, readCache, writeCache);
+      sourceFiles = astScanner.filterFilesThatShouldBeParsed(sourceFiles, readCache, writeCache);
+      testFiles = astScannerForTests.filterFilesThatShouldBeParsed(testFiles, readCache, writeCache);
+      generatedFiles = astScannerForGeneratedFiles.filterFilesThatShouldBeParsed(generatedFiles, readCache, writeCache);
     }
 
     // SonarLint is not compatible with batch mode, it needs InputFile#contents() and batch mode use InputFile#absolutePath()

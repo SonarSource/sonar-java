@@ -390,7 +390,7 @@ class Expectations {
     }
 
     @Override
-    public boolean preScan(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
+    public boolean shouldBeScanned(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
       return true;
     }
 

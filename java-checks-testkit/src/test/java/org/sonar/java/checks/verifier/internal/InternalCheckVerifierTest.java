@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks.verifier.internal;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -26,10 +27,12 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.aggregator.AggregateWith;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalysisException;
+import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.RspecKey;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
@@ -43,6 +46,9 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 class InternalCheckVerifierTest {
 
@@ -934,6 +940,48 @@ class InternalCheckVerifierTest {
       .hasMessageContaining(String.format("File %s was already added.", TEST_FILE));
   }
 
+  @Test
+  void withCache_effectively_sets_the_caches_for_prescan() {
+    ReadCache readCache = new ReadCache() {
+      @Override
+      public InputStream read(String s) {
+        return null;
+      }
+
+      @Override
+      public boolean contains(String s) {
+        return false;
+      }
+    };
+
+    WriteCache writeCache = new WriteCache() {
+      @Override
+      public void write(String s, InputStream inputStream) {
+
+      }
+
+      @Override
+      public void write(String s, byte[] bytes) {
+
+      }
+
+      @Override
+      public void copyFromPrevious(String s) {
+
+      }
+    };
+
+    var check = spy(new NoEffectEndOfAnalysisCheck());
+
+    InternalCheckVerifier.newInstance()
+      .withCache(readCache, writeCache)
+      .onFile(TEST_FILE)
+      .withCheck(check)
+      .verifyNoIssues();
+
+    verify(check, times(1)).shouldBeScanned(any(), eq(readCache), eq(writeCache));
+  }
+
   @Rule(key = "FailingCheck")
   private static final class FailingCheck implements JavaFileScanner {
     @Override
@@ -943,7 +991,20 @@ class InternalCheckVerifierTest {
   }
 
   @Rule(key = "NoEffectCheck")
-  private static final class NoEffectCheck implements JavaFileScanner {
+  private final static class NoEffectCheck implements JavaFileScanner {
+
+    @Override
+    public void scanFile(JavaFileScannerContext context) {
+      // do nothing
+    }
+  }
+
+  @Rule(key="NoEffectEndOfAnalysisCheck")
+  private static class NoEffectEndOfAnalysisCheck implements JavaFileScanner, EndOfAnalysisCheck {
+    @Override
+    public void endOfAnalysis() {
+      // do nothing
+    }
 
     @Override
     public void scanFile(JavaFileScannerContext context) {
