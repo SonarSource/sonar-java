@@ -181,16 +181,24 @@ public class InternalCheckVerifier implements CheckVerifier {
     return addFiles(InputFile.Status.SAME, filenames);
   }
 
+  @Override
   public InternalCheckVerifier addFiles(InputFile.Status status, String... modifiedFileNames) {
     return addFiles(status, Arrays.asList(modifiedFileNames));
   }
 
+  @Override
   public InternalCheckVerifier addFiles(InputFile.Status status, Collection<String> modifiedFileNames) {
     requiresNonEmpty(modifiedFileNames, "file");
 
     if (files == null) {
       files = new ArrayList<>(modifiedFileNames.size());
     }
+
+    files.forEach(inputFile -> {
+      if (modifiedFileNames.contains(inputFile.toString())) {
+        throw new IllegalArgumentException(String.format("File %s was already added.", inputFile));
+      }
+    });
 
     files.addAll(modifiedFileNames.stream()
       .map(File::new)

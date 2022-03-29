@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -105,6 +107,16 @@ public class SECheckVerifier implements CheckVerifier {
   public CheckVerifier onFiles(Collection<String> filenames) {
     checkVerifier.onFiles(filenames);
     return this;
+  }
+
+  @Override
+  public CheckVerifier addFiles(InputFile.Status status, String... filenames) {
+    return checkVerifier.addFiles(status, filenames);
+  }
+
+  @Override
+  public CheckVerifier addFiles(InputFile.Status status, Collection<String> filenames) {
+    return checkVerifier.addFiles(status, filenames);
   }
 
   @Override

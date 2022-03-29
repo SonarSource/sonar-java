@@ -26,6 +26,8 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.aggregator.AggregateWith;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.RspecKey;
@@ -40,8 +42,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.Assertions.*;
 
 class InternalCheckVerifierTest {
 
@@ -907,6 +908,30 @@ class InternalCheckVerifierTest {
         .verifyIssues();
     }
 
+  }
+
+  @Test
+  void addFiles_registers_file_to_be_analyzed() {
+    InternalCheckVerifier.newInstance()
+      .addFiles(InputFile.Status.ADDED, TEST_FILE)
+      .withCheck(NO_EFFECT_CHECK)
+      .verifyNoIssues();
+
+    InternalCheckVerifier.newInstance()
+      .addFiles(InputFile.Status.ADDED, TEST_FILE)
+      .addFiles(InputFile.Status.ADDED, TEST_FILE_NONCOMPLIANT)
+      .withCheck(NO_EFFECT_CHECK)
+      .verifyNoIssues();
+  }
+
+  @Test
+  void addFiles_throws_an_IllegalArgumentException_if_file_added_before() {
+    InternalCheckVerifier checkVerifier = InternalCheckVerifier.newInstance();
+    checkVerifier.onFiles(TEST_FILE);
+    assertThatThrownBy(() -> {
+      checkVerifier.addFiles(InputFile.Status.ADDED, TEST_FILE);
+    }).isInstanceOf(IllegalArgumentException.class)
+      .hasMessageContaining(String.format("File %s was already added.", TEST_FILE));
   }
 
   @Rule(key = "FailingCheck")

@@ -21,6 +21,8 @@ package org.sonar.java.checks.verifier;
 
 import java.io.File;
 import java.util.Collection;
+
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 import org.sonar.plugins.java.api.JavaFileScanner;
 
@@ -154,6 +156,26 @@ public interface CheckVerifier {
    * @return the verifier configured to consider the provided test file(s) as source for the rule(s)
    */
   CheckVerifier onFiles(Collection<String> filenames);
+
+  /**
+   * Adds a collection of files with an expected status to be verified by the given rule(s).
+   * If a file by the same filename is already listed to be analyzed, an exception is thrown.
+   * @param status The status of the files to be analyzed
+   * @param filenames a collection of files to be analyzed
+   * @return the verifier configured
+   * @throws IllegalArgumentException if a file by the same filename had already been added
+   */
+  CheckVerifier addFiles(InputFile.Status status, String... filenames);
+
+  /**
+   * Adds a collection of files with an expected status.
+   * If a file by the same filename is already listed to be analyzed, an exception is thrown.
+   * @param status The status of the files to be analyzed
+   * @param filenames a collection of files to be analyzed
+   * @return the verifier configured
+   * @throws IllegalArgumentException if a file by the same filename had already been added
+   */
+  CheckVerifier addFiles(InputFile.Status status, Collection<String> filenames);
 
   /**
    * Tells the verifier that no bytecode will be provided. This method is usually used in combination with
