@@ -375,7 +375,7 @@ class JavaFrontendTest {
 
   @Test
   void test_preview_feature_in_max_supported_version_do_not_log_message() throws IOException {
-    // When the the actual version match the maximum supported version (currently 17), the preview features flag is
+    // When the actual version match the maximum supported version (currently 17), the preview features flag is
     // enabled in the parser config and we made sure to be able to parse preview features, no need to log anything.
     logTester.setLevel(LoggerLevel.DEBUG);
     scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "17"),
@@ -386,11 +386,23 @@ class JavaFrontendTest {
   }
 
   @Test
-  void test_preview_feature_log_message() throws IOException {
-    // When the the actual version is greater than the maximum supported version (currently 17),
-    // we can not guarantee the correct behavior of preview features and log a message.
+  void test_preview_feature_in_java_18_do_not_log_message() throws IOException {
+    // Java 18 does not add any syntactic changes from 17, we can therefore enable the preview features flag
+    // in the parser config, no need to log anything.
     logTester.setLevel(LoggerLevel.DEBUG);
     scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "18"),
+      SONARLINT_RUNTIME, "class A { void m(String s) { switch(s) { case null: default: } } }");
+    assertThat(sensorContext.allAnalysisErrors()).isEmpty();
+    String allLogs = String.join("\n", logTester.logs());
+    assertThat(allLogs).doesNotContain("Unresolved imports/types", "Use of preview features");
+  }
+
+  @Test
+  void test_preview_feature_log_message() throws IOException {
+    // When the actual version is greater than the maximum supported version (currently 17) and not explicitly 18,
+    // we can not guarantee the correct behavior of preview features and log a message.
+    logTester.setLevel(LoggerLevel.DEBUG);
+    scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "19"),
       SONARLINT_RUNTIME, "class A { void m(String s) { switch(s) { case null: default: } } }");
     assertThat(sensorContext.allAnalysisErrors()).isEmpty();
     assertTrue(logTester.logs(LoggerLevel.WARN).stream().noneMatch(l -> l.endsWith("Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.")));
