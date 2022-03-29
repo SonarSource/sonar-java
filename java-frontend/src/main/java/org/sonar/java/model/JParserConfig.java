@@ -114,7 +114,7 @@ public abstract class JParserConfig {
     options.put(JavaCore.COMPILER_COMPLIANCE, javaVersion);
     options.put(JavaCore.COMPILER_SOURCE, javaVersion);
     options.put(JavaCore.COMPILER_PB_MAX_PER_UNIT, MAXIMUM_ECJ_WARNINGS);
-    if (MAXIMUM_SUPPORTED_JAVA_VERSION.equals(javaVersion)) {
+    if (shouldEnablePreviewFlag(javaVersion)) {
       options.put(JavaCore.COMPILER_PB_ENABLE_PREVIEW_FEATURES, "enabled");
     }
     // enabling all supported compiler warnings
@@ -274,6 +274,12 @@ public abstract class JParserConfig {
       }
       action.accept(inputFile, result);
     }
+  }
+
+  @VisibleForTesting
+  static boolean shouldEnablePreviewFlag(String currentVersion) {
+    // Java 18 does not add any syntactic changes from 17, we can therefore enable the preview features flag safely for java 18.
+    return MAXIMUM_SUPPORTED_JAVA_VERSION.equals(currentVersion) || "18".equals(currentVersion);
   }
 
   public static String effectiveJavaVersion(@Nullable JavaVersion javaVersion) {

@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.model.JParserConfig.effectiveJavaVersion;
+import static org.sonar.java.model.JParserConfig.shouldEnablePreviewFlag;
 
 class JParserConfigTest {
 
@@ -31,6 +32,18 @@ class JParserConfigTest {
     assertThat(effectiveJavaVersion(null)).isEqualTo("17");
     assertThat(effectiveJavaVersion(new JavaVersionImpl())).isEqualTo("17");
     assertThat(effectiveJavaVersion(new JavaVersionImpl(10))).isEqualTo("10");
+  }
+
+  @Test
+  void should_enable_preview() {
+    assertThat(shouldEnablePreviewFlag("8")).isFalse();
+    assertThat(shouldEnablePreviewFlag("11")).isFalse();
+    assertThat(shouldEnablePreviewFlag("16")).isFalse();
+    assertThat(shouldEnablePreviewFlag("17")).isTrue();
+    assertThat(shouldEnablePreviewFlag("18")).isTrue();
+
+    assertThat(shouldEnablePreviewFlag(JavaVersionImpl.fromString("1.8").toString())).isFalse();
+    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(18).toString())).isTrue();
   }
 
 }
