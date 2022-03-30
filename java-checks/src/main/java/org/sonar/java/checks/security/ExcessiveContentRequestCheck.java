@@ -124,11 +124,13 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
 
   private List<String> currentFilesThatSetMaximumSize = new ArrayList<>();
   private List<String> currentFilesThatInstantiate = new ArrayList<>();
+  private WriteCache writeCache;
 
-  private synchronized void loadDataFromCache(ReadCache readCache) {
+  private synchronized void prepCaches(ReadCache readCache, WriteCache writeCache) {
     if (isCacheLoaded) {
       return;
     }
+    this.writeCache = writeCache;
     isCacheLoaded = true;
     try (InputStream in = readCache.read("java:S5693:maximumSize")) {
       String raw = new String(in.readAllBytes(), StandardCharsets.UTF_8);
@@ -161,7 +163,7 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     // If it is a changed file, we return true.
 
     // If not done yet, load data from the cache
-    loadDataFromCache(readCache);
+    prepCaches(readCache, writeCache);
 
     // Assume the file needs to be scanned again unless we can find some cached results for it
     boolean needsToBeScanned = true;

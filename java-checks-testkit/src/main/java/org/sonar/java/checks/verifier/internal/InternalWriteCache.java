@@ -19,31 +19,46 @@
  */
 package org.sonar.java.checks.verifier.internal;
 
-import org.sonar.api.batch.sensor.cache.ReadCache;
-
-import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.api.batch.sensor.cache.WriteCache;
 
-public class InternalReadCache implements ReadCache {
+public class InternalWriteCache implements WriteCache {
+
   private final Map<String, byte[]> cache = new HashMap<>();
+  private ReadCache readCache;
 
-  @Override
-  public InputStream read(String key) {
-    if (!cache.containsKey(key)) {
-      throw new IllegalArgumentException(String.format("cache does not contain key \"%s\"", key));
-    }
-    return new ByteArrayInputStream(cache.get(key));
-  }
-
-  @Override
-  public boolean contains(String key) {
-    return cache.containsKey(key);
-  }
-
-  public InternalReadCache put(String key, byte[] data) {
-    cache.put(key, data);
+  public InternalWriteCache bind(ReadCache readCache) {
+    this.readCache = readCache;
     return this;
+  }
+
+  public Map<String, byte[]> getCache() {
+    return cache;
+  }
+
+  @Override
+  public void write(String key, InputStream data) {
+    try {
+      write(key, data.readAllBytes());
+    } catch (IOException e) {
+      throw new IllegalStateException("Failed to read stream", e);
+    }
+  }
+
+  @Override
+  public void write(String key, byte[] data) {
+    if (this.cache.containsKey(key)) {
+      throw new IllegalArgumentException(String.format("Same key cannot be written to multiple times (%s)", key));
+    }
+    this.cache.put(key, data);
+  }
+
+  @Override
+  public void copyFromPrevious(String key) {
+    write(key, readCache.read(key));
   }
 }
