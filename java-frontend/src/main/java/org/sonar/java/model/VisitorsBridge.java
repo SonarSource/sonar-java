@@ -164,7 +164,7 @@ public class VisitorsBridge {
     if (sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile)) {
       return scannersThatCannotBeSkipped.stream().anyMatch(scanner -> scanner.shouldBeScanned(inputFile, readCache, writeCache));
     } else {
-      return false;
+      return true;
     }
   }
 
@@ -320,7 +320,7 @@ public class VisitorsBridge {
 
     @Override
     public boolean shouldBeScanned(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
-      return subscriptionVisitors.stream().allMatch(visitor -> visitor.shouldBeScanned(inputFile, readCache, writeCache));
+      return subscriptionVisitors.stream().anyMatch(visitor -> visitor.shouldBeScanned(inputFile, readCache, writeCache));
     }
 
     @Override

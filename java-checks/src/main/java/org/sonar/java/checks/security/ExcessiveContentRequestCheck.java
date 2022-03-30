@@ -114,11 +114,18 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
 
   @Override
   public boolean shouldBeScanned(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
-    return true;
+    // 2 cache keys:
+    // - list of files that set the maximum size
+    // - list of files that instantiate a new object
+    // If not done yet, load lists from cache and store them in a field.
+    // If the file is unchanged, we copy over the data from previous analyses and return false.
+    // If it is a changed file, we return true.
+    return false;
   }
 
   @Override
   public void endOfAnalysis() {
+    // TODO write lists back to cache
     if (!sizeSetSomewhere && context != null) {
       DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) context;
       multipartConstructorIssues.forEach(defaultContext::reportIssue);
@@ -232,5 +239,6 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     }
     return Optional.empty();
   }
+
 
 }

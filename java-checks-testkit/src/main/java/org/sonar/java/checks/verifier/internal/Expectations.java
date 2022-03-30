@@ -391,7 +391,7 @@ class Expectations {
 
     @Override
     public boolean shouldBeScanned(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
-      return true;
+      return false;
     }
 
     @Override
