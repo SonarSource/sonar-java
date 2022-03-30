@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.api.batch.fs.InputFile;
@@ -112,6 +113,8 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     .addParametersMatcher("java.lang.CharSequence")
     .build();
 
+  private static final Logger logger = Logger.getLogger(ExcessiveContentRequestCheck.class.getName());
+
   private final List<AnalyzerMessage> multipartConstructorIssues = new ArrayList<>();
   private boolean sizeSetSomewhere = false;
 
@@ -133,7 +136,8 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
       filesThatSetMaximumSize = Arrays.asList(filenames);
     } catch (IllegalArgumentException e) {
       filesThatSetMaximumSize = null;
-    } catch (IOException ignored) {
+    } catch (IOException exception) {
+      logger.warning(exception.getMessage());
     }
 
     try (InputStream in = readCache.read("java:S5693:instantiate")) {
@@ -142,7 +146,8 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
       filesThatInstantiate = Arrays.asList(filenames);
     } catch (IllegalArgumentException e) {
       filesThatInstantiate = null;
-    } catch (IOException ignored) {
+    } catch (IOException exception) {
+      logger.warning(exception.getMessage());
     }
   }
 
