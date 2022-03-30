@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class InternalReadCache implements ReadCache {
-  private Map<String, byte[]> cache = new HashMap<>();
+  private final Map<String, byte[]> cache = new HashMap<>();
 
   @Override
   public InputStream read(String key) {

@@ -19,6 +19,9 @@
  */
 package org.sonar.java.checks.security;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -112,6 +115,37 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
   private final List<AnalyzerMessage> multipartConstructorIssues = new ArrayList<>();
   private boolean sizeSetSomewhere = false;
 
+  private List<String> filesThatSetMaximumSize;
+  private List<String> filesThatInstantiate;
+  private boolean isCacheLoaded = false;
+
+  private List<String> currentFilesThatSetMaximumSize = new ArrayList<>();
+  private List<String> currentFilesThatInstantiate = new ArrayList<>();
+
+  private synchronized void loadDataFromCache(ReadCache readCache) {
+    if (isCacheLoaded) {
+      return;
+    }
+    isCacheLoaded = true;
+    try (InputStream in = readCache.read("java:S5693:maximumSize")) {
+      String raw = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+      String[] filenames = raw.split(";");
+      filesThatSetMaximumSize = Arrays.asList(filenames);
+    } catch (IllegalArgumentException e) {
+      filesThatSetMaximumSize = null;
+    } catch (IOException ignored) {
+    }
+
+    try (InputStream in = readCache.read("java:S5693:instantiate")) {
+      String raw = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+      String[] filenames = raw.split(";");
+      filesThatInstantiate = Arrays.asList(filenames);
+    } catch (IllegalArgumentException e) {
+      filesThatInstantiate = null;
+    } catch (IOException ignored) {
+    }
+  }
+
   @Override
   public boolean shouldBeScanned(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
     // 2 cache keys:
@@ -120,7 +154,27 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     // If not done yet, load lists from cache and store them in a field.
     // If the file is unchanged, we copy over the data from previous analyses and return false.
     // If it is a changed file, we return true.
-    return false;
+
+    // If not done yet, load data from the cache
+    loadDataFromCache(readCache);
+    // If no data in the cache, then the file should be scanned
+    if (filesThatSetMaximumSize == null || filesThatInstantiate == null) {
+      return true;
+    }
+    // If the file has not changed, then check if there is data in the cache about it
+    if (inputFile.status().equals(InputFile.Status.SAME)) {
+      String fileKey = inputFile.toString();
+      if (filesThatSetMaximumSize.contains(fileKey)) {
+        currentFilesThatSetMaximumSize.add(fileKey);
+        sizeSetSomewhere = true;
+      }
+      if (filesThatInstantiate.contains(fileKey)) {
+        currentFilesThatInstantiate.add(fileKey);
+      }
+      return false;
+    } else {
+      return true;
+    }
   }
 
   @Override

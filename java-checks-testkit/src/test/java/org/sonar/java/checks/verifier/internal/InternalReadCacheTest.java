@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class InternalReadCacheTest {
 
   @Test
-  void readCache_returns_the_expected_value() {
+  void read_returns_the_expected_value() {
     InternalReadCache cache = new InternalReadCache();
     String key = "a convenient key";
     byte[] data = "Some data".getBytes(StandardCharsets.UTF_8);

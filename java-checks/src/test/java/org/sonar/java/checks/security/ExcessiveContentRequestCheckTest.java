@@ -19,10 +19,11 @@
  */
 package org.sonar.java.checks.security;
 
+import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
+import org.sonar.java.checks.verifier.internal.InternalReadCache;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
@@ -40,11 +41,15 @@ class ExcessiveContentRequestCheckTest {
    * [] Write the result to the cache
    */
   void test_caching() {
-    ((InternalCheckVerifier) CheckVerifier.newVerifier())
-      .onFiles(mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/A.java"))
+    InternalReadCache readCache = new InternalReadCache();
+    String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/A.java");
+    readCache.put("java:S5693:maximumSize", unmodifiedFile.getBytes(StandardCharsets.UTF_8));
+    readCache.put("java:S5693:instantiate", new byte[]{});
+    CheckVerifier.newVerifier()
+      .onFiles(unmodifiedFile)
       .addFiles(InputFile.Status.CHANGED, mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/B.java"))
       .withCheck(new ExcessiveContentRequestCheck())
-      .incrementalAnalysisEnabled(true)
+      .withCache(readCache, null)
       .verifyNoIssues();
   }
 
