@@ -162,24 +162,24 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
 
     // If not done yet, load data from the cache
     loadDataFromCache(readCache);
-    // If no data in the cache, then the file should be scanned
-    if (filesThatSetMaximumSize == null || filesThatInstantiate == null) {
-      return true;
+
+    // Assume the file needs to be scanned again unless we can find some cached results for it
+    boolean needsToBeScanned = true;
+
+    String fileKey = inputFile.toString();
+    // If a correct maximum size has been set in this file in a previous analysis, we use this information
+    if (filesThatSetMaximumSize != null && filesThatSetMaximumSize.contains(fileKey)) {
+      currentFilesThatSetMaximumSize.add(fileKey);
+      sizeSetSomewhere = true;
+      needsToBeScanned = false;
     }
-    // If the file has not changed, then check if there is data in the cache about it
-    if (inputFile.status().equals(InputFile.Status.SAME)) {
-      String fileKey = inputFile.toString();
-      if (filesThatSetMaximumSize.contains(fileKey)) {
-        currentFilesThatSetMaximumSize.add(fileKey);
-        sizeSetSomewhere = true;
-      }
-      if (filesThatInstantiate.contains(fileKey)) {
-        currentFilesThatInstantiate.add(fileKey);
-      }
-      return false;
-    } else {
-      return true;
+    // If a relevant instantiation has been found in a previous analysis, we use this information
+    if (filesThatInstantiate != null && filesThatInstantiate.contains(fileKey)) {
+      currentFilesThatInstantiate.add(fileKey);
+      needsToBeScanned = false;
     }
+
+    return needsToBeScanned;
   }
 
   @Override

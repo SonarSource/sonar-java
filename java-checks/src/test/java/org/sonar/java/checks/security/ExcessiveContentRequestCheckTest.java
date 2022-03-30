@@ -20,6 +20,7 @@
 package org.sonar.java.checks.security;
 
 import java.nio.charset.StandardCharsets;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.checks.verifier.CheckVerifier;
@@ -31,26 +32,43 @@ import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class ExcessiveContentRequestCheckTest {
 
-  @Test
-  /**
-   * On a module made of files A.java and B.java, where the rule is applied in incremental mode,
-   * where A.java is unmodified and B.java is modified, the check should:
-   * [x] Not analyze the unmodified source file
-   * [] Recover the results from a previous analysis from the injected cache
-   * [] Raise no issue
-   * [] Write the result to the cache
-   */
-  void test_caching() {
-    InternalReadCache readCache = new InternalReadCache();
-    String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/A.java");
-    readCache.put("java:S5693:maximumSize", unmodifiedFile.getBytes(StandardCharsets.UTF_8));
-    readCache.put("java:S5693:instantiate", new byte[]{});
-    CheckVerifier.newVerifier()
-      .onFiles(unmodifiedFile)
-      .addFiles(InputFile.Status.CHANGED, mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/B.java"))
-      .withCheck(new ExcessiveContentRequestCheck())
-      .withCache(readCache, null)
-      .verifyNoIssues();
+  @Nested
+  class Caching {
+    @Test
+    /**
+     * On a module made of files A.java and B.java, where the rule is applied in incremental mode,
+     * where A.java is unmodified and B.java is modified, the check should:
+     * [x] Not analyze the unmodified source file
+     * [x] Recover the results from a previous analysis from the injected cache
+     * [x] Raise no issue
+     * [] Write the result to the cache
+     */
+    void no_issue_raised_on_valid_case_when_size_is_set_in_file_with_cached_results() {
+      InternalReadCache readCache = new InternalReadCache();
+      String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/A.java");
+      readCache.put("java:S5693:maximumSize", unmodifiedFile.getBytes(StandardCharsets.UTF_8));
+      readCache.put("java:S5693:instantiate", new byte[]{});
+      CheckVerifier.newVerifier()
+        .onFiles(unmodifiedFile)
+        .addFiles(InputFile.Status.CHANGED, mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/B.java"))
+        .withCheck(new ExcessiveContentRequestCheck())
+        .withCache(readCache, null)
+        .verifyNoIssues();
+    }
+
+    @Test
+    void no_issue_raised_on_valid_case_when_instantiation_in_file_with_cached_results() {
+      InternalReadCache readCache = new InternalReadCache();
+      String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/B.java");
+      readCache.put("java:S5693:maximumSize", new byte[]{});
+      readCache.put("java:S5693:instantiate", unmodifiedFile.getBytes(StandardCharsets.UTF_8));
+      CheckVerifier.newVerifier()
+        .onFiles(unmodifiedFile)
+        .addFiles(InputFile.Status.CHANGED, mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/A.java"))
+        .withCheck(new ExcessiveContentRequestCheck())
+        .withCache(readCache, null)
+        .verifyNoIssues();
+    }
   }
 
   @Test
