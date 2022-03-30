@@ -390,6 +390,9 @@ class Expectations {
     }
 
     @Override
+    /**
+     * Returns false to avoid forcing the scan of files that have not been requested by other checks.
+     */
     public boolean shouldBeScanned(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
       return false;
     }

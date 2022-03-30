@@ -28,13 +28,16 @@ import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.sonarsource.analyzer.commons.collections.MapBuilder;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.END_COLUMN;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.END_LINE;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.FLOWS;
@@ -490,6 +493,21 @@ class ExpectationsTest {
       parser.consolidateQuickFixes();
       Map<TextSpan, List<JavaQuickFix>> quickFixes = expectations.quickFixes();
       assertThat(quickFixes).isEmpty();
+    }
+
+    @Test
+    void parser_shouldBeScanned_always_returns_false_regardless_of_file_status() {
+      Expectations.Parser parser = new Expectations().parser();
+      InputFile inputFile = mock(InputFile.class);
+
+      doReturn(InputFile.Status.SAME).when(inputFile).status();
+      assertThat(parser.shouldBeScanned(inputFile, null, null)).isFalse();
+
+      doReturn(InputFile.Status.CHANGED).when(inputFile).status();
+      assertThat(parser.shouldBeScanned(inputFile, null, null)).isFalse();
+
+      doReturn(InputFile.Status.ADDED).when(inputFile).status();
+      assertThat(parser.shouldBeScanned(inputFile, null, null)).isFalse();
     }
   }
 }
