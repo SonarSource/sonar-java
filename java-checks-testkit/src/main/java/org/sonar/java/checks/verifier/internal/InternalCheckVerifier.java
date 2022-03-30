@@ -157,11 +157,6 @@ public class InternalCheckVerifier implements CheckVerifier {
     return this;
   }
 
-  public CheckVerifier incrementalAnalysisEnabled(boolean incrementalAnalysisEnabled) {
-    this.incrementalAnalysisEnabled = incrementalAnalysisEnabled;
-    return this;
-  }
-
   @Override
   public InternalCheckVerifier onFile(String filename) {
     requiresNull(files, FILE_OR_FILES);
