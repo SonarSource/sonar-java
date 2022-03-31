@@ -22,11 +22,7 @@ package org.sonar.java.checks.security;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -146,7 +142,8 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     try (InputStream in = readCache.read(SET_MAXIMUM_SIZE_CACHE_KEY)) {
       String raw = new String(in.readAllBytes(), StandardCharsets.UTF_8);
       String[] filenames = raw.split(";");
-      filesThatSetMaximumSize = Arrays.asList(filenames);
+      filesThatSetMaximumSize = new ArrayList<String>();
+      Collections.addAll(filesThatSetMaximumSize, filenames);
     } catch (IllegalArgumentException e) {
       filesThatSetMaximumSize = null;
     } catch (IOException exception) {
@@ -156,7 +153,8 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     try (InputStream in = readCache.read(INSTANTIATION_CACHE_KEY)) {
       String raw = new String(in.readAllBytes(), StandardCharsets.UTF_8);
       String[] filenames = raw.split(";");
-      filesThatInstantiate = Arrays.asList(filenames);
+      filesThatInstantiate = new ArrayList<>();
+      Collections.addAll(filesThatInstantiate, filenames);
     } catch (IllegalArgumentException e) {
       filesThatInstantiate = null;
     } catch (IOException exception) {
@@ -225,6 +223,14 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
       multipartConstructorIssues.forEach(defaultContext::reportIssue);
     }
     commitCaches();
+    if (filesThatSetMaximumSize != null) {
+      filesThatSetMaximumSize.clear();
+    }
+    if (filesThatInstantiate != null) {
+      filesThatInstantiate.clear();
+    }
+    currentFilesThatSetMaximumSize.clear();
+    currentFilesThatInstantiate.clear();
     multipartConstructorIssues.clear();
     sizeSetSomewhere = false;
   }
