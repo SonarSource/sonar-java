@@ -49,6 +49,8 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.Nullable;
+
 import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
 @Rule(key = "S5693")
@@ -114,7 +116,10 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     .addParametersMatcher("java.lang.CharSequence")
     .build();
 
-  private static final Logger logger = Logger.getLogger(ExcessiveContentRequestCheck.class.getName());
+  public static final String INSTANTIATION_CACHE_KEY = "java:S5693:instantiate" ;
+  public static final String SET_MAXIMUM_SIZE_CACHE_KEY = "java:S5693:maximumSize";
+
+  private static final Logger LOGGER = Logger.getLogger(ExcessiveContentRequestCheck.class.getName());
 
   private final List<AnalyzerMessage> multipartConstructorIssues = new ArrayList<>();
   private boolean sizeSetSomewhere = false;
@@ -129,7 +134,7 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
 
   private WriteCache writeCache;
 
-  private synchronized void initCaches(ReadCache readCache, WriteCache writeCache) {
+  private synchronized void initCaches(@Nullable ReadCache readCache, @Nullable WriteCache writeCache) {
     if (cacheIsLoaded) {
       return;
     }
@@ -138,24 +143,24 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     if (readCache == null) {
       return;
     }
-    try (InputStream in = readCache.read("java:S5693:maximumSize")) {
+    try (InputStream in = readCache.read(SET_MAXIMUM_SIZE_CACHE_KEY)) {
       String raw = new String(in.readAllBytes(), StandardCharsets.UTF_8);
       String[] filenames = raw.split(";");
       filesThatSetMaximumSize = Arrays.asList(filenames);
     } catch (IllegalArgumentException e) {
       filesThatSetMaximumSize = null;
     } catch (IOException exception) {
-      logger.warning(exception.getMessage());
+      LOGGER.warning(exception.getMessage());
     }
 
-    try (InputStream in = readCache.read("java:S5693:instantiate")) {
+    try (InputStream in = readCache.read(INSTANTIATION_CACHE_KEY)) {
       String raw = new String(in.readAllBytes(), StandardCharsets.UTF_8);
       String[] filenames = raw.split(";");
       filesThatInstantiate = Arrays.asList(filenames);
     } catch (IllegalArgumentException e) {
       filesThatInstantiate = null;
     } catch (IOException exception) {
-      logger.warning(exception.getMessage());
+      LOGGER.warning(exception.getMessage());
     }
   }
 
@@ -169,16 +174,16 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     }
     if (this.filesThatSetMaximumSize != null && this.filesThatSetMaximumSize.containsAll(currentFilesThatSetMaximumSize)) {
       // If the list of files that sets the maximum size has not changed, we copy the value from the previous analysis
-      writeCache.copyFromPrevious("java:S5693:maximumSize");
+      writeCache.copyFromPrevious(SET_MAXIMUM_SIZE_CACHE_KEY);
     } else {
       byte[] data = String.join(";", currentFilesThatSetMaximumSize).getBytes(StandardCharsets.UTF_8);
-      writeCache.write("java:S5693:maximumSize", data);
+      writeCache.write(SET_MAXIMUM_SIZE_CACHE_KEY, data);
     }
     if (this.filesThatInstantiate != null && this.filesThatInstantiate.containsAll(currentFilesThatInstantiate)) {
-      writeCache.copyFromPrevious("java:S5693:instantiate");
+      writeCache.copyFromPrevious(INSTANTIATION_CACHE_KEY);
     } else {
       byte[] data = String.join(";", currentFilesThatInstantiate).getBytes(StandardCharsets.UTF_8);
-      writeCache.write("java:S5693:instantiate", data);
+      writeCache.write(INSTANTIATION_CACHE_KEY, data);
     }
   }
 
@@ -219,7 +224,6 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
       DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) context;
       multipartConstructorIssues.forEach(defaultContext::reportIssue);
     }
-    // TODO write lists back to cache
     commitCaches();
     multipartConstructorIssues.clear();
     sizeSetSomewhere = false;
