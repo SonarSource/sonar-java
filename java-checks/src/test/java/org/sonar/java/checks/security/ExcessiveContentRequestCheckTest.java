@@ -19,20 +19,33 @@
  */
 package org.sonar.java.checks.security;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LogTesterJUnit5;
+import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalReadCache;
 import org.sonar.java.checks.verifier.internal.InternalWriteCache;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class ExcessiveContentRequestCheckTest {
+
+  @RegisterExtension
+  LogTesterJUnit5 logTester = new LogTesterJUnit5();
 
   @Nested
   class Caching {
@@ -131,6 +144,25 @@ class ExcessiveContentRequestCheckTest {
 
       verify(writeCache, never()).copyFromPrevious(eq("java:S5693:maximumSize"));
       verify(writeCache, never()).copyFromPrevious(eq("java:S5693:instantiate"));
+    }
+
+    @Test
+    void log_when_failing_to_read_from_or_write_to_caches() throws IOException {
+      InputStream in = mock(InputStream.class);
+      doThrow(new IOException("boom")).when(in).readAllBytes();
+      InternalReadCache readCache = mock(InternalReadCache.class);
+      doReturn(in).when(readCache).read(any(String.class));
+
+      String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/A.java");
+      CheckVerifier.newVerifier()
+        .onFiles(unmodifiedFile)
+        .addFiles(InputFile.Status.CHANGED, mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/B.java"))
+        .withCheck(new ExcessiveContentRequestCheck())
+        .withCache(readCache, null)
+        .verifyNoIssues();
+      assertThat(logTester.getLogs(LoggerLevel.WARN))
+        .hasSize(2)
+        .allMatch(logAndArguments -> logAndArguments.getFormattedMsg().equals("boom"));
     }
   }
 

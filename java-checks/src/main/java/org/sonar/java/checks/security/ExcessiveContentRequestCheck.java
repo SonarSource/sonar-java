@@ -22,14 +22,20 @@ package org.sonar.java.checks.security;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.logging.Logger;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.EndOfAnalysisCheck;
@@ -115,7 +121,7 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
   public static final String INSTANTIATION_CACHE_KEY = "java:S5693:instantiate" ;
   public static final String SET_MAXIMUM_SIZE_CACHE_KEY = "java:S5693:maximumSize";
 
-  private static final Logger LOGGER = Logger.getLogger(ExcessiveContentRequestCheck.class.getName());
+  private static final Logger LOGGER = Loggers.get(ExcessiveContentRequestCheck.class);
 
   private final List<AnalyzerMessage> multipartConstructorIssues = new ArrayList<>();
   private boolean sizeSetSomewhere = false;
@@ -125,8 +131,8 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
   private boolean cacheIsLoaded = false;
   private boolean cacheIsCommitted = false;
 
-  private List<String> currentFilesThatSetMaximumSize = new ArrayList<>();
-  private List<String> currentFilesThatInstantiate = new ArrayList<>();
+  private final List<String> currentFilesThatSetMaximumSize = new ArrayList<>();
+  private final List<String> currentFilesThatInstantiate = new ArrayList<>();
 
   private WriteCache writeCache;
 
@@ -142,12 +148,12 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     try (InputStream in = readCache.read(SET_MAXIMUM_SIZE_CACHE_KEY)) {
       String raw = new String(in.readAllBytes(), StandardCharsets.UTF_8);
       String[] filenames = raw.split(";");
-      filesThatSetMaximumSize = new ArrayList<String>();
+      filesThatSetMaximumSize = new ArrayList<>();
       Collections.addAll(filesThatSetMaximumSize, filenames);
     } catch (IllegalArgumentException e) {
       filesThatSetMaximumSize = null;
     } catch (IOException exception) {
-      LOGGER.warning(exception.getMessage());
+      LOGGER.warn(exception.getMessage());
     }
 
     try (InputStream in = readCache.read(INSTANTIATION_CACHE_KEY)) {
@@ -158,7 +164,7 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     } catch (IllegalArgumentException e) {
       filesThatInstantiate = null;
     } catch (IOException exception) {
-      LOGGER.warning(exception.getMessage());
+      LOGGER.warn(exception.getMessage());
     }
   }
 
