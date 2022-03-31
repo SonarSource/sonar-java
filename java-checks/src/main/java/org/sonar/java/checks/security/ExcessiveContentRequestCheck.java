@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
@@ -120,18 +121,23 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
 
   private List<String> filesThatSetMaximumSize;
   private List<String> filesThatInstantiate;
-  private boolean isCacheLoaded = false;
+  private boolean cacheIsLoaded = false;
+  private boolean cacheIsCommitted = false;
 
   private List<String> currentFilesThatSetMaximumSize = new ArrayList<>();
   private List<String> currentFilesThatInstantiate = new ArrayList<>();
+
   private WriteCache writeCache;
 
-  private synchronized void prepCaches(ReadCache readCache, WriteCache writeCache) {
-    if (isCacheLoaded) {
+  private synchronized void initCaches(ReadCache readCache, WriteCache writeCache) {
+    if (cacheIsLoaded) {
       return;
     }
     this.writeCache = writeCache;
-    isCacheLoaded = true;
+    cacheIsLoaded = true;
+    if (readCache == null) {
+      return;
+    }
     try (InputStream in = readCache.read("java:S5693:maximumSize")) {
       String raw = new String(in.readAllBytes(), StandardCharsets.UTF_8);
       String[] filenames = raw.split(";");
@@ -153,6 +159,29 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     }
   }
 
+  private synchronized void commitCaches() {
+    if (cacheIsCommitted) {
+      return;
+    }
+    cacheIsCommitted = true;
+    if (writeCache == null) {
+      return;
+    }
+    if (this.filesThatSetMaximumSize != null && this.filesThatSetMaximumSize.containsAll(currentFilesThatSetMaximumSize)) {
+      // If the list of files that sets the maximum size has not changed, we copy the value from the previous analysis
+      writeCache.copyFromPrevious("java:S5693:maximumSize");
+    } else {
+      byte[] data = String.join(";", currentFilesThatSetMaximumSize).getBytes(StandardCharsets.UTF_8);
+      writeCache.write("java:S5693:maximumSize", data);
+    }
+    if (this.filesThatInstantiate != null && this.filesThatInstantiate.containsAll(currentFilesThatInstantiate)) {
+      writeCache.copyFromPrevious("java:S5693:instantiate");
+    } else {
+      byte[] data = String.join(";", currentFilesThatInstantiate).getBytes(StandardCharsets.UTF_8);
+      writeCache.write("java:S5693:instantiate", data);
+    }
+  }
+
   @Override
   public boolean shouldBeScanned(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
     // 2 cache keys:
@@ -163,7 +192,7 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     // If it is a changed file, we return true.
 
     // If not done yet, load data from the cache
-    prepCaches(readCache, writeCache);
+    initCaches(readCache, writeCache);
 
     // Assume the file needs to be scanned again unless we can find some cached results for it
     boolean needsToBeScanned = true;
@@ -186,11 +215,12 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
 
   @Override
   public void endOfAnalysis() {
-    // TODO write lists back to cache
     if (!sizeSetSomewhere && context != null) {
       DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) context;
       multipartConstructorIssues.forEach(defaultContext::reportIssue);
     }
+    // TODO write lists back to cache
+    commitCaches();
     multipartConstructorIssues.clear();
     sizeSetSomewhere = false;
   }
@@ -209,6 +239,7 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
         // Create an issue that we will report only at the end of the analysis if the maximum size was never set.
         AnalyzerMessage analyzerMessage = defaultContext.createAnalyzerMessage(this, newClassTree, MESSAGE_SIZE_NOT_SET);
         multipartConstructorIssues.add(analyzerMessage);
+        currentFilesThatInstantiate.add(context.getInputFile().toString());
       }
     } else {
       MethodInvocationTree mit = (MethodInvocationTree) tree;

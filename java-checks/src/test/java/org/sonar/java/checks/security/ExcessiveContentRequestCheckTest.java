@@ -25,7 +25,9 @@ import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalReadCache;
+import org.sonar.java.checks.verifier.internal.InternalWriteCache;
 
+import static org.mockito.Mockito.*;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
@@ -68,6 +70,67 @@ class ExcessiveContentRequestCheckTest {
         .withCheck(new ExcessiveContentRequestCheck())
         .withCache(readCache, null)
         .verifyNoIssues();
+    }
+
+    @Test
+    void new_data_is_persisted_to_the_write_cache_at_the_end_of_analysis() {
+      String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/A.java");
+
+      InternalReadCache readCache = new InternalReadCache();
+      readCache.put("java:S5693:maximumSize", unmodifiedFile.getBytes(StandardCharsets.UTF_8));
+
+      InternalWriteCache writeCache = spy(new InternalWriteCache());
+      writeCache.bind(readCache);
+
+      CheckVerifier.newVerifier()
+        .onFiles(unmodifiedFile)
+        .addFiles(InputFile.Status.CHANGED, mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/B.java"))
+        .withCheck(new ExcessiveContentRequestCheck())
+        .withCache(readCache, writeCache)
+        .verifyNoIssues();
+
+      verify(writeCache, times(1)).write(eq("java:S5693:instantiate"), any(byte[].class));
+      verify(writeCache, times(1)).copyFromPrevious(eq("java:S5693:maximumSize"));
+    }
+
+    @Test
+    void new_data_is_persisted_to_the_write_cache_at_the_end_of_analysis_2() {
+      String modifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/A.java");
+      String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/B.java");
+
+      InternalReadCache readCache = new InternalReadCache();
+      readCache.put("java:S5693:instantiate", (modifiedFile + ";" + unmodifiedFile).getBytes(StandardCharsets.UTF_8));
+
+      InternalWriteCache writeCache = spy(new InternalWriteCache());
+      writeCache.bind(readCache);
+
+      CheckVerifier.newVerifier()
+        .onFiles(unmodifiedFile)
+        .addFiles(InputFile.Status.CHANGED, modifiedFile)
+        .withCheck(new ExcessiveContentRequestCheck())
+        .withCache(readCache, writeCache)
+        .verifyNoIssues();
+
+      verify(writeCache, times(1)).write(eq("java:S5693:maximumSize"), any(byte[].class));
+      verify(writeCache, times(1)).copyFromPrevious(eq("java:S5693:instantiate"));
+    }
+
+    @Test
+    void old_data_is_copied_from_the_read_to_the_write_cache_at_the_end_of_analysis() {
+      InternalWriteCache writeCache = spy(new InternalWriteCache());
+      String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/A.java");
+      CheckVerifier.newVerifier()
+        .onFiles(unmodifiedFile)
+        .addFiles(InputFile.Status.CHANGED, mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/B.java"))
+        .withCheck(new ExcessiveContentRequestCheck())
+        .withCache(null, writeCache)
+        .verifyNoIssues();
+
+      verify(writeCache, times(1)).write(eq("java:S5693:maximumSize"), any(byte[].class));
+      verify(writeCache, times(1)).write(eq("java:S5693:instantiate"), any(byte[].class));
+
+      verify(writeCache, never()).copyFromPrevious(eq("java:S5693:maximumSize"));
+      verify(writeCache, never()).copyFromPrevious(eq("java:S5693:instantiate"));
     }
   }
 
