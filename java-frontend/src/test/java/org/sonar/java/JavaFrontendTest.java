@@ -386,11 +386,11 @@ class JavaFrontendTest {
   }
 
   @Test
-  void test_preview_feature_in_java_18_do_not_log_message() throws IOException {
-    // Java 18 does not add any syntactic changes from 17, we can therefore enable the preview features flag
-    // in the parser config, no need to log anything.
+  void test_preview_feature_in_version_greater_than_maximum_do_not_log_message() throws IOException {
+    // It can happen that a new version of Java is used, that we do not officially support. In this case
+    // we still enable the flag to optimize our chances to correctly parse the code.
     logTester.setLevel(LoggerLevel.DEBUG);
-    scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "18"),
+    scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "42"),
       SONARLINT_RUNTIME, "class A { void m(String s) { switch(s) { case null: default: } } }");
     assertThat(sensorContext.allAnalysisErrors()).isEmpty();
     String allLogs = String.join("\n", logTester.logs());
@@ -398,25 +398,8 @@ class JavaFrontendTest {
   }
 
   @Test
-  void test_preview_feature_log_message() throws IOException {
-    // When the actual version is greater than the maximum supported version (currently 17) and not explicitly 18,
-    // we can not guarantee the correct behavior of preview features and log a message.
-    logTester.setLevel(LoggerLevel.DEBUG);
-    scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "19"),
-      SONARLINT_RUNTIME, "class A { void m(String s) { switch(s) { case null: default: } } }");
-    assertThat(sensorContext.allAnalysisErrors()).isEmpty();
-    assertTrue(logTester.logs(LoggerLevel.WARN).stream().noneMatch(l -> l.endsWith("Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.")));
-    assertTrue(logTester.logs(LoggerLevel.WARN).stream().anyMatch(l -> l.endsWith("Use of preview features have been detected during analysis. Enable DEBUG mode to see them.")));
-    // We should keep this message or we won't have anything actionable in the debug logs to understand the warning
-    assertTrue(logTester.logs(LoggerLevel.DEBUG).stream().anyMatch(l -> l.replace("\r\n", "\n").endsWith("Use of preview features:\n" +
-      "- Pattern Matching in Switch is a preview feature and disabled by default.")));
-    assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(1);
-    assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
-  }
-
-  @Test
   void test_sealed_classes_in_java_16_log_message() throws IOException {
-    // When the the actual version is lower than the maximum supported version (currently 17),
+    // When the actual version is lower than the maximum supported version (currently 17),
     // we can not guarantee that we are still parsing preview features the same way (it may have evolved) and log a message.
     logTester.setLevel(LoggerLevel.DEBUG);
     scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "16"),

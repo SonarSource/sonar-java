@@ -53,17 +53,17 @@ import org.sonarsource.performance.measure.PerformanceMeasure;
 
 public abstract class JParserConfig {
 
-  public static final String MAXIMUM_SUPPORTED_JAVA_VERSION = Integer.toString(JavaVersionImpl.MAX_SUPPORTED);
+  public static final JavaVersion MAXIMUM_SUPPORTED_JAVA_VERSION = new JavaVersionImpl(JavaVersionImpl.MAX_SUPPORTED);
 
   private static final Logger LOG = Loggers.get(JParserConfig.class);
 
   private static final String MAXIMUM_ECJ_WARNINGS = "42000";
   private static final Set<String> JRE_JARS = new HashSet<>(Arrays.asList("rt.jar", "jrt-fs.jar", "android.jar"));
 
-  final String javaVersion;
+  final JavaVersion javaVersion;
   final List<File> classpath;
 
-  private JParserConfig(String javaVersion, List<File> classpath) {
+  private JParserConfig(JavaVersion javaVersion, List<File> classpath) {
     this.javaVersion = javaVersion;
     this.classpath = classpath;
   }
@@ -75,13 +75,13 @@ public abstract class JParserConfig {
     BATCH(Batch::new),
     FILE_BY_FILE(FileByFile::new);
 
-    private final BiFunction<String, List<File>, JParserConfig> supplier;
+    private final BiFunction<JavaVersion, List<File>, JParserConfig> supplier;
 
-    Mode(BiFunction<String, List<File>, JParserConfig> supplier) {
+    Mode(BiFunction<JavaVersion, List<File>, JParserConfig> supplier) {
       this.supplier = supplier;
     }
 
-    public JParserConfig create(String javaVersion, List<File> classpath) {
+    public JParserConfig create(JavaVersion javaVersion, List<File> classpath) {
       return supplier.apply(javaVersion, classpath);
     }
   }
@@ -111,8 +111,8 @@ public abstract class JParserConfig {
   public ASTParser astParser() {
     ASTParser astParser = ASTParser.newParser(AST.getJLSLatest());
     Map<String, String> options = new HashMap<>();
-    options.put(JavaCore.COMPILER_COMPLIANCE, javaVersion);
-    options.put(JavaCore.COMPILER_SOURCE, javaVersion);
+    options.put(JavaCore.COMPILER_COMPLIANCE, javaVersion.toString());
+    options.put(JavaCore.COMPILER_SOURCE, javaVersion.toString());
     options.put(JavaCore.COMPILER_PB_MAX_PER_UNIT, MAXIMUM_ECJ_WARNINGS);
     if (shouldEnablePreviewFlag(javaVersion)) {
       options.put(JavaCore.COMPILER_PB_ENABLE_PREVIEW_FEATURES, "enabled");
@@ -139,7 +139,7 @@ public abstract class JParserConfig {
   @VisibleForTesting
   static class Batch extends JParserConfig {
 
-    Batch(String javaVersion, List<File> classpath) {
+    Batch(JavaVersion javaVersion, List<File> classpath) {
       super(javaVersion, classpath);
     }
 
@@ -173,7 +173,7 @@ public abstract class JParserConfig {
             executionTimeReport.start(inputFile);
             Result result;
             try {
-              result = new Result(JParser.convert(javaVersion, inputFile.filename(), inputFile.contents(), ast));
+              result = new Result(JParser.convert(javaVersion.toString(), inputFile.filename(), inputFile.contents(), ast));
             } catch (Exception e) {
               result = new Result(e);
             }
@@ -224,7 +224,7 @@ public abstract class JParserConfig {
 
   private static class FileByFile extends JParserConfig {
 
-    private FileByFile(String javaVersion, List<File> classpath) {
+    private FileByFile(JavaVersion javaVersion, List<File> classpath) {
       super(javaVersion, classpath);
     }
 
@@ -262,11 +262,11 @@ public abstract class JParserConfig {
       }
     }
 
-    private static void parse(ASTParser astParser, InputFile inputFile, String javaVersion, BiConsumer<InputFile, Result> action) {
+    private static void parse(ASTParser astParser, InputFile inputFile, JavaVersion javaVersion, BiConsumer<InputFile, Result> action) {
       Result result;
       PerformanceMeasure.Duration parseDuration = PerformanceMeasure.start("JParser");
       try {
-        result = new Result(JParser.parse(astParser, javaVersion, inputFile.filename(), inputFile.contents()));
+        result = new Result(JParser.parse(astParser, javaVersion.toString(), inputFile.filename(), inputFile.contents()));
       } catch (Exception e) {
         result = new Result(e);
       } finally {
@@ -277,16 +277,16 @@ public abstract class JParserConfig {
   }
 
   @VisibleForTesting
-  static boolean shouldEnablePreviewFlag(String currentVersion) {
-    // Java 18 does not add any syntactic changes from 17, we can therefore enable the preview features flag safely for java 18.
-    return MAXIMUM_SUPPORTED_JAVA_VERSION.equals(currentVersion) || "18".equals(currentVersion);
+  static boolean shouldEnablePreviewFlag(JavaVersion currentVersion) {
+    // We enable the preview feature flag even if the version is not officially supported, in order to have the best chances to parse the code.
+    return currentVersion.asInt() >= MAXIMUM_SUPPORTED_JAVA_VERSION.asInt();
   }
 
-  public static String effectiveJavaVersion(@Nullable JavaVersion javaVersion) {
+  public static JavaVersion effectiveJavaVersion(@Nullable JavaVersion javaVersion) {
     if (javaVersion == null || javaVersion.isNotSet()) {
       return JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
     }
-    return Integer.toString(javaVersion.asInt());
+    return javaVersion;
   }
 
 }

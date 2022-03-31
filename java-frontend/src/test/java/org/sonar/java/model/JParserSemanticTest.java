@@ -59,6 +59,7 @@ import org.sonar.java.model.statement.LabeledStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.model.statement.SwitchExpressionTreeImpl;
 import org.sonar.java.model.statement.YieldStatementTreeImpl;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -1644,11 +1645,11 @@ class JParserSemanticTest {
   }
 
   private CompilationUnit createAST(String source) {
-    String version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
+    JavaVersion version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
     ASTParser astParser = ASTParser.newParser(AST.JLS14);
     Map<String, String> options = new HashMap<>();
-    options.put(JavaCore.COMPILER_COMPLIANCE, version);
-    options.put(JavaCore.COMPILER_SOURCE, version);
+    options.put(JavaCore.COMPILER_COMPLIANCE, version.toString());
+    options.put(JavaCore.COMPILER_SOURCE, version.toString());
     options.put(JavaCore.COMPILER_PB_ENABLE_PREVIEW_FEATURES, "enabled");
     astParser.setCompilerOptions(options);
     astParser.setEnvironment(

@@ -104,7 +104,7 @@ class JParserTest {
   void should_recover_if_parser_fails() {
     String version = "12";
     List<File> classpath = Collections.singletonList(new File("unknownFile"));
-    ASTParser astParser = FILE_BY_FILE.create(version, classpath).astParser();
+    ASTParser astParser = FILE_BY_FILE.create(JavaVersionImpl.fromString(version), classpath).astParser();
     assertThrows(RecognitionException.class, () -> JParser.parse(astParser, version, "A", "class A { }"));
   }
 
