@@ -69,7 +69,7 @@ public class VisitorsBridge {
   private final List<JavaFileScanner> scannersThatCannotBeSkipped;
   private final SonarComponents sonarComponents;
   protected InputFile currentFile;
-  protected JavaVersion javaVersion;
+  protected final JavaVersion javaVersion;
   private final List<File> classpath;
   protected boolean inAndroidContext = false;
   private int fullyScannedFileCount = 0;
@@ -77,15 +77,21 @@ public class VisitorsBridge {
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
-    this(Collections.singletonList(visitor), new ArrayList<>(), null);
+    this(Collections.singletonList(visitor), new ArrayList<>(), null, new JavaVersionImpl());
   }
 
+  @VisibleForTesting
   public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
+    this(visitors, projectClasspath, sonarComponents, new JavaVersionImpl());
+  }
+
+  public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, JavaVersion javaVersion) {
     this.visitors = visitors;
     this.allScanners = new ArrayList<>();
     this.scannersThatCannotBeSkipped = new ArrayList<>();
     this.classpath = projectClasspath;
     this.sonarComponents = sonarComponents;
+    this.javaVersion = javaVersion;
     updateScanners();
   }
 
@@ -132,7 +138,7 @@ public class VisitorsBridge {
   }
 
   boolean isVisitorJavaVersionCompatible(Object visitor) {
-    return javaVersion == null || !(visitor instanceof JavaVersionAwareVisitor) ||
+    return !(visitor instanceof JavaVersionAwareVisitor) ||
       ((JavaVersionAwareVisitor) visitor).isCompatibleWithJavaVersion(javaVersion);
   }
 
@@ -146,11 +152,6 @@ public class VisitorsBridge {
 
   public List<File> getClasspath() {
     return classpath;
-  }
-
-  public void setJavaVersion(JavaVersion javaVersion) {
-    this.javaVersion = javaVersion;
-    updateScanners();
   }
 
   public void setInAndroidContext(boolean inAndroidContext) {

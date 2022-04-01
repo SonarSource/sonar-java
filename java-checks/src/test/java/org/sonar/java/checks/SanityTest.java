@@ -248,8 +248,8 @@ class SanityTest {
     SonarComponents sonarComponents = sonarComponents(moduleBaseDir, inputFiles);
     for (InputFile inputFile : inputFiles) {
       try {
-        VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(checks, classpath, sonarComponents);
-        JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge, new JavaVersionImpl(JavaVersionImpl.MAX_SUPPORTED), null);
+        VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(checks, classpath, sonarComponents, new JavaVersionImpl(JavaVersionImpl.MAX_SUPPORTED));
+        JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge, null);
       } catch (Throwable e) {
         exceptions.add(new SanityCheckException(inputFile, e));
       }

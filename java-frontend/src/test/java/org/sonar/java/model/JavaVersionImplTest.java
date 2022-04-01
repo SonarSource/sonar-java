@@ -205,6 +205,13 @@ class JavaVersionImplTest {
   }
 
   @Test
+  void test_effective_java_version() {
+    assertThat(new JavaVersionImpl().effectiveJavaVersionAsString()).isEqualTo("17");
+    assertThat(new JavaVersionImpl(10).effectiveJavaVersionAsString()).isEqualTo("10");
+    assertThat(new JavaVersionImpl(-1).effectiveJavaVersionAsString()).isEqualTo("17");
+  }
+
+  @Test
   void test_toString() throws Exception {
     JavaVersion version;
     version = new JavaVersionImpl();
@@ -217,7 +224,7 @@ class JavaVersionImplTest {
   @Test
   void test_fromString() throws Exception {
     JavaVersion version;
-    version = JavaVersionImpl.fromString(null);
+    version = JavaVersionImpl.fromString("-1");
     assertThat(version.isNotSet()).isTrue();
     assertThat(version.asInt()).isEqualTo(-1);
 

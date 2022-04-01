@@ -299,22 +299,23 @@ class VisitorsBridgeTest {
       new RuleForAllJavaVersion(),
       new RuleForJava15(),
       new SubscriptionVisitorForJava10());
+    // By default, the visitor bridge is created with a version = -1 (unset)
     VisitorsBridge visitorsBridge = new VisitorsBridge(visitors, Collections.emptyList(), null);
-    visitorsBridge.endOfAnalysis();
-    assertThat(trace).containsExactly("RuleForAllJavaVersion", "RuleForJava15", "SubscriptionVisitorForJava10");
-
-    trace.clear();
-    visitorsBridge.setJavaVersion(new JavaVersionImpl(8));
     visitorsBridge.endOfAnalysis();
     assertThat(trace).containsExactly("RuleForAllJavaVersion");
 
     trace.clear();
-    visitorsBridge.setJavaVersion(new JavaVersionImpl(11));
+    visitorsBridge = new VisitorsBridge(visitors, Collections.emptyList(), null, new JavaVersionImpl(8));
+    visitorsBridge.endOfAnalysis();
+    assertThat(trace).containsExactly("RuleForAllJavaVersion");
+
+    trace.clear();
+    visitorsBridge = new VisitorsBridge(visitors, Collections.emptyList(), null, new JavaVersionImpl(11));
     visitorsBridge.endOfAnalysis();
     assertThat(trace).containsExactly("RuleForAllJavaVersion", "SubscriptionVisitorForJava10");
 
     trace.clear();
-    visitorsBridge.setJavaVersion(new JavaVersionImpl(16));
+    visitorsBridge = new VisitorsBridge(visitors, Collections.emptyList(), null, new JavaVersionImpl(16));
     visitorsBridge.endOfAnalysis();
     assertThat(trace).containsExactly("RuleForAllJavaVersion", "RuleForJava15", "SubscriptionVisitorForJava10");
   }
@@ -376,15 +377,14 @@ class VisitorsBridgeTest {
     VisitorsBridge visitorsBridge = new VisitorsBridge(
       List.of(skippableVisitor, endOfAnalysisVisitor, unskippableVisitor, incompatibleVisitor),
       Collections.emptyList(),
-      sonarComponents
+      sonarComponents,
+      new JavaVersionImpl(JavaVersionImpl.MAX_SUPPORTED)
     );
 
-    visitorsBridge.setJavaVersion(new JavaVersionImpl(JavaVersionImpl.MAX_SUPPORTED));
-
-    verify(skippableVisitor, times(2)).nodesToVisit();
+    verify(skippableVisitor, times(1)).nodesToVisit();
     verify(endOfAnalysisVisitor, never()).nodesToVisit();
-    verify(unskippableVisitor, times(4)).nodesToVisit();
-    verify(incompatibleVisitor, times(2)).nodesToVisit();
+    verify(unskippableVisitor, times(2)).nodesToVisit();
+    verify(incompatibleVisitor, never()).nodesToVisit();
 
     visitorsBridge.visitFile(null, true);
 

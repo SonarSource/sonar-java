@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.java.model.JParser;
 import org.sonar.java.model.JParserConfig;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -86,8 +87,8 @@ public abstract class JParserTestUtils {
 
   public static CompilationUnitTree parse(String source) {
     List<File> classpath = Arrays.asList(new File("target/test-classes"), new File("target/classes"));
-    String version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    return JParser.parse(JParserConfig.Mode.FILE_BY_FILE.create(version, classpath).astParser(), version, "test", source);
+    JavaVersion version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
+    return JParser.parse(JParserConfig.Mode.FILE_BY_FILE.create(version, classpath).astParser(), version.toString(), "test", source);
   }
 
 }

@@ -32,6 +32,7 @@ import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.verifier.TestUtils;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -179,7 +180,7 @@ class BaseTreeVisitorIssueFilterTest {
   }
 
   private static void scanFile(JavaIssueFilter filter) {
-    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(Collections.singletonList(filter), Collections.emptyList(), null);
+    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(Collections.singletonList(filter), Collections.emptyList(), null, new JavaVersionImpl());
     JavaAstScanner.scanSingleFileForTests(INPUT_FILE, visitorsBridge);
   }
 }

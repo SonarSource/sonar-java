@@ -28,6 +28,7 @@ import org.sonar.api.utils.Version;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -44,7 +45,7 @@ class VisitorsBridgeForTestsTest {
     sonarComponents.setSensorContext(context);
 
     Tree parse = JParserTestUtils.parse("class A{}");
-    VisitorsBridgeForTests visitorsBridgeForTests = new VisitorsBridgeForTests(Collections.singletonList(new DummyVisitor()), sonarComponents);
+    VisitorsBridgeForTests visitorsBridgeForTests = new VisitorsBridgeForTests(Collections.singletonList(new DummyVisitor()), sonarComponents, new JavaVersionImpl());
     visitorsBridgeForTests.setCurrentFile(TestUtils.emptyInputFile("dummy.java"));
     visitorsBridgeForTests.visitFile(parse, false);
     assertThat(visitorsBridgeForTests.lastCreatedTestContext().getSemanticModel()).isNull();
@@ -64,7 +65,7 @@ class VisitorsBridgeForTestsTest {
 
     Tree parse = JParserTestUtils.parse("class A{}");
     DummyVisitor javaCheck = new DummyVisitor();
-    VisitorsBridgeForTests visitorsBridgeForTests = new VisitorsBridgeForTests(Collections.singletonList(javaCheck), sonarComponents);
+    VisitorsBridgeForTests visitorsBridgeForTests = new VisitorsBridgeForTests(Collections.singletonList(javaCheck), sonarComponents, new JavaVersionImpl());
     visitorsBridgeForTests.setCurrentFile(TestUtils.emptyInputFile("dummy.java"));
     visitorsBridgeForTests.visitFile(parse, false);
     JavaFileScannerContextForTests lastContext = visitorsBridgeForTests.lastCreatedTestContext();

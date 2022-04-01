@@ -25,11 +25,13 @@ import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.Sema;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 public class VisitorsBridgeForTests extends VisitorsBridge {
@@ -40,16 +42,16 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
 
   @VisibleForTesting
   public VisitorsBridgeForTests(JavaFileScanner visitor, SonarComponents sonarComponents) {
-    this(Collections.singletonList(visitor), Collections.emptyList(), sonarComponents);
+    this(Collections.singletonList(visitor), Collections.emptyList(), sonarComponents, new JavaVersionImpl());
   }
 
-  public VisitorsBridgeForTests(Iterable<? extends JavaCheck> visitors, @Nullable SonarComponents sonarComponents) {
-    super(visitors, Collections.emptyList(), sonarComponents);
+  public VisitorsBridgeForTests(Iterable<? extends JavaCheck> visitors, @Nullable SonarComponents sonarComponents, JavaVersion javaVersion) {
+    super(visitors, Collections.emptyList(), sonarComponents, javaVersion);
     enableSemantic = false;
   }
 
-  public VisitorsBridgeForTests(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
-    super(visitors, projectClasspath, sonarComponents);
+  public VisitorsBridgeForTests(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, JavaVersion javaVersion) {
+    super(visitors, projectClasspath, sonarComponents, javaVersion);
   }
 
   @Override
