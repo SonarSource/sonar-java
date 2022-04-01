@@ -604,7 +604,9 @@ class JavaFrontendTest {
     sonarComponents.setSensorContext(sensorContext);
     sonarComponents.mainChecks().add(mainCodeIssueScannerAndFilter);
     sonarComponents.testChecks().add(testCodeIssueScannerAndFilter);
-    JavaVersion javaVersion = JavaVersionImpl.fromString(settings.asConfig().get(JavaVersion.SOURCE_VERSION).orElse(null));
+    JavaVersion javaVersion = settings.asConfig().get(JavaVersion.SOURCE_VERSION)
+      .map(JavaVersionImpl::fromString)
+      .orElse(new JavaVersionImpl());
     JavaFrontend frontend = new JavaFrontend(javaVersion, sonarComponents, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class),
       null, mainCodeIssueScannerAndFilter);
     frontend.scan(inputFiles, Collections.emptyList(), Collections.emptyList());

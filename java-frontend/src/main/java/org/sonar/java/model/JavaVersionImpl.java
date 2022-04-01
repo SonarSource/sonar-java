@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model;
 
-import javax.annotation.Nullable;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -50,10 +49,7 @@ public class JavaVersionImpl implements JavaVersion {
     this.javaVersion = javaVersion;
   }
 
-  public static JavaVersion fromString(@Nullable String javaVersion) {
-    if (javaVersion == null) {
-      return new JavaVersionImpl();
-    }
+  public static JavaVersion fromString(String javaVersion) {
     try {
       String cleanedVersion = javaVersion.startsWith("1.") ? javaVersion.substring(2) : javaVersion;
       int versionAsInt = Integer.parseInt(cleanedVersion);

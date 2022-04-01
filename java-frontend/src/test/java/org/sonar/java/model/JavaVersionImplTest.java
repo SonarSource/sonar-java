@@ -217,7 +217,7 @@ class JavaVersionImplTest {
   @Test
   void test_fromString() throws Exception {
     JavaVersion version;
-    version = JavaVersionImpl.fromString(null);
+    version = JavaVersionImpl.fromString("-1");
     assertThat(version.isNotSet()).isTrue();
     assertThat(version.asInt()).isEqualTo(-1);
 

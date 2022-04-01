@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.model.JavaVersionImpl;
@@ -29,7 +30,10 @@ class RunFinalizersCheckTest {
 
   @Test
   void test() {
-    int javaVersion = JavaVersionImpl.fromString(System.getProperty("java.specification.version")).asInt();
+    int javaVersion = Optional.ofNullable(System.getProperty("java.specification.version"))
+      .map(JavaVersionImpl::fromString)
+      .orElse(new JavaVersionImpl())
+      .asInt();
     if (javaVersion < 11) {
       CheckVerifier.newVerifier()
         .onFile(nonCompilingTestSourcesPath("checks/RunFinalizersCheck.java"))

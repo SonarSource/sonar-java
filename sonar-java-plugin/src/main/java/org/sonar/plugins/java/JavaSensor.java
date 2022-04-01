@@ -184,7 +184,9 @@ public class JavaSensor implements Sensor {
   }
 
   private JavaVersion getJavaVersion() {
-    JavaVersion javaVersion = JavaVersionImpl.fromString(settings.get(JavaVersion.SOURCE_VERSION).orElse(null));
+    JavaVersion javaVersion = settings.get(JavaVersion.SOURCE_VERSION)
+      .map(JavaVersionImpl::fromString)
+      .orElse(new JavaVersionImpl());
     LOG.info("Configured Java source version (" + JavaVersion.SOURCE_VERSION + "): " + javaVersion);
     return javaVersion;
   }
