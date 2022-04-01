@@ -136,6 +136,11 @@ public class JavaVersionImpl implements JavaVersion {
   }
 
   @Override
+  public boolean isSet() {
+    return javaVersion != -1;
+  }
+
+  @Override
   public boolean isNotSet() {
     return javaVersion == -1;
   }

@@ -29,6 +29,8 @@ class JavaVersionImplTest {
   @Test
   void no_version_set() throws Exception {
     JavaVersion version = new JavaVersionImpl();
+    assertThat(version.isSet()).isFalse();
+    assertThat(version.isNotSet()).isTrue();
     assertThat(version.isJava7Compatible()).isTrue();
     assertThat(version.isJava8Compatible()).isTrue();
     assertThat(version.isJava9Compatible()).isFalse();
@@ -43,6 +45,8 @@ class JavaVersionImplTest {
   @Test
   void java_5() throws Exception {
     JavaVersion version = new JavaVersionImpl(5);
+    assertThat(version.isSet()).isTrue();
+    assertThat(version.isNotSet()).isFalse();
     assertThat(version.isJava6Compatible()).isFalse();
     assertThat(version.isJava7Compatible()).isFalse();
     assertThat(version.isJava8Compatible()).isFalse();
@@ -225,6 +229,7 @@ class JavaVersionImplTest {
   void test_fromString() throws Exception {
     JavaVersion version;
     version = JavaVersionImpl.fromString("-1");
+    assertThat(version.isSet()).isFalse();
     assertThat(version.isNotSet()).isTrue();
     assertThat(version.asInt()).isEqualTo(-1);
 
@@ -233,6 +238,7 @@ class JavaVersionImplTest {
     assertThat(version.asInt()).isEqualTo(-1);
 
     version = JavaVersionImpl.fromString("1.6");
+    assertThat(version.isSet()).isTrue();
     assertThat(version.isNotSet()).isFalse();
     assertThat(version.asInt()).isEqualTo(6);
 

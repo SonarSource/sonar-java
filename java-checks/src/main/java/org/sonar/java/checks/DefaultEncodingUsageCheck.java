@@ -130,7 +130,7 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection implement
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
-    return version.isNotSet() || version.asInt() < 18;
+    return version.isSet() && version.asInt() < 18;
   }
 
   @Override
