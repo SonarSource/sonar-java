@@ -24,8 +24,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -37,7 +39,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 
 @Rule(key = "S1943")
-public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
+public class DefaultEncodingUsageCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
 
   private static final String INT = "int";
   private static final String BOOLEAN = "boolean";
@@ -125,6 +127,11 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
 
   private static final MethodMatchers FILEUTILS_WRITE_WITH_CHARSET_MATCHERS =
     MethodMatchers.or(FILEUTILS_WRITE_WITH_CHARSET);
+
+  @Override
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return version.isNotSet() || version.asInt() < 18;
+  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
