@@ -33,7 +33,6 @@ import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import javax.annotation.Nullable;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
@@ -111,8 +110,8 @@ public abstract class JParserConfig {
   public ASTParser astParser() {
     ASTParser astParser = ASTParser.newParser(AST.getJLSLatest());
     Map<String, String> options = new HashMap<>();
-    options.put(JavaCore.COMPILER_COMPLIANCE, javaVersion.toString());
-    options.put(JavaCore.COMPILER_SOURCE, javaVersion.toString());
+    options.put(JavaCore.COMPILER_COMPLIANCE, javaVersion.effectiveJavaVersionAsString());
+    options.put(JavaCore.COMPILER_SOURCE, javaVersion.effectiveJavaVersionAsString());
     options.put(JavaCore.COMPILER_PB_MAX_PER_UNIT, MAXIMUM_ECJ_WARNINGS);
     if (shouldEnablePreviewFlag(javaVersion)) {
       options.put(JavaCore.COMPILER_PB_ENABLE_PREVIEW_FEATURES, "enabled");
@@ -173,7 +172,7 @@ public abstract class JParserConfig {
             executionTimeReport.start(inputFile);
             Result result;
             try {
-              result = new Result(JParser.convert(javaVersion.toString(), inputFile.filename(), inputFile.contents(), ast));
+              result = new Result(JParser.convert(javaVersion.effectiveJavaVersionAsString(), inputFile.filename(), inputFile.contents(), ast));
             } catch (Exception e) {
               result = new Result(e);
             }
@@ -266,7 +265,7 @@ public abstract class JParserConfig {
       Result result;
       PerformanceMeasure.Duration parseDuration = PerformanceMeasure.start("JParser");
       try {
-        result = new Result(JParser.parse(astParser, javaVersion.toString(), inputFile.filename(), inputFile.contents()));
+        result = new Result(JParser.parse(astParser, javaVersion.effectiveJavaVersionAsString(), inputFile.filename(), inputFile.contents()));
       } catch (Exception e) {
         result = new Result(e);
       } finally {
@@ -280,13 +279,6 @@ public abstract class JParserConfig {
   static boolean shouldEnablePreviewFlag(JavaVersion currentVersion) {
     // We enable the preview feature flag even if the version is not officially supported, in order to have the best chances to parse the code.
     return currentVersion.asInt() >= MAXIMUM_SUPPORTED_JAVA_VERSION.asInt();
-  }
-
-  public static JavaVersion effectiveJavaVersion(@Nullable JavaVersion javaVersion) {
-    if (javaVersion == null || javaVersion.isNotSet()) {
-      return JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    }
-    return javaVersion;
   }
 
 }

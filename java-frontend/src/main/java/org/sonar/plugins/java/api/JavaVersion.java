@@ -129,4 +129,10 @@ public interface JavaVersion {
    */
   String java8CompatibilityMessage();
 
+  /**
+   * Get the effective Java version as a String. If no version is set, return the maximum supported version.
+   * @return an int representing the effective java version
+   */
+  String effectiveJavaVersionAsString();
+
 }

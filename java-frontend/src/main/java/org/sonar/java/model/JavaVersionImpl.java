@@ -141,6 +141,14 @@ public class JavaVersionImpl implements JavaVersion {
   }
 
   @Override
+  public String effectiveJavaVersionAsString() {
+    if (isNotSet()) {
+      return Integer.toString(MAX_SUPPORTED);
+    }
+    return Integer.toString(javaVersion);
+  }
+
+  @Override
   public String toString() {
     return isNotSet() ? "none" : Integer.toString(javaVersion);
   }

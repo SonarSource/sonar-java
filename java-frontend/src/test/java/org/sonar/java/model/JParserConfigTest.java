@@ -22,17 +22,9 @@ package org.sonar.java.model;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.model.JParserConfig.effectiveJavaVersion;
 import static org.sonar.java.model.JParserConfig.shouldEnablePreviewFlag;
 
 class JParserConfigTest {
-
-  @Test
-  void effective_java_version() {
-    assertThat(effectiveJavaVersion(null).asInt()).isEqualTo(17);
-    assertThat(effectiveJavaVersion(new JavaVersionImpl()).asInt()).isEqualTo(17);
-    assertThat(effectiveJavaVersion(new JavaVersionImpl(10)).asInt()).isEqualTo(10);
-  }
 
   @Test
   void should_enable_preview() {

@@ -71,7 +71,7 @@ public class JavaAstScanner {
     AnalysisProgress analysisProgress = new AnalysisProgress(filesNames.size());
     try {
       JParserConfig.Mode.FILE_BY_FILE
-        .create(JParserConfig.effectiveJavaVersion(visitor.getJavaVersion()), visitor.getClasspath())
+        .create(visitor.getJavaVersion(), visitor.getClasspath())
         .parse(filesNames,
           this::analysisCancelled,
           analysisProgress,
