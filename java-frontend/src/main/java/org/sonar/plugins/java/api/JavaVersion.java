@@ -107,7 +107,13 @@ public interface JavaVersion {
 
   /**
    * Test if java version has been set for the analysis.
-   * @return false if set, true otherwise.
+   * @return true if set, false otherwise.
+   */
+  boolean isSet();
+
+  /**
+   * Test if java version has not been set for the analysis.
+   * @return true if not set, false otherwise.
    */
   boolean isNotSet();
 
