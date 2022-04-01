@@ -501,13 +501,13 @@ class ExpectationsTest {
       InputFile inputFile = mock(InputFile.class);
 
       doReturn(InputFile.Status.SAME).when(inputFile).status();
-      assertThat(parser.shouldBeScanned(inputFile, null, null)).isFalse();
+      assertThat(parser.shouldBeScanned(inputFile, null)).isFalse();
 
       doReturn(InputFile.Status.CHANGED).when(inputFile).status();
-      assertThat(parser.shouldBeScanned(inputFile, null, null)).isFalse();
+      assertThat(parser.shouldBeScanned(inputFile, null)).isFalse();
 
       doReturn(InputFile.Status.ADDED).when(inputFile).status();
-      assertThat(parser.shouldBeScanned(inputFile, null, null)).isFalse();
+      assertThat(parser.shouldBeScanned(inputFile, null)).isFalse();
     }
   }
 }

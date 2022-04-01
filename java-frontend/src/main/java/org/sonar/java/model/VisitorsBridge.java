@@ -56,6 +56,7 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -160,9 +161,9 @@ public class VisitorsBridge {
     this.inAndroidContext = inAndroidContext;
   }
 
-  public boolean shouldBeScanned(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
+  public boolean shouldBeScanned(InputFile inputFile, CacheContext cacheContext) {
     if (sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile)) {
-      return scannersThatCannotBeSkipped.stream().anyMatch(scanner -> scanner.shouldBeScanned(inputFile, readCache, writeCache));
+      return scannersThatCannotBeSkipped.stream().anyMatch(scanner -> scanner.shouldBeScanned(inputFile, cacheContext));
     } else {
       return true;
     }
@@ -319,8 +320,8 @@ public class VisitorsBridge {
     }
 
     @Override
-    public boolean shouldBeScanned(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
-      return subscriptionVisitors.stream().anyMatch(visitor -> visitor.shouldBeScanned(inputFile, readCache, writeCache));
+    public boolean shouldBeScanned(InputFile inputFile, CacheContext cacheContext) {
+      return subscriptionVisitors.stream().anyMatch(visitor -> visitor.shouldBeScanned(inputFile, cacheContext));
     }
 
     @Override

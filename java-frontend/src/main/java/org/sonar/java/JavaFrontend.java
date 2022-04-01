@@ -40,6 +40,7 @@ import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
+import org.sonar.java.caching.CacheContextImpl;
 import org.sonar.java.collections.CollectionUtils;
 import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.java.model.JParserConfig;
@@ -47,6 +48,7 @@ import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonarsource.performance.measure.PerformanceMeasure;
 import org.sonarsource.performance.measure.PerformanceMeasure.Duration;
@@ -127,13 +129,13 @@ public class JavaFrontend {
 
 
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
-    if (sonarComponents != null && sonarComponents.context().isCacheEnabled()) {
-      var readCache = sonarComponents.context().previousAnalysisCache();
-      var writeCache = sonarComponents.context().nextCache();
-
-      sourceFiles = astScanner.filterFilesThatShouldBeParsed(sourceFiles, readCache, writeCache);
-      testFiles = astScannerForTests.filterFilesThatShouldBeParsed(testFiles, readCache, writeCache);
-      generatedFiles = astScannerForGeneratedFiles.filterFilesThatShouldBeParsed(generatedFiles, readCache, writeCache);
+    if (sonarComponents != null) {
+      CacheContext cacheContext = CacheContextImpl.of(sonarComponents.context());
+      if (cacheContext.isCacheEnabled()) {
+        sourceFiles = astScanner.filterFilesThatShouldBeParsed(sourceFiles, cacheContext);
+        testFiles = astScannerForTests.filterFilesThatShouldBeParsed(testFiles, cacheContext);
+        generatedFiles = astScannerForGeneratedFiles.filterFilesThatShouldBeParsed(generatedFiles, cacheContext);
+      }
     }
 
     // SonarLint is not compatible with batch mode, it needs InputFile#contents() and batch mode use InputFile#absolutePath()

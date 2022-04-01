@@ -20,26 +20,6 @@
 package org.sonar.java.checks.verifier.internal;
 
 import com.sonar.sslr.api.RecognitionException;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import javax.annotation.Nullable;
-
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -49,6 +29,8 @@ import org.sonar.api.config.Configuration;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.Beta;
 import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.caching.JavaReadCacheImpl;
+import org.sonar.java.caching.JavaWriteCacheImpl;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.FilesUtils;
 import org.sonar.java.checks.verifier.TestUtils;
@@ -63,14 +45,16 @@ import org.sonar.java.testing.JavaFileScannerContextForTests;
 import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.caching.CacheContext;
 
-import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.EFFORT_TO_FIX;
-import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.END_COLUMN;
-import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.END_LINE;
-import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.FLOWS;
-import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.MESSAGE;
-import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.SECONDARY_LOCATIONS;
-import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.START_COLUMN;
+import javax.annotation.Nullable;
+import java.io.File;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.*;
 
 public class InternalCheckVerifier implements CheckVerifier {
 
@@ -97,8 +81,7 @@ public class InternalCheckVerifier implements CheckVerifier {
   private boolean collectQuickFixes = false;
 
   private Expectations expectations = new Expectations();
-  private ReadCache readCache;
-  private WriteCache writeCache;
+  private CacheContext cacheContext;
 
   private InternalCheckVerifier() {
   }
@@ -215,9 +198,17 @@ public class InternalCheckVerifier implements CheckVerifier {
 
   @Override
   public CheckVerifier withCache(@Nullable ReadCache readCache, @Nullable WriteCache writeCache) {
-    this.readCache = readCache;
-    this.writeCache = writeCache;
+    return withCache(new InternalCacheContext(
+      true,
+      readCache == null ? null : new JavaReadCacheImpl(readCache),
+      writeCache == null ? null : new JavaWriteCacheImpl(writeCache)
+    ));
+  }
+
+  @Override
+  public CheckVerifier withCache(CacheContext context) {
     incrementalAnalysisEnabled = true;
+    this.cacheContext = context;
     return this;
   }
 
@@ -282,7 +273,7 @@ public class InternalCheckVerifier implements CheckVerifier {
 
     List<InputFile> filesToParse = files;
     if (incrementalAnalysisEnabled) {
-      filesToParse = astScanner.filterFilesThatShouldBeParsed(files, readCache, writeCache);
+      filesToParse = astScanner.filterFilesThatShouldBeParsed(files, this.cacheContext);
     }
     astScanner.scan(filesToParse);
 

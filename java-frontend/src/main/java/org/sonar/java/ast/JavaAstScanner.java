@@ -46,6 +46,7 @@ import org.sonar.java.model.JProblem;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.caching.CacheContext;
 
 public class JavaAstScanner {
   private static final Logger LOG = Loggers.get(JavaAstScanner.class);
@@ -68,9 +69,9 @@ public class JavaAstScanner {
     return visitor.getClasspath();
   }
 
-  public List<InputFile> filterFilesThatShouldBeParsed(Iterable<? extends InputFile> inputFiles, ReadCache readCache, WriteCache writeCache) {
+  public List<InputFile> filterFilesThatShouldBeParsed(Iterable<? extends InputFile> inputFiles, CacheContext cacheContext) {
     return StreamSupport.stream(inputFiles.spliterator(), false).filter( file ->
-      visitor.shouldBeScanned(file, readCache, writeCache)
+      visitor.shouldBeScanned(file, cacheContext)
     ).collect(Collectors.toList());
   }
 

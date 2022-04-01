@@ -28,12 +28,15 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.RspecKey;
+import org.sonar.java.caching.JavaReadCacheImpl;
+import org.sonar.java.caching.JavaWriteCacheImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
@@ -42,6 +45,7 @@ import org.sonar.java.testing.JavaFileScannerContextForTests;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -942,34 +946,13 @@ class InternalCheckVerifierTest {
 
   @Test
   void withCache_effectively_sets_the_caches_for_prescan() {
-    ReadCache readCache = new ReadCache() {
-      @Override
-      public InputStream read(String s) {
-        return null;
-      }
-
-      @Override
-      public boolean contains(String s) {
-        return false;
-      }
-    };
-
-    WriteCache writeCache = new WriteCache() {
-      @Override
-      public void write(String s, InputStream inputStream) {
-
-      }
-
-      @Override
-      public void write(String s, byte[] bytes) {
-
-      }
-
-      @Override
-      public void copyFromPrevious(String s) {
-
-      }
-    };
+    ReadCache readCache = new InternalReadCache();
+    WriteCache writeCache = new InternalWriteCache();
+    CacheContext cacheContext = new InternalCacheContext(
+      true,
+      new JavaReadCacheImpl(readCache),
+      new JavaWriteCacheImpl(writeCache)
+    );
 
     var check = spy(new NoEffectEndOfAnalysisCheck());
 
@@ -979,7 +962,7 @@ class InternalCheckVerifierTest {
       .withCheck(check)
       .verifyNoIssues();
 
-    verify(check, times(1)).shouldBeScanned(any(), eq(readCache), eq(writeCache));
+    verify(check, times(1)).shouldBeScanned(any(), eq(cacheContext));
   }
 
   @Rule(key = "FailingCheck")

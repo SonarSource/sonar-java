@@ -27,6 +27,7 @@ import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.caching.CacheContext;
 
 import javax.annotation.Nullable;
 
@@ -196,7 +197,15 @@ public interface CheckVerifier {
    * @param writeCache A place to dump information at the end of the analysis
    * @return the verifier configured with the caches to use.
    */
+  //FIXME Remove this method
   CheckVerifier withCache(@Nullable ReadCache readCache, @Nullable WriteCache writeCache);
+
+  /**
+   *
+   * @param context A wrapper for the {@link org.sonar.plugins.java.api.caching.JavaReadCache} and {@link org.sonar.plugins.java.api.caching.JavaWriteCache}.
+   * @return the verifier configured with the caches to use
+   */
+  CheckVerifier withCache(CacheContext context);
 
   /**
    * Verifies that all the expected issues are correctly raised by the rule(s),

@@ -23,6 +23,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.java.annotations.Beta;
+import org.sonar.plugins.java.api.caching.CacheContext;
 
 /**
  * Common interface for all checks analyzing a java file.
@@ -42,11 +43,10 @@ public interface JavaFileScanner extends JavaCheck {
    * The rule may persist data to the write cache for future analyses.
    *
    * @param inputFile The file thay will eventually be scanned
-   * @param readCache The cache of information from previous analyses
-   * @param writeCache The cache may persist data for future analyses
+   * @param cacheContext Provides all necessary information to use the caches
    * @return Returns true by default or if the file needs to be scanned again, false otherwise.
    */
-  default boolean shouldBeScanned(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
+  default boolean shouldBeScanned(InputFile inputFile, CacheContext cacheContext) {
     return true;
   }
 }

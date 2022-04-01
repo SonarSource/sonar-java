@@ -43,6 +43,9 @@ import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.caching.JavaReadCache;
+import org.sonar.plugins.java.api.caching.JavaWriteCache;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -134,9 +137,9 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
   private final List<String> currentFilesThatSetMaximumSize = new ArrayList<>();
   private final List<String> currentFilesThatInstantiate = new ArrayList<>();
 
-  private WriteCache writeCache;
+  private JavaWriteCache writeCache;
 
-  private synchronized void initCaches(@Nullable ReadCache readCache, @Nullable WriteCache writeCache) {
+  private synchronized void initCaches(@Nullable JavaReadCache readCache, @Nullable JavaWriteCache writeCache) {
     if (cacheIsLoaded) {
       return;
     }
@@ -192,7 +195,7 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
   }
 
   @Override
-  public boolean shouldBeScanned(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
+  public boolean shouldBeScanned(InputFile inputFile, CacheContext cacheContext) {
     // 2 cache keys:
     // - list of files that set the maximum size
     // - list of files that instantiate a new object
@@ -201,7 +204,7 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     // If it is a changed file, we return true.
 
     // If not done yet, load data from the cache
-    initCaches(readCache, writeCache);
+    initCaches(cacheContext.getReadCache(), cacheContext.getWriteCache());
 
     // Assume the file needs to be scanned again unless we can find some cached results for it
     boolean needsToBeScanned = true;

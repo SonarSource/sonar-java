@@ -61,6 +61,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
@@ -389,11 +390,12 @@ class Expectations {
       this.quickFixes = quickFixes;
     }
 
-    @Override
+
     /**
      * Returns false to avoid forcing the scan of files that have not been requested by other checks.
      */
-    public boolean shouldBeScanned(InputFile inputFile, ReadCache readCache, WriteCache writeCache) {
+    @Override
+    public boolean shouldBeScanned(InputFile inputFile, CacheContext cacheContext) {
       return false;
     }
 
