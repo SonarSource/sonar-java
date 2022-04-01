@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.sonar.java.TestUtils;
 import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -39,7 +40,7 @@ class IssuableSubscriptionVisitorTest {
 
   @Test
   void test_custom_rules_report_issues() throws Exception {
-    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(Collections.singletonList(new CustomRule()), new ArrayList<>(), null);
+    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(Collections.singletonList(new CustomRule()), new ArrayList<>(), null, new JavaVersionImpl());
     JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/resources/IssuableSubscriptionClass.java"), visitorsBridge);
     Set<AnalyzerMessage> issues = visitorsBridge.lastCreatedTestContext().getIssues();
     assertThat(issues).hasSize(7);

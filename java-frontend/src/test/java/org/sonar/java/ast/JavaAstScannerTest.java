@@ -383,8 +383,7 @@ class JavaAstScannerTest {
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, classpathForMain, classpathForTest, null);
     sonarComponents.setSensorContext(context);
     JavaAstScanner scanner = new JavaAstScanner(sonarComponents);
-    VisitorsBridge visitorBridge = new VisitorsBridge(visitors, new ArrayList<>(), sonarComponents);
-    visitorBridge.setJavaVersion(new JavaVersionImpl(javaVersion));
+    VisitorsBridge visitorBridge = new VisitorsBridge(visitors, new ArrayList<>(), sonarComponents, new JavaVersionImpl(javaVersion));
     scanner.setVisitorBridge(visitorBridge);
     scanner.scan(inputFiles);
   }

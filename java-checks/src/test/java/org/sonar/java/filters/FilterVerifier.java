@@ -45,6 +45,7 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.checks.verifier.TestUtils;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.testing.JavaFileScannerContextForTests;
 import org.sonar.java.testing.VisitorsBridgeForTests;
@@ -75,7 +76,7 @@ public class FilterVerifier {
     projectClasspath.add(new File("target/test-classes"));
 
     InputFile inputFile = TestUtils.inputFile(filename);
-    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(visitors, projectClasspath, sonarComponents(inputFile));
+    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(visitors, projectClasspath, sonarComponents(inputFile), new JavaVersionImpl());
     JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge);
     JavaFileScannerContextForTests testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
 

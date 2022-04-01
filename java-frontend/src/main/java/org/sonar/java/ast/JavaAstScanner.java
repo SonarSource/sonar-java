@@ -42,7 +42,6 @@ import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.JProblem;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaVersion;
 
@@ -192,13 +191,12 @@ public class JavaAstScanner {
 
   @VisibleForTesting
   public static void scanSingleFileForTests(InputFile file, VisitorsBridge visitorsBridge) {
-    scanSingleFileForTests(file, visitorsBridge, new JavaVersionImpl(), null);
+    scanSingleFileForTests(file, visitorsBridge, null);
   }
 
   @VisibleForTesting
-  public static void scanSingleFileForTests(InputFile inputFile, VisitorsBridge visitorsBridge, JavaVersion javaVersion, @Nullable SonarComponents sonarComponents) {
+  public static void scanSingleFileForTests(InputFile inputFile, VisitorsBridge visitorsBridge, @Nullable SonarComponents sonarComponents) {
     JavaAstScanner astScanner = new JavaAstScanner(sonarComponents);
-    visitorsBridge.setJavaVersion(javaVersion);
     astScanner.setVisitorBridge(visitorsBridge);
     astScanner.scan(Collections.singleton(inputFile));
   }

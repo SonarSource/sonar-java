@@ -115,8 +115,7 @@ public class JavaFrontend {
 
   private static VisitorsBridge createVisitorBridge(
     Iterable<JavaCheck> codeVisitors, List<File> classpath, JavaVersion javaVersion, @Nullable SonarComponents sonarComponents, boolean inAndroidContext) {
-    VisitorsBridge visitorsBridge = new VisitorsBridge(codeVisitors, classpath, sonarComponents);
-    visitorsBridge.setJavaVersion(javaVersion);
+    VisitorsBridge visitorsBridge = new VisitorsBridge(codeVisitors, classpath, sonarComponents, javaVersion);
     visitorsBridge.setInAndroidContext(inAndroidContext);
     return visitorsBridge;
   }
