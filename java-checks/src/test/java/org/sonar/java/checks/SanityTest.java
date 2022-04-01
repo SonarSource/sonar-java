@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
@@ -102,6 +103,7 @@ class SanityTest {
    * It does not prevent other rules to fail if similar construct of the language, but not yet encountered.
    */
   @Test
+  @EnabledIfSystemProperty(named = "force.sanity.test", matches = "true")
   void test() throws Exception {
     logTester.setLevel(LoggerLevel.WARN);
 
