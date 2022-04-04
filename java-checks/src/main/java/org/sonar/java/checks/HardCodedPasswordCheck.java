@@ -51,7 +51,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S2068")
-public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
+public class HardCodedPasswordCheck extends IssuableSubscriptionVisitor {
 
   private static final String DEFAULT_CREDENTIAL_WORDS = "password,passwd,pwd,passphrase,java.naming.security.credentials";
   private static final Set<String> WHITE_LIST = Collections.singleton("anonymous");

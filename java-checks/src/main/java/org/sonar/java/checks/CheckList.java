@@ -388,7 +388,7 @@ public final class CheckList {
     GetRequestedSessionIdCheck.class,
     GettersSettersOnRightFieldCheck.class,
     GraphemeClustersInClassesCheck.class,
-    HardCodedCredentialsCheck.class,
+    HardCodedPasswordCheck.class,
     HardcodedURICheck.class,
     HasNextCallingNextCheck.class,
     HiddenFieldCheck.class,

@@ -2,7 +2,7 @@ package checks;
 
 import java.net.PasswordAuthentication;
 
-class HardCodedCredentialsCheckCustom {
+class HardCodedPasswordCheckCustom {
 
   String fieldNameWithPasswordInIt;
   String fieldNameWithBazookaInIt;
@@ -22,7 +22,7 @@ class HardCodedCredentialsCheckCustom {
     this.fieldNameWithBazookaInIt = "xx"; // Noncompliant
 
 
-    HardCodedCredentialsCheckCustom myA = new HardCodedCredentialsCheckCustom();
+    HardCodedPasswordCheckCustom myA = new HardCodedPasswordCheckCustom();
     myA.setProperty("marmalade", "xxxxx"); // Noncompliant
     myA.setProperty("passwd", "xxxxx"); //Compliant
     myA.setProperty("pwd", "xxxxx"); // Compliant

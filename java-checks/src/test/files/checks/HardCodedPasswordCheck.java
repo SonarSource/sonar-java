@@ -2,7 +2,7 @@ import java.net.PasswordAuthentication;
 import java.sql.DriverManager;
 import javax.naming.Context;
 
-class A {
+class HardCodedPasswordCheck {
 
   String fieldNameWithPasswordInIt = retrievePassword();
 

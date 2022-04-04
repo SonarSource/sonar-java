@@ -25,7 +25,7 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
-class HardCodedCredentialsCheckTest {
+class HardCodedPasswordCheckTest {
 
   /**
    * @see org.sonar.java.checks.eclipsebug.EclipseBugTest#javax_conflict()
@@ -33,8 +33,8 @@ class HardCodedCredentialsCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/HardCodedCredentialsCheck.java")
-      .withCheck(new HardCodedCredentialsCheck())
+      .onFile("src/test/files/checks/HardCodedPasswordCheck.java")
+      .withCheck(new HardCodedPasswordCheck())
       // FIXME should not requires an empty classpath
       .withClassPath(Collections.emptyList())
       .verifyIssues();
@@ -42,10 +42,10 @@ class HardCodedCredentialsCheckTest {
 
   @Test
   void custom() {
-    HardCodedCredentialsCheck check = new HardCodedCredentialsCheck();
+    HardCodedPasswordCheck check = new HardCodedPasswordCheck();
     check.credentialWords = "marmalade,bazooka";
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/HardCodedCredentialsCheckCustom.java"))
+      .onFile(testSourcesPath("checks/HardCodedPasswordCheckCustom.java"))
       .withCheck(check)
       .verifyIssues();
   }
