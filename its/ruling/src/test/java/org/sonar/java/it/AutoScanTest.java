@@ -176,10 +176,7 @@ public class AutoScanTest {
     List<IssueDiff> knownDiffs = GSON.fromJson(Files.readString(pathFor("src/test/resources/autoscan/" + DIFF_FILE + ".json")), GSON_LIST_ISSUE_DIFF_TYPE);
     IssueDiff knownTotal = IssueDiff.total(knownDiffs);
 
-    Set<IssueDiff> actualDiffs = new LinkedHashSet<>(newDiffs);
-    actualDiffs.removeAll(knownDiffs);
-
-    assertThat(actualDiffs).isEmpty();
+    assertThat(newDiffs).containsExactlyInAnyOrderElementsOf(knownDiffs);
     assertThat(newTotal).isEqualTo(knownTotal);
     assertThat(rulesCausingFPs).hasSize(7);
     assertThat(rulesNotReporting).hasSize(6);
