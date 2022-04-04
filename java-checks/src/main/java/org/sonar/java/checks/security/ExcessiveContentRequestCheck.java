@@ -192,33 +192,26 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
 
   @Override
   public boolean scanWithoutParsing(InputFile inputFile, CacheContext cacheContext) {
-    // 2 cache keys:
-    // - list of files that set the maximum size
-    // - list of files that instantiate a new object
-    // If not done yet, load lists from cache and store them in a field.
-    // If the file is unchanged, we copy over the data from previous analyses and return false.
-    // If it is a changed file, we return true.
-
     // If not done yet, load data from the cache
     initCaches(cacheContext.getReadCache(), cacheContext.getWriteCache());
 
-    // Assume the file needs to be scanned again unless we can find some cached results for it
-    boolean needsToBeScanned = true;
+    // Assume the file could not be scanned by default
+    boolean successfullyScanned = false;
 
     String fileKey = inputFile.toString();
     // If a correct maximum size has been set in this file in a previous analysis, we use this information
     if (filesThatSetMaximumSize != null && filesThatSetMaximumSize.contains(fileKey)) {
       currentFilesThatSetMaximumSize.add(fileKey);
       sizeSetSomewhere = true;
-      needsToBeScanned = false;
+      successfullyScanned = true;
     }
     // If a relevant instantiation has been found in a previous analysis, we use this information
     if (filesThatInstantiate != null && filesThatInstantiate.contains(fileKey)) {
       currentFilesThatInstantiate.add(fileKey);
-      needsToBeScanned = false;
+      successfullyScanned = true;
     }
 
-    return needsToBeScanned;
+    return successfullyScanned;
   }
 
   @Override
