@@ -174,17 +174,19 @@ public class InternalCheckVerifier implements CheckVerifier {
       files = new ArrayList<>(modifiedFileNames.size());
     }
 
+    var filesToAdd = modifiedFileNames.stream()
+        .map(name -> TestUtils.inputFile("", new File(name), status))
+          .collect(Collectors.toList());
+
+    var filesToAddStrings = filesToAdd.stream().map(Object::toString).collect(Collectors.toList());
+
     files.forEach(inputFile -> {
-      if (modifiedFileNames.contains(inputFile.toString())) {
+      if (filesToAddStrings.contains(inputFile.toString())) {
         throw new IllegalArgumentException(String.format("File %s was already added.", inputFile));
       }
     });
 
-    files.addAll(modifiedFileNames.stream()
-      .map(File::new)
-      .map(file -> TestUtils.inputFile("", file, status))
-      .collect(Collectors.toList())
-    );
+    files.addAll(filesToAdd);
 
     return this;
   }
