@@ -20,6 +20,8 @@
 package org.sonar.java.checks.verifier.internal;
 
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -941,7 +943,7 @@ class InternalCheckVerifierTest {
     assertThatThrownBy(() -> {
       checkVerifier.addFiles(InputFile.Status.ADDED, TEST_FILE);
     }).isInstanceOf(IllegalArgumentException.class)
-      .hasMessageContaining(String.format("File %s was already added.", TEST_FILE));
+      .hasMessageContaining(String.format("File %s was already added.", Path.of(TEST_FILE)));
   }
 
   @Test
