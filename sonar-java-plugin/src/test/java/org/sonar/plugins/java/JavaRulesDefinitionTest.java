@@ -131,10 +131,10 @@ class JavaRulesDefinitionTest {
     definition.define(context);
     RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
 
-    RulesDefinition.Rule hardcodedCredentialsRule = repository.rule("S1313");
-    assertThat(hardcodedCredentialsRule.deprecatedRuleKeys()).containsExactly(RuleKey.of("squid", "S1313"));
-    assertThat(hardcodedCredentialsRule.type()).isEqualTo(RuleType.SECURITY_HOTSPOT);
-    assertThat(hardcodedCredentialsRule.activatedByDefault()).isFalse();
+    RulesDefinition.Rule hardcodedIdRule = repository.rule("S1313");
+    assertThat(hardcodedIdRule.deprecatedRuleKeys()).containsExactly(RuleKey.of("squid", "S1313"));
+    assertThat(hardcodedIdRule.type()).isEqualTo(RuleType.SECURITY_HOTSPOT);
+    assertThat(hardcodedIdRule.activatedByDefault()).isFalse();
   }
 
   @Test
