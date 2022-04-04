@@ -132,9 +132,9 @@ public class JavaFrontend {
     if (sonarComponents != null) {
       CacheContext cacheContext = CacheContextImpl.of(sonarComponents.context());
       if (cacheContext.isCacheEnabled()) {
-        sourceFiles = astScanner.filterFilesThatShouldBeParsed(sourceFiles, cacheContext);
-        testFiles = astScannerForTests.filterFilesThatShouldBeParsed(testFiles, cacheContext);
-        generatedFiles = astScannerForGeneratedFiles.filterFilesThatShouldBeParsed(generatedFiles, cacheContext);
+        sourceFiles = astScanner.scanWithoutParsing(sourceFiles, cacheContext);
+        testFiles = astScannerForTests.scanWithoutParsing(testFiles, cacheContext);
+        generatedFiles = astScannerForGeneratedFiles.scanWithoutParsing(generatedFiles, cacheContext);
       }
     }
 

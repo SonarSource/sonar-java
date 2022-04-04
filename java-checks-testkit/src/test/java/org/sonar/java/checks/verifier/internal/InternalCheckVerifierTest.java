@@ -19,9 +19,7 @@
  */
 package org.sonar.java.checks.verifier.internal;
 
-import java.io.InputStream;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -30,7 +28,6 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.check.Rule;
@@ -964,7 +961,7 @@ class InternalCheckVerifierTest {
       .withCheck(check)
       .verifyNoIssues();
 
-    verify(check, times(1)).shouldBeScanned(any(), eq(cacheContext));
+    verify(check, times(1)).scanWithoutParsing(any(), eq(cacheContext));
   }
 
   @Rule(key = "FailingCheck")

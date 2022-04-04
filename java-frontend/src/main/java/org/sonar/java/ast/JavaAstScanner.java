@@ -33,8 +33,6 @@ import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.sensor.cache.ReadCache;
-import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.AnalysisException;
@@ -69,9 +67,15 @@ public class JavaAstScanner {
     return visitor.getClasspath();
   }
 
-  public List<InputFile> filterFilesThatShouldBeParsed(Iterable<? extends InputFile> inputFiles, CacheContext cacheContext) {
+  /**
+   * Scan files without parsing, using the raw input file and cached information, and return the list of files that could not be analyzed without parsing.
+   * @param inputFiles The list of files to analyze
+   * @param cacheContext Cache infrastructure
+   * @return The list of files that could be successfully analyzed without parsing
+   */
+  public List<InputFile> scanWithoutParsing(Iterable<? extends InputFile> inputFiles, CacheContext cacheContext) {
     return StreamSupport.stream(inputFiles.spliterator(), false).filter( file ->
-      visitor.shouldBeScanned(file, cacheContext)
+      visitor.scanWithoutParsing(file, cacheContext)
     ).collect(Collectors.toList());
   }
 

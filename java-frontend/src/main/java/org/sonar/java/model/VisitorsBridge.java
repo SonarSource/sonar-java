@@ -33,8 +33,6 @@ import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.sensor.cache.ReadCache;
-import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -164,11 +162,19 @@ public class VisitorsBridge {
     this.inAndroidContext = inAndroidContext;
   }
 
-  public boolean shouldBeScanned(InputFile inputFile, CacheContext cacheContext) {
+  /**
+   * In cases where incremental analysis is active, try to scan a raw file without parsing its content.
+   *
+   * @param inputFile The file to scan
+   * @param cacheContext Cached information that may help to analyse the file without parsing
+   *
+   * @return True if all scanners successfully scan the file without contents. False otherwise.
+   */
+  public boolean scanWithoutParsing(InputFile inputFile, CacheContext cacheContext) {
     if (sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile)) {
-      return scannersThatCannotBeSkipped.stream().anyMatch(scanner -> scanner.shouldBeScanned(inputFile, cacheContext));
+      return scannersThatCannotBeSkipped.stream().allMatch(scanner -> scanner.scanWithoutParsing(inputFile, cacheContext));
     } else {
-      return true;
+      return false;
     }
   }
 
@@ -323,8 +329,8 @@ public class VisitorsBridge {
     }
 
     @Override
-    public boolean shouldBeScanned(InputFile inputFile, CacheContext cacheContext) {
-      return subscriptionVisitors.stream().anyMatch(visitor -> visitor.shouldBeScanned(inputFile, cacheContext));
+    public boolean scanWithoutParsing(InputFile inputFile, CacheContext cacheContext) {
+      return subscriptionVisitors.stream().allMatch(visitor -> visitor.scanWithoutParsing(inputFile, cacheContext));
     }
 
     @Override

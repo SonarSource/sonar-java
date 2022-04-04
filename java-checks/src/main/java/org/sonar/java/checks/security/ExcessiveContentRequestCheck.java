@@ -22,18 +22,16 @@ package org.sonar.java.checks.security;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.sensor.cache.ReadCache;
-import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
@@ -53,8 +51,6 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.Nullable;
 
 import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
@@ -195,7 +191,7 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
   }
 
   @Override
-  public boolean shouldBeScanned(InputFile inputFile, CacheContext cacheContext) {
+  public boolean scanWithoutParsing(InputFile inputFile, CacheContext cacheContext) {
     // 2 cache keys:
     // - list of files that set the maximum size
     // - list of files that instantiate a new object
