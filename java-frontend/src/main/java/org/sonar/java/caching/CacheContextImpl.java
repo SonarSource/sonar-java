@@ -19,6 +19,7 @@
  */
 package org.sonar.java.caching;
 
+import javax.annotation.Nullable;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -39,18 +40,21 @@ public class CacheContextImpl implements CacheContext {
     this.writeCache = writeCache;
   }
 
-  public static CacheContextImpl of(SensorContext context) {
-    try {
-      return new CacheContextImpl(
-        context.isCacheEnabled(),
-        new JavaReadCacheImpl(context.previousAnalysisCache()),
-        new JavaWriteCacheImpl(context.nextCache())
-      );
-    } catch (NoSuchMethodError error) {
-      LOGGER.info(error.getMessage());
-      DummyCache dummyCache = new DummyCache();
-      return new CacheContextImpl(false, dummyCache, dummyCache);
+  public static CacheContextImpl of(@Nullable SensorContext context) {
+    if (context != null) {
+      try {
+        return new CacheContextImpl(
+          context.isCacheEnabled(),
+          new JavaReadCacheImpl(context.previousAnalysisCache()),
+          new JavaWriteCacheImpl(context.nextCache())
+        );
+      } catch (NoSuchMethodError error) {
+        LOGGER.info(error.getMessage());
+      }
     }
+
+    DummyCache dummyCache = new DummyCache();
+    return new CacheContextImpl(false, dummyCache, dummyCache);
   }
 
   @Override

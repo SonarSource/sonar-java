@@ -27,9 +27,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultInputDir;
+import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
@@ -42,6 +44,7 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
 import org.sonar.plugins.java.api.SourceMap;
+import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -330,6 +333,23 @@ class DefaultJavaFileScannerContextTest {
   @Test
   void test_new_issue_return_a_builder() {
     assertThat(context.newIssue()).isInstanceOf(FluentReporting.JavaIssueBuilder.class);
+  }
+
+  @Test
+  void test_getCacheContext_returns_created_cacheContext() {
+    var sensorContext = mock(SensorContext.class);
+    doAnswer(invocation -> true).when(sensorContext).isCacheEnabled();
+    doAnswer(invocation -> null).when(sensorContext).previousAnalysisCache();
+    doAnswer(invocation -> null).when(sensorContext).nextCache();
+    doAnswer(invocation -> sensorContext).when(sonarComponents).context();
+
+    DefaultJavaFileScannerContext ctx = new DefaultJavaFileScannerContext(
+      compilationUnitTree, JAVA_INPUT_FILE, null, sonarComponents, new JavaVersionImpl(), true, false);
+
+    var cc = ctx.getCacheContext();
+    assertThat(cc.isCacheEnabled()).isTrue();
+    assertThat(cc.getReadCache()).isNotNull();
+    assertThat(cc.getWriteCache()).isNotNull();
   }
 
   private static void assertMessagePosition(AnalyzerMessage message, int startLine, int startColumn, int endLine, int endColumn) {

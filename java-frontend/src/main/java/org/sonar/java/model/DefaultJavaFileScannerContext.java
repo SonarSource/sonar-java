@@ -32,6 +32,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
+import org.sonar.java.caching.CacheContextImpl;
 import org.sonar.java.regex.RegexCache;
 import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.RegexScannerContext;
@@ -42,6 +43,7 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.SourceMap;
+import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -59,6 +61,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
   private final JavaVersion javaVersion;
   private final boolean fileParsed;
   private final boolean inAndroidContext;
+  private final CacheContext cacheContext;
 
   private List<String> lines = null;
   private String content;
@@ -75,6 +78,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
     this.javaVersion = javaVersion;
     this.fileParsed = fileParsed;
     this.inAndroidContext = inAndroidContext;
+    this.cacheContext = CacheContextImpl.of(sonarComponents != null ? sonarComponents.context() : null);
   }
 
   @Override
@@ -283,5 +287,10 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
   @Override
   public JavaIssueBuilder newIssue() {
     return new InternalJavaIssueBuilder(inputFile, sonarComponents);
+  }
+
+  @Override
+  public CacheContext getCacheContext() {
+    return cacheContext;
   }
 }
