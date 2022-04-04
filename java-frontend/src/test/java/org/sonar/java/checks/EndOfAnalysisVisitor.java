@@ -22,12 +22,13 @@ package org.sonar.java.checks;
 import java.util.List;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
 public class EndOfAnalysisVisitor extends SubscriptionVisitor implements EndOfAnalysisCheck{
 
   @Override
-  public void endOfAnalysis() {
+  public void endOfAnalysis(CacheContext cacheContext) {
     // do nothing
   }
 

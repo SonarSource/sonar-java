@@ -987,7 +987,7 @@ class InternalCheckVerifierTest {
   @Rule(key="NoEffectEndOfAnalysisCheck")
   private static class NoEffectEndOfAnalysisCheck implements JavaFileScanner, EndOfAnalysisCheck {
     @Override
-    public void endOfAnalysis() {
+    public void endOfAnalysis(CacheContext cacheContext) {
       // do nothing
     }
 

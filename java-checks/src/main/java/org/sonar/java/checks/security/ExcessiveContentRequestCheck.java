@@ -226,7 +226,7 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
   }
 
   @Override
-  public void endOfAnalysis() {
+  public void endOfAnalysis(CacheContext cacheContext) {
     if (!sizeSetSomewhere && context != null) {
       DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) context;
       multipartConstructorIssues.forEach(defaultContext::reportIssue);

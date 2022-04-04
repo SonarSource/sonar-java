@@ -49,6 +49,7 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.caching.CacheContextImpl;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.exceptions.ThrowableUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -77,6 +78,7 @@ public class VisitorsBridge {
   protected boolean inAndroidContext = false;
   private int fullyScannedFileCount = 0;
   private int skippedFileCount = 0;
+  private final CacheContext cacheContext;
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
@@ -94,6 +96,7 @@ public class VisitorsBridge {
     this.scannersThatCannotBeSkipped = new ArrayList<>();
     this.classpath = projectClasspath;
     this.sonarComponents = sonarComponents;
+    this.cacheContext = CacheContextImpl.of(sonarComponents != null ? sonarComponents.context() : null);
     this.javaVersion = javaVersion;
     updateScanners();
   }
@@ -301,7 +304,7 @@ public class VisitorsBridge {
     allScanners.stream()
       .filter(EndOfAnalysisCheck.class::isInstance)
       .map(EndOfAnalysisCheck.class::cast)
-      .forEach(EndOfAnalysisCheck::endOfAnalysis);
+      .forEach(check -> check.endOfAnalysis(cacheContext));
   }
 
   private class IssuableSubscriptionVisitorsRunner implements JavaFileScanner, EndOfAnalysisCheck {
@@ -339,11 +342,11 @@ public class VisitorsBridge {
     }
 
     @Override
-    public void endOfAnalysis() {
+    public void endOfAnalysis(CacheContext cacheContext) {
       subscriptionVisitors.stream()
         .filter(EndOfAnalysisCheck.class::isInstance)
         .map(EndOfAnalysisCheck.class::cast)
-        .forEach(EndOfAnalysisCheck::endOfAnalysis);
+        .forEach(check -> check.endOfAnalysis(cacheContext));
     }
 
     private void visitChildren(Tree tree) throws CheckFailureException {

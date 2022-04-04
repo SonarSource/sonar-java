@@ -28,6 +28,7 @@ import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 
 @Rule(key = "S1228")
@@ -59,7 +60,7 @@ public class PackageInfoCheck implements JavaFileScanner, EndOfAnalysisCheck {
   }
 
   @Override
-  public void endOfAnalysis() {
+  public void endOfAnalysis(CacheContext cacheContext) {
     missingPackageWithoutPackageFile.removeAll(knownPackageWithPackageFile);
     for (String missingPackageInfo : missingPackageWithoutPackageFile) {
       context.addIssueOnProject(this, "Add a 'package-info.java' file to document the '" + missingPackageInfo + "' package");

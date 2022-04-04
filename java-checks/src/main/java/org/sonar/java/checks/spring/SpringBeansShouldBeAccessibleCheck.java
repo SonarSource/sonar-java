@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.EndOfAnalysisCheck;
+import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -76,7 +77,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
   }
 
   @Override
-  public void endOfAnalysis() {
+  public void endOfAnalysis(CacheContext cacheContext) {
     DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) context;
     messagesPerPackage.entrySet().stream()
       // support sub-packages

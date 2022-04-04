@@ -29,6 +29,7 @@ import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 
 @Rule(key = "S4032")
@@ -59,7 +60,7 @@ public class UselessPackageInfoCheck implements JavaFileScanner, EndOfAnalysisCh
   }
 
   @Override
-  public void endOfAnalysis() {
+  public void endOfAnalysis(CacheContext cacheContext) {
     unneededPackageInfoFiles.keySet().removeAll(knownPackagesWithOtherFiles);
     for (JavaFileScannerContext uselessPackageInfoFileContext : unneededPackageInfoFiles.values()) {
       uselessPackageInfoFileContext.addIssueOnFile(this, "Remove this package.");

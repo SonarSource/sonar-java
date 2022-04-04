@@ -73,7 +73,7 @@ class DefaultJavaFileScannerContextTest {
   private static final InputComponent PROJECT_BASE_DIR = new DefaultInputDir("", BASE_DIR.getAbsolutePath());
   private static final int COST = 42;
   private static final JavaCheck CHECK = new JavaCheck() { };
-  private static final EndOfAnalysisCheck END_OF_ANALYSIS_CHECK = () -> { };
+  private static final EndOfAnalysisCheck END_OF_ANALYSIS_CHECK = (cacheContext) -> { };
   private SonarComponents sonarComponents;
   private CompilationUnitTree compilationUnitTree;
   private DefaultJavaFileScannerContext context;

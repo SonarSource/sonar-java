@@ -45,6 +45,7 @@ import org.sonar.java.ExceptionHandler;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
+import org.sonar.java.caching.CacheContextImpl;
 import org.sonar.java.checks.VisitorThatCanBeSkipped;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
@@ -55,6 +56,7 @@ import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.notchecks.VisitorNotInChecksPackage;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.caching.CacheContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -87,7 +89,7 @@ class JavaAstScannerTest {
     scanTwoFilesWithVisitor(endOfAnalysisScanner, false, false);
 
     verify(endOfAnalysisScanner, times(2)).scanFile(any());
-    verify(endOfAnalysisScanner, times(1)).endOfAnalysis();
+    verify(endOfAnalysisScanner, times(1)).endOfAnalysis(any());
   }
 
   @Test
@@ -464,7 +466,7 @@ class JavaAstScannerTest {
     }
 
     @Override
-    public void endOfAnalysis() {
+    public void endOfAnalysis(CacheContext cacheContext) {
       // Do nothing
     }
   }
