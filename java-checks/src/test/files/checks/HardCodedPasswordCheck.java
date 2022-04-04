@@ -11,7 +11,7 @@ class HardCodedPasswordCheck {
 
   private void a(char[] pwd, String var) {
     String variable1 = "blabla";
-    String variable2 = "login=a&password=xxx"; // Noncompliant [[sc=24;ec=46]] {{'password' detected in this expression, review this potentially hard-coded credential.}}
+    String variable2 = "login=a&password=xxx"; // Noncompliant [[sc=24;ec=46]] {{'password' detected in this expression, review this potentially hard-coded password.}}
     String variable3 = "login=a&passwd=xxx"; // Noncompliant
     String variable4 = "login=a&pwd=xxx"; // Noncompliant
     String variable5 = "login=a&password=";
@@ -148,7 +148,7 @@ class HardCodedPasswordCheck {
     env.put("password", "whateverpassword"); // Compliant
 
     String[] urls = {
-      "http://user:123456@server.com/path",     // Noncompliant {{Review this hard-coded URL, which may contain a credential.}}
+      "http://user:123456@server.com/path",     // Noncompliant {{Review this hard-coded URL, which may contain a password.}}
       "ftp://anonymous:anonymous@wustl.edu",    // OK, user == password
       "http://admin:admin@server.com/path",     // OK, user == password
       "http://user:@server.com/path",           // OK, password is empty

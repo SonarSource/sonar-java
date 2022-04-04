@@ -11,7 +11,7 @@ class HardCodedPasswordCheckCustom {
     String variable2 = "login=a&password=xxx"; // Compliant
     String variable3 = "login=a&passwd=xxx"; // Compliant
     String variable4 = "login=a&pwd=xxx"; // Compliant
-    String variable5 = "login=a&marmalade=xxx"; // Noncompliant [[sc=24;ec=47]] {{'marmalade' detected in this expression, review this potentially hard-coded credential.}}
+    String variable5 = "login=a&marmalade=xxx"; // Noncompliant [[sc=24;ec=47]] {{'marmalade' detected in this expression, review this potentially hard-coded password.}}
     String variable6 = "login=a&bazooka=xxx "; // Noncompliant
 
     String variableNameWithBazookaInIt = "xxx"; // Noncompliant [[sc=12;ec=39]]

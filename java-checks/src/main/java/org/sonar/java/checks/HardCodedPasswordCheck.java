@@ -53,7 +53,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S2068")
 public class HardCodedPasswordCheck extends IssuableSubscriptionVisitor {
 
-  private static final String DEFAULT_CREDENTIAL_WORDS = "password,passwd,pwd,passphrase,java.naming.security.credentials";
+  private static final String DEFAULT_PASSWORD_WORDS = "password,passwd,pwd,passphrase,java.naming.security.credentials";
   private static final Set<String> WHITE_LIST = Collections.singleton("anonymous");
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String JAVA_LANG_OBJECT = "java.lang.Object";
@@ -90,9 +90,9 @@ public class HardCodedPasswordCheck extends IssuableSubscriptionVisitor {
 
   @RuleProperty(
     key = "credentialWords",
-    description = "Comma separated list of words identifying potential credentials",
-    defaultValue = DEFAULT_CREDENTIAL_WORDS)
-  public String credentialWords = DEFAULT_CREDENTIAL_WORDS;
+    description = "Comma separated list of words identifying potential secrets",
+    defaultValue = DEFAULT_PASSWORD_WORDS)
+  public String passwordWords = DEFAULT_PASSWORD_WORDS;
 
   private List<Pattern> variablePatterns = null;
   private List<Pattern> literalPatterns = null;
@@ -112,7 +112,7 @@ public class HardCodedPasswordCheck extends IssuableSubscriptionVisitor {
   }
 
   private List<Pattern> toPatterns(String suffix) {
-    return Stream.of(credentialWords.split(","))
+    return Stream.of(passwordWords.split(","))
       .map(String::trim)
       .map(word -> Pattern.compile("(" + word + ")" + suffix, Pattern.CASE_INSENSITIVE))
       .collect(Collectors.toList());
@@ -196,7 +196,7 @@ public class HardCodedPasswordCheck extends IssuableSubscriptionVisitor {
   private void handleStringLiteral(LiteralTree tree) {
     String cleanedLiteral = LiteralUtils.trimQuotes(tree.value());
     if (isURLWithCredentials(cleanedLiteral)) {
-      reportIssue(tree, "Review this hard-coded URL, which may contain a credential.");
+      reportIssue(tree, "Review this hard-coded URL, which may contain a password.");
     } else if (!isPartOfConstantPasswordDeclaration(tree)) {
       literalPatterns().map(pattern -> pattern.matcher(cleanedLiteral))
         // contains "pwd=" or similar
@@ -204,7 +204,7 @@ public class HardCodedPasswordCheck extends IssuableSubscriptionVisitor {
         .map(matcher -> matcher.group(1))
         .filter(match -> !isExcludedLiteral(cleanedLiteral, match))
         .findAny()
-        .ifPresent(credential -> report(tree, credential));
+        .ifPresent(password -> report(tree, password));
     }
   }
 
@@ -336,6 +336,6 @@ public class HardCodedPasswordCheck extends IssuableSubscriptionVisitor {
   }
 
   private void report(Tree tree, String match) {
-    reportIssue(tree, "'" + match + "' detected in this expression, review this potentially hard-coded credential.");
+    reportIssue(tree, "'" + match + "' detected in this expression, review this potentially hard-coded password.");
   }
 }

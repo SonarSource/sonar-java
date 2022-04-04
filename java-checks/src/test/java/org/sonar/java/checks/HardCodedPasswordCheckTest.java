@@ -43,7 +43,7 @@ class HardCodedPasswordCheckTest {
   @Test
   void custom() {
     HardCodedPasswordCheck check = new HardCodedPasswordCheck();
-    check.credentialWords = "marmalade,bazooka";
+    check.passwordWords = "marmalade,bazooka";
     CheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/HardCodedPasswordCheckCustom.java"))
       .withCheck(check)
