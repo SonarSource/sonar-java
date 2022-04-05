@@ -163,16 +163,29 @@ public class VisitorsBridge {
   }
 
   /**
-   * In cases where incremental analysis is active, try to scan a raw file without parsing its content.
+   * In cases where incremental analysis is enabled, try to scan a raw file without parsing its content.
    *
-   * @param inputFile The file to scan
+   * @param inputFile    The file to scan
    * @param cacheContext Cached information that may help to analyse the file without parsing
-   *
    * @return True if all scanners successfully scan the file without contents. False otherwise.
    */
   public boolean scanWithoutParsing(InputFile inputFile, CacheContext cacheContext) {
     if (sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile)) {
-      return scannersThatCannotBeSkipped.stream().allMatch(scanner -> scanner.scanWithoutParsing(inputFile, cacheContext));
+      boolean allScansSucceeded = true;
+      for (var scanner: scannersThatCannotBeSkipped) {
+        try {
+          allScansSucceeded &= scanner.scanWithoutParsing(inputFile, cacheContext);
+        } catch (Exception e) {
+          String failureMessage = String.format(
+            "Scan without parsing of file %s failed on scanner %s.",
+            inputFile,
+            scanner.getClass().getCanonicalName()
+          );
+          LOG.warn(failureMessage);
+          interruptIfFailFast(new CheckFailureException(failureMessage, e));
+        }
+      }
+      return allScansSucceeded;
     } else {
       return false;
     }
