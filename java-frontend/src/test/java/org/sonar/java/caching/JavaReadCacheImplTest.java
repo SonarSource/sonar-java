@@ -29,7 +29,6 @@ import org.sonar.api.batch.sensor.cache.ReadCache;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -44,19 +43,20 @@ class JavaReadCacheImplTest {
     byte[] data = "Hello".getBytes(StandardCharsets.UTF_8);
     ReadCache readCache = mock(ReadCache.class);
 
-    doReturn(new ByteArrayInputStream(data)).when(readCache).read(eq(key));
-    try (InputStream read = new JavaReadCacheImpl(readCache).read(key)) {
+    doReturn(new ByteArrayInputStream(data)).when(readCache).read(key);
+    JavaReadCacheImpl cache = new JavaReadCacheImpl(readCache);
+    try (InputStream read = cache.read(key)) {
       assertThat(read).hasBinaryContent(data);
     } catch (IOException e) {
       fail("This is not expected");
     }
-    verify(readCache, times(1)).read(eq(key));
+    verify(readCache, times(1)).read(key);
 
-    doThrow(new IllegalArgumentException("boom")).when(readCache).read(eq(missingKey));
-    assertThatThrownBy(() -> new JavaReadCacheImpl(readCache).read(missingKey))
+    doThrow(new IllegalArgumentException("boom")).when(readCache).read(missingKey);
+    assertThatThrownBy(() -> cache.read(missingKey))
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessage("boom");
-    verify(readCache, times(1)).read(eq(missingKey));
+    verify(readCache, times(1)).read(missingKey);
   }
 
   @Test
@@ -65,12 +65,19 @@ class JavaReadCacheImplTest {
     String missingKey = "missing";
     ReadCache readCache = mock(ReadCache.class);
 
-    doReturn(true).when(readCache).contains(eq(key));
+    doReturn(true).when(readCache).contains(key);
     assertThat(new JavaReadCacheImpl(readCache).contains(key)).isTrue();
-    verify(readCache, times(1)).contains(eq(key));
+    verify(readCache, times(1)).contains(key);
 
-    doReturn(false).when(readCache).contains(eq(missingKey));
+    doReturn(false).when(readCache).contains(missingKey);
     assertThat(new JavaReadCacheImpl(readCache).contains(missingKey)).isFalse();
-    verify(readCache, times(1)).contains(eq(missingKey));
+    verify(readCache, times(1)).contains(missingKey);
+  }
+
+  @Test
+  void equality_is_only_based_on_ReadCache_field() {
+    ReadCache readCache = mock(ReadCache.class);
+    assertThat(new JavaReadCacheImpl(readCache)).hasSameHashCodeAs(new JavaReadCacheImpl(readCache));
+    assertThat(new JavaReadCacheImpl(readCache)).isEqualTo(new JavaReadCacheImpl(readCache));
   }
 }

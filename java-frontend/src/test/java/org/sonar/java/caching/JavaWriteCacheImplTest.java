@@ -25,8 +25,8 @@ import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -42,17 +42,18 @@ class JavaWriteCacheImplTest {
     byte[] data = "message".getBytes(StandardCharsets.UTF_8);
     WriteCache writeCache = mock(WriteCache.class);
 
-    verify(writeCache, never()).write(eq(key), eq(data));
+    verify(writeCache, never()).write(key, data);
 
-    doThrow(new IllegalArgumentException("boom")).when(writeCache).write(eq(key), eq(data));
-    assertThatThrownBy(() -> new JavaWriteCacheImpl(writeCache).write(key, data))
+    doThrow(new IllegalArgumentException("boom")).when(writeCache).write(key, data);
+    JavaWriteCacheImpl cache = new JavaWriteCacheImpl(writeCache);
+    assertThatThrownBy(() -> cache.write(key, data))
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessage("boom");
-    verify(writeCache, times(1)).write(eq(key), eq(data));
+    verify(writeCache, times(1)).write(key, data);
 
-    doNothing().when(writeCache).write(eq(key), eq(data));
-    new JavaWriteCacheImpl(writeCache).write(key, data);
-    verify(writeCache, times(2)).write(eq(key), eq(data));
+    doNothing().when(writeCache).write(key, data);
+    cache.write(key, data);
+    verify(writeCache, times(2)).write(key, data);
   }
 
   @Test
@@ -61,16 +62,17 @@ class JavaWriteCacheImplTest {
     InputStream data = new ByteArrayInputStream("message".getBytes(StandardCharsets.UTF_8));
     WriteCache writeCache = mock(WriteCache.class);
 
-    verify(writeCache, never()).write(eq(key), eq(data));
-    doThrow(new IllegalArgumentException("boom")).when(writeCache).write(eq(key), eq(data));
-    assertThatThrownBy(() -> new JavaWriteCacheImpl(writeCache).write(key, data))
+    verify(writeCache, never()).write(key, data);
+    doThrow(new IllegalArgumentException("boom")).when(writeCache).write(key, data);
+    JavaWriteCacheImpl cache = new JavaWriteCacheImpl(writeCache);
+    assertThatThrownBy(() -> cache.write(key, data))
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessage("boom");
-    verify(writeCache, times(1)).write(eq(key), eq(data));
+    verify(writeCache, times(1)).write(key, data);
 
-    doNothing().when(writeCache).write(eq(key), eq(data));
-    new JavaWriteCacheImpl(writeCache).write(key, data);
-    verify(writeCache, times(2)).write(eq(key), eq(data));
+    doNothing().when(writeCache).write(key, data);
+    cache.write(key, data);
+    verify(writeCache, times(2)).write(key, data);
   }
 
   @Test
@@ -78,17 +80,24 @@ class JavaWriteCacheImplTest {
     String key = "key";
     WriteCache writeCache = mock(WriteCache.class);
 
-    verify(writeCache, never()).copyFromPrevious(eq(key));
+    verify(writeCache, never()).copyFromPrevious(key);
 
-    doThrow(new IllegalArgumentException("boom")).when(writeCache).copyFromPrevious(eq(key));
-    assertThatThrownBy(() -> new JavaWriteCacheImpl(writeCache).copyFromPrevious(key))
+    doThrow(new IllegalArgumentException("boom")).when(writeCache).copyFromPrevious(key);
+    JavaWriteCacheImpl cache = new JavaWriteCacheImpl(writeCache);
+    assertThatThrownBy(() -> cache.copyFromPrevious(key))
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessage("boom");
-    verify(writeCache, times(1)).copyFromPrevious(eq(key));
+    verify(writeCache, times(1)).copyFromPrevious(key);
 
-    doNothing().when(writeCache).copyFromPrevious(eq(key));
-    new JavaWriteCacheImpl(writeCache).copyFromPrevious(key);
-    verify(writeCache, times(2)).copyFromPrevious(eq(key));
+    doNothing().when(writeCache).copyFromPrevious(key);
+    cache.copyFromPrevious(key);
+    verify(writeCache, times(2)).copyFromPrevious(key);
   }
 
+  @Test
+  void equality_is_only_based_on_WriteCache_field() {
+    WriteCache writeCache = mock(WriteCache.class);
+    assertThat(new JavaWriteCacheImpl(writeCache)).hasSameHashCodeAs(new JavaWriteCacheImpl(writeCache));
+    assertThat(new JavaWriteCacheImpl(writeCache)).isEqualTo(new JavaWriteCacheImpl(writeCache));
+  }
 }

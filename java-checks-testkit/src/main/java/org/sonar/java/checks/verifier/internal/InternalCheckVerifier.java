@@ -20,6 +20,25 @@
 package org.sonar.java.checks.verifier.internal;
 
 import com.sonar.sslr.api.RecognitionException;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -47,14 +66,13 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.caching.CacheContext;
 
-import javax.annotation.Nullable;
-import java.io.File;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.*;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.EFFORT_TO_FIX;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.END_COLUMN;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.END_LINE;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.FLOWS;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.MESSAGE;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.SECONDARY_LOCATIONS;
+import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.START_COLUMN;
 
 public class InternalCheckVerifier implements CheckVerifier {
 
@@ -287,7 +305,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     }
   }
 
-  private void checkIssues(Set<AnalyzerMessage> issues, Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> quickFixes) {
+  private void checkIssues(Set<AnalyzerMessage> issues, Map<TextSpan, List<JavaQuickFix>> quickFixes) {
     if (expectations.expectNoIssues()) {
       assertNoIssues(issues);
     } else if (expectations.expectIssueAtFileLevel() || expectations.expectIssueAtProjectLevel()) {
