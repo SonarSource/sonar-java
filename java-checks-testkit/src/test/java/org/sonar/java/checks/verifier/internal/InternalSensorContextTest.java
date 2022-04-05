@@ -53,6 +53,7 @@ class InternalSensorContextTest {
     assertThat(context.project()).isNotNull();
     assertThat(context.project().isFile()).isFalse();
     assertThat(context.project().key()).isEqualTo("project");
+    assertThat(context.canSkipUnchangedFiles()).isFalse();
 
     assertMethodNotSupported(() -> context.activeRules(), "InternalSensorContext::activeRules()");
     assertMethodNotSupported(() -> context.addContextProperty(null, null), "InternalSensorContext::addContextProperty(String,String)");
