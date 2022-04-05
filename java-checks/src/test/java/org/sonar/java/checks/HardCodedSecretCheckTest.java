@@ -23,33 +23,24 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
-class HardCodedPasswordCheckTest {
+class HardCodedSecretCheckTest {
 
   @Test
   void default_words() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/HardCodedPasswordCheck.java"))
-      .withCheck(new HardCodedPasswordCheck())
+      .onFile(mainCodeSourcesPath("checks/HardCodedSecretCheck.java"))
+      .withCheck(new HardCodedSecretCheck())
       .verifyIssues();
   }
 
   @Test
   void custom_words() {
-    HardCodedPasswordCheck check = new HardCodedPasswordCheck();
-    check.passwordWords = "marmalade,bazooka";
+    HardCodedSecretCheck check = new HardCodedSecretCheck();
+    check.secretWords = "marmalade,bazooka";
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/HardCodedPasswordCheckCustom.java"))
+      .onFile(mainCodeSourcesPath("checks/HardCodedSecretCheckCustom.java"))
       .withCheck(check)
-      .verifyIssues();
-  }
-
-  @Test
-  void non_compiling() {
-    CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/HardCodedPasswordCheck.java"))
-      .withCheck(new HardCodedPasswordCheck())
       .verifyIssues();
   }
 

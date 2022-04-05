@@ -1,5 +1,8 @@
+package checks;
+
 import java.net.PasswordAuthentication;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import javax.naming.Context;
 
 class HardCodedPasswordCheck {
@@ -9,7 +12,7 @@ class HardCodedPasswordCheck {
   private static final String PASSED = "passed"; // compliant nothing to do with passwords
   private static final String EMPTY = "";
 
-  private void a(char[] pwd, String var) {
+  private void a(char[] pwd, String var) throws SQLException {
     String variable1 = "blabla";
     String variable2 = "login=a&password=xxx"; // Noncompliant [[sc=24;ec=46]] {{'password' detected in this expression, review this potentially hard-coded password.}}
     String variable3 = "login=a&passwd=xxx"; // Noncompliant
@@ -124,8 +127,6 @@ class HardCodedPasswordCheck {
     myA.setProperty("password", "pwd"); // Compliant
     myA.setProperty("something", "else").setProperty("password", "xxxxx"); // Noncompliant [[sc=42;ec=53]]
 
-    MyUnknownClass.myUnknownMethod("password", "xxxxx"); // Noncompliant
-
     PasswordAuthentication pa;
     pa = new PasswordAuthentication("userName", "1234".toCharArray());  // Noncompliant {{Remove this hard-coded password.}}
     pa = new PasswordAuthentication("userName", var.toCharArray());
@@ -170,9 +171,12 @@ class HardCodedPasswordCheck {
     return null;
   }
 
-  private A setProperty(Object property, Object Value) {
-    return this;
+  static class A {
+    private A setProperty(Object property, Object Value) {
+      return this;
+    }
   }
+
 
   private static class OtherPasswordAuthentication {
     OtherPasswordAuthentication(String username, char[] pwd) {}

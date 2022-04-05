@@ -389,6 +389,7 @@ public final class CheckList {
     GettersSettersOnRightFieldCheck.class,
     GraphemeClustersInClassesCheck.class,
     HardCodedPasswordCheck.class,
+    HardCodedSecretCheck.class,
     HardcodedURICheck.class,
     HasNextCallingNextCheck.class,
     HiddenFieldCheck.class,
