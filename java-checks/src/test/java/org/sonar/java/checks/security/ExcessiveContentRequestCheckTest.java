@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.security;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -27,8 +26,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.sensor.cache.ReadCache;
-import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.checks.verifier.CheckVerifier;
@@ -36,11 +33,17 @@ import org.sonar.java.checks.verifier.internal.InternalReadCache;
 import org.sonar.java.checks.verifier.internal.InternalWriteCache;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class ExcessiveContentRequestCheckTest {
 
@@ -50,14 +53,6 @@ class ExcessiveContentRequestCheckTest {
   @Nested
   class Caching {
     @Test
-    /**
-     * On a module made of files A.java and B.java, where the rule is applied in incremental mode,
-     * where A.java is unmodified and B.java is modified, the check should:
-     * [x] Not analyze the unmodified source file
-     * [x] Recover the results from a previous analysis from the injected cache
-     * [x] Raise no issue
-     * [] Write the result to the cache
-     */
     void no_issue_raised_on_valid_case_when_size_is_set_in_file_with_cached_results() {
       InternalReadCache readCache = new InternalReadCache();
       String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/A.java");
@@ -103,7 +98,7 @@ class ExcessiveContentRequestCheckTest {
         .verifyNoIssues();
 
       verify(writeCache, times(1)).write(eq("java:S5693:instantiate"), any(byte[].class));
-      verify(writeCache, times(1)).copyFromPrevious(eq("java:S5693:maximumSize"));
+      verify(writeCache, times(1)).copyFromPrevious("java:S5693:maximumSize");
     }
 
     @Test
@@ -125,7 +120,7 @@ class ExcessiveContentRequestCheckTest {
         .verifyNoIssues();
 
       verify(writeCache, times(1)).write(eq("java:S5693:maximumSize"), any(byte[].class));
-      verify(writeCache, times(1)).copyFromPrevious(eq("java:S5693:instantiate"));
+      verify(writeCache, times(1)).copyFromPrevious("java:S5693:instantiate");
     }
 
     @Test
@@ -142,8 +137,8 @@ class ExcessiveContentRequestCheckTest {
       verify(writeCache, times(1)).write(eq("java:S5693:maximumSize"), any(byte[].class));
       verify(writeCache, times(1)).write(eq("java:S5693:instantiate"), any(byte[].class));
 
-      verify(writeCache, never()).copyFromPrevious(eq("java:S5693:maximumSize"));
-      verify(writeCache, never()).copyFromPrevious(eq("java:S5693:instantiate"));
+      verify(writeCache, never()).copyFromPrevious("java:S5693:maximumSize");
+      verify(writeCache, never()).copyFromPrevious("java:S5693:instantiate");
     }
 
     @Test
@@ -169,7 +164,7 @@ class ExcessiveContentRequestCheckTest {
   @Test
   void test_default_max() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/ExcessiveContentRequestCheck/ExcessiveContentRequestCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/ExcessiveContentRequestCheck.java"))
       .withCheck(new ExcessiveContentRequestCheck())
       .verifyIssues();
   }
@@ -187,7 +182,7 @@ class ExcessiveContentRequestCheckTest {
     ExcessiveContentRequestCheck check = new ExcessiveContentRequestCheck();
     check.fileUploadSizeLimit = 8_000_000L;
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/ExcessiveContentRequestCheck/ExcessiveContentRequestCheck_max8000000.java"))
+      .onFile(mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/ExcessiveContentRequestCheck_max8000000.java"))
       .withCheck(check)
       .verifyIssues();
   }
@@ -195,7 +190,7 @@ class ExcessiveContentRequestCheckTest {
   @Test
   void test_max_not_set() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/security/ExcessiveContentRequestCheck/ExcessiveContentRequestCheck_sizeNotSet.java"))
+      .onFile(mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/ExcessiveContentRequestCheck_sizeNotSet.java"))
       .withCheck(new ExcessiveContentRequestCheck())
       .verifyIssues();
   }
@@ -205,8 +200,8 @@ class ExcessiveContentRequestCheckTest {
     // As soon as the size is set somewhere in the project, do not report an issue.
     CheckVerifier.newVerifier()
       .onFiles(
-        testSourcesPath("checks/security/ExcessiveContentRequestCheck/ExcessiveContentRequestCheck_setSize.java"),
-        testSourcesPath("checks/security/ExcessiveContentRequestCheck/ExcessiveContentRequestCheck_sizeNotSet.java"))
+        mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/ExcessiveContentRequestCheck_setSize.java"),
+        mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/ExcessiveContentRequestCheck_sizeNotSet.java"))
       .withCheck(new ExcessiveContentRequestCheck())
       // Note that this will check that no issue îs reported on the second file (order is therefore important).
       .verifyNoIssues();
