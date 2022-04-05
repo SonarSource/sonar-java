@@ -26,7 +26,6 @@ import javax.annotation.Nullable;
 public final class ShannonEntropy {
 
   private static final double LOG_2 = Math.log(2.0d);
-  private static final double ENTROPY_THRESHOLD = 4.2d;
 
   private ShannonEntropy() {
     // utility class
@@ -43,10 +42,6 @@ public final class ShannonEntropy {
       .mapToDouble(count -> ((double) count) / length)
       .map(frequency -> -(frequency * Math.log(frequency) / LOG_2))
       .sum();
-  }
-
-  public static boolean hasHighEntropy(@Nullable String str) {
-    return calculate(str) >= ENTROPY_THRESHOLD;
   }
 
 }

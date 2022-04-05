@@ -37,12 +37,19 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
 
   private static final String DEFAULT_SECRET_WORDS = "secret,token,api[_.-]?key,credential,auth";
+  private static final String DEFAULT_MIN_ENTROPY_THRESHOLD = "4.2";
 
   @RuleProperty(
     key = "secretWords",
     description = "Comma separated list of words identifying potential secrets",
     defaultValue = DEFAULT_SECRET_WORDS)
   public String secretWords = DEFAULT_SECRET_WORDS;
+
+  @RuleProperty(
+    key = "minEntropyThreshold",
+    description = "Minimum shannon entropy threshold of the secret",
+    defaultValue = DEFAULT_MIN_ENTROPY_THRESHOLD)
+  public double minEntropyThreshold = Double.parseDouble(DEFAULT_MIN_ENTROPY_THRESHOLD);
 
   @Override
   protected String getCredentialWords() {
@@ -78,7 +85,7 @@ public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
 
   @Override
   protected boolean isPotentialCredential(@Nullable String literal) {
-    return super.isPotentialCredential(literal) && ShannonEntropy.hasHighEntropy(literal);
+    return super.isPotentialCredential(literal) && ShannonEntropy.calculate(literal) >= minEntropyThreshold;
   }
 
   protected void report(Tree tree, String match) {

@@ -44,10 +44,4 @@ class ShannonEntropyTest {
     assertThat(ShannonEntropy.calculate("qAhEMdXy/MPwEuDlhh7O0AFBuzGvNy7AxpL3sX3q")).isEqualTo(4.684183, WITHIN_5);
   }
 
-  @Test
-  void high_entropy() {
-    assertThat(ShannonEntropy.hasHighEntropy("0123456789abcdef0123456789abcdef01234567")).isFalse();
-    assertThat(ShannonEntropy.hasHighEntropy("qAhEMdXy/MPwEuDlhh7O0AFBuzGvNy7AxpL3sX3q")).isTrue();
-  }
-
 }

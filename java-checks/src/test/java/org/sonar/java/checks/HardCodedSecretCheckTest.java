@@ -38,6 +38,7 @@ class HardCodedSecretCheckTest {
   void custom_words() {
     HardCodedSecretCheck check = new HardCodedSecretCheck();
     check.secretWords = "marmalade,bazooka";
+    check.minEntropyThreshold = 2.0d;
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/HardCodedSecretCheckCustom.java"))
       .withCheck(check)
