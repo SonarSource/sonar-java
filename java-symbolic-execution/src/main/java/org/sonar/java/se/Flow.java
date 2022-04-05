@@ -130,4 +130,14 @@ public class Flow {
       return new Flow(Collections.unmodifiableList(elements), exceptional);
     }
   }
+
+  public static int f(int a, int b, int c) {
+    if (a < b) {
+      a += c;
+      if (b == 0) c = 18;
+    }
+    if (b < a) return a / b;
+    return a + b;
+  }
+
 }
