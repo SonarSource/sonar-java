@@ -58,6 +58,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -453,6 +454,108 @@ class VisitorsBridgeTest {
       .isEqualTo("Optimized analysis for 1 of 1 files.");
   }
 
+  @Test
+  void scanWithoutParsing_returns_false_when_the_file_cannot_be_skipped() throws ApiMismatchException {
+    // When VB has no SonarComponents
+    VisitorsBridge visitorsBridge = new VisitorsBridge(null);
+    InputFile inputFile = mock(InputFile.class);
+    doReturn(InputFile.Status.CHANGED).when(inputFile).status();
+    CacheContext cacheContext = mock(CacheContext.class);
+    assertThat(visitorsBridge.scanWithoutParsing(inputFile, cacheContext)).isFalse();
+
+    // When SonarComponents is set and does not allow the file to be skipped
+    SonarComponents sonarComponents = mock(SonarComponents.class);
+    doReturn(false).when(sonarComponents).fileCanBeSkipped(any(InputFile.class));
+    doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
+    VisitorsBridge visitorsBridgeWithSonarComponents = new VisitorsBridge(
+      Collections.emptyList(),
+      Collections.emptyList(),
+      sonarComponents
+    );
+
+    assertThat(visitorsBridge.scanWithoutParsing(inputFile, cacheContext)).isFalse();
+  }
+
+  @Test
+  void scanWithoutParsing_returns_false_when_a_scanner_cannot_scan_successfully_without_parsing() throws ApiMismatchException {
+    SonarComponents sonarComponents = mock(SonarComponents.class);
+    doReturn(true).when(sonarComponents).fileCanBeSkipped(any(InputFile.class));
+    doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
+    CannotScanWithoutParsing scanner = new CannotScanWithoutParsing();
+
+    VisitorsBridge visitorsBridge = new VisitorsBridge(
+      Collections.singletonList(scanner),
+      Collections.emptyList(),
+      sonarComponents
+    );
+
+    InputFile inputFile = mock(InputFile.class);
+    doReturn(InputFile.Status.CHANGED).when(inputFile).status();
+    CacheContext cacheContext = mock(CacheContext.class);
+
+    assertThat(visitorsBridge.scanWithoutParsing(inputFile, cacheContext)).isFalse();
+  }
+
+  @Test
+  void scanWithoutParsing_returns_false_when_a_scanner_throws_an_exception_while_scanning_without_parsing_and_fail_fast_is_disabled() throws ApiMismatchException {
+    SonarComponents sonarComponents = mock(SonarComponents.class);
+    doReturn(true).when(sonarComponents).fileCanBeSkipped(any(InputFile.class));
+    doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
+    doReturn(false).when(sonarComponents).shouldFailAnalysisOnException();
+    CannotScanWithoutParsing scanner = spy(new CannotScanWithoutParsing());
+    doThrow(new RuntimeException("boom")).when(scanner).scanWithoutParsing(any(), any());
+
+    VisitorsBridge visitorsBridge = new VisitorsBridge(
+      Collections.singletonList(scanner),
+      Collections.emptyList(),
+      sonarComponents
+    );
+
+    InputFile inputFile = mock(InputFile.class);
+    doReturn(InputFile.Status.CHANGED).when(inputFile).status();
+    CacheContext cacheContext = mock(CacheContext.class);
+
+    assertThat(visitorsBridge.scanWithoutParsing(inputFile, cacheContext)).isFalse();
+  }
+
+  @Test
+  void scanWithoutParsing_triggers_an_AnalysisException_when_a_scanner_throws_while_scanning_without_parsing() throws ApiMismatchException {
+    SonarComponents sonarComponents = mock(SonarComponents.class);
+    doReturn(true).when(sonarComponents).fileCanBeSkipped(any(InputFile.class));
+    doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
+    doReturn(true).when(sonarComponents).shouldFailAnalysisOnException();
+    CannotScanWithoutParsing scanner = spy(new CannotScanWithoutParsing());
+    RuntimeException boom = new RuntimeException("boom");
+    doThrow(boom).when(scanner).scanWithoutParsing(any(), any());
+
+    VisitorsBridge visitorsBridge = new VisitorsBridge(
+      Collections.singletonList(scanner),
+      Collections.emptyList(),
+      sonarComponents
+    );
+
+    InputFile inputFile = mock(InputFile.class);
+    doReturn(InputFile.Status.CHANGED).when(inputFile).status();
+    doReturn("src/java/File.java").when(inputFile).toString();
+    CacheContext cacheContext = mock(CacheContext.class);
+
+    assertThatThrownBy(() -> visitorsBridge.scanWithoutParsing(inputFile, cacheContext))
+      .hasRootCauseMessage("boom")
+      .hasRootCauseInstanceOf(RuntimeException.class)
+      .hasMessage("Failing check")
+      .isInstanceOf(AnalysisException.class);
+
+    String expectedLogMessage = String.format(
+      "Scan without parsing of file %s failed for scanner %s.",
+      inputFile.toString(),
+      scanner.getClass().getCanonicalName()
+    );
+
+    List<LogAndArguments> warningLogs = logTester.getLogs(LoggerLevel.WARN);
+    assertThat(warningLogs).hasSize(1);
+    assertThat(warningLogs.get(0).getFormattedMsg()).isEqualTo(expectedLogMessage);
+  }
+
   private static String ruleKeyFromErrorLog(String errorLog) {
     String newString = errorLog.substring("Unable to run check class ".length(), errorLog.indexOf(" on file"));
     if (newString.contains("SymbolicExecutionVisitor")) {
@@ -581,6 +684,26 @@ class VisitorsBridgeTest {
     @Override
     public boolean isCompatibleWithJavaVersion(JavaVersion version) {
       return false;
+    }
+  }
+
+  private static class CannotScanWithoutParsing implements EndOfAnalysisCheck, JavaFileScanner {
+    /**
+     * Always fail
+     */
+    @Override
+    public boolean scanWithoutParsing(InputFile inputFile, CacheContext cacheContext) {
+      return false;
+    }
+
+    @Override
+    public void scanFile(JavaFileScannerContext context) {
+      /* Do nothing */
+    }
+
+    @Override
+    public void endOfAnalysis(CacheContext cacheContext) {
+      /* Do nothing */
     }
   }
 }

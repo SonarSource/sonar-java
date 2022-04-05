@@ -177,11 +177,12 @@ public class VisitorsBridge {
           allScansSucceeded &= scanner.scanWithoutParsing(inputFile, cacheContext);
         } catch (Exception e) {
           String failureMessage = String.format(
-            "Scan without parsing of file %s failed on scanner %s.",
+            "Scan without parsing of file %s failed for scanner %s.",
             inputFile,
             scanner.getClass().getCanonicalName()
           );
           LOG.warn(failureMessage);
+          allScansSucceeded = false;
           interruptIfFailFast(new CheckFailureException(failureMessage, e));
         }
       }
