@@ -27,7 +27,9 @@ import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ShannonEntropy;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -80,7 +82,12 @@ public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
   }
 
   private void handleMethodInvocation(MethodInvocationTree mit) {
-    isSettingCredential(mit).ifPresent(settingSecret -> report(ExpressionUtils.methodName(mit), settingSecret));
+    ExpressionTree methodSelect = mit.methodSelect();
+    if (EQUALS_MATCHER.matches(mit) && methodSelect.is(Kind.MEMBER_SELECT)) {
+      handleEqualsMethod(mit, (MemberSelectExpressionTree) methodSelect);
+    } else {
+      isSettingCredential(mit).ifPresent(settingPassword -> report(ExpressionUtils.methodName(mit), settingPassword));
+    }
   }
 
   @Override

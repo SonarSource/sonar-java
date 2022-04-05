@@ -55,12 +55,6 @@ public class HardCodedPasswordCheck extends AbstractHardCodedCredentialChecker {
     .addParametersMatcher(JAVA_LANG_STRING, "char[]")
     .build();
 
-  private static final MethodMatchers EQUALS_MATCHER = MethodMatchers.create()
-    .ofAnyType()
-    .names("equals")
-    .addParametersMatcher(JAVA_LANG_OBJECT)
-    .build();
-
   private static final MethodMatchers GET_CONNECTION_MATCHER = MethodMatchers.create()
     .ofTypes("java.sql.DriverManager")
     .names("getConnection")
@@ -152,19 +146,6 @@ public class HardCodedPasswordCheck extends AbstractHardCodedCredentialChecker {
     } else {
       isSettingCredential(mit).ifPresent(settingPassword -> report(ExpressionUtils.methodName(mit), settingPassword));
     }
-  }
-
-  private void handleEqualsMethod(MethodInvocationTree mit, MemberSelectExpressionTree methodSelect) {
-    ExpressionTree leftExpression = methodSelect.expression();
-    ExpressionTree rightExpression = mit.arguments().get(0);
-
-    isCredentialVariable(leftExpression)
-      .filter(passwordVariableName -> isPotentialCredential(rightExpression) && !isCredentialLikeName(rightExpression))
-      .ifPresent(passwordVariableName -> report(leftExpression, passwordVariableName));
-
-    isCredentialVariable(rightExpression)
-      .filter(passwordVariableName -> isPotentialCredential(leftExpression) && !isCredentialLikeName(leftExpression))
-      .ifPresent(passwordVariableName -> report(rightExpression, passwordVariableName));
   }
 
   private void handleGetConnectionMethod(MethodInvocationTree mit) {

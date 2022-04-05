@@ -54,6 +54,12 @@ public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscri
     .addWithoutParametersMatcher()
     .build();
 
+  protected static final MethodMatchers EQUALS_MATCHER = MethodMatchers.create()
+    .ofAnyType()
+    .names("equals")
+    .addParametersMatcher(JAVA_LANG_OBJECT)
+    .build();
+
   private List<Pattern> variablePatterns = null;
   private List<Pattern> literalPatterns = null;
 
@@ -217,6 +223,19 @@ public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscri
 
   protected boolean isPotentialCredential(ExpressionTree expression) {
     return isPotentialCredential(ExpressionsHelper.getConstantValueAsString(expression).value());
+  }
+
+  protected void handleEqualsMethod(MethodInvocationTree mit, MemberSelectExpressionTree methodSelect) {
+    ExpressionTree leftExpression = methodSelect.expression();
+    ExpressionTree rightExpression = mit.arguments().get(0);
+
+    isCredentialVariable(leftExpression)
+      .filter(passwordVariableName -> isPotentialCredential(rightExpression) && !isCredentialLikeName(rightExpression))
+      .ifPresent(passwordVariableName -> report(leftExpression, passwordVariableName));
+
+    isCredentialVariable(rightExpression)
+      .filter(passwordVariableName -> isPotentialCredential(leftExpression) && !isCredentialLikeName(leftExpression))
+      .ifPresent(passwordVariableName -> report(rightExpression, passwordVariableName));
   }
 
 }
