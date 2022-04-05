@@ -21,19 +21,13 @@ package org.sonar.java.checks;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.ShannonEntropy;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -76,39 +70,6 @@ public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
     } else {
       handleMethodInvocation((MethodInvocationTree) tree);
     }
-  }
-
-  private void handleStringLiteral(LiteralTree tree) {
-    String cleanedLiteral = LiteralUtils.trimQuotes(tree.value());
-    if (!isPartOfConstantCredentialDeclaration(tree)) {
-      literalPatterns().map(pattern -> pattern.matcher(cleanedLiteral))
-        // contains "pwd=" or similar
-        .filter(Matcher::find)
-        .map(matcher -> matcher.group(1))
-        .filter(match -> !isExcludedLiteral(cleanedLiteral, match))
-        .findAny()
-        .ifPresent(credential -> report(tree, credential));
-    }
-  }
-
-  private void handleVariable(VariableTree tree) {
-    IdentifierTree variable = tree.simpleName();
-    isCredentialVariableName(variable)
-      .filter(secretVariableName -> {
-        ExpressionTree initializer = tree.initializer();
-        return initializer != null && isNotExcluded(initializer) && isNotSecretConst(initializer);
-      })
-      .ifPresent(secretVariableName -> report(variable, secretVariableName));
-  }
-
-  private boolean isNotSecretConst(ExpressionTree expression) {
-    if (expression.is(Kind.METHOD_INVOCATION)) {
-      ExpressionTree methodSelect = ((MethodInvocationTree) expression).methodSelect();
-      return methodSelect.is(Kind.MEMBER_SELECT) && isNotSecretConst(((MemberSelectExpressionTree) methodSelect).expression());
-    }
-    String literal = ExpressionsHelper.getConstantValueAsString(expression).value();
-    return literal == null || variablePatterns().map(pattern -> pattern.matcher(literal))
-      .noneMatch(Matcher::find);
   }
 
   private void handleMethodInvocation(MethodInvocationTree mit) {

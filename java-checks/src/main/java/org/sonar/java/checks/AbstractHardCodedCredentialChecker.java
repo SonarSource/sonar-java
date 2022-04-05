@@ -44,9 +44,9 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscriptionVisitor {
 
-  protected static final Set<String> ALLOW_LIST = Collections.singleton("anonymous");
-  protected static final String JAVA_LANG_STRING = "java.lang.String";
-  protected static final String JAVA_LANG_OBJECT = "java.lang.Object";
+  private static final Set<String> ALLOW_LIST = Collections.singleton("anonymous");
+  private static final String JAVA_LANG_STRING = "java.lang.String";
+  private static final String JAVA_LANG_OBJECT = "java.lang.Object";
 
   protected static final MethodMatchers STRING_TO_CHAR_ARRAY = MethodMatchers.create()
     .ofTypes(JAVA_LANG_STRING)
@@ -63,98 +63,36 @@ public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscri
 
   protected abstract void report(Tree tree, String match);
 
-  protected boolean isPartOfConstantCredentialDeclaration(LiteralTree tree) {
-    Tree parent = tree.parent();
-    return parent != null && parent.is(Tree.Kind.VARIABLE) && isCredentialVariableName(((VariableTree) parent).simpleName()).isPresent();
-  }
-
-  protected Optional<String> isCredentialVariable(ExpressionTree variable) {
-    if (variable.is(Tree.Kind.MEMBER_SELECT)) {
-      return isCredentialVariableName(((MemberSelectExpressionTree) variable).identifier());
-    } else if (variable.is(Tree.Kind.IDENTIFIER)) {
-      return isCredentialVariableName((IdentifierTree) variable);
-    }
-    return Optional.empty();
-  }
-
-  protected Optional<String> isCredentialVariableName(IdentifierTree identifierTree) {
-    return isCredentialLikeName(identifierTree.name());
-  }
-
-  protected boolean isPotentialCredential(@Nullable String literal) {
-    if (literal == null) {
-      return false;
-    }
-    String trimmed = literal.trim();
-    return trimmed.length() >= minCredentialLength() && !ALLOW_LIST.contains(trimmed);
-  }
-
-  protected boolean isPotentialCredential(ExpressionTree expression) {
-    return isPotentialCredential(ExpressionsHelper.getConstantValueAsString(expression).value());
-  }
-
-  protected boolean isExcludedLiteral(String cleanedLiteral, String match) {
-    String followingString = cleanedLiteral.substring(cleanedLiteral.indexOf(match) + match.length() + 1);
-    return !isPotentialCredential(followingString)
-      || followingString.startsWith("?")
-      || followingString.startsWith(":")
-      || followingString.startsWith("\\\"")
-      || followingString.contains("%s");
-  }
-
-  protected boolean isNotExcluded(ExpressionTree expression) {
-    if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
-      MethodInvocationTree mit = (MethodInvocationTree) expression;
-      return STRING_TO_CHAR_ARRAY.matches(mit) && isCallOnStringLiteral(mit.methodSelect());
-    } else {
-      return isPotentialCredential(expression);
-    }
-  }
-
-  protected boolean isCallOnStringLiteral(ExpressionTree expr) {
-    return expr.is(Tree.Kind.MEMBER_SELECT) &&
-      isPotentialCredential(((MemberSelectExpressionTree) expr).expression());
-  }
-
-  protected List<Pattern> toPatterns(String suffix) {
-    return Stream.of(getCredentialWords().split(","))
-      .map(String::trim)
-      .map(word -> Pattern.compile("(" + word + ")" + suffix, Pattern.CASE_INSENSITIVE))
-      .collect(Collectors.toList());
-  }
-
-  protected Stream<Pattern> variablePatterns() {
+  private Stream<Pattern> variablePatterns() {
     if (variablePatterns == null) {
       variablePatterns = toPatterns("");
     }
     return variablePatterns.stream();
   }
 
-  protected Stream<Pattern> literalPatterns() {
+  private Stream<Pattern> literalPatterns() {
     if (literalPatterns == null) {
       literalPatterns = toPatterns("=\\S.");
     }
     return literalPatterns.stream();
   }
 
+  private List<Pattern> toPatterns(String suffix) {
+    return Stream.of(getCredentialWords().split(","))
+      .map(String::trim)
+      .map(word -> Pattern.compile("(" + word + ")" + suffix, Pattern.CASE_INSENSITIVE))
+      .collect(Collectors.toList());
+  }
 
-  protected boolean isCredentialLikeName(ExpressionTree expression) {
-    if (expression.is(Tree.Kind.STRING_LITERAL)) {
-      return isCredentialLikeName(LiteralUtils.trimQuotes(((LiteralTree) expression).value())).isPresent();
+  protected Optional<String> isSettingCredential(MethodInvocationTree tree) {
+    List<ExpressionTree> arguments = tree.arguments();
+    if (arguments.size() == 2 && isArgumentsSuperTypeOfString(arguments) && !isCredentialLikeName(arguments.get(1)) && isPotentialCredential(arguments.get(1))) {
+      return isCredential(arguments.get(0));
     }
-    return false;
+    return Optional.empty();
   }
 
-  protected Optional<String> isCredentialLikeName(String name) {
-    return variablePatterns()
-      .map(pattern -> pattern.matcher(name))
-      // contains "pwd" or similar
-      .filter(Matcher::find)
-      .map(matcher -> matcher.group(1))
-      .findAny();
-  }
-
-  protected Optional<String> isCredential(ExpressionTree argument) {
+  private Optional<String> isCredential(ExpressionTree argument) {
     String value = ExpressionsHelper.getConstantValueAsString(argument).value();
     if (StringUtils.isEmpty(value)) {
       return Optional.empty();
@@ -167,24 +105,118 @@ public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscri
       .findAny();
   }
 
-  protected static boolean isArgumentsSuperTypeOfString(List<ExpressionTree> arguments) {
-    return arguments.stream().allMatch(arg -> arg.symbolType().is(JAVA_LANG_STRING) ||
-      arg.symbolType().is(JAVA_LANG_OBJECT));
+  private Optional<String> isCredentialVariableName(IdentifierTree identifierTree) {
+    return isCredentialLikeName(identifierTree.name());
   }
 
-  protected Optional<String> isSettingCredential(MethodInvocationTree tree) {
-    List<ExpressionTree> arguments = tree.arguments();
-    if (arguments.size() == 2 && isArgumentsSuperTypeOfString(arguments) && !isCredentialLikeName(arguments.get(1)) && isPotentialCredential(arguments.get(1))) {
-      return isCredential(arguments.get(0));
+  protected boolean isCredentialLikeName(ExpressionTree expression) {
+    if (expression.is(Tree.Kind.STRING_LITERAL)) {
+      return isCredentialLikeName(LiteralUtils.trimQuotes(((LiteralTree) expression).value())).isPresent();
+    }
+    return false;
+  }
+
+  private Optional<String> isCredentialLikeName(String name) {
+    return variablePatterns()
+      .map(pattern -> pattern.matcher(name))
+      // contains "pwd" or similar
+      .filter(Matcher::find)
+      .map(matcher -> matcher.group(1))
+      .findAny();
+  }
+
+  protected Optional<String> isCredentialVariable(ExpressionTree variable) {
+    if (variable.is(Tree.Kind.MEMBER_SELECT)) {
+      return isCredentialVariableName(((MemberSelectExpressionTree) variable).identifier());
+    } else if (variable.is(Tree.Kind.IDENTIFIER)) {
+      return isCredentialVariableName((IdentifierTree) variable);
     }
     return Optional.empty();
+  }
+
+  protected boolean isCallOnStringLiteral(ExpressionTree expr) {
+    return expr.is(Tree.Kind.MEMBER_SELECT) &&
+      isPotentialCredential(((MemberSelectExpressionTree) expr).expression());
+  }
+
+  protected void handleStringLiteral(LiteralTree tree) {
+    String cleanedLiteral = LiteralUtils.trimQuotes(tree.value());
+    if (!isPartOfConstantCredentialDeclaration(tree)) {
+      literalPatterns().map(pattern -> pattern.matcher(cleanedLiteral))
+        // contains "pwd=" or similar
+        .filter(Matcher::find)
+        .map(matcher -> matcher.group(1))
+        .filter(match -> !isExcludedLiteral(cleanedLiteral, match))
+        .findAny()
+        .ifPresent(credential -> report(tree, credential));
+    }
+  }
+
+  private boolean isPartOfConstantCredentialDeclaration(LiteralTree tree) {
+    Tree parent = tree.parent();
+    return parent != null && parent.is(Tree.Kind.VARIABLE) && isCredentialVariableName(((VariableTree) parent).simpleName()).isPresent();
+  }
+
+  protected boolean isPotentialCredential(@Nullable String literal) {
+    if (literal == null) {
+      return false;
+    }
+    String trimmed = literal.trim();
+    return trimmed.length() >= minCredentialLength() && !ALLOW_LIST.contains(trimmed);
+  }
+
+  private boolean isExcludedLiteral(String cleanedLiteral, String match) {
+    String followingString = cleanedLiteral.substring(cleanedLiteral.indexOf(match) + match.length() + 1);
+    return !isPotentialCredential(followingString)
+      || followingString.startsWith("?")
+      || followingString.startsWith(":")
+      || followingString.startsWith("\\\"")
+      || followingString.contains("%s");
+  }
+
+  protected void handleVariable(VariableTree tree) {
+    IdentifierTree variable = tree.simpleName();
+    isCredentialVariableName(variable)
+      .filter(credentialVariableName -> {
+        ExpressionTree initializer = tree.initializer();
+        return initializer != null && isNotExcluded(initializer) && isNotCredentialConst(initializer);
+      })
+      .ifPresent(credentialVariableName -> report(variable, credentialVariableName));
   }
 
   protected void handleAssignment(AssignmentExpressionTree tree) {
     ExpressionTree variable = tree.variable();
     isCredentialVariable(variable)
-      .filter(passwordVariableName -> isNotExcluded(tree.expression()))
-      .ifPresent(passwordVariableName -> report(variable, passwordVariableName));
+      .filter(credentialVariableName -> isNotExcluded(tree.expression()))
+      .ifPresent(credentialVariableName -> report(variable, credentialVariableName));
+  }
+
+  private static boolean isArgumentsSuperTypeOfString(List<ExpressionTree> arguments) {
+    return arguments.stream().allMatch(arg -> arg.symbolType().is(JAVA_LANG_STRING) ||
+      arg.symbolType().is(JAVA_LANG_OBJECT));
+  }
+
+  private boolean isNotCredentialConst(ExpressionTree expression) {
+    if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
+      ExpressionTree methodSelect = ((MethodInvocationTree) expression).methodSelect();
+      return methodSelect.is(Tree.Kind.MEMBER_SELECT) && isNotCredentialConst(((MemberSelectExpressionTree) methodSelect).expression());
+    }
+    String literal = ExpressionsHelper.getConstantValueAsString(expression).value();
+    return literal == null || variablePatterns().map(pattern -> pattern.matcher(literal))
+      .noneMatch(Matcher::find);
+  }
+
+  private boolean isNotExcluded(ExpressionTree expression) {
+    if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree mit = (MethodInvocationTree) expression;
+      return STRING_TO_CHAR_ARRAY.matches(mit) && isCallOnStringLiteral(mit.methodSelect());
+    } else {
+      return isPotentialCredential(expression);
+    }
+  }
+
+  protected boolean isPotentialCredential(ExpressionTree expression) {
+    return isPotentialCredential(ExpressionsHelper.getConstantValueAsString(expression).value());
   }
 
 }

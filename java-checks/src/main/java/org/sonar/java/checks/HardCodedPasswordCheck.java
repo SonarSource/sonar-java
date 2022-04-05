@@ -27,13 +27,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -107,18 +105,13 @@ public class HardCodedPasswordCheck extends AbstractHardCodedCredentialChecker {
     }
   }
 
-  private void handleStringLiteral(LiteralTree tree) {
+  @Override
+  protected void handleStringLiteral(LiteralTree tree) {
     String cleanedLiteral = LiteralUtils.trimQuotes(tree.value());
     if (isURLWithCredentials(cleanedLiteral)) {
       reportIssue(tree, "Review this hard-coded URL, which may contain a password.");
-    } else if (!isPartOfConstantCredentialDeclaration(tree)) {
-      literalPatterns().map(pattern -> pattern.matcher(cleanedLiteral))
-        // contains "pwd=" or similar
-        .filter(Matcher::find)
-        .map(matcher -> matcher.group(1))
-        .filter(match -> !isExcludedLiteral(cleanedLiteral, match))
-        .findAny()
-        .ifPresent(password -> report(tree, password));
+    } else {
+      super.handleStringLiteral(tree);
     }
   }
 
@@ -135,26 +128,6 @@ public class HardCodedPasswordCheck extends AbstractHardCodedCredentialChecker {
       }
     }
     return false;
-  }
-
-  private void handleVariable(VariableTree tree) {
-    IdentifierTree variable = tree.simpleName();
-    isCredentialVariableName(variable)
-      .filter(passwordVariableName -> {
-        ExpressionTree initializer = tree.initializer();
-        return initializer != null && isNotExcluded(initializer) && isNotPasswordConst(initializer);
-      })
-      .ifPresent(passwordVariableName -> report(variable, passwordVariableName));
-  }
-
-  private boolean isNotPasswordConst(ExpressionTree expression) {
-    if (expression.is(Kind.METHOD_INVOCATION)) {
-      ExpressionTree methodSelect = ((MethodInvocationTree) expression).methodSelect();
-      return methodSelect.is(Kind.MEMBER_SELECT) && isNotPasswordConst(((MemberSelectExpressionTree) methodSelect).expression());
-    }
-    String literal = ExpressionsHelper.getConstantValueAsString(expression).value();
-    return literal == null || variablePatterns().map(pattern -> pattern.matcher(literal))
-      .noneMatch(Matcher::find);
   }
 
   private void handleConstructor(NewClassTree tree) {
