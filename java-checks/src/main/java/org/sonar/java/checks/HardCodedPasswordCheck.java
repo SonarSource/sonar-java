@@ -45,7 +45,6 @@ public class HardCodedPasswordCheck extends AbstractHardCodedCredentialChecker {
 
   private static final String DEFAULT_PASSWORD_WORDS = "password,passwd,pwd,passphrase,java.naming.security.credentials";
   private static final String JAVA_LANG_STRING = "java.lang.String";
-  private static final String JAVA_LANG_OBJECT = "java.lang.Object";
   private static final Pattern URL_PREFIX = Pattern.compile("^\\w{1,8}://");
   private static final Pattern NON_EMPTY_URL_CREDENTIAL = Pattern.compile("(?<user>[^\\s:]*+):(?<password>\\S++)");
 
