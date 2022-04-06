@@ -28,9 +28,11 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.java.caching.DummyCache;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalReadCache;
 import org.sonar.java.checks.verifier.internal.InternalWriteCache;
+import org.sonar.plugins.java.api.caching.CacheContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.any;
@@ -158,6 +160,50 @@ class ExcessiveContentRequestCheckTest {
       assertThat(logTester.getLogs(LoggerLevel.WARN))
         .hasSize(2)
         .allMatch(logAndArguments -> logAndArguments.getFormattedMsg().equals("boom"));
+    }
+
+    @Test
+    void initCaches_does_not_try_to_load_from_the_cache_a_second_time() {
+      ExcessiveContentRequestCheck checkWithoutCache = new ExcessiveContentRequestCheck();
+      var disabledCacheContext = mock(CacheContext.class);
+      doReturn(false).when(disabledCacheContext).isCacheEnabled();
+      verify(disabledCacheContext, never()).isCacheEnabled();
+      checkWithoutCache.initCaches(disabledCacheContext);
+      verify(disabledCacheContext, times(1)).isCacheEnabled();
+      checkWithoutCache.initCaches(disabledCacheContext);
+      verify(disabledCacheContext, times(1)).isCacheEnabled();
+
+      ExcessiveContentRequestCheck checkWithCache = new ExcessiveContentRequestCheck();
+      var enabledCacheContext = mock(CacheContext.class);
+      doReturn(true).when(enabledCacheContext).isCacheEnabled();
+      doReturn(new DummyCache()).when(enabledCacheContext).getReadCache();
+      verify(enabledCacheContext, never()).isCacheEnabled();
+      checkWithCache.initCaches(enabledCacheContext);
+      verify(enabledCacheContext, times(1)).isCacheEnabled();
+      checkWithCache.initCaches(enabledCacheContext);
+      verify(enabledCacheContext, times(1)).isCacheEnabled();
+    }
+
+    @Test
+    void commitCaches_does_not_try_to_commit_the_caches_a_second_time() {
+      ExcessiveContentRequestCheck checkWithoutCache = new ExcessiveContentRequestCheck();
+      var disabledCacheContext = mock(CacheContext.class);
+      doReturn(false).when(disabledCacheContext).isCacheEnabled();
+      verify(disabledCacheContext, never()).isCacheEnabled();
+      checkWithoutCache.commitCaches(disabledCacheContext);
+      verify(disabledCacheContext, times(1)).isCacheEnabled();
+      checkWithoutCache.commitCaches(disabledCacheContext);
+      verify(disabledCacheContext, times(1)).isCacheEnabled();
+
+      ExcessiveContentRequestCheck checkWithCache = new ExcessiveContentRequestCheck();
+      var enabledCacheContext = mock(CacheContext.class);
+      doReturn(true).when(enabledCacheContext).isCacheEnabled();
+      doReturn(new DummyCache()).when(enabledCacheContext).getWriteCache();
+      verify(enabledCacheContext, never()).isCacheEnabled();
+      checkWithCache.commitCaches(enabledCacheContext);
+      verify(enabledCacheContext, times(1)).isCacheEnabled();
+      checkWithCache.commitCaches(enabledCacheContext);
+      verify(enabledCacheContext, times(1)).isCacheEnabled();
     }
   }
 

@@ -36,6 +36,7 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.EndOfAnalysisCheck;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -130,7 +131,8 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
   private final List<String> currentFilesThatSetMaximumSize = new ArrayList<>();
   private final List<String> currentFilesThatInstantiate = new ArrayList<>();
 
-  private synchronized void initCaches(CacheContext cacheContext) {
+  @VisibleForTesting
+  synchronized void initCaches(CacheContext cacheContext) {
     if (cacheIsLoaded) {
       return;
     }
@@ -162,12 +164,12 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     }
   }
 
-  private synchronized void commitCaches(CacheContext cacheContext) {
+  @VisibleForTesting
+  synchronized void commitCaches(CacheContext cacheContext) {
     if (cacheIsCommitted) {
       return;
     }
     cacheIsCommitted = true;
-    //FIXME why is the cacheContext different from the one passed by the context
     if (!cacheContext.isCacheEnabled()) {
       return;
     }
@@ -187,7 +189,7 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
         writeCache.write(INSTANTIATION_CACHE_KEY, data);
       }
     } catch (IllegalArgumentException e) {
-      LOGGER.warn(String.format("Failed to read persist data into the cache", e.getMessage()));
+      LOGGER.warn(String.format("Failed to read persist data into the cache: %s", e.getMessage()));
     }
   }
 
