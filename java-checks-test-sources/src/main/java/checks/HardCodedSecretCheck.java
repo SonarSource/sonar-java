@@ -2,6 +2,15 @@ package checks;
 
 import java.sql.SQLException;
 
+/**
+ * This check detect hardcoded secrets in multiples cases:
+ * - 1. String literal
+ * - 2. Variable declaration
+ * - 3. Assignment
+ * - 4. Method invocations
+ * - 4.1 Equals
+ * - 4.2 Setting secrets
+ */
 class HardCodedSecretCheck {
 
   String fieldNameWithSecretInIt = retrieveSecret();
@@ -10,6 +19,8 @@ class HardCodedSecretCheck {
   private static final String EMPTY = "";
 
   private void a(char[] secret, String var) throws SQLException {
+    // ========== 1. String literal ==========
+    // The variable name does not influence the issue, only the string is considered.
     String variable1 = "blabla";
     String variable2 = "login=a&secret=abcdefghijklmnopqrs"; // Noncompliant [[sc=24;ec=60]] {{'secret' detected in this expression, review this potentially hard-coded secret.}}
     String variable3 = "login=a&token=abcdefghijklmnopqrs"; // Noncompliant
@@ -38,7 +49,8 @@ class HardCodedSecretCheck {
       </form>
       """; // false-negative, we should support text block lines and several issues inside
 
-    String query1 = "secret=?"; // Compliant
+    // Secrets starting with "?", ":", "\"", containing "%s" or with less than 2 characters are ignored
+    String query1 = "secret=?abcdefghijklmnopqrs"; // Compliant
     String query1_1 = "secret=???"; // Compliant
     String query1_2 = "secret=X"; // Compliant
     String query1_3 = "secret=anonymous"; // Compliant
@@ -49,7 +61,34 @@ class HardCodedSecretCheck {
     String query6 = "secret=\"%s\""; // Compliant
     String query7 = "\"secret=\""; // Compliant
 
-    // Constant used to avoid duplicated string
+    // We handle strings in a naive way, resulting in possible FP
+    String params1 = "user=admin&secret=Secretabcdefghijklmnopqrs"; // Noncompliant
+    String params2 = "secret=no\nuser=admin0123456789"; // Noncompliant, false-positive new line should end the secret value
+    String sqlserver1= "pgsql:host=localhost port=5432 dbname=test user=postgres secret=abcdefghijklmnopqrs"; // Noncompliant
+    String sqlserver2 = "pgsql:host=localhost port=5432 dbname=test secret=no user=abcdefghijklmnopqrs"; // Noncompliant, false-positive
+
+    // URLs are reported by S2068 only.
+    String[] urls = {
+      "http://user:123456@server.com/path",     // Compliant
+    };
+
+    // ========== 2. Variable declaration ==========
+    // The variable name should contain a secret word
+    final String MY_SECRET = "abcdefghijklmnopqrs"; // Noncompliant
+    String variableNameWithSecretInIt = "abcdefghijklmnopqrs"; // Noncompliant [[sc=12;ec=38]]
+    String variableNameWithSecretaryInIt = "abcdefghijklmnopqrs"; // Noncompliant, false-positive Secretary is not Secret
+    String variableNameWithAuthorshipInIt = "abcdefghijklmnopqrs"; // Noncompliant, false-positive Authorship is not Auth
+    String variableNameWithTokenInIt = "abcdefghijklmnopqrs"; // Noncompliant
+    String variableNameWithApiKeyInIt = "abcdefghijklmnopqrs"; // Noncompliant [[sc=12;ec=38]]
+    String variableNameWithCredentialInIt = "abcdefghijklmnopqrs"; // Noncompliant [[sc=12;ec=42]]
+    String variableNameWithAuthInIt = "abcdefghijklmnopqrs"; // Noncompliant [[sc=12;ec=36]]
+    // Secrets with less than 2 characters, explicitly "anonymous", are ignored
+    String variableNameWithSecretInItEmpty = "";
+    String variableNameWithSecretInItOneChar = "X";
+    String variableNameWithSecretInItAnonymous = "anonymous";
+    String otherVariableNameWithAuthInIt;
+
+    // Constant used to avoid duplicated string are ignored
     String secretConst = "Secret"; // Compliant
     String secrets = "secret"; // Compliant
     final String SECRET = "Secret"; // Compliant
@@ -67,37 +106,25 @@ class HardCodedSecretCheck {
     String CA_SECRET = "ca-secret"; // Compliant
     String caSecret = CA_SECRET; // Compliant
 
-    final String MY_SECRET = "abcdefghijklmnopqrs"; // Noncompliant
-
+    // False positives...
     String OkapiKeyboard = "what a strange QWERTY keyboard for animals"; // Noncompliant, false-positive "Okapi" and "Keyboard" is not "api" and "key"
     String OKAPI_KEYBOARD = "what a strange QWERTY keyboard for animals"; // Noncompliant, false-positive "Okapi" and "Keyboard" is not "api" and "key"
     String okApiKeyValue = "Spaces are UNEXPECTED 012 345 678"; // Noncompliant, false-positive a secret with spaces does not look like a secret
     String tokenism = "(Queen's Partner's Stored Knowledge is a Minimal Sham)"; // Noncompliant, false-positive tokenism is not token
 
-    String params1 = "user=admin&secret=Secretabcdefghijklmnopqrs"; // Noncompliant
-    String params2 = "secret=no\nuser=admin0123456789"; // Noncompliant, false-positive new line should end the secret value
-    String sqlserver1= "pgsql:host=localhost port=5432 dbname=test user=postgres secret=abcdefghijklmnopqrs"; // Noncompliant
-    String sqlserver2 = "pgsql:host=localhost port=5432 dbname=test secret=no user=abcdefghijklmnopqrs"; // Noncompliant, false-positive
-
-    String variableNameWithSecretInIt = "abcdefghijklmnopqrs"; // Noncompliant [[sc=12;ec=38]]
-    String variableNameWithSecretaryInIt = "abcdefghijklmnopqrs"; // Noncompliant, false-positive Secretary is not Secret
-    String variableNameWithAuthorshipInIt = "abcdefghijklmnopqrs"; // Noncompliant, false-positive Authorship is not Auth
-    String variableNameWithSecretInItEmpty = "";
-    String variableNameWithSecretInItOneChar = "X";
-    String variableNameWithSecretInItAnonymous = "anonymous";
-    String variableNameWithTokenInIt = "abcdefghijklmnopqrs"; // Noncompliant
-    String variableNameWithApiKeyInIt = "abcdefghijklmnopqrs"; // Noncompliant [[sc=12;ec=38]]
-    String variableNameWithCredentialInIt = "abcdefghijklmnopqrs"; // Noncompliant [[sc=12;ec=42]]
-    String variableNameWithAuthInIt = "abcdefghijklmnopqrs"; // Noncompliant [[sc=12;ec=36]]
-    String otherVariableNameWithAuthInIt;
+    // ========== 3. Assignment ==========
     fieldNameWithSecretInIt = "abcdefghijklmnopqrs"; // Noncompliant
-    fieldNameWithSecretInIt = "X";
-    fieldNameWithSecretInIt = "anonymous";
-    fieldNameWithSecretInIt = retrieveSecret();
     this.fieldNameWithSecretInIt = "abcdefghijklmnopqrs"; // Noncompliant
+    // Secrets with less than 2 chars are explicitly ignored
+    fieldNameWithSecretInIt = "X";
+    // "anonymous" is explicitly ignored
+    fieldNameWithSecretInIt = "anonymous";
+    // Not hardcoded
+    fieldNameWithSecretInIt = retrieveSecret();
     this.fieldNameWithSecretInIt = retrieveSecret();
-    variable1 = "xx";
+    variable1 = "abcdefghijklmnopqrs";
 
+    // Same constraints apply to "toCharArray" called on a String
     char[] credential = "abcdefghijklmnopqrs".toCharArray(); // Noncompliant
     credential = "abcdefghijklmnopqrs".toCharArray(); // Noncompliant
     credential = PASSED.toCharArray(); // Noncompliant
@@ -105,6 +132,8 @@ class HardCodedSecretCheck {
     credential = "X".toCharArray();
     credential = "anonymous".toCharArray();
 
+    // ========== 4. Method invocations ==========
+    // ========== 4.1 Equals ==========
     String auth = "abcdefghijklmnopqrs"; // Noncompliant
     if(auth.equals("abcdefghijklmnopqrs")) { // Noncompliant
     }
@@ -136,6 +165,8 @@ class HardCodedSecretCheck {
     String[] array = {};
     array[0] = "xx";
 
+    // ========== 4.2 Setting secrets ==========
+    // When a method call has two arguments potentially containing String, we report an issue the same way we would with a variable declaration
     A myA = new A();
     myA.setProperty("secret", "abcdefghijklmnopqrs"); // Noncompliant
     myA.setProperty("secretary", "abcdefghijklmnopqrs"); // Compliant
@@ -152,10 +183,6 @@ class HardCodedSecretCheck {
     myA.setProperty("secret", "secret"); // Compliant
     myA.setProperty("secret", "auth"); // Compliant
     myA.setProperty("something", "else").setProperty("secret", "abcdefghijklmnopqrs"); // Noncompliant [[sc=42;ec=53]]
-
-    String[] urls = {
-      "http://user:123456@server.com/path",     // Compliant
-    };
   }
 
   private char[] getSecret(String s) {
