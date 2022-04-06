@@ -67,6 +67,12 @@ public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscri
 
   protected abstract String getCredentialWords();
 
+  /**
+   * Determine if the actual hardcoded credential from the expression, contains one of the credentials pattern.
+   * This is typically used to ignore constant declaration.
+   */
+  protected abstract boolean isCredentialContainingPattern(ExpressionTree expression);
+
   protected abstract void report(Tree tree, String match);
 
   private Stream<Pattern> variablePatterns() {
@@ -92,7 +98,7 @@ public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscri
 
   protected Optional<String> isSettingCredential(MethodInvocationTree tree) {
     List<ExpressionTree> arguments = tree.arguments();
-    if (arguments.size() == 2 && isArgumentsSuperTypeOfString(arguments) && !isCredentialLikeName(arguments.get(1)) && isPotentialCredential(arguments.get(1))) {
+    if (arguments.size() == 2 && isArgumentsSuperTypeOfString(arguments) && !isCredentialContainingPattern(arguments.get(1)) && isPotentialCredential(arguments.get(1))) {
       return isCredential(arguments.get(0));
     }
     return Optional.empty();
@@ -115,16 +121,7 @@ public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscri
     return isCredentialLikeName(identifierTree.name());
   }
 
-  protected boolean isCredentialLikeName(ExpressionTree expression) {
-    if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
-      ExpressionTree methodSelect = ((MethodInvocationTree) expression).methodSelect();
-      return methodSelect.is(Tree.Kind.MEMBER_SELECT) && isCredentialLikeName(((MemberSelectExpressionTree) methodSelect).expression());
-    }
-    String literal = ExpressionsHelper.getConstantValueAsString(expression).value();
-    return literal == null || isCredentialLikeName(literal).isPresent();
-  }
-
-  private Optional<String> isCredentialLikeName(String name) {
+  protected Optional<String> isCredentialLikeName(String name) {
     return variablePatterns()
       .map(pattern -> pattern.matcher(name))
       // contains "pwd" or similar
@@ -187,7 +184,7 @@ public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscri
     isCredentialVariableName(variable)
       .filter(credentialVariableName -> {
         ExpressionTree initializer = tree.initializer();
-        return initializer != null && isNotExcluded(initializer) && !isCredentialLikeName(initializer);
+        return initializer != null && isNotExcluded(initializer) && !isCredentialContainingPattern(initializer);
       })
       .ifPresent(credentialVariableName -> report(variable, credentialVariableName));
   }
@@ -222,11 +219,11 @@ public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscri
     ExpressionTree rightExpression = mit.arguments().get(0);
 
     isCredentialVariable(leftExpression)
-      .filter(passwordVariableName -> isPotentialCredential(rightExpression) && !isCredentialLikeName(rightExpression))
+      .filter(passwordVariableName -> isPotentialCredential(rightExpression) && !isCredentialContainingPattern(rightExpression))
       .ifPresent(passwordVariableName -> report(leftExpression, passwordVariableName));
 
     isCredentialVariable(rightExpression)
-      .filter(passwordVariableName -> isPotentialCredential(leftExpression) && !isCredentialLikeName(leftExpression))
+      .filter(passwordVariableName -> isPotentialCredential(leftExpression) && !isCredentialContainingPattern(leftExpression))
       .ifPresent(passwordVariableName -> report(rightExpression, passwordVariableName));
   }
 

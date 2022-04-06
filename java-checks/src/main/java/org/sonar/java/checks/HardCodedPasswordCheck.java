@@ -27,6 +27,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -158,5 +159,15 @@ public class HardCodedPasswordCheck extends AbstractHardCodedCredentialChecker {
 
   protected void report(Tree tree, String match) {
     reportIssue(tree, "'" + match + "' detected in this expression, review this potentially hard-coded password.");
+  }
+
+  @Override
+  protected boolean isCredentialContainingPattern(ExpressionTree expression) {
+    if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
+      ExpressionTree methodSelect = ((MethodInvocationTree) expression).methodSelect();
+      return methodSelect.is(Tree.Kind.MEMBER_SELECT) && isCredentialContainingPattern(((MemberSelectExpressionTree) methodSelect).expression());
+    }
+    String literal = ExpressionsHelper.getConstantValueAsString(expression).value();
+    return literal == null || super.isCredentialLikeName(literal).isPresent();
   }
 }

@@ -59,6 +59,13 @@ public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
   }
 
   @Override
+  protected boolean isCredentialContainingPattern(ExpressionTree expression) {
+    // Secrets containing a secret word is not considered as containing an expression.
+    // Simple constant declaration like "String secret = "secret"" will anyway be filtered by the entropy filter.
+    return false;
+  }
+
+  @Override
   protected int minCredentialLength() {
     return 2;
   }

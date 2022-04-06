@@ -88,10 +88,11 @@ class HardCodedSecretCheck {
     String variableNameWithSecretInItAnonymous = "anonymous";
     String otherVariableNameWithAuthInIt;
 
-    // Constant used to avoid duplicated string are ignored
-    String secretConst = "Secret"; // Compliant
-    String secrets = "secret"; // Compliant
-    final String SECRET = "Secret"; // Compliant
+    // Don't filter when the secret is containing any of the secret word.
+    String secretConst = "Secret_abcdefghijklmnopqrs"; // Noncompliant
+    String secrets = "secret_abcdefghijklmnopqrs"; // Noncompliant
+    final String SECRET = "Secret_abcdefghijklmnopqrs"; // Noncompliant
+    // Simple constants will be filtered thanks to the entropy check
     final String SECRET_INPUT = "[id='secret']"; // Compliant
     final String SECRET_PROPERTY = "custom.secret"; // Compliant
     final String TRUSTSTORE_SECRET = "trustStoreSecret"; // Compliant
