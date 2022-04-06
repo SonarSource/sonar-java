@@ -48,6 +48,7 @@ import org.sonar.api.config.Configuration;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.Beta;
 import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.caching.DummyCache;
 import org.sonar.java.caching.JavaReadCacheImpl;
 import org.sonar.java.caching.JavaWriteCacheImpl;
 import org.sonar.java.checks.verifier.CheckVerifier;
@@ -220,8 +221,8 @@ public class InternalCheckVerifier implements CheckVerifier {
   public CheckVerifier withCache(@Nullable ReadCache readCache, @Nullable WriteCache writeCache) {
     return withCache(new InternalCacheContext(
       true,
-      readCache == null ? null : new JavaReadCacheImpl(readCache),
-      writeCache == null ? null : new JavaWriteCacheImpl(writeCache)
+      readCache == null ? new DummyCache() : new JavaReadCacheImpl(readCache),
+      writeCache == null ? new DummyCache() : new JavaWriteCacheImpl(writeCache)
     ));
   }
 
