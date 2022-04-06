@@ -71,13 +71,13 @@ public class JavaAstScanner {
    * Scan files without parsing, using the raw input file and cached information, and return the list of files that could not be analyzed without parsing.
    * @param inputFiles The list of files to analyze
    * @param cacheContext Cache infrastructure
-   * @return The list of files that could be successfully analyzed without parsing
+   * @return The list of files that could not be successfully analyzed without parsing
    */
   public List<InputFile> scanWithoutParsing(Iterable<? extends InputFile> inputFiles, CacheContext cacheContext) {
-    return StreamSupport.stream(inputFiles.spliterator(), false).filter(file -> {
-      var requiresParsingToBeAnalyzed = !visitor.scanWithoutParsing(file, cacheContext);
-      return requiresParsingToBeAnalyzed;
-    }).collect(Collectors.toList());
+    return StreamSupport.stream(inputFiles.spliterator(), false)
+      // Filter out files that have been successfully scanned without parsing
+      .filter(file -> !visitor.scanWithoutParsing(file, cacheContext))
+      .collect(Collectors.toList());
   }
 
   public void scan(Iterable<? extends InputFile> inputFiles) {

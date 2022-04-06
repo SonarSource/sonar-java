@@ -45,7 +45,6 @@ import org.sonar.java.ExceptionHandler;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
-import org.sonar.java.caching.CacheContextImpl;
 import org.sonar.java.checks.VisitorThatCanBeSkipped;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
@@ -62,6 +61,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -348,6 +348,39 @@ class JavaAstScannerTest {
 
     verify(skippable, never()).visitNode(any());
     verify(unskippable, times(1)).visitNode(any());
+  }
+
+  @Test
+  void scanWithoutParsing_returns_the_same_list_of_files_when_the_visitorsBridge_cannot_scan_without_parsing() {
+    SonarComponents sonarComponents = mock(SonarComponents.class);
+    CacheContext cacheContext = mock(CacheContext.class);
+    VisitorsBridge visitorsBridge = mock(VisitorsBridge.class);
+    doReturn(false).when(visitorsBridge).scanWithoutParsing(any(), any());
+    JavaAstScanner javaAstScanner = new JavaAstScanner(sonarComponents);
+    javaAstScanner.setVisitorBridge(visitorsBridge);
+
+    assertThat(javaAstScanner.scanWithoutParsing(Collections.emptyList(), cacheContext)).isEmpty();
+
+    List<InputFile> singleFileList = List.of(mock(InputFile.class));
+    assertThat(javaAstScanner.scanWithoutParsing(singleFileList, cacheContext)).isEqualTo(singleFileList);
+  }
+
+  @Test
+  void scanWithoutParsing_filters_out_the_files_that_could_be_successfully_scanned_without_parsing() {
+    var successful = mock(InputFile.class);
+    var unsuccessful = mock(InputFile.class);
+    var files = List.of(successful, unsuccessful, successful);
+
+    VisitorsBridge visitorsBridge = mock(VisitorsBridge.class);
+    doReturn(true).when(visitorsBridge).scanWithoutParsing(any(), any());
+    doReturn(false).when(visitorsBridge).scanWithoutParsing(eq(unsuccessful), any());
+
+    JavaAstScanner javaAstScanner = new JavaAstScanner(mock(SonarComponents.class));
+    javaAstScanner.setVisitorBridge(visitorsBridge);
+
+    assertThat(javaAstScanner.scanWithoutParsing(files, mock(CacheContext.class)))
+      .hasSize(1)
+      .containsOnly(unsuccessful);
   }
 
   private void scanSingleFile(InputFile file, boolean failOnException) {
