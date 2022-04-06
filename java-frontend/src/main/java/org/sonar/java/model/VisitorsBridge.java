@@ -76,7 +76,7 @@ public class VisitorsBridge {
   protected boolean inAndroidContext = false;
   private int fullyScannedFileCount = 0;
   private int skippedFileCount = 0;
-  private final CacheContext cacheContext;
+  private CacheContext cacheContext;
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
@@ -160,6 +160,10 @@ public class VisitorsBridge {
 
   public void setInAndroidContext(boolean inAndroidContext) {
     this.inAndroidContext = inAndroidContext;
+  }
+
+  public void setCacheContext(CacheContext cacheContext) {
+    this.cacheContext = cacheContext;
   }
 
   /**
@@ -362,11 +366,11 @@ public class VisitorsBridge {
     }
 
     @Override
-    public void endOfAnalysis(CacheContext cacheContext) {
+    public void endOfAnalysis(CacheContext cachedContext) {
       subscriptionVisitors.stream()
         .filter(EndOfAnalysisCheck.class::isInstance)
         .map(EndOfAnalysisCheck.class::cast)
-        .forEach(check -> check.endOfAnalysis(cacheContext));
+        .forEach(check -> check.endOfAnalysis(cachedContext));
     }
 
     private void visitChildren(Tree tree) throws CheckFailureException {
