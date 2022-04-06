@@ -132,6 +132,7 @@ public class JavaFrontend {
     if (sonarComponents != null) {
       CacheContext cacheContext = CacheContextImpl.of(sonarComponents.context());
       if (cacheContext.isCacheEnabled()) {
+        LOG.debug("The cache is enabled. The Java analyzer will try to leverage cached data from previous analyses.");
         sourceFiles = astScanner.scanWithoutParsing(sourceFiles, cacheContext);
         testFiles = astScannerForTests.scanWithoutParsing(testFiles, cacheContext);
         generatedFiles = astScannerForGeneratedFiles.scanWithoutParsing(generatedFiles, cacheContext);

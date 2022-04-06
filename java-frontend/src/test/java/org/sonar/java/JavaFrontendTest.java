@@ -42,6 +42,9 @@ import org.sonar.api.SonarQubeSide;
 import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.rule.CheckFactory;
+import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
@@ -51,6 +54,7 @@ import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.scan.issue.filter.IssueFilterChain;
 import org.sonar.api.utils.Version;
+import org.sonar.api.utils.log.LogAndArguments;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.classpath.ClasspathForMain;
@@ -68,8 +72,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -184,6 +190,34 @@ class JavaFrontendTest {
     assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly(
       "No \"Main and Test\" source files to scan."
     );
+  }
+
+  @Test
+  void scan_logs_when_caching_is_enabled() {
+    File baseDir = temp.getRoot().getAbsoluteFile();
+    SensorContextTester sensorContextTester = SensorContextTester.create(baseDir);
+    sensorContextTester.setSettings(new MapSettings());
+
+    SensorContext spy = spy(sensorContextTester);
+    doReturn(true).when(spy).isCacheEnabled();
+    doReturn(mock(ReadCache.class)).when(spy).previousAnalysisCache();
+    doReturn(mock(WriteCache.class)).when(spy).nextCache();
+    var sonarComponents = mock(SonarComponents.class);
+    doReturn(spy).when(sonarComponents).context();
+
+    JavaFrontend frontend = new JavaFrontend(
+      new JavaVersionImpl(),
+      sonarComponents,
+      null,
+      mock(JavaResourceLocator.class),
+      mainCodeIssueScannerAndFilter
+    );
+
+    frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+    List<LogAndArguments> logs = logTester.getLogs(LoggerLevel.DEBUG);
+    assertThat(logs).hasSize(1);
+    assertThat(logs.get(0).getFormattedMsg())
+      .isEqualTo("The cache is enabled. The Java analyzer will try to leverage cached data from previous analyses.");
   }
 
   @Test
