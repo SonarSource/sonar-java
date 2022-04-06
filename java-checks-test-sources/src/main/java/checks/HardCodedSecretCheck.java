@@ -20,6 +20,23 @@ class HardCodedSecretCheck {
     String variable8 = "login=a&auth=abcdefghijklmnopqrs"; // Noncompliant
     String variable9 = "login=a&secret=";
     String variableA = "login=a&secret= ";
+    String variableB = "secret=&login=abcdefghijklmnopqrs"; // Noncompliant, false-positive the secret value should stop at &
+    String variableC = "Okapi-key=42, Okapia Johnstoni, Forest/Zebra Giraffe"; // Noncompliant, false-positive because "Okapi" ends with "api"
+    String variableD = "gran-papi-key=Known by everybody in the world like PWD123456"; // Noncompliant, false-positive because "papi" ends with "api"
+    String variableE = """
+      login=a
+      secret=abcdefghijklmnopqrs
+      """; // false-negative, we should support text block lines, report precise location inside
+    String variableF = """
+      <form action="/delete?secret=abcdefghijklmnopqrs">
+        <input type="text" id="item" value="42"><br><br>
+        <input type="submit" value="Delete">
+      </form>
+      <form action="/update?api-key=abcdefghijklmnopqrs">
+        <input type="text" id="item" value="42"><br><br>
+        <input type="submit" value="Update">
+      </form>
+      """; // false-negative, we should support text block lines and several issues inside
 
     String query1 = "secret=?"; // Compliant
     String query1_1 = "secret=???"; // Compliant
@@ -30,7 +47,7 @@ class HardCodedSecretCheck {
     String query3 = "secret=:param"; // Compliant
     String query5 = "secret=%s"; // Compliant
     String query6 = "secret=\"%s\""; // Compliant
-    String query7 = "\"password=\""; // Compliant
+    String query7 = "\"secret=\""; // Compliant
 
     // Constant used to avoid duplicated string
     String secretConst = "Secret"; // Compliant
@@ -51,10 +68,20 @@ class HardCodedSecretCheck {
     String caSecret = CA_SECRET; // Compliant
 
     final String MY_SECRET = "abcdefghijklmnopqrs"; // Noncompliant
-    String params = "user=admin&secret=Secretabcdefghijklmnopqrs"; // Noncompliant
-    String sqlserver = "pgsql:host=localhost port=5432 dbname=test user=postgres secret=abcdefghijklmnopqrs"; // Noncompliant
+
+    String OkapiKeyboard = "what a strange QWERTY keyboard for animals"; // Noncompliant, false-positive "Okapi" and "Keyboard" is not "api" and "key"
+    String OKAPI_KEYBOARD = "what a strange QWERTY keyboard for animals"; // Noncompliant, false-positive "Okapi" and "Keyboard" is not "api" and "key"
+    String okApiKeyValue = "Spaces are UNEXPECTED 012 345 678"; // Noncompliant, false-positive a secret with spaces does not look like a secret
+    String tokenism = "(Queen's Partner's Stored Knowledge is a Minimal Sham)"; // Noncompliant, false-positive tokenism is not token
+
+    String params1 = "user=admin&secret=Secretabcdefghijklmnopqrs"; // Noncompliant
+    String params2 = "secret=no\nuser=admin0123456789"; // Noncompliant, false-positive new line should end the secret value
+    String sqlserver1= "pgsql:host=localhost port=5432 dbname=test user=postgres secret=abcdefghijklmnopqrs"; // Noncompliant
+    String sqlserver2 = "pgsql:host=localhost port=5432 dbname=test secret=no user=abcdefghijklmnopqrs"; // Noncompliant, false-positive
 
     String variableNameWithSecretInIt = "abcdefghijklmnopqrs"; // Noncompliant [[sc=12;ec=38]]
+    String variableNameWithSecretaryInIt = "abcdefghijklmnopqrs"; // Noncompliant, false-positive Secretary is not Secret
+    String variableNameWithAuthorshipInIt = "abcdefghijklmnopqrs"; // Noncompliant, false-positive Authorship is not Auth
     String variableNameWithSecretInItEmpty = "";
     String variableNameWithSecretInItOneChar = "X";
     String variableNameWithSecretInItAnonymous = "anonymous";
@@ -111,8 +138,11 @@ class HardCodedSecretCheck {
 
     A myA = new A();
     myA.setProperty("secret", "abcdefghijklmnopqrs"); // Noncompliant
+    myA.setProperty("secretary", "abcdefghijklmnopqrs"); // Compliant
     myA.setProperty("token", "abcdefghijklmnopqrs"); // Noncompliant
+    myA.setProperty("tokenization", "abcdefghijklmnopqrs"); // Compliant
     myA.setProperty("api-key", "abcdefghijklmnopqrs"); // Noncompliant
+    myA.setProperty("okapi-keyboard", "abcdefghijklmnopqrs"); // Compliant
     myA.setProperty("secret", "X");
     myA.setProperty("secret", "anonymous");
     myA.setProperty("secret", new Object());
