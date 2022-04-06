@@ -116,10 +116,12 @@ public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscri
   }
 
   protected boolean isCredentialLikeName(ExpressionTree expression) {
-    if (expression.is(Tree.Kind.STRING_LITERAL)) {
-      return isCredentialLikeName(LiteralUtils.trimQuotes(((LiteralTree) expression).value())).isPresent();
+    if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
+      ExpressionTree methodSelect = ((MethodInvocationTree) expression).methodSelect();
+      return methodSelect.is(Tree.Kind.MEMBER_SELECT) && isCredentialLikeName(((MemberSelectExpressionTree) methodSelect).expression());
     }
-    return false;
+    String literal = ExpressionsHelper.getConstantValueAsString(expression).value();
+    return literal == null || isCredentialLikeName(literal).isPresent();
   }
 
   private Optional<String> isCredentialLikeName(String name) {
@@ -185,7 +187,7 @@ public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscri
     isCredentialVariableName(variable)
       .filter(credentialVariableName -> {
         ExpressionTree initializer = tree.initializer();
-        return initializer != null && isNotExcluded(initializer) && isNotCredentialConst(initializer);
+        return initializer != null && isNotExcluded(initializer) && !isCredentialLikeName(initializer);
       })
       .ifPresent(credentialVariableName -> report(variable, credentialVariableName));
   }
@@ -200,16 +202,6 @@ public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscri
   private static boolean isArgumentsSuperTypeOfString(List<ExpressionTree> arguments) {
     return arguments.stream().allMatch(arg -> arg.symbolType().is(JAVA_LANG_STRING) ||
       arg.symbolType().is(JAVA_LANG_OBJECT));
-  }
-
-  private boolean isNotCredentialConst(ExpressionTree expression) {
-    if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
-      ExpressionTree methodSelect = ((MethodInvocationTree) expression).methodSelect();
-      return methodSelect.is(Tree.Kind.MEMBER_SELECT) && isNotCredentialConst(((MemberSelectExpressionTree) methodSelect).expression());
-    }
-    String literal = ExpressionsHelper.getConstantValueAsString(expression).value();
-    return literal == null || variablePatterns().map(pattern -> pattern.matcher(literal))
-      .noneMatch(Matcher::find);
   }
 
   private boolean isNotExcluded(ExpressionTree expression) {
