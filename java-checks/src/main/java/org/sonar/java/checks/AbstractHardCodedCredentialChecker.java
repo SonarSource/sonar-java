@@ -63,7 +63,7 @@ public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscri
   private List<Pattern> variablePatterns = null;
   private List<Pattern> literalPatterns = null;
 
-  protected abstract int minCredentialLength();
+  private static final int MINIMUM_CREDENTIAL_LENGTH = 2;
 
   protected abstract String getCredentialWords();
 
@@ -167,7 +167,7 @@ public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscri
       return false;
     }
     String trimmed = literal.trim();
-    return trimmed.length() >= minCredentialLength() && !ALLOW_LIST.contains(trimmed);
+    return trimmed.length() >= MINIMUM_CREDENTIAL_LENGTH && !ALLOW_LIST.contains(trimmed);
   }
 
   private boolean isExcludedLiteral(String cleanedLiteral, String match) {

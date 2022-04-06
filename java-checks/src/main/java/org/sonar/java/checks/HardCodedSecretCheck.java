@@ -66,11 +66,6 @@ public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
   }
 
   @Override
-  protected int minCredentialLength() {
-    return 2;
-  }
-
-  @Override
   public List<Kind> nodesToVisit() {
     return Arrays.asList(Kind.STRING_LITERAL, Kind.VARIABLE, Kind.ASSIGNMENT, Kind.METHOD_INVOCATION);
   }
@@ -102,6 +97,7 @@ public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
     return super.isPotentialCredential(literal) && ShannonEntropy.calculate(literal) >= minEntropyThreshold;
   }
 
+  @Override
   protected void report(Tree tree, String match) {
     reportIssue(tree, "'" + match + "' detected in this expression, review this potentially hard-coded secret.");
   }

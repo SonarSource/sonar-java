@@ -65,18 +65,13 @@ public class HardCodedPasswordCheck extends AbstractHardCodedCredentialChecker {
 
   @RuleProperty(
     key = "credentialWords",
-    description = "Comma separated list of words identifying potential secrets",
+    description = "Comma separated list of words identifying potential passwords",
     defaultValue = DEFAULT_PASSWORD_WORDS)
   public String passwordWords = DEFAULT_PASSWORD_WORDS;
 
   @Override
   protected String getCredentialWords() {
     return passwordWords;
-  }
-
-  @Override
-  protected int minCredentialLength() {
-    return 2;
   }
 
   @Override
@@ -157,6 +152,7 @@ public class HardCodedPasswordCheck extends AbstractHardCodedCredentialChecker {
     }
   }
 
+  @Override
   protected void report(Tree tree, String match) {
     reportIssue(tree, "'" + match + "' detected in this expression, review this potentially hard-coded password.");
   }
