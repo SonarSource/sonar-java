@@ -30,7 +30,6 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -42,8 +41,6 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.caching.CacheContext;
-import org.sonar.plugins.java.api.caching.JavaReadCache;
-import org.sonar.plugins.java.api.caching.JavaWriteCache;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -133,17 +130,15 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
   private final List<String> currentFilesThatSetMaximumSize = new ArrayList<>();
   private final List<String> currentFilesThatInstantiate = new ArrayList<>();
 
-  private JavaWriteCache writeCache;
-
-  private synchronized void initCaches(@Nullable JavaReadCache readCache, @Nullable JavaWriteCache writeCache) {
+  private synchronized void initCaches(CacheContext cacheContext) {
     if (cacheIsLoaded) {
       return;
     }
-    this.writeCache = writeCache;
     cacheIsLoaded = true;
-    if (readCache == null) {
+    if (!cacheContext.isCacheEnabled()) {
       return;
     }
+    var readCache = cacheContext.getReadCache();
     try (InputStream in = readCache.read(SET_MAXIMUM_SIZE_CACHE_KEY)) {
       String raw = new String(in.readAllBytes(), StandardCharsets.UTF_8);
       String[] filenames = raw.split(";");
@@ -167,33 +162,39 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     }
   }
 
-  private synchronized void commitCaches() {
+  private synchronized void commitCaches(CacheContext cacheContext) {
     if (cacheIsCommitted) {
       return;
     }
     cacheIsCommitted = true;
-    if (writeCache == null) {
+    //FIXME why is the cacheContext different from the one passed by the context
+    if (!cacheContext.isCacheEnabled()) {
       return;
     }
-    if (this.filesThatSetMaximumSize != null && this.filesThatSetMaximumSize.containsAll(currentFilesThatSetMaximumSize)) {
-      // If the list of files that sets the maximum size has not changed, we copy the value from the previous analysis
-      writeCache.copyFromPrevious(SET_MAXIMUM_SIZE_CACHE_KEY);
-    } else {
-      byte[] data = String.join(";", currentFilesThatSetMaximumSize).getBytes(StandardCharsets.UTF_8);
-      writeCache.write(SET_MAXIMUM_SIZE_CACHE_KEY, data);
-    }
-    if (this.filesThatInstantiate != null && this.filesThatInstantiate.containsAll(currentFilesThatInstantiate)) {
-      writeCache.copyFromPrevious(INSTANTIATION_CACHE_KEY);
-    } else {
-      byte[] data = String.join(";", currentFilesThatInstantiate).getBytes(StandardCharsets.UTF_8);
-      writeCache.write(INSTANTIATION_CACHE_KEY, data);
+    var writeCache = cacheContext.getWriteCache();
+    try {
+      if (this.filesThatSetMaximumSize != null && this.filesThatSetMaximumSize.containsAll(currentFilesThatSetMaximumSize)) {
+        // If the list of files that sets the maximum size has not changed, we copy the value from the previous analysis
+        writeCache.copyFromPrevious(SET_MAXIMUM_SIZE_CACHE_KEY);
+      } else {
+        byte[] data = String.join(";", currentFilesThatSetMaximumSize).getBytes(StandardCharsets.UTF_8);
+        writeCache.write(SET_MAXIMUM_SIZE_CACHE_KEY, data);
+      }
+      if (this.filesThatInstantiate != null && this.filesThatInstantiate.containsAll(currentFilesThatInstantiate)) {
+        writeCache.copyFromPrevious(INSTANTIATION_CACHE_KEY);
+      } else {
+        byte[] data = String.join(";", currentFilesThatInstantiate).getBytes(StandardCharsets.UTF_8);
+        writeCache.write(INSTANTIATION_CACHE_KEY, data);
+      }
+    } catch (IllegalArgumentException e) {
+      LOGGER.warn(String.format("Failed to read persist data into the cache", e.getMessage()));
     }
   }
 
   @Override
   public boolean scanWithoutParsing(InputFile inputFile, CacheContext cacheContext) {
     // If not done yet, load data from the cache
-    initCaches(cacheContext.getReadCache(), cacheContext.getWriteCache());
+    initCaches(cacheContext);
 
     // Assume the file could not be scanned by default
     boolean successfullyScanned = false;
@@ -220,7 +221,7 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
       DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) context;
       multipartConstructorIssues.forEach(defaultContext::reportIssue);
     }
-    commitCaches();
+    commitCaches(cacheContext);
     if (filesThatSetMaximumSize != null) {
       filesThatSetMaximumSize.clear();
     }
