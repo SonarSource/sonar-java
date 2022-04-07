@@ -40,6 +40,7 @@ import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
+import org.sonar.java.caching.CacheContextImpl;
 import org.sonar.java.collections.CollectionUtils;
 import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.java.model.JParserConfig;
@@ -47,6 +48,7 @@ import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonarsource.performance.measure.PerformanceMeasure;
 import org.sonarsource.performance.measure.PerformanceMeasure.Duration;
@@ -127,6 +129,16 @@ public class JavaFrontend {
 
 
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
+    if (sonarComponents != null) {
+      CacheContext cacheContext = CacheContextImpl.of(sonarComponents.context());
+      if (cacheContext.isCacheEnabled()) {
+        LOG.debug("The cache is enabled. The Java analyzer will try to leverage cached data from previous analyses.");
+        sourceFiles = astScanner.scanWithoutParsing(sourceFiles, cacheContext);
+        testFiles = astScannerForTests.scanWithoutParsing(testFiles, cacheContext);
+        generatedFiles = astScannerForGeneratedFiles.scanWithoutParsing(generatedFiles, cacheContext);
+      }
+    }
+
     // SonarLint is not compatible with batch mode, it needs InputFile#contents() and batch mode use InputFile#absolutePath()
     boolean isSonarLint = sonarComponents != null && sonarComponents.isSonarLintContext();
     boolean fileByFileMode = isSonarLint || isFileByFileEnabled();

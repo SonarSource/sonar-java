@@ -27,6 +27,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -233,4 +234,8 @@ public interface JavaFileScannerContext {
     return Optional.empty();
   }
 
+  /**
+   * @return the {@link CacheContext} applicable to this scan.
+   */
+  CacheContext getCacheContext();
 }

@@ -17,26 +17,16 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.plugins.java.api.caching;
 
-import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+public interface CacheContext {
+  /**
+   * Describes whether caching facilities are available in this context.
+   * @return True if the server allows caching, false otherwise
+   */
+  boolean isCacheEnabled();
 
-@Rule(key = "S3011")
-public class AccessibilityChangeCheck extends AbstractAccessibilityChangeChecker {
-  @Override
-  protected void onMethodInvocationFound(MethodInvocationTree mit) {
+  JavaReadCache getReadCache();
 
-
-    if (isModifyingFieldFromRecord(mit)) {
-      return;
-    }
-    if (SET_ACCESSIBLE_MATCHER.matches(mit)) {
-      if (setsToPubliclyAccessible(mit)) {
-        reportIssue(mit, "This accessibility update should be removed.");
-      }
-    } else {
-      reportIssue(mit, "This accessibility bypass should be removed.");
-    }
-  }
+  JavaWriteCache getWriteCache();
 }

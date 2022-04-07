@@ -58,7 +58,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
@@ -66,6 +65,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;

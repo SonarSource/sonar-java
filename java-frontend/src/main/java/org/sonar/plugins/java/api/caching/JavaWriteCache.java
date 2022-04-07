@@ -17,26 +17,26 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.plugins.java.api.caching;
 
-import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import java.io.InputStream;
 
-@Rule(key = "S3011")
-public class AccessibilityChangeCheck extends AbstractAccessibilityChangeChecker {
-  @Override
-  protected void onMethodInvocationFound(MethodInvocationTree mit) {
+public interface JavaWriteCache {
+  /**
+   * Save a new entry in the cache. The stream will be consumed immediately.
+   * @throws IllegalArgumentException if the cache already contains the key
+   */
+  void write(String key, InputStream data);
 
+  /**
+   * Save a new entry in the cache.
+   * @throws IllegalArgumentException if the cache already contains the key
+   */
+  void write(String key, byte[] data);
 
-    if (isModifyingFieldFromRecord(mit)) {
-      return;
-    }
-    if (SET_ACCESSIBLE_MATCHER.matches(mit)) {
-      if (setsToPubliclyAccessible(mit)) {
-        reportIssue(mit, "This accessibility update should be removed.");
-      }
-    } else {
-      reportIssue(mit, "This accessibility bypass should be removed.");
-    }
-  }
+  /**
+   * Copy a cached entry from the previous cache to the new one.
+   * @throws IllegalArgumentException if the previous cache doesn't contain given key or if this cache already contains the key
+   */
+  void copyFromPrevious(String key);
 }

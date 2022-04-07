@@ -70,6 +70,12 @@ class InternalSensorContextTest {
     assertMethodNotSupported(() -> context.settings(), "InternalSensorContext::settings()");
   }
 
+  @Test
+  void canSkipUnchangedFiles_returns_false_by_default() {
+    SensorContext context = new InternalSensorContext();
+    assertThat(context.canSkipUnchangedFiles()).isFalse();
+  }
+
   private static void assertMethodNotSupported(Executable executable, String expectedMessage) {
     InternalMockedSonarAPI.NotSupportedException e = assertThrows(InternalMockedSonarAPI.NotSupportedException.class, executable);
     assertThat(e).hasMessage(String.format("Method unsuported by the rule verifier framework: '%s'", expectedMessage));

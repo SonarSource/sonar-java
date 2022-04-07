@@ -44,6 +44,7 @@ import org.sonar.java.model.JProblem;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.caching.CacheContext;
 
 public class JavaAstScanner {
   private static final Logger LOG = Loggers.get(JavaAstScanner.class);
@@ -64,6 +65,19 @@ public class JavaAstScanner {
 
   public List<File> getClasspath() {
     return visitor.getClasspath();
+  }
+
+  /**
+   * Scan files without parsing, using the raw input file and cached information, and return the list of files that could not be analyzed without parsing.
+   * @param inputFiles The list of files to analyze
+   * @param cacheContext Cache infrastructure
+   * @return The list of files that could not be successfully analyzed without parsing
+   */
+  public List<InputFile> scanWithoutParsing(Iterable<? extends InputFile> inputFiles, CacheContext cacheContext) {
+    return StreamSupport.stream(inputFiles.spliterator(), false)
+      // Filter out files that have been successfully scanned without parsing
+      .filter(file -> !visitor.scanWithoutParsing(file, cacheContext))
+      .collect(Collectors.toList());
   }
 
   public void scan(Iterable<? extends InputFile> inputFiles) {

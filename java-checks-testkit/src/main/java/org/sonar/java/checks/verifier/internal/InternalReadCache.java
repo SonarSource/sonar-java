@@ -17,26 +17,33 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.verifier.internal;
 
-import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.api.batch.sensor.cache.ReadCache;
 
-@Rule(key = "S3011")
-public class AccessibilityChangeCheck extends AbstractAccessibilityChangeChecker {
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+
+public class InternalReadCache implements ReadCache {
+  private final Map<String, byte[]> cache = new HashMap<>();
+
   @Override
-  protected void onMethodInvocationFound(MethodInvocationTree mit) {
-
-
-    if (isModifyingFieldFromRecord(mit)) {
-      return;
+  public InputStream read(String key) {
+    if (!cache.containsKey(key)) {
+      throw new IllegalArgumentException(String.format("cache does not contain key \"%s\"", key));
     }
-    if (SET_ACCESSIBLE_MATCHER.matches(mit)) {
-      if (setsToPubliclyAccessible(mit)) {
-        reportIssue(mit, "This accessibility update should be removed.");
-      }
-    } else {
-      reportIssue(mit, "This accessibility bypass should be removed.");
-    }
+    return new ByteArrayInputStream(cache.get(key));
+  }
+
+  @Override
+  public boolean contains(String key) {
+    return cache.containsKey(key);
+  }
+
+  public InternalReadCache put(String key, byte[] data) {
+    cache.put(key, data);
+    return this;
   }
 }

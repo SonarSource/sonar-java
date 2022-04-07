@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks.verifier.internal;
 
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -26,9 +27,16 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalysisException;
+import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.RspecKey;
+import org.sonar.java.caching.DummyCache;
+import org.sonar.java.caching.JavaReadCacheImpl;
+import org.sonar.java.caching.JavaWriteCacheImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
@@ -37,11 +45,16 @@ import org.sonar.java.testing.JavaFileScannerContextForTests;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.caching.JavaReadCache;
+import org.sonar.plugins.java.api.caching.JavaWriteCache;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 class InternalCheckVerifierTest {
 
@@ -909,6 +922,75 @@ class InternalCheckVerifierTest {
 
   }
 
+  @Test
+  void addFiles_registers_file_to_be_analyzed() {
+    InternalCheckVerifier.newInstance()
+      .addFiles(InputFile.Status.ADDED, TEST_FILE)
+      .withCheck(NO_EFFECT_CHECK)
+      .verifyNoIssues();
+
+    InternalCheckVerifier.newInstance()
+      .addFiles(InputFile.Status.ADDED, TEST_FILE)
+      .addFiles(InputFile.Status.ADDED, TEST_FILE_NONCOMPLIANT)
+      .withCheck(NO_EFFECT_CHECK)
+      .verifyNoIssues();
+  }
+
+  @Test
+  void addFiles_throws_an_IllegalArgumentException_if_file_added_before() {
+    InternalCheckVerifier checkVerifier = InternalCheckVerifier.newInstance();
+    checkVerifier.onFiles(TEST_FILE);
+    assertThatThrownBy(() -> {
+      checkVerifier.addFiles(InputFile.Status.ADDED, TEST_FILE);
+    }).isInstanceOf(IllegalArgumentException.class)
+      .hasMessageContaining(String.format("File %s was already added.", Path.of(TEST_FILE)));
+  }
+
+  @Test
+  void withCache_effectively_sets_the_caches_for_scanWithoutParsing() {
+    ReadCache readCache = new InternalReadCache();
+    WriteCache writeCache = new InternalWriteCache();
+    CacheContext cacheContext = new InternalCacheContext(
+      true,
+      new JavaReadCacheImpl(readCache),
+      new JavaWriteCacheImpl(writeCache)
+    );
+
+    var check = spy(new NoEffectEndOfAnalysisCheck());
+
+    InternalCheckVerifier.newInstance()
+      .withCache(readCache, writeCache)
+      .onFile(TEST_FILE)
+      .withCheck(check)
+      .verifyNoIssues();
+
+    verify(check, times(1)).scanWithoutParsing(any(), eq(cacheContext));
+    verify(check, times(1)).endOfAnalysis(cacheContext);
+  }
+
+  @Test
+  void withCache_can_handle_a_mix_of_caches_combination() {
+    InternalCheckVerifier dummyReadDummyWrite = InternalCheckVerifier.newInstance();
+    dummyReadDummyWrite.withCache(null, null);
+    assertThat(dummyReadDummyWrite.cacheContext.getReadCache()).isInstanceOf(DummyCache.class);
+    assertThat(dummyReadDummyWrite.cacheContext.getWriteCache()).isInstanceOf(DummyCache.class);
+
+    InternalCheckVerifier internalReadDummyWrite = InternalCheckVerifier.newInstance();
+    internalReadDummyWrite.withCache(new InternalReadCache(), null);
+    assertThat(internalReadDummyWrite.cacheContext.getReadCache()).isInstanceOf(JavaReadCache.class);
+    assertThat(internalReadDummyWrite.cacheContext.getWriteCache()).isInstanceOf(DummyCache.class);
+
+    InternalCheckVerifier internalReadInternalWrite = InternalCheckVerifier.newInstance();
+    internalReadInternalWrite.withCache(new InternalReadCache(), new InternalWriteCache());
+    assertThat(internalReadInternalWrite.cacheContext.getReadCache()).isInstanceOf(JavaReadCache.class);
+    assertThat(internalReadInternalWrite.cacheContext.getWriteCache()).isInstanceOf(JavaWriteCache.class);
+
+    InternalCheckVerifier dummyReadInternalWrite = InternalCheckVerifier.newInstance();
+    dummyReadInternalWrite.withCache(null, new InternalWriteCache());
+    assertThat(dummyReadInternalWrite.cacheContext.getReadCache()).isInstanceOf(JavaReadCache.class);
+    assertThat(dummyReadInternalWrite.cacheContext.getWriteCache()).isInstanceOf(JavaWriteCache.class);
+  }
+
   @Rule(key = "FailingCheck")
   private static final class FailingCheck implements JavaFileScanner {
     @Override
@@ -918,7 +1000,20 @@ class InternalCheckVerifierTest {
   }
 
   @Rule(key = "NoEffectCheck")
-  private static final class NoEffectCheck implements JavaFileScanner {
+  private final static class NoEffectCheck implements JavaFileScanner {
+
+    @Override
+    public void scanFile(JavaFileScannerContext context) {
+      // do nothing
+    }
+  }
+
+  @Rule(key="NoEffectEndOfAnalysisCheck")
+  private static class NoEffectEndOfAnalysisCheck implements JavaFileScanner, EndOfAnalysisCheck {
+    @Override
+    public void endOfAnalysis(CacheContext cacheContext) {
+      // do nothing
+    }
 
     @Override
     public void scanFile(JavaFileScannerContext context) {

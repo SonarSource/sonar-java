@@ -47,6 +47,7 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.caching.CacheContextImpl;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.exceptions.ThrowableUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -54,6 +55,7 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -74,6 +76,8 @@ public class VisitorsBridge {
   protected boolean inAndroidContext = false;
   private int fullyScannedFileCount = 0;
   private int skippedFileCount = 0;
+  @VisibleForTesting
+  CacheContext cacheContext;
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
@@ -91,6 +95,7 @@ public class VisitorsBridge {
     this.scannersThatCannotBeSkipped = new ArrayList<>();
     this.classpath = projectClasspath;
     this.sonarComponents = sonarComponents;
+    this.cacheContext = CacheContextImpl.of(sonarComponents != null ? sonarComponents.context() : null);
     this.javaVersion = javaVersion;
     updateScanners();
   }
@@ -156,6 +161,44 @@ public class VisitorsBridge {
 
   public void setInAndroidContext(boolean inAndroidContext) {
     this.inAndroidContext = inAndroidContext;
+  }
+
+  public void setCacheContext(CacheContext cacheContext) {
+    this.cacheContext = cacheContext;
+  }
+
+  /**
+   * In cases where incremental analysis is enabled, try to scan a raw file without parsing its content.
+   *
+   * @param inputFile    The file to scan
+   * @param cacheContext Cached information that may help to analyse the file without parsing
+   * @return True if all scanners successfully scan the file without contents. False otherwise.
+   */
+  public boolean scanWithoutParsing(InputFile inputFile, CacheContext cacheContext) {
+    if (sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile)) {
+      boolean allScansSucceeded = true;
+      for (var scanner: scannersThatCannotBeSkipped) {
+        try {
+          allScansSucceeded &= scanner.scanWithoutParsing(inputFile, cacheContext);
+        } catch (AnalysisException e) {
+          // In the case where the IssuableSubscriptionVisitorsRunner throws an exception, the problem has already been
+          // logged and the exception formatted.
+          throw e;
+        } catch (Exception e) {
+          allScansSucceeded = false;
+          String failureMessage = String.format(
+            "Scan without parsing of file %s failed for scanner %s.",
+            inputFile,
+            scanner.getClass().getCanonicalName()
+          );
+          LOG.warn(failureMessage);
+          interruptIfFailFast(new CheckFailureException(failureMessage, e));
+        }
+      }
+      return allScansSucceeded;
+    } else {
+      return false;
+    }
   }
 
   public void visitFile(@Nullable Tree parsedTree, boolean fileCanBeSkipped) {
@@ -290,7 +333,7 @@ public class VisitorsBridge {
     allScanners.stream()
       .filter(EndOfAnalysisCheck.class::isInstance)
       .map(EndOfAnalysisCheck.class::cast)
-      .forEach(EndOfAnalysisCheck::endOfAnalysis);
+      .forEach(check -> check.endOfAnalysis(cacheContext));
   }
 
   private class IssuableSubscriptionVisitorsRunner implements JavaFileScanner, EndOfAnalysisCheck {
@@ -309,6 +352,26 @@ public class VisitorsBridge {
     }
 
     @Override
+    public boolean scanWithoutParsing(InputFile inputFile, CacheContext cacheContext) throws AnalysisException {
+      boolean allScansSucceeded = true;
+      for (SubscriptionVisitor visitor : subscriptionVisitors) {
+        try {
+          allScansSucceeded &= visitor.scanWithoutParsing(inputFile, cacheContext);
+        } catch (Exception e) {
+          allScansSucceeded = false;
+          String failureMessage = String.format(
+            "Scan without parsing of file %s failed for scanner %s.",
+            inputFile,
+            visitor.getClass().getCanonicalName()
+          );
+          LOG.warn(failureMessage);
+          interruptIfFailFast(new CheckFailureException(failureMessage, e));
+        }
+      }
+      return allScansSucceeded;
+    }
+
+    @Override
     public void scanFile(JavaFileScannerContext javaFileScannerContext) {
       PerformanceMeasure.Duration issuableSubscriptionVisitorsDuration = PerformanceMeasure.start("IssuableSubscriptionVisitors");
       try {
@@ -323,11 +386,11 @@ public class VisitorsBridge {
     }
 
     @Override
-    public void endOfAnalysis() {
+    public void endOfAnalysis(CacheContext cachedContext) {
       subscriptionVisitors.stream()
         .filter(EndOfAnalysisCheck.class::isInstance)
         .map(EndOfAnalysisCheck.class::cast)
-        .forEach(EndOfAnalysisCheck::endOfAnalysis);
+        .forEach(check -> check.endOfAnalysis(cachedContext));
     }
 
     private void visitChildren(Tree tree) throws CheckFailureException {

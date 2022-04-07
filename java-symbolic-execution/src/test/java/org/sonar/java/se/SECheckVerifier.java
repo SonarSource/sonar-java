@@ -27,11 +27,18 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.caching.CacheContext;
+
+import javax.annotation.Nullable;
 
 public class SECheckVerifier implements CheckVerifier {
   
@@ -108,9 +115,29 @@ public class SECheckVerifier implements CheckVerifier {
   }
 
   @Override
+  public CheckVerifier addFiles(InputFile.Status status, String... filenames) {
+    return checkVerifier.addFiles(status, filenames);
+  }
+
+  @Override
+  public CheckVerifier addFiles(InputFile.Status status, Collection<String> filenames) {
+    return checkVerifier.addFiles(status, filenames);
+  }
+
+  @Override
   public CheckVerifier withoutSemantic() {
     checkVerifier.withoutSemantic();
     return this;
+  }
+
+  @Override
+  public CheckVerifier withCache(@Nullable ReadCache readCache, @Nullable WriteCache writeCache) {
+    return this.withCache(readCache, writeCache);
+  }
+
+  @Override
+  public CheckVerifier withCache(CacheContext context) {
+    return this.withCache(context);
   }
 
   @Override

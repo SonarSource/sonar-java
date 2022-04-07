@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultInputDir;
+import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
@@ -70,7 +71,7 @@ class DefaultJavaFileScannerContextTest {
   private static final InputComponent PROJECT_BASE_DIR = new DefaultInputDir("", BASE_DIR.getAbsolutePath());
   private static final int COST = 42;
   private static final JavaCheck CHECK = new JavaCheck() { };
-  private static final EndOfAnalysisCheck END_OF_ANALYSIS_CHECK = () -> { };
+  private static final EndOfAnalysisCheck END_OF_ANALYSIS_CHECK = (cacheContext) -> { };
   private SonarComponents sonarComponents;
   private CompilationUnitTree compilationUnitTree;
   private DefaultJavaFileScannerContext context;
@@ -330,6 +331,23 @@ class DefaultJavaFileScannerContextTest {
   @Test
   void test_new_issue_return_a_builder() {
     assertThat(context.newIssue()).isInstanceOf(FluentReporting.JavaIssueBuilder.class);
+  }
+
+  @Test
+  void test_getCacheContext_returns_created_cacheContext() {
+    var sensorContext = mock(SensorContext.class);
+    doAnswer(invocation -> true).when(sensorContext).isCacheEnabled();
+    doAnswer(invocation -> null).when(sensorContext).previousCache();
+    doAnswer(invocation -> null).when(sensorContext).nextCache();
+    doAnswer(invocation -> sensorContext).when(sonarComponents).context();
+
+    DefaultJavaFileScannerContext ctx = new DefaultJavaFileScannerContext(
+      compilationUnitTree, JAVA_INPUT_FILE, null, sonarComponents, new JavaVersionImpl(), true, false);
+
+    var cc = ctx.getCacheContext();
+    assertThat(cc.isCacheEnabled()).isTrue();
+    assertThat(cc.getReadCache()).isNotNull();
+    assertThat(cc.getWriteCache()).isNotNull();
   }
 
   private static void assertMessagePosition(AnalyzerMessage message, int startLine, int startColumn, int endLine, int endColumn) {

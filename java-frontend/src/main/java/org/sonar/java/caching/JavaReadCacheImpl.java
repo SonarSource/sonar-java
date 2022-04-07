@@ -17,23 +17,41 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.caching;
 
-import java.util.List;
-import org.sonar.java.EndOfAnalysisCheck;
-import org.sonar.java.ast.visitors.SubscriptionVisitor;
-import org.sonar.plugins.java.api.caching.CacheContext;
-import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.plugins.java.api.caching.JavaReadCache;
 
-public class EndOfAnalysisVisitor extends SubscriptionVisitor implements EndOfAnalysisCheck{
+import java.io.InputStream;
+import java.util.Objects;
 
-  @Override
-  public void endOfAnalysis(CacheContext cacheContext) {
-    // do nothing
+public class JavaReadCacheImpl implements JavaReadCache {
+  private ReadCache readCache;
+
+  public JavaReadCacheImpl(ReadCache readCache) {
+    this.readCache = readCache;
   }
 
   @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.COMPILATION_UNIT);
+  public InputStream read(String key) {
+    return readCache.read(key);
+  }
+
+  @Override
+  public boolean contains(String key) {
+    return readCache.contains(key);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    JavaReadCacheImpl that = (JavaReadCacheImpl) o;
+    return Objects.equals(readCache, that.readCache);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(readCache);
   }
 }

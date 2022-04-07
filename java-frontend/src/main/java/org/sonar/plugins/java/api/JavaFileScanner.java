@@ -19,7 +19,9 @@
  */
 package org.sonar.plugins.java.api;
 
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.annotations.Beta;
+import org.sonar.plugins.java.api.caching.CacheContext;
 
 /**
  * Common interface for all checks analyzing a java file.
@@ -33,4 +35,17 @@ public interface JavaFileScanner extends JavaCheck {
    */
   void scanFile(JavaFileScannerContext context);
 
+  /**
+   * Scan based on the raw file and cached data (ie: No tree is available at this stage).
+   * The rule should leverage data from the read cache.
+   * The rule should persist data to the write cache for future analyses.
+   *
+   * @param inputFile The file that will eventually be scanned
+   * @param cacheContext Provides all necessary information to use the caches
+   * @return True if successful (ie: no further scanning is required). False by default or if the file cannot be scanned exhaustively without contents.
+   */
+  @Beta
+  default boolean scanWithoutParsing(InputFile inputFile, CacheContext cacheContext) {
+    return false;
+  }
 }

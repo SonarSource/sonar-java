@@ -26,6 +26,8 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.InputModule;
 import org.sonar.api.batch.rule.ActiveRules;
 import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.api.batch.sensor.code.NewSignificantCode;
 import org.sonar.api.batch.sensor.coverage.NewCoverage;
 import org.sonar.api.batch.sensor.cpd.NewCpdTokens;
@@ -74,6 +76,11 @@ public final class InternalSensorContext extends InternalMockedSonarAPI implemen
   }
 
   @Override
+  public boolean canSkipUnchangedFiles() {
+    return false;
+  }
+
+  @Override
   public FileSystem fileSystem() {
     return FILE_SYSTEM;
   }
@@ -116,6 +123,21 @@ public final class InternalSensorContext extends InternalMockedSonarAPI implemen
   @Override
   public void markForPublishing(InputFile arg0) {
     throw notSupportedException("markForPublishing(InputFile)");
+  }
+
+  @Override
+  public WriteCache nextCache() {
+    return null;
+  }
+
+  @Override
+  public ReadCache previousCache() {
+    return null;
+  }
+
+  @Override
+  public boolean isCacheEnabled() {
+    return false;
   }
 
   @Override
