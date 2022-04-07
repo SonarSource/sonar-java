@@ -38,7 +38,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S6418")
 public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
 
-  private static final String DEFAULT_SECRET_WORDS = "secret,token,api[_.-]?key,credential,auth";
+  private static final String DEFAULT_SECRET_WORDS = "api[_.-]?key,auth,credential,secret,token";
   private static final String DEFAULT_MIN_ENTROPY_THRESHOLD = "4.2";
 
   private static final String FIRST_ACCEPTED_CHARACTER = "[\\w.+/~$-]";
