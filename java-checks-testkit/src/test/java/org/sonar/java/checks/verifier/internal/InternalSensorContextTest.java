@@ -53,7 +53,6 @@ class InternalSensorContextTest {
     assertThat(context.project()).isNotNull();
     assertThat(context.project().isFile()).isFalse();
     assertThat(context.project().key()).isEqualTo("project");
-    assertThat(context.canSkipUnchangedFiles()).isFalse();
 
     assertMethodNotSupported(() -> context.activeRules(), "InternalSensorContext::activeRules()");
     assertMethodNotSupported(() -> context.addContextProperty(null, null), "InternalSensorContext::addContextProperty(String,String)");
@@ -69,6 +68,12 @@ class InternalSensorContextTest {
     assertMethodNotSupported(() -> context.newSignificantCode(), "InternalSensorContext::newSignificantCode()");
     assertMethodNotSupported(() -> context.newSymbolTable(), "InternalSensorContext::newSymbolTable()");
     assertMethodNotSupported(() -> context.settings(), "InternalSensorContext::settings()");
+  }
+
+  @Test
+  void canSkipUnchangedFiles_returns_false_by_default() {
+    SensorContext context = new InternalSensorContext();
+    assertThat(context.canSkipUnchangedFiles()).isFalse();
   }
 
   private static void assertMethodNotSupported(Executable executable, String expectedMessage) {

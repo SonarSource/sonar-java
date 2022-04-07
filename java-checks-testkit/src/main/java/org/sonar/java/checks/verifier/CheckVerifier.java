@@ -197,7 +197,6 @@ public interface CheckVerifier {
    * @param writeCache A place to dump information at the end of the analysis
    * @return the verifier configured with the caches to use.
    */
-  //FIXME Remove this method
   CheckVerifier withCache(@Nullable ReadCache readCache, @Nullable WriteCache writeCache);
 
   /**

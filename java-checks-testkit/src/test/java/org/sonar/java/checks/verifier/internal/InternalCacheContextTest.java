@@ -46,7 +46,14 @@ class InternalCacheContextTest {
     JavaWriteCacheImpl writeCache = new JavaWriteCacheImpl(new InternalWriteCache());
     InternalCacheContext a = new InternalCacheContext(true, readCache, writeCache);
     InternalCacheContext b = new InternalCacheContext(true, readCache, writeCache);
-    assertThat(a).isEqualTo(b);
-    assertThat(a).hasSameHashCodeAs(b);
+    assertThat(a)
+      .isEqualTo(a)
+      .isEqualTo(b)
+      .hasSameHashCodeAs(b)
+      .isNotEqualTo(null)
+      .isNotEqualTo(new Object())
+      .isNotEqualTo(new InternalCacheContext(false, readCache, writeCache))
+      .isNotEqualTo(new InternalCacheContext(true, null, writeCache))
+      .isNotEqualTo(new InternalCacheContext(true, readCache, null));
   }
 }
