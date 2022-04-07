@@ -19,33 +19,28 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
-class HardCodedCredentialsCheckTest {
+class HardCodedSecretCheckTest {
 
-  /**
-   * @see org.sonar.java.checks.eclipsebug.EclipseBugTest#javax_conflict()
-   */
   @Test
-  void test() {
+  void default_words() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/HardCodedCredentialsCheck.java")
-      .withCheck(new HardCodedCredentialsCheck())
-      // FIXME should not requires an empty classpath
-      .withClassPath(Collections.emptyList())
+      .onFile(mainCodeSourcesPath("checks/HardCodedSecretCheck.java"))
+      .withCheck(new HardCodedSecretCheck())
       .verifyIssues();
   }
 
   @Test
-  void custom() {
-    HardCodedCredentialsCheck check = new HardCodedCredentialsCheck();
-    check.credentialWords = "marmalade,bazooka";
+  void custom_words() {
+    HardCodedSecretCheck check = new HardCodedSecretCheck();
+    check.secretWords = "marmalade,bazooka";
+    check.minEntropyThreshold = 1.5d;
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/HardCodedCredentialsCheckCustom.java"))
+      .onFile(mainCodeSourcesPath("checks/HardCodedSecretCheckCustom.java"))
       .withCheck(check)
       .verifyIssues();
   }
