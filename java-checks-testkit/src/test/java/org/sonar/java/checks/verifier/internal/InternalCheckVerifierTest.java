@@ -34,6 +34,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.RspecKey;
+import org.sonar.java.caching.DummyCache;
 import org.sonar.java.caching.JavaReadCacheImpl;
 import org.sonar.java.caching.JavaWriteCacheImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -45,6 +46,8 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.caching.JavaReadCache;
+import org.sonar.plugins.java.api.caching.JavaWriteCache;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -944,7 +947,7 @@ class InternalCheckVerifierTest {
   }
 
   @Test
-  void withCache_effectively_sets_the_caches_for_prescan() {
+  void withCache_effectively_sets_the_caches_for_scanWithoutParsing() {
     ReadCache readCache = new InternalReadCache();
     WriteCache writeCache = new InternalWriteCache();
     CacheContext cacheContext = new InternalCacheContext(
@@ -962,6 +965,30 @@ class InternalCheckVerifierTest {
       .verifyNoIssues();
 
     verify(check, times(1)).scanWithoutParsing(any(), eq(cacheContext));
+    verify(check, times(1)).endOfAnalysis(cacheContext);
+  }
+
+  @Test
+  void withCache_can_handle_a_mix_of_caches_combination() {
+    InternalCheckVerifier dummyReadDummyWrite = InternalCheckVerifier.newInstance();
+    dummyReadDummyWrite.withCache(null, null);
+    assertThat(dummyReadDummyWrite.cacheContext.getReadCache()).isInstanceOf(DummyCache.class);
+    assertThat(dummyReadDummyWrite.cacheContext.getWriteCache()).isInstanceOf(DummyCache.class);
+
+    InternalCheckVerifier internalReadDummyWrite = InternalCheckVerifier.newInstance();
+    internalReadDummyWrite.withCache(new InternalReadCache(), null);
+    assertThat(internalReadDummyWrite.cacheContext.getReadCache()).isInstanceOf(JavaReadCache.class);
+    assertThat(internalReadDummyWrite.cacheContext.getWriteCache()).isInstanceOf(DummyCache.class);
+
+    InternalCheckVerifier internalReadInternalWrite = InternalCheckVerifier.newInstance();
+    internalReadInternalWrite.withCache(new InternalReadCache(), new InternalWriteCache());
+    assertThat(internalReadInternalWrite.cacheContext.getReadCache()).isInstanceOf(JavaReadCache.class);
+    assertThat(internalReadInternalWrite.cacheContext.getWriteCache()).isInstanceOf(JavaWriteCache.class);
+
+    InternalCheckVerifier dummyReadInternalWrite = InternalCheckVerifier.newInstance();
+    dummyReadInternalWrite.withCache(null, new InternalWriteCache());
+    assertThat(dummyReadInternalWrite.cacheContext.getReadCache()).isInstanceOf(JavaReadCache.class);
+    assertThat(dummyReadInternalWrite.cacheContext.getWriteCache()).isInstanceOf(JavaWriteCache.class);
   }
 
   @Rule(key = "FailingCheck")

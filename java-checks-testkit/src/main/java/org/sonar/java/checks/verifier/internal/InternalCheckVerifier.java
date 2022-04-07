@@ -47,6 +47,7 @@ import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.api.config.Configuration;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.Beta;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.caching.DummyCache;
 import org.sonar.java.caching.JavaReadCacheImpl;
@@ -100,7 +101,8 @@ public class InternalCheckVerifier implements CheckVerifier {
   private boolean collectQuickFixes = false;
 
   private Expectations expectations = new Expectations();
-  private CacheContext cacheContext;
+  @VisibleForTesting
+  CacheContext cacheContext;
 
   private InternalCheckVerifier() {
   }
