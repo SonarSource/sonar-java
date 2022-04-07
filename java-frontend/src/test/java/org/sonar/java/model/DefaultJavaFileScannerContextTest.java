@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultInputDir;
@@ -44,7 +43,6 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
 import org.sonar.plugins.java.api.SourceMap;
-import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -339,7 +337,7 @@ class DefaultJavaFileScannerContextTest {
   void test_getCacheContext_returns_created_cacheContext() {
     var sensorContext = mock(SensorContext.class);
     doAnswer(invocation -> true).when(sensorContext).isCacheEnabled();
-    doAnswer(invocation -> null).when(sensorContext).previousAnalysisCache();
+    doAnswer(invocation -> null).when(sensorContext).previousCache();
     doAnswer(invocation -> null).when(sensorContext).nextCache();
     doAnswer(invocation -> sensorContext).when(sonarComponents).context();
 

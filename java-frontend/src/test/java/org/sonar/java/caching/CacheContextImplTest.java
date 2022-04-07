@@ -33,7 +33,7 @@ class CacheContextImplTest {
     SensorContext sensorContext = mock(SensorContext.class);
     doReturn(true).when(sensorContext).isCacheEnabled();
     var readCache = mock(ReadCache.class);
-    doReturn(readCache).when(sensorContext).previousAnalysisCache();
+    doReturn(readCache).when(sensorContext).previousCache();
     var writeCache = mock(WriteCache.class);
     doReturn(writeCache).when(sensorContext).nextCache();
 
@@ -50,7 +50,7 @@ class CacheContextImplTest {
     doReturn(false).when(sensorContext).isCacheEnabled();
 
     var readCache = mock(ReadCache.class);
-    doReturn(readCache).when(sensorContext).previousAnalysisCache();
+    doReturn(readCache).when(sensorContext).previousCache();
     var writeCache = mock(WriteCache.class);
     doReturn(writeCache).when(sensorContext).nextCache();
 

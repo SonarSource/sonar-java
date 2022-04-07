@@ -45,7 +45,7 @@ public class CacheContextImpl implements CacheContext {
       try {
         return new CacheContextImpl(
           context.isCacheEnabled(),
-          new JavaReadCacheImpl(context.previousAnalysisCache()),
+          new JavaReadCacheImpl(context.previousCache()),
           new JavaWriteCacheImpl(context.nextCache())
         );
       } catch (NoSuchMethodError error) {

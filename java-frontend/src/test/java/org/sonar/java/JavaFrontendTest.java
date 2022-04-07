@@ -200,7 +200,7 @@ class JavaFrontendTest {
 
     SensorContext spy = spy(sensorContextTester);
     doReturn(true).when(spy).isCacheEnabled();
-    doReturn(mock(ReadCache.class)).when(spy).previousAnalysisCache();
+    doReturn(mock(ReadCache.class)).when(spy).previousCache();
     doReturn(mock(WriteCache.class)).when(spy).nextCache();
     var sonarComponents = mock(SonarComponents.class);
     doReturn(spy).when(sonarComponents).context();

@@ -131,7 +131,7 @@ public final class InternalSensorContext extends InternalMockedSonarAPI implemen
   }
 
   @Override
-  public ReadCache previousAnalysisCache() {
+  public ReadCache previousCache() {
     return null;
   }
 
