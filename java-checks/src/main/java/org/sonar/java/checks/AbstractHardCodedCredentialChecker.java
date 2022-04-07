@@ -27,7 +27,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.LiteralUtils;
@@ -162,10 +161,7 @@ public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscri
     return parent != null && parent.is(Tree.Kind.VARIABLE) && isCredentialVariableName(((VariableTree) parent).simpleName()).isPresent();
   }
 
-  protected boolean isPotentialCredential(@Nullable String literal) {
-    if (literal == null) {
-      return false;
-    }
+  protected boolean isPotentialCredential(String literal) {
     String trimmed = literal.trim();
     return trimmed.length() >= MINIMUM_CREDENTIAL_LENGTH && !ALLOW_LIST.contains(trimmed);
   }
@@ -211,7 +207,11 @@ public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscri
   }
 
   protected boolean isPotentialCredential(ExpressionTree expression) {
-    return isPotentialCredential(ExpressionsHelper.getConstantValueAsString(expression).value());
+    String value = ExpressionsHelper.getConstantValueAsString(expression).value();
+    if (value == null) {
+      return false;
+    }
+    return isPotentialCredential(value);
   }
 
   protected void handleEqualsMethod(MethodInvocationTree mit, MemberSelectExpressionTree methodSelect) {

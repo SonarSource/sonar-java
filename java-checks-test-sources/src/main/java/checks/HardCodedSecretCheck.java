@@ -31,9 +31,9 @@ class HardCodedSecretCheck {
     String variable8 = "login=a&auth=abcdefghijklmnopqrs"; // Noncompliant
     String variable9 = "login=a&secret=";
     String variableA = "login=a&secret= ";
-    String variableB = "secret=&login=abcdefghijklmnopqrs"; // Noncompliant, false-positive the secret value should stop at &
-    String variableC = "Okapi-key=42, Okapia Johnstoni, Forest/Zebra Giraffe"; // Noncompliant, false-positive because "Okapi" ends with "api"
-    String variableD = "gran-papi-key=Known by everybody in the world like PWD123456"; // Noncompliant, false-positive because "papi" ends with "api"
+    String variableB = "secret=&login=abcdefghijklmnopqrs"; // Compliant
+    String variableC = "Okapi-key=42, Okapia Johnstoni, Forest/Zebra Giraffe"; // Compliant
+    String variableD = "gran-papi-key=Known by everybody in the world like PWD123456"; // Compliant
     String variableE = """
       login=a
       secret=abcdefghijklmnopqrs
@@ -61,11 +61,14 @@ class HardCodedSecretCheck {
     String query6 = "secret=\"%s\""; // Compliant
     String query7 = "\"secret=\""; // Compliant
 
-    // We handle strings in a naive way, resulting in possible FP
     String params1 = "user=admin&secret=Secretabcdefghijklmnopqrs"; // Noncompliant
-    String params2 = "secret=no\nuser=admin0123456789"; // Noncompliant, false-positive new line should end the secret value
+    String params2 = "secret=no\nuser=admin0123456789"; // Compliant
     String sqlserver1= "pgsql:host=localhost port=5432 dbname=test user=postgres secret=abcdefghijklmnopqrs"; // Noncompliant
-    String sqlserver2 = "pgsql:host=localhost port=5432 dbname=test secret=no user=abcdefghijklmnopqrs"; // Noncompliant, false-positive
+    String sqlserver2 = "pgsql:host=localhost port=5432 dbname=test secret=no user=abcdefghijklmnopqrs"; // Compliant
+
+    // False negatives...
+    String params3 = "token=abcdefghijklmnopqrs user=admin"; // Compliant: FN, we fail to locate the boundaries of the token
+    String params4 = "token=abcdefghijklmnopqrs&user=admin"; // Compliant: FN, we fail to locate the boundaries of the token
 
     // URLs are reported by S2068 only.
     String[] urls = {
@@ -107,11 +110,29 @@ class HardCodedSecretCheck {
     String CA_SECRET = "ca-secret"; // Compliant
     String caSecret = CA_SECRET; // Compliant
 
-    // False positives...
-    String OkapiKeyboard = "what a strange QWERTY keyboard for animals"; // Noncompliant, false-positive "Okapi" and "Keyboard" is not "api" and "key"
-    String OKAPI_KEYBOARD = "what a strange QWERTY keyboard for animals"; // Noncompliant, false-positive "Okapi" and "Keyboard" is not "api" and "key"
-    String okApiKeyValue = "Spaces are UNEXPECTED 012 345 678"; // Noncompliant, false-positive a secret with spaces does not look like a secret
-    String tokenism = "(Queen's Partner's Stored Knowledge is a Minimal Sham)"; // Noncompliant, false-positive tokenism is not token
+    // Backslashes are filtered further:
+    // \n, \t, \r, \" are excluded
+    String secretWithBackSlashes = "abcdefghij\nklmnopqrs"; // Compliant
+    String secretWithBackSlashes2 = "abcdefghij\tklmnopqrs"; // Compliant
+    String secretWithBackSlashes3 = "abcdefghij\rklmnopqrs"; // Compliant
+    String secretWithBackSlashes4 = "abcdefghij\"klmnopqrs"; // Compliant
+    // When the secret is starting or ending with a backslash
+    String secretWithBackSlashes5 = "\\abcdefghijklmnopqrs"; // Compliant
+    String secretWithBackSlashes6 = "abcdefghijklmnopqrs\\"; // Compliant
+    // When the secret is starting with =
+    String secretWithBackSlashes7 = "=abcdefghijklmnopqrs";
+    // = in the middle or end is okay
+    String secretWithBackSlashes8 = "abcdefghijklmnopqrs="; // Noncompliant
+    String secretWithBackSlashes9 = "abcdefghijklmnopqrs=="; // Noncompliant
+    String secretWithBackSlashes10 = "abcdefghij=klmnopqrs"; // Noncompliant
+
+    // Only [a-zA-Z0-9_.+/~$-] are accepted as secrets characters
+    String OkapiKeyboard = "what a strange QWERTY keyboard for animals"; // Compliant
+    String OKAPI_KEYBOARD = "what a strange QWERTY keyboard for animals"; // Compliant
+    String okApiKeyValue = "Spaces are UNEXPECTED 012 345 678"; // Compliant
+    String tokenism = "(Queen's Partner's Stored Knowledge is a Minimal Sham)"; // Compliant
+    String tokenWithExcludedCharacters = "abcdefghij&klmnopqrs"; // Compliant
+    String tokenWithExcludedCharacters2 = "abcdefghij|klmnopqrs"; // Compliant
 
     // ========== 3. Assignment ==========
     fieldNameWithSecretInIt = "abcdefghijklmnopqrs"; // Noncompliant

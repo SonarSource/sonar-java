@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import java.util.Arrays;
 import java.util.List;
-import javax.annotation.Nullable;
+import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ShannonEntropy;
@@ -40,6 +40,11 @@ public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
 
   private static final String DEFAULT_SECRET_WORDS = "secret,token,api[_.-]?key,credential,auth";
   private static final String DEFAULT_MIN_ENTROPY_THRESHOLD = "4.2";
+
+  private static final String FIRST_ACCEPTED_CHARACTER = "[\\w.+/~$-]";
+  private static final String FOLLOWING_ACCEPTED_CHARACTER = "[=\\w.+/~$-]";
+  private static final Pattern SECRET_PATTERN =
+    Pattern.compile(FIRST_ACCEPTED_CHARACTER + "(" + FOLLOWING_ACCEPTED_CHARACTER + "|\\\\\\\\" + FOLLOWING_ACCEPTED_CHARACTER + ")++={0,2}");
 
   @RuleProperty(
     key = "secretWords",
@@ -93,8 +98,10 @@ public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
   }
 
   @Override
-  protected boolean isPotentialCredential(@Nullable String literal) {
-    return super.isPotentialCredential(literal) && ShannonEntropy.calculate(literal) >= minEntropyThreshold;
+  protected boolean isPotentialCredential(String literal) {
+    return super.isPotentialCredential(literal)
+      && ShannonEntropy.calculate(literal) >= minEntropyThreshold
+      && SECRET_PATTERN.matcher(literal).matches();
   }
 
   @Override
