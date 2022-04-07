@@ -490,13 +490,19 @@ class VisitorsBridgeTest {
     }
 
     @Test
+    void scanWithoutParsing_returns_false_for_scanners_that_do_not_override_scanWithoutParsing() throws ApiMismatchException {
+      JavaFileScanner scanner = new DefaultEndOfAnalysisCheck();
+      assertThat(scan_without_parsing(scanner)).isFalse();
+    }
+
+    @Test
     void scanWithoutParsing_returns_false_when_a_JFS_cannot_scan_successfully_without_parsing() throws ApiMismatchException {
-      returns_false_when_a_scanner_cannot_scan_successfully_without_parsing(new ScannerThatCannotScanWithoutParsing());
+      assertThat(scan_without_parsing(new ScannerThatCannotScanWithoutParsing())).isFalse();
     }
 
     @Test
     void scanWithoutParsing_returns_false_when_an_ISV_cannot_scan_successfully_without_parsing() throws ApiMismatchException {
-     returns_false_when_a_scanner_cannot_scan_successfully_without_parsing(new IsvThatCannotScanWithoutParsing());
+      assertThat(scan_without_parsing(new IsvThatCannotScanWithoutParsing())).isFalse();
     }
 
     @Test
@@ -533,42 +539,13 @@ class VisitorsBridgeTest {
       triggers_an_AnalysisException_when_a_scanner_throws_while_scanning_without_parsing(scanner);
     }
 
-    private void returns_false_when_a_scanner_cannot_scan_successfully_without_parsing(JavaFileScanner scanner) throws ApiMismatchException {
-      SonarComponents sonarComponents = mock(SonarComponents.class);
-      doReturn(true).when(sonarComponents).fileCanBeSkipped(any(InputFile.class));
-      doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
-
-      VisitorsBridge visitorsBridge = new VisitorsBridge(
-        Collections.singletonList(scanner),
-        Collections.emptyList(),
-        sonarComponents
-      );
-
-      InputFile inputFile = mock(InputFile.class);
-      doReturn(InputFile.Status.CHANGED).when(inputFile).status();
-      CacheContext cacheContext = mock(CacheContext.class);
-
-      assertThat(visitorsBridge.scanWithoutParsing(inputFile, cacheContext)).isFalse();
-    }
-
     private void returns_false_when_a_scanner_throws_an_exception_while_scanning_without_parsing_and_fail_fast_is_disabled(JavaFileScanner scanner) throws ApiMismatchException {
       SonarComponents sonarComponents = mock(SonarComponents.class);
       doReturn(true).when(sonarComponents).fileCanBeSkipped(any(InputFile.class));
       doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
       doReturn(false).when(sonarComponents).shouldFailAnalysisOnException();
-      doThrow(new RuntimeException("boom")).when(scanner).scanWithoutParsing(any(), any());
 
-      VisitorsBridge visitorsBridge = new VisitorsBridge(
-        Collections.singletonList(scanner),
-        Collections.emptyList(),
-        sonarComponents
-      );
-
-      InputFile inputFile = mock(InputFile.class);
-      doReturn(InputFile.Status.CHANGED).when(inputFile).status();
-      CacheContext cacheContext = mock(CacheContext.class);
-
-      assertThat(visitorsBridge.scanWithoutParsing(inputFile, cacheContext)).isFalse();
+      assertThat(scan_without_parsing(sonarComponents, scanner)).isFalse();
     }
 
     private void triggers_an_AnalysisException_when_a_scanner_throws_while_scanning_without_parsing(JavaFileScanner scanner) throws ApiMismatchException {
@@ -577,18 +554,10 @@ class VisitorsBridgeTest {
       doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
       doReturn(true).when(sonarComponents).shouldFailAnalysisOnException();
 
-      VisitorsBridge visitorsBridge = new VisitorsBridge(
-        Collections.singletonList(scanner),
-        Collections.emptyList(),
-        sonarComponents
-      );
-
       InputFile inputFile = mock(InputFile.class);
       doReturn(InputFile.Status.CHANGED).when(inputFile).status();
-      doReturn("src/java/File.java").when(inputFile).toString();
-      CacheContext cacheContext = mock(CacheContext.class);
 
-      assertThatThrownBy(() -> visitorsBridge.scanWithoutParsing(inputFile, cacheContext))
+      assertThatThrownBy(() -> scan_without_parsing(sonarComponents, scanner, inputFile))
         .hasRootCauseMessage("boom")
         .hasRootCauseInstanceOf(RuntimeException.class)
         .hasMessage("Failing check")
@@ -603,6 +572,32 @@ class VisitorsBridgeTest {
       List<LogAndArguments> warningLogs = logTester.getLogs(LoggerLevel.WARN);
       assertThat(warningLogs).hasSize(1);
       assertThat(warningLogs.get(0).getFormattedMsg()).isEqualTo(expectedLogMessage);
+    }
+
+    private boolean scan_without_parsing(JavaFileScanner scanner) throws ApiMismatchException {
+      SonarComponents sonarComponents = mock(SonarComponents.class);
+      doReturn(true).when(sonarComponents).fileCanBeSkipped(any(InputFile.class));
+      doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
+
+      return scan_without_parsing(sonarComponents, scanner);
+    }
+
+    private boolean scan_without_parsing(SonarComponents sonarComponents, JavaFileScanner scanner) {
+      InputFile inputFile = mock(InputFile.class);
+      doReturn(InputFile.Status.CHANGED).when(inputFile).status();
+      return scan_without_parsing(sonarComponents, scanner, inputFile);
+    }
+
+    private boolean scan_without_parsing(SonarComponents sonarComponents, JavaFileScanner scanner, InputFile inputFile) {
+      VisitorsBridge visitorsBridge = new VisitorsBridge(
+        Collections.singletonList(scanner),
+        Collections.emptyList(),
+        sonarComponents
+      );
+
+      CacheContext cacheContext = mock(CacheContext.class);
+
+      return visitorsBridge.scanWithoutParsing(inputFile, cacheContext);
     }
   }
 
@@ -734,6 +729,19 @@ class VisitorsBridgeTest {
     @Override
     public boolean isCompatibleWithJavaVersion(JavaVersion version) {
       return false;
+    }
+  }
+
+  private static class DefaultEndOfAnalysisCheck implements EndOfAnalysisCheck, JavaFileScanner {
+
+    @Override
+    public void endOfAnalysis(CacheContext cacheContext) {
+      /* Do nothing */
+    }
+
+    @Override
+    public void scanFile(JavaFileScannerContext context) {
+      /* Do nothing */
     }
   }
 
