@@ -83,7 +83,7 @@ public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscri
 
   private Stream<Pattern> literalPatterns() {
     if (literalPatterns == null) {
-      literalPatterns = toPatterns("=\\S.");
+      literalPatterns = toPatterns("=\\s*+([^\\\\ &;#]+)");
     }
     return literalPatterns.stream();
   }
@@ -149,10 +149,9 @@ public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscri
       literalPatterns().map(pattern -> pattern.matcher(cleanedLiteral))
         // contains "pwd=" or similar
         .filter(Matcher::find)
-        .map(matcher -> matcher.group(1))
-        .filter(match -> !isExcludedLiteral(cleanedLiteral, match))
+        .filter(matcher -> !isExcludedLiteral(matcher.group(2)))
         .findAny()
-        .ifPresent(credential -> report(tree, credential));
+        .ifPresent(matcher -> report(tree, matcher.group(1)));
     }
   }
 
@@ -166,8 +165,7 @@ public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscri
     return trimmed.length() >= MINIMUM_CREDENTIAL_LENGTH && !ALLOW_LIST.contains(trimmed);
   }
 
-  private boolean isExcludedLiteral(String cleanedLiteral, String match) {
-    String followingString = cleanedLiteral.substring(cleanedLiteral.indexOf(match) + match.length() + 1);
+  private boolean isExcludedLiteral(String followingString) {
     return !isPotentialCredential(followingString)
       || followingString.startsWith("?")
       || followingString.startsWith(":")

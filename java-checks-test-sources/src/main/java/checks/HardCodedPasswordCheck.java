@@ -57,6 +57,17 @@ class HardCodedPasswordCheck {
     // When the string is in a variable with a name containing password, we let the logic about variable declaration (2.) determine if we should raise an issue.
     String inPasswordConstant = "user=admin&password=Password123"; // Compliant
 
+    // Password are correctly extracted
+    String query10 = "password=something&user=user"; // Noncompliant
+    String query11 = "password=anonymous&user=user"; // Compliant, the password is the excluded "anonymous" and not "anonymous&user=user"
+    String query12 = "password=anonymous user=user"; // Compliant
+    String query121 = "password=anonymous;user=user"; // Compliant
+    String query122 = "password=anonymous#user=user"; // Compliant
+    String query13 = "password=anonymous\tuser=user"; // Compliant
+    String query14 = "password=anonymous\nuser=user"; // Compliant
+    String query15 = "password=something&user=user%s"; // Noncompliant
+    String query16 = "passwordProtected password=:notAPassword"; // Compliant, the password is starting with ":" and therefore excluded
+
     // ========== 1.2 Urls ==========
     // No exclusion is made when the password if found in an url
     String[] urls = {

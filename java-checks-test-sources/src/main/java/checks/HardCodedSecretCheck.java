@@ -66,9 +66,9 @@ class HardCodedSecretCheck {
     String sqlserver1= "pgsql:host=localhost port=5432 dbname=test user=postgres secret=abcdefghijklmnopqrs"; // Noncompliant
     String sqlserver2 = "pgsql:host=localhost port=5432 dbname=test secret=no user=abcdefghijklmnopqrs"; // Compliant
 
-    // False negatives...
-    String params3 = "token=abcdefghijklmnopqrs user=admin"; // Compliant: FN, we fail to locate the boundaries of the token
-    String params4 = "token=abcdefghijklmnopqrs&user=admin"; // Compliant: FN, we fail to locate the boundaries of the token
+    // Spaces and & are not included into the token, it shows us the end of the token.
+    String params3 = "token=abcdefghijklmnopqrs user=admin"; // Noncompliant
+    String params4 = "token=abcdefghijklmnopqrs&user=admin"; // Noncompliant
 
     // URLs are reported by S2068 only.
     String[] urls = {
