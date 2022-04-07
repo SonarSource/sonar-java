@@ -83,7 +83,7 @@ public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscri
 
   private Stream<Pattern> literalPatterns() {
     if (literalPatterns == null) {
-      literalPatterns = toPatterns("=\\s*+([^\\\\ &;#]+)");
+      literalPatterns = toPatterns("=\\s*+([^\\\\ &;#,|]+)");
     }
     return literalPatterns.stream();
   }
@@ -169,7 +169,6 @@ public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscri
     return !isPotentialCredential(followingString)
       || followingString.startsWith("?")
       || followingString.startsWith(":")
-      || followingString.startsWith("\\\"")
       || followingString.contains("%s");
   }
 

@@ -37,7 +37,7 @@ class HardCodedPasswordCheck {
     String sqlserver = "pgsql:host=localhost port=5432 dbname=test user=postgres password=postgres"; // Noncompliant
 
     // Password starting with "?" are ignored
-    String query1 = "password=?"; // Compliant
+    String query1 = "password=?hard-to-find"; // Compliant
     String query1_1 = "password=???"; // Compliant
     // Password starting with "\"" are ignored
     String query7 = "\"password=\""; // Compliant
@@ -60,6 +60,8 @@ class HardCodedPasswordCheck {
     // Password are correctly extracted
     String query10 = "password=something&user=user"; // Noncompliant
     String query11 = "password=anonymous&user=user"; // Compliant, the password is the excluded "anonymous" and not "anonymous&user=user"
+    String query17 = "password=anonymous,user=user"; // Compliant
+    String query18 = "password=anonymous|user=user"; // Compliant
     String query12 = "password=anonymous user=user"; // Compliant
     String query121 = "password=anonymous;user=user"; // Compliant
     String query122 = "password=anonymous#user=user"; // Compliant

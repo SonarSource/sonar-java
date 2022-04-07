@@ -44,7 +44,7 @@ public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
   private static final String FIRST_ACCEPTED_CHARACTER = "[\\w.+/~$-]";
   private static final String FOLLOWING_ACCEPTED_CHARACTER = "[=\\w.+/~$-]";
   private static final Pattern SECRET_PATTERN =
-    Pattern.compile(FIRST_ACCEPTED_CHARACTER + "(" + FOLLOWING_ACCEPTED_CHARACTER + "|\\\\\\\\" + FOLLOWING_ACCEPTED_CHARACTER + ")++={0,2}");
+    Pattern.compile(FIRST_ACCEPTED_CHARACTER + "(" + FOLLOWING_ACCEPTED_CHARACTER + "|\\\\\\\\" + FOLLOWING_ACCEPTED_CHARACTER + ")++");
 
   @RuleProperty(
     key = "secretWords",
