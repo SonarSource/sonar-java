@@ -180,14 +180,18 @@ public class VisitorsBridge {
       for (var scanner: scannersThatCannotBeSkipped) {
         try {
           allScansSucceeded &= scanner.scanWithoutParsing(inputFile, cacheContext);
+        } catch (AnalysisException e) {
+          // In the case where the IssuableSubscriptionVisitorsRunner throws an exception, the problem has already been
+          // logged and the exception formatted.
+          throw e;
         } catch (Exception e) {
+          allScansSucceeded = false;
           String failureMessage = String.format(
             "Scan without parsing of file %s failed for scanner %s.",
             inputFile,
             scanner.getClass().getCanonicalName()
           );
           LOG.warn(failureMessage);
-          allScansSucceeded = false;
           interruptIfFailFast(new CheckFailureException(failureMessage, e));
         }
       }
@@ -348,8 +352,23 @@ public class VisitorsBridge {
     }
 
     @Override
-    public boolean scanWithoutParsing(InputFile inputFile, CacheContext cacheContext) {
-      return subscriptionVisitors.stream().allMatch(visitor -> visitor.scanWithoutParsing(inputFile, cacheContext));
+    public boolean scanWithoutParsing(InputFile inputFile, CacheContext cacheContext) throws AnalysisException {
+      boolean allScansSucceeded = true;
+      for (SubscriptionVisitor visitor : subscriptionVisitors) {
+        try {
+          allScansSucceeded &= visitor.scanWithoutParsing(inputFile, cacheContext);
+        } catch (Exception e) {
+          allScansSucceeded = false;
+          String failureMessage = String.format(
+            "Scan without parsing of file %s failed for scanner %s.",
+            inputFile,
+            visitor.getClass().getCanonicalName()
+          );
+          LOG.warn(failureMessage);
+          interruptIfFailFast(new CheckFailureException(failureMessage, e));
+        }
+      }
+      return allScansSucceeded;
     }
 
     @Override
