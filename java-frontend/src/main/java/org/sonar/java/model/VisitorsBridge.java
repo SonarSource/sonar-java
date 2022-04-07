@@ -76,7 +76,8 @@ public class VisitorsBridge {
   protected boolean inAndroidContext = false;
   private int fullyScannedFileCount = 0;
   private int skippedFileCount = 0;
-  private CacheContext cacheContext;
+  @VisibleForTesting
+  CacheContext cacheContext;
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {

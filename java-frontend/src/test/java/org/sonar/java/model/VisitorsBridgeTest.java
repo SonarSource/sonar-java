@@ -455,6 +455,15 @@ class VisitorsBridgeTest {
   }
 
   @Test
+  void setCacheContext() {
+    CacheContext cacheContext = mock(CacheContext.class);
+    VisitorsBridge visitorsBridge = new VisitorsBridge(null);
+    assertThat(visitorsBridge.cacheContext).isNotEqualTo(cacheContext);
+    visitorsBridge.setCacheContext(cacheContext);
+    assertThat(visitorsBridge.cacheContext).isEqualTo(cacheContext);
+  }
+
+  @Test
   void scanWithoutParsing_returns_false_when_the_file_cannot_be_skipped() throws ApiMismatchException {
     // When VB has no SonarComponents
     VisitorsBridge visitorsBridge = new VisitorsBridge(null);
