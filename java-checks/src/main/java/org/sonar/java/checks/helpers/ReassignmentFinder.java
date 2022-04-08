@@ -73,8 +73,12 @@ public final class ReassignmentFinder {
       return ((VariableTree) tree).initializer();
     } else if (tree.is(Tree.Kind.ENUM_CONSTANT)) {
       return ((EnumConstantTree) tree).initializer();
+    } else if (tree instanceof AssignmentExpressionTree) {
+      // All kinds of Assignment
+      return ((AssignmentExpressionTree) tree).expression();
     }
-    return ((AssignmentExpressionTree) tree).expression();
+    // Can be other declaration, like class
+    return null;
   }
 
   public static List<AssignmentExpressionTree> getReassignments(@Nullable Tree ownerDeclaration, List<IdentifierTree> usages) {
