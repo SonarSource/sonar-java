@@ -101,8 +101,7 @@ The "Ruling Test" are an integration test suite which launches the analysis of a
 
 To run the test, first make sure the submodules are checked out:
 
-    git submodule init 
-    git submodule update
+    git submodule update --init --recursive
 
 Launch ruling test:
 
