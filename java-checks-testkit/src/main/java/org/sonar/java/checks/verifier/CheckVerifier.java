@@ -21,15 +21,12 @@ package org.sonar.java.checks.verifier;
 
 import java.io.File;
 import java.util.Collection;
-
+import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.caching.CacheContext;
-
-import javax.annotation.Nullable;
 
 /**
  * This interface defines how to use checks (rules) verifiers. It's goal is to provide all the required information
@@ -198,13 +195,6 @@ public interface CheckVerifier {
    * @return the verifier configured with the caches to use.
    */
   CheckVerifier withCache(@Nullable ReadCache readCache, @Nullable WriteCache writeCache);
-
-  /**
-   *
-   * @param context A wrapper for the {@link org.sonar.plugins.java.api.caching.JavaReadCache} and {@link org.sonar.plugins.java.api.caching.JavaWriteCache}.
-   * @return the verifier configured with the caches to use
-   */
-  CheckVerifier withCache(CacheContext context);
 
   /**
    * Verifies that all the expected issues are correctly raised by the rule(s),

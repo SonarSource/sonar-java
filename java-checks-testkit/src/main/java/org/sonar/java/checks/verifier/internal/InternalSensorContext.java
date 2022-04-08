@@ -43,7 +43,7 @@ import org.sonar.api.config.Settings;
 import org.sonar.api.scanner.fs.InputProject;
 import org.sonar.api.utils.Version;
 
-public final class InternalSensorContext extends InternalMockedSonarAPI implements SensorContext {
+public class InternalSensorContext extends InternalMockedSonarAPI implements SensorContext {
   private static final Configuration CONFIG = new InternalConfiguration();
   private static final SonarRuntime RUNTIME = new InternalSonarRuntime();
   private static final FileSystem FILE_SYSTEM = new InternalFileSystem();

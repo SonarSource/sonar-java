@@ -51,10 +51,13 @@ import org.sonar.plugins.java.api.caching.JavaWriteCache;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 class InternalCheckVerifierTest {
 
@@ -964,7 +967,7 @@ class InternalCheckVerifierTest {
       .withCheck(check)
       .verifyNoIssues();
 
-    verify(check, times(1)).scanWithoutParsing(any(), eq(cacheContext));
+    verify(check, times(1)).scanWithoutParsing(argThat(context -> equivalent(cacheContext, context.getCacheContext())));
     verify(check, times(1)).endOfAnalysis(cacheContext);
   }
 
@@ -989,6 +992,12 @@ class InternalCheckVerifierTest {
     dummyReadInternalWrite.withCache(null, new InternalWriteCache());
     assertThat(dummyReadInternalWrite.cacheContext.getReadCache()).isInstanceOf(JavaReadCache.class);
     assertThat(dummyReadInternalWrite.cacheContext.getWriteCache()).isInstanceOf(JavaWriteCache.class);
+  }
+
+  boolean equivalent(CacheContext a, CacheContext b) {
+    return a.isCacheEnabled() == b.isCacheEnabled() &&
+      a.getReadCache().equals(b.getReadCache()) &&
+      a.getWriteCache().equals(b.getWriteCache());
   }
 
   @Rule(key = "FailingCheck")

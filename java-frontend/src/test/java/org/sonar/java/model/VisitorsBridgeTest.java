@@ -47,6 +47,7 @@ import org.sonar.java.checks.EndOfAnalysisVisitor;
 import org.sonar.java.checks.VisitorThatCanBeSkipped;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.notchecks.VisitorNotInChecksPackage;
+import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -474,7 +475,7 @@ class VisitorsBridgeTest {
       InputFile inputFile = mock(InputFile.class);
       doReturn(InputFile.Status.CHANGED).when(inputFile).status();
       CacheContext cacheContext = mock(CacheContext.class);
-      assertThat(visitorsBridge.scanWithoutParsing(inputFile, cacheContext)).isFalse();
+      assertThat(visitorsBridge.scanWithoutParsing(inputFile)).isFalse();
 
       // When SonarComponents is set and does not allow the file to be skipped
       SonarComponents sonarComponents = mock(SonarComponents.class);
@@ -486,7 +487,7 @@ class VisitorsBridgeTest {
         sonarComponents
       );
 
-      assertThat(visitorsBridge.scanWithoutParsing(inputFile, cacheContext)).isFalse();
+      assertThat(visitorsBridge.scanWithoutParsing(inputFile)).isFalse();
     }
 
     @Test
@@ -508,7 +509,7 @@ class VisitorsBridgeTest {
     @Test
     void scanWithoutParsing_returns_false_when_a_JFS_throws_an_exception_while_scanning_without_parsing_and_fail_fast_is_disabled() throws ApiMismatchException {
       ScannerThatCannotScanWithoutParsing scanner = spy(new ScannerThatCannotScanWithoutParsing());
-      doThrow(new RuntimeException("boom")).when(scanner).scanWithoutParsing(any(), any());
+      doThrow(new RuntimeException("boom")).when(scanner).scanWithoutParsing(any());
 
       returns_false_when_a_scanner_throws_an_exception_while_scanning_without_parsing_and_fail_fast_is_disabled(scanner);
     }
@@ -516,7 +517,7 @@ class VisitorsBridgeTest {
     @Test
     void scanWithoutParsing_returns_false_when_an_ISV_throws_an_exception_while_scanning_without_parsing_and_fail_fast_is_disabled() throws ApiMismatchException {
       IsvThatCannotScanWithoutParsing scanner = spy(new IsvThatCannotScanWithoutParsing());
-      doThrow(new RuntimeException("boom")).when(scanner).scanWithoutParsing(any(), any());
+      doThrow(new RuntimeException("boom")).when(scanner).scanWithoutParsing(any());
 
       returns_false_when_a_scanner_throws_an_exception_while_scanning_without_parsing_and_fail_fast_is_disabled(scanner);
     }
@@ -525,7 +526,7 @@ class VisitorsBridgeTest {
     void scanWithoutParsing_triggers_an_AnalysisException_when_a_JFS_throws_while_scanning_without_parsing() throws ApiMismatchException {
       ScannerThatCannotScanWithoutParsing scanner = spy(new ScannerThatCannotScanWithoutParsing());
       RuntimeException boom = new RuntimeException("boom");
-      doThrow(boom).when(scanner).scanWithoutParsing(any(), any());
+      doThrow(boom).when(scanner).scanWithoutParsing(any());
 
       triggers_an_AnalysisException_when_a_scanner_throws_while_scanning_without_parsing(scanner);
     }
@@ -534,7 +535,7 @@ class VisitorsBridgeTest {
     void scanWithoutParsing_triggers_an_AnalysisException_when_an_ISV_throws_while_scanning_without_parsing() throws ApiMismatchException {
       IsvThatCannotScanWithoutParsing scanner = spy(new IsvThatCannotScanWithoutParsing());
       RuntimeException boom = new RuntimeException("boom");
-      doThrow(boom).when(scanner).scanWithoutParsing(any(), any());
+      doThrow(boom).when(scanner).scanWithoutParsing(any());
 
       triggers_an_AnalysisException_when_a_scanner_throws_while_scanning_without_parsing(scanner);
     }
@@ -595,9 +596,9 @@ class VisitorsBridgeTest {
         sonarComponents
       );
 
-      CacheContext cacheContext = mock(CacheContext.class);
+      visitorsBridge.setCurrentFile(inputFile);
 
-      return visitorsBridge.scanWithoutParsing(inputFile, cacheContext);
+      return visitorsBridge.scanWithoutParsing(inputFile);
     }
   }
 
@@ -750,7 +751,7 @@ class VisitorsBridgeTest {
      * Always fail
      */
     @Override
-    public boolean scanWithoutParsing(InputFile inputFile, CacheContext cacheContext) {
+    public boolean scanWithoutParsing(InputFileScannerContext fileScannerContext) {
       return false;
     }
 
@@ -778,7 +779,7 @@ class VisitorsBridgeTest {
     }
 
     @Override
-    public boolean scanWithoutParsing(InputFile inputFile, CacheContext cacheContext) {
+    public boolean scanWithoutParsing(InputFileScannerContext fileScannerContext) {
       return false;
     }
   }

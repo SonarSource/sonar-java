@@ -50,6 +50,7 @@ import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.caching.CacheContextImpl;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.exceptions.ThrowableUtils;
+import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -171,15 +172,15 @@ public class VisitorsBridge {
    * In cases where incremental analysis is enabled, try to scan a raw file without parsing its content.
    *
    * @param inputFile    The file to scan
-   * @param cacheContext Cached information that may help to analyse the file without parsing
    * @return True if all scanners successfully scan the file without contents. False otherwise.
    */
-  public boolean scanWithoutParsing(InputFile inputFile, CacheContext cacheContext) {
+  public boolean scanWithoutParsing(InputFile inputFile) {
     if (sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile)) {
       boolean allScansSucceeded = true;
       for (var scanner: scannersThatCannotBeSkipped) {
         try {
-          allScansSucceeded &= scanner.scanWithoutParsing(inputFile, cacheContext);
+          var fileScannerContext = createScannerContext();
+          allScansSucceeded &= scanner.scanWithoutParsing(fileScannerContext);
         } catch (AnalysisException e) {
           // In the case where the IssuableSubscriptionVisitorsRunner throws an exception, the problem has already been
           // logged and the exception formatted.
@@ -284,6 +285,15 @@ public class VisitorsBridge {
     return "";
   }
 
+  protected InputFileScannerContext createScannerContext() {
+    return new DefaultInputFileScannerContext(
+      sonarComponents,
+      currentFile,
+      javaVersion,
+      inAndroidContext
+    );
+  }
+
   protected JavaFileScannerContext createScannerContext(
     CompilationUnitTree tree, @Nullable Sema semanticModel, SonarComponents sonarComponents, boolean fileParsed) {
     return new DefaultJavaFileScannerContext(
@@ -352,16 +362,16 @@ public class VisitorsBridge {
     }
 
     @Override
-    public boolean scanWithoutParsing(InputFile inputFile, CacheContext cacheContext) throws AnalysisException {
+    public boolean scanWithoutParsing(InputFileScannerContext fileScannerContext) throws AnalysisException {
       boolean allScansSucceeded = true;
       for (SubscriptionVisitor visitor : subscriptionVisitors) {
         try {
-          allScansSucceeded &= visitor.scanWithoutParsing(inputFile, cacheContext);
+          allScansSucceeded &= visitor.scanWithoutParsing(fileScannerContext);
         } catch (Exception e) {
           allScansSucceeded = false;
           String failureMessage = String.format(
             "Scan without parsing of file %s failed for scanner %s.",
-            inputFile,
+            fileScannerContext.getInputFile(),
             visitor.getClass().getCanonicalName()
           );
           LOG.warn(failureMessage);

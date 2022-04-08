@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +31,6 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
-import org.sonar.java.caching.CacheContextImpl;
 import org.sonar.java.regex.RegexCache;
 import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.RegexScannerContext;
@@ -43,7 +41,6 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.SourceMap;
-import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -51,17 +48,12 @@ import org.sonarsource.analyzer.commons.regex.RegexParseResult;
 import org.sonarsource.analyzer.commons.regex.ast.FlagSet;
 import org.sonarsource.analyzer.commons.regex.ast.RegexSyntaxElement;
 
-public class DefaultJavaFileScannerContext implements JavaFileScannerContext, RegexScannerContext, FluentReporting {
+public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContext implements JavaFileScannerContext, RegexScannerContext, FluentReporting {
   private final JavaTree.CompilationUnitTreeImpl tree;
   private final boolean semanticEnabled;
-  private final SonarComponents sonarComponents;
   private final ComplexityVisitor complexityVisitor;
   private final RegexCache regexCache;
-  private final InputFile inputFile;
-  private final JavaVersion javaVersion;
   private final boolean fileParsed;
-  private final boolean inAndroidContext;
-  private final CacheContext cacheContext;
 
   private List<String> lines = null;
   private String content;
@@ -69,41 +61,17 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
   public DefaultJavaFileScannerContext(CompilationUnitTree tree, InputFile inputFile, Sema semanticModel,
                                        @Nullable SonarComponents sonarComponents, JavaVersion javaVersion,
                                        boolean fileParsed, boolean inAndroidContext) {
+    super(sonarComponents, inputFile, javaVersion, inAndroidContext);
     this.tree = (JavaTree.CompilationUnitTreeImpl) tree;
-    this.inputFile = inputFile;
     this.semanticEnabled = semanticModel != null;
-    this.sonarComponents = sonarComponents;
     this.complexityVisitor = new ComplexityVisitor();
     this.regexCache = new RegexCache();
-    this.javaVersion = javaVersion;
     this.fileParsed = fileParsed;
-    this.inAndroidContext = inAndroidContext;
-    this.cacheContext = CacheContextImpl.of(sonarComponents != null ? sonarComponents.context() : null);
   }
 
   @Override
   public CompilationUnitTree getTree() {
     return tree;
-  }
-
-  @Override
-  public void addIssueOnFile(JavaCheck javaCheck, String message) {
-    addIssue(-1, javaCheck, message);
-  }
-
-  @Override
-  public void addIssueOnProject(JavaCheck check, String message) {
-    sonarComponents.addIssue(getProject(), check, -1, message, 0);
-  }
-
-  @Override
-  public void addIssue(int line, JavaCheck javaCheck, String message) {
-    addIssue(line, javaCheck, message, null);
-  }
-
-  @Override
-  public void addIssue(int line, JavaCheck javaCheck, String message, @Nullable Integer cost) {
-    sonarComponents.addIssue(inputFile, javaCheck, line, message, cost);
   }
 
   @Override
@@ -113,16 +81,6 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
       return null;
     }
     return tree.sema;
-  }
-
-  @Override
-  public JavaVersion getJavaVersion() {
-    return this.javaVersion;
-  }
-
-  @Override
-  public boolean inAndroidContext() {
-    return inAndroidContext;
   }
 
   @Override
@@ -251,21 +209,6 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
   }
 
   @Override
-  public InputFile getInputFile() {
-    return inputFile;
-  }
-
-  @Override
-  public InputComponent getProject() {
-    return sonarComponents.project();
-  }
-
-  @Override
-  public File getWorkingDirectory() {
-    return sonarComponents.workDir();
-  }
-
-  @Override
   public List<Tree> getComplexityNodes(Tree tree) {
     return complexityVisitor.getNodes(tree);
   }
@@ -289,8 +232,4 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
     return new InternalJavaIssueBuilder(inputFile, sonarComponents);
   }
 
-  @Override
-  public CacheContext getCacheContext() {
-    return cacheContext;
-  }
 }

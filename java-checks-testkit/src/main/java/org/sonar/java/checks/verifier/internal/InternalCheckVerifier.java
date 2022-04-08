@@ -95,14 +95,16 @@ public class InternalCheckVerifier implements CheckVerifier {
   private List<InputFile> files = null;
   private JavaVersion javaVersion = null;
   private boolean inAndroidContext = false;
-  private boolean incrementalAnalysisEnabled = false;
+  private boolean isCacheEnabled = false;
   private List<File> classpath = null;
   private Consumer<Set<AnalyzerMessage>> customIssueVerifier = null;
   private boolean collectQuickFixes = false;
 
   private Expectations expectations = new Expectations();
   @VisibleForTesting
-  CacheContext cacheContext;
+  CacheContext cacheContext = null;
+  private ReadCache readCache;
+  private WriteCache writeCache;
 
   private InternalCheckVerifier() {
   }
@@ -221,17 +223,14 @@ public class InternalCheckVerifier implements CheckVerifier {
 
   @Override
   public CheckVerifier withCache(@Nullable ReadCache readCache, @Nullable WriteCache writeCache) {
-    return withCache(new InternalCacheContext(
+    this.isCacheEnabled = true;
+    this.readCache = readCache;
+    this.writeCache = writeCache;
+    this.cacheContext = new InternalCacheContext(
       true,
       readCache == null ? new DummyCache() : new JavaReadCacheImpl(readCache),
       writeCache == null ? new DummyCache() : new JavaWriteCacheImpl(writeCache)
-    ));
-  }
-
-  @Override
-  public CheckVerifier withCache(CacheContext context) {
-    incrementalAnalysisEnabled = true;
-    this.cacheContext = context;
+    );
     return this;
   }
 
@@ -295,8 +294,8 @@ public class InternalCheckVerifier implements CheckVerifier {
     astScanner.setVisitorBridge(visitorsBridge);
 
     List<InputFile> filesToParse = files;
-    if (incrementalAnalysisEnabled) {
-      filesToParse = astScanner.scanWithoutParsing(files, this.cacheContext);
+    if (isCacheEnabled) {
+      filesToParse = astScanner.scanWithoutParsing(files);
       visitorsBridge.setCacheContext(cacheContext);
     }
     astScanner.scan(filesToParse);
@@ -628,7 +627,17 @@ public class InternalCheckVerifier implements CheckVerifier {
   }
 
   private SonarComponents sonarComponents() {
-    SensorContext context = new InternalSensorContext();
+    SensorContext context;
+    if (isCacheEnabled) {
+      context = new CacheEnabledSensorContext(readCache, writeCache);
+      cacheContext = new InternalCacheContext(
+        context.isCacheEnabled(),
+        new JavaReadCacheImpl(context.previousCache()),
+        new JavaWriteCacheImpl(context.nextCache())
+      );
+    } else {
+      context = new InternalSensorContext();
+    }
     FileSystem fileSystem = context.fileSystem();
     Configuration config = context.config();
 
@@ -643,7 +652,7 @@ public class InternalCheckVerifier implements CheckVerifier {
 
       @Override
       public boolean canSkipUnchangedFiles() {
-        return incrementalAnalysisEnabled;
+        return isCacheEnabled;
       }
     };
     sonarComponents.setSensorContext(context);
