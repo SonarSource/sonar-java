@@ -223,6 +223,9 @@ class HardCodedPasswordCheck {
     env.put(Context.SECURITY_CREDENTIALS, "");
     env.put("password", "whateverpassword"); // Compliant
 
+    // Others tests...
+    env.put("password", OtherPasswordAuthentication.get());
+
     // ========== 5. Constructors ==========
     // Second argument of "PasswordAuthentication" is setting explicitly a password
     PasswordAuthentication pa;
@@ -256,5 +259,9 @@ class HardCodedPasswordCheck {
 
   private static class OtherPasswordAuthentication {
     OtherPasswordAuthentication(String username, char[] pwd) {}
+
+    static String get() {
+      return "";
+    }
   }
 }

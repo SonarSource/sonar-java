@@ -1279,7 +1279,7 @@
   },
   {
     "ruleKey": "S2440",
-    "truePositives": 9,
+    "truePositives": 10,
     "falseNegatives": 4,
     "falsePositives": 0
   },
@@ -1657,7 +1657,7 @@
   },
   {
     "ruleKey": "S3400",
-    "truePositives": 99,
+    "truePositives": 100,
     "falseNegatives": 0,
     "falsePositives": 0
   },
@@ -1873,7 +1873,7 @@
   },
   {
     "ruleKey": "S4143",
-    "truePositives": 3,
+    "truePositives": 4,
     "falseNegatives": 0,
     "falsePositives": 0
   },
