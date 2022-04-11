@@ -39,6 +39,7 @@
 162,
 ],
 'org.eclipse.jetty:jetty-project-branch:jetty-io/src/test/java/org/eclipse/jetty/io/SelectorManagerTest.java':[
+89,
 140,
 ],
 'org.eclipse.jetty:jetty-project-branch:jetty-io/src/test/java/org/eclipse/jetty/io/SocketChannelEndPointInterestsTest.java':[
@@ -47,6 +48,7 @@
 'org.eclipse.jetty:jetty-project-branch:jetty-io/src/test/java/org/eclipse/jetty/io/SocketChannelEndPointTest.java':[
 180,
 261,
+410,
 439,
 ],
 'org.eclipse.jetty:jetty-project-branch:jetty-io/src/test/java/org/eclipse/jetty/io/WriteFlusherTest.java':[
@@ -64,6 +66,11 @@
 142,
 297,
 ],
+'org.eclipse.jetty:jetty-project-branch:jetty-server/src/test/java/org/eclipse/jetty/server/ConnectionOpenCloseTest.java':[
+99,
+161,
+231,
+],
 'org.eclipse.jetty:jetty-project-branch:jetty-server/src/test/java/org/eclipse/jetty/server/ConnectorCloseTestBase.java':[
 99,
 113,
@@ -74,6 +81,8 @@
 'org.eclipse.jetty:jetty-project-branch:jetty-server/src/test/java/org/eclipse/jetty/server/ConnectorTimeoutTest.java':[
 116,
 153,
+211,
+275,
 310,
 313,
 316,
@@ -164,6 +173,9 @@
 209,
 227,
 234,
+],
+'org.eclipse.jetty:jetty-project-branch:jetty-server/src/test/java/org/eclipse/jetty/server/NotAcceptingTest.java':[
+460,
 ],
 'org.eclipse.jetty:jetty-project-branch:jetty-server/src/test/java/org/eclipse/jetty/server/OptionalSslConnectionTest.java':[
 168,
