@@ -6,7 +6,7 @@ This SonarSource project is a code analyzer for Java projects. Information about
 Features
 --------
 
-* 600+ rules (including 150+ bug detection rules and 350+ code smells)
+* 600+ rules (including 150+ bug detection rules and 350+ code smells) and 40+ quick fixes
 * Metrics (cognitive complexity, number of lines etc.)
 * Import of [test coverage reports](https://docs.sonarqube.org/display/PLUG/Code+Coverage+by+Unit+Tests+for+Java+Project)
 * [Custom rules](https://docs.sonarqube.org/latest/analysis/languages/java/)
