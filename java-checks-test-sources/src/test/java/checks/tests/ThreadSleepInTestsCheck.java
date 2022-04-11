@@ -2,6 +2,8 @@ package checks.tests;
 
 import org.junit.Test;
 
+import java.util.concurrent.TimeUnit;
+
 import static java.lang.Thread.sleep;
 
 public class ThreadSleepInTestsCheck {
@@ -26,6 +28,22 @@ public class ThreadSleepInTestsCheck {
     A.sleep(1000); // Compliant
     bar();
   }
+
+  @Test
+  public void test4() throws InterruptedException {
+    foo();
+    java.util.concurrent.TimeUnit.SECONDS.sleep(1); // Noncompliant [[sc=43;ec=48]] {{Remove this use of "TimeUnit.sleep()".}}
+    bar();
+  }
+
+  @Test
+  public void test5() throws InterruptedException {
+    foo();
+    TimeUnit.HOURS.sleep(1); // Noncompliant [[sc=20;ec=25]] {{Remove this use of "TimeUnit.sleep()".}}
+    bar();
+  }
+
+
 
   void foo() {}
   void bar() {}

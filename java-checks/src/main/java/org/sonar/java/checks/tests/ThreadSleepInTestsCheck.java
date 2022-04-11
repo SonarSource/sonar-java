@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks.tests;
 
+import java.util.Objects;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
@@ -29,11 +30,13 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 public class ThreadSleepInTestsCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportIssue(ExpressionUtils.methodName(mit), "Remove this use of \"Thread.sleep()\".");
+    String name = Objects.requireNonNull(mit.symbol().owner()).type().name();
+    reportIssue(ExpressionUtils.methodName(mit), String.format("Remove this use of \"%s.sleep()\".", name));
   }
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
-    return MethodMatchers.create().ofTypes("java.lang.Thread").names("sleep").withAnyParameters().build();
+    return MethodMatchers.or(MethodMatchers.create().ofTypes("java.lang.Thread").names("sleep").withAnyParameters().build(),
+      MethodMatchers.create().ofTypes("java.util.concurrent.TimeUnit").names("sleep").withAnyParameters().build());
   }
 }
