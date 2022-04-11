@@ -61,7 +61,7 @@ abstract class S3677_XmlValidatedSignatureCheck {
 
   void noncompliant_1(Node node, KeySelector selector) throws Exception {
     DOMValidateContext valContext = new DOMValidateContext(selector, node);
-    valContext.setProperty("org.jcp.xml.dsig.secureValidation", Boolean.FALSE); // Noncompliant {{Use the secure validation mode when validating this XML signature.}}
+    valContext.setProperty("org.jcp.xml.dsig.secureValidation", Boolean.FALSE); // Noncompliant {{Set the 'org.jcp.xml.dsig.secureValidation' property to "true" on the 'DOMValidateContext' object to validate this XML signature securely.}}
 
     XMLSignature signature = fac.unmarshalXMLSignature(valContext);
 
@@ -69,7 +69,7 @@ abstract class S3677_XmlValidatedSignatureCheck {
   }
 
   void noncompliant_2(Node node, KeySelector selector) throws Exception {
-    DOMValidateContext valContext = new DOMValidateContext(selector, node); // Noncompliant {{Use the secure validation mode when validating this XML signature.}}
+    DOMValidateContext valContext = new DOMValidateContext(selector, node); // Noncompliant {{Set the 'org.jcp.xml.dsig.secureValidation' property to "true" on the 'DOMValidateContext' object to validate this XML signature securely.}}
 
     XMLSignature signature = fac.unmarshalXMLSignature(valContext);
 
@@ -79,7 +79,7 @@ abstract class S3677_XmlValidatedSignatureCheck {
   void noncompliant_3(Node node, KeySelector selector) throws Exception {
     DOMValidateContext valContext = new DOMValidateContext(selector, node);
     valContext.setProperty("org.jcp.xml.dsig.secureValidation", Boolean.TRUE);
-    valContext.setProperty("org.jcp.xml.dsig.secureValidation", Boolean.FALSE); // Noncompliant {{Use the secure validation mode when validating this XML signature.}}
+    valContext.setProperty("org.jcp.xml.dsig.secureValidation", Boolean.FALSE); // Noncompliant {{Set the 'org.jcp.xml.dsig.secureValidation' property to "true" on the 'DOMValidateContext' object to validate this XML signature securely.}}
 
     XMLSignature signature = fac.unmarshalXMLSignature(valContext);
 
@@ -88,7 +88,7 @@ abstract class S3677_XmlValidatedSignatureCheck {
 
   DOMValidateContext noncompliant_4(Node node, KeySelector selector) throws Exception {
     DOMValidateContext valContext = new DOMValidateContext(selector, node);
-    valContext.setProperty("org.jcp.xml.dsig.secureValidation", Boolean.FALSE); // Noncompliant {{Use the secure validation mode when validating this XML signature.}}
+    valContext.setProperty("org.jcp.xml.dsig.secureValidation", Boolean.FALSE); // Noncompliant {{Set the 'org.jcp.xml.dsig.secureValidation' property to "true" on the 'DOMValidateContext' object to validate this XML signature securely.}}
 
     return valContext;
   }

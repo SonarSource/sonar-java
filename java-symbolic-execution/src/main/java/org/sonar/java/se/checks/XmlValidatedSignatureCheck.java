@@ -45,6 +45,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S6377")
 public class XmlValidatedSignatureCheck extends SECheck {
 
+  private static final String MESSAGE = "Set the 'org.jcp.xml.dsig.secureValidation' property to \"true\" on the 'DOMValidateContext' object "
+    + "to validate this XML signature securely.";
   private static final String JAVAX_XML_CRYPTO_VALIDATE_CONTEXT = "javax.xml.crypto.dsig.XMLValidateContext";
 
   private static final MethodMatchers DOM_VALIDATE_CONTEXT_CONSTRUCTOR = MethodMatchers.create()
@@ -170,7 +172,7 @@ public class XmlValidatedSignatureCheck extends SECheck {
     }
     Optional.ofNullable(ps.getConstraint(domSv, DomSecureValidation.class))
       .map(constraint -> getIssueLocation(context, domSv, constraint))
-      .ifPresent(tree -> context.reportIssue(tree, this, "Use the secure validation mode when validating this XML signature."));
+      .ifPresent(tree -> context.reportIssue(tree, this, MESSAGE));
   }
 
   private static Tree getIssueLocation(CheckerContext context, DomValidateContextSymbolicValue sv, DomSecureValidation constraint) {
