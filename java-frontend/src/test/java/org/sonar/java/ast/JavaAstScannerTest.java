@@ -34,7 +34,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.issue.NoSonarFilter;
@@ -50,12 +49,10 @@ import org.sonar.java.checks.VisitorThatCanBeSkipped;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.exceptions.ApiMismatchException;
-import org.sonar.java.model.DefaultInputFileScannerContext;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.notchecks.VisitorNotInChecksPackage;
-import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
@@ -423,23 +420,6 @@ class JavaAstScannerTest {
     VisitorsBridge visitorBridge = new VisitorsBridge(visitors, new ArrayList<>(), sonarComponents, new JavaVersionImpl(javaVersion));
     scanner.setVisitorBridge(visitorBridge);
     scanner.scan(inputFiles);
-  }
-
-  private InputFileScannerContext from(InputFile file, CacheContext cacheContext) {
-    SensorContext sensorContext = mock(SensorContext.class);
-    doReturn(cacheContext.isCacheEnabled()).when(sensorContext).isCacheEnabled();
-    doReturn(cacheContext.getReadCache()).when(sensorContext).previousCache();
-    doReturn(cacheContext.getWriteCache()).when(sensorContext).nextCache();
-
-    SonarComponents sonarComponents = mock(SonarComponents.class);
-    doReturn(sensorContext).when(sonarComponents).context();
-
-    return new DefaultInputFileScannerContext(
-      sonarComponents,
-      file,
-      null,
-      false
-    );
   }
 
   private static class CheckThrowingSOError implements JavaFileScanner {

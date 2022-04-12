@@ -41,6 +41,7 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.SourceMap;
+import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -60,13 +61,19 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
 
   public DefaultJavaFileScannerContext(CompilationUnitTree tree, InputFile inputFile, Sema semanticModel,
                                        @Nullable SonarComponents sonarComponents, JavaVersion javaVersion,
-                                       boolean fileParsed, boolean inAndroidContext) {
-    super(sonarComponents, inputFile, javaVersion, inAndroidContext);
+                                       boolean fileParsed, boolean inAndroidContext, @Nullable CacheContext cacheContext) {
+    super(sonarComponents, inputFile, javaVersion, inAndroidContext, cacheContext);
     this.tree = (JavaTree.CompilationUnitTreeImpl) tree;
     this.semanticEnabled = semanticModel != null;
     this.complexityVisitor = new ComplexityVisitor();
     this.regexCache = new RegexCache();
     this.fileParsed = fileParsed;
+  }
+
+  public DefaultJavaFileScannerContext(CompilationUnitTree tree, InputFile inputFile, Sema semanticModel,
+                                       @Nullable SonarComponents sonarComponents, JavaVersion javaVersion,
+                                       boolean fileParsed, boolean inAndroidContext) {
+    this(tree,inputFile, semanticModel, sonarComponents, javaVersion, fileParsed, inAndroidContext, null);
   }
 
   @Override

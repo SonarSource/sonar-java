@@ -290,7 +290,8 @@ public class VisitorsBridge {
       sonarComponents,
       currentFile,
       javaVersion,
-      inAndroidContext
+      inAndroidContext,
+      cacheContext
     );
   }
 
@@ -303,7 +304,9 @@ public class VisitorsBridge {
       sonarComponents,
       javaVersion,
       fileParsed,
-      inAndroidContext);
+      inAndroidContext,
+      cacheContext
+    );
   }
 
   private void createSonarSymbolTable(CompilationUnitTree tree) {

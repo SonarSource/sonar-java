@@ -37,12 +37,17 @@ public class DefaultInputFileScannerContext implements InputFileScannerContext {
   protected final boolean inAndroidContext;
   protected final CacheContext cacheContext;
 
-  public DefaultInputFileScannerContext(@Nullable SonarComponents sonarComponents, InputFile inputFile, JavaVersion javaVersion, boolean inAndroidContext) {
+  public DefaultInputFileScannerContext(@Nullable SonarComponents sonarComponents, InputFile inputFile, JavaVersion javaVersion, boolean inAndroidContext,
+                                        @Nullable CacheContext cacheContext) {
     this.sonarComponents = sonarComponents;
     this.inputFile = inputFile;
     this.javaVersion = javaVersion;
     this.inAndroidContext = inAndroidContext;
-    this.cacheContext = CacheContextImpl.of(sonarComponents != null ? sonarComponents.context() : null);
+    if (cacheContext != null) {
+      this.cacheContext = cacheContext;
+    } else {
+      this.cacheContext = CacheContextImpl.of(sonarComponents != null ? sonarComponents.context() : null);
+    }
   }
 
   @Override
