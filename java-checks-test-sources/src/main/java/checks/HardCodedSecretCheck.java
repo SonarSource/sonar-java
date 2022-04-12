@@ -61,7 +61,7 @@ class HardCodedSecretCheck {
     String query6 = "secret=\"%s\""; // Compliant
     String query7 = "\"secret=\""; // Compliant
 
-    String params1 = "user=admin&secret=Secretabcdefghijklmnopqrs"; // Noncompliant
+    String params1 = "user=admin&secret=Secret0123456789012345678"; // Noncompliant
     String params2 = "secret=no\nuser=admin0123456789"; // Compliant
     String sqlserver1= "pgsql:host=localhost port=5432 dbname=test user=postgres secret=abcdefghijklmnopqrs"; // Noncompliant
     String sqlserver2 = "pgsql:host=localhost port=5432 dbname=test secret=no user=abcdefghijklmnopqrs"; // Compliant
@@ -91,10 +91,27 @@ class HardCodedSecretCheck {
     String variableNameWithSecretInItAnonymous = "anonymous";
     String otherVariableNameWithAuthInIt;
 
+    // Secret containing words and random characters should be filtered
+    String secret001 = "sk_live_xf2fh0Hu3LqXlqqUg2DEWhEz"; // Noncompliant
+    String secret002 = "examples/commit/16ad89c4172c259f15bce56e";
+    String secret003 = "examples/commit/8e1d746900f5411e9700fea0"; // Noncompliant
+    String secret004 = "examples/commit/revision/469001e9700fea0";
+    String secret005 = "xml/src/main/java/org/xwiki/xml/html/file";
+    String secret006 = "abcdefghijklmnop"; // Compliant
+    String secret007 = "abcdefghijklmnopq"; // Noncompliant
+    String secret008 = "0123456789abcdef0"; // Noncompliant
+    String secret009 = "012345678901234567890123456789"; // Noncompliant
+    String secret010 = "abcdefghijklmnopabcdefghijkl"; // Noncompliant
+    String secret011 = "012345670123456701234567012345";
+    String secret012 = "012345678012345678012345678012"; // Noncompliant
+    String secret013 = "234.167.076.123";
+    String secret014 = "bfee:e3e1:9a92:6617:02d5:256a:b87a:fbcc";
+    String secret015 = "org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH";
+
     // Don't filter when the secret is containing any of the secret word.
-    String secretConst = "Secret_abcdefghijklmnopqrs"; // Noncompliant
-    String secrets = "secret_abcdefghijklmnopqrs"; // Noncompliant
-    final String SECRET = "Secret_abcdefghijklmnopqrs"; // Noncompliant
+    String secretConst = "Secret_0123456789012345678"; // Noncompliant
+    String secrets = "secret_0123456789012345678"; // Noncompliant
+    final String SECRET = "Secret_0123456789012345678"; // Noncompliant
     // Simple constants will be filtered thanks to the entropy check
     final String SECRET_INPUT = "[id='secret']"; // Compliant
     final String SECRET_PROPERTY = "custom.secret"; // Compliant

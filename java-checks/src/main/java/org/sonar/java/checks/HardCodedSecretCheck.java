@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.checks.helpers.LatinAlphabetLanguagesHelper;
 import org.sonar.java.checks.helpers.ShannonEntropy;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -39,7 +40,11 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
 
   private static final String DEFAULT_SECRET_WORDS = "api[_.-]?key,auth,credential,secret,token";
-  private static final String DEFAULT_MIN_ENTROPY_THRESHOLD = "4.2";
+  private static final String DEFAULT_MIN_ENTROPY_THRESHOLD = "3.0";
+  private static final int MINIMUM_CREDENTIAL_LENGTH = 17;
+  public static final int MIN_SECRET_LENGTH_FOR_GIVEN_ENTROPY = 25;
+  public static final double ENTROPY_INCREASE_FACTOR_BY_MISSING_CHARACTER = 1.034;
+  private static final String DEFAULT_MAX_LANGUAGE_SCORE = "1.5";
 
   private static final String FIRST_ACCEPTED_CHARACTER = "[\\w.+/~$-]";
   private static final String FOLLOWING_ACCEPTED_CHARACTER = "[=\\w.+/~$-]";
@@ -57,6 +62,12 @@ public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
     description = "Minimum shannon entropy threshold of the secret",
     defaultValue = DEFAULT_MIN_ENTROPY_THRESHOLD)
   public double minEntropyThreshold = Double.parseDouble(DEFAULT_MIN_ENTROPY_THRESHOLD);
+
+  @RuleProperty(
+    key = "maxLanguageScore",
+    description = "Max human language similarity score of the secret",
+    defaultValue = DEFAULT_MAX_LANGUAGE_SCORE)
+  public double maxLanguageScore = Double.parseDouble(DEFAULT_MAX_LANGUAGE_SCORE);
 
   @Override
   protected String getCredentialWords() {
@@ -99,9 +110,17 @@ public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
 
   @Override
   protected boolean isPotentialCredential(String literal) {
-    return super.isPotentialCredential(literal)
-      && ShannonEntropy.calculate(literal) >= minEntropyThreshold
-      && SECRET_PATTERN.matcher(literal).matches();
+    if (literal.length() < MINIMUM_CREDENTIAL_LENGTH || !SECRET_PATTERN.matcher(literal).matches()) {
+      return false;
+    }
+    double effectiveMinEntropyThreshold = minEntropyThreshold;
+    if (literal.length() < MIN_SECRET_LENGTH_FOR_GIVEN_ENTROPY) {
+      int missingCharacterCount = MIN_SECRET_LENGTH_FOR_GIVEN_ENTROPY - literal.length();
+      // increase the entropy threshold constraint when there's not enough characters
+      effectiveMinEntropyThreshold *= Math.pow(ENTROPY_INCREASE_FACTOR_BY_MISSING_CHARACTER, missingCharacterCount);
+    }
+    return ShannonEntropy.calculate(literal) >= effectiveMinEntropyThreshold
+      && LatinAlphabetLanguagesHelper.humanLanguageScore(literal) < maxLanguageScore;
   }
 
   @Override
