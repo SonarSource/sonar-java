@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
@@ -151,7 +152,7 @@ class JavaFrontendTest {
     settings.setProperty("sonar.java.fileByFile", "true");
     scan(settings, SONARQUBE_RUNTIME, Collections.emptyList());
 
-    assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly(
+    assertThat(logTester.logs(LoggerLevel.INFO)).contains(
       "No \"Main\" source files to scan.",
       "No \"Test\" source files to scan.",
       "No \"Generated\" source files to scan."
@@ -162,7 +163,7 @@ class JavaFrontendTest {
   void scanning_empty_project_should_be_logged_in_file_by_file_sonarlint() throws Exception {
     scan(new MapSettings(), SONARLINT_RUNTIME, Collections.emptyList());
 
-    assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly(
+    assertThat(logTester.logs(LoggerLevel.INFO)).contains(
       "No \"Main\" source files to scan.",
       "No \"Test\" source files to scan.",
       "No \"Generated\" source files to scan."
@@ -174,7 +175,7 @@ class JavaFrontendTest {
     JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), mainCodeIssueScannerAndFilter);
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
 
-    assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly(
+    assertThat(logTester.logs(LoggerLevel.INFO)).contains(
       "No \"Main\" source files to scan.",
       "No \"Test\" source files to scan.",
       "No \"Generated\" source files to scan."
@@ -187,13 +188,13 @@ class JavaFrontendTest {
     settings.setProperty("sonar.internal.analysis.autoscan", "true");
     scan(settings, SONARQUBE_RUNTIME, Collections.emptyList());
 
-    assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly(
+    assertThat(logTester.logs(LoggerLevel.INFO)).contains(
       "No \"Main and Test\" source files to scan."
     );
   }
 
   @Test
-  void scan_logs_when_caching_is_enabled() {
+  void test_scan_logs_when_caching_is_enabled() {
     File baseDir = temp.getRoot().getAbsoluteFile();
     SensorContextTester sensorContextTester = SensorContextTester.create(baseDir);
     sensorContextTester.setSettings(new MapSettings());
@@ -214,10 +215,64 @@ class JavaFrontendTest {
     );
 
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-    List<LogAndArguments> logs = logTester.getLogs(LoggerLevel.DEBUG);
-    assertThat(logs).hasSize(1);
-    assertThat(logs.get(0).getFormattedMsg())
-      .isEqualTo("The cache is enabled. The Java analyzer will try to leverage cached data from previous analyses.");
+    List<String> logs = logTester.getLogs(LoggerLevel.INFO).stream()
+      .map(LogAndArguments::getFormattedMsg)
+      .collect(Collectors.toList());
+    assertThat(logs)
+      .isNotEmpty()
+      .contains("The cache is enabled. The Java analyzer will try to leverage cached data from previous analyses.");
+  }
+
+  @Test
+  void test_scan_logs_when_caching_is_disabled() {
+    File baseDir = temp.getRoot().getAbsoluteFile();
+    SensorContextTester sensorContextTester = SensorContextTester.create(baseDir);
+    sensorContextTester.setSettings(new MapSettings());
+
+    SensorContext spy = spy(sensorContextTester);
+    doReturn(false).when(spy).isCacheEnabled();
+
+    var sonarComponents = mock(SonarComponents.class);
+    doReturn(spy).when(sonarComponents).context();
+
+    JavaFrontend frontend = new JavaFrontend(
+      new JavaVersionImpl(),
+      sonarComponents,
+      null,
+      mock(JavaResourceLocator.class),
+      mainCodeIssueScannerAndFilter
+    );
+
+    frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+    List<String> logs = logTester.getLogs(LoggerLevel.INFO).stream()
+      .map(LogAndArguments::getFormattedMsg)
+      .collect(Collectors.toList());
+    assertThat(logs)
+      .isNotEmpty()
+      .contains("The cache is not enabled. The Java analyzer will not try to leverage data from a previous analysis.");
+  }
+
+  @Test
+  void test_scan_logs_when_caching_is_disabled_when_sonar_components_is_null() {
+    File baseDir = temp.getRoot().getAbsoluteFile();
+    SensorContextTester sensorContextTester = SensorContextTester.create(baseDir);
+    sensorContextTester.setSettings(new MapSettings());
+
+    JavaFrontend frontend = new JavaFrontend(
+      new JavaVersionImpl(),
+      null,
+      null,
+      mock(JavaResourceLocator.class),
+      mainCodeIssueScannerAndFilter
+    );
+
+    frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+    List<String> logs = logTester.getLogs(LoggerLevel.INFO).stream()
+      .map(LogAndArguments::getFormattedMsg)
+      .collect(Collectors.toList());
+    assertThat(logs)
+      .isNotEmpty()
+      .contains("The cache is not enabled. The Java analyzer will not try to leverage data from a previous analysis.");
   }
 
   @Test
@@ -601,23 +656,6 @@ class JavaFrontendTest {
     assertThat(generator.next()).hasSize(1).contains(B);
     assertThat(generator.hasNext()).isFalse();
     assertThat(generator.next()).isEmpty();
-  }
-
-  void cached_data_loaded_and_ast_not_parsed() {
-    //FIXME complete test
-    if (sensorContext == null) {
-      File baseDir = temp.getRoot().getAbsoluteFile();
-      sensorContext = SensorContextTester.create(baseDir);
-      sensorContext.setSettings(new MapSettings());
-    }
-
-    var javaVersion = JavaVersionImpl.fromString("11");
-    FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
-    var sonarComponents = new SonarComponents(fileLinesContextFactory, sensorContext.fileSystem(), javaClasspath, javaTestClasspath, mock(CheckFactory.class));
-    sonarComponents.setSensorContext(sensorContext);
-    JavaFrontend frontend = new JavaFrontend(javaVersion, sonarComponents, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class),
-      null, mainCodeIssueScannerAndFilter);
-
   }
 
   private List<InputFile> scan(SonarRuntime sonarRuntime, String... codeList) throws IOException {

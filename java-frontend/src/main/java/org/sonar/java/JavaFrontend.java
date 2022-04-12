@@ -48,7 +48,6 @@ import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonarsource.performance.measure.PerformanceMeasure;
 import org.sonarsource.performance.measure.PerformanceMeasure.Duration;
@@ -127,16 +126,14 @@ public class JavaFrontend {
     return sonarComponents != null && sonarComponents.analysisCancelled();
   }
 
-
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
-    if (sonarComponents != null) {
-      CacheContext cacheContext = CacheContextImpl.of(sonarComponents.context());
-      if (cacheContext.isCacheEnabled()) {
-        LOG.debug("The cache is enabled. The Java analyzer will try to leverage cached data from previous analyses.");
-        sourceFiles = astScanner.scanWithoutParsing(sourceFiles);
-        testFiles = astScannerForTests.scanWithoutParsing(testFiles);
-        generatedFiles = astScannerForGeneratedFiles.scanWithoutParsing(generatedFiles);
-      }
+    if (isCacheEnabled()) {
+      LOG.info("The cache is enabled. The Java analyzer will try to leverage cached data from previous analyses.");
+      sourceFiles = astScanner.scanWithoutParsing(sourceFiles);
+      testFiles = astScannerForTests.scanWithoutParsing(testFiles);
+      generatedFiles = astScannerForGeneratedFiles.scanWithoutParsing(generatedFiles);
+    } else {
+      LOG.info("The cache is not enabled. The Java analyzer will not try to leverage data from a previous analysis.");
     }
 
     // SonarLint is not compatible with batch mode, it needs InputFile#contents() and batch mode use InputFile#absolutePath()
@@ -372,6 +369,10 @@ public class JavaFrontend {
   @VisibleForTesting
   long getBatchModeSizeInKB() {
     return sonarComponents == null ? -1L : sonarComponents.getBatchModeSizeInKB();
+  }
+
+  private boolean isCacheEnabled() {
+    return sonarComponents != null && CacheContextImpl.of(sonarComponents.context()).isCacheEnabled();
   }
 
   private static <T> void scanAndMeasureTask(Iterable<T> files, Consumer<Iterable<T>> action, String descriptor) {
