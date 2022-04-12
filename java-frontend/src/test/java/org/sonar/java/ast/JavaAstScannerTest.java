@@ -64,7 +64,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -376,7 +375,7 @@ class JavaAstScannerTest {
 
     VisitorsBridge visitorsBridge = mock(VisitorsBridge.class);
     doReturn(true).when(visitorsBridge).scanWithoutParsing(any());
-    doReturn(false).when(visitorsBridge).scanWithoutParsing(eq(unsuccessful));
+    doReturn(false).when(visitorsBridge).scanWithoutParsing(unsuccessful);
 
     JavaAstScanner javaAstScanner = new JavaAstScanner(mock(SonarComponents.class));
     javaAstScanner.setVisitorBridge(visitorsBridge);
