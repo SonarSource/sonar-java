@@ -49,7 +49,7 @@ public class CacheContextImpl implements CacheContext {
           new JavaWriteCacheImpl(context.nextCache())
         );
       } catch (NoSuchMethodError error) {
-        LOGGER.info(error.getMessage());
+        LOGGER.debug(String.format("Missing cache related method from sonar-plugin-api: %s.", error.getMessage()));
       }
     }
 
