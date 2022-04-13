@@ -70,6 +70,9 @@ class HardCodedSecretCheck {
     String params3 = "token=abcdefghijklmnopqrs user=admin"; // Noncompliant
     String params4 = "token=abcdefghijklmnopqrs&user=admin"; // Noncompliant
 
+    String params5 = "token=123456&abcdefghijklmnopqrs"; // Compliant, FN, even if "&" is accepted in a password, it also indicates a cut in a string literal
+    String params6 = "token=123456:abcdefghijklmnopqrs"; // Noncompliant
+
     // URLs are reported by S2068 only.
     String[] urls = {
       "http://user:123456@server.com/path",     // Compliant
@@ -105,8 +108,14 @@ class HardCodedSecretCheck {
     String secret011 = "012345670123456701234567012345";
     String secret012 = "012345678012345678012345678012"; // Noncompliant
     String secret013 = "234.167.076.123";
-    String secret014 = "bfee:e3e1:9a92:6617:02d5:256a:b87a:fbcc";
+    String secret014 = "bfee:e3e1:9a92:6617:02d5:256a:b87a:fbcc"; // Noncompliant
     String secret015 = "org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH";
+    // Example of Telegram bot token
+    String secret016 = "bot123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"; // Noncompliant
+    // Secret with "&"
+    String secret017 = "012&345678012345678012345&678012"; // Noncompliant
+    String secret018 = "&12&345678012345678012345&67801&"; // Noncompliant
+
 
     // Don't filter when the secret is containing any of the secret word.
     String secretConst = "Secret_0123456789012345678"; // Noncompliant
@@ -148,7 +157,6 @@ class HardCodedSecretCheck {
     String OKAPI_KEYBOARD = "what a strange QWERTY keyboard for animals"; // Compliant
     String okApiKeyValue = "Spaces are UNEXPECTED 012 345 678"; // Compliant
     String tokenism = "(Queen's Partner's Stored Knowledge is a Minimal Sham)"; // Compliant
-    String tokenWithExcludedCharacters = "abcdefghij&klmnopqrs"; // Compliant
     String tokenWithExcludedCharacters2 = "abcdefghij|klmnopqrs"; // Compliant
 
     // ========== 3. Assignment ==========
