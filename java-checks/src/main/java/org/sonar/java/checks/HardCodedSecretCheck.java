@@ -24,8 +24,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.checks.helpers.LatinAlphabetLanguagesHelper;
-import org.sonar.java.checks.helpers.ShannonEntropy;
+import org.sonar.java.checks.helpers.RandomnessDetector;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -42,17 +41,16 @@ import static org.sonar.java.checks.HardcodedIpCheck.IP_V6_ALONE;
 public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
 
   private static final String DEFAULT_SECRET_WORDS = "api[_.-]?key,auth,credential,secret,token";
-  private static final String DEFAULT_MIN_ENTROPY_THRESHOLD = "3.0";
+  private static final String DEFAULT_RANDOMNESS_SENSIBILITY= "5.0";
   private static final int MINIMUM_CREDENTIAL_LENGTH = 17;
-  public static final int MIN_SECRET_LENGTH_FOR_GIVEN_ENTROPY = 25;
-  public static final double ENTROPY_INCREASE_FACTOR_BY_MISSING_CHARACTER = 1.034;
-  private static final String DEFAULT_MAX_LANGUAGE_SCORE = "1.5";
 
   private static final String FIRST_ACCEPTED_CHARACTER = "[\\w.+/~$:&-]";
   private static final String FOLLOWING_ACCEPTED_CHARACTER = "[=\\w.+/~$:&-]";
   private static final Pattern SECRET_PATTERN =
     Pattern.compile(FIRST_ACCEPTED_CHARACTER + "(" + FOLLOWING_ACCEPTED_CHARACTER + "|\\\\\\\\" + FOLLOWING_ACCEPTED_CHARACTER + ")++");
   private static final Pattern IPV_6_PATTERN = Pattern.compile(IP_V6_ALONE);
+
+  private RandomnessDetector randomnessDetector;
 
   @RuleProperty(
     key = "secretWords",
@@ -61,16 +59,10 @@ public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
   public String secretWords = DEFAULT_SECRET_WORDS;
 
   @RuleProperty(
-    key = "minEntropyThreshold",
-    description = "Minimum shannon entropy threshold of the secret",
-    defaultValue = DEFAULT_MIN_ENTROPY_THRESHOLD)
-  public double minEntropyThreshold = Double.parseDouble(DEFAULT_MIN_ENTROPY_THRESHOLD);
-
-  @RuleProperty(
-    key = "maxLanguageScore",
-    description = "Max human language similarity score of the secret",
-    defaultValue = DEFAULT_MAX_LANGUAGE_SCORE)
-  public double maxLanguageScore = Double.parseDouble(DEFAULT_MAX_LANGUAGE_SCORE);
+    key = "randomnessSensibility",
+    description = "Allows to tune the Randomness Sensibility (from 0 to 10)",
+    defaultValue = DEFAULT_RANDOMNESS_SENSIBILITY)
+  public double randomnessSensibility = Double.parseDouble(DEFAULT_RANDOMNESS_SENSIBILITY);
 
   @Override
   protected String getCredentialWords() {
@@ -116,15 +108,15 @@ public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
     if (literal.length() < MINIMUM_CREDENTIAL_LENGTH || !SECRET_PATTERN.matcher(literal).matches()) {
       return false;
     }
-    double effectiveMinEntropyThreshold = minEntropyThreshold;
-    if (literal.length() < MIN_SECRET_LENGTH_FOR_GIVEN_ENTROPY) {
-      int missingCharacterCount = MIN_SECRET_LENGTH_FOR_GIVEN_ENTROPY - literal.length();
-      // increase the entropy threshold constraint when there's not enough characters
-      effectiveMinEntropyThreshold *= Math.pow(ENTROPY_INCREASE_FACTOR_BY_MISSING_CHARACTER, missingCharacterCount);
-    }
-    return ShannonEntropy.calculate(literal) >= effectiveMinEntropyThreshold
-      && LatinAlphabetLanguagesHelper.humanLanguageScore(literal) < maxLanguageScore
+    return getRandomnessDetector().isRandom(literal)
       && isNotIpV6(literal);
+  }
+
+  private RandomnessDetector getRandomnessDetector() {
+    if (randomnessDetector == null) {
+      randomnessDetector = new RandomnessDetector(randomnessSensibility);
+    }
+    return randomnessDetector;
   }
 
   private static boolean isNotIpV6(String literal) {
