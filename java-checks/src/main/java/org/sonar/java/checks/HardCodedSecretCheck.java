@@ -46,8 +46,8 @@ public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
   public static final double ENTROPY_INCREASE_FACTOR_BY_MISSING_CHARACTER = 1.034;
   private static final String DEFAULT_MAX_LANGUAGE_SCORE = "1.5";
 
-  private static final String FIRST_ACCEPTED_CHARACTER = "[\\w.+/~$-]";
-  private static final String FOLLOWING_ACCEPTED_CHARACTER = "[=\\w.+/~$-]";
+  private static final String FIRST_ACCEPTED_CHARACTER = "[\\w.+/~$:&-]";
+  private static final String FOLLOWING_ACCEPTED_CHARACTER = "[=\\w.+/~$:&-]";
   private static final Pattern SECRET_PATTERN =
     Pattern.compile(FIRST_ACCEPTED_CHARACTER + "(" + FOLLOWING_ACCEPTED_CHARACTER + "|\\\\\\\\" + FOLLOWING_ACCEPTED_CHARACTER + ")++");
 
