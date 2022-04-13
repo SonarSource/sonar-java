@@ -108,7 +108,9 @@ class HardCodedSecretCheck {
     String secret011 = "012345670123456701234567012345";
     String secret012 = "012345678012345678012345678012"; // Noncompliant
     String secret013 = "234.167.076.123";
-    String secret014 = "bfee:e3e1:9a92:6617:02d5:256a:b87a:fbcc"; // Noncompliant
+    String ip_secret1 = "bfee:e3e1:9a92:6617:02d5:256a:b87a:fbcc"; // Compliant: ipv6 format
+    String ip_secret2 = "2001:db8:1::ab9:C0A8:102"; // Compliant: ipv6 format
+    String ip_secret3 = "::ab9:C0A8:102"; // Compliant: ipv6 format
     String secret015 = "org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH";
     // Example of Telegram bot token
     String secret016 = "bot123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"; // Noncompliant
