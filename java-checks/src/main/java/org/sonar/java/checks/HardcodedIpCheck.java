@@ -44,7 +44,7 @@ public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner
 
   private static final String IP_V6_WITH_FIRST_PART = "(\\p{XDigit}{1,4}::?){1,7}\\p{XDigit}{0,4}";
   private static final String IP_V6_WITHOUT_FIRST_PART = "::((\\p{XDigit}{1,4}:){0,6}\\p{XDigit}{1,4})?";
-  private static final String IP_V6_ALONE = ("(?<ip>" + IP_V6_WITH_FIRST_PART + "|" + IP_V6_WITHOUT_FIRST_PART + ")");
+  public static final String IP_V6_ALONE = ("(?<ip>" + IP_V6_WITH_FIRST_PART + "|" + IP_V6_WITHOUT_FIRST_PART + ")");
   private static final String IP_V6_BRACKET = "\\[" + IP_V6_ALONE + "\\]";
   private static final String IP_V6_URL = PROTOCOL_URL + IP_V6_BRACKET + END_URL;
 

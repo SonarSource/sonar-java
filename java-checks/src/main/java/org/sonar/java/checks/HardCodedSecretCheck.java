@@ -36,6 +36,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.sonar.java.checks.HardcodedIpCheck.IP_V6_ALONE;
+
 @Rule(key = "S6418")
 public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
 
@@ -50,6 +52,7 @@ public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
   private static final String FOLLOWING_ACCEPTED_CHARACTER = "[=\\w.+/~$:&-]";
   private static final Pattern SECRET_PATTERN =
     Pattern.compile(FIRST_ACCEPTED_CHARACTER + "(" + FOLLOWING_ACCEPTED_CHARACTER + "|\\\\\\\\" + FOLLOWING_ACCEPTED_CHARACTER + ")++");
+  private static final Pattern IPV_6_PATTERN = Pattern.compile(IP_V6_ALONE);
 
   @RuleProperty(
     key = "secretWords",
@@ -120,7 +123,12 @@ public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
       effectiveMinEntropyThreshold *= Math.pow(ENTROPY_INCREASE_FACTOR_BY_MISSING_CHARACTER, missingCharacterCount);
     }
     return ShannonEntropy.calculate(literal) >= effectiveMinEntropyThreshold
-      && LatinAlphabetLanguagesHelper.humanLanguageScore(literal) < maxLanguageScore;
+      && LatinAlphabetLanguagesHelper.humanLanguageScore(literal) < maxLanguageScore
+      && isNotIpV6(literal);
+  }
+
+  private static boolean isNotIpV6(String literal) {
+    return !IPV_6_PATTERN.matcher(literal).matches();
   }
 
   @Override
