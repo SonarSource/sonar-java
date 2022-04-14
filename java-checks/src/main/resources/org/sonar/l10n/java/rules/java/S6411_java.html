@@ -1,0 +1,54 @@
+<p>Maps use hashes of the keys to select a bucket to store data in. Objects that hash to the same value will be added to the same bucket.</p>
+<p>When the hashing function has a poor distribution, buckets can grow to very large sizes. This may negatively affect lookup performance, as, by
+default, matching a key within a bucket has linear complexity.</p>
+<p>In addition, as the default hashCode function can be selected at runtime, performance expectations cannot be maintained.</p>
+<p>Implementing Comparable mitigates the performance issue for objects that hash to the same value.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+class MyKeyType {
+    // ...
+}
+
+class Program {
+    Map&lt;MyKeyType, MyValueType&gt; data = new HashMap&lt;&gt;(); // Noncompliant
+
+    Map&lt;MyKeyType, MyValueType&gt; buildMap() { // Noncompliant
+        //...
+    }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+class MyKeyType implements Comparable&lt;MyKeyType&gt; {
+    // ...
+}
+
+class MyChildKeyType extends MyKeyType {
+    // ...
+}
+
+class Program {
+    Map&lt;MyKeyType, MyValueType&gt; data = new HashMap&lt;&gt;();
+    Map&lt;MyChildKeyType, MyValueType&gt; data = new HashMap&lt;&gt;();
+
+    Map&lt;MyKeyType, MyValueType&gt; buildMap() {
+        //...
+    }
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.kb.cert.org/vuls/id/903934">https://www.kb.cert.org/vuls/id/903934</a> </li>
+  <li> <a
+  href="https://dzone.com/articles/java-8-hashmaps-keys-and-the-comparable-interface">https://dzone.com/articles/java-8-hashmaps-keys-and-the-comparable-interface</a> </li>
+  <li> <a
+  href="https://github.com/openjdk/jdk/blob/4927ee426aedbeea0f4119bac0a342c6d3576762/src/hotspot/share/runtime/synchronizer.cpp#L760-L798">https://github.com/openjdk/jdk/blob/4927ee426aedbeea0f4119bac0a342c6d3576762/src/hotspot/share/runtime/synchronizer.cpp#L760-L798</a> </li>
+  <li> <a
+  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Comparable.html">https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Comparable.html</a> </li>
+</ul>
+<h3>Implementation Specification</h3>
+<h3>Message</h3>
+<p>The key type should implement Comparable.</p>
+<h3>Highlighting</h3>
+<p>Variable type, method return type and expressions.</p>
+
