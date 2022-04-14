@@ -439,6 +439,7 @@ public final class CheckList {
     LoopExecutingAtMostOnceCheck.class,
     LoopsOnSameSetCheck.class,
     MainMethodThrowsExceptionCheck.class,
+    MapKeyNotComparableCheck.class,
     MembersDifferOnlyByCapitalizationCheck.class,
     MethodComplexityCheck.class,
     MethodIdenticalImplementationsCheck.class,

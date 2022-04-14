@@ -1,0 +1,15 @@
+{
+  "title": "Types used as keys in Maps should implement Comparable",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "tags": [],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6411",
+  "sqKey": "S6411",
+  "scope": "All",
+  "quickfix": "unknown"
+}
