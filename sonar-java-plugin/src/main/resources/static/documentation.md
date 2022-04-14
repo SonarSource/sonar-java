@@ -85,6 +85,12 @@ This last criteria implies that [custom rules](https://redirect.sonarsource.com/
 If you wish to disable this optimization, you can set the value of the analysis parameter `sonar.java.skipUnchanged` to `false`.
 Leaving the parameter unset lets the server decide whether the optimization should be enabled.
 
+## Cache-enabled rules (experimental)
+Starting from April 2022, the Java analyzer offers rule developers a SQ cache that can be used to store and retrieve information from one analysis to the other.
+The cache is provided by the underlying SonarQube instance and is branch specific.
+Please refer to the [sonar-java wiki](https://github.com/SonarSource/sonar-java/wiki/Cache-enabled-analysis) for additional information.
+
+
 ## Analyzing JSP and Thymeleaf for XSS vulnerabilities
 
 In SonarQube Developer and Enterprise editions and on SonarCloud you can benefit from advanced security rules including XSS vulnerability detection. Java analysis supports analysis of Thymeleaf and JSP views when used with Java Servlets or Spring. To benefit from this analysis you need to make your views part of the project sources using `sonar.sources` property. In practice this usually means adding the following in your Maven `pom.xml` file
@@ -118,6 +124,11 @@ where `src/main/webapp` is the directory which contains `.jsp` or Thymeleaf's `.
 The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/doc/java-custom-rules-guide.html) will help to quickly start writing custom rules for Java.
 
 ### API changes
+
+#### **7.12**
+
+* New method: `JavaFileScanner.scanWithoutParsing(InputFileScannerContext)`. Use this method to inspect an unchanged file before it is parsed.
+This method allows you to pre-compute some work and even signal that the rule does not need the file to be parsed. 
 
 #### **7.7**
 
