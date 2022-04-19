@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.InterruptedIOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.function.Consumer;
@@ -67,15 +68,16 @@ public class JavaAstScanner {
   }
 
   /**
-   * Scan files without parsing, using the raw input file and cached information, and return the list of files that could not be analyzed without parsing.
+   * Attempt to scan files without parsing, using the raw input file and cached information.
+   *
    * @param inputFiles The list of files to analyze
-   * @return The list of files that could not be successfully analyzed without parsing
+   * @return A map with 2 lists of inputFiles. Under the {@code true} key, files that have successfully been scanned without parsing and,
+   * under the {@code false} key, files that need to be parsed for further analysis.
    */
-  public List<InputFile> scanWithoutParsing(Iterable<? extends InputFile> inputFiles) {
+  public Map<Boolean, List<InputFile>> scanWithoutParsing(Iterable<? extends InputFile> inputFiles) {
     return StreamSupport.stream(inputFiles.spliterator(), false)
-      // Filter out files that have been successfully scanned without parsing
-      .filter(file -> !visitor.scanWithoutParsing(file))
-      .collect(Collectors.toList());
+      // Split files between successfully scanned without parsing and failed to scan without parsing
+      .collect(Collectors.partitioningBy(visitor::scanWithoutParsing));
   }
 
   public void scan(Iterable<? extends InputFile> inputFiles) {

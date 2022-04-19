@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CancellationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -358,10 +359,18 @@ class JavaAstScannerTest {
     JavaAstScanner javaAstScanner = new JavaAstScanner(sonarComponents);
     javaAstScanner.setVisitorBridge(visitorsBridge);
 
-    assertThat(javaAstScanner.scanWithoutParsing(Collections.emptyList())).isEmpty();
+    Map<Boolean, List<InputFile>> expectedEmpty = Map.of(
+      true, Collections.emptyList(),
+      false, Collections.emptyList()
+    );
+    assertThat(javaAstScanner.scanWithoutParsing(Collections.emptyList())).isEqualTo(expectedEmpty);
 
-    List<InputFile> singleFileList = List.of(mock(InputFile.class));
-    assertThat(javaAstScanner.scanWithoutParsing(singleFileList)).isEqualTo(singleFileList);
+    InputFile unsuccessful = mock(InputFile.class);
+    Map<Boolean, List<InputFile>> expectedSingle = Map.of(
+      true, Collections.emptyList(),
+      false, List.of(unsuccessful)
+    );
+    assertThat(javaAstScanner.scanWithoutParsing(List.of(unsuccessful))).isEqualTo(expectedSingle);
   }
 
   @Test
@@ -377,9 +386,10 @@ class JavaAstScannerTest {
     JavaAstScanner javaAstScanner = new JavaAstScanner(mock(SonarComponents.class));
     javaAstScanner.setVisitorBridge(visitorsBridge);
 
-    assertThat(javaAstScanner.scanWithoutParsing(files))
-      .hasSize(1)
-      .containsOnly(unsuccessful);
+    Map<Boolean, List<InputFile>> actual = javaAstScanner.scanWithoutParsing(files);
+    assertThat(actual).hasSize(2);
+    assertThat(actual.get(false)).containsExactly(unsuccessful);
+    assertThat(actual.get(true)).containsExactly(successful, successful);
   }
 
   private void scanSingleFile(InputFile file, boolean failOnException) {

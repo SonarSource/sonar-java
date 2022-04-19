@@ -224,7 +224,13 @@ class JavaFrontendTest {
       .collect(Collectors.toList());
     assertThat(logs)
       .isNotEmpty()
-      .contains("Server-side caching is enabled. The Java analyzer will try to leverage cached data from previous analyses.");
+      .containsExactly(
+        "Server-side caching is enabled. The Java analyzer will try to leverage cached data from previous analyses.",
+        "Server-side caching is enabled. 0 out of 0 files were successfully scanned and will not be parsed further.",
+        "No \"Main\" source files to scan.",
+        "No \"Test\" source files to scan.",
+        "No \"Generated\" source files to scan."
+      );
   }
 
   @Test
@@ -253,7 +259,12 @@ class JavaFrontendTest {
       .collect(Collectors.toList());
     assertThat(logs)
       .isNotEmpty()
-      .contains("Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.");
+      .containsExactly(
+        "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
+        "No \"Main\" source files to scan.",
+        "No \"Test\" source files to scan.",
+        "No \"Generated\" source files to scan."
+      );
   }
 
   @Test
@@ -276,7 +287,12 @@ class JavaFrontendTest {
       .collect(Collectors.toList());
     assertThat(logs)
       .isNotEmpty()
-      .contains("Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.");
+      .containsExactly(
+        "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
+        "No \"Main\" source files to scan.",
+        "No \"Test\" source files to scan.",
+        "No \"Generated\" source files to scan."
+      );
   }
 
   @Test

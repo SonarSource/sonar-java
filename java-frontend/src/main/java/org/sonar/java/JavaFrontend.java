@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -129,9 +130,25 @@ public class JavaFrontend {
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
     if (isCacheEnabled()) {
       LOG.info("Server-side caching is enabled. The Java analyzer will try to leverage cached data from previous analyses.");
-      sourceFiles = astScanner.scanWithoutParsing(sourceFiles);
-      testFiles = astScannerForTests.scanWithoutParsing(testFiles);
-      generatedFiles = astScannerForGeneratedFiles.scanWithoutParsing(generatedFiles);
+      long successfullyParsed = 0L;
+      long total = 0L;
+
+      Map<Boolean, List<InputFile>> mainFilesScannedWithoutParsing = astScanner.scanWithoutParsing(sourceFiles);
+      sourceFiles = mainFilesScannedWithoutParsing.get(false);
+      successfullyParsed += mainFilesScannedWithoutParsing.get(true).size();
+      total += mainFilesScannedWithoutParsing.get(true).size() + mainFilesScannedWithoutParsing.get(false).size();
+
+      Map<Boolean, List<InputFile>> testFilesScannedWithoutParsing = astScannerForTests.scanWithoutParsing(testFiles);
+      testFiles = testFilesScannedWithoutParsing.get(false);
+      successfullyParsed += testFilesScannedWithoutParsing.get(true).size();
+      total += testFilesScannedWithoutParsing.get(true).size() + testFilesScannedWithoutParsing.get(false).size();
+
+      Map<Boolean, List<InputFile>> generatedFilesScannedWithoutParsing = astScannerForGeneratedFiles.scanWithoutParsing(generatedFiles);
+      generatedFiles = generatedFilesScannedWithoutParsing.get(false);
+      successfullyParsed += generatedFilesScannedWithoutParsing.get(true).size();
+      total += generatedFilesScannedWithoutParsing.get(true).size() + generatedFilesScannedWithoutParsing.get(false).size();
+
+      LOG.info("Server-side caching is enabled. {} out of {} files were successfully scanned and will not be parsed further.", successfullyParsed, total);
     } else {
       LOG.info("Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.");
     }

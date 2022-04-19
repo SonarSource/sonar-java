@@ -294,7 +294,7 @@ public class InternalCheckVerifier implements CheckVerifier {
 
     List<InputFile> filesToParse = files;
     if (isCacheEnabled) {
-      filesToParse = astScanner.scanWithoutParsing(files);
+      filesToParse = astScanner.scanWithoutParsing(files).get(false);
       visitorsBridge.setCacheContext(cacheContext);
     }
     astScanner.scan(filesToParse);
