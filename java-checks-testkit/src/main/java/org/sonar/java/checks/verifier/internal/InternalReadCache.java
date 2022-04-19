@@ -27,23 +27,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class InternalReadCache implements ReadCache {
-  private final Map<String, byte[]> cache = new HashMap<>();
+  private final Map<String, byte[]> data = new HashMap<>();
 
   @Override
   public InputStream read(String key) {
-    if (!cache.containsKey(key)) {
+    if (!data.containsKey(key)) {
       throw new IllegalArgumentException(String.format("cache does not contain key \"%s\"", key));
     }
-    return new ByteArrayInputStream(cache.get(key));
+    return new ByteArrayInputStream(data.get(key));
   }
 
   @Override
   public boolean contains(String key) {
-    return cache.containsKey(key);
+    return data.containsKey(key);
   }
 
   public InternalReadCache put(String key, byte[] data) {
-    cache.put(key, data);
+    this.data.put(key, data);
     return this;
   }
 }

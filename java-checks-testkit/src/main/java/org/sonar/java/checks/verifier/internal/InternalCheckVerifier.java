@@ -54,7 +54,6 @@ import org.sonar.java.caching.JavaReadCacheImpl;
 import org.sonar.java.caching.JavaWriteCacheImpl;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.FilesUtils;
-import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.JavaVersionImpl;
@@ -198,7 +197,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     }
 
     var filesToAdd = modifiedFileNames.stream()
-        .map(name -> TestUtils.inputFile("", new File(name), status))
+        .map(name -> InternalInputFile.inputFile("", new File(name), status))
           .collect(Collectors.toList());
 
     var filesToAddStrings = filesToAdd.stream().map(Object::toString).collect(Collectors.toList());
@@ -627,19 +626,19 @@ public class InternalCheckVerifier implements CheckVerifier {
   }
 
   private SonarComponents sonarComponents() {
-    SensorContext context;
+    SensorContext sensorContext;
     if (isCacheEnabled) {
-      context = new CacheEnabledSensorContext(readCache, writeCache);
+      sensorContext = new CacheEnabledSensorContext(readCache, writeCache);
       cacheContext = new InternalCacheContext(
-        context.isCacheEnabled(),
-        new JavaReadCacheImpl(context.previousCache()),
-        new JavaWriteCacheImpl(context.nextCache())
+        sensorContext.isCacheEnabled(),
+        new JavaReadCacheImpl(sensorContext.previousCache()),
+        new JavaWriteCacheImpl(sensorContext.nextCache())
       );
     } else {
-      context = new InternalSensorContext();
+      sensorContext = new InternalSensorContext();
     }
-    FileSystem fileSystem = context.fileSystem();
-    Configuration config = context.config();
+    FileSystem fileSystem = sensorContext.fileSystem();
+    Configuration config = sensorContext.config();
 
     ClasspathForMain classpathForMain = new ClasspathForMain(config, fileSystem);
     ClasspathForTest classpathForTest = new ClasspathForTest(config, fileSystem);
@@ -655,7 +654,7 @@ public class InternalCheckVerifier implements CheckVerifier {
         return isCacheEnabled;
       }
     };
-    sonarComponents.setSensorContext(context);
+    sonarComponents.setSensorContext(sensorContext);
     return sonarComponents;
   }
 

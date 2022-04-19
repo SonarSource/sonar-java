@@ -79,8 +79,8 @@ class InternalWriteCacheTest {
     byte[] data = "message".getBytes(StandardCharsets.UTF_8);
     InternalReadCache readCache = new InternalReadCache().put("key", data);
     InternalWriteCache cache = new InternalWriteCache().bind(readCache);
-    assertThat(cache.getCache()).doesNotContainKey("key");
+    assertThat(cache.getData()).doesNotContainKey("key");
     cache.copyFromPrevious("key");
-    assertThat(cache.getCache()).containsEntry("key", data);
+    assertThat(cache.getData()).containsEntry("key", data);
   }
 }

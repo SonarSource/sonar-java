@@ -28,7 +28,7 @@ import org.sonar.api.batch.sensor.cache.WriteCache;
 
 public class InternalWriteCache implements WriteCache {
 
-  private final Map<String, byte[]> cache = new HashMap<>();
+  private final Map<String, byte[]> data = new HashMap<>();
   private ReadCache readCache;
 
   public InternalWriteCache bind(ReadCache readCache) {
@@ -36,8 +36,8 @@ public class InternalWriteCache implements WriteCache {
     return this;
   }
 
-  public Map<String, byte[]> getCache() {
-    return cache;
+  public Map<String, byte[]> getData() {
+    return data;
   }
 
   @Override
@@ -51,10 +51,10 @@ public class InternalWriteCache implements WriteCache {
 
   @Override
   public void write(String key, byte[] data) {
-    if (this.cache.containsKey(key)) {
+    if (this.data.containsKey(key)) {
       throw new IllegalArgumentException(String.format("Same key cannot be written to multiple times (%s)", key));
     }
-    this.cache.put(key, data);
+    this.data.put(key, data);
   }
 
   @Override

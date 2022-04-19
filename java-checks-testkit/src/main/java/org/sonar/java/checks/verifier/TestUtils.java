@@ -94,8 +94,4 @@ public class TestUtils {
   public static InputFile inputFile(String moduleKey, File file) {
     return InternalInputFile.inputFile(moduleKey, file);
   }
-
-  public static InputFile inputFile(String moduleKey, File file, InputFile.Status status) {
-    return InternalInputFile.inputFile(moduleKey, file, status);
-  }
 }
