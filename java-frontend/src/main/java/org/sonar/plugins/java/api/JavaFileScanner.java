@@ -39,7 +39,7 @@ public interface JavaFileScanner extends JavaCheck {
    * The rule should persist data to the write cache for future analyses.
    *
    * @param inputFileScannerContext The file that will eventually be scanned
-   * @return True if successful (ie: no further scanning is required). False by default or if the file cannot be scanned exhaustively without contents.
+   * @return {@code true} if successful (ie: no further scanning is required). {@code false} by default or if the file cannot be scanned exhaustively without contents.
    */
   @Beta
   default boolean scanWithoutParsing(InputFileScannerContext inputFileScannerContext) {
