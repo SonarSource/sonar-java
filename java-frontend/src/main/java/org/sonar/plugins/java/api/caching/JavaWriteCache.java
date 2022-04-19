@@ -36,7 +36,7 @@ public interface JavaWriteCache {
 
   /**
    * Copy a cached entry from the previous cache to the new one.
-   * @throws IllegalArgumentException if the previous cache doesn't contain given key or if this cache already contains the key
+   * @throws {@code IllegalArgumentException} if the previous cache doesn't contain given key or if this cache already contains the key.
    */
   void copyFromPrevious(String key);
 }
