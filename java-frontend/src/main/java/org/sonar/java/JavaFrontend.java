@@ -133,7 +133,7 @@ public class JavaFrontend {
       testFiles = astScannerForTests.scanWithoutParsing(testFiles);
       generatedFiles = astScannerForGeneratedFiles.scanWithoutParsing(generatedFiles);
     } else {
-      LOG.info("The cache is not enabled. The Java analyzer will not try to leverage data from a previous analysis.");
+      LOG.info("Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.");
     }
 
     // SonarLint is not compatible with batch mode, it needs InputFile#contents() and batch mode use InputFile#absolutePath()
