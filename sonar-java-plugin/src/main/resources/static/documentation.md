@@ -127,7 +127,7 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 #### **7.12**
 
-* New method: `JavaFileScanner.scanWithoutParsing(InputFileScannerContext)`. Use this method to inspect an unchanged file before it is parsed.
+* New method: `JavaFileScanner#scanWithoutParsing(InputFileScannerContext)`. Use this method to inspect an unchanged file before it is parsed.
 This method allows you to pre-compute some work and even signal that the rule does not need the file to be parsed. 
 
 #### **7.7**
