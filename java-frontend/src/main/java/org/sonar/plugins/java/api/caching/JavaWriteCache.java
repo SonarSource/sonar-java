@@ -30,7 +30,7 @@ public interface JavaWriteCache {
 
   /**
    * Save a new entry in the cache.
-   * @throws IllegalArgumentException if the cache already contains the key
+   * @throws {@code IllegalArgumentException} if the cache already contains the key.
    */
   void write(String key, byte[] data);
 
