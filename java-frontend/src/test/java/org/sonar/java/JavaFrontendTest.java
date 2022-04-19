@@ -152,7 +152,8 @@ class JavaFrontendTest {
     settings.setProperty("sonar.java.fileByFile", "true");
     scan(settings, SONARQUBE_RUNTIME, Collections.emptyList());
 
-    assertThat(logTester.logs(LoggerLevel.INFO)).contains(
+    assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly(
+      "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
       "No \"Main\" source files to scan.",
       "No \"Test\" source files to scan.",
       "No \"Generated\" source files to scan."
@@ -163,7 +164,8 @@ class JavaFrontendTest {
   void scanning_empty_project_should_be_logged_in_file_by_file_sonarlint() throws Exception {
     scan(new MapSettings(), SONARLINT_RUNTIME, Collections.emptyList());
 
-    assertThat(logTester.logs(LoggerLevel.INFO)).contains(
+    assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly(
+      "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
       "No \"Main\" source files to scan.",
       "No \"Test\" source files to scan.",
       "No \"Generated\" source files to scan."
@@ -175,7 +177,8 @@ class JavaFrontendTest {
     JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), mainCodeIssueScannerAndFilter);
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
 
-    assertThat(logTester.logs(LoggerLevel.INFO)).contains(
+    assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly(
+      "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
       "No \"Main\" source files to scan.",
       "No \"Test\" source files to scan.",
       "No \"Generated\" source files to scan."
@@ -188,7 +191,8 @@ class JavaFrontendTest {
     settings.setProperty("sonar.internal.analysis.autoscan", "true");
     scan(settings, SONARQUBE_RUNTIME, Collections.emptyList());
 
-    assertThat(logTester.logs(LoggerLevel.INFO)).contains(
+    assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly(
+      "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
       "No \"Main and Test\" source files to scan."
     );
   }

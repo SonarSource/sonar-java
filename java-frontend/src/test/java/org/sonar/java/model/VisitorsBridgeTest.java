@@ -491,9 +491,9 @@ class VisitorsBridgeTest {
     }
 
     @Test
-    void scanWithoutParsing_returns_false_for_scanners_that_do_not_override_scanWithoutParsing() throws ApiMismatchException {
+    void scanWithoutParsing_returns_true_for_scanners_that_do_not_override_scanWithoutParsing() throws ApiMismatchException {
       JavaFileScanner scanner = new DefaultEndOfAnalysisCheck();
-      assertThat(scan_without_parsing(scanner)).isFalse();
+      assertThat(scan_without_parsing(scanner)).isTrue();
     }
 
     @Test

@@ -19,15 +19,11 @@
  */
 package org.sonar.java.caching;
 
+import java.io.InputStream;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
 
-import java.io.InputStream;
-import java.util.HashSet;
-import java.util.Set;
-
 public class DummyCache implements JavaReadCache, JavaWriteCache {
-  private Set<String> keysWrittenTo = new HashSet<>();
 
   @Override
   public InputStream read(String key) {
@@ -41,16 +37,12 @@ public class DummyCache implements JavaReadCache, JavaWriteCache {
 
   @Override
   public void write(String key, InputStream data) {
-    if (!keysWrittenTo.add(key)) {
-      throw new IllegalArgumentException(String.format("Same key cannot be written to multiple times (%s)", key));
-    }
+    throw new IllegalArgumentException(String.format("Same key cannot be written to multiple times (%s)", key));
   }
 
   @Override
   public void write(String key, byte[] data) {
-    if (!keysWrittenTo.add(key)) {
-      throw new IllegalArgumentException(String.format("Same key cannot be written to multiple times (%s)", key));
-    }
+    throw new IllegalArgumentException(String.format("Same key cannot be written to multiple times (%s)", key));
   }
 
   @Override

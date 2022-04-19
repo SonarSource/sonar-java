@@ -36,22 +36,12 @@ class DummyCacheTest {
     assertThatThrownBy(() -> cache.read(key))
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessage("No cache data available");
-
-    cache.write(key, "data".getBytes(StandardCharsets.UTF_8));
-    assertThatThrownBy(() -> cache.read(key))
-      .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage("No cache data available");
   }
 
   @Test
   void contains_always_returns_false() {
-    String key = "key";
     DummyCache cache = new DummyCache();
-
-    assertThat(cache.contains(key)).isFalse();
-
-    cache.write(key, "data".getBytes(StandardCharsets.UTF_8));
-    assertThat(cache.contains(key)).isFalse();
+    assertThat(cache.contains("key")).isFalse();
   }
 
   @Test
@@ -60,7 +50,6 @@ class DummyCacheTest {
     byte[] data = "data".getBytes(StandardCharsets.UTF_8);
     DummyCache cache = new DummyCache();
 
-    cache.write(key, data);
     assertThatThrownBy(() -> cache.write(key, data))
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessage("Same key cannot be written to multiple times (key)");
@@ -72,7 +61,6 @@ class DummyCacheTest {
     InputStream in = new ByteArrayInputStream("data".getBytes(StandardCharsets.UTF_8));
     DummyCache cache = new DummyCache();
 
-    cache.write(key, in);
     assertThatThrownBy(() -> cache.write(key, in))
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessage("Same key cannot be written to multiple times (key)");
@@ -81,14 +69,8 @@ class DummyCacheTest {
   @Test
   void copyFromPrevious_always_throws_an_IllegalArgumentException() {
     String key = "key";
-    byte[] data = "data".getBytes(StandardCharsets.UTF_8);
     DummyCache cache = new DummyCache();
 
-    assertThatThrownBy(() -> cache.copyFromPrevious(key))
-      .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage("No cache data available");
-
-    cache.write(key, data);
     assertThatThrownBy(() -> cache.copyFromPrevious(key))
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessage("No cache data available");
