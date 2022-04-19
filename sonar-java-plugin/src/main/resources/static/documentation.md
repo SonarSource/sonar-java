@@ -87,7 +87,7 @@ Leaving the parameter unset lets the server decide whether the optimization shou
 
 ## Cache-enabled rules (experimental)
 Starting from April 2022, the Java analyzer offers rule developers a SQ cache that can be used to store and retrieve information from one analysis to the other.
-The cache is provided by the underlying SonarQube instance and is branch specific.
+The cache is provided by the underlying SonarQube instance and is branch-specific.
 Please refer to the [sonar-java wiki](https://github.com/SonarSource/sonar-java/wiki/Cache-enabled-analysis) for additional information.
 
 
