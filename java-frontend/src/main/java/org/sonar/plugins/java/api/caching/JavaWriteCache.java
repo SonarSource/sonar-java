@@ -24,7 +24,7 @@ import java.io.InputStream;
 public interface JavaWriteCache {
   /**
    * Save a new entry in the cache. The stream will be consumed immediately.
-   * @throws IllegalArgumentException if the cache already contains the key
+   * @throws {@code IllegalArgumentException} if the cache already contains the key.
    */
   void write(String key, InputStream data);
 
