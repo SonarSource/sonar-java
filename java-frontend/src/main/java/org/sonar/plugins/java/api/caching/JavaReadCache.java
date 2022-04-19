@@ -23,7 +23,7 @@ import java.io.InputStream;
 
 public interface JavaReadCache {
   /**
-   * Returns an input stream for the data cached with the key. It's the responsibility of the caller to close the stream.
+   * Returns an input stream for the data cached with the provided {@code key}. It is the responsibility of the caller to close the stream.
    */
   InputStream read(String key);
 
