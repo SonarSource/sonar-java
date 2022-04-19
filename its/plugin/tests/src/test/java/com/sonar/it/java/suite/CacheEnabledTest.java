@@ -43,7 +43,7 @@ public class CacheEnabledTest {
 
     BuildResult buildResult = orchestrator.executeBuild(build);
 
-    assertThat(buildResult.getLogs()).contains("The cache is enabled. The Java analyzer will try to leverage cached data from previous analyses.");
+    assertThat(buildResult.getLogs()).contains("Server-side caching is enabled. The Java analyzer will try to leverage cached data from previous analyses.");
   }
 
   @Test
@@ -57,7 +57,7 @@ public class CacheEnabledTest {
 
     BuildResult buildResult = orchestrator.executeBuild(build);
 
-    assertThat(buildResult.getLogs()).contains("The cache is not enabled. The Java analyzer will not try to leverage data from a previous analysis.");
+    assertThat(buildResult.getLogs()).contains("Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.");
   }
 
 

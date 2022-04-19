@@ -220,7 +220,7 @@ class JavaFrontendTest {
       .collect(Collectors.toList());
     assertThat(logs)
       .isNotEmpty()
-      .contains("The cache is enabled. The Java analyzer will try to leverage cached data from previous analyses.");
+      .contains("Server-side caching is enabled. The Java analyzer will try to leverage cached data from previous analyses.");
   }
 
   @Test
@@ -249,7 +249,7 @@ class JavaFrontendTest {
       .collect(Collectors.toList());
     assertThat(logs)
       .isNotEmpty()
-      .contains("The cache is not enabled. The Java analyzer will not try to leverage data from a previous analysis.");
+      .contains("Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.");
   }
 
   @Test
@@ -272,7 +272,7 @@ class JavaFrontendTest {
       .collect(Collectors.toList());
     assertThat(logs)
       .isNotEmpty()
-      .contains("The cache is not enabled. The Java analyzer will not try to leverage data from a previous analysis.");
+      .contains("Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.");
   }
 
   @Test

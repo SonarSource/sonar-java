@@ -128,7 +128,7 @@ public class JavaFrontend {
 
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
     if (isCacheEnabled()) {
-      LOG.info("The cache is enabled. The Java analyzer will try to leverage cached data from previous analyses.");
+      LOG.info("Server-side caching is enabled. The Java analyzer will try to leverage cached data from previous analyses.");
       sourceFiles = astScanner.scanWithoutParsing(sourceFiles);
       testFiles = astScannerForTests.scanWithoutParsing(testFiles);
       generatedFiles = astScannerForGeneratedFiles.scanWithoutParsing(generatedFiles);

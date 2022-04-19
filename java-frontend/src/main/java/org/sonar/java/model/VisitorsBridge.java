@@ -177,9 +177,9 @@ public class VisitorsBridge {
   public boolean scanWithoutParsing(InputFile inputFile) {
     if (sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile)) {
       boolean allScansSucceeded = true;
+      var fileScannerContext = createScannerContext();
       for (var scanner: scannersThatCannotBeSkipped) {
         try {
-          var fileScannerContext = createScannerContext();
           allScansSucceeded &= scanner.scanWithoutParsing(fileScannerContext);
         } catch (AnalysisException e) {
           // In the case where the IssuableSubscriptionVisitorsRunner throws an exception, the problem has already been
