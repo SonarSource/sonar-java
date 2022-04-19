@@ -238,5 +238,4 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
   public JavaIssueBuilder newIssue() {
     return new InternalJavaIssueBuilder(inputFile, sonarComponents);
   }
-
 }
