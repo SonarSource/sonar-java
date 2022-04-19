@@ -28,7 +28,7 @@ public interface JavaReadCache {
   InputStream read(String key);
 
   /**
-   * Checks whether the cache contains a key
+   * Checks whether the cache contains the provided {@code key}.
    */
   boolean contains(String key);
 }
