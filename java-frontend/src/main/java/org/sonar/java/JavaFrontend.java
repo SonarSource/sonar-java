@@ -129,7 +129,6 @@ public class JavaFrontend {
 
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
     if (isCacheEnabled()) {
-      LOG.info("Server-side caching is enabled. The Java analyzer will try to leverage cached data from previous analyses.");
       long successfullyScanned = 0L;
       long total = 0L;
 
@@ -148,7 +147,11 @@ public class JavaFrontend {
       successfullyScanned += generatedFilesScannedWithoutParsing.get(true).size();
       total += generatedFilesScannedWithoutParsing.get(true).size() + generatedFilesScannedWithoutParsing.get(false).size();
 
-      LOG.info("Server-side caching is enabled. {} out of {} files were successfully scanned and will not be parsed.", successfullyScanned, total);
+      LOG.info(
+        "Server-side caching is enabled. The Java analyzer was able to leverage cached data from previous analyses for {} out of {} files. These files will not be parsed.",
+        successfullyScanned,
+        total
+      );
     } else {
       LOG.info("Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.");
     }

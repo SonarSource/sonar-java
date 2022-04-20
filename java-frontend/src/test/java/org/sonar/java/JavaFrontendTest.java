@@ -225,8 +225,7 @@ class JavaFrontendTest {
     assertThat(logs)
       .isNotEmpty()
       .containsExactly(
-        "Server-side caching is enabled. The Java analyzer will try to leverage cached data from previous analyses.",
-        "Server-side caching is enabled. 0 out of 0 files were successfully scanned and will not be parsed further.",
+        "Server-side caching is enabled. The Java analyzer was able to leverage cached data from previous analyses for 0 out of 0 files. These files will not be parsed.",
         "No \"Main\" source files to scan.",
         "No \"Test\" source files to scan.",
         "No \"Generated\" source files to scan."
