@@ -17,21 +17,16 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java;
+package org.sonar.plugins.java.api.caching;
 
-import org.sonar.java.annotations.Beta;
-import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.caching.CacheContext;
-
-/**
- * Common interface for checks that are triggered at the end of the analysis, after all files have been scanned.
- * <b>Warning</b>: keeping state between files can lead to memory leaks. Implement with care.
- */
-@Beta
-public interface EndOfAnalysisCheck extends JavaCheck {
-
+public interface CacheContext {
   /**
-   * Method called at the end of analysis, after all files have been scanned.
+   * Describes whether caching facilities are available in this context.
+   * @return True if the server allows caching, false otherwise
    */
-  void endOfAnalysis(CacheContext cacheContext);
+  boolean isCacheEnabled();
+
+  JavaReadCache getReadCache();
+
+  JavaWriteCache getWriteCache();
 }

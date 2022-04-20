@@ -33,4 +33,16 @@ public interface JavaFileScanner extends JavaCheck {
    */
   void scanFile(JavaFileScannerContext context);
 
+  /**
+   * Scan based on the raw file and cached data (ie: No tree is available at this stage).
+   * The rule should leverage data from the read cache.
+   * The rule should persist data to the write cache for future analyses.
+   *
+   * @param inputFileScannerContext The file that will eventually be scanned
+   * @return {@code true} by default or if successful (ie: no further scanning is required). {@code false} if the file cannot be scanned exhaustively without contents.
+   */
+  @Beta
+  default boolean scanWithoutParsing(InputFileScannerContext inputFileScannerContext) {
+    return true;
+  }
 }

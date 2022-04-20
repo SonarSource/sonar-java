@@ -17,21 +17,33 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java;
+package org.sonar.java.checks.verifier.internal;
 
-import org.sonar.java.annotations.Beta;
-import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.api.batch.sensor.cache.ReadCache;
 
-/**
- * Common interface for checks that are triggered at the end of the analysis, after all files have been scanned.
- * <b>Warning</b>: keeping state between files can lead to memory leaks. Implement with care.
- */
-@Beta
-public interface EndOfAnalysisCheck extends JavaCheck {
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
-  /**
-   * Method called at the end of analysis, after all files have been scanned.
-   */
-  void endOfAnalysis(CacheContext cacheContext);
+public class InternalReadCache implements ReadCache {
+  private final Map<String, byte[]> data = new HashMap<>();
+
+  @Override
+  public InputStream read(String key) {
+    if (!data.containsKey(key)) {
+      throw new IllegalArgumentException(String.format("cache does not contain key \"%s\"", key));
+    }
+    return new ByteArrayInputStream(data.get(key));
+  }
+
+  @Override
+  public boolean contains(String key) {
+    return data.containsKey(key);
+  }
+
+  public InternalReadCache put(String key, byte[] data) {
+    this.data.put(key, data);
+    return this;
+  }
 }

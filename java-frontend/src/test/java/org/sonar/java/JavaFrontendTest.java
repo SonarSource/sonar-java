@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
@@ -42,6 +43,9 @@ import org.sonar.api.SonarQubeSide;
 import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.rule.CheckFactory;
+import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
@@ -51,6 +55,7 @@ import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.scan.issue.filter.IssueFilterChain;
 import org.sonar.api.utils.Version;
+import org.sonar.api.utils.log.LogAndArguments;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.classpath.ClasspathForMain;
@@ -61,14 +66,17 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -145,6 +153,7 @@ class JavaFrontendTest {
     scan(settings, SONARQUBE_RUNTIME, Collections.emptyList());
 
     assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly(
+      "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
       "No \"Main\" source files to scan.",
       "No \"Test\" source files to scan.",
       "No \"Generated\" source files to scan."
@@ -156,6 +165,7 @@ class JavaFrontendTest {
     scan(new MapSettings(), SONARLINT_RUNTIME, Collections.emptyList());
 
     assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly(
+      "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
       "No \"Main\" source files to scan.",
       "No \"Test\" source files to scan.",
       "No \"Generated\" source files to scan."
@@ -168,6 +178,7 @@ class JavaFrontendTest {
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
 
     assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly(
+      "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
       "No \"Main\" source files to scan.",
       "No \"Test\" source files to scan.",
       "No \"Generated\" source files to scan."
@@ -181,8 +192,106 @@ class JavaFrontendTest {
     scan(settings, SONARQUBE_RUNTIME, Collections.emptyList());
 
     assertThat(logTester.logs(LoggerLevel.INFO)).containsExactly(
+      "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
       "No \"Main and Test\" source files to scan."
     );
+  }
+
+  @Test
+  void test_scan_logs_when_caching_is_enabled() {
+    File baseDir = temp.getRoot().getAbsoluteFile();
+    SensorContextTester sensorContextTester = SensorContextTester.create(baseDir);
+    sensorContextTester.setSettings(new MapSettings());
+
+    SensorContext spy = spy(sensorContextTester);
+    doReturn(true).when(spy).isCacheEnabled();
+    doReturn(mock(ReadCache.class)).when(spy).previousCache();
+    doReturn(mock(WriteCache.class)).when(spy).nextCache();
+    var sonarComponents = mock(SonarComponents.class);
+    doReturn(spy).when(sonarComponents).context();
+
+    JavaFrontend frontend = new JavaFrontend(
+      new JavaVersionImpl(),
+      sonarComponents,
+      null,
+      mock(JavaResourceLocator.class),
+      mainCodeIssueScannerAndFilter
+    );
+
+    frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+    List<String> logs = logTester.getLogs(LoggerLevel.INFO).stream()
+      .map(LogAndArguments::getFormattedMsg)
+      .collect(Collectors.toList());
+    assertThat(logs)
+      .isNotEmpty()
+      .containsExactly(
+        "Server-side caching is enabled. The Java analyzer was able to leverage cached data from previous analyses for 0 out of 0 files. These files will not be parsed.",
+        "No \"Main\" source files to scan.",
+        "No \"Test\" source files to scan.",
+        "No \"Generated\" source files to scan."
+      );
+  }
+
+  @Test
+  void test_scan_logs_when_caching_is_disabled() {
+    File baseDir = temp.getRoot().getAbsoluteFile();
+    SensorContextTester sensorContextTester = SensorContextTester.create(baseDir);
+    sensorContextTester.setSettings(new MapSettings());
+
+    SensorContext spy = spy(sensorContextTester);
+    doReturn(false).when(spy).isCacheEnabled();
+
+    var sonarComponents = mock(SonarComponents.class);
+    doReturn(spy).when(sonarComponents).context();
+
+    JavaFrontend frontend = new JavaFrontend(
+      new JavaVersionImpl(),
+      sonarComponents,
+      null,
+      mock(JavaResourceLocator.class),
+      mainCodeIssueScannerAndFilter
+    );
+
+    frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+    List<String> logs = logTester.getLogs(LoggerLevel.INFO).stream()
+      .map(LogAndArguments::getFormattedMsg)
+      .collect(Collectors.toList());
+    assertThat(logs)
+      .isNotEmpty()
+      .containsExactly(
+        "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
+        "No \"Main\" source files to scan.",
+        "No \"Test\" source files to scan.",
+        "No \"Generated\" source files to scan."
+      );
+  }
+
+  @Test
+  void test_scan_logs_when_caching_is_disabled_when_sonar_components_is_null() {
+    File baseDir = temp.getRoot().getAbsoluteFile();
+    SensorContextTester sensorContextTester = SensorContextTester.create(baseDir);
+    sensorContextTester.setSettings(new MapSettings());
+
+    JavaFrontend frontend = new JavaFrontend(
+      new JavaVersionImpl(),
+      null,
+      null,
+      mock(JavaResourceLocator.class),
+      mainCodeIssueScannerAndFilter
+    );
+
+    frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+    List<String> logs = logTester.getLogs(LoggerLevel.INFO).stream()
+      .map(LogAndArguments::getFormattedMsg)
+      .collect(Collectors.toList());
+    assertThat(logs)
+      .isNotEmpty()
+      .containsExactly(
+        "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
+        "No \"Main\" source files to scan.",
+        "No \"Test\" source files to scan.",
+        "No \"Generated\" source files to scan."
+      );
   }
 
   @Test
@@ -657,7 +766,7 @@ class JavaFrontendTest {
     }
 
     @Override
-    public void endOfAnalysis() {
+    public void endOfAnalysis(CacheContext cacheContext) {
       endOfAnalysisInvocationCount++;
     }
   }

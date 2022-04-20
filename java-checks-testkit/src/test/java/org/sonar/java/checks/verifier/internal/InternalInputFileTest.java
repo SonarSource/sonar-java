@@ -68,7 +68,7 @@ class InternalInputFileTest {
     assertThat(e.getMessage()).matches(m -> NO_SUCH_FILE_MESSAGE_LINUX.equals(m) || NO_SUCH_FILE_MESSAGE_WINDOWS.equals(m));
 
     assertMethodNotSupported(() -> inputFile.selectLine(0), "InternalInputFile::selectLine(int)");
-    assertMethodNotSupported(() -> inputFile.status(), "InternalInputFile::status()");
+    assertThat(inputFile.status()).isEqualTo(InputFile.Status.SAME);
   }
 
   @Test
@@ -102,7 +102,7 @@ class InternalInputFileTest {
     assertThat(inputFile.newRange(0, 0, 0, 0)).isNotNull();
 
     assertMethodNotSupported(() -> inputFile.selectLine(0), "InternalInputFile::selectLine(int)");
-    assertMethodNotSupported(() -> inputFile.status(), "InternalInputFile::status()");
+    assertThat(inputFile.status()).isEqualTo(InputFile.Status.SAME);
   }
 
   @Test

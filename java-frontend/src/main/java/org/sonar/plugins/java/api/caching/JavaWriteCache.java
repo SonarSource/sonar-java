@@ -17,21 +17,26 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java;
+package org.sonar.plugins.java.api.caching;
 
-import org.sonar.java.annotations.Beta;
-import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.caching.CacheContext;
+import java.io.InputStream;
 
-/**
- * Common interface for checks that are triggered at the end of the analysis, after all files have been scanned.
- * <b>Warning</b>: keeping state between files can lead to memory leaks. Implement with care.
- */
-@Beta
-public interface EndOfAnalysisCheck extends JavaCheck {
+public interface JavaWriteCache {
+  /**
+   * Save a new entry in the cache. The stream will be consumed immediately.
+   * @throws {@code IllegalArgumentException} if the cache already contains the key.
+   */
+  void write(String key, InputStream data);
 
   /**
-   * Method called at the end of analysis, after all files have been scanned.
+   * Save a new entry in the cache.
+   * @throws {@code IllegalArgumentException} if the cache already contains the key.
    */
-  void endOfAnalysis(CacheContext cacheContext);
+  void write(String key, byte[] data);
+
+  /**
+   * Copy a cached entry from the previous cache to the new one.
+   * @throws {@code IllegalArgumentException} if the previous cache doesn't contain given key or if this cache already contains the key.
+   */
+  void copyFromPrevious(String key);
 }

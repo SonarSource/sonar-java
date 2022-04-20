@@ -17,21 +17,33 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java;
+package org.sonar.java.checks.verifier.internal;
 
-import org.sonar.java.annotations.Beta;
-import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.api.batch.sensor.cache.WriteCache;
 
-/**
- * Common interface for checks that are triggered at the end of the analysis, after all files have been scanned.
- * <b>Warning</b>: keeping state between files can lead to memory leaks. Implement with care.
- */
-@Beta
-public interface EndOfAnalysisCheck extends JavaCheck {
+public class CacheEnabledSensorContext extends InternalSensorContext {
 
-  /**
-   * Method called at the end of analysis, after all files have been scanned.
-   */
-  void endOfAnalysis(CacheContext cacheContext);
+  private final ReadCache readCache;
+  private final WriteCache writeCache;
+
+  CacheEnabledSensorContext(ReadCache readCache, WriteCache writeCache) {
+    this.readCache = readCache;
+    this.writeCache = writeCache;
+  }
+
+  @Override
+  public boolean isCacheEnabled() {
+    return true;
+  }
+
+  @Override
+  public ReadCache previousCache() {
+    return readCache;
+  }
+
+  @Override
+  public WriteCache nextCache() {
+    return writeCache;
+  }
 }

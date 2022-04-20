@@ -42,13 +42,18 @@ import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.api.config.Configuration;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.Beta;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.caching.DummyCache;
+import org.sonar.java.caching.JavaReadCacheImpl;
+import org.sonar.java.caching.JavaWriteCacheImpl;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.FilesUtils;
-import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.JavaVersionImpl;
@@ -60,6 +65,7 @@ import org.sonar.java.testing.JavaFileScannerContextForTests;
 import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.caching.CacheContext;
 
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.EFFORT_TO_FIX;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.END_COLUMN;
@@ -76,6 +82,7 @@ public class InternalCheckVerifier implements CheckVerifier {
 
   private static final JavaVersion DEFAULT_JAVA_VERSION = new JavaVersionImpl();
   private static final List<File> DEFAULT_CLASSPATH = FilesUtils.getClassPath(FilesUtils.DEFAULT_TEST_JARS_DIRECTORY);
+
   static {
     Optional.of(new File(FilesUtils.DEFAULT_TEST_CLASSES_DIRECTORY)).filter(File::exists).ifPresent(DEFAULT_CLASSPATH::add);
   }
@@ -87,11 +94,16 @@ public class InternalCheckVerifier implements CheckVerifier {
   private List<InputFile> files = null;
   private JavaVersion javaVersion = null;
   private boolean inAndroidContext = false;
+  private boolean isCacheEnabled = false;
   private List<File> classpath = null;
   private Consumer<Set<AnalyzerMessage>> customIssueVerifier = null;
   private boolean collectQuickFixes = false;
 
   private Expectations expectations = new Expectations();
+  @VisibleForTesting
+  CacheContext cacheContext = null;
+  private ReadCache readCache;
+  private WriteCache writeCache;
 
   private InternalCheckVerifier() {
   }
@@ -167,10 +179,37 @@ public class InternalCheckVerifier implements CheckVerifier {
   public InternalCheckVerifier onFiles(Collection<String> filenames) {
     requiresNull(files, FILE_OR_FILES);
     requiresNonEmpty(filenames, "file");
-    files = filenames.stream()
-      .map(File::new)
-      .map(TestUtils::inputFile)
-      .collect(Collectors.toList());
+    files = new ArrayList<>();
+    return addFiles(InputFile.Status.SAME, filenames);
+  }
+
+  @Override
+  public InternalCheckVerifier addFiles(InputFile.Status status, String... modifiedFileNames) {
+    return addFiles(status, Arrays.asList(modifiedFileNames));
+  }
+
+  @Override
+  public InternalCheckVerifier addFiles(InputFile.Status status, Collection<String> modifiedFileNames) {
+    requiresNonEmpty(modifiedFileNames, "file");
+
+    if (files == null) {
+      files = new ArrayList<>(modifiedFileNames.size());
+    }
+
+    var filesToAdd = modifiedFileNames.stream()
+        .map(name -> InternalInputFile.inputFile("", new File(name), status))
+          .collect(Collectors.toList());
+
+    var filesToAddStrings = filesToAdd.stream().map(Object::toString).collect(Collectors.toList());
+
+    files.forEach(inputFile -> {
+      if (filesToAddStrings.contains(inputFile.toString())) {
+        throw new IllegalArgumentException(String.format("File %s was already added.", inputFile));
+      }
+    });
+
+    files.addAll(filesToAdd);
+
     return this;
   }
 
@@ -178,6 +217,19 @@ public class InternalCheckVerifier implements CheckVerifier {
   public InternalCheckVerifier withoutSemantic() {
     // can be called any number of time
     withoutSemantic = true;
+    return this;
+  }
+
+  @Override
+  public CheckVerifier withCache(@Nullable ReadCache readCache, @Nullable WriteCache writeCache) {
+    this.isCacheEnabled = true;
+    this.readCache = readCache;
+    this.writeCache = writeCache;
+    this.cacheContext = new InternalCacheContext(
+      true,
+      readCache == null ? new DummyCache() : new JavaReadCacheImpl(readCache),
+      writeCache == null ? new DummyCache() : new JavaWriteCacheImpl(writeCache)
+    );
     return this;
   }
 
@@ -240,13 +292,22 @@ public class InternalCheckVerifier implements CheckVerifier {
     visitorsBridge.setInAndroidContext(inAndroidContext);
     astScanner.setVisitorBridge(visitorsBridge);
 
-    astScanner.scan(files);
+    List<InputFile> filesToParse = files;
+    if (isCacheEnabled) {
+      filesToParse = astScanner.scanWithoutParsing(files).get(false);
+      visitorsBridge.setCacheContext(cacheContext);
+    }
+    astScanner.scan(filesToParse);
 
     JavaFileScannerContextForTests testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
-    checkIssues(testJavaFileScannerContext.getIssues(), testJavaFileScannerContext.getQuickFixes());
+    if (testJavaFileScannerContext != null) {
+      checkIssues(testJavaFileScannerContext.getIssues(), testJavaFileScannerContext.getQuickFixes());
+    } else {
+      checkIssues(Collections.emptySet(), Collections.emptyMap());
+    }
   }
 
-  private void checkIssues(Set<AnalyzerMessage> issues, Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> quickFixes) {
+  private void checkIssues(Set<AnalyzerMessage> issues, Map<TextSpan, List<JavaQuickFix>> quickFixes) {
     if (expectations.expectNoIssues()) {
       assertNoIssues(issues);
     } else if (expectations.expectIssueAtFileLevel() || expectations.expectIssueAtProjectLevel()) {
@@ -564,10 +625,20 @@ public class InternalCheckVerifier implements CheckVerifier {
     }
   }
 
-  private static SonarComponents sonarComponents() {
-    SensorContext context = new InternalSensorContext();
-    FileSystem fileSystem = context.fileSystem();
-    Configuration config = context.config();
+  private SonarComponents sonarComponents() {
+    SensorContext sensorContext;
+    if (isCacheEnabled) {
+      sensorContext = new CacheEnabledSensorContext(readCache, writeCache);
+      cacheContext = new InternalCacheContext(
+        sensorContext.isCacheEnabled(),
+        new JavaReadCacheImpl(sensorContext.previousCache()),
+        new JavaWriteCacheImpl(sensorContext.nextCache())
+      );
+    } else {
+      sensorContext = new InternalSensorContext();
+    }
+    FileSystem fileSystem = sensorContext.fileSystem();
+    Configuration config = sensorContext.config();
 
     ClasspathForMain classpathForMain = new ClasspathForMain(config, fileSystem);
     ClasspathForTest classpathForTest = new ClasspathForTest(config, fileSystem);
@@ -577,8 +648,13 @@ public class InternalCheckVerifier implements CheckVerifier {
       public boolean reportAnalysisError(RecognitionException re, InputFile inputFile) {
         throw new AssertionError(String.format("Should not fail analysis (%s)", re.getMessage()));
       }
+
+      @Override
+      public boolean canSkipUnchangedFiles() {
+        return isCacheEnabled;
+      }
     };
-    sonarComponents.setSensorContext(context);
+    sonarComponents.setSensorContext(sensorContext);
     return sonarComponents;
   }
 
@@ -638,9 +714,9 @@ public class InternalCheckVerifier implements CheckVerifier {
       String expectedDescription = expected.getDescription();
       if (!actualDescription.equals(expectedDescription)) {
         throw new AssertionError(String.format("[Quick Fix] Wrong description for issue on line %d.%nExpected: {{%s}}%nbut was:     {{%s}}",
-            actualIssue.getLine(),
-            expectedDescription,
-            actualDescription));
+          actualIssue.getLine(),
+          expectedDescription,
+          actualDescription));
       }
       List<JavaTextEdit> actualTextEdits = actual.getTextEdits();
       List<JavaTextEdit> expectedTextEdits = expected.getTextEdits();

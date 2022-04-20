@@ -17,21 +17,18 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java;
+package org.sonar.plugins.java.api.caching;
 
-import org.sonar.java.annotations.Beta;
-import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.caching.CacheContext;
+import java.io.InputStream;
 
-/**
- * Common interface for checks that are triggered at the end of the analysis, after all files have been scanned.
- * <b>Warning</b>: keeping state between files can lead to memory leaks. Implement with care.
- */
-@Beta
-public interface EndOfAnalysisCheck extends JavaCheck {
+public interface JavaReadCache {
+  /**
+   * Returns an input stream for the data cached with the provided {@code key}. It is the responsibility of the caller to close the stream.
+   */
+  InputStream read(String key);
 
   /**
-   * Method called at the end of analysis, after all files have been scanned.
+   * Checks whether the cache contains the provided {@code key}.
    */
-  void endOfAnalysis(CacheContext cacheContext);
+  boolean contains(String key);
 }
