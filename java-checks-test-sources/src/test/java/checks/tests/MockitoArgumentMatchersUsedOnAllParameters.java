@@ -2,6 +2,7 @@ package checks.tests;
 
 
 import java.util.Random;
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
@@ -90,6 +91,12 @@ public class MockitoArgumentMatchersUsedOnAllParameters {
     verify(foo).bar(gt(42), any(), any());
     verify(foo).bar(intThat(x -> x >= 42), or(ArgumentMatchers.any(), notNull()), any());
     verify(foo).bar(eq(42), any(), not(null));
+
+    // MockitoHamcrest argThat adapter
+    Matcher<String> matcher = org.hamcrest.Matchers.endsWith("str");
+    verify(foo).bar(any(), org.mockito.hamcrest.MockitoHamcrest.argThat(org.hamcrest.Matchers.anything()), any());
+    verify(foo).bar(any(), org.mockito.hamcrest.MockitoHamcrest.argThat(matcher), any());
+    verify(foo).bar(any(), any(), org.mockito.hamcrest.MockitoHamcrest.doubleThat(org.hamcrest.Matchers.notANumber()));
 
     anyInt();
     eq(42);

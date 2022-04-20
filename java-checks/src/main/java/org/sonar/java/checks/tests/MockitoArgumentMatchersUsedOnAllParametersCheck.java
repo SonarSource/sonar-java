@@ -57,6 +57,12 @@ public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMoc
     .withAnyParameters()
     .build();
 
+  private static final MethodMatchers HAMCREST_ADAPTOR_MATCHER = MethodMatchers.create()
+    .ofTypes("org.mockito.hamcrest.MockitoHamcrest")
+    .anyName()
+    .withAnyParameters()
+    .build();
+
   private static final MethodMatchers ARGUMENT_CAPTOR = MethodMatchers.create()
     .ofTypes(ARGUMENT_CAPTOR_CLASS)
     .names("capture")
@@ -104,6 +110,7 @@ public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMoc
     }
     MethodInvocationTree invocation = (MethodInvocationTree) unpacked;
     return ARGUMENT_CAPTOR.matches(invocation) ||
+      HAMCREST_ADAPTOR_MATCHER.matches(invocation) ||
       ARGUMENT_MARCHER.matches(invocation) ||
       returnsAnArgumentMatcher(invocation);
   }
