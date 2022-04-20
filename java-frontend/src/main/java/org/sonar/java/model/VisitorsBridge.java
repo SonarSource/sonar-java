@@ -177,6 +177,7 @@ public class VisitorsBridge {
   public boolean scanWithoutParsing(InputFile inputFile) {
     if (sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile)) {
       boolean allScansSucceeded = true;
+      this.currentFile = inputFile;
       var fileScannerContext = createScannerContext();
       for (var scanner: scannersThatCannotBeSkipped) {
         try {
