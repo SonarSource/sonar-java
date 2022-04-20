@@ -148,7 +148,7 @@ public class JavaFrontend {
       successfullyParsed += generatedFilesScannedWithoutParsing.get(true).size();
       total += generatedFilesScannedWithoutParsing.get(true).size() + generatedFilesScannedWithoutParsing.get(false).size();
 
-      LOG.info("Server-side caching is enabled. {} out of {} files were successfully scanned and will not be parsed further.", successfullyParsed, total);
+      LOG.info("Server-side caching is enabled. {} out of {} files were successfully scanned and will not be parsed.", successfullyParsed, total);
     } else {
       LOG.info("Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.");
     }
