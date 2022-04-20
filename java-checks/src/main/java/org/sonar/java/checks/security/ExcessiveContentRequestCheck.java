@@ -19,19 +19,27 @@
  */
 package org.sonar.java.checks.security;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.EndOfAnalysisCheck;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -107,15 +115,123 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     .addParametersMatcher("java.lang.CharSequence")
     .build();
 
+  public static final String INSTANTIATION_CACHE_KEY = "java:S5693:instantiate" ;
+  public static final String SET_MAXIMUM_SIZE_CACHE_KEY = "java:S5693:maximumSize";
+
+  private static final Logger LOGGER = Loggers.get(ExcessiveContentRequestCheck.class);
+
   private final List<AnalyzerMessage> multipartConstructorIssues = new ArrayList<>();
   private boolean sizeSetSomewhere = false;
 
+  private List<String> filesThatSetMaximumSize;
+  private List<String> filesThatInstantiate;
+  private boolean cacheIsLoaded = false;
+  private boolean cacheIsCommitted = false;
+
+  private final List<String> currentFilesThatSetMaximumSize = new ArrayList<>();
+  private final List<String> currentFilesThatInstantiate = new ArrayList<>();
+
+  @VisibleForTesting
+  synchronized void initCaches(CacheContext cacheContext) {
+    if (cacheIsLoaded) {
+      return;
+    }
+    cacheIsLoaded = true;
+    if (!cacheContext.isCacheEnabled()) {
+      return;
+    }
+    var readCache = cacheContext.getReadCache();
+    try (InputStream in = readCache.read(SET_MAXIMUM_SIZE_CACHE_KEY)) {
+      String raw = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+      String[] filenames = raw.split(";");
+      filesThatSetMaximumSize = new ArrayList<>();
+      Collections.addAll(filesThatSetMaximumSize, filenames);
+    } catch (IllegalArgumentException e) {
+      filesThatSetMaximumSize = null;
+    } catch (IOException exception) {
+      LOGGER.warn(exception.getMessage());
+    }
+
+    try (InputStream in = readCache.read(INSTANTIATION_CACHE_KEY)) {
+      String raw = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+      String[] filenames = raw.split(";");
+      filesThatInstantiate = new ArrayList<>();
+      Collections.addAll(filesThatInstantiate, filenames);
+    } catch (IllegalArgumentException e) {
+      filesThatInstantiate = null;
+    } catch (IOException exception) {
+      LOGGER.warn(exception.getMessage());
+    }
+  }
+
+  @VisibleForTesting
+  synchronized void commitCaches(CacheContext cacheContext) {
+    if (cacheIsCommitted) {
+      return;
+    }
+    cacheIsCommitted = true;
+    if (!cacheContext.isCacheEnabled()) {
+      return;
+    }
+    var writeCache = cacheContext.getWriteCache();
+    try {
+      if (this.filesThatSetMaximumSize != null && this.filesThatSetMaximumSize.containsAll(currentFilesThatSetMaximumSize)) {
+        // If the list of files that sets the maximum size has not changed, we copy the value from the previous analysis
+        writeCache.copyFromPrevious(SET_MAXIMUM_SIZE_CACHE_KEY);
+      } else {
+        byte[] data = String.join(";", currentFilesThatSetMaximumSize).getBytes(StandardCharsets.UTF_8);
+        writeCache.write(SET_MAXIMUM_SIZE_CACHE_KEY, data);
+      }
+      if (this.filesThatInstantiate != null && this.filesThatInstantiate.containsAll(currentFilesThatInstantiate)) {
+        writeCache.copyFromPrevious(INSTANTIATION_CACHE_KEY);
+      } else {
+        byte[] data = String.join(";", currentFilesThatInstantiate).getBytes(StandardCharsets.UTF_8);
+        writeCache.write(INSTANTIATION_CACHE_KEY, data);
+      }
+    } catch (IllegalArgumentException e) {
+      LOGGER.warn(String.format("Failed to read persist data into the cache: %s", e.getMessage()));
+    }
+  }
+
   @Override
-  public void endOfAnalysis(CacheContext ignored) {
+  public boolean scanWithoutParsing(InputFileScannerContext context) {
+    // If not done yet, load data from the cache
+    initCaches(context.getCacheContext());
+
+    // Assume the file could not be scanned by default
+    boolean successfullyScanned = false;
+
+    String fileKey = context.getInputFile().toString();
+    // If a correct maximum size has been set in this file in a previous analysis, we use this information
+    if (filesThatSetMaximumSize != null && filesThatSetMaximumSize.contains(fileKey)) {
+      currentFilesThatSetMaximumSize.add(fileKey);
+      sizeSetSomewhere = true;
+      successfullyScanned = true;
+    }
+    // If a relevant instantiation has been found in a previous analysis, we use this information
+    if (filesThatInstantiate != null && filesThatInstantiate.contains(fileKey)) {
+      currentFilesThatInstantiate.add(fileKey);
+      successfullyScanned = true;
+    }
+
+    return successfullyScanned;
+  }
+
+  @Override
+  public void endOfAnalysis(CacheContext cacheContext) {
     if (!sizeSetSomewhere && context != null) {
       DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) context;
       multipartConstructorIssues.forEach(defaultContext::reportIssue);
     }
+    commitCaches(cacheContext);
+    if (filesThatSetMaximumSize != null) {
+      filesThatSetMaximumSize.clear();
+    }
+    if (filesThatInstantiate != null) {
+      filesThatInstantiate.clear();
+    }
+    currentFilesThatSetMaximumSize.clear();
+    currentFilesThatInstantiate.clear();
     multipartConstructorIssues.clear();
     sizeSetSomewhere = false;
   }
@@ -134,6 +250,7 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
         // Create an issue that we will report only at the end of the analysis if the maximum size was never set.
         AnalyzerMessage analyzerMessage = defaultContext.createAnalyzerMessage(this, newClassTree, MESSAGE_SIZE_NOT_SET);
         multipartConstructorIssues.add(analyzerMessage);
+        currentFilesThatInstantiate.add(context.getInputFile().toString());
       }
     } else {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
@@ -225,5 +342,6 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     }
     return Optional.empty();
   }
+
 
 }
