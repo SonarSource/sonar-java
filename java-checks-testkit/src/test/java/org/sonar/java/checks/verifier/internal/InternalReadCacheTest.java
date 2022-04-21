@@ -19,15 +19,14 @@
  */
 package org.sonar.java.checks.verifier.internal;
 
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class InternalReadCacheTest {
 
@@ -63,5 +62,19 @@ class InternalReadCacheTest {
   void contains_returns_false_when_key_is_absent() {
     InternalReadCache cache = new InternalReadCache();
     assertThat(cache.contains("non existing key")).isFalse();
+  }
+
+  @Test
+  void putAll_from_writeCache() {
+    var readCache = new InternalReadCache();
+    var writeCache = new InternalWriteCache();
+
+    var value = new byte[]{'f', 'o', 'o'};
+    var key = "some key";
+    writeCache.write(key, value);
+
+    assertThat(readCache.contains(key)).isFalse();
+    readCache.putAll(writeCache);
+    assertThat(readCache.contains(key)).isTrue();
   }
 }

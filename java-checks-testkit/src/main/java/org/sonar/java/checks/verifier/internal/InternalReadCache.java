@@ -19,12 +19,11 @@
  */
 package org.sonar.java.checks.verifier.internal;
 
-import org.sonar.api.batch.sensor.cache.ReadCache;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import org.sonar.api.batch.sensor.cache.ReadCache;
 
 public class InternalReadCache implements ReadCache {
   private final Map<String, byte[]> data = new HashMap<>();
@@ -45,5 +44,14 @@ public class InternalReadCache implements ReadCache {
   public InternalReadCache put(String key, byte[] data) {
     this.data.put(key, data);
     return this;
+  }
+
+  public InternalReadCache putAll(Map<String, byte[]> data) {
+    this.data.putAll(data);
+    return this;
+  }
+
+  public InternalReadCache putAll(InternalWriteCache writeCache) {
+    return this.putAll(writeCache.getData());
   }
 }

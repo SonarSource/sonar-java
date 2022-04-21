@@ -97,7 +97,7 @@ public final class InternalInputFile extends InternalMockedSonarAPI implements I
 
   @Override
   public String key() {
-    return moduleKey + ":" + filename();
+    return moduleKey + ":" + path().toString().replace(File.separatorChar, '/');
   }
 
   @Override

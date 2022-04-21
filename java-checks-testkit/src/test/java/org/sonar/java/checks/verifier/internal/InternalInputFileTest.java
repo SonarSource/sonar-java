@@ -78,7 +78,7 @@ class InternalInputFileTest {
     assertThat(inputFile.filename()).isEqualTo("bar.java");
     assertThat(inputFile.file()).isNotNull();
     assertThat(inputFile.isFile()).isTrue();
-    assertThat(inputFile.key()).isEqualTo("module:bar.java");
+    assertThat(inputFile.key()).isEqualTo("module:src/test/files/internal/bar.java");
     assertThat(inputFile.type()).isEqualTo(InputFile.Type.MAIN);
     assertThat(inputFile.charset()).isEqualTo(StandardCharsets.UTF_8);
     assertThat(inputFile.contents()).startsWith("class A { }");
