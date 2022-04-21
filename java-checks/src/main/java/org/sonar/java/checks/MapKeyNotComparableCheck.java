@@ -56,7 +56,7 @@ public class MapKeyNotComparableCheck extends IssuableSubscriptionVisitor {
     return JUtils.isTypeVar(mapKeyTree.symbolType());
   }
 
-  private Optional<IdentifierTree> getMapKeyTree(ParameterizedTypeTree typeTree) {
+  private static Optional<IdentifierTree> getMapKeyTree(ParameterizedTypeTree typeTree) {
     TypeArguments typeArgs = typeTree.typeArguments();
     if (typeArgs.size() > 1) {
       Tree mapKeyTree = typeArgs.get(0);
@@ -67,7 +67,7 @@ public class MapKeyNotComparableCheck extends IssuableSubscriptionVisitor {
     return Optional.empty();
   }
 
-  private boolean implementsComparable(Type mapKeyType) {
+  private static boolean implementsComparable(Type mapKeyType) {
     return mapKeyType.isSubtypeOf("java.lang.Comparable");
   }
 }
