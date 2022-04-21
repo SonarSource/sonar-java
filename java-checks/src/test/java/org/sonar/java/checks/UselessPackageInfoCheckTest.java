@@ -137,7 +137,7 @@ class UselessPackageInfoCheckTest {
     verify(check, times(2)).scanWithoutParsing(any());
     assertThat(writeCache2.getData())
       .hasSize(4)
-      .containsExactlyEntriesOf(writeCache.getData());
+      .containsExactlyInAnyOrderEntriesOf(writeCache.getData());
   }
 
   @Test
@@ -162,6 +162,7 @@ class UselessPackageInfoCheckTest {
 
   @Test
   void write_cache_multiple_writes() {
+    logTester.setLevel(LoggerLevel.TRACE);
     verifier
       .addFiles(InputFile.Status.SAME,
         mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java")
@@ -169,9 +170,9 @@ class UselessPackageInfoCheckTest {
       .withCheck(new UselessPackageInfoCheck());
 
     verifier.verifyNoIssues();
-    assertThatThrownBy(verifier::verifyNoIssues)
-      .isInstanceOf(AnalysisException.class)
-      .hasRootCauseInstanceOf(IllegalArgumentException.class);
+    verifier.verifyNoIssues();
+    assertThat(logTester.logs(LoggerLevel.TRACE))
+      .anyMatch(msg -> msg.matches("Could not store data to cache key '[^']+': .+"));
   }
 
   @Test

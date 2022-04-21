@@ -19,35 +19,169 @@
  */
 package org.sonar.java.checks;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Set;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.api.utils.log.LogTesterJUnit5;
+import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.java.AnalysisException;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.internal.InternalReadCache;
+import org.sonar.java.checks.verifier.internal.InternalWriteCache;
+import org.sonar.plugins.java.api.InputFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.in;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class MissingPackageInfoCheckTest {
 
+  private static final String EXPECTED_PACKAGE = "checks.packageInfo.nopackageinfo";
+  private static final String EXPECTED_MESSAGE = "Add a 'package-info.java' file to document the '" + EXPECTED_PACKAGE + "' package";
+
+  @RegisterExtension
+  public final LogTesterJUnit5 logTester = new LogTesterJUnit5();
+
+  private ReadCache readCache;
+  private InternalWriteCache writeCache;
+  private CheckVerifier verifier;
+
+  @BeforeEach
+  void initVerifier() {
+    this.readCache = new InternalReadCache();
+    this.writeCache = new InternalWriteCache().bind(readCache);
+    this.verifier = CheckVerifier.newVerifier()
+      .withCache(readCache, writeCache);
+  }
+
   @Test
   void no_package_info() {
-    final String expectedPackage = "checks.packageInfo.nopackageinfo";
-
     MissingPackageInfoCheck check = new MissingPackageInfoCheck();
-    String expectedMessage = "Add a 'package-info.java' file to document the '" + expectedPackage + "' package";
 
     CheckVerifier.newVerifier()
       .onFiles(
-        testSourcesPath("DefaultPackage.java"),
-        testSourcesPath("checks/packageInfo/HelloWorld.java"),
-        testSourcesPath("checks/packageInfo/package-info.java"),
-        testSourcesPath("checks/packageInfo/nopackageinfo/HelloWorld.java"),
-        testSourcesPath("checks/packageInfo/nopackageinfo/nopackageinfo.java"))
+        mainCodeSourcesPath("DefaultPackage.java"),
+        mainCodeSourcesPath("checks/packageInfo/HelloWorld.java"),
+        mainCodeSourcesPath("checks/packageInfo/package-info.java"),
+        mainCodeSourcesPath("checks/packageInfo/nopackageinfo/HelloWorld.java"),
+        mainCodeSourcesPath("checks/packageInfo/nopackageinfo/nopackageinfo.java"))
       .withCheck(check)
-      .verifyIssueOnProject(expectedMessage);
+      .verifyIssueOnProject(EXPECTED_MESSAGE);
 
     Set<String> set = check.missingPackageWithoutPackageFile;
     assertThat(set).hasSize(1);
-    assertThat(set.iterator().next()).isEqualTo(expectedPackage);
+    assertThat(set.iterator().next()).isEqualTo(EXPECTED_PACKAGE);
   }
 
+  @Test
+  void caching() {
+    verifier
+      .onFiles(
+        mainCodeSourcesPath("DefaultPackage.java"),
+        mainCodeSourcesPath("checks/packageInfo/HelloWorld.java"),
+        mainCodeSourcesPath("checks/packageInfo/package-info.java"),
+        mainCodeSourcesPath("checks/packageInfo/nopackageinfo/HelloWorld.java"),
+        mainCodeSourcesPath("checks/packageInfo/nopackageinfo/nopackageinfo.java")
+      )
+      .withCheck(new MissingPackageInfoCheck())
+      .verifyIssueOnProject(EXPECTED_MESSAGE);
+
+    var check = spy(new MissingPackageInfoCheck() {
+      @Override
+      public boolean scanWithoutParsing(InputFileScannerContext inputFileScannerContext) {
+        this.context = inputFileScannerContext;
+        return super.scanWithoutParsing(inputFileScannerContext);
+      }
+
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+        this.context = context;
+        super.scanFile(context);
+      }
+    });
+
+    var populatedReadCache = new InternalReadCache().putAll(writeCache);
+    var writeCache2 = new InternalWriteCache().bind(populatedReadCache);
+    CheckVerifier.newVerifier()
+      .withCache(populatedReadCache, writeCache2)
+      .addFiles(InputFile.Status.SAME,
+        mainCodeSourcesPath("checks/packageInfo/HelloWorld.java"),
+        mainCodeSourcesPath("checks/packageInfo/package-info.java"),
+        mainCodeSourcesPath("checks/packageInfo/nopackageinfo/HelloWorld.java"),
+        mainCodeSourcesPath("checks/packageInfo/nopackageinfo/nopackageinfo.java"),
+        mainCodeSourcesPath("DefaultPackage.java")
+      )
+      .withCheck(check)
+      .verifyIssueOnProject(EXPECTED_MESSAGE);
+
+    verify(check, times(0)).scanFile(any());
+    verify(check, times(5)).scanWithoutParsing(any());
+    assertThat(writeCache2.getData())
+      .hasSize(5)
+      .containsExactlyInAnyOrderEntriesOf(writeCache.getData());
+  }
+
+  @Test
+  void cache_deserialization_throws_IOException() throws IOException {
+    var inputStream = mock(InputStream.class);
+    doThrow(new IOException()).when(inputStream).readAllBytes();
+    var readCache = mock(ReadCache.class);
+    doReturn(inputStream).when(readCache).read(any());
+    doReturn(true).when(readCache).contains(any());
+
+    var verifier = CheckVerifier.newVerifier()
+      .withCache(readCache, writeCache)
+      .addFiles(InputFile.Status.SAME,
+        mainCodeSourcesPath("checks/packageInfo/HelloWorld.java")
+      )
+      .withCheck(new MissingPackageInfoCheck());
+
+    assertThatThrownBy(verifier::verifyNoIssues)
+      .isInstanceOf(AnalysisException.class)
+      .hasRootCauseInstanceOf(IOException.class);
+  }
+
+  @Test
+  void write_cache_multiple_writes() {
+    logTester.setLevel(LoggerLevel.TRACE);
+    verifier
+      .addFiles(InputFile.Status.SAME,
+        mainCodeSourcesPath("checks/packageInfo/HelloWorld.java")
+      )
+      .withCheck(new MissingPackageInfoCheck());
+
+    verifier.verifyNoIssues();
+    verifier.verifyNoIssues();
+    assertThat(logTester.logs(LoggerLevel.TRACE))
+      .anyMatch(msg -> msg.matches("Could not store data to cache key '[^']+': .+"));
+  }
+
+  @Test
+  void emptyCache() {
+    logTester.setLevel(LoggerLevel.TRACE);
+    verifier
+      .addFiles(InputFile.Status.SAME,
+        mainCodeSourcesPath("checks/packageInfo/HelloWorld.java")
+      )
+      .withCheck(new MissingPackageInfoCheck())
+      .verifyNoIssues();
+
+    assertThat(logTester.logs(LoggerLevel.TRACE).stream()
+      .filter(msg -> msg.matches("Cache miss for key '[^']+'")))
+      .hasSize(1);
+  }
 }

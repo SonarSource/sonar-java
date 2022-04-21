@@ -23,33 +23,25 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
-import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 
 @Rule(key = "S1228")
-public class MissingPackageInfoCheck implements JavaFileScanner, EndOfAnalysisCheck {
+public class MissingPackageInfoCheck extends AbstractPackageInfoChecker {
 
   @VisibleForTesting
   final Set<String> missingPackageWithoutPackageFile = new HashSet<>();
   private final Set<String> knownPackageWithPackageFile = new HashSet<>();
-  private JavaFileScannerContext context;
+  protected InputFileScannerContext context;
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  protected void processFile(InputFileScannerContext context, String packageName) {
     this.context = context;
 
-    PackageDeclarationTree packageDeclaration = context.getTree().packageDeclaration();
-    if (packageDeclaration == null) {
-      // default package
+    if (knownPackageWithPackageFile.contains(packageName)) {
       return;
     }
-
-    String packageName = ExpressionsHelper.concatenate(packageDeclaration.packageName());
 
     File parentFile = context.getInputFile().file().getParentFile();
     if (!new File(parentFile, "package-info.java").isFile()) {
@@ -66,5 +58,4 @@ public class MissingPackageInfoCheck implements JavaFileScanner, EndOfAnalysisCh
       context.addIssueOnProject(this, "Add a 'package-info.java' file to document the '" + missingPackageInfo + "' package");
     }
   }
-
 }
