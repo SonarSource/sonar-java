@@ -32,7 +32,7 @@ import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 
 @Rule(key = "S1228")
-public class PackageInfoCheck implements JavaFileScanner, EndOfAnalysisCheck {
+public class MissingPackageInfoCheck implements JavaFileScanner, EndOfAnalysisCheck {
 
   @VisibleForTesting
   final Set<String> missingPackageWithoutPackageFile = new HashSet<>();

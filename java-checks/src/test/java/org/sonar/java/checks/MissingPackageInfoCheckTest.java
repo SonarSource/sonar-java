@@ -26,13 +26,13 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
-class PackageInfoCheckTest {
+class MissingPackageInfoCheckTest {
 
   @Test
   void no_package_info() {
     final String expectedPackage = "checks.packageInfo.nopackageinfo";
 
-    PackageInfoCheck check = new PackageInfoCheck();
+    MissingPackageInfoCheck check = new MissingPackageInfoCheck();
     String expectedMessage = "Add a 'package-info.java' file to document the '" + expectedPackage + "' package";
 
     CheckVerifier.newVerifier()

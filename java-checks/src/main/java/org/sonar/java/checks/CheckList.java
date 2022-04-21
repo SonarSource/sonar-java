@@ -228,7 +228,7 @@ public final class CheckList {
     NestedIfStatementsCheck.class,
     BadAbstractClassNameCheck.class,
     RawExceptionCheck.class,
-    PackageInfoCheck.class,
+    MissingPackageInfoCheck.class,
     OperatorPrecedenceCheck.class,
     RawTypeCheck.class,
 
