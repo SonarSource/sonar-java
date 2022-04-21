@@ -294,8 +294,8 @@ public class InternalCheckVerifier implements CheckVerifier {
 
     List<InputFile> filesToParse = files;
     if (isCacheEnabled) {
-      filesToParse = astScanner.scanWithoutParsing(files).get(false);
       visitorsBridge.setCacheContext(cacheContext);
+      filesToParse = astScanner.scanWithoutParsing(files).get(false);
     }
     astScanner.scan(filesToParse);
 
@@ -629,11 +629,6 @@ public class InternalCheckVerifier implements CheckVerifier {
     SensorContext sensorContext;
     if (isCacheEnabled) {
       sensorContext = new CacheEnabledSensorContext(readCache, writeCache);
-      cacheContext = new InternalCacheContext(
-        sensorContext.isCacheEnabled(),
-        new JavaReadCacheImpl(sensorContext.previousCache()),
-        new JavaWriteCacheImpl(sensorContext.nextCache())
-      );
     } else {
       sensorContext = new InternalSensorContext();
     }

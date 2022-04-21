@@ -177,7 +177,7 @@ public class VisitorsBridge {
   public boolean scanWithoutParsing(InputFile inputFile) {
     if (sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile)) {
       boolean allScansSucceeded = true;
-      var fileScannerContext = createScannerContext();
+      var fileScannerContext = createScannerContext(sonarComponents, inputFile, javaVersion, inAndroidContext, cacheContext);
       for (var scanner: scannersThatCannotBeSkipped) {
         try {
           allScansSucceeded &= scanner.scanWithoutParsing(fileScannerContext);
@@ -285,10 +285,11 @@ public class VisitorsBridge {
     return "";
   }
 
-  protected InputFileScannerContext createScannerContext() {
+  protected static InputFileScannerContext createScannerContext(
+    SonarComponents sonarComponents, InputFile inputFile, JavaVersion javaVersion, boolean inAndroidContext, CacheContext cacheContext) {
     return new DefaultInputFileScannerContext(
       sonarComponents,
-      currentFile,
+      inputFile,
       javaVersion,
       inAndroidContext,
       cacheContext
