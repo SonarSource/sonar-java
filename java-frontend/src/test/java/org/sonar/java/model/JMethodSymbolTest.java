@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
@@ -45,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 class JMethodSymbolTest {
@@ -347,6 +349,19 @@ class JMethodSymbolTest {
     assertThat(cu.sema.methodSymbol(Objects.requireNonNull(methodInvocation.methodBinding)).signature())
       .isEqualTo(method.symbol().signature())
       .isEqualTo("org.example.C#m(Ljava/lang/Object;[Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+  }
+
+  @Test
+  void support_unexpected_IMethodBinding_null_return_type() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { C m() { return null; } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    // simulate broken semantic with getReturnType() == null
+    IMethodBinding brokenMethodBinding = spy(m.methodBinding);
+    when(brokenMethodBinding.getReturnType()).thenReturn(null);
+    JMethodSymbol methodSymbol = new JMethodSymbol(cu.sema, brokenMethodBinding);
+    assertThat(methodSymbol.returnType().isUnknown()).isTrue();
+    assertThat(methodSymbol.metadata()).isSameAs(Symbols.EMPTY_METADATA);
   }
 
   private static CompilationUnitTreeImpl test(String source) {
