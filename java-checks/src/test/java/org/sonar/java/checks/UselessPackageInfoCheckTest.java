@@ -19,53 +19,171 @@
  */
 package org.sonar.java.checks;
 
+import java.io.IOException;
+import java.io.InputStream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.api.utils.log.LogTesterJUnit5;
+import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.java.AnalysisException;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.internal.InternalReadCache;
+import org.sonar.java.checks.verifier.internal.InternalWriteCache;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class UselessPackageInfoCheckTest {
 
+  @RegisterExtension
+  public final LogTesterJUnit5 logTester = new LogTesterJUnit5();
+
+  private ReadCache readCache;
+  private InternalWriteCache writeCache;
+  private CheckVerifier verifier;
+
+  @BeforeEach
+  void initVerifier() {
+    this.readCache = new InternalReadCache();
+    this.writeCache = new InternalWriteCache().bind(readCache);
+    this.verifier = CheckVerifier.newVerifier()
+      .withCache(readCache, writeCache);
+  }
+
   @Test
   void withNoOtherFile() {
-    CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFiles/package-info.java"))
+    verifier
+      .onFile(mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFiles/package-info.java"))
       .withCheck(new UselessPackageInfoCheck())
       .verifyIssueOnFile("Remove this package.");
   }
 
   @Test
   void withOtherFile() {
-    CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/UselessPackageInfoCheck/package-info.java"))
+    verifier
+      .onFile(mainCodeSourcesPath("checks/UselessPackageInfoCheck/package-info.java"))
       .withCheck(new UselessPackageInfoCheck())
       .verifyNoIssues();
   }
 
   @Test
   void notAPackageInfo() {
-    CheckVerifier.newVerifier()
+    verifier
       .onFiles(
-        testSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java"),
-        testSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld2.java"))
+        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java"),
+        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld2.java"))
       .withCheck(new UselessPackageInfoCheck())
       .verifyNoIssues();
   }
 
   @Test
   void notAPackageInfoOnSingleFile() {
-    CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java"))
+    verifier
+      .onFile(mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java"))
       .withCheck(new UselessPackageInfoCheck())
       .verifyNoIssues();
   }
 
   @Test
   void defaultPackage() {
-    CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("DefaultPackage.java"))
+    verifier
+      .onFile(mainCodeSourcesPath("DefaultPackage.java"))
       .withCheck(new UselessPackageInfoCheck())
       .verifyNoIssues();
   }
 
+  @Test
+  void caching() throws IOException, ClassNotFoundException {
+    verifier
+      .onFiles(
+        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java"),
+        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld2.java"),
+        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/package-info.java"),
+        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFiles/package-info.java")
+      )
+      .withCheck(new UselessPackageInfoCheck())
+      .verifyIssueOnFile("Remove this package.");
+
+    var check = spy(new UselessPackageInfoCheck());
+
+    var populatedReadCache = new InternalReadCache().putAll(writeCache);
+    var writeCache2 = new InternalWriteCache().bind(populatedReadCache);
+    CheckVerifier.newVerifier()
+      .withCache(populatedReadCache, writeCache2)
+      .addFiles(InputFile.Status.SAME,
+        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java"),
+        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld2.java")
+      )
+      .addFiles(InputFile.Status.CHANGED,
+        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/package-info.java"),
+        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFiles/package-info.java")
+      )
+      .withCheck(check)
+      .verifyIssueOnFile("Remove this package.");
+
+    verify(check, times(2)).scanFile(any());
+    verify(check, times(2)).scanWithoutParsing(any());
+    assertThat(writeCache2.getData())
+      .hasSize(4)
+      .containsExactlyEntriesOf(writeCache.getData());
+  }
+
+  @Test
+  void cache_deserialization_throws_IOException() throws IOException {
+    var inputStream = mock(InputStream.class);
+    doThrow(new IOException()).when(inputStream).readAllBytes();
+    var readCache = mock(ReadCache.class);
+    doReturn(inputStream).when(readCache).read(any());
+
+    var verifier = CheckVerifier.newVerifier()
+      .withCache(readCache, writeCache)
+      .addFiles(InputFile.Status.SAME,
+        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java")
+      )
+      .withCheck(new UselessPackageInfoCheck());
+
+    assertThatThrownBy(verifier::verifyNoIssues)
+      .isInstanceOf(AnalysisException.class)
+      .hasCauseInstanceOf(IOException.class);
+  }
+
+  @Test
+  void write_cache_multiple_writes() throws IOException {
+    verifier
+      .addFiles(InputFile.Status.SAME,
+        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java")
+      )
+      .withCheck(new UselessPackageInfoCheck());
+
+    verifier.verifyNoIssues();
+    assertThatThrownBy(verifier::verifyNoIssues)
+      .isInstanceOf(AnalysisException.class)
+      .hasRootCauseInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
+  void emptyCache() {
+    logTester.setLevel(LoggerLevel.DEBUG);
+    verifier
+      .addFiles(InputFile.Status.SAME,
+        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java")
+      )
+      .withCheck(new UselessPackageInfoCheck())
+      .verifyNoIssues();
+
+    assertThat(logTester.logs(LoggerLevel.DEBUG).stream()
+      .filter(msg -> msg.matches("Could not load cached package for key '[^']+' due to a '[^']+': .+\\.")))
+      .hasSize(1);
+  }
 }
