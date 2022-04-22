@@ -19,17 +19,55 @@
  */
 package org.sonar.java.checks.spring;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.api.utils.log.LogTesterJUnit5;
+import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.java.AnalysisException;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.internal.InternalReadCache;
+import org.sonar.java.checks.verifier.internal.InternalWriteCache;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class SpringBeansShouldBeAccessibleCheckTest {
 
   private static final String BASE_PATH = "checks/spring/s4605/";
+
+  @RegisterExtension
+  public final LogTesterJUnit5 logTester = new LogTesterJUnit5();
+
+  private ReadCache readCache;
+  private InternalWriteCache writeCache;
+  private CheckVerifier verifier;
+
+  @BeforeEach
+  void initVerifier() {
+    this.readCache = new InternalReadCache();
+    this.writeCache = new InternalWriteCache().bind(readCache);
+    this.verifier = CheckVerifier.newVerifier()
+      .withCache(readCache, writeCache);
+  }
 
   @Test
   void testComponentScan() {
@@ -104,5 +142,96 @@ class SpringBeansShouldBeAccessibleCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void caching() throws IOException, ClassNotFoundException {
+    var unchangedFiles = Stream.of(
+      "app/SpringBootApp1.java",
+      "fourthApp/SpringBootApp4.java"
+    ).map(path -> mainCodeSourcesPath(BASE_PATH + "springBootApplication/" + path)).collect(Collectors.toList());
+    var changedFiles = Stream.of(
+      "app/Ok/Ok.java",
+      "fourthApp/controller/Controller.java",
+      "fourthApp/domain/SomeClass.java",
+      "fourthApp/utility/SomeUtilityClass.java",
+      "Ko/Ko.java"
+    ).map(path -> mainCodeSourcesPath(BASE_PATH + "springBootApplication/" + path)).collect(Collectors.toList());
 
+    var check = spy(new SpringBeansShouldBeAccessibleCheck());
+    verifier
+      .addFiles(InputFile.Status.SAME, unchangedFiles)
+      .addFiles(InputFile.Status.CHANGED, changedFiles)
+      .withCheck(check)
+      .verifyIssues();
+
+    verify(check, times(15)).visitNode(any());
+    verify(check, times(2)).scanWithoutParsing(any());
+    assertThat(writeCache.getData())
+      .hasSize(2);
+
+
+    check = spy(new SpringBeansShouldBeAccessibleCheck());
+
+    var populatedReadCache = new InternalReadCache().putAll(writeCache);
+    var writeCache2 = new InternalWriteCache().bind(populatedReadCache);
+    CheckVerifier.newVerifier()
+      .withCache(populatedReadCache, writeCache2)
+      .addFiles(InputFile.Status.SAME, unchangedFiles)
+      .addFiles(InputFile.Status.CHANGED, changedFiles)
+      .withCheck(check)
+      .verifyIssues();
+
+    verify(check, times(12)).visitNode(any());
+    verify(check, times(2)).scanWithoutParsing(any());
+    assertThat(writeCache2.getData())
+      .hasSize(2)
+      .containsExactlyEntriesOf(writeCache.getData());
+  }
+
+  @Test
+  void cache_deserialization_throws_IOException() throws IOException {
+    var inputStream = mock(InputStream.class);
+    doThrow(new IOException()).when(inputStream).readAllBytes();
+    var readCache = mock(ReadCache.class);
+    doReturn(inputStream).when(readCache).read(any());
+
+    var verifier = CheckVerifier.newVerifier()
+      .withCache(readCache, writeCache)
+      .addFiles(InputFile.Status.SAME,
+        mainCodeSourcesPath(BASE_PATH + "springBootApplication/app/SpringBootApp1.java")
+      )
+      .withCheck(new SpringBeansShouldBeAccessibleCheck());
+
+    assertThatThrownBy(verifier::verifyNoIssues)
+      .isInstanceOf(AnalysisException.class)
+      .hasRootCauseInstanceOf(IOException.class);
+  }
+
+  @Test
+  void write_cache_multiple_writes() {
+    verifier
+      .addFiles(InputFile.Status.SAME,
+        mainCodeSourcesPath(BASE_PATH + "springBootApplication/app/SpringBootApp1.java")
+      )
+      .withCheck(new SpringBeansShouldBeAccessibleCheck());
+
+    verifier.verifyNoIssues();
+    assertThatThrownBy(verifier::verifyNoIssues)
+      .isInstanceOf(AnalysisException.class)
+      .hasRootCauseInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
+  void emptyCache() {
+    logTester.setLevel(LoggerLevel.TRACE);
+    verifier
+      .addFiles(InputFile.Status.SAME,
+        mainCodeSourcesPath(BASE_PATH + "springBootApplication/app/SpringBootApp1.java")
+      )
+      .withCheck(new SpringBeansShouldBeAccessibleCheck())
+      .verifyNoIssues();
+
+    assertThat(logTester.logs(LoggerLevel.TRACE).stream().filter(
+      msg -> msg.matches("Could not load cached data for key '[^']+' due to an IllegalArgumentException: .+")
+    )).hasSize(1);
+  }
 }
