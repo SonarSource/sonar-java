@@ -103,7 +103,7 @@ public class MissingBeanValidationCheck extends IssuableSubscriptionVisitor {
     if (!variableType.is(Tree.Kind.PARAMETERIZED_TYPE)) {
       return Stream.empty();
     }
-    return ((ParameterizedTypeTree) variableType).typeArguments().stream().map(TypeTree.class::cast);
+    return ((ParameterizedTypeTree) variableType).typeArguments().stream();
   }
 
   private static boolean validationSupported(VariableTree variable) {

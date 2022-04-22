@@ -60,10 +60,8 @@ public class MapKeyNotComparableCheck extends IssuableSubscriptionVisitor {
   private static Optional<TypeTree> getMapKeyTree(ParameterizedTypeTree typeTree) {
     TypeArguments typeArgs = typeTree.typeArguments();
     if (typeArgs.size() == 2) {
-      Tree mapKeyTree = typeArgs.get(0);
-      if (mapKeyTree instanceof TypeTree) {
-        return Optional.of((TypeTree)mapKeyTree);
-      }
+      TypeTree mapKeyTree = typeArgs.get(0);
+      return Optional.of(mapKeyTree);
     }
     return Optional.empty();
   }

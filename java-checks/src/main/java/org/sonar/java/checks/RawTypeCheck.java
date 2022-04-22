@@ -61,9 +61,7 @@ public class RawTypeCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   @Override
   public void visitParameterizedType(ParameterizedTypeTree tree) {
-    tree.typeArguments().stream()
-      .filter(TypeTree.class::isInstance)
-      .map(TypeTree.class::cast)
+    tree.typeArguments()
       .forEach(this::checkTypeTree);
     super.visitParameterizedType(tree);
   }
