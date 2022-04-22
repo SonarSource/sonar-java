@@ -375,6 +375,10 @@ abstract class JSymbol implements Symbol {
           binding.getAnnotations());
       case IBinding.METHOD:
         ITypeBinding returnType = ((IMethodBinding) binding).getReturnType();
+        // In rare circumstances, when the semantic information is incomplete, returnType can be null.
+        if (returnType == null) {
+          return Symbols.EMPTY_METADATA;
+        }
         return new JSymbolMetadata(
           sema,
           this,

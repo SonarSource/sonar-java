@@ -106,7 +106,12 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
   @Override
   public TypeSymbol returnType() {
     if (returnType == null) {
-      returnType = sema.typeSymbol(methodBinding().getReturnType());
+      ITypeBinding methodBindingReturnType = methodBinding().getReturnType();
+      // In rare circumstances, when the semantic information is incomplete, methodBindingReturnType can be null.
+      if (methodBindingReturnType == null) {
+        return Symbols.unknownTypeSymbol;
+      }
+      this.returnType = sema.typeSymbol(methodBindingReturnType);
     }
     return returnType;
   }
