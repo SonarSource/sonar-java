@@ -377,7 +377,7 @@ public class BaseTreeVisitor implements TreeVisitor {
 
   @Override
   public void visitTypeArguments(TypeArguments trees) {
-    scan((List<Tree>)trees);
+    scan((List<TypeTree>)trees);
   }
 
   @Override

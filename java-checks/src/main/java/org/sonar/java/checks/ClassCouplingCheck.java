@@ -45,6 +45,7 @@ import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
@@ -132,18 +133,18 @@ public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScann
   @Override
   public void visitParameterizedType(ParameterizedTypeTree tree) {
     checkTypes(tree.type());
-    checkTypes((List<Tree>) tree.typeArguments());
+    checkTypes((List<TypeTree>) tree.typeArguments());
     super.visitParameterizedType(tree);
   }
 
   @Override
   public void visitNewClass(NewClassTree tree) {
     if (tree.typeArguments() != null) {
-      checkTypes((List<Tree>) tree.typeArguments());
+      checkTypes((List<TypeTree>) tree.typeArguments());
     }
     if (tree.identifier().is(Tree.Kind.PARAMETERIZED_TYPE)) {
       scan(tree.enclosingExpression());
-      checkTypes((List<Tree>) ((ParameterizedTypeTree) tree.identifier()).typeArguments());
+      checkTypes((List<TypeTree>) ((ParameterizedTypeTree) tree.identifier()).typeArguments());
       scan(tree.typeArguments());
       scan(tree.arguments());
       scan(tree.classBody());
