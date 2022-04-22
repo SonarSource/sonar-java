@@ -22,8 +22,8 @@ public class MapKeyNotComparableCheck {
   static class UnknownClass implements Unknown {}
 
   static class Program {
-    Map<UnknownClass, Object> nonComparable = new HashMap<>(); // Noncompliant false positive
-    Map<UnknownType, Object> nonComparable = new HashMap<>(); // Potential false negative
+    Map<UnknownClass, Object> nonComparable = new HashMap<>(); // Potential false negative caused by unknown hierarchy
+    Map<UnknownType, Object> nonComparable = new HashMap<>(); // Potential false negative caused by unknown symbol
     Map<NonComparable, Object> nonCompliant = new HashMap<>(); // Noncompliant [[sc=9;ec=22]] {{The key type should implement Comparable.}}
     Map<MyComparableType, Object> comparable = new HashMap<>(); // compliant
     Map noParams = new HashMap();

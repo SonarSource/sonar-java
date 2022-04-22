@@ -271,4 +271,27 @@ public final class JUtils {
     return method.declarationParameters().get(param).metadata();
   }
 
+  public static boolean hasUnknownTypeInHierarchy(Symbol.MethodSymbol symbol) {
+    Symbol owner = symbol.owner();
+    if (owner == null || !owner.isTypeSymbol()) {
+      // Broken hierarchy
+      return true;
+    }
+    return hasUnknownTypeInHierarchy((Symbol.TypeSymbol) owner);
+  }
+
+  public static boolean hasUnknownTypeInHierarchy(Symbol.TypeSymbol typeSymbol) {
+    if (typeSymbol.isUnknown()) {
+      return true;
+    }
+    if (typeSymbol.interfaces().stream().map(Type::symbol).anyMatch(JUtils::hasUnknownTypeInHierarchy)) {
+      return true;
+    }
+    Type superClass = typeSymbol.superClass();
+    if (superClass == null) {
+      return false;
+    }
+    return hasUnknownTypeInHierarchy(superClass.symbol());
+  }
+
 }
