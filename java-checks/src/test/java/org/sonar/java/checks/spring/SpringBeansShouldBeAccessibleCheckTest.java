@@ -48,7 +48,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class SpringBeansShouldBeAccessibleCheckTest {
 
@@ -73,15 +72,15 @@ class SpringBeansShouldBeAccessibleCheckTest {
   void testComponentScan() {
     final String testFolder = BASE_PATH + "componentScan/";
     List<String> files = Arrays.asList(
-      testSourcesPath("SpringBootAppInDefaultPackage.java"),
-      testSourcesPath(testFolder + "packageA/ComponentA.java"),
-      testSourcesPath(testFolder + "packageB/ComponentB.java"),
-      testSourcesPath(testFolder + "packageC/ComponentC.java"),
-      testSourcesPath(testFolder + "packageX/ComponentX.java"),
-      testSourcesPath(testFolder + "packageY/ComponentY.java"),
-      testSourcesPath(testFolder + "packageZ/ComponentZ.java"),
-      testSourcesPath(testFolder + "packageFP/ComponentFP.java"),
-      testSourcesPath(testFolder + "ComponentScan.java"));
+      mainCodeSourcesPath("SpringBootAppInDefaultPackage.java"),
+      mainCodeSourcesPath(testFolder + "packageA/ComponentA.java"),
+      mainCodeSourcesPath(testFolder + "packageB/ComponentB.java"),
+      mainCodeSourcesPath(testFolder + "packageC/ComponentC.java"),
+      mainCodeSourcesPath(testFolder + "packageX/ComponentX.java"),
+      mainCodeSourcesPath(testFolder + "packageY/ComponentY.java"),
+      mainCodeSourcesPath(testFolder + "packageZ/ComponentZ.java"),
+      mainCodeSourcesPath(testFolder + "packageFP/ComponentFP.java"),
+      mainCodeSourcesPath(testFolder + "ComponentScan.java"));
 
     CheckVerifier.newVerifier()
       .onFiles(files)
@@ -98,11 +97,11 @@ class SpringBeansShouldBeAccessibleCheckTest {
   void testSpringBootApplication() {
     final String testFolder = BASE_PATH + "springBootApplication/";
     List<String> files = Arrays.asList(
-      testSourcesPath(testFolder + "Ko/Ko.java"),
-      testSourcesPath(testFolder + "app/Ok/Ok.java"),
-      testSourcesPath(testFolder + "app/SpringBootApp1.java"),
-      testSourcesPath(testFolder + "secondApp/AnotherOk.java"),
-      testSourcesPath(testFolder + "secondApp/SpringBootApp2.java"));
+      mainCodeSourcesPath(testFolder + "Ko/Ko.java"),
+      mainCodeSourcesPath(testFolder + "app/Ok/Ok.java"),
+      mainCodeSourcesPath(testFolder + "app/SpringBootApp1.java"),
+      mainCodeSourcesPath(testFolder + "secondApp/AnotherOk.java"),
+      mainCodeSourcesPath(testFolder + "secondApp/SpringBootApp2.java"));
 
     CheckVerifier.newVerifier()
       .onFiles(files)
@@ -119,9 +118,9 @@ class SpringBeansShouldBeAccessibleCheckTest {
   void testSpringBootApplicationWithAnnotation() {
     final String testFolderThirdApp = BASE_PATH + "springBootApplication/thirdApp/";
     List<String> thirdAppTestFiles = Arrays.asList(
-      testSourcesPath(testFolderThirdApp + "SpringBootApp3.java"),
-      testSourcesPath(testFolderThirdApp + "domain/SomeClass.java"),
-      testSourcesPath(testFolderThirdApp + "controller/Controller.java"));
+      mainCodeSourcesPath(testFolderThirdApp + "SpringBootApp3.java"),
+      mainCodeSourcesPath(testFolderThirdApp + "domain/SomeClass.java"),
+      mainCodeSourcesPath(testFolderThirdApp + "controller/Controller.java"));
 
     CheckVerifier.newVerifier()
       .onFiles(thirdAppTestFiles)
@@ -130,11 +129,11 @@ class SpringBeansShouldBeAccessibleCheckTest {
 
     final String testFolderFourthApp = BASE_PATH + "springBootApplication/fourthApp/";
     List<String> fourthAppTestFiles = Arrays.asList(
-      testSourcesPath(testFolderFourthApp + "SpringBootApp4.java"),
+      mainCodeSourcesPath(testFolderFourthApp + "SpringBootApp4.java"),
       nonCompilingTestSourcesPath(testFolderFourthApp + "SpringBootApp4b.java"),
-      testSourcesPath(testFolderFourthApp + "domain/SomeClass.java"),
-      testSourcesPath(testFolderFourthApp + "utility/SomeUtilityClass.java"),
-      testSourcesPath(testFolderFourthApp + "controller/Controller.java"));
+      mainCodeSourcesPath(testFolderFourthApp + "domain/SomeClass.java"),
+      mainCodeSourcesPath(testFolderFourthApp + "utility/SomeUtilityClass.java"),
+      mainCodeSourcesPath(testFolderFourthApp + "controller/Controller.java"));
 
     CheckVerifier.newVerifier()
       .onFiles(fourthAppTestFiles)
