@@ -58,12 +58,12 @@ class ExcessiveContentRequestCheckTest {
     @Test
     void no_issue_raised_on_valid_case_when_size_is_set_in_file_with_cached_results() {
       InternalReadCache readCache = new InternalReadCache();
-      String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/A.java");
+      String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Setter.java");
       readCache.put("java:S5693:maximumSize", unmodifiedFile.getBytes(StandardCharsets.UTF_8));
       readCache.put("java:S5693:instantiate", new byte[]{});
       CheckVerifier.newVerifier()
         .onFiles(unmodifiedFile)
-        .addFiles(InputFile.Status.CHANGED, mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/B.java"))
+        .addFiles(InputFile.Status.CHANGED, mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Instantiator.java"))
         .withCheck(new ExcessiveContentRequestCheck())
         .withCache(readCache, null)
         .verifyNoIssues();
@@ -72,12 +72,12 @@ class ExcessiveContentRequestCheckTest {
     @Test
     void no_issue_raised_on_valid_case_when_instantiation_in_file_with_cached_results() {
       InternalReadCache readCache = new InternalReadCache();
-      String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/B.java");
+      String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Instantiator.java");
       readCache.put("java:S5693:maximumSize", new byte[]{});
       readCache.put("java:S5693:instantiate", unmodifiedFile.getBytes(StandardCharsets.UTF_8));
       CheckVerifier.newVerifier()
         .onFiles(unmodifiedFile)
-        .addFiles(InputFile.Status.CHANGED, mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/A.java"))
+        .addFiles(InputFile.Status.CHANGED, mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Setter.java"))
         .withCheck(new ExcessiveContentRequestCheck())
         .withCache(readCache, null)
         .verifyNoIssues();
@@ -85,7 +85,7 @@ class ExcessiveContentRequestCheckTest {
 
     @Test
     void new_data_is_persisted_to_the_write_cache_at_the_end_of_analysis() {
-      String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/A.java");
+      String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Setter.java");
 
       InternalReadCache readCache = new InternalReadCache();
       readCache.put("java:S5693:maximumSize", unmodifiedFile.getBytes(StandardCharsets.UTF_8));
@@ -95,7 +95,7 @@ class ExcessiveContentRequestCheckTest {
 
       CheckVerifier.newVerifier()
         .onFiles(unmodifiedFile)
-        .addFiles(InputFile.Status.CHANGED, mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/B.java"))
+        .addFiles(InputFile.Status.CHANGED, mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Instantiator.java"))
         .withCheck(new ExcessiveContentRequestCheck())
         .withCache(readCache, writeCache)
         .verifyNoIssues();
@@ -106,8 +106,8 @@ class ExcessiveContentRequestCheckTest {
 
     @Test
     void new_data_is_persisted_to_the_write_cache_at_the_end_of_analysis_2() {
-      String modifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/A.java");
-      String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/B.java");
+      String modifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Setter.java");
+      String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Instantiator.java");
 
       InternalReadCache readCache = new InternalReadCache();
       readCache.put("java:S5693:instantiate", (modifiedFile + ";" + unmodifiedFile).getBytes(StandardCharsets.UTF_8));
@@ -129,10 +129,10 @@ class ExcessiveContentRequestCheckTest {
     @Test
     void old_data_is_copied_from_the_read_to_the_write_cache_at_the_end_of_analysis() {
       InternalWriteCache writeCache = spy(new InternalWriteCache());
-      String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/A.java");
+      String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Setter.java");
       CheckVerifier.newVerifier()
         .onFiles(unmodifiedFile)
-        .addFiles(InputFile.Status.CHANGED, mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/B.java"))
+        .addFiles(InputFile.Status.CHANGED, mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Instantiator.java"))
         .withCheck(new ExcessiveContentRequestCheck())
         .withCache(null, writeCache)
         .verifyNoIssues();
@@ -151,10 +151,10 @@ class ExcessiveContentRequestCheckTest {
       InternalReadCache readCache = mock(InternalReadCache.class);
       doReturn(in).when(readCache).read(any(String.class));
 
-      String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/A.java");
+      String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Setter.java");
       CheckVerifier.newVerifier()
         .onFiles(unmodifiedFile)
-        .addFiles(InputFile.Status.CHANGED, mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/B.java"))
+        .addFiles(InputFile.Status.CHANGED, mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Instantiator.java"))
         .withCheck(new ExcessiveContentRequestCheck())
         .withCache(readCache, null)
         .verifyNoIssues();
