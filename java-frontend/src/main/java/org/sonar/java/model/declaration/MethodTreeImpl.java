@@ -30,11 +30,11 @@ import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -294,7 +294,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
       Symbol.MethodSymbol symbol = symbol();
       List<Symbol.MethodSymbol> overriddenSymbols = symbol.overriddenSymbols();
       if (overriddenSymbols.isEmpty()) {
-        isOverriding = hasUnknownTypeInHierarchy(symbol) ? null : false;
+        isOverriding = JUtils.hasUnknownTypeInHierarchy(symbol) ? null : false;
       } else {
         isOverriding = overriddenSymbols.stream().allMatch(Symbol::isUnknown) ? null : true;
       }
@@ -337,26 +337,4 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     return "Override".equals(id.name());
   }
 
-  private static boolean hasUnknownTypeInHierarchy(Symbol.MethodSymbol symbol) {
-    Symbol owner = symbol.owner();
-    if (owner == null || !owner.isTypeSymbol()) {
-      // Broken hierarchy
-      return true;
-    }
-    return hasUnknownTypeInHierarchy((Symbol.TypeSymbol) owner);
-  }
-
-  private static boolean hasUnknownTypeInHierarchy(Symbol.TypeSymbol typeSymbol) {
-    if (typeSymbol.isUnknown()) {
-      return true;
-    }
-    if (typeSymbol.interfaces().stream().map(Type::symbol).anyMatch(MethodTreeImpl::hasUnknownTypeInHierarchy)) {
-      return true;
-    }
-    Type superClass = typeSymbol.superClass();
-    if (superClass == null) {
-      return false;
-    }
-    return hasUnknownTypeInHierarchy(superClass.symbol());
-  }
 }

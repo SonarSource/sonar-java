@@ -46,7 +46,9 @@ public class MapKeyNotComparableCheck extends IssuableSubscriptionVisitor {
     Type type = typeTree.symbolType();
     if (type.isSubtypeOf("java.util.Map")) {
       getMapKeyTree(typeTree).ifPresent(mapKeyTree -> {
-        if (!isGenericOrWildCard(mapKeyTree) && !implementsComparable(mapKeyTree.symbolType())) {
+        if (!isGenericOrWildCard(mapKeyTree) &&
+          !implementsComparable(mapKeyTree.symbolType()) &&
+          !JUtils.hasUnknownTypeInHierarchy(mapKeyTree.symbolType().symbol())) {
           reportIssue(mapKeyTree, "The key type should implement Comparable.");
         }
       });
