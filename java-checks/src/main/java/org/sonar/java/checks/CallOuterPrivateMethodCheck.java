@@ -35,6 +35,8 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -90,10 +92,10 @@ public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       Symbol symbol = tree.symbol();
-      if(symbol.isUnknown()) {
+      if (symbol.isUnknown()) {
         String name = ExpressionUtils.methodName(tree).name();
-        unknownInvocations.computeIfAbsent(name, k ->  new HashSet<>()).add(tree);
-      } else if (isPrivateMethodOfOuterClass(symbol)) {
+        unknownInvocations.computeIfAbsent(name, k -> new HashSet<>()).add(tree);
+      } else if (isPrivateMethodOfOuterClass(symbol) && isInvocationOnCurrentInstance(tree)) {
         if (JUtils.isParametrizedMethod((Symbol.MethodSymbol) symbol) && symbol.declaration() != null) {
           // generic methods requires to use their declaration symbol rather than the parameterized one
           symbol = ((Symbol.MethodSymbol) symbol).declaration().symbol();
@@ -103,12 +105,24 @@ public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
       super.visitMethodInvocation(tree);
     }
 
+    private boolean isInvocationOnCurrentInstance(MethodInvocationTree tree) {
+      ExpressionTree expressionTree = tree.methodSelect();
+      if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
+        // Looking for "A.this.f()"
+        ExpressionTree memberSelectExpression = ((MemberSelectExpressionTree) expressionTree).expression();
+        if (memberSelectExpression.is(Tree.Kind.MEMBER_SELECT)) {
+          return ExpressionUtils.isThis(((MemberSelectExpressionTree) memberSelectExpression).identifier());
+        }
+      }
+      return expressionTree.is(Tree.Kind.IDENTIFIER);
+    }
+
     private boolean isPrivateMethodOfOuterClass(Symbol symbol) {
       return symbol.isPrivate() && symbol.owner().equals(classSymbol.owner()) && !"<init>".equals(symbol.name());
     }
 
     void checkUsages() {
-      
+
       usagesByInnerClass.forEach((symbol, innerClassUsages) -> innerClassUsages.forEach((methodUsed, count) -> {
         boolean matchArity = unknownInvocations.getOrDefault(methodUsed.name(), new HashSet<>())
           .stream()
@@ -132,7 +146,7 @@ public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
       if (declaration != null && !isIllegalMove(declaration, classSymbol)) {
         String message = "Move this method into ";
         if (classSymbol.name().isEmpty()) {
-          message += "the anonymous class declared at line " + ((JavaTree) classSymbol.declaration()).getLine()+".";
+          message += "the anonymous class declared at line " + ((JavaTree) classSymbol.declaration()).getLine() + ".";
         } else {
           message += "\"" + classSymbol.name() + "\".";
         }
