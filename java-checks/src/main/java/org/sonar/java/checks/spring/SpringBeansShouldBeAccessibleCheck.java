@@ -148,7 +148,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
     } catch (IOException e) {
       throw new AnalysisException(String.format("Could not load cache entry at key '%s'", cacheKey), e);
     } catch (IllegalArgumentException e) {
-      LOG.trace(() ->
+      LOG.debug(() ->
         String.format("Could not load cached data for key '%s' due to an IllegalArgumentException: %s", cacheKey, e.getLocalizedMessage())
       );
     }

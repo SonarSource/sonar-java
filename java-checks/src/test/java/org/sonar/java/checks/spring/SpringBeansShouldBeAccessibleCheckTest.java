@@ -171,9 +171,9 @@ class SpringBeansShouldBeAccessibleCheckTest {
     check = spy(new SpringBeansShouldBeAccessibleCheck());
 
     var populatedReadCache = new InternalReadCache().putAll(writeCache);
-    var writeCache2 = new InternalWriteCache().bind(populatedReadCache);
+    var finalWriteCache = new InternalWriteCache().bind(populatedReadCache);
     CheckVerifier.newVerifier()
-      .withCache(populatedReadCache, writeCache2)
+      .withCache(populatedReadCache, finalWriteCache)
       .addFiles(InputFile.Status.SAME, unchangedFiles)
       .addFiles(InputFile.Status.CHANGED, changedFiles)
       .withCheck(check)
@@ -181,7 +181,7 @@ class SpringBeansShouldBeAccessibleCheckTest {
 
     verify(check, times(12)).visitNode(any());
     verify(check, times(2)).scanWithoutParsing(any());
-    assertThat(writeCache2.getData())
+    assertThat(finalWriteCache.getData())
       .hasSize(2)
       .containsExactlyEntriesOf(writeCache.getData());
   }
@@ -221,7 +221,7 @@ class SpringBeansShouldBeAccessibleCheckTest {
 
   @Test
   void emptyCache() {
-    logTester.setLevel(LoggerLevel.TRACE);
+    logTester.setLevel(LoggerLevel.DEBUG);
     verifier
       .addFiles(InputFile.Status.SAME,
         mainCodeSourcesPath(BASE_PATH + "springBootApplication/app/SpringBootApp1.java")
@@ -229,7 +229,7 @@ class SpringBeansShouldBeAccessibleCheckTest {
       .withCheck(new SpringBeansShouldBeAccessibleCheck())
       .verifyNoIssues();
 
-    assertThat(logTester.logs(LoggerLevel.TRACE).stream().filter(
+    assertThat(logTester.logs(LoggerLevel.DEBUG).stream().filter(
       msg -> msg.matches("Could not load cached data for key '[^']+' due to an IllegalArgumentException: .+")
     )).hasSize(1);
   }
