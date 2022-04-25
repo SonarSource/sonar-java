@@ -19,7 +19,7 @@ class MyJavaRulesDefinitionTest {
 
   @Test
   void test() {
-    MyJavaRulesDefinition rulesDefinition = new MyJavaRulesDefinition();
+    MyJavaRulesDefinition rulesDefinition = new MyJavaRulesDefinition(new MyJavaRulesPluginTest.MockedSonarRuntime());
     RulesDefinition.Context context = new RulesDefinition.Context();
     rulesDefinition.define(context);
     RulesDefinition.Repository repository = context.repository(MyJavaRulesDefinition.REPOSITORY_KEY);
