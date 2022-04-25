@@ -171,22 +171,29 @@ public class XmlValidatedSignatureCheck extends SECheck {
       return;
     }
     Optional.ofNullable(ps.getConstraint(domSv, DomSecureValidation.class))
-      .map(constraint -> getIssueLocation(context, domSv, constraint))
-      .ifPresent(tree -> context.reportIssue(tree, this, MESSAGE));
+      .ifPresent(constraint -> report(context, domSv, constraint));
   }
 
-  private static Tree getIssueLocation(CheckerContext context, DomValidateContextSymbolicValue sv, DomSecureValidation constraint) {
-    if (constraint == DomSecureValidation.DISABLED) {
-      // has never been explicitly set to false, let's avoid looping on the exploded graph
-      return sv.init;
+  private void report(CheckerContext context, DomValidateContextSymbolicValue sv, DomSecureValidation constraint) {
+    Tree reportTree = sv.init;
+    String message = MESSAGE;
+    if (constraint != DomSecureValidation.DISABLED) {
+      // has been explicitly set to something else than false, loop on the exploded graph
+      reportTree = FlowComputation.flowWithoutExceptions(context.getNode(), sv, DomSecureValidation.IS_EXPLICITLY_DISABLED, DOMAINS, FlowComputation.FIRST_FLOW)
+        .stream()
+        .findFirst()
+        .flatMap(f -> f.elements().stream().findFirst())
+        .map(e -> e.syntaxNode)
+        // Last step should never occurs, we add it for defensive programming
+        .orElse(sv.init);
     }
-    return FlowComputation.flowWithoutExceptions(context.getNode(), sv, DomSecureValidation.IS_EXPLICITLY_DISABLED, DOMAINS, FlowComputation.FIRST_FLOW)
-      .stream()
-      .findFirst()
-      .flatMap(f -> f.elements().stream().findFirst())
-      .map(e -> e.syntaxNode)
-      // Last step should never occurs, we add it for defensive programming
-      .orElse(sv.init);
+
+    if (reportTree.is(Tree.Kind.METHOD_INVOCATION)) {
+      // takes the argument matching the setProperty method
+      reportTree = ((MethodInvocationTree) reportTree).arguments().get(1);
+      message = "Change this to \"true\" to validate this XML signature securely.";
+    }
+    context.reportIssue(reportTree, this, message);
   }
 
   @VisibleForTesting
