@@ -19,9 +19,10 @@
  */
 package org.sonar.java.checks.security;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -29,18 +30,16 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.LogAndArguments;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
-import org.sonar.java.caching.DummyCache;
+import org.sonar.java.AnalysisException;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.internal.InternalInputFile;
 import org.sonar.java.checks.verifier.internal.InternalReadCache;
 import org.sonar.java.checks.verifier.internal.InternalWriteCache;
-import org.sonar.plugins.java.api.caching.CacheContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -55,160 +54,162 @@ class ExcessiveContentRequestCheckTest {
 
   @Nested
   class Caching {
-    @Test
-    void no_issue_raised_on_valid_case_when_size_is_set_in_file_with_cached_results() {
-      InternalReadCache readCache = new InternalReadCache();
-      String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Setter.java");
-      readCache.put("java:S5693:maximumSize", unmodifiedFile.getBytes(StandardCharsets.UTF_8));
-      readCache.put("java:S5693:instantiate", new byte[]{});
-      CheckVerifier.newVerifier()
-        .onFiles(unmodifiedFile)
-        .addFiles(InputFile.Status.CHANGED, mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Instantiator.java"))
-        .withCheck(new ExcessiveContentRequestCheck())
-        .withCache(readCache, null)
-        .verifyNoIssues();
-    }
+    private InternalReadCache readCache;
+    private InternalWriteCache writeCache;
+    private CheckVerifier verifier;
 
-    @Test
-    void no_issue_raised_on_valid_case_when_instantiation_in_file_with_cached_results() {
-      InternalReadCache readCache = new InternalReadCache();
-      String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Instantiator.java");
-      readCache.put("java:S5693:maximumSize", new byte[]{});
-      readCache.put("java:S5693:instantiate", unmodifiedFile.getBytes(StandardCharsets.UTF_8));
-      CheckVerifier.newVerifier()
-        .onFiles(unmodifiedFile)
-        .addFiles(InputFile.Status.CHANGED, mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Setter.java"))
-        .withCheck(new ExcessiveContentRequestCheck())
-        .withCache(readCache, null)
-        .verifyNoIssues();
-    }
+    private final String safeSourceFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Safe.java");
+    private final String unsafeSourceFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Unsafe.java");
+    private final String sanitizerSourceFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Sanitizer.java");
+    private final Map<String, byte[]> expectedFinalCacheState = Map.of(
+      "java:S5693:instantiate:" + computeFileKey(unsafeSourceFile), new byte[]{1},
+      "java:S5693:cached:" + computeFileKey(unsafeSourceFile), new byte[]{1},
+      "java:S5693:instantiate:" + computeFileKey(safeSourceFile), new byte[]{1},
+      "java:S5693:maximumSize:" + computeFileKey(safeSourceFile), new byte[]{1},
+      "java:S5693:cached:" + computeFileKey(safeSourceFile), new byte[]{1},
+      "java:S5693:maximumSize:" + computeFileKey(sanitizerSourceFile), new byte[]{1},
+      "java:S5693:cached:" + computeFileKey(sanitizerSourceFile), new byte[]{1}
+    );
 
-    @Test
-    void new_data_is_persisted_to_the_write_cache_at_the_end_of_analysis() {
-      String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Setter.java");
-
-      InternalReadCache readCache = new InternalReadCache();
-      readCache.put("java:S5693:maximumSize", unmodifiedFile.getBytes(StandardCharsets.UTF_8));
-
-      InternalWriteCache writeCache = spy(new InternalWriteCache());
+    @BeforeEach
+    void initVerifier() {
+      readCache = new InternalReadCache();
+      writeCache = new InternalWriteCache();
       writeCache.bind(readCache);
 
-      CheckVerifier.newVerifier()
-        .onFiles(unmodifiedFile)
-        .addFiles(InputFile.Status.CHANGED, mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Instantiator.java"))
-        .withCheck(new ExcessiveContentRequestCheck())
-        .withCache(readCache, writeCache)
-        .verifyNoIssues();
+      verifier = CheckVerifier.newVerifier()
+        .withCache(readCache, writeCache);
+    }
 
-      verify(writeCache, times(1)).write(eq("java:S5693:instantiate"), any(byte[].class));
-      verify(writeCache, times(1)).copyFromPrevious("java:S5693:maximumSize");
+    String computeFileKey(String path) {
+      return InternalInputFile.inputFile("", new File(path)).key();
     }
 
     @Test
-    void new_data_is_persisted_to_the_write_cache_at_the_end_of_analysis_2() {
-      String modifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Setter.java");
-      String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Instantiator.java");
+    void no_issue_raised_on_unchanged_files_with_empty_cache() {
+      var check = spy(new ExcessiveContentRequestCheck());
 
-      InternalReadCache readCache = new InternalReadCache();
-      readCache.put("java:S5693:instantiate", (modifiedFile + ";" + unmodifiedFile).getBytes(StandardCharsets.UTF_8));
-
-      InternalWriteCache writeCache = spy(new InternalWriteCache());
-      writeCache.bind(readCache);
-
-      CheckVerifier.newVerifier()
-        .onFiles(unmodifiedFile)
-        .addFiles(InputFile.Status.CHANGED, modifiedFile)
-        .withCheck(new ExcessiveContentRequestCheck())
-        .withCache(readCache, writeCache)
+      verifier
+        .addFiles(InputFile.Status.SAME, safeSourceFile, unsafeSourceFile, sanitizerSourceFile)
+        .withCheck(check)
         .verifyNoIssues();
 
-      verify(writeCache, times(1)).write(eq("java:S5693:maximumSize"), any(byte[].class));
-      verify(writeCache, times(1)).copyFromPrevious("java:S5693:instantiate");
+      verify(check, times(3)).scanWithoutParsing(any());
+      verify(check, times(3)).setContext(any());
+
+      assertThat(writeCache.getData()).containsExactlyInAnyOrderEntriesOf(expectedFinalCacheState);
     }
 
     @Test
-    void old_data_is_copied_from_the_read_to_the_write_cache_at_the_end_of_analysis() {
-      InternalWriteCache writeCache = spy(new InternalWriteCache());
-      String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Setter.java");
-      CheckVerifier.newVerifier()
-        .onFiles(unmodifiedFile)
-        .addFiles(InputFile.Status.CHANGED, mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Instantiator.java"))
-        .withCheck(new ExcessiveContentRequestCheck())
-        .withCache(null, writeCache)
+    void no_issue_raised_when_changed_unsafe_file_is_covered_by_unchanged_cached_safe_files() {
+      readCache.put("java:S5693:cached:" + computeFileKey(safeSourceFile), new byte[]{1});
+      readCache.put("java:S5693:instantiate:" + computeFileKey(safeSourceFile), new byte[]{1});
+      readCache.put("java:S5693:maximumSize:" + computeFileKey(safeSourceFile), new byte[]{1});
+      readCache.put("java:S5693:cached:" + computeFileKey(sanitizerSourceFile), new byte[]{1});
+      readCache.put("java:S5693:maximumSize:" + computeFileKey(sanitizerSourceFile), new byte[]{1});
+
+
+      var check = spy(new ExcessiveContentRequestCheck());
+      verifier
+        .addFiles(InputFile.Status.SAME, safeSourceFile, sanitizerSourceFile)
+        .addFiles(InputFile.Status.CHANGED, unsafeSourceFile)
+        .withCheck(check)
         .verifyNoIssues();
 
-      verify(writeCache, times(1)).write(eq("java:S5693:maximumSize"), any(byte[].class));
-      verify(writeCache, times(1)).write(eq("java:S5693:instantiate"), any(byte[].class));
+      verify(check, times(2)).scanWithoutParsing(any());
+      verify(check, times(1)).setContext(any());
 
-      verify(writeCache, never()).copyFromPrevious("java:S5693:maximumSize");
-      verify(writeCache, never()).copyFromPrevious("java:S5693:instantiate");
+      assertThat(writeCache.getData()).containsExactlyInAnyOrderEntriesOf(expectedFinalCacheState);
     }
 
     @Test
-    void log_when_failing_to_read_from_or_write_to_caches() throws IOException {
-      InputStream in = mock(InputStream.class);
-      doThrow(new IOException("boom")).when(in).readAllBytes();
-      InternalReadCache readCache = mock(InternalReadCache.class);
-      doReturn(in).when(readCache).read(any(String.class));
+    void no_issue_raised_when_cached_unsafe_file_is_covered_by_changed_safe_files() {
+      readCache.put("java:S5693:cached:" + computeFileKey(unsafeSourceFile), new byte[]{1});
+      readCache.put("java:S5693:instantiate:" + computeFileKey(unsafeSourceFile), new byte[]{1});
+      readCache.put("java:S5693:maximumSize:" + computeFileKey(sanitizerSourceFile), new byte[]{1});
+      readCache.put("java:S5693:cached:" + computeFileKey(sanitizerSourceFile), new byte[]{1});
 
-      String unmodifiedFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Setter.java");
-      CheckVerifier.newVerifier()
-        .onFiles(unmodifiedFile)
-        .addFiles(InputFile.Status.CHANGED, mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Instantiator.java"))
-        .withCheck(new ExcessiveContentRequestCheck())
-        .withCache(readCache, null)
+      var check = spy(new ExcessiveContentRequestCheck());
+      verifier
+        .addFiles(InputFile.Status.SAME, unsafeSourceFile)
+        .addFiles(InputFile.Status.CHANGED, safeSourceFile, sanitizerSourceFile)
+        .withCheck(check)
         .verifyNoIssues();
-      assertThat(logTester.getLogs(LoggerLevel.WARN))
+
+      verify(check, times(1)).scanWithoutParsing(any());
+      verify(check, times(2)).setContext(any());
+
+      assertThat(writeCache.getData()).containsExactlyInAnyOrderEntriesOf(expectedFinalCacheState);
+    }
+
+    @Test
+    void no_issue_raised_when_all_results_are_cached() {
+      readCache.putAll(expectedFinalCacheState);
+
+      var check = spy(new ExcessiveContentRequestCheck());
+      verifier
+        .addFiles(InputFile.Status.SAME, unsafeSourceFile, safeSourceFile, sanitizerSourceFile)
+        .withCheck(check)
+        .verifyNoIssues();
+
+      verify(check, times(3)).scanWithoutParsing(any());
+      verify(check, never()).setContext(any());
+
+      assertThat(writeCache.getData()).containsExactlyInAnyOrderEntriesOf(expectedFinalCacheState);
+    }
+
+
+    @Test
+    void log_when_failing_to_write_to_cache() throws IOException {
+
+      var spyOnWriteCache = spy(writeCache);
+      IllegalArgumentException expectedException = new IllegalArgumentException("boom");
+      doThrow(expectedException).when(spyOnWriteCache).write(any(), any(byte[].class));
+
+      logTester.setLevel(LoggerLevel.TRACE);
+
+      verifier
+        .addFiles(InputFile.Status.SAME, safeSourceFile)
+        .addFiles(InputFile.Status.CHANGED, unsafeSourceFile, sanitizerSourceFile)
+        .withCheck(new ExcessiveContentRequestCheck())
+        .withCache(readCache, spyOnWriteCache);
+
+      assertThatThrownBy(verifier::verifyNoIssues)
+        .isInstanceOf(AnalysisException.class)
+        .hasRootCause(expectedException);
+
+      assertThat(logTester.getLogs(LoggerLevel.TRACE))
         .map(LogAndArguments::getFormattedMsg)
-        .containsExactly(
-          "boom",
-          "boom",
-          "Failed to read persist data into the cache: Same key cannot be written to multiple times (java:S5693:maximumSize)"
+        .contains(
+          "Failed to write to cache for file " + safeSourceFile
         );
     }
 
     @Test
-    void initCaches_does_not_try_to_load_from_the_cache_a_second_time() {
-      ExcessiveContentRequestCheck checkWithoutCache = new ExcessiveContentRequestCheck();
-      var disabledCacheContext = mock(CacheContext.class);
-      doReturn(false).when(disabledCacheContext).isCacheEnabled();
-      verify(disabledCacheContext, never()).isCacheEnabled();
-      checkWithoutCache.initCaches(disabledCacheContext);
-      verify(disabledCacheContext, times(1)).isCacheEnabled();
-      checkWithoutCache.initCaches(disabledCacheContext);
-      verify(disabledCacheContext, times(1)).isCacheEnabled();
+    void log_when_copying_from_previous_cache() throws IOException {
 
-      ExcessiveContentRequestCheck checkWithCache = new ExcessiveContentRequestCheck();
-      var enabledCacheContext = mock(CacheContext.class);
-      doReturn(true).when(enabledCacheContext).isCacheEnabled();
-      doReturn(new DummyCache()).when(enabledCacheContext).getReadCache();
-      verify(enabledCacheContext, never()).isCacheEnabled();
-      checkWithCache.initCaches(enabledCacheContext);
-      verify(enabledCacheContext, times(1)).isCacheEnabled();
-      checkWithCache.initCaches(enabledCacheContext);
-      verify(enabledCacheContext, times(1)).isCacheEnabled();
-    }
+      readCache.putAll(expectedFinalCacheState);
+      var spyOnWriteCache = spy(writeCache);
+      IllegalArgumentException expectedException = new IllegalArgumentException("boom");
+      doThrow(expectedException).when(spyOnWriteCache).copyFromPrevious(any());
 
-    @Test
-    void commitCaches_does_not_try_to_commit_the_caches_a_second_time() {
-      ExcessiveContentRequestCheck checkWithoutCache = new ExcessiveContentRequestCheck();
-      var disabledCacheContext = mock(CacheContext.class);
-      doReturn(false).when(disabledCacheContext).isCacheEnabled();
-      verify(disabledCacheContext, never()).isCacheEnabled();
-      checkWithoutCache.commitCaches(disabledCacheContext);
-      verify(disabledCacheContext, times(1)).isCacheEnabled();
-      checkWithoutCache.commitCaches(disabledCacheContext);
-      verify(disabledCacheContext, times(1)).isCacheEnabled();
+      logTester.setLevel(LoggerLevel.TRACE);
 
-      ExcessiveContentRequestCheck checkWithCache = new ExcessiveContentRequestCheck();
-      var enabledCacheContext = mock(CacheContext.class);
-      doReturn(true).when(enabledCacheContext).isCacheEnabled();
-      doReturn(new DummyCache()).when(enabledCacheContext).getWriteCache();
-      verify(enabledCacheContext, never()).isCacheEnabled();
-      checkWithCache.commitCaches(enabledCacheContext);
-      verify(enabledCacheContext, times(1)).isCacheEnabled();
-      checkWithCache.commitCaches(enabledCacheContext);
-      verify(enabledCacheContext, times(1)).isCacheEnabled();
+      verifier
+        .addFiles(InputFile.Status.SAME, safeSourceFile)
+        .addFiles(InputFile.Status.CHANGED, unsafeSourceFile, sanitizerSourceFile)
+        .withCheck(new ExcessiveContentRequestCheck())
+        .withCache(readCache, spyOnWriteCache);
+
+      assertThatThrownBy(verifier::verifyNoIssues)
+        .isInstanceOf(AnalysisException.class)
+        .hasRootCause(expectedException);
+
+      assertThat(logTester.getLogs(LoggerLevel.TRACE))
+        .map(LogAndArguments::getFormattedMsg)
+        .contains(
+          "Failed to copy from previous cache for file " + safeSourceFile
+        );
     }
   }
 
@@ -250,7 +251,7 @@ class ExcessiveContentRequestCheckTest {
   void test_max_set_in_another_file() {
     // As soon as the size is set somewhere in the project, do not report an issue.
     CheckVerifier.newVerifier()
-      .onFiles(
+      .addFiles(InputFile.Status.SAME,
         mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/ExcessiveContentRequestCheck_setSize.java"),
         mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/ExcessiveContentRequestCheck_sizeNotSet.java"))
       .withCheck(new ExcessiveContentRequestCheck())
