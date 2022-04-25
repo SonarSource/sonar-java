@@ -221,7 +221,7 @@ class SpringBeansShouldBeAccessibleCheckTest {
 
   @Test
   void emptyCache() {
-    logTester.setLevel(LoggerLevel.DEBUG);
+    logTester.setLevel(LoggerLevel.TRACE);
     verifier
       .addFiles(InputFile.Status.SAME,
         mainCodeSourcesPath(BASE_PATH + "springBootApplication/app/SpringBootApp1.java")
@@ -229,8 +229,8 @@ class SpringBeansShouldBeAccessibleCheckTest {
       .withCheck(new SpringBeansShouldBeAccessibleCheck())
       .verifyNoIssues();
 
-    assertThat(logTester.logs(LoggerLevel.DEBUG).stream().filter(
-      msg -> msg.matches("Could not load cached data for key '[^']+' due to an IllegalArgumentException: .+")
+    assertThat(logTester.logs(LoggerLevel.TRACE).stream().filter(
+      msg -> msg.matches("Cache miss for key '[^']+': .+")
     )).hasSize(1);
   }
 }
