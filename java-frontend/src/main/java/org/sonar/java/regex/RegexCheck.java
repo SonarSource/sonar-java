@@ -53,6 +53,10 @@ public interface RegexCheck extends JavaCheck {
       this.message = message;
     }
 
+    public static RegexIssueLocation fromCommonsRegexIssueLocation(org.sonarsource.analyzer.commons.regex.RegexIssueLocation location) {
+      return new RegexIssueLocation(location.syntaxElements(), location.message());
+    }
+
     private RegexIssueLocation(AnalyzerMessage.TextSpan location, String message) {
       this.locations = Collections.singletonList(location);
       this.message = message;

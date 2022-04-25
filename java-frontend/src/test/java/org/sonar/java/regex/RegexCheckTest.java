@@ -142,6 +142,22 @@ class RegexCheckTest implements RegexCheck {
     assertThat(locations.get(2).locations().get(0)).isSameAs(issue.locations().get(2));
   }
 
+  @Test
+  void test_from_commons_regex_regex_issue_location() {
+    RegexTree regexTree = assertSuccessfulParse("A");
+    org.sonarsource.analyzer.commons.regex.RegexIssueLocation regexIssueLocation =
+      new org.sonarsource.analyzer.commons.regex.RegexIssueLocation(regexTree, "My issue message.");
+    RegexCheck.RegexIssueLocation issue = RegexCheck.RegexIssueLocation.fromCommonsRegexIssueLocation(regexIssueLocation);
+
+    assertThat(issue.message()).isEqualTo("My issue message.");
+    List<RegexIssueLocation> locations = issue.toSingleLocationItems();
+    assertThat(locations).hasSize(1);
+
+    assertThat(locations.get(0).message()).isEqualTo("My issue message.");
+    assertThat(locations.get(0).locations()).hasSize(1);
+    assertThat(locations.get(0).locations().get(0)).isSameAs(issue.locations().get(0));
+  }
+
   private static List<TextSpan> correspondingTextSpans(RegexTree tree) {
     return new RegexCheck.RegexIssueLocation(tree, "message").locations();
   }

@@ -67,6 +67,7 @@ import org.sonar.java.checks.regex.StringReplaceCheck;
 import org.sonar.java.checks.regex.UnicodeAwareCharClassesCheck;
 import org.sonar.java.checks.regex.UnicodeCaseCheck;
 import org.sonar.java.checks.regex.UnusedGroupNamesCheck;
+import org.sonar.java.checks.regex.VerboseRegexCheck;
 import org.sonar.java.checks.security.AndroidBiometricAuthWithoutCryptoCheck;
 import org.sonar.java.checks.security.AndroidBroadcastingCheck;
 import org.sonar.java.checks.security.AndroidExternalStorageCheck;
@@ -676,6 +677,7 @@ public final class CheckList {
     VarArgCheck.class,
     VarCanBeUsedCheck.class,
     VariableDeclarationScopeCheck.class,
+    VerboseRegexCheck.class,
     VerifiedServerHostnamesCheck.class,
     VisibleForTestingUsageCheck.class,
     VolatileNonPrimitiveFieldCheck.class,
