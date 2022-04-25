@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.IntFunction;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.java.annotations.VisibleForTesting;
@@ -289,6 +290,13 @@ public abstract class AbstractRegexCheck extends IssuableSubscriptionVisitor imp
     if (reportedRegexTrees.add(regexTree)) {
       regexContext.reportIssue(this, regexTree, message, cost, secondaries);
     }
+  }
+
+  public final void reportIssueFromCommons(RegexSyntaxElement regexTree, String message, @Nullable Integer cost,
+    List<org.sonarsource.analyzer.commons.regex.RegexIssueLocation> secondaries) {
+    reportIssue(regexTree, message, cost, secondaries.stream()
+      .map(RegexCheck.RegexIssueLocation::fromCommonsRegexIssueLocation)
+      .collect(Collectors.toList()));
   }
 
   public Tree methodOrAnnotationName(ExpressionTree methodInvocationOrAnnotation) {
