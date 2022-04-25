@@ -19,6 +19,8 @@
  */
 package org.sonar.java.checks.spring;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,23 +29,31 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
+import org.sonar.java.AnalysisException;
 import org.sonar.java.EndOfAnalysisCheck;
-import org.sonar.plugins.java.api.caching.CacheContext;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 @Rule(key = "S4605")
 public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisitor implements EndOfAnalysisCheck {
+
+  private static final Logger LOG = Loggers.get(SpringBeansShouldBeAccessibleCheck.class);
 
   private static final String MESSAGE_FORMAT = "'%s' is not reachable by @ComponentsScan or @SpringBootApplication. "
     + "Either move it to a package configured in @ComponentsScan or update your @ComponentsScan configuration.";
@@ -60,6 +70,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
   private static final Set<String> COMPONENT_SCAN_ARGUMENTS = SetUtils.immutableSetOf("basePackages", "value");
 
   private static final String SPRING_BOOT_APP_ANNOTATION = "org.springframework.boot.autoconfigure.SpringBootApplication";
+  private static final String CACHE_KEY_PREFIX = "java:S4605:targeted:";
 
   /**
    * The key is the package name.
@@ -74,6 +85,14 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.CLASS);
+  }
+
+  @Override
+  public boolean scanWithoutParsing(InputFileScannerContext inputFileScannerContext) {
+    return readFromCache(inputFileScannerContext).map(targetedPackages -> {
+      packagesScannedBySpring.addAll(targetedPackages);
+      return true;
+    }).orElse(false);
   }
 
   @Override
@@ -100,10 +119,41 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
     if (componentScanValues != null) {
       componentScanValues.forEach(this::addToScannedPackages);
     } else if (hasAnnotation(classSymbolMetadata, SPRING_BOOT_APP_ANNOTATION)) {
-      packagesScannedBySpring.addAll(targetedPackages(classPackageName, classSymbolMetadata));
+      var targetedPackages = targetedPackages(classPackageName, classSymbolMetadata);
+      packagesScannedBySpring.addAll(targetedPackages);
+      if (context.getCacheContext().isCacheEnabled()) {
+        writeToCache(context, targetedPackages);
+      }
     } else if (hasAnnotation(classSymbolMetadata, SPRING_BEAN_ANNOTATIONS)) {
       addMessageToMap(classPackageName, classTree.simpleName());
     }
+  }
+
+  private static String cacheKey(InputFile inputFile) {
+    return CACHE_KEY_PREFIX + inputFile.key();
+  }
+
+  private static void writeToCache(InputFileScannerContext context, List<String> targetedPackages) {
+    var cacheKey = cacheKey(context.getInputFile());
+    var data = String.join(";", targetedPackages).getBytes(StandardCharsets.UTF_8);
+    context.getCacheContext().getWriteCache().write(cacheKey, data);
+  }
+
+  private static Optional<List<String>> readFromCache(InputFileScannerContext context) {
+    var cacheKey = cacheKey(context.getInputFile());
+    try (var in = context.getCacheContext().getReadCache().read(cacheKey)) {
+      var res = Arrays.asList(new String(in.readAllBytes(), StandardCharsets.UTF_8).split(";"));
+      context.getCacheContext().getWriteCache().copyFromPrevious(cacheKey);
+      return Optional.of(res);
+    } catch (IOException e) {
+      throw new AnalysisException(String.format("Could not load cache entry at key '%s'", cacheKey), e);
+    } catch (IllegalArgumentException e) {
+      LOG.debug(() ->
+        String.format("Could not load cached data for key '%s' due to an IllegalArgumentException: %s", cacheKey, e.getLocalizedMessage())
+      );
+    }
+
+    return Optional.empty();
   }
 
   private static List<String> targetedPackages(String classPackageName, SymbolMetadata classSymbolMetadata) {
