@@ -20,12 +20,14 @@
 package org.sonar.java.caching;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
+import org.sonar.api.config.Configuration;
 import org.sonar.api.utils.log.LogAndArguments;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.Logger;
@@ -70,8 +72,8 @@ class CacheContextImplTest {
     CacheContextImpl cci = CacheContextImpl.of(sensorContext);
     assertThat(cci.isCacheEnabled()).isFalse();
 
-    assertThat(cci.getReadCache()).isEqualTo(new JavaReadCacheImpl(readCache));
-    assertThat(cci.getWriteCache()).isEqualTo(new JavaWriteCacheImpl(writeCache));
+    assertThat(cci.getReadCache()).isInstanceOf(DummyCache.class);
+    assertThat(cci.getWriteCache()).isInstanceOf(DummyCache.class);
   }
 
   @Test
@@ -100,5 +102,35 @@ class CacheContextImplTest {
     assertThat(logs)
       .hasSize(1)
       .contains("Missing cache related method from sonar-plugin-api: bim.");
+  }
+
+  @Test
+  void override_flag_caching_enabled_true() {
+    SensorContext context = mock(SensorContext.class);
+    doReturn(false).when(context).isCacheEnabled();
+    doReturn(mock(ReadCache.class)).when(context).previousCache();
+    doReturn(mock(WriteCache.class)).when(context).nextCache();
+
+    Configuration config = mock(Configuration.class);
+    doReturn(config).when(context).config();
+
+    assertThat(CacheContextImpl.of(context).isCacheEnabled()).isFalse();
+    doReturn(Optional.of(true)).when(config).getBoolean(CacheContextImpl.SONAR_CACHING_ENABLED_KEY);
+    assertThat(CacheContextImpl.of(context).isCacheEnabled()).isTrue();
+  }
+
+  @Test
+  void override_flag_caching_enabled_false() {
+    SensorContext context = mock(SensorContext.class);
+    doReturn(true).when(context).isCacheEnabled();
+    doReturn(mock(ReadCache.class)).when(context).previousCache();
+    doReturn(mock(WriteCache.class)).when(context).nextCache();
+
+    Configuration config = mock(Configuration.class);
+    doReturn(config).when(context).config();
+
+    assertThat(CacheContextImpl.of(context).isCacheEnabled()).isTrue();
+    doReturn(Optional.of(false)).when(config).getBoolean(CacheContextImpl.SONAR_CACHING_ENABLED_KEY);
+    assertThat(CacheContextImpl.of(context).isCacheEnabled()).isFalse();
   }
 }
