@@ -24,11 +24,11 @@ class MyJavaRulesPluginTest {
 
     assertThat(context.getExtensions()).hasSize(2);
   }
-  private static class MockedSonarRuntime implements SonarRuntime {
+  public static class MockedSonarRuntime implements SonarRuntime {
 
     @Override
     public Version getApiVersion() {
-      return Version.create(7, 9);
+      return Version.create(8, 9);
     }
 
     @Override

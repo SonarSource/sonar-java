@@ -32,8 +32,8 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonarsource.analyzer.commons.regex.JavaRegexSource;
 import org.sonarsource.analyzer.commons.regex.ast.IndexRange;
+import org.sonarsource.analyzer.commons.regex.java.JavaRegexSource;
 
 public class JavaAnalyzerRegexSource extends JavaRegexSource {
   /**
