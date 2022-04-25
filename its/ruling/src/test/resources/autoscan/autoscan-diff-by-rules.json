@@ -379,7 +379,7 @@
   },
   {
     "ruleKey": "S1186",
-    "truePositives": 637,
+    "truePositives": 640,
     "falseNegatives": 0,
     "falsePositives": 0
   },
@@ -1651,7 +1651,7 @@
   },
   {
     "ruleKey": "S3398",
-    "truePositives": 7,
+    "truePositives": 8,
     "falseNegatives": 0,
     "falsePositives": 0
   },
