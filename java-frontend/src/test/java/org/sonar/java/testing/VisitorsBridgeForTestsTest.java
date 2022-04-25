@@ -22,11 +22,13 @@ package org.sonar.java.testing;
 import java.io.File;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.utils.Version;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
+import org.sonar.java.caching.CacheContextImpl;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -35,6 +37,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 class VisitorsBridgeForTestsTest {
 
@@ -79,6 +82,21 @@ class VisitorsBridgeForTestsTest {
     lastContext.reportIssue(message);
     assertThat(message.getMessage()).isEqualTo("test");
     assertThat(lastContext.getIssues()).hasSize(5);
+  }
+
+  @Test
+  void create_InputFileScannerContext_also_sets_testContext_field() {
+    SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
+    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null);
+    sonarComponents.setSensorContext(context);
+    DummyVisitor javaCheck = new DummyVisitor();
+    VisitorsBridgeForTests visitorsBridgeForTests = new VisitorsBridgeForTests(Collections.singletonList(javaCheck), sonarComponents, new JavaVersionImpl());
+    var inputFile = mock(InputFile.class);
+
+    var expectedTestContext =
+      visitorsBridgeForTests.createScannerContext(sonarComponents, inputFile, new JavaVersionImpl(), false, CacheContextImpl.of(context));
+
+    assertThat(visitorsBridgeForTests.lastCreatedTestContext()).isSameAs(expectedTestContext);
   }
 
   private static class DummyVisitor implements JavaFileScanner {

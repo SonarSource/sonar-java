@@ -285,7 +285,7 @@ public class VisitorsBridge {
     return "";
   }
 
-  protected static InputFileScannerContext createScannerContext(
+  protected InputFileScannerContext createScannerContext(
     SonarComponents sonarComponents, InputFile inputFile, JavaVersion javaVersion, boolean inAndroidContext, CacheContext cacheContext) {
     return new DefaultInputFileScannerContext(
       sonarComponents,

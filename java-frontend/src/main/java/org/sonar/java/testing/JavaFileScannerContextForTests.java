@@ -38,6 +38,7 @@ import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -49,8 +50,8 @@ public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContex
 
   public JavaFileScannerContextForTests(CompilationUnitTree tree, InputFile inputFile, Sema semanticModel,
                                         @Nullable SonarComponents sonarComponents, JavaVersion javaVersion,
-                                        boolean failedParsing, boolean inAndroidContext) {
-    super(tree, inputFile, semanticModel, sonarComponents, javaVersion, failedParsing, inAndroidContext);
+                                        boolean failedParsing, boolean inAndroidContext, @Nullable CacheContext cacheContext) {
+    super(tree, inputFile, semanticModel, sonarComponents, javaVersion, failedParsing, inAndroidContext, cacheContext);
     this.sonarComponents = sonarComponents;
   }
 
