@@ -19,6 +19,7 @@
  */
 package org.sonar.java.caching;
 
+import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.utils.log.Logger;
@@ -28,6 +29,12 @@ import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
 
 public class CacheContextImpl implements CacheContext {
+  /**
+   * Can be set to {@code true} or {@code false} to override whether the cache is enabled or not. Note that even if this is set to true,
+   * the engine may not use caching anyway, if the server does not support it.
+   */
+  public static final String SONAR_CACHING_ENABLED_KEY = "sonar.java.caching.enabled";
+
   private static final Logger LOGGER = Loggers.get(CacheContextImpl.class);
 
   private final boolean isCacheEnabled;
@@ -41,13 +48,26 @@ public class CacheContextImpl implements CacheContext {
   }
 
   public static CacheContextImpl of(@Nullable SensorContext context) {
+
     if (context != null) {
       try {
-        return new CacheContextImpl(
-          context.isCacheEnabled(),
-          new JavaReadCacheImpl(context.previousCache()),
-          new JavaWriteCacheImpl(context.nextCache())
-        );
+        boolean cacheEnabled =
+          (context.config() == null ? Optional.<Boolean>empty() : context.config().getBoolean(SONAR_CACHING_ENABLED_KEY))
+            .map(flag -> {
+              LOGGER.debug(() -> "Forcing caching behavior. Caching will be enabled: " + flag);
+              return flag;
+            })
+            .orElse(context.isCacheEnabled());
+
+        LOGGER.trace(() -> "Caching is enabled: " + cacheEnabled);
+
+        if (cacheEnabled) {
+          return new CacheContextImpl(
+            true,
+            new JavaReadCacheImpl(context.previousCache()),
+            new JavaWriteCacheImpl(context.nextCache())
+          );
+        }
       } catch (NoSuchMethodError error) {
         LOGGER.debug(() -> String.format("Missing cache related method from sonar-plugin-api: %s.", error.getMessage()));
       }
