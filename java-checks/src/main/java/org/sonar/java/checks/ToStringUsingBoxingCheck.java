@@ -21,30 +21,56 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import javax.annotation.CheckForNull;
+import java.util.function.Supplier;
 import org.sonar.check.Rule;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
+
 @Rule(key = "S1158")
 public class ToStringUsingBoxingCheck extends IssuableSubscriptionVisitor {
 
-  private static final Set<String> PRIMITIVE_WRAPPERS = SetUtils.immutableSetOf(
-    "Byte",
-    "Short",
-    "Integer",
-    "Long",
-    "Float",
-    "Double",
-    "Character",
-    "Boolean");
+  private static final String[] PRIMITIVE_WRAPPERS = new String[]{
+    "java.lang.Byte",
+    "java.lang.Character",
+    "java.lang.Short",
+    "java.lang.Integer",
+    "java.lang.Long",
+    "java.lang.Float",
+    "java.lang.Double",
+    "java.lang.Boolean"
+  };
+
+  private static final MethodMatchers PRIMITIVE_CONSTRUCTOR = MethodMatchers.create()
+    .ofTypes(PRIMITIVE_WRAPPERS)
+    .constructor()
+    .addParametersMatcher(MethodMatchers.ANY)
+    .build();
+  private static final MethodMatchers PRIMITIVE_VALUE_OF = MethodMatchers.create()
+    .ofTypes(PRIMITIVE_WRAPPERS)
+    .names("valueOf")
+    .addParametersMatcher(MethodMatchers.ANY)
+    .build();
+  private static final MethodMatchers TO_STRING = MethodMatchers.create()
+    // We are interested in any implementation of "toString", including the one from Integer
+    .ofAnyType()
+    .names("toString")
+    .withAnyParameters()
+    .build();
+  private static final MethodMatchers COMPARE_TO = MethodMatchers.create()
+    .ofSubTypes("java.lang.Comparable")
+    .names("compareTo")
+    .addParametersMatcher(MethodMatchers.ANY)
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -54,40 +80,73 @@ public class ToStringUsingBoxingCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodInvocationTree mit = (MethodInvocationTree) tree;
-    String callingToStringOrCompareTo = isCallingToStringOrCompareTo(mit.methodSelect());
-    if (callingToStringOrCompareTo != null) {
-      String newlyCreatedClassName = getNewlyCreatedClassName(mit);
-      if (PRIMITIVE_WRAPPERS.contains(newlyCreatedClassName)) {
-        reportIssue(((MemberSelectExpressionTree) mit.methodSelect()).expression(),
-          "Call the static method " + newlyCreatedClassName + "." + callingToStringOrCompareTo +
-            "(...) instead of instantiating a temporary object to perform this to string conversion.");
-      }
+    ExpressionTree methodSelect = mit.methodSelect();
+    if (!methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      return;
+    }
+    ExpressionTree memberSelectExpression = ((MemberSelectExpressionTree) methodSelect).expression();
+    if (memberSelectExpression.is(Tree.Kind.NEW_CLASS) && PRIMITIVE_CONSTRUCTOR.matches((NewClassTree) memberSelectExpression)) {
+      ExpressionTree argument = ((NewClassTree) memberSelectExpression).arguments().get(0);
+      reportIfCompareToOrToString(mit, memberSelectExpression, memberSelectExpression.symbolType().toString(), argument);
+    } else if (memberSelectExpression.is(Tree.Kind.METHOD_INVOCATION) && PRIMITIVE_VALUE_OF.matches((MethodInvocationTree) memberSelectExpression)) {
+      ExpressionTree argument = ((MethodInvocationTree) memberSelectExpression).arguments().get(0);
+      reportIfCompareToOrToString(mit, memberSelectExpression, memberSelectExpression.symbolType().toString(), argument);
     }
   }
 
-  private static String getNewlyCreatedClassName(MethodInvocationTree mit) {
-    MemberSelectExpressionTree mset = (MemberSelectExpressionTree) mit.methodSelect();
-    if (mset.expression().is(Tree.Kind.NEW_CLASS)) {
-      Tree classId = ((NewClassTree) mset.expression()).identifier();
-      if (classId.is(Tree.Kind.IDENTIFIER)) {
-        return ((IdentifierTree) classId).name();
-      } else if (classId.is(Tree.Kind.MEMBER_SELECT)) {
-        return ((MemberSelectExpressionTree) classId).identifier().name();
+  private void reportIfCompareToOrToString(MethodInvocationTree mit, ExpressionTree memberSelectExpression, String boxedType, Tree argument) {
+    Supplier<JavaQuickFix> quickFix;
+    String replacementMethod;
+    if (TO_STRING.matches(mit)) {
+      replacementMethod = "toString";
+      if (mit.arguments().isEmpty()) {
+        quickFix = toStringQuickFix(mit, boxedType, argument);
+      } else {
+        // The actual Integer.toString(...) is called, we want to keep the same arguments but change the first part
+        quickFix = toStringWithArgumentQuickFix(memberSelectExpression, boxedType);
       }
+    } else if (COMPARE_TO.matches(mit)) {
+      replacementMethod = "compare";
+      quickFix = compareToQuickFix(mit, boxedType, argument, mit.arguments().get(0));
+    } else {
+      return;
     }
-    return "";
+
+    QuickFixHelper.newIssue(context)
+      .forRule(this)
+      .onTree(mit)
+      .withMessage(String.format("Call the static method %s.%s(...) instead of instantiating a temporary object.", boxedType, replacementMethod))
+      .withQuickFix(quickFix)
+      .report();
   }
 
-  @CheckForNull
-  private static String isCallingToStringOrCompareTo(ExpressionTree methodSelect) {
-    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-      String name = ((MemberSelectExpressionTree) methodSelect).identifier().name();
-      if ("toString".equals(name)) {
-        return name;
-      } else if ("compareTo".equals(name)) {
-        return "compare";
-      }
-    }
-    return null;
+  private static Supplier<JavaQuickFix> toStringQuickFix(MethodInvocationTree mit, String boxedType, Tree argument) {
+    String replacement = String.format("%s.toString(", boxedType);
+    return () ->
+      JavaQuickFix.newQuickFix(String.format("Use %s...) instead", replacement))
+        .addTextEdit(
+          JavaTextEdit.replaceTextSpan(textSpanBetween(mit, true, argument, false), replacement),
+          JavaTextEdit.replaceTextSpan(textSpanBetween(argument, false, mit, true), ")")
+        ).build();
   }
+
+
+  private static Supplier<JavaQuickFix> toStringWithArgumentQuickFix(ExpressionTree memberSelectExpression, String type) {
+    return () ->
+      JavaQuickFix.newQuickFix(String.format("Use %s.toString(...) instead", type))
+        .addTextEdit(
+          JavaTextEdit.replaceTree(memberSelectExpression, type)
+        ).build();
+  }
+
+  private static Supplier<JavaQuickFix> compareToQuickFix(MethodInvocationTree mit, String type, Tree firstArgument, Tree secondArgument) {
+    String replacement = String.format("%s.compare(", type);
+    return () ->
+      JavaQuickFix.newQuickFix(String.format("Use %s...) instead", replacement))
+        .addTextEdit(
+          JavaTextEdit.replaceTextSpan(textSpanBetween(mit, true, firstArgument, false), replacement),
+          JavaTextEdit.replaceTextSpan(textSpanBetween(firstArgument, false, secondArgument, false), ", ")
+        ).build();
+  }
+
 }
