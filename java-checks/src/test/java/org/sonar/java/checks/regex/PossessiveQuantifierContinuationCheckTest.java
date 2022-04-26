@@ -22,14 +22,14 @@ package org.sonar.java.checks.regex;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class PossessiveQuantifierContinuationCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/PossessiveQuantifierContinuationCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/PossessiveQuantifierContinuationCheck.java"))
       .withCheck(new PossessiveQuantifierContinuationCheck())
       .verifyIssues();
   }
