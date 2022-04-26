@@ -2,13 +2,13 @@ package checks;
 
 class ToStringUsingBoxingCheck {
   private void f() {
-    new Byte("").toString(); // Noncompliant [[sc=5;ec=28]] {{Call the static method Byte.toString(...) instead of instantiating a temporary object.}}
+    new Byte((byte) 12).toString(); // Noncompliant [[sc=5;ec=35]] {{Call the static method Byte.toString(...) instead of instantiating a temporary object.}}
     new Short((short) 0).toString(); // Noncompliant {{Call the static method Short.toString(...) instead of instantiating a temporary object.}}
     new Integer(0).toString(); // Noncompliant {{Call the static method Integer.toString(...) instead of instantiating a temporary object.}}
     new java.lang.Integer(0).toString(); // Noncompliant {{Call the static method Integer.toString(...) instead of instantiating a temporary object.}}
-    new Long(0).toString(); // Noncompliant {{Call the static method Long.toString(...) instead of instantiating a temporary object.}}
-    new Float(0).toString(); // Noncompliant {{Call the static method Float.toString(...) instead of instantiating a temporary object.}}
-    new Double(0).toString(); // Noncompliant {{Call the static method Double.toString(...) instead of instantiating a temporary object.}}
+    new Long(0L).toString(); // Noncompliant {{Call the static method Long.toString(...) instead of instantiating a temporary object.}}
+    new Float(0f).toString(); // Noncompliant {{Call the static method Float.toString(...) instead of instantiating a temporary object.}}
+    new Double(0d).toString(); // Noncompliant {{Call the static method Double.toString(...) instead of instantiating a temporary object.}}
     new Character('a').toString(); // Noncompliant {{Call the static method Character.toString(...) instead of instantiating a temporary object.}}
     new Boolean(false).toString(); // Noncompliant {{Call the static method Boolean.toString(...) instead of instantiating a temporary object.}}
     new Integer(0).toString(1); // Noncompliant {{Call the static method Integer.toString(...) instead of instantiating a temporary object.}}
@@ -43,11 +43,37 @@ class ToStringUsingBoxingCheck {
     toString();
   }
 
+  private void trueNegative(String[] array, int i) {
+    // When the type of the argument of the wrapper creation is not the same as the argument, the operation requires a cast.
+    new Byte("1").toString();
+    new Long("2").toString();
+    Integer.valueOf("1").compareTo(2);
+    Integer.valueOf("1").toString();
+    Integer.valueOf(array[i]).compareTo(Integer.valueOf(array[i + 1]));
+
+    // We can not directly use toString here, we have to add "f" or cast it.
+    // The quick fix will not compile, but it seems like a corner case
+    // due to the arguable choice to have a Float constructor taking a double in the first place...
+    new Float(1.2).toString(); // Noncompliant
+    Float.toString(1.2f);
+    Float.toString((float) 1.2);
+    // With the non-deprecated way, "valueOf" with double does not exist, everything will work just fine
+    Float.valueOf(1.2f).toString(); // Noncompliant
+
+    // Some types can be automatically casted to others
+    new Long(0).toString(); // Noncompliant
+    new Float(0).toString(); // Noncompliant
+    new Double(0).toString(); // Noncompliant
+    new Double(1.2f).toString(); // Noncompliant
+    byte myByte = 4;
+    new Short(myByte).toString(); // Noncompliant
+  }
+
   private void quickFixes(boolean myBoolean) {
-    new Byte("").toString(); // Noncompliant [[sc=5;ec=28;quickfixes=qf1]]
+    new Byte((byte) 1).toString(); // Noncompliant [[sc=5;ec=34;quickfixes=qf1]]
     // fix@qf1 {{Use Byte.toString(...) instead}}
     // edit@qf1 [[sc=5;ec=14]] {{Byte.toString(}}
-    // edit@qf1 [[sc=16;ec=28]] {{)}}
+    // edit@qf1 [[sc=22;ec=34]] {{)}}
     new Short((short) 0).toString(); // Noncompliant [[sc=5;ec=36;quickfixes=qf2]]
     // fix@qf2 {{Use Short.toString(...) instead}}
     // edit@qf2 [[sc=5;ec=15]] {{Short.toString(}}
