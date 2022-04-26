@@ -19,57 +19,17 @@
  */
 package org.sonar.java.checks.regex;
 
-import java.util.Collections;
 import org.sonar.check.Rule;
-import org.sonarsource.analyzer.commons.regex.RegexParseResult;
-import org.sonarsource.analyzer.commons.regex.ast.DisjunctionTree;
-import org.sonarsource.analyzer.commons.regex.ast.GroupTree;
-import org.sonarsource.analyzer.commons.regex.ast.RegexBaseVisitor;
-import org.sonarsource.analyzer.commons.regex.ast.RegexTree;
-import org.sonarsource.analyzer.commons.regex.ast.RepetitionTree;
-import org.sonarsource.analyzer.commons.regex.ast.SequenceTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonarsource.analyzer.commons.regex.RegexParseResult;
+import org.sonarsource.analyzer.commons.regex.finders.EmptyStringRepetitionFinder;
 
 @Rule(key = "S5842")
 public class EmptyStringRepetitionCheck extends AbstractRegexCheck {
 
-  private static final String MESSAGE = "Rework this part of the regex to not match the empty string.";
-
   @Override
-  public void checkRegex(RegexParseResult regex, ExpressionTree methodInvocationOrAnnotation) {
-    new Visitor().visit(regex);
-  }
-
-  private class Visitor extends RegexBaseVisitor {
-
-    @Override
-    public void visitRepetition(RepetitionTree tree) {
-      RegexTree element = tree.getElement();
-      if (matchEmptyString(element)) {
-        reportIssue(element, MESSAGE, null, Collections.emptyList());
-      }
-    }
-
-    private boolean matchEmptyString(RegexTree element) {
-      switch (element.kind()) {
-        case SEQUENCE:
-          return ((SequenceTree) element).getItems().stream().allMatch(this::matchEmptyString);
-        case DISJUNCTION:
-          return ((DisjunctionTree) element).getAlternatives().stream().anyMatch(this::matchEmptyString);
-        case REPETITION:
-          return ((RepetitionTree) element).getQuantifier().getMinimumRepetitions() == 0;
-        case LOOK_AROUND:
-        case BOUNDARY:
-          return true;
-        default:
-          if (element instanceof GroupTree) {
-            RegexTree nestedElement = ((GroupTree) element).getElement();
-            return nestedElement == null || matchEmptyString(nestedElement);
-          }
-          return false;
-      }
-    }
-
+  public void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation) {
+    new EmptyStringRepetitionFinder(this::reportIssueFromCommons).visit(regexForLiterals);
   }
 
 }
