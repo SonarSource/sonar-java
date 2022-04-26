@@ -19,60 +19,17 @@
  */
 package org.sonar.java.checks.regex;
 
-import java.util.Collections;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.RegexTreeHelper;
-import org.sonar.java.checks.helpers.SubAutomaton;
-import org.sonar.java.regex.RegexCheck;
-import org.sonarsource.analyzer.commons.regex.RegexParseResult;
-import org.sonarsource.analyzer.commons.regex.ast.AutomatonState;
-import org.sonarsource.analyzer.commons.regex.ast.FinalState;
-import org.sonarsource.analyzer.commons.regex.ast.Quantifier;
-import org.sonarsource.analyzer.commons.regex.ast.RegexBaseVisitor;
-import org.sonarsource.analyzer.commons.regex.ast.RegexSyntaxElement;
-import org.sonarsource.analyzer.commons.regex.ast.RepetitionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonarsource.analyzer.commons.regex.RegexParseResult;
+import org.sonarsource.analyzer.commons.regex.finders.PossessiveQuantifierContinuationFinder;
 
 @Rule(key = "S5994")
 public class PossessiveQuantifierContinuationCheck extends AbstractRegexCheck {
 
-  private static final String MESSAGE = "Change this impossible to match sub-pattern that conflicts with the previous possessive quantifier.";
-
   @Override
   public void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation) {
-    new Visitor(regexForLiterals.getFinalState()).visit(regexForLiterals);
-  }
-
-  private class Visitor extends RegexBaseVisitor {
-
-    private final FinalState finalState;
-
-    public Visitor(FinalState finalState) {
-      this.finalState = finalState;
-    }
-
-    @Override
-    public void visitRepetition(RepetitionTree repetitionTree) {
-      AutomatonState continuation = repetitionTree.continuation();
-      while(continuation != null && !(continuation instanceof RegexSyntaxElement)) {
-        continuation = continuation.continuation();
-      }
-      if (continuation != null && doesRepetitionContinuationAlwaysFail(repetitionTree)) {
-        reportIssue((RegexSyntaxElement) continuation, MESSAGE, null,
-            Collections.singletonList(new RegexCheck.RegexIssueLocation(repetitionTree, "Previous possessive repetition")));
-      }
-      super.visitRepetition(repetitionTree);
-    }
-
-    private boolean doesRepetitionContinuationAlwaysFail(RepetitionTree repetitionTree) {
-      Quantifier quantifier = repetitionTree.getQuantifier();
-      if (!quantifier.isOpenEnded() || quantifier.getModifier() != Quantifier.Modifier.POSSESSIVE) {
-        return false;
-      }
-      SubAutomaton potentialSuperset = new SubAutomaton(repetitionTree.getElement(), repetitionTree.continuation(), false);
-      SubAutomaton potentialSubset = new SubAutomaton(repetitionTree.continuation(), finalState, true);
-      return RegexTreeHelper.supersetOf(potentialSuperset, potentialSubset, false);
-    }
+    new PossessiveQuantifierContinuationFinder(this::reportIssueFromCommons, regexForLiterals.getFinalState()).visit(regexForLiterals);
   }
 
 }
