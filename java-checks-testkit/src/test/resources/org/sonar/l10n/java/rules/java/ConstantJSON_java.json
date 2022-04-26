@@ -12,5 +12,6 @@
   "tags": [
     "convention"
   ],
+  "quickfix": "covered",
   "defaultSeverity": "Minor"
 }

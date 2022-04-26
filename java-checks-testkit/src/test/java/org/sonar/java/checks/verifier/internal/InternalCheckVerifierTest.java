@@ -37,6 +37,7 @@ import org.sonar.java.RspecKey;
 import org.sonar.java.caching.DummyCache;
 import org.sonar.java.caching.JavaReadCacheImpl;
 import org.sonar.java.caching.JavaWriteCacheImpl;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
@@ -272,7 +273,83 @@ class InternalCheckVerifierTest {
     }
 
     @Test
-    void absent_rule_matadata_does_not_make_verifier_fail() {
+    void rule_with_quickfixes_should_not_have_quickfix_unknown_in_its_json_metadata() {
+      @Rule(key = "ExponentialRemediationFunc")
+      class ExponentialRemediationFunctionCheck extends CheckWithQuickFix {
+      }
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFile(TEST_FILE_NONCOMPLIANT)
+        .withCheck(new ExponentialRemediationFunctionCheck())
+        .withQuickFixes()
+        .verifyIssues());
+
+      assertThat(e)
+        .isInstanceOf(AssertionError.class)
+        .hasMessageContaining("The json file associated with this rule has \"quickfix\": \"unknown\"" +
+          " instead of \"covered\" or \"partial\"");
+    }
+
+    @Test
+    void rule_with_quickfixes_can_have_quickfix_covered_in_its_json_metadata() {
+      @Rule(key = "ConstantJSON")
+      class ConstantCostCheck extends CheckWithQuickFix {
+      }
+      InternalCheckVerifier.newInstance()
+        .onFile(TEST_FILE_NONCOMPLIANT)
+        .withCheck(new ConstantCostCheck())
+        .withQuickFixes()
+        .verifyIssues();
+    }
+
+    @Test
+    void rule_with_quickfixes_can_have_quickfix_partial_in_its_json_metadata() {
+      @Rule(key = "UndefinedRemediationFunc")
+      class UndefinedRemediationFunctionCheck extends CheckWithQuickFix {
+      }
+      InternalCheckVerifier.newInstance()
+        .onFile(TEST_FILE_NONCOMPLIANT)
+        .withCheck(new UndefinedRemediationFunctionCheck())
+        .withQuickFixes()
+        .verifyIssues();
+    }
+
+    @Test
+    void rule_without_quickfixes_can_have_quickfix_unknown_in_its_json_metadata() {
+      @Rule(key = "ExponentialRemediationFunc")
+      class ExponentialRemediationFunctionCheck implements JavaFileScanner {
+        @Override
+        public void scanFile(JavaFileScannerContext context) {
+          context.addIssue(1, this, "message", 42);
+        }
+      }
+      InternalCheckVerifier.newInstance()
+        .onFile(TEST_FILE_NONCOMPLIANT)
+        .withChecks(new ExponentialRemediationFunctionCheck())
+        .withQuickFixes()
+        .verifyIssues();
+    }
+
+    @Test
+    void should_fail_for_rule_S100_without_json_metadata() {
+      @Rule(key = "S100")
+      class S100WithoutJsonCheck implements JavaFileScanner {
+        @Override
+        public void scanFile(JavaFileScannerContext context) {
+          context.addIssue(1, this, "message", 42);
+        }
+      }
+      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+        .onFile(TEST_FILE_NONCOMPLIANT)
+        .withCheck(new S100WithoutJsonCheck())
+        .verifyIssues());
+
+      assertThat(e)
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageStartingWith("Expecting the rule S100 to have a valid json file /org/sonar/l10n/java/rules/java/S100_java.json");
+    }
+
+    @Test
+    void absent_rule_metadata_does_not_make_verifier_fail() {
       @Rule(key = "DoesntExists")
       class DoesntExistsMetadata implements JavaFileScanner {
         @Override
@@ -578,7 +655,7 @@ class InternalCheckVerifierTest {
   }
 
   @Nested
-  class TestingMulitpleFileIssues {
+  class TestingMultipleFileIssues {
 
     @Test
     void raising_no_issue_while_expecting_some_should_fail() {
@@ -1125,6 +1202,21 @@ class InternalCheckVerifierTest {
       if (context.inAndroidContext()) {
         context.addIssueOnFile(this, "issueOnFile");
       }
+    }
+  }
+
+  class CheckWithQuickFix implements JavaFileScanner {
+    @Override
+    public void scanFile(JavaFileScannerContext context) {
+      ((InternalJavaIssueBuilder) ((DefaultJavaFileScannerContext) context)
+        .newIssue())
+        .forRule(this)
+        .onTree(context.getTree())
+        .withMessage("All code should be deleted")
+        .withQuickFix(() -> JavaQuickFix.newQuickFix("Delete all")
+          .addTextEdit(JavaTextEdit.removeTree(context.getTree()))
+          .build())
+        .report();
     }
   }
 

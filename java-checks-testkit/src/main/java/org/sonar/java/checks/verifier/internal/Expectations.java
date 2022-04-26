@@ -58,7 +58,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
@@ -66,6 +65,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -723,40 +723,45 @@ class Expectations {
       String func;
     }
 
+    String quickfix;
     Remediation remediation;
   }
 
   @CheckForNull
-  static RemediationFunction remediationFunction(AnalyzerMessage issue) {
-    String ruleKey = ruleKey(issue);
-    try {
-      RuleJSON rule = getRuleJSON(ruleKey);
-      if (rule.remediation == null) {
-        return null;
-      }
-      switch (rule.remediation.func) {
-        case "Linear":
-          return RemediationFunction.LINEAR;
-        case "Constant/Issue":
-          return RemediationFunction.CONST;
-        default:
-          return null;
-      }
-    } catch (IOException | JsonParseException e) {
-      // Failed to open JSON file, as this is not part of API yet, we should not fail because of this
-      // Remediation function and cost not provided, "constant" is assumed.
+  static RemediationFunction remediationFunction(@Nullable RuleJSON rule) {
+    if (rule == null || rule.remediation == null) {
       return null;
+    }
+    switch (rule.remediation.func) {
+      case "Linear":
+        return RemediationFunction.LINEAR;
+      case "Constant/Issue":
+        return RemediationFunction.CONST;
+      default:
+        return null;
     }
   }
 
-  private static RuleJSON getRuleJSON(String ruleKey) throws IOException {
+  @Nullable
+  public static RuleJSON getRuleJSON(AnalyzerMessage issue) {
+    String ruleKey = ruleKey(issue);
     String ruleJson = "/org/sonar/l10n/java/rules/java/" + ruleKey + "_java.json";
-    URL resource = CheckVerifier.class.getResource(ruleJson);
-    if (resource == null) {
-      throw new IOException(ruleJson + " not found");
+    try {
+      URL resource = CheckVerifier.class.getResource(ruleJson);
+      if (resource == null) {
+        throw new IOException(ruleJson + " not found");
+      }
+      Gson gson = new Gson();
+      return gson.fromJson(new InputStreamReader(resource.openStream(), StandardCharsets.UTF_8), RuleJSON.class);
+    } catch (IOException | JsonParseException e) {
+      // Not all checks are tested with the related json file available in the classpath, like all SECheck.
+      // But at least we can test with one check that the way we load json could work from time to time
+      if (ruleKey.equals("S100")) {
+        throw new IllegalStateException("Expecting the rule " + ruleKey +
+          " to have a valid json file " + ruleJson + ": " + e.getMessage(), e);
+      }
+      return null;
     }
-    Gson gson = new Gson();
-    return gson.fromJson(new InputStreamReader(resource.openStream(), StandardCharsets.UTF_8), RuleJSON.class);
   }
 
   private static String ruleKey(AnalyzerMessage issue) {

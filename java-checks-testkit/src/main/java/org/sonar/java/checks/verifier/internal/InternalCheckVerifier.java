@@ -376,7 +376,9 @@ public class InternalCheckVerifier implements CheckVerifier {
       throw new AssertionError("No issue raised. At least one issue expected");
     }
     List<Integer> unexpectedLines = new LinkedList<>();
-    Expectations.RemediationFunction remediationFunction = Expectations.remediationFunction(issues.iterator().next());
+    AnalyzerMessage firstIssue = issues.iterator().next();
+    Expectations.RuleJSON ruleJson = Expectations.getRuleJSON(firstIssue);
+    Expectations.RemediationFunction remediationFunction = Expectations.remediationFunction(ruleJson);
     Map<Integer, List<Expectations.Issue>> expected = expectations.issues;
 
     for (AnalyzerMessage issue : issues) {
@@ -395,6 +397,15 @@ public class InternalCheckVerifier implements CheckVerifier {
 
     if (collectQuickFixes) {
       new QuickFixesVerifier(expectations.quickFixes(), quickFixes).accept(issues);
+      assertJsonMetadataQuickfixIsCovered(ruleJson, !quickFixes.isEmpty());
+    }
+  }
+
+  private static void assertJsonMetadataQuickfixIsCovered(@Nullable Expectations.RuleJSON ruleJson, boolean hasQuickFix) {
+    if (hasQuickFix && ruleJson != null &&
+      !("covered".equals(ruleJson.quickfix) || "partial".equals(ruleJson.quickfix))) {
+      throw new AssertionError("The json file associated with this rule has \"quickfix\": \"" +
+        ruleJson.quickfix + "\" instead of \"covered\" or \"partial\"");
     }
   }
 
