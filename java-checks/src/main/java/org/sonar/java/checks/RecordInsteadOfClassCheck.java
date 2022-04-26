@@ -65,6 +65,10 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
       // records can not be abstract
       return;
     }
+    if (!classSymbol.isFinal()) {
+      // records can not be extended
+      return;
+    }
 
     List<Symbol.VariableSymbol> fields = classFields(classSymbol);
     if (fields.isEmpty() || !hasOnlyPrivateFinalFields(fields)) {
