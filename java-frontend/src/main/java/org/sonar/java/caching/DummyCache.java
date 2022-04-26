@@ -20,6 +20,7 @@
 package org.sonar.java.caching;
 
 import java.io.InputStream;
+import javax.annotation.CheckForNull;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
 
@@ -28,6 +29,12 @@ public class DummyCache implements JavaReadCache, JavaWriteCache {
   @Override
   public InputStream read(String key) {
     throw new IllegalArgumentException("No cache data available");
+  }
+
+  @CheckForNull
+  @Override
+  public byte[] readBytes(String key) {
+    return null;
   }
 
   @Override

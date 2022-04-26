@@ -19,13 +19,19 @@
  */
 package org.sonar.java.caching;
 
+import java.io.IOException;
+import javax.annotation.CheckForNull;
 import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 
 import java.io.InputStream;
 import java.util.Objects;
 
 public class JavaReadCacheImpl implements JavaReadCache {
+  private static final Logger LOG = Loggers.get(JavaReadCacheImpl.class);
+
   private ReadCache readCache;
 
   public JavaReadCacheImpl(ReadCache readCache) {
@@ -35,6 +41,21 @@ public class JavaReadCacheImpl implements JavaReadCache {
   @Override
   public InputStream read(String key) {
     return readCache.read(key);
+  }
+
+  @CheckForNull
+  @Override
+  public byte[] readBytes(String key) {
+    if (readCache.contains(key)) {
+      try (var in = read(key)) {
+        return in.readAllBytes();
+      } catch (IOException e) {
+        throw new CacheReadException(String.format("Unable to read data for key '%s'", key), e);
+      }
+    } else {
+      LOG.trace(() -> String.format("Cache miss for key '%s'", key));
+      return null;
+    }
   }
 
   @Override

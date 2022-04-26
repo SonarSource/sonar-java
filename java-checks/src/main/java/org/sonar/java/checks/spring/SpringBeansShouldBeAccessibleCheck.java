@@ -141,19 +141,13 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
 
   private static Optional<List<String>> readFromCache(InputFileScannerContext context) {
     var cacheKey = cacheKey(context.getInputFile());
-    try (var in = context.getCacheContext().getReadCache().read(cacheKey)) {
-      var res = Arrays.asList(new String(in.readAllBytes(), StandardCharsets.UTF_8).split(";"));
+    var bytes = context.getCacheContext().getReadCache().readBytes(cacheKey);
+    if (bytes != null) {
       context.getCacheContext().getWriteCache().copyFromPrevious(cacheKey);
-      return Optional.of(res);
-    } catch (IOException e) {
-      throw new AnalysisException(String.format("Could not load cache entry at key '%s'", cacheKey), e);
-    } catch (IllegalArgumentException e) {
-      LOG.trace(() ->
-        String.format("Cache miss for key '%s': %s", cacheKey, e.getLocalizedMessage())
-      );
+      return Optional.of(Arrays.asList(new String(bytes, StandardCharsets.UTF_8).split(";")));
+    } else {
+      return Optional.empty();
     }
-
-    return Optional.empty();
   }
 
   private static List<String> targetedPackages(String classPackageName, SymbolMetadata classSymbolMetadata) {

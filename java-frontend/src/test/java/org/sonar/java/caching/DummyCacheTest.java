@@ -75,4 +75,9 @@ class DummyCacheTest {
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessage("No cache data available");
   }
+
+  @Test
+  void readBytes_returns_null() {
+    assertThat(new DummyCache().readBytes("foo")).isNull();
+  }
 }

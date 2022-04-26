@@ -192,6 +192,7 @@ class SpringBeansShouldBeAccessibleCheckTest {
     doThrow(new IOException()).when(inputStream).readAllBytes();
     var readCache = mock(ReadCache.class);
     doReturn(inputStream).when(readCache).read(any());
+    doReturn(true).when(readCache).contains(any());
 
     var verifier = CheckVerifier.newVerifier()
       .withCache(readCache, writeCache)
@@ -230,7 +231,7 @@ class SpringBeansShouldBeAccessibleCheckTest {
       .verifyNoIssues();
 
     assertThat(logTester.logs(LoggerLevel.TRACE).stream().filter(
-      msg -> msg.matches("Cache miss for key '[^']+': .+")
+      msg -> msg.matches("Cache miss for key '[^']+'")
     )).hasSize(1);
   }
 }
