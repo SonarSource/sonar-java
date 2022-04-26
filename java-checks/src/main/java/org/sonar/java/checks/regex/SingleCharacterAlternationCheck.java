@@ -19,32 +19,17 @@
  */
 package org.sonar.java.checks.regex;
 
-import java.util.Collections;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonarsource.analyzer.commons.regex.RegexParseResult;
-import org.sonarsource.analyzer.commons.regex.ast.CharacterClassElementTree;
-import org.sonarsource.analyzer.commons.regex.ast.DisjunctionTree;
-import org.sonarsource.analyzer.commons.regex.ast.RegexBaseVisitor;
+import org.sonarsource.analyzer.commons.regex.finders.SingleCharacterAlternationFinder;
 
 @Rule(key = "S6035")
 public class SingleCharacterAlternationCheck extends AbstractRegexCheck {
 
   @Override
   public void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation) {
-    new SingleCharacterAlternationFinder().visit(regexForLiterals);
-  }
-
-  class SingleCharacterAlternationFinder extends RegexBaseVisitor {
-
-    @Override
-    public void visitDisjunction(DisjunctionTree tree) {
-      if (tree.getAlternatives().stream().allMatch(CharacterClassElementTree.class::isInstance)) {
-        reportIssue(tree, "Replace this alternation with a character class.", null, Collections.emptyList());
-      }
-      super.visitDisjunction(tree);
-    }
-
+    new SingleCharacterAlternationFinder(this::reportIssueFromCommons).visit(regexForLiterals);
   }
 
 }
