@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class RecordInsteadOfClassCheckTest {
@@ -35,4 +36,12 @@ class RecordInsteadOfClassCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_incomplete_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/RecordInsteadOfClassCheck.java"))
+      .withCheck(new RecordInsteadOfClassCheck())
+      .withJavaVersion(16)
+      .verifyIssues();
+  }
 }
