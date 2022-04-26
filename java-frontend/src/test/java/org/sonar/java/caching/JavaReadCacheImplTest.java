@@ -28,7 +28,9 @@ import org.sonar.api.batch.sensor.cache.ReadCache;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -42,21 +44,42 @@ class JavaReadCacheImplTest {
     String missingKey = "non existing key";
     byte[] data = "Hello".getBytes(StandardCharsets.UTF_8);
     ReadCache readCache = mock(ReadCache.class);
-
     doReturn(new ByteArrayInputStream(data)).when(readCache).read(key);
+    doReturn(true).when(readCache).contains(key);
+
     JavaReadCacheImpl cache = new JavaReadCacheImpl(readCache);
     try (InputStream read = cache.read(key)) {
       assertThat(read).hasBinaryContent(data);
     } catch (IOException e) {
       fail("This is not expected");
     }
-    verify(readCache, times(1)).read(key);
+
+    doReturn(new ByteArrayInputStream(data)).when(readCache).read(key);
+    assertThat(cache.readBytes(key)).isEqualTo(data);
+    verify(readCache, times(2)).read(key);
 
     doThrow(new IllegalArgumentException("boom")).when(readCache).read(missingKey);
+    doReturn(false).when(readCache).contains(missingKey);
     assertThatThrownBy(() -> cache.read(missingKey))
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessage("boom");
+    assertThat(cache.readBytes(missingKey)).isNull();
     verify(readCache, times(1)).read(missingKey);
+  }
+
+  @Test
+  void IOException_on_read_InputStream() throws IOException {
+    ReadCache readCache = mock(ReadCache.class);
+    InputStream inputStream = mock(InputStream.class);
+    var ioException = new IOException();
+    doThrow(ioException).when(inputStream).readAllBytes();
+    doReturn(inputStream).when(readCache).read(any());
+    doReturn(true).when(readCache).contains(any());
+
+    JavaReadCacheImpl cache = new JavaReadCacheImpl(readCache);
+    assertThatThrownBy(() -> cache.readBytes("foo"))
+      .isInstanceOf(CacheReadException.class)
+      .hasRootCause(ioException);
   }
 
   @Test
