@@ -63,13 +63,15 @@ import org.sonarqube.ws.client.qualityprofiles.ActivateRuleRequest;
 import org.sonarqube.ws.client.qualityprofiles.SearchRequest;
 import org.sonarqube.ws.client.rules.CreateRequest;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class JavaRulingTest {
 
   private static final int LOGS_NUMBER_LINES = 200;
   private static final Logger LOG = LoggerFactory.getLogger(JavaRulingTest.class);
 
-  private static String INCREMENTAL_ANALYSIS_KEY = "sonar.java.skipUnchanged";
-  private static boolean INCREMENTAL_ANALYSIS_VALUE = true;
+  private static final String INCREMENTAL_ANALYSIS_KEY = "sonar.java.skipUnchanged";
+  private static final String SONAR_CACHING_ENABLED_KEY = "sonar.analysisCache.enabled";
 
   // by default all rules are enabled, if you want to enable just a subset of rules you can specify the list of
   // rule keys from the command line using "rules" property, i.e. mvn test -Drules=S100,S101
@@ -86,7 +88,7 @@ public class JavaRulingTest {
 
   @ClassRule
   public static Orchestrator orchestrator = Orchestrator.builderEnv()
-    .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE[8.9]"))
+    .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE[9.4]"))
     .addPlugin(FileLocation.byWildcardMavenFilename(new File("../../sonar-java-plugin/target"), "sonar-java-plugin-*.jar"))
     .addPlugin(MavenLocation.of("org.sonarsource.sonar-lits-plugin", "sonar-lits-plugin", "0.10.0.2181"))
     .setEdition(Edition.DEVELOPER)
@@ -230,16 +232,28 @@ public class JavaRulingTest {
       .addArgument("-Dpmd.skip=true")
       .addArgument("-Dcheckstyle.skip=true")
       // Set up incremental analysis
-      .setProperty(INCREMENTAL_ANALYSIS_KEY, Boolean.toString(INCREMENTAL_ANALYSIS_VALUE))
       .setProperties(
         "sonar.pullrequest.key", branch,
         "sonar.pullrequest.branch", branch,
         "sonar.pullrequest.base", mainBranch,
         "sonar.scm.provider", "git",
-        "sonar.scm.disabled", "false"
+        "sonar.scm.disabled", "false",
+        INCREMENTAL_ANALYSIS_KEY, "true",
+        SONAR_CACHING_ENABLED_KEY, "true"
       );
 
+    var before1 = System.currentTimeMillis();
     executeBuildWithCommonProperties(build, projectName);
+    var after1 = System.currentTimeMillis();
+    var time1 = after1 - before1;
+
+    var before2 = System.currentTimeMillis();
+    executeBuildWithCommonProperties(build, projectName);
+    var after2 = System.currentTimeMillis();
+    var time2 = after2 - before2;
+
+    System.out.printf("Time 1: %s\nTime 2: %s\n", time1, time2);
+    assertThat(time2).isLessThan(time1);
   }
 
   private static String getFileLocationAbsolutePath(FileLocation location) {
@@ -366,7 +380,7 @@ public class JavaRulingTest {
 
   private static void assertNoDifferences(String projectName) throws IOException {
     String differences = new String(Files.readAllBytes(Paths.get(litsDifferencesPath(projectName))), StandardCharsets.UTF_8);
-    Assertions.assertThat(differences).isEmpty();
+    assertThat(differences).isEmpty();
   }
 
   private static void instantiateTemplateRule(String ruleTemplateKey, String instantiationKey, String params, Set<String> activatedRuleKeys) {
