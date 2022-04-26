@@ -21,13 +21,16 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -85,13 +88,41 @@ public class ToStringUsingBoxingCheck extends IssuableSubscriptionVisitor {
       return;
     }
     ExpressionTree memberSelectExpression = ((MemberSelectExpressionTree) methodSelect).expression();
-    if (memberSelectExpression.is(Tree.Kind.NEW_CLASS) && PRIMITIVE_CONSTRUCTOR.matches((NewClassTree) memberSelectExpression)) {
-      ExpressionTree argument = ((NewClassTree) memberSelectExpression).arguments().get(0);
-      reportIfCompareToOrToString(mit, memberSelectExpression, memberSelectExpression.symbolType().toString(), argument);
-    } else if (memberSelectExpression.is(Tree.Kind.METHOD_INVOCATION) && PRIMITIVE_VALUE_OF.matches((MethodInvocationTree) memberSelectExpression)) {
-      ExpressionTree argument = ((MethodInvocationTree) memberSelectExpression).arguments().get(0);
-      reportIfCompareToOrToString(mit, memberSelectExpression, memberSelectExpression.symbolType().toString(), argument);
+    Optional<ExpressionTree> argumentOfPrimitiveWrapper = getArgumentOfPrimitiveWrapper(memberSelectExpression);
+    if (argumentOfPrimitiveWrapper.isPresent()) {
+      ExpressionTree argument = argumentOfPrimitiveWrapper.get();
+      Type memberSelectType = memberSelectExpression.symbolType();
+      if (isCompatiblePrimitiveType(memberSelectType, argument.symbolType())) {
+        reportIfCompareToOrToString(mit, memberSelectExpression, memberSelectExpression.symbolType().toString(), argument);
+      }
     }
+  }
+
+  private static boolean isCompatiblePrimitiveType(Type memberSelectType, Type argumentType) {
+    Type memberSelectAsPrimitive = JUtils.primitiveType(memberSelectType);
+    if (memberSelectAsPrimitive != null) {
+      if (argumentType.equals(memberSelectAsPrimitive)) {
+        return true;
+      }
+      if (argumentType.is("int")) {
+        return memberSelectAsPrimitive.is("double")
+          || memberSelectAsPrimitive.is("float")
+          || memberSelectAsPrimitive.is("long");
+      }
+      if (argumentType.is("float")) {
+        return memberSelectAsPrimitive.is("double");
+      }
+    }
+    return false;
+  }
+
+  private static Optional<ExpressionTree> getArgumentOfPrimitiveWrapper(ExpressionTree memberSelectExpression) {
+    if (memberSelectExpression.is(Tree.Kind.NEW_CLASS) && PRIMITIVE_CONSTRUCTOR.matches((NewClassTree) memberSelectExpression)) {
+      return Optional.of(((NewClassTree) memberSelectExpression).arguments().get(0));
+    } else if (memberSelectExpression.is(Tree.Kind.METHOD_INVOCATION) && PRIMITIVE_VALUE_OF.matches((MethodInvocationTree) memberSelectExpression)) {
+      return Optional.of(((MethodInvocationTree) memberSelectExpression).arguments().get(0));
+    }
+    return Optional.empty();
   }
 
   private void reportIfCompareToOrToString(MethodInvocationTree mit, ExpressionTree memberSelectExpression, String boxedType, Tree argument) {
