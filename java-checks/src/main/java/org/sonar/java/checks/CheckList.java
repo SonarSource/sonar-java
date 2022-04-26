@@ -63,6 +63,7 @@ import org.sonar.java.checks.regex.RegexLookaheadCheck;
 import org.sonar.java.checks.regex.RegexStackOverflowCheck;
 import org.sonar.java.checks.regex.ReluctantQuantifierCheck;
 import org.sonar.java.checks.regex.ReluctantQuantifierWithEmptyContinuationCheck;
+import org.sonar.java.checks.regex.SingleCharCharacterClassCheck;
 import org.sonar.java.checks.regex.SingleCharacterAlternationCheck;
 import org.sonar.java.checks.regex.StringReplaceCheck;
 import org.sonar.java.checks.regex.UnicodeAwareCharClassesCheck;
@@ -561,6 +562,7 @@ public final class CheckList {
     SimpleClassNameCheck.class,
     SimpleStringLiteralForSingleLineStringsCheck.class,
     SingleCharacterAlternationCheck.class,
+    SingleCharCharacterClassCheck.class,
     SpecializedFunctionalInterfacesCheck.class,
     SpringAntMatcherOrderCheck.class,
     SpringAutoConfigurationCheck.class,
