@@ -50,13 +50,23 @@ class ToStringUsingBoxingCheck {
     Integer.valueOf("1").compareTo(2);
     Integer.valueOf("1").toString();
     Integer.valueOf(array[i]).compareTo(Integer.valueOf(array[i + 1]));
-    new Float(1.2).toString();
+
+    // We can not directly use toString here, we have to add "f" or cast it.
+    // The quick fix will not compile, but it seems like a corner case
+    // due to the arguable choice to have a Float constructor taking a double in the first place...
+    new Float(1.2).toString(); // Noncompliant
+    Float.toString(1.2f);
+    Float.toString((float) 1.2);
+    // With the non-deprecated way, "valueOf" with double does not exist, everything will work just fine
+    Float.valueOf(1.2f).toString(); // Noncompliant
 
     // Some types can be automatically casted to others
     new Long(0).toString(); // Noncompliant
     new Float(0).toString(); // Noncompliant
     new Double(0).toString(); // Noncompliant
     new Double(1.2f).toString(); // Noncompliant
+    byte myByte = 4;
+    new Short(myByte).toString(); // Noncompliant
   }
 
   private void quickFixes(boolean myBoolean) {
