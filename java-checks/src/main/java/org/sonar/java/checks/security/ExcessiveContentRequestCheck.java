@@ -193,9 +193,7 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
         filesThatSetMaximumSize.add(context.getInputFile().key());
         sizeSetSomewhere = true;
         getIfExceedSize(mit.arguments().get(0))
-          .map(bytesExceeding -> {
-            return defaultContext.createAnalyzerMessage(this, mit, String.format(MESSAGE_EXCEED_SIZE, bytesExceeding, fileUploadSizeLimit));
-          })
+          .map(bytesExceeding -> defaultContext.createAnalyzerMessage(this, mit, String.format(MESSAGE_EXCEED_SIZE, bytesExceeding, fileUploadSizeLimit)))
           .ifPresent(defaultContext::reportIssue);
       }
     }
