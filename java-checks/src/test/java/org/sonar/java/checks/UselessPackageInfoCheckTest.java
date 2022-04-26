@@ -29,6 +29,7 @@ import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.AnalysisException;
+import org.sonar.java.caching.CacheReadException;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalReadCache;
 import org.sonar.java.checks.verifier.internal.InternalWriteCache;
@@ -145,6 +146,7 @@ class UselessPackageInfoCheckTest {
     doThrow(new IOException()).when(inputStream).readAllBytes();
     var readCache = mock(ReadCache.class);
     doReturn(inputStream).when(readCache).read(any());
+    doReturn(true).when(readCache).contains(any());
 
     var verifier = CheckVerifier.newVerifier()
       .withCache(readCache, writeCache)
@@ -155,11 +157,11 @@ class UselessPackageInfoCheckTest {
 
     assertThatThrownBy(verifier::verifyNoIssues)
       .isInstanceOf(AnalysisException.class)
-      .hasCauseInstanceOf(IOException.class);
+      .hasRootCauseInstanceOf(IOException.class);
   }
 
   @Test
-  void write_cache_multiple_writes() throws IOException {
+  void write_cache_multiple_writes() {
     verifier
       .addFiles(InputFile.Status.SAME,
         mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java")
@@ -174,7 +176,7 @@ class UselessPackageInfoCheckTest {
 
   @Test
   void emptyCache() {
-    logTester.setLevel(LoggerLevel.DEBUG);
+    logTester.setLevel(LoggerLevel.TRACE);
     verifier
       .addFiles(InputFile.Status.SAME,
         mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java")
@@ -182,8 +184,8 @@ class UselessPackageInfoCheckTest {
       .withCheck(new UselessPackageInfoCheck())
       .verifyNoIssues();
 
-    assertThat(logTester.logs(LoggerLevel.DEBUG).stream()
-      .filter(msg -> msg.matches("Could not load cached package for key '[^']+' due to a '[^']+': .+\\.")))
+    assertThat(logTester.logs(LoggerLevel.TRACE).stream()
+      .filter(msg -> msg.matches("Cache miss for key '[^']+'")))
       .hasSize(1);
   }
 }

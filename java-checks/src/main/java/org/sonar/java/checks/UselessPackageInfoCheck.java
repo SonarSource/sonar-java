@@ -113,17 +113,8 @@ public class UselessPackageInfoCheck implements JavaFileScanner, EndOfAnalysisCh
 
   private static Optional<String> getPackageFromCache(InputFileScannerContext inputFileScannerContext) {
     var cacheKey = cacheKey(inputFileScannerContext.getInputFile());
-    try (var in = inputFileScannerContext.getCacheContext().getReadCache().read(cacheKey)) {
-      return Optional.of(new String(in.readAllBytes(), StandardCharsets.UTF_8));
-    } catch (IllegalArgumentException e) {
-      LOG.debug(() -> String.format(
-        "Could not load cached package for key '%s' due to a '%s': %s.", cacheKey, e.getClass().getSimpleName(), e.getMessage()
-      ));
-    } catch (IOException e) {
-      throw new AnalysisException(String.format("IOException while trying to read cached data for key '%s'", cacheKey), e);
-    }
-
-    return Optional.empty();
+    var bytes = inputFileScannerContext.getCacheContext().getReadCache().readBytes(cacheKey);
+    return bytes != null ? Optional.of(new String(bytes, StandardCharsets.UTF_8)) : Optional.empty();
   }
 
   private static void writePackageNameToCache(InputFileScannerContext context, String packageName) {
