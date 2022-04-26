@@ -22,15 +22,15 @@ package org.sonar.java.checks.regex;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
 
 class SingleCharacterAlternationCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/SingleCharacterAlternationCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/SingleCharacterAlternationCheck.java"))
       .withCheck(new SingleCharacterAlternationCheck())
       .verifyIssues();
   }
