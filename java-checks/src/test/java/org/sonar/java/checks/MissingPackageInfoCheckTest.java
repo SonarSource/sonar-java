@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -29,13 +30,15 @@ import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.AnalysisException;
-import org.sonar.java.caching.CacheReadException;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalReadCache;
 import org.sonar.java.checks.verifier.internal.InternalWriteCache;
+import org.sonar.plugins.java.api.InputFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.in;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -45,7 +48,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
-class UselessPackageInfoCheckTest {
+class MissingPackageInfoCheckTest {
+
+  private static final String EXPECTED_PACKAGE = "checks.packageInfo.nopackageinfo";
+  private static final String EXPECTED_MESSAGE = "Add a 'package-info.java' file to document the '" + EXPECTED_PACKAGE + "' package";
 
   @RegisterExtension
   public final LogTesterJUnit5 logTester = new LogTesterJUnit5();
@@ -63,80 +69,69 @@ class UselessPackageInfoCheckTest {
   }
 
   @Test
-  void withNoOtherFile() {
-    verifier
-      .onFile(mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFiles/package-info.java"))
-      .withCheck(new UselessPackageInfoCheck())
-      .verifyIssueOnFile("Remove this package.");
+  void no_package_info() {
+    MissingPackageInfoCheck check = new MissingPackageInfoCheck();
+
+    CheckVerifier.newVerifier()
+      .onFiles(
+        mainCodeSourcesPath("DefaultPackage.java"),
+        mainCodeSourcesPath("checks/packageInfo/HelloWorld.java"),
+        mainCodeSourcesPath("checks/packageInfo/package-info.java"),
+        mainCodeSourcesPath("checks/packageInfo/nopackageinfo/HelloWorld.java"),
+        mainCodeSourcesPath("checks/packageInfo/nopackageinfo/nopackageinfo.java"))
+      .withCheck(check)
+      .verifyIssueOnProject(EXPECTED_MESSAGE);
+
+    Set<String> set = check.missingPackageWithoutPackageFile;
+    assertThat(set).hasSize(1);
+    assertThat(set.iterator().next()).isEqualTo(EXPECTED_PACKAGE);
   }
 
   @Test
-  void withOtherFile() {
-    verifier
-      .onFile(mainCodeSourcesPath("checks/UselessPackageInfoCheck/package-info.java"))
-      .withCheck(new UselessPackageInfoCheck())
-      .verifyNoIssues();
-  }
-
-  @Test
-  void notAPackageInfo() {
+  void caching() {
     verifier
       .onFiles(
-        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java"),
-        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld2.java"))
-      .withCheck(new UselessPackageInfoCheck())
-      .verifyNoIssues();
-  }
-
-  @Test
-  void notAPackageInfoOnSingleFile() {
-    verifier
-      .onFile(mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java"))
-      .withCheck(new UselessPackageInfoCheck())
-      .verifyNoIssues();
-  }
-
-  @Test
-  void defaultPackage() {
-    verifier
-      .onFile(mainCodeSourcesPath("DefaultPackage.java"))
-      .withCheck(new UselessPackageInfoCheck())
-      .verifyNoIssues();
-  }
-
-  @Test
-  void caching() throws IOException, ClassNotFoundException {
-    verifier
-      .onFiles(
-        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java"),
-        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld2.java"),
-        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/package-info.java"),
-        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFiles/package-info.java")
+        mainCodeSourcesPath("DefaultPackage.java"),
+        mainCodeSourcesPath("checks/packageInfo/HelloWorld.java"),
+        mainCodeSourcesPath("checks/packageInfo/package-info.java"),
+        mainCodeSourcesPath("checks/packageInfo/nopackageinfo/HelloWorld.java"),
+        mainCodeSourcesPath("checks/packageInfo/nopackageinfo/nopackageinfo.java")
       )
-      .withCheck(new UselessPackageInfoCheck())
-      .verifyIssueOnFile("Remove this package.");
+      .withCheck(new MissingPackageInfoCheck())
+      .verifyIssueOnProject(EXPECTED_MESSAGE);
 
-    var check = spy(new UselessPackageInfoCheck());
+    var check = spy(new MissingPackageInfoCheck() {
+      @Override
+      public boolean scanWithoutParsing(InputFileScannerContext inputFileScannerContext) {
+        this.context = inputFileScannerContext;
+        return super.scanWithoutParsing(inputFileScannerContext);
+      }
+
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+        this.context = context;
+        super.scanFile(context);
+      }
+    });
 
     var populatedReadCache = new InternalReadCache().putAll(writeCache);
     var writeCache2 = new InternalWriteCache().bind(populatedReadCache);
     CheckVerifier.newVerifier()
       .withCache(populatedReadCache, writeCache2)
       .addFiles(InputFile.Status.SAME,
-        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java"),
-        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld2.java")
-      )
-      .addFiles(InputFile.Status.CHANGED,
-        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/package-info.java"),
-        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFiles/package-info.java")
+        mainCodeSourcesPath("checks/packageInfo/HelloWorld.java"),
+        mainCodeSourcesPath("checks/packageInfo/package-info.java"),
+        mainCodeSourcesPath("checks/packageInfo/nopackageinfo/HelloWorld.java"),
+        mainCodeSourcesPath("checks/packageInfo/nopackageinfo/nopackageinfo.java"),
+        mainCodeSourcesPath("DefaultPackage.java")
       )
       .withCheck(check)
-      .verifyIssueOnFile("Remove this package.");
+      .verifyIssueOnProject(EXPECTED_MESSAGE);
 
-    verify(check, times(2)).scanFile(any());
-    verify(check, times(2)).scanWithoutParsing(any());
+    verify(check, times(0)).scanFile(any());
+    verify(check, times(5)).scanWithoutParsing(any());
     assertThat(writeCache2.getData())
-      .hasSize(4)
+      .hasSize(5)
       .containsExactlyInAnyOrderEntriesOf(writeCache.getData());
   }
 
@@ -151,9 +146,9 @@ class UselessPackageInfoCheckTest {
     var verifier = CheckVerifier.newVerifier()
       .withCache(readCache, writeCache)
       .addFiles(InputFile.Status.SAME,
-        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java")
+        mainCodeSourcesPath("checks/packageInfo/HelloWorld.java")
       )
-      .withCheck(new UselessPackageInfoCheck());
+      .withCheck(new MissingPackageInfoCheck());
 
     assertThatThrownBy(verifier::verifyNoIssues)
       .isInstanceOf(AnalysisException.class)
@@ -165,9 +160,9 @@ class UselessPackageInfoCheckTest {
     logTester.setLevel(LoggerLevel.TRACE);
     verifier
       .addFiles(InputFile.Status.SAME,
-        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java")
+        mainCodeSourcesPath("checks/packageInfo/HelloWorld.java")
       )
-      .withCheck(new UselessPackageInfoCheck());
+      .withCheck(new MissingPackageInfoCheck());
 
     verifier.verifyNoIssues();
     verifier.verifyNoIssues();
@@ -180,9 +175,9 @@ class UselessPackageInfoCheckTest {
     logTester.setLevel(LoggerLevel.TRACE);
     verifier
       .addFiles(InputFile.Status.SAME,
-        mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld1.java")
+        mainCodeSourcesPath("checks/packageInfo/HelloWorld.java")
       )
-      .withCheck(new UselessPackageInfoCheck())
+      .withCheck(new MissingPackageInfoCheck())
       .verifyNoIssues();
 
     assertThat(logTester.logs(LoggerLevel.TRACE).stream()
