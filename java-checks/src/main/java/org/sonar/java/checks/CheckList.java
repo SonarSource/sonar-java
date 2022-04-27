@@ -54,6 +54,7 @@ import org.sonar.java.checks.regex.GraphemeClustersInClassesCheck;
 import org.sonar.java.checks.regex.ImpossibleBackReferenceCheck;
 import org.sonar.java.checks.regex.ImpossibleBoundariesCheck;
 import org.sonar.java.checks.regex.InvalidRegexCheck;
+import org.sonar.java.checks.regex.MultipleWhitespaceCheck;
 import org.sonar.java.checks.regex.PossessiveQuantifierContinuationCheck;
 import org.sonar.java.checks.regex.RedosCheck;
 import org.sonar.java.checks.regex.RedundantRegexAlternativesCheck;
@@ -456,6 +457,7 @@ public final class CheckList {
     MissingOverridesInRecordWithArrayComponentCheck.class,
     ModifiersOrderCheck.class,
     ModulusEqualityCheck.class,
+    MultipleWhitespaceCheck.class,
     NPEThrowCheck.class,
     NestedEnumStaticCheck.class,
     NestedSwitchCheck.class,

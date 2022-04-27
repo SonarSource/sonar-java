@@ -1,0 +1,15 @@
+<p>Multiple spaces in a regular expression can make it hard to tell how many spaces should be matched. It’s more readable to use only one space and
+then indicate with a quantifier how many spaces are expected.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+Pattern.compile("hello   world");
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+Pattern.compile("hello {3}world");
+</pre>
+<h2>Exceptions</h2>
+<p>In <a href="https://www.regular-expressions.info/freespacing.html">free-spacing mode</a> (<code>Pattern.COMMENTS</code> flag, or with embedded flag
+expression <code>(?x)</code>), whitespaces are ignored. In this case no issue should be triggered, because the whitespaces may be intended to improve
+readability.</p>
+
