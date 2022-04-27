@@ -33,6 +33,7 @@ import org.sonar.api.utils.log.LogAndArguments;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.AnalysisException;
+import org.sonar.java.checks.security.ExcessiveContentRequestCheck.CachedResult;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalInputFile;
 import org.sonar.java.checks.verifier.internal.InternalReadCache;
@@ -46,6 +47,10 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.sonar.java.checks.security.ExcessiveContentRequestCheck.CachedResult.INSTANTIATES_VALUE;
+import static org.sonar.java.checks.security.ExcessiveContentRequestCheck.CachedResult.SETS_MAXIMUM_SIZE_VALUE;
+import static org.sonar.java.checks.security.ExcessiveContentRequestCheck.CachedResult.fromBytes;
+import static org.sonar.java.checks.security.ExcessiveContentRequestCheck.CachedResult.toBytes;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
@@ -64,13 +69,9 @@ class ExcessiveContentRequestCheckTest {
     private final String unsafeSourceFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Unsafe.java");
     private final String sanitizerSourceFile = mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/caching/Sanitizer.java");
     private final Map<String, byte[]> expectedFinalCacheState = Map.of(
-      "java:S5693:instantiate:" + computeFileKey(unsafeSourceFile), new byte[]{1},
-      "java:S5693:cached:" + computeFileKey(unsafeSourceFile), new byte[]{1},
-      "java:S5693:instantiate:" + computeFileKey(safeSourceFile), new byte[]{1},
-      "java:S5693:maximumSize:" + computeFileKey(safeSourceFile), new byte[]{1},
-      "java:S5693:cached:" + computeFileKey(safeSourceFile), new byte[]{1},
-      "java:S5693:maximumSize:" + computeFileKey(sanitizerSourceFile), new byte[]{1},
-      "java:S5693:cached:" + computeFileKey(sanitizerSourceFile), new byte[]{1}
+      computeCacheKey(unsafeSourceFile), new byte[]{INSTANTIATES_VALUE},
+      computeCacheKey(safeSourceFile), new byte[]{INSTANTIATES_VALUE + SETS_MAXIMUM_SIZE_VALUE},
+      computeCacheKey(sanitizerSourceFile), new byte[]{SETS_MAXIMUM_SIZE_VALUE}
     );
 
     @BeforeEach
@@ -83,8 +84,8 @@ class ExcessiveContentRequestCheckTest {
         .withCache(readCache, writeCache);
     }
 
-    String computeFileKey(String path) {
-      return InternalInputFile.inputFile("", new File(path)).key();
+    String computeCacheKey(String path) {
+      return "java:S5693:" + InternalInputFile.inputFile("", new File(path)).key();
     }
 
     @Test
@@ -98,25 +99,22 @@ class ExcessiveContentRequestCheckTest {
         .verifyNoIssues();
 
       verify(check, times(3)).scanWithoutParsing(any());
-      verify(check, times(3)).setContext(any());
+      verify(check, times(3)).leaveFile(any());
 
       assertThat(writeCache.getData()).containsExactlyInAnyOrderEntriesOf(expectedFinalCacheState);
       List<String> logs = logTester.getLogs(LoggerLevel.TRACE).stream().map(LogAndArguments::getFormattedMsg).collect(Collectors.toList());
       assertThat(logs).
         contains(
-          "No cached data for " + safeSourceFile,
-          "No cached data for " + unsafeSourceFile,
-          "No cached data for " + sanitizerSourceFile
+          "No cached data for rule java:S5693 on file " + safeSourceFile,
+          "No cached data for rule java:S5693 on file " + unsafeSourceFile,
+          "No cached data for rule java:S5693 on file " + sanitizerSourceFile
         );
     }
 
     @Test
     void no_issue_raised_when_changed_unsafe_file_is_covered_by_unchanged_cached_safe_files() {
-      readCache.put("java:S5693:cached:" + computeFileKey(safeSourceFile), new byte[]{1});
-      readCache.put("java:S5693:instantiate:" + computeFileKey(safeSourceFile), new byte[]{1});
-      readCache.put("java:S5693:maximumSize:" + computeFileKey(safeSourceFile), new byte[]{1});
-      readCache.put("java:S5693:cached:" + computeFileKey(sanitizerSourceFile), new byte[]{1});
-      readCache.put("java:S5693:maximumSize:" + computeFileKey(sanitizerSourceFile), new byte[]{1});
+      readCache.put(computeCacheKey(safeSourceFile), toBytes(new CachedResult(true, true)));
+      readCache.put(computeCacheKey(sanitizerSourceFile), toBytes(new CachedResult(false, true)));
 
 
       var check = spy(new ExcessiveContentRequestCheck());
@@ -127,17 +125,15 @@ class ExcessiveContentRequestCheckTest {
         .verifyNoIssues();
 
       verify(check, times(2)).scanWithoutParsing(any());
-      verify(check, times(1)).setContext(any());
+      verify(check, times(1)).leaveFile(any());
 
       assertThat(writeCache.getData()).containsExactlyInAnyOrderEntriesOf(expectedFinalCacheState);
     }
 
     @Test
     void no_issue_raised_when_cached_unsafe_file_is_covered_by_changed_safe_files() {
-      readCache.put("java:S5693:cached:" + computeFileKey(unsafeSourceFile), new byte[]{1});
-      readCache.put("java:S5693:instantiate:" + computeFileKey(unsafeSourceFile), new byte[]{1});
-      readCache.put("java:S5693:maximumSize:" + computeFileKey(sanitizerSourceFile), new byte[]{1});
-      readCache.put("java:S5693:cached:" + computeFileKey(sanitizerSourceFile), new byte[]{1});
+      //readCache.put(computeCacheKey(unsafeSourceFile), new byte[]{1, 0});
+      readCache.put(computeCacheKey(unsafeSourceFile), toBytes(new CachedResult(true, false)));
 
       var check = spy(new ExcessiveContentRequestCheck());
       verifier
@@ -147,7 +143,7 @@ class ExcessiveContentRequestCheckTest {
         .verifyNoIssues();
 
       verify(check, times(1)).scanWithoutParsing(any());
-      verify(check, times(2)).setContext(any());
+      verify(check, times(2)).leaveFile(any());
 
       assertThat(writeCache.getData()).containsExactlyInAnyOrderEntriesOf(expectedFinalCacheState);
     }
@@ -163,7 +159,7 @@ class ExcessiveContentRequestCheckTest {
         .verifyNoIssues();
 
       verify(check, times(3)).scanWithoutParsing(any());
-      verify(check, never()).setContext(any());
+      verify(check, never()).leaveFile(any());
 
       assertThat(writeCache.getData()).containsExactlyInAnyOrderEntriesOf(expectedFinalCacheState);
     }
@@ -219,6 +215,73 @@ class ExcessiveContentRequestCheckTest {
         .contains(
           "Failed to copy from previous cache for file " + safeSourceFile
         );
+    }
+
+    @Test
+    void scanWithoutParsing_returns_false_when_cached_data_is_corrupted() {
+      var check = spy(new ExcessiveContentRequestCheck());
+      readCache.put(computeCacheKey(unsafeSourceFile), null);
+      readCache.put(computeCacheKey(safeSourceFile), new byte[0]);
+      readCache.put(computeCacheKey(sanitizerSourceFile), new byte[2]);
+
+      logTester.setLevel(LoggerLevel.TRACE);
+
+      verifier
+        .addFiles(InputFile.Status.SAME, unsafeSourceFile, safeSourceFile, sanitizerSourceFile)
+        .withCheck(check)
+        .verifyNoIssues();
+
+      verify(check, times(3)).scanWithoutParsing(any());
+      verify(check, times(3)).leaveFile(any());
+
+      List<String> logs = logTester.getLogs(LoggerLevel.TRACE).stream().map(LogAndArguments::getFormattedMsg).collect(Collectors.toList());
+
+      assertThat(logs).contains(
+        "Cached entry is unreadable for rule java:S5693 on file " + unsafeSourceFile,
+        "Cached entry is unreadable for rule java:S5693 on file " + safeSourceFile
+      );
+
+      assertThat(writeCache.getData()).containsExactlyInAnyOrderEntriesOf(expectedFinalCacheState);
+    }
+
+    @Test
+    void fromBytes_returns_the_expected_result() {
+      var noRelevantActions = new byte[]{0};
+      var instantiate = new byte[]{INSTANTIATES_VALUE};
+      var set = new byte[]{SETS_MAXIMUM_SIZE_VALUE};
+      var instantiateAndSet = new byte[]{INSTANTIATES_VALUE + SETS_MAXIMUM_SIZE_VALUE};
+
+      CachedResult actual = fromBytes(noRelevantActions);
+      assertThat(actual.instantiates).isFalse();
+      assertThat(actual.setMaximumSize).isFalse();
+
+      actual = fromBytes(instantiate);
+      assertThat(actual.instantiates).isTrue();
+      assertThat(actual.setMaximumSize).isFalse();
+
+      actual = fromBytes(set);
+      assertThat(actual.instantiates).isFalse();
+      assertThat(actual.setMaximumSize).isTrue();
+
+      actual = fromBytes(instantiateAndSet);
+      assertThat(actual.instantiates).isTrue();
+      assertThat(actual.setMaximumSize).isTrue();
+
+      assertThatThrownBy(() -> fromBytes(new byte[0]))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Could not decode cached result: unexpected length (expected = 1, actual = 0)");
+
+      assertThatThrownBy(() -> fromBytes(new byte[2]))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Could not decode cached result: unexpected length (expected = 1, actual = 2)");
+    }
+
+    @Test
+    void CachedResult_toBytes_returns_the_expected_result() {
+      assertThat(toBytes(new CachedResult(false, false))).isEqualTo(new byte[]{0});
+      assertThat(toBytes(new CachedResult(true, false))).isEqualTo(new byte[]{INSTANTIATES_VALUE});
+      assertThat(toBytes(new CachedResult(false, true))).isEqualTo(new byte[]{SETS_MAXIMUM_SIZE_VALUE});
+      assertThat(toBytes(new CachedResult(true, true))).isEqualTo(new byte[]{INSTANTIATES_VALUE + SETS_MAXIMUM_SIZE_VALUE});
     }
   }
 
