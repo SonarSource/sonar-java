@@ -303,12 +303,12 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     JavaWriteCache writeCache = cacheContext.getWriteCache();
     try {
       if (instantiates) {
-        writeCache.copyFromPrevious(CACHE_KEY_INSTANTIATE + ":" + inputFile.key());
+        writeCache.copyFromPrevious(computeCacheKey(CACHE_KEY_INSTANTIATE, inputFile));
       }
       if (setsMaximumSize) {
-        writeCache.copyFromPrevious(CACHE_KEY_SET_MAXIMUM_SIZE + ":" + inputFile.key());
+        writeCache.copyFromPrevious(computeCacheKey(CACHE_KEY_SET_MAXIMUM_SIZE, inputFile));
       }
-      writeCache.copyFromPrevious(CACHE_KEY_CACHED + ":" + inputFile.key());
+      writeCache.copyFromPrevious(computeCacheKey(CACHE_KEY_CACHED, inputFile));
     } catch (IllegalArgumentException e) {
       String message = String.format("Failed to copy from previous cache for file %s", inputFile);
       LOGGER.trace(message);
