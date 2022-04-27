@@ -21,7 +21,9 @@ package org.sonar.java.checks.security;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -87,6 +89,7 @@ class ExcessiveContentRequestCheckTest {
 
     @Test
     void no_issue_raised_on_unchanged_files_with_empty_cache() {
+      logTester.setLevel(LoggerLevel.TRACE);
       var check = spy(new ExcessiveContentRequestCheck());
 
       verifier
@@ -98,6 +101,13 @@ class ExcessiveContentRequestCheckTest {
       verify(check, times(3)).setContext(any());
 
       assertThat(writeCache.getData()).containsExactlyInAnyOrderEntriesOf(expectedFinalCacheState);
+      List<String> logs = logTester.getLogs(LoggerLevel.TRACE).stream().map(LogAndArguments::getFormattedMsg).collect(Collectors.toList());
+      assertThat(logs).
+        contains(
+          "No cached data for " + safeSourceFile,
+          "No cached data for " + unsafeSourceFile,
+          "No cached data for " + sanitizerSourceFile
+        );
     }
 
     @Test
@@ -157,7 +167,6 @@ class ExcessiveContentRequestCheckTest {
 
       assertThat(writeCache.getData()).containsExactlyInAnyOrderEntriesOf(expectedFinalCacheState);
     }
-
 
     @Test
     void log_when_failing_to_write_to_cache() throws IOException {

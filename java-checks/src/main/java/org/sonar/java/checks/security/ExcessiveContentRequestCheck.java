@@ -127,8 +127,8 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
 
   private Set<String> filesCached = new HashSet<>();
 
-  private final List<String> filesThatSetMaximumSize = new ArrayList<>();
-  private final List<String> filesThatInstantiate = new ArrayList<>();
+  private boolean currentFileSetsMaximumSize = false;
+  private boolean currentFileInstantiates = false;
 
   @Override
   public boolean scanWithoutParsing(InputFileScannerContext context) {
@@ -136,24 +136,17 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     CacheContext cacheContext = context.getCacheContext();
     // Check if results have been cached previously for this unchanged file
     if (!isCached(cacheContext, unchangedFile)) {
-      LOGGER.debug(() -> String.format("No cached data for %s", unchangedFile));
+      LOGGER.trace(() -> String.format("No cached data for %s", unchangedFile));
       return false;
     }
 
-    filesCached.add(unchangedFile.key());
-
-    boolean isInstantiating = isInstantiating(cacheContext, unchangedFile);
-    if (isInstantiating) {
-      filesThatInstantiate.add(unchangedFile.key());
-    }
-
-    boolean isSettingMaximumSize = isSettingMaximumSize(cacheContext, unchangedFile);
-    if (isSettingMaximumSize) {
+    boolean inputFileInstantiates = isInstantiating(cacheContext, unchangedFile);
+    boolean inputFileSetsMaximumSize = isSettingMaximumSize(cacheContext, unchangedFile);
+    if (inputFileSetsMaximumSize) {
       sizeSetSomewhere = true;
-      filesThatSetMaximumSize.add(unchangedFile.key());
     }
-
-    keepForNextAnalysis(cacheContext, context.getInputFile(), isInstantiating, isSettingMaximumSize);
+    keepForNextAnalysis(cacheContext, context.getInputFile(), inputFileInstantiates, inputFileSetsMaximumSize);
+    filesCached.add(unchangedFile.key());
 
     return true;
   }
@@ -164,8 +157,6 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
       DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) context;
       multipartConstructorIssues.forEach(defaultContext::reportIssue);
     }
-    filesThatSetMaximumSize.clear();
-    filesThatInstantiate.clear();
     filesCached.clear();
     multipartConstructorIssues.clear();
     sizeSetSomewhere = false;
@@ -185,12 +176,12 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
         // Create an issue that we will report only at the end of the analysis if the maximum size was never set.
         AnalyzerMessage analyzerMessage = defaultContext.createAnalyzerMessage(this, newClassTree, MESSAGE_SIZE_NOT_SET);
         multipartConstructorIssues.add(analyzerMessage);
-        filesThatInstantiate.add(context.getInputFile().key());
+        currentFileInstantiates = true;
       }
     } else {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
       if (METHODS_SETTING_MAX_SIZE.matches(mit)) {
-        filesThatSetMaximumSize.add(context.getInputFile().key());
+        currentFileSetsMaximumSize = true;
         sizeSetSomewhere = true;
         getIfExceedSize(mit.arguments().get(0))
           .map(bytesExceeding -> defaultContext.createAnalyzerMessage(this, mit, String.format(MESSAGE_EXCEED_SIZE, bytesExceeding, fileUploadSizeLimit)))
@@ -202,12 +193,12 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
   @Override
   public void leaveFile(JavaFileScannerContext context) {
     super.leaveFile(context);
-    boolean instantiates =  filesThatInstantiate.contains(context.getInputFile().key());
-    boolean setsMaximumSize = filesThatSetMaximumSize.contains(context.getInputFile().key());
     CacheContext cacheContext = context.getCacheContext();
     if (cacheContext.isCacheEnabled()) {
-      writeForNextAnalysis(cacheContext, context.getInputFile(), instantiates, setsMaximumSize);
+      writeForNextAnalysis(cacheContext, context.getInputFile(), currentFileInstantiates, currentFileSetsMaximumSize);
     }
+    currentFileSetsMaximumSize = false;
+    currentFileInstantiates = false;
   }
 
   private Optional<Long> getIfExceedSize(ExpressionTree expressionTree) {
@@ -320,7 +311,7 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
       writeCache.copyFromPrevious(CACHE_KEY_CACHED + ":" + inputFile.key());
     } catch (IllegalArgumentException e) {
       String message = String.format("Failed to copy from previous cache for file %s", inputFile);
-      LOGGER.trace(() -> message);
+      LOGGER.trace(message);
       throw new AnalysisException(message, e);
     }
   }
@@ -337,7 +328,7 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
       writeCache.write(computeCacheKey(CACHE_KEY_CACHED, inputFile), new byte[]{1});
     } catch (IllegalArgumentException e) {
       String message = String.format("Failed to write to cache for file %s", inputFile);
-      LOGGER.trace(() -> message);
+      LOGGER.trace(message);
       throw new AnalysisException(message, e);
     }
   }
