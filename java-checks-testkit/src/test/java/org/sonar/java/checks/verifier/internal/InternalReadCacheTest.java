@@ -44,6 +44,16 @@ class InternalReadCacheTest {
   }
 
   @Test
+  void read_returns_an_empty_InputStream_when_value_is_null() {
+    InternalReadCache cache = new InternalReadCache();
+    String key = "an existing key";
+    cache.put(key, null);
+    assertThat(cache.read(key))
+      .isInstanceOf(InputStream.class)
+      .isEmpty();
+  }
+
+  @Test
   void read_throws_an_IllegalArgumentException_when_the_key_does_not_match_anything() {
     InternalReadCache cache = new InternalReadCache();
     assertThatThrownBy(() -> cache.read("non existing key"))

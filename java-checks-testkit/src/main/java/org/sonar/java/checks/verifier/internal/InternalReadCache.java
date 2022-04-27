@@ -33,7 +33,11 @@ public class InternalReadCache implements ReadCache {
     if (!data.containsKey(key)) {
       throw new IllegalArgumentException(String.format("cache does not contain key \"%s\"", key));
     }
-    return new ByteArrayInputStream(data.get(key));
+    byte[] buf = data.get(key);
+    if (buf == null) {
+      return new ByteArrayInputStream(new byte[0]);
+    }
+    return new ByteArrayInputStream(buf);
   }
 
   @Override
