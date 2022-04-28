@@ -128,4 +128,61 @@ abstract class AssignmentInSubExpressionCheck {
       list.forEach(e -> field = field + e); // Compliant : ignore assignment expression in lambda
     }
   }
+
+  class java14 {
+    private static final java.util.Random RAND = new java.util.Random();
+    private int a;
+
+    // equivalent version of 'bar', which do not raise issues
+    void foo() {
+      String temp;
+      String temp2 = "";
+
+      switch (RAND.nextInt(10)) {
+        case 1 -> temp = "partial"; // Compliant
+        case 2 -> temp = "whole"; // Compliant
+        case 3, 5 -> temp = "none"; // Compliant
+        case 7 -> {
+          System.out.println(a = 0); // Noncompliant
+        }
+        default -> {
+          temp = "empty";
+          temp2 = "default";
+        }
+      }
+    }
+
+    void bar() {
+      String temp;
+      String temp2 = "";
+
+      switch (RAND.nextInt(5)) {
+        case 1:
+          temp = "partial";
+          break;
+        case 2:
+          temp = "whole";
+          break;
+        case 3, 5:
+          temp = "none";
+          break;
+        default:
+          temp = "empty";
+          temp2 = "default";
+          break;
+      }
+    }
+
+    private String b;
+    void qix() {
+      String s = switch (RAND.nextInt(10)) {
+        case 1 -> b = "wrong assigment"; // Noncompliant
+        case 2 -> {
+          b = "valid assignment"; // Compliant
+          yield "actual value being returned";
+        }
+        default -> "defautl value";
+      };
+    }
+  }
 }
