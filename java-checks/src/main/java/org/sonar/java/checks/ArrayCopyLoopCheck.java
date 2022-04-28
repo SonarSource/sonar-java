@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
@@ -52,12 +53,11 @@ import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 @Rule(key = "S3012")
 public class ArrayCopyLoopCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatchers COLLECTION_ADD =
-    MethodMatchers.create().ofSubTypes("java.util.Collection").names("add").addParametersMatcher(ANY).build();
+  private static final MethodMatchers COLLECTION_ADD = MethodMatchers.create().ofSubTypes("java.util.Collection").names("add").addParametersMatcher(ANY).build();
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Arrays.asList(Kind.FOR_STATEMENT, Kind.FOR_EACH_STATEMENT, Kind.WHILE_STATEMENT);
+    return Arrays.asList(Kind.FOR_STATEMENT, Kind.FOR_EACH_STATEMENT, Kind.WHILE_STATEMENT, Kind.DO_STATEMENT);
   }
 
   @Override
@@ -67,6 +67,8 @@ public class ArrayCopyLoopCheck extends IssuableSubscriptionVisitor {
       statement = checkFor((ForStatementTree) tree);
     } else if (tree.is(Kind.WHILE_STATEMENT)) {
       statement = checkWhile((WhileStatementTree) tree);
+    } else if (tree.is(Kind.DO_STATEMENT)) {
+      statement = checkDoWhile((DoWhileStatementTree) tree);
     } else {
       statement = checkForEach((ForEachStatement) tree);
     }
@@ -96,14 +98,24 @@ public class ArrayCopyLoopCheck extends IssuableSubscriptionVisitor {
 
   @CheckForNull
   private static StatementTree checkWhile(WhileStatementTree tree) {
-    if (tree.statement().is(Kind.BLOCK)) {
-      BlockTree block = (BlockTree) tree.statement();
+    return checkDoOrWhile(tree);
+  }
+
+  @CheckForNull
+  private static StatementTree checkDoWhile(DoWhileStatementTree tree) {
+    return checkDoOrWhile(tree);
+  }
+
+  private static StatementTree checkDoOrWhile(StatementTree tree) {
+    StatementTree doOrWhile = doOrWhileStatement(tree);
+    if (doOrWhile.is(Kind.BLOCK)) {
+      BlockTree block = (BlockTree) doOrWhile;
       List<StatementTree> body = block.body();
       if (body.size() == 2) {
         StatementTree update = body.get(1);
         Symbol counter = checkUpdate(update);
         if (counter != null) {
-          ExpressionTree condition = tree.condition();
+          ExpressionTree condition = doOrWhileCondition(tree);
           if (checkCondition(condition, counter)) {
             StatementTree statement = body.get(0);
             if (checkStatement(statement, counter)) {
@@ -114,6 +126,14 @@ public class ArrayCopyLoopCheck extends IssuableSubscriptionVisitor {
       }
     }
     return null;
+  }
+
+  private static ExpressionTree doOrWhileCondition(StatementTree tree) {
+    return tree.is(Kind.WHILE_STATEMENT) ? ((WhileStatementTree) tree).condition() : ((DoWhileStatementTree) tree).condition();
+  }
+
+  private static StatementTree doOrWhileStatement(StatementTree tree) {
+    return tree.is(Kind.WHILE_STATEMENT) ? ((WhileStatementTree) tree).statement() : ((DoWhileStatementTree) tree).statement();
   }
 
   @CheckForNull

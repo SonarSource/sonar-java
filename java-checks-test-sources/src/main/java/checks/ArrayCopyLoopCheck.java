@@ -103,6 +103,31 @@ abstract class ArrayCopyLoopCheck implements Collection<Integer> {
       i = 1 + i;
     }
 
+    do {
+      dst[i] = src[i]; // Noncompliant
+      i++;
+    } while (i < src.length);
+
+    do {
+      list.add(src[i]); // Noncompliant
+      i++;
+    } while (i < src.length);
+
+    do {
+      list.add(src[i]); // Noncompliant
+      i += 1;
+    } while (i < src.length);
+
+    do {
+      list.add(src[i]); // Noncompliant
+      i = i + 1;
+    } while (i < src.length);
+
+    do {
+      list.add(src[i]); // Noncompliant
+      i = 1 + i;
+    } while (i < src.length);
+
     for (int j = 0; j != src.length; ++j) {
       dst[j] = src[j]; // Noncompliant
     }
@@ -373,6 +398,11 @@ abstract class ArrayCopyLoopCheck implements Collection<Integer> {
       // Collections.addAll(list, src); does not compile
       // Arrays.asList(src) will return a List<int[]>
     }
+
+    do {
+      dst[i] = src[i]; // Noncompliant
+      ++i;
+    } while (i < src.length);
 
     while (i < src.length) {
       dst[i] = src[i]; // Noncompliant
