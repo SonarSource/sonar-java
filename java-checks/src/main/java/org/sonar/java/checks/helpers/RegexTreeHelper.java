@@ -19,66 +19,22 @@
  */
 package org.sonar.java.checks.helpers;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
-import org.sonar.java.regex.RegexCheck;
 import org.sonarsource.analyzer.commons.regex.ast.AutomatonState;
 import org.sonarsource.analyzer.commons.regex.ast.AutomatonState.TransitionType;
 import org.sonarsource.analyzer.commons.regex.ast.BoundaryTree;
-import org.sonarsource.analyzer.commons.regex.ast.CharacterTree;
 import org.sonarsource.analyzer.commons.regex.ast.EndOfLookaroundState;
 import org.sonarsource.analyzer.commons.regex.ast.FinalState;
 import org.sonarsource.analyzer.commons.regex.ast.LookAroundTree;
-import org.sonarsource.analyzer.commons.regex.ast.RegexSyntaxElement;
 
 import static org.sonarsource.analyzer.commons.regex.ast.AutomatonState.TransitionType.EPSILON;
 import static org.sonarsource.analyzer.commons.regex.ast.AutomatonState.TransitionType.NEGATION;
 
 public class RegexTreeHelper {
 
-  // M (Mark) is "a character intended to be combined with another character (e.g. accents, umlauts, enclosing boxes, etc.)."
-  // See https://www.regular-expressions.info/unicode.html
-  private static final Pattern MARK_PATTERN = Pattern.compile("\\p{M}");
-
   private RegexTreeHelper() {
     // Utils class
-  }
-
-  public static List<RegexCheck.RegexIssueLocation> getGraphemeInList(List<? extends RegexSyntaxElement> trees) {
-    List<RegexCheck.RegexIssueLocation> result = new ArrayList<>();
-    List<RegexSyntaxElement> codePoints = new ArrayList<>();
-    for (RegexSyntaxElement child : trees) {
-      if (child instanceof CharacterTree) {
-        CharacterTree currentCharacter = (CharacterTree) child;
-        if (!currentCharacter.isEscapeSequence()) {
-          if (!isMark(currentCharacter)) {
-            addCurrentGrapheme(result, codePoints);
-            codePoints.clear();
-            codePoints.add(currentCharacter);
-          } else if (!codePoints.isEmpty()) {
-            codePoints.add(currentCharacter);
-          }
-          continue;
-        }
-      }
-      addCurrentGrapheme(result, codePoints);
-      codePoints.clear();
-    }
-    addCurrentGrapheme(result, codePoints);
-    return result;
-  }
-
-  private static boolean isMark(CharacterTree currentChar) {
-    return MARK_PATTERN.matcher(currentChar.characterAsString()).matches();
-  }
-
-  private static void addCurrentGrapheme(List<RegexCheck.RegexIssueLocation> result, List<RegexSyntaxElement> codePoints) {
-    if (codePoints.size() > 1) {
-      result.add(new RegexCheck.RegexIssueLocation(new ArrayList<>(codePoints), ""));
-    }
   }
 
   public static boolean canReachWithoutConsumingInput(AutomatonState start, AutomatonState goal) {
