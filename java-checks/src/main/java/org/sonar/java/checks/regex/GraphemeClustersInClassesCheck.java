@@ -19,46 +19,17 @@
  */
 package org.sonar.java.checks.regex;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.sonar.check.Rule;
-import org.sonarsource.analyzer.commons.regex.RegexParseResult;
-import org.sonarsource.analyzer.commons.regex.ast.CharacterClassTree;
-import org.sonarsource.analyzer.commons.regex.ast.CharacterClassUnionTree;
-import org.sonarsource.analyzer.commons.regex.ast.RegexBaseVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-
-import static org.sonar.java.checks.helpers.RegexTreeHelper.getGraphemeInList;
+import org.sonarsource.analyzer.commons.regex.RegexParseResult;
+import org.sonarsource.analyzer.commons.regex.finders.GraphemeInClassFinder;
 
 @Rule(key = "S5868")
 public class GraphemeClustersInClassesCheck extends AbstractRegexCheck {
 
-  private static final String MESSAGE = "Extract %d Grapheme Cluster(s) from this character class.";
-
   @Override
   public void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation) {
-    new GraphemeInClassVisitor().visit(regexForLiterals);
-  }
-
-  private class GraphemeInClassVisitor extends RegexBaseVisitor {
-
-    private final List<RegexIssueLocation> graphemeClusters = new ArrayList<>();
-
-    @Override
-    public void visitCharacterClass(CharacterClassTree tree) {
-      super.visitCharacterClass(tree);
-      if (!graphemeClusters.isEmpty()) {
-        reportIssue(tree, String.format(MESSAGE, graphemeClusters.size()), null, graphemeClusters);
-      }
-      graphemeClusters.clear();
-    }
-
-    @Override
-    public void visitCharacterClassUnion(CharacterClassUnionTree tree) {
-      graphemeClusters.addAll(getGraphemeInList(tree.getCharacterClasses()));
-      super.visitCharacterClassUnion(tree);
-    }
-
+    new GraphemeInClassFinder(this::reportIssueFromCommons).visit(regexForLiterals);
   }
 
 }

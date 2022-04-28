@@ -22,14 +22,14 @@ package org.sonar.java.checks.regex;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class GraphemeClustersInClassesCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/GraphemeClustersInClassesCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/GraphemeClustersInClassesCheck.java"))
       .withCheck(new GraphemeClustersInClassesCheck())
       .verifyIssues();
   }
