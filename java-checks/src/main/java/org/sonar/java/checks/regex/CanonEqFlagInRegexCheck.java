@@ -24,17 +24,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.regex.RegexParseResult;
 import org.sonarsource.analyzer.commons.regex.ast.CharacterClassTree;
 import org.sonarsource.analyzer.commons.regex.ast.CharacterTree;
 import org.sonarsource.analyzer.commons.regex.ast.RegexBaseVisitor;
 import org.sonarsource.analyzer.commons.regex.ast.SequenceTree;
-import org.sonar.plugins.java.api.semantic.MethodMatchers;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.java.checks.helpers.RegexTreeHelper.getGraphemeInList;
+import static org.sonarsource.analyzer.commons.regex.helpers.GraphemeHelper.getGraphemeInList;
 
 @Rule(key = "S5854")
 public class CanonEqFlagInRegexCheck extends AbstractRegexCheck {
@@ -93,7 +93,10 @@ public class CanonEqFlagInRegexCheck extends AbstractRegexCheck {
 
     @Override
     public void visitSequence(SequenceTree tree) {
-      subjectToNormalization.addAll(getGraphemeInList(tree.getItems()));
+      getGraphemeInList(tree.getItems())
+        .stream()
+        .map(RegexIssueLocation::fromCommonsRegexIssueLocation)
+        .forEach(subjectToNormalization::add);
       super.visitSequence(tree);
     }
 
