@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -34,8 +35,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
-
-import javax.annotation.Nullable;
+import org.sonar.plugins.java.api.tree.YieldStatementTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "AssignmentInSubExpressionCheck", repositoryKey = "squid")
@@ -146,6 +146,21 @@ public class AssignmentInSubExpressionCheck extends BaseTreeVisitor implements J
       ExpressionTree expressionTree = skipChainedAssignments(initializer);
       scan(expressionTree);
     }
+  }
+
+  @Override
+  public void visitYieldStatement(YieldStatementTree tree) {
+    if (isWithinSwitchExpression(tree)) {
+      super.visitYieldStatement(tree);
+    }
+  }
+
+  private static boolean isWithinSwitchExpression(YieldStatementTree tree) {
+    Tree parent = tree.parent();
+    while (!parent.is(Tree.Kind.SWITCH_EXPRESSION, Tree.Kind.SWITCH_STATEMENT)) {
+      parent = parent.parent();
+    }
+    return parent.is(Tree.Kind.SWITCH_EXPRESSION);
   }
 
   @Override
