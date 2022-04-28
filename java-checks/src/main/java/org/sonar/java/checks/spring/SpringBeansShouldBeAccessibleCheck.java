@@ -80,12 +80,12 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
   /**
    * These are the packages that will be scanned by Spring in search of components
    */
-  private final Set<String> packagesScannedBySpring = new HashSet<>();
+  private final Set<String> packagesScannedBySpringAtProjectLevel = new HashSet<>();
 
   /**
    * Used to track the set of packages scanned by this file to cache when exiting the file.
    */
-  private final Set<String> packagesScannedByThisFile = new HashSet<>();
+  private final Set<String> packagesScannedBySpringAtFileLevel = new HashSet<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -95,7 +95,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
   @Override
   public boolean scanWithoutParsing(InputFileScannerContext inputFileScannerContext) {
     return readFromCache(inputFileScannerContext).map(targetedPackages -> {
-      packagesScannedBySpring.addAll(targetedPackages);
+      packagesScannedBySpringAtProjectLevel.addAll(targetedPackages);
       return true;
     }).orElse(false);
   }
@@ -105,7 +105,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
     DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) context;
     messagesPerPackage.entrySet().stream()
       // support sub-packages
-      .filter(entry -> packagesScannedBySpring.stream().noneMatch(entry.getKey()::contains))
+      .filter(entry -> packagesScannedBySpringAtProjectLevel.stream().noneMatch(entry.getKey()::contains))
       .forEach(entry -> entry.getValue().forEach(defaultContext::reportIssue));
   }
 
@@ -126,20 +126,26 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
       componentScanValues.forEach(this::addToScannedPackages);
     } else if (hasAnnotation(classSymbolMetadata, SPRING_BOOT_APP_ANNOTATION)) {
       var targetedPackages = targetedPackages(classPackageName, classSymbolMetadata);
-      packagesScannedBySpring.addAll(targetedPackages);
-      packagesScannedByThisFile.addAll(targetedPackages);
+      packagesScannedBySpringAtProjectLevel.addAll(targetedPackages);
+      packagesScannedBySpringAtFileLevel.addAll(targetedPackages);
     } else if (hasAnnotation(classSymbolMetadata, SPRING_BEAN_ANNOTATIONS)) {
       addMessageToMap(classPackageName, classTree.simpleName());
     }
   }
 
   @Override
+  public void setContext(JavaFileScannerContext context) {
+    packagesScannedBySpringAtFileLevel.clear();
+    super.setContext(context);
+  }
+
+  @Override
   public void leaveFile(JavaFileScannerContext context) {
     super.leaveFile(context);
     if (context.getCacheContext().isCacheEnabled()) {
-      writeToCache(context, packagesScannedByThisFile);
+      writeToCache(context, packagesScannedBySpringAtFileLevel);
     }
-    packagesScannedByThisFile.clear();
+    packagesScannedBySpringAtFileLevel.clear();
   }
 
   private static String cacheKey(InputFile inputFile) {
@@ -149,7 +155,11 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
   private static void writeToCache(InputFileScannerContext context, Collection<String> targetedPackages) {
     var cacheKey = cacheKey(context.getInputFile());
     var data = String.join(";", targetedPackages).getBytes(StandardCharsets.UTF_8);
-    context.getCacheContext().getWriteCache().write(cacheKey, data);
+    try {
+      context.getCacheContext().getWriteCache().write(cacheKey, data);
+    } catch (IllegalArgumentException e) {
+      LOG.trace(() -> String.format("Tried to write multiple times to cache key '%s'. Ignoring writes after the first.", cacheKey));
+    }
   }
 
   private static Optional<List<String>> readFromCache(InputFileScannerContext context) {
@@ -199,7 +209,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
     if (annotationValue.value() instanceof Object[]) {
       for (Object o : (Object[]) annotationValue.value()) {
         if (o instanceof String) {
-          packagesScannedBySpring.add((String) o);
+          packagesScannedBySpringAtProjectLevel.add((String) o);
         }
       }
     }
