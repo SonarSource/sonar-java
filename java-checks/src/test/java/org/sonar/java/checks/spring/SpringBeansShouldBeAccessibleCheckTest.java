@@ -165,7 +165,7 @@ class SpringBeansShouldBeAccessibleCheckTest {
     verify(check, times(15)).visitNode(any());
     verify(check, times(2)).scanWithoutParsing(any());
     assertThat(writeCache.getData())
-      .hasSize(2);
+      .hasSize(7);
 
 
     check = spy(new SpringBeansShouldBeAccessibleCheck());
@@ -182,7 +182,7 @@ class SpringBeansShouldBeAccessibleCheckTest {
     verify(check, times(12)).visitNode(any());
     verify(check, times(2)).scanWithoutParsing(any());
     assertThat(finalWriteCache.getData())
-      .hasSize(2)
+      .hasSize(7)
       .containsExactlyEntriesOf(writeCache.getData());
   }
 

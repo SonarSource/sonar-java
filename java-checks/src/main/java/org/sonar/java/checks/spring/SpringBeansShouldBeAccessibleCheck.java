@@ -19,10 +19,10 @@
  */
 package org.sonar.java.checks.spring;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,12 +36,12 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
-import org.sonar.java.AnalysisException;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -82,6 +82,11 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
    */
   private final Set<String> packagesScannedBySpring = new HashSet<>();
 
+  /**
+   * Used to track the set of packages scanned by this file to cache when exiting the file.
+   */
+  private final Set<String> packagesScannedByThisFile = new HashSet<>();
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.CLASS);
@@ -115,25 +120,33 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
     String classPackageName = packageNameOf(classTree.symbol());
     SymbolMetadata classSymbolMetadata = classTree.symbol().metadata();
 
+
     List<SymbolMetadata.AnnotationValue> componentScanValues = classSymbolMetadata.valuesForAnnotation(COMPONENT_SCAN_ANNOTATION);
     if (componentScanValues != null) {
       componentScanValues.forEach(this::addToScannedPackages);
     } else if (hasAnnotation(classSymbolMetadata, SPRING_BOOT_APP_ANNOTATION)) {
       var targetedPackages = targetedPackages(classPackageName, classSymbolMetadata);
       packagesScannedBySpring.addAll(targetedPackages);
-      if (context.getCacheContext().isCacheEnabled()) {
-        writeToCache(context, targetedPackages);
-      }
+      packagesScannedByThisFile.addAll(targetedPackages);
     } else if (hasAnnotation(classSymbolMetadata, SPRING_BEAN_ANNOTATIONS)) {
       addMessageToMap(classPackageName, classTree.simpleName());
     }
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    super.leaveFile(context);
+    if (context.getCacheContext().isCacheEnabled()) {
+      writeToCache(context, packagesScannedByThisFile);
+    }
+    packagesScannedByThisFile.clear();
   }
 
   private static String cacheKey(InputFile inputFile) {
     return CACHE_KEY_PREFIX + inputFile.key();
   }
 
-  private static void writeToCache(InputFileScannerContext context, List<String> targetedPackages) {
+  private static void writeToCache(InputFileScannerContext context, Collection<String> targetedPackages) {
     var cacheKey = cacheKey(context.getInputFile());
     var data = String.join(";", targetedPackages).getBytes(StandardCharsets.UTF_8);
     context.getCacheContext().getWriteCache().write(cacheKey, data);
