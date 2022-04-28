@@ -142,7 +142,7 @@ class SpringBeansShouldBeAccessibleCheckTest {
   }
 
   @Test
-  void caching() throws IOException, ClassNotFoundException {
+  void caching() {
     var unchangedFiles = Stream.of(
       "app/SpringBootApp1.java",
       "fourthApp/SpringBootApp4.java"
@@ -165,7 +165,7 @@ class SpringBeansShouldBeAccessibleCheckTest {
     verify(check, times(15)).visitNode(any());
     verify(check, times(2)).scanWithoutParsing(any());
     assertThat(writeCache.getData())
-      .hasSize(2);
+      .hasSize(7);
 
 
     check = spy(new SpringBeansShouldBeAccessibleCheck());
@@ -182,7 +182,7 @@ class SpringBeansShouldBeAccessibleCheckTest {
     verify(check, times(12)).visitNode(any());
     verify(check, times(2)).scanWithoutParsing(any());
     assertThat(finalWriteCache.getData())
-      .hasSize(2)
+      .hasSize(7)
       .containsExactlyEntriesOf(writeCache.getData());
   }
 
@@ -208,6 +208,7 @@ class SpringBeansShouldBeAccessibleCheckTest {
 
   @Test
   void write_cache_multiple_writes() {
+    logTester.setLevel(LoggerLevel.TRACE);
     verifier
       .addFiles(InputFile.Status.SAME,
         mainCodeSourcesPath(BASE_PATH + "springBootApplication/app/SpringBootApp1.java")
@@ -215,9 +216,11 @@ class SpringBeansShouldBeAccessibleCheckTest {
       .withCheck(new SpringBeansShouldBeAccessibleCheck());
 
     verifier.verifyNoIssues();
-    assertThatThrownBy(verifier::verifyNoIssues)
-      .isInstanceOf(AnalysisException.class)
-      .hasRootCauseInstanceOf(IllegalArgumentException.class);
+    verifier.verifyNoIssues();
+
+    assertThat(logTester.logs(LoggerLevel.TRACE).stream().filter(
+      msg -> msg.matches("Tried to write multiple times to cache key '[^']+'\\. Ignoring writes after the first\\.")
+    )).hasSize(1);
   }
 
   @Test

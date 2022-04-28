@@ -19,10 +19,10 @@
  */
 package org.sonar.java.checks.spring;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,12 +36,12 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
-import org.sonar.java.AnalysisException;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -80,7 +80,12 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
   /**
    * These are the packages that will be scanned by Spring in search of components
    */
-  private final Set<String> packagesScannedBySpring = new HashSet<>();
+  private final Set<String> packagesScannedBySpringAtProjectLevel = new HashSet<>();
+
+  /**
+   * Used to track the set of packages scanned by this file to cache when exiting the file.
+   */
+  private final Set<String> packagesScannedBySpringAtFileLevel = new HashSet<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -90,7 +95,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
   @Override
   public boolean scanWithoutParsing(InputFileScannerContext inputFileScannerContext) {
     return readFromCache(inputFileScannerContext).map(targetedPackages -> {
-      packagesScannedBySpring.addAll(targetedPackages);
+      packagesScannedBySpringAtProjectLevel.addAll(targetedPackages);
       return true;
     }).orElse(false);
   }
@@ -100,7 +105,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
     DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) context;
     messagesPerPackage.entrySet().stream()
       // support sub-packages
-      .filter(entry -> packagesScannedBySpring.stream().noneMatch(entry.getKey()::contains))
+      .filter(entry -> packagesScannedBySpringAtProjectLevel.stream().noneMatch(entry.getKey()::contains))
       .forEach(entry -> entry.getValue().forEach(defaultContext::reportIssue));
   }
 
@@ -115,28 +120,46 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
     String classPackageName = packageNameOf(classTree.symbol());
     SymbolMetadata classSymbolMetadata = classTree.symbol().metadata();
 
+
     List<SymbolMetadata.AnnotationValue> componentScanValues = classSymbolMetadata.valuesForAnnotation(COMPONENT_SCAN_ANNOTATION);
     if (componentScanValues != null) {
       componentScanValues.forEach(this::addToScannedPackages);
     } else if (hasAnnotation(classSymbolMetadata, SPRING_BOOT_APP_ANNOTATION)) {
       var targetedPackages = targetedPackages(classPackageName, classSymbolMetadata);
-      packagesScannedBySpring.addAll(targetedPackages);
-      if (context.getCacheContext().isCacheEnabled()) {
-        writeToCache(context, targetedPackages);
-      }
+      packagesScannedBySpringAtProjectLevel.addAll(targetedPackages);
+      packagesScannedBySpringAtFileLevel.addAll(targetedPackages);
     } else if (hasAnnotation(classSymbolMetadata, SPRING_BEAN_ANNOTATIONS)) {
       addMessageToMap(classPackageName, classTree.simpleName());
     }
+  }
+
+  @Override
+  public void setContext(JavaFileScannerContext context) {
+    packagesScannedBySpringAtFileLevel.clear();
+    super.setContext(context);
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    super.leaveFile(context);
+    if (context.getCacheContext().isCacheEnabled()) {
+      writeToCache(context, packagesScannedBySpringAtFileLevel);
+    }
+    packagesScannedBySpringAtFileLevel.clear();
   }
 
   private static String cacheKey(InputFile inputFile) {
     return CACHE_KEY_PREFIX + inputFile.key();
   }
 
-  private static void writeToCache(InputFileScannerContext context, List<String> targetedPackages) {
+  private static void writeToCache(InputFileScannerContext context, Collection<String> targetedPackages) {
     var cacheKey = cacheKey(context.getInputFile());
     var data = String.join(";", targetedPackages).getBytes(StandardCharsets.UTF_8);
-    context.getCacheContext().getWriteCache().write(cacheKey, data);
+    try {
+      context.getCacheContext().getWriteCache().write(cacheKey, data);
+    } catch (IllegalArgumentException e) {
+      LOG.trace(() -> String.format("Tried to write multiple times to cache key '%s'. Ignoring writes after the first.", cacheKey));
+    }
   }
 
   private static Optional<List<String>> readFromCache(InputFileScannerContext context) {
@@ -186,7 +209,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
     if (annotationValue.value() instanceof Object[]) {
       for (Object o : (Object[]) annotationValue.value()) {
         if (o instanceof String) {
-          packagesScannedBySpring.add((String) o);
+          packagesScannedBySpringAtProjectLevel.add((String) o);
         }
       }
     }
