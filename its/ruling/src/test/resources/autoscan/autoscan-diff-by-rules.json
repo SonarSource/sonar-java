@@ -2581,7 +2581,7 @@
   },
   {
     "ruleKey": "S6035",
-    "truePositives": 39,
+    "truePositives": 43,
     "falseNegatives": 9,
     "falsePositives": 0
   },
