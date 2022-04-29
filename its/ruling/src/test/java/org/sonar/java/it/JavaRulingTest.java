@@ -290,7 +290,6 @@ public class JavaRulingTest {
     var time3 = after3 - before3;
 
     // Results
-    System.out.printf("Time 1: %s\nTime 2: %s\nTime 3: %s\n", time1, time2, time3);
     assertThat(time2).isLessThan(time1);
     assertThat(time3)
       .isLessThan(time1)
