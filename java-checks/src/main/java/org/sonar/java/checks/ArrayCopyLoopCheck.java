@@ -66,9 +66,9 @@ public class ArrayCopyLoopCheck extends IssuableSubscriptionVisitor {
     if (tree.is(Kind.FOR_STATEMENT)) {
       statement = checkFor((ForStatementTree) tree);
     } else if (tree.is(Kind.WHILE_STATEMENT)) {
-      statement = checkWhile((WhileStatementTree) tree);
+      statement = checkDoOrWhile((WhileStatementTree) tree);
     } else if (tree.is(Kind.DO_STATEMENT)) {
-      statement = checkDoWhile((DoWhileStatementTree) tree);
+      statement = checkDoOrWhile((DoWhileStatementTree) tree);
     } else {
       statement = checkForEach((ForEachStatement) tree);
     }
@@ -97,17 +97,8 @@ public class ArrayCopyLoopCheck extends IssuableSubscriptionVisitor {
   }
 
   @CheckForNull
-  private static StatementTree checkWhile(WhileStatementTree tree) {
-    return checkDoOrWhile(tree);
-  }
-
-  @CheckForNull
-  private static StatementTree checkDoWhile(DoWhileStatementTree tree) {
-    return checkDoOrWhile(tree);
-  }
-
   private static StatementTree checkDoOrWhile(StatementTree tree) {
-    StatementTree doOrWhile = doOrWhileStatement(tree);
+    StatementTree doOrWhile = statement(tree);
     if (doOrWhile.is(Kind.BLOCK)) {
       BlockTree block = (BlockTree) doOrWhile;
       List<StatementTree> body = block.body();
@@ -115,7 +106,7 @@ public class ArrayCopyLoopCheck extends IssuableSubscriptionVisitor {
         StatementTree update = body.get(1);
         Symbol counter = checkUpdate(update);
         if (counter != null) {
-          ExpressionTree condition = doOrWhileCondition(tree);
+          ExpressionTree condition = condition(tree);
           if (checkCondition(condition, counter)) {
             StatementTree statement = body.get(0);
             if (checkStatement(statement, counter)) {
@@ -128,11 +119,11 @@ public class ArrayCopyLoopCheck extends IssuableSubscriptionVisitor {
     return null;
   }
 
-  private static ExpressionTree doOrWhileCondition(StatementTree tree) {
+  private static ExpressionTree condition(StatementTree tree) {
     return tree.is(Kind.WHILE_STATEMENT) ? ((WhileStatementTree) tree).condition() : ((DoWhileStatementTree) tree).condition();
   }
 
-  private static StatementTree doOrWhileStatement(StatementTree tree) {
+  private static StatementTree statement(StatementTree tree) {
     return tree.is(Kind.WHILE_STATEMENT) ? ((WhileStatementTree) tree).statement() : ((DoWhileStatementTree) tree).statement();
   }
 
