@@ -63,13 +63,15 @@ import org.sonarqube.ws.client.qualityprofiles.ActivateRuleRequest;
 import org.sonarqube.ws.client.qualityprofiles.SearchRequest;
 import org.sonarqube.ws.client.rules.CreateRequest;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class JavaRulingTest {
 
   private static final int LOGS_NUMBER_LINES = 200;
   private static final Logger LOG = LoggerFactory.getLogger(JavaRulingTest.class);
 
-  private static String INCREMENTAL_ANALYSIS_KEY = "sonar.java.skipUnchanged";
-  private static boolean INCREMENTAL_ANALYSIS_VALUE = true;
+  private static final String INCREMENTAL_ANALYSIS_KEY = "sonar.java.skipUnchanged";
+  private static final String SONAR_CACHING_ENABLED_KEY = "sonar.analysisCache.enabled";
 
   // by default all rules are enabled, if you want to enable just a subset of rules you can specify the list of
   // rule keys from the command line using "rules" property, i.e. mvn test -Drules=S100,S101
@@ -86,10 +88,11 @@ public class JavaRulingTest {
 
   @ClassRule
   public static Orchestrator orchestrator = Orchestrator.builderEnv()
-    .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE[8.9]"))
+    .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE[9.4]"))
     .addPlugin(FileLocation.byWildcardMavenFilename(new File("../../sonar-java-plugin/target"), "sonar-java-plugin-*.jar"))
     .addPlugin(MavenLocation.of("org.sonarsource.sonar-lits-plugin", "sonar-lits-plugin", "0.10.0.2181"))
     .setEdition(Edition.DEVELOPER)
+    .activateLicense()
     .build();
 
   @BeforeClass
@@ -193,53 +196,104 @@ public class JavaRulingTest {
   }
 
   @Test
-  public void eclipse_jetty() throws Exception {
-    String projectName = "eclipse-jetty";
-    List<String> dirs = Arrays.asList("jetty-http/", "jetty-io/", "jetty-jmx/", "jetty-server/", "jetty-slf4j-impl/", "jetty-util/", "jetty-util-ajax/", "jetty-xml/", "tests/jetty-http-tools/");
-    String binaries = dirs.stream().map(dir -> FileLocation.of("../sources/eclipse-jetty/" + dir + "target/classes"))
-      .map(JavaRulingTest::getFileLocationAbsolutePath)
-      .collect(Collectors.joining(","));
-
-    MavenBuild build = test_project("org.eclipse.jetty:jetty-project", projectName)
-      .setProperty("sonar.java.fileByFile", "true")
-      // re-define binaries from initial maven build
-      .setProperty("sonar.java.binaries", binaries)
-      .setProperty("sonar.exclusions", "jetty-server/src/main/java/org/eclipse/jetty/server/HttpInput.java," +
-          "jetty-osgi/jetty-osgi-boot/src/main/java/org/eclipse/jetty/osgi/boot/internal/serverfactory/ServerInstanceWrapper.java")
-      .addArgument("-Dpmd.skip=true")
-      .addArgument("-Dcheckstyle.skip=true");
-    executeBuildWithCommonProperties(build, projectName);
-  }
-
-  @Test
   public void eclipse_jetty_incremental() throws Exception {
-    String projectName = "eclipse-jetty-similar-to-main";
     List<String> dirs = Arrays.asList("jetty-http/", "jetty-io/", "jetty-jmx/", "jetty-server/", "jetty-slf4j-impl/", "jetty-util/", "jetty-util-ajax/", "jetty-xml/", "tests/jetty-http-tools/");
-    String binaries = dirs.stream().map(dir -> FileLocation.of("../sources/eclipse-jetty-similar-to-main/" + dir + "target/classes"))
+
+    String mainBranchSourceCode = "eclipse-jetty";
+    String mainBinaries = dirs.stream().map(dir -> FileLocation.of("../sources/" + mainBranchSourceCode + "/" + dir + "target/classes"))
       .map(JavaRulingTest::getFileLocationAbsolutePath)
       .collect(Collectors.joining(","));
 
-    final var branch = "eclipse-jetty-same-issues-as-main";
     final var mainBranch = "eclipse-jetty-main";
 
-    MavenBuild build = test_project("org.eclipse.jetty:jetty-project-branch", projectName)
+    MavenBuild branchBuild = test_project("org.eclipse.jetty:jetty-project", mainBranchSourceCode)
       // re-define binaries from initial maven build
-      .setProperty("sonar.java.binaries", binaries)
+      .setProperty("sonar.java.binaries", mainBinaries)
       .setProperty("sonar.exclusions", "jetty-server/src/main/java/org/eclipse/jetty/server/HttpInput.java," +
         "jetty-osgi/jetty-osgi-boot/src/main/java/org/eclipse/jetty/osgi/boot/internal/serverfactory/ServerInstanceWrapper.java")
       .addArgument("-Dpmd.skip=true")
       .addArgument("-Dcheckstyle.skip=true")
       // Set up incremental analysis
-      .setProperty(INCREMENTAL_ANALYSIS_KEY, Boolean.toString(INCREMENTAL_ANALYSIS_VALUE))
       .setProperties(
-        "sonar.pullrequest.key", branch,
-        "sonar.pullrequest.branch", branch,
-        "sonar.pullrequest.base", mainBranch,
+        "sonar.branch.name", mainBranch,
         "sonar.scm.provider", "git",
-        "sonar.scm.disabled", "false"
+        "sonar.scm.disabled", "false",
+        INCREMENTAL_ANALYSIS_KEY, "true",
+        SONAR_CACHING_ENABLED_KEY, "true"
       );
 
-    executeBuildWithCommonProperties(build, projectName);
+    var before1 = System.currentTimeMillis();
+    executeBuildWithCommonProperties(branchBuild, mainBranchSourceCode);
+    var after1 = System.currentTimeMillis();
+    var time1 = after1 - before1;
+
+    // Huge PR
+    String prSourceCode = "eclipse-jetty-similar-to-main";
+    String prBinaries = dirs.stream().map(dir -> FileLocation.of("../sources/" + prSourceCode + "/" + dir + "target/classes"))
+      .map(JavaRulingTest::getFileLocationAbsolutePath)
+      .collect(Collectors.joining(","));
+
+    final var prBranch = "eclipse-jetty-same-issues-as-main";
+
+    MavenBuild prBuild = test_existing_project("org.eclipse.jetty:jetty-project", prSourceCode)
+      // re-define binaries from initial maven build
+      .setProperty("sonar.java.binaries", prBinaries)
+      .setProperty("sonar.exclusions", "jetty-server/src/main/java/org/eclipse/jetty/server/HttpInput.java," +
+        "jetty-osgi/jetty-osgi-boot/src/main/java/org/eclipse/jetty/osgi/boot/internal/serverfactory/ServerInstanceWrapper.java")
+      .addArgument("-Dpmd.skip=true")
+      .addArgument("-Dcheckstyle.skip=true")
+      // Set up incremental analysis
+      .setProperties(
+        "sonar.pullrequest.key", prBranch,
+        "sonar.pullrequest.branch", prBranch,
+        "sonar.pullrequest.base", mainBranch,
+        "sonar.scm.provider", "git",
+        "sonar.scm.disabled", "false",
+        INCREMENTAL_ANALYSIS_KEY, "true",
+        SONAR_CACHING_ENABLED_KEY, "true"
+      );
+
+    var before2 = System.currentTimeMillis();
+    executeBuildWithCommonProperties(prBuild, prSourceCode);
+    var after2 = System.currentTimeMillis();
+    var time2 = after2 - before2;
+
+    // Small PR
+    String smallPrSourceCode = "eclipse-jetty-similar-to-main-small";
+    String smallPrBinaries = dirs.stream().map(dir -> FileLocation.of("../sources/" + smallPrSourceCode + "/" + dir + "target/classes"))
+      .map(JavaRulingTest::getFileLocationAbsolutePath)
+      .collect(Collectors.joining(","));
+
+    final var smallPrBranch = "eclipse-jetty-same-issues-as-main-small";
+
+    MavenBuild smallPrBuild = test_existing_project("org.eclipse.jetty:jetty-project", smallPrSourceCode)
+      // re-define binaries from initial maven build
+      .setProperty("sonar.java.binaries", smallPrBinaries)
+      .setProperty("sonar.exclusions", "jetty-server/src/main/java/org/eclipse/jetty/server/HttpInput.java," +
+        "jetty-osgi/jetty-osgi-boot/src/main/java/org/eclipse/jetty/osgi/boot/internal/serverfactory/ServerInstanceWrapper.java")
+      .addArgument("-Dpmd.skip=true")
+      .addArgument("-Dcheckstyle.skip=true")
+      // Set up incremental analysis
+      .setProperties(
+        "sonar.pullrequest.key", smallPrBranch,
+        "sonar.pullrequest.branch", smallPrBranch,
+        "sonar.pullrequest.base", mainBranch,
+        "sonar.scm.provider", "git",
+        "sonar.scm.disabled", "false",
+        INCREMENTAL_ANALYSIS_KEY, "true",
+        SONAR_CACHING_ENABLED_KEY, "true"
+      );
+
+    var before3 = System.currentTimeMillis();
+    executeBuildWithCommonProperties(smallPrBuild, smallPrSourceCode);
+    var after3 = System.currentTimeMillis();
+    var time3 = after3 - before3;
+
+    // Results
+    assertThat(time2).isLessThan(time1);
+    assertThat(time3)
+      .isLessThan(time1)
+      .isLessThan(time2);
   }
 
   private static String getFileLocationAbsolutePath(FileLocation location) {
@@ -294,6 +348,15 @@ public class JavaRulingTest {
     String pomLocation = "../sources/" + (path != null ? path + "/" : "") + projectName + "/pom.xml";
     File pomFile = FileLocation.of(pomLocation).getFile().getCanonicalFile();
     prepareProject(projectKey, projectName);
+    MavenBuild mavenBuild = MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals().addArgument("-DskipTests");
+    mavenBuild.setProperty("sonar.projectKey", projectKey);
+    return mavenBuild;
+  }
+
+  private static MavenBuild test_existing_project(String projectKey, String projectName) throws IOException {
+    String pomLocation = "../sources/" + projectName + "/pom.xml";
+    File pomFile = FileLocation.of(pomLocation).getFile().getCanonicalFile();
+    //prepareProject(projectKey, projectName);
     MavenBuild mavenBuild = MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals().addArgument("-DskipTests");
     mavenBuild.setProperty("sonar.projectKey", projectKey);
     return mavenBuild;
@@ -366,7 +429,7 @@ public class JavaRulingTest {
 
   private static void assertNoDifferences(String projectName) throws IOException {
     String differences = new String(Files.readAllBytes(Paths.get(litsDifferencesPath(projectName))), StandardCharsets.UTF_8);
-    Assertions.assertThat(differences).isEmpty();
+    assertThat(differences).isEmpty();
   }
 
   private static void instantiateTemplateRule(String ruleTemplateKey, String instantiationKey, String params, Set<String> activatedRuleKeys) {
