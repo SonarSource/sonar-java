@@ -22,13 +22,14 @@ package org.sonar.java.checks.regex;
 import java.util.Collections;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.RegexTreeHelper;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonarsource.analyzer.commons.regex.MatchType;
 import org.sonarsource.analyzer.commons.regex.RegexParseResult;
 import org.sonarsource.analyzer.commons.regex.ast.AutomatonState;
 import org.sonarsource.analyzer.commons.regex.ast.Quantifier;
 import org.sonarsource.analyzer.commons.regex.ast.RegexBaseVisitor;
 import org.sonarsource.analyzer.commons.regex.ast.RepetitionTree;
 import org.sonarsource.analyzer.commons.regex.ast.StartState;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 
 @Rule(key = "S6019")
 public class ReluctantQuantifierWithEmptyContinuationCheck extends AbstractRegexCheckTrackingMatchType {

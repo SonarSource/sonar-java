@@ -23,12 +23,13 @@ import java.util.Collections;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.RegexTreeHelper;
 import org.sonar.java.checks.helpers.SubAutomaton;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonarsource.analyzer.commons.regex.MatchType;
 import org.sonarsource.analyzer.commons.regex.RegexParseResult;
 import org.sonarsource.analyzer.commons.regex.ast.FinalState;
 import org.sonarsource.analyzer.commons.regex.ast.LookAroundTree;
 import org.sonarsource.analyzer.commons.regex.ast.RegexBaseVisitor;
 import org.sonarsource.analyzer.commons.regex.ast.RegexTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 
 @Rule(key = "S6002")
 public class RegexLookaheadCheck extends AbstractRegexCheckTrackingMatchType {
