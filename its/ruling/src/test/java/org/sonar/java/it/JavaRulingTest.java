@@ -196,25 +196,6 @@ public class JavaRulingTest {
   }
 
   @Test
-  public void eclipse_jetty() throws Exception {
-    String projectName = "eclipse-jetty";
-    List<String> dirs = Arrays.asList("jetty-http/", "jetty-io/", "jetty-jmx/", "jetty-server/", "jetty-slf4j-impl/", "jetty-util/", "jetty-util-ajax/", "jetty-xml/", "tests/jetty-http-tools/");
-    String binaries = dirs.stream().map(dir -> FileLocation.of("../sources/eclipse-jetty/" + dir + "target/classes"))
-      .map(JavaRulingTest::getFileLocationAbsolutePath)
-      .collect(Collectors.joining(","));
-
-    MavenBuild build = test_project("org.eclipse.jetty:jetty-project", projectName)
-      .setProperty("sonar.java.fileByFile", "true")
-      // re-define binaries from initial maven build
-      .setProperty("sonar.java.binaries", binaries)
-      .setProperty("sonar.exclusions", "jetty-server/src/main/java/org/eclipse/jetty/server/HttpInput.java," +
-          "jetty-osgi/jetty-osgi-boot/src/main/java/org/eclipse/jetty/osgi/boot/internal/serverfactory/ServerInstanceWrapper.java")
-      .addArgument("-Dpmd.skip=true")
-      .addArgument("-Dcheckstyle.skip=true");
-    executeBuildWithCommonProperties(build, projectName);
-  }
-
-  @Test
   public void eclipse_jetty_incremental() throws Exception {
     List<String> dirs = Arrays.asList("jetty-http/", "jetty-io/", "jetty-jmx/", "jetty-server/", "jetty-slf4j-impl/", "jetty-util/", "jetty-util-ajax/", "jetty-xml/", "tests/jetty-http-tools/");
 
