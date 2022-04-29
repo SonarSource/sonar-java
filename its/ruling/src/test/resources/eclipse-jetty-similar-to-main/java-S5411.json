@@ -1,8 +1,8 @@
 {
-'org.eclipse.jetty:jetty-project-branch:jetty-io/src/main/java/org/eclipse/jetty/io/ByteBufferPool.java':[
+'org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ByteBufferPool.java':[
 141,
 ],
-'org.eclipse.jetty:jetty-project-branch:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java':[
+'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java':[
 568,
 ],
 }

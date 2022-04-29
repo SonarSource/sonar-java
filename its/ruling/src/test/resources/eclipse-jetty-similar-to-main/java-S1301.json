@@ -1,14 +1,14 @@
 {
-'org.eclipse.jetty:jetty-project-branch:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java':[
+'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java':[
 1761,
 ],
-'org.eclipse.jetty:jetty-project-branch:jetty-http/src/main/java/org/eclipse/jetty/http/HttpVersion.java':[
+'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpVersion.java':[
 75,
 ],
-'org.eclipse.jetty:jetty-project-branch:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractEndPoint.java':[
+'org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractEndPoint.java':[
 275,
 ],
-'org.eclipse.jetty:jetty-project-branch:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelState.java':[
+'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelState.java':[
 282,
 298,
 331,
@@ -17,7 +17,7 @@
 1329,
 1362,
 ],
-'org.eclipse.jetty:jetty-project-branch:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java':[
+'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java':[
 941,
 980,
 ],

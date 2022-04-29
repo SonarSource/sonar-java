@@ -1,11 +1,11 @@
 {
-'org.eclipse.jetty:jetty-project-branch:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java':[
+'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java':[
 367,
 383,
 395,
 400,
 ],
-'org.eclipse.jetty:jetty-project-branch:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ShutdownHandler.java':[
+'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ShutdownHandler.java':[
 243,
 ],
 }

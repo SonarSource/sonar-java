@@ -1,5 +1,5 @@
 {
-'org.eclipse.jetty:jetty-project-branch:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ManagedAttributeListener.java':[
+'org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ManagedAttributeListener.java':[
 47,
 ],
 }

@@ -1,5 +1,5 @@
 {
-'org.eclipse.jetty:jetty-project-branch:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java':[
+'org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java':[
 608,
 612,
 637,

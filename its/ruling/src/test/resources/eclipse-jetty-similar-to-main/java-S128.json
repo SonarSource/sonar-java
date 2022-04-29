@@ -1,5 +1,5 @@
 {
-'org.eclipse.jetty:jetty-project-branch:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java':[
+'org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java':[
 201,
 ],
 }
