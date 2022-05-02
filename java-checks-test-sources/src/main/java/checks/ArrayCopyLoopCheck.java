@@ -505,13 +505,24 @@ abstract class ArrayCopyLoopCheck implements Collection<Integer> {
 
   public void copy(Collection<Integer> target, int[] source) {
     for (int s : source) {
-      target.add(s); // FP: S3012
+      target.add(s); // FP: S3012. Collection.addAll does not accept int[] as an argument.
     }
   }
 
   private static void copyToSet(long[] array, Set<Long> set) {
     for (long labelId : array) {
       set.add(labelId); // Compliant
+    }
+  }
+
+  private static void copyToNonCollection(int[] array) {
+    class NonCollection {
+      void add(Integer i) {}
+    }
+
+    NonCollection nonCollection = new NonCollection();
+    for (Integer i : array) {
+      nonCollection.add(i); // Compliant
     }
   }
 
