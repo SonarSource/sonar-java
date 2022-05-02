@@ -66,6 +66,7 @@ import org.sonar.java.checks.regex.ReluctantQuantifierWithEmptyContinuationCheck
 import org.sonar.java.checks.regex.SingleCharCharacterClassCheck;
 import org.sonar.java.checks.regex.SingleCharacterAlternationCheck;
 import org.sonar.java.checks.regex.StringReplaceCheck;
+import org.sonar.java.checks.regex.SuperfluousCurlyBraceCheck;
 import org.sonar.java.checks.regex.UnicodeAwareCharClassesCheck;
 import org.sonar.java.checks.regex.UnicodeCaseCheck;
 import org.sonar.java.checks.regex.UnusedGroupNamesCheck;
@@ -598,6 +599,7 @@ public final class CheckList {
     StringToStringCheck.class,
     StrongCipherAlgorithmCheck.class,
     SubClassStaticReferenceCheck.class,
+    SuperfluousCurlyBraceCheck.class,
     SuppressWarningsCheck.class,
     SuspiciousListRemoveCheck.class,
     SwitchCaseTooBigCheck.class,
