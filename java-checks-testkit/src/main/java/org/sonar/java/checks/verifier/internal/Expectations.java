@@ -363,7 +363,7 @@ class Expectations {
     private Pattern shift = Pattern.compile(NONCOMPLIANT_FLAG + "@(\\S+)");
 
     private static final Pattern FLOW_COMMENT = Pattern.compile("//\\s+flow");
-    private static final Pattern FLOW = Pattern.compile("flow@(?<ids>\\S+).*?(?=flow@)?");
+    private static final Pattern FLOW = Pattern.compile("flow@(?<ids>\\S+)");
 
     private static final Pattern QUICK_FIX_MESSAGE = Pattern.compile("//\\s*fix@(?<id>\\S+)\\s+\\{\\{(?<message>.*)\\}\\}");
     private static final Pattern QUICK_FIX_EDIT = Pattern.compile("//\\s*edit@(?<id>\\S+).+");
