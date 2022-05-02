@@ -1,0 +1,22 @@
+<p>Curly brace quantifiers in regular expressions can be used to have a more fine-grained control over how many times the character or the
+sub-expression preceeding them should occur. They can be used to match an expression exactly n times with <code>{n}</code>, between n and m times with
+<code>{n,m}</code>, or at least n times with <code>{n,}</code>. In some cases, using such a quantifier is superfluous for the semantic of the regular
+expression, and it can be removed to improve readability. This rule raises an issue when one of the following quantifiers is encountered:</p>
+<ul>
+  <li> <code>{1,1}</code> or <code>{1}</code>: they match the expression exactly once. The same behavior can be achieved without the quantifier. </li>
+  <li> <code>{0,0}</code> or <code>{0}</code>: they match the expression zero times. The same behavior can be achieved by removing the expression.
+  </li>
+</ul>
+<h2>Noncompliant Code Example</h2>
+<pre>
+"ab{1,1}c"
+"ab{1}c"
+"ab{0,0}c"
+"ab{0}c"
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+"abc"
+"ac"
+</pre>
+
