@@ -22,14 +22,14 @@ package org.sonar.java.checks.regex;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class RegexComplexityCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/RegexComplexityCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RegexComplexityCheck.java"))
       .withCheck(new RegexComplexityCheck())
       .verifyIssues();
   }
@@ -39,7 +39,7 @@ class RegexComplexityCheckTest {
     RegexComplexityCheck check = new RegexComplexityCheck();
     check.setMax(0);
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/RegexComplexityCheckWithThreshold0.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RegexComplexityCheckWithThreshold0.java"))
       .withCheck(check)
       .verifyIssues();
   }
@@ -49,7 +49,7 @@ class RegexComplexityCheckTest {
     RegexComplexityCheck check = new RegexComplexityCheck();
     check.setMax(1);
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/RegexComplexityCheckWithThreshold1.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RegexComplexityCheckWithThreshold1.java"))
       .withCheck(check)
       .verifyIssues();
   }
