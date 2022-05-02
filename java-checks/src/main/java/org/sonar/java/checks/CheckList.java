@@ -653,6 +653,7 @@ public final class CheckList {
     TransientFieldInNonSerializableCheck.class,
     TryWithResourcesCheck.class,
     TwoLocksWaitCheck.class,
+    TypeUpperBoundNotFinalCheck.class,
     URLHashCodeAndEqualsCheck.class,
     UnderscoreMisplacedOnNumberCheck.class,
     UnderscoreOnNumberCheck.class,

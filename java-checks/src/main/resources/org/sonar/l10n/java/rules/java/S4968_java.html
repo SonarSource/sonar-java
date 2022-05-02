@@ -1,0 +1,16 @@
+<p>When a generic class is declaring wildcard with an upper bound that is <code>final</code>, this generic class is not generic at all because it only
+accepts one and only one type at runtime: the one that is <code>final</code>. Instead of using <code>Generics</code>, it’s simpler to directly use the
+concrete <code>final</code> class.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+public static &lt;T extends String&gt; T getMyString() { // Noncompliant; String is a "final" class and so can't be extended
+ [...]
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+public static String getMyString() { // Compliant
+  [...]
+}
+</pre>
+

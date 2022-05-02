@@ -1,0 +1,15 @@
+{
+  "title": "The upper bound of wildcard parameterized types should not be \"final\" ",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-4968",
+  "sqKey": "S4968",
+  "scope": "All",
+  "quickfix": "unknown"
+}
