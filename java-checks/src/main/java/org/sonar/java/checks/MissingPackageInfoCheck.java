@@ -25,7 +25,7 @@ import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.InputFileScannerContext;
-import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.ScannerContext;
 
 @Rule(key = "S1228")
 public class MissingPackageInfoCheck extends AbstractPackageInfoChecker {
@@ -52,7 +52,7 @@ public class MissingPackageInfoCheck extends AbstractPackageInfoChecker {
   }
 
   @Override
-  public void endOfAnalysis(CacheContext cacheContext) {
+  public void endOfAnalysis(ScannerContext ignored) {
     missingPackageWithoutPackageFile.removeAll(knownPackageWithPackageFile);
     for (String missingPackageInfo : missingPackageWithoutPackageFile) {
       context.addIssueOnProject(this, "Add a 'package-info.java' file to document the '" + missingPackageInfo + "' package");

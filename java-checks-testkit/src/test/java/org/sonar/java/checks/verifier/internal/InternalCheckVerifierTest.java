@@ -45,6 +45,7 @@ import org.sonar.java.testing.JavaFileScannerContextForTests;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.ScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
@@ -968,7 +969,7 @@ class InternalCheckVerifierTest {
       .verifyNoIssues();
 
     verify(check, times(1)).scanWithoutParsing(argThat(context -> equivalent(cacheContext, context.getCacheContext())));
-    verify(check, times(1)).endOfAnalysis(cacheContext);
+    verify(check, times(1)).endOfAnalysis(argThat(context -> equivalent(cacheContext, context.getCacheContext())));
   }
 
   @Test
@@ -1020,7 +1021,7 @@ class InternalCheckVerifierTest {
   @Rule(key="NoEffectEndOfAnalysisCheck")
   private static class NoEffectEndOfAnalysisCheck implements JavaFileScanner, EndOfAnalysisCheck {
     @Override
-    public void endOfAnalysis(CacheContext cacheContext) {
+    public void endOfAnalysis(ScannerContext ignored) {
       // do nothing
     }
 

@@ -52,6 +52,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.ScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -264,7 +265,7 @@ class VisitorsBridgeTest {
       }
 
       @Override
-      public void endOfAnalysis(CacheContext cacheContext) {
+      public void endOfAnalysis(ScannerContext ignored) {
         trace.add(this.getClass().getSimpleName());
       }
     }
@@ -279,7 +280,7 @@ class VisitorsBridgeTest {
       }
 
       @Override
-      public void endOfAnalysis(CacheContext cacheContext) {
+      public void endOfAnalysis(ScannerContext ignored) {
         trace.add(this.getClass().getSimpleName());
       }
     }
@@ -295,7 +296,7 @@ class VisitorsBridgeTest {
       }
 
       @Override
-      public void endOfAnalysis(CacheContext cacheContext) {
+      public void endOfAnalysis(ScannerContext ignored) {
         trace.add(this.getClass().getSimpleName());
       }
     }
@@ -723,7 +724,7 @@ class VisitorsBridgeTest {
     }
 
     @Override
-    public void endOfAnalysis(CacheContext cacheContext) {
+    public void endOfAnalysis(ScannerContext ignored) {
       // do nothing
     }
 
@@ -736,7 +737,7 @@ class VisitorsBridgeTest {
   private static class DefaultEndOfAnalysisCheck implements EndOfAnalysisCheck, JavaFileScanner {
 
     @Override
-    public void endOfAnalysis(CacheContext cacheContext) {
+    public void endOfAnalysis(ScannerContext ignored) {
       /* Do nothing */
     }
 
@@ -761,7 +762,7 @@ class VisitorsBridgeTest {
     }
 
     @Override
-    public void endOfAnalysis(CacheContext cacheContext) {
+    public void endOfAnalysis(ScannerContext ignored) {
       /* Do nothing */
     }
   }
@@ -769,7 +770,7 @@ class VisitorsBridgeTest {
   private static class IsvThatCannotScanWithoutParsing extends IssuableSubscriptionVisitor implements EndOfAnalysisCheck {
 
     @Override
-    public void endOfAnalysis(CacheContext cacheContext) {
+    public void endOfAnalysis(ScannerContext ignored) {
       /* Do nothing */
     }
 

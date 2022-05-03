@@ -56,6 +56,7 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.ScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -344,10 +345,12 @@ public class VisitorsBridge {
       LOG.info("Did not optimize analysis for any files, performed a full analysis for all {} files.", fullyScannedFileCount);
     }
 
+    ScannerContext scannerContext = new DefaultScannerContext(sonarComponents, javaVersion, cacheContext);
+
     allScanners.stream()
       .filter(EndOfAnalysisCheck.class::isInstance)
       .map(EndOfAnalysisCheck.class::cast)
-      .forEach(check -> check.endOfAnalysis(cacheContext));
+      .forEach(check -> check.endOfAnalysis(scannerContext));
   }
 
   private class IssuableSubscriptionVisitorsRunner implements JavaFileScanner, EndOfAnalysisCheck {
@@ -400,11 +403,11 @@ public class VisitorsBridge {
     }
 
     @Override
-    public void endOfAnalysis(CacheContext cachedContext) {
+    public void endOfAnalysis(ScannerContext scannerContext) {
       subscriptionVisitors.stream()
         .filter(EndOfAnalysisCheck.class::isInstance)
         .map(EndOfAnalysisCheck.class::cast)
-        .forEach(check -> check.endOfAnalysis(cachedContext));
+        .forEach(check -> check.endOfAnalysis(scannerContext));
     }
 
     private void visitChildren(Tree tree) throws CheckFailureException {

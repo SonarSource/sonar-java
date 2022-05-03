@@ -56,6 +56,7 @@ import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.notchecks.VisitorNotInChecksPackage;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.ScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -508,7 +509,7 @@ class JavaAstScannerTest {
     }
 
     @Override
-    public void endOfAnalysis(CacheContext cacheContext) {
+    public void endOfAnalysis(ScannerContext ignored) {
       // Do nothing
     }
   }

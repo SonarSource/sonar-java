@@ -42,7 +42,7 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.ScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -101,7 +101,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
   }
 
   @Override
-  public void endOfAnalysis(CacheContext cacheContext) {
+  public void endOfAnalysis(ScannerContext ignored) {
     DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) context;
     messagesPerPackage.entrySet().stream()
       // support sub-packages

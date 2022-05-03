@@ -21,7 +21,7 @@ package org.sonar.java;
 
 import org.sonar.java.annotations.Beta;
 import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.ScannerContext;
 
 /**
  * Common interface for checks that are triggered at the end of the analysis, after all files have been scanned.
@@ -33,5 +33,5 @@ public interface EndOfAnalysisCheck extends JavaCheck {
   /**
    * Method called at the end of analysis, after all files have been scanned.
    */
-  void endOfAnalysis(CacheContext cacheContext);
+  void endOfAnalysis(ScannerContext scannerContext);
 }

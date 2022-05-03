@@ -41,6 +41,7 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.ScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
@@ -153,7 +154,7 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
   }
 
   @Override
-  public void endOfAnalysis(CacheContext cacheContext) {
+  public void endOfAnalysis(ScannerContext ignored) {
     if (!sizeSetSomewhere && context != null) {
       DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) context;
       multipartConstructorIssues.forEach(defaultContext::reportIssue);
