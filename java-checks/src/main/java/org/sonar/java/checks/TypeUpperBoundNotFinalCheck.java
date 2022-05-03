@@ -63,7 +63,7 @@ public class TypeUpperBoundNotFinalCheck extends IssuableSubscriptionVisitor {
       if (((IdentifierTree)type).symbol().isFinal()) {
         reportIssue(containingTree, "The upper bound of a type variable should not be final.");
       }
-    } else {
+    } else if (type.is(Tree.Kind.PARAMETERIZED_TYPE)) {
       reportIssueIfTypeIsFinal(((ParameterizedTypeTree) type).type(), containingTree);
     }
   }

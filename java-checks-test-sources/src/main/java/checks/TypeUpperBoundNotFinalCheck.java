@@ -40,6 +40,8 @@ public class TypeUpperBoundNotFinalCheck {
 
   public static void unboundedWildcard(Collection<?> c) { }
 
+  public static <T extends TypeUpperBoundNotFinalCheck.NonFinalClass<T>> void memberSelect() { }
+
 
   static class NonFinalClass<T> { }
   final static class FinalClass<T> { }
