@@ -3,6 +3,7 @@ package checks;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 
 public class TypeUpperBoundNotFinalCheck {
@@ -25,6 +26,10 @@ public class TypeUpperBoundNotFinalCheck {
 
   public static <T extends NonFinalClass<? extends FinalClass>> void finalInnerBound() { } // Noncompliant [[sc=42;ec=62]]
 
+  public static final class ImmutableClass<B> {
+    public <T extends B> NonFinalClass<B> extendsClass(Map<? extends Class<? extends T>, ? extends T> map) { return null; } // Noncompliant [[sc=60;ec=88]]
+  }
+
 
   public static class Extendable<T extends Object> { } // Compliant
 
@@ -41,7 +46,6 @@ public class TypeUpperBoundNotFinalCheck {
   public static void unboundedWildcard(Collection<?> c) { }
 
   public static <T extends TypeUpperBoundNotFinalCheck.NonFinalClass<T>> void memberSelect() { }
-
 
   static class NonFinalClass<T> { }
   final static class FinalClass<T> { }
