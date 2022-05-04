@@ -2,16 +2,32 @@ package checks;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nullable;
+import org.rapidoid.collection.Coll;
 
 public class TypeUpperBoundNotFinalCheck {
-  public static <T extends FinalClass> T getMyString() { // Noncompliant [[sc=18;ec=38]] {{The upper bound of a type variable should not be final.}}
-    return (T) new FinalClass<>();
+  public static class NonExtendableTypeParam<T extends FinalClass> { } // Noncompliant
+
+  public static <T extends FinalClass> void methodTypeParameter() { } // Noncompliant
+
+  public static class Variables {
+    private TwoParams<? extends FinalClass, String> complexVarParams = null; // Noncompliant
+    private FinalClass<? extends NonFinalClass> finalVar = null;
+
+    public static void methodTypeParameter() {
+      Collection<? extends FinalClass> variableDeclInMethod = null; // Noncompliant
+      TwoParams<String, ? extends FinalClass> complexVarParams = null; // Noncompliant
+    }
   }
 
-  public static class NonExtendableTypeParam<T extends FinalClass> { } // Noncompliant
+  static abstract class AbstractClass {
+    public abstract <T extends FinalClass> Set<T> overriddenWithTypeParam(); // Noncompliant
+    public abstract Set<String> overriddenWithArgument(Collection<? extends FinalClass> v); // Noncompliant
+  }
 
   public static void boundedWildcard(Collection<? extends FinalClass> c) { } // Noncompliant
 
@@ -22,16 +38,30 @@ public class TypeUpperBoundNotFinalCheck {
     return null;
   }
 
-  public static <T extends FinalClass<T>> void finalParameterizedBound() { } // Noncompliant
+  public static <T extends FinalClass<T>> void finalParameterizedBound() { } // Noncompliant [[sc=18;ec=41]]
 
   public static <T extends NonFinalClass<? extends FinalClass>> void finalInnerBound() { } // Noncompliant [[sc=42;ec=62]]
+
+  public static <T extends TwoParams<? extends NonFinalClass, ? extends FinalClass>> void complexFinalInnerBound() { } // Noncompliant [[sc=63;ec=83]]
+
+  public static <T extends NonFinalClass, B extends FinalClass> void multipleTypeParams() { } // Noncompliant [[sc=43;ec=63]]
+
+  public static NonFinalClass<? extends FinalClass<T>> methodReturn() { return null; } // Noncompliant [[sc=31;ec=54]]
 
   public static final class ImmutableClass<B> {
     public <T extends B> NonFinalClass<B> extendsClass(Map<? extends Class<? extends T>, ? extends T> map) { return null; } // Noncompliant [[sc=60;ec=88]]
   }
 
 
+
   public static class Extendable<T extends Object> { } // Compliant
+
+  public static class OverridingClass extends AbstractClass {
+    @Override
+    public <T extends FinalClass> Set<T> overriddenWithTypeParam() {return new HashSet<>();} // Compliant because overridden methods might not be modifiable by user
+    @Override
+    public Set<String> overriddenWithArgument(Collection<? extends FinalClass> v) {return new HashSet<>();}; // Compliant
+  }
 
   public static class MultipleBounds<T extends Object & Comparable> { }
 
@@ -45,8 +75,13 @@ public class TypeUpperBoundNotFinalCheck {
 
   public static void unboundedWildcard(Collection<?> c) { }
 
-  public static <T extends TypeUpperBoundNotFinalCheck.NonFinalClass<T>> void memberSelect() { }
+  public static FinalClass returnFinal() { return null; }
 
+  public static FinalClass<? extends NonFinalClass<T>> finalMethodReturn() { return null; }
+
+
+
+  public static class TwoParams<T, B> { }
   static class NonFinalClass<T> { }
   final static class FinalClass<T> { }
 }
