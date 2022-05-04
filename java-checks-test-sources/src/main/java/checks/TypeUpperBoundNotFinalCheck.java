@@ -14,9 +14,11 @@ public class TypeUpperBoundNotFinalCheck {
 
   public static <T extends FinalClass> void methodTypeParameter() { } // Noncompliant
 
+  public static <T extends NonFinalClass<? extends FinalClass>> void complexTypeParameter() { } // Noncompliant
+
   public static class Variables {
     private TwoParams<? extends FinalClass, String> complexVarParams = null; // Noncompliant
-    private FinalClass<? extends NonFinalClass> finalVar = null;
+    private FinalClass<? extends NonFinalClass> finalVar = null; // Compliant
 
     public static void methodTypeParameter() {
       Collection<? extends FinalClass> variableDeclInMethod = null; // Noncompliant
