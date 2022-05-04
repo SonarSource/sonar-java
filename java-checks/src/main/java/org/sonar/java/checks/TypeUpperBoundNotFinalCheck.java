@@ -64,15 +64,13 @@ public class TypeUpperBoundNotFinalCheck extends IssuableSubscriptionVisitor {
   }
 
   private void handleMethodParameters(MethodTree method) {
-    if (method.parameters() != null) {
-      for (VariableTree variable : method.parameters()) {
-        variable.accept(checkVariable);
-      }
+    for (VariableTree variable : method.parameters()) {
+      variable.accept(checkVariable);
     }
   }
 
   private void handleMethodReturn(TypeTree returnType) {
-    if (returnType != null && returnType.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+    if (returnType.is(Tree.Kind.PARAMETERIZED_TYPE)) {
       handleParameterizedType((ParameterizedTypeTree) returnType);
     }
   }
@@ -86,11 +84,9 @@ public class TypeUpperBoundNotFinalCheck extends IssuableSubscriptionVisitor {
   }
 
   private void handleClassFields(ClassTree classTree) {
-    if (classTree.members() != null) {
-      for (Tree member : classTree.members()) {
-        if (member.is(Tree.Kind.VARIABLE)) {
-          member.accept(checkVariable);
-        }
+    for (Tree member : classTree.members()) {
+      if (member.is(Tree.Kind.VARIABLE)) {
+        member.accept(checkVariable);
       }
     }
   }

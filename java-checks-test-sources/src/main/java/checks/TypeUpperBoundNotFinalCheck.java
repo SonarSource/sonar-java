@@ -56,7 +56,10 @@ public class TypeUpperBoundNotFinalCheck {
 
 
 
-  public static class Extendable<T extends Object> { } // Compliant
+  public static class Extendable<T extends Object> { // Compliant
+    private FinalClass fc = null;
+    private Extendable() { fc = new FinalClass(); }
+  }
 
   public static class OverridingClass extends AbstractClass {
     @Override
