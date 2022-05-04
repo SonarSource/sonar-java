@@ -84,6 +84,8 @@ public class TypeUpperBoundNotFinalCheck {
 
   public static FinalClass<? extends NonFinalClass<T>> finalMethodReturn() { return null; }
 
+  public static NonFinalClass<? extends FinalClass[]> arrayBound() { return null; }
+
 
 
   public static class TwoParams<T, B> { }
