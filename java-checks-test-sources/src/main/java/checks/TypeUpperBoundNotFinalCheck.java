@@ -14,6 +14,8 @@ public class TypeUpperBoundNotFinalCheck {
 
   public static <T extends FinalClass> void methodTypeParameter() { } // Noncompliant
 
+  public static void nonExtendableWildcard(Collection<? extends FinalClass> c){ } // Noncompliant
+
   public static <T extends NonFinalClass<? extends FinalClass>> void complexTypeParameter() { } // Noncompliant
 
   public static class Variables {
@@ -63,9 +65,12 @@ public class TypeUpperBoundNotFinalCheck {
 
   public static class OverridingClass extends AbstractClass {
     @Override
-    public <T extends FinalClass> Set<T> overriddenWithTypeParam() {return new HashSet<>();} // Compliant because overridden methods might not be modifiable by user
+    public <T extends FinalClass> Set<T> overriddenWithTypeParam() {return new HashSet<>();} // Compliant because overridden methods signature might not be modifiable by user
     @Override
-    public Set<String> overriddenWithArgument(Collection<? extends FinalClass> v) {return new HashSet<>();}; // Compliant
+    public Set<String> overriddenWithArgument(Collection<? extends FinalClass> v) { // Compliant
+      TwoParams<? extends FinalClass, String> complexVarParams = null; // Noncompliant
+      return new HashSet<>();
+    };
   }
 
   public static class MultipleBounds<T extends Object & Comparable> { }
