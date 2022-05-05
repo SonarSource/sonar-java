@@ -82,7 +82,7 @@
 
     <sonar.version>9.4.0.54424</sonar.version>
     <sonarlint.plugin.api.version>6.3.0.36253</sonarlint.plugin.api.version>
-    <analyzer.commons.version>1.24.0.977</analyzer.commons.version>
+    <analyzer.commons.version>1.24.0.980</analyzer.commons.version>
     <orchestrator.version>3.35.1.2719</orchestrator.version>
     <sslr.version>1.24.0.633</sslr.version>
     <argLine>-Xmx512m</argLine>
