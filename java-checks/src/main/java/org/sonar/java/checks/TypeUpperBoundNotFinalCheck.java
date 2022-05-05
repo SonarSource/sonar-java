@@ -19,9 +19,11 @@
  */
 package org.sonar.java.checks;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -58,9 +60,17 @@ public class TypeUpperBoundNotFinalCheck extends IssuableSubscriptionVisitor {
 
   private boolean reportIssueIfBoundIsFinal(TypeTree bound, Tree treeToReport) {
     if (bound.is(Tree.Kind.IDENTIFIER)) {
-      if (isFinal((IdentifierTree) bound) && !isParamOfOverriddenMethod(bound)) {
-        reportIssue(treeToReport, "Replace this type parametrization by the 'final' type.");
-        return true;
+      if (isFinal((IdentifierTree) bound)) {
+        MethodTree method = getMethod(bound);
+        if (method != null) {
+          if (notOverriding(method)) {
+            reportIssue(treeToReport, "Replace this type parametrization by the 'final' type.");
+            return true;
+          }
+        } else {
+          reportIssue(treeToReport, "Replace this type parametrization by the 'final' type.");
+          return true;
+        }
       }
     } else if (bound.is(Tree.Kind.PARAMETERIZED_TYPE)) {
       ParameterizedTypeTree type = (ParameterizedTypeTree) bound;
@@ -75,14 +85,19 @@ public class TypeUpperBoundNotFinalCheck extends IssuableSubscriptionVisitor {
     return bound.symbol().isFinal();
   }
 
-  private boolean isParamOfOverriddenMethod(TypeTree bound) {
-    Tree parent = bound.parent();
+  @Nullable
+  private MethodTree getMethod(TypeTree type) {
+    Tree parent = type.parent();
     while (parent != null && !parent.is(Tree.Kind.BLOCK)) {
-      if (parent.is(Tree.Kind.METHOD) && Boolean.TRUE.equals(((MethodTree) parent).isOverriding())) {
-        return true;
+      if (parent.is(Tree.Kind.METHOD)) {
+        return (MethodTree) parent;
       }
       parent = parent.parent();
     }
-    return false;
+    return null;
+  }
+
+  private boolean notOverriding(MethodTree method) {
+    return Boolean.FALSE.equals(method.isOverriding());
   }
 }
