@@ -1,0 +1,17 @@
+<p>There are several reasons to use a group in a regular expression:</p>
+<ul>
+  <li> to change the precedence (e.g. <code>do(g|or)</code> will match 'dog' and 'door') </li>
+  <li> to remember parenthesised part of the match in the case of capturing group </li>
+  <li> to improve readability </li>
+</ul>
+<p>In any case, having an empty group is most probably a mistake. Either it is a leftover after refactoring and should be removed, or the actual
+parentheses were intended and were not escaped.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+"foo()"  // Noncompliant, will match only 'foo'
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+"foo\\(\\)"  // Matches 'foo()'
+</pre>
+

@@ -48,6 +48,7 @@ import org.sonar.java.checks.regex.AnchorPrecedenceCheck;
 import org.sonar.java.checks.regex.CanonEqFlagInRegexCheck;
 import org.sonar.java.checks.regex.DuplicatesInCharacterClassCheck;
 import org.sonar.java.checks.regex.EmptyLineRegexCheck;
+import org.sonar.java.checks.regex.EmptyRegexGroupCheck;
 import org.sonar.java.checks.regex.EmptyStringRepetitionCheck;
 import org.sonar.java.checks.regex.EscapeSequenceControlCharacterCheck;
 import org.sonar.java.checks.regex.GraphemeClustersInClassesCheck;
@@ -354,6 +355,7 @@ public final class CheckList {
     EmptyDatabasePasswordCheck.class,
     EmptyLineRegexCheck.class,
     EmptyMethodsCheck.class,
+    EmptyRegexGroupCheck.class,
     EmptyStatementUsageCheck.class,
     EmptyStringRepetitionCheck.class,
     EncryptionAlgorithmCheck.class,
