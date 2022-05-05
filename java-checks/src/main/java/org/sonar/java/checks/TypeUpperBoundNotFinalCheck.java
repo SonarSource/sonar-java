@@ -25,6 +25,7 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
@@ -44,7 +45,7 @@ public class TypeUpperBoundNotFinalCheck extends IssuableSubscriptionVisitor {
     if (tree.is(Tree.Kind.TYPE_PARAMETER)) {
       handleBounds(((TypeParameterTree) tree).bounds(), tree);
     } else if (tree.is(Tree.Kind.EXTENDS_WILDCARD)) {
-      handleBounds(Collections.singletonList(((WildcardTree)tree).bound()), tree);
+      handleBounds(Collections.singletonList(((WildcardTree) tree).bound()), tree);
     }
   }
 
@@ -57,7 +58,7 @@ public class TypeUpperBoundNotFinalCheck extends IssuableSubscriptionVisitor {
 
   private boolean reportIssueIfBoundIsFinal(TypeTree bound, Tree treeToReport) {
     if (bound.is(Tree.Kind.IDENTIFIER)) {
-      if (((IdentifierTree) bound).symbol().isFinal()) {
+      if (isFinal((IdentifierTree) bound) && !isParamOfOverriddenMethod(bound)) {
         reportIssue(treeToReport, "Replace this type parametrization by the 'final' type.");
         return true;
       }
@@ -66,6 +67,21 @@ public class TypeUpperBoundNotFinalCheck extends IssuableSubscriptionVisitor {
       if (reportIssueIfBoundIsFinal(type.type(), treeToReport)) {
         return true;
       }
+    }
+    return false;
+  }
+
+  private boolean isFinal(IdentifierTree bound) {
+    return bound.symbol().isFinal();
+  }
+
+  private boolean isParamOfOverriddenMethod(TypeTree bound) {
+    Tree parent = bound.parent();
+    while (parent != null && !parent.is(Tree.Kind.BLOCK)) {
+      if (parent.is(Tree.Kind.METHOD) && Boolean.TRUE.equals(((MethodTree) parent).isOverriding())) {
+        return true;
+      }
+      parent = parent.parent();
     }
     return false;
   }
