@@ -1,5 +1,5 @@
 {
-  "title": "The upper bound of wildcard parameterized types should not be \"final\" ",
+  "title": "The upper bound of type variables and wildcards should not be \"final\" ",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
