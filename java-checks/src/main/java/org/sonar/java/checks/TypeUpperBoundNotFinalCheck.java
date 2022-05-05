@@ -107,7 +107,7 @@ public class TypeUpperBoundNotFinalCheck extends IssuableSubscriptionVisitor {
   private boolean reportIssueIfBoundIsFinal(TypeTree bound, Tree treeToReport) {
     if (bound.is(Tree.Kind.IDENTIFIER)) {
       if (((IdentifierTree) bound).symbol().isFinal()) {
-        reportIssue(treeToReport, "Refactor this code to use rather than extend the 'final' type.");
+        reportIssue(treeToReport, "Replace this type parametrization by the 'final' type.");
         return true;
       }
     } else if (bound.is(Tree.Kind.PARAMETERIZED_TYPE)) {
