@@ -19,11 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
+import java.util.Optional;
+
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -60,17 +60,9 @@ public class TypeUpperBoundNotFinalCheck extends IssuableSubscriptionVisitor {
 
   private boolean reportIssueIfBoundIsFinal(TypeTree bound, Tree treeToReport) {
     if (bound.is(Tree.Kind.IDENTIFIER)) {
-      if (isFinal((IdentifierTree) bound)) {
-        MethodTree method = getMethod(bound);
-        if (method != null) {
-          if (notOverriding(method)) {
-            reportIssue(treeToReport, "Replace this type parametrization by the 'final' type.");
-            return true;
-          }
-        } else {
-          reportIssue(treeToReport, "Replace this type parametrization by the 'final' type.");
-          return true;
-        }
+      if (isFinal((IdentifierTree) bound) && !inOverridingMethodDeclaration(bound)) {
+        reportIssue(treeToReport, "Replace this type parametrization by the 'final' type.");
+        return true;
       }
     } else if (bound.is(Tree.Kind.PARAMETERIZED_TYPE)) {
       ParameterizedTypeTree type = (ParameterizedTypeTree) bound;
@@ -81,23 +73,33 @@ public class TypeUpperBoundNotFinalCheck extends IssuableSubscriptionVisitor {
     return false;
   }
 
-  private boolean isFinal(IdentifierTree bound) {
+  private static boolean isFinal(IdentifierTree bound) {
     return bound.symbol().isFinal();
   }
 
-  @Nullable
-  private MethodTree getMethod(TypeTree type) {
+  // Returns true if 'type' is part of the signature of an overriding method.
+  private static boolean inOverridingMethodDeclaration(TypeTree type) {
+    Optional<MethodTree> method = getMethodDeclaration(type);
+    if (!method.isPresent()) {
+      return false;
+    } else {
+      return isOverriding(method.get());
+    }
+  }
+
+  // Returns the method where 'type' is in its signature, if any.
+  private static Optional<MethodTree> getMethodDeclaration(TypeTree type) {
     Tree parent = type.parent();
     while (parent != null && !parent.is(Tree.Kind.BLOCK)) {
       if (parent.is(Tree.Kind.METHOD)) {
-        return (MethodTree) parent;
+        return Optional.of((MethodTree) parent);
       }
       parent = parent.parent();
     }
-    return null;
+    return Optional.empty();
   }
 
-  private boolean notOverriding(MethodTree method) {
-    return Boolean.FALSE.equals(method.isOverriding());
+  private static boolean isOverriding(MethodTree method) {
+    return !Boolean.FALSE.equals(method.isOverriding());
   }
 }
