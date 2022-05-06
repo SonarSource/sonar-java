@@ -80,10 +80,10 @@ public class TypeUpperBoundNotFinalCheck extends IssuableSubscriptionVisitor {
   // Returns true if 'type' is part of the signature of an overriding method.
   private static boolean inOverridingMethodDeclaration(TypeTree type) {
     Optional<MethodTree> method = getMethodDeclaration(type);
-    if (!method.isPresent()) {
-      return false;
-    } else {
+    if (method.isPresent()) {
       return isOverriding(method.get());
+    } else {
+      return false;
     }
   }
 
