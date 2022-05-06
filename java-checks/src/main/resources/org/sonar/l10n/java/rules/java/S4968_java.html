@@ -1,5 +1,5 @@
-<p>When a generic class is declaring wildcard with an upper bound that is <code>final</code>, this generic class is not generic at all because it only
-accepts one and only one type at runtime: the one that is <code>final</code>. Instead of using <code>Generics</code>, it’s simpler to directly use the
+<p>When a type variable or a wildcard declares an upper bound that is <code>final</code>, the parametrization is not generic at all because it accepts
+one and only one type at runtime: the one that is <code>final</code>. Instead of using <code>Generics</code>, it’s simpler to directly use the
 concrete <code>final</code> class.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
