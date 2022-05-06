@@ -70,6 +70,7 @@ import org.sonar.java.checks.regex.StringReplaceCheck;
 import org.sonar.java.checks.regex.SuperfluousCurlyBraceCheck;
 import org.sonar.java.checks.regex.UnicodeAwareCharClassesCheck;
 import org.sonar.java.checks.regex.UnicodeCaseCheck;
+import org.sonar.java.checks.regex.UnquantifiedNonCapturingGroupCheck;
 import org.sonar.java.checks.regex.UnusedGroupNamesCheck;
 import org.sonar.java.checks.regex.VerboseRegexCheck;
 import org.sonar.java.checks.security.AndroidBiometricAuthWithoutCryptoCheck;
@@ -661,6 +662,7 @@ public final class CheckList {
     UnnecessaryEscapeSequencesInTextBlockCheck.class,
     UnnecessarySemicolonCheck.class,
     UnpredictableSaltCheck.class,
+    UnquantifiedNonCapturingGroupCheck.class,
     UnreachableCatchCheck.class,
     UnusedGroupNamesCheck.class,
     UnusedLabelCheck.class,

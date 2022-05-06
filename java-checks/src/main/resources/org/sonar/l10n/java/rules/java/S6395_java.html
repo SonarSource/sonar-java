@@ -1,0 +1,20 @@
+<p>Sub-patterns can be wrapped by parentheses to build a group. This enables to restrict alternations, back reference the group or apply quantifier to
+the sub-pattern.</p>
+<p>If this group should not be part of the match result or if no reference to this group is required, a non-capturing group can be created by adding
+<code>:?</code> behind the opening parenthesis.</p>
+<p>However, if this non-capturing group does not have a quantifier, or does not wrap an alternation, then imaging this group is redundant.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+"(?:number)\\d{2}"
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+"number\\d{2}"      	// it is anyway required
+"(?:number)?\\d{2}"  	// it is in fact optional
+</pre>
+<h2>Exceptions</h2>
+<p>This rule does not report an issue if the non-capturing group is an alternation.</p>
+<pre>
+"(?:number|string)"
+</pre>
+
