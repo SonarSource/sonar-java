@@ -24,13 +24,10 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.regex.MatchType;
 import org.sonarsource.analyzer.commons.regex.RegexParseResult;
 
 public abstract class AbstractRegexCheckTrackingMatchType extends AbstractRegexCheckTrackingMatchers {
-
-  protected enum MatchType {
-    FULL, PARTIAL, BOTH, UNKNOWN
-  }
 
   private static final MethodMatchers PARTIAL_MATCHERS = MethodMatchers.or(
     MethodMatchers.create()

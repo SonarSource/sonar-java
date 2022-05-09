@@ -34,6 +34,8 @@ import org.sonar.java.checks.helpers.IntersectAutomataChecker;
 import org.sonar.java.checks.helpers.RegexReachabilityChecker;
 import org.sonar.java.checks.helpers.SimplifiedRegexCharacterClass;
 import org.sonar.java.checks.helpers.SubAutomaton;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonarsource.analyzer.commons.regex.MatchType;
 import org.sonarsource.analyzer.commons.regex.RegexParseResult;
 import org.sonarsource.analyzer.commons.regex.ast.AtomicGroupTree;
 import org.sonarsource.analyzer.commons.regex.ast.AutomatonState;
@@ -45,7 +47,6 @@ import org.sonarsource.analyzer.commons.regex.ast.GroupTree;
 import org.sonarsource.analyzer.commons.regex.ast.RegexBaseVisitor;
 import org.sonarsource.analyzer.commons.regex.ast.RegexTree;
 import org.sonarsource.analyzer.commons.regex.ast.RepetitionTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 
 import static org.sonar.java.checks.helpers.RegexTreeHelper.canReachWithoutConsumingInput;
 import static org.sonar.java.checks.helpers.RegexTreeHelper.canReachWithoutConsumingInputOrGoingThroughBoundaries;
