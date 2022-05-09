@@ -40,6 +40,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.ScannerSide;
@@ -391,14 +392,35 @@ public class SonarComponents {
   }
 
   public File workDir() {
+    var root = getRootProject();
+    if (root != null) {
+      return root.getWorkDir();
+    } else {
+      return fs.workDir();
+    }
+  }
+
+  public String getModuleKey() {
+    var root = getRootProject();
+    if (root != null && projectDefinition != null) {
+      var rootBase = root.getBaseDir().toPath();
+      var moduleBase = projectDefinition.getBaseDir().toPath();
+      return rootBase.relativize(moduleBase).toString().replaceAll("[\\\\/]", ":");
+    } else {
+      return "";
+    }
+  }
+
+  @CheckForNull
+  private ProjectDefinition getRootProject() {
     ProjectDefinition current = projectDefinition;
     if (current == null) {
-      return fs.workDir();
+      return null;
     }
     while (current.getParent() != null) {
       current = current.getParent();
     }
-    return current.getWorkDir();
+    return current;
   }
 
   public boolean canSkipUnchangedFiles() throws ApiMismatchException {

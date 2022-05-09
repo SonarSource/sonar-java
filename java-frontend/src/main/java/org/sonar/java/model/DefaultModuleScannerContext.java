@@ -62,11 +62,23 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
     return sonarComponents.project();
   }
 
+  @Override
+  @Deprecated
   public File getWorkingDirectory() {
     return sonarComponents.workDir();
   }
 
   public CacheContext getCacheContext() {
     return cacheContext;
+  }
+
+  @Override
+  public File getRootProjectWorkingDirectory() {
+    return sonarComponents.workDir();
+  }
+
+  @Override
+  public String getModuleKey() {
+    return sonarComponents.getModuleKey();
   }
 }
