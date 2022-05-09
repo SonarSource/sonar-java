@@ -19,35 +19,21 @@
  */
 package org.sonar.java.model;
 
-import java.io.File;
 import javax.annotation.Nullable;
-import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.SonarComponents;
-import org.sonar.java.caching.CacheContextImpl;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.caching.CacheContext;
 
-public class DefaultInputFileScannerContext implements InputFileScannerContext {
-  protected final SonarComponents sonarComponents;
+public class DefaultInputFileScannerContext extends DefaultModuleScannerContext implements InputFileScannerContext {
   protected final InputFile inputFile;
-  protected final JavaVersion javaVersion;
-  protected final boolean inAndroidContext;
-  protected final CacheContext cacheContext;
 
   public DefaultInputFileScannerContext(@Nullable SonarComponents sonarComponents, InputFile inputFile, JavaVersion javaVersion, boolean inAndroidContext,
                                         @Nullable CacheContext cacheContext) {
-    this.sonarComponents = sonarComponents;
+    super(sonarComponents, javaVersion, inAndroidContext, cacheContext);
     this.inputFile = inputFile;
-    this.javaVersion = javaVersion;
-    this.inAndroidContext = inAndroidContext;
-    if (cacheContext != null) {
-      this.cacheContext = cacheContext;
-    } else {
-      this.cacheContext = CacheContextImpl.of(sonarComponents != null ? sonarComponents.context() : null);
-    }
   }
 
   @Override
@@ -66,37 +52,8 @@ public class DefaultInputFileScannerContext implements InputFileScannerContext {
   }
 
   @Override
-  public void addIssueOnProject(JavaCheck check, String message) {
-    sonarComponents.addIssue(getProject(), check, -1, message, 0);
-  }
-
-  @Override
-  public JavaVersion getJavaVersion() {
-    return this.javaVersion;
-  }
-
-  @Override
-  public boolean inAndroidContext() {
-    return inAndroidContext;
-  }
-
-  @Override
   public InputFile getInputFile() {
     return inputFile;
   }
 
-  @Override
-  public InputComponent getProject() {
-    return sonarComponents.project();
-  }
-
-  @Override
-  public File getWorkingDirectory() {
-    return sonarComponents.workDir();
-  }
-
-  @Override
-  public CacheContext getCacheContext() {
-    return cacheContext;
-  }
 }
