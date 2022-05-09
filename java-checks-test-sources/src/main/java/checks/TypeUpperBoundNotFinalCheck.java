@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
-import org.rapidoid.collection.Coll;
 
 public class TypeUpperBoundNotFinalCheck {
   public static class NonExtendableTypeParam<T extends FinalClass> { } // Noncompliant {{Replace this type parametrization by the 'final' type `FinalClass`}}
