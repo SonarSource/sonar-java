@@ -52,12 +52,12 @@ public class TypeUpperBoundNotFinalCheck extends IssuableSubscriptionVisitor {
   }
 
   private void handleBounds(List<TypeTree> bounds, Tree treeToReport) {
-    Optional<IdentifierTree> first = bounds.stream()
+    bounds.stream()
       .map(TypeUpperBoundNotFinalCheck::getIdentifier)
       .flatMap(Optional::stream)
       .filter(bound -> isFinal(bound) && !inOverridingMethodDeclaration(treeToReport))
-      .findFirst();
-    first.ifPresent(identifierTree -> reportIssue(treeToReport, "Replace this type parametrization by the 'final' type `" + identifierTree.name() + "`"));
+      .findFirst()
+      .ifPresent(identifierTree -> reportIssue(treeToReport, "Replace this type parametrization by the 'final' type `" + identifierTree.name() + "`"));
   }
 
   private static Optional<IdentifierTree> getIdentifier(TypeTree t) {
