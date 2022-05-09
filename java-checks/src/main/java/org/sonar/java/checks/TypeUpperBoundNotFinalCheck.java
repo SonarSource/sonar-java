@@ -52,33 +52,35 @@ public class TypeUpperBoundNotFinalCheck extends IssuableSubscriptionVisitor {
   }
 
   private void handleBounds(List<TypeTree> bounds, Tree treeToReport) {
-    for (TypeTree bound : bounds) {
-      if (reportIssueIfBoundIsFinal(bound, treeToReport))
-        return;
+    Optional<IdentifierTree> first = bounds.stream()
+      .map(TypeUpperBoundNotFinalCheck::getIdentifier)
+      .flatMap(Optional::stream)
+      .filter(bound -> isFinal(bound) && !inOverridingMethodDeclaration(treeToReport))
+      .findFirst();
+    if (first.isPresent()) {
+      reportIssue(treeToReport, "Replace this type parametrization by the 'final' type `" + first.get().name() + "`");
     }
   }
 
-  private boolean reportIssueIfBoundIsFinal(TypeTree bound, Tree treeToReport) {
-    if (bound.is(Tree.Kind.IDENTIFIER)) {
-      if (isFinal((IdentifierTree) bound) && !inOverridingMethodDeclaration(bound)) {
-        reportIssue(treeToReport, "Replace this type parametrization by the 'final' type.");
-        return true;
-      }
-    } else if (bound.is(Tree.Kind.PARAMETERIZED_TYPE)) {
-      ParameterizedTypeTree type = (ParameterizedTypeTree) bound;
-      if (reportIssueIfBoundIsFinal(type.type(), treeToReport)) {
-        return true;
-      }
+  private static Optional<IdentifierTree> getIdentifier(TypeTree t) {
+    if (t.is(Tree.Kind.IDENTIFIER)) {
+      return Optional.of((IdentifierTree) t);
+    } else if (t.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+      ParameterizedTypeTree type = (ParameterizedTypeTree) t;
+      return getIdentifier(type.type());
     }
-    return false;
+
+    return Optional.empty();
   }
 
   private static boolean isFinal(IdentifierTree bound) {
     return bound.symbol().isFinal();
   }
 
-  // Returns true if 'type' is part of the signature of an overriding method.
-  private static boolean inOverridingMethodDeclaration(TypeTree type) {
+  /**
+   * Returns true if 'type' is part of the signature of an overriding method.
+   */
+  private static boolean inOverridingMethodDeclaration(Tree type) {
     Optional<MethodTree> method = getMethodDeclaration(type);
     if (method.isPresent()) {
       return isOverriding(method.get());
@@ -87,8 +89,10 @@ public class TypeUpperBoundNotFinalCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  // Returns the method where 'type' is in its signature, if any.
-  private static Optional<MethodTree> getMethodDeclaration(TypeTree type) {
+  /**
+   * Returns the method where 'type' appears in its signature, if any.
+   */
+  private static Optional<MethodTree> getMethodDeclaration(Tree type) {
     Tree parent = type.parent();
     while (parent != null && !parent.is(Tree.Kind.BLOCK)) {
       if (parent.is(Tree.Kind.METHOD)) {
