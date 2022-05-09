@@ -63,12 +63,14 @@ public class RegexLookaheadCheck extends AbstractRegexCheckTrackingMatchType {
     private boolean doesLookaheadContinuationAlwaysFail(LookAroundTree lookAround) {
       RegexTree lookAroundElement = lookAround.getElement();
       boolean canLookAroundBeAPrefix = matchType != MatchType.FULL;
-      SubAutomaton lookAroundSubAutomaton = new SubAutomaton(lookAroundElement, lookAroundElement.continuation(), canLookAroundBeAPrefix);
+      SubAutomaton lookAroundSubAutomaton;
       SubAutomaton continuationSubAutomaton = new SubAutomaton(lookAround.continuation(), finalState, true);
 
       if (lookAround.getPolarity() == LookAroundTree.Polarity.NEGATIVE) {
+        lookAroundSubAutomaton = new SubAutomaton(lookAroundElement, lookAroundElement.continuation(), false);
         return RegexTreeHelper.supersetOf(lookAroundSubAutomaton, continuationSubAutomaton, false);
       }
+      lookAroundSubAutomaton  = new SubAutomaton(lookAroundElement, lookAroundElement.continuation(), canLookAroundBeAPrefix);
       return !RegexTreeHelper.intersects(lookAroundSubAutomaton, continuationSubAutomaton, true);
     }
 
