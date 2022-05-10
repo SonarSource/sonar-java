@@ -19,15 +19,12 @@
  */
 package org.sonar.plugins.java.api;
 
-import java.io.File;
 import java.util.List;
 import javax.annotation.Nullable;
-import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
-public interface InputFileScannerContext {
+public interface InputFileScannerContext extends ModuleScannerContext {
 
   /**
    * Report an issue at file level.
@@ -53,14 +50,6 @@ public interface InputFileScannerContext {
    */
   void addIssue(int line, JavaCheck check, String message, @Nullable Integer cost);
 
-  /**
-   * Report an issue at at the project level.
-   * @param check The check raising the issue.
-   * @param message Message to display to the user
-   * @since SonarJava 5.12: Dropping support of file-related methods
-   */
-  void addIssueOnProject(JavaCheck check, String message);
-
 
   /**
    * InputFile under analysis.
@@ -69,34 +58,4 @@ public interface InputFileScannerContext {
    */
   InputFile getInputFile();
 
-  /**
-   * {@link InputComponent} representing the project being analyzed
-   * @return the project component
-   * @since SonarJava 5.12: Dropping support of file-related methods
-   */
-  InputComponent getProject();
-
-  /**
-   * The working directory used by the analysis.
-   * @return the current working directory.
-   */
-  File getWorkingDirectory();
-
-  /**
-   * Java version defined for the analysis using {@code sonar.java.version} parameter.
-   * @return JavaVersion object with API to act on it.
-   */
-  JavaVersion getJavaVersion();
-
-  /**
-   * To be used to know if the current file is in an android context or not.
-   * This value is determined thanks to the presence of android classes in the classpath.
-   * @return true if the current file is in an android context.
-   */
-  boolean inAndroidContext();
-
-  /**
-   * @return the {@link CacheContext} applicable to this scan.
-   */
-  CacheContext getCacheContext();
 }
