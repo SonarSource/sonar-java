@@ -62,28 +62,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class DefaultJavaFileScannerContextTest {
-
-  private static final File JAVA_FILE = new File("src/test/files/api/JavaFileScannerContext.java");
-  private static final InputFile JAVA_INPUT_FILE = TestUtils.inputFile(JAVA_FILE);
-  private static final File WORK_DIR = new File("target");
-  private static final File BASE_DIR = new File("");
-  private static final InputComponent PROJECT_BASE_DIR = new DefaultInputDir("", BASE_DIR.getAbsolutePath());
-  private static final int COST = 42;
-  private static final JavaCheck CHECK = new JavaCheck() { };
-  private static final EndOfAnalysisCheck END_OF_ANALYSIS_CHECK = (cacheContext) -> { };
-  private SonarComponents sonarComponents;
-  private CompilationUnitTree compilationUnitTree;
-  private DefaultJavaFileScannerContext context;
-  private AnalyzerMessage reportedMessage;
-
-  @BeforeEach
-  public void setup() {
-    sonarComponents = createSonarComponentsMock();
-    compilationUnitTree = JParserTestUtils.parse(JAVA_FILE);
-    context = new DefaultJavaFileScannerContext(compilationUnitTree, JAVA_INPUT_FILE, null, sonarComponents, new JavaVersionImpl(), true, false);
-    reportedMessage = null;
-  }
+class DefaultJavaFileScannerContextTest extends DefaultInputFileScannerContextTest {
 
   @Test
   void get_complexity_nodes() {
@@ -356,30 +335,5 @@ class DefaultJavaFileScannerContextTest {
     assertThat(location.startCharacter).isEqualTo(startColumn);
     assertThat(location.endLine).isEqualTo(endLine);
     assertThat(location.endCharacter).isEqualTo(endColumn);
-  }
-
-  private SonarComponents createSonarComponentsMock() {
-    SonarComponents sonarComponents = mock(SonarComponents.class);
-    doAnswer(invocation -> {
-      reportedMessage = (AnalyzerMessage) invocation.getArguments()[0];
-      return null;
-    }).when(sonarComponents).reportIssue(any(AnalyzerMessage.class));
-
-    doAnswer(invocation -> {
-      Integer cost = invocation.getArgument(4);
-      reportedMessage = new AnalyzerMessage(invocation.getArgument(1),
-        invocation.getArgument(0),
-        null,
-        invocation.getArgument(3),
-        cost != null ? cost : 0);
-      return null;
-    }).when(sonarComponents).addIssue(any(InputComponent.class), any(JavaCheck.class), anyInt(), anyString(), any());
-
-    when(sonarComponents.fileLines(any(InputFile.class))).thenReturn(Arrays.asList("1st line", "2nd line"));
-    when(sonarComponents.inputFileContents(any(InputFile.class))).thenReturn("content");
-    when(sonarComponents.workDir()).thenReturn(WORK_DIR);
-    when(sonarComponents.project()).thenReturn(PROJECT_BASE_DIR);
-
-    return sonarComponents;
   }
 }

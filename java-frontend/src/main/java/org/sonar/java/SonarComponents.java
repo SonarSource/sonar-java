@@ -391,7 +391,7 @@ public class SonarComponents {
     return Math.min(500L, ((long) (maxMemoryInBytesProvider.getAsLong() * 0.00005)) / 1000L);
   }
 
-  public File workDir() {
+  public File projectLevelWorkDir() {
     var root = getRootProject();
     if (root != null) {
       return root.getWorkDir();
@@ -405,7 +405,7 @@ public class SonarComponents {
     if (root != null && projectDefinition != null) {
       var rootBase = root.getBaseDir().toPath();
       var moduleBase = projectDefinition.getBaseDir().toPath();
-      return rootBase.relativize(moduleBase).toString().replaceAll("[\\\\/]", ":");
+      return rootBase.relativize(moduleBase).toString().replace('\\', '/');
     } else {
       return "";
     }

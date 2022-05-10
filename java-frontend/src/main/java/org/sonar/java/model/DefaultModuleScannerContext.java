@@ -65,7 +65,7 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
   @Override
   @Deprecated
   public File getWorkingDirectory() {
-    return sonarComponents.workDir();
+    return sonarComponents.projectLevelWorkDir();
   }
 
   public CacheContext getCacheContext() {
@@ -74,7 +74,7 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
 
   @Override
   public File getRootProjectWorkingDirectory() {
-    return sonarComponents.workDir();
+    return sonarComponents.projectLevelWorkDir();
   }
 
   @Override
