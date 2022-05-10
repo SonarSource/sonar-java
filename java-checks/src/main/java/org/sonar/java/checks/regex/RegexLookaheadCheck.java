@@ -19,61 +19,18 @@
  */
 package org.sonar.java.checks.regex;
 
-import java.util.Collections;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.RegexTreeHelper;
-import org.sonar.java.checks.helpers.SubAutomaton;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonarsource.analyzer.commons.regex.MatchType;
 import org.sonarsource.analyzer.commons.regex.RegexParseResult;
-import org.sonarsource.analyzer.commons.regex.ast.FinalState;
-import org.sonarsource.analyzer.commons.regex.ast.LookAroundTree;
-import org.sonarsource.analyzer.commons.regex.ast.RegexBaseVisitor;
-import org.sonarsource.analyzer.commons.regex.ast.RegexTree;
+import org.sonarsource.analyzer.commons.regex.finders.FailingLookaheadFinder;
 
 @Rule(key = "S6002")
 public class RegexLookaheadCheck extends AbstractRegexCheckTrackingMatchType {
 
-  private static final String MESSAGE = "Remove or fix this lookahead assertion that can never be true.";
-
   @Override
   protected void checkRegex(RegexParseResult regex, ExpressionTree methodInvocationOrAnnotation, MatchType matchType) {
-    new LookaheadFinder(matchType, regex.getFinalState()).visit(regex);
-  }
-
-  private class LookaheadFinder extends RegexBaseVisitor {
-
-    private final MatchType matchType;
-
-    private final FinalState finalState;
-
-    public LookaheadFinder(MatchType matchType, FinalState finalState) {
-      this.matchType = matchType;
-      this.finalState = finalState;
-    }
-
-    @Override
-    public void visitLookAround(LookAroundTree tree) {
-      if (tree.getDirection() == LookAroundTree.Direction.AHEAD && doesLookaheadContinuationAlwaysFail(tree)) {
-        reportIssue(tree, MESSAGE, null, Collections.emptyList());
-      }
-      super.visitLookAround(tree);
-    }
-
-    private boolean doesLookaheadContinuationAlwaysFail(LookAroundTree lookAround) {
-      RegexTree lookAroundElement = lookAround.getElement();
-      boolean canLookAroundBeAPrefix = matchType != MatchType.FULL;
-      SubAutomaton lookAroundSubAutomaton;
-      SubAutomaton continuationSubAutomaton = new SubAutomaton(lookAround.continuation(), finalState, true);
-
-      if (lookAround.getPolarity() == LookAroundTree.Polarity.NEGATIVE) {
-        lookAroundSubAutomaton = new SubAutomaton(lookAroundElement, lookAroundElement.continuation(), false);
-        return RegexTreeHelper.supersetOf(lookAroundSubAutomaton, continuationSubAutomaton, false);
-      }
-      lookAroundSubAutomaton  = new SubAutomaton(lookAroundElement, lookAroundElement.continuation(), canLookAroundBeAPrefix);
-      return !RegexTreeHelper.intersects(lookAroundSubAutomaton, continuationSubAutomaton, true);
-    }
-
+    new FailingLookaheadFinder(this::reportIssueFromCommons, regex.getFinalState(), matchType).visit(regex);
   }
 
 }
