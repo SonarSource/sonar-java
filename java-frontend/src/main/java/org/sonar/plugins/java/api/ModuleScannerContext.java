@@ -47,7 +47,7 @@ public interface ModuleScannerContext {
    *
    * @deprecated use {@link #getRootProjectWorkingDirectory()} instead
    */
-  @Deprecated
+  @Deprecated(since = "7.12")
   File getWorkingDirectory();
 
   /**
