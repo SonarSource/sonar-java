@@ -410,6 +410,7 @@ public class SonarComponents {
       var rootBase = root.getBaseDir().toPath();
       var moduleBase = projectDefinition.getBaseDir().toPath();
       return rootBase.relativize(moduleBase).toString().replace('\\', '/');
+    }
     return "";
   }
 
