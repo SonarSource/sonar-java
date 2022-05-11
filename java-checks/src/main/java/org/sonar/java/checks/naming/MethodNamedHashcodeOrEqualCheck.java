@@ -37,16 +37,17 @@ public class MethodNamedHashcodeOrEqualCheck extends IssuableSubscriptionVisitor
 
   @Override
   public void visitNode(Tree tree) {
-    IdentifierTree methodIdentifier = ((MethodTree) tree).simpleName();
+    MethodTree method = (MethodTree) tree;
+    IdentifierTree methodIdentifier = method.simpleName();
     switch (methodIdentifier.name()) {
       case "hashcode":
-        report(methodIdentifier, "hashCode()");
+        reportIfNotOverriding(method, "hashCode()");
         break;
       case "equal":
-        report(methodIdentifier, "equals(Object obj)");
+        reportIfNotOverriding(method, "equals(Object obj)");
         break;
       case "tostring":
-        report(methodIdentifier, "toString()");
+        reportIfNotOverriding(method, "toString()");
         break;
       default:
         // do nothing
@@ -54,8 +55,13 @@ public class MethodNamedHashcodeOrEqualCheck extends IssuableSubscriptionVisitor
     }
   }
 
-  private void report(IdentifierTree methodIdentifier, String substitute) {
-    reportIssue(methodIdentifier, "Either override Object." + substitute + ", or totally rename the method to prevent any confusion.");
+  private void reportIfNotOverriding(MethodTree method, String substitute) {
+    if (notOverriding(method)) {
+      reportIssue(method.simpleName(), "Either override Object." + substitute + ", or totally rename the method to prevent any confusion.");
+    }
   }
 
+  private static boolean notOverriding(MethodTree method) {
+    return Boolean.FALSE.equals(method.isOverriding());
+  }
 }

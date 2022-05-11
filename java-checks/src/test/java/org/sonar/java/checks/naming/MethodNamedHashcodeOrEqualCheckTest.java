@@ -19,6 +19,9 @@
  */
 package org.sonar.java.checks.naming;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
@@ -27,9 +30,17 @@ class MethodNamedHashcodeOrEqualCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/naming/MethodNamedHashcodeOrEqualCheck.java")
+      .onFile(mainCodeSourcesPath("checks/naming/MethodNamedHashcodeOrEqualCheck.java"))
       .withCheck(new MethodNamedHashcodeOrEqualCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_incomplete_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/naming/MethodNamedHashcodeOrEqualCheck.java"))
+      .withCheck(new MethodNamedHashcodeOrEqualCheck())
+      .verifyNoIssues();
   }
 
 }
