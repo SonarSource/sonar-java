@@ -34,13 +34,14 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.AnalysisException;
-import org.sonar.java.EndOfAnalysisCheck;
+import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
@@ -56,7 +57,7 @@ import static org.sonar.java.checks.security.ExcessiveContentRequestCheck.Cached
 import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
 @Rule(key = "S5693")
-public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor implements EndOfAnalysisCheck {
+public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor implements EndOfAnalysis {
 
   @RuleProperty(
     key = "fileUploadSizeLimit",
@@ -153,9 +154,9 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
   }
 
   @Override
-  public void endOfAnalysis(CacheContext cacheContext) {
-    if (!sizeSetSomewhere && context != null) {
-      DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) context;
+  public void endOfAnalysis(ModuleScannerContext context) {
+    if (!sizeSetSomewhere && this.context != null) {
+      DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) this.context;
       multipartConstructorIssues.forEach(defaultContext::reportIssue);
     }
     filesCached.clear();

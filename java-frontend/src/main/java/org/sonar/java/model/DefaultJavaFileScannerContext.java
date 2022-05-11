@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.java.EndOfAnalysisCheck;
+import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.regex.RegexCache;
@@ -221,7 +221,7 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
   }
 
   protected static void throwIfEndOfAnalysisCheck(JavaCheck javaCheck) {
-    if (javaCheck instanceof EndOfAnalysisCheck) {
+    if (javaCheck instanceof EndOfAnalysis) {
       throw new UnsupportedOperationException("EndOfAnalysisCheck must only call reportIssue with AnalyzerMessage and must never pass a Tree reference.");
     }
   }

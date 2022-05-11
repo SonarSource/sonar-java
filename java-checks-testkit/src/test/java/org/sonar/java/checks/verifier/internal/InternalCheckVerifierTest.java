@@ -32,7 +32,7 @@ import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalysisException;
-import org.sonar.java.EndOfAnalysisCheck;
+import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.java.RspecKey;
 import org.sonar.java.caching.DummyCache;
 import org.sonar.java.caching.JavaReadCacheImpl;
@@ -45,6 +45,7 @@ import org.sonar.java.testing.JavaFileScannerContextForTests;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
@@ -54,6 +55,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -968,7 +970,7 @@ class InternalCheckVerifierTest {
       .verifyNoIssues();
 
     verify(check, times(1)).scanWithoutParsing(argThat(context -> equivalent(cacheContext, context.getCacheContext())));
-    verify(check, times(1)).endOfAnalysis(cacheContext);
+    verify(check, times(1)).endOfAnalysis(any());
   }
 
   @Test
@@ -1018,9 +1020,9 @@ class InternalCheckVerifierTest {
   }
 
   @Rule(key="NoEffectEndOfAnalysisCheck")
-  private static class NoEffectEndOfAnalysisCheck implements JavaFileScanner, EndOfAnalysisCheck {
+  private static class NoEffectEndOfAnalysisCheck implements JavaFileScanner, EndOfAnalysis {
     @Override
-    public void endOfAnalysis(CacheContext cacheContext) {
+    public void endOfAnalysis(ModuleScannerContext context) {
       // do nothing
     }
 

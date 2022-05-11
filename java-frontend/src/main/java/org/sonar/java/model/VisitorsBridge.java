@@ -39,7 +39,7 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.CheckFailureException;
-import org.sonar.java.EndOfAnalysisCheck;
+import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.java.ExceptionHandler;
 import org.sonar.java.IllegalRuleParameterException;
 import org.sonar.java.JavaVersionAwareVisitor;
@@ -56,6 +56,7 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -149,7 +150,7 @@ public class VisitorsBridge {
   }
 
   static boolean canVisitorBeSkippedOnUnchangedFiles(Object visitor) {
-    return !(visitor instanceof EndOfAnalysisCheck) && visitor.getClass().getCanonicalName().startsWith("org.sonar.java.checks.");
+    return !(visitor instanceof EndOfAnalysis) && visitor.getClass().getCanonicalName().startsWith("org.sonar.java.checks.");
   }
 
   public JavaVersion getJavaVersion() {
@@ -344,13 +345,15 @@ public class VisitorsBridge {
       LOG.info("Did not optimize analysis for any files, performed a full analysis for all {} files.", fullyScannedFileCount);
     }
 
+    var moduleContext = new DefaultModuleScannerContext(sonarComponents, javaVersion, inAndroidContext, cacheContext);
+
     allScanners.stream()
-      .filter(EndOfAnalysisCheck.class::isInstance)
-      .map(EndOfAnalysisCheck.class::cast)
-      .forEach(check -> check.endOfAnalysis(cacheContext));
+      .filter(EndOfAnalysis.class::isInstance)
+      .map(EndOfAnalysis.class::cast)
+      .forEach(check -> check.endOfAnalysis(moduleContext));
   }
 
-  private class IssuableSubscriptionVisitorsRunner implements JavaFileScanner, EndOfAnalysisCheck {
+  private class IssuableSubscriptionVisitorsRunner implements JavaFileScanner, EndOfAnalysis {
     private EnumMap<Tree.Kind, List<SubscriptionVisitor>> checks;
     private List<SubscriptionVisitor> subscriptionVisitors;
 
@@ -400,10 +403,10 @@ public class VisitorsBridge {
     }
 
     @Override
-    public void endOfAnalysis(CacheContext cachedContext) {
+    public void endOfAnalysis(ModuleScannerContext cachedContext) {
       subscriptionVisitors.stream()
-        .filter(EndOfAnalysisCheck.class::isInstance)
-        .map(EndOfAnalysisCheck.class::cast)
+        .filter(EndOfAnalysis.class::isInstance)
+        .map(EndOfAnalysis.class::cast)
         .forEach(check -> check.endOfAnalysis(cachedContext));
     }
 

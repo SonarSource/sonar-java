@@ -25,14 +25,14 @@ import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
-import org.sonar.java.EndOfAnalysisCheck;
+import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 
-public abstract class AbstractPackageInfoChecker implements JavaFileScanner, EndOfAnalysisCheck {
+public abstract class AbstractPackageInfoChecker implements JavaFileScanner, EndOfAnalysis {
   private static final Logger LOG = Loggers.get(AbstractPackageInfoChecker.class);
   private static final String CACHE_KEY_PREFIX = "java:S1228;S4032:package:";
 

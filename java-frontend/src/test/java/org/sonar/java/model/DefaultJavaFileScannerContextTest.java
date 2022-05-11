@@ -19,32 +19,21 @@
  */
 package org.sonar.java.model;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.sonar.api.batch.fs.InputComponent;
-import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.internal.DefaultInputDir;
 import org.sonar.api.batch.sensor.SensorContext;
-import org.sonar.java.EndOfAnalysisCheck;
-import org.sonar.java.SonarComponents;
-import org.sonar.java.TestUtils;
 import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.RegexParserTestUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
 import org.sonar.java.reporting.FluentReporting;
-import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
 import org.sonar.plugins.java.api.SourceMap;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.regex.ast.CurlyBraceQuantifier;
@@ -55,9 +44,6 @@ import org.sonarsource.analyzer.commons.regex.ast.RepetitionTree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -177,8 +163,8 @@ class DefaultJavaFileScannerContextTest extends DefaultInputFileScannerContextTe
   @Test
   void report_issue_on_tree_with_cross_file_scanner_throws() {
     assertThatExceptionOfType(UnsupportedOperationException.class)
-        .isThrownBy(() -> context.reportIssue(END_OF_ANALYSIS_CHECK, compilationUnitTree, "msg"))
-        .withMessage("EndOfAnalysisCheck must only call reportIssue with AnalyzerMessage and must never pass a Tree reference.");
+      .isThrownBy(() -> context.reportIssue(END_OF_ANALYSIS_CHECK, compilationUnitTree, "msg"))
+      .withMessage("EndOfAnalysisCheck must only call reportIssue with AnalyzerMessage and must never pass a Tree reference.");
   }
 
   @Test
@@ -247,7 +233,8 @@ class DefaultJavaFileScannerContextTest extends DefaultInputFileScannerContextTe
 
   @Test
   void report_issue_on_regex_tree() {
-    RegexCheck regexCheck = new RegexCheck() {};
+    RegexCheck regexCheck = new RegexCheck() {
+    };
     String regex = "x{42}|y{23}";
     RegexTree regexTree = RegexParserTestUtils.assertSuccessfulParse(regex);
     DisjunctionTree disjunctionTree = (DisjunctionTree) regexTree;
@@ -267,7 +254,8 @@ class DefaultJavaFileScannerContextTest extends DefaultInputFileScannerContextTe
 
   @Test
   void report_issue_on_regex_tree_with_secondary() {
-    RegexCheck regexCheck = new RegexCheck() {};
+    RegexCheck regexCheck = new RegexCheck() {
+    };
     String regex = "x{42}|y{23}";
     RegexTree regexTree = RegexParserTestUtils.assertSuccessfulParse(regex);
     DisjunctionTree disjunctionTree = (DisjunctionTree) regexTree;

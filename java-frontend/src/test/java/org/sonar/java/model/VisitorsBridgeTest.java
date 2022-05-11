@@ -38,7 +38,7 @@ import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.CheckFailureException;
-import org.sonar.java.EndOfAnalysisCheck;
+import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
@@ -52,6 +52,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -258,17 +259,17 @@ class VisitorsBridgeTest {
   @Test
   void filter_scanner_by_java_version() {
     List<String> trace = new ArrayList<>();
-    class RuleForAllJavaVersion implements JavaFileScanner, EndOfAnalysisCheck {
+    class RuleForAllJavaVersion implements JavaFileScanner, EndOfAnalysis {
       @Override
       public void scanFile(JavaFileScannerContext context) {
       }
 
       @Override
-      public void endOfAnalysis(CacheContext cacheContext) {
+      public void endOfAnalysis(ModuleScannerContext context) {
         trace.add(this.getClass().getSimpleName());
       }
     }
-    class RuleForJava15 implements JavaFileScanner, JavaVersionAwareVisitor, EndOfAnalysisCheck {
+    class RuleForJava15 implements JavaFileScanner, JavaVersionAwareVisitor, EndOfAnalysis {
       @Override
       public boolean isCompatibleWithJavaVersion(JavaVersion version) {
         return version.isJava15Compatible();
@@ -279,11 +280,11 @@ class VisitorsBridgeTest {
       }
 
       @Override
-      public void endOfAnalysis(CacheContext cacheContext) {
+      public void endOfAnalysis(ModuleScannerContext context) {
         trace.add(this.getClass().getSimpleName());
       }
     }
-    class SubscriptionVisitorForJava10 extends IssuableSubscriptionVisitor implements JavaFileScanner, JavaVersionAwareVisitor, EndOfAnalysisCheck {
+    class SubscriptionVisitorForJava10 extends IssuableSubscriptionVisitor implements JavaFileScanner, JavaVersionAwareVisitor, EndOfAnalysis {
       @Override
       public boolean isCompatibleWithJavaVersion(JavaVersion version) {
         return version.isJava10Compatible();
@@ -295,7 +296,7 @@ class VisitorsBridgeTest {
       }
 
       @Override
-      public void endOfAnalysis(CacheContext cacheContext) {
+      public void endOfAnalysis(ModuleScannerContext context) {
         trace.add(this.getClass().getSimpleName());
       }
     }
@@ -716,14 +717,14 @@ class VisitorsBridgeTest {
     }
   }
 
-  private static class VisitorWithIncompatibleVersion extends IssuableSubscriptionVisitor implements EndOfAnalysisCheck, JavaVersionAwareVisitor {
+  private static class VisitorWithIncompatibleVersion extends IssuableSubscriptionVisitor implements EndOfAnalysis, JavaVersionAwareVisitor {
     @Override
     public List<Kind> nodesToVisit() {
       return List.of(Kind.COMPILATION_UNIT);
     }
 
     @Override
-    public void endOfAnalysis(CacheContext cacheContext) {
+    public void endOfAnalysis(ModuleScannerContext context) {
       // do nothing
     }
 
@@ -733,10 +734,10 @@ class VisitorsBridgeTest {
     }
   }
 
-  private static class DefaultEndOfAnalysisCheck implements EndOfAnalysisCheck, JavaFileScanner {
+  private static class DefaultEndOfAnalysisCheck implements EndOfAnalysis, JavaFileScanner {
 
     @Override
-    public void endOfAnalysis(CacheContext cacheContext) {
+    public void endOfAnalysis(ModuleScannerContext context) {
       /* Do nothing */
     }
 
@@ -746,7 +747,7 @@ class VisitorsBridgeTest {
     }
   }
 
-  private static class ScannerThatCannotScanWithoutParsing implements EndOfAnalysisCheck, JavaFileScanner {
+  private static class ScannerThatCannotScanWithoutParsing implements EndOfAnalysis, JavaFileScanner {
     /**
      * Always fail
      */
@@ -761,15 +762,15 @@ class VisitorsBridgeTest {
     }
 
     @Override
-    public void endOfAnalysis(CacheContext cacheContext) {
+    public void endOfAnalysis(ModuleScannerContext context) {
       /* Do nothing */
     }
   }
 
-  private static class IsvThatCannotScanWithoutParsing extends IssuableSubscriptionVisitor implements EndOfAnalysisCheck {
+  private static class IsvThatCannotScanWithoutParsing extends IssuableSubscriptionVisitor implements EndOfAnalysis {
 
     @Override
-    public void endOfAnalysis(CacheContext cacheContext) {
+    public void endOfAnalysis(ModuleScannerContext context) {
       /* Do nothing */
     }
 

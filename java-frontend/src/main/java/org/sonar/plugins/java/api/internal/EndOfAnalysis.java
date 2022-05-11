@@ -17,21 +17,21 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java;
+package org.sonar.plugins.java.api.internal;
 
 import org.sonar.java.annotations.Beta;
-import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.ModuleScannerContext;
 
 /**
- * Common interface for checks that are triggered at the end of the analysis, after all files have been scanned.
- * <b>Warning</b>: keeping state between files can lead to memory leaks. Implement with care.
+ * Common interface for providing callbacks that are triggered at the end of a module's analysis, after all files have been scanned.
+ * <b>Warning: keeping state between files can lead to memory leaks. Implement with care.</b>
  */
 @Beta
-public interface EndOfAnalysisCheck extends JavaCheck {
+public interface EndOfAnalysis {
 
   /**
-   * Method called at the end of analysis, after all files have been scanned.
+   * A method called when all files in the module have been processed.
+   * @param context ModuleScannerContext that can be used to get module information or report issues at project level.
    */
-  void endOfAnalysis(CacheContext cacheContext);
+  void endOfAnalysis(ModuleScannerContext context);
 }

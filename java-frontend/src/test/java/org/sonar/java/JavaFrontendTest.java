@@ -66,7 +66,8 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.ModuleScannerContext;
+import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -737,7 +738,7 @@ class JavaFrontendTest {
     return defaultFile;
   }
 
-  private class TestIssueFilter implements JavaFileScanner, SonarJavaIssueFilter, EndOfAnalysisCheck {
+  private class TestIssueFilter implements JavaFileScanner, SonarJavaIssueFilter, EndOfAnalysis {
     CompilationUnitTree lastScannedTree = null;
     int scanFileInvocationCount = 0;
     int endOfAnalysisInvocationCount = 0;
@@ -766,7 +767,7 @@ class JavaFrontendTest {
     }
 
     @Override
-    public void endOfAnalysis(CacheContext cacheContext) {
+    public void endOfAnalysis(ModuleScannerContext context) {
       endOfAnalysisInvocationCount++;
     }
   }
