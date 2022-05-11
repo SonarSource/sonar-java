@@ -400,6 +400,10 @@ public class SonarComponents {
     }
   }
 
+  /**
+   * Returns an OS-independent key that should identify the module within the project
+   * @return A key representing the module
+   */
   public String getModuleKey() {
     var root = getRootProject();
     if (root != null && projectDefinition != null) {
