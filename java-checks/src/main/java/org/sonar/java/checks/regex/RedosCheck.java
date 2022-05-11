@@ -48,9 +48,9 @@ import org.sonarsource.analyzer.commons.regex.ast.RegexBaseVisitor;
 import org.sonarsource.analyzer.commons.regex.ast.RegexTree;
 import org.sonarsource.analyzer.commons.regex.ast.RepetitionTree;
 
-import static org.sonar.java.checks.helpers.RegexTreeHelper.canReachWithoutConsumingInput;
-import static org.sonar.java.checks.helpers.RegexTreeHelper.canReachWithoutConsumingInputOrGoingThroughBoundaries;
-import static org.sonar.java.checks.helpers.RegexTreeHelper.isAnchoredAtEnd;
+import static org.sonarsource.analyzer.commons.regex.helpers.RegexReachabilityChecker.canReachWithoutConsumingInput;
+import static org.sonarsource.analyzer.commons.regex.helpers.RegexReachabilityChecker.canReachWithoutConsumingInputNorCrossingBoundaries;
+import static org.sonarsource.analyzer.commons.regex.helpers.RegexTreeHelper.isAnchoredAtEnd;
 
 @Rule(key = "S5852")
 public class RedosCheck extends AbstractRegexCheckTrackingMatchType {
@@ -198,12 +198,12 @@ public class RedosCheck extends AbstractRegexCheckTrackingMatchType {
     }
 
     private boolean subAutomatonCanConsume(SubAutomaton auto1, SubAutomaton auto2) {
-      return canReachWithoutConsumingInputOrGoingThroughBoundaries(auto1.end, auto2.end)
+      return canReachWithoutConsumingInputNorCrossingBoundaries(auto1.end, auto2.end)
         || intersectionChecker.check(auto1, auto2);
     }
 
     private boolean automatonIsEmptyOrIntersects(SubAutomaton auto1, SubAutomaton auto2) {
-      return canReachWithoutConsumingInputOrGoingThroughBoundaries(auto1.start, auto1.end)
+      return canReachWithoutConsumingInputNorCrossingBoundaries(auto1.start, auto1.end)
         || intersectionChecker.check(auto1, auto2);
     }
 
@@ -220,7 +220,7 @@ public class RedosCheck extends AbstractRegexCheckTrackingMatchType {
      * When used for partial matches, a regex acts as if it had `(?s:.*)` attached to its beginning and end unless anchored.
      */
     private boolean overlapsWithImplicitMatchAlls(RepetitionTree tree) {
-      return isUsedForPartialMatch && canReachWithoutConsumingInputOrGoingThroughBoundaries(startOfRegex, tree);
+      return isUsedForPartialMatch && canReachWithoutConsumingInputNorCrossingBoundaries(startOfRegex, tree);
     }
 
     @Override
