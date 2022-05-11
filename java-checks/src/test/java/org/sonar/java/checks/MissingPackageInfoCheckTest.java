@@ -100,19 +100,7 @@ class MissingPackageInfoCheckTest {
       .withCheck(new MissingPackageInfoCheck())
       .verifyIssueOnProject(EXPECTED_MESSAGE);
 
-    var check = spy(new MissingPackageInfoCheck() {
-      @Override
-      public boolean scanWithoutParsing(InputFileScannerContext inputFileScannerContext) {
-        this.context = inputFileScannerContext;
-        return super.scanWithoutParsing(inputFileScannerContext);
-      }
-
-      @Override
-      public void scanFile(JavaFileScannerContext context) {
-        this.context = context;
-        super.scanFile(context);
-      }
-    });
+    var check = spy(new MissingPackageInfoCheck());
 
     var populatedReadCache = new InternalReadCache().putAll(writeCache);
     var writeCache2 = new InternalWriteCache().bind(populatedReadCache);

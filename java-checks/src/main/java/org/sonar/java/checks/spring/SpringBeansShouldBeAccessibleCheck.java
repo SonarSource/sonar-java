@@ -36,6 +36,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
+import org.sonar.java.model.DefaultModuleScannerContext;
 import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -102,7 +103,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
 
   @Override
   public void endOfAnalysis(ModuleScannerContext context) {
-    DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) this.context;
+    var defaultContext = (DefaultModuleScannerContext) context;
     messagesPerPackage.entrySet().stream()
       // support sub-packages
       .filter(entry -> packagesScannedBySpringAtProjectLevel.stream().noneMatch(entry.getKey()::contains))

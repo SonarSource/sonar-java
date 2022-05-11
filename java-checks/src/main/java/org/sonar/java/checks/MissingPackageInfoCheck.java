@@ -33,12 +33,9 @@ public class MissingPackageInfoCheck extends AbstractPackageInfoChecker {
   @VisibleForTesting
   final Set<String> missingPackageWithoutPackageFile = new HashSet<>();
   private final Set<String> knownPackageWithPackageFile = new HashSet<>();
-  protected InputFileScannerContext context;
 
   @Override
   protected void processFile(InputFileScannerContext context, String packageName) {
-    this.context = context;
-
     if (knownPackageWithPackageFile.contains(packageName)) {
       return;
     }
@@ -55,7 +52,7 @@ public class MissingPackageInfoCheck extends AbstractPackageInfoChecker {
   public void endOfAnalysis(ModuleScannerContext context) {
     missingPackageWithoutPackageFile.removeAll(knownPackageWithPackageFile);
     for (String missingPackageInfo : missingPackageWithoutPackageFile) {
-      this.context.addIssueOnProject(this, "Add a 'package-info.java' file to document the '" + missingPackageInfo + "' package");
+      context.addIssueOnProject(this, "Add a 'package-info.java' file to document the '" + missingPackageInfo + "' package");
     }
   }
 }

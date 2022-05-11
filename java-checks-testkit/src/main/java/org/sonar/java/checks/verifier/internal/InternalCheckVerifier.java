@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -197,8 +198,8 @@ public class InternalCheckVerifier implements CheckVerifier {
     }
 
     var filesToAdd = modifiedFileNames.stream()
-        .map(name -> InternalInputFile.inputFile("", new File(name), status))
-          .collect(Collectors.toList());
+      .map(name -> InternalInputFile.inputFile("", new File(name), status))
+      .collect(Collectors.toList());
 
     var filesToAddStrings = filesToAdd.stream().map(Object::toString).collect(Collectors.toList());
 
@@ -300,8 +301,13 @@ public class InternalCheckVerifier implements CheckVerifier {
     astScanner.scan(filesToParse);
 
     JavaFileScannerContextForTests testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
+    JavaFileScannerContextForTests testModuleScannerContext = visitorsBridge.lastCreatedModuleContext();
     if (testJavaFileScannerContext != null) {
-      checkIssues(testJavaFileScannerContext.getIssues(), testJavaFileScannerContext.getQuickFixes());
+      var issues = new LinkedHashSet<>(testJavaFileScannerContext.getIssues());
+      issues.addAll(testModuleScannerContext.getIssues());
+      var quickFixes = new HashMap<>(testJavaFileScannerContext.getQuickFixes());
+      quickFixes.putAll(testModuleScannerContext.getQuickFixes());
+      checkIssues(issues, quickFixes);
     } else {
       checkIssues(Collections.emptySet(), Collections.emptyMap());
     }

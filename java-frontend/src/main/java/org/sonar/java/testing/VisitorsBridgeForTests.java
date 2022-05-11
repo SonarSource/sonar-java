@@ -34,12 +34,14 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 public class VisitorsBridgeForTests extends VisitorsBridge {
 
   private JavaFileScannerContextForTests testContext;
+  private JavaFileScannerContextForTests moduleContext;
   private boolean enableSemantic = true;
 
 
@@ -72,7 +74,19 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
     return testContext;
   }
 
+  @Override
+  protected ModuleScannerContext createScannerContext(
+    @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean inAndroidContext, @Nullable CacheContext cacheContext
+  ) {
+    moduleContext = new JavaFileScannerContextForTests(null, null, null, sonarComponents, javaVersion, false, inAndroidContext, cacheContext);
+    return moduleContext;
+  }
+
   public JavaFileScannerContextForTests lastCreatedTestContext() {
     return testContext;
+  }
+
+  public JavaFileScannerContextForTests lastCreatedModuleContext() {
+    return moduleContext;
   }
 }

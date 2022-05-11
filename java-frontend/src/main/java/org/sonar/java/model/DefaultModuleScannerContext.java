@@ -24,6 +24,7 @@ import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.caching.CacheContextImpl;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.ModuleScannerContext;
@@ -70,6 +71,10 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
 
   public CacheContext getCacheContext() {
     return cacheContext;
+  }
+
+  public void reportIssue(AnalyzerMessage message) {
+    sonarComponents.reportIssue(message);
   }
 
   @Override
