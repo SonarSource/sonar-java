@@ -20,15 +20,15 @@
 package org.sonar.java.checks;
 
 import java.util.List;
-import org.sonar.java.EndOfAnalysisCheck;
+import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
-import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
-public class EndOfAnalysisVisitor extends SubscriptionVisitor implements EndOfAnalysisCheck{
+public class EndOfAnalysisVisitor extends SubscriptionVisitor implements EndOfAnalysis {
 
   @Override
-  public void endOfAnalysis(CacheContext cacheContext) {
+  public void endOfAnalysis(ModuleScannerContext context) {
     // do nothing
   }
 

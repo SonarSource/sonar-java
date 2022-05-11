@@ -26,11 +26,12 @@ import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultInputDir;
-import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.ModuleScannerContext;
+import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,11 +52,18 @@ class DefaultInputFileScannerContextTest {
   protected static final InputComponent PROJECT_BASE_DIR = new DefaultInputDir("", BASE_DIR.getAbsolutePath());
   protected static final int COST = 42;
   protected static final JavaCheck CHECK = new JavaCheck() { };
-  protected static final EndOfAnalysisCheck END_OF_ANALYSIS_CHECK = (cacheContext) -> { };
+  protected static final JavaCheck END_OF_ANALYSIS_CHECK = new NoopEndOfAnalysisCheck();
   protected SonarComponents sonarComponents;
   protected CompilationUnitTree compilationUnitTree;
   protected DefaultJavaFileScannerContext context;
   protected AnalyzerMessage reportedMessage;
+
+  private static class NoopEndOfAnalysisCheck implements EndOfAnalysis, JavaCheck {
+    @Override
+    public void endOfAnalysis(ModuleScannerContext context) {
+      // Do nothing
+    }
+  }
 
   @BeforeEach
   public void setup() {

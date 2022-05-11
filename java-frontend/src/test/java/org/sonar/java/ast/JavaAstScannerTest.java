@@ -41,7 +41,7 @@ import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.AnalysisException;
-import org.sonar.java.EndOfAnalysisCheck;
+import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.java.ExceptionHandler;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
@@ -56,6 +56,7 @@ import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.notchecks.VisitorNotInChecksPackage;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -501,14 +502,14 @@ class JavaAstScannerTest {
     }
   }
 
-  private static class EndOfAnalysisScanner implements JavaFileScanner, EndOfAnalysisCheck {
+  private static class EndOfAnalysisScanner implements JavaFileScanner, EndOfAnalysis {
     @Override
     public void scanFile(JavaFileScannerContext context) {
       // Do nothing
     }
 
     @Override
-    public void endOfAnalysis(CacheContext cacheContext) {
+    public void endOfAnalysis(ModuleScannerContext context) {
       // Do nothing
     }
   }

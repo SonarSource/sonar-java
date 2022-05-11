@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.InputFileScannerContext;
-import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.ModuleScannerContext;
 
 @Rule(key = "S4032")
 public class UselessPackageInfoCheck extends AbstractPackageInfoChecker {
@@ -53,7 +53,7 @@ public class UselessPackageInfoCheck extends AbstractPackageInfoChecker {
   }
 
   @Override
-  public void endOfAnalysis(CacheContext cacheContext) {
+  public void endOfAnalysis(ModuleScannerContext context) {
     unneededPackageInfoFiles.keySet().removeAll(knownPackagesWithOtherFiles);
     for (var uselessPackageInfoFileContext : unneededPackageInfoFiles.values()) {
       uselessPackageInfoFileContext.addIssueOnFile(this, "Remove this package.");
