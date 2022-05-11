@@ -43,9 +43,11 @@ public interface ModuleScannerContext {
 
   /**
    * The working directory used by the analysis.
-   *
    * @return the current working directory.
+   *
+   * @deprecated use {@link #getRootProjectWorkingDirectory()} instead
    */
+  @Deprecated(since = "7.12")
   File getWorkingDirectory();
 
   /**
@@ -67,4 +69,15 @@ public interface ModuleScannerContext {
    * @return the {@link CacheContext} applicable to this scan.
    */
   CacheContext getCacheContext();
+
+  /**
+   * @return The working directory used by the analysis on project-level. Even if the project contains multiple modules, this method
+   * will always return the same value.
+   */
+  File getRootProjectWorkingDirectory();
+
+  /**
+   * @return A key that uniquely identifies the current module, provided that this project consists of multiple modules.
+   */
+  String getModuleKey();
 }

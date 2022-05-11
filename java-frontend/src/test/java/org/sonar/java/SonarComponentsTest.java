@@ -158,7 +158,7 @@ class SonarComponentsTest {
 
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, null, mock(ClasspathForTest.class), checkFactory);
 
-    assertThat(sonarComponents.workDir()).isEqualTo(workDir);
+    assertThat(sonarComponents.projectLevelWorkDir()).isEqualTo(workDir);
   }
 
   @Test
@@ -173,7 +173,7 @@ class SonarComponentsTest {
     ProjectDefinition childProjectDefinition = ProjectDefinition.create();
     parentProjectDefinition.addSubProject(childProjectDefinition);
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, null, mock(ClasspathForTest.class), checkFactory, childProjectDefinition);
-    assertThat(sonarComponents.workDir()).isEqualTo(workDir);
+    assertThat(sonarComponents.projectLevelWorkDir()).isEqualTo(workDir);
   }
 
   @Test
@@ -1001,6 +1001,26 @@ class SonarComponentsTest {
 
     sonarComponents = new SonarComponents(null, null, null, null, checkFactory);
     assertThat(sonarComponents.jspChecks()).isEmpty();
+  }
+
+  @Test
+  void moduleKey_empty() {
+    var sonarComponents = new SonarComponents(null, null, null, null, null);
+    assertThat(sonarComponents.getModuleKey()).isEmpty();
+  }
+
+  @Test
+  void moduleKey_non_empty() {
+    var rootProj = mock(ProjectDefinition.class);
+    doReturn(new File("/foo/bar/proj")).when(rootProj).getBaseDir();
+    var parentModule = mock(ProjectDefinition.class);
+    doReturn(rootProj).when(parentModule).getParent();
+    var childModule = mock(ProjectDefinition.class);
+    doReturn(new File("/foo/bar/proj/pmodule/cmodule")).when(childModule).getBaseDir();
+    doReturn(parentModule).when(childModule).getParent();
+
+    var sonarComponents = new SonarComponents(null, null, null, null, null, null, childModule);
+    assertThat(sonarComponents.getModuleKey()).isEqualTo("pmodule/cmodule");
   }
 
   @Rule(key = "jsp")

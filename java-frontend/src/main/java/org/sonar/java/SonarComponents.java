@@ -40,6 +40,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.ScannerSide;
@@ -390,15 +391,39 @@ public class SonarComponents {
     return Math.min(500L, ((long) (maxMemoryInBytesProvider.getAsLong() * 0.00005)) / 1000L);
   }
 
-  public File workDir() {
+  public File projectLevelWorkDir() {
+    var root = getRootProject();
+    if (root != null) {
+      return root.getWorkDir();
+    } else {
+      return fs.workDir();
+    }
+  }
+
+  /**
+   * Returns an OS-independent key that should identify the module within the project
+   * @return A key representing the module
+   */
+  public String getModuleKey() {
+    var root = getRootProject();
+    if (root != null && projectDefinition != null) {
+      var rootBase = root.getBaseDir().toPath();
+      var moduleBase = projectDefinition.getBaseDir().toPath();
+      return rootBase.relativize(moduleBase).toString().replace('\\', '/');
+    }
+    return "";
+  }
+
+  @CheckForNull
+  private ProjectDefinition getRootProject() {
     ProjectDefinition current = projectDefinition;
     if (current == null) {
-      return fs.workDir();
+      return null;
     }
     while (current.getParent() != null) {
       current = current.getParent();
     }
-    return current.getWorkDir();
+    return current;
   }
 
   public boolean canSkipUnchangedFiles() throws ApiMismatchException {

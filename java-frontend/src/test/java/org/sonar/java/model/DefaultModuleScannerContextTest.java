@@ -122,16 +122,16 @@ class DefaultModuleScannerContextTest {
       new SonarComponents(null, null, null, null, null)
     );
     var expectedWorkDir = mock(File.class);
-    doReturn(expectedWorkDir).when(sonarComponents).workDir();
+    doReturn(expectedWorkDir).when(sonarComponents).projectLevelWorkDir();
     var context = new DefaultModuleScannerContext(
       sonarComponents,
       new JavaVersionImpl(JavaVersionImpl.MAX_SUPPORTED),
       true,
       null
     );
-    verify(sonarComponents, never()).workDir();
+    verify(sonarComponents, never()).projectLevelWorkDir();
     var workDir = context.getWorkingDirectory();
-    verify(sonarComponents, times(1)).workDir();
+    verify(sonarComponents, times(1)).projectLevelWorkDir();
     assertThat(workDir).isEqualTo(expectedWorkDir);
   }
 
@@ -180,5 +180,20 @@ class DefaultModuleScannerContextTest {
       cacheContext
     );
     assertThat(context.getCacheContext()).isEqualTo(cacheContext);
+  }
+
+  @Test
+  void getRootProjectWorkingDirectory_returns_the_working_dir_from_sonarComponents() {
+    var projectLevelWorkDirFile = new File("foo");
+    var sonarComponents = mock(SonarComponents.class);
+    doReturn(projectLevelWorkDirFile).when(sonarComponents).projectLevelWorkDir();
+
+    var context = new DefaultModuleScannerContext(
+      sonarComponents,
+      new JavaVersionImpl(JavaVersionImpl.MAX_SUPPORTED),
+      false,
+      null
+    );
+    assertThat(context.getRootProjectWorkingDirectory()).isSameAs(projectLevelWorkDirFile);
   }
 }
