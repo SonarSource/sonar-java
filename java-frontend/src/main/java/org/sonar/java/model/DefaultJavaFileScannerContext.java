@@ -181,10 +181,6 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
     return content;
   }
 
-  public void reportIssue(AnalyzerMessage message) {
-    sonarComponents.reportIssue(message);
-  }
-
   public AnalyzerMessage createAnalyzerMessage(JavaCheck javaCheck, Tree startTree, String message) {
     return createAnalyzerMessage(inputFile, javaCheck, startTree, null, message, Collections.emptyList(), null);
   }

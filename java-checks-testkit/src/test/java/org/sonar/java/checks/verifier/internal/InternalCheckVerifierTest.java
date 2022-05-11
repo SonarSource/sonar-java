@@ -970,7 +970,7 @@ class InternalCheckVerifierTest {
       .verifyNoIssues();
 
     verify(check, times(1)).scanWithoutParsing(argThat(context -> equivalent(cacheContext, context.getCacheContext())));
-    verify(check, times(1)).endOfAnalysis(any());
+    verify(check, times(1)).endOfAnalysis(argThat(context -> equivalent(cacheContext, context.getCacheContext())));
   }
 
   @Test

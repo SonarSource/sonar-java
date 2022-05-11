@@ -34,6 +34,7 @@ import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -97,6 +98,21 @@ class VisitorsBridgeForTestsTest {
       visitorsBridgeForTests.createScannerContext(sonarComponents, inputFile, new JavaVersionImpl(), false, CacheContextImpl.of(context));
 
     assertThat(visitorsBridgeForTests.lastCreatedTestContext()).isSameAs(expectedTestContext);
+  }
+
+  @Test
+  void lastCreatedModuleContext_returns_last_created_module_context() {
+    var bridge = new VisitorsBridgeForTests(Collections.emptyList(), mock(SonarComponents.class), new JavaVersionImpl());
+    var firstModuleContext = bridge.createScannerContext(null, new JavaVersionImpl(), false, null);
+    var secondAndExpectedModuleContext = bridge.createScannerContext(null, new JavaVersionImpl(), false, null);
+    var firstTestContext = bridge.createScannerContext((CompilationUnitTree) null, null, null, false);
+    var secondTestContext = bridge.createScannerContext(null, (InputFile) null, new JavaVersionImpl(), false, null);
+
+    assertThat(bridge.lastCreatedModuleContext())
+      .isSameAs(secondAndExpectedModuleContext)
+      .isNotSameAs(firstModuleContext)
+      .isNotSameAs(firstTestContext)
+      .isNotSameAs(secondTestContext);
   }
 
   private static class DummyVisitor implements JavaFileScanner {
