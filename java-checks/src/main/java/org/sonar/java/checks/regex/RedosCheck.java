@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.RegexReachabilityChecker;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonarsource.analyzer.commons.regex.MatchType;
 import org.sonarsource.analyzer.commons.regex.RegexParseResult;
@@ -45,6 +44,7 @@ import org.sonarsource.analyzer.commons.regex.ast.RegexBaseVisitor;
 import org.sonarsource.analyzer.commons.regex.ast.RegexTree;
 import org.sonarsource.analyzer.commons.regex.ast.RepetitionTree;
 import org.sonarsource.analyzer.commons.regex.helpers.IntersectAutomataChecker;
+import org.sonarsource.analyzer.commons.regex.helpers.RegexReachabilityChecker;
 import org.sonarsource.analyzer.commons.regex.helpers.SimplifiedRegexCharacterClass;
 import org.sonarsource.analyzer.commons.regex.helpers.SubAutomaton;
 
