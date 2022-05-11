@@ -435,7 +435,7 @@ public class SonarComponents {
         if (overrideSkipFlag != null) {
           return overrideSkipFlag;
         }
-        Method canSkipUnchangedFiles = context.getClass().getDeclaredMethod("canSkipUnchangedFiles");
+        Method canSkipUnchangedFiles = context.getClass().getMethod("canSkipUnchangedFiles");
         return (Boolean) canSkipUnchangedFiles.invoke(context);
       } catch (NoSuchMethodError | NoSuchMethodException error) {
         throw new ApiMismatchException(error);
