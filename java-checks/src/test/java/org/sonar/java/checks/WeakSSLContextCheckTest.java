@@ -22,14 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class WeakSSLContextCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/WeakSSLContextCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/WeakSSLContextCheck.java"))
       .withCheck(new WeakSSLContextCheck())
       .verifyIssues();
   }
@@ -37,7 +37,7 @@ class WeakSSLContextCheckTest {
   @Test
   void test_java_7() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/WeakSSLContextCheckJava7.java"))
+      .onFile(mainCodeSourcesPath("checks/WeakSSLContextCheckJava7.java"))
       .withCheck(new WeakSSLContextCheck())
       .withJavaVersion(7)
       .verifyIssues();
@@ -46,7 +46,7 @@ class WeakSSLContextCheckTest {
   @Test
   void test_java_8() {
     CheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/WeakSSLContextCheckJava8.java"))
+      .onFile(mainCodeSourcesPath("checks/WeakSSLContextCheckJava8.java"))
       .withCheck(new WeakSSLContextCheck())
       .withJavaVersion(8)
       .verifyIssues();
