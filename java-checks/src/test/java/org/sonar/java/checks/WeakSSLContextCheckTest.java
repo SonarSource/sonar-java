@@ -29,7 +29,7 @@ class WeakSSLContextCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/WeakSSLContextCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/WeakSSLContextCheckJava8.java"))
       .withCheck(new WeakSSLContextCheck())
       .verifyIssues();
   }
@@ -37,7 +37,7 @@ class WeakSSLContextCheckTest {
   @Test
   void test_java_7() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/WeakSSLContextCheckJava7.java"))
+      .onFile(mainCodeSourcesPath("checks/WeakSSLContextCheck.java"))
       .withCheck(new WeakSSLContextCheck())
       .withJavaVersion(7)
       .verifyIssues();
