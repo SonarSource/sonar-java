@@ -1,5 +1,5 @@
 <p>ActiveMQ can send/receive JMS Object messages (named ObjectMessage in ActiveMQ context) to comply with JMS specification. Internally, ActiveMQ
-relies on Java serialization mechanism for marshaling/unmarshaling of the message payload. Deserialization based on data supplied by the user could
+relies on Java serialization mechanism for marshaling/unmarshalling of the message payload. Deserialization based on data supplied by the user could
 lead to remote code execution attacks, where the structure of the serialized data is changed to modify the behavior of the object being
 unserialized.</p>
 <p>To limit the risk to be victim of such attack, ActiveMQ 5.12.2+ enforces developers to explicitly whitelist packages that can be exchanged using
