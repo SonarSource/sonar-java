@@ -93,7 +93,7 @@ public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
   }
 
   private boolean isStrongProtocol(String protocol) {
-    // A project not set is very likely to be >= Java8
+    // A project with a version not set is very likely to be >= Java 8
     return STRONG_PROTOCOLS.contains(protocol) || (javaVersionNotSetOr8OrHigher && STRONG_AFTER_JAVA_8.contains(protocol));
   }
 
