@@ -1,7 +1,7 @@
 <p>The <code>instanceof</code> construction is a preferred way to check whether a variable can be cast to some type statically because a compile-time
 error will occur in case of incompatible types. The method <a
 href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html#isInstance-java.lang.Object-">isInstance()</a> from <code>java.lang.Class</code>
-works differently and does type check at runtime only, incompatible types will therefore not be detected early in the developement, potentially
+works differently and does type check at runtime only, incompatible types will therefore not be detected early in the development, potentially
 resulting in dead code. The <code>isInstance()</code> method should only be used in dynamic cases when the <code>instanceof</code> operator can’t be
 used.</p>
 <p>This rule raises an issue when <code>isInstance()</code> is used and could be replaced with an <code>instanceof</code> check.</p>
