@@ -56,11 +56,11 @@ public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
     .withAnyParameters()
     .build();
 
-  private boolean projectHasJava8OrHigher;
+  private boolean javaVersionNotSetOr8OrHigher;
 
   @Override
   public void setContext(JavaFileScannerContext context) {
-    projectHasJava8OrHigher = context.getJavaVersion().asInt() >= 8;
+    javaVersionNotSetOr8OrHigher = context.getJavaVersion().isJava8Compatible();
     super.setContext(context);
   }
 
@@ -93,7 +93,8 @@ public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
   }
 
   private boolean isStrongProtocol(String protocol) {
-    return STRONG_PROTOCOLS.contains(protocol) || (projectHasJava8OrHigher && STRONG_AFTER_JAVA_8.contains(protocol));
+    // A project with a version not set is very likely to be >= Java 8
+    return STRONG_PROTOCOLS.contains(protocol) || (javaVersionNotSetOr8OrHigher && STRONG_AFTER_JAVA_8.contains(protocol));
   }
 
   private static List<Tree> getUnsecureVersionsInArguments(Arguments arguments) {

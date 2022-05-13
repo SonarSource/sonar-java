@@ -34,20 +34,20 @@ public interface JavaVersion {
   String SOURCE_VERSION = "sonar.java.source";
 
   /**
-   * Test if java version of the project is greater than or equal to 6.
-   * @return true if java version used is >= 6
+   * Test if java version of the project is not set or greater than or equal to 6.
+   * @return true if java version used is >= 6 or not set
    */
   boolean isJava6Compatible();
 
   /**
-   * Test if java version of the project is greater than or equal to 7.
-   * @return true if java version used is >= 7
+   * Test if java version of the project is not set or greater than or equal to 7.
+   * @return true if java version used is >= 7 or not set
    */
   boolean isJava7Compatible();
 
   /**
-   * Test if java version of the project is greater than or equal to 8.
-   * @return true if java version used is >= 8
+   * Test if java version of the project is not set greater than or equal to 8.
+   * @return true if java version used is >= 8 or not set
    */
   boolean isJava8Compatible();
 
