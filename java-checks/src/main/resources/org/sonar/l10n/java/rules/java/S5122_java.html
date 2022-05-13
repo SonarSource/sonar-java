@@ -35,8 +35,11 @@ protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws Se
 }
 </pre>
 <p>Spring MVC framework:</p>
-<p><a
-href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/CrossOrigin.html">CrossOrigin</a></p>
+<ul>
+  <li> <a
+  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/CrossOrigin.html">CrossOrigin</a>
+  </li>
+</ul>
 <pre>
 @CrossOrigin // Sensitive
 @RequestMapping("")
@@ -47,15 +50,19 @@ public class TestController {
     }
 }
 </pre>
-<p><a
-href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/cors/CorsConfiguration.html">cors.CorsConfiguration</a></p>
+<ul>
+  <li> <a
+  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/cors/CorsConfiguration.html">cors.CorsConfiguration</a> </li>
+</ul>
 <pre>
 CorsConfiguration config = new CorsConfiguration();
 config.addAllowedOrigin("*"); // Sensitive
 config.applyPermitDefaultValues(); // Sensitive
 </pre>
-<p><a
-href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/config/annotation/CorsRegistration.html">servlet.config.annotation.CorsConfiguration</a></p>
+<ul>
+  <li> <a
+  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/config/annotation/CorsRegistration.html">servlet.config.annotation.CorsConfiguration</a> </li>
+</ul>
 <pre>
 class Insecure implements WebMvcConfigurer {
   @Override
@@ -63,6 +70,15 @@ class Insecure implements WebMvcConfigurer {
     registry.addMapping("/**")
       .allowedOrigins("*"); // Sensitive
   }
+}
+</pre>
+<p>User-controlled origin:</p>
+<pre>
+public ResponseEntity&lt;String&gt; userControlledOrigin(@RequestHeader("Origin") String origin) {
+  HttpHeaders responseHeaders = new HttpHeaders();
+  responseHeaders.add("Access-Control-Allow-Origin", origin); // Sensitive
+
+  return new ResponseEntity&lt;&gt;("content", responseHeaders, HttpStatus.CREATED);
 }
 </pre>
 <h2>Compliant Solution</h2>
@@ -78,8 +94,11 @@ protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws Se
 }
 </pre>
 <p>Spring MVC framework:</p>
-<p><a
-href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/CrossOrigin.html">CrossOrigin</a></p>
+<ul>
+  <li> <a
+  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/CrossOrigin.html">CrossOrigin</a>
+  </li>
+</ul>
 <pre>
 @CrossOrigin("trustedwebsite.com") // Compliant
 @RequestMapping("")
@@ -90,14 +109,18 @@ public class TestController {
     }
 }
 </pre>
-<p><a
-href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/cors/CorsConfiguration.html">cors.CorsConfiguration</a></p>
+<ul>
+  <li> <a
+  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/cors/CorsConfiguration.html">cors.CorsConfiguration</a> </li>
+</ul>
 <pre>
 CorsConfiguration config = new CorsConfiguration();
 config.addAllowedOrigin("http://domain2.com"); // Compliant
 </pre>
-<p><a
-href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/config/annotation/CorsRegistration.html">servlet.config.annotation.CorsConfiguration</a></p>
+<ul>
+  <li> <a
+  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/config/annotation/CorsRegistration.html">servlet.config.annotation.CorsConfiguration</a> </li>
+</ul>
 <pre>
 class Safe implements WebMvcConfigurer {
   @Override
@@ -105,6 +128,17 @@ class Safe implements WebMvcConfigurer {
     registry.addMapping("/**")
       .allowedOrigins("safe.com"); // Compliant
   }
+}
+</pre>
+<p>User-controlled origin validated with an allow-list:</p>
+<pre>
+public ResponseEntity&lt;String&gt; userControlledOrigin(@RequestHeader("Origin") String origin) {
+  HttpHeaders responseHeaders = new HttpHeaders();
+  if (trustedOrigins.contains(origin)) {
+    responseHeaders.add("Access-Control-Allow-Origin", origin);
+  }
+
+  return new ResponseEntity&lt;&gt;("content", responseHeaders, HttpStatus.CREATED);
 }
 </pre>
 <h2>See</h2>
@@ -118,8 +152,8 @@ class Safe implements WebMvcConfigurer {
   Misconfiguration </li>
   <li> <a href="https://www.owasp.org/index.php/HTML5_Security_Cheat_Sheet#Cross_Origin_Resource_Sharing">OWASP HTML5 Security Cheat Sheet</a> - Cross
   Origin Resource Sharing </li>
-  <li> <a href="https://cwe.mitre.org/data/definitions/346.html">MITRE, CWE-346</a> - Origin Validation Error </li>
-  <li> <a href="https://cwe.mitre.org/data/definitions/942.html">MITRE, CWE-942</a> - Overly Permissive Cross-domain Whitelist </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/346">MITRE, CWE-346</a> - Origin Validation Error </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/942">MITRE, CWE-942</a> - Overly Permissive Cross-domain Whitelist </li>
   <li> <a href="https://www.sans.org/top25-software-errors/#cat3">SANS Top 25</a> - Porous Defenses </li>
 </ul>
 

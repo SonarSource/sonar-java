@@ -1,18 +1,42 @@
-<p>XML document can be signed to ensure data integrity and authentication. The signature should be verified and validated to make sure it’s secure.
-For instance, signatures based on weak cipher algorithms like MD5 should be rejected, and an XML document should not contain hostile constructs that
-can lead to Denial of Services attacks, like a large number of <code>SignedInfo</code> elements.</p>
+<p>XML signature validations work by parsing third-party data that cannot be trusted until it is actually validated.</p>
+<p>As with any other parsing process, unrestricted validation of third-party XML signatures can lead to security vulnerabilities. In this case,
+threats range from denial of service to confidentiality breaches.</p>
+<p>By default, the Java XML Digital Signature API does not apply restrictions on XML signature validation, unless the application runs with a security
+manager.<br> To protect the application from these vulnerabilities, set the <code>org.jcp.xml.dsig.secureValidation</code> attribute to
+<code>true</code> with the <code>javax.xml.crypto.dsig.dom.DOMValidateContext.setProperty</code> method.<br> This attribute ensures that the code
+enforces the following restrictions:</p>
+<ul>
+  <li> Forbids the use of XSLT transforms </li>
+  <li> Restricts the number of <code>SignedInfo</code> or <code>Manifest Reference</code> elements to 30 or less </li>
+  <li> Restricts the number of <code>Reference</code> transforms to 5 or less </li>
+  <li> Forbids the use of MD5-related signatures or MAC algorithms </li>
+  <li> Ensures that <code>Reference</code> IDs are unique to help prevent signature wrapping attacks </li>
+  <li> Forbids Reference URIs of type <code>http</code>, <code>https</code>, or <code>file</code> </li>
+  <li> Does not allow a <code>RetrievalMethod</code> element to reference another <code>RetrievalMethod</code> element </li>
+  <li> Forbids RSA or DSA keys less than 1024 bits </li>
+</ul>
 <h2>Noncompliant Code Example</h2>
-<p>The Java XML Digital Signature API doesn’t use a strong signature validation mode by default:</p>
 <pre>
-DOMValidateContext valContext = new DOMValidateContext(new KeyValueKeySelector(), nl.item(0)); // Noncompliant
+NodeList signatureElement = doc.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
+
+XMLSignatureFactory fac = XMLSignatureFactory.getInstance("DOM");
+DOMValidateContext valContext = new DOMValidateContext(new KeyValueKeySelector(), signatureElement.item(0)); // Noncompliant
+XMLSignature signature = fac.unmarshalXMLSignature(valContext);
+
+boolean signatureValidity = signature.validate(valContext);
 </pre>
 <h2>Compliant Solution</h2>
-<p>The Java XML Digital Signature API offers a secure validation mode to protect against various <a
-href="https://docs.oracle.com/en/java/javase/14/security/java-xml-digital-signature-api-overview-and-tutorial.html#GUID-8618C294-3BFE-45C3-9A1E-C4629E337E68">security
-issues</a>:</p>
+<p>In order to benefit from this secure validation mode, set the DOMValidateContext’s <code>org.jcp.xml.dsig.secureValidation</code> property to
+<code>TRUE</code>.</p>
 <pre>
-DOMValidateContext valContext = new DOMValidateContext(new KeyValueKeySelector(), nl.item(0));
+NodeList signatureElement = doc.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
+
+XMLSignatureFactory fac = XMLSignatureFactory.getInstance("DOM");
+DOMValidateContext valContext = new DOMValidateContext(new KeyValueKeySelector(), signatureElement.item(0));
 valContext.setProperty("org.jcp.xml.dsig.secureValidation", Boolean.TRUE);
+XMLSignature signature = fac.unmarshalXMLSignature(valContext);
+
+boolean signatureValidity = signature.validate(valContext);
 </pre>
 <h2>See</h2>
 <ul>
@@ -20,6 +44,6 @@ valContext.setProperty("org.jcp.xml.dsig.secureValidation", Boolean.TRUE);
   href="https://docs.oracle.com/en/java/javase/14/security/java-xml-digital-signature-api-overview-and-tutorial.html#GUID-DB46A001-6DBD-4571-BDBC-1BBC394BF61E">Oracle Java Documentation</a> - XML Digital Signature API Overview and Tutorial </li>
   <li> <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data
   Exposure </li>
-  <li> <a href="http://cwe.mitre.org/data/definitions/347.html">MITRE, CWE-347</a> - Improper Verification of Cryptographic Signature </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/347">MITRE, CWE-347</a> - Improper Verification of Cryptographic Signature </li>
 </ul>
 
