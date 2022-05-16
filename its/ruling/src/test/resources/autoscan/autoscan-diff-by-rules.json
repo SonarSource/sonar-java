@@ -673,7 +673,7 @@
   },
   {
     "ruleKey": "S1854",
-    "truePositives": 1666,
+    "truePositives": 1668,
     "falseNegatives": 3,
     "falsePositives": 0
   },
@@ -2647,7 +2647,7 @@
   },
   {
     "ruleKey": "S6205",
-    "truePositives": 7,
+    "truePositives": 8,
     "falseNegatives": 0,
     "falsePositives": 0
   },
