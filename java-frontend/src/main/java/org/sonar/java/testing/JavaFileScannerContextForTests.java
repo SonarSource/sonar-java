@@ -46,13 +46,11 @@ public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContex
 
   private final Set<AnalyzerMessage> issues = new LinkedHashSet<>();
   private final Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> quickFixes = new HashMap<>();
-  private final SonarComponents sonarComponents;
 
   public JavaFileScannerContextForTests(CompilationUnitTree tree, InputFile inputFile, Sema semanticModel,
                                         @Nullable SonarComponents sonarComponents, JavaVersion javaVersion,
                                         boolean failedParsing, boolean inAndroidContext, @Nullable CacheContext cacheContext) {
     super(tree, inputFile, semanticModel, sonarComponents, javaVersion, failedParsing, inAndroidContext, cacheContext);
-    this.sonarComponents = sonarComponents;
   }
 
   public Set<AnalyzerMessage> getIssues() {
