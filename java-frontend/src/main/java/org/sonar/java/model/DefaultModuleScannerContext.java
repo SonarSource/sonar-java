@@ -64,7 +64,6 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
   }
 
   @Override
-  @Deprecated(since = "7.12")
   public File getWorkingDirectory() {
     return sonarComponents.projectLevelWorkDir();
   }
