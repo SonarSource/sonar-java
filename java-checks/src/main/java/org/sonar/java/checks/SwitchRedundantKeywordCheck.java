@@ -71,10 +71,12 @@ public class SwitchRedundantKeywordCheck extends IssuableSubscriptionVisitor imp
           reportStatementInBlock(yieldKeyword, blockTree, "block and \"yield\"");
         }
       } else {
-        reportIssue(blockTree.openBraceToken(),
-          String.format(MESSAGE, "block"),
-          Collections.singletonList(new JavaFileScannerContext.Location("Redundant close brace", blockTree.closeBraceToken())),
-          null);
+        if (lastStatement.is(Tree.Kind.EXPRESSION_STATEMENT)) {
+          reportIssue(blockTree.openBraceToken(),
+            String.format(MESSAGE, "block"),
+            Collections.singletonList(new JavaFileScannerContext.Location("Redundant close brace", blockTree.closeBraceToken())),
+            null);
+        }
       }
     } else if (lastStatement.is(Tree.Kind.BREAK_STATEMENT)) {
       if (statementsInBody == 2) {

@@ -42,6 +42,29 @@ public class SwitchRedundantKeywordCheck {
 
   int switchStatement(String mode) {
     int result = 0;
+
+    switch (mode) {
+      case "a" -> { // Noncompliant
+        result = 1;
+      }
+      case "a1" -> { // compliant, two statements in block
+        mode = "";
+        result = 1;
+      }
+      case "b" -> {
+        if (mode.equals("b")) {
+          doSomethingElse();
+        }
+      }
+      case "c" -> { // compliant, return is not an expression
+        return 1;
+      }
+      case "d" -> {
+        throw new IllegalArgumentException();
+      }
+      default -> doSomethingElse();
+    }
+
     switch (mode) {
       case "a" -> {
         result = 1;
