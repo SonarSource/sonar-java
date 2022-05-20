@@ -47,20 +47,20 @@ public class SwitchRedundantKeywordCheck {
       case "a" -> { // Noncompliant
         result = 1;
       }
+      case "d" -> { // Noncompliant
+        throw new IllegalArgumentException();
+      }
       case "a1" -> { // compliant, two statements in block
         mode = "";
         result = 1;
       }
-      case "b" -> {
+      case "b" -> { // compliant
         if (mode.equals("b")) {
           doSomethingElse();
         }
       }
-      case "c" -> { // compliant, return is not an expression
+      case "c" -> {
         return 1;
-      }
-      case "d" -> {
-        throw new IllegalArgumentException();
       }
       default -> doSomethingElse();
     }
@@ -78,6 +78,17 @@ public class SwitchRedundantKeywordCheck {
         doSomethingElse();
         result = 3;
         break; // Noncompliant [[sc=9;ec=15]] {{Remove this redundant "break".}}
+      }
+    }
+
+    my_for:
+    for (int i = 0; i < 10; i++) {
+      switch (i) {
+        case 9 -> {
+          System.out.println("Hello");
+          break my_for; // Compliant when break with label
+        }
+        default -> System.out.println("Splash!");
       }
     }
 
