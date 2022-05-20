@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.BreakStatementTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
@@ -71,12 +72,14 @@ public class SwitchRedundantKeywordCheck extends IssuableSubscriptionVisitor imp
           reportStatementInBlock(yieldKeyword, blockTree, "block and \"yield\"");
         }
       } else {
-        reportIssue(blockTree.openBraceToken(),
-          String.format(MESSAGE, "block"),
-          Collections.singletonList(new JavaFileScannerContext.Location("Redundant close brace", blockTree.closeBraceToken())),
-          null);
+        if (lastStatement.is(Tree.Kind.EXPRESSION_STATEMENT, Tree.Kind.THROW_STATEMENT)) {
+          reportIssue(blockTree.openBraceToken(),
+            String.format(MESSAGE, "block"),
+            Collections.singletonList(new JavaFileScannerContext.Location("Redundant close brace", blockTree.closeBraceToken())),
+            null);
+        }
       }
-    } else if (lastStatement.is(Tree.Kind.BREAK_STATEMENT)) {
+    } else if (lastStatement.is(Tree.Kind.BREAK_STATEMENT) && ((BreakStatementTree) lastStatement).label() == null) {
       if (statementsInBody == 2) {
         reportStatementInBlock(lastStatement, blockTree, "block and \"break\"");
       } else {
