@@ -28,7 +28,7 @@ container_definition: &CONTAINER_DEFINITION
 win_vm_definition: &WINDOWS_VM_DEFINITION
   gce_instance:
     image_project: release-engineering-ci-prod
-    image_family: lt-base-windows-jdk11
+    image_family: lt-base-windows-jdk17
     platform: windows
     zone: europe-west4-b
     preemptible: false
