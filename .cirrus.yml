@@ -20,7 +20,7 @@ env:
   CIRRUS_CLONE_DEPTH: 50
 
 container_definition: &CONTAINER_DEFINITION
-  image: eu.gcr.io/release-engineering-ci-prod/base:j17-latest
+  image: eu.gcr.io/release-engineering-ci-prod/base:j11-latest
   cluster_name: cirrus-ci
   zone: europe-west4-b
   namespace: default
