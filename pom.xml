@@ -94,7 +94,7 @@
     <artifactsToPublish>${project.groupId}:sonar-java-plugin:jar</artifactsToPublish>
 
     <!-- FIXME: Overrides OSS parent pom for java 16 compatibility -->
-    <version.artifactory.plugin>3.2.1</version.artifactory.plugin>
+    <version.artifactory.plugin>3.4.0</version.artifactory.plugin>
 
     <!-- FIXME: Overrides OSS parent pom for java 17 compatibility -->
     <version.jacoco.plugin>0.8.7</version.jacoco.plugin>
