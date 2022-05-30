@@ -55,8 +55,13 @@ public class FilePermissionsCheck extends IssuableSubscriptionVisitor {
 
   // 'other' group not being 0
   private static final Pattern CHMOD_OCTAL_PATTERN = Pattern.compile("(^|\\s)[0-7]{2,3}[1-7](\\s|$)");
+
+  private static final String WHO = "([ug]*+[ao][ugao]*+)?";
+  // ignoring '-' as it should be safe to explicitly REMOVE permission
+  private static final String WHAT = "[+=]";
+  private static final String WHICH = "[sStT]*+[rwxX][rwxXsStT]*+";
   // simplification of all the possible combinations of adding perms to 'other'
-  private static final Pattern SIMPLIFIED_CHMOD_OTHER_PATTERN = Pattern.compile("(^|\\s|,)([ug]*+[ao][ugao]*+)?[+=][sStT]*+[rwxX][rwxXsStT]*+(\\s|,|$)");
+  private static final Pattern SIMPLIFIED_CHMOD_OTHER_PATTERN = Pattern.compile("(^|\\s|,)" + WHO + WHAT + WHICH + "(\\s|,|$)");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

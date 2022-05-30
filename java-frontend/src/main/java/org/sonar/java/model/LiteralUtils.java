@@ -150,7 +150,7 @@ public class LiteralUtils {
   public static boolean isNegOne(ExpressionTree tree) {
     return tree.is(Kind.UNARY_MINUS) && isOne(((UnaryExpressionTree) tree).expression());
   }
-  
+
   public static String getAsStringValue(LiteralTree tree) {
     if (!tree.is(Kind.TEXT_BLOCK)) {
       return tree.is(Kind.STRING_LITERAL) ? trimQuotes(tree.value()) : tree.value();
@@ -171,7 +171,7 @@ public class LiteralUtils {
   }
 
   private static String removeTrailingSpaces(String s) {
-    return s.replaceAll("[\t \f]*$", "");
+    return s.replaceAll("\\s++$", "");
   }
 
   public static int indentationOfTextBlock(String[] lines) {

@@ -33,7 +33,6 @@ import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -44,6 +43,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
 
@@ -57,7 +57,12 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
   protected static final String JAVA_LANG_THROWABLE = "java.lang.Throwable";
   protected static final String ORG_APACHE_LOGGING_LOG4J_LOGGER = "org.apache.logging.log4j.Logger";
 
-  private static final Pattern PRINTF_PARAM_PATTERN = Pattern.compile("%(\\d+\\$)?([-#+ 0,(\\<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%])");
+  private static final String ARGUMENT_INDEX = "(\\d++\\$)?";
+  private static final String FLAGS = "([-#+ 0,(\\<]++)?";
+  private static final String WIDTH = "([1-9]\\d*+)?";
+  private static final String PRECISION = "(\\.\\d++)?";
+  private static final String CONVERSION = "([tT])?([a-zA-Z%])";
+  private static final Pattern PRINTF_PARAM_PATTERN = Pattern.compile("%" + ARGUMENT_INDEX + FLAGS + WIDTH + PRECISION + CONVERSION);
 
   protected static final String PRINTF_METHOD_NAME = "printf";
   private static final String FORMAT_METHOD_NAME = "format";
