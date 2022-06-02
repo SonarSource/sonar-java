@@ -96,7 +96,7 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
   private AnalyzerMessage createAnalyzerMessage(int startLine, int startColumn, String line, String message) {
     String lineWithoutCommentPrefix = line.replaceFirst("^(//|/\\*\\*?|[ \t]*\\*)?[ \t]*+", "");
     int prefixSize = line.length() - lineWithoutCommentPrefix.length();
-    String lineWithoutCommentPrefixAndSuffix = lineWithoutCommentPrefix.replaceFirst("[ \t]+(\\*/)?$", "");
+    String lineWithoutCommentPrefixAndSuffix = lineWithoutCommentPrefix.replaceFirst("[ \t]++(\\*/)?$", "");
 
     AnalyzerMessage.TextSpan textSpan = new AnalyzerMessage.TextSpan(
       startLine,

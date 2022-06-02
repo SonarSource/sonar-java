@@ -71,9 +71,9 @@ public class StringMethodsWithLocaleCheck extends AbstractMethodDetection {
 
     // source: https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html#syntax
     private static final String ARGUMENT_INDEX = "(\\d+\\$)?";
-    private static final String FLAGS = "([-,#+ 0(]*)?";
+    private static final String FLAGS = "([-,#+ 0(]+)?";
     private static final String FLAGS_WITH_FORCED_COMMA = "([-#+ 0(]*,[-#+ 0(]*)";
-    private static final String WIDTH = "([0-9]*\\.?[0-9]*)?";
+    private static final String WIDTH = "(\\d*\\.?\\d*)";
     private static final String INTEGER_LOCAL_SPECIFIC_FORMAT = FLAGS_WITH_FORCED_COMMA + WIDTH + "d";
     private static final String DATE_TIME_FLOATING_POINT_LOCAL_SPECIFIC_FORMAT = FLAGS + WIDTH + "[eEfgGaAtT]";
 
