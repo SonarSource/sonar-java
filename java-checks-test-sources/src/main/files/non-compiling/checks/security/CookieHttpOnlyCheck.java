@@ -43,6 +43,12 @@ class CookieHttpOnlyCheck {
     field5 = new HttpCookie("name, value"); // FN
   }
 
+  private void play() {
+    // constructor dropped from play 2.6.0
+    play.mvc.Http.Cookie c1 = new play.mvc.Http.Cookie("1", "2", 3, "4", "5", true, false,  unknown); // Noncompliant
+    play.mvc.Http.Cookie c2 = new play.mvc.Http.Cookie("1", "2", 3, "4", "5", true, true,  unknown);
+  }
+
   // SONARJAVA-2772
   Cookie xsfrToken() {
     this.getXsfrTokenProp2().withHttpOnly(false);

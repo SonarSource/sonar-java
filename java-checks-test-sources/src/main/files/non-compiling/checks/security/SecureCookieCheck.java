@@ -21,6 +21,12 @@ class SecureCookieCheck {
     return new HttpCookie("name", "value"); // Noncompliant
   }
 
+  private void play() {
+    // constructor dropped from play 2.6.0
+    play.mvc.Http.Cookie c1 = new play.mvc.Http.Cookie("1", "2", 3, "4", "5", false, true,  unknown); // Noncompliant
+    play.mvc.Http.Cookie c2 = new play.mvc.Http.Cookie("1", "2", 3, "4", "5", true, true,  unknown);
+  }
+
 }
 
 class SecureCookieCheckB extends Cookie {

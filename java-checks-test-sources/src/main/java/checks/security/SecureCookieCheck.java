@@ -142,18 +142,16 @@ class SecureCookieCheck {
   }
 
   void playFw(play.mvc.Http.Cookie.SameSite sameSite) {
-    play.mvc.Http.Cookie c11 = new play.mvc.Http.Cookie("1", "2", 3, "4", "5", false, true); // Noncompliant
-    play.mvc.Http.Cookie c12 = new play.mvc.Http.Cookie("1", "2", 3, "4", "5", true, false);
     play.mvc.Http.Cookie c21 = new play.mvc.Http.Cookie("1", "2", 3, "4", "5", false, false, sameSite); // Noncompliant
     play.mvc.Http.Cookie c22 = new play.mvc.Http.Cookie("1", "2", 3, "4", "5", true, false, sameSite);
     play.mvc.Http.Cookie c4;
-    c4 =  new play.mvc.Http.Cookie("1", "2", 3, "4", "5", true, true);
+    c4 = new play.mvc.Http.Cookie("1", "2", 3, "4", "5", true, true, sameSite);
     CookieBuilder cb1 = play.mvc.Http.Cookie.builder("1", "2");
     cb1.withSecure(false);  // Noncompliant
     CookieBuilder cb2 = play.mvc.Http.Cookie.builder("1", "2");
     cb2.withSecure(true);
     play.mvc.Http.Cookie.builder("1", "2")
-        .withMaxAge(1)
+        .withName("yolo")
         .withPath("x")
         .withDomain("x")
         .withSecure(true)
@@ -164,11 +162,11 @@ class SecureCookieCheck {
   }
 
   play.mvc.Http.Cookie getC5() {
-    return new play.mvc.Http.Cookie("1", "2", 3, "4", "5", false, true); // Noncompliant
+    return new play.mvc.Http.Cookie("1", "2", 3, "4", "5", false, true, play.mvc.Http.Cookie.SameSite.NONE); // Noncompliant
   }
 
   play.mvc.Http.Cookie getC6() {
-    return new play.mvc.Http.Cookie("1", "2", 3, "4", "5", true, true);
+    return new play.mvc.Http.Cookie("1", "2", 3, "4", "5", true, true, play.mvc.Http.Cookie.SameSite.NONE);
   }
 
   Http.CookieBuilder getC7() {

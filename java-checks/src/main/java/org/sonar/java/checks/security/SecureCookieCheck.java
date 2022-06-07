@@ -92,6 +92,8 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
       .constructor()
       .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, JAVA_LANG_STRING, BOOLEAN, INT)
       .build(),
+    // The following constructor was deprecated in play 2.6.x and dropped in play version >= 2.7.x.
+    // Staying here to make sure the rule still catches it, but can not be tested
     MethodMatchers.create()
       .ofTypes(PLAY_COOKIE)
       .constructor()
