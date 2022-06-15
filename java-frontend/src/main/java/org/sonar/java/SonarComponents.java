@@ -64,6 +64,7 @@ import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.exceptions.ApiMismatchException;
+import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JProblem;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -451,6 +452,10 @@ public class SonarComponents {
 
 
   public boolean fileCanBeSkipped(InputFile inputFile) {
+    if (inputFile instanceof GeneratedFile) {
+      // Generated files should not be skipped as we cannot assess the change status of the source file
+      return false;
+    }
     boolean canSkipInContext;
     try {
       canSkipInContext = canSkipUnchangedFiles();
