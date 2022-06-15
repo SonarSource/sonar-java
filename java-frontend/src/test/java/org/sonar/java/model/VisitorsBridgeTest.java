@@ -494,11 +494,8 @@ class VisitorsBridgeTest {
 
     @Test
     void scanWithoutParsing_returns_false_when_the_file_is_a_generated_file() throws ApiMismatchException {
-      //InputFile inputFile = mock(InputFile.class);
-      //doReturn(InputFile.Status.CHANGED).when(inputFile).status();
       InputFile inputFile = new GeneratedFile(Path.of("non-existing-generated-file.java"));
 
-      // When SonarComponents is set and does not allow the file to be skipped
       SonarComponents sonarComponents = spy(new SonarComponents(null, null, null, null, null));
       doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
       VisitorsBridge visitorsBridge = new VisitorsBridge(
