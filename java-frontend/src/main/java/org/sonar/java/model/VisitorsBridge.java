@@ -181,7 +181,11 @@ public class VisitorsBridge {
       var fileScannerContext = createScannerContext(sonarComponents, inputFile, javaVersion, inAndroidContext, cacheContext);
       for (var scanner: scannersThatCannotBeSkipped) {
         try {
-          allScansSucceeded &= scanner.scanWithoutParsing(fileScannerContext);
+          var success = scanner.scanWithoutParsing(fileScannerContext);
+          allScansSucceeded &= success;
+          final var allScansSucceededFinal = allScansSucceeded;
+          LOG.debug(() -> String.format("Rule '%s' scanWithoutParsing %s (%s)", scanner.getClass().getSimpleName(),
+            success ? "was SUCCESSful" : "FAILED", allScansSucceededFinal ? "we can skip parsing" : "re-parsing required" ));
         } catch (AnalysisException e) {
           // In the case where the IssuableSubscriptionVisitorsRunner throws an exception, the problem has already been
           // logged and the exception formatted.
