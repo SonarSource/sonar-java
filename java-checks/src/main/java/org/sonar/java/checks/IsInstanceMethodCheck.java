@@ -42,6 +42,11 @@ public class IsInstanceMethodCheck extends IssuableSubscriptionVisitor {
     .withAnyParameters()
     .build();
 
+  // do something stupid
+  void foo() {
+    System.out.println("foo");
+  }
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.METHOD_INVOCATION);
