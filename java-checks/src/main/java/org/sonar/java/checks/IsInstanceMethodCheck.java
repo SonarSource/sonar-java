@@ -47,6 +47,10 @@ public class IsInstanceMethodCheck extends IssuableSubscriptionVisitor {
     return Collections.singletonList(Tree.Kind.METHOD_INVOCATION);
   }
 
+  public static void main(String[] args) {
+    System.out.println("foo");
+  }
+
   @Override
   public void visitNode(Tree tree) {
     MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
@@ -74,7 +78,7 @@ public class IsInstanceMethodCheck extends IssuableSubscriptionVisitor {
 
   private static Optional<String> getName(ExpressionTree selectedExpression) {
     Type type = selectedExpression.symbolType();
-    return type.isUnknown() ? 
+    return type.isUnknown() ?
       Optional.empty() :
       Optional.of(type.name());
   }
