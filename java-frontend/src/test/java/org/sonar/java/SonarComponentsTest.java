@@ -23,6 +23,7 @@ import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,6 +78,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.exceptions.ApiMismatchException;
+import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -712,6 +714,23 @@ class SonarComponentsTest {
       sonarComponents::canSkipUnchangedFiles
     );
     assertThat(error).hasCause(new NoSuchMethodError("API version mismatch :-("));
+  }
+
+  @Test
+  void fileCanBeSkipped_returns_false_when_the_file_is_a_generated_file() throws ApiMismatchException {
+    SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
+    SonarComponents sonarComponents = spy(
+      new SonarComponents(
+        fileLinesContextFactory,
+        sensorContextTester.fileSystem(),
+        mock(ClasspathForMain.class),
+        mock(ClasspathForTest.class),
+        checkFactory
+      )
+    );
+    InputFile inputFile = new GeneratedFile(Path.of("non-existing-generated-file.java"));
+
+    assertThat(sonarComponents.fileCanBeSkipped(inputFile)).isFalse();
   }
 
   @Test

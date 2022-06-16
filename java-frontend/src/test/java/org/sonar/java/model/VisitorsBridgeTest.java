@@ -20,6 +20,7 @@
 package org.sonar.java.model;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,7 +39,6 @@ import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.CheckFailureException;
-import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
@@ -54,6 +54,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
@@ -484,6 +485,21 @@ class VisitorsBridgeTest {
       doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
       VisitorsBridge visitorsBridgeWithSonarComponents = new VisitorsBridge(
         Collections.emptyList(),
+        Collections.emptyList(),
+        sonarComponents
+      );
+
+      assertThat(visitorsBridge.scanWithoutParsing(inputFile)).isFalse();
+    }
+
+    @Test
+    void scanWithoutParsing_returns_false_when_the_file_is_a_generated_file() throws ApiMismatchException {
+      InputFile inputFile = new GeneratedFile(Path.of("non-existing-generated-file.java"));
+
+      SonarComponents sonarComponents = spy(new SonarComponents(null, null, null, null, null));
+      doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
+      VisitorsBridge visitorsBridge = new VisitorsBridge(
+        Collections.singletonList(new EndOfAnalysisVisitor()),
         Collections.emptyList(),
         sonarComponents
       );

@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
@@ -142,10 +143,7 @@ public class JavaFrontend {
       successfullyScanned += testFilesScannedWithoutParsing.get(true).size();
       total += testFilesScannedWithoutParsing.get(true).size() + testFilesScannedWithoutParsing.get(false).size();
 
-      Map<Boolean, List<InputFile>> generatedFilesScannedWithoutParsing = astScannerForGeneratedFiles.scanWithoutParsing(generatedFiles);
-      generatedFiles = generatedFilesScannedWithoutParsing.get(false);
-      successfullyScanned += generatedFilesScannedWithoutParsing.get(true).size();
-      total += generatedFilesScannedWithoutParsing.get(true).size() + generatedFilesScannedWithoutParsing.get(false).size();
+      total += StreamSupport.stream(generatedFiles.spliterator(), false).count();
 
       LOG.info(
         "Server-side caching is enabled. The Java analyzer was able to leverage cached data from previous analyses for {} out of {} files. These files will not be parsed.",
