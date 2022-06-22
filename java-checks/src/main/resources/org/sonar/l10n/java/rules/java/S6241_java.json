@@ -1,0 +1,18 @@
+{
+  "title": "Region should be set explicitly when creating a new \"AwsClient\"",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
+  "tags": [
+    "startup-time",
+    "aws"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6241",
+  "sqKey": "S6241",
+  "scope": "Main",
+  "quickfix": "unknown"
+}
