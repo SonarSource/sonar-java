@@ -23,12 +23,54 @@ import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6241")
 public class AwsRegionShouldBeSetExplicitlyCheck extends IssuableSubscriptionVisitor {
+
+  private static final MethodMatchers BUILD_METHOD = MethodMatchers.create()
+    .ofSubTypes("software.amazon.awssdk.awscore.client.builder.AwsClientBuilder")
+    .names("build")
+    .addWithoutParametersMatcher()
+    .build();
+
+  private static final MethodMatchers REGION_METHOD = MethodMatchers.create()
+    .ofSubTypes("software.amazon.awssdk.awscore.client.builder.AwsClientBuilder")
+    .names("region")
+    .addParametersMatcher("software.amazon.awssdk.regions.Region")
+    .build();
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.emptyList();
+    return Collections.singletonList(Tree.Kind.METHOD_INVOCATION);
+  }
+
+  @Override
+  public void visitNode(Tree tree) {
+    MethodInvocationTree invocation = (MethodInvocationTree) tree;
+    if (BUILD_METHOD.matches(invocation) && !chainSetsRegion(invocation)) {
+      reportIssue(invocation, "Region should be set explicitly when creating a new \"AwsClient\"");
+    }
+  }
+
+  private static boolean chainSetsRegion(MethodInvocationTree terminalCall) {
+    ExpressionTree expression = terminalCall.methodSelect();
+    while (expression.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) expression;
+      ExpressionTree currentExpression = memberSelectExpressionTree.expression();
+      if (!currentExpression.is(Tree.Kind.METHOD_INVOCATION)) {
+        return false;
+      }
+      MethodInvocationTree currentInvocation = (MethodInvocationTree) currentExpression;
+      if (REGION_METHOD.matches(currentInvocation)) {
+        return true;
+      }
+      expression = currentInvocation.methodSelect();
+    }
+    return false;
   }
 }

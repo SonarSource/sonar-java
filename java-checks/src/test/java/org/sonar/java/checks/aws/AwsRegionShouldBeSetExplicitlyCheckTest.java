@@ -30,6 +30,6 @@ class AwsRegionShouldBeSetExplicitlyCheckTest {
     CheckVerifier.newVerifier()
       .withCheck(new AwsRegionShouldBeSetExplicitlyCheck())
       .onFiles(mainCodeSourcesPath("checks/aws/AwsRegionShouldBeSetExplicitlyCheck.java"))
-      .verifyNoIssues();
+      .verifyIssues();
   }
 }
