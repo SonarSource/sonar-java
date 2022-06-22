@@ -21,13 +21,16 @@ package org.sonar.java.checks.aws;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6241")
 public class AwsRegionShouldBeSetExplicitlyCheck extends IssuableSubscriptionVisitor {
@@ -52,9 +55,31 @@ public class AwsRegionShouldBeSetExplicitlyCheck extends IssuableSubscriptionVis
   @Override
   public void visitNode(Tree tree) {
     MethodInvocationTree invocation = (MethodInvocationTree) tree;
-    if (BUILD_METHOD.matches(invocation) && !chainSetsRegion(invocation)) {
+    if (!BUILD_METHOD.matches(invocation)) {
+      return;
+    }
+    Optional<VariableTree> declaration = getDeclaration(invocation);
+    if (declaration.isPresent()) {
+      VariableTree actualDeclaration = declaration.get();
+      ExpressionTree initializer = actualDeclaration.initializer();
+      if (initializer.is(Tree.Kind.METHOD_INVOCATION)) {
+        MethodInvocationTree initializationChain = (MethodInvocationTree) initializer;
+        if (REGION_METHOD.matches(initializationChain) || chainSetsRegion(initializationChain)) {
+          return;
+        }
+      }
+      List<IdentifierTree> usages = actualDeclaration.symbol().usages();
+      if (usages.stream().anyMatch(identifier -> setsRegion(identifier))) {
+        return;
+      }
+      reportIssue(actualDeclaration, "Region should be set explicitly when creating a new \"AwsClient\"");
+    } else {
+      if (chainSetsRegion(invocation)) {
+        return;
+      }
       reportIssue(invocation, "Region should be set explicitly when creating a new \"AwsClient\"");
     }
+
   }
 
   private static boolean chainSetsRegion(MethodInvocationTree terminalCall) {
@@ -70,6 +95,43 @@ public class AwsRegionShouldBeSetExplicitlyCheck extends IssuableSubscriptionVis
         return true;
       }
       expression = currentInvocation.methodSelect();
+    }
+    return false;
+  }
+
+  private static Optional<VariableTree> getDeclaration(MethodInvocationTree terminalCall) {
+    ExpressionTree expression = terminalCall.methodSelect();
+    while (expression.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) expression;
+      ExpressionTree currentExpression = memberSelectExpressionTree.expression();
+      if (currentExpression.is(Tree.Kind.IDENTIFIER)) {
+        IdentifierTree identifier = (IdentifierTree) currentExpression;
+        Tree declaration = identifier.symbol().declaration();
+        if (declaration != null && declaration.is(Tree.Kind.VARIABLE)) {
+          return Optional.of((VariableTree) declaration);
+        }
+      }
+      if (!currentExpression.is(Tree.Kind.METHOD_INVOCATION)) {
+        return Optional.empty();
+      }
+      MethodInvocationTree currentInvocation = (MethodInvocationTree) currentExpression;
+      expression = currentInvocation.methodSelect();
+    }
+    return Optional.empty();
+  }
+
+  private static boolean setsRegion(IdentifierTree identifier) {
+    Tree parent = identifier.parent();
+    while (parent != null && parent.is(Tree.Kind.MEMBER_SELECT)) {
+      parent = parent.parent();
+      if (parent == null || !parent.is(Tree.Kind.METHOD_INVOCATION)) {
+        return false;
+      }
+      MethodInvocationTree invocation = (MethodInvocationTree) parent;
+      if (REGION_METHOD.matches(invocation)) {
+        return true;
+      }
+      parent = invocation.parent();
     }
     return false;
   }
