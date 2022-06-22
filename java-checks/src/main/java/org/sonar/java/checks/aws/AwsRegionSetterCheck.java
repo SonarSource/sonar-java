@@ -28,7 +28,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 public class AwsRegionSetterCheck extends AbstractMethodDetection {
 
   private static final String STRING_TYPE = "java.lang.String";
-  private static final String MESSAGE = "Use an Enum not a String to set the region.";
+  private static final String MESSAGE = "Give the enum value for this region instead.";
 
   private static final MethodMatchers REGION_SETTER_MATCHER = MethodMatchers.create()
     .ofTypes("com.amazonaws.services.s3.AmazonS3ClientBuilder")
