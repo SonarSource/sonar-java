@@ -43,7 +43,7 @@ public class AwsRegionSetterCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree tree) {
-    // We know from the Matcher that there is one and only one argument.
+    // REGION_SETTER_MATCHER ensures that there is one and only one argument.
     reportIssue(tree.arguments().get(0), MESSAGE);
   }
 }
