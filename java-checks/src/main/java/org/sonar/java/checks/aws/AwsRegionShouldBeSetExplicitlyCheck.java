@@ -69,6 +69,9 @@ public class AwsRegionShouldBeSetExplicitlyCheck extends IssuableSubscriptionVis
         }
       }
       List<IdentifierTree> usages = actualDeclaration.symbol().usages();
+      if (usages.stream().anyMatch(identifier -> isPassedAsArgument(identifier))) {
+        return;
+      }
       if (usages.stream().anyMatch(identifier -> setsRegion(identifier))) {
         return;
       }
@@ -118,6 +121,11 @@ public class AwsRegionShouldBeSetExplicitlyCheck extends IssuableSubscriptionVis
       expression = currentInvocation.methodSelect();
     }
     return Optional.empty();
+  }
+
+  private static boolean isPassedAsArgument(IdentifierTree identifier) {
+    Tree parent = identifier.parent();
+    return parent != null && parent.is(Tree.Kind.ARGUMENTS);
   }
 
   private static boolean setsRegion(IdentifierTree identifier) {

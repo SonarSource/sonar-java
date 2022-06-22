@@ -1,6 +1,7 @@
 package checks.aws;
 
 import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
+import software.amazon.awssdk.awscore.client.builder.AwsClientBuilder;
 import software.amazon.awssdk.core.SdkSystemSetting;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -46,5 +47,14 @@ public class AwsRegionShouldBeSetExplicitlyCheck {
       .region(Region.of(System.getenv(SdkSystemSetting.AWS_REGION.environmentVariable())));
     fourthBuilder.credentialsProvider(EnvironmentVariableCredentialsProvider.create());
     fourthBuilder.build();
+  }
+
+  void compliantVariableSetInOtherMethod() {
+    S3ClientBuilder builder = S3Client.builder();
+    couldSetTheRegionButWillNot(builder);
+    builder.build();
+  }
+
+  void couldSetTheRegionButWillNot(AwsClientBuilder ignored) {
   }
 }
