@@ -58,21 +58,23 @@ public class AwsRegionShouldBeSetExplicitlyCheck extends IssuableSubscriptionVis
     if (!BUILD_METHOD.matches(invocation)) {
       return;
     }
-    // If the call to build is part of an assignment, we can investigate the chained calls
-    if (chainSetsRegion(invocation)) {
+    // We first look for a call to region within the same chain of calls.
+    if (setsRegion(invocation)) {
       return;
     }
-    // If the call to build is made a builder variable, we look for the declaration and track usage
+    // If the call to build is made on a builder variable, we look into initialization and usages for a call to region
     Optional<VariableTree> declaration = getDeclaration(invocation);
     if (declaration.isPresent()) {
       VariableTree actualDeclaration = declaration.get();
       ExpressionTree initializer = actualDeclaration.initializer();
+      // We first look into the initialization for a call to region
       if (initializer.is(Tree.Kind.METHOD_INVOCATION)) {
         MethodInvocationTree initializationChain = (MethodInvocationTree) initializer;
-        if (REGION_METHOD.matches(initializationChain) || chainSetsRegion(initializationChain)) {
+        if (setsRegion(initializationChain)) {
           return;
         }
       }
+      // If no call to region is found in the call, we go to the other usages
       List<IdentifierTree> usages = actualDeclaration.symbol().usages();
       // If one of the usages is passing the builder to a method, we assume it might set there
       if (usages.stream().anyMatch(AwsRegionShouldBeSetExplicitlyCheck::isPassedAsArgument)) {
@@ -88,8 +90,11 @@ public class AwsRegionShouldBeSetExplicitlyCheck extends IssuableSubscriptionVis
     }
   }
 
-  private static boolean chainSetsRegion(MethodInvocationTree terminalCall) {
-    ExpressionTree expression = terminalCall.methodSelect();
+  private static boolean setsRegion(MethodInvocationTree invocation) {
+    if (REGION_METHOD.matches(invocation)) {
+      return true;
+    }
+    ExpressionTree expression = invocation.methodSelect();
     while (expression.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) expression;
       ExpressionTree currentExpression = memberSelectExpressionTree.expression();
@@ -113,7 +118,7 @@ public class AwsRegionShouldBeSetExplicitlyCheck extends IssuableSubscriptionVis
       if (currentExpression.is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifier = (IdentifierTree) currentExpression;
         Tree declaration = identifier.symbol().declaration();
-        if (declaration != null && declaration.is(Tree.Kind.VARIABLE) && !declaration.parent().is(Tree.Kind.CLASS)) {
+        if (declaration != null && declaration.is(Tree.Kind.VARIABLE)) {
           return Optional.of((VariableTree) declaration);
         }
       }
