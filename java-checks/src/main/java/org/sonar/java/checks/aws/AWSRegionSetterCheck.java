@@ -19,19 +19,51 @@
  */
 package org.sonar.java.checks.aws;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 @Rule(key = "S6262")
-public class AWSRegionSetterCheck extends IssuableSubscriptionVisitor {
+public class AWSRegionSetterCheck extends AbstractMethodDetection {
+
+  private static final String MESSAGE = "Use an Enum not a String to set the region.";
+
+  private static final MethodMatchers REGION_SETTER_MATCHER = MethodMatchers.create()
+    .ofTypes("com.amazonaws.services.s3.AmazonS3ClientBuilder")
+    .names("withRegion")
+    .withAnyParameters()
+    .build();
 
   @Override
-  public List<Kind> nodesToVisit() {
-    return Arrays.asList(Kind.METHOD, Kind.METHOD_INVOCATION);
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return REGION_SETTER_MATCHER;
+  }
+
+  @Override
+  protected void onMethodInvocationFound(MethodInvocationTree tree) {
+    process(tree.arguments());
+  }
+
+  private void process(Arguments arguments) {
+    if (arguments.isEmpty()) {
+      return;
+    }
+    ExpressionTree firstArgument = ExpressionUtils.skipParentheses(arguments.get(0));
+    processArgument(firstArgument);
+  }
+
+  private void processArgument(ExpressionTree argument) {
+    switch (argument.kind()) {
+      case STRING_LITERAL:
+        reportIssue(argument, MESSAGE);
+        break;
+      default:
+        break;
+    }
   }
 
 }
