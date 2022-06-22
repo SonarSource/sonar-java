@@ -58,6 +58,11 @@ public class AwsRegionShouldBeSetExplicitlyCheck extends IssuableSubscriptionVis
     if (!BUILD_METHOD.matches(invocation)) {
       return;
     }
+    // If the call to build is part of an assignment, we can investigate the chained calls
+    if (chainSetsRegion(invocation)) {
+      return;
+    }
+    // If the call to build is made a builder variable, we look for the declaration and track usage
     Optional<VariableTree> declaration = getDeclaration(invocation);
     if (declaration.isPresent()) {
       VariableTree actualDeclaration = declaration.get();
@@ -69,20 +74,18 @@ public class AwsRegionShouldBeSetExplicitlyCheck extends IssuableSubscriptionVis
         }
       }
       List<IdentifierTree> usages = actualDeclaration.symbol().usages();
-      if (usages.stream().anyMatch(identifier -> isPassedAsArgument(identifier))) {
+      // If one of the usages is passing the builder to a method, we assume it might set there
+      if (usages.stream().anyMatch(AwsRegionShouldBeSetExplicitlyCheck::isPassedAsArgument)) {
         return;
       }
-      if (usages.stream().anyMatch(identifier -> setsRegion(identifier))) {
+      // If the usage sets the region, we return
+      if (usages.stream().anyMatch(AwsRegionShouldBeSetExplicitlyCheck::setsRegion)) {
         return;
       }
       reportIssue(actualDeclaration, "Region should be set explicitly when creating a new \"AwsClient\"");
     } else {
-      if (chainSetsRegion(invocation)) {
-        return;
-      }
       reportIssue(invocation, "Region should be set explicitly when creating a new \"AwsClient\"");
     }
-
   }
 
   private static boolean chainSetsRegion(MethodInvocationTree terminalCall) {
@@ -110,7 +113,7 @@ public class AwsRegionShouldBeSetExplicitlyCheck extends IssuableSubscriptionVis
       if (currentExpression.is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifier = (IdentifierTree) currentExpression;
         Tree declaration = identifier.symbol().declaration();
-        if (declaration != null && declaration.is(Tree.Kind.VARIABLE)) {
+        if (declaration != null && declaration.is(Tree.Kind.VARIABLE) && !declaration.parent().is(Tree.Kind.CLASS)) {
           return Optional.of((VariableTree) declaration);
         }
       }

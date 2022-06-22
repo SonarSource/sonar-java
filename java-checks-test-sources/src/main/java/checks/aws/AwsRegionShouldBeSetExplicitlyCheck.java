@@ -9,7 +9,7 @@ import software.amazon.awssdk.services.s3.S3ClientBuilder;
 
 public class AwsRegionShouldBeSetExplicitlyCheck {
   void nonCompliantChained() {
-    S3Client.builder() // Noncompliant {{Region should be set explicitly when creating a new "AwsClient"}}
+    S3Client s3Client = S3Client.builder() // Noncompliant {{Region should be set explicitly when creating a new "AwsClient"}}
       .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
       .build();
   }
@@ -17,6 +17,10 @@ public class AwsRegionShouldBeSetExplicitlyCheck {
   void nonCompliantVariable() {
     S3ClientBuilder builder = S3Client.builder(); // Noncompliant
     builder.build();
+  }
+
+  class NonCompliantClientAsField {
+    S3Client incompleteClient = S3Client.builder().build(); // Noncompliant
   }
 
   void compliantChained() {
@@ -56,5 +60,11 @@ public class AwsRegionShouldBeSetExplicitlyCheck {
   }
 
   void couldSetTheRegionButWillNot(AwsClientBuilder ignored) {
+  }
+  class ClientAsField {
+    S3Client client = S3Client.builder()
+      .region(Region.of(System.getenv(SdkSystemSetting.AWS_REGION.environmentVariable())))
+      .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+      .build();
   }
 }
