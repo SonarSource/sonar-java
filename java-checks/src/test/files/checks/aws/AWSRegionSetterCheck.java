@@ -6,7 +6,7 @@ public class T {
   private static final Regions REGION_EU_WEST_1 = Regions.EU_WEST_1;
 
   void nonCompliant() {
-    AmazonS3ClientBuilder.standard().withRegion("eu_west_1").build(); // Noncompliant
+    AmazonS3ClientBuilder.standard().withRegion("eu_west_1").build(); // Noncompliant [[sc=49;ec=60]]
     AmazonS3ClientBuilder.standard().withRegion(EU_WEST_1).build(); // Noncompliant
   }
 
