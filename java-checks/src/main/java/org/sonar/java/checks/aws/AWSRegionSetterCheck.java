@@ -22,9 +22,6 @@ package org.sonar.java.checks.aws;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
-import org.sonar.plugins.java.api.tree.Arguments;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 // TODO rename to AwsXxxx
@@ -47,31 +44,6 @@ public class AWSRegionSetterCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree tree) {
-    process(tree.arguments());
+    reportIssue(tree.arguments().get(0), MESSAGE);
   }
-
-  private void process(Arguments arguments) {
-    // TODO assert that argument size == 1
-    if (arguments.isEmpty()) {
-      return;
-    }
-    ExpressionTree firstArgument = arguments.get(0);
-    processArgument(firstArgument);
-  }
-
-  private void processArgument(ExpressionTree argument) {
-    switch (argument.kind()) {
-      case STRING_LITERAL:
-        reportIssue(argument, MESSAGE);
-        break;
-      case IDENTIFIER:
-        if (((IdentifierTree) argument).symbol().type().is(STRING_TYPE)) {
-          reportIssue(argument, MESSAGE);
-        }
-        break;
-      default:
-        break;
-    }
-  }
-
 }
