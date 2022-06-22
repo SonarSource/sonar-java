@@ -44,6 +44,7 @@ public class AWSRegionSetterCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree tree) {
+    // We know from the Matcher that there is one and only one argument.
     reportIssue(tree.arguments().get(0), MESSAGE);
   }
 }
