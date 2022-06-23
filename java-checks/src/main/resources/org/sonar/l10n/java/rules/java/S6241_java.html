@@ -1,12 +1,9 @@
 <p>If the region is not specified when creating a new AwsClient with an <a
 href="https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/awscore/client/builder/AwsClientBuilder.html">AwsClientBuilder</a>, the AWS SDK
 will execute some logic to identify the endpoint automatically.</p>
-<pre>
-While it will probably identify the correct one, this extra logic will slow down startup time, already known to be a hotspot.
-</pre>
-<pre>
-You should therefore always define the logic to set the region yourself. This is typically done by retrieving the region from the Lambda provided AWS_REGION environment variable.
-</pre>
+<p>While it will probably identify the correct one, this extra logic will slow down startup time, already known to be a hotspot.</p>
+<p>You should therefore always define the logic to set the region yourself. This is typically done by retrieving the region from the Lambda provided
+AWS_REGION environment variable.</p>
 <p>This will make the code more explicit and spare initialization time.</p>
 <p>This rule reports an issue when the region is not set when creating an AwsClient.</p>
 <h2>Noncompliant Code Example</h2>
