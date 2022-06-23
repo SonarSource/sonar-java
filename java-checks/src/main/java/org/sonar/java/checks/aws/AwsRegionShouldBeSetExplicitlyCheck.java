@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -104,42 +105,21 @@ public class AwsRegionShouldBeSetExplicitlyCheck extends IssuableSubscriptionVis
    * @return True if the region is potentially set by one of the method calls in the chain
    */
   private static boolean setsRegion(MethodInvocationTree invocation) {
-    if (REGION_METHOD.matches(invocation)) {
-      return true;
-    }
-    if (!belongsToExpectedOwner(invocation)) {
-      return true;
-    }
-    ExpressionTree expression = invocation.methodSelect();
-    while (expression.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) expression;
-      ExpressionTree currentExpression = memberSelectExpressionTree.expression();
-      if (!currentExpression.is(Tree.Kind.METHOD_INVOCATION)) {
-        return false;
-      }
-      MethodInvocationTree currentInvocation = (MethodInvocationTree) currentExpression;
-      if (!belongsToExpectedOwner(currentInvocation)) {
-        return true;
-      }
-      if (REGION_METHOD.matches(currentInvocation)) {
-        return true;
-      }
-      expression = currentInvocation.methodSelect();
-    }
-    return false;
+    CallChainVisitor visitor = new CallChainVisitor(REGION_METHOD);
+    invocation.accept(visitor);
+    return visitor.methodIsInvoked;
   }
 
   /**
-   * Tests if the method invoked is owned a child of the SDKBuilder or the SDKClient.
-   * The result can be used to decide whether the method sets the region on the builder.
+   * Crawls down the method calls following an SdkBuilder identifier to check if one of them returns sets the region.
    *
-   * @param invocation The method invocation to inspect
-   * @return True if the method belongs to SDKBuilder or the SDKClient
+   * @param identifier The SdkBuilder to check
+   * @return True if one of the method calls sets the region. False otherwise
    */
-  private static boolean belongsToExpectedOwner(MethodInvocationTree invocation) {
-    Symbol owner = invocation.symbol().owner();
-    return owner.type().isSubtypeOf(SDK_CLIENT_BUILDER_TYPE) ||
-      owner.type().isSubtypeOf(SDK_CLIENT_TYPE);
+  private static boolean setsRegion(IdentifierTree identifier) {
+    ReverseCallChainVisitor visitor = new ReverseCallChainVisitor(REGION_METHOD);
+    identifier.accept(visitor);
+    return visitor.methodIsInvoked;
   }
 
   private static Optional<VariableTree> getDeclaration(MethodInvocationTree terminalCall) {
@@ -168,25 +148,72 @@ public class AwsRegionShouldBeSetExplicitlyCheck extends IssuableSubscriptionVis
     return parent != null && parent.is(Tree.Kind.ARGUMENTS);
   }
 
-  /**
-   * Crawls down the method calls following an SdkBuilder identifier to check if one of them returns sets the region.
-   *
-   * @param identifier The SdkBuilder to check
-   * @return True if one of the method calls sets the region. False otherwise
-   */
-  private static boolean setsRegion(IdentifierTree identifier) {
-    Tree parent = identifier.parent();
-    while (parent != null && parent.is(Tree.Kind.MEMBER_SELECT)) {
-      parent = parent.parent();
-      if (parent == null || !parent.is(Tree.Kind.METHOD_INVOCATION)) {
-        return false;
-      }
-      MethodInvocationTree invocation = (MethodInvocationTree) parent;
-      if (REGION_METHOD.matches(invocation)) {
-        return true;
-      }
-      parent = invocation.parent();
+  private static class CallChainVisitor extends BaseTreeVisitor {
+    protected boolean methodIsInvoked;
+    private MethodMatchers target;
+
+    CallChainVisitor(MethodMatchers matcher) {
+      this.target = matcher;
     }
-    return false;
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      if (inspectCall(tree)) {
+        return;
+      }
+      ExpressionTree expression = tree.methodSelect();
+      expression.accept(this);
+    }
+
+    protected boolean inspectCall(MethodInvocationTree invocation) {
+      methodIsInvoked = target.matches(invocation) || !methodBelongsToSdk(invocation);
+      return methodIsInvoked;
+    }
+
+    /**
+     * Tests if the method invoked is owned a child of the SDKBuilder or the SDKClient.
+     * The result can be used to decide whether the method sets the region on the builder.
+     *
+     * @param invocation The method invocation to inspect
+     * @return True if the method belongs to SDKBuilder or the SDKClient
+     */
+    private static boolean methodBelongsToSdk(MethodInvocationTree invocation) {
+      Symbol owner = invocation.symbol().owner();
+      return owner.type().isSubtypeOf(SDK_CLIENT_BUILDER_TYPE) ||
+        owner.type().isSubtypeOf(SDK_CLIENT_TYPE);
+    }
+  }
+
+  private static class ReverseCallChainVisitor extends CallChainVisitor {
+    ReverseCallChainVisitor(MethodMatchers matcher) {
+      super(matcher);
+    }
+
+    @Override
+    public void visitIdentifier(IdentifierTree tree) {
+      Tree parent = tree.parent();
+      if (parent != null && parent.is(Tree.Kind.MEMBER_SELECT)) {
+        parent.accept(this);
+      }
+    }
+
+    @Override
+    public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+      Tree parent = tree.parent();
+      if (parent != null && parent.is(Tree.Kind.METHOD_INVOCATION)) {
+        parent.accept(this);
+      }
+    }
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      if (inspectCall(tree)) {
+        return;
+      }
+      Tree parent = tree.parent();
+      if (parent != null && parent.is(Tree.Kind.MEMBER_SELECT)) {
+        parent.accept(this);
+      }
+    }
   }
 }
