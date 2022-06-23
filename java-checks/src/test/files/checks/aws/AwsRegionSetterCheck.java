@@ -13,5 +13,10 @@ public class T {
   void compliant() {
     AmazonS3ClientBuilder.standard().withRegion(Regions.EU_WEST_1).build(); // Compliant
     AmazonS3ClientBuilder.standard().withRegion(ENUM_EU_WEST_1).build(); // Compliant
+    AmazonS3ClientBuilder.standard().withRegion(getRegion()).build(); // Compliant
+  }
+
+  String getRegion() {
+    return EU_WEST_1;
   }
 }

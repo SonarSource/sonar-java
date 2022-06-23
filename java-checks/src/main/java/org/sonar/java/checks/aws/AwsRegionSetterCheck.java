@@ -23,7 +23,9 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 @Rule(key = "S6262")
 public class AwsRegionSetterCheck extends AbstractMethodDetection {
@@ -48,6 +50,9 @@ public class AwsRegionSetterCheck extends AbstractMethodDetection {
     if (arguments.size() != 1) {
       return;
     }
-    reportIssue(arguments.get(0), MESSAGE);
+    ExpressionTree argument = arguments.get(0);
+    if (argument.is(Kind.STRING_LITERAL, Kind.IDENTIFIER)) {
+      reportIssue(argument, MESSAGE);
+    }
   }
 }
