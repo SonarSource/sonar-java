@@ -90,11 +90,9 @@ public class AwsRegionShouldBeSetExplicitlyCheck extends IssuableSubscriptionVis
       if (usages.stream().anyMatch(AwsRegionShouldBeSetExplicitlyCheck::setsRegion)) {
         return;
       }
-      String typeName = ((Symbol.MethodSymbol) invocation.symbol()).returnType().name();
-      reportIssue(actualDeclaration, "Region should be set explicitly when creating a new " + typeName + ".");
+      reportIssue(actualDeclaration, "Set the region explicitly on this builder.");
     } else {
-      String typeName = ((Symbol.MethodSymbol) invocation.symbol()).returnType().name();
-      reportIssue(invocation, "Region should be set explicitly when creating a new " + typeName + ".");
+      reportIssue(invocation, "Set the region explicitly on this builder.");
     }
   }
 
