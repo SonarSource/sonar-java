@@ -7,7 +7,7 @@
     "constantCost": "5min"
   },
   "tags": [
-    "AWS"
+    "aws"
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-6262",
