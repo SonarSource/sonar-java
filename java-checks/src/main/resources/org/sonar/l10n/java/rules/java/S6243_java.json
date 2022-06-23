@@ -1,0 +1,15 @@
+{
+  "title": "Reusable resources should be initialized at construction time of Lambda functions",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
+  "tags": [],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6243",
+  "sqKey": "S6243",
+  "scope": "Main",
+  "quickfix": "unknown"
+}
