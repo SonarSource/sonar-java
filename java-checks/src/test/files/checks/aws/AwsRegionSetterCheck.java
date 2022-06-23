@@ -7,7 +7,7 @@ public class T {
 
   void nonCompliant() {
     AmazonS3ClientBuilder.standard().withRegion("eu_west_1").build(); // Noncompliant [[sc=49;ec=60]]
-    AmazonS3ClientBuilder.standard().withRegion(EU_WEST_1).build(); // Noncompliant
+    AmazonS3ClientBuilder.standard().withRegion(EU_WEST_1).build(); // Noncompliant {{Give the enum value for this region instead.}}
   }
 
   void compliant() {
