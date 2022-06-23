@@ -10,18 +10,18 @@ import software.amazon.awssdk.services.s3.S3ClientBuilder;
 public class AwsRegionShouldBeSetExplicitlyCheck {
 
   void nonCompliantChained() {
-    S3Client s3Client = S3Client.builder() // Noncompliant {{Region should be set explicitly when creating a new "AwsClient"}}
+    S3Client s3Client = S3Client.builder() // Noncompliant [[sl=+0;sc=25;el=+2;ec=15]] {{Region should be set explicitly when creating a new "AwsClient"}}
       .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
       .build();
   }
 
   void nonCompliantVariable() {
-    S3ClientBuilder builder = S3Client.builder(); // Noncompliant
+    S3ClientBuilder builder = S3Client.builder(); // Noncompliant [[sc=5;ec=50]] {{Region should be set explicitly when creating a new "AwsClient"}}
     builder.build();
   }
 
   class NonCompliantClientAsField {
-    S3Client incompleteClient = S3Client.builder().build(); // Noncompliant
+    S3Client incompleteClient = S3Client.builder().build(); // Noncompliant [[sc=33;ec=59]] {{Region should be set explicitly when creating a new "AwsClient"}}
   }
 
   void compliantChained() {
@@ -55,7 +55,7 @@ public class AwsRegionShouldBeSetExplicitlyCheck {
   }
 
   void compliantVariableSetInOtherMethod() {
-    S3ClientBuilder builder = S3Client.builder();
+    S3ClientBuilder builder = S3Client.builder(); // Compliant FN
     couldSetTheRegionButWillNot(builder);
     builder.build();
   }
