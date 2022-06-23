@@ -89,9 +89,11 @@ public class AwsRegionShouldBeSetExplicitlyCheck extends IssuableSubscriptionVis
       if (usages.stream().anyMatch(AwsRegionShouldBeSetExplicitlyCheck::setsRegion)) {
         return;
       }
-      reportIssue(actualDeclaration, "Region should be set explicitly when creating a new \"AwsClient\"");
+      String typeName = ((Symbol.MethodSymbol) invocation.symbol()).returnType().name();
+      reportIssue(actualDeclaration, "Region should be set explicitly when creating a new " + typeName + ".");
     } else {
-      reportIssue(invocation, "Region should be set explicitly when creating a new \"AwsClient\"");
+      String typeName = ((Symbol.MethodSymbol) invocation.symbol()).returnType().name();
+      reportIssue(invocation, "Region should be set explicitly when creating a new " + typeName + ".");
     }
   }
 
