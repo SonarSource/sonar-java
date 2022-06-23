@@ -37,6 +37,20 @@ public class AwsReusableResourcesInitializedOnceCheck {
       DriverManager.getConnection("foo"); // Noncompliant [[sc=21;ec=34]] {Instantiate this client outside the Lambda function.}
       var customClient = new FooClient(); // Noncompliant  [[sc=30;ec=39]] {Instantiate this client outside the Lambda function.}
       var compliant = new Object();
+      build();
+
+      called();
+      return null;
+    }
+
+    // Similar signature but not same:
+    public Void handleRequest(Object o, Context context, Object foo) throws SQLException {
+      S3Client s3Client = S3Client.builder().region(Region.EU_CENTRAL_1).build();
+      S3Client.builder().build();
+      MachineLearningClient.builder().build();
+      DriverManager.getConnection("foo");
+      var customClient = new FooClient();
+      var compliant = new Object();
 
       called();
       return null;
@@ -100,6 +114,18 @@ public class AwsReusableResourcesInitializedOnceCheck {
       called();
     }
 
+    // Similar signature but not same:
+    public void handleRequest(Object o, Context context) throws SQLException {
+      S3Client s3Client = S3Client.builder().region(Region.EU_CENTRAL_1).build();
+      S3Client.builder().build();
+      MachineLearningClient.builder().build();
+      DriverManager.getConnection("foo");
+      var customClient = new FooClient();
+      var compliant = new Object();
+
+      called();
+    }
+
     void called() throws SQLException {
       S3Client s3Client = S3Client.builder().region(Region.EU_CENTRAL_1).build(); // Noncompliant
       S3Client.builder().build(); // Noncompliant
@@ -148,5 +174,9 @@ public class AwsReusableResourcesInitializedOnceCheck {
     public void close() {
 
     }
+  }
+
+  static Object build() {
+    return null;
   }
 }
