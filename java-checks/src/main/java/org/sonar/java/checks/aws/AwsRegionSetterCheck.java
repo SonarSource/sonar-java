@@ -22,7 +22,6 @@ package org.sonar.java.checks.aws;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
-import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -46,11 +45,8 @@ public class AwsRegionSetterCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree tree) {
-    Arguments arguments = tree.arguments();
-    if (arguments.size() != 1) {
-      return;
-    }
-    ExpressionTree argument = arguments.get(0);
+    // The methodmatcher ensures that there is one and only one argument.
+    ExpressionTree argument = tree.arguments().get(0);
     if (argument.is(Kind.STRING_LITERAL, Kind.IDENTIFIER)) {
       reportIssue(argument, MESSAGE);
     }
