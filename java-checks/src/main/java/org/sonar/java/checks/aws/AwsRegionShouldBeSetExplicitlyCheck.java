@@ -87,10 +87,8 @@ public class AwsRegionShouldBeSetExplicitlyCheck extends IssuableSubscriptionVis
       if (regionIsSet) {
         return;
       }
-      reportIssue(actualDeclaration, "Set the region explicitly on this builder.");
-    } else {
-      reportIssue(invocation, "Set the region explicitly on this builder.");
     }
+    reportIssue(invocation, "Set the region explicitly on this builder.");
   }
 
   /**
