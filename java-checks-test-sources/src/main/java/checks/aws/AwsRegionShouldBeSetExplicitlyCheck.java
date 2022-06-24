@@ -8,6 +8,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3ClientBuilder;
 
 public class AwsRegionShouldBeSetExplicitlyCheck {
+  public static final AwsClientBuilder BUILDER = getABuilder();
 
   void nonCompliantChained() {
     S3Client s3Client = S3Client.builder() // Noncompliant [[sl=+0;sc=25;el=+2;ec=15]] {{Set the region explicitly on this builder.}}
@@ -76,7 +77,7 @@ public class AwsRegionShouldBeSetExplicitlyCheck {
     builder.build();
   }
 
-  AwsClientBuilder getABuilder() {
+  static AwsClientBuilder getABuilder() {
     return S3Client.builder();
   }
 
@@ -84,8 +85,6 @@ public class AwsRegionShouldBeSetExplicitlyCheck {
     AwsClientBuilder builder = getABuilder(); // Compliant FN
     builder.build();
 
-    AwsClientBuilder anotherBuilder = getABuilder() // Compliant FN
-      .credentialsProvider(EnvironmentVariableCredentialsProvider.create());
-    anotherBuilder.build();
+
   }
 }
