@@ -344,7 +344,7 @@
   {
     "ruleKey": "S1172",
     "truePositives": 317,
-    "falseNegatives": 8,
+    "falseNegatives": 10,
     "falsePositives": 0
   },
   {
@@ -547,7 +547,7 @@
   },
   {
     "ruleKey": "S1481",
-    "truePositives": 1322,
+    "truePositives": 1328,
     "falseNegatives": 7,
     "falsePositives": 0
   },
@@ -673,7 +673,7 @@
   },
   {
     "ruleKey": "S1854",
-    "truePositives": 1686,
+    "truePositives": 1692,
     "falseNegatives": 3,
     "falsePositives": 0
   },
@@ -818,7 +818,7 @@
   {
     "ruleKey": "S2095",
     "truePositives": 112,
-    "falseNegatives": 16,
+    "falseNegatives": 18,
     "falsePositives": 0
   },
   {
