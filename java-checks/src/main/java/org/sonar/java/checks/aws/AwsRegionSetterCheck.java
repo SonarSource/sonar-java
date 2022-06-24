@@ -33,8 +33,8 @@ public class AwsRegionSetterCheck extends AbstractMethodDetection {
   private static final String MESSAGE = "Give the enum value for this region instead.";
 
   private static final MethodMatchers REGION_SETTER_MATCHER = MethodMatchers.create()
-    .ofTypes("com.amazonaws.services.s3.AmazonS3ClientBuilder")
-    .names("withRegion")
+    .ofSubTypes("com.amazonaws.client.builder.AwsClientBuilder")
+    .names("withRegion", "setRegion")
     .addParametersMatcher(STRING_TYPE)
     .build();
 
