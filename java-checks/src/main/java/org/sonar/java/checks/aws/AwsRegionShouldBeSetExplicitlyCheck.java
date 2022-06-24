@@ -81,13 +81,10 @@ public class AwsRegionShouldBeSetExplicitlyCheck extends IssuableSubscriptionVis
         return;
       }
       // If no call to region is found in the call, we go to the other usages
-      List<IdentifierTree> usages = actualDeclaration.symbol().usages();
       // If one of the usages is passing the builder to a method, we assume it might set there
-      if (usages.stream().anyMatch(AwsRegionShouldBeSetExplicitlyCheck::isPassedAsArgument)) {
-        return;
-      }
-      // If the usage sets the region, we return
-      if (usages.stream().anyMatch(AwsRegionShouldBeSetExplicitlyCheck::setsRegion)) {
+      boolean regionIsSet = actualDeclaration.symbol().usages().stream()
+        .anyMatch(usage -> isPassedAsArgument(usage) || setsRegion(usage));
+      if (regionIsSet) {
         return;
       }
       reportIssue(actualDeclaration, "Set the region explicitly on this builder.");
