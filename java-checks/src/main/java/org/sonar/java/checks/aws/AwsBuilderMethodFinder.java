@@ -50,6 +50,8 @@ public abstract class AwsBuilderMethodFinder extends IssuableSubscriptionVisitor
 
   abstract MethodMatchers getTargetMethod();
 
+  abstract String getIssueMessage();
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.METHOD_INVOCATION);
@@ -85,9 +87,9 @@ public abstract class AwsBuilderMethodFinder extends IssuableSubscriptionVisitor
       if (regionIsSet) {
         return;
       }
-      reportIssue(actualDeclaration, "Set the region explicitly on this builder.");
+      reportIssue(actualDeclaration, getIssueMessage());
     } else {
-      reportIssue(invocation, "Set the region explicitly on this builder.");
+      reportIssue(invocation, getIssueMessage());
     }
   }
 

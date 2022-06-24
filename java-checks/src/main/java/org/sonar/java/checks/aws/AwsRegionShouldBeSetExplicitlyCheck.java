@@ -34,4 +34,9 @@ public class AwsRegionShouldBeSetExplicitlyCheck extends AwsBuilderMethodFinder 
   protected MethodMatchers getTargetMethod() {
     return REGION_METHOD;
   }
+
+  @Override
+  String getIssueMessage() {
+    return "Set the region explicitly on this builder.";
+  }
 }

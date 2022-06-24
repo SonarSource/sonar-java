@@ -34,4 +34,9 @@ public class AwsCredentialsShouldBeSetExplicitlyCheck extends AwsBuilderMethodFi
   MethodMatchers getTargetMethod() {
     return CREDENTIALS_METHOD;
   }
+
+  @Override
+  String getIssueMessage() {
+    return "Set the credentials provider explicitly on this builder.";
+  }
 }
