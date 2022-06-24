@@ -1,0 +1,18 @@
+{
+  "title": "Credentials Provider should be set explicitly when creating a new \"AwsClient\"",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
+  "tags": [
+    "startup-time",
+    "aws"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6242",
+  "sqKey": "S6242",
+  "scope": "Main",
+  "quickfix": "unknown"
+}
