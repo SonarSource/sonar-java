@@ -16,8 +16,8 @@ public class AwsRegionShouldBeSetExplicitlyCheck {
   }
 
   void nonCompliantVariable() {
-    S3ClientBuilder builder = S3Client.builder();
-    builder.build(); // Noncompliant [[sc=5;ec=20]] {{Set the region explicitly on this builder.}}
+    S3ClientBuilder builder = S3Client.builder(); // Noncompliant [[sc=5;ec=50]] {{Set the region explicitly on this builder.}}
+    builder.build();
   }
 
   class NonCompliantClientAsField {
