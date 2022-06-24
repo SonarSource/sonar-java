@@ -20,11 +20,11 @@
 package org.sonar.java.checks.aws;
 
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 @Rule(key = "S6262")
 public class AwsRegionSetterCheck extends AbstractMethodDetection {
@@ -47,7 +47,7 @@ public class AwsRegionSetterCheck extends AbstractMethodDetection {
   protected void onMethodInvocationFound(MethodInvocationTree tree) {
     // The methodmatcher ensures that there is one and only one argument.
     ExpressionTree argument = tree.arguments().get(0);
-    if (argument.is(Kind.STRING_LITERAL, Kind.IDENTIFIER)) {
+    if (ExpressionsHelper.getConstantValueAsString(argument).value() != null) {
       reportIssue(argument, MESSAGE);
     }
   }

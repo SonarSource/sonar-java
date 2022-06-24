@@ -1,5 +1,6 @@
 package checks.aws;
 
+import checks.aws.externalpackage.ExternalClass;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.AWSLambdaClientBuilder;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -15,9 +16,13 @@ public class AwsRegionSetterCheck {
   }
 
   void compliant() {
-    AmazonS3ClientBuilder.standard().withRegion(Regions.EU_WEST_1).build(); // Compliant
-    AmazonS3ClientBuilder.standard().withRegion(ENUM_EU_WEST_1).build(); // Compliant
-    AmazonS3ClientBuilder.standard().withRegion(getRegion()).build(); // Compliant
+    AmazonS3ClientBuilder.standard().withRegion(Regions.EU_WEST_1).build();
+    AmazonS3ClientBuilder.standard().withRegion(ENUM_EU_WEST_1).build();
+
+    // String not defined locally or through a call => Compliant
+    AmazonS3ClientBuilder.standard().withRegion(getRegion()).build();
+    AmazonS3ClientBuilder.standard().withRegion(new ExternalClass().getRegion()).build();
+    AmazonS3ClientBuilder.standard().withRegion(ExternalClass.US_EAST_2).build();
   }
 
   String getRegion() {
