@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.sonar.java.checks.aws.AwsRegionShouldBeSetExplicitlyCheck;
 import org.sonar.java.checks.naming.BadAbstractClassNameCheck;
 import org.sonar.java.checks.naming.BadClassNameCheck;
 import org.sonar.java.checks.naming.BadConstantNameCheck;
@@ -262,6 +263,7 @@ public final class CheckList {
     AssertsOnParametersOfPublicMethodCheck.class,
     AtLeastOneConstructorCheck.class,
     AuthorizationsStrongDecisionsCheck.class,
+    AwsRegionShouldBeSetExplicitlyCheck.class,
     BadConstantNameCheck.class,
     BadFieldNameCheck.class,
     BadFieldNameStaticNonFinalCheck.class,
