@@ -68,10 +68,13 @@ public abstract class AwsBuilderMethodFinder extends IssuableSubscriptionVisitor
       return;
     }
     // If the call to build is made on a builder variable, we look into initialization and usages for a call to region
-    Optional<VariableTree> declaration = getDeclaration(invocation);
-    if (declaration.isPresent()) {
-      VariableTree actualDeclaration = declaration.get();
-      ExpressionTree initializer = actualDeclaration.initializer();
+    getIdentifier(invocation).ifPresentOrElse(identifier -> {
+      Symbol symbol = identifier.symbol();
+      VariableTree declaration = (VariableTree) symbol.declaration();
+      if (declaration == null) {
+        return;
+      }
+      ExpressionTree initializer = declaration.initializer();
       // If the builder variable is not initialized using a method call, we return
       if (!initializer.is(Tree.Kind.METHOD_INVOCATION)) {
         return;
@@ -82,15 +85,13 @@ public abstract class AwsBuilderMethodFinder extends IssuableSubscriptionVisitor
       }
       // If no call to region is found in the call, we go to the other usages
       // If one of the usages is passing the builder to a method, we assume it might set there
-      boolean regionIsSet = actualDeclaration.symbol().usages().stream()
+      boolean regionIsSet = declaration.symbol().usages().stream()
         .anyMatch(usage -> isPassedAsArgument(usage) || setsRegion(usage));
       if (regionIsSet) {
         return;
       }
-      reportIssue(actualDeclaration, getIssueMessage());
-    } else {
-      reportIssue(invocation, getIssueMessage());
-    }
+      reportIssue(declaration, getIssueMessage());
+    }, () ->  reportIssue(invocation, getIssueMessage()));
   }
 
   /**
@@ -117,25 +118,27 @@ public abstract class AwsBuilderMethodFinder extends IssuableSubscriptionVisitor
     return visitor.methodIsInvoked;
   }
 
-  private static Optional<VariableTree> getDeclaration(MethodInvocationTree terminalCall) {
-    ExpressionTree expression = terminalCall.methodSelect();
-    while (expression.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) expression;
-      ExpressionTree currentExpression = memberSelectExpressionTree.expression();
-      if (currentExpression.is(Tree.Kind.IDENTIFIER)) {
-        IdentifierTree identifier = (IdentifierTree) currentExpression;
-        Tree declaration = identifier.symbol().declaration();
-        if (declaration != null && declaration.is(Tree.Kind.VARIABLE)) {
-          return Optional.of((VariableTree) declaration);
+  private static Optional<IdentifierTree> getIdentifier(MethodInvocationTree invocation) {
+    ExpressionTree expression = invocation.methodSelect();
+    while (true) {
+      if (expression.is(Tree.Kind.IDENTIFIER)) {
+        IdentifierTree identifier = (IdentifierTree) expression;
+        if (identifier.symbol().isVariableSymbol()) {
+          return Optional.of(identifier);
         }
-      }
-      if (!currentExpression.is(Tree.Kind.METHOD_INVOCATION)) {
         return Optional.empty();
+      } else if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
+        MethodInvocationTree currentInvocation = (MethodInvocationTree) expression;
+        expression = currentInvocation.methodSelect();
+      } else {
+        MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) expression;
+        IdentifierTree identifier = memberSelect.identifier();
+        if (identifier.symbol().isVariableSymbol()) {
+          return Optional.of(identifier);
+        }
+        expression = memberSelect.expression();
       }
-      MethodInvocationTree currentInvocation = (MethodInvocationTree) currentExpression;
-      expression = currentInvocation.methodSelect();
     }
-    return Optional.empty();
   }
 
   private static boolean isPassedAsArgument(IdentifierTree identifier) {
