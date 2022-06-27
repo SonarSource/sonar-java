@@ -837,6 +837,12 @@
       <version>1.2.1</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk</artifactId>
+      <version>1.12.244</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <profiles>
