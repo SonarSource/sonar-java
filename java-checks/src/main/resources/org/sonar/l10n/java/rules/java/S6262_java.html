@@ -1,0 +1,13 @@
+<p>When explicitly setting the region on an AWS Client, you should always prefer providing the value from the Enum <a
+href="https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/index.html?com/amazonaws/regions/Regions.html">Regions</a> instead of a hardcoded String.
+This will allow you to transparently support any change in the API and avoid mistakes.</p>
+<p>This rule reports an issue when a hardcoded string is used instead of an available enum value.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+AmazonS3ClientBuilder.standard().withRegion("eu_west_1").build();
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+AmazonS3ClientBuilder.standard().withRegion(Regions.EU_WEST_1).build();
+</pre>
+
