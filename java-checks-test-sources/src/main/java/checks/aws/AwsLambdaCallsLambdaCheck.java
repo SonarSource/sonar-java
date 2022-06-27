@@ -80,7 +80,6 @@ public class AwsLambdaCallsLambdaCheck {
       awsLambda.invoke(invokeRequest);
     }
 
-    @SneakyThrows
     @Override
     public void handleRequest(InputStream inputStream, OutputStream outputStream, Context context) throws IOException {
       awsLambda.invoke(invokeRequest); // Noncompliant
