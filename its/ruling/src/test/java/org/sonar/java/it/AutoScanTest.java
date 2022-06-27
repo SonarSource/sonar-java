@@ -179,7 +179,7 @@ public class AutoScanTest {
     assertThat(newTotal).isEqualTo(knownTotal);
     assertThat(rulesCausingFPs).hasSize(7);
     assertThat(rulesNotReporting).hasSize(6);
-    assertThat(rulesSilenced).hasSize(61);
+    assertThat(rulesSilenced).hasSize(63);
 
     /**
      * 4. Check total number of differences (FPs + FNs)
