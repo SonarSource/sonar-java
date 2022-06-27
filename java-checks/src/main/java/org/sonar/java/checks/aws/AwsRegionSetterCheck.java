@@ -24,9 +24,8 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
-// TODO rename to AwsXxxx
 @Rule(key = "S6262")
-public class AWSRegionSetterCheck extends AbstractMethodDetection {
+public class AwsRegionSetterCheck extends AbstractMethodDetection {
 
   private static final String STRING_TYPE = "java.lang.String";
   private static final String MESSAGE = "Use an Enum not a String to set the region.";

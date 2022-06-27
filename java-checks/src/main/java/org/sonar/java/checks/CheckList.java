@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.sonar.java.checks.aws.AWSRegionSetterCheck;
+import org.sonar.java.checks.aws.AwsRegionSetterCheck;
 import org.sonar.java.checks.aws.AwsRegionShouldBeSetExplicitlyCheck;
 import org.sonar.java.checks.aws.AwsReusableResourcesInitializedOnceCheck;
 import org.sonar.java.checks.naming.BadAbstractClassNameCheck;
@@ -262,7 +262,7 @@ public final class CheckList {
     ArraysAsListOfPrimitiveToStreamCheck.class,
     AssertOnBooleanVariableCheck.class,
     AssertionsInProductionCodeCheck.class,
-    AWSRegionSetterCheck.class,
+    AwsRegionSetterCheck.class,
     AssertsOnParametersOfPublicMethodCheck.class,
     AtLeastOneConstructorCheck.class,
     AuthorizationsStrongDecisionsCheck.class,

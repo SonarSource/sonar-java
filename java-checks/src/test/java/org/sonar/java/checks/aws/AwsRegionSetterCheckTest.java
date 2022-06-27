@@ -22,13 +22,13 @@ package org.sonar.java.checks.aws;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-class AWSRegionSetterCheckTest {
+class AwsRegionSetterCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/aws/AWSRegionSetterCheck.java")
-      .withCheck(new AWSRegionSetterCheck())
+      .onFile("src/test/files/checks/aws/AwsRegionSetterCheck.java")
+      .withCheck(new AwsRegionSetterCheck())
       .verifyIssues();
   }
 
