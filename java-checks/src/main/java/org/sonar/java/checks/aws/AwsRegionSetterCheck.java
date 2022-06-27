@@ -50,6 +50,5 @@ public class AwsRegionSetterCheck extends AbstractMethodDetection {
     if (argument.is(Tree.Kind.STRING_LITERAL)) {
       reportIssue(argument, MESSAGE);
     }
-
   }
 }
