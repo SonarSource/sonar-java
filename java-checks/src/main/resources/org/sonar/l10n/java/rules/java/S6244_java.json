@@ -1,0 +1,17 @@
+{
+  "title": "Consumer Builders should be used",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "aws"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-6244",
+  "sqKey": "S6244",
+  "scope": "Main",
+  "quickfix": "unknown"
+}
