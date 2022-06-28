@@ -65,7 +65,7 @@ public class AwsLambdaCallsLambdaCheck extends AwsReusableResourcesInitializedOn
     methodTree.accept(finder);
     TreeHelper.findReachableMethodsInSameFile(methodTree).forEach(tree -> tree.accept(finder));
 
-    finder.getInvokeInvocations().forEach((call, msg) -> reportIssue(ExpressionUtils.methodName(call), msg));
+    finder.getInvokeCalls().forEach((call, msg) -> reportIssue(ExpressionUtils.methodName(call), msg));
   }
 
   private static class InvokeFinder extends BaseTreeVisitor {
@@ -88,7 +88,7 @@ public class AwsLambdaCallsLambdaCheck extends AwsReusableResourcesInitializedOn
       }
     }
 
-    public Map<MethodInvocationTree, String> getInvokeInvocations() {
+    public Map<MethodInvocationTree, String> getInvokeCalls() {
       return invokeInvocations;
     }
   }
