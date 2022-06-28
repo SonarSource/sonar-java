@@ -68,14 +68,14 @@ public class AwsLambdaCallsLambdaCheck extends AwsReusableResourcesInitializedOn
     var methodTree = (MethodTree) handleRequestMethodTree;
     if (!HANDLE_REQUEST_MATCHER.matches(methodTree)) return;
 
-    var finder = new InvokeFinder();
+    var finder = new SyncInvokeFinder();
     methodTree.accept(finder);
     TreeHelper.findReachableMethodsInSameFile(methodTree).forEach(tree -> tree.accept(finder));
 
-    finder.getInvokeCalls().forEach((call, msg) -> reportIssue(ExpressionUtils.methodName(call), msg));
+    finder.getSyncInvokeCalls().forEach((call, msg) -> reportIssue(ExpressionUtils.methodName(call), msg));
   }
 
-  private static class InvokeFinder extends BaseTreeVisitor {
+  private static class SyncInvokeFinder extends BaseTreeVisitor {
     private final Map<MethodInvocationTree, String> invokeInvocations = new IdentityHashMap<>();
 
     private static final MethodMatchers INVOKE_MATCHERS = MethodMatchers.create()
@@ -131,7 +131,7 @@ public class AwsLambdaCallsLambdaCheck extends AwsReusableResourcesInitializedOn
       return false;
     }
 
-    public Map<MethodInvocationTree, String> getInvokeCalls() {
+    public Map<MethodInvocationTree, String> getSyncInvokeCalls() {
       return invokeInvocations;
     }
   }
