@@ -99,14 +99,10 @@ public class AwsLambdaCallsLambdaCheck extends AwsReusableResourcesInitializedOn
         List<IdentifierTree> localUsages = usages.stream().filter(u -> isLocalVariable(u.symbol()) && !u.equals(invokeRequest)).collect(Collectors.toList());
         // TODO: Stop if invokeRequest is received as argument to 'this' method
         // Stop if invokeRequest is passed as arg to a method
-        if (localUsages.stream().anyMatch(lu -> lu.parent().is(Tree.Kind.ARGUMENTS))) {
+        if (localUsages.stream().anyMatch(lu -> lu.parent().is(Tree.Kind.ARGUMENTS) ||
+                                          setsInvocationTypeToEvent(lu))) {
           return Optional.empty();
         }
-        // Compliant if calls setInvocationType or withInvocationType exists
-        if (localUsages.stream().anyMatch(lu -> setsInvocationTypeToEvent(lu))) {
-          return Optional.empty();
-        }
-
         return Optional.of(MESSAGE);
       } else {
         return Optional.empty();
@@ -125,6 +121,7 @@ public class AwsLambdaCallsLambdaCheck extends AwsReusableResourcesInitializedOn
           ExpressionTree argument = methodCall.arguments().get(0);
           if (argument.is(Tree.Kind.STRING_LITERAL)) {
             String stringVal = ((LiteralTree)argument).value();
+            // TODO: ask why this is so
             if (stringVal.equals("\"Event\"")) {
               return true;
             }
