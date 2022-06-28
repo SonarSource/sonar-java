@@ -71,6 +71,10 @@ public class AwsLambdaCallsLambdaCheck extends AwsReusableResourcesInitializedOn
   private static class InvokeFinder extends BaseTreeVisitor {
     private final Map<MethodInvocationTree, String> invokeInvocations = new IdentityHashMap<>();
 
+    private static final MethodMatchers INVOKE_MATCHERS = MethodMatchers.create()
+      .ofSubTypes("com.amazonaws.services.lambda.AWSLambda").names("invoke")
+      .withAnyParameters().build();
+
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       methodCallsInvoke(tree).ifPresent(msgPart -> invokeInvocations.put(tree, msgPart));
