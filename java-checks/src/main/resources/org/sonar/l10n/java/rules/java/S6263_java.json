@@ -1,0 +1,16 @@
+{
+  "title": "Using long-term access keys is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "1h"
+  },
+  "tags": [
+    "aws"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-6263",
+  "sqKey": "S6263",
+  "scope": "Main"
+}

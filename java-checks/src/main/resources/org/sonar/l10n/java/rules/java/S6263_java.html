@@ -1,0 +1,39 @@
+<p>In AWS, long-term access keys will be valid until you manually revoke them. This makes them highly sensitive as any exposure can have serious
+consequences and should be used with care.</p>
+<p>This rule will trigger when encountering an instantiation of <code>com.amazonaws.auth.BasicAWSCredentials</code>.</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> The access key is used directly in an application or AWS CLI script running on an Amazon EC2 instance. </li>
+  <li> Cross-account access is needed. </li>
+  <li> The access keys need to be embedded within a mobile application. </li>
+  <li> Existing identity providers (SAML 2.0, on-premises identity store) already exists. </li>
+</ul>
+<p>For more information, see <a href="https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html#use-roles">Use IAM roles
+instead of long-term access keys</a>.</p>
+<p>There is a risk if you answered yes to any of those questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>Consider using IAM roles or other features of the AWS Security Token Service that provide temporary credentials, limiting the risks.</p>
+<h2>Sensitive Code Example</h2>
+<pre>
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.BasicAWSCredentials;
+// ...
+
+AWSCredentials awsCredentials = new BasicAWSCredentials(accessKeyId, secretAccessKey);
+</pre>
+<h2>Compliant Solution</h2>
+<p>Example for AWS STS (see <a href="https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/prog-services-sts.html">Getting Temporary Credentials
+with AWS STS</a>).</p>
+<pre>
+BasicSessionCredentials sessionCredentials = new BasicSessionCredentials(
+   session_creds.getAccessKeyId(),
+   session_creds.getSecretAccessKey(),
+   session_creds.getSessionToken());
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html">Best practices for managing AWS access keys</a>
+  </li>
+  <li> <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html">Managing access keys for IAM users</a> </li>
+</ul>
+
