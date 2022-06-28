@@ -27,7 +27,7 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 @Rule(key = "S6263")
 public class AwsLongTermAccessKeysCheck extends AbstractMethodDetection {
 
-  private static final String MESSAGE = "Make sure using a Long-term access key is safe here.";
+  private static final String MESSAGE = "Make sure using a long-term access key is safe here.";
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {

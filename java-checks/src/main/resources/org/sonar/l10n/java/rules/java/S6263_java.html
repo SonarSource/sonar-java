@@ -1,4 +1,4 @@
-<p>In AWS, Long-term access keys will be valid until you manually revoke them. This makes them highly sensitive as any exposure can have serious
+<p>In AWS, long-term access keys will be valid until you manually revoke them. This makes them highly sensitive as any exposure can have serious
 consequences and should be used with care.</p>
 <p>This rule will trigger when encountering an instantiation of <code>com.amazonaws.auth.BasicAWSCredentials</code>.</p>
 <h2>Ask Yourself Whether</h2>
@@ -9,7 +9,7 @@ consequences and should be used with care.</p>
   <li> Existing identity providers (SAML 2.0, on-premises identity store) already exists. </li>
 </ul>
 <p>For more information, see <a href="https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html#use-roles">Use IAM roles
-instead of Long-term access keys</a>.</p>
+instead of long-term access keys</a>.</p>
 <p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
 <p>Consider using IAM roles or other features of the AWS Security Token Service that provide temporary credentials, limiting the risks.</p>
