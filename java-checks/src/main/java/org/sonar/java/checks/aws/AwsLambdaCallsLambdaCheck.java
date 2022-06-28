@@ -41,19 +41,15 @@ public class AwsLambdaCallsLambdaCheck extends AwsReusableResourcesInitializedOn
     MethodMatchers.create()
       .ofSubTypes("com.amazonaws.services.lambda.runtime.RequestHandler")
       .names("handleRequest")
-      .addParametersMatcher(params -> params.size() == 2)
+      .addParametersMatcher("java.lang.Object", "com.amazonaws.services.lambda.runtime.Context")
       .build(),
     MethodMatchers.create()
       .ofSubTypes("com.amazonaws.services.lambda.runtime.RequestStreamHandler")
       .names("handleRequest")
-      .addParametersMatcher(params -> params.size() == 3)
+      .addParametersMatcher("java.io.InputStream", "java.io.OutputStream", "com.amazonaws.services.lambda.runtime.Context")
       .build());
 
   private static final String MESSAGE = "Avoid synchronous calls to other lambdas";
-
-  private static final MethodMatchers INVOKE_MATCHERS = MethodMatchers.create()
-    .ofSubTypes("com.amazonaws.services.lambda.AWSLambda").names("invoke")
-    .withAnyParameters().build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
