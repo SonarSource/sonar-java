@@ -8,6 +8,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3ClientBuilder;
 
 public class AwsCredentialsShouldBeSetExplicitlyCheck {
+  public static final AwsClientBuilder BUILDER = S3Client.builder(); // Compliant FN - Could be configured closer to build call
 
   void nonCompliant() {
     S3Client.builder().build(); // Noncompliant [[sc=5;ec=31]] {{Set the credentials provider explicitly on this builder.}}
@@ -45,6 +46,8 @@ public class AwsCredentialsShouldBeSetExplicitlyCheck {
     S3Client stillAnotherClient = (S3Client) remotelyPreCraftedBuilder.build();
 
     S3Client sourceDirectlyFromBuilder = (S3Client) AwsRegionShouldBeSetExplicitlyCheck.BUILDER.build(); // Compliant FN
+
+    S3Client clientOutOfNowhere = (S3Client) BUILDER.build(); // Compliant FN
   }
 
   static AwsClientBuilder getABuilder() {
