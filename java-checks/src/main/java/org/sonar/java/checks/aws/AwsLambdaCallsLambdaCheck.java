@@ -90,17 +90,16 @@ public class AwsLambdaCallsLambdaCheck extends AwsReusableResourcesInitializedOn
     private static Optional<String> methodCallsInvoke(MethodInvocationTree tree) {
       if (INVOKE_MATCHERS.matches(tree)) {
         // Because of the INVOKE_MATCHER, we know there is one argument and it is of type IdentifierTree
-        IdentifierTree invokeRequest = (IdentifierTree)tree.arguments().get(0);
-        // Put .usages() and .declaration() together
-        // filter on isLocalVariable
-        // filter if current usage != invokeRequest , i.e. the point where all started
+        IdentifierTree invokeRequest = (IdentifierTree) tree.arguments().get(0);
 
-        List<IdentifierTree> usages = invokeRequest.symbol().usages();
-        List<IdentifierTree> localUsages = usages.stream().filter(u -> isLocalVariable(u.symbol()) && !u.equals(invokeRequest)).collect(Collectors.toList());
+        // We know there is at least one usage, i.e. the one we just got above
+        List<IdentifierTree> localUsages = invokeRequest.symbol().usages().stream()
+          .filter(u -> isLocalVariable(u.symbol()) && !u.equals(invokeRequest))
+          .collect(Collectors.toList());
         // TODO: Stop if invokeRequest is received as argument to 'this' method
         // Stop if invokeRequest is passed as arg to a method
         if (localUsages.stream().anyMatch(lu -> lu.parent().is(Tree.Kind.ARGUMENTS) ||
-                                          setsInvocationTypeToEvent(lu))) {
+          setsInvocationTypeToEvent(lu))) {
           return Optional.empty();
         }
         return Optional.of(MESSAGE);
@@ -112,7 +111,8 @@ public class AwsLambdaCallsLambdaCheck extends AwsReusableResourcesInitializedOn
     private static boolean setsInvocationTypeToEvent(IdentifierTree identifier) {
       if (identifier.parent() != null && identifier.parent().parent().is(Tree.Kind.METHOD_INVOCATION)) {
         MethodMatchers INVOCATIONTYPE_MATCHERS = MethodMatchers.create()
-          .ofTypes("com.amazonaws.services.lambda.model.InvokeRequest").names("setInvocationType", "withInvocationType")
+          .ofTypes("com.amazonaws.services.lambda.model.InvokeRequest")
+          .names("setInvocationType", "withInvocationType")
           .addParametersMatcher("java.lang.String").build();
 
         MethodInvocationTree methodCall = (MethodInvocationTree) identifier.parent().parent();
@@ -120,7 +120,7 @@ public class AwsLambdaCallsLambdaCheck extends AwsReusableResourcesInitializedOn
         if (INVOCATIONTYPE_MATCHERS.matches(methodCall)) {
           ExpressionTree argument = methodCall.arguments().get(0);
           if (argument.is(Tree.Kind.STRING_LITERAL)) {
-            String stringVal = ((LiteralTree)argument).value();
+            String stringVal = ((LiteralTree) argument).value();
             // TODO: ask why this is so
             if (stringVal.equals("\"Event\"")) {
               return true;
