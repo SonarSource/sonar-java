@@ -23,14 +23,22 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.sonar.check.Rule;
+import org.sonar.java.checks.SystemOutOrErrUsageCheck;
 import org.sonar.java.checks.helpers.TreeHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import static org.sonar.java.model.JUtils.isLocalVariable;
 
 @Rule(key = "S6243")
 public class AwsLambdaCallsLambdaCheck extends AwsReusableResourcesInitializedOnceCheck {
@@ -73,7 +81,7 @@ public class AwsLambdaCallsLambdaCheck extends AwsReusableResourcesInitializedOn
 
     private static final MethodMatchers INVOKE_MATCHERS = MethodMatchers.create()
       .ofSubTypes("com.amazonaws.services.lambda.AWSLambda").names("invoke")
-      .withAnyParameters().build();
+      .addParametersMatcher("com.amazonaws.services.lambda.model.InvokeRequest").build();
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
@@ -82,6 +90,18 @@ public class AwsLambdaCallsLambdaCheck extends AwsReusableResourcesInitializedOn
 
     private static Optional<String> methodCallsInvoke(MethodInvocationTree tree) {
       if (INVOKE_MATCHERS.matches(tree)) {
+        // TODO: get the argument of this call 'tree'., i.e. it is the invokeRequest var
+        // find the usages of the arg
+        // is_compliant if - subject of a call, - arg of the current method we are in, - has calls to 'setInvocationType' or 'withInvocationType'
+
+
+        // Because of the INVOKE_MATCHER, we know there is one argument and it is of type IdentifierTree
+        IdentifierTree invokeRequest = (IdentifierTree)tree.arguments().get(0);
+        // Put .usages() and .declaration() together
+        // filter on isLocalVariable
+        // filter if current usage = invokeRequest , i.e. the point where all started
+        List<IdentifierTree> usages = invokeRequest.symbol().usages();
+        List<IdentifierTree> res = usages.stream().filter(u -> isLocalVariable(u.symbol()) && !u.equals(invokeRequest)).collect(Collectors.toList());
         return Optional.of(MESSAGE);
       } else {
         return Optional.empty();
