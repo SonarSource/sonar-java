@@ -63,11 +63,11 @@ public abstract class AwsBuilderMethodFinder extends IssuableSubscriptionVisitor
     if (!getBuildMethod().matches(invocation)) {
       return;
     }
-    // We first look for a call to region within the same chain of calls.
-    if (setsRegion(invocation)) {
+    // We first look for a call to the target method within the same chain of calls.
+    if (isTargetMethodInvoked(invocation)) {
       return;
     }
-    // If the call to build is made on a builder variable, we look into initialization and usages for a call to region
+    // If the call to build is made on a builder variable, we look into initialization and usages for a call to the method
     getIdentifier(invocation).ifPresentOrElse(identifier -> {
       Symbol symbol = identifier.symbol();
       VariableTree declaration = (VariableTree) symbol.declaration();
@@ -80,14 +80,13 @@ public abstract class AwsBuilderMethodFinder extends IssuableSubscriptionVisitor
         return;
       }
       MethodInvocationTree initializationChain = (MethodInvocationTree) initializer;
-      if (setsRegion(initializationChain)) {
+      if (isTargetMethodInvoked(initializationChain)) {
         return;
       }
-      // If no call to region is found in the call, we go to the other usages
       // If one of the usages is passing the builder to a method, we assume it might set there
-      boolean regionIsSet = declaration.symbol().usages().stream()
-        .anyMatch(usage -> isPassedAsArgument(usage) || setsRegion(usage));
-      if (regionIsSet) {
+      boolean targetMethodIsInvoked = declaration.symbol().usages().stream()
+        .anyMatch(usage -> isPassedAsArgument(usage) || isTargetMethodInvoked(usage));
+      if (targetMethodIsInvoked) {
         return;
       }
       reportIssue(declaration, getIssueMessage());
@@ -95,29 +94,34 @@ public abstract class AwsBuilderMethodFinder extends IssuableSubscriptionVisitor
   }
 
   /**
-   * Crawls up a call chain using methodSelect to determine whether one of the methods called sets the region.
+   * Crawls up a call chain using methodSelect to determine whether one of the invocation calls the target method.
    *
    * @param invocation The first in the chain to inspect
-   * @return True if the region is potentially set by one of the method calls in the chain
+   * @return True if the target method might have been called in the chain. False, otherwise.
    */
-  private boolean setsRegion(MethodInvocationTree invocation) {
+  private boolean isTargetMethodInvoked(MethodInvocationTree invocation) {
     CallChainVisitor visitor = new CallChainVisitor(getTargetMethod());
     invocation.accept(visitor);
     return visitor.methodIsInvoked;
   }
 
   /**
-   * Crawls down the method calls following an SdkBuilder identifier to check if one of them returns sets the region.
+   * Crawls down the method calls following an SdkBuilder identifier to check if one of them calls the target method.
    *
    * @param identifier The SdkBuilder to check
-   * @return True if one of the method calls sets the region. False otherwise
+   * @return True if the target method might have been called in the chain. False, otherwise.
    */
-  private boolean setsRegion(IdentifierTree identifier) {
+  private boolean isTargetMethodInvoked(IdentifierTree identifier) {
     ReverseCallChainVisitor visitor = new ReverseCallChainVisitor(getTargetMethod());
     identifier.accept(visitor);
     return visitor.methodIsInvoked;
   }
 
+  /**
+   * Crawls up a method call chain to the right-most variable identifier.
+   * @param invocation The first method call to start from.
+   * @return The identifier of the variable if present. Empty, otherwise.
+   */
   private static Optional<IdentifierTree> getIdentifier(MethodInvocationTree invocation) {
     ExpressionTree expression = invocation.methodSelect();
     while (true) {
@@ -169,8 +173,8 @@ public abstract class AwsBuilderMethodFinder extends IssuableSubscriptionVisitor
     }
 
     /**
-     * Tests if the method invoked is owned a child of the SDKBuilder or the SDKClient.
-     * The result can be used to decide whether the method sets the region on the builder.
+     * Tests if the method invoked is owned by a child of the SDKBuilder or the SDKClient.
+     * The result can be used to decide whether the method call might invoke the target method on the builder.
      *
      * @param invocation The method invocation to inspect
      * @return True if the method belongs to SDKBuilder or the SDKClient
