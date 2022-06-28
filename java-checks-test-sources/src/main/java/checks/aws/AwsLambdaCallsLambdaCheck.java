@@ -46,12 +46,20 @@ public class AwsLambdaCallsLambdaCheck {
 
       invokeAsync();
 
-      transitiveCallee1();
+
+      transitiveSynCall1();
 
       return null;
     }
 
-    void invokeAsync(){
+    void invokeAsync() {
+      invokeAsync1();
+      invokeAsync2();
+      invokeAsync3(new InvokeRequest());
+      invokeAsync4();
+    }
+
+    void invokeAsync1() {
       invokeRequest = new InvokeRequest();
       // Makes call async
       invokeRequest.setInvocationType("Event");
@@ -61,21 +69,46 @@ public class AwsLambdaCallsLambdaCheck {
       awsLambda.invoke(invokeRequest);
     }
 
+    void invokeAsync2(){
+      invokeRequest = new InvokeRequest().withFunctionName(MY_FUNCTION)
+        .withInvocationType("Event");
+
+      // Compliant as call is async
+      awsLambda.invoke(invokeRequest);
+    }
+
+    void invokeAsync3(InvokeRequest invokeRequest){
+      // Compliant as we don't know what invokeRequest contains
+      awsLambda.invoke(invokeRequest);
+    }
+
+    void invokeAsync4(){
+      invokeRequest = new InvokeRequest();
+      invokeRequest.setInvocationType("Event");
+      foo(invokeRequest);
+      // Compliant as we don't know what the call to Foo did to invokeRequest
+      awsLambda.invoke(invokeRequest);
+    }
+
+    private InvokeRequest foo(InvokeRequest invokeRequest) {
+      return new InvokeRequest();
+    }
+
     // Not the correct 'handleRequest' signature
-    public void handleRequest(String o, Context context) {
+    public Void handleRequest(String o, Context context) {
       awsLambda.invoke(invokeRequest); // compliant
       return null;
     }
 
-    void transitiveCallee1() {
-      transitiveCallee2();
+    void transitiveSynCall1() {
+      transitiveSynCall2();
     }
 
-    void transitiveCallee2() {
-      transitiveCallee3();
+    void transitiveSynCall2() {
+      transitiveSynCall3();
     }
 
-    void transitiveCallee3() {
+    void transitiveSynCall3() {
       awsLambda.invoke(invokeRequest); // Noncompliant
     }
   }
