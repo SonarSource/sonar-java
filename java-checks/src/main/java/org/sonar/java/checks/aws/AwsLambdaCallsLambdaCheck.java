@@ -97,7 +97,7 @@ public class AwsLambdaCallsLambdaCheck extends AwsReusableResourcesInitializedOn
           .filter(u -> isLocalVariable(u.symbol()) && !u.equals(invokeRequest))
           .collect(Collectors.toList());
         // TODO: Stop if invokeRequest is received as argument to 'this' method
-        // Stop if invokeRequest is passed as arg to a method
+        // TODO: why is transitiveSynCall3 in test NonCompliant and passing
         if (localUsages.stream().anyMatch(lu -> lu.parent().is(Tree.Kind.ARGUMENTS) ||
           setsInvocationTypeToEvent(lu))) {
           return Optional.empty();
