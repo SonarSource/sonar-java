@@ -43,11 +43,26 @@ public class AwsLambdaCallsLambdaCheck {
         .withRegion(Regions.US_WEST_2).build();
 
       awsLambda.invoke(invokeRequest); // Noncompliant
+
+      invokeAsync();
+
+      transitiveCallee1();
+
       return null;
     }
 
-    // Almost similar signature
-    public Void handleRequest(String o, Context context) {
+    void invokeAsync(){
+      invokeRequest = new InvokeRequest();
+      // Makes call async
+      invokeRequest.setInvocationType("Event");
+      invokeRequest.withFunctionName(MY_FUNCTION);
+
+      // Compliant as call is async
+      awsLambda.invoke(invokeRequest);
+    }
+
+    // Not the correct 'handleRequest' signature
+    public void handleRequest(String o, Context context) {
       awsLambda.invoke(invokeRequest); // compliant
       return null;
     }
