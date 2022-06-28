@@ -45,11 +45,33 @@ public class AwsLambdaCallsLambdaCheck {
       awsLambda.invoke(invokeRequest); // Noncompliant
 
       invokeAsync();
+      invokeSync();
 
-
-      transitiveSynCall1();
+      transitiveSyncCall();
 
       return null;
+    }
+
+    void invokeSync() {
+      invokeSync1();
+      wrongInvocationType();
+    }
+
+    void wrongInvocationType() {
+      var invokeRequest = new InvokeRequest();
+      // Makes call Sync
+      invokeRequest.setInvocationType("RequestResponse");
+      awsLambda.invoke(invokeRequest); // Noncompliant
+
+    }
+
+    void invokeSync1() {
+      InvokeRequest invokeRequest = new InvokeRequest().withFunctionName(MY_FUNCTION);
+
+      InvokeRequest invokeRequest2 = new InvokeRequest().withFunctionName(MY_FUNCTION)
+        .withInvocationType("Event");
+
+      awsLambda.invoke(invokeRequest); // Noncompliant
     }
 
     void invokeAsync() {
@@ -60,7 +82,7 @@ public class AwsLambdaCallsLambdaCheck {
     }
 
     void invokeAsync1() {
-      invokeRequest = new InvokeRequest();
+      var invokeRequest = new InvokeRequest();
       // Makes call async
       invokeRequest.setInvocationType("Event");
       invokeRequest.withFunctionName(MY_FUNCTION);
@@ -70,7 +92,7 @@ public class AwsLambdaCallsLambdaCheck {
     }
 
     void invokeAsync2(){
-      invokeRequest = new InvokeRequest().withFunctionName(MY_FUNCTION)
+      InvokeRequest invokeRequest = new InvokeRequest().withFunctionName(MY_FUNCTION)
         .withInvocationType("Event");
 
       // Compliant as call is async
@@ -83,7 +105,7 @@ public class AwsLambdaCallsLambdaCheck {
     }
 
     void invokeAsync4(){
-      invokeRequest = new InvokeRequest();
+      var invokeRequest = new InvokeRequest();
       invokeRequest.setInvocationType("Event");
       foo(invokeRequest);
       // Compliant as we don't know what the call to Foo did to invokeRequest
@@ -100,7 +122,7 @@ public class AwsLambdaCallsLambdaCheck {
       return null;
     }
 
-    void transitiveSynCall1() {
+    void transitiveSyncCall() {
       transitiveSynCall2();
     }
 
