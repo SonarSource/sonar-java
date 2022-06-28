@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.SQLException;
-import lombok.SneakyThrows;
 
 public class AwsLambdaCallsLambdaCheck {
 
@@ -46,24 +45,41 @@ public class AwsLambdaCallsLambdaCheck {
 
       invokeAsync();
       invokeSync();
+      invokeUnknown();
 
       transitiveSyncCall();
 
       return null;
     }
 
-    void invokeSync() {
-      invokeSync1();
-      wrongInvocationType();
+    void fromField() {
+      invokeRequest = new InvokeRequest();
+      invokeRequest.setInvocationType("RequestResponse");
+       // Compliant as invokeRequest is not a local variable
+      awsLambda.invoke(invokeRequest);
     }
 
-    void wrongInvocationType() {
+    void invokeSync() {
+      invokeSync1();
+      invokeSync2();
+    }
+
+    void invokeSync2() {
       var invokeRequest = new InvokeRequest();
-      // Makes call Sync
+      // Makes call sync
       invokeRequest.setInvocationType("RequestResponse");
       awsLambda.invoke(invokeRequest); // Noncompliant
 
     }
+
+    void invokeUnknown(){
+      var invokeRequest = new InvokeRequest();
+      invokeRequest.setInvocationType("RequestResponse");
+      foo(invokeRequest);
+      // Compliant as we don't know what the call to foo did to invokeRequest
+      awsLambda.invoke(invokeRequest);
+    }
+
 
     void invokeSync1() {
       InvokeRequest invokeRequest = new InvokeRequest().withFunctionName(MY_FUNCTION);
@@ -76,9 +92,8 @@ public class AwsLambdaCallsLambdaCheck {
 
     void invokeAsync() {
       invokeAsync1();
-      invokeAsync2();
-      invokeAsync3(new InvokeRequest());
-      invokeAsync4();
+      /* invokeAsync2(); */
+      /* invokeAsync3(new InvokeRequest()); */
     }
 
     void invokeAsync1() {
@@ -101,14 +116,6 @@ public class AwsLambdaCallsLambdaCheck {
 
     void invokeAsync3(InvokeRequest invokeRequest){
       // Compliant as we don't know what invokeRequest contains
-      awsLambda.invoke(invokeRequest);
-    }
-
-    void invokeAsync4(){
-      var invokeRequest = new InvokeRequest();
-      invokeRequest.setInvocationType("Event");
-      foo(invokeRequest);
-      // Compliant as we don't know what the call to Foo did to invokeRequest
       awsLambda.invoke(invokeRequest);
     }
 
