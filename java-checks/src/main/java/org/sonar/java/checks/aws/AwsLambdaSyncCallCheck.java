@@ -107,11 +107,8 @@ public class AwsLambdaSyncCallCheck extends AwsReusableResourcesInitializedOnceC
           .filter(u -> isLocalVariable(u.symbol()) && !u.equals(invokeRequest))
           .collect(Collectors.toList());
 
-        if (localUsages.stream().anyMatch(lu -> isArgumentToACall(lu))) {
-          return Optional.empty();
-        }
-
-        if (setsInvocationTypeToEvent(tree)) {
+        if (localUsages.stream().anyMatch(lu -> isArgumentToACall(lu) ||
+          setsInvocationTypeToEvent(lu))) {
           return Optional.empty();
         }
 
@@ -133,30 +130,25 @@ public class AwsLambdaSyncCallCheck extends AwsReusableResourcesInitializedOnceC
       return (declaration != null && declaration.is(Tree.Kind.VARIABLE) && isLocalVariable(((VariableTree) declaration).symbol()));
     }
 
-
-    private static boolean setsInvocationTypeToEvent(MethodInvocationTree methodTree) {
-      var finder = new InvocationTypeSetterFinder();
-      methodTree.accept(finder);
-      return finder.hasFoundOne();
-    }
-
-    private static final class InvocationTypeSetterFinder extends BaseTreeVisitor {
-      private boolean found = false;
-
-      private final MethodMatchers INVOCATIONTYPE_MATCHERS = MethodMatchers.create()
-        .ofTypes("com.amazonaws.services.lambda.model.InvokeRequest")
-        .names("setInvocationType", "withInvocationType")
+    private static boolean setsInvocationTypeToEvent(IdentifierTree invokeRequest) {
+      if (invokeRequest.parent() != null && invokeRequest.parent().parent().is(Tree.Kind.METHOD_INVOCATION)) {
+        MethodMatchers INVOCATIONTYPE_MATCHERS = MethodMatchers.create()
+          .ofTypes("com.amazonaws.services.lambda.model.InvokeRequest")
+          .names("setInvocationType", "withInvocationType")
           .addParametersMatcher("java.lang.String").build();
 
-      @Override
-      public void visitMethodInvocation(MethodInvocationTree tree) {
-        // TODO check that call sets "Event"
-        found =  INVOCATIONTYPE_MATCHERS.matches(tree) || found;
-      }
+        MethodInvocationTree methodCall = (MethodInvocationTree) invokeRequest.parent().parent();
 
-      public final boolean hasFoundOne() {
-        return found;
+        if (INVOCATIONTYPE_MATCHERS.matches(methodCall)) {
+          ExpressionTree argument = methodCall.arguments().get(0);
+          if (argument.is(Tree.Kind.STRING_LITERAL)) {
+            String stringVal = ((LiteralTree) argument).value();
+            // TODO: ask why this is so
+            return stringVal.equals("\"Event\"");
+          }
+        }
       }
+      return false;
     }
 
     public Map<MethodInvocationTree, String> getSyncInvokeCalls() {
