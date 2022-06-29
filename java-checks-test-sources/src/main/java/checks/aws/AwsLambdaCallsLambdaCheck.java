@@ -93,7 +93,8 @@ public class AwsLambdaCallsLambdaCheck {
     void invokeAsync() {
       invokeAsync1();
       invokeAsync2();
-      invokeAsync3(new InvokeRequest());
+      invokeAsync3();
+      invokeAsync4(new InvokeRequest());
     }
 
     void invokeAsync1() {
@@ -107,6 +108,14 @@ public class AwsLambdaCallsLambdaCheck {
     }
 
     void invokeAsync2(){
+     InvokeRequest invokeRequest = new InvokeRequest();
+     invokeRequest.withFunctionName(MY_FUNCTION).withInvocationType("Event");
+
+      // Compliant as call is async
+      awsLambda.invoke(invokeRequest);
+    }
+
+    void invokeAsync3(){
       InvokeRequest invokeRequest = new InvokeRequest().withFunctionName(MY_FUNCTION)
         .withInvocationType("Event");
 
@@ -114,7 +123,8 @@ public class AwsLambdaCallsLambdaCheck {
       awsLambda.invoke(invokeRequest);
     }
 
-    void invokeAsync3(InvokeRequest invokeRequest){
+
+    void invokeAsync4(InvokeRequest invokeRequest){
       // Compliant as we don't know what invokeRequest contains
       awsLambda.invoke(invokeRequest);
     }
