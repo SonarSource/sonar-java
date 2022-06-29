@@ -65,6 +65,15 @@ public class AwsLambdaSyncCallCheck {
       invokeSync2();
     }
 
+    void invokeSync1() {
+      InvokeRequest invokeRequest = new InvokeRequest().withFunctionName(MY_FUNCTION);
+
+      InvokeRequest invokeRequest2 = new InvokeRequest().withFunctionName(MY_FUNCTION)
+        .withInvocationType("Event");
+
+      awsLambda.invoke(invokeRequest); // Noncompliant
+    }
+
     void invokeSync2() {
       var invokeRequest = new InvokeRequest();
       // Makes call sync
@@ -79,16 +88,6 @@ public class AwsLambdaSyncCallCheck {
       foo(invokeRequest);
       // Compliant as we don't know what the call to foo did to invokeRequest
       awsLambda.invoke(invokeRequest);
-    }
-
-
-    void invokeSync1() {
-      InvokeRequest invokeRequest = new InvokeRequest().withFunctionName(MY_FUNCTION);
-
-      InvokeRequest invokeRequest2 = new InvokeRequest().withFunctionName(MY_FUNCTION)
-        .withInvocationType("Event");
-
-      awsLambda.invoke(invokeRequest); // Noncompliant
     }
 
     void invokeAsync() {
