@@ -22,21 +22,21 @@ package org.sonar.java.checks.aws;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 
-@Rule(key = "S6241")
-public class AwsRegionShouldBeSetExplicitlyCheck extends AwsBuilderMethodFinder {
-  private static final MethodMatchers REGION_METHOD = MethodMatchers.create()
+@Rule(key = "S6242")
+public class AwsCredentialsShouldBeSetExplicitlyCheck extends AwsBuilderMethodFinder {
+  private static final MethodMatchers CREDENTIALS_METHOD = MethodMatchers.create()
     .ofSubTypes(AWS_CLIENT_BUILDER_TYPE)
-    .names("region")
-    .addParametersMatcher("software.amazon.awssdk.regions.Region")
+    .names("credentialsProvider")
+    .addParametersMatcher("software.amazon.awssdk.auth.credentials.AwsCredentialsProvider")
     .build();
 
   @Override
-  protected MethodMatchers getTargetMethod() {
-    return REGION_METHOD;
+  MethodMatchers getTargetMethod() {
+    return CREDENTIALS_METHOD;
   }
 
   @Override
   String getIssueMessage() {
-    return "Set the region explicitly on this builder.";
+    return "Set the credentials provider explicitly on this builder.";
   }
 }

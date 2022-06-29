@@ -19,24 +19,19 @@
  */
 package org.sonar.java.checks.aws;
 
-import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.junit.jupiter.api.Test;
+import org.sonar.java.checks.verifier.CheckVerifier;
 
-@Rule(key = "S6241")
-public class AwsRegionShouldBeSetExplicitlyCheck extends AwsBuilderMethodFinder {
-  private static final MethodMatchers REGION_METHOD = MethodMatchers.create()
-    .ofSubTypes(AWS_CLIENT_BUILDER_TYPE)
-    .names("region")
-    .addParametersMatcher("software.amazon.awssdk.regions.Region")
-    .build();
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
-  @Override
-  protected MethodMatchers getTargetMethod() {
-    return REGION_METHOD;
+
+class AwsCredentialsShouldBeSetExplicitlyCheckTest {
+  @Test
+  void test() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/aws/AwsCredentialsShouldBeSetExplicitlyCheck.java"))
+      .withCheck(new AwsCredentialsShouldBeSetExplicitlyCheck())
+      .verifyIssues();
   }
 
-  @Override
-  String getIssueMessage() {
-    return "Set the region explicitly on this builder.";
-  }
 }

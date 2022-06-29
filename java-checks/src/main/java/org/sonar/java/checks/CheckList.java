@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.java.checks.aws.AwsConsumerBuilderUsageCheck;
+import org.sonar.java.checks.aws.AwsCredentialsShouldBeSetExplicitlyCheck;
 import org.sonar.java.checks.aws.AwsLongTermAccessKeysCheck;
 import org.sonar.java.checks.aws.AwsRegionSetterCheck;
 import org.sonar.java.checks.aws.AwsRegionShouldBeSetExplicitlyCheck;
@@ -268,6 +269,7 @@ public final class CheckList {
     AtLeastOneConstructorCheck.class,
     AuthorizationsStrongDecisionsCheck.class,
     AwsConsumerBuilderUsageCheck.class,
+    AwsCredentialsShouldBeSetExplicitlyCheck.class,
     AwsLongTermAccessKeysCheck.class,
     AwsRegionSetterCheck.class,
     AwsRegionShouldBeSetExplicitlyCheck.class,
