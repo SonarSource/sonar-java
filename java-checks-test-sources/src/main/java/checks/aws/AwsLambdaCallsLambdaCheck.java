@@ -34,7 +34,7 @@ public class AwsLambdaCallsLambdaCheck {
 
     @Override
     public Void handleRequest(Object o, Context context) {
-      invokeRequest = new InvokeRequest()
+      var invokeRequest = new InvokeRequest()
         .withFunctionName(MY_FUNCTION);
 
       awsLambda = AWSLambdaClientBuilder.standard()
@@ -92,8 +92,8 @@ public class AwsLambdaCallsLambdaCheck {
 
     void invokeAsync() {
       invokeAsync1();
-      /* invokeAsync2(); */
-      /* invokeAsync3(new InvokeRequest()); */
+      invokeAsync2();
+      invokeAsync3(new InvokeRequest());
     }
 
     void invokeAsync1() {
@@ -138,27 +138,27 @@ public class AwsLambdaCallsLambdaCheck {
     }
 
     void transitiveSynCall3() {
+      InvokeRequest invokeRequest = new InvokeRequest()
+        .withFunctionName(MY_FUNCTION)
+        .withInvocationType("Event");
       awsLambda.invoke(invokeRequest); // Noncompliant
     }
   }
 
   static class RequestStreamHandlerImpl implements RequestStreamHandler {
-    private InvokeRequest invokeRequest = null;
     private AWSLambda awsLambda = null;
 
     public RequestStreamHandlerImpl() throws SQLException {
-      invokeRequest = new InvokeRequest()
-        .withFunctionName(MY_FUNCTION);
-
       awsLambda = AWSLambdaClientBuilder.standard()
         .withCredentials(new ProfileCredentialsProvider())
         .withRegion(Regions.US_WEST_2).build();
-
-      awsLambda.invoke(invokeRequest);
     }
 
     @Override
     public void handleRequest(InputStream inputStream, OutputStream outputStream, Context context) throws IOException {
+       InvokeRequest invokeRequest = new InvokeRequest()
+        .withFunctionName(MY_FUNCTION);
+
       awsLambda.invoke(invokeRequest); // Noncompliant
     }
   }
