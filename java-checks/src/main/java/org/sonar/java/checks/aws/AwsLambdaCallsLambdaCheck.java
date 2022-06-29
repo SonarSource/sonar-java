@@ -36,8 +36,10 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.sonar.java.model.JUtils.isLocalVariable;
+import static org.sonar.java.model.JUtils.isParameter;
 
 @Rule(key = "S6243")
 public class AwsLambdaCallsLambdaCheck extends AwsReusableResourcesInitializedOnceCheck {
@@ -66,7 +68,9 @@ public class AwsLambdaCallsLambdaCheck extends AwsReusableResourcesInitializedOn
   @Override
   public void visitNode(Tree handleRequestMethodTree) {
     var methodTree = (MethodTree) handleRequestMethodTree;
-    if (!HANDLE_REQUEST_MATCHER.matches(methodTree)) return;
+    if (!HANDLE_REQUEST_MATCHER.matches(methodTree)) {
+      return;
+    }
 
     var finder = new SyncInvokeFinder();
     methodTree.accept(finder);
@@ -87,35 +91,53 @@ public class AwsLambdaCallsLambdaCheck extends AwsReusableResourcesInitializedOn
       methodCallsInvoke(tree).ifPresent(msgPart -> invokeInvocations.put(tree, msgPart));
     }
 
+    // TODO ask: this is for sdk 1 only. How to deal with v2?
+    // TODO extract Johann's code
     private static Optional<String> methodCallsInvoke(MethodInvocationTree tree) {
       if (INVOKE_MATCHERS.matches(tree)) {
-        // Because of the INVOKE_MATCHER, we know there is one argument and it is of type IdentifierTree
+        // INVOKE_MATCHER implies there is one argument and it is of type IdentifierTree.
         IdentifierTree invokeRequest = (IdentifierTree) tree.arguments().get(0);
 
-        // We know there is at least one usage, i.e. the one we just got above
+        if (isParameter(invokeRequest.symbol())) {
+          return Optional.empty();
+        }
+
+        // We know there is at least one usage, i.e. the one we just got above.
         List<IdentifierTree> localUsages = invokeRequest.symbol().usages().stream()
           .filter(u -> isLocalVariable(u.symbol()) && !u.equals(invokeRequest))
           .collect(Collectors.toList());
-        // TODO: Stop if invokeRequest is received as argument to 'this' method
-        // TODO: why is transitiveSynCall3 in test NonCompliant and passing
-        if (localUsages.stream().anyMatch(lu -> lu.parent().is(Tree.Kind.ARGUMENTS) ||
+
+        if (localUsages.stream().anyMatch(lu -> isArgumentToACall(lu) ||
           setsInvocationTypeToEvent(lu))) {
           return Optional.empty();
         }
-        return Optional.of(MESSAGE);
+
+        if (hasLocalVarDeclaration(invokeRequest)) {
+          return Optional.of(MESSAGE);
+        }
+        return Optional.empty();
       } else {
         return Optional.empty();
       }
     }
 
-    private static boolean setsInvocationTypeToEvent(IdentifierTree identifier) {
-      if (identifier.parent() != null && identifier.parent().parent().is(Tree.Kind.METHOD_INVOCATION)) {
+    private static boolean isArgumentToACall(IdentifierTree invokeRequest) {
+      return invokeRequest.parent().is(Tree.Kind.ARGUMENTS);
+    }
+
+    private static boolean hasLocalVarDeclaration(IdentifierTree invokeRequest) {
+      Tree declaration = invokeRequest.symbol().declaration();
+      return (declaration != null && declaration.is(Tree.Kind.VARIABLE) && isLocalVariable(((VariableTree) declaration).symbol()));
+    }
+
+    private static boolean setsInvocationTypeToEvent(IdentifierTree invokeRequest) {
+      if (invokeRequest.parent() != null && invokeRequest.parent().parent().is(Tree.Kind.METHOD_INVOCATION)) {
         MethodMatchers INVOCATIONTYPE_MATCHERS = MethodMatchers.create()
           .ofTypes("com.amazonaws.services.lambda.model.InvokeRequest")
           .names("setInvocationType", "withInvocationType")
           .addParametersMatcher("java.lang.String").build();
 
-        MethodInvocationTree methodCall = (MethodInvocationTree) identifier.parent().parent();
+        MethodInvocationTree methodCall = (MethodInvocationTree) invokeRequest.parent().parent();
 
         if (INVOCATIONTYPE_MATCHERS.matches(methodCall)) {
           ExpressionTree argument = methodCall.arguments().get(0);
