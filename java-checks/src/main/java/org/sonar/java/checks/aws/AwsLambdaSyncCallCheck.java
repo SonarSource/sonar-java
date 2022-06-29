@@ -29,6 +29,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.TreeHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -116,7 +117,8 @@ public class AwsLambdaSyncCallCheck extends AwsReusableResourcesInitializedOnceC
 
         if (isParameter(invokeRequest.symbol()) ||
           localUsages.stream().anyMatch(lu -> isArgumentToACall(lu) ||
-            setsAsyncInvocationType(lu))) {
+            setsAsyncInvocationType(lu)) ||
+            hasContructorSettingAsyncCall(invokeRequest)) {
           return Optional.empty();
         }
 
@@ -159,6 +161,12 @@ public class AwsLambdaSyncCallCheck extends AwsReusableResourcesInitializedOnceC
 
         return containsAsyncInvocationTypeSetter(methodCall);
       }
+      return false;
+    }
+
+    private static boolean hasContructorSettingAsyncCall(IdentifierTree invokeRequest) {
+      Tree declaration = invokeRequest.symbol().declaration();
+      // return (declaration != null && declaration.is(Tree.Kind.VARIABLE) );
       return false;
     }
   }
