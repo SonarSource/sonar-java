@@ -29,10 +29,8 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.TreeHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -102,12 +100,9 @@ public class AwsLambdaSyncCallCheck extends AwsReusableResourcesInitializedOnceC
       return invokeInvocations;
     }
 
-    // TODO ask: this is for sdk 1 only. How to deal with v2?
-    // TODO extract Johann's code
-    // TODO Do we have to do a non-compiling tests?
     private static Optional<String> getSynCalls(MethodInvocationTree tree) {
       if (INVOKE_MATCHERS.matches(tree)) {
-        // INVOKE_MATCHER implies there is one argument and it is of type IdentifierTree.
+        // INVOKE_MATCHER ensures that there is one argument and it is of type IdentifierTree.
         IdentifierTree invokeRequest = (IdentifierTree) tree.arguments().get(0);
 
         // We know there is at least one usage, i.e. the one we just got above.
@@ -115,10 +110,10 @@ public class AwsLambdaSyncCallCheck extends AwsReusableResourcesInitializedOnceC
           .filter(u -> isLocalVariable(u.symbol()) && !u.equals(invokeRequest))
           .collect(Collectors.toList());
 
-        if (isParameter(invokeRequest.symbol()) ||
-          localUsages.stream().anyMatch(lu -> isArgumentToACall(lu) ||
-            setsAsyncInvocationType(lu)) ||
-            hasContructorSettingAsyncCall(invokeRequest)) {
+        if (isParameter(invokeRequest.symbol())
+          || localUsages.stream().anyMatch(lu -> isArgumentToACall(lu)
+            || statementSetsAsyncCall(lu))
+          || hasDeclarationSettingAsyncCall(invokeRequest)) {
           return Optional.empty();
         }
 
@@ -132,7 +127,7 @@ public class AwsLambdaSyncCallCheck extends AwsReusableResourcesInitializedOnceC
     }
 
     private static boolean isArgumentToACall(IdentifierTree invokeRequest) {
-      return invokeRequest.parent().is(Tree.Kind.ARGUMENTS);
+      return invokeRequest.parent() != null && invokeRequest.parent().is(Tree.Kind.ARGUMENTS);
     }
 
     private static boolean hasLocalVarDeclaration(IdentifierTree invokeRequest) {
@@ -140,33 +135,70 @@ public class AwsLambdaSyncCallCheck extends AwsReusableResourcesInitializedOnceC
       return (declaration != null && declaration.is(Tree.Kind.VARIABLE) && isLocalVariable(((VariableTree) declaration).symbol()));
     }
 
-    private static boolean setsAsyncInvocationType(IdentifierTree invokeRequest) {
-      return containsAsyncInvocationTypeSetter(invokeRequest);
+    /**
+     * Returns true if the statement starting at the identifier 'invokeRequest' sets the InvocationType object
+     * to a configuration that sets lambda calls to be async.
+     *
+     * @param invokeRequest
+     * @return true if statement leads calls to lambdas to be async
+     */
+    private static boolean statementSetsAsyncCall(IdentifierTree invokeRequest) {
+      return callChainSetsAsyncCall(invokeRequest);
     }
 
-    private static boolean containsAsyncInvocationTypeSetter(Tree tree) {
+    /**
+     * Returns true if in the call chain starting at 'tree' there is a call that
+     * sets 'InvocationType' to async.
+     *
+     * @param tree an Identifier or a MethodInvocation as starting point of a call chain
+     * @return true if InvocationType is set to async
+     */
+    private static boolean callChainSetsAsyncCall(Tree tree) {
       Tree treeParent = tree.parent();
       if (treeParent != null && treeParent.parent() != null &&
         treeParent.parent().is(Tree.Kind.METHOD_INVOCATION)) {
 
         MethodInvocationTree methodCall = (MethodInvocationTree) treeParent.parent();
-        Arguments arguments = methodCall.arguments();
 
-        if (INVOCATIONTYPE_MATCHERS.matches(methodCall) &&
-          arguments.get(0).is(Tree.Kind.STRING_LITERAL)) {
-          String stringVal = ((LiteralTree) arguments.get(0)).value();
-          // TODO: ask why this is so
-          return (stringVal.equals("\"Event\"") || stringVal.equals("\"DryRun\""));
+        if (setsInvocationTypeToAsync(methodCall)) {
+          return true;
+        } else {
+          return callChainSetsAsyncCall(methodCall);
         }
-
-        return containsAsyncInvocationTypeSetter(methodCall);
       }
       return false;
     }
 
-    private static boolean hasContructorSettingAsyncCall(IdentifierTree invokeRequest) {
+    private static boolean hasDeclarationSettingAsyncCall(IdentifierTree invokeRequest) {
       Tree declaration = invokeRequest.symbol().declaration();
-      // return (declaration != null && declaration.is(Tree.Kind.VARIABLE) );
+      if (declaration != null) {
+        AsyncInvocationTypeSetterFinder asyncSetterVisitor = new AsyncInvocationTypeSetterFinder();
+        declaration.accept(asyncSetterVisitor);
+        return asyncSetterVisitor.found();
+      }
+      return false;
+    }
+
+    private static final class AsyncInvocationTypeSetterFinder extends BaseTreeVisitor {
+      private boolean found = false;
+
+      @Override
+      public void visitMethodInvocation(MethodInvocationTree methodCall) {
+        found = setsInvocationTypeToAsync(methodCall) || found;
+      }
+
+      public boolean found() {
+        return found;
+      }
+    }
+
+    private static boolean setsInvocationTypeToAsync(MethodInvocationTree methodCall) {
+      Arguments arguments = methodCall.arguments();
+      if (INVOCATIONTYPE_MATCHERS.matches(methodCall) &&
+        arguments.get(0).is(Tree.Kind.STRING_LITERAL)) {
+        String stringVal = ((LiteralTree) arguments.get(0)).value();
+        return (stringVal.equals("\"Event\"") || stringVal.equals("\"DryRun\""));
+      }
       return false;
     }
   }

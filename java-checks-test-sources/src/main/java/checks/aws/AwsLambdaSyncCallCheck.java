@@ -158,7 +158,7 @@ public class AwsLambdaSyncCallCheck {
     void transitiveSynCall3() {
       InvokeRequest invokeRequest = new InvokeRequest()
         .withFunctionName(MY_FUNCTION)
-        .withInvocationType("Event");
+        .withInvocationType("RequestResponse");
       awsLambda.invoke(invokeRequest); // Noncompliant
     }
   }
