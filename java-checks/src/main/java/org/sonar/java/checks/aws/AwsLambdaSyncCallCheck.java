@@ -109,17 +109,14 @@ public class AwsLambdaSyncCallCheck extends AwsReusableResourcesInitializedOnceC
         // INVOKE_MATCHER implies there is one argument and it is of type IdentifierTree.
         IdentifierTree invokeRequest = (IdentifierTree) tree.arguments().get(0);
 
-        if (isParameter(invokeRequest.symbol())) {
-          return Optional.empty();
-        }
-
         // We know there is at least one usage, i.e. the one we just got above.
         List<IdentifierTree> localUsages = invokeRequest.symbol().usages().stream()
           .filter(u -> isLocalVariable(u.symbol()) && !u.equals(invokeRequest))
           .collect(Collectors.toList());
 
-        if (localUsages.stream().anyMatch(lu -> isArgumentToACall(lu) ||
-          setsAsyncInvocationType(lu))) {
+        if (isParameter(invokeRequest.symbol()) ||
+          localUsages.stream().anyMatch(lu -> isArgumentToACall(lu) ||
+            setsAsyncInvocationType(lu))) {
           return Optional.empty();
         }
 
@@ -148,16 +145,16 @@ public class AwsLambdaSyncCallCheck extends AwsReusableResourcesInitializedOnceC
     private static boolean containsAsyncInvocationTypeSetter(Tree tree) {
       Tree treeParent = tree.parent();
       if (treeParent != null && treeParent.parent() != null &&
-          treeParent.parent().is(Tree.Kind.METHOD_INVOCATION)) {
+        treeParent.parent().is(Tree.Kind.METHOD_INVOCATION)) {
 
         MethodInvocationTree methodCall = (MethodInvocationTree) treeParent.parent();
         Arguments arguments = methodCall.arguments();
 
         if (INVOCATIONTYPE_MATCHERS.matches(methodCall) &&
-            arguments.get(0).is(Tree.Kind.STRING_LITERAL)) {
-            String stringVal = ((LiteralTree) arguments.get(0)).value();
-            // TODO: ask why this is so
-            return (stringVal.equals("\"Event\"") || stringVal.equals("\"DryRun\""));
+          arguments.get(0).is(Tree.Kind.STRING_LITERAL)) {
+          String stringVal = ((LiteralTree) arguments.get(0)).value();
+          // TODO: ask why this is so
+          return (stringVal.equals("\"Event\"") || stringVal.equals("\"DryRun\""));
         }
 
         return containsAsyncInvocationTypeSetter(methodCall);
