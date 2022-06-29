@@ -41,7 +41,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import static org.sonar.java.model.JUtils.isLocalVariable;
 import static org.sonar.java.model.JUtils.isParameter;
 
-@Rule(key = "S6243")
+@Rule(key = "S6246")
 public class AwsLambdaSyncCallCheck extends AwsReusableResourcesInitializedOnceCheck {
 
   private static final List<Tree.Kind> NODES_TO_VISIT = List.of(Tree.Kind.METHOD);
