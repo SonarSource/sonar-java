@@ -68,8 +68,7 @@ public class AwsLambdaSyncCallCheck {
     void invokeSync1() {
       InvokeRequest invokeRequest = new InvokeRequest().withFunctionName(MY_FUNCTION);
 
-      InvokeRequest invokeRequest2 = new InvokeRequest().withFunctionName(MY_FUNCTION)
-        .withInvocationType("Event");
+      InvokeRequest invokeRequest2 = new InvokeRequest().withInvocationType("Event");
 
       awsLambda.invoke(invokeRequest); // Noncompliant
     }
