@@ -88,12 +88,12 @@ public class AwsLambdaCallsLambdaCheck extends AwsReusableResourcesInitializedOn
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      methodCallsInvoke(tree).ifPresent(msgPart -> invokeInvocations.put(tree, msgPart));
+      getSynCalls(tree).ifPresent(msgPart -> invokeInvocations.put(tree, msgPart));
     }
 
     // TODO ask: this is for sdk 1 only. How to deal with v2?
     // TODO extract Johann's code
-    private static Optional<String> methodCallsInvoke(MethodInvocationTree tree) {
+    private static Optional<String> getSynCalls(MethodInvocationTree tree) {
       if (INVOKE_MATCHERS.matches(tree)) {
         // INVOKE_MATCHER implies there is one argument and it is of type IdentifierTree.
         IdentifierTree invokeRequest = (IdentifierTree) tree.arguments().get(0);
@@ -144,9 +144,7 @@ public class AwsLambdaCallsLambdaCheck extends AwsReusableResourcesInitializedOn
           if (argument.is(Tree.Kind.STRING_LITERAL)) {
             String stringVal = ((LiteralTree) argument).value();
             // TODO: ask why this is so
-            if (stringVal.equals("\"Event\"")) {
-              return true;
-            }
+            return stringVal.equals("\"Event\"");
           }
         }
       }
