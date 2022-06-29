@@ -13,7 +13,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.SQLException;
 
-public class AwsLambdaCallsLambdaCheck {
+public class AwsLambdaSyncCallCheck {
 
   public static final String MY_FUNCTION = "myFunction";
 

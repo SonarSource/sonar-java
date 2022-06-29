@@ -24,13 +24,13 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
-class AwsLambdaCallsLambdaCheckTest {
+class AwsLambdaSyncCallCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/aws/AwsLambdaCallsLambdaCheck.java"))
-      .withCheck(new AwsLambdaCallsLambdaCheck())
+      .onFile(mainCodeSourcesPath("checks/aws/AwsLambdaSyncCallCheck.java"))
+      .withCheck(new AwsLambdaSyncCallCheck())
       .verifyIssues();
   }
 }
