@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.caching.JavaReadCache;
 
 import java.io.InputStream;
 import java.util.Objects;
+import org.sonarsource.performance.measure.PerformanceMeasure;
 
 public class JavaReadCacheImpl implements JavaReadCache {
   private static final Logger LOG = Loggers.get(JavaReadCacheImpl.class);
@@ -40,20 +41,27 @@ public class JavaReadCacheImpl implements JavaReadCache {
 
   @Override
   public InputStream read(String key) {
-    return readCache.read(key);
+    PerformanceMeasure.Duration duration = PerformanceMeasure.start("JavaReadCache.read");
+    InputStream read = readCache.read(key);
+    duration.stop();
+    return read;
   }
 
   @CheckForNull
   @Override
   public byte[] readBytes(String key) {
+    PerformanceMeasure.Duration duration = PerformanceMeasure.start("JavaReadCache.readBytes");
     if (readCache.contains(key)) {
       try (var in = read(key)) {
         return in.readAllBytes();
       } catch (IOException e) {
         throw new CacheReadException(String.format("Unable to read data for key '%s'", key), e);
+      } finally {
+        duration.stop();
       }
     } else {
       LOG.trace(() -> String.format("Cache miss for key '%s'", key));
+      duration.stop();
       return null;
     }
   }
