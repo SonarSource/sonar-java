@@ -102,6 +102,7 @@ public class AwsLambdaSyncCallCheck extends AwsReusableResourcesInitializedOnceC
 
     // TODO ask: this is for sdk 1 only. How to deal with v2?
     // TODO extract Johann's code
+    // TODO Do we have to do a non-compiling tests?
     private static Optional<String> getSynCalls(MethodInvocationTree tree) {
       if (INVOKE_MATCHERS.matches(tree)) {
         // INVOKE_MATCHER implies there is one argument and it is of type IdentifierTree.
@@ -117,7 +118,7 @@ public class AwsLambdaSyncCallCheck extends AwsReusableResourcesInitializedOnceC
           .collect(Collectors.toList());
 
         if (localUsages.stream().anyMatch(lu -> isArgumentToACall(lu) ||
-          setsInvocationTypeToEvent(lu))) {
+          setsAsyncInvocationType(lu))) {
           return Optional.empty();
         }
 
@@ -139,11 +140,11 @@ public class AwsLambdaSyncCallCheck extends AwsReusableResourcesInitializedOnceC
       return (declaration != null && declaration.is(Tree.Kind.VARIABLE) && isLocalVariable(((VariableTree) declaration).symbol()));
     }
 
-    private static boolean setsInvocationTypeToEvent(IdentifierTree invokeRequest) {
-      return containsInvocationTypeSetter(invokeRequest);
+    private static boolean setsAsyncInvocationType(IdentifierTree invokeRequest) {
+      return containsAsyncInvocationTypeSetter(invokeRequest);
     }
 
-    private static boolean containsInvocationTypeSetter(Tree tree) {
+    private static boolean containsAsyncInvocationTypeSetter(Tree tree) {
       Tree treeParent = tree.parent();
       if (treeParent != null && treeParent.parent() != null &&
           treeParent.parent().is(Tree.Kind.METHOD_INVOCATION)) {
@@ -159,7 +160,7 @@ public class AwsLambdaSyncCallCheck extends AwsReusableResourcesInitializedOnceC
           }
         }
 
-        return containsInvocationTypeSetter(methodCall);
+        return containsAsyncInvocationTypeSetter(methodCall);
       }
       return false;
     }

@@ -29,6 +29,7 @@ public class AwsLambdaSyncCallCheck {
         .withCredentials(new ProfileCredentialsProvider())
         .withRegion(Regions.US_WEST_2).build();
 
+      // Compliant as not on local variable
       awsLambda.invoke(invokeRequest);
     }
 
