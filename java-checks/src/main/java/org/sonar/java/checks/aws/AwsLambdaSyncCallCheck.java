@@ -113,7 +113,7 @@ public class AwsLambdaSyncCallCheck extends AwsReusableResourcesInitializedOnceC
         if (isParameter(invokeRequest.symbol())
           || localUsages.stream().anyMatch(lu -> isArgumentToACall(lu)
             || statementSetsAsyncCall(lu))
-          || hasDeclarationSettingAsyncCall(invokeRequest)) {
+          || declarationSetsAsyncCall(invokeRequest)) {
           return Optional.empty();
         }
 
@@ -169,7 +169,13 @@ public class AwsLambdaSyncCallCheck extends AwsReusableResourcesInitializedOnceC
       return false;
     }
 
-    private static boolean hasDeclarationSettingAsyncCall(IdentifierTree invokeRequest) {
+    /**
+     * Returns true if the declaration of the 'invokeRequest' variable leads to async lambda calls.
+     *
+     * @param invokeRequest the 'invokeRequest' varible being declared
+     * @return true if the declaration of the 'invokeRequest' variable leads to async lambda calls
+     */
+    private static boolean declarationSetsAsyncCall(IdentifierTree invokeRequest) {
       Tree declaration = invokeRequest.symbol().declaration();
       if (declaration != null) {
         AsyncInvocationTypeSetterFinder asyncSetterVisitor = new AsyncInvocationTypeSetterFinder();
