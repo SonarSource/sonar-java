@@ -29,6 +29,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.TreeHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -150,14 +151,13 @@ public class AwsLambdaSyncCallCheck extends AwsReusableResourcesInitializedOnceC
           treeParent.parent().is(Tree.Kind.METHOD_INVOCATION)) {
 
         MethodInvocationTree methodCall = (MethodInvocationTree) treeParent.parent();
+        Arguments arguments = methodCall.arguments();
 
-        if (INVOCATIONTYPE_MATCHERS.matches(methodCall)) {
-          ExpressionTree argument = methodCall.arguments().get(0);
-          if (argument.is(Tree.Kind.STRING_LITERAL)) {
-            String stringVal = ((LiteralTree) argument).value();
+        if (INVOCATIONTYPE_MATCHERS.matches(methodCall) &&
+            arguments.get(0).is(Tree.Kind.STRING_LITERAL)) {
+            String stringVal = ((LiteralTree) arguments.get(0)).value();
             // TODO: ask why this is so
             return (stringVal.equals("\"Event\"") || stringVal.equals("\"DryRun\""));
-          }
         }
 
         return containsAsyncInvocationTypeSetter(methodCall);
