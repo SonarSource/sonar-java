@@ -45,10 +45,6 @@ public abstract class AwsBuilderMethodFinder extends IssuableSubscriptionVisitor
     .addWithoutParametersMatcher()
     .build();
 
-  protected MethodMatchers getBuildMethod() {
-    return BUILD_METHOD;
-  }
-
   abstract MethodMatchers getTargetMethod();
 
   abstract String getIssueMessage();
@@ -61,7 +57,7 @@ public abstract class AwsBuilderMethodFinder extends IssuableSubscriptionVisitor
   @Override
   public void visitNode(Tree tree) {
     MethodInvocationTree invocation = (MethodInvocationTree) tree;
-    if (!getBuildMethod().matches(invocation)) {
+    if (!BUILD_METHOD.matches(invocation)) {
       return;
     }
     // We first look for a call to the target method within the same chain of calls.
