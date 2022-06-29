@@ -8,7 +8,7 @@
     "linearFactor": "1h"
   },
   "tags": [
-    "AWS"
+    "aws"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-6246",
