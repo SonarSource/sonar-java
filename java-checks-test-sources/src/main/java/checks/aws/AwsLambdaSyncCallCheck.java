@@ -43,8 +43,9 @@ public class AwsLambdaSyncCallCheck {
 
       awsLambda.invoke(invokeRequest); // Noncompliant
 
-      invokeAsync();
       invokeSync();
+      invokeAsync();
+      invokeDryRun();
       invokeUnknown();
 
       transitiveSyncCall();
@@ -111,7 +112,7 @@ public class AwsLambdaSyncCallCheck {
      InvokeRequest invokeRequest = new InvokeRequest();
      invokeRequest.withFunctionName(MY_FUNCTION).withInvocationType("Event");
 
-      // Compliant as call is async
+     // Async call
       awsLambda.invoke(invokeRequest);
     }
 
@@ -119,13 +120,21 @@ public class AwsLambdaSyncCallCheck {
       InvokeRequest invokeRequest = new InvokeRequest().withFunctionName(MY_FUNCTION)
         .withInvocationType("Event");
 
-      // Compliant as call is async
+      // Async call
       awsLambda.invoke(invokeRequest);
     }
 
 
     void invokeAsync4(InvokeRequest invokeRequest){
       // Compliant as we don't know what invokeRequest contains
+      awsLambda.invoke(invokeRequest);
+    }
+
+    void invokeDryRun(){
+     InvokeRequest invokeRequest = new InvokeRequest();
+     invokeRequest.withInvocationType("DryRun").withFunctionName(MY_FUNCTION);
+
+      // Compliant as call is DryRun
       awsLambda.invoke(invokeRequest);
     }
 
