@@ -42,7 +42,7 @@ public class AwsLambdaSyncCallCheck {
         .withCredentials(new ProfileCredentialsProvider())
         .withRegion(Regions.US_WEST_2).build();
 
-      awsLambda.invoke(invokeRequest); // Noncompliant [[sc=17;ec=23]] {{Avoid synchronous calls to other lambdas}}
+      awsLambda.invoke(invokeRequest); // Noncompliant [[sc=17;ec=23]] {{Avoid synchronous calls to other lambdas.}}
 
       invokeSync();
       invokeAsync();
