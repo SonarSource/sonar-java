@@ -57,7 +57,7 @@ public class TypeUpperBoundNotFinalCheck extends IssuableSubscriptionVisitor {
       .flatMap(Optional::stream)
       .filter(bound -> isFinal(bound) && !inOverridingMethodDeclaration(treeToReport))
       .findFirst()
-      .ifPresent(identifierTree -> reportIssue(treeToReport, "Replace this type parametrization by the 'final' type `" + identifierTree.name() + "`"));
+      .ifPresent(identifierTree -> reportIssue(treeToReport, "Replace this type parametrization by the 'final' type `" + identifierTree.name() + "`."));
   }
 
   private static Optional<IdentifierTree> getIdentifier(TypeTree t) {
