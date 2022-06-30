@@ -1,12 +1,7 @@
 {
   "title": "Lambdas should not invoke other lambdas synchronously",
-  "type": "CODE_SMELL",
+  "type": "SECURITY_HOTSPOT",
   "status": "ready",
-  "remediation": {
-    "func": "Linear",
-    "linearDesc": "Per cloud function invocation",
-    "linearFactor": "1h"
-  },
   "tags": [
     "aws"
   ],
