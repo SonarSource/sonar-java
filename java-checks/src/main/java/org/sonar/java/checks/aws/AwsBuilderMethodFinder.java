@@ -67,13 +67,13 @@ public abstract class AwsBuilderMethodFinder extends IssuableSubscriptionVisitor
     // If the call to build is made on a builder variable, we look into initialization and usages for a call to the method
     getIdentifier(invocation).ifPresentOrElse(identifier -> {
       Symbol symbol = identifier.symbol();
-      if (!JUtils.isLocalVariable(symbol)) {
+      if (!JUtils.isLocalVariable(symbol) || JUtils.isParameter(symbol)) {
         return;
       }
       VariableTree declaration = (VariableTree) symbol.declaration();
       ExpressionTree initializer = declaration.initializer();
       // If the builder variable is not initialized using a method call, we return
-      if (!initializer.is(Tree.Kind.METHOD_INVOCATION)) {
+      if (initializer == null || !initializer.is(Tree.Kind.METHOD_INVOCATION)) {
         return;
       }
       MethodInvocationTree initializationChain = (MethodInvocationTree) initializer;
