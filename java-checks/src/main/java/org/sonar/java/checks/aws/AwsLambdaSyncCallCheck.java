@@ -200,8 +200,8 @@ public class AwsLambdaSyncCallCheck extends AwsReusableResourcesInitializedOnceC
 
     private static boolean setsInvocationTypeToAsync(MethodInvocationTree methodCall) {
       Arguments arguments = methodCall.arguments();
-      if (INVOCATIONTYPE_MATCHERS.matches(methodCall) &&
-        arguments.get(0).is(Tree.Kind.STRING_LITERAL)) {
+      if (INVOCATIONTYPE_MATCHERS.matches(methodCall)) {
+        // From the matcher we know there is an argument and it is a string.
         String stringVal = ((LiteralTree) arguments.get(0)).value();
         return (stringVal.equals("\"Event\"") || stringVal.equals("\"DryRun\""));
       }
