@@ -42,28 +42,9 @@ import static org.sonar.java.model.JUtils.isLocalVariable;
 import static org.sonar.java.model.JUtils.isParameter;
 
 @Rule(key = "S6246")
-public class AwsLambdaSyncCallCheck extends AwsReusableResourcesInitializedOnceCheck {
-
-  private static final List<Tree.Kind> NODES_TO_VISIT = List.of(Tree.Kind.METHOD);
-
-  private static final MethodMatchers HANDLE_REQUEST_MATCHER = MethodMatchers.or(
-    MethodMatchers.create()
-      .ofSubTypes("com.amazonaws.services.lambda.runtime.RequestHandler")
-      .names("handleRequest")
-      .addParametersMatcher("java.lang.Object", "com.amazonaws.services.lambda.runtime.Context")
-      .build(),
-    MethodMatchers.create()
-      .ofSubTypes("com.amazonaws.services.lambda.runtime.RequestStreamHandler")
-      .names("handleRequest")
-      .addParametersMatcher("java.io.InputStream", "java.io.OutputStream", "com.amazonaws.services.lambda.runtime.Context")
-      .build());
+public class AwsLambdaSyncCallCheck extends AbstractAwsMethodVisitor {
 
   private static final String MESSAGE = "Avoid synchronous calls to other lambdas";
-
-  @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return NODES_TO_VISIT;
-  }
 
   @Override
   public void visitNode(Tree handleRequestMethodTree) {
