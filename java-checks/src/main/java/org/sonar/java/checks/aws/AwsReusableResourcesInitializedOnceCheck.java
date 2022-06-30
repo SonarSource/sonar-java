@@ -22,6 +22,7 @@ package org.sonar.java.checks.aws;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.TreeHelper;
 import org.sonar.java.model.ExpressionUtils;
@@ -46,12 +47,11 @@ public class AwsReusableResourcesInitializedOnceCheck extends AbstractAwsMethodV
   private static final MethodMatchers CONNECTION_CREATION_MATCHERS = MethodMatchers.create()
     .ofTypes("java.sql.DriverManager").names("getConnection").withAnyParameters().build();
 
-
   @Override
-  public void visitNode(Tree handleRequestMethodTree) {
+  void visitReachableMethodsFromHandleRequest(Set<MethodTree> methodTrees) {
     var finder = new ResourceCreationFinder();
 
-    visitReachableMethodsFromHandleRequest(handleRequestMethodTree, finder);
+    methodTrees.forEach(m -> m.accept(finder));
 
     finder.getBuilderInvocations().forEach((call, msg) ->
       reportIssue(ExpressionUtils.methodName(call), msg)

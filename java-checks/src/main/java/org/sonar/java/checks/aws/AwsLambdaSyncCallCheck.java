@@ -23,6 +23,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.sonar.check.Rule;
@@ -47,15 +48,9 @@ public class AwsLambdaSyncCallCheck extends AbstractAwsMethodVisitor {
   private static final String MESSAGE = "Avoid synchronous calls to other lambdas";
 
   @Override
-  public void visitNode(Tree handleRequestMethodTree) {
-    var methodTree = (MethodTree) handleRequestMethodTree;
-    if (!HANDLE_REQUEST_MATCHER.matches(methodTree)) {
-      return;
-    }
-
+  void visitReachableMethodsFromHandleRequest(Set<MethodTree> methodTrees) {
     var finder = new SyncInvokeFinder();
-    methodTree.accept(finder);
-    TreeHelper.findReachableMethodsInSameFile(methodTree).forEach(tree -> tree.accept(finder));
+    methodTrees.forEach(m -> m.accept(finder));
 
     finder.getSyncInvokeCalls().forEach((call, msg) -> reportIssue(ExpressionUtils.methodName(call), msg));
   }

@@ -19,16 +19,17 @@
  */
 package org.sonar.java.checks.aws;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.sonar.java.checks.helpers.TreeHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-public class AbstractAwsMethodVisitor extends IssuableSubscriptionVisitor {
+public abstract class AbstractAwsMethodVisitor extends IssuableSubscriptionVisitor {
   private final List<Tree.Kind> NODES_TO_VISIT = List.of(Tree.Kind.METHOD);
 
   protected static final MethodMatchers HANDLE_REQUEST_MATCHER = MethodMatchers.or(
@@ -48,13 +49,18 @@ public class AbstractAwsMethodVisitor extends IssuableSubscriptionVisitor {
     return NODES_TO_VISIT;
   }
 
-  public TreeVisitor visitReachableMethodsFromHandleRequest(Tree handleRequestMethodTree, TreeVisitor treeVisitor) {
+  @Override
+  public void visitNode(Tree handleRequestMethodTree) {
     var methodTree = (MethodTree) handleRequestMethodTree;
-    if (!HANDLE_REQUEST_MATCHER.matches(methodTree))
-      return treeVisitor;
+    if (!HANDLE_REQUEST_MATCHER.matches(methodTree)) {
+      return;
+    }
 
-    methodTree.accept(treeVisitor);
-    TreeHelper.findReachableMethodsInSameFile(methodTree).forEach(tree -> tree.accept(treeVisitor));
-    return treeVisitor;
+    Set<MethodTree> methodTrees = new HashSet<>();
+    methodTrees.addAll(TreeHelper.findReachableMethodsInSameFile(methodTree));
+    methodTrees.add(methodTree);
+    visitReachableMethodsFromHandleRequest(methodTrees);
   }
+
+  abstract void visitReachableMethodsFromHandleRequest(Set<MethodTree> methodTrees);
 }
