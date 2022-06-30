@@ -1,5 +1,6 @@
 package checks.aws;
 
+import java.util.Random;
 import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
 import software.amazon.awssdk.awscore.client.builder.AwsClientBuilder;
 import software.amazon.awssdk.core.SdkSystemSetting;
@@ -31,7 +32,7 @@ public class AwsCredentialsShouldBeSetExplicitlyCheck {
     thirdBuilder.build();
   }
 
-  void compliant() {
+  void compliant(AwsClientBuilder builderArgument) {
     S3Client client = S3Client.builder() // Compliant
       .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
       .build();
@@ -48,6 +49,19 @@ public class AwsCredentialsShouldBeSetExplicitlyCheck {
     S3Client sourceDirectlyFromBuilder = (S3Client) AwsRegionShouldBeSetExplicitlyCheck.BUILDER.build(); // Compliant FN
 
     S3Client clientOutOfNowhere = (S3Client) BUILDER.build(); // Compliant FN
+
+    S3Client clientFromBuilderArgument = (S3Client) builderArgument.build();
+
+    S3ClientBuilder initializedLater = null;
+    initializedLater = S3Client.builder()
+      .credentialsProvider(EnvironmentVariableCredentialsProvider.create());
+    S3Client someClient = initializedLater.build();
+
+    S3ClientBuilder initializedConditionally; // Compliant FN
+    if (new Random().nextBoolean()) {
+      initializedConditionally = S3Client.builder();
+      S3Client someOtherClient = initializedConditionally.build();
+    }
   }
 
   static AwsClientBuilder getABuilder() {
