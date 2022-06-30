@@ -30,7 +30,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 public abstract class AbstractAwsMethodVisitor extends IssuableSubscriptionVisitor {
-  private final List<Tree.Kind> NODES_TO_VISIT = List.of(Tree.Kind.METHOD);
+  private static final List<Tree.Kind> NODES_TO_VISIT = List.of(Tree.Kind.METHOD);
 
   protected static final MethodMatchers HANDLE_REQUEST_MATCHER = MethodMatchers.or(
     MethodMatchers.create()
