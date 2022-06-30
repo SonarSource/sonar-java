@@ -57,7 +57,7 @@ public class AwsLambdaSyncCallCheck {
     void fromField() {
       invokeRequest = new InvokeRequest();
       invokeRequest.setInvocationType("RequestResponse");
-       // Compliant as invokeRequest is not a local variable
+      // Compliant as invokeRequest is not a local variable
       awsLambda.invoke(invokeRequest);
     }
 
@@ -82,7 +82,7 @@ public class AwsLambdaSyncCallCheck {
 
     }
 
-    void invokeUnknown(){
+    void invokeUnknown() {
       var invokeRequest = new InvokeRequest();
       invokeRequest.setInvocationType("RequestResponse");
       foo(invokeRequest);
@@ -107,15 +107,15 @@ public class AwsLambdaSyncCallCheck {
       awsLambda.invoke(invokeRequest);
     }
 
-    void invokeAsync2(){
-     InvokeRequest invokeRequest = new InvokeRequest();
-     invokeRequest.withFunctionName(MY_FUNCTION).withInvocationType("Event");
+    void invokeAsync2() {
+      InvokeRequest invokeRequest = new InvokeRequest();
+      invokeRequest.withFunctionName(MY_FUNCTION).withInvocationType("Event");
 
-     // Async call
+      // Async call
       awsLambda.invoke(invokeRequest);
     }
 
-    void invokeAsync3(){
+    void invokeAsync3() {
       InvokeRequest invokeRequest = new InvokeRequest().withFunctionName(MY_FUNCTION)
         .withInvocationType("Event");
 
@@ -123,15 +123,14 @@ public class AwsLambdaSyncCallCheck {
       awsLambda.invoke(invokeRequest);
     }
 
-
-    void invokeAsync4(InvokeRequest invokeRequest){
+    void invokeAsync4(InvokeRequest invokeRequest) {
       // Compliant as we don't know what invokeRequest contains
       awsLambda.invoke(invokeRequest);
     }
 
-    void invokeDryRun(){
-     InvokeRequest invokeRequest = new InvokeRequest();
-     invokeRequest.withInvocationType("DryRun").withFunctionName(MY_FUNCTION);
+    void invokeDryRun() {
+      InvokeRequest invokeRequest = new InvokeRequest();
+      invokeRequest.withInvocationType("DryRun").withFunctionName(MY_FUNCTION);
 
       // Compliant as call is DryRun
       awsLambda.invoke(invokeRequest);
@@ -174,7 +173,7 @@ public class AwsLambdaSyncCallCheck {
 
     @Override
     public void handleRequest(InputStream inputStream, OutputStream outputStream, Context context) throws IOException {
-       InvokeRequest invokeRequest = new InvokeRequest()
+      InvokeRequest invokeRequest = new InvokeRequest()
         .withFunctionName(MY_FUNCTION);
 
       awsLambda.invoke(invokeRequest); // Noncompliant
