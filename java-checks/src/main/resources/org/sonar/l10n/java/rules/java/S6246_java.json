@@ -2,6 +2,10 @@
   "title": "Lambdas should not invoke other lambdas synchronously",
   "type": "CODE_SMELL",
   "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "3h"
+  },
   "tags": [
     "aws"
   ],
