@@ -27,7 +27,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.TreeHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -115,7 +114,7 @@ public class AwsLambdaSyncCallCheck extends AbstractAwsMethodVisitor {
      * Returns true if the statement starting at the identifier 'invokeRequest' sets the InvocationType object
      * to a configuration that sets lambda calls to be async.
      *
-     * @param invokeRequest
+     * @param invokeRequest the identifier where the statement starts
      * @return true if statement leads calls to lambdas to be async
      */
     private static boolean statementSetsAsyncCall(IdentifierTree invokeRequest) {
