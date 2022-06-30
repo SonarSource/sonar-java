@@ -93,14 +93,14 @@ public class AwsLambdaSyncCallCheck extends AwsReusableResourcesInitializedOnceC
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      getSynCalls(tree).ifPresent(msgPart -> invokeInvocations.put(tree, msgPart));
+      getSyncCalls(tree).ifPresent(msgPart -> invokeInvocations.put(tree, msgPart));
     }
 
     public Map<MethodInvocationTree, String> getSyncInvokeCalls() {
       return invokeInvocations;
     }
 
-    private static Optional<String> getSynCalls(MethodInvocationTree tree) {
+    private static Optional<String> getSyncCalls(MethodInvocationTree tree) {
       if (INVOKE_MATCHERS.matches(tree)) {
         // INVOKE_MATCHER ensures that there is one argument and it is of type IdentifierTree.
         IdentifierTree invokeRequest = (IdentifierTree) tree.arguments().get(0);
