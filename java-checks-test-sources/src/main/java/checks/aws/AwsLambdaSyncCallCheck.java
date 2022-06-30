@@ -48,6 +48,7 @@ public class AwsLambdaSyncCallCheck {
       invokeAsync();
       invokeDryRun();
       invokeUnknown();
+      fromField();
 
       transitiveSyncCall();
 
