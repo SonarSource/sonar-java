@@ -90,7 +90,10 @@ public class AwsLambdaSyncCallCheck {
       // Compliant as we don't know what the call to foo did to invokeRequest
       awsLambda.invoke(invokeRequest);
     }
-
+    private InvokeRequest foo(InvokeRequest invokeRequest) {
+      return new InvokeRequest();
+    }
+    
     void invokeAsync() {
       invokeAsync1();
       invokeAsync2();
@@ -135,10 +138,6 @@ public class AwsLambdaSyncCallCheck {
 
       // Compliant as call is DryRun
       awsLambda.invoke(invokeRequest);
-    }
-
-    private InvokeRequest foo(InvokeRequest invokeRequest) {
-      return new InvokeRequest();
     }
 
     // Not the correct 'handleRequest' signature
