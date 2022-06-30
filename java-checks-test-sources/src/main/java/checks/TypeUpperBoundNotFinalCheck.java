@@ -9,7 +9,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 public class TypeUpperBoundNotFinalCheck {
-  public static class NonExtendableTypeParam<T extends FinalClass> { } // Noncompliant {{Replace this type parametrization by the 'final' type `FinalClass`}}
+  public static class NonExtendableTypeParam<T extends FinalClass> { } // Noncompliant {{Replace this type parametrization by the 'final' type `FinalClass`.}}
 
   public static <T extends FinalClass> void methodTypeParameter() { } // Noncompliant
 
