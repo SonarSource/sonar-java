@@ -177,12 +177,10 @@ public class AwsLambdaSyncCallCheck extends AwsReusableResourcesInitializedOnceC
      */
     private static boolean declarationSetsAsyncCall(IdentifierTree invokeRequest) {
       Tree declaration = invokeRequest.symbol().declaration();
-      if (declaration != null) {
-        AsyncInvocationTypeSetterFinder asyncSetterVisitor = new AsyncInvocationTypeSetterFinder();
-        declaration.accept(asyncSetterVisitor);
-        return asyncSetterVisitor.found();
-      }
-      return false;
+      AsyncInvocationTypeSetterFinder asyncSetterVisitor = new AsyncInvocationTypeSetterFinder();
+      // There has to be a declaration (if code compiled)
+      declaration.accept(asyncSetterVisitor);
+      return asyncSetterVisitor.found();
     }
 
     private static final class AsyncInvocationTypeSetterFinder extends BaseTreeVisitor {
