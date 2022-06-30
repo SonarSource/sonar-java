@@ -22,14 +22,14 @@ public class AwsLambdaSyncCallCheck {
     private AWSLambda awsLambda = null;
 
     public RequestHandlerImpl() throws SQLException {
-      invokeRequest = new InvokeRequest()
+      var invokeRequest = new InvokeRequest()
         .withFunctionName(MY_FUNCTION);
 
       awsLambda = AWSLambdaClientBuilder.standard()
         .withCredentials(new ProfileCredentialsProvider())
         .withRegion(Regions.US_WEST_2).build();
 
-      // Compliant as not on local variable
+      // Compliant because not in code reachable from handleRequest
       awsLambda.invoke(invokeRequest);
     }
 
