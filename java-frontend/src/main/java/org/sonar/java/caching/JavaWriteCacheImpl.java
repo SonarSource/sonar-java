@@ -24,6 +24,7 @@ import org.sonar.plugins.java.api.caching.JavaWriteCache;
 
 import java.io.InputStream;
 import java.util.Objects;
+import org.sonarsource.performance.measure.PerformanceMeasure;
 
 public class JavaWriteCacheImpl implements JavaWriteCache {
   private WriteCache writeCache;
@@ -34,17 +35,23 @@ public class JavaWriteCacheImpl implements JavaWriteCache {
 
   @Override
   public void write(String key, InputStream data) {
+    PerformanceMeasure.Duration duration = PerformanceMeasure.start("JavaWriteCache.write");
     this.writeCache.write(key, data);
+    duration.stop();
   }
 
   @Override
   public void write(String key, byte[] data) {
+    PerformanceMeasure.Duration duration = PerformanceMeasure.start("JavaWriteCache.write");
     this.writeCache.write(key, data);
+    duration.stop();
   }
 
   @Override
   public void copyFromPrevious(String key) {
+    PerformanceMeasure.Duration duration = PerformanceMeasure.start("JavaWriteCache.copyFromPrevious");
     this.writeCache.copyFromPrevious(key);
+    duration.stop();
   }
 
   @Override

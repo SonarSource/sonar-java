@@ -177,9 +177,12 @@ public class VisitorsBridge {
    */
   public boolean scanWithoutParsing(InputFile inputFile) {
     if (sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile)) {
+      PerformanceMeasure.Duration duration = PerformanceMeasure.start("ScanWithoutParsing");
       boolean allScansSucceeded = true;
       var fileScannerContext = createScannerContext(sonarComponents, inputFile, javaVersion, inAndroidContext, cacheContext);
       for (var scanner: scannersThatCannotBeSkipped) {
+        boolean exceptionIsBlownUp = false;
+        PerformanceMeasure.Duration scannerDuration = PerformanceMeasure.start(scanner);
         try {
           allScansSucceeded &= scanner.scanWithoutParsing(fileScannerContext);
         } catch (AnalysisException e) {
@@ -187,6 +190,7 @@ public class VisitorsBridge {
           // logged and the exception formatted.
           throw e;
         } catch (Exception e) {
+          exceptionIsBlownUp = true;
           allScansSucceeded = false;
           String failureMessage = String.format(
             "Scan without parsing of file %s failed for scanner %s.",
@@ -195,8 +199,15 @@ public class VisitorsBridge {
           );
           LOG.warn(failureMessage);
           interruptIfFailFast(new CheckFailureException(failureMessage, e));
+          exceptionIsBlownUp = false;
+        } finally {
+          scannerDuration.stop();
+          if (exceptionIsBlownUp) {
+            duration.stop();
+          }
         }
       }
+      duration.stop();
       return allScansSucceeded;
     } else {
       return false;
@@ -378,6 +389,7 @@ public class VisitorsBridge {
     public boolean scanWithoutParsing(InputFileScannerContext fileScannerContext) throws AnalysisException {
       boolean allScansSucceeded = true;
       for (SubscriptionVisitor visitor : subscriptionVisitors) {
+        PerformanceMeasure.Duration duration = PerformanceMeasure.start(visitor);
         try {
           allScansSucceeded &= visitor.scanWithoutParsing(fileScannerContext);
         } catch (Exception e) {
@@ -389,6 +401,8 @@ public class VisitorsBridge {
           );
           LOG.warn(failureMessage);
           interruptIfFailFast(new CheckFailureException(failureMessage, e));
+        } finally {
+          duration.stop();
         }
       }
       return allScansSucceeded;
