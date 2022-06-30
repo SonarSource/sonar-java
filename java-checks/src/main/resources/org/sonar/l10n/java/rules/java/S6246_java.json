@@ -1,11 +1,11 @@
 {
   "title": "Lambdas should not invoke other lambdas synchronously",
-  "type": "SECURITY_HOTSPOT",
+  "type": "CODE_SMELL",
   "status": "ready",
   "tags": [
     "aws"
   ],
-  "defaultSeverity": "Critical",
+  "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-6246",
   "sqKey": "S6246",
   "scope": "All",
