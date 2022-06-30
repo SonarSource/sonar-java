@@ -44,7 +44,7 @@ import static org.sonar.java.model.JUtils.isParameter;
 @Rule(key = "S6246")
 public class AwsLambdaSyncCallCheck extends AbstractAwsMethodVisitor {
 
-  private static final String MESSAGE = "Avoid synchronous calls to other lambdas";
+  private static final String MESSAGE = "Avoid synchronous calls to other lambdas.";
 
   @Override
   void visitReachableMethodsFromHandleRequest(Set<MethodTree> methodTrees) {
