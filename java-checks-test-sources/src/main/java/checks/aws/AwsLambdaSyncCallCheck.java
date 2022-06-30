@@ -99,6 +99,7 @@ public class AwsLambdaSyncCallCheck {
       invokeAsync2();
       invokeAsync3();
       invokeAsync4(new InvokeRequest());
+      invokeAsync5();
     }
 
     void invokeAsync1() {
@@ -128,6 +129,11 @@ public class AwsLambdaSyncCallCheck {
     }
 
     void invokeAsync4(InvokeRequest invokeRequest) {
+      // Compliant as we don't know what invokeRequest contains
+      awsLambda.invoke(invokeRequest);
+    }
+
+    void invokeAsync5() {
       // Compliant as we don't know what invokeRequest contains
       awsLambda.invoke(invokeRequest);
     }
