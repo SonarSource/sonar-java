@@ -13,6 +13,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.SQLException;
 
+import static checks.aws.AwsLambdaSyncCallCheckHelper.REQUEST_IN_DIFFERENT_FILE;
+
 public class AwsLambdaSyncCallCheck {
 
   public static final String MY_FUNCTION = "myFunction";
@@ -88,6 +90,7 @@ public class AwsLambdaSyncCallCheck {
       invokeUnknown2();
       invokeUnknown3();
       invokeUnknown4();
+      invokeUnknown5();
     }
 
     void invokeUnknown1() {
@@ -120,6 +123,11 @@ public class AwsLambdaSyncCallCheck {
       // Compliant because we don't know what getString could return
       invokeRequest4.setInvocationType(getString());
       awsLambda.invoke(invokeRequest4);
+    }
+
+    void invokeUnknown5() {
+      // Compliant because request comes from another file
+      awsLambda.invoke(REQUEST_IN_DIFFERENT_FILE);
     }
 
     private String getString() {
