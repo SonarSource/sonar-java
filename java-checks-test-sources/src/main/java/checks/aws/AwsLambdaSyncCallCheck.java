@@ -84,6 +84,12 @@ public class AwsLambdaSyncCallCheck {
     }
 
     void invokeUnknown() {
+      invokeUnknown1();
+      invokeUnknown2();
+      invokeUnknown3();
+    }
+
+    void invokeUnknown1() {
       var invokeRequest = new InvokeRequest();
       invokeRequest.setInvocationType("RequestResponse");
       foo(invokeRequest);
@@ -93,8 +99,20 @@ public class AwsLambdaSyncCallCheck {
     private InvokeRequest foo(InvokeRequest invokeRequest) {
       return new InvokeRequest();
     }
-    
-    void invokeAsync() {
+
+    void invokeUnknown2() {
+      var invokeRequest4 = new InvokeRequest();
+      awsLambda.invoke((invokeRequest4));
+    }
+
+    void invokeUnknown3() {
+      awsLambda.invoke(getInvokeRequest());
+    }
+    private InvokeRequest getInvokeRequest() {
+      return null;
+    }
+
+	void invokeAsync() {
       invokeAsync1();
       invokeAsync2();
       invokeAsync3();

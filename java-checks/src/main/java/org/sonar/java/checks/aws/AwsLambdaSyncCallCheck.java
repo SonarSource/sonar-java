@@ -31,6 +31,7 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -77,8 +78,14 @@ public class AwsLambdaSyncCallCheck extends AbstractAwsMethodVisitor {
 
     private static Optional<String> getSyncCalls(MethodInvocationTree tree) {
       if (INVOKE_MATCHERS.matches(tree)) {
-        // INVOKE_MATCHER ensures that there is one argument and it is of type IdentifierTree.
-        IdentifierTree invokeRequest = (IdentifierTree) tree.arguments().get(0);
+
+        // INVOKE_MATCHER ensures that there is one argument.
+        ExpressionTree argument = tree.arguments().get(0);
+
+        if (!argument.is(Tree.Kind.IDENTIFIER)) {
+          return Optional.empty();
+        }
+        IdentifierTree invokeRequest = (IdentifierTree) argument;
 
         // We know there is at least one usage, i.e. the one we just got above.
         List<IdentifierTree> localUsages = invokeRequest.symbol().usages().stream()
