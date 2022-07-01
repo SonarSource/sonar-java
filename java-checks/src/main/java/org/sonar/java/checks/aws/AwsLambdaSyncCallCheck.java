@@ -111,24 +111,13 @@ public class AwsLambdaSyncCallCheck extends AbstractAwsMethodVisitor {
     }
 
     /**
-     * Returns true if the statement starting at the identifier 'invokeRequest' sets the InvocationType object
-     * to a configuration that sets lambda calls to be async.
+     * Returns true if the statement starting at 'tree' sets the InvocationType object
+     * to a configuration that leads to async lambda calls. The statement could be a sequence of calls.
      *
-     * @param invokeRequest the identifier where the statement starts
-     * @return true if statement leads calls to lambdas to be async
+     * @param tree the statement starting point
+     * @return true if statement leads lambda calls to be async
      */
-    private static boolean statementSetsAsyncCall(IdentifierTree invokeRequest) {
-      return callChainSetsAsyncCall(invokeRequest);
-    }
-
-    /**
-     * Returns true if in the call chain starting at 'tree' there is a call that
-     * sets 'InvocationType' to async.
-     *
-     * @param tree an Identifier or a MethodInvocation as starting point of a call chain
-     * @return true if InvocationType is set to async
-     */
-    private static boolean callChainSetsAsyncCall(Tree tree) {
+    private static boolean statementSetsAsyncCall(Tree tree) {
       Tree treeParent = tree.parent();
       if (treeParent != null && treeParent.parent() != null &&
         treeParent.parent().is(Tree.Kind.METHOD_INVOCATION)) {
@@ -138,7 +127,7 @@ public class AwsLambdaSyncCallCheck extends AbstractAwsMethodVisitor {
         if (setsInvocationTypeToAsync(methodCall)) {
           return true;
         } else {
-          return callChainSetsAsyncCall(methodCall);
+          return statementSetsAsyncCall(methodCall);
         }
       }
       return false;
