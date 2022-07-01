@@ -148,7 +148,8 @@ public class AwsLambdaSyncCallCheck extends AbstractAwsMethodVisitor {
     private static boolean declarationSetsAsyncCall(IdentifierTree invokeRequest) {
       Tree declaration = invokeRequest.symbol().declaration();
       if (declaration == null) {
-        // Declaration not found so we can't say that calls are sync
+        // Declaration not found so we can't say that calls are sync.
+        // E.g. decalaration coming from another file.
         return true;
       }
       AsyncInvocationTypeSetterFinder asyncSetterVisitor = new AsyncInvocationTypeSetterFinder();
