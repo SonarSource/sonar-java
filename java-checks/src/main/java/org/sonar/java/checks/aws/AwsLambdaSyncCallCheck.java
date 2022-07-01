@@ -125,14 +125,7 @@ public class AwsLambdaSyncCallCheck extends AbstractAwsMethodVisitor {
      */
     private static boolean statementSetsAsyncCall(Tree tree) {
       MethodInvocationTree methodCall = findMethodInvocationTreeAncestor(tree);
-      if (methodCall != null) {
-        if (setsInvocationTypeToAsync(methodCall)) {
-          return true;
-        } else {
-          return statementSetsAsyncCall(methodCall);
-        }
-      }
-      return false;
+      return (methodCall != null && (setsInvocationTypeToAsync(methodCall) || statementSetsAsyncCall(methodCall)));
     }
 
     private static MethodInvocationTree findMethodInvocationTreeAncestor(Tree tree) {
@@ -154,8 +147,11 @@ public class AwsLambdaSyncCallCheck extends AbstractAwsMethodVisitor {
      */
     private static boolean declarationSetsAsyncCall(IdentifierTree invokeRequest) {
       Tree declaration = invokeRequest.symbol().declaration();
+      if (declaration == null) {
+        // Declaration not found so we can't say that calls are sync
+        return true;
+      }
       AsyncInvocationTypeSetterFinder asyncSetterVisitor = new AsyncInvocationTypeSetterFinder();
-      // There has to be a declaration (if code compiled)
       declaration.accept(asyncSetterVisitor);
       return asyncSetterVisitor.found();
     }
@@ -165,7 +161,7 @@ public class AwsLambdaSyncCallCheck extends AbstractAwsMethodVisitor {
 
       @Override
       public void visitMethodInvocation(MethodInvocationTree methodCall) {
-        found = setsInvocationTypeToAsync(methodCall) || found;
+        found = found || setsInvocationTypeToAsync(methodCall);
       }
 
       public boolean found() {
