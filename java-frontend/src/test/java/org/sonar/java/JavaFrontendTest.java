@@ -60,6 +60,7 @@ import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
+import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -75,6 +76,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -199,7 +201,7 @@ class JavaFrontendTest {
   }
 
   @Test
-  void test_scan_logs_when_caching_is_enabled() {
+  void test_scan_logs_when_caching_is_enabled_and_can_skip_unchanged_files() throws ApiMismatchException {
     File baseDir = temp.getRoot().getAbsoluteFile();
     SensorContextTester sensorContextTester = SensorContextTester.create(baseDir);
     sensorContextTester.setSettings(new MapSettings());
@@ -210,6 +212,7 @@ class JavaFrontendTest {
     doReturn(mock(WriteCache.class)).when(spy).nextCache();
     var sonarComponents = mock(SonarComponents.class);
     doReturn(spy).when(sonarComponents).context();
+    doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
 
     JavaFrontend frontend = new JavaFrontend(
       new JavaVersionImpl(),
@@ -234,7 +237,79 @@ class JavaFrontendTest {
   }
 
   @Test
-  void test_scan_logs_when_caching_is_disabled() {
+  void test_scan_logs_when_caching_is_enabled_and_cannot_skip_unchanged_files() throws ApiMismatchException {
+    File baseDir = temp.getRoot().getAbsoluteFile();
+    SensorContextTester sensorContextTester = SensorContextTester.create(baseDir);
+    sensorContextTester.setSettings(new MapSettings());
+
+    SensorContext spy = spy(sensorContextTester);
+    doReturn(true).when(spy).isCacheEnabled();
+    doReturn(mock(ReadCache.class)).when(spy).previousCache();
+    doReturn(mock(WriteCache.class)).when(spy).nextCache();
+    var sonarComponents = mock(SonarComponents.class);
+    doReturn(spy).when(sonarComponents).context();
+    doReturn(false).when(sonarComponents).canSkipUnchangedFiles();
+
+    JavaFrontend frontend = new JavaFrontend(
+      new JavaVersionImpl(),
+      sonarComponents,
+      null,
+      mock(JavaResourceLocator.class),
+      mainCodeIssueScannerAndFilter
+    );
+
+    frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+    List<String> logs = logTester.getLogs(LoggerLevel.INFO).stream()
+      .map(LogAndArguments::getFormattedMsg)
+      .collect(Collectors.toList());
+    assertThat(logs)
+      .isNotEmpty()
+      .containsExactly(
+        "Server-side caching is enabled. The Java analyzer will not try to leverage data from a previous analysis.",
+        "No \"Main\" source files to scan.",
+        "No \"Test\" source files to scan.",
+        "No \"Generated\" source files to scan."
+      );
+  }
+
+  @Test
+  void test_scan_logs_when_caching_is_enabled_and_cannot_determine_if_unchanged_files_can_be_skipped() throws ApiMismatchException {
+    File baseDir = temp.getRoot().getAbsoluteFile();
+    SensorContextTester sensorContextTester = SensorContextTester.create(baseDir);
+    sensorContextTester.setSettings(new MapSettings());
+
+    SensorContext spy = spy(sensorContextTester);
+    doReturn(true).when(spy).isCacheEnabled();
+    doReturn(mock(ReadCache.class)).when(spy).previousCache();
+    doReturn(mock(WriteCache.class)).when(spy).nextCache();
+    var sonarComponents = mock(SonarComponents.class);
+    doReturn(spy).when(sonarComponents).context();
+    doThrow(new ApiMismatchException(new NoSuchMethodError("BOOM!"))).when(sonarComponents).canSkipUnchangedFiles();
+
+    JavaFrontend frontend = new JavaFrontend(
+      new JavaVersionImpl(),
+      sonarComponents,
+      null,
+      mock(JavaResourceLocator.class),
+      mainCodeIssueScannerAndFilter
+    );
+
+    frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+    List<String> logs = logTester.getLogs(LoggerLevel.INFO).stream()
+      .map(LogAndArguments::getFormattedMsg)
+      .collect(Collectors.toList());
+    assertThat(logs)
+      .isNotEmpty()
+      .containsExactly(
+        "Server-side caching is enabled. The Java analyzer will not try to leverage data from a previous analysis.",
+        "No \"Main\" source files to scan.",
+        "No \"Test\" source files to scan.",
+        "No \"Generated\" source files to scan."
+      );
+  }
+
+  @Test
+  void test_scan_logs_when_caching_is_disabled_and_can_skip_unchanged_files() throws ApiMismatchException {
     File baseDir = temp.getRoot().getAbsoluteFile();
     SensorContextTester sensorContextTester = SensorContextTester.create(baseDir);
     sensorContextTester.setSettings(new MapSettings());
@@ -244,6 +319,42 @@ class JavaFrontendTest {
 
     var sonarComponents = mock(SonarComponents.class);
     doReturn(spy).when(sonarComponents).context();
+    doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
+
+    JavaFrontend frontend = new JavaFrontend(
+      new JavaVersionImpl(),
+      sonarComponents,
+      null,
+      mock(JavaResourceLocator.class),
+      mainCodeIssueScannerAndFilter
+    );
+
+    frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+    List<String> logs = logTester.getLogs(LoggerLevel.INFO).stream()
+      .map(LogAndArguments::getFormattedMsg)
+      .collect(Collectors.toList());
+    assertThat(logs)
+      .isNotEmpty()
+      .containsExactly(
+        "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
+        "No \"Main\" source files to scan.",
+        "No \"Test\" source files to scan.",
+        "No \"Generated\" source files to scan."
+      );
+  }
+
+  @Test
+  void test_scan_logs_when_caching_is_disabled_and_cannot_skip_unchanged_files() throws ApiMismatchException {
+    File baseDir = temp.getRoot().getAbsoluteFile();
+    SensorContextTester sensorContextTester = SensorContextTester.create(baseDir);
+    sensorContextTester.setSettings(new MapSettings());
+
+    SensorContext spy = spy(sensorContextTester);
+    doReturn(false).when(spy).isCacheEnabled();
+
+    var sonarComponents = mock(SonarComponents.class);
+    doReturn(spy).when(sonarComponents).context();
+    doReturn(false).when(sonarComponents).canSkipUnchangedFiles();
 
     JavaFrontend frontend = new JavaFrontend(
       new JavaVersionImpl(),
