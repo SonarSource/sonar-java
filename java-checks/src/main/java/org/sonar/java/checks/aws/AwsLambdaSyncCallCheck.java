@@ -86,8 +86,7 @@ public class AwsLambdaSyncCallCheck extends AbstractAwsMethodVisitor {
           .collect(Collectors.toList());
 
         if (isParameter(invokeRequest.symbol())
-          || localUsages.stream().anyMatch(lu -> isArgumentToACall(lu)
-            || statementSetsAsyncCall(lu))
+          || localUsages.stream().anyMatch(lu -> isArgumentToACall(lu) || statementSetsAsyncCall(lu))
           || declarationSetsAsyncCall(invokeRequest)) {
           return Optional.empty();
         }
