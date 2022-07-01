@@ -1,0 +1,20 @@
+<p>Invoking other Lambdas synchronously from a Lambda is a scalability anti-pattern. Lambdas have a maximum execution time before they timeout (15
+minutes as of May 2021). Having to wait for another Lambda to finish its execution could lead to a timeout.</p>
+<p>A better solution is to generate&nbsp;events that can be consumed asynchronously by other Lambdas.</p>
+<h2>Noncompliant Code Example</h2>
+<p>With AWS SDKv1</p>
+<pre>
+InvokeRequest invokeRequest = new InvokeRequest()
+         .withFunctionName("myFunction");
+
+AWSLambda awsLambda = AWSLambdaClientBuilder.standard()
+		.withCredentials(new ProfileCredentialsProvider())
+		.withRegion(Regions.US_WEST_2).build();
+
+awsLambda.invoke(invokeRequest); // Noncompliant
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html">Best practices for working with AWS Lambda functions</a> </li>
+</ul>
+

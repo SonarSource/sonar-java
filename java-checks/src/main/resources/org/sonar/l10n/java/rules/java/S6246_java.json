@@ -1,0 +1,17 @@
+{
+  "title": "Lambdas should not invoke other lambdas synchronously",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "3h"
+  },
+  "tags": [
+    "aws"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-6246",
+  "sqKey": "S6246",
+  "scope": "All",
+  "quickfix": "unknown"
+}

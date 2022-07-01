@@ -179,7 +179,7 @@ public class AutoScanTest {
     assertThat(newTotal).isEqualTo(knownTotal);
     assertThat(rulesCausingFPs).hasSize(7);
     assertThat(rulesNotReporting).hasSize(6);
-    assertThat(rulesSilenced).hasSize(66);
+    assertThat(rulesSilenced).hasSize(67);
 
     /**
      * 4. Check total number of differences (FPs + FNs)
@@ -187,7 +187,7 @@ public class AutoScanTest {
      * No differences would mean that we find the same issues with and without the bytecode and libraries
      */
     String differences = Files.readString(pathFor(TARGET_ACTUAL + PROJECT_KEY + "-no-binaries_differences"));
-    assertThat(differences).isEqualTo("Issues differences: 3131");
+    assertThat(differences).isEqualTo("Issues differences: 3137");
   }
 
   private static Path pathFor(String path) {
