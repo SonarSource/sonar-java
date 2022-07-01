@@ -27,13 +27,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -177,8 +177,13 @@ public class AwsLambdaSyncCallCheck extends AbstractAwsMethodVisitor {
       Arguments arguments = methodCall.arguments();
       if (INVOCATIONTYPE_MATCHERS.matches(methodCall)) {
         // From the matcher we know there is an argument and it is a string.
-        String stringVal = ((LiteralTree) arguments.get(0)).value();
-        return (stringVal.equals("\"Event\"") || stringVal.equals("\"DryRun\""));
+        String stringVal = ExpressionsHelper.getConstantValueAsString(arguments.get(0)).value();
+        if (stringVal != null) {
+          return stringVal.equals("Event") || stringVal.equals("DryRun");
+        } else {
+          // Could not get the string real value, therefore sync calls are out of the picture.
+          return true;
+        }
       }
       return false;
     }

@@ -87,6 +87,7 @@ public class AwsLambdaSyncCallCheck {
       invokeUnknown1();
       invokeUnknown2();
       invokeUnknown3();
+      invokeUnknown4();
     }
 
     void invokeUnknown1() {
@@ -96,6 +97,7 @@ public class AwsLambdaSyncCallCheck {
       // Compliant as we don't know what the call to foo did to invokeRequest
       awsLambda.invoke(invokeRequest);
     }
+
     private InvokeRequest foo(InvokeRequest invokeRequest) {
       return new InvokeRequest();
     }
@@ -108,11 +110,23 @@ public class AwsLambdaSyncCallCheck {
     void invokeUnknown3() {
       awsLambda.invoke(getInvokeRequest());
     }
+
     private InvokeRequest getInvokeRequest() {
       return null;
     }
 
-	void invokeAsync() {
+    void invokeUnknown4() {
+      var invokeRequest4 = new InvokeRequest();
+      // Compliant because we don't know what getString could return
+      invokeRequest4.setInvocationType(getString());
+      awsLambda.invoke(invokeRequest4);
+    }
+
+    private String getString() {
+      return null;
+    }
+
+    void invokeAsync() {
       invokeAsync1();
       invokeAsync2();
       invokeAsync3();
@@ -162,7 +176,6 @@ public class AwsLambdaSyncCallCheck {
       (invokeRequest4).setInvocationType("Event");
       awsLambda.invoke(invokeRequest4);
     }
-
 
     void invokeDryRun() {
       InvokeRequest invokeRequest = new InvokeRequest();
