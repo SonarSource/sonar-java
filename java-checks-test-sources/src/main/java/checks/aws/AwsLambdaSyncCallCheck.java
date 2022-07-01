@@ -100,6 +100,7 @@ public class AwsLambdaSyncCallCheck {
       invokeAsync3();
       invokeAsync4(new InvokeRequest());
       invokeAsync5();
+      invokeAsync6();
     }
 
     void invokeAsync1() {
@@ -137,6 +138,13 @@ public class AwsLambdaSyncCallCheck {
       // Compliant as we don't know what invokeRequest contains
       awsLambda.invoke(invokeRequest);
     }
+
+    void invokeAsync6() {
+      var invokeRequest4 = new InvokeRequest();
+      (invokeRequest4).setInvocationType("Event");
+      awsLambda.invoke(invokeRequest4);
+    }
+
 
     void invokeDryRun() {
       InvokeRequest invokeRequest = new InvokeRequest();

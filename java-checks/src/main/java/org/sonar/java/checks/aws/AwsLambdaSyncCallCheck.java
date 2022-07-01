@@ -118,12 +118,8 @@ public class AwsLambdaSyncCallCheck extends AbstractAwsMethodVisitor {
      * @return true if statement leads lambda calls to be async
      */
     private static boolean statementSetsAsyncCall(Tree tree) {
-      Tree treeParent = tree.parent();
-      if (treeParent != null && treeParent.parent() != null &&
-        treeParent.parent().is(Tree.Kind.METHOD_INVOCATION)) {
-
-        MethodInvocationTree methodCall = (MethodInvocationTree) treeParent.parent();
-
+      MethodInvocationTree methodCall = findMethodInvocationTreeAncestor(tree);
+      if (methodCall != null) {
         if (setsInvocationTypeToAsync(methodCall)) {
           return true;
         } else {
@@ -131,6 +127,17 @@ public class AwsLambdaSyncCallCheck extends AbstractAwsMethodVisitor {
         }
       }
       return false;
+    }
+
+    private static MethodInvocationTree findMethodInvocationTreeAncestor(Tree tree) {
+      Tree parent = tree.parent();
+      while (parent != null) {
+        if (parent.is(Tree.Kind.METHOD_INVOCATION)) {
+          return (MethodInvocationTree) parent;
+        }
+        parent = parent.parent();
+      }
+      return null;
     }
 
     /**
