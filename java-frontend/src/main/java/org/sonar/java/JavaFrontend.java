@@ -44,6 +44,7 @@ import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.caching.CacheContextImpl;
 import org.sonar.java.collections.CollectionUtils;
+import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.VisitorsBridge;
@@ -129,7 +130,7 @@ public class JavaFrontend {
   }
 
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
-    if (isCacheEnabled()) {
+    if (canOptimizeScanning()) {
       long successfullyScanned = 0L;
       long total = 0L;
 
@@ -150,6 +151,8 @@ public class JavaFrontend {
         successfullyScanned,
         total
       );
+    } else if (isCacheEnabled()) {
+      LOG.info("Server-side caching is enabled. The Java analyzer will not try to leverage data from a previous analysis.");
     } else {
       LOG.info("Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.");
     }
@@ -391,6 +394,14 @@ public class JavaFrontend {
 
   private boolean isCacheEnabled() {
     return sonarComponents != null && CacheContextImpl.of(sonarComponents.context()).isCacheEnabled();
+  }
+
+  private boolean canOptimizeScanning() {
+    try {
+      return sonarComponents != null && sonarComponents.canSkipUnchangedFiles() && isCacheEnabled();
+    } catch (ApiMismatchException e) {
+      return false;
+    }
   }
 
   private static <T> void scanAndMeasureTask(Iterable<T> files, Consumer<Iterable<T>> action, String descriptor) {
