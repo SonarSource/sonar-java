@@ -232,7 +232,7 @@
     <dependency>
       <groupId>org.springframework.data</groupId>
       <artifactId>spring-data-mongodb</artifactId>
-      <version>2.0.8.RELEASE</version>
+      <version>3.3.5</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
