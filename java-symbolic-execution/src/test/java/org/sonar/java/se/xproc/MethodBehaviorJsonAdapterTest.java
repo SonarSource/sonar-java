@@ -22,17 +22,12 @@ package org.sonar.java.se.xproc;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.model.Sema;
-import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramState;
-import org.sonar.java.se.SymbolicExecutionVisitor;
-import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
@@ -42,7 +37,6 @@ import org.sonar.plugins.java.api.semantic.Type;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.sonar.java.se.utils.SETestUtils.createSymbolicExecutionVisitorAndSemantic;
 
 class MethodBehaviorJsonAdapterTest {
 
@@ -309,19 +303,6 @@ class MethodBehaviorJsonAdapterTest {
 
     MethodBehavior deserialized = gson.fromJson(serialized, MethodBehavior.class);
     assertThat(deserialized).isEqualTo(mb);
-  }
-
-  @Test
-  void get_method_behavior_isEmpty() {
-    Pair<SymbolicExecutionVisitor, Sema> visitorAndSemantic = createSymbolicExecutionVisitorAndSemantic(
-      "src/test/java/org/sonar/java/resolve/targets/se/mb/FakeCommonsLang2ArrayUtils.java",
-      new NullDereferenceCheck());
-
-    SymbolicExecutionVisitor sev = visitorAndSemantic.a;
-
-    Collection<MethodBehavior> behaviors = sev.behaviorCache.behaviors.values();
-    assertThat(behaviors).hasSize(18);
-    System.out.println(gson.toJson(behaviors));
   }
 
   private static MethodBehavior newMethodBehavior(String signature) {
