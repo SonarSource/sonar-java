@@ -33,20 +33,21 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.Sema;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.CheckerDispatcher;
-import org.sonar.java.se.utils.JParserTestUtils;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramState;
-import org.sonar.java.se.utils.SETestUtils;
 import org.sonar.java.se.SymbolicExecutionVisitor;
-import org.sonar.java.checks.verifier.TestUtils;
+import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
+import org.sonar.java.se.utils.JParserTestUtils;
+import org.sonar.java.se.utils.SETestUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -104,7 +105,7 @@ class BehaviorCacheTest {
 
   @Test
   void explore_method_with_recursive_call() throws Exception {
-    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/RecursiveCall.java", 
+    SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/RecursiveCall.java",
       new NullDereferenceCheck());
     assertThat(sev.behaviorCache.behaviors).hasSize(1);
     assertThat(sev.behaviorCache.behaviors.keySet().iterator().next()).contains("#foo");
@@ -112,7 +113,7 @@ class BehaviorCacheTest {
 
   @Test
   void interrupted_exploration_does_not_create_method_yields() throws Exception {
-    SymbolicExecutionVisitor sev = 
+    SymbolicExecutionVisitor sev =
       createSymbolicExecutionVisitor("src/test/files/se/PartialMethodYieldMaxStep.java", new NullDereferenceCheck());
     assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(2);
 
@@ -127,7 +128,7 @@ class BehaviorCacheTest {
 
   @Test
   void clear_stack_when_taking_exceptional_path_from_method_invocation() throws Exception {
-    Pair<SymbolicExecutionVisitor, Sema> sevAndSemantic = 
+    Pair<SymbolicExecutionVisitor, Sema> sevAndSemantic =
       createSymbolicExecutionVisitorAndSemantic("src/test/files/se/CleanStackWhenRaisingException.java", new NullDereferenceCheck());
     SymbolicExecutionVisitor sev = sevAndSemantic.a;
     Sema semanticModel = sevAndSemantic.b;
@@ -149,17 +150,17 @@ class BehaviorCacheTest {
 
     List<InputFile> inputFiles = Arrays.asList(
       "src/test/files/se/Log4jAssert.java",
-      TestUtils.testSourcesPath("symbolicexecution/behaviorcache/JavaLangMathMethods.java"),
-      TestUtils.testSourcesPath("symbolicexecution/behaviorcache/CommonsLangValidate.java"),
-      TestUtils.testSourcesPath("symbolicexecution/behaviorcache/CommonsLang3StringUtilsMethods.java"),
-      TestUtils.testSourcesPath("symbolicexecution/behaviorcache/CommonsLang2StringUtilsMethods.java"),
-      TestUtils.testSourcesPath("symbolicexecution/behaviorcache/ObjectsMethodsMethodBehaviors.java"),
-      TestUtils.testSourcesPath("symbolicexecution/behaviorcache/GuavaPreconditionsMethods.java"),
-      TestUtils.testSourcesPath("symbolicexecution/behaviorcache/GuavaCommonStrings.java"),
-      TestUtils.testSourcesPath("symbolicexecution/behaviorcache/GuavaVerifyMethods.java"),
-      TestUtils.testSourcesPath("symbolicexecution/behaviorcache/CollectionUtilsIsEmpty.java"),
-      TestUtils.testSourcesPath("symbolicexecution/behaviorcache/SpringAssert.java"),
-      TestUtils.testSourcesPath("symbolicexecution/behaviorcache/EclipseAssert.java"))
+      TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/JavaLangMathMethods.java"),
+      TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/CommonsLangValidate.java"),
+      TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/CommonsLang3StringUtilsMethods.java"),
+      TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/CommonsLang2StringUtilsMethods.java"),
+      TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/ObjectsMethodsMethodBehaviors.java"),
+      TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/GuavaPreconditionsMethods.java"),
+      TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/GuavaCommonStrings.java"),
+      TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/GuavaVerifyMethods.java"),
+      TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/CollectionUtilsIsEmpty.java"),
+      TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/SpringAssert.java"),
+      TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/EclipseAssert.java"))
       .stream()
       .map(File::new)
       .map(SETestUtils::inputFile)
@@ -178,47 +179,57 @@ class BehaviorCacheTest {
 
   @Test
   void java_lang_math_methods_should_be_handled() throws Exception {
-    verifyNoIssueOnFile(TestUtils.testSourcesPath("symbolicexecution/behaviorcache/JavaLangMathMethods.java"));
+    verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/JavaLangMathMethods.java"));
   }
 
   @Test
   void commons_lang3_string_utils_method_should_be_handled() throws Exception {
-    verifyNoIssueOnFile(TestUtils.testSourcesPath("symbolicexecution/behaviorcache/CommonsLang3StringUtilsMethods.java"));
+    verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/CommonsLang3StringUtilsMethods.java"));
+  }
+
+  @Test
+  void commons_lang3_array_utils_method_should_be_handled() throws Exception {
+    verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/CommonsLang3ArrayUtilsMethods.java"));
   }
 
   @Test
   void commons_lang2_string_utils_method_should_be_handled() throws Exception {
-    verifyNoIssueOnFile(TestUtils.testSourcesPath("symbolicexecution/behaviorcache/CommonsLang2StringUtilsMethods.java"));
+    verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/CommonsLang2StringUtilsMethods.java"));
+  }
+
+  @Test
+  void commons_lang2_array_utils_method_should_be_handled() throws Exception {
+    verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/CommonsLang2ArrayUtilsMethods.java"));
   }
 
   @Test
   void guava_preconditions_methods_should_be_handled() throws Exception {
-    verifyNoIssueOnFile(TestUtils.testSourcesPath("symbolicexecution/behaviorcache/GuavaPreconditionsMethods.java"));
+    verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/GuavaPreconditionsMethods.java"));
   }
 
   @Test
   void objects_methods() {
-    verifyNoIssueOnFile(TestUtils.testSourcesPath("symbolicexecution/behaviorcache/ObjectsMethodsMethodBehaviors.java"));
+    verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/ObjectsMethodsMethodBehaviors.java"));
   }
 
   @Test
   void guava_common_Strings() throws Exception {
-    verifyNoIssueOnFile(TestUtils.testSourcesPath("symbolicexecution/behaviorcache/GuavaCommonStrings.java"));
+    verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/GuavaCommonStrings.java"));
   }
 
   @Test
   void guava_verify() throws Exception {
-    verifyNoIssueOnFile(TestUtils.testSourcesPath("symbolicexecution/behaviorcache/GuavaVerifyMethods.java"));
+    verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/GuavaVerifyMethods.java"));
   }
 
   @Test
   void collections_utils_is_empty_method() throws Exception {
-    verifyNoIssueOnFile(TestUtils.testSourcesPath("symbolicexecution/behaviorcache/CollectionUtilsIsEmpty.java"));
+    verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/CollectionUtilsIsEmpty.java"));
   }
 
   @Test
   void apache_lang_validate() throws Exception {
-    verifyNoIssueOnFile(TestUtils.testSourcesPath("symbolicexecution/behaviorcache/CommonsLangValidate.java"));
+    verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/CommonsLangValidate.java"));
   }
 
   @Test
@@ -230,12 +241,12 @@ class BehaviorCacheTest {
 
   @Test
   void spring_assert() throws Exception {
-    verifyNoIssueOnFile(TestUtils.testSourcesPath("symbolicexecution/behaviorcache/SpringAssert.java"));
+    verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/SpringAssert.java"));
   }
 
   @Test
   void eclipse_aspectj_assert() throws Exception {
-    verifyNoIssueOnFile(TestUtils.testSourcesPath("symbolicexecution/behaviorcache/EclipseAssert.java"));
+    verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/EclipseAssert.java"));
   }
 
   @Test
@@ -316,7 +327,8 @@ class BehaviorCacheTest {
 
   private static void verifyNoIssueOnFile(String fileName) {
     SECheck nullDereferenceCheck = new NullDereferenceCheck();
-    createSymbolicExecutionVisitorAndSemantic(fileName, nullDereferenceCheck);
+    SECheck divByZeroCheck = new DivisionByZeroCheck();
+    createSymbolicExecutionVisitorAndSemantic(fileName, nullDereferenceCheck, divByZeroCheck);
     // verify we did not raise any issue, if we did, the context will get them reported.
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     nullDereferenceCheck.scanFile(context);
