@@ -216,5 +216,545 @@
         "exception": "java.lang.NullPointerException"
       }
     ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.ArrayUtils#isEmpty([Z)Z",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL",
+          "TRUE"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.ArrayUtils#isEmpty([B)Z",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL",
+          "TRUE"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.ArrayUtils#isEmpty([C)Z",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL",
+          "TRUE"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.ArrayUtils#isEmpty([D)Z",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL",
+          "TRUE"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.ArrayUtils#isEmpty([F)Z",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL",
+          "TRUE"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.ArrayUtils#isEmpty([I)Z",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL",
+          "TRUE"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.ArrayUtils#isEmpty([J)Z",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL",
+          "TRUE"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.ArrayUtils#isEmpty([Ljava/lang/Object;)Z",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL",
+          "TRUE"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.ArrayUtils#isEmpty([S)Z",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL",
+          "TRUE"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.ArrayUtils#isNotEmpty([Z)Z",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL",
+          "FALSE"
+        ]
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.ArrayUtils#isNotEmpty([B)Z",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL",
+          "FALSE"
+        ]
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.ArrayUtils#isNotEmpty([C)Z",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL",
+          "FALSE"
+        ]
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.ArrayUtils#isNotEmpty([D)Z",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL",
+          "FALSE"
+        ]
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.ArrayUtils#isNotEmpty([F)Z",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL",
+          "FALSE"
+        ]
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.ArrayUtils#isNotEmpty([I)Z",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL",
+          "FALSE"
+        ]
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.ArrayUtils#isNotEmpty([J)Z",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL",
+          "FALSE"
+        ]
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.ArrayUtils#isNotEmpty([S)Z",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL",
+          "FALSE"
+        ]
+      }
+    ]
+  },
+  {
+    "signature": "org.apache.commons.lang3.ArrayUtils#isNotEmpty([Ljava/lang/Object;)Z",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL",
+          "FALSE"
+        ]
+      }
+    ]
   }
 ]
