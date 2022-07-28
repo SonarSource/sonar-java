@@ -197,6 +197,7 @@ class BehaviorCacheTest {
     verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/CommonsLang2StringUtilsMethods.java"));
   }
 
+
   @Test
   void commons_lang2_array_utils_method_should_be_handled() throws Exception {
     verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/CommonsLang2ArrayUtilsMethods.java"));
@@ -242,6 +243,11 @@ class BehaviorCacheTest {
   @Test
   void spring_assert() throws Exception {
     verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/SpringAssert.java"));
+  }
+
+  @Test
+  void spring_string_utils_is_empty() throws Exception {
+    verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/SpringStringUtilsMethods.java"));
   }
 
   @Test
