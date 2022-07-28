@@ -117,7 +117,7 @@ public class JavaSensor implements Sensor {
 
   private static UnaryOperator<List<JavaCheck>> createCheckFilter(boolean isAutoScanCheckFiltering) {
     if (isAutoScanCheckFiltering) {
-      Set<String> sonarWayRuleKeys = JavaSonarWayProfile.readProfile().ruleKeys;
+      Set<String> sonarWayRuleKeys = JavaSonarWayProfile.ruleKeys();
       Set<Class<? extends JavaCheck>> notWorkingChecks = CheckList.getJavaChecksNotWorkingForAutoScan();
       return checks -> checks.stream()
         .filter(c -> !(c instanceof SECheck))
