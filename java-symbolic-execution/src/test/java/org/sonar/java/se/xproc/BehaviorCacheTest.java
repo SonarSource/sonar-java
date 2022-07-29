@@ -246,7 +246,7 @@ class BehaviorCacheTest {
   }
 
   @Test
-  void spring_string_utils_is_empty() throws Exception {
+  void spring_string_utils_should_be_handled() throws Exception {
     verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/SpringStringUtilsMethods.java"));
   }
 
