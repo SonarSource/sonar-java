@@ -21,16 +21,16 @@ package org.sonar.java.checks.security;
 
 
 import org.junit.jupiter.api.Test;
+import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
-import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 
 class CredentialsShouldNotBeHardcodedCheckTest {
 
   @Test
   void test() {
-    InternalCheckVerifier.newInstance()
-      .withCheck(new CredentialsShouldNotBeHardcodedCheck())
+    CheckVerifier.newVerifier()
       .onFile(TestUtils.mainCodeSourcesPath("checks/security/CredentialsShouldNotBeHardcodedCheck.java"))
+      .withCheck(new CredentialsShouldNotBeHardcodedCheck())
       .verifyIssues();
   }
 }
