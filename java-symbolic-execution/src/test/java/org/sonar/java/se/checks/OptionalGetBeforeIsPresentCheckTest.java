@@ -48,6 +48,16 @@ class OptionalGetBeforeIsPresentCheckTest {
   }
 
   @Test
+  void test_ofNullable() {
+    SECheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/OptionalGetBeforeIsPresentCheck_ofNullable.java"))
+      .withChecks(new OptionalGetBeforeIsPresentCheck(), new NullDereferenceCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .withJavaVersion(11)
+      .verifyNoIssues();
+  }
+
+  @Test
   void invocation_leading_to_NoSuchElementException() {
     SECheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("symbolicexecution/checks/MethodInvocationLeadingToNSEE.java"))
