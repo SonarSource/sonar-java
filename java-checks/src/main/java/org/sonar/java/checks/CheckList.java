@@ -91,6 +91,7 @@ import org.sonar.java.checks.security.AuthorizationsStrongDecisionsCheck;
 import org.sonar.java.checks.security.CipherBlockChainingCheck;
 import org.sonar.java.checks.security.ClearTextProtocolCheck;
 import org.sonar.java.checks.security.CookieHttpOnlyCheck;
+import org.sonar.java.checks.security.CredentialsShouldNotBeHardcodedCheck;
 import org.sonar.java.checks.security.CryptographicKeySizeCheck;
 import org.sonar.java.checks.security.DataHashingCheck;
 import org.sonar.java.checks.security.DebugFeatureEnabledCheck;
@@ -339,6 +340,7 @@ public final class CheckList {
     ControlCharacterInLiteralCheck.class,
     ControllerWithSessionAttributesCheck.class,
     CookieHttpOnlyCheck.class,
+    CredentialsShouldNotBeHardcodedCheck.class,
     CryptographicKeySizeCheck.class,
     CustomCryptographicAlgorithmCheck.class,
     CustomSerializationMethodCheck.class,
