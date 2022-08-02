@@ -242,8 +242,29 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
         psEmpty.forEach(context::addTransition);
         psPresent.forEach(context::addTransition);
         programState = null;
-      } else if (OPTIONAL_OF.matches(tree) || OPTIONAL_OF_NULLABLE.matches(tree)) {
+      } else if (OPTIONAL_OF.matches(tree)) {
         constraintManager.setValueFactory(() -> new OptionalSymbolicValue(peek));
+      } else if (OPTIONAL_OF_NULLABLE.matches(tree)) {
+        Objects.requireNonNull(peek);
+        ObjectConstraint nullability = programState.getConstraint(peek, ObjectConstraint.class);
+        if (nullability != null) {
+          constraintManager.setValueFactory(() -> new OptionalSymbolicValue(peek));
+        } else {
+          SymbolicValue optionalSV = new OptionalSymbolicValue(peek);
+          ProgramState newState = programState.unstackValue(2).state.stackValue(optionalSV);
+          // if NULL -> OptionalSV = NOT_PRESENT
+          peek.setConstraint(newState, ObjectConstraint.NULL).stream()
+            .map(ps -> optionalSV.setConstraint(ps, OptionalConstraint.NOT_PRESENT))
+            .flatMap(List::stream)
+            .forEach(context::addTransition);
+          // if NOT_NULL -> OptionalSV = PRESENT
+          peek.setConstraint(newState, ObjectConstraint.NOT_NULL).stream()
+            .map(ps -> optionalSV.setConstraint(ps, OptionalConstraint.PRESENT))
+            .flatMap(List::stream)
+            .forEach(context::addTransition);
+          // interrupt current path to only use transitions
+          programState = null;
+        }
       }
     }
 
