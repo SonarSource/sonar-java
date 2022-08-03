@@ -13,6 +13,8 @@ public class CredentialsShouldNotBeHardcodedCheck {
     String inputString = "s3cr37";
     byte[] key = inputString.getBytes();
     SHA256.getHMAC(key, message);  // Noncompliant
+    SHA256.getHMAC(inputString.getBytes(), message); // Noncompliant
+    SHA256.getHMAC("anotherS3cr37".getBytes(), message); // Noncompliant
   }
 
   public static void compliantAzure(SecretClient secretClient, String secretName, byte[] message) {

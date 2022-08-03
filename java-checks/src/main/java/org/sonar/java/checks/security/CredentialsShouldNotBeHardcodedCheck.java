@@ -27,22 +27,56 @@ import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6437")
 public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVisitor {
   private static final Logger LOG = Loggers.get(CredentialsShouldNotBeHardcodedCheck.class);
 
-  private static List<MethodMatchers> methodMatchers;
+  private static final String JAVA_LANG_STRING = "java.lang.String";
+  private static final String GET_BYTES = "getBytes";
+  private static final MethodMatchers STRING_TO_BYTE_ARRAY_METHODS = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes(JAVA_LANG_STRING)
+      .names(GET_BYTES)
+      .addWithoutParametersMatcher()
+      .build(),
+    MethodMatchers.create()
+      .ofTypes(JAVA_LANG_STRING)
+      .names(GET_BYTES)
+      .addParametersMatcher(parameters -> parameters.size() == 1 &&
+        (parameters.get(0).is("java.nio.charset.Charset") || parameters.get(0).is(JAVA_LANG_STRING))
+      ).build(),
+    MethodMatchers.create()
+      .ofTypes(JAVA_LANG_STRING)
+      .names(GET_BYTES)
+      .addParametersMatcher("int", "int", "java.lang.byte[]", "int")
+      .build()
+  );
+
+
+  private static Map<String, List<CredentialsMethod>> methodMatchers;
 
   public CredentialsShouldNotBeHardcodedCheck() {
     loadSignatures();
@@ -53,7 +87,7 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
       return;
     }
     try {
-      methodMatchers = loadAppSecRecords(Path.of("..", "credentials-methods.json"));
+      methodMatchers = loadMethods(Path.of("..", "credentials-methods.json"));
     } catch (IOException e) {
       LOG.warn(e.getMessage());
     }
@@ -67,15 +101,118 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
   @Override
   public void visitNode(Tree tree) {
     MethodInvocationTree invocation = (MethodInvocationTree) tree;
-    for (MethodMatchers matcher : methodMatchers) {
+    String methodName = invocation.symbol().name();
+    List<CredentialsMethod> candidates = methodMatchers.get(methodName);
+    if (candidates == null) {
+      return;
+    }
+    for (CredentialsMethod candidate : candidates) {
+      MethodMatchers matcher = candidate.methodMatcher;
       if (matcher.matches(invocation)) {
-        reportIssue(invocation, "");
-        return;
+        checkArguments(invocation, candidate.argumentIndices).ifPresent(argument -> reportIssue(argument, ""));
       }
     }
   }
 
-  static List<MethodMatchers> loadAppSecRecords(Path path) throws IOException {
+  private Optional<Tree> checkArguments(MethodInvocationTree invocation, List<Integer> argumentIndices) {
+    for (Integer argumentIndex : argumentIndices) {
+      Arguments arguments = invocation.arguments();
+      if (arguments.size() <= argumentIndex) {
+        return Optional.empty();
+      }
+      ExpressionTree argument = arguments.get(argumentIndex);
+      if (argument.is(Tree.Kind.STRING_LITERAL)) {
+        reportIssue(invocation, "");
+      } else if (argument.is(Tree.Kind.IDENTIFIER)) {
+        IdentifierTree identifier = (IdentifierTree) argument;
+        Optional<Object> identifierAsConstant = identifier.asConstant();
+        if (identifierAsConstant.isPresent()) {
+          reportIssue(invocation, "");
+        }
+        Symbol symbol = identifier.symbol();
+        if (!symbol.isVariableSymbol()) {
+          return Optional.empty();
+        }
+        VariableTree variableTree = (VariableTree) symbol.declaration();
+        if (variableTree.symbol().type().is("byte[]") && isByteArrayDerivedFromPlainText(variableTree)) {
+          return Optional.of(argument);
+        }
+      } else if (argument.is(Tree.Kind.METHOD_INVOCATION)) {
+        if (isByteArrayDerivedFromPlainText((MethodInvocationTree) argument)) {
+          return Optional.of(argument);
+        }
+      }
+    }
+    return Optional.empty();
+  }
+
+  private static boolean isByteArrayDerivedFromPlainText(MethodInvocationTree invocation) {
+    if (!STRING_TO_BYTE_ARRAY_METHODS.matches(invocation)) {
+      return false;
+    }
+    ExpressionTree expressionTree = invocation.methodSelect();
+    if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
+      ExpressionTree expression = ((MemberSelectExpressionTree) expressionTree).expression();
+      if (expression.is(Tree.Kind.IDENTIFIER)) {
+        IdentifierTree identifier = (IdentifierTree) expression;
+        Symbol symbol = identifier.symbol();
+        if (symbol.isVariableSymbol()) {
+          VariableTree variable = (VariableTree) symbol.declaration();
+          return variable.symbol().type().is(JAVA_LANG_STRING) && variable.initializer().asConstant().isPresent();
+        }
+      } else if (expression.is(Tree.Kind.STRING_LITERAL)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static boolean isByteArrayDerivedFromPlainText(VariableTree variableTree) {
+    ExpressionTree initializer = variableTree.initializer();
+    if (!initializer.is(Tree.Kind.METHOD_INVOCATION)) {
+      return true;
+    }
+    MethodInvocationTree initializationCall = (MethodInvocationTree) initializer;
+    if (!STRING_TO_BYTE_ARRAY_METHODS.matches(initializationCall)) {
+      return true;
+    }
+    StringConstantFinder visitor = new StringConstantFinder();
+    initializationCall.accept(visitor);
+    return visitor.finding != null;
+  }
+
+  private static class StringConstantFinder extends BaseTreeVisitor {
+    VariableTree finding;
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      ExpressionTree expressionTree = tree.methodSelect();
+      if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
+        expressionTree.accept(this);
+      }
+    }
+
+    @Override
+    public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+      ExpressionTree expression = tree.expression();
+      if (expression.is(Tree.Kind.IDENTIFIER)) {
+        IdentifierTree identifier = (IdentifierTree) expression;
+        Symbol symbol = identifier.symbol();
+        if (symbol.isVariableSymbol()) {
+          symbol.declaration().accept(this);
+        }
+      }
+    }
+
+    @Override
+    public void visitVariable(VariableTree tree) {
+      if (tree.symbol().type().is(JAVA_LANG_STRING) && tree.initializer().asConstant().isPresent()) {
+        finding = tree;
+      }
+    }
+  }
+
+  static Map<String, List<CredentialsMethod>> loadMethods(Path path) throws IOException {
     Gson gson = new Gson();
     Type appSecRecordsCollection = new TypeToken<List<List<String>>>() {
     }.getType();
@@ -83,53 +220,72 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
     try (InputStream in = new FileInputStream(path.toFile())) {
       rawData = new String(in.readAllBytes(), StandardCharsets.UTF_8);
     }
-    List<List<String>> appSecRecords = gson.fromJson(rawData, appSecRecordsCollection);
-    return appSecRecords.stream()
-      .map(AppSecRecord::new)
-      .map(CredentialsShouldNotBeHardcodedCheck::convertToMatchers)
-      .collect(Collectors.toList());
-  }
-
-  private static MethodMatchers convertToMatchers(AppSecRecord appSecRecord) {
-    int argumentListStart = appSecRecord.method.indexOf('(');
-    int argumentListEnd = appSecRecord.method.indexOf(')', argumentListStart);
-    String type = appSecRecord.artifactId + "." + appSecRecord.classType;
-    int numberOfArguments = appSecRecord.method.substring(argumentListStart + 1, argumentListEnd).split(",").length;
-    if (appSecRecord.methodType.equals("Constructor")) {
-      return MethodMatchers.create()
-        .ofTypes(type)
-        .constructor()
-        .addParametersMatcher(argumentList -> argumentList.size() == numberOfArguments)
-        .build();
+    List<List<String>> jsonRecords = gson.fromJson(rawData, appSecRecordsCollection);
+    Map<String, List<CredentialsMethod>> methodsGroupedByName = new TreeMap<>();
+    for (List<String> jsonRecord : jsonRecords) {
+      CredentialsMethod method = new CredentialsMethod(jsonRecord);
+      if (methodsGroupedByName.containsKey(method.methodName)) {
+        methodsGroupedByName.get(method.methodName).add(method);
+      } else {
+        List<CredentialsMethod> methods = new ArrayList<>();
+        methods.add(method);
+        methodsGroupedByName.put(method.methodName, methods);
+      }
     }
-
-    String methodName = appSecRecord.method.substring(0, argumentListStart);
-    return MethodMatchers.create()
-      .ofTypes(type)
-      .names(methodName)
-      .addParametersMatcher(argumentList-> argumentList.size() == numberOfArguments)
-      .build();
+    return methodsGroupedByName;
   }
 
-  static class AppSecRecord {
+  static class CredentialsMethod {
     public final String groupId;
     public final String artifactId;
     public final String namespace;
     public final String classType;
     public final String methodType;
     public final String methodModifiersAndReturnType;
-    public final String method;
-    public final String argumentIndex;
+    public final String methodSignature;
+    public final String methodName;
+    public final List<Integer> argumentIndices;
+    public final MethodMatchers methodMatcher;
 
-    public AppSecRecord(List<String> record) {
-      this.groupId = record.get(1);
-      this.artifactId = record.get(2);
-      this.namespace = record.get(3);
-      this.classType = record.get(4);
-      this.methodType = record.get(5);
-      this.methodModifiersAndReturnType = record.get(6);
-      this.method = record.get(7);
-      this.argumentIndex = record.get(8);
+    public CredentialsMethod(List<String> entry) {
+      this.groupId = entry.get(1);
+      this.artifactId = entry.get(2);
+      this.namespace = entry.get(3);
+      this.classType = entry.get(4);
+      this.methodType = entry.get(5);
+      this.methodModifiersAndReturnType = entry.get(6);
+      this.methodSignature = entry.get(7);
+      this.methodName = extractMethodName(this.methodSignature);
+      this.argumentIndices = Stream.of(entry.get(8).split(","))
+        .map(index -> Integer.valueOf(index.trim()) - 1)
+        .collect(Collectors.toList());
+      this.methodMatcher = convertToMatchers(this);
+    }
+
+    private static MethodMatchers convertToMatchers(CredentialsMethod credentialsMethod) {
+      int argumentListStart = credentialsMethod.methodSignature.indexOf('(');
+      int argumentListEnd = credentialsMethod.methodSignature.indexOf(')', argumentListStart);
+      String type = credentialsMethod.artifactId + "." + credentialsMethod.classType;
+      int numberOfArguments = credentialsMethod.methodSignature.substring(argumentListStart + 1, argumentListEnd).split(",").length;
+
+      if (credentialsMethod.methodType.equals("Constructor")) {
+        return MethodMatchers.create()
+          .ofTypes(type)
+          .constructor()
+          .addParametersMatcher(argumentList -> argumentList.size() == numberOfArguments)
+          .build();
+      }
+
+      return MethodMatchers.create()
+        .ofTypes(type)
+        .names(credentialsMethod.methodName)
+        .addParametersMatcher(argumentList -> argumentList.size() == numberOfArguments)
+        .build();
+    }
+
+    private static String extractMethodName(String signature) {
+      int argumentListStart = signature.indexOf('(');
+      return signature.substring(0, argumentListStart);
     }
   }
 }
