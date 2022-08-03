@@ -32,11 +32,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
-import org.sonarsource.analyzer.commons.collections.PCollections;
-import org.sonarsource.analyzer.commons.collections.PMap;
-import org.sonar.java.se.checks.NullDereferenceCheck;
-import org.sonar.java.se.utils.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.Sema;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.Flow;
@@ -44,12 +41,14 @@ import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramPoint;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicExecutionVisitor;
+import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.java.se.utils.JParserTestUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
@@ -60,6 +59,8 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.collections.PCollections;
+import org.sonarsource.analyzer.commons.collections.PMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -226,6 +227,7 @@ class MethodYieldTest {
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     when(context.getTree()).thenReturn(cut);
     when(context.getSemanticModel()).thenReturn(semanticModel);
+    when(context.getJavaVersion()).thenReturn(new JavaVersionImpl(11));
     sev.scanFile(context);
 
     MethodSymbol methodSymbol = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(0)).symbol();
@@ -310,7 +312,7 @@ class MethodYieldTest {
 
   @Test
   void catch_class_cast_exception() throws Exception {
-    Map<String, MethodBehavior> behaviorCache = 
+    Map<String, MethodBehavior> behaviorCache =
       createSymbolicExecutionVisitor("src/test/files/se/XProcCatchClassCastException.java", new NullDereferenceCheck())
         .behaviorCache.behaviors;
     assertThat(behaviorCache.values()).hasSize(1);
