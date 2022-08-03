@@ -19,12 +19,13 @@
  */
 package org.sonar.java.se.checks;
 
-import org.sonar.java.Preconditions;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.Preconditions;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
@@ -191,16 +192,17 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
   }
 
   private static class PreStatementVisitor extends CheckerTreeNodeVisitor {
-
     private final CheckerContext context;
     private final ConstraintManager constraintManager;
     private final SECheck check;
+    private final boolean java11;
 
     private PreStatementVisitor(SECheck check, CheckerContext context) {
       super(context.getState());
       this.context = context;
       this.constraintManager = context.getConstraintManager();
       this.check = check;
+      this.java11 = context.getScannerContext().getJavaVersion().asInt() >= 11;
     }
 
     @Override
@@ -209,73 +211,97 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
         return;
       }
 
-      SymbolicValue peek = programState.peekValue();
-      if (OPTIONAL_TEST_METHODS.matches(tree)) {
-        constraintManager.setValueFactory(() -> new OptionalTestMethodSymbolicValue(peek, tree.symbol()));
-      } else if (OPTIONAL_GET.matches(tree) && presenceHasNotBeenChecked(programState.peekValueSymbol())) {
-        context.addExceptionalYield(peek, programState, "java.util.NoSuchElementException", check);
+      if (OPTIONAL_GET.matches(tree)) {
+        handleOptionalGetMethod(tree);
+      } else if (OPTIONAL_TEST_METHODS.matches(tree)) {
+        handleOptionalTestMethods(tree);
+      } else if (OPTIONAL_FILTER.matches(tree)) {
+        handleOptionalFilterMethod();
+      } else if (OPTIONAL_ORELSE.matches(tree)) {
+        handleOptionalOrElseMethod(tree);
+      } else if (OPTIONAL_OF.matches(tree)) {
+        handleOptionalOfMethod();
+      } else if (OPTIONAL_OF_NULLABLE.matches(tree)) {
+        handleOptionalOfNullableMethod();
+      }
+    }
+
+    private void handleOptionalOfMethod() {
+      constraintManager.setValueFactory(() -> new OptionalSymbolicValue(programState.peekValue()));
+    }
+
+    private void handleOptionalTestMethods(MethodInvocationTree tree) {
+      constraintManager.setValueFactory(() -> new OptionalTestMethodSymbolicValue(programState.peekValue(), tree.symbol()));
+    }
+
+    private void handleOptionalGetMethod(MethodInvocationTree tree) {
+      if (presenceHasNotBeenChecked(programState.peekValueSymbol())) {
+        SymbolicValue optionalSV = Objects.requireNonNull(programState.peekValue());
+        context.addExceptionalYield(optionalSV, programState, "java.util.NoSuchElementException", check);
         reportIssue(tree);
         // continue exploration after reporting, assuming the optional is now present (killing any noise after the initial issue)
-        programState = programState.addConstraint(peek, OptionalConstraint.PRESENT);
-      } else if (OPTIONAL_FILTER.matches(tree)) {
-        // filter has one parameter, so optional is next item on stack
-        SymbolicValue optionalSV = programState.peekValue(1);
+        programState = programState.addConstraint(optionalSV, OptionalConstraint.PRESENT);
+      }
+    }
 
-        if (programState.getConstraint(optionalSV, OptionalConstraint.class) == OptionalConstraint.NOT_PRESENT) {
-          // reuse the same optional - filtering a non-present optional is a no-op
-          constraintManager.setValueFactory(() -> optionalSV);
-        } else {
-          constraintManager.setValueFactory(() -> new FilteredOptionalSymbolicValue(optionalSV));
-        }
-      } else if (OPTIONAL_ORELSE.matches(tree)) {
-        ProgramState.Pop pop = programState.unstackValue(2);
-        SymbolicValue orElseValue = pop.values.get(0);
-        SymbolicValue optional = pop.values.get(1);
-        List<ProgramState> psEmpty = optional.setConstraint(pop.state.stackValue(orElseValue), OptionalConstraint.NOT_PRESENT);
-        SymbolicValue symbolicValue;
-        if(optional instanceof OptionalSymbolicValue) {
-          symbolicValue = ((OptionalSymbolicValue) optional).wrappedValue;
-        } else {
-          symbolicValue = constraintManager.createSymbolicValue(tree);
-        }
-        List<ProgramState> psPresent = optional.setConstraint(pop.state.stackValue(symbolicValue), OptionalConstraint.PRESENT);
-        psEmpty.forEach(context::addTransition);
-        psPresent.forEach(context::addTransition);
+    private void handleOptionalFilterMethod() {
+      // filter has one parameter, so optional is next item on stack
+      SymbolicValue optionalSV = programState.peekValue(1);
+
+      if (programState.getConstraint(optionalSV, OptionalConstraint.class) == OptionalConstraint.NOT_PRESENT) {
+        // reuse the same optional - filtering a non-present optional is a no-op
+        constraintManager.setValueFactory(() -> optionalSV);
+      } else {
+        constraintManager.setValueFactory(() -> new FilteredOptionalSymbolicValue(optionalSV));
+      }
+    }
+
+    private void handleOptionalOrElseMethod(MethodInvocationTree tree) {
+      ProgramState.Pop pop = programState.unstackValue(2);
+      SymbolicValue orElseValue = pop.values.get(0);
+      SymbolicValue optional = pop.values.get(1);
+      List<ProgramState> psEmpty = optional.setConstraint(pop.state.stackValue(orElseValue), OptionalConstraint.NOT_PRESENT);
+      SymbolicValue symbolicValue;
+      if(optional instanceof OptionalSymbolicValue) {
+        symbolicValue = ((OptionalSymbolicValue) optional).wrappedValue;
+      } else {
+        symbolicValue = constraintManager.createSymbolicValue(tree);
+      }
+      List<ProgramState> psPresent = optional.setConstraint(pop.state.stackValue(symbolicValue), OptionalConstraint.PRESENT);
+      psEmpty.forEach(context::addTransition);
+      psPresent.forEach(context::addTransition);
+      // interrupt current path to only use transitions
+      programState = null;
+    }
+
+    private void handleOptionalOfNullableMethod() {
+      SymbolicValue ofNullableParameter = Objects.requireNonNull(programState.peekValue());
+      ObjectConstraint nullability = programState.getConstraint(ofNullableParameter, ObjectConstraint.class);
+      if (nullability != null) {
+        constraintManager.setValueFactory(() -> new OptionalSymbolicValue(ofNullableParameter));
+      } else {
+        SymbolicValue optionalSV = new OptionalSymbolicValue(ofNullableParameter);
+        ProgramState newState = programState.unstackValue(2).state.stackValue(optionalSV);
+        // if NULL -> OptionalSV = NOT_PRESENT
+        ofNullableParameter.setConstraint(newState, ObjectConstraint.NULL).stream()
+          .map(ps -> optionalSV.setConstraint(ps, OptionalConstraint.NOT_PRESENT))
+          .flatMap(List::stream)
+          .forEach(context::addTransition);
+        // if NOT_NULL -> OptionalSV = PRESENT
+        ofNullableParameter.setConstraint(newState, ObjectConstraint.NOT_NULL).stream()
+          .map(ps -> optionalSV.setConstraint(ps, OptionalConstraint.PRESENT))
+          .flatMap(List::stream)
+          .forEach(context::addTransition);
+        // interrupt current path to only use transitions
         programState = null;
-      } else if (OPTIONAL_OF.matches(tree)) {
-        constraintManager.setValueFactory(() -> new OptionalSymbolicValue(peek));
-      } else if (OPTIONAL_OF_NULLABLE.matches(tree)) {
-        Objects.requireNonNull(peek);
-        ObjectConstraint nullability = programState.getConstraint(peek, ObjectConstraint.class);
-        if (nullability != null) {
-          constraintManager.setValueFactory(() -> new OptionalSymbolicValue(peek));
-        } else {
-          SymbolicValue optionalSV = new OptionalSymbolicValue(peek);
-          ProgramState newState = programState.unstackValue(2).state.stackValue(optionalSV);
-          // if NULL -> OptionalSV = NOT_PRESENT
-          peek.setConstraint(newState, ObjectConstraint.NULL).stream()
-            .map(ps -> optionalSV.setConstraint(ps, OptionalConstraint.NOT_PRESENT))
-            .flatMap(List::stream)
-            .forEach(context::addTransition);
-          // if NOT_NULL -> OptionalSV = PRESENT
-          peek.setConstraint(newState, ObjectConstraint.NOT_NULL).stream()
-            .map(ps -> optionalSV.setConstraint(ps, OptionalConstraint.PRESENT))
-            .flatMap(List::stream)
-            .forEach(context::addTransition);
-          // interrupt current path to only use transitions
-          programState = null;
-        }
       }
     }
 
     private void reportIssue(MethodInvocationTree mit) {
-      String identifier = getIdentifierPart(mit.methodSelect());
-      String issueMsg = identifier.isEmpty() ? "Optional#" : (identifier + ".");
       Tree reportTree = mit.methodSelect().is(Tree.Kind.MEMBER_SELECT) ? ((MemberSelectExpressionTree) mit.methodSelect()).expression() : mit;
-      String isEmptySuggestion = context.getScannerContext().getJavaVersion().asInt() >= 11 ?
-        String.format(" or \"!%sisEmpty()\"", issueMsg) : "";
-      context.reportIssue(reportTree, check,
-        String.format("Call \"%sisPresent()\"%s before accessing the value.", issueMsg, isEmptySuggestion));
+      String owner = getIdentifierPart(mit.methodSelect()).map(name -> name + ".").orElse("Optional#");
+      String alternative = java11 ? String.format(" or \"!%sisEmpty()\"", owner) : "";
+      context.reportIssue(reportTree, check, String.format("Call \"%sisPresent()\"%s before accessing the value.", owner, alternative));
     }
 
     private boolean presenceHasNotBeenChecked(ProgramState.SymbolicValueSymbol symbolicValueSymbol) {
@@ -290,14 +316,14 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
       return optionalConstraint != OptionalConstraint.PRESENT;
     }
 
-    private static String getIdentifierPart(ExpressionTree methodSelect) {
+    private static Optional<String> getIdentifierPart(ExpressionTree methodSelect) {
       if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
         ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
         if (expression.is(Tree.Kind.IDENTIFIER)) {
-          return ((IdentifierTree) expression).name();
+          return Optional.of(((IdentifierTree) expression).name());
         }
       }
-      return "";
+      return Optional.empty();
     }
 
     private static boolean isInvocationOnClassInstanceField(MethodInvocationTree mit) {
