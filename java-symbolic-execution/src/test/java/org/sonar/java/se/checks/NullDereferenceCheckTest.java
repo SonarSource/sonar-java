@@ -21,8 +21,21 @@ package org.sonar.java.se.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.se.SECheckVerifier;
+import org.sonar.java.se.utils.SETestUtils;
+
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class NullDereferenceCheckTest {
+
+  // TODO: where is its correct location?
+  @Test
+  void test_booleanValue() throws Exception {
+    SECheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/NullFromBooleanValue.java"))
+      .withChecks(new NullDereferenceCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
+  }
 
   @Test
   void test() {
