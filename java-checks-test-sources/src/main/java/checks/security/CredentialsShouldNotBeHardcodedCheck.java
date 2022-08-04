@@ -13,6 +13,10 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRespon
 
 public class CredentialsShouldNotBeHardcodedCheck {
   private static String secretString = "hunter2";
+  private static String secretReassginedField = "hunter2";
+  static {
+    secretReassginedField = "*******";
+  }
   private static byte[] secretByteArray = new byte[]{0xC, 0xA, 0xF, 0xE};
 
   public static void nonCompliant(byte[] message) throws ServletException {
@@ -31,6 +35,15 @@ public class CredentialsShouldNotBeHardcodedCheck {
     request.login("user", "password"); // Noncompliant
     request.login("user", effectivelyConstantString); // Noncompliant
     request.login("user", secretString); // Noncompliant
+  }
+
+  public static void compliant(String message, String secretParameter) throws ServletException {
+    String secretReassginedVariable = "s3cr37";
+    secretReassginedVariable = "very" + secretReassginedVariable;
+    HttpServletRequest request = new HttpServletRequestWrapper(null);
+    request.login("user", secretParameter); // compliant because we do not check parameters
+    request.login("user", secretReassginedVariable); // compliant because we do not check reassigned variables
+    request.login("user", secretReassginedField); // compliant because we do not check reassigned fields
   }
 
   public static void compliantAzure(SecretClient secretClient, String secretName, byte[] message) {

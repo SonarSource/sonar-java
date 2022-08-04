@@ -39,6 +39,8 @@ import java.util.stream.Stream;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ReassignmentFinder;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -132,11 +134,13 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
           reportIssue(invocation, "");
         }
         Symbol symbol = identifier.symbol();
-        if (!symbol.isVariableSymbol()) {
+        if (!symbol.isVariableSymbol() || JUtils.isParameter(symbol) || isReassigned(symbol)) {
           return Optional.empty();
         }
+
         VariableTree variableTree = (VariableTree) symbol.declaration();
         org.sonar.plugins.java.api.semantic.Type type = variableTree.symbol().type();
+
         if (type.is("byte[]") && isByteArrayDerivedFromPlainText(variableTree)) {
           return Optional.of(argument);
         } else if (type.is(JAVA_LANG_STRING) && variableTree.initializer().asConstant().isPresent()) {
@@ -149,6 +153,10 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
       }
     }
     return Optional.empty();
+  }
+
+  private static boolean isReassigned(Symbol symbol) {
+    return !ReassignmentFinder.getReassignments(symbol.owner().declaration(), symbol.usages()).isEmpty();
   }
 
   private static boolean isByteArrayDerivedFromPlainText(MethodInvocationTree invocation) {
