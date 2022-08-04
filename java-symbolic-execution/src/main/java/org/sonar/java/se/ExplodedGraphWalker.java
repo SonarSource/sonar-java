@@ -126,7 +126,7 @@ public class ExplodedGraphWalker {
   public static final MethodMatchers EQUALS_METHODS = MethodMatchers.or(
     EQUALS,
     MethodMatchers.create().ofTypes("java.util.Objects").names("equals").withAnyParameters().build());
-  public  static  final MethodMatchers BOOLEAN_VALUE_MATCHER =  MethodMatchers.create().ofTypes("java.lang.Boolean")
+  public static final MethodMatchers BOOLEAN_VALUE_MATCHER = MethodMatchers.create().ofTypes("java.lang.Boolean")
     .names("booleanValue").addWithoutParametersMatcher().build();
 
   private final AlwaysTrueOrFalseExpressionCollector alwaysTrueOrFalseExpressionCollector;
