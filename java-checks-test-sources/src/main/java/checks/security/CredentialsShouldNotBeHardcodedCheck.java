@@ -3,6 +3,8 @@ package checks.security;
 
 import com.azure.security.keyvault.secrets.SecretClient;
 import com.azure.security.keyvault.secrets.models.KeyVaultSecret;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -23,7 +25,7 @@ public class CredentialsShouldNotBeHardcodedCheck {
   }
   private static byte[] secretByteArray = new byte[]{0xC, 0xA, 0xF, 0xE};
 
-  public static void nonCompliant(byte[] message) throws ServletException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException {
+  public static void nonCompliant(byte[] message) throws ServletException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
     String effectivelyConstantString = "s3cr37";
     byte[] key = effectivelyConstantString.getBytes();
 
@@ -33,12 +35,14 @@ public class CredentialsShouldNotBeHardcodedCheck {
     SHA256.getHMAC(effectivelyConstantString.getBytes(), message); // Noncompliant
     SHA256.getHMAC("anotherS3cr37".getBytes(), message); // Noncompliant
     SHA256.getHMAC(secretString.getBytes(), message); // Noncompliant
+    SHA256.getHMAC(secretString.getBytes(StandardCharsets.UTF_8), message); // Noncompliant
+    SHA256.getHMAC(secretString.getBytes("UTF-8"), message); // Noncompliant
 
     // String based
     HttpServletRequest request = new HttpServletRequestWrapper(null);
     request.login("user", "password"); // Noncompliant
-    request.login("user", effectivelyConstantString); // Noncompliant [[sc=27;ec=52;secondary=-13]]
-    request.login("user", secretString); // Noncompliant [[sc=27;ec=39;secondary=-22]]
+    request.login("user", effectivelyConstantString); // Noncompliant [[sc=27;ec=52;secondary=-15]]
+    request.login("user", secretString); // Noncompliant [[sc=27;ec=39;secondary=-24]]
 
     KeyStore store = KeyStore.getInstance(null);
 

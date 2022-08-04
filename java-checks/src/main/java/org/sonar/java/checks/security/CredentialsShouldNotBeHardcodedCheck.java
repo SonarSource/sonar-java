@@ -59,23 +59,13 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
   private static final Logger LOG = Loggers.get(CredentialsShouldNotBeHardcodedCheck.class);
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
-  private static final String GET_BYTES = "getBytes";
   private static final MethodMatchers STRING_TO_ARRAY_METHODS = MethodMatchers.or(
     MethodMatchers.create()
       .ofTypes(JAVA_LANG_STRING)
-      .names(GET_BYTES)
+      .names("getBytes")
       .addWithoutParametersMatcher()
-      .build(),
-    MethodMatchers.create()
-      .ofTypes(JAVA_LANG_STRING)
-      .names(GET_BYTES)
-      .addParametersMatcher(parameters -> parameters.size() == 1 &&
-        (parameters.get(0).is("java.nio.charset.Charset") || parameters.get(0).is(JAVA_LANG_STRING))
-      ).build(),
-    MethodMatchers.create()
-      .ofTypes(JAVA_LANG_STRING)
-      .names(GET_BYTES)
-      .addParametersMatcher("int", "int", "java.lang.byte[]", "int")
+      .addParametersMatcher("java.nio.charset.Charset")
+      .addParametersMatcher(JAVA_LANG_STRING)
       .build(),
     MethodMatchers.create()
       .ofTypes(JAVA_LANG_STRING)
