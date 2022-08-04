@@ -151,7 +151,7 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
         if (isStringDerivedFromPlainText(variable) || isArrayDerivedFromPlainText(variable)) {
           reportIssue(argument, ISSUE_MESSAGE, List.of(new JavaFileScannerContext.Location("", variable)), null);
         }
-      } else if (argument.is(Tree.Kind.METHOD_INVOCATION) && isByteArrayDerivedFromPlainText((MethodInvocationTree) argument)) {
+      } else if (argument.is(Tree.Kind.METHOD_INVOCATION) && isArrayDerivedFromPlainText((MethodInvocationTree) argument)) {
         reportIssue(argument, ISSUE_MESSAGE);
       }
     }
@@ -177,37 +177,20 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
       return true;
     }
     MethodInvocationTree initializationCall = (MethodInvocationTree) initializer;
-    if (!STRING_TO_ARRAY_METHODS.matches(initializationCall)) {
+    return isArrayDerivedFromPlainText(initializationCall);
+  }
+
+  private static boolean isArrayDerivedFromPlainText(MethodInvocationTree invocation) {
+    if (!STRING_TO_ARRAY_METHODS.matches(invocation)) {
       return true;
     }
     StringConstantFinder visitor = new StringConstantFinder();
-    initializationCall.accept(visitor);
+    invocation.accept(visitor);
     return visitor.finding != null;
   }
 
-  private static boolean isByteArrayDerivedFromPlainText(MethodInvocationTree invocation) {
-    if (!STRING_TO_ARRAY_METHODS.matches(invocation)) {
-      return false;
-    }
-    ExpressionTree expressionTree = invocation.methodSelect();
-    if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
-      ExpressionTree expression = ((MemberSelectExpressionTree) expressionTree).expression();
-      if (expression.is(Tree.Kind.IDENTIFIER)) {
-        IdentifierTree identifier = (IdentifierTree) expression;
-        Symbol symbol = identifier.symbol();
-        if (symbol.isVariableSymbol()) {
-          VariableTree variable = (VariableTree) symbol.declaration();
-          return variable.symbol().type().is(JAVA_LANG_STRING) && variable.initializer().asConstant().isPresent();
-        }
-      } else if (expression.is(Tree.Kind.STRING_LITERAL)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   private static class StringConstantFinder extends BaseTreeVisitor {
-    VariableTree finding;
+    Tree finding;
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
@@ -224,14 +207,12 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
         IdentifierTree identifier = (IdentifierTree) expression;
         Symbol symbol = identifier.symbol();
         if (symbol.isVariableSymbol()) {
-          symbol.declaration().accept(this);
+          VariableTree variable = (VariableTree) symbol.declaration();
+          if (variable.symbol().type().is(JAVA_LANG_STRING) && variable.initializer().asConstant().isPresent()) {
+            finding = variable;
+          }
         }
-      }
-    }
-
-    @Override
-    public void visitVariable(VariableTree tree) {
-      if (tree.symbol().type().is(JAVA_LANG_STRING) && tree.initializer().asConstant().isPresent()) {
+      } else if (expression.is(Tree.Kind.STRING_LITERAL)) {
         finding = tree;
       }
     }
