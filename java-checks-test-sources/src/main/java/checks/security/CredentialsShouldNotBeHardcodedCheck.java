@@ -9,12 +9,17 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueReques
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
 
 public class CredentialsShouldNotBeHardcodedCheck {
+  private static String secretString = "hunter2";
+  private static byte[] secretByteArray = new byte[]{0xC,0xA,0xF,0xE};
+
   public static void nonCompliant(byte[] message) {
     String inputString = "s3cr37";
     byte[] key = inputString.getBytes();
+    SHA256.getHMAC(secretByteArray, message); // Noncompliant
     SHA256.getHMAC(key, message);  // Noncompliant
     SHA256.getHMAC(inputString.getBytes(), message); // Noncompliant
     SHA256.getHMAC("anotherS3cr37".getBytes(), message); // Noncompliant
+    SHA256.getHMAC(secretString.getBytes(), message); // Noncompliant
   }
 
   public static void compliantAzure(SecretClient secretClient, String secretName, byte[] message) {

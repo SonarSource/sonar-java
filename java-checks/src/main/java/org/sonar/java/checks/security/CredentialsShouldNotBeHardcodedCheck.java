@@ -29,6 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -109,13 +110,14 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
     for (CredentialsMethod candidate : candidates) {
       MethodMatchers matcher = candidate.methodMatcher;
       if (matcher.matches(invocation)) {
-        checkArguments(invocation, candidate.argumentIndices).ifPresent(argument -> reportIssue(argument, ""));
+        checkArguments(invocation, candidate.targetArguments).ifPresent(argument -> reportIssue(argument, ""));
       }
     }
   }
 
-  private Optional<Tree> checkArguments(MethodInvocationTree invocation, List<Integer> argumentIndices) {
-    for (Integer argumentIndex : argumentIndices) {
+  private Optional<Tree> checkArguments(MethodInvocationTree invocation, List<TargetArgument> argumentsToExamine) {
+    for (TargetArgument argumentToExamine : argumentsToExamine) {
+      int argumentIndex = argumentToExamine.index;
       Arguments arguments = invocation.arguments();
       if (arguments.size() <= argumentIndex) {
         return Optional.empty();
@@ -221,9 +223,14 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
       rawData = new String(in.readAllBytes(), StandardCharsets.UTF_8);
     }
     List<List<String>> jsonRecords = gson.fromJson(rawData, appSecRecordsCollection);
+    Map<String, Integer> argumentTypeCount = new HashMap<>();
     Map<String, List<CredentialsMethod>> methodsGroupedByName = new TreeMap<>();
     for (List<String> jsonRecord : jsonRecords) {
       CredentialsMethod method = new CredentialsMethod(jsonRecord);
+      for (TargetArgument argument: method.targetArguments) {
+        Integer currentCount = argumentTypeCount.getOrDefault(argument.type, 0);
+        argumentTypeCount.put(argument.type, currentCount + 1);
+      }
       if (methodsGroupedByName.containsKey(method.methodName)) {
         methodsGroupedByName.get(method.methodName).add(method);
       } else {
@@ -244,7 +251,7 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
     public final String methodModifiersAndReturnType;
     public final String methodSignature;
     public final String methodName;
-    public final List<Integer> argumentIndices;
+    public final List<TargetArgument> targetArguments;
     public final MethodMatchers methodMatcher;
 
     public CredentialsMethod(List<String> entry) {
@@ -256,9 +263,10 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
       this.methodModifiersAndReturnType = entry.get(6);
       this.methodSignature = entry.get(7);
       this.methodName = extractMethodName(this.methodSignature);
-      this.argumentIndices = Stream.of(entry.get(8).split(","))
+      List<Integer> argumentIndices = Stream.of(entry.get(8).split(","))
         .map(index -> Integer.valueOf(index.trim()) - 1)
         .collect(Collectors.toList());
+      this.targetArguments = extractArguments(this.methodSignature, argumentIndices);
       this.methodMatcher = convertToMatchers(this);
     }
 
@@ -286,6 +294,81 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
     private static String extractMethodName(String signature) {
       int argumentListStart = signature.indexOf('(');
       return signature.substring(0, argumentListStart);
+    }
+
+    private static List<TargetArgument> extractArguments(String signature, List<Integer> indices) {
+      List<List<String>> arguments = splitArgumentTypeAndName(signature);
+      return indices.stream()
+        .filter(index -> 0 <= index && index < arguments.size())
+        .map(index -> new TargetArgument(arguments.get(index).get(0), arguments.get(index).get(1), index))
+        .collect(Collectors.toList());
+    }
+
+    private static List<List<String>> splitArgumentTypeAndName(String signature) {
+      return tokenizeArguments(signature).stream()
+        .map(argumentString -> {
+          int index = argumentString.lastIndexOf(" ");
+          return List.of(
+            matchType(argumentString.substring(0, index).trim()),
+            argumentString.substring(index).trim()
+          );
+        }).collect(Collectors.toList());
+    }
+
+    private static List<String> tokenizeArguments(String signature) {
+      int start = signature.indexOf('(');
+      int end = signature.indexOf(')');
+      String parameters = signature.substring(start + 1, end);
+      List<String> types = new ArrayList<>();
+      int depth = 0;
+      start = 0;
+      for (int index = 0; index < parameters.length(); index++) {
+        char character = parameters.charAt(index);
+        switch (character) {
+          case ',':
+            if (depth == 0) {
+              end = index;
+              types.add(parameters.substring(start, end));
+              start = end + 1;
+            }
+            break;
+          case '<':
+            depth++;
+            break;
+          case '>':
+            depth--;
+            break;
+          default:
+            break;
+        }
+      }
+      types.add(parameters.substring(start));
+      return types;
+    }
+
+    private static String matchType(String type) {
+      switch (type) {
+        case "byte[]":
+          return "java.lang.byte[]";
+        case "char[]":
+          return "java.lang.char[]";
+        case "String":
+          return JAVA_LANG_STRING;
+        default:
+          return type;
+      }
+    }
+  }
+
+  static class TargetArgument {
+    public final String type;
+    public final String name;
+    public final int index;
+
+    TargetArgument(String type, String name, int index) {
+      this.type = type;
+      this.name = name;
+      this.index = index;
     }
   }
 }
