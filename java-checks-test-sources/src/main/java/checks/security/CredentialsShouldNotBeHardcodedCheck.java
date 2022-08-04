@@ -24,8 +24,8 @@ public class CredentialsShouldNotBeHardcodedCheck {
     byte[] key = effectivelyConstantString.getBytes();
 
     // byte array based
-    SHA256.getHMAC(secretByteArray, message); // Noncompliant
-    SHA256.getHMAC(key, message);  // Noncompliant
+    SHA256.getHMAC(secretByteArray, message); // Noncompliant [[sc=20;ec=35;secondary=-7]] {{Revoke and change this password, as it is compromised.}}
+    SHA256.getHMAC(key, message);  // Noncompliant [[sc=20;ec=23;secondary=-4]]
     SHA256.getHMAC(effectivelyConstantString.getBytes(), message); // Noncompliant
     SHA256.getHMAC("anotherS3cr37".getBytes(), message); // Noncompliant
     SHA256.getHMAC(secretString.getBytes(), message); // Noncompliant
@@ -33,8 +33,8 @@ public class CredentialsShouldNotBeHardcodedCheck {
     // String based
     HttpServletRequest request = new HttpServletRequestWrapper(null);
     request.login("user", "password"); // Noncompliant
-    request.login("user", effectivelyConstantString); // Noncompliant
-    request.login("user", secretString); // Noncompliant
+    request.login("user", effectivelyConstantString); // Noncompliant [[sc=27;ec=52;secondary=-13]]
+    request.login("user", secretString); // Noncompliant [[sc=27;ec=39;secondary=-22]]
   }
 
   public static void compliant(String message, String secretParameter) throws ServletException {

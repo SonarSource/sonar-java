@@ -42,6 +42,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ReassignmentFinder;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -78,6 +79,8 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
       .build()
   );
 
+  private static final String ISSUE_MESSAGE = "Revoke and change this password, as it is compromised.";
+
 
   private static Map<String, List<CredentialsMethod>> methodMatchers;
 
@@ -112,47 +115,46 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
     for (CredentialsMethod candidate : candidates) {
       MethodMatchers matcher = candidate.methodMatcher;
       if (matcher.matches(invocation)) {
-        checkArguments(invocation, candidate.targetArguments).ifPresent(argument -> reportIssue(argument, ""));
+        checkArguments(invocation, candidate.targetArguments);
       }
     }
   }
 
-  private Optional<Tree> checkArguments(MethodInvocationTree invocation, List<TargetArgument> argumentsToExamine) {
+  private void checkArguments(MethodInvocationTree invocation, List<TargetArgument> argumentsToExamine) {
     for (TargetArgument argumentToExamine : argumentsToExamine) {
       int argumentIndex = argumentToExamine.index;
       Arguments arguments = invocation.arguments();
       if (arguments.size() <= argumentIndex) {
-        return Optional.empty();
+        return;
       }
       ExpressionTree argument = arguments.get(argumentIndex);
       if (argument.is(Tree.Kind.STRING_LITERAL)) {
-        reportIssue(invocation, "");
+        reportIssue(argument, ISSUE_MESSAGE);
       } else if (argument.is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifier = (IdentifierTree) argument;
         Optional<Object> identifierAsConstant = identifier.asConstant();
         if (identifierAsConstant.isPresent()) {
-          reportIssue(invocation, "");
+          reportIssue(argument, ISSUE_MESSAGE);
         }
         Symbol symbol = identifier.symbol();
         if (!symbol.isVariableSymbol() || JUtils.isParameter(symbol) || isReassigned(symbol)) {
-          return Optional.empty();
+          return;
         }
 
         VariableTree variableTree = (VariableTree) symbol.declaration();
         org.sonar.plugins.java.api.semantic.Type type = variableTree.symbol().type();
 
         if (type.is("byte[]") && isByteArrayDerivedFromPlainText(variableTree)) {
-          return Optional.of(argument);
+          reportIssue(argument, ISSUE_MESSAGE, List.of(new JavaFileScannerContext.Location("", variableTree)), null);
         } else if (type.is(JAVA_LANG_STRING) && variableTree.initializer().asConstant().isPresent()) {
-          return Optional.of(argument);
+          reportIssue(argument, ISSUE_MESSAGE, List.of(new JavaFileScannerContext.Location("", variableTree)), null);
         }
       } else if (argument.is(Tree.Kind.METHOD_INVOCATION)) {
         if (isByteArrayDerivedFromPlainText((MethodInvocationTree) argument)) {
-          return Optional.of(argument);
+          reportIssue(argument, ISSUE_MESSAGE);
         }
       }
     }
-    return Optional.empty();
   }
 
   private static boolean isReassigned(Symbol symbol) {
