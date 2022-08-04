@@ -98,7 +98,7 @@ plugin_qa_task:
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
     <<: *CONTAINER_DEFINITION
-    cpu: 8
+    cpu: 7
     memory: 16G
   env:
     matrix:
@@ -143,7 +143,7 @@ ruling_task:
   eks_container:
     <<: *CONTAINER_DEFINITION
     image: 166916561812.dkr.ecr.eu-central-1.amazonaws.com/base:j17-latest
-    cpu: 8
+    cpu: 7
     memory: 16G
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
