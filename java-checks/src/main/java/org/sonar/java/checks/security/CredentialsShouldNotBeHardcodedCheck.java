@@ -136,7 +136,10 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
           return Optional.empty();
         }
         VariableTree variableTree = (VariableTree) symbol.declaration();
-        if (variableTree.symbol().type().is("byte[]") && isByteArrayDerivedFromPlainText(variableTree)) {
+        org.sonar.plugins.java.api.semantic.Type type = variableTree.symbol().type();
+        if (type.is("byte[]") && isByteArrayDerivedFromPlainText(variableTree)) {
+          return Optional.of(argument);
+        } else if (type.is(JAVA_LANG_STRING) && variableTree.initializer().asConstant().isPresent()) {
           return Optional.of(argument);
         }
       } else if (argument.is(Tree.Kind.METHOD_INVOCATION)) {
