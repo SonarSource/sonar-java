@@ -27,16 +27,6 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class NullDereferenceCheckTest {
 
-  // TODO: where is its correct location?
-  @Test
-  void test_booleanValue() throws Exception {
-    SECheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("symbolicexecution/checks/NullFromBooleanValue.java"))
-      .withChecks(new NullDereferenceCheck())
-      .withClassPath(SETestUtils.CLASS_PATH)
-      .verifyNoIssues();
-  }
-
   @Test
   void test() {
     SECheckVerifier.newVerifier()
@@ -107,5 +97,14 @@ class NullDereferenceCheckTest {
       .onFile("src/test/files/se/NPE_transitive.java")
       .withCheck(new NullDereferenceCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_booleanValue_method() throws Exception {
+    SECheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/NullFromBooleanValueCall.java"))
+      .withChecks(new NullDereferenceCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
   }
 }
