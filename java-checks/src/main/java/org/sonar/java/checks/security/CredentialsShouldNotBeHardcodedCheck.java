@@ -60,7 +60,7 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String GET_BYTES = "getBytes";
-  private static final MethodMatchers STRING_TO_BYTE_ARRAY_METHODS = MethodMatchers.or(
+  private static final MethodMatchers STRING_TO_ARRAY_METHODS = MethodMatchers.or(
     MethodMatchers.create()
       .ofTypes(JAVA_LANG_STRING)
       .names(GET_BYTES)
@@ -76,6 +76,11 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
       .ofTypes(JAVA_LANG_STRING)
       .names(GET_BYTES)
       .addParametersMatcher("int", "int", "java.lang.byte[]", "int")
+      .build(),
+    MethodMatchers.create()
+      .ofTypes(JAVA_LANG_STRING)
+      .names("toCharArray")
+      .addWithoutParametersMatcher()
       .build()
   );
 
@@ -128,7 +133,7 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
         return;
       }
       ExpressionTree argument = arguments.get(argumentIndex);
-      if (argument.is(Tree.Kind.STRING_LITERAL)) {
+      if (argument.is(Tree.Kind.STRING_LITERAL, Tree.Kind.NEW_ARRAY)) {
         reportIssue(argument, ISSUE_MESSAGE);
       } else if (argument.is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifier = (IdentifierTree) argument;
@@ -141,18 +146,13 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
           return;
         }
 
-        VariableTree variableTree = (VariableTree) symbol.declaration();
-        org.sonar.plugins.java.api.semantic.Type type = variableTree.symbol().type();
+        VariableTree variable = (VariableTree) symbol.declaration();
 
-        if (type.is("byte[]") && isByteArrayDerivedFromPlainText(variableTree)) {
-          reportIssue(argument, ISSUE_MESSAGE, List.of(new JavaFileScannerContext.Location("", variableTree)), null);
-        } else if (type.is(JAVA_LANG_STRING) && variableTree.initializer().asConstant().isPresent()) {
-          reportIssue(argument, ISSUE_MESSAGE, List.of(new JavaFileScannerContext.Location("", variableTree)), null);
+        if (isStringDerivedFromPlainText(variable) || isArrayDerivedFromPlainText(variable)) {
+          reportIssue(argument, ISSUE_MESSAGE, List.of(new JavaFileScannerContext.Location("", variable)), null);
         }
-      } else if (argument.is(Tree.Kind.METHOD_INVOCATION)) {
-        if (isByteArrayDerivedFromPlainText((MethodInvocationTree) argument)) {
-          reportIssue(argument, ISSUE_MESSAGE);
-        }
+      } else if (argument.is(Tree.Kind.METHOD_INVOCATION) && isByteArrayDerivedFromPlainText((MethodInvocationTree) argument)) {
+        reportIssue(argument, ISSUE_MESSAGE);
       }
     }
   }
@@ -161,8 +161,32 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
     return !ReassignmentFinder.getReassignments(symbol.owner().declaration(), symbol.usages()).isEmpty();
   }
 
+  private static boolean isStringDerivedFromPlainText(VariableTree variable) {
+    Symbol symbol = variable.symbol();
+    return symbol.type().is(JAVA_LANG_STRING) && variable.initializer().asConstant().isPresent();
+  }
+
+  private static boolean isArrayDerivedFromPlainText(VariableTree variable) {
+    Symbol symbol = variable.symbol();
+    org.sonar.plugins.java.api.semantic.Type type = symbol.type();
+    if (!type.is("byte[]") && !type.is("char[]")) {
+      return false;
+    }
+    ExpressionTree initializer = variable.initializer();
+    if (!initializer.is(Tree.Kind.METHOD_INVOCATION)) {
+      return true;
+    }
+    MethodInvocationTree initializationCall = (MethodInvocationTree) initializer;
+    if (!STRING_TO_ARRAY_METHODS.matches(initializationCall)) {
+      return true;
+    }
+    StringConstantFinder visitor = new StringConstantFinder();
+    initializationCall.accept(visitor);
+    return visitor.finding != null;
+  }
+
   private static boolean isByteArrayDerivedFromPlainText(MethodInvocationTree invocation) {
-    if (!STRING_TO_BYTE_ARRAY_METHODS.matches(invocation)) {
+    if (!STRING_TO_ARRAY_METHODS.matches(invocation)) {
       return false;
     }
     ExpressionTree expressionTree = invocation.methodSelect();
@@ -180,20 +204,6 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
       }
     }
     return false;
-  }
-
-  private static boolean isByteArrayDerivedFromPlainText(VariableTree variableTree) {
-    ExpressionTree initializer = variableTree.initializer();
-    if (!initializer.is(Tree.Kind.METHOD_INVOCATION)) {
-      return true;
-    }
-    MethodInvocationTree initializationCall = (MethodInvocationTree) initializer;
-    if (!STRING_TO_BYTE_ARRAY_METHODS.matches(initializationCall)) {
-      return true;
-    }
-    StringConstantFinder visitor = new StringConstantFinder();
-    initializationCall.accept(visitor);
-    return visitor.finding != null;
   }
 
   private static class StringConstantFinder extends BaseTreeVisitor {

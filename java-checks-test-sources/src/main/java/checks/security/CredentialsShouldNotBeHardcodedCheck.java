@@ -3,6 +3,10 @@ package checks.security;
 
 import com.azure.security.keyvault.secrets.SecretClient;
 import com.azure.security.keyvault.secrets.models.KeyVaultSecret;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -19,7 +23,7 @@ public class CredentialsShouldNotBeHardcodedCheck {
   }
   private static byte[] secretByteArray = new byte[]{0xC, 0xA, 0xF, 0xE};
 
-  public static void nonCompliant(byte[] message) throws ServletException {
+  public static void nonCompliant(byte[] message) throws ServletException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException {
     String effectivelyConstantString = "s3cr37";
     byte[] key = effectivelyConstantString.getBytes();
 
@@ -35,6 +39,16 @@ public class CredentialsShouldNotBeHardcodedCheck {
     request.login("user", "password"); // Noncompliant
     request.login("user", effectivelyConstantString); // Noncompliant [[sc=27;ec=52;secondary=-13]]
     request.login("user", secretString); // Noncompliant [[sc=27;ec=39;secondary=-22]]
+
+    KeyStore store = KeyStore.getInstance(null);
+
+    store.getKey("", new char[]{0xC, 0xA, 0xF, 0xE}); // Noncompliant
+
+    char[] password = new char[]{0xC, 0xA, 0xF, 0xE};
+    store.getKey("", password); // Noncompliant [[sc=22;ec=30;secondary=-1]]
+
+    String passwordAsString = "hunter2";
+    store.getKey("", passwordAsString.toCharArray()); // Noncompliant [[sc=22;ec=52]]
   }
 
   public static void compliant(String message, String secretParameter) throws ServletException {
