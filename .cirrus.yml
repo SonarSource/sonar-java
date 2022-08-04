@@ -26,7 +26,7 @@ container_definition: &CONTAINER_DEFINITION
 
 win_vm_definition: &WINDOWS_VM_DEFINITION
   ec2_instance:
-    image: ami-0209182c247e15935 # lt-base-windows jdk17 AMI
+    image: ami-0c4a49d5ebd1743a3 # lt-base-windows jdk17 AMI
     type: t2.xlarge
     platform: windows
     region: eu-central-1
