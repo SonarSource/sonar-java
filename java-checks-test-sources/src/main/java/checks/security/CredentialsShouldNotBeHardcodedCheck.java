@@ -19,9 +19,13 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRespon
 
 public class CredentialsShouldNotBeHardcodedCheck {
   private static String secretString = "hunter2";
-  private static String secretReassginedField = "hunter2";
+  private static String secretReassignedField = "hunter2";
+  private static byte[] secretByteArrayReassignedField = new byte[]{0xC, 0xA, 0xF, 0xE};
+  private static char[] secretCharArrayReassignedField = new char[]{0xC, 0xA, 0xF, 0xE};
   static {
-    secretReassginedField = "*******";
+    secretReassignedField = "*******";
+    secretByteArrayReassignedField = new byte[]{};
+    secretCharArrayReassignedField = new char[]{'c', 'a', 'f', 'e'};
   }
   private static byte[] secretByteArray = new byte[]{0xC, 0xA, 0xF, 0xE};
 
@@ -42,7 +46,7 @@ public class CredentialsShouldNotBeHardcodedCheck {
     HttpServletRequest request = new HttpServletRequestWrapper(null);
     request.login("user", "password"); // Noncompliant
     request.login("user", effectivelyConstantString); // Noncompliant [[sc=27;ec=52;secondary=-15]]
-    request.login("user", secretString); // Noncompliant [[sc=27;ec=39;secondary=-24]]
+    request.login("user", secretString); // Noncompliant [[sc=27;ec=39;secondary=-28]]
 
     KeyStore store = KeyStore.getInstance(null);
 
@@ -55,13 +59,29 @@ public class CredentialsShouldNotBeHardcodedCheck {
     store.getKey("", passwordAsString.toCharArray()); // Noncompliant [[sc=22;ec=52]]
   }
 
-  public static void compliant(String message, String secretParameter) throws ServletException {
+  public static void compliant(String message, String secretParameter, byte[] secretByteArrayParameter, char[] secretCharArrayParameter) throws ServletException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException {
+    final byte[] messageAsBytes = message.getBytes(StandardCharsets.UTF_8);
     String secretReassginedVariable = "s3cr37";
     secretReassginedVariable = "very" + secretReassginedVariable;
+    byte[] secretReassignedAsBytesVariable = secretReassginedVariable.getBytes(StandardCharsets.UTF_8);
+    secretReassignedAsBytesVariable = message.getBytes(StandardCharsets.UTF_8);
+    char[] secretReassignedAsCharsVariable = secretReassginedVariable.toCharArray();
+    secretReassignedAsCharsVariable = "".toCharArray();
+
+    SHA256.getHMAC(secretByteArrayParameter, messageAsBytes); // compliant because we do not check parameters
+    SHA256.getHMAC(secretReassignedAsBytesVariable, messageAsBytes); // compliant because we do not check reassigned variables
+    SHA256.getHMAC(secretByteArrayReassignedField, messageAsBytes); // compliant because we do not check reassinged variables
+
     HttpServletRequest request = new HttpServletRequestWrapper(null);
     request.login("user", secretParameter); // compliant because we do not check parameters
     request.login("user", secretReassginedVariable); // compliant because we do not check reassigned variables
-    request.login("user", secretReassginedField); // compliant because we do not check reassigned fields
+    request.login("user", secretReassignedField); // compliant because we do not check reassigned fields
+
+
+    KeyStore store = KeyStore.getInstance(null);
+    store.getKey("", secretCharArrayParameter); // compliant because we do not check parameters
+    store.getKey("", secretReassignedAsCharsVariable); // compliant because we do not check reassigned variables
+    store.getKey("", secretCharArrayReassignedField); // compliant because we do not check reassigned fields
   }
 
   public static void compliantAzure(SecretClient secretClient, String secretName, byte[] message) {
