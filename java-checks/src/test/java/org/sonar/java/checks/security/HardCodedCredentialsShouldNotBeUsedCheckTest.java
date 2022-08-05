@@ -24,13 +24,13 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
-class CredentialsShouldNotBeHardcodedCheckTest {
+class HardCodedCredentialsShouldNotBeUsedCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/security/CredentialsShouldNotBeHardcodedCheck.java"))
-      .withCheck(new CredentialsShouldNotBeHardcodedCheck())
+      .onFile(TestUtils.mainCodeSourcesPath("checks/security/HardCodedCredentialsShouldNotBeUsedCheck.java"))
+      .withCheck(new HardCodedCredentialsShouldNotBeUsedCheck())
       .verifyIssues();
   }
 }

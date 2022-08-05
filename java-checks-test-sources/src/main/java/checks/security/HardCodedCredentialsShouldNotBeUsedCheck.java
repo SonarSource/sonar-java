@@ -17,7 +17,7 @@ import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
 
-public class CredentialsShouldNotBeHardcodedCheck {
+public class HardCodedCredentialsShouldNotBeUsedCheck {
   private static String secretString = "hunter2";
   private static String secretReassignedField = "hunter2";
   private static byte[] secretByteArrayReassignedField = new byte[]{0xC, 0xA, 0xF, 0xE};
