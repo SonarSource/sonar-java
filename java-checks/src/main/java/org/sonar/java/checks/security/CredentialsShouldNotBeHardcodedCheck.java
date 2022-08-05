@@ -56,6 +56,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6437")
 public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVisitor {
+  private static final Path CREDENTIALS_METHODS_FILE = Path.of("src", "main", "resources", "credentials-methods.json");
   private static final Logger LOG = Loggers.get(CredentialsShouldNotBeHardcodedCheck.class);
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
@@ -88,9 +89,10 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
       return;
     }
     try {
-      methodMatchers = loadMethods(Path.of("..", "credentials-methods.json"));
+      methodMatchers = loadMethods(CREDENTIALS_METHODS_FILE);
     } catch (IOException e) {
       LOG.warn(e.getMessage());
+      methodMatchers = Collections.emptyMap();
     }
   }
 
