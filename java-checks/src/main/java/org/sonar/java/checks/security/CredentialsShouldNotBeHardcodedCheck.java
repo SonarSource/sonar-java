@@ -19,26 +19,16 @@
  */
 package org.sonar.java.checks.security;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.CredentialsMethodsLoader;
 import org.sonar.java.checks.helpers.ReassignmentFinder;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -78,7 +68,7 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
   private static final String ISSUE_MESSAGE = "Revoke and change this password, as it is compromised.";
 
 
-  private static Map<String, List<CredentialsMethod>> methodMatchers;
+  private static Map<String, List<CredentialsMethodsLoader.CredentialsMethod>> methodMatchers;
 
   public CredentialsShouldNotBeHardcodedCheck() {
     loadSignatures();
@@ -89,7 +79,7 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
       return;
     }
     try {
-      methodMatchers = loadMethods(CREDENTIALS_METHODS_FILE);
+      methodMatchers = CredentialsMethodsLoader.load(CREDENTIALS_METHODS_FILE);
     } catch (IOException e) {
       LOG.warn(e.getMessage());
       methodMatchers = Collections.emptyMap();
@@ -105,11 +95,11 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
   public void visitNode(Tree tree) {
     MethodInvocationTree invocation = (MethodInvocationTree) tree;
     String methodName = invocation.symbol().name();
-    List<CredentialsMethod> candidates = methodMatchers.get(methodName);
+    List<CredentialsMethodsLoader.CredentialsMethod> candidates = methodMatchers.get(methodName);
     if (candidates == null) {
       return;
     }
-    for (CredentialsMethod candidate : candidates) {
+    for (CredentialsMethodsLoader.CredentialsMethod candidate : candidates) {
       MethodMatchers matcher = candidate.methodMatcher;
       if (matcher.matches(invocation)) {
         checkArguments(invocation, candidate.targetArguments);
@@ -117,8 +107,8 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
     }
   }
 
-  private void checkArguments(MethodInvocationTree invocation, List<TargetArgument> argumentsToExamine) {
-    for (TargetArgument argumentToExamine : argumentsToExamine) {
+  private void checkArguments(MethodInvocationTree invocation, List<CredentialsMethodsLoader.TargetArgument> argumentsToExamine) {
+    for (CredentialsMethodsLoader.TargetArgument argumentToExamine : argumentsToExamine) {
       int argumentIndex = argumentToExamine.index;
       Arguments arguments = invocation.arguments();
       if (arguments.size() <= argumentIndex) {
@@ -207,164 +197,6 @@ public class CredentialsShouldNotBeHardcodedCheck extends IssuableSubscriptionVi
       } else if (expression.is(Tree.Kind.STRING_LITERAL)) {
         finding = tree;
       }
-    }
-  }
-
-  static Map<String, List<CredentialsMethod>> loadMethods(Path path) throws IOException {
-    Gson gson = new Gson();
-    Type appSecRecordsCollection = new TypeToken<List<List<String>>>() {
-    }.getType();
-    String rawData;
-    try (InputStream in = new FileInputStream(path.toFile())) {
-      rawData = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-    }
-    List<List<String>> jsonRecords = gson.fromJson(rawData, appSecRecordsCollection);
-    Map<String, Integer> argumentTypeCount = new HashMap<>();
-    Map<String, List<CredentialsMethod>> methodsGroupedByName = new TreeMap<>();
-    for (List<String> jsonRecord : jsonRecords) {
-      CredentialsMethod method = new CredentialsMethod(jsonRecord);
-      for (TargetArgument argument: method.targetArguments) {
-        Integer currentCount = argumentTypeCount.getOrDefault(argument.type, 0);
-        argumentTypeCount.put(argument.type, currentCount + 1);
-      }
-      if (methodsGroupedByName.containsKey(method.methodName)) {
-        methodsGroupedByName.get(method.methodName).add(method);
-      } else {
-        List<CredentialsMethod> methods = new ArrayList<>();
-        methods.add(method);
-        methodsGroupedByName.put(method.methodName, methods);
-      }
-    }
-    return methodsGroupedByName;
-  }
-
-  static class CredentialsMethod {
-    public final String groupId;
-    public final String artifactId;
-    public final String namespace;
-    public final String classType;
-    public final String methodType;
-    public final String methodModifiersAndReturnType;
-    public final String methodSignature;
-    public final String methodName;
-    public final List<TargetArgument> targetArguments;
-    public final MethodMatchers methodMatcher;
-
-    public CredentialsMethod(List<String> entry) {
-      this.groupId = entry.get(1);
-      this.artifactId = entry.get(2);
-      this.namespace = entry.get(3);
-      this.classType = entry.get(4);
-      this.methodType = entry.get(5);
-      this.methodModifiersAndReturnType = entry.get(6);
-      this.methodSignature = entry.get(7);
-      this.methodName = extractMethodName(this.methodSignature);
-      List<Integer> argumentIndices = Stream.of(entry.get(8).split(","))
-        .map(index -> Integer.valueOf(index.trim()) - 1)
-        .collect(Collectors.toList());
-      this.targetArguments = extractArguments(this.methodSignature, argumentIndices);
-      this.methodMatcher = convertToMatchers(this);
-    }
-
-    private static MethodMatchers convertToMatchers(CredentialsMethod credentialsMethod) {
-      int argumentListStart = credentialsMethod.methodSignature.indexOf('(');
-      int argumentListEnd = credentialsMethod.methodSignature.indexOf(')', argumentListStart);
-      String type = credentialsMethod.artifactId + "." + credentialsMethod.classType;
-      int numberOfArguments = credentialsMethod.methodSignature.substring(argumentListStart + 1, argumentListEnd).split(",").length;
-
-      if (credentialsMethod.methodType.equals("Constructor")) {
-        return MethodMatchers.create()
-          .ofTypes(type)
-          .constructor()
-          .addParametersMatcher(argumentList -> argumentList.size() == numberOfArguments)
-          .build();
-      }
-
-      return MethodMatchers.create()
-        .ofTypes(type)
-        .names(credentialsMethod.methodName)
-        .addParametersMatcher(argumentList -> argumentList.size() == numberOfArguments)
-        .build();
-    }
-
-    private static String extractMethodName(String signature) {
-      int argumentListStart = signature.indexOf('(');
-      return signature.substring(0, argumentListStart);
-    }
-
-    private static List<TargetArgument> extractArguments(String signature, List<Integer> indices) {
-      List<List<String>> arguments = splitArgumentTypeAndName(signature);
-      return indices.stream()
-        .filter(index -> 0 <= index && index < arguments.size())
-        .map(index -> new TargetArgument(arguments.get(index).get(0), arguments.get(index).get(1), index))
-        .collect(Collectors.toList());
-    }
-
-    private static List<List<String>> splitArgumentTypeAndName(String signature) {
-      return tokenizeArguments(signature).stream()
-        .map(argumentString -> {
-          int index = argumentString.lastIndexOf(" ");
-          return List.of(
-            matchType(argumentString.substring(0, index).trim()),
-            argumentString.substring(index).trim()
-          );
-        }).collect(Collectors.toList());
-    }
-
-    private static List<String> tokenizeArguments(String signature) {
-      int start = signature.indexOf('(');
-      int end = signature.indexOf(')');
-      String parameters = signature.substring(start + 1, end);
-      List<String> types = new ArrayList<>();
-      int depth = 0;
-      start = 0;
-      for (int index = 0; index < parameters.length(); index++) {
-        char character = parameters.charAt(index);
-        switch (character) {
-          case ',':
-            if (depth == 0) {
-              end = index;
-              types.add(parameters.substring(start, end));
-              start = end + 1;
-            }
-            break;
-          case '<':
-            depth++;
-            break;
-          case '>':
-            depth--;
-            break;
-          default:
-            break;
-        }
-      }
-      types.add(parameters.substring(start));
-      return types;
-    }
-
-    private static String matchType(String type) {
-      switch (type) {
-        case "byte[]":
-          return "java.lang.byte[]";
-        case "char[]":
-          return "java.lang.char[]";
-        case "String":
-          return JAVA_LANG_STRING;
-        default:
-          return type;
-      }
-    }
-  }
-
-  static class TargetArgument {
-    public final String type;
-    public final String name;
-    public final int index;
-
-    TargetArgument(String type, String name, int index) {
-      this.type = type;
-      this.name = name;
-      this.index = index;
     }
   }
 }
