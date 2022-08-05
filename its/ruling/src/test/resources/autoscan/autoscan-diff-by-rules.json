@@ -79,7 +79,7 @@
   },
   {
     "ruleKey": "S125",
-    "truePositives": 2702,
+    "truePositives": 2703,
     "falseNegatives": 0,
     "falsePositives": 0
   },
@@ -181,7 +181,7 @@
   },
   {
     "ruleKey": "S1118",
-    "truePositives": 65,
+    "truePositives": 66,
     "falseNegatives": 0,
     "falsePositives": 0
   },
@@ -397,7 +397,7 @@
   },
   {
     "ruleKey": "S1192",
-    "truePositives": 223,
+    "truePositives": 224,
     "falseNegatives": 0,
     "falsePositives": 0
   },
@@ -673,7 +673,7 @@
   },
   {
     "ruleKey": "S1854",
-    "truePositives": 1706,
+    "truePositives": 1708,
     "falseNegatives": 3,
     "falsePositives": 0
   },
@@ -787,7 +787,7 @@
   },
   {
     "ruleKey": "S2068",
-    "truePositives": 58,
+    "truePositives": 59,
     "falseNegatives": 0,
     "falsePositives": 0
   },
@@ -2047,7 +2047,7 @@
   },
   {
     "ruleKey": "S4719",
-    "truePositives": 43,
+    "truePositives": 44,
     "falseNegatives": 47,
     "falsePositives": 0
   },
@@ -2858,6 +2858,12 @@
   {
     "ruleKey": "S6418",
     "truePositives": 49,
+    "falseNegatives": 0,
+    "falsePositives": 0
+  },
+  {
+    "ruleKey": "S6437",
+    "truePositives": 0,
     "falseNegatives": 0,
     "falsePositives": 0
   }
