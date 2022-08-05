@@ -1,4 +1,7 @@
-aws_credentials: ENCRYPTED[!7889ae9e13755da9d07516e105535409cc2a98ee580dd392acc67d45dc1b530fd1e1522728ae1e86eff712406ce8623e!]
+aws_credentials:
+  role_arn: arn:aws:iam::166916561812:role/CirrusCI-staging
+  role_session_name: cirrus # an identifier for the assumed role session
+  region: eu-central-1 # region to use for calling the STS
 
 env:
   ARTIFACTORY_URL: ENCRYPTED[!2f8fa307d3289faa0aa6791f18b961627ae44f1ef46b136e1a1e63b0b4c86454dbb25520d49b339e2d50a1e1e5f95c88!]
