@@ -21,6 +21,9 @@ package org.sonar.java.se.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.se.SECheckVerifier;
+import org.sonar.java.se.utils.SETestUtils;
+
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class NullDereferenceCheckTest {
 
@@ -94,5 +97,14 @@ class NullDereferenceCheckTest {
       .onFile("src/test/files/se/NPE_transitive.java")
       .withCheck(new NullDereferenceCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_booleanValue_method() throws Exception {
+    SECheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/NullFromBooleanValueCall.java"))
+      .withChecks(new NullDereferenceCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
   }
 }

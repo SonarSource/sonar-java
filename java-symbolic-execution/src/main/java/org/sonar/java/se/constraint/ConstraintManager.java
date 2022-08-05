@@ -145,6 +145,8 @@ public class ConstraintManager {
       ProgramState.SymbolicValueSymbol leftOp = values.get(1);
       ProgramState.SymbolicValueSymbol rightOp = values.get(0);
       result.computedFrom(Arrays.asList(rightOp, leftOp));
+    } else if (ExplodedGraphWalker.BOOLEAN_VALUE_MATCHER.matches(syntaxNode)) {
+      result = values.get(0).symbolicValue();
     } else {
       result = createDefaultSymbolicValue();
     }
