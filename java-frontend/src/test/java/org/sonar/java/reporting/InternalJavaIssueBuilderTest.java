@@ -21,7 +21,6 @@ package org.sonar.java.reporting;
 
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,8 +35,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.sonar.api.SonarEdition;
-import org.sonar.api.SonarQubeSide;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextPointer;
 import org.sonar.api.batch.fs.TextRange;
@@ -50,9 +47,7 @@ import org.sonar.api.batch.sensor.issue.IssueLocation;
 import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
 import org.sonar.api.batch.sensor.issue.internal.DefaultIssue;
-import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.SonarComponents;
@@ -569,7 +564,7 @@ class InternalJavaIssueBuilderTest {
       throw new IllegalStateException("Not supposed to be tested");
     }
 
-    // @Override in SonarQube 9.2
+    @Override
     public NewIssue setQuickFixAvailable(boolean b) {
       isQuickFixAvailable = b;
       return this;
@@ -617,9 +612,19 @@ class InternalJavaIssueBuilderTest {
       throw new IllegalStateException("Not supposed to be tested");
     }
 
-    // @Override in SonarQube 9.2
+    @Override
     public boolean isQuickFixAvailable() {
       return isQuickFixAvailable;
+    }
+
+    @Override
+    public Optional<String> ruleDescriptionContextKey() {
+      return Optional.empty();
+    }
+
+    @Override
+    public NewIssue setRuleDescriptionContextKey(String ruleDescriptionContextKey) {
+      return this;
     }
   }
 

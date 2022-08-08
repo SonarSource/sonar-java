@@ -79,12 +79,11 @@ class JavaSonarWayProfileTest {
   void should_contains_security_rules_if_present() {
     // no security rules available
     com.sonar.plugins.security.api.JavaRules.ruleKeys = new HashSet<>();
-    assertThat(JavaSonarWayProfile.getSecurityRuleKeys(true)).isEmpty();
+    assertThat(JavaSonarWayProfile.getSecurityRuleKeys()).isEmpty();
 
     // one security rule available
     com.sonar.plugins.security.api.JavaRules.ruleKeys = new HashSet<>(Arrays.asList("S3649"));
-    assertThat(JavaSonarWayProfile.getSecurityRuleKeys(true)).containsOnly(RuleKey.of("java", "S3649"));
-    assertThat(JavaSonarWayProfile.getSecurityRuleKeys(false)).containsOnly(RuleKey.of("security-repo-key", "S3649"));
+    assertThat(JavaSonarWayProfile.getSecurityRuleKeys()).containsOnly(RuleKey.of("security-repo-key", "S3649"));
   }
 
   @Test
@@ -100,20 +99,20 @@ class JavaSonarWayProfileTest {
 
   @Test
   void external_rule_keys_missing_class() {
-    JavaSonarWayProfile.getExternalRuleKeys("silly.name", "getDataflowBugDetectionRuleKeys", "ruleCategory", false);
+    JavaSonarWayProfile.getExternalRuleKeys("silly.name", "getDataflowBugDetectionRuleKeys", "ruleCategory");
     assertThat(logTester.logs(LoggerLevel.DEBUG)).containsExactly("[ClassNotFoundException], no ruleCategory rules added to Sonar way java profile: silly.name");
   }
 
   @Test
   void external_rule_keys_missing_method() {
-    JavaSonarWayProfile.getExternalRuleKeys(DBD_RULES_CLASS_NAME, "nonExistingRuleKeysMethod", "ruleCategory", false);
+    JavaSonarWayProfile.getExternalRuleKeys(DBD_RULES_CLASS_NAME, "nonExistingRuleKeysMethod", "ruleCategory");
     assertThat(logTester.logs(LoggerLevel.DEBUG))
       .containsExactly("[NoSuchMethodException], no ruleCategory rules added to Sonar way java profile: com.sonarsource.plugins.dbd.api.JavaRules.nonExistingRuleKeysMethod()");
   }
 
   @Test
   void external_rule_keys_method_throws_exception() {
-    JavaSonarWayProfile.getExternalRuleKeys(DBD_RULES_CLASS_NAME, "methodThrowingException", "ruleCategory", false);
+    JavaSonarWayProfile.getExternalRuleKeys(DBD_RULES_CLASS_NAME, "methodThrowingException", "ruleCategory");
     assertThat(logTester.logs(LoggerLevel.DEBUG)).containsExactly("[InvocationTargetException], no ruleCategory rules added to Sonar way java profile: null");
   }
 }

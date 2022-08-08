@@ -19,7 +19,7 @@
     <version>${project.version}</version>
   </dependency>
   <dependency>
-    <groupId>org.sonarsource.sonarqube</groupId>
+    <groupId>org.sonarsource.api.plugin</groupId>
     <artifactId>sonar-plugin-api</artifactId>
     <scope>provided</scope>
   </dependency>
@@ -63,17 +63,17 @@
     <artifactId>mockito-junit-jupiter</artifactId>
     <scope>test</scope>
   </dependency>
-  <dependency>     
+  <dependency>
     <groupId>commons-io</groupId>
     <artifactId>commons-io</artifactId>
     <scope>test</scope>
-  </dependency>   
+  </dependency>
   <dependency>
     <groupId>com.google.guava</groupId>
     <artifactId>guava</artifactId>
     <scope>test</scope>
   </dependency>
-</dependencies> 
+</dependencies>
   <build>
     <plugins>
       <plugin>

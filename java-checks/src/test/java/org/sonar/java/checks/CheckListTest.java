@@ -38,10 +38,9 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
@@ -127,8 +126,7 @@ class CheckListTest {
       String simpleName = cls.getSimpleName();
       // Handle legacy keys.
       Rule ruleAnnotation = AnnotationUtils.getAnnotation(cls, Rule.class);
-      String key = getKey(cls, ruleAnnotation);
-      keyMap.put(ruleAnnotation.key(), key);
+      keyMap.put(ruleAnnotation.key(), ruleAnnotation.key());
       if (SE_CHEKS.contains(simpleName)) {
         continue;
       }
@@ -147,10 +145,10 @@ class CheckListTest {
       assertThat(keys).as("Duplicate key " + rule.key()).doesNotContain(rule.key());
       keys.add(rule.key());
       names.add(rule.name());
-      assertThat(getClass().getResource("/org/sonar/l10n/java/rules/" + CheckList.REPOSITORY_KEY + "/" + keyMap.get(rule.key()) + "_java.html"))
+      assertThat(getClass().getResource("/org/sonar/l10n/java/rules/" + CheckList.REPOSITORY_KEY + "/" + keyMap.get(rule.key()) + ".html"))
         .overridingErrorMessage("No description for " + rule.key() + " " + keyMap.get(rule.key()))
         .isNotNull();
-      assertThat(getClass().getResource("/org/sonar/l10n/java/rules/" + CheckList.REPOSITORY_KEY + "/" + keyMap.get(rule.key()) + "_java.json"))
+      assertThat(getClass().getResource("/org/sonar/l10n/java/rules/" + CheckList.REPOSITORY_KEY + "/" + keyMap.get(rule.key()) + ".json"))
         .overridingErrorMessage("No json metadata file for " + rule.key() + " " + keyMap.get(rule.key()))
         .isNotNull();
 
@@ -161,15 +159,6 @@ class CheckListTest {
         assertThat(param.description()).overridingErrorMessage(rule.key() + " missing description for param " + param.key()).isNotEmpty();
       }
     }
-  }
-
-  private static String getKey(Class<?> cls, Rule ruleAnnotation) {
-    String key = ruleAnnotation.key();
-    RspecKey rspecKeyAnnotation = AnnotationUtils.getAnnotation(cls, RspecKey.class);
-    if (rspecKeyAnnotation != null) {
-      return rspecKeyAnnotation.value();
-    }
-    return key;
   }
 
   @Test
@@ -195,8 +184,8 @@ class CheckListTest {
     Set<Class<? extends JavaCheck>> testChecks = new HashSet<>(CheckList.getJavaTestChecks());
 
     for (Class<?> cls : CheckList.getChecks()) {
-      String key = getKey(cls, AnnotationUtils.getAnnotation(cls, Rule.class));
-      URL metadataURL = getClass().getResource("/org/sonar/l10n/java/rules/" + CheckList.REPOSITORY_KEY + "/" + key + "_java.json");
+      String key = AnnotationUtils.getAnnotation(cls, Rule.class).key();
+      URL metadataURL = getClass().getResource("/org/sonar/l10n/java/rules/" + CheckList.REPOSITORY_KEY + "/" + key + ".json");
       File metadataFile = new File(metadataURL.toURI());
       assertThat(metadataFile).exists();
       try (FileReader jsonReader = new FileReader(metadataFile)) {
