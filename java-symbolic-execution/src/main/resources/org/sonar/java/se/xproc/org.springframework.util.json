@@ -701,9 +701,7 @@
           ]
         ],
         "resultIndex": -1,
-        "resultConstraint": [
-          "NOT_NULL"
-        ]
+        "resultConstraint": null
       },
       {
         "parametersConstraints": [
