@@ -163,7 +163,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
 
   private static boolean isArrayDerivedFromPlainText(MethodInvocationTree invocation) {
     if (!STRING_TO_ARRAY_METHODS.matches(invocation)) {
-      return true;
+      return false;
     }
     StringConstantFinder visitor = new StringConstantFinder();
     invocation.accept(visitor);

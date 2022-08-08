@@ -70,7 +70,8 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
 
     SHA256.getHMAC(secretByteArrayParameter, messageAsBytes); // compliant because we do not check parameters
     SHA256.getHMAC(secretReassignedAsBytesVariable, messageAsBytes); // compliant because we do not check reassigned variables
-    SHA256.getHMAC(secretByteArrayReassignedField, messageAsBytes); // compliant because we do not check reassinged variables
+    SHA256.getHMAC(secretByteArrayReassignedField, messageAsBytes); // compliant because we do not check reassigned variables
+    SHA256.getHMAC(convertToByteArray(secretParameter), messageAsBytes); // compliant because we do not check calls to methods defined out of String
 
     HttpServletRequest request = new HttpServletRequestWrapper(null);
     request.login("user", secretParameter); // compliant because we do not check parameters
@@ -82,6 +83,8 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     store.getKey("", secretCharArrayParameter); // compliant because we do not check parameters
     store.getKey("", secretReassignedAsCharsVariable); // compliant because we do not check reassigned variables
     store.getKey("", secretCharArrayReassignedField); // compliant because we do not check reassigned fields
+    store.getKey("", convertToCharArray(secretParameter)); // compliant because we do not check calls to methods defined out of String
+
   }
 
   public static void compliantAzure(SecretClient secretClient, String secretName, byte[] message) {
@@ -102,5 +105,13 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
 
     byte[] key = secret.getBytes();
     SHA256.getHMAC(key, message);
+  }
+
+  private static byte[] convertToByteArray(final String string) {
+    return string.getBytes(StandardCharsets.UTF_8);
+  }
+
+  private static char[] convertToCharArray(final String string) {
+    return string.toCharArray();
   }
 }
