@@ -114,4 +114,8 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
   private static char[] convertToCharArray(final String string) {
     return string.toCharArray();
   }
+
+  private static CharSequence convertToCharSequence(final String string) {
+    return string;
+  }
 }

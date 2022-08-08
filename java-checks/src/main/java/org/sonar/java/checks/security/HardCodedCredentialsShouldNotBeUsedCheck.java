@@ -24,7 +24,6 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
@@ -110,18 +109,11 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
     for (CredentialsMethodsLoader.TargetArgument argumentToExamine : argumentsToExamine) {
       int argumentIndex = argumentToExamine.index;
       Arguments arguments = invocation.arguments();
-      if (arguments.size() <= argumentIndex) {
-        return;
-      }
       ExpressionTree argument = arguments.get(argumentIndex);
       if (argument.is(Tree.Kind.STRING_LITERAL, Tree.Kind.NEW_ARRAY)) {
         reportIssue(argument, ISSUE_MESSAGE);
       } else if (argument.is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifier = (IdentifierTree) argument;
-        Optional<Object> identifierAsConstant = identifier.asConstant();
-        if (identifierAsConstant.isPresent()) {
-          reportIssue(argument, ISSUE_MESSAGE);
-        }
         Symbol symbol = identifier.symbol();
         if (!symbol.isVariableSymbol() || JUtils.isParameter(symbol) || isReassigned(symbol)) {
           return;
