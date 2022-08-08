@@ -62,6 +62,11 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
       .ofTypes(JAVA_LANG_STRING)
       .names("toCharArray")
       .addWithoutParametersMatcher()
+      .build(),
+    MethodMatchers.create()
+      .ofTypes(JAVA_LANG_STRING)
+      .names("subSequence")
+      .addParametersMatcher("int", "int")
       .build()
   );
 
@@ -121,10 +126,12 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
 
         VariableTree variable = (VariableTree) symbol.declaration();
 
-        if (isStringDerivedFromPlainText(variable) || isArrayDerivedFromPlainText(variable)) {
+        if (isStringDerivedFromPlainText(variable) || isDerivedFromPlainText(variable)) {
           reportIssue(argument, ISSUE_MESSAGE, List.of(new JavaFileScannerContext.Location("", variable)), null);
+        } else {
+          System.out.println(variable.symbol().type());
         }
-      } else if (argument.is(Tree.Kind.METHOD_INVOCATION) && isArrayDerivedFromPlainText((MethodInvocationTree) argument)) {
+      } else if (argument.is(Tree.Kind.METHOD_INVOCATION) && isDerivedFromPlainText((MethodInvocationTree) argument)) {
         reportIssue(argument, ISSUE_MESSAGE);
       }
     }
@@ -139,21 +146,18 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
     return symbol.type().is(JAVA_LANG_STRING) && variable.initializer().asConstant().isPresent();
   }
 
-  private static boolean isArrayDerivedFromPlainText(VariableTree variable) {
+  private static boolean isDerivedFromPlainText(VariableTree variable) {
     Symbol symbol = variable.symbol();
     org.sonar.plugins.java.api.semantic.Type type = symbol.type();
-    if (!type.is("byte[]") && !type.is("char[]")) {
-      return false;
-    }
     ExpressionTree initializer = variable.initializer();
     if (!initializer.is(Tree.Kind.METHOD_INVOCATION)) {
       return true;
     }
     MethodInvocationTree initializationCall = (MethodInvocationTree) initializer;
-    return isArrayDerivedFromPlainText(initializationCall);
+    return isDerivedFromPlainText(initializationCall);
   }
 
-  private static boolean isArrayDerivedFromPlainText(MethodInvocationTree invocation) {
+  private static boolean isDerivedFromPlainText(MethodInvocationTree invocation) {
     if (!STRING_TO_ARRAY_METHODS.matches(invocation)) {
       return false;
     }

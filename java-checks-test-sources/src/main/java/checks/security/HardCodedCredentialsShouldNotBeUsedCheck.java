@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import org.h2.security.SHA256;
+import org.springframework.security.crypto.encrypt.Encryptors;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
@@ -57,6 +58,9 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
 
     String passwordAsString = "hunter2";
     store.getKey("", passwordAsString.toCharArray()); // Noncompliant [[sc=22;ec=52]]
+
+    Encryptors.delux(effectivelyConstantString.subSequence(0, effectivelyConstantString.length()), effectivelyConstantString); // Noncompliant [[sc=22;ec=98]]
+    Encryptors.delux("password".subSequence(0, 0), "salt"); // Noncompliant
   }
 
   public static void compliant(String message, String secretParameter, byte[] secretByteArrayParameter, char[] secretCharArrayParameter) throws ServletException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException {
@@ -84,6 +88,10 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     store.getKey("", secretReassignedAsCharsVariable); // compliant because we do not check reassigned variables
     store.getKey("", secretCharArrayReassignedField); // compliant because we do not check reassigned fields
     store.getKey("", convertToCharArray(secretParameter)); // compliant because we do not check calls to methods defined out of String
+
+    StringBuilder passwordBuilder = new StringBuilder();
+    passwordBuilder.append("secret");
+    Encryptors.delux(passwordBuilder.subSequence(0, 0), "salt"); // compliant because we do not check CharSequences that are not derived from String.subSequence
 
   }
 
