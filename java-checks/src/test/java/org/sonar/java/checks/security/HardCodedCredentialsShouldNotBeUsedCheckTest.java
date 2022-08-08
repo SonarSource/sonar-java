@@ -20,11 +20,38 @@
 package org.sonar.java.checks.security;
 
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.sonar.api.utils.log.LogTesterJUnit5;
+import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.java.checks.helpers.CredentialsMethodsLoader;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 class HardCodedCredentialsShouldNotBeUsedCheckTest {
+  @RegisterExtension
+  final LogTesterJUnit5 logTester = new LogTesterJUnit5();
+
+  @Test
+  void uses_empty_collection_when_methods_cannot_be_loaded() {
+    HardCodedCredentialsShouldNotBeUsedCheck.MethodLoadingFunction<Path, Map<String, List<CredentialsMethodsLoader.CredentialsMethod>>> function = path -> {
+      throw new IOException("boom");
+    };
+    var check = new HardCodedCredentialsShouldNotBeUsedCheck(function);
+    assertThat(check.getMethods()).isEmpty();
+    List<String> logs = logTester.getLogs(LoggerLevel.WARN).stream()
+      .map(logAndArguments -> logAndArguments.getFormattedMsg())
+      .collect(Collectors.toList());
+    assertThat(logs)
+      .containsOnly(String.format("Could not load methods from \"%s\": boom.", HardCodedCredentialsShouldNotBeUsedCheck.CREDENTIALS_METHODS_FILE));
+  }
 
   @Test
   void test() {

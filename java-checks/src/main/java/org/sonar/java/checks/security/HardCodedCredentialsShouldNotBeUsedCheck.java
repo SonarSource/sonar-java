@@ -28,6 +28,7 @@ import java.util.Optional;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.helpers.CredentialsMethodsLoader;
 import org.sonar.java.checks.helpers.ReassignmentFinder;
 import org.sonar.java.model.JUtils;
@@ -46,7 +47,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6437")
 public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscriptionVisitor {
-  private static final Path CREDENTIALS_METHODS_FILE = Path.of("src", "main", "resources", "credentials-methods.json");
+  public static final Path CREDENTIALS_METHODS_FILE = Path.of("src", "main", "resources", "credentials-methods.json");
   private static final Logger LOG = Loggers.get(HardCodedCredentialsShouldNotBeUsedCheck.class);
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
@@ -68,21 +69,19 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
   private static final String ISSUE_MESSAGE = "Revoke and change this password, as it is compromised.";
 
 
-  private static Map<String, List<CredentialsMethodsLoader.CredentialsMethod>> methodMatchers;
+  private Map<String, List<CredentialsMethodsLoader.CredentialsMethod>> methods;
 
   public HardCodedCredentialsShouldNotBeUsedCheck() {
-    loadSignatures();
+    this(CredentialsMethodsLoader::load);
   }
 
-  private static synchronized void loadSignatures() {
-    if (methodMatchers != null) {
-      return;
-    }
+  @VisibleForTesting
+  HardCodedCredentialsShouldNotBeUsedCheck(MethodLoadingFunction<Path, Map<String, List<CredentialsMethodsLoader.CredentialsMethod>>> function) {
     try {
-      methodMatchers = CredentialsMethodsLoader.load(CREDENTIALS_METHODS_FILE);
+      methods = function.apply(CREDENTIALS_METHODS_FILE);
     } catch (IOException e) {
-      LOG.warn(e.getMessage());
-      methodMatchers = Collections.emptyMap();
+      LOG.warn(String.format("Could not load methods from \"%s\": %s.", CREDENTIALS_METHODS_FILE, e.getMessage()));
+      methods = Collections.emptyMap();
     }
   }
 
@@ -95,7 +94,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
   public void visitNode(Tree tree) {
     MethodInvocationTree invocation = (MethodInvocationTree) tree;
     String methodName = invocation.symbol().name();
-    List<CredentialsMethodsLoader.CredentialsMethod> candidates = methodMatchers.get(methodName);
+    List<CredentialsMethodsLoader.CredentialsMethod> candidates = methods.get(methodName);
     if (candidates == null) {
       return;
     }
@@ -171,6 +170,10 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
     return visitor.finding != null;
   }
 
+  public Map<String, List<CredentialsMethodsLoader.CredentialsMethod>> getMethods() {
+    return this.methods;
+  }
+
   private static class StringConstantFinder extends BaseTreeVisitor {
     Tree finding;
 
@@ -199,4 +202,10 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
       }
     }
   }
+
+  @FunctionalInterface
+  public interface MethodLoadingFunction<T, R> {
+    R apply(T t) throws IOException;
+  }
+
 }
