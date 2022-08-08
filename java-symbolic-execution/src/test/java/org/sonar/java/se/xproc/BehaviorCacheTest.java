@@ -173,8 +173,8 @@ class BehaviorCacheTest {
     }
 
     assertThat(behaviorCache.behaviors).isEmpty();
-    assertThat(behaviorCache.hardcodedBehaviors()).hasSize(215);
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).containsOnly("[SE] Loaded 215 hardcoded method behaviors.");
+    assertThat(behaviorCache.hardcodedBehaviors()).hasSize(216);
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).containsOnly("[SE] Loaded 216 hardcoded method behaviors.");
   }
 
   @Test
@@ -196,6 +196,7 @@ class BehaviorCacheTest {
   void commons_lang2_string_utils_method_should_be_handled() throws Exception {
     verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/CommonsLang2StringUtilsMethods.java"));
   }
+
 
   @Test
   void commons_lang2_array_utils_method_should_be_handled() throws Exception {
@@ -242,6 +243,11 @@ class BehaviorCacheTest {
   @Test
   void spring_assert() throws Exception {
     verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/SpringAssert.java"));
+  }
+
+  @Test
+  void spring_string_utils_should_be_handled() throws Exception {
+    verifyNoIssueOnFile(TestUtils.mainCodeSourcesPath("symbolicexecution/behaviorcache/SpringStringUtilsMethods.java"));
   }
 
   @Test

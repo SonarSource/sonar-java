@@ -688,5 +688,33 @@
         ]
       }
     ]
+  },
+  {
+    "signature": "org.springframework.util.StringUtils#isEmpty(Ljava/lang/Object;)Z",
+    "varArgs": false,
+    "declaredExceptions": [],
+    "yields": [
+      {
+        "parametersConstraints": [
+          [
+            "NOT_NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": null
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_NULL",
+          "TRUE"
+        ]
+      }
+    ]
   }
 ]
