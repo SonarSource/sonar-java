@@ -128,8 +128,6 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
 
         if (isStringDerivedFromPlainText(variable) || isDerivedFromPlainText(variable)) {
           reportIssue(argument, ISSUE_MESSAGE, List.of(new JavaFileScannerContext.Location("", variable)), null);
-        } else {
-          System.out.println(variable.symbol().type());
         }
       } else if (argument.is(Tree.Kind.METHOD_INVOCATION) && isDerivedFromPlainText((MethodInvocationTree) argument)) {
         reportIssue(argument, ISSUE_MESSAGE);
@@ -147,8 +145,6 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
   }
 
   private static boolean isDerivedFromPlainText(VariableTree variable) {
-    Symbol symbol = variable.symbol();
-    org.sonar.plugins.java.api.semantic.Type type = symbol.type();
     ExpressionTree initializer = variable.initializer();
     if (!initializer.is(Tree.Kind.METHOD_INVOCATION)) {
       return true;
