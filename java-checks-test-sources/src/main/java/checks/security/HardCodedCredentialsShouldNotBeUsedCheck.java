@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import org.h2.security.SHA256;
 import org.springframework.security.crypto.encrypt.Encryptors;
+import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
@@ -61,6 +62,8 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
 
     Encryptors.delux(effectivelyConstantString.subSequence(0, effectivelyConstantString.length()), effectivelyConstantString); // Noncompliant [[sc=22;ec=98]]
     Encryptors.delux("password".subSequence(0, 0), "salt"); // Noncompliant
+
+    new Pbkdf2PasswordEncoder("secret"); // Noncompliant
   }
 
   public static void compliant(String message, String secretParameter, byte[] secretByteArrayParameter, char[] secretCharArrayParameter) throws ServletException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException {

@@ -20,7 +20,6 @@
 package org.sonar.java.checks.security;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -41,12 +40,14 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6437")
 public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscriptionVisitor {
-  public static final Path CREDENTIALS_METHODS_FILE = Path.of("src", "main", "resources", "credentials-methods.json");
+  public static final String CREDENTIALS_METHODS_FILE = "/org/sonar/java/checks/security/credentials-methods.json";
+
   private static final Logger LOG = Loggers.get(HardCodedCredentialsShouldNotBeUsedCheck.class);
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
@@ -76,44 +77,58 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
   private Map<String, List<CredentialsMethodsLoader.CredentialsMethod>> methods;
 
   public HardCodedCredentialsShouldNotBeUsedCheck() {
-    this(CredentialsMethodsLoader::load);
+    this(CREDENTIALS_METHODS_FILE);
   }
 
   @VisibleForTesting
-  HardCodedCredentialsShouldNotBeUsedCheck(MethodLoadingFunction<Path, Map<String, List<CredentialsMethodsLoader.CredentialsMethod>>> function) {
+  HardCodedCredentialsShouldNotBeUsedCheck(String resourcePath) {
     try {
-      methods = function.apply(CREDENTIALS_METHODS_FILE);
+      methods = CredentialsMethodsLoader.load(resourcePath);
     } catch (IOException e) {
-      LOG.warn(String.format("Could not load methods from \"%s\": %s.", CREDENTIALS_METHODS_FILE, e.getMessage()));
+      LOG.warn(e.getMessage());
       methods = Collections.emptyMap();
     }
   }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.METHOD_INVOCATION);
+    return List.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    MethodInvocationTree invocation = (MethodInvocationTree) tree;
-    String methodName = invocation.symbol().name();
+    String methodName;
+    boolean isConstructor = tree.is(Tree.Kind.NEW_CLASS);
+    if (isConstructor) {
+      NewClassTree newClass = (NewClassTree) tree;
+      methodName = newClass.symbolType().name();
+    } else {
+      MethodInvocationTree invocation = (MethodInvocationTree) tree;
+      methodName = invocation.symbol().name();
+    }
     List<CredentialsMethodsLoader.CredentialsMethod> candidates = methods.get(methodName);
     if (candidates == null) {
       return;
     }
     for (CredentialsMethodsLoader.CredentialsMethod candidate : candidates) {
       MethodMatchers matcher = candidate.methodMatcher;
-      if (matcher.matches(invocation)) {
-        checkArguments(invocation, candidate.targetArguments);
+      if (isConstructor) {
+        NewClassTree constructor = (NewClassTree) tree;
+        if (matcher.matches(constructor)) {
+          checkArguments(constructor.arguments(), candidate.targetArguments);
+        }
+      } else {
+        MethodInvocationTree invocation = (MethodInvocationTree) tree;
+        if (matcher.matches(invocation)) {
+          checkArguments(invocation.arguments(), candidate.targetArguments);
+        }
       }
     }
   }
 
-  private void checkArguments(MethodInvocationTree invocation, List<CredentialsMethodsLoader.TargetArgument> argumentsToExamine) {
+  private void checkArguments(Arguments arguments, List<CredentialsMethodsLoader.TargetArgument> argumentsToExamine) {
     for (CredentialsMethodsLoader.TargetArgument argumentToExamine : argumentsToExamine) {
       int argumentIndex = argumentToExamine.index;
-      Arguments arguments = invocation.arguments();
       ExpressionTree argument = arguments.get(argumentIndex);
       if (argument.is(Tree.Kind.STRING_LITERAL, Tree.Kind.NEW_ARRAY)) {
         reportIssue(argument, ISSUE_MESSAGE);

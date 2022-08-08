@@ -21,12 +21,10 @@ package org.sonar.java.checks.helpers;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,10 +42,13 @@ public class CredentialsMethodsLoader {
     /* No concrete instance of this helper should be created */
   }
 
-  public static Map<String, List<CredentialsMethod>> load(Path path) throws IOException {
+  public static Map<String, List<CredentialsMethod>> load(String resourcePath) throws IOException {
     Gson gson = new Gson();
     String rawData;
-    try (InputStream in = new FileInputStream(path.toFile())) {
+    try (InputStream in = CredentialsMethodsLoader.class.getResourceAsStream(resourcePath)) {
+      if (in == null) {
+        throw new IOException(String.format("Could not load methods from \"%s\".", resourcePath));
+      }
       rawData = new String(in.readAllBytes(), StandardCharsets.UTF_8);
     }
     List<List<String>> jsonRecords = gson.fromJson(rawData, CREDENTIALS_METHODS_JSON_TYPE);
@@ -66,38 +67,36 @@ public class CredentialsMethodsLoader {
   }
 
   public static class CredentialsMethod {
-    public final String groupId;
-    public final String artifactId;
     public final String namespace;
     public final String classType;
+    public final String className;
     public final String methodType;
-    public final String methodModifiersAndReturnType;
-    public final String methodSignature;
+    public final String modifiersAndReturnType;
+    public final String method;
     public final String methodName;
     public final List<TargetArgument> targetArguments;
     public final MethodMatchers methodMatcher;
 
     public CredentialsMethod(List<String> entry) {
-      this.groupId = entry.get(1);
-      this.artifactId = entry.get(2);
-      this.namespace = entry.get(3);
-      this.classType = entry.get(4);
+      this.namespace = entry.get(2);
+      this.classType = entry.get(3);
+      this.className = entry.get(4);
       this.methodType = entry.get(5);
-      this.methodModifiersAndReturnType = entry.get(6);
-      this.methodSignature = entry.get(7);
-      this.methodName = extractMethodName(this.methodSignature);
+      this.modifiersAndReturnType = entry.get(6);
+      this.method = entry.get(7);
+      this.methodName = extractMethodName(this.method);
       List<Integer> argumentIndices = Stream.of(entry.get(8).split(","))
         .map(index -> Integer.valueOf(index.trim()) - 1)
         .collect(Collectors.toList());
-      this.targetArguments = extractArguments(this.methodSignature, argumentIndices);
+      this.targetArguments = extractArguments(this.method, argumentIndices);
       this.methodMatcher = convertToMatchers(this);
     }
 
     private static MethodMatchers convertToMatchers(CredentialsMethod credentialsMethod) {
-      int argumentListStart = credentialsMethod.methodSignature.indexOf('(');
-      int argumentListEnd = credentialsMethod.methodSignature.indexOf(')', argumentListStart);
-      String type = credentialsMethod.artifactId + "." + credentialsMethod.classType;
-      int numberOfArguments = credentialsMethod.methodSignature.substring(argumentListStart + 1, argumentListEnd).split(",").length;
+      int argumentListStart = credentialsMethod.method.indexOf('(');
+      int argumentListEnd = credentialsMethod.method.indexOf(')', argumentListStart);
+      String type = credentialsMethod.namespace + "." + credentialsMethod.className;
+      int numberOfArguments = credentialsMethod.method.substring(argumentListStart + 1, argumentListEnd).split(",").length;
 
       if (credentialsMethod.methodType.equals("Constructor")) {
         return MethodMatchers.create()
@@ -170,6 +169,7 @@ public class CredentialsMethodsLoader {
     }
 
     private static String matchType(String type) {
+      //FIXME handle type erasure
       switch (type) {
         case "byte[]":
           return "java.lang.byte[]";
