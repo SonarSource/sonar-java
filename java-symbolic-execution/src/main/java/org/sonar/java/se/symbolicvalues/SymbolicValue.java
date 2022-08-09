@@ -34,6 +34,7 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
+import org.sonar.java.se.constraint.OptionalConstraint;
 import org.sonar.java.se.constraint.TypedConstraint;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -75,10 +76,26 @@ public class SymbolicValue {
     }
   };
 
+  public static final SymbolicValue PRESENT_LITERAL = new SymbolicValue() {
+    @Override
+    public String toString() {
+      return "SV_PRESENT";
+    }
+  };
+
+  public static final SymbolicValue NOT_PRESENT_LITERAL = new SymbolicValue() {
+    @Override
+    public String toString() {
+      return "SV_NOT_PRESENT";
+    }
+  };
+
   private static final List<SymbolicValue> PROTECTED_SYMBOLIC_VALUES = Arrays.asList(
     NULL_LITERAL,
     TRUE_LITERAL,
-    FALSE_LITERAL
+    FALSE_LITERAL,
+    PRESENT_LITERAL,
+    NOT_PRESENT_LITERAL
   );
 
   private static int idGenerator;
@@ -158,6 +175,14 @@ public class SymbolicValue {
       return Collections.emptyList();
     }
     return Collections.singletonList(programState.addConstraint(this, booleanConstraint));
+  }
+
+  public List<ProgramState> setConstraint(ProgramState programState, OptionalConstraint optionalConstraint) {
+    Constraint cstraint = programState.getConstraint(this, optionalConstraint.getClass());
+    if (!optionalConstraint.isValidWith(cstraint)) {
+      return Collections.emptyList();
+    }
+    return Collections.singletonList(programState.addConstraint(this, optionalConstraint));
   }
 
   public List<ProgramState> setConstraint(ProgramState programState, Constraint constraint) {
