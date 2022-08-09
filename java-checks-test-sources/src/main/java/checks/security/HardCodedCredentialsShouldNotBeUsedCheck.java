@@ -24,10 +24,12 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
   private static String secretReassignedField = "hunter2";
   private static byte[] secretByteArrayReassignedField = new byte[]{0xC, 0xA, 0xF, 0xE};
   private static char[] secretCharArrayReassignedField = new char[]{0xC, 0xA, 0xF, 0xE};
+  private static CharSequence secretCharSequenceReassignedField = "Hello, World!".subSequence(0, 12);
   static {
     secretReassignedField = "*******";
     secretByteArrayReassignedField = new byte[]{};
     secretCharArrayReassignedField = new char[]{'c', 'a', 'f', 'e'};
+    secretCharSequenceReassignedField = "Bye!".subSequence(0, 3);
   }
   private static byte[] secretByteArray = new byte[]{0xC, 0xA, 0xF, 0xE};
 
@@ -48,7 +50,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     HttpServletRequest request = new HttpServletRequestWrapper(null);
     request.login("user", "password"); // Noncompliant
     request.login("user", effectivelyConstantString); // Noncompliant [[sc=27;ec=52;secondary=-15]]
-    request.login("user", secretString); // Noncompliant [[sc=27;ec=39;secondary=-28]]
+    request.login("user", secretString); // Noncompliant [[sc=27;ec=39;secondary=-30]]
 
     KeyStore store = KeyStore.getInstance(null);
 
@@ -66,7 +68,8 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     new Pbkdf2PasswordEncoder("secret"); // Noncompliant
   }
 
-  public static void compliant(String message, String secretParameter, byte[] secretByteArrayParameter, char[] secretCharArrayParameter) throws ServletException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException {
+  public static void compliant(String message, String secretParameter, byte[] secretByteArrayParameter, char[] secretCharArrayParameter, CharSequence charSequenceParameter)
+    throws ServletException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException {
     final byte[] messageAsBytes = message.getBytes(StandardCharsets.UTF_8);
     String secretReassginedVariable = "s3cr37";
     secretReassginedVariable = "very" + secretReassginedVariable;
@@ -92,9 +95,18 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     store.getKey("", secretCharArrayReassignedField); // compliant because we do not check reassigned fields
     store.getKey("", convertToCharArray(secretParameter)); // compliant because we do not check calls to methods defined out of String
 
-    StringBuilder passwordBuilder = new StringBuilder();
-    passwordBuilder.append("secret");
-    Encryptors.delux(passwordBuilder.subSequence(0, 0), "salt"); // compliant because we do not check CharSequences that are not derived from String.subSequence
+
+    CharSequence secretReassignedAsCharSequence = "hello".subSequence(0, 4);
+    secretReassignedAsCharSequence = "world".subSequence(0, 4);
+
+    Encryptors.delux(charSequenceParameter, "salt");  // compliant because we do not check parameters
+    Encryptors.delux(secretReassignedAsCharSequence, "salt"); // compliant because we do not check reassigned variables
+    Encryptors.delux(secretCharSequenceReassignedField, "salt"); // compliant because we do not check reassigned fields
+    Encryptors.delux(convertToCharSequence("password"), "salt"); // compliant because we do not check calls to methods defined out of String
+
+    StringBuilder passwordFromStringBuilder = new StringBuilder();
+    passwordFromStringBuilder.append("secret");
+    Encryptors.delux(passwordFromStringBuilder.subSequence(0, 0), "salt"); // compliant because we do not check CharSequences that are not derived from String.subSequence
 
   }
 
