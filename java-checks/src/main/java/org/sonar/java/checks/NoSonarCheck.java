@@ -25,11 +25,8 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @Rule(key = "NoSonar")
-@DeprecatedRuleKey(ruleKey = "S1291", repositoryKey = "squid")
-@DeprecatedRuleKey(ruleKey = "S1291", repositoryKey = "java")
 public class NoSonarCheck extends IssuableSubscriptionVisitor {
 
   private static final String PATTERN = "NOSONAR";

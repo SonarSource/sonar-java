@@ -19,11 +19,17 @@
  */
 package org.sonar.plugins.java;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import org.sonar.api.SonarRuntime;
 import org.sonar.api.server.rule.RulesDefinition;
+import org.sonar.api.utils.AnnotationUtils;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.CheckList;
 import org.sonarsource.analyzer.commons.RuleMetadataLoader;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKeys;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 /**
@@ -42,6 +48,8 @@ public class JavaRulesDefinition implements RulesDefinition {
     "S3688",
     "S3546",
     "S4011");
+
+  private static final Map<String, String> INTERNAL_KEYS = Collections.singletonMap("NoSonar", "S1291");
 
   private final SonarRuntime sonarRuntime;
 
@@ -62,8 +70,27 @@ public class JavaRulesDefinition implements RulesDefinition {
       .map(repository::rule)
       .forEach(rule -> rule.setTemplate(true));
 
-    repository.rules().stream().forEach(rule -> rule.addDeprecatedRuleKey("squid", rule.key()));
+    INTERNAL_KEYS.forEach((ruleKey, internalKey) -> repository.rule(ruleKey).setInternalKey(internalKey));
+
+    // for all the rules without explicit deprecated key already declared, register them with "squid:key"
+    CheckList.getChecks().stream()
+      .filter(rule -> !deprecatesRules(rule))
+      .map(JavaRulesDefinition::ruleKey)
+      .map(repository::rule)
+      .forEach(rule -> rule.addDeprecatedRuleKey("squid", rule.key()));
 
     repository.done();
+  }
+
+  private static String ruleKey(Class<?> rule) {
+    return AnnotationUtils.getAnnotation(rule, org.sonar.check.Rule.class).key();
+  }
+
+  @VisibleForTesting
+  static boolean deprecatesRules(Class<?> rule) {
+    // single annotation
+    return AnnotationUtils.getAnnotation(rule, DeprecatedRuleKey.class) != null
+      // multiple annotations, for instance java:S4830
+      || AnnotationUtils.getAnnotation(rule, DeprecatedRuleKeys.class) != null;
   }
 }

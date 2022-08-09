@@ -19,8 +19,10 @@
  */
 package org.sonar.plugins.java;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
@@ -31,6 +33,8 @@ import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.utils.Version;
 import org.sonar.java.checks.CheckList;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKeys;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -138,9 +142,45 @@ class JavaRulesDefinitionTest {
 
     RulesDefinition.Rule rule = repository.rule("S1104");
     assertThat(rule.activatedByDefault()).isTrue();
-    assertThat(rule.deprecatedRuleKeys()).containsExactly(
-      RuleKey.of("squid", "ClassVariableVisibilityCheck"),
-      RuleKey.of("squid", "S1104"));
+    assertThat(rule.deprecatedRuleKeys()).containsExactly(RuleKey.of("squid", "ClassVariableVisibilityCheck"));
+
+    // FIXME SONAR-17167: S4830 should have references to java:S4244 and squid:S4244
+    RulesDefinition.Rule s4830 = repository.rule("S4830");
+    assertThat(s4830.deprecatedRuleKeys()).containsExactlyInAnyOrder(RuleKey.of("squid", "S4830"));
+
+    // FIXME SONAR-17167: Rules can not have multiple links to deprecated keys, especially if one of the deprecated key is a droppped rule
+    List<String> rulesWithManyDeprecatedKeys = repository.rules().stream()
+      .filter(r -> r.deprecatedRuleKeys().size() >= 2)
+      .map(RulesDefinition.Rule::key)
+      .collect(Collectors.toList());
+    assertThat(rulesWithManyDeprecatedKeys).isEmpty();
+  }
+
+  @Test
+  void test_deprecates_rules() {
+    @DeprecatedRuleKey(repositoryKey = "repo", ruleKey = "SXXXX")
+    class RuleA {
+    }
+
+    @DeprecatedRuleKey(repositoryKey = "repo", ruleKey = "SXXXX")
+    @DeprecatedRuleKey(repositoryKey = "repo", ruleKey = "SYYYY")
+    class RuleB {
+    }
+
+    @DeprecatedRuleKeys({
+      @DeprecatedRuleKey(repositoryKey = "repo", ruleKey = "SXXXX"),
+      @DeprecatedRuleKey(repositoryKey = "repo", ruleKey = "SYYYY")
+    })
+    class RuleC {
+    }
+
+    class RuleD {
+    }
+
+    assertThat(JavaRulesDefinition.deprecatesRules(RuleA.class)).isTrue();
+    assertThat(JavaRulesDefinition.deprecatesRules(RuleB.class)).isTrue();
+    assertThat(JavaRulesDefinition.deprecatesRules(RuleC.class)).isTrue();
+    assertThat(JavaRulesDefinition.deprecatesRules(RuleD.class)).isFalse();
   }
 
   @Test
@@ -154,6 +194,9 @@ class JavaRulesDefinitionTest {
       // NoSonar key can't be changed to RSPEC key
       if (!r.key().equals("NoSonar")) {
         assertThat(pattern.matcher(r.key()).matches()).isTrue();
+        assertThat(r.internalKey()).isNull();
+      } else {
+        assertThat(r.internalKey()).isEqualTo("S1291");
       }
     });
   }
