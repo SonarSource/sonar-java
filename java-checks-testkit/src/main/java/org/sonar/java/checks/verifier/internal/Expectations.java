@@ -55,10 +55,8 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
@@ -66,6 +64,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -760,19 +759,12 @@ class Expectations {
   }
 
   private static String ruleKey(AnalyzerMessage issue) {
-    String ruleKey;
-    RspecKey rspecKeyAnnotation = AnnotationUtils.getAnnotation(issue.getCheck().getClass(), RspecKey.class);
-    if (rspecKeyAnnotation != null) {
-      ruleKey = rspecKeyAnnotation.value();
+    Rule ruleAnnotation = AnnotationUtils.getAnnotation(issue.getCheck().getClass(), Rule.class);
+    if (ruleAnnotation != null) {
+      return ruleAnnotation.key();
     } else {
-      Rule ruleAnnotation = AnnotationUtils.getAnnotation(issue.getCheck().getClass(), Rule.class);
-      if (ruleAnnotation != null) {
-        ruleKey = ruleAnnotation.key();
-      } else {
-        throw new AssertionError("Rules should be annotated with '@Rule(key = \"...\")' annotation (org.sonar.check.Rule).");
-      }
+      throw new AssertionError("Rules should be annotated with '@Rule(key = \"...\")' annotation (org.sonar.check.Rule).");
     }
-    return ruleKey;
   }
 
 }

@@ -32,8 +32,6 @@ import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalysisException;
-import org.sonar.plugins.java.api.internal.EndOfAnalysis;
-import org.sonar.java.RspecKey;
 import org.sonar.java.caching.DummyCache;
 import org.sonar.java.caching.JavaReadCacheImpl;
 import org.sonar.java.caching.JavaWriteCacheImpl;
@@ -49,13 +47,13 @@ import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
+import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -359,7 +357,7 @@ class InternalCheckVerifierTest {
 
     @Test
     void test_rspec_key_with_no_metadata_should_not_fail() throws Exception {
-      @RspecKey("Dummy_fake_JSON")
+      @Rule(key = "Dummy_fake_JSON")
       class DoesntExistsMetadataCheck implements JavaFileScanner {
         @Override
         public void scanFile(JavaFileScannerContext context) {

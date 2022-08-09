@@ -32,11 +32,11 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "S4424", repositoryKey = "squid")
-@DeprecatedRuleKey(ruleKey = "S4424", repositoryKey = "java")
 @Rule(key = "S4830")
+// FIXME SONAR-17167: S4424 has been dropped and causes crashes in SQ - Only keeping the implicit "squid:S4830" (see JavaRulesDefinition)
+// @DeprecatedRuleKey(ruleKey = "S4424", repositoryKey = "squid")
+// @DeprecatedRuleKey(ruleKey = "S4424", repositoryKey = "java")
 public class ServerCertificatesCheck extends IssuableSubscriptionVisitor {
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String X509_CERTIFICATE_ARRAY = "java.security.cert.X509Certificate[]";
