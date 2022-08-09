@@ -20,37 +20,33 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueReques
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
 
 public class HardCodedCredentialsShouldNotBeUsedCheck {
-  private static String secretString = "hunter2";
-  private static String secretReassignedField = "hunter2";
-  private static byte[] secretByteArrayReassignedField = new byte[]{0xC, 0xA, 0xF, 0xE};
-  private static char[] secretCharArrayReassignedField = new char[]{0xC, 0xA, 0xF, 0xE};
-  private static CharSequence secretCharSequenceReassignedField = "Hello, World!".subSequence(0, 12);
-  static {
-    secretReassignedField = "*******";
-    secretByteArrayReassignedField = new byte[]{};
-    secretCharArrayReassignedField = new char[]{'c', 'a', 'f', 'e'};
-    secretCharSequenceReassignedField = "Bye!".subSequence(0, 3);
-  }
-  private static byte[] secretByteArray = new byte[]{0xC, 0xA, 0xF, 0xE};
+  static final String FINAL_SECRET_STRING = "hunter2";
+  static final byte[] FINAL_SECRET_BYTE_ARRAY = FINAL_SECRET_STRING.getBytes(StandardCharsets.UTF_8);
+  static final char[] FINAL_SECRET_CHAR_ARRAY = FINAL_SECRET_STRING.toCharArray();
+  static final CharSequence FINAL_SECRET_CHAR_SEQUENCE = FINAL_SECRET_STRING.subSequence(0, FINAL_SECRET_STRING.length());
+  private static String secretStringField = "hunter2";
+  private static byte[] secretByteArrayField = new byte[]{0xC, 0xA, 0xF, 0xE};
+  private static char[] secretCharArrayField = new char[]{0xC, 0xA, 0xF, 0xE};
+  private static CharSequence secretCharSequenceField = "Hello, World!".subSequence(0, 12);
 
   public static void nonCompliant(byte[] message) throws ServletException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
     String effectivelyConstantString = "s3cr37";
     byte[] key = effectivelyConstantString.getBytes();
 
     // byte array based
-    SHA256.getHMAC(secretByteArray, message); // Noncompliant [[sc=20;ec=35;secondary=-7]] {{Revoke and change this password, as it is compromised.}}
+    SHA256.getHMAC(FINAL_SECRET_BYTE_ARRAY, message); // Noncompliant [[sc=20;ec=43;secondary=24]] {{Revoke and change this password, as it is compromised.}}
     SHA256.getHMAC(key, message);  // Noncompliant [[sc=20;ec=23;secondary=-4]]
     SHA256.getHMAC(effectivelyConstantString.getBytes(), message); // Noncompliant
     SHA256.getHMAC("anotherS3cr37".getBytes(), message); // Noncompliant
-    SHA256.getHMAC(secretString.getBytes(), message); // Noncompliant
-    SHA256.getHMAC(secretString.getBytes(StandardCharsets.UTF_8), message); // Noncompliant
-    SHA256.getHMAC(secretString.getBytes("UTF-8"), message); // Noncompliant
+    SHA256.getHMAC(FINAL_SECRET_STRING.getBytes(), message); // Noncompliant
+    SHA256.getHMAC(FINAL_SECRET_STRING.getBytes(StandardCharsets.UTF_8), message); // Noncompliant
+    SHA256.getHMAC(FINAL_SECRET_STRING.getBytes("UTF-8"), message); // Noncompliant
 
     // String based
     HttpServletRequest request = new HttpServletRequestWrapper(null);
     request.login("user", "password"); // Noncompliant
-    request.login("user", effectivelyConstantString); // Noncompliant [[sc=27;ec=52;secondary=-15]]
-    request.login("user", secretString); // Noncompliant [[sc=27;ec=39;secondary=-30]]
+    request.login("user", effectivelyConstantString); // Noncompliant [[sc=27;ec=52;secondary=33]]
+    request.login("user", FINAL_SECRET_STRING); // Noncompliant [[sc=27;ec=46;secondary=23]]
 
     KeyStore store = KeyStore.getInstance(null);
 
@@ -80,19 +76,19 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
 
     SHA256.getHMAC(secretByteArrayParameter, messageAsBytes); // compliant because we do not check parameters
     SHA256.getHMAC(secretReassignedAsBytesVariable, messageAsBytes); // compliant because we do not check reassigned variables
-    SHA256.getHMAC(secretByteArrayReassignedField, messageAsBytes); // compliant because we do not check reassigned variables
+    SHA256.getHMAC(secretByteArrayField, messageAsBytes); // compliant because we do not check non-final fields
     SHA256.getHMAC(convertToByteArray(secretParameter), messageAsBytes); // compliant because we do not check calls to methods defined out of String
 
     HttpServletRequest request = new HttpServletRequestWrapper(null);
     request.login("user", secretParameter); // compliant because we do not check parameters
     request.login("user", secretReassginedVariable); // compliant because we do not check reassigned variables
-    request.login("user", secretReassignedField); // compliant because we do not check reassigned fields
+    request.login("user", secretStringField); // compliant because we do not check non-final fields
 
 
     KeyStore store = KeyStore.getInstance(null);
     store.getKey("", secretCharArrayParameter); // compliant because we do not check parameters
     store.getKey("", secretReassignedAsCharsVariable); // compliant because we do not check reassigned variables
-    store.getKey("", secretCharArrayReassignedField); // compliant because we do not check reassigned fields
+    store.getKey("", secretCharArrayField); // compliant because we do not check non-final fields
     store.getKey("", convertToCharArray(secretParameter)); // compliant because we do not check calls to methods defined out of String
 
 
@@ -101,7 +97,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
 
     Encryptors.delux(charSequenceParameter, "salt");  // compliant because we do not check parameters
     Encryptors.delux(secretReassignedAsCharSequence, "salt"); // compliant because we do not check reassigned variables
-    Encryptors.delux(secretCharSequenceReassignedField, "salt"); // compliant because we do not check reassigned fields
+    Encryptors.delux(secretCharSequenceField, "salt"); // compliant because we do not check non-final fields
     Encryptors.delux(convertToCharSequence("password"), "salt"); // compliant because we do not check calls to methods defined out of String
 
     StringBuilder passwordFromStringBuilder = new StringBuilder();

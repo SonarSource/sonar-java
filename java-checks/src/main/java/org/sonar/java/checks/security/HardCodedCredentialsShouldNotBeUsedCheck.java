@@ -135,7 +135,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
       } else if (argument.is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifier = (IdentifierTree) argument;
         Symbol symbol = identifier.symbol();
-        if (!symbol.isVariableSymbol() || JUtils.isParameter(symbol) || isReassigned(symbol)) {
+        if (!symbol.isVariableSymbol() || JUtils.isParameter(symbol) || isNonFinalField(symbol) || isReassigned(symbol)) {
           return;
         }
 
@@ -148,6 +148,10 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
         reportIssue(argument, ISSUE_MESSAGE);
       }
     }
+  }
+
+  private static boolean isNonFinalField(Symbol symbol) {
+    return symbol.isVariableSymbol() && symbol.owner().isTypeSymbol() && !symbol.isFinal();
   }
 
   private static boolean isReassigned(Symbol symbol) {
