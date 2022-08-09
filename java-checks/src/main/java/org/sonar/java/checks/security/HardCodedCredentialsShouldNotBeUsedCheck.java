@@ -141,7 +141,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
 
         VariableTree variable = (VariableTree) symbol.declaration();
 
-        if (isStringDerivedFromPlainText(variable) || isDerivedFromPlainText(variable)) {
+        if (variable != null && (isStringDerivedFromPlainText(variable) || isDerivedFromPlainText(variable))) {
           reportIssue(argument, ISSUE_MESSAGE, List.of(new JavaFileScannerContext.Location("", variable)), null);
         }
       } else if (argument.is(Tree.Kind.METHOD_INVOCATION) && isDerivedFromPlainText((MethodInvocationTree) argument)) {
