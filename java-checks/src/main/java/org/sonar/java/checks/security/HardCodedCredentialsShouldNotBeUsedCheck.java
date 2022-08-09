@@ -200,8 +200,11 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
         Symbol symbol = identifier.symbol();
         if (symbol.isVariableSymbol()) {
           VariableTree variable = (VariableTree) symbol.declaration();
-          if (variable.symbol().type().is(JAVA_LANG_STRING) && variable.initializer().asConstant().isPresent()) {
-            finding = variable;
+          if (variable.symbol().type().is(JAVA_LANG_STRING)) {
+            ExpressionTree initializer = variable.initializer();
+            if (initializer != null && initializer.asConstant().isPresent()) {
+              finding = variable;
+            }
           }
         }
       } else if (expression.is(Tree.Kind.STRING_LITERAL)) {
