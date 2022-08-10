@@ -144,5 +144,37 @@
         "exception": "java.lang.NullPointerException"
       }
     ]
+  },
+  {
+    "signature": "java.util.Optional#ofNullable(Ljava/lang/Object;)Ljava/util/Optional;",
+    "varArgs": false,
+    "declaredExceptions": [],
+      "yields": [
+          {
+              "parametersConstraints": [
+                  [
+                      "NOT_NULL"
+                  ],
+                  []
+              ],
+              "resultIndex": 0,
+              "resultConstraint": [
+                  "PRESENT",
+          "NOT_NULL"
+        ]
+      },
+      {
+        "parametersConstraints": [
+          [
+            "NULL"
+          ]
+        ],
+        "resultIndex": -1,
+        "resultConstraint": [
+          "NOT_PRESENT",
+          "NOT_NULL"
+        ]
+      }
+    ]
   }
 ]

@@ -39,6 +39,7 @@ import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.constraint.ObjectConstraint;
+import org.sonar.java.se.constraint.OptionalConstraint;
 
 public class MethodBehaviorJsonAdapter implements JsonSerializer<MethodBehavior>, JsonDeserializer<MethodBehavior> {
 
@@ -123,6 +124,10 @@ public class MethodBehaviorJsonAdapter implements JsonSerializer<MethodBehavior>
         case "TRUE":
         case "FALSE":
           constraint = BooleanConstraint.valueOf(constraintAsString);
+          break;
+        case "PRESENT":
+        case "NOT_PRESENT":
+          constraint = OptionalConstraint.valueOf(constraintAsString);
           break;
         default:
           String msg = String.format("Unsupported constraint \"%s\". Only \"TRUE\", \"FALSE\", \"NULL\", and \"NOT_NULL\" are supported.", constraintAsString);
