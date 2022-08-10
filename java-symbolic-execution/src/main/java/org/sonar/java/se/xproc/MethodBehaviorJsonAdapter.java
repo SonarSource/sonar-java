@@ -130,7 +130,7 @@ public class MethodBehaviorJsonAdapter implements JsonSerializer<MethodBehavior>
           constraint = OptionalConstraint.valueOf(constraintAsString);
           break;
         default:
-          String msg = String.format("Unsupported constraint \"%s\". Only \"TRUE\", \"FALSE\", \"NULL\", and \"NOT_NULL\" are supported.", constraintAsString);
+          String msg = String.format("Unsupported constraint \"%s\". Only \"TRUE\", \"FALSE\", \"NULL\", \"NOT_NULL\", \"PRESENT\" and \"NOT_PRESENT\" are supported.", constraintAsString);
           throw new IllegalStateException(msg);
       }
       constraintsByDomain = constraintsByDomain.put(constraint);
