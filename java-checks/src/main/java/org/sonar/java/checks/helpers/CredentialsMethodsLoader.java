@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -96,20 +97,33 @@ public class CredentialsMethodsLoader {
       int argumentListStart = credentialsMethod.method.indexOf('(');
       int argumentListEnd = credentialsMethod.method.indexOf(')', argumentListStart);
       String type = credentialsMethod.namespace + "." + credentialsMethod.className;
-      int numberOfArguments = credentialsMethod.method.substring(argumentListStart + 1, argumentListEnd).split(",").length;
+      final int numberOfArguments = credentialsMethod.method.substring(argumentListStart + 1, argumentListEnd).split(",").length;
+
+      Predicate<List<org.sonar.plugins.java.api.semantic.Type>> argumentMatcher = argumentTypes -> {
+        if (argumentTypes.size() != numberOfArguments) {
+          return false;
+        }
+        for (TargetArgument expectedArgument : credentialsMethod.targetArguments) {
+          var actualType = argumentTypes.get(expectedArgument.index);
+          if (!expectedArgument.type.endsWith(actualType.name())) {
+            return false;
+          }
+        }
+        return true;
+      };
 
       if (credentialsMethod.methodType.equals("Constructor")) {
         return MethodMatchers.create()
           .ofTypes(type)
           .constructor()
-          .addParametersMatcher(argumentList -> argumentList.size() == numberOfArguments)
+          .addParametersMatcher(argumentMatcher)
           .build();
       }
 
       return MethodMatchers.create()
         .ofTypes(type)
         .names(credentialsMethod.methodName)
-        .addParametersMatcher(argumentList -> argumentList.size() == numberOfArguments)
+        .addParametersMatcher(argumentMatcher)
         .build();
     }
 
@@ -131,7 +145,7 @@ public class CredentialsMethodsLoader {
         .map(argumentString -> {
           int index = argumentString.lastIndexOf(" ");
           return List.of(
-            matchType(argumentString.substring(0, index).trim()),
+            argumentString.substring(0, index).trim(),
             argumentString.substring(index).trim()
           );
         }).collect(Collectors.toList());
@@ -166,20 +180,6 @@ public class CredentialsMethodsLoader {
       }
       types.add(parameters.substring(start));
       return types;
-    }
-
-    private static String matchType(String type) {
-      //FIXME handle type erasure
-      switch (type) {
-        case "byte[]":
-          return "java.lang.byte[]";
-        case "char[]":
-          return "java.lang.char[]";
-        case "String":
-          return "java.lang.String";
-        default:
-          return type;
-      }
     }
   }
 
