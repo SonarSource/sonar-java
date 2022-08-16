@@ -219,12 +219,21 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
         handleOptionalFilterMethod();
       } else if (OPTIONAL_ORELSE.matches(tree)) {
         handleOptionalOrElseMethod(tree);
+
+      // } else if (OPTIONAL_OF.matches(tree) || OPTIONAL_OF_NULLABLE.matches(tree)) {
+      //   SymbolicValue peek = programState.peekValue();
+      //   constraintManager.setValueFactory(() -> new OptionalSymbolicValue(peek));
+      // }
+
       } else if (OPTIONAL_OF.matches(tree)) {
         handleOptionalOfMethod();
       } else if (OPTIONAL_OF_NULLABLE.matches(tree)) {
-        handleOptionalOfNullableMethod();
+        // DO NOTHING
+
+        //handleOptionalOfNullableMethod();
       }
     }
+
 
     private void handleOptionalOfMethod() {
       constraintManager.setValueFactory(() -> new OptionalSymbolicValue(programState.peekValue()));
@@ -275,26 +284,26 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
     }
 
     private void handleOptionalOfNullableMethod() {
-      SymbolicValue ofNullableParameter = Objects.requireNonNull(programState.peekValue());
-      ObjectConstraint nullability = programState.getConstraint(ofNullableParameter, ObjectConstraint.class);
-      if (nullability != null) {
-        constraintManager.setValueFactory(() -> new OptionalSymbolicValue(ofNullableParameter));
-      } else {
-        SymbolicValue optionalSV = new OptionalSymbolicValue(ofNullableParameter);
-        ProgramState newState = programState.unstackValue(2).state.stackValue(optionalSV);
-        // if NULL -> OptionalSV = NOT_PRESENT
-        ofNullableParameter.setConstraint(newState, ObjectConstraint.NULL).stream()
-          .map(ps -> optionalSV.setConstraint(ps, OptionalConstraint.NOT_PRESENT))
-          .flatMap(List::stream)
-          .forEach(context::addTransition);
-        // if NOT_NULL -> OptionalSV = PRESENT
-        ofNullableParameter.setConstraint(newState, ObjectConstraint.NOT_NULL).stream()
-          .map(ps -> optionalSV.setConstraint(ps, OptionalConstraint.PRESENT))
-          .flatMap(List::stream)
-          .forEach(context::addTransition);
-        // interrupt current path to only use transitions
-        programState = null;
-      }
+      // SymbolicValue ofNullableParameter = Objects.requireNonNull(programState.peekValue());
+      // ObjectConstraint nullability = programState.getConstraint(ofNullableParameter, ObjectConstraint.class);
+      // if (nullability != null) {
+      //   constraintManager.setValueFactory(() -> new OptionalSymbolicValue(ofNullableParameter));
+      // } else {
+      //   SymbolicValue optionalSV = new OptionalSymbolicValue(ofNullableParameter);
+      //   ProgramState newState = programState.unstackValue(2).state.stackValue(optionalSV);
+      //   // if NULL -> OptionalSV = NOT_PRESENT
+      //   ofNullableParameter.setConstraint(newState, ObjectConstraint.NULL).stream()
+      //     .map(ps -> optionalSV.setConstraint(ps, OptionalConstraint.NOT_PRESENT))
+      //     .flatMap(List::stream)
+      //     .forEach(context::addTransition);
+      //   // if NOT_NULL -> OptionalSV = PRESENT
+      //   ofNullableParameter.setConstraint(newState, ObjectConstraint.NOT_NULL).stream()
+      //     .map(ps -> optionalSV.setConstraint(ps, OptionalConstraint.PRESENT))
+      //     .flatMap(List::stream)
+      //     .forEach(context::addTransition);
+      //   // interrupt current path to only use transitions
+      //   programState = null;
+      // }
     }
 
     private void reportIssue(MethodInvocationTree mit) {
