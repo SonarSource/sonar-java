@@ -37,7 +37,8 @@ public class JavaVersionImpl implements JavaVersion {
   private static final int JAVA_15 = 15;
   private static final int JAVA_16 = 16;
   private static final int JAVA_17 = 17;
-  public static final int MAX_SUPPORTED = JAVA_17;
+  private static final int JAVA_18 = 18;
+  public static final int MAX_SUPPORTED = JAVA_18;
 
   private final int javaVersion;
 
@@ -105,6 +106,16 @@ public class JavaVersionImpl implements JavaVersion {
   @Override
   public boolean isJava16Compatible() {
     return JAVA_16 <= javaVersion;
+  }
+
+  @Override
+  public boolean isJava17Compatible() {
+    return JAVA_17 <= javaVersion;
+  }
+
+  @Override
+  public boolean isJava18Compatible() {
+    return JAVA_18 <= javaVersion;
   }
 
   private boolean notSetOrAtLeast(int requiredJavaVersion) {

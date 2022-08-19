@@ -165,7 +165,7 @@ class ExplodedGraphWalkerTest {
   }
 
   /**
-   * Checking that Java 17 patterns do not fail SE engine
+   * Checking that Java 18 patterns do not fail SE engine
    * TODO once feature is final: make sure learned constraints propagate in branches
    */
   @Test
@@ -174,7 +174,7 @@ class ExplodedGraphWalkerTest {
       .onFile(TestUtils.nonCompilingTestSourcesPath("symbolicexecution/engine/SwitchWithPatterns.java"))
       .withChecks(seChecks())
       .withClassPath(SETestUtils.CLASS_PATH)
-      .withJavaVersion(17)
+      .withJavaVersion(18)
       .verifyNoIssues();
   }
 

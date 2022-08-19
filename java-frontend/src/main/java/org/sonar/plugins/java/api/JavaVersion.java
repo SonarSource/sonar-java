@@ -100,6 +100,22 @@ public interface JavaVersion {
   boolean isJava16Compatible();
 
   /**
+   * Test if java version of the project is greater than or equal to 17.
+   * Remark - Contrary to other isJava*Compatible methods, this one will NOT return true if version is not set
+   * @return true if java version used is >= 17
+   * @since SonarJava 7.14: Support of Java 18
+   */
+  boolean isJava17Compatible();
+
+  /**
+   * Test if java version of the project is greater than or equal to 18.
+   * Remark - Contrary to other isJava*Compatible methods, this one will NOT return true if version is not set
+   * @return true if java version used is >= 18
+   * @since SonarJava 7.14: Support of Java 18
+   */
+  boolean isJava18Compatible();
+
+  /**
    * get java version as integer
    * @return an int representing the java version
    */
