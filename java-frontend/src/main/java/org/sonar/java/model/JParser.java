@@ -1648,9 +1648,17 @@ public class JParser {
   }
 
   private YieldStatementTreeImpl convertYield(YieldStatement e) {
+    InternalSyntaxToken yieldKeyword = null;
+    if (!e.isImplicit()) {
+      try {
+        yieldKeyword = firstTokenIn(e, TerminalTokens.TokenNameRestrictedIdentifierYield);
+      } catch (AssertionError | IndexOutOfBoundsException error) {
+        // TODO ECJ bug? should be "TerminalTokens.TokenNameRestrictedIdentifierYield" in all cases
+        yieldKeyword = firstTokenIn(e, TerminalTokens.TokenNameIdentifier);
+      }
+    }
     return new YieldStatementTreeImpl(
-      // TODO ECJ bug? should be "TerminalTokens.TokenNameRestrictedIdentifierYield" instead
-      e.isImplicit() ? null : firstTokenIn(e, TerminalTokens.TokenNameIdentifier),
+      yieldKeyword,
       convertExpression(e.getExpression()),
       lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
     );

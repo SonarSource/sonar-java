@@ -24,6 +24,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -34,7 +35,6 @@ import org.sonar.plugins.java.api.tree.GuardedPatternTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NullPatternTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
-import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -217,12 +217,12 @@ class AbstractPatternTreeTest {
     ExpressionTree expression = expressions.get(0);
     assertThat(expression).is(Tree.Kind.GUARDED_PATTERN);
     GuardedPatternTree guardedPattern = (GuardedPatternTree) expression;
-    PatternTree nestedPattern = guardedPattern.pattern();
-    assertThat(nestedPattern).is(Tree.Kind.GUARDED_PATTERN);
-    GuardedPatternTree nestedGuardedPattern = (GuardedPatternTree) nestedPattern;
-    assertThat(nestedGuardedPattern.pattern()).is(Tree.Kind.TYPE_PATTERN);
-    assertThat(nestedGuardedPattern.expression()).is(Tree.Kind.GREATER_THAN);
-    assertThat(guardedPattern.expression()).is(Tree.Kind.BOOLEAN_LITERAL);
+    assertThat(guardedPattern.pattern()).is(Tree.Kind.TYPE_PATTERN);
+    // ECJ transform the guarded pattern in and drop the parenthesis
+    assertThat(guardedPattern.expression()).is(Tree.Kind.CONDITIONAL_AND);
+    BinaryExpressionTree and = (BinaryExpressionTree) guardedPattern.expression();
+    assertThat(and.leftOperand()).is(Tree.Kind.GREATER_THAN);
+    assertThat(and.rightOperand()).is(Tree.Kind.BOOLEAN_LITERAL);
   }
 
   @Test

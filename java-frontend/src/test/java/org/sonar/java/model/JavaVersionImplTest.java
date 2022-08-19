@@ -20,6 +20,8 @@
 package org.sonar.java.model;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.sonar.plugins.java.api.JavaVersion;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,175 +29,48 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JavaVersionImplTest {
 
   @Test
-  void no_version_set() throws Exception {
+  void no_version_set() {
     JavaVersion version = new JavaVersionImpl();
     assertThat(version.isSet()).isFalse();
     assertThat(version.isNotSet()).isTrue();
+    // not set is considered compatible with everything <= 8
+    assertThat(version.isJava6Compatible()).isTrue();
     assertThat(version.isJava7Compatible()).isTrue();
     assertThat(version.isJava8Compatible()).isTrue();
+    // all the rest are incompatible
     assertThat(version.isJava9Compatible()).isFalse();
     assertThat(version.isJava10Compatible()).isFalse();
     assertThat(version.isJava12Compatible()).isFalse();
     assertThat(version.isJava14Compatible()).isFalse();
     assertThat(version.isJava15Compatible()).isFalse();
     assertThat(version.isJava16Compatible()).isFalse();
+    assertThat(version.isJava17Compatible()).isFalse();
+    assertThat(version.isJava18Compatible()).isFalse();
     assertThat(version.asInt()).isEqualTo(-1);
   }
 
-  @Test
-  void java_5() throws Exception {
-    JavaVersion version = new JavaVersionImpl(5);
+  @ParameterizedTest(name = "JavaVersion: \"{0}\"")
+  @ValueSource(ints = {5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 42})
+  void java_versions(int javaVersionAsInt) {
+    JavaVersion version = new JavaVersionImpl(javaVersionAsInt);
     assertThat(version.isSet()).isTrue();
     assertThat(version.isNotSet()).isFalse();
-    assertThat(version.isJava6Compatible()).isFalse();
-    assertThat(version.isJava7Compatible()).isFalse();
-    assertThat(version.isJava8Compatible()).isFalse();
-    assertThat(version.isJava9Compatible()).isFalse();
-    assertThat(version.isJava10Compatible()).isFalse();
-    assertThat(version.isJava12Compatible()).isFalse();
-    assertThat(version.isJava14Compatible()).isFalse();
-    assertThat(version.isJava15Compatible()).isFalse();
-    assertThat(version.isJava16Compatible()).isFalse();
-    assertThat(version.asInt()).isEqualTo(5);
+    assertThat(version.isJava6Compatible()).isEqualTo(javaVersionAsInt >= 6);
+    assertThat(version.isJava7Compatible()).isEqualTo(javaVersionAsInt >= 7);
+    assertThat(version.isJava8Compatible()).isEqualTo(javaVersionAsInt >= 8);
+    assertThat(version.isJava9Compatible()).isEqualTo(javaVersionAsInt >= 9);
+    assertThat(version.isJava10Compatible()).isEqualTo(javaVersionAsInt >= 10);
+    assertThat(version.isJava12Compatible()).isEqualTo(javaVersionAsInt >= 12);
+    assertThat(version.isJava14Compatible()).isEqualTo(javaVersionAsInt >= 14);
+    assertThat(version.isJava15Compatible()).isEqualTo(javaVersionAsInt >= 15);
+    assertThat(version.isJava16Compatible()).isEqualTo(javaVersionAsInt >= 16);
+    assertThat(version.isJava17Compatible()).isEqualTo(javaVersionAsInt >= 17);
+    assertThat(version.isJava18Compatible()).isEqualTo(javaVersionAsInt >= 18);
+    assertThat(version.asInt()).isEqualTo(javaVersionAsInt);
   }
 
   @Test
-  void java_6() throws Exception {
-    JavaVersion version = new JavaVersionImpl(6);
-    assertThat(version.isJava6Compatible()).isTrue();
-    assertThat(version.isJava7Compatible()).isFalse();
-    assertThat(version.isJava8Compatible()).isFalse();
-    assertThat(version.isJava9Compatible()).isFalse();
-    assertThat(version.isJava10Compatible()).isFalse();
-    assertThat(version.isJava12Compatible()).isFalse();
-    assertThat(version.isJava14Compatible()).isFalse();
-    assertThat(version.isJava15Compatible()).isFalse();
-    assertThat(version.isJava16Compatible()).isFalse();
-    assertThat(version.asInt()).isEqualTo(6);
-  }
-
-  @Test
-  void java_7() throws Exception {
-    JavaVersion version = new JavaVersionImpl(7);
-    assertThat(version.isJava6Compatible()).isTrue();
-    assertThat(version.isJava7Compatible()).isTrue();
-    assertThat(version.isJava8Compatible()).isFalse();
-    assertThat(version.isJava9Compatible()).isFalse();
-    assertThat(version.isJava10Compatible()).isFalse();
-    assertThat(version.isJava12Compatible()).isFalse();
-    assertThat(version.isJava14Compatible()).isFalse();
-    assertThat(version.isJava15Compatible()).isFalse();
-    assertThat(version.isJava16Compatible()).isFalse();
-    assertThat(version.asInt()).isEqualTo(7);
-  }
-
-  @Test
-  void java_8() throws Exception {
-    JavaVersion version = new JavaVersionImpl(8);
-    assertThat(version.isJava6Compatible()).isTrue();
-    assertThat(version.isJava7Compatible()).isTrue();
-    assertThat(version.isJava8Compatible()).isTrue();
-    assertThat(version.isJava9Compatible()).isFalse();
-    assertThat(version.isJava10Compatible()).isFalse();
-    assertThat(version.isJava12Compatible()).isFalse();
-    assertThat(version.isJava14Compatible()).isFalse();
-    assertThat(version.isJava15Compatible()).isFalse();
-    assertThat(version.isJava16Compatible()).isFalse();
-    assertThat(version.asInt()).isEqualTo(8);
-  }
-
-  @Test
-  void java_9() throws Exception {
-    JavaVersion version = new JavaVersionImpl(9);
-    assertThat(version.isJava6Compatible()).isTrue();
-    assertThat(version.isJava7Compatible()).isTrue();
-    assertThat(version.isJava8Compatible()).isTrue();
-    assertThat(version.isJava9Compatible()).isTrue();
-    assertThat(version.isJava10Compatible()).isFalse();
-    assertThat(version.isJava12Compatible()).isFalse();
-    assertThat(version.isJava14Compatible()).isFalse();
-    assertThat(version.isJava15Compatible()).isFalse();
-    assertThat(version.isJava16Compatible()).isFalse();
-    assertThat(version.asInt()).isEqualTo(9);
-  }
-
-  @Test
-  void java_10() throws Exception {
-    JavaVersion version = new JavaVersionImpl(10);
-    assertThat(version.isJava6Compatible()).isTrue();
-    assertThat(version.isJava7Compatible()).isTrue();
-    assertThat(version.isJava8Compatible()).isTrue();
-    assertThat(version.isJava9Compatible()).isTrue();
-    assertThat(version.isJava10Compatible()).isTrue();
-    assertThat(version.isJava12Compatible()).isFalse();
-    assertThat(version.isJava14Compatible()).isFalse();
-    assertThat(version.isJava15Compatible()).isFalse();
-    assertThat(version.isJava16Compatible()).isFalse();
-    assertThat(version.asInt()).isEqualTo(10);
-  }
-
-  @Test
-  void java_12() {
-    JavaVersion version = new JavaVersionImpl(12);
-    assertThat(version.isJava6Compatible()).isTrue();
-    assertThat(version.isJava7Compatible()).isTrue();
-    assertThat(version.isJava8Compatible()).isTrue();
-    assertThat(version.isJava9Compatible()).isTrue();
-    assertThat(version.isJava10Compatible()).isTrue();
-    assertThat(version.isJava12Compatible()).isTrue();
-    assertThat(version.isJava14Compatible()).isFalse();
-    assertThat(version.isJava15Compatible()).isFalse();
-    assertThat(version.isJava16Compatible()).isFalse();
-    assertThat(version.asInt()).isEqualTo(12);
-  }
-
-  @Test
-  void java_14() {
-    JavaVersion version = new JavaVersionImpl(14);
-    assertThat(version.isJava6Compatible()).isTrue();
-    assertThat(version.isJava7Compatible()).isTrue();
-    assertThat(version.isJava8Compatible()).isTrue();
-    assertThat(version.isJava9Compatible()).isTrue();
-    assertThat(version.isJava10Compatible()).isTrue();
-    assertThat(version.isJava12Compatible()).isTrue();
-    assertThat(version.isJava14Compatible()).isTrue();
-    assertThat(version.isJava15Compatible()).isFalse();
-    assertThat(version.isJava16Compatible()).isFalse();
-    assertThat(version.asInt()).isEqualTo(14);
-  }
-
-  @Test
-  void java_15() {
-    JavaVersion version = new JavaVersionImpl(15);
-    assertThat(version.isJava6Compatible()).isTrue();
-    assertThat(version.isJava7Compatible()).isTrue();
-    assertThat(version.isJava8Compatible()).isTrue();
-    assertThat(version.isJava9Compatible()).isTrue();
-    assertThat(version.isJava10Compatible()).isTrue();
-    assertThat(version.isJava12Compatible()).isTrue();
-    assertThat(version.isJava14Compatible()).isTrue();
-    assertThat(version.isJava15Compatible()).isTrue();
-    assertThat(version.isJava16Compatible()).isFalse();
-    assertThat(version.asInt()).isEqualTo(15);
-  }
-
-  @Test
-  void java_16() {
-    JavaVersion version = new JavaVersionImpl(16);
-    assertThat(version.isJava6Compatible()).isTrue();
-    assertThat(version.isJava7Compatible()).isTrue();
-    assertThat(version.isJava8Compatible()).isTrue();
-    assertThat(version.isJava9Compatible()).isTrue();
-    assertThat(version.isJava10Compatible()).isTrue();
-    assertThat(version.isJava12Compatible()).isTrue();
-    assertThat(version.isJava14Compatible()).isTrue();
-    assertThat(version.isJava15Compatible()).isTrue();
-    assertThat(version.isJava16Compatible()).isTrue();
-    assertThat(version.asInt()).isEqualTo(16);
-  }
-
-  @Test
-  void compatibilityMesssages() throws Exception {
+  void compatibilityMesssages() {
     JavaVersion version;
     version = new JavaVersionImpl();
     assertThat(version.java6CompatibilityMessage()).isEqualTo(" (sonar.java.source not set. Assuming 6 or greater.)");
@@ -210,13 +85,13 @@ class JavaVersionImplTest {
 
   @Test
   void test_effective_java_version() {
-    assertThat(new JavaVersionImpl().effectiveJavaVersionAsString()).isEqualTo("17");
+    assertThat(new JavaVersionImpl().effectiveJavaVersionAsString()).isEqualTo("18");
     assertThat(new JavaVersionImpl(10).effectiveJavaVersionAsString()).isEqualTo("10");
-    assertThat(new JavaVersionImpl(-1).effectiveJavaVersionAsString()).isEqualTo("17");
+    assertThat(new JavaVersionImpl(-1).effectiveJavaVersionAsString()).isEqualTo("18");
   }
 
   @Test
-  void test_toString() throws Exception {
+  void test_toString() {
     JavaVersion version;
     version = new JavaVersionImpl();
     assertThat(version).hasToString("none");
@@ -226,7 +101,7 @@ class JavaVersionImplTest {
   }
 
   @Test
-  void test_fromString() throws Exception {
+  void test_fromString() {
     JavaVersion version;
     version = JavaVersionImpl.fromString("-1");
     assertThat(version.isSet()).isFalse();
