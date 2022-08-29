@@ -24,20 +24,13 @@ import java.util.stream.Collectors;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 
 public class CredentialMethod {
-  public final String cls;
-  public final String name;
-  public final List<String> args;
-  private final List<Integer> indexes;
+  public String cls;
+  public String name;
+  public List<String> args;
+  private List<Integer> indexes;
 
   private MethodMatchers methodMatcher;
 
-  public CredentialMethod(String cls, String name, List<String> args, List<Integer> indexes) {
-    this.cls = cls;
-    this.name = name;
-    this.args = args;
-    this.indexes = indexes;
-    this.methodMatcher = methodMatcher();
-  }
 
   public boolean isConstructor() {
     return this.cls.endsWith(this.name);
