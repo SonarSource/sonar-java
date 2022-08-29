@@ -27,7 +27,8 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.checks.helpers.CredentialsMethodsLoader;
+import org.sonar.java.checks.helpers.CredentialMethod;
+import org.sonar.java.checks.helpers.CredentialMethodsLoader;
 import org.sonar.java.checks.helpers.ReassignmentFinder;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -74,7 +75,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
   private static final String ISSUE_MESSAGE = "Revoke and change this password, as it is compromised.";
 
 
-  private Map<String, List<CredentialsMethodsLoader.CredentialsMethod>> methods;
+  private Map<String, List<CredentialMethod>> methods;
 
   public HardCodedCredentialsShouldNotBeUsedCheck() {
     this(CREDENTIALS_METHODS_FILE);
@@ -83,7 +84,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
   @VisibleForTesting
   HardCodedCredentialsShouldNotBeUsedCheck(String resourcePath) {
     try {
-      methods = CredentialsMethodsLoader.load(resourcePath);
+      methods = CredentialMethodsLoader.load(resourcePath);
     } catch (IOException e) {
       LOG.warn(e.getMessage());
       methods = Collections.emptyMap();
@@ -106,30 +107,29 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
       MethodInvocationTree invocation = (MethodInvocationTree) tree;
       methodName = invocation.symbol().name();
     }
-    List<CredentialsMethodsLoader.CredentialsMethod> candidates = methods.get(methodName);
+    List<CredentialMethod> candidates = methods.get(methodName);
     if (candidates == null) {
       return;
     }
-    for (CredentialsMethodsLoader.CredentialsMethod candidate : candidates) {
-      MethodMatchers matcher = candidate.methodMatcher;
+    for (CredentialMethod candidate : candidates) {
+      MethodMatchers matcher = candidate.methodMatcher();
       if (isConstructor) {
         NewClassTree constructor = (NewClassTree) tree;
         if (matcher.matches(constructor)) {
-          checkArguments(constructor.arguments(), candidate.targetArguments);
+          checkArguments(constructor.arguments(), candidate);
         }
       } else {
         MethodInvocationTree invocation = (MethodInvocationTree) tree;
         if (matcher.matches(invocation)) {
-          checkArguments(invocation.arguments(), candidate.targetArguments);
+          checkArguments(invocation.arguments(), candidate);
         }
       }
     }
   }
 
-  private void checkArguments(Arguments arguments, List<CredentialsMethodsLoader.TargetArgument> argumentsToExamine) {
-    for (CredentialsMethodsLoader.TargetArgument argumentToExamine : argumentsToExamine) {
-      int argumentIndex = argumentToExamine.index;
-      ExpressionTree argument = arguments.get(argumentIndex);
+  private void checkArguments(Arguments arguments, CredentialMethod method) {
+    for (int targetArgumentIndex : method.indices()) {
+      ExpressionTree argument = arguments.get(targetArgumentIndex);
       if (argument.is(Tree.Kind.STRING_LITERAL, Tree.Kind.NEW_ARRAY)) {
         reportIssue(argument, ISSUE_MESSAGE);
       } else if (argument.is(Tree.Kind.IDENTIFIER)) {
@@ -181,7 +181,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
     return visitor.finding != null;
   }
 
-  public Map<String, List<CredentialsMethodsLoader.CredentialsMethod>> getMethods() {
+  public Map<String, List<CredentialMethod>> getMethods() {
     return this.methods;
   }
 
