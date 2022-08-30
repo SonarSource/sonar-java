@@ -33,7 +33,11 @@ public class CredentialMethod {
 
 
   public boolean isConstructor() {
-    return this.cls.endsWith(this.name);
+    int sep = Math.max(cls.lastIndexOf('.'), cls.lastIndexOf('$'));
+    if (sep == -1) {
+      return cls.equals(name);
+    }
+    return cls.substring(sep + 1).equals(name);
   }
 
   public MethodMatchers methodMatcher() {
