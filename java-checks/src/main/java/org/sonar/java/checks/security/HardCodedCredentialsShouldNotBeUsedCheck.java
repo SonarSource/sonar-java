@@ -86,7 +86,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
     try {
       methods = CredentialMethodsLoader.load(resourcePath);
     } catch (IOException e) {
-      LOG.warn(e.getMessage());
+      LOG.error(e.getMessage());
       methods = Collections.emptyMap();
     }
   }

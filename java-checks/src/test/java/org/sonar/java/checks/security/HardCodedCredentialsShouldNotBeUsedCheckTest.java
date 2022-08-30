@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.sonar.api.utils.log.LogAndArguments;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.checks.verifier.CheckVerifier;
@@ -39,8 +40,8 @@ class HardCodedCredentialsShouldNotBeUsedCheckTest {
   void uses_empty_collection_when_methods_cannot_be_loaded() {
     var check = new HardCodedCredentialsShouldNotBeUsedCheck("non-existing-file.json");
     assertThat(check.getMethods()).isEmpty();
-    List<String> logs = logTester.getLogs(LoggerLevel.WARN).stream()
-      .map(logAndArguments -> logAndArguments.getFormattedMsg())
+    List<String> logs = logTester.getLogs(LoggerLevel.ERROR).stream()
+      .map(LogAndArguments::getFormattedMsg)
       .collect(Collectors.toList());
     assertThat(logs)
       .containsOnly("Could not load methods from \"non-existing-file.json\".");
