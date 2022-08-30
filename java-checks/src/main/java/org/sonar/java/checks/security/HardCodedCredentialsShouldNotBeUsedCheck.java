@@ -216,10 +216,4 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
       }
     }
   }
-
-  @FunctionalInterface
-  public interface MethodLoadingFunction<T, R> {
-    R apply(T t) throws IOException;
-  }
-
 }
