@@ -41,6 +41,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     SHA256.getHMAC(FINAL_SECRET_STRING.getBytes(), message); // Noncompliant
     SHA256.getHMAC(FINAL_SECRET_STRING.getBytes(StandardCharsets.UTF_8), message); // Noncompliant
     SHA256.getHMAC(FINAL_SECRET_STRING.getBytes("UTF-8"), message); // Noncompliant
+    SHA256.getHMAC((FINAL_SECRET_STRING).getBytes("UTF-8"), message); // Noncompliant
 
     // String based
     HttpServletRequest request = new HttpServletRequestWrapper(null);
@@ -62,6 +63,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     Encryptors.delux("password".subSequence(0, 0), "salt"); // Noncompliant
 
     new Pbkdf2PasswordEncoder("secret"); // Noncompliant
+    new Pbkdf2PasswordEncoder(("secret")); // Noncompliant
   }
 
   public static void compliant(String message, String secretParameter, byte[] secretByteArrayParameter, char[] secretCharArrayParameter, CharSequence charSequenceParameter)

@@ -30,6 +30,7 @@ import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.helpers.CredentialMethod;
 import org.sonar.java.checks.helpers.CredentialMethodsLoader;
 import org.sonar.java.checks.helpers.ReassignmentFinder;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -129,7 +130,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
 
   private void checkArguments(Arguments arguments, CredentialMethod method) {
     for (int targetArgumentIndex : method.indices()) {
-      ExpressionTree argument = arguments.get(targetArgumentIndex);
+      ExpressionTree argument = ExpressionUtils.skipParentheses(arguments.get(targetArgumentIndex));
       if (argument.is(Tree.Kind.STRING_LITERAL, Tree.Kind.NEW_ARRAY)) {
         reportIssue(argument, ISSUE_MESSAGE);
       } else if (argument.is(Tree.Kind.IDENTIFIER)) {
@@ -198,7 +199,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
 
     @Override
     public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-      ExpressionTree expression = tree.expression();
+      ExpressionTree expression = ExpressionUtils.skipParentheses(tree.expression());
       if (expression.is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifier = (IdentifierTree) expression;
         Symbol symbol = identifier.symbol();
