@@ -23,10 +23,10 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class CredentialMethodsLoader {
   private CredentialMethodsLoader() {
@@ -43,12 +43,6 @@ public class CredentialMethodsLoader {
       rawData = new String(in.readAllBytes(), StandardCharsets.UTF_8);
     }
     CredentialMethod[] credentialMethods = gson.fromJson(rawData, CredentialMethod[].class);
-
-    Map<String, List<CredentialMethod>> methods = new TreeMap<>();
-    for (var method : credentialMethods) {
-      List<CredentialMethod> methodsByTheSameName = methods.computeIfAbsent(method.name, key -> new ArrayList<>());
-      methodsByTheSameName.add(method);
-    }
-    return methods;
+    return Arrays.stream(credentialMethods).collect(Collectors.groupingBy(m -> m.name));
   }
 }
