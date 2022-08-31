@@ -2864,7 +2864,7 @@
   {
     "ruleKey": "S6437",
     "truePositives": 19,
-    "falseNegatives": 11,
+    "falseNegatives": 13,
     "falsePositives": 0
   }
 ]
