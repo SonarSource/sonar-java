@@ -129,7 +129,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
   }
 
   private void checkArguments(Arguments arguments, CredentialMethod method) {
-    for (int targetArgumentIndex : method.indices()) {
+    for (int targetArgumentIndex : method.indices) {
       ExpressionTree argument = ExpressionUtils.skipParentheses(arguments.get(targetArgumentIndex));
       if (argument.is(Tree.Kind.STRING_LITERAL, Tree.Kind.NEW_ARRAY)) {
         reportIssue(argument, ISSUE_MESSAGE);

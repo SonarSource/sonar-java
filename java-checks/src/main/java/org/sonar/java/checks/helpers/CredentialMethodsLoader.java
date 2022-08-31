@@ -20,9 +20,18 @@
 package org.sonar.java.checks.helpers;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +43,6 @@ public class CredentialMethodsLoader {
   }
 
   public static Map<String, List<CredentialMethod>> load(String resourcePath) throws IOException {
-    Gson gson = new Gson();
     String rawData;
     try (InputStream in = CredentialMethodsLoader.class.getResourceAsStream(resourcePath)) {
       if (in == null) {
@@ -42,7 +50,34 @@ public class CredentialMethodsLoader {
       }
       rawData = new String(in.readAllBytes(), StandardCharsets.UTF_8);
     }
+    Gson gson = new GsonBuilder()
+      .registerTypeAdapter(CredentialMethod.class, new Deserializer())
+      .create();
     CredentialMethod[] credentialMethods = gson.fromJson(rawData, CredentialMethod[].class);
     return Arrays.stream(credentialMethods).collect(Collectors.groupingBy(m -> m.name));
+  }
+
+  public static class Deserializer implements JsonDeserializer<CredentialMethod> {
+    @Override
+    public CredentialMethod deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+      JsonObject object = jsonElement.getAsJsonObject();
+      JsonArray argsInArray = object.get("args").getAsJsonArray();
+      List<String> args = new ArrayList<>(argsInArray.size());
+      for (var arg :argsInArray) {
+        args.add(arg.getAsString());
+      }
+      JsonArray indexes = object.get("indexes").getAsJsonArray();
+      List<Integer> indices = new ArrayList<>(indexes.size());
+      for (var index: indexes) {
+        int computed = index.getAsInt() - 1;
+        indices.add(computed);
+      }
+      return new CredentialMethod(
+        object.get("cls").getAsString(),
+        object.get("name").getAsString(),
+        args,
+        indices
+      );
+    }
   }
 }

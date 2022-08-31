@@ -20,17 +20,22 @@
 package org.sonar.java.checks.helpers;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 
 public class CredentialMethod {
-  public String cls;
-  public String name;
-  public List<String> args;
-  private List<Integer> indexes;
+  public final String cls;
+  public final String name;
+  public final List<String> args;
+  public final List<Integer> indices;
 
   private MethodMatchers methodMatcher;
 
+  public CredentialMethod(String cls, String name, List<String> args, List<Integer> indices) {
+    this.cls = cls;
+    this.name = name;
+    this.args = args;
+    this.indices = indices;
+  }
 
   public boolean isConstructor() {
     int sep = Math.max(cls.lastIndexOf('.'), cls.lastIndexOf('$'));
@@ -54,9 +59,5 @@ public class CredentialMethod {
       .addParametersMatcher(args.toArray(new String[0]))
       .build();
     return methodMatcher;
-  }
-
-  public List<Integer> indices() {
-    return indexes.stream().map(integer -> integer - 1).collect(Collectors.toList());
   }
 }
