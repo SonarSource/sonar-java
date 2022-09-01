@@ -22,6 +22,7 @@ package org.sonar.java.checks.helpers;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,5 +39,15 @@ class CredentialMethodTest {
     assertThat(stringCompareTo.isConstructor()).isFalse();
     var innerClassConstructor = new CredentialMethod("org.sonar.Outer$Inner", "Inner", Collections.emptyList(), Collections.emptyList());
     assertThat(innerClassConstructor.isConstructor()).isTrue();
+  }
+
+  @Test
+  void methodMatcher_is_recycled() {
+    var constructor = new CredentialMethod("Object", "Object", Collections.emptyList(), Collections.emptyList());
+    MethodMatchers constructorMatcher = constructor.methodMatcher();
+    assertThat(constructor.methodMatcher()).isSameAs(constructorMatcher);
+    var equalsMatcher = new CredentialMethod("Object", "equals", Collections.emptyList(), Collections.emptyList());
+    MethodMatchers methodMatcher = equalsMatcher.methodMatcher();
+    assertThat(equalsMatcher.methodMatcher()).isSameAs(methodMatcher);
   }
 }
