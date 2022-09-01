@@ -57,7 +57,7 @@ public class CredentialMethodsLoader {
     return Arrays.stream(credentialMethods).collect(Collectors.groupingBy(m -> m.name));
   }
 
-  public static class Deserializer implements JsonDeserializer<CredentialMethod> {
+  private static class Deserializer implements JsonDeserializer<CredentialMethod> {
     @Override
     public CredentialMethod deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
       JsonObject object = jsonElement.getAsJsonObject();
