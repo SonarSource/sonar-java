@@ -48,7 +48,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6437")
 public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscriptionVisitor {
-  public static final String CREDENTIALS_METHODS_FILE = "/org/sonar/java/checks/security/credentials-methods.json";
+  public static final String CREDENTIALS_METHODS_FILE = "/org/sonar/java/checks/security/S6437-methods.json";
 
   private static final Logger LOG = Loggers.get(HardCodedCredentialsShouldNotBeUsedCheck.class);
 
