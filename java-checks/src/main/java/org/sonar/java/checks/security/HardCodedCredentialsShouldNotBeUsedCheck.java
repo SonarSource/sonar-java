@@ -165,7 +165,10 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
   }
 
   private static boolean isDerivedFromPlainText(VariableTree variable) {
-    ExpressionTree initializer = variable.initializer();
+    ExpressionTree initializer = ExpressionUtils.skipParentheses(variable.initializer());
+    if (initializer.is(Tree.Kind.CONDITIONAL_EXPRESSION)) {
+      return false;
+    }
     if (!initializer.is(Tree.Kind.METHOD_INVOCATION)) {
       return true;
     }

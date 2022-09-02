@@ -3,12 +3,15 @@ package checks.security;
 
 import com.azure.security.keyvault.secrets.SecretClient;
 import com.azure.security.keyvault.secrets.models.KeyVaultSecret;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -22,8 +25,6 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRespon
 public class HardCodedCredentialsShouldNotBeUsedCheck {
   static final String FINAL_SECRET_STRING = "hunter2";
   static final byte[] FINAL_SECRET_BYTE_ARRAY = FINAL_SECRET_STRING.getBytes(StandardCharsets.UTF_8);
-  static final char[] FINAL_SECRET_CHAR_ARRAY = FINAL_SECRET_STRING.toCharArray();
-  static final CharSequence FINAL_SECRET_CHAR_SEQUENCE = FINAL_SECRET_STRING.subSequence(0, FINAL_SECRET_STRING.length());
   private static String secretStringField = "hunter2";
   private static byte[] secretByteArrayField = new byte[]{0xC, 0xA, 0xF, 0xE};
   private static char[] secretCharArrayField = new char[]{0xC, 0xA, 0xF, 0xE};
@@ -34,7 +35,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     byte[] key = effectivelyConstantString.getBytes();
 
     // byte array based
-    SHA256.getHMAC(FINAL_SECRET_BYTE_ARRAY, message); // Noncompliant [[sc=20;ec=43;secondary=24]] {{Revoke and change this password, as it is compromised.}}
+    SHA256.getHMAC(FINAL_SECRET_BYTE_ARRAY, message); // Noncompliant [[sc=20;ec=43;secondary=27]] {{Revoke and change this password, as it is compromised.}}
     SHA256.getHMAC(key, message);  // Noncompliant [[sc=20;ec=23;secondary=-4]]
     SHA256.getHMAC(effectivelyConstantString.getBytes(), message); // Noncompliant
     SHA256.getHMAC("anotherS3cr37".getBytes(), message); // Noncompliant
@@ -46,8 +47,8 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     // String based
     HttpServletRequest request = new HttpServletRequestWrapper(null);
     request.login("user", "password"); // Noncompliant
-    request.login("user", effectivelyConstantString); // Noncompliant [[sc=27;ec=52;secondary=33]]
-    request.login("user", FINAL_SECRET_STRING); // Noncompliant [[sc=27;ec=46;secondary=23]]
+    request.login("user", effectivelyConstantString); // Noncompliant [[sc=27;ec=52;secondary=34]]
+    request.login("user", FINAL_SECRET_STRING); // Noncompliant [[sc=27;ec=46;secondary=26]]
 
     KeyStore store = KeyStore.getInstance(null);
 
@@ -126,6 +127,20 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
 
     byte[] key = secret.getBytes();
     SHA256.getHMAC(key, message);
+  }
+
+  public static void compliantFromEnvironment(KeyStore keyStore, InputStream in) throws CertificateException, IOException, NoSuchAlgorithmException {
+    String defaultKeyStorePassword = System.getProperty("MY_SECRET");
+
+    char[] passwd = defaultKeyStorePassword.toCharArray();
+    keyStore.load(in, passwd);  // Compliant, we should not raise when the password is recovered from an external source
+
+    String withDefault = System.getProperty("MY_SECRET", "DEFAULT");
+    char[] passwdWithDefaultFallback = withDefault.toCharArray();
+    keyStore.load(in, passwdWithDefaultFallback); // Compliant, we should not raise when the password is recovered from an external source
+
+    char[] conditionalPasswd = defaultKeyStorePassword == null ? new char[0] : defaultKeyStorePassword.toCharArray();
+    keyStore.load(in, conditionalPasswd); // Compliant, we should not raise when the password is recovered from a conditional
   }
 
   private static byte[] convertToByteArray(final String string) {
