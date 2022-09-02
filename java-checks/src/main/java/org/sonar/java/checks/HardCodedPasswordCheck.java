@@ -30,13 +30,11 @@ import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -45,23 +43,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public class HardCodedPasswordCheck extends AbstractHardCodedCredentialChecker {
 
   private static final String DEFAULT_PASSWORD_WORDS = "password,passwd,pwd,passphrase,java.naming.security.credentials";
-  private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final Pattern URL_PREFIX = Pattern.compile("^\\w{1,8}://");
   private static final Pattern NON_EMPTY_URL_CREDENTIAL = Pattern.compile("(?<user>[^\\s:]*+):(?<password>\\S++)");
-
-  private static final MethodMatchers PASSWORD_AUTHENTICATION_CONSTRUCTOR = MethodMatchers.create()
-    .ofTypes("java.net.PasswordAuthentication")
-    .constructor()
-    .addParametersMatcher(JAVA_LANG_STRING, "char[]")
-    .build();
-
-  private static final MethodMatchers GET_CONNECTION_MATCHER = MethodMatchers.create()
-    .ofTypes("java.sql.DriverManager")
-    .names("getConnection")
-    .withAnyParameters()
-    .build();
-
-  private static final int GET_CONNECTION_PASSWORD_ARGUMENT = 2;
 
   @RuleProperty(
     key = "credentialWords",
@@ -76,7 +59,7 @@ public class HardCodedPasswordCheck extends AbstractHardCodedCredentialChecker {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.STRING_LITERAL, Tree.Kind.VARIABLE, Tree.Kind.ASSIGNMENT, Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION);
+    return Arrays.asList(Tree.Kind.STRING_LITERAL, Tree.Kind.VARIABLE, Tree.Kind.ASSIGNMENT, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
@@ -87,8 +70,6 @@ public class HardCodedPasswordCheck extends AbstractHardCodedCredentialChecker {
       handleVariable((VariableTree) tree);
     } else if (tree.is(Tree.Kind.ASSIGNMENT)) {
       handleAssignment((AssignmentExpressionTree) tree);
-    } else if (tree.is(Tree.Kind.NEW_CLASS)) {
-      handleConstructor((NewClassTree) tree);
     } else {
       handleMethodInvocation((MethodInvocationTree) tree);
     }
@@ -119,36 +100,12 @@ public class HardCodedPasswordCheck extends AbstractHardCodedCredentialChecker {
     return false;
   }
 
-  private void handleConstructor(NewClassTree tree) {
-    if (!PASSWORD_AUTHENTICATION_CONSTRUCTOR.matches(tree)) {
-      return;
-    }
-    ExpressionTree secondArg = tree.arguments().get(1);
-    if (secondArg.is(Tree.Kind.METHOD_INVOCATION)) {
-      MethodInvocationTree mit = (MethodInvocationTree) secondArg;
-      if (STRING_TO_CHAR_ARRAY.matches(mit) && isCallOnStringLiteral(mit.methodSelect())) {
-        reportIssue(tree, "Remove this hard-coded password.");
-      }
-    }
-  }
-
   private void handleMethodInvocation(MethodInvocationTree mit) {
     ExpressionTree methodSelect = mit.methodSelect();
     if (EQUALS_MATCHER.matches(mit) && methodSelect.is(Kind.MEMBER_SELECT)) {
       handleEqualsMethod(mit, (MemberSelectExpressionTree) methodSelect);
-    } else if (GET_CONNECTION_MATCHER.matches(mit)) {
-      handleGetConnectionMethod(mit);
     } else {
       isSettingCredential(mit).ifPresent(settingPassword -> report(ExpressionUtils.methodName(mit), settingPassword));
-    }
-  }
-
-  private void handleGetConnectionMethod(MethodInvocationTree mit) {
-    if (mit.arguments().size() > GET_CONNECTION_PASSWORD_ARGUMENT) {
-      ExpressionTree expression = mit.arguments().get(GET_CONNECTION_PASSWORD_ARGUMENT);
-      if (isPotentialCredential(expression)) {
-        reportIssue(expression, "Remove this hard-coded password.");
-      }
     }
   }
 
