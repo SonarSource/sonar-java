@@ -28,7 +28,7 @@ class HardCodedPasswordCheckCustom {
     myA.setProperty("pwd", "xxxxx"); // Compliant
 
 
-    new PasswordAuthentication("userName", "1234".toCharArray());  // Noncompliant {{Remove this hard-coded password.}}
+    new PasswordAuthentication("userName", "1234".toCharArray()); // Compliant, handled by S6437
     new PasswordAuthentication("userName", pwd); // Compliant
     new PasswordAuthentication("userName", getPwd(var)); // Compliant
     new PasswordAuthentication("userName", var.toCharArray()); // Compliant

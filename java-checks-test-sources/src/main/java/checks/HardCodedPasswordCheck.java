@@ -183,8 +183,8 @@ class HardCodedPasswordCheck {
     // ========== 4.2 API setting password ==========
     // The second argument of "getConnection" contains a password: report an issue if it is hardcoded
     java.sql.Connection conn = DriverManager.getConnection("jdbc:mysql://xxx/", "root", var);
-    conn = DriverManager.getConnection("jdbc:mysql://xxx/", "root", "whateverpassword"); // Noncompliant [[sc=69;ec=87]]
-    conn = DriverManager.getConnection("jdbc:mysql://xxx/", "root", PASSED); // Noncompliant  [[sc=69;ec=75]]
+    conn = DriverManager.getConnection("jdbc:mysql://xxx/", "root", "whateverpassword"); // Compliant, handled by S6437
+    conn = DriverManager.getConnection("jdbc:mysql://xxx/", "root", PASSED); // Compliant, handled by S6437
     conn = DriverManager.getConnection("jdbc:mysql://xxx/");
     // Password not set as argument, but it is still detected in the string itself is detected thanks to (1.)
     conn = DriverManager.getConnection("jdbc:db2://myhost:5021/mydb:user=dbadm;password=foo"); // Noncompliant [[sc=40;ec=93]]
@@ -229,7 +229,7 @@ class HardCodedPasswordCheck {
     // ========== 5. Constructors ==========
     // Second argument of "PasswordAuthentication" is setting explicitly a password
     PasswordAuthentication pa;
-    pa = new PasswordAuthentication("userName", "1234".toCharArray());  // Noncompliant {{Remove this hard-coded password.}}
+    pa = new PasswordAuthentication("userName", "1234".toCharArray()); // Compliant, handled by S6437
     // Not hardcoded
     pa = new PasswordAuthentication("userName", var.toCharArray());
     pa = new PasswordAuthentication("userName", pwd); // Compliant
