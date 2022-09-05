@@ -43,12 +43,16 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     SHA256.getHMAC(FINAL_SECRET_STRING.getBytes(StandardCharsets.UTF_8), message); // Noncompliant
     SHA256.getHMAC(FINAL_SECRET_STRING.getBytes("UTF-8"), message); // Noncompliant
     SHA256.getHMAC((FINAL_SECRET_STRING).getBytes("UTF-8"), message); // Noncompliant
+    SHA256.getHMAC(new byte[1], message); // Noncompliant
 
     // String based
     HttpServletRequest request = new HttpServletRequestWrapper(null);
     request.login("user", "password"); // Noncompliant
     request.login("user", effectivelyConstantString); // Noncompliant [[sc=27;ec=52;secondary=34]]
     request.login("user", FINAL_SECRET_STRING); // Noncompliant [[sc=27;ec=46;secondary=26]]
+    String plainTextSecret = new String("BOOM");
+    request.login("user", plainTextSecret); // Noncompliant
+    request.login("user", new String("secret")); // Noncompliant
 
     KeyStore store = KeyStore.getInstance(null);
 
@@ -86,6 +90,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     request.login("user", secretParameter); // compliant because we do not check parameters
     request.login("user", secretReassginedVariable); // compliant because we do not check reassigned variables
     request.login("user", secretStringField); // compliant because we do not check non-final fields
+    request.login("user", getAString()); // compliant
 
 
     KeyStore store = KeyStore.getInstance(null);
@@ -93,6 +98,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     store.getKey("", secretReassignedAsCharsVariable); // compliant because we do not check reassigned variables
     store.getKey("", secretCharArrayField); // compliant because we do not check non-final fields
     store.getKey("", convertToCharArray(secretParameter)); // compliant because we do not check calls to methods defined out of String
+    store.getKey("", new char[0]); // compliant because we don't consider empty arrays
 
 
     CharSequence secretReassignedAsCharSequence = "hello".subSequence(0, 4);
@@ -143,6 +149,13 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     keyStore.load(in, conditionalPasswd); // Compliant, we should not raise when the password is recovered from a conditional
   }
 
+  public static void nonCompliantFromNewObject(String parameterSecret) throws ServletException {
+    // String based
+    HttpServletRequest request = new HttpServletRequestWrapper(null);
+    String secret = new String(parameterSecret);
+    request.login("user", secret); // Compliant
+  }
+
   private static byte[] convertToByteArray(final String string) {
     return string.getBytes(StandardCharsets.UTF_8);
   }
@@ -153,5 +166,9 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
 
   private static CharSequence convertToCharSequence(final String string) {
     return string;
+  }
+
+  private static String getAString() {
+    return "secret";
   }
 }

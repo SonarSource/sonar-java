@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
@@ -42,6 +43,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -73,10 +75,20 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
       .build()
   );
 
+  private static final MethodMatchers SUPPORTED_CONSTRUCTORS = MethodMatchers.create()
+    .ofTypes(
+      JAVA_LANG_STRING,
+      "java.lang.StringBuffer",
+      "java.lang.StringBuilder",
+      "java.nio.CharBuffer"
+    ).constructor()
+    .addParametersMatcher(parameters -> !parameters.isEmpty())
+    .build();
   private static final String ISSUE_MESSAGE = "Revoke and change this password, as it is compromised.";
 
 
   private Map<String, List<CredentialMethod>> methods;
+  private static JavaFileScannerContext.Location secondaryLocation;
 
   public HardCodedCredentialsShouldNotBeUsedCheck() {
     this(CREDENTIALS_METHODS_FILE);
@@ -99,6 +111,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
 
   @Override
   public void visitNode(Tree tree) {
+    secondaryLocation = null;
     String methodName;
     boolean isConstructor = tree.is(Tree.Kind.NEW_CLASS);
     if (isConstructor) {
@@ -131,24 +144,52 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
   private void checkArguments(Arguments arguments, CredentialMethod method) {
     for (int targetArgumentIndex : method.indices) {
       ExpressionTree argument = ExpressionUtils.skipParentheses(arguments.get(targetArgumentIndex));
-      if (argument.is(Tree.Kind.STRING_LITERAL, Tree.Kind.NEW_ARRAY)) {
-        reportIssue(argument, ISSUE_MESSAGE);
-      } else if (argument.is(Tree.Kind.IDENTIFIER)) {
-        IdentifierTree identifier = (IdentifierTree) argument;
-        Symbol symbol = identifier.symbol();
-        if (!symbol.isVariableSymbol() || JUtils.isParameter(symbol) || isNonFinalField(symbol) || isReassigned(symbol)) {
-          return;
+      if (isDerivedFromPlainText(argument)) {
+        if (secondaryLocation == null) {
+          reportIssue(argument, ISSUE_MESSAGE);
+        } else {
+          reportIssue(argument, ISSUE_MESSAGE, List.of(secondaryLocation), null);
         }
-
-        VariableTree variable = (VariableTree) symbol.declaration();
-
-        if (variable != null && (isStringDerivedFromPlainText(variable) || isDerivedFromPlainText(variable))) {
-          reportIssue(argument, ISSUE_MESSAGE, List.of(new JavaFileScannerContext.Location("", variable)), null);
-        }
-      } else if (argument.is(Tree.Kind.METHOD_INVOCATION) && isDerivedFromPlainText((MethodInvocationTree) argument)) {
-        reportIssue(argument, ISSUE_MESSAGE);
       }
     }
+  }
+
+  private static boolean isDerivedFromPlainText(ExpressionTree expression) {
+    ExpressionTree arg = ExpressionUtils.skipParentheses(expression);
+    switch (arg.kind()) {
+      case IDENTIFIER:
+        IdentifierTree identifier = (IdentifierTree) arg;
+        return isDerivedFromPlainText(identifier);
+      case NEW_ARRAY:
+        NewArrayTree newArrayTree = (NewArrayTree) arg;
+        return isDerivedFromPlainText(newArrayTree);
+      case NEW_CLASS:
+        NewClassTree newClassTree = (NewClassTree) arg;
+        return isDerivedFromPlainText(newClassTree);
+      case METHOD_INVOCATION:
+        MethodInvocationTree methodInvocationTree = (MethodInvocationTree) arg;
+        return isDerivedFromPlainText(methodInvocationTree);
+      case STRING_LITERAL:
+      case INT_LITERAL:
+      case CHAR_LITERAL:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  private static boolean isDerivedFromPlainText(IdentifierTree identifier) {
+    Symbol symbol = identifier.symbol();
+    if (!symbol.isVariableSymbol() || JUtils.isParameter(symbol) || isNonFinalField(symbol) || isReassigned(symbol)) {
+      return false;
+    }
+    VariableTree variable = (VariableTree) symbol.declaration();
+
+    boolean result = variable != null && (isStringDerivedFromPlainText(variable) || isDerivedFromPlainText(variable));
+    if (result) {
+      secondaryLocation = new JavaFileScannerContext.Location("", variable);
+    }
+    return result;
   }
 
   private static boolean isNonFinalField(Symbol symbol) {
@@ -166,14 +207,19 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
 
   private static boolean isDerivedFromPlainText(VariableTree variable) {
     ExpressionTree initializer = ExpressionUtils.skipParentheses(variable.initializer());
-    if (initializer.is(Tree.Kind.CONDITIONAL_EXPRESSION)) {
-      return false;
+    if (initializer.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree initializationCall = (MethodInvocationTree) initializer;
+      return isDerivedFromPlainText(initializationCall);
     }
-    if (!initializer.is(Tree.Kind.METHOD_INVOCATION)) {
-      return true;
+    if (initializer.is(Tree.Kind.NEW_ARRAY)) {
+      NewArrayTree initializationCall = (NewArrayTree) initializer;
+      return isDerivedFromPlainText(initializationCall);
     }
-    MethodInvocationTree initializationCall = (MethodInvocationTree) initializer;
-    return isDerivedFromPlainText(initializationCall);
+    if (initializer.is(Tree.Kind.NEW_CLASS)) {
+      NewClassTree initializationCall = (NewClassTree) initializer;
+      return isDerivedFromPlainText(initializationCall);
+    }
+    return false;
   }
 
   private static boolean isDerivedFromPlainText(MethodInvocationTree invocation) {
@@ -183,6 +229,27 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
     StringConstantFinder visitor = new StringConstantFinder();
     invocation.accept(visitor);
     return visitor.finding != null;
+  }
+
+  private static boolean isDerivedFromPlainText(NewArrayTree invocation) {
+    ExpressionTree dimension = invocation.dimensions().get(0).expression();
+    if (dimension != null && dimension.is(Tree.Kind.INT_LITERAL)) {
+      Optional<Integer> sizeOfArray = dimension.asConstant(Integer.class);
+      if (sizeOfArray.isPresent() && sizeOfArray.get() == 0) {
+        return false;
+      }
+    }
+    return invocation.initializers().stream()
+      .map(ExpressionUtils::skipParentheses)
+      .allMatch(HardCodedCredentialsShouldNotBeUsedCheck::isDerivedFromPlainText);
+  }
+
+  private static boolean isDerivedFromPlainText(NewClassTree invocation) {
+    if (!SUPPORTED_CONSTRUCTORS.matches(invocation)) {
+      return false;
+    }
+    return invocation.arguments().stream()
+      .allMatch(HardCodedCredentialsShouldNotBeUsedCheck::isDerivedFromPlainText);
   }
 
   public Map<String, List<CredentialMethod>> getMethods() {
