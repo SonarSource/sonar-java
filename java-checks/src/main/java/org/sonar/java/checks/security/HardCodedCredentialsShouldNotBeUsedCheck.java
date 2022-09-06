@@ -104,6 +104,10 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
     }
   }
 
+  public Map<String, List<CredentialMethod>> getMethods() {
+    return this.methods;
+  }
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return List.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
@@ -222,14 +226,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
     return false;
   }
 
-  private static boolean isDerivedFromPlainText(MethodInvocationTree invocation) {
-    if (!STRING_TO_ARRAY_METHODS.matches(invocation)) {
-      return false;
-    }
-    StringConstantFinder visitor = new StringConstantFinder();
-    invocation.accept(visitor);
-    return visitor.finding != null;
-  }
+
 
   private static boolean isDerivedFromPlainText(NewArrayTree invocation) {
     ExpressionTree dimension = invocation.dimensions().get(0).expression();
@@ -252,8 +249,13 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
       .allMatch(HardCodedCredentialsShouldNotBeUsedCheck::isDerivedFromPlainText);
   }
 
-  public Map<String, List<CredentialMethod>> getMethods() {
-    return this.methods;
+  private static boolean isDerivedFromPlainText(MethodInvocationTree invocation) {
+    if (!STRING_TO_ARRAY_METHODS.matches(invocation)) {
+      return false;
+    }
+    StringConstantFinder visitor = new StringConstantFinder();
+    invocation.accept(visitor);
+    return visitor.finding != null;
   }
 
   private static class StringConstantFinder extends BaseTreeVisitor {

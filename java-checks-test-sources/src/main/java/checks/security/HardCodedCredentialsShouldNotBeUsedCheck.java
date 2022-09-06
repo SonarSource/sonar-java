@@ -22,6 +22,8 @@ import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
 
+import static java.lang.System.getProperty;
+
 public class HardCodedCredentialsShouldNotBeUsedCheck {
   static final String FINAL_SECRET_STRING = "hunter2";
   static final byte[] FINAL_SECRET_BYTE_ARRAY = FINAL_SECRET_STRING.getBytes(StandardCharsets.UTF_8);
@@ -35,7 +37,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     byte[] key = effectivelyConstantString.getBytes();
 
     // byte array based
-    SHA256.getHMAC(FINAL_SECRET_BYTE_ARRAY, message); // Noncompliant [[sc=20;ec=43;secondary=27]] {{Revoke and change this password, as it is compromised.}}
+    SHA256.getHMAC(FINAL_SECRET_BYTE_ARRAY, message); // Noncompliant [[sc=20;ec=43;secondary=29]] {{Revoke and change this password, as it is compromised.}}
     SHA256.getHMAC(key, message);  // Noncompliant [[sc=20;ec=23;secondary=-4]]
     SHA256.getHMAC(effectivelyConstantString.getBytes(), message); // Noncompliant
     SHA256.getHMAC("anotherS3cr37".getBytes(), message); // Noncompliant
@@ -48,8 +50,8 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     // String based
     HttpServletRequest request = new HttpServletRequestWrapper(null);
     request.login("user", "password"); // Noncompliant
-    request.login("user", effectivelyConstantString); // Noncompliant [[sc=27;ec=52;secondary=34]]
-    request.login("user", FINAL_SECRET_STRING); // Noncompliant [[sc=27;ec=46;secondary=26]]
+    request.login("user", effectivelyConstantString); // Noncompliant [[sc=27;ec=52;secondary=36]]
+    request.login("user", FINAL_SECRET_STRING); // Noncompliant [[sc=27;ec=46;secondary=28]]
     String plainTextSecret = new String("BOOM");
     request.login("user", plainTextSecret); // Noncompliant
     request.login("user", new String("secret")); // Noncompliant
@@ -91,6 +93,8 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     request.login("user", secretReassginedVariable); // compliant because we do not check reassigned variables
     request.login("user", secretStringField); // compliant because we do not check non-final fields
     request.login("user", getAString()); // compliant
+    request.login("user", new String());
+    request.login("user", getProperty("hope"));
 
 
     KeyStore store = KeyStore.getInstance(null);
@@ -136,12 +140,12 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
   }
 
   public static void compliantFromEnvironment(KeyStore keyStore, InputStream in) throws CertificateException, IOException, NoSuchAlgorithmException {
-    String defaultKeyStorePassword = System.getProperty("MY_SECRET");
+    String defaultKeyStorePassword = getProperty("MY_SECRET");
 
     char[] passwd = defaultKeyStorePassword.toCharArray();
     keyStore.load(in, passwd);  // Compliant, we should not raise when the password is recovered from an external source
 
-    String withDefault = System.getProperty("MY_SECRET", "DEFAULT");
+    String withDefault = getProperty("MY_SECRET", "DEFAULT");
     char[] passwdWithDefaultFallback = withDefault.toCharArray();
     keyStore.load(in, passwdWithDefaultFallback); // Compliant, we should not raise when the password is recovered from an external source
 
