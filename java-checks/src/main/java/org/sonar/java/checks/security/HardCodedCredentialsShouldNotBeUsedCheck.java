@@ -33,6 +33,7 @@ import org.sonar.java.checks.helpers.CredentialMethodsLoader;
 import org.sonar.java.checks.helpers.ReassignmentFinder;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -174,6 +175,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
         MethodInvocationTree methodInvocationTree = (MethodInvocationTree) arg;
         return isDerivedFromPlainText(methodInvocationTree);
       case STRING_LITERAL:
+        return !LiteralUtils.isEmptyString(arg);
       case INT_LITERAL:
       case CHAR_LITERAL:
         return true;
@@ -206,7 +208,9 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
 
   private static boolean isStringDerivedFromPlainText(VariableTree variable) {
     Symbol symbol = variable.symbol();
-    return symbol.type().is(JAVA_LANG_STRING) && variable.initializer().asConstant().isPresent();
+    return symbol.type().is(JAVA_LANG_STRING) &&
+      variable.initializer().asConstant(String.class)
+        .map(value -> !value.isEmpty()).orElse(false);
   }
 
   private static boolean isDerivedFromPlainText(VariableTree variable) {

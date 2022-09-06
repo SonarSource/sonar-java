@@ -93,8 +93,11 @@ public class HardCodedCredentialsShouldNotBeUsedCheck {
     request.login("user", secretReassginedVariable); // compliant because we do not check reassigned variables
     request.login("user", secretStringField); // compliant because we do not check non-final fields
     request.login("user", getAString()); // compliant
-    request.login("user", new String());
-    request.login("user", getProperty("hope"));
+    request.login("user", new String()); // compliant
+    request.login("user", getProperty("hope")); // compliant
+    request.login("user", ""); // compliant
+    final String emptyString = "";
+    request.login("user", emptyString); // compliant
 
 
     KeyStore store = KeyStore.getInstance(null);
